@@ -2,118 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5678BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9209FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:41:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiAQNiD convert rfc822-to-8bit (ORCPT
+        id S232183AbiAQNl4 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 08:38:03 -0500
-Received: from mail-qk1-f173.google.com ([209.85.222.173]:44683 "EHLO
-        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiAQNiB (ORCPT
+        Mon, 17 Jan 2022 08:41:56 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:59700 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230190AbiAQNlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 08:38:01 -0500
-Received: by mail-qk1-f173.google.com with SMTP id t1so2837055qkt.11;
-        Mon, 17 Jan 2022 05:38:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Vgyxr7ztzV60Xeh7Q7gRuypGNAwuqlHo855fT6ZQ17E=;
-        b=PiUDFWDBmU1+9vD4LZmuVbR65V+lCU9F7loiGmX1eZujZTseE8D/3n5/gK3z/DarOl
-         FgwlLnRenmiBBehgtd+rIidprM7p26l03tsCuJVY7kl8KZzV0a1AFr3PCeKYdgLuovtN
-         2PdoJ8xqSuQS6GjvwpU+2RKSBgGaWEjWiOCWnzZYMn4Huncw/C10BepaY4pUZy1ldVCa
-         kLm/aFCLHPSYgIHItB/kpxYZSi0Y7BaXC1NX5cXIlQOx51n4h7chhUGHKfvEYlERUgzr
-         sm+HTEDGRnSwkKCgZAgjiS0Bbv6Wciam5yS9ZNeKlgBX+ghOzHxthf3qvzbvcMBqFNMG
-         qZcg==
-X-Gm-Message-State: AOAM533pUQzBzSmKA6RUzx1GGUD6jpJgwso7Shooe9JhEx+JDWnegzkK
-        XP/hCP60M1k6g83EqfYgI23+N+rJJGNE3PtveCI=
-X-Google-Smtp-Source: ABdhPJzgqH7VQOVtjyKwk0O6xlkP5eJCKSaa1kHhuN3q3ZPuNR5LB9Fx/9eQnXEjz8YssSHj1lIGXO8rpmxps9J+78A=
-X-Received: by 2002:a05:620a:4714:: with SMTP id bs20mr2943693qkb.8.1642426680287;
- Mon, 17 Jan 2022 05:38:00 -0800 (PST)
-MIME-Version: 1.0
-References: <20220107181723.54392-1-paul@crapouillou.net> <IKXS5R.AB16PVIGN8Z9@crapouillou.net>
-In-Reply-To: <IKXS5R.AB16PVIGN8Z9@crapouillou.net>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 17 Jan 2022 14:37:45 +0100
-Message-ID: <CAJZ5v0htDq+qFhEoV+PLQ9_pOy_xa7+rMoaGtqK7QpEbpUDA+Q@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] DEV_PM_OPS macros rework v3
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Len Brown <len.brown@intel.com>,
-        Pavel Machek <pavel@ucw.cz>, list@opendingux.net,
-        linux-iio@vger.kernel.org,
+        Mon, 17 Jan 2022 08:41:55 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-271-41QZaZ6cPQuaP92XkRhvvQ-1; Mon, 17 Jan 2022 08:41:52 -0500
+X-MC-Unique: 41QZaZ6cPQuaP92XkRhvvQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CD4B884BA59;
+        Mon, 17 Jan 2022 13:41:50 +0000 (UTC)
+Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.57])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C1D77C5AB;
+        Mon, 17 Jan 2022 13:41:23 +0000 (UTC)
+Received: by sparkplug.usersys.redhat.com (Postfix, from userid 1000)
+        id 42608160291; Thu, 17 Dec 2020 12:51:14 +0100 (CET)
+Date:   Thu, 17 Dec 2020 12:51:14 +0100
+From:   Artem Savkov <artem.savkov@gmail.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
+        WANG Chao <chao.wang@ucloud.cn>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+Subject: Re: [PATCH] kbuild: add extra-y to targets-for-modules
+Message-ID: <20201217115114.GA673511@sparkplug.usersys.redhat.com>
+References: <20201103054425.59251-1-chao.wang@ucloud.cn>
+ <CAK7LNARnmJRy1NPBDkgNsoe_TqpD=HJhmri4YHjXjscGZ-neWw@mail.gmail.com>
+ <20201123150452.GA68187@MacBook-Pro-2>
+ <CAK7LNASH7Pj9eUdxF-sp1_Ap+uA9jEtsXa--pUDDw_pNVLtviA@mail.gmail.com>
+ <20201208092035.GA96434@MacBook-Pro-2.local>
+ <20201208143117.GA3333762@wtfbox.lan>
+ <CAK7LNAS=wdCObfX3x8CQmXf8HsrKAjz+v+XVUCxVg63pxy8MXg@mail.gmail.com>
+ <f2d1888b-5b8e-a513-61c7-f41fc3f3f7a3@redhat.com>
+ <CAK7LNATmfzt0kTF0BWkSRaZV3p01mvN4OSGPZsCp+KHghCWf0Q@mail.gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <CAK7LNATmfzt0kTF0BWkSRaZV3p01mvN4OSGPZsCp+KHghCWf0Q@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=artem.savkov@gmail.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: gmail.com
+Content-Type: text/plain; charset=UTF-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Dec 17, 2020 at 05:26:07PM +0900, Masahiro Yamada wrote:
+> On Thu, Dec 17, 2020 at 8:04 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
+> >
+> > On 12/16/20 1:14 AM, Masahiro Yamada wrote:
+> > > On Tue, Dec 8, 2020 at 11:31 PM Artem Savkov <artem.savkov@gmail.com> wrote:
+> > >>
+> > >> On Tue, Dec 08, 2020 at 05:20:35PM +0800, WANG Chao wrote:
+> > >>> Sorry for the late reply.
+> > >>>
+> > >>> On 11/25/20 at 10:42P, Masahiro Yamada wrote:
+> > >>>> On Tue, Nov 24, 2020 at 12:05 AM WANG Chao <chao.wang@ucloud.cn> wrote:
+> > >>>>>
+> > >>>>> On 11/23/20 at 02:23P, Masahiro Yamada wrote:
+> > >>>>>> On Tue, Nov 3, 2020 at 3:23 PM WANG Chao <chao.wang@ucloud.cn> wrote:
+> > >>>>>>>
+> > >>>>>>> extra-y target doesn't build for 'make M=...' since commit 6212804f2d78
+> > >>>>>>> ("kbuild: do not create built-in objects for external module builds").
+> > >>>>>>>
+> > >>>>>>> This especially breaks kpatch, which is using 'extra-y := kpatch.lds'
+> > >>>>>>> and 'make M=...' to build livepatch patch module.
+> > >>>>>>>
+> > >>>>>>> Add extra-y to targets-for-modules so that such kind of build works
+> > >>>>>>> properly.
+> > >>>>>>>
+> > >>>>>>> Signed-off-by: WANG Chao <chao.wang@ucloud.cn>
+> > >>>>>>> ---
+> > >>>>>>>   scripts/Makefile.build | 2 +-
+> > >>>>>>>   1 file changed, 1 insertion(+), 1 deletion(-)
+> > >>>>>>>
+> > >>>>>>> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
+> > >>>>>>> index ae647379b579..0113a042d643 100644
+> > >>>>>>> --- a/scripts/Makefile.build
+> > >>>>>>> +++ b/scripts/Makefile.build
+> > >>>>>>> @@ -86,7 +86,7 @@ ifdef need-builtin
+> > >>>>>>>   targets-for-builtin += $(obj)/built-in.a
+> > >>>>>>>   endif
+> > >>>>>>>
+> > >>>>>>> -targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
+> > >>>>>>> +targets-for-modules := $(extra-y) $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
+> > >>>>>>>
+> > >>>>>>>   ifdef need-modorder
+> > >>>>>>>   targets-for-modules += $(obj)/modules.order
+> > >>>>>>> --
+> > >>>>>>> 2.29.1
+> > >>>>>>>
+> > >>>>>>
+> > >>>>>> NACK.
+> > >>>>>>
+> > >>>>>> Please fix your Makefile.
+> > >>>>>>
+> > >>>>>> Hint:
+> > >>>>>> https://patchwork.kernel.org/project/linux-kbuild/patch/20201123045403.63402-6-masahiroy@kernel.org/
+> > >>>>>>
+> > >>>>>>
+> > >>>>>> Probably what you should use is 'targets'.
+> > >>>>>
+> > >>>>> I tried with 'targets' and 'always-y'. Both doesn't work for me.
+> > >>>>>
+> > >>>>> I narraw it down to the following example:
+> > >>>>>
+> > >>>>> cat > Makefile << _EOF_
+> > >>>>> obj-m += foo.o
+> > >>>>>
+> > >>>>> ldflags-y += -T $(src)/kpatch.lds
+> > >>>>> always-y += kpatch.lds
+> > >>>>>
+> > >>>>> foo-objs += bar.o
+> > >>>>>
+> > >>>>> all:
+> > >>>>>          make -C /lib/modules/$(shell uname -r)/build M=$(PWD)
+> > >>>>> clean:
+> > >>>>>          make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+> > >>>>> _EOF_
+> > >>>>>
+> > >>>>> Take a look into scripts/Makefile.build:488:
+> > >>>>>
+> > >>>>> __build: $(if $(KBUILD_BUILTIN), $(targets-for-builtin)) \
+> > >>>>>           $(if $(KBUILD_MODULES), $(targets-for-modules)) \
+> > >>>>>           $(subdir-ym) $(always-y)
+> > >>>>>          @:
+> > >>>>>
+> > >>>>> 'always-y' is built after 'targets-for-modules'. This makes
+> > >>>>> 'targets-for-modules' fails because kpatch.lds isn't there.
+> > >>>>
+> > >>>>
+> > >>>> Heh, you rely on the targets built from left to right,
+> > >>>> and you have never thought Make supports the parallel option -j.
+> > >>>
+> > >>> You're right. I missed that.
+> > >>>
+> > >>>>
+> > >>>>
+> > >>>> You need to specify the dependency if you expect objects
+> > >>>> are built in the particular order.
+> > >>>>
+> > >>>> However, in this case, using ldflags-y looks wrong
+> > >>>> in the first place.
+> > >>>>
+> > >>>> The linker script is used when combining the object
+> > >>>> as well as the final link of *.ko
+> > >>
+> > >> We want linker script to be used on both those steps, otherwise modpost
+> > >> fails.
+> > >
+> > >
+> > > In that case, does the following work?
+> > > (untested)
+> > >
+> > >
+> > >
+> > > diff --git a/kmod/patch/Makefile b/kmod/patch/Makefile
+> > > index e017b17..02d4c66 100644
+> > > --- a/kmod/patch/Makefile
+> > > +++ b/kmod/patch/Makefile
+> > > @@ -12,7 +12,9 @@ endif
+> > >
+> > >   obj-m += $(KPATCH_NAME).o
+> > >   ldflags-y += -T $(src)/kpatch.lds
+> > > -extra-y := kpatch.lds
+> > > +targets += kpatch.lds
+> > > +
+> > > +$(obj)/$(KPATCH_NAME).o: $(obj)/kpatch.lds
+> > >
+> > >   $(KPATCH_NAME)-objs += patch-hook.o output.o
+> > >
+> >
+> > Hi Masahiro,
+> >
+> > Yeah this is more or less what Artem came up with:
+> > https://github.com/dynup/kpatch/pull/1149
+> >
+> > though we hadn't added kpatch.lds to targets.  Is there documentation
+> > somewhere on what effect "targets" has for out-of-tree builds?
+> >
+> > Thanks,
+> >
+> > -- Joe
+> >
+> 
+> 
+> Please try the rebuild without changing any source code.
+> 
+> If kpatch.lds is needlessly rebuilt, you need to add
+> it to 'targets'.
+> 
+> 
+> In linux-next, this is documented.
+> 
+> Documentation/kbuild/makefile.rst:
+> 
+>         Any target that utilizes if_changed must be listed in $(targets),
+>         otherwise the command line check will fail, and the target will
+>         always be built.
 
-On Sun, Jan 16, 2022 at 1:05 PM Paul Cercueil <paul@crapouillou.net> wrote:
->
-> Hi Rafael,
->
-> Could patches [1/6] and [2/6] make it to 5.17-rc1, or at least -rc2?
+Ah yes, it did rebuild every time. Thank you for the pointer.
 
-Yes.  I'm going to send a PR with the whole series later today.
+-- 
+ Artem
 
-> I'm afraid that if these two have to wait for the 5.18 cycle, then I'll
-> have more drivers to fix later.
->
-> Should I add a Fixes tag maybe?
-
-No need, thanks!
-
-> Le ven., janv. 7 2022 at 18:17:17 +0000, Paul Cercueil
-> <paul@crapouillou.net> a écrit :
-> > Hi,
-> >
-> > A V2 of my patchset that tweaks a bit the *_DEV_PM_OPS() macros that
-> > were introduced recently.
-> >
-> > Changes since V2:
-> > * [1/6]: - Keep UNIVERSAL_DEV_PM_OPS() macro deprecated
-> >          - Rework commit message
-> > * [3/6]: - Reorder the code to have non-private macros together in the
-> >            file
-> >        - Add comment about the necesity to use the new export macro
-> >          when the dev_pm_ops has to be exported
-> > * [5/6]: Add comment about the necesity to use the new export macro
-> >          when the dev_pm_ops has to be exported
-> >
-> > Cheers,
-> > -Paul
-> >
-> > Paul Cercueil (6):
-> >   PM: core: Remove DEFINE_UNIVERSAL_DEV_PM_OPS() macro
-> >   PM: core: Remove static qualifier in DEFINE_SIMPLE_DEV_PM_OPS macro
-> >   PM: core: Add EXPORT[_GPL]_SIMPLE_DEV_PM_OPS macros
-> >   PM: runtime: Add DEFINE_RUNTIME_DEV_PM_OPS() macro
-> >   PM: runtime: Add EXPORT[_GPL]_RUNTIME_DEV_PM_OPS macros
-> >   iio: pressure: bmp280: Use new PM macros
-> >
-> >  drivers/iio/pressure/bmp280-core.c | 11 ++----
-> >  drivers/iio/pressure/bmp280-i2c.c  |  2 +-
-> >  drivers/iio/pressure/bmp280-spi.c  |  2 +-
-> >  drivers/mmc/host/jz4740_mmc.c      |  4 +--
-> >  drivers/mmc/host/mxcmmc.c          |  2 +-
-> >  include/linux/pm.h                 | 55
-> > ++++++++++++++++++++++--------
-> >  include/linux/pm_runtime.h         | 24 +++++++++++++
-> >  7 files changed, 71 insertions(+), 29 deletions(-)
-> >
-> > --
-> > 2.34.1
-> >
->
->
