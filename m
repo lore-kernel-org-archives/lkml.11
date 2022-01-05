@@ -2,227 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BEE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EDC6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244723AbiAEWHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 17:07:02 -0500
-Received: from mga18.intel.com ([134.134.136.126]:19133 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244716AbiAEWG5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:06:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641420417; x=1672956417;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=A3S6i6P/bWmDPC68jtKB8TMGT9TJaBRTy/Rny9domTk=;
-  b=BO+47DQRmCKIGaOIVaeCsgYoAkF9g4+q9DwvNujYmBTSOOKhAIpot9uW
-   fKasz9dHIGgbSsBYGZg0PXBHwZcytDXT/n3jnPTQZYEhMGgilo3SIySM1
-   O8ww2fgTXFlnU5u32GTK05RVX/9wS3uJYDvXZG5CSGGFjBinnRzT3LoH6
-   xeYe2w8Dke7JlugFUG54tynr9pTU+BltQwR6wJjabbtOYNTrnuHNGtc/c
-   9wnVJx5EOq8EM8wRxvlM098AkMmPewN1t2bmpXwqwyY9jm4OdLOjWAAHA
-   X4HBx+rOmFrrL1NnO2R7BKTmwi/DI4BETeD4+CzPz+qB991oqHvfhISkz
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="229358708"
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="229358708"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 14:06:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="689168076"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 05 Jan 2022 14:06:55 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5EQo-000H4c-Jm; Wed, 05 Jan 2022 22:06:54 +0000
-Date:   Thu, 6 Jan 2022 06:06:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:kprobe/multi 4/14]
- drivers/gpu/drm/i915/gem/i915_gem_internal.c:174:6: error: shift count >=
- width of type
-Message-ID: <202201060655.KDdXDde2-lkp@intel.com>
+        id S244731AbiAEWHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 17:07:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244724AbiAEWHD (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 17:07:03 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDE8C061245
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 14:07:03 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id lr15-20020a17090b4b8f00b001b19671cbebso462613pjb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 14:07:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BFG0l9emxD+ju8/dHSykgBujSujZCyd7JKllBt6CzUo=;
+        b=jecAfIY/6Qu8Buu8K/aqr0IrdQLnHApT+lYmFo6pyZE1a65d6H0naDK/SUJaACxmLW
+         nLH++d4TzrDa5tBL3PginZNVAx1/s/oEPsEbc101uYtlAzzFgA548H3d+XoR8kMrDBkZ
+         2qI3Gy+k72QSOdd7gj8tC9doNRg/w3aixN2dk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BFG0l9emxD+ju8/dHSykgBujSujZCyd7JKllBt6CzUo=;
+        b=lQJOwO61fFS6B89JA5hDWSjkfwjb+ZdP1W4WLAlSx6tLLbd0IhCV45pUp8rzkAVD7q
+         EoVciYgcq1rFlvGB+4QcSje0i8rH3izDCztUm+SUyvOcxXBpkcM/ZTJEQ5ZPOttpDVuz
+         6yOOg0Vi3YkhPdiMpJ2qdr6LAR5rXQRytRQszPhPDA7dz3iK6U6c6qKzqqtKbvmeR7ua
+         bnlq7nDs3o/YR3yA3VGEDI5d9K9OrNBz/2WHy9p7crG26PhKbVdJ0ONQEHHemOk2pGIC
+         aeva3aAsqVvuoT6K4XVL0z1GFpZZOS335ae3wgUrAs1+EM7larePsw9LY6uAsym9aLET
+         yXhQ==
+X-Gm-Message-State: AOAM530eL8lncP6+byVOoKHnoiCq0LDLuFsmXWFSgOQOGcP5I4y9XpqB
+        jHXXGg3F1WmiKBa1915pBdqVmw==
+X-Google-Smtp-Source: ABdhPJw27ubGDdoaFjTWz8GID1OST2AU2oj7fn00pSUSmDTo8jYJgpQ3NgI0lwnigzi7BWQHPZDVUA==
+X-Received: by 2002:a17:902:bd86:b0:149:5e5e:3857 with SMTP id q6-20020a170902bd8600b001495e5e3857mr51932157pls.36.1641420422574;
+        Wed, 05 Jan 2022 14:07:02 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:7fcd:6709:f1b5:a22a])
+        by smtp.gmail.com with UTF8SMTPSA id y8sm3481746pjt.25.2022.01.05.14.07.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 14:07:01 -0800 (PST)
+From:   Gwendal Grignou <gwendal@chromium.org>
+To:     bleung@chromium.org, groeck@chromium.org, myungjoo.ham@samsung.com,
+        cw00.choi@samsung.com, benjamin.tissoires@redhat.com,
+        jic23@kernel.org, dtor@chromium.org, hverkuil-cisco@xs4all.nl,
+        mchehab@kernel.org, lee.jones@linaro.org, pmalani@chromium.org,
+        sre@kernel.org, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lgirdwood@gmail.com,
+        a.zummo@towertech.it, cychiang@chromium.org, perex@perex.cz
+Cc:     linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH 00/17] Add export symbol namespace PL_CHROMEOS
+Date:   Wed,  5 Jan 2022 14:06:36 -0800
+Message-Id: <20220105220653.122451-1-gwendal@chromium.org>
+X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git kprobe/multi
-head:   27d253a29de023f664387fcc049edeeaadf23c8e
-commit: fbf6ec1e4f8e6c1fed1e1d14f16595e2dc01902d [4/14] kprobe: Add support to register multiple ftrace kprobes
-config: x86_64-randconfig-r011-20220105 (https://download.01.org/0day-ci/archive/20220106/202201060655.KDdXDde2-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=fbf6ec1e4f8e6c1fed1e1d14f16595e2dc01902d
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf kprobe/multi
-        git checkout fbf6ec1e4f8e6c1fed1e1d14f16595e2dc01902d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/i915/
+Add a symbol namespace for functions exported by the plaform chromeos
+subsystem.
+Add depenencies for all drivers using these function.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+'make nsdeps' is used to fix the dependencies.
 
-All errors (new ones prefixed by >>):
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 
-   In file included from drivers/gpu/drm/i915/gem/i915_gem_internal.c:11:
-   In file included from drivers/gpu/drm/i915/i915_drv.h:41:
-   In file included from include/linux/backlight.h:13:
-   In file included from include/linux/fb.h:6:
-   In file included from include/linux/kgdb.h:19:
-   include/linux/kprobes.h:77:21: error: field has incomplete type 'struct ftrace_ops'
-                   struct ftrace_ops ops;
-                                     ^
-   include/linux/ftrace.h:332:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   In file included from drivers/gpu/drm/i915/gem/i915_gem_internal.c:11:
-   In file included from drivers/gpu/drm/i915/i915_drv.h:84:
-   In file included from drivers/gpu/drm/i915/gt/intel_engine.h:18:
-   In file included from drivers/gpu/drm/i915/gt/intel_gt_types.h:18:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc.h:9:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_guc.h:19:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h:13:
-   In file included from drivers/gpu/drm/i915/i915_vma.h:34:
-   drivers/gpu/drm/i915/gem/i915_gem_object.h:43:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
-           if (overflows_type(size, obj->base.size))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
-           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-                                         ^  ~~~~~~~~~~~~~~~~
->> drivers/gpu/drm/i915/gem/i915_gem_internal.c:174:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
-           if (overflows_type(size, obj->base.size))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
-           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-                                         ^  ~~~~~~~~~~~~~~~~
-   3 errors generated.
---
-   In file included from drivers/gpu/drm/i915/i915_query.c:9:
-   In file included from drivers/gpu/drm/i915/i915_drv.h:41:
-   In file included from include/linux/backlight.h:13:
-   In file included from include/linux/fb.h:6:
-   In file included from include/linux/kgdb.h:19:
-   include/linux/kprobes.h:77:21: error: field has incomplete type 'struct ftrace_ops'
-                   struct ftrace_ops ops;
-                                     ^
-   include/linux/ftrace.h:332:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   In file included from drivers/gpu/drm/i915/i915_query.c:9:
-   In file included from drivers/gpu/drm/i915/i915_drv.h:84:
-   In file included from drivers/gpu/drm/i915/gt/intel_engine.h:18:
-   In file included from drivers/gpu/drm/i915/gt/intel_gt_types.h:18:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc.h:9:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_guc.h:19:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h:13:
-   In file included from drivers/gpu/drm/i915/i915_vma.h:34:
-   drivers/gpu/drm/i915/gem/i915_gem_object.h:43:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
-           if (overflows_type(size, obj->base.size))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
-           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-                                         ^  ~~~~~~~~~~~~~~~~
->> drivers/gpu/drm/i915/i915_query.c:512:7: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
-                   if (overflows_type(item.query_id - 1, unsigned long))
-                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
-           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-                                         ^  ~~~~~~~~~~~~~~~~
-   3 errors generated.
---
-   In file included from drivers/gpu/drm/i915/display/intel_fb.c:9:
-   In file included from drivers/gpu/drm/i915/display/intel_display.h:28:
-   In file included from include/drm/drm_util.h:36:
-   In file included from include/linux/kgdb.h:19:
-   include/linux/kprobes.h:77:21: error: field has incomplete type 'struct ftrace_ops'
-                   struct ftrace_ops ops;
-                                     ^
-   include/linux/ftrace.h:332:8: note: forward declaration of 'struct ftrace_ops'
-   struct ftrace_ops;
-          ^
-   In file included from drivers/gpu/drm/i915/display/intel_fb.c:10:
-   In file included from drivers/gpu/drm/i915/display/intel_display_types.h:47:
-   In file included from drivers/gpu/drm/i915/i915_drv.h:84:
-   In file included from drivers/gpu/drm/i915/gt/intel_engine.h:18:
-   In file included from drivers/gpu/drm/i915/gt/intel_gt_types.h:18:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc.h:9:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_guc.h:19:
-   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h:13:
-   In file included from drivers/gpu/drm/i915/i915_vma.h:34:
-   drivers/gpu/drm/i915/gem/i915_gem_object.h:43:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
-           if (overflows_type(size, obj->base.size))
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
-           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-                                         ^  ~~~~~~~~~~~~~~~~
->> drivers/gpu/drm/i915/display/intel_fb.c:863:2: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
-           assign_chk_ovf(i915, remap_info->offset, obj_offset);
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/display/intel_fb.c:845:28: note: expanded from macro 'assign_chk_ovf'
-           drm_WARN_ON(&(i915)->drm, overflows_type(val, var)); \
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
-           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
-                                         ^
-   include/drm/drm_print.h:593:19: note: expanded from macro 'drm_WARN_ON'
-           drm_WARN((drm), (x), "%s",                                      \
-           ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/drm/drm_print.h:583:7: note: expanded from macro 'drm_WARN'
-           WARN(condition, "%s %s: " format,                               \
-           ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/asm-generic/bug.h:130:25: note: expanded from macro 'WARN'
-           int __ret_warn_on = !!(condition);                              \
-                                  ^~~~~~~~~
-   3 errors generated.
+Gwendal Grignou (17):
+  plaform: chrome: Add PL_CHROMEOS export symbol namespace
+  iio:cros_ec_sensors: Add PL_CHROMEOS dependency
+  platform/chrome: Add PL_CHROMEOS dependency
+  power_supply: chromeos: Add PL_CHROMEOS dependency
+  rtc: wilco: Add PL_CHROMEOS dependency
+  mfd: cros_ec_dev: Add PL_CHROMEOS dependency
+  platform: chrome: Add PL_CHROMEOS dependency
+  rtc: cros_ec: Add PL_CHROMEOS dependency
+  extcon: cros_ec: Add PL_CHROMEOS dependency
+  HID: google: Add PL_CHROMEOS dependency
+  i2c: cros-ec-tunnel: Add PL_CHROMEOS dependency
+  Input: cros_ec_keyb - Add PL_CHROMEOS dependency
+  media: cros-ec-cec: Add PL_CHROMEOS dependency
+  power: supply: PCHG: Add PL_CHROMEOS dependency
+  pwm: cros-ec: Add PL_CHROMEOS dependency
+  regulator: cros-ec-regulator: Add PL_CHROMEOS dependency
+  ASoC: cros_ec_codec: Add PL_CHROMEOS dependency
 
+ drivers/extcon/extcon-usbc-cros-ec.c           |  1 +
+ drivers/hid/hid-google-hammer.c                |  1 +
+ drivers/i2c/busses/i2c-cros-ec-tunnel.c        |  1 +
+ .../cros_ec_sensors/cros_ec_sensors_core.c     |  1 +
+ drivers/iio/proximity/cros_ec_mkbp_proximity.c |  1 +
+ drivers/input/keyboard/cros_ec_keyb.c          |  1 +
+ .../media/cec/platform/cros-ec/cros-ec-cec.c   |  1 +
+ drivers/mfd/cros_ec_dev.c                      |  1 +
+ drivers/platform/chrome/cros_ec.c              |  1 +
+ drivers/platform/chrome/cros_ec_chardev.c      |  1 +
+ drivers/platform/chrome/cros_ec_debugfs.c      |  1 +
+ drivers/platform/chrome/cros_ec_i2c.c          |  1 +
+ drivers/platform/chrome/cros_ec_ishtp.c        |  1 +
+ drivers/platform/chrome/cros_ec_lightbar.c     |  1 +
+ drivers/platform/chrome/cros_ec_lpc.c          |  1 +
+ drivers/platform/chrome/cros_ec_proto.c        | 18 +++++++++---------
+ drivers/platform/chrome/cros_ec_rpmsg.c        |  1 +
+ drivers/platform/chrome/cros_ec_sensorhub.c    |  1 +
+ .../platform/chrome/cros_ec_sensorhub_ring.c   |  4 ++--
+ drivers/platform/chrome/cros_ec_spi.c          |  1 +
+ drivers/platform/chrome/cros_ec_sysfs.c        |  1 +
+ drivers/platform/chrome/cros_ec_typec.c        |  1 +
+ drivers/platform/chrome/cros_ec_vbc.c          |  1 +
+ drivers/platform/chrome/cros_usbpd_logger.c    |  1 +
+ drivers/platform/chrome/cros_usbpd_notify.c    |  5 +++--
+ drivers/platform/chrome/wilco_ec/debugfs.c     |  1 +
+ drivers/platform/chrome/wilco_ec/mailbox.c     |  2 +-
+ drivers/platform/chrome/wilco_ec/properties.c  |  8 ++++----
+ drivers/platform/chrome/wilco_ec/telemetry.c   |  1 +
+ drivers/power/supply/cros_peripheral_charger.c |  1 +
+ drivers/power/supply/cros_usbpd-charger.c      |  1 +
+ drivers/power/supply/wilco-charger.c           |  1 +
+ drivers/pwm/pwm-cros-ec.c                      |  1 +
+ drivers/regulator/cros-ec-regulator.c          |  1 +
+ drivers/rtc/rtc-cros-ec.c                      |  1 +
+ drivers/rtc/rtc-wilco-ec.c                     |  1 +
+ sound/soc/codecs/cros_ec_codec.c               |  1 +
+ 37 files changed, 51 insertions(+), 18 deletions(-)
 
-vim +174 drivers/gpu/drm/i915/gem/i915_gem_internal.c
+-- 
+2.34.1.448.ga2b2bfdf31-goog
 
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  147  
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  148  /**
-40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  149   * i915_gem_object_create_internal: create an object with volatile pages
-40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  150   * @i915: the i915 device
-40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  151   * @size: the size in bytes of backing storage to allocate for the object
-40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  152   *
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  153   * Creates a new object that wraps some internal memory for private use.
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  154   * This object is not backed by swappable storage, and as such its contents
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  155   * are volatile and only valid whilst pinned. If the object is reaped by the
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  156   * shrinker, its pages and data will be discarded. Equally, it is not a full
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  157   * GEM object and so not valid for access from userspace. This makes it useful
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  158   * for hardware interfaces like ringbuffers (which are pinned from the time
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  159   * the request is written to the time the hardware stops accessing it), but
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  160   * not for contexts (which need to be preserved when not active for later
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  161   * reuse). Note that it is not cleared upon allocation.
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  162   */
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  163  struct drm_i915_gem_object *
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  164  i915_gem_object_create_internal(struct drm_i915_private *i915,
-fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12  165  				phys_addr_t size)
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  166  {
-7867d709959927e drivers/gpu/drm/i915/gem/i915_gem_internal.c Chris Wilson 2019-10-22  167  	static struct lock_class_key lock_class;
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  168  	struct drm_i915_gem_object *obj;
-b8f55be64453ea7 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-08-11  169  	unsigned int cache_level;
-920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  170  
-fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12  171  	GEM_BUG_ON(!size);
-bf6b2030bed9371 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-16  172  	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
-fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12  173  
-fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12 @174  	if (overflows_type(size, obj->base.size))
-
-:::::: The code at line 174 was first introduced by commit
-:::::: fcd46e53449c4d659ffbedcd2823ea2f73e39927 drm/i915: Declare i915_gem_object_create_internal() as taking phys_addr_t size
-
-:::::: TO: Chris Wilson <chris@chris-wilson.co.uk>
-:::::: CC: Chris Wilson <chris@chris-wilson.co.uk>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
