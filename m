@@ -2,324 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C57C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:16:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC4DC43219
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243934AbiAEUQC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 15:16:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
+        id S243960AbiAEUSm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 15:18:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243922AbiAEUQA (ORCPT
+        with ESMTP id S243950AbiAEUSl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 15:16:00 -0500
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1C14C061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 12:15:59 -0800 (PST)
-Received: by mail-ot1-x32b.google.com with SMTP id s21-20020a05683004d500b0058f585672efso659808otd.3
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 12:15:59 -0800 (PST)
+        Wed, 5 Jan 2022 15:18:41 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F203C061201
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 12:18:41 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id p15so1143220ybk.10
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 12:18:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=HSbkNTNm9VCnUs8Ipu7XS+VBlyVvdkfAbBwxdrdNJmM=;
-        b=h/Fp33d5JH0AQMkMH6HxzJbLti3BpYDnuXCFfvct3fO1Yk4F5W0CqXtafTBD37+7vZ
-         nUYFUA6CQo/ae4VBbHp8lZ/yUbErrZA5tvfeh5Ilc5/j/zNju3CPymXucd8vojblVn1o
-         nipOfF2Z5m4uXbr6K3q4DvXzk3RN+qVzkXoVg=
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=koUG4mBaX/32RQiwrPD+XRtpDsLQ6tXsD9l8tNIsTsM=;
+        b=pTM4fbhrLR0L/UsKn5Elp+TBieKwifmdJJdKIcbCH1YbtfYeuZShXeHtuZNS5wYmic
+         h23ROpOIL82AMYBxJtcr9Egz+EZwhVkXyRCMwCiT0AS2lS/dp51hran0Vx4s+c0gdbPl
+         4hrxtvn6EJtmZEdXMhYOJrGEWFbKxRwiFFf3lDwaNUQcZiHxPxnufbvjiMtOLS4Vva2l
+         KYxsRFmD4gdprdIu5MwNQNiNafGUE2XpzxtjD5dCsA0MYITeHA80YxQF3/A9Bdv6KWJo
+         reCQ49By88S1uOEqJutLC0Y6yOVQJc0uJzp05KLlVodxkxrkwO0c8R92CdRYu7tEssVm
+         1xcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=HSbkNTNm9VCnUs8Ipu7XS+VBlyVvdkfAbBwxdrdNJmM=;
-        b=1YDISEoEiTzj1tAheiB3KTO63S5tYnHBhvKdHx57xYuv6wJb7s4PuZ2IO4rOmMBonf
-         hyX4/CbxwQeMZZ9PNbZervvQTx/fOf51YyIVnfNL+Ku5VY6EGw9F/KBQrSLehST2URLW
-         OwveIt48jzrwF+xnkpN0D5WdqlmtBYczZ6EalKMaB0S4EPTpQxmPkmMJpJe9HYgwCWQX
-         tU+V+a1MTOwcqQp3Lw/DE2yWrmobwbYHbHrMV3YCrV5wY4+EiVJ1GkNRl1R7rmHpPCD1
-         j+8K0RLMYc/idyOCRRoF/iSGx3fCIVBMsWnhStR/KazGARzqB32+FkatOdQrsz6QWxZT
-         AcgQ==
-X-Gm-Message-State: AOAM532CSIGum7+vG6LSfAiqJlLlGffYFR9t60daJ6nLS99Bwi8NXeSA
-        sQrsJrRUS1zeiCln3nxVK7xj0vnc/uJRhn8K6DoZiA==
-X-Google-Smtp-Source: ABdhPJwLd+XEqPrdAZ7Ph0SB/lz1qb6vj3bA1AIY3TzFcRJvcOAaqL9i2JzAC8gw7biNic9knarJuMLiuf7T7HG3El0=
-X-Received: by 2002:a9d:1a6:: with SMTP id e35mr44967ote.77.1641413759265;
- Wed, 05 Jan 2022 12:15:59 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Wed, 5 Jan 2022 12:15:58 -0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=koUG4mBaX/32RQiwrPD+XRtpDsLQ6tXsD9l8tNIsTsM=;
+        b=r3YQnhA2rYV2rZTq6ryoVA/8pv25oadH45o0idiDAAASlrfmDezj9J8ZnRPFsY71+V
+         yCDoErNiQvbptOOrDAT7IUgGdTAXVKup6lbYvRyWe5ila79ZxvOp8pMy62MTUSwbeaml
+         CA1ctA9rzijFVvGsLoQ/PMRW1ANgrE+PbzdgGtmha2LIUnumgt/tNKtPNEfeF6/H6YAk
+         VU4anZxQHxFfneQJmWQzKnvzbIl+nLz7DD4BP7TS+Fr5v/af3RNA8XuJqMdzd1yCeTNq
+         sW5nlcB6GIcFGQRcGfdUocAjffz2/qrKhyxLBwR1vGkEiB1ALCPHumrgh2iu4+7Q7T+7
+         IbLw==
+X-Gm-Message-State: AOAM532ZvAa992GZ1d40E2xyj3/2CgEAwE9lArmU3ORHcERJWZ34Hh+K
+        vB2VmVJJQ795aVcL57ZZqHRUWLTpdR6UxLCQGTyGgQ==
+X-Google-Smtp-Source: ABdhPJw+MtswP+bBIXzw2fD0VxSWv4TW1Zt5sSALH37S5MTkdypofzG6IRLw0xceqMUHVuy/3rntj/a1H0Cn1JQnB4A=
+X-Received: by 2002:a05:6902:124f:: with SMTP id t15mr80500510ybu.644.1641413920152;
+ Wed, 05 Jan 2022 12:18:40 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <1641208380-15510-2-git-send-email-quic_srivasam@quicinc.com>
-References: <1641208380-15510-1-git-send-email-quic_srivasam@quicinc.com> <1641208380-15510-2-git-send-email-quic_srivasam@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.9.1
-Date:   Wed, 5 Jan 2022 12:15:58 -0800
-Message-ID: <CAE-0n523iE-rkSKNvZaF8+qOezEQLo-hAhhMcRoHs9kVa0iLZg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] arm64: dts: qcom: sc7280: Add nodes for va tx and
- rx macros and external codecs
-To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        devicetree@vger.kernel.org, dianders@chromium.org,
-        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
-Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+References: <20211229215330.4134835-1-yaelt@google.com> <CAFA6WYPuPHgcnzt6j+Q-EA2Dos6vBDukrjpheo5srLVXFrifEg@mail.gmail.com>
+ <5a38824152eeee0fc9ba0a4fd2308bb6e0970059.camel@linux.ibm.com> <CAFA6WYOJt3=YMTt_QQSq6Z-MK42hwWspgSpasw2fuPtVFcP3uA@mail.gmail.com>
+In-Reply-To: <CAFA6WYOJt3=YMTt_QQSq6Z-MK42hwWspgSpasw2fuPtVFcP3uA@mail.gmail.com>
+From:   Yael Tiomkin <yaelt@google.com>
+Date:   Wed, 5 Jan 2022 15:18:29 -0500
+Message-ID: <CAKoutNvW1c7MkTaFwyrD7MjUVXvTtcBOGFULMittJ5vzjMN0mg@mail.gmail.com>
+Subject: Re: [PATCH v4] KEYS: encrypted: Instantiate key with user-provided
+ decrypted data
+To:     Sumit Garg <sumit.garg@linaro.org>
+Cc:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org,
+        jejb@linux.ibm.com, Jarkko Sakkinen <jarkko@kernel.org>,
+        corbet@lwn.net, dhowells@redhat.com, jmorris@namei.org,
+        serge@hallyn.com, keyrings@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module <linux-security-module@vger.kernel.org>,
+        =?UTF-8?Q?Jan_L=C3=BCbbe?= <jlu@pengutronix.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Srinivasa Rao Mandadapu (2022-01-03 03:12:58)
-> SC7280 has VA, TX and RX macros with SoundWire Controllers to attach with
-> codecs like WCD938x, max98360a using soundwire masters and i2s bus.
-> Add these nodes for sc7280 based platforms audio use case.
-> Add tlmm gpio property in wcd938x node for switching CTIA/OMTP Headset.
+Hi Sumit,
+
+On Mon, Jan 3, 2022 at 1:51 AM Sumit Garg <sumit.garg@linaro.org> wrote:
 >
-> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
-> Co-developed-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> Signed-off-by: Venkata Prasad Potturu <quic_potturu@quicinc.com>
-> ---
->  arch/arm64/boot/dts/qcom/sc7280-crd.dts  |   4 ++
->  arch/arm64/boot/dts/qcom/sc7280-idp.dtsi |  52 ++++++++++++++
->  arch/arm64/boot/dts/qcom/sc7280.dtsi     | 113 +++++++++++++++++++++++++++++++
->  3 files changed, 169 insertions(+)
+> Hi Mimi,
 >
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> index cd2755c..035cca9 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-crd.dts
-> @@ -72,6 +72,10 @@ ap_ts_pen_1v8: &i2c13 {
->         pins = "gpio51";
->  };
+> Apologies for the delayed reply as I was on leave for a long new year weekend.
 >
-> +&wcd938x {
-> +       qcom,us-euro-gpios = <&tlmm 81 0>;
-
-Why is this a qcom prefix vs. a standard foo-gpios property?
-
-> +};
-> +
->  &tlmm {
->         tp_int_odl: tp-int-odl {
->                 pins = "gpio7";
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> index ddeb508..94614c9 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280-idp.dtsi
-> @@ -636,3 +636,55 @@
->                 bias-pull-up;
->         };
->  };
-> +
-> +&swr0 {
-> +       wcd_rx: wcd938x-rx{
-
-space before { please
-
-Also, are these speakers or amps or something like that? I'd expect the
-node name to be more generic.
-
-> +               compatible = "sdw20217010d00";
-> +               reg = <0 4>;
-> +               #sound-dai-cells = <1>;
-> +               qcom,rx-port-mapping = <1 2 3 4 5>;
-> +       };
-> +};
-> +
-> +&swr1 {
-> +       wcd_tx: wcd938x-tx{
-> +               compatible = "sdw20217010d00";
-> +               reg = <0 3>;
-> +               #sound-dai-cells = <1>;
-> +               qcom,tx-port-mapping = <1 2 3 4>;
-> +       };
-> +};
-> +
-> +&soc {
-> +       max98360a: audio-codec-0 {
-
-This shouldn't be a child of the soc node.
-
-> +               compatible = "maxim,max98360a";
-> +               pinctrl-names = "default";
-> +               pinctrl-0 = <&amp_en>;
-> +               sdmode-gpios = <&tlmm 63 GPIO_ACTIVE_HIGH>;
-> +               #sound-dai-cells = <0>;
-> +       };
-> +
-> +       wcd938x: codec {
-
-Same comment.
-
-> +               compatible = "qcom,wcd9380-codec";
-> +               #sound-dai-cells = <1>;
-> +
-> +               reset-gpios = <&tlmm 83 0>;
-> +
-> +               qcom,rx-device = <&wcd_rx>;
-> +               qcom,tx-device = <&wcd_tx>;
-> +
-> +               vdd-rxtx-supply = <&vreg_l18b_1p8>;
-> +               vdd-io-supply = <&vreg_l18b_1p8>;
-> +               vdd-buck-supply = <&vreg_l17b_1p8>;
-> +               vdd-mic-bias-supply = <&vreg_bob>;
-> +
-> +               qcom,micbias1-microvolt = <1800000>;
-> +               qcom,micbias2-microvolt = <1800000>;
-> +               qcom,micbias3-microvolt = <1800000>;
-> +               qcom,micbias4-microvolt = <1800000>;
-> +
-> +               qcom,mbhc-buttons-vthreshold-microvolt = <75000 150000 237000 500000 500000 500000 500000 500000>;
-> +               qcom,mbhc-headset-vthreshold-microvolt = <1700000>;
-> +               qcom,mbhc-headphone-vthreshold-microvolt = <50000>;
-> +       };
-> +};
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index 6233f2c..c0d9de3 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -1744,6 +1744,119 @@
->                         #clock-cells = <1>;
->                 };
+> On Thu, 30 Dec 2021 at 18:59, Mimi Zohar <zohar@linux.ibm.com> wrote:
+> >
+> > Hi Sumit,
+> >
+> > On Thu, 2021-12-30 at 15:37 +0530, Sumit Garg wrote:
+> > > + Jan, Ahmad
+> > >
+> > > On Thu, 30 Dec 2021 at 03:24, Yael Tiomkin <yaelt@google.com> wrote:
+> > > >
+> > > > The encrypted.c class supports instantiation of encrypted keys with
+> > > > either an already-encrypted key material, or by generating new key
+> > > > material based on random numbers. This patch defines a new datablob
+> > > > format: [<format>] <master-key name> <decrypted data length>
+> > > > <decrypted data> that allows to instantiate encrypted keys using
+> > > > user-provided decrypted data, and therefore allows to perform key
+> > > > encryption from userspace. The decrypted key material will be
+> > > > inaccessible from userspace.
+> > >
+> > > This type of user-space key import feature has already been discussed
+> > > at large in the context of trusted keys here [1]. So what makes it
+> > > special in case of encrypted keys such that it isn't a "UNSAFE_IMPORT"
+> > > or "DEBUGGING_IMPORT" or "DEVELOPMENT_IMPORT", ...?
+> > >
+> > > [1] https://lore.kernel.org/linux-integrity/74830d4f-5a76-8ba8-aad0-0d79f7c01af9@pengutronix.de/
+> > >
+> > > -Sumit
+> > >
+> > > >
+> > > > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+> > > > Signed-off-by: Yael Tiomkin <yaelt@google.com>
+> >
+> > There is a difference between trusted and encrypted keys.
 >
-> +               rxmacro: rxmacro@3200000 {
-
-What is rxmacro? Maybe 'soundwire'?
-
-> +                       pinctrl-names = "default";
-> +                       pinctrl-0 = <&rx_swr_active>;
-> +                       compatible = "qcom,sc7280-lpass-rx-macro";
-> +                       reg = <0 0x3200000 0 0x1000>;
-> +
-> +                       clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
-> +                                       <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
-> +                                       <&vamacro>;
-> +                       clock-names = "mclk", "npl", "fsgen";
-> +                       #clock-cells = <0>;
-> +                       clock-frequency = <9600000>;
-> +                       clock-output-names = "mclk";
-> +                       #sound-dai-cells = <1>;
-> +               };
-> +
-> +               /* rx macro */
-> +               swr0: soundwire-controller@3210000 {
-
-Is 'controller' redundant? i.e. soundwire is always a controller? Maybe
-'soundwire' is better
-
-> +                       reg = <0 0x3210000 0 0x2000>;
-> +                       compatible = "qcom,soundwire-v1.6.0";
-> +                       interrupts = <GIC_SPI 155 IRQ_TYPE_LEVEL_HIGH>;
-> +                       clocks = <&rxmacro>;
-> +                       clock-names = "iface";
-> +                       label = "RX";
-> +
-> +                       qcom,din-ports = <0>;
-> +                       qcom,dout-ports = <5>;
-> +                       qcom,swrm-hctl-reg = <0x032a90a0>;
-> +
-> +                       qcom,ports-word-length =        /bits/ 8 <0x01 0x07 0x04 0xFF 0xFF>;
-> +                       qcom,ports-sinterval-low =      /bits/ 8 <0x03 0x3F 0x1F 0x03 0x03>;
-> +                       qcom,ports-offset1 =            /bits/ 8 <0x00 0x00 0x0B 0x01 0x01>;
-> +                       qcom,ports-offset2 =            /bits/ 8 <0x00 0x00 0x0B 0x00 0x00>;
-> +                       qcom,ports-lane-control =       /bits/ 8 <0x01 0x00 0x00 0x00 0x00>;
-> +                       qcom,ports-block-pack-mode =    /bits/ 8 <0xFF 0x00 0x01 0xFF 0xFF>;
-> +                       qcom,ports-hstart =             /bits/ 8 <0xFF 0x03 0xFF 0xFF 0xFF>;
-> +                       qcom,ports-hstop =              /bits/ 8 <0xFF 0x06 0xFF 0xFF 0xFF>;
-> +                       qcom,ports-block-group-count =  /bits/ 8 <0xFF 0xFF 0xFF 0xFF 0x00>;
-
-Why is this bit stuff in DT vs. in the device driver?
-
-> +
-> +                       #sound-dai-cells = <1>;
-> +                       #address-cells = <2>;
-> +                       #size-cells = <0>;
-> +               };
-> +
-> +               txmacro: txmacro@3220000 {
-> +                       pinctrl-names = "default";
-> +                       pinctrl-0 = <&tx_swr_active>;
-> +                       compatible = "qcom,sc7280-lpass-tx-macro";
-> +                       reg = <0 0x3220000 0 0x1000>;
-> +
-> +                       clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
-> +                                        <&lpass_aon LPASS_AON_CC_TX_MCLK_2X_CLK>,
-> +                                        <&vamacro>;
-
-Please align the clocks here so the < starts on the same column.
-
-> +                       clock-names = "mclk", "npl", "fsgen";
-> +
-> +                       #clock-cells = <0>;
-> +                       clock-frequency = <9600000>;
-> +                       clock-output-names = "mclk";
-> +                       #address-cells = <2>;
-> +                       #size-cells = <2>;
-> +                       #sound-dai-cells = <1>;
-> +               };
-> +
-> +               /* tx macro */
-
-Do we need these comments? Please remove them as they're practically
-useless.
-
-> +               swr1: soundwire-controller@3230000 {
-> +                       reg = <0 0x3230000 0 0x2000>;
-> +                       compatible = "qcom,soundwire-v1.6.0";
-> +
-> +                       interrupts-extended =
-> +                                       <&intc GIC_SPI 496 IRQ_TYPE_LEVEL_HIGH>,
-> +                                       <&pdc 130 IRQ_TYPE_LEVEL_HIGH>;
-> +                       interrupt-names = "swr_master_irq", "swr_wake_irq";
-> +                       clocks = <&txmacro>;
-> +                       clock-names = "iface";
-> +                       label = "TX";
-> +
-> +                       qcom,din-ports = <3>;
-> +                       qcom,dout-ports = <0>;
-> +                       qcom,swrm-hctl-reg = <0x032a90a8>;
-
-This looks like some common register location for soundwire oops bits.
-Is it another device? Or maybe it's a common register base that needs to
-be a syscon?
-
-> +
-> +                       qcom,ports-sinterval-low =      /bits/ 8 <0x01 0x03 0x03>;
-> +                       qcom,ports-offset1 =            /bits/ 8 <0x01 0x00 0x02>;
-> +                       qcom,ports-offset2 =            /bits/ 8 <0x00 0x00 0x00>;
-> +                       qcom,ports-hstart =             /bits/ 8 <0xFF 0xFF 0xFF>;
-> +                       qcom,ports-hstop =              /bits/ 8 <0xFF 0xFF 0xFF>;
-> +                       qcom,ports-word-length =        /bits/ 8 <0xFF 0x0 0xFF>;
-> +                       qcom,ports-block-pack-mode =    /bits/ 8 <0xFF 0xFF 0xFF>;
-> +                       qcom,ports-block-group-count =  /bits/ 8 <0xFF 0xFF 0xFF>;
-> +                       qcom,ports-lane-control =       /bits/ 8 <0x00 0x01 0x00>;
-> +                       qcom,port-offset = <1>;
-> +
-> +                       #sound-dai-cells = <1>;
-> +                       #address-cells = <2>;
-> +                       #size-cells = <0>;
-> +               };
-> +
-> +               vamacro: codec@3370000 {
-> +                       compatible = "qcom,sc7280-lpass-va-macro";
-> +                       pinctrl-0 = <&dmic01_active>;
-> +                       pinctrl-names = "default";
-> +
-> +                       vdd-micb-supply = <&vreg_bob>;
-
-The supplies need to be set in the board file, no the soc file as they
-can be different depending on what the hardware engineer wires to the
-pins on the SoC.
-
-> +                       reg = <0 0x3370000 0 0x1000>;
-> +                       clocks = <&lpass_aon LPASS_AON_CC_TX_MCLK_CLK>,
-> +                                       <&lpass_audiocc LPASS_AUDIO_CC_RX_MCLK_CLK>;
-> +                       clock-names = "mclk", "macro";
-> +
-> +                       #clock-cells = <0>;
-> +                       clock-frequency = <9600000>;
-> +                       clock-output-names = "fsgen";
-> +                       #sound-dai-cells = <1>;
-> +               };
-> +
->                 lpass_tlmm: pinctrl@33c0000 {
->                         compatible = "qcom,sc7280-lpass-lpi-pinctrl";
->                         reg = <0 0x33c0000 0x0 0x20000>,
-> --
-> 2.7.4
+> Yeah I understand the implementation differences.
 >
+> >  So in
+> > addition to pointing to the rather long discussion thread, please
+> > summarize the conclusion and, assuming you agree, include why in once
+> > case it was acceptable and in the other it wasn't to provide userspace
+> > key data.
+>
+> My major concern with importing user-space key data in *plain* format
+> is that if import is *not* done in a safe (manufacturing or
+> production) environment then the plain key data is susceptible to
+> user-space compromises when the device is in the field.
+
+I agree this can happen. Key distribution in any scenario needs to be
+secure and this could also potentially be an issue if the key is first
+encrypted and then imported. We can make sure the documentation
+highlights the safety requirement.
+
+>
+> And it sounds like we are diverting from basic definition [1] of encrypted keys:
+>
+> "Trusted and Encrypted Keys are two new key types added to the
+> existing kernel key ring service. Both of these new types are variable
+> length symmetric keys, and in both cases all keys are created in the
+> kernel, and **user space sees, stores, and loads** only encrypted
+> blobs."
+>
+> Also, as Jarrko mentioned earlier the use-case is still not clear to
+> me as well. Isn't user logon keys an alternative option for
+> non-readable user-space keys?
+
+The goal in this change is to allow key encryption from userspace,
+using user-provided decrypted data. This cannot be achieved in logon
+keys, which as you mentioned, are simply non-readable user type keys.
+
+
+>
+> [1] https://www.kernel.org/doc/html/v4.13/security/keys/trusted-encrypted.html
+>
+> -Sumit
+>
+> >
+> > thanks,
+> >
+> > Mimi
+> >
+
+Yael
