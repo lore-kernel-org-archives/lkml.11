@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C21CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58682C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242272AbiAER31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:29:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55096 "EHLO
+        id S242275AbiAER3j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:29:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242235AbiAER3Z (ORCPT
+        with ESMTP id S242273AbiAER33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:29:25 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E405C061245;
-        Wed,  5 Jan 2022 09:29:25 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id g191-20020a1c9dc8000000b0032fbf912885so3710647wme.4;
-        Wed, 05 Jan 2022 09:29:24 -0800 (PST)
+        Wed, 5 Jan 2022 12:29:29 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E03CC061245;
+        Wed,  5 Jan 2022 09:29:29 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id j18so84495851wrd.2;
+        Wed, 05 Jan 2022 09:29:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=76j/vBihwnF+1b+6Vi7Z9v34SJGyorcIi5qbktRYn7M=;
-        b=PAiO7xpn9cR7fCzoh02uoNu36k52dnHGWus+w9e1kg0BKjaLo7XMfT7m5jv7Vo0yOi
-         bCZIMCWQ5KKv4HuNuI/jTaI3jt/C2eKTuvh2YnpM1sO2FAI/LIMCA2S3pWHU6DkJlv6W
-         3vLph53A9mVICKhb5zw3IA9806wY+zORKlPH0Tx4xP+W8QbTWCa/CvFnmiGljjKrtivF
-         NBmrHTPVinfq2oZKPDi6kT3et5vq62LiEcV5Ty82Nn627VgiVbLTvTKHwz7+5Zh4a6f+
-         vsSY3db0oZW3ufUAaYjFl3qxL7MLKdY8TyKvaEL+xPkCH05VaCyBDQYC7//lZChVXx8+
-         fAjw==
+        bh=EwC0zb6TsDRNr+wrSu8k3dQNGNsYgW/0Ss/SRNaNxkI=;
+        b=beLHVYce21VNdAuj3elbE3gbFn4pMqPAHJW8M2rosz4scHjk7UjfvHD5jQ1F93Hu4l
+         j06wLMd08kIPtTe1QpVIWMxHnFsznNRvg2bdgYoxylrmaiexGIlQPfBi53kS6DEgeP5L
+         SawgGXWPtF8LRHLch0HwxOjFBku6v2s2dbycrBkkCtGhbuate1tFWi4Y3WW1eefafNXd
+         hceRZlZ2wosPe2Kson/555K3xwdF2wVXV2QbN9Cs3oDAll9b3e8PrErz0kkd8arAS4AM
+         GM2sbqPcZOfenqviqNYtsfWDzZv/RRDRyraaB/AY1hkABJzVwCsAjclAByr6TEw+amcd
+         M/8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=76j/vBihwnF+1b+6Vi7Z9v34SJGyorcIi5qbktRYn7M=;
-        b=7lFdVKHGpgydTeg1QVkLq6X2YUmtJKQ8eyqkTLjAJyJXAvZ2OMVTe0XmwoLxOQ4nEQ
-         HNaf92gp5DqDAq5XeID/iKblQEpyzk5zgsw6waHXWQ5E9Hu5/Ann/3GvLxJq//f7hcex
-         +8OmDn9G8qmt6NQiw22wxrbzNnnHECn/JS5tI6yhMHT3XBnmaIKwZicm0Zc4znOqz9gR
-         xlws2EM8cd+jAdcq3/kRx+Te1Y9A1lLLFAe6Ia8iPxon4dlvlcOyXz0u9t28h13z8OY0
-         d23ylfdSNh01UYOLPy8uU/lC+a+CaPPJB/kIH+rzm5MveG4wsARybRvEclKfQXLjwoY2
-         OPaQ==
-X-Gm-Message-State: AOAM533cl8n1NnVhBxoSNq46UOrlyucCF8AJveJn/NPUtMvNHgIfDdNl
-        eL2mhYK3FBHA0UX4tPMjqYY=
-X-Google-Smtp-Source: ABdhPJxpJk51idyGNT2hPNI07YNoQmi5SEQ2ysX1wo3u1Q7fD5HPriWyw04A1WGVm7cTWAzToPKomA==
-X-Received: by 2002:a1c:a747:: with SMTP id q68mr2491100wme.98.1641403763651;
-        Wed, 05 Jan 2022 09:29:23 -0800 (PST)
+        bh=EwC0zb6TsDRNr+wrSu8k3dQNGNsYgW/0Ss/SRNaNxkI=;
+        b=mCq7OiK/0FdYUlGF/066FVZGbKyDq3oTWr7q184U4XPAH00bwvl2DbUkzLemtuxPLb
+         LyZeWEylHGFU54eE+qd7nL6NDiAS8P1SsvLZORfKwVLoG9nsuMxQnvb+NGEZ8HrdgsS8
+         Fbui71PN6byYM/xxW2eYOAKhwR6usMA2srDXkToth9Aah+w09Ygr7lW7+i9Q2Vp+8A/H
+         dXFAKaoGFV1n+Kv035Te6mwYxwEEkKV1WOJX8GUL/MezqGTes5H2vCVF0XvBrRHfOzku
+         Zp4islYpMZcQw0x/5vr9JYfQT8j9TBCToVk/JTBp+QdC4Hh721GOD7vGapoURCSHxb9w
+         AVKw==
+X-Gm-Message-State: AOAM533JslmdeQ6ClGj4D3QyfVtIO0y6RAofDoCadfqQqK7aewu+hMFg
+        rZerIs6coqRinYkX6e3DGvk=
+X-Google-Smtp-Source: ABdhPJzVm7MRHTpXf4ZhzddbnhGyfGlLquu07CeyORjwDyd85erInZtVu+WdWELaLPnSXTsxutkJNA==
+X-Received: by 2002:a05:6000:d0:: with SMTP id q16mr1552936wrx.600.1641403767729;
+        Wed, 05 Jan 2022 09:29:27 -0800 (PST)
 Received: from localhost.localdomain ([217.113.240.86])
-        by smtp.gmail.com with ESMTPSA id g6sm43071442wri.67.2022.01.05.09.29.22
+        by smtp.gmail.com with ESMTPSA id g6sm43071442wri.67.2022.01.05.09.29.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 09:29:23 -0800 (PST)
+        Wed, 05 Jan 2022 09:29:27 -0800 (PST)
 From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
 To:     jikos@kernel.org
 Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
         linux-kernel@vger.kernel.org, spbnick@gmail.com,
         =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH 1/4] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_init
-Date:   Wed,  5 Jan 2022 18:29:12 +0100
-Message-Id: <20220105172915.131091-2-jose.exposito89@gmail.com>
+Subject: [PATCH 3/4] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_huion_init
+Date:   Wed,  5 Jan 2022 18:29:14 +0100
+Message-Id: <20220105172915.131091-4-jose.exposito89@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220105172915.131091-1-jose.exposito89@gmail.com>
 References: <20220105172915.131091-1-jose.exposito89@gmail.com>
@@ -73,43 +73,40 @@ Initialize the stack variables after checking the input parameters to
 avoid a possible NULL pointer dereference.
 
 Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
-Addresses-Coverity-ID: 1443831 ("Null pointer dereference")
+Addresses-Coverity-ID: 1443804 ("Null pointer dereference")
 Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 ---
- drivers/hid/hid-uclogic-params.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/hid/hid-uclogic-params.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index adff1bd68d9f..3c10b858cf74 100644
+index 3a83e2c39b4f..4136837e4d15 100644
 --- a/drivers/hid/hid-uclogic-params.c
 +++ b/drivers/hid/hid-uclogic-params.c
-@@ -834,10 +834,10 @@ int uclogic_params_init(struct uclogic_params *params,
- 			struct hid_device *hdev)
+@@ -709,9 +709,9 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
+ 				     struct hid_device *hdev)
  {
  	int rc;
 -	struct usb_device *udev = hid_to_usb_dev(hdev);
--	__u8  bNumInterfaces = udev->config->desc.bNumInterfaces;
 -	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
 -	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
 +	struct usb_device *udev;
-+	__u8  bNumInterfaces;
 +	struct usb_interface *iface;
 +	__u8 bInterfaceNumber;
  	bool found;
  	/* The resulting parameters (noop) */
  	struct uclogic_params p = {0, };
-@@ -848,6 +848,11 @@ int uclogic_params_init(struct uclogic_params *params,
+@@ -725,6 +725,10 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
  		goto cleanup;
  	}
  
 +	udev = hid_to_usb_dev(hdev);
-+	bNumInterfaces = udev->config->desc.bNumInterfaces;
 +	iface = to_usb_interface(hdev->dev.parent);
 +	bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
 +
- 	/*
- 	 * Set replacement report descriptor if the original matches the
- 	 * specified size. Otherwise keep interface unchanged.
+ 	/* If it's not a pen interface */
+ 	if (bInterfaceNumber != 0) {
+ 		/* TODO: Consider marking the interface invalid */
 -- 
 2.25.1
 
