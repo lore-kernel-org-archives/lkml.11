@@ -2,98 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCC9C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC75C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242473AbiAERoq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:44:46 -0500
-Received: from smtp.hosts.co.uk ([85.233.160.19]:23576 "EHLO smtp.hosts.co.uk"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242461AbiAERok (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:44:40 -0500
-Received: from host81-132-12-162.range81-132.btcentralplus.com ([81.132.12.162] helo=[192.168.1.218])
-        by smtp.hosts.co.uk with esmtpa (Exim)
-        (envelope-from <antlists@youngman.org.uk>)
-        id 1n5AKx-0000lW-FP; Wed, 05 Jan 2022 17:44:36 +0000
-Message-ID: <96d9e6d4-16e5-6bfe-fc5a-7d0dfbaeadf0@youngman.org.uk>
-Date:   Wed, 5 Jan 2022 17:44:34 +0000
+        id S242481AbiAERoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:44:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237699AbiAERox (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 12:44:53 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32CC1C0611FF
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 09:44:53 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id s127so46305oig.2
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 09:44:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=landley-net.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CYkxlfgv45mqTZADc0Kifg55ygD2FGzQIL6sFuK7qLc=;
+        b=8J5Y+EYV/p4WRjI6UeE/U4rLd23xUQXQHMxZY2dziV7p38HniCS9/GD8MOzZYADJmz
+         I3Fzy/ruyj7TX1FJatMP8LTuIZfHcybsP/rSeCImRdtGbhgA3ZHHfXO+3lSoBbOag8bE
+         6XPYJzrj9hZjCii9MsycFuW5OtVvEwZEOJgT3erMsuhVkpu9inH2AZNZkHTwwNT9J7kI
+         cKE8HGcjzB9JThX0V4wIVdy+XR5IHaw16QF2RjsSTLuVASD2aLWtWS/ETGpbl+K2xoAb
+         49Az626oI52/jENAeGZckV6JiCSsIYom9bbK7rqoFqKuFbZnuA2Pyuz6z98Hb1TGYPOQ
+         pF3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CYkxlfgv45mqTZADc0Kifg55ygD2FGzQIL6sFuK7qLc=;
+        b=sL6tWiIRtoPHrSygFgyKZ8+LMK0oAf4DKnt+mFfqfFYgC3Xe+2Df0lxLauhYoDx2xz
+         pQpshnvwxsEOrfWy8tEUMlcSRzqrV+0dJpWke6dzOqBeYw+egzMyhk+MDAAJgb0GJPfd
+         G+RzufXruxYfIDT8oUgBJiQ8OFMXkSs7DjSQa+XEo0YNN44XV4BVU+Zn+LFL78Mqm9DZ
+         xaUOuVhUTQ5DAByAJaTdrJF2rGCgsUuKz792Jgim5mBj14EOXnkSGHQ7xepJTWXFu+KA
+         3NgsPoiDc0rrkCLIxYtWCApFv71NKE4he78J2yfqcpRLQ8yT+oKNXGmH19b19f45GcXZ
+         JDlQ==
+X-Gm-Message-State: AOAM533jLOEp/2pyaQTVS5ItM6n/mzHeOlT/lbUaZqnsvpmOKRE21IZX
+        H8cbac2XHwhXePyYhWl+zEA/3Q==
+X-Google-Smtp-Source: ABdhPJw7Vo+HXAvCcuQGUd58gCnDJV8yHSr52quHXZxS8lB1Hnf5ir7hrJCS9RaR54CbAbIfZFdKLA==
+X-Received: by 2002:aca:4b49:: with SMTP id y70mr460547oia.41.1641404692516;
+        Wed, 05 Jan 2022 09:44:52 -0800 (PST)
+Received: from [192.168.86.166] ([136.62.4.88])
+        by smtp.gmail.com with ESMTPSA id g2sm255418oos.47.2022.01.05.09.44.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 09:44:52 -0800 (PST)
+Subject: Re: [PATCH] sh: sq: use default_groups in kobj_type
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org
+References: <20220104162240.1309639-1-gregkh@linuxfoundation.org>
+From:   Rob Landley <rob@landley.net>
+Message-ID: <4622e641-1423-e72a-4f6d-5f2cc747a148@landley.net>
+Date:   Wed, 5 Jan 2022 11:46:28 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: mdadm regression tests fail
-Content-Language: en-GB
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Bruce Dubbs <bruce.dubbs@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-raid@vger.kernel.org
-Cc:     "Douglas R. Reno" <renodr2002@gmail.com>,
-        Pierre Labastie <pierre.labastie@neuf.fr>
-References: <c4c17b11-16f4-ef70-5897-02f923907963@gmail.com>
- <45492ddd-42f1-674f-af27-5e0a0aace8c9@infradead.org>
-From:   Wols Lists <antlists@youngman.org.uk>
-In-Reply-To: <45492ddd-42f1-674f-af27-5e0a0aace8c9@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220104162240.1309639-1-gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bear in mind raid superblock v0.9 is deprecated as in "if it breaks it 
-won't be fixed for you".
+On 1/4/22 10:22 AM, Greg Kroah-Hartman wrote:
+> There are currently 2 ways to create a set of sysfs files for a
+> kobj_type, through the default_attrs field, and the default_groups
+> field.  Move the sh sq sysfs code to use default_groups field which has
+> been the preferred way since aa30f47cf666 ("kobject: Add support for
+> default attribute groups to kobj_type") so that we can soon get rid of
+> the obsolete default_attrs field.
 
-So I would skip this test, and if you're mentioning raid in the 
-handbook, tell people they need to use one of the v1.x formats.
+Let's see, sh4-specific, depends on CONFIG_SH_STORE_QUEUES... it built but I'm
+not finding an "sq" entry under /proc. (Or anything with "mapping" in it...)
 
-(NB - you can always point them at the linux raid wiki.)
+Oh well, probably right? Didn't break anything for me:
 
-Cheers,
-Wol
+Tested-by: Rob Landley <rob@landley.net>
 
-On 05/01/2022 17:12, Randy Dunlap wrote:
-> Hi.
-> [adding linux-raid mailing list]
-> 
-> 
-> On 1/4/22 10:55, Bruce Dubbs wrote:
->> I am trying to document the mdadm-4.2 installation procedures for our book,
->> https://www.linuxfromscratch.org/blfs/view/svn/postlfs/mdadm.html
->>
->> For testing, I am doing a simple:
->>
->>    make
->>    sudo ./test --keep-going --logdir=test-logs --save-logs
->>
->> But I get failures for about half the tests.
->>
->> Digging in a bit I just ran:
->>
->>   sudo ./test --tests=00raid0 --logdir=test-logs
->>
->> This is the first test that fails.  With some hacking, it appears that the first portion of this test that fails is:
->>
->>    mdadm -CR $md0 -e0.90 -l0 -n4 $dev0 $dev1 $dev2 $dev3
->>
->> This resolves to
->>
->>    mdadm -CR /dev/md0 -e0.90 -l0 -n4 /dev/loop0 /dev/loop1 /dev/loop2 /dev/loop3
->>
->> There is not a lot of error output in the test, so I manually ran:
->>
->>    dd if=/dev/zero of=/tmp/mdtest0 count=20000 bs=1K
->>    losetup /dev/loop0 /tmp/mdtest0
->>
->> For /dev/loop[0123]
->>
->> Then I ran
->>
->>    mdadm -CR /dev/md0 -e0.90 -l0 -n4 /dev/loop0 /dev/loop1 /dev/loop2 /dev/loop3
->>    mdadm: 0.90 metadata does not support layouts for RAID0
->>
->> My question is whether the regression tests in the tarball are valid for mdadm-4.2?
->>
->>    -- Bruce Dubbs
->>       linuxfromscratch.org
->>
->> Note: The kernel is version 5.15.12.
-> 
-
+Rob
