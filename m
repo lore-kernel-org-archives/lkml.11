@@ -2,101 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C72C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 18:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C60CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 18:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243097AbiAESee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 13:34:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243013AbiAESeY (ORCPT
+        id S243094AbiAESha (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 13:37:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60676 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243042AbiAESh1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 13:34:24 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA987C034008
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 10:34:23 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id v6so12167wra.8
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 10:34:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+lqRhrkooB1DRVf4+Ugj5CfxzFlazGWH1jNE3D3s2OI=;
-        b=m63AUIcP/hsHWSNy4ffYkMVz4F4XPKbOSnUAtPfhTPYKxz2CWKcL+NaYAolE8zBPjG
-         Fr/0zi7WXIGgT3q3AacedKNriA8Xc06cBYJ6Db1wL/Y+uGXmCR2p5RzRvYhMPDRsg4fC
-         nPMYW0LZdRAuTp0Oy+Hl1x5tYleyBkuKM+Gd3TuIoWLVKE2Vf1e0JSh9CjHQR9SIzo0x
-         dIw1lTyesCUKED/kPmw7xBD54q35SAIO0PGEuUWESduc18u4+VPZNWBKVYryMmVnPRkt
-         mQHrRoC5pr4jNy9b4Md25tVo5Yq5jAaZOSVdJHxWN2azJiWNvdEU8draZERY4AyiRox8
-         hvlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+lqRhrkooB1DRVf4+Ugj5CfxzFlazGWH1jNE3D3s2OI=;
-        b=K0hgXxIoz0kySKx+ZtWpYgNOyWAPWWKCzMAaNsQo+fagbfAxnBsJVcIFJLxYHdG92N
-         nsbpU+VrhYIdjYqKWygX6N8cDzwZBbzmjliEOkyG9sDET4FnMRBdWDO4WzjU+zKQJ2Zx
-         R5usQTMzsbuBlb7YaxZ0InqZif+hpY607PUa4WrqfBr9Ox9rMDqyD5OfFxUfWUVDFfw6
-         Pj24RA070G7vipdsLtXcia8c4LUX3vRPzBjmPYe8lQs/t8eXGZLs2GwDhtI5BX3wVRZ5
-         S3lUHNRz4fiVrPUkYxR+TrYrpT8cOr8uRSq6vgecPgi1h/8N4MrV5Dak88jt65ieaMlN
-         8aWw==
-X-Gm-Message-State: AOAM533t5dp0gmV/QXOlnEs1wCKTb9fbSqkiG8GNHESfHm/U8awLgAAq
-        c9dlRosl4HkGbtRFm5YF9dixWw==
-X-Google-Smtp-Source: ABdhPJz0N3u0K3ODf2ENu2o1jEqFhMpLXF2rMl6y8dWXUQjJhWNHaKquJILWYcgj37lywdEaVbmcmw==
-X-Received: by 2002:adf:df89:: with SMTP id z9mr3502651wrl.505.1641407662295;
-        Wed, 05 Jan 2022 10:34:22 -0800 (PST)
-Received: from localhost.localdomain ([81.178.195.252])
-        by smtp.gmail.com with ESMTPSA id o1sm3272215wmc.38.2022.01.05.10.34.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 10:34:21 -0800 (PST)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org
-Subject: [PATCH v2 4/7] arm64: dts: qcom: pmi8998: add rradc node
-Date:   Wed,  5 Jan 2022 18:33:50 +0000
-Message-Id: <20220105183353.2505744-5-caleb.connolly@linaro.org>
+        Wed, 5 Jan 2022 13:37:27 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EA79B81D38;
+        Wed,  5 Jan 2022 18:37:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71CB0C36AE9;
+        Wed,  5 Jan 2022 18:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641407845;
+        bh=yn8IcHE7h9fqD/cjERArRVpjBpyJFcdTE2ffAfx17dA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Th+j2JFrcOlvWm4iIRi+v+gnshmUD7R7VhZ4aYuTxyXU23rvQUJmmVMW4j7dKCLKQ
+         9TObFB23wnhbK+FCSaiQAeJvMEUWZ56Vp3KBGVJPtCqzN8m+4VcInmkcIF71MzsusB
+         sQAE2rf7dBGl2d1yM0DFyaqRCdbF8SabazOIygys=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>, linux-efi@vger.kernel.org
+Subject: [PATCH] efi: use default_groups in kobj_type
+Date:   Wed,  5 Jan 2022 19:37:16 +0100
+Message-Id: <20220105183716.2841210-1-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220105183353.2505744-1-caleb.connolly@linaro.org>
-References: <20220105183353.2505744-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2651; h=from:subject; bh=yn8IcHE7h9fqD/cjERArRVpjBpyJFcdTE2ffAfx17dA=; b=owGbwMvMwCRo6H6F97bub03G02pJDIlXn8ZoG7Upn/qncsTuvXb94TeGu9Q7eh8vv2ud1VKmP3V/ ssPSjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZjItD8McwV5FtWKfs3Sbal65vlay/ n0jwm7KhgWLFz2X3j5Rw8Fvevhe35fcLF2vnOAHwA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a DT node for the Round Robin ADC found in the PMI8998 PMIC.
+There are currently 2 ways to create a set of sysfs files for a
+kobj_type, through the default_attrs field, and the default_groups
+field.  Move the firmware efi sysfs code to use default_groups
+field which has been the preferred way since aa30f47cf666 ("kobject: Add
+support for default attribute groups to kobj_type") so that we can soon
+get rid of the obsolete default_attrs field.
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: linux-efi@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/pmi8998.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/firmware/efi/efivars.c     | 3 ++-
+ drivers/firmware/efi/esrt.c        | 4 +++-
+ drivers/firmware/efi/runtime-map.c | 3 ++-
+ 3 files changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-index 0fef5f113f05..da10668c361d 100644
---- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
-@@ -18,6 +18,14 @@ pmi8998_gpio: gpios@c000 {
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
- 		};
-+
-+		pmi8998_rradc: rradc@4500 {
-+			compatible = "qcom,pmi8998-rradc";
-+			reg = <0x4500>;
-+			#io-channel-cells = <1>;
-+
-+			status = "disabled";
-+		};
- 	};
+diff --git a/drivers/firmware/efi/efivars.c b/drivers/firmware/efi/efivars.c
+index e6b16b3a17a8..ea0bc39dc965 100644
+--- a/drivers/firmware/efi/efivars.c
++++ b/drivers/firmware/efi/efivars.c
+@@ -352,11 +352,12 @@ static struct attribute *def_attrs[] = {
+ 	&efivar_attr_raw_var.attr,
+ 	NULL,
+ };
++ATTRIBUTE_GROUPS(def);
  
- 	pmi8998_lsid1: pmic@3 {
+ static struct kobj_type efivar_ktype = {
+ 	.release = efivar_release,
+ 	.sysfs_ops = &efivar_attr_ops,
+-	.default_attrs = def_attrs,
++	.default_groups = def_groups,
+ };
+ 
+ static ssize_t efivar_create(struct file *filp, struct kobject *kobj,
+diff --git a/drivers/firmware/efi/esrt.c b/drivers/firmware/efi/esrt.c
+index d5915272141f..2a2f52b017e7 100644
+--- a/drivers/firmware/efi/esrt.c
++++ b/drivers/firmware/efi/esrt.c
+@@ -146,6 +146,8 @@ static struct attribute *esre1_attrs[] = {
+ 	&esre_last_attempt_status.attr,
+ 	NULL
+ };
++ATTRIBUTE_GROUPS(esre1);
++
+ static void esre_release(struct kobject *kobj)
+ {
+ 	struct esre_entry *entry = to_entry(kobj);
+@@ -157,7 +159,7 @@ static void esre_release(struct kobject *kobj)
+ static struct kobj_type esre1_ktype = {
+ 	.release = esre_release,
+ 	.sysfs_ops = &esre_attr_ops,
+-	.default_attrs = esre1_attrs,
++	.default_groups = esre1_groups,
+ };
+ 
+ 
+diff --git a/drivers/firmware/efi/runtime-map.c b/drivers/firmware/efi/runtime-map.c
+index ad9ddefc9dcb..92a3d45a795c 100644
+--- a/drivers/firmware/efi/runtime-map.c
++++ b/drivers/firmware/efi/runtime-map.c
+@@ -79,6 +79,7 @@ static struct attribute *def_attrs[] = {
+ 	&map_attribute_attr.attr,
+ 	NULL
+ };
++ATTRIBUTE_GROUPS(def);
+ 
+ static const struct sysfs_ops map_attr_ops = {
+ 	.show = map_attr_show,
+@@ -94,7 +95,7 @@ static void map_release(struct kobject *kobj)
+ 
+ static struct kobj_type __refdata map_ktype = {
+ 	.sysfs_ops	= &map_attr_ops,
+-	.default_attrs	= def_attrs,
++	.default_groups	= def_groups,
+ 	.release	= map_release,
+ };
+ 
 -- 
 2.34.1
 
