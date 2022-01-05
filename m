@@ -2,107 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B35AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 19:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE0FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 19:19:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243449AbiAETTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 14:19:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243434AbiAETSv (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 14:18:51 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BCEEC061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 11:18:51 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id j6so354153edw.12
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 11:18:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aSZJ6lOXxe1t+UE4RzgH09dpup0DIvKIanGw3pdRDu0=;
-        b=LOQbagsAdCakbS9BqHLeR4QV4V4qMq4xIFEygeAnWmmSU11M1jK8usHrq8Lzs4XUvk
-         zUO+dRpDe/bweElJ9jb+PMTqN3LgVkzcNPfGMMrZXmiRYYOK1TQ6tlyGi4Gi9kewBvvW
-         SV2Zkd5JvGn5e05wPGXEjDQUbYeVmq5+SQeNg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aSZJ6lOXxe1t+UE4RzgH09dpup0DIvKIanGw3pdRDu0=;
-        b=ZFKwblbinIp3lBICpfaz9ulc71hwNYPPEkk7rSNoo5CpFtwXcrk3SgTQTSaIzTiLh6
-         UeB9aGAIjUFbp/w3k9copw4a+/IAYiyz1TsnnW7UfEm8FY78WU3rKFGDRpdrd8Nskp0Q
-         uezb+coNzKL61wb83lMTvJlf6aK45I0UczKlt4cGUkHANdge9lgYN5voaCVhZck7JFFD
-         BoUTKev6JjgPrWeZ+K2hBJSRY0cnXuKNOSk/bKuqIaz6u3m9RVADSBKGOtBLOMLmd52v
-         rvKEyPP292KQGkjE9G7JeQsJzTQMhCuyuWfc2b+eBsM97uQovuTFbNlFQCyifo4h8kfI
-         flqA==
-X-Gm-Message-State: AOAM530EZAyonfdTvQlXNAnbovNeNdedthV/I7tzDQcNgwB7xlncW2bl
-        0XkefXmttUo5aPhW/VqaWPbm66Puf6Cu7q0+D5o=
-X-Google-Smtp-Source: ABdhPJxC/uCoDeop6+BD9EjgoBkItOehkGXJdmdJ6cjfba7CFa3XZM4TyWkD6JpTOJaMvw6wOSFeTQ==
-X-Received: by 2002:a17:906:71d9:: with SMTP id i25mr33828082ejk.266.1641410330003;
-        Wed, 05 Jan 2022 11:18:50 -0800 (PST)
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
-        by smtp.gmail.com with ESMTPSA id o1sm16162011edv.2.2022.01.05.11.18.49
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 11:18:49 -0800 (PST)
-Received: by mail-wm1-f42.google.com with SMTP id k66-20020a1ca145000000b00345fa984108so13647wme.2
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 11:18:49 -0800 (PST)
-X-Received: by 2002:a05:600c:4f13:: with SMTP id l19mr4148156wmq.152.1641410026707;
- Wed, 05 Jan 2022 11:13:46 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000e8f8f505d0e479a5@google.com> <20211211015620.1793-1-hdanton@sina.com>
- <YbQUSlq76Iv5L4cC@sol.localdomain> <YdW3WfHURBXRmn/6@sol.localdomain>
- <CAHk-=wjqh_R9w4-=wfegut2C0Bg=sJaPrayk39JRCkZc=O+gsw@mail.gmail.com> <CAHk-=wjddvNbZBuvh9m_2VYFC1W7HvbP33mAzkPGOCHuVi5fJg@mail.gmail.com>
-In-Reply-To: <CAHk-=wjddvNbZBuvh9m_2VYFC1W7HvbP33mAzkPGOCHuVi5fJg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 5 Jan 2022 11:13:30 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjn5xkLWaF2_4pMVEkZrTA=LiOH=_pQK0g-_BMSE-8Jxg@mail.gmail.com>
-Message-ID: <CAHk-=wjn5xkLWaF2_4pMVEkZrTA=LiOH=_pQK0g-_BMSE-8Jxg@mail.gmail.com>
-Subject: Re: psi_trigger_poll() is completely broken
-To:     Eric Biggers <ebiggers@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Linux-MM <linux-mm@kvack.org>
+        id S243455AbiAETTP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 14:19:15 -0500
+Received: from mga17.intel.com ([192.55.52.151]:31169 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243460AbiAETTF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 14:19:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641410345; x=1672946345;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=8DgziH0WFP49C0kGqzf2uBEI/O4bSOCsl5hhKmIa6O0=;
+  b=mzFf7s+9g4PpgCAE7WeJro6WdfIpJ5ChyxRjdf4MbfC4OcNcgFPWj3PH
+   GNmDk7q7DWooSENDGoTwNF1tEEJqJoPhdp4hcFxOpjaSRjyo/wa9t/bON
+   JuqN1Xq1XvqBLkQlY5QI+wqSDF/wMfST9Bt4u+1aHkajf6mGkQXnoMWNL
+   4YsU8LmEJnOwbtNIpd9V7W30dIIn0O6aVS318Q3kDsG/nA6M+5klxrZ8i
+   n5ELQDlUObJfgv7NIEcsAufMweWSjsHOyhd3xz6Q8Sh3y2LCI1/OMUOsY
+   ll+oNiOEe4vB8m3K+uTnSWwWjv4FuinXJWP0AHD5cPP7doGjZkIH4LXL6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="223202982"
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="223202982"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 11:19:05 -0800
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="621236959"
+Received: from schen9-mobl.amr.corp.intel.com ([10.212.137.150])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 11:19:04 -0800
+Message-ID: <2ddaf5e732c48f74a3758484869c81195adbc47a.camel@linux.intel.com>
+Subject: Re: [PATCH RESEND 1/1] x86/smpboot: check cpu_initialized_mask
+ first after returning from schedule()
+From:   Tim Chen <tim.c.chen@linux.intel.com>
+To:     Dongli Zhang <dongli.zhang@oracle.com>, x86@kernel.org
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com, peterz@infradead.org,
+        rafael.j.wysocki@intel.com, vkuznets@redhat.com,
+        alison.schofield@intel.com, boris.ostrovsky@oracle.com,
+        joe.jin@oracle.com, longpeng2@huawei.com, bigeasy@linutronix.de,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 05 Jan 2022 11:19:04 -0800
+In-Reply-To: <20211223210343.1116-1-dongli.zhang@oracle.com>
+References: <20211223210343.1116-1-dongli.zhang@oracle.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 5, 2022 at 11:07 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> Whoever came up with that stupid "replace existing trigger with a
-> write()" model should feel bad. It's garbage, and it's actively buggy
-> in multiple ways.
+On Thu, 2021-12-23 at 13:03 -0800, Dongli Zhang wrote:
+> To online a new CPU, the master CPU signals the secondary and waits
+> for at
+> most 10 seconds until cpu_initialized_mask is set by the secondary
+> CPU.
+> There is a case that the master CPU fails the online when it takes
+> 10+
+> seconds for schedule() to return (although the cpu_initialized_mask
+> is
+> already set by the secondary CPU).
+> 
+> 1. The master CPU signals the secondary CPU in do_boot_cpu().
+> 
+> 2. As the cpu_initialized_mask is still not set, the master CPU
+> reschedules
+> via schedule().
+> 
+> 3. Suppose it takes 10+ seconds until schedule() returns due to
+> performance
+> issue. The secondary CPU sets the cpu_initialized_mask during those
+> 10+
+> seconds.
 
-What are the users? Can we make the rule for -EBUSY simply be that you
-can _install_ a trigger, but you can't replace an existing one (except
-with NULL, when you close it).
+The patch seems reasonable. But do you know what other task got run
+and caused such long delay (>10 sec), preventing switch
+back to in the master CPU?  It seems like there could be some problem
+causing the long delay. It is better if we understand the root cause
+of that.
 
-That would fix the poll() lifetime issue, and would make the
-psi_trigger_replace() races fairly easy to fix - just use
+Tim
 
-        if (cmpxchg(trigger_ptr, NULL, new) != NULL) {
-                ... free 'new', return -EBUSY ..
+> 
+> 4. Once the schedule() at the master CPU returns, although the
+> cpu_initialized_mask is set, the time_before(jiffies, timeout) fails.
+> As a
+> result, the master CPU regards this as failure.
+> 
+> [   51.983296] smpboot: do_boot_cpu failed(-1) to wakeup CPU#4
+> 
+> 5. Since the secondary CPU is stuck at state CPU_UP_PREPARE, any
+> further
+> online operation will fail by cpu_check_up_prepare(), unless the
+> below
+> patch set is applied.
+> 
+> https://lore.kernel.org/all/20211206152034.2150770-1-bigeasy@linutronix.de/
+> 
+> This issue is resolved by always first checking whether the secondary
+> CPU
+> has set cpu_initialized_mask.
+> 
+> Cc: Longpeng(Mike) <longpeng2@huawei.com>
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: Joe Jin <joe.jin@oracle.com>
+> Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+> ---
+> To resend by Cc linux-kernel@vger.kernel.org as well.
+> 
+>  arch/x86/kernel/smpboot.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kernel/smpboot.c b/arch/x86/kernel/smpboot.c
+> index 617012f4619f..faad4fcf67eb 100644
+> --- a/arch/x86/kernel/smpboot.c
+> +++ b/arch/x86/kernel/smpboot.c
+> @@ -1145,7 +1145,7 @@ static int do_boot_cpu(int apicid, int cpu,
+> struct task_struct *idle,
+>  		 */
+>  		boot_error = -1;
+>  		timeout = jiffies + 10*HZ;
+> -		while (time_before(jiffies, timeout)) {
+> +		while (true) {
+>  			if (cpumask_test_cpu(cpu,
+> cpu_initialized_mask)) {
+>  				/*
+>  				 * Tell AP to proceed with
+> initialization
+> @@ -1154,6 +1154,10 @@ static int do_boot_cpu(int apicid, int cpu,
+> struct task_struct *idle,
+>  				boot_error = 0;
+>  				break;
+>  			}
+> +
+> +			if (time_after_eq(jiffies, timeout))
+> +				break;
+> +
+>  			schedule();
+>  		}
+>  	}
 
-to install the new one, instead of
-
-        rcu_assign_pointer(*trigger_ptr, new);
-
-or something like that. No locking necessary.
-
-But I assume people actually end up re-writing triggers, because
-people are perverse and have taken advantage of this completely broken
-API.
-
-               Linus
