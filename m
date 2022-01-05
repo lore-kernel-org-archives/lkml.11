@@ -2,92 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8821FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:45:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:46:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242489AbiAERpa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:45:30 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:58606 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237699AbiAERpU (ORCPT
+        id S242507AbiAERql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242491AbiAERqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:45:20 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 02AC0CE0451;
-        Wed,  5 Jan 2022 17:45:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C534C36AE0;
-        Wed,  5 Jan 2022 17:45:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641404717;
-        bh=Q3V6GchDz78dmmg78l3g/qEnjx4BoPVZZK1V2rhQnWg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ofv2KE4rUB3IDE5zL0LXmcN71knBnGoHLvDV2Kto/Au/uS6xKi4fnQx0ec7kw172w
-         BbDNFOrbPnuJOnu/tQCE3V9lQ2JSWQ1I1m7/yWycIU8F9uEsfOdXaldGfOgLh1Xgpb
-         D3biVEQT9XNIZXsP9hMsWsnfhqjojMiwV0zHGZ1smVOUaE0AlOMQDfH+Vwpzjde+IZ
-         4EI8Mn5CNoE2cfdgQzkACRm6y5W/dHKF/2rQvfDraCSyxaoyV29AuGF8wzBFLrrjtU
-         Mhcf9BXbMVP9aEwYgBR/xsrhHli0xmRbJ4N5MsmsisGMstkwuV+eqF9nmkciju8Qzq
-         y0rPZl0QRkSeA==
-Date:   Wed, 5 Jan 2022 09:45:17 -0800
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-xfs <linux-xfs@vger.kernel.org>,
-        Linux NVDIMM <nvdimm@lists.linux.dev>,
-        Linux MM <linux-mm@kvack.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        david <david@fromorbit.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jane Chu <jane.chu@oracle.com>
-Subject: Re: [PATCH v9 01/10] dax: Use percpu rwsem for
- dax_{read,write}_lock()
-Message-ID: <20220105174517.GI31606@magnolia>
-References: <20211226143439.3985960-1-ruansy.fnst@fujitsu.com>
- <20211226143439.3985960-2-ruansy.fnst@fujitsu.com>
- <CAPcyv4gkxuFRGh57nYrpS8mXo+5j-7=KGNn-gULgLGthZQPo2g@mail.gmail.com>
+        Wed, 5 Jan 2022 12:46:39 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD48C061201
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 09:46:39 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id f8so26069930pgf.8
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 09:46:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kukafVx7055r8OcVvqLzxD7DUbrJSCUpCeX5KLtoe+4=;
+        b=M22wNw8Ag6nNk/CCBGok616/uNIatExoP5zvfwTiJeJtGC2X3te82k04ifGULNQ3dp
+         IZ4GhWDyehtar1ZxQFtOxwSG8KAlWvmeXwjL6IY8Gb8Mn8eME+l2Hyulw+6BxhXt42W7
+         +qejfmnhDbh0fUwK+gbY0pixmm2l+xJpl25CMXciNAtSMgkp1tukQUcbPhy7scSIgWD2
+         SQS/T21VRKmUgxTk9w9vC1fmO43KqNuVNk2I+ZJHRW52d/TnCNw/g/tcxktjrfUTFoIi
+         7XfxeMEqeMCa1YRMk7r3X25peeefoYjMqrKApr5ZDbe8NPtESx0BhWHg+/d+qjnEKxbL
+         IGOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kukafVx7055r8OcVvqLzxD7DUbrJSCUpCeX5KLtoe+4=;
+        b=P0Tgb0cnMpN/mhw+L6Rdiu1waCxCKMrj591aNOUolPa1ys4IIWBzDgP5Z9h2z0tYtR
+         udCFw+ZNkU9cZIZ6C4BLt5/ry2Cr0a/YowFDQS1ad08l5xRT5mD6wbWvrXKQNc4h6FJ9
+         0yCGo97QkTh3a8VjYNIAXctc0k6gniHLaj/KHU/duM7HocBT5tlI5z5/tqqkAEeCS/CQ
+         Dq9TeH1fL5dIIKQJzN3qtiE4Ukgg+c1NsQ87lpRQTmWPrh1vqrVpyMOvOEbmK9xb65FP
+         AiIppvyzNEqEFvM7a4sbZUDmp1Y9xSXYCN8CJpDp+im70Cxg5ocy2oQ69Wnbg0oJsJp6
+         XlCA==
+X-Gm-Message-State: AOAM531PH3MVBCpRx5/ztYryK5FACcwbrI2UQyFrPAqSKZJfSuJLaY60
+        HSS5Vp6u6zwEUEUcn7WGIqk62w==
+X-Google-Smtp-Source: ABdhPJyFwjYQf5hPBRwiSxtXmUuk3gBK75txy6WOHVYaJF2EbPU3M40gOP5ibeGVz1vFJzTc/ztwbg==
+X-Received: by 2002:aa7:88ce:0:b0:4ba:efec:39e0 with SMTP id k14-20020aa788ce000000b004baefec39e0mr56680934pff.80.1641404798687;
+        Wed, 05 Jan 2022 09:46:38 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id l2sm45836425pfu.13.2022.01.05.09.46.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 09:46:38 -0800 (PST)
+Date:   Wed, 5 Jan 2022 17:46:34 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Joerg Roedel <joro@8bytes.org>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: [PATCH v2 2/5] KVM: SVM: allow to force AVIC to be enabled
+Message-ID: <YdXZeuCKo58t3kD5@google.com>
+References: <20211213104634.199141-1-mlevitsk@redhat.com>
+ <20211213104634.199141-3-mlevitsk@redhat.com>
+ <YdTJPTSsM1feVwt/@google.com>
+ <dd7caa75ae9aef07d51043c01f073c6c23a3a445.camel@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPcyv4gkxuFRGh57nYrpS8mXo+5j-7=KGNn-gULgLGthZQPo2g@mail.gmail.com>
+In-Reply-To: <dd7caa75ae9aef07d51043c01f073c6c23a3a445.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 02:44:08PM -0800, Dan Williams wrote:
-> On Sun, Dec 26, 2021 at 6:35 AM Shiyang Ruan <ruansy.fnst@fujitsu.com> wrote:
-> >
-> > In order to introduce dax holder registration, we need a write lock for
-> > dax.
-> 
-> As far as I can see, no, a write lock is not needed while the holder
-> is being registered.
-> 
-> The synchronization that is needed is to make sure that the device
-> stays live over the registration event, and that any in-flight holder
-> operations are flushed before the device transitions from live to
-> dead, and that in turn relates to the live state of the pgmap.
-> 
-> The dax device cannot switch from live to dead without first flushing
-> all readers, so holding dax_read_lock() over the register holder event
-> should be sufficient.
+On Wed, Jan 05, 2022, Maxim Levitsky wrote:
+> On Tue, 2022-01-04 at 22:25 +0000, Sean Christopherson wrote:
+> > This is all more than a bit terrifying, though I can see the usefuless for a
+> > developer.  At the very least, this should taint the kernel.  This should also
+> > probably be buried behind a Kconfig that is itself buried behind EXPERT.
+> > 
+> I used 'module_param_unsafe' which does taint the kernel.
 
-...and perhaps add a comment describing that this is what the
-synchronization primitive is really protecting against?  The first time
-I read through this patchset, I assumed the rwsem was protecting
-&dax_hosts and was confused when I saw the one use of dax_write_lock.
-
---D
-
-> If you are worried about 2 or more potential
-> holders colliding at registration time, I would expect that's already
-> prevented by block device exclusive holder synchronization, but you
-> could also use cmpxchg and a single pointer to a 'struct dax_holder {
-> void *holder_data, struct dax_holder_operations *holder_ops }'. If you
-> are worried about memory_failure triggering while the filesystem is
-> shutting down it can do a synchronize_srcu(&dax_srcu) if it really
-> needs to ensure that the notify path is idle after removing the holder
-> registration.
-> 
-> ...are there any cases remaining not covered by the above suggestions?
+Ah, neat, TIL.  Thanks!
