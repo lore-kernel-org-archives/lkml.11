@@ -2,104 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10972C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:52:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22720C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239064AbiAEVwd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 16:52:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58764 "EHLO
+        id S244618AbiAEVxg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 16:53:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244600AbiAEVwL (ORCPT
+        with ESMTP id S244594AbiAEVxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 16:52:11 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72401C061212;
-        Wed,  5 Jan 2022 13:52:10 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id b13so1827078edd.8;
-        Wed, 05 Jan 2022 13:52:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bjB/Zn0uKKBu8yfN2dleBmwCa7tAycjeqrCCen9R2Cw=;
-        b=b/qmShWmOlCqy6QMXlTvASUJddaI5zI/6aasF937ZZK8GAZfDjfsdL6yKNyEt6/RkH
-         iJlxLpLLr5Q+SwswJnZp9Z6Kf6ZkDR6HLcoVuW729au4Rsd/9u/IxAicbiYz/LZgz79L
-         GdS6DjbKZFWX9APSwNY2L6Xwcv6bLRLPwnbKS3AyZSMel4MOgl00C3E8ylvqFJBIwfiO
-         Kc6dXVU/6CbfFG0TsMc1hAm5eAaOj5h0Jiy7pDA628SPqrFPjg+WyCiGwEpJKmiaEU9B
-         KRIeAPI+FaOTMyZfdiSwMtbT4GpNaelDJVcz4qOt2Fx+3O97Y08gm2DkeYlXIwxFJmgW
-         sITQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bjB/Zn0uKKBu8yfN2dleBmwCa7tAycjeqrCCen9R2Cw=;
-        b=OG0bSNEQulyCdqrsvH8M+YmrIg6IRmBf417XPVEagVUICTt57pM6BWrO6ueUFP82AS
-         43Zl5HdsRYKdKRgRET8Prqq1qqfoFdJOmJ4hOvY6Mt8fDn+KsCUpOw7jgkIK+KrOZLD5
-         7cQ36cQhWef/8PiuIguB+o/ZAf6cues+9ktfLXV2rWU0+ol1zf5HViwaXHDhjD2N5O5i
-         LGdJVmMBHiuvD+Pg9kep/zXEarLu7OA5rXj6ThR8WCfBX/p5kqgciIG0kRyYPJ65dxOO
-         +gjSpVtGOqvcKohxb0NPjl6/cDmIJAhG4FCdAN0voSqqwsjWozCxZkoWXHl7b2A3GgIv
-         2Isg==
-X-Gm-Message-State: AOAM531LwlVfTKm9vap//IVypWOP2ClzfmpVkifISNO6eivOtWB2RrhD
-        a1XCMwCK3LTZuxK3Atv7+1pUtmmDbG1WEhylCg0=
-X-Google-Smtp-Source: ABdhPJwLfQRw8pC3JV+6Qx5qoGjNdZEjOwnd3EUlmiwp8FgXYbFvx6A04tcHF77/pjpG2dpE3fekXYJMyL5ND9OZCyI=
-X-Received: by 2002:a50:d710:: with SMTP id t16mr55428708edi.50.1641419528997;
- Wed, 05 Jan 2022 13:52:08 -0800 (PST)
+        Wed, 5 Jan 2022 16:53:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D90AC061245;
+        Wed,  5 Jan 2022 13:53:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FD7461941;
+        Wed,  5 Jan 2022 21:53:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EE1EC36AEB;
+        Wed,  5 Jan 2022 21:53:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641419601;
+        bh=mQ/3HsG80cYdm5868lW6A5Jt9A4S+VlmnjhN5ANY1Lo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gHUp9BiRs/WIFPw28K0+UzPPKP1OcOUGPmjo9z3smImearRcLq4rg1GmphZCpDGVT
+         L/H4NGwWUzmKWmJKceEtUxbXeBGxA+xyKzGhZ+Rl/+1j0khIOib+cQNGbTaPDWDWFC
+         sEcvTB7f2f7j0V65QemiTMHW5LhgyfJvYXf8gnT5Otks8r+5Dw2YSVfYEKBYiMWeot
+         UYTZtxs3bIITCmppbIGUE/PwTX55ClNjp6XMVaZMu71b1MB3QzkqIwuBWqBQiggBD7
+         qT7fuMjaPy6pgadBUVbG9YALMXMzIXDEcNHlQJppdQCO2hHrsilJda5yH3IN1J/FSB
+         JvfEecYB/0Geg==
+Date:   Wed, 5 Jan 2022 13:53:20 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
+Subject: Re: [PATCH v7] lib/crypto: blake2s: include as built-in
+Message-ID: <YdYTUCR2GM/6CXmF@gmail.com>
+References: <CAHmME9oPcEjRnqDesPNKJNOsT+i9vmWRxy9c62t+Xu9Nohsi2A@mail.gmail.com>
+ <20220103123152.1043972-1-Jason@zx2c4.com>
+ <YdOhMPwL9sXllm8X@gondor.apana.org.au>
+ <CAMj1kXFhygHnB12g9MD0wMo_deZ6xd7FMEzbrvEvKVtqYdskAQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <1641368602-20401-1-git-send-email-hongxing.zhu@nxp.com> <1641368602-20401-6-git-send-email-hongxing.zhu@nxp.com>
-In-Reply-To: <1641368602-20401-6-git-send-email-hongxing.zhu@nxp.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Wed, 5 Jan 2022 18:51:58 -0300
-Message-ID: <CAOMZO5AqgOOo3+r3yQSsfaNxW9eHXhCi=m+mqR=sf=K6dXA8tw@mail.gmail.com>
-Subject: Re: [PATCH v5 5/6] PCI: imx6: Fix the regulator dump when link never
- came up
-To:     Richard Zhu <hongxing.zhu@nxp.com>
-Cc:     Lucas Stach <l.stach@pengutronix.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Mark Brown <broonie@kernel.org>, lorenzo.pieralisi@arm.com,
-        jingoohan1@gmail.com, stable@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-imx@nxp.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXFhygHnB12g9MD0wMo_deZ6xd7FMEzbrvEvKVtqYdskAQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Richard,
+On Tue, Jan 04, 2022 at 06:02:52PM +0100, Ard Biesheuvel wrote:
+> The only downside here is that the ARM/x86 accelerated shashes and the
+> generic shash now use the same core transform, right?
 
-On Wed, Jan 5, 2022 at 5:12 AM Richard Zhu <hongxing.zhu@nxp.com> wrote:
->
-> When PCIe PHY link never came up and vpcie regulator is present, there
-> would be following dump when try to put the regulator.
-> Add a new host_exit() callback for i.MX PCIe driver to disable this
-> regulator and fix this dump when link never came up.
->
-> The driver should undo any enables it did itself, and not undo any
-> enables that anything else did which means it should never be basing
-> decisions on regulator_is_enabled().
->
-> To keep usage counter balance of the clocks, powers and so on. Do the
-> clock disable in the error handling after host_init too.
->
->   imx6q-pcie 33800000.pcie: Phy link never came up
->   imx6q-pcie: probe of 33800000.pcie failed with error -110
+I don't see how this is the case, given that crypto/blake2s_generic.c still uses
+blake2s_compress_generic(), not blake2s_compress().
 
-Shouldn't we ignore the dw_pcie_wait_for_link() error?
-
-At least, this was the intention of 886a9c134755 ("PCI: dwc: Move link
-handling into
-common code").
-
->   ------------[ cut here ]------------
->   WARNING: CPU: 3 PID: 119 at drivers/regulator/core.c:2256 _regulator_put.part.0+0x14c/0x158
->   Modules linked in:
-
-My concern is that this issue is still present in 5.15, which is LTS.
-
-You only address this problem in 5/6 and I am not sure if the previous
-patches could be applied to stable as they are cleanups.
-
-How can we fix this for 5.15 stable?
-
-Could you make a minimal fix as the first patch of the series and
-cleanup patches later?
+- Eric
