@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE067C43217
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 18:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3C9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 18:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243050AbiAESeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 13:34:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S243128AbiAESes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 13:34:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230525AbiAESeT (ORCPT
+        with ESMTP id S243055AbiAESeZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 13:34:19 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B01CC061201
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 10:34:19 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id j18so72905wrd.2
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 10:34:19 -0800 (PST)
+        Wed, 5 Jan 2022 13:34:25 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8A3C0611FF
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 10:34:24 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id q8so4267323wra.12
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 10:34:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QjBi5fYeFYGkdoj528/DSOwlrW5ixEJe9Vn+jZ4Y8b8=;
-        b=UPDHMyCzqHNAX+Ppou+LwYpU+ElAEjcIANhveWVZJWYcUwl2rDuEarF3CEblJhNKNl
-         eV/5svevFAcjv/+IylVQq42nyECZptMbb8OdRyRkSAO6KcwxenL2BGcL2QfCWMUKwh8t
-         JNl1fFk1lESeYeBdkHTILsVnt7dSAEosM29ingFnolVIRcFYFZtuL/iDW1lGvMZa8Cui
-         W9ELcZCNIXvbt8V+xMHZYSYnxZl0Mv1iMkLjsTfgpUyIp0L2W+RQESUuvSVhkevdHJ+s
-         Eqpnk34Ce/sHsI7oTXQ7L7X5Tehf6DOaHVtEiVABkF7FDcxHL98l/JjFRWNMqRNur1cu
-         UmgQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6owdUrWnsMJbv4dtPOTN1GhRqLZCzET0ZErU0fw/VVw=;
+        b=umyUYyPj8Y8dGWViGQ53lLOC1QgwFrSDaCbaCBHetou6It3/5RZzFXGgS/2MGb1/ke
+         lAGl5C4vkr5el7oFdBXMQ2BFIq3GFcOotddpplp26eaICa7yi2DPzDXuhV4G/lbdSlGy
+         2aGOY95iyaV4GStJLekVb3u3Lg1n6LreebBEthtB8YpRESs8/MkQ1+gyYOW5eK1mdwxC
+         LkZ5ADQzDUbW0cFUbW7kT4OBkNRY/y2sZOun7Uai4j3UzFl0Otetrvn+C4M0NPfw5RgB
+         AqRr6Rkehvs4uXq14WpZmPQ0iQ32Ob4eMoCzvYh6bfnmTQDaFxQzdr1J8orNeSSqfgPk
+         H4AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QjBi5fYeFYGkdoj528/DSOwlrW5ixEJe9Vn+jZ4Y8b8=;
-        b=NU7qH6SSHkUYjSNWEHdC2f65C4CbpHwvRAT3z4Kgb6ybiYvEnT79f9w2XVrw3vLkN8
-         AT4TkHOzwCbG8tcYF05loVM6gR7nd26AnHy5l1LbF6sfnVzQgC0PXVewGpun931OApK0
-         qMv6Ec8R1uuyoNARrbBuHkzNVrUq8jaxlK+A6cAq3ggfEfGczeB76pWjh/QzLK8/Df7d
-         DjjanJ/bhFJfR0M+lWCSHXw3xGltvfEV4aKOjNZRB/KFuosirTxR86aO3YKgsFRL3ma3
-         7XkA0oeSpVTsxsfCuBfI8jAn5OcJOE0CFtmEMHygIUvWp423glcK4k0Ij+Uubs7ji+4l
-         jI6g==
-X-Gm-Message-State: AOAM530q6wzU4xqSouWzqnMuWAGG/YXA4bpAusfuB7C8n99zBBBx8+r+
-        Fj9wjKUYv5MM55CkCwsW1hiJzg==
-X-Google-Smtp-Source: ABdhPJxR+M9AgXVXxAlo3/HZTapEmtTjnt56e0VZivXQ3ykVou0kKKoSkty37wMyWuP1j9swClUl4g==
-X-Received: by 2002:a05:6000:18cd:: with SMTP id w13mr20860167wrq.199.1641407657954;
-        Wed, 05 Jan 2022 10:34:17 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6owdUrWnsMJbv4dtPOTN1GhRqLZCzET0ZErU0fw/VVw=;
+        b=GdZTuUZ7XaBQJGPm5E0n1NFdFoqFDFZGNNqTiqI6DWMJHIct3Tlxlp7SiCYimNIM2I
+         0lTHpyR94qhyiGQHQx6wdLHsiszGT4LgPSUKiCRD4JCJdKvChmEMV8pz+BLNqXFX5Htr
+         R63UUvpY+835xYm/At5jlv355N9S1KSwV32HCk02L7gEvqtczJqkp6vvsuTEm7gWm0/j
+         vGSkzW3xEOXVQor1/WnylThy52EHVybMQDJObtlJZCr+QVOuh8n+JjLIN+3Ut+5dbbiM
+         efOz33lCRBkJ9qrh55Dvd9FreM9U7KYgWhM2vmNUFrtSNWWRggeZ4FHECzoUXRnXpnyi
+         V90Q==
+X-Gm-Message-State: AOAM533D7a+uvyPfQZVIZUJ00ldwdnEmIcbBR8A2H+9380ATog8zmzQR
+        6F/sKT1bb70GpVeHUruBOKvuHrdKmphtxg==
+X-Google-Smtp-Source: ABdhPJyxfDPsbnxdNzdjwnjvGaaXfGJUwL/J85bz0M2Bs9NvtNlOzt0qitd4HXxs0OakcL+q2ZpagA==
+X-Received: by 2002:a5d:4c48:: with SMTP id n8mr47008816wrt.25.1641407663486;
+        Wed, 05 Jan 2022 10:34:23 -0800 (PST)
 Received: from localhost.localdomain ([81.178.195.252])
-        by smtp.gmail.com with ESMTPSA id o1sm3272215wmc.38.2022.01.05.10.34.16
+        by smtp.gmail.com with ESMTPSA id o1sm3272215wmc.38.2022.01.05.10.34.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 10:34:17 -0800 (PST)
+        Wed, 05 Jan 2022 10:34:22 -0800 (PST)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -59,56 +59,40 @@ To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         linux-arm-msm@vger.kernel.org
 Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
         john.stultz@linaro.org
-Subject: [PATCH v2 0/7] iio: adc: introduce Qualcomm SPMI Round Robin ADC
-Date:   Wed,  5 Jan 2022 18:33:46 +0000
-Message-Id: <20220105183353.2505744-1-caleb.connolly@linaro.org>
+Subject: [PATCH v2 5/7] arm64: dts: qcom: sdm845-oneplus: enable rradc
+Date:   Wed,  5 Jan 2022 18:33:51 +0000
+Message-Id: <20220105183353.2505744-6-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220105183353.2505744-1-caleb.connolly@linaro.org>
+References: <20220105183353.2505744-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The RRADC is responsible for reading data about the current and
-voltage from the USB or DC in jacks, it can also read the battery
-ID (resistence) and some temperatures. It is found on the PMI8998 and
-PM660 Qualcomm PMICs.
+Enable the RRADC for the OnePlus 6.
 
-The RRADC has to calibrate some ADC values based on which chip fab
-the PMIC was produced in, to facilitate this the patch
-("mfd: qcom-spmi-pmic: expose the PMIC revid information to clients")
-exposes the PMIC revision information as a struct and registers it
-as driver data in the Qualcomm SPMI PMIC driver so that it can be 
-read by the RRADC.
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Changes since v1:
- * Rework the RRADC driver based on Jonathan's feedback
- * Pick up Rob's reviewed by for the dt-binding patch.
-
-Caleb Connolly (7):
-  mfd: qcom-spmi-pmic: expose the PMIC revid information to clients
-  dt-bindings: iio: adc: document qcom-spmi-rradc
-  iio: adc: qcom-spmi-rradc: introduce round robin adc
-  arm64: dts: qcom: pmi8998: add rradc node
-  arm64: dts: qcom: sdm845-oneplus: enable rradc
-  arm64: dts: qcom: sdm845-db845c: enable rradc
-  arm64: dts: qcom: sdm845-xiaomi-beryllium: enable RRADC
-
- .../bindings/iio/adc/qcom,spmi-rradc.yaml     |   54 +
- arch/arm64/boot/dts/qcom/pmi8998.dtsi         |    8 +
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts    |    4 +
- .../boot/dts/qcom/sdm845-oneplus-common.dtsi  |    4 +
- .../boot/dts/qcom/sdm845-xiaomi-beryllium.dts |    4 +
- drivers/iio/adc/Kconfig                       |   13 +
- drivers/iio/adc/Makefile                      |    1 +
- drivers/iio/adc/qcom-spmi-rradc.c             | 1070 +++++++++++++++++
- drivers/mfd/qcom-spmi-pmic.c                  |  108 +-
- include/soc/qcom/qcom-pmic.h                  |   63 +
- 10 files changed, 1272 insertions(+), 57 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
- create mode 100644 drivers/iio/adc/qcom-spmi-rradc.c
- create mode 100644 include/soc/qcom/qcom-pmic.h
-
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
+index 3e04aeb479d1..9feda49b2f12 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
+@@ -450,6 +450,10 @@ pinconf {
+ 	};
+ };
+ 
++&pmi8998_rradc {
++	status = "okay";
++};
++
+ &qupv3_id_1 {
+ 	status = "okay";
+ };
 -- 
 2.34.1
 
