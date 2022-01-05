@@ -2,127 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6231FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244026AbiAEU0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 15:26:45 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:44406
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244008AbiAEUYh (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 15:24:37 -0500
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E49714002B
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 20:24:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641414273;
-        bh=Z7Q01MgSEbyZYHT3rk+3A+kephcacvWRoAm/f2TTeCA=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=CwlomVquiDB7eJaEX3kTbcFp0MAequdVgGHnzkdMbn0G1IuDjxAwQCoZ9MQ9MyRJO
-         7PcLlKy5Ox17Tl7VAVsKXHfKOmL/AG0u1GqxbW48PkgExLmwHvqMaSLKT5ucMZ3QL9
-         zSdC49vZNNUUCXe2qPzZTnqN72YgwJYQrhgyWcjKwcliaXFG3EiycnIBLNuD1LHy3y
-         8FIp/WeHruWJU5DUrAMJJVOAlzCgikxfZxQLlkA3nFTcpG6XbawEMyWFFKjJu4A+EQ
-         2HqMXnbdHjaJCuxPXj0WKJyi4u3i3OcWJH9KotpEY+7XggXRh+H1uXsSXFW/nq5Kjx
-         dGHRLFhOAxcbQ==
-Received: by mail-wm1-f70.google.com with SMTP id k40-20020a05600c1ca800b00345bf554707so1191254wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 12:24:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Z7Q01MgSEbyZYHT3rk+3A+kephcacvWRoAm/f2TTeCA=;
-        b=43u0+EzVait51s7bEaeybVGHMoqCUk5GGjurpyUM/lKc5a955t/OLqxrc5NOniMsV1
-         tiHgGEPzrQhX2uXbNmJWvkauUTIVnuxVjfDlfbb2k4lm6N3VbqFx7znsvMXv0YmcsnkE
-         JI6Q54eznWwXaDBP2zTEv0SVouw3Usez0FNcc6hO5Orpph1ZJLdeMCHPk5mzSPkCa5K6
-         hPTxh6n8joKWSmCFX6dyR5AwdN1qv98pk1m8jupGjLTcvUaljZP826qZJ9PmTFf5EkQY
-         EdE8SXsd519pkxIKKlQqUDs+sahmisLEwdjDEm9oUQfSuR6dfehz9hNWy1FAeXAKmT3i
-         bHfA==
-X-Gm-Message-State: AOAM53166+mGjgOKzU2tkuffDilhMUqV7aNXCNnz0tvLHCBq6UID9Pfn
-        LS/M8VnB9250ZmbvwAsjtVGcxpVDkpBpWicKtBTg09fBPbqmLpYVmvBjg0uX2661VO9O9hhJtow
-        9JcUAb70ZdpiPIAZf918Tv+ShcAyGBkFLRa2rn/HAsw==
-X-Received: by 2002:a1c:9856:: with SMTP id a83mr4298307wme.157.1641414271345;
-        Wed, 05 Jan 2022 12:24:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyDOoioCbtDcfutGP5nnn1CRcSrlm9FAZ0/AwZzVCuwcbxtjswiY565cQifCl/khgMGZCxOOw==
-X-Received: by 2002:a1c:9856:: with SMTP id a83mr4298293wme.157.1641414271152;
-        Wed, 05 Jan 2022 12:24:31 -0800 (PST)
-Received: from [192.168.1.124] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id l26sm41211495wrz.44.2022.01.05.12.24.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 12:24:30 -0800 (PST)
-Message-ID: <e54c289c-6aeb-fcf4-67fe-fc8e375149f9@canonical.com>
-Date:   Wed, 5 Jan 2022 21:24:29 +0100
+        id S244037AbiAEU12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 15:27:28 -0500
+Received: from mga18.intel.com ([134.134.136.126]:10654 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244017AbiAEU1O (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 15:27:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641414434; x=1672950434;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FSFWIc4HSv9YdqR3Ma1IzBH4Anr1q7MqPqL/vrhT98M=;
+  b=MDf3a41GWsP02QDmKOrs8kN9dKULQKH+g69N9V/3gBpwK1OYq3xaomyr
+   LiLRPzoZwL9+JeO7Zrh1YESjcvVpJqVIESFzqfhhU48UTagdvuzib1pjL
+   lKx1LOL1Ml/CEkVZGx2A104a1Hvz1DOakoC4s89Y1h8RYlmWPFPgTBPxa
+   sMr1DlI8qVhCLNX2nXpr3iAlhvuaPrHOSQTsLKGiwxdDokBHYpVCFGdi2
+   KxpwcjDRnFmWjH+eYCW1Loghd/7dn5xa/lBCdvaFzxF99Ven/Xo+pYoTG
+   L7f7yLqHjiVgSlqqJCrzI4ZvwgyTi4BHRAIZOQBR3POaYAh+wRI6dKSZG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="229345941"
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="229345941"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 12:27:12 -0800
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="760939957"
+Received: from njvora-mobl.amr.corp.intel.com (HELO [10.212.154.74]) ([10.212.154.74])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 12:27:10 -0800
+Message-ID: <acba0832-9b11-c93d-7903-fff33f740605@intel.com>
+Date:   Wed, 5 Jan 2022 12:27:08 -0800
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 01/24] pinctrl: samsung: drop pin banks references on
- error paths
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v8 13/40] x86/kernel: Make the bss.decrypted section
+ shared in RMP table
 Content-Language: en-US
-To:     Sam Protsenko <semen.protsenko@linaro.org>
-Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sylwester Nawrocki <snawrocki@kernel.org>,
-        Chanho Park <chanho61.park@samsung.com>, stable@vger.kernel.org
-References: <20211231161930.256733-1-krzysztof.kozlowski@canonical.com>
- <20211231161930.256733-2-krzysztof.kozlowski@canonical.com>
- <CAPLW+4mosbk2_NPFFP=sUmKjBoZOG3vNcmT+7sMtTunhbVqcxA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <CAPLW+4mosbk2_NPFFP=sUmKjBoZOG3vNcmT+7sMtTunhbVqcxA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Brijesh Singh <brijesh.singh@amd.com>,
+        Venu Busireddy <venu.busireddy@oracle.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+References: <20211210154332.11526-1-brijesh.singh@amd.com>
+ <20211210154332.11526-14-brijesh.singh@amd.com> <YdSKQKSTS83cRzGZ@dt>
+ <18eadf9d-8e31-0945-ccf4-2cb72b8e0dd4@amd.com>
+From:   Dave Hansen <dave.hansen@intel.com>
+In-Reply-To: <18eadf9d-8e31-0945-ccf4-2cb72b8e0dd4@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 03/01/2022 15:49, Sam Protsenko wrote:
-> On Fri, 31 Dec 2021 at 18:20, Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
+On 1/5/22 11:52, Brijesh Singh wrote:
+>>>           for (; vaddr < vaddr_end; vaddr += PMD_SIZE) {
+>>> +            /*
+>>> +             * When SEV-SNP is active then transition the page to shared in the RMP
+>>> +             * table so that it is consistent with the page table attribute change.
+>>> +             */
+>>> +            early_snp_set_memory_shared(__pa(vaddr), __pa(vaddr), PTRS_PER_PMD);
 >>
->> The driver iterates over its devicetree children with
->> for_each_child_of_node() and stores for later found node pointer.  This
->> has to be put in error paths to avoid leak during re-probing.
->>
->> Fixes: ab663789d697 ("pinctrl: samsung: Match pin banks with their device nodes")
->> Cc: <stable@vger.kernel.org>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->> ---
->>  drivers/pinctrl/samsung/pinctrl-samsung.c | 29 +++++++++++++++++------
->>  1 file changed, 22 insertions(+), 7 deletions(-)
->>
->> diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
->> index 8941f658e7f1..f2864a7869b3 100644
->> --- a/drivers/pinctrl/samsung/pinctrl-samsung.c
->> +++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
->> @@ -1002,6 +1002,15 @@ samsung_pinctrl_get_soc_data_for_of_alias(struct platform_device *pdev)
->>         return &(of_data->ctrl[id]);
->>  }
->>
->> +static void samsung_banks_of_node_put(struct samsung_pinctrl_drv_data *d)
->> +{
->> +       struct samsung_pin_bank *bank;
->> +       unsigned int i;
->> +
->> +       for (i = 0; i < d->nr_banks; ++i, ++bank)
->> +               of_node_put(bank->of_node);
+>> Shouldn't the first argument be vaddr as below?
 > 
-> But "bank" variable wasn't actually assigned before, only declared?
+> Nope, sme_postprocess_startup() is called while we are fixing the 
+> initial page table and running with identity mapping (so va == pa).
 
-Good point, bank has to be assigned just like in patch 2/24.
-
-> 
->> +}
->> +
-
-Best regards,
-Krzysztof
+I'm not sure I've ever seen a line of code that wanted a comment so badly.
