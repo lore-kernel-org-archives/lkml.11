@@ -2,84 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8A0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA15C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242420AbiAERlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:41:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        id S242424AbiAERl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:41:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242413AbiAERkz (ORCPT
+        with ESMTP id S242430AbiAERlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:40:55 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6A6C061201;
-        Wed,  5 Jan 2022 09:40:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=RTJxwLl+pm7Ff+UKXl9jyuyYhU7kQqFATFz9yxORmSQ=; b=Waxs5JjT7qV1ScF1HUqjEizvXw
-        1uci335s6o4lX2mbH1hheG8Bwf8imBq1QkvGBzCw8pNVudtKHFmSKDcAtg4Rqt7o5ySRsHAgT8rjQ
-        zxJM+XaEPF/Hu8YRNx1743hkvJt43+eRjH2JsusfZLnxxCLVbSKierPUQaUcuRKTMpZ1LO6+sqQiU
-        r2PAjVgYiGbDrlMMjf4uLKfLMKlwxVZ+QjImY+sGMRdIH6VdYD14sdo51FC1QvVO2XtNMyg9MtDZb
-        bl1CcTFr71a+GJbVEwBV6mU0v6adS4mZBnf2/tfepLUiWn2MxaVb6PjdniklXECmmkCDcvsYJjsFN
-        Lq1+uHCA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n5AHE-00ElOm-RT; Wed, 05 Jan 2022 17:40:44 +0000
-Date:   Wed, 5 Jan 2022 17:40:44 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     linux-mm <linux-mm@kvack.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Juergen Gross <jgross@suse.com>,
-        Dan Streetman <ddstreet@ieee.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Seth Jennings <sjenning@redhat.com>,
-        Vitaly Wool <vitaly.wool@konsulko.com>,
-        lkft-triage@lists.linaro.org
-Subject: Re: [next] mm/shmem.c:3993:5: error: conflicting types for
- 'shmem_unuse'; have 'int(unsigned int, long unsigned int *)'
-Message-ID: <YdXYHP5gPMRzmv0B@casper.infradead.org>
-References: <CA+G9fYvXfD3wS8eJV6A6GygqhJb3AUF9OROQAkBRRTN+thVo-g@mail.gmail.com>
+        Wed, 5 Jan 2022 12:41:21 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27CF3C061201
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 09:41:21 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so6909686pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 09:41:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gzQ72BBdlbIwljQ9GmIvY1Y0Vph95fp3b2f0mlNY2ig=;
+        b=E8W/mM5tg4uMQl+gYVBTsmLjT8y0cxNDt0JmMghEnL77yQqHQnUAuXH1cOLGRCpVqj
+         MLRzKva/JfvhYIK5VRk+A+nwDfSMdZrPy7W0PoULQn2fZvRFiy3F6cCIcpAgZ5EfsGnj
+         AQOTipQ6XY0wPu3WcTsTGpu1O5KHxTzYWJzB2Y7MZockAGO519UOaSa4WQTKgGyyVitq
+         oNw3kKHcEcpatxlGscm+A6lys3gpHRtzBm5fulOeXypFtty+GT573xjUDkQG2E+NheI4
+         KZJJO4SVSI6xX5583UYEXaPUHbRbKoDpqtQIOr/42ivp6/0yExbE8Qpw0CWX0GEZ1U+O
+         G73Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gzQ72BBdlbIwljQ9GmIvY1Y0Vph95fp3b2f0mlNY2ig=;
+        b=7G0Z2E4KQsgKEVhTrsZaA85EJDHxFO947NO6pruWXHs4M10Su0F9KPPBhx4chQjn3m
+         DZk630qkF27WvUceSQmKrpgCZtvxbOAz4BzqxIIRAwSxD3zs9rC4v+4z4VIgvYCaPRQM
+         2w/7pu6cLYpdb+K/mLqhJzDqv5oZjt3hnFBztkBCDACKboaWn3Ske09VuH76f64tbfTm
+         EMfR0aPE3x3VOK+q13z+FZPPwe6fyczU3pJm3sJ1WYMOYD8ko/GBg3vWz2PVhtHn28ZL
+         S1RBgAtkEv1nwS8frhuhxzqiUN/qDHHnkK+hR0gmL9j1zZjXawEseyP7K7MA1FFouHw9
+         Y+8Q==
+X-Gm-Message-State: AOAM530BzdG7lswvznpf/7CFYhTEnla7RzRATspKYBda8Tq2oi+Pk/ru
+        7TfeQC7K+T85Ic9vz66wIaXj8jxVgoWWRSRjmfODRA==
+X-Google-Smtp-Source: ABdhPJxN8ppKSK8GXuZut/tPMjou6EwYIg6LidumtfgGEZel8tmkV9qHTU80LjGPle7XoYStcasMHA7FIbBkapv5XUA=
+X-Received: by 2002:a17:90a:5295:: with SMTP id w21mr3113121pjh.179.1641404480159;
+ Wed, 05 Jan 2022 09:41:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYvXfD3wS8eJV6A6GygqhJb3AUF9OROQAkBRRTN+thVo-g@mail.gmail.com>
+References: <20220105104113.31415-1-linmq006@gmail.com>
+In-Reply-To: <20220105104113.31415-1-linmq006@gmail.com>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Wed, 5 Jan 2022 18:41:09 +0100
+Message-ID: <CAG3jFysAF8EvNZYwZYi4XYg9PG9quQCN=rDmsReS=bwvgLJ-Nw@mail.gmail.com>
+Subject: Re: [PATCH] drm/bridge: Add missing pm_runtime_disable() in __dw_mipi_dsi_probe
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        Philippe CORNU <philippe.cornu@st.com>,
+        Archit Taneja <architt@codeaurora.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 08:01:19PM +0530, Naresh Kamboju wrote:
-> mm/shmem.c:3993:5: error: conflicting types for 'shmem_unuse'; have
-> 'int(unsigned int,  long unsigned int *)'
->  3993 | int shmem_unuse(unsigned int type, unsigned long *fs_pages_to_unuse)
->       |     ^~~~~~~~~~~
-> In file included from include/linux/khugepaged.h:6,
->                  from mm/shmem.c:37:
-> include/linux/shmem_fs.h:86:5: note: previous declaration of
-> 'shmem_unuse' with type 'int(unsigned int)'
->    86 | int shmem_unuse(unsigned int type);
->       |     ^~~~~~~~~~~
+Hey,
 
-This is "mm: simplify try_to_unuse" in akpm's tree.
+Thanks for submitting this fix.
 
-It needs a fix that looks something like this:
+On Wed, 5 Jan 2022 at 11:41, Miaoqian Lin <linmq006@gmail.com> wrote:
+>
+> If the probe fails, we should use pm_runtime_disable() to balance
+> pm_runtime_enable().
+> Add missing pm_runtime_disable() for __dw_mipi_dsi_probe.
+>
+> Fixes: 46fc515 ("drm/bridge/synopsys: Add MIPI DSI host controller bridge")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+> index e44e18a0112a..56c3fd08c6a0 100644
+> --- a/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+> +++ b/drivers/gpu/drm/bridge/synopsys/dw-mipi-dsi.c
+> @@ -1199,6 +1199,7 @@ __dw_mipi_dsi_probe(struct platform_device *pdev,
+>         ret = mipi_dsi_host_register(&dsi->dsi_host);
+>         if (ret) {
+>                 dev_err(dev, "Failed to register MIPI host: %d\n", ret);
+> +               pm_runtime_disable(dev);
+>                 dw_mipi_dsi_debugfs_remove(dsi);
+>                 return ERR_PTR(ret);
+>         }
+> --
+> 2.17.1
+>
 
-+++ b/mm/shmem.c
-@@ -3990,7 +3990,7 @@ int __init shmem_init(void)
-        return 0;
- }
+Added r-b tag and applied to drm-misc-next
 
--int shmem_unuse(unsigned int type, unsigned long *fs_pages_to_unuse)
-+int shmem_unuse(unsigned int type)
- {
-        return 0;
- }
-
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
