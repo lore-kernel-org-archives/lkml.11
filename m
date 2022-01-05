@@ -2,117 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 782EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244423AbiAEVXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 16:23:46 -0500
-Received: from smtp02.smtpout.orange.fr ([80.12.242.124]:52580 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244405AbiAEVXl (ORCPT
+        id S244437AbiAEVbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 16:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244426AbiAEVbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 16:23:41 -0500
-Received: from [192.168.1.18] ([90.11.185.88])
-        by smtp.orange.fr with ESMTPA
-        id 5Dkonz8rwBazo5Dkon0Nlo; Wed, 05 Jan 2022 22:23:40 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 05 Jan 2022 22:23:40 +0100
-X-ME-IP: 90.11.185.88
-Message-ID: <bc95636a-8b67-b0cd-dc18-b21ac4b83962@wanadoo.fr>
-Date:   Wed, 5 Jan 2022 22:23:27 +0100
+        Wed, 5 Jan 2022 16:31:08 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABB3C061245
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 13:31:08 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id kc16so462043qvb.3
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 13:31:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KaugUz46tW8OmhBqIZ9jwiqPis52Cy1fNqiGsGfoTG8=;
+        b=imnzYCQ5MsamiVJKUgz/DAmOxeFUztOWBxZ8rpHXsoPFwt1QIta5OVZ8P7Sbp3RLE4
+         lTC0HUWrzyaBAnblC65Xuwu/+MoSx9JEw99xpn4Alxo3N/oIMu8ZeR2S036RBFtQLPLb
+         SU3LJrFvYlsO6DR2ojsMyAXtIqpeipPKmK4BnQvd2O9l9mo2zFjGt1EHjqHk1hEROetx
+         njzS/MqS1jcndiXHnJ1fzcmaoWEzWXY50wfHUBwgfJsQP9s3HZFKjUpjw1k0cRrTNyxG
+         es6r/drZFkPiWMESLgkq0qTfiDLAIl8RxlUO932XRX5PIpIETZY2TLzVPr3nFgtvYEVr
+         lGpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KaugUz46tW8OmhBqIZ9jwiqPis52Cy1fNqiGsGfoTG8=;
+        b=yhL8+T/poEp8mBCQfZ+fj4bP2gHadospDRBMCPwDv915bOGEMwl2D+yKWu6XT6uUqY
+         Y/L2tcwx/lBDYRwrguYhvQeTnSiXRqwyme5EDrtQv/XOAbh0F0E++MeCbshQFEdPBJcF
+         J7DAcGhBQFtGGF0A2OftPPIDG1+Xb6kHUZqX5fT0rss/oDC53ufZNjlmIc1+SN0spm12
+         lzqxZcK3BmWMlvqFwv9T1+G1OyzdP2rejXKeTKkjcAV4aVvYH8Ah/hL8byVWUBm59GzS
+         6Xuf3cnglXdyejkmGVLld7vqdYQmtB/sRifJe6BvMrVGv9xeNzaTpjYDNqMDRxJsWFYV
+         0L/Q==
+X-Gm-Message-State: AOAM53230cvNO3RzKuCheUc9Z78tALLAIPxSYSFbGLbm+RwkjsLlKrrS
+        ZgBVjuSVxLQFzRcnsUb1LdIxag==
+X-Google-Smtp-Source: ABdhPJy7VyTmEoBTsJdjaQQhxyBAh+c5MvjENhOKOpyyCC8MG09jgKANOY0TEU057qCllHgmuKtK4w==
+X-Received: by 2002:ad4:5aa9:: with SMTP id u9mr52496438qvg.50.1641418267445;
+        Wed, 05 Jan 2022 13:31:07 -0800 (PST)
+Received: from [192.168.0.111] (d-65-175-178-104.nh.cpe.atlanticbb.net. [65.175.178.104])
+        by smtp.gmail.com with ESMTPSA id 22sm47790qtw.12.2022.01.05.13.31.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 13:31:07 -0800 (PST)
+Message-ID: <28405360-ea08-acdd-d62b-b925c9904dff@google.com>
+Date:   Wed, 5 Jan 2022 16:31:05 -0500
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH] alpha: Remove usage of the deprecated "pci-dma-compat.h"
- API
-Content-Language: en-GB
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
+ Firefox/91.0 Thunderbird/91.3.2
+Subject: Re: [PATCH] rlimits: do not grab tasklist_lock for do_prlimit on
+ current
+Content-Language: en-US
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        William Cohen <wcohen@redhat.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Chris Hyser <chris.hyser@oracle.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Xiaofeng Cao <caoxiaofeng@yulong.com>,
         David Hildenbrand <david@redhat.com>,
-        martin.oliveira@eideticom.com, alpha <linux-alpha@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>
-References: <0b8bacb36e111d2621c2c0459b20b1da9f4375c0.1641137463.git.christophe.jaillet@wanadoo.fr>
- <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com>
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <20211213220401.1039578-1-brho@google.com>
+ <8735mww2w3.fsf@email.froward.int.ebiederm.org>
+ <456a056e-453e-71b0-0f9e-03511b9f56b1@google.com>
+ <87zgp1psd3.fsf@email.froward.int.ebiederm.org>
+From:   Barret Rhoden <brho@google.com>
+In-Reply-To: <87zgp1psd3.fsf@email.froward.int.ebiederm.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 03/01/2022 à 02:51, Arnd Bergmann a écrit :
-> On Sun, Jan 2, 2022 at 10:32 AM Christophe JAILLET
-> <christophe.jaillet@wanadoo.fr> wrote:
->>
->> In [1], Christoph Hellwig has proposed to remove the wrappers in
->> include/linux/pci-dma-compat.h.
->>
->> Some reasons why this API should be removed have been given by Julia
->> Lawall in [2].
->>
->> A coccinelle script has been used to perform the needed transformation.
->> Only relevant parts are given below.
->>
->>
->> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
->> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
->>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> 
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> It looks like the number of remaining files that use the old
-> interfaces has gone down
-> a lot more since you last sent these patches. I would suggest you send them as a
-> series that includes the patch to remove the header as the last change, and
-> ask Andrew to pick up the ones that remain after this resend into the -mm tree,
-> possibly after the next -rc1. How many patches do you have left?
-> 
->           Arnd
-> 
+On 12/15/21 14:42, Eric W. Biederman wrote:
+> In update_rlimit_cpu use lock_task_sighand instead of unconditionally
+> grabbing sighand->siglock (because without tasklist_lock sighand might
+> be NULL).
 
-Hi,
+this ended up being a minor complication, since update_rlimit_cpu() 
+could fail if the task was exiting, but i think i sorted it out.
 
-This would be ~ 10 patches.
-I sent recently some missing ones because I was not aware of 
---include-headers. So .h files were missing in my previous patches.
+i'll send out revised patchset shortly with this change, including 
+making do_prlimit() static.
+
+thanks,
+
+barret
 
 
-The main remaining issue is linked to files in message/fusion.
-The patches are big.
-They have to be looked at carefully because it touches some GFP flags 
-when s/pci_alloc_consistent/dma_alloc_coherent/.
-
-My last try did not get any attention.
-Even [1] which is purely mechanical
-
-I'll try another approach without trying to turn some (hidden) 
-GFP_ATOMIC into GFP_KERNEL.
-1st patch: only mechanical changes done with coccinelle, leaving GFP_ATOMIC
-2nd patch: add some FIXME comments explaining why some could be turned 
-into GFP_KERNEL
-3rd patch: remove the comments and update the GFP flags accordingly.
-
-So, a maintainer could either apply 1 (no risk at all, should even 
-generate the same .o file), or 1+2 (only FIXME comments for future 
-analysis) or 1+2+3 for full clean-up (if he trusts me and/or has time to 
-check my explanations).
-
-This way, I hope that some could at least apply the first one.
-
-
-Being able to axe this deprecated API and .h file would be my 
-contribution to Ingo Molnar's "Fast Kernel Headers" tree :)
-
-CJ
-
-[1]: 
-https://lore.kernel.org/kernel-janitors/db5aa78d7d44b809ab83ba6fb4880d698517bfec.1623580326.git.christophe.jaillet@wanadoo.fr/
