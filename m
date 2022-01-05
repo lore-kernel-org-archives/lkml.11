@@ -2,204 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D825EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:31:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED68C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244490AbiAEVbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 16:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
+        id S244515AbiAEVeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 16:34:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244446AbiAEVbd (ORCPT
+        with ESMTP id S244519AbiAEVdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 16:31:33 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5824C061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 13:31:32 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id e2-20020a25d302000000b0060c57942183so1136148ybf.18
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 13:31:32 -0800 (PST)
+        Wed, 5 Jan 2022 16:33:13 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC9BC033270
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 13:32:56 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id 205so552782pfu.0
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 13:32:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=e02bjD6pRKTWNu3KvN2MtMLMNFzM1qFsgH72gSuIkl4=;
-        b=g2LCcjXXaW7gzE4dCTvUSuTgcCA53czMalkKvkChm6TBE4b+r6X9NJWmpuA55yNesS
-         QrMBzdp784HO2SshmhwbZdZGW6EgWwGp5fI/LWT4ApiqTkr3s0zsnAW2pWGbzZRTxvWS
-         6Sgn3DMaxdU5px2s/SRPeNQY+7VUv0dH0HwMGjjTllzTT+junL1sGuyc0y0JtCiJ4YXE
-         j10KhriKENIYwbu232IvSkly2qnCdPU4qe+SCzEBV61mbmgGWyiyK/gPGEzsbCwpHgHQ
-         Ew8E4W226r7Uz8JI4dJTzvli2WIgmmoQjUHxBcO9xenxIS9WZDH1qbsr7weCSUYjAUy+
-         DBSA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iz75eNeOMPClkyOOeLrV+wvs6NQGY9YHbUynqVGaBoA=;
+        b=AB4tJ+dzW5ouj4RxmjR6PNX0hGu4E7KwgrPH5DSxzhQ0MRvdfkpV+KF4cH+uokvkgU
+         KgycErH9ec+6Mna5PvJ4QafghedPWVWsVy/sDKWGS+GzOrimbxk4z/FLlBQtc1jXh5Nk
+         3Qnw/txROmJ0mZt/jeQG8gBibEzFU51UTKyk3dXFgFphxJNKaqODUVGhwDLFhvEb1IWL
+         A6J1gIYi/veevogwJpn00Y/8Ki3+evFr7kLy82yzQ9BtF/tv1mRHoLeSfPCaM7oy/1zR
+         4bKjx7odp8pYd6sn1DEZrVtuCZ7gL7YgEhxyC9lOZkv1sgxVFewQPNqNI3LsNrEjc2Gs
+         GFMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=e02bjD6pRKTWNu3KvN2MtMLMNFzM1qFsgH72gSuIkl4=;
-        b=XZm4JElAIpxM7y6lGZzkl4K0Fp6H+AChKERUTkgzfavxzaUCJs/YdS6jSy4BiD74Bt
-         56lpXxuvXFsbgIADrqjRPt3emqDv7dyUja3M1r1u0affuqY4ccjG9xIs3xWXBityUsRc
-         SLsPciAtQZ+d2rNNhfvjwyZnLk59yJQD16u/kb//aNRl44sBSGarIzgoNQji+u8RvwiB
-         8LzbeUixScioBq/YbjA/3+QM/a8K+SduCaw9swOpM0ioPfJiFKtn//AaAK2bia3J+OHj
-         R3LWfzHECUQVaAQTkY8v0TEXcM6obrnSFBdnKcwHYG8ttnIZPIv+0N2ncKjahFeLGhhV
-         W2cw==
-X-Gm-Message-State: AOAM533AEwCM66VkJ95sd7iX3ZBt4sw4VvspdLamCN1u2NDwRvgL12rj
-        0w2kPoCNpCZpwExej8qSreI7LFUB
-X-Google-Smtp-Source: ABdhPJwvIDThxVqCBdibl4805Y+ll3+2PEgxcX3feRUyW/5ke6vBMekJwngIcIi2u5eLiWbbIU/tNQLj
-X-Received: from gnomeregan.cam.corp.google.com ([2620:15c:6:412:3ab7:a23:e07a:5e22])
- (user=brho job=sendgmr) by 2002:a25:bfc6:: with SMTP id q6mr64374645ybm.709.1641418292040;
- Wed, 05 Jan 2022 13:31:32 -0800 (PST)
-Date:   Wed,  5 Jan 2022 16:28:28 -0500
-In-Reply-To: <20220105212828.197013-1-brho@google.com>
-Message-Id: <20220105212828.197013-4-brho@google.com>
-Mime-Version: 1.0
-References: <20220105212828.197013-1-brho@google.com>
-X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
-Subject: [PATCH v2 3/3] prlimit: do not grab the tasklist_lock
-From:   Barret Rhoden <brho@google.com>
-To:     ebiederm@xmission.com
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        William Cohen <wcohen@redhat.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Xiaofeng Cao <caoxiaofeng@yulong.com>,
-        David Hildenbrand <david@redhat.com>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iz75eNeOMPClkyOOeLrV+wvs6NQGY9YHbUynqVGaBoA=;
+        b=0wKxbz6nDFzdnN71FSeIDVbuIjkWdS9AqOg115R/4VWIVeDBNS6+EjF7jCfDF31G78
+         ZsLI7uWWd9Rhy7TUBsqbSKmqIqLDOHM1xNOuAz2ZxjBo3K5EfRBNpeOLiiQiHSYm6oyO
+         5RSjE0hmzMJQ1e8YDwNQAIJVecIzifkRZm6Ji5va1QpE75P3Wcw6D92dVMRjggRAYVXv
+         X3hKi8Vb1SGSmUmUPjzrxUXBG7RYhDPpUw7uEuWliiAr68+22pY6pJxYAk0dPccNif4X
+         F7O5YxI41PCJvvU0Q0sehefyepuYyYtCS48/zJcHe/3BcDKt5CZUgdij/IR50vcuFs8H
+         cUgA==
+X-Gm-Message-State: AOAM533rVN5d8eaQ8oal0Ay2elYE+zJQ0hM4sSGUQUUo8By9Mm0j/Hbm
+        3ofvPY3Ku/eiAeKrsT7E39JFnA==
+X-Google-Smtp-Source: ABdhPJySi5TejS9nHZYYoGQ7nIG1FbKRoZsOt8J5uJvqnaWV1lK23NM8kHwxzbHlHuuCnzfnNGuipw==
+X-Received: by 2002:a05:6a00:1a8c:b0:4bb:8593:e815 with SMTP id e12-20020a056a001a8c00b004bb8593e815mr55987089pfv.5.1641418375394;
+        Wed, 05 Jan 2022 13:32:55 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id o11sm4500pgk.36.2022.01.05.13.32.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 13:32:54 -0800 (PST)
+Date:   Wed, 5 Jan 2022 21:32:51 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     David Matlack <dmatlack@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ben Gardon <bgardon@google.com>,
+        Mingwei Zhang <mizhang@google.com>
+Subject: Re: [PATCH v2 24/30] KVM: x86/mmu: Allow yielding when zapping GFNs
+ for defunct TDP MMU root
+Message-ID: <YdYOg6UnRPJsznjC@google.com>
+References: <20211223222318.1039223-1-seanjc@google.com>
+ <20211223222318.1039223-25-seanjc@google.com>
+ <YdTzkjOi2w+MVA2V@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdTzkjOi2w+MVA2V@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unnecessarily grabbing the tasklist_lock can be a scalability bottleneck
-for workloads that also must grab the tasklist_lock for waiting,
-killing, and cloning.
+On Wed, Jan 05, 2022, David Matlack wrote:
+> On Thu, Dec 23, 2021 at 10:23:12PM +0000, Sean Christopherson wrote:
+> > +	/*
+> > +	 * Invalidate the root to prevent it from being reused by a vCPU, and
+> > +	 * mark it defunct so that kvm_tdp_mmu_zap_invalidated_roots() doesn't
+> > +	 * try to put a reference it didn't acquire.
+> > +	 */
+> > +	root->role.invalid = true;
+> > +	root->tdp_mmu_defunct_root = true;
+> 
+> Ah ok so tdp_mmu_defunct_root indicates the root became invalid due to
+> losing all its references while it was valid. This is in contrast to
+> kvm_tdp_mmu_invalidate_all_roots() which marks roots invalid while they
+> still have valid references.
+> 
+> But I wonder if tdp_mmu_defunct_root is necessary? It's only used to
+> skip a put in zap_invalidated_roots. Could we instead unconditionally
+> grab a reference in invalidate_all_roots and then unconditionally drop
+> it?
 
-The tasklist_lock was grabbed to protect tsk->sighand from disappearing
-(becoming NULL).  tsk->signal was already protected by holding a
-reference to tsk.
+Hmm, it's probably not necessary.  I added tdp_mmu_defunct_root before realizing
+that that kvm_tdp_mmu_invalidate_all_roots() was wrong about this:
 
-update_rlimit_cpu() assumed tsk->sighand != NULL.  With this commit, it
-attempts to lock_task_sighand().  However, this means that
-update_rlimit_cpu() can fail.  This only happens when a task is exiting.
-Note that during exec, sighand may *change*, but it will not be NULL.
+ * Roots which have a zero refcount should be skipped as
+ * they're already being torn down.
 
-Prior to this commit, the do_prlimit() ensured that update_rlimit_cpu()
-would not fail by read locking the tasklist_lock and checking tsk->sighand
-!= NULL.
+IIRC, I added the second flag because I was trying to honor that (incorrect) logic,
+and never reconsidered the need for a second flag once I got everything working.
+The only downside would be keeping the memory for defunct roots around a wee bit
+longer, and that's not a big deal.
 
-If update_rlimit_cpu() fails, there may be other tasks that are not
-exiting that share tsk->signal.  We need to run update_rlimit_cpu() on
-one of them.   We can't "back out" the new rlim - once we unlocked
-task_lock(group_leader), the rlim is essentially changed.
-
-The only other caller of update_rlimit_cpu() is
-selinux_bprm_committing_creds().  It has tsk == current, so
-update_rlimit_cpu() cannot fail (current->sighand cannot disappear
-until current exits).
-
-This change resulted in a 14% speedup on a microbenchmark where parents
-kill and wait on their children, and children getpriority, setpriority,
-and getrlimit.
-
-Signed-off-by: Barret Rhoden <brho@google.com>
----
- include/linux/posix-timers.h   |  2 +-
- kernel/sys.c                   | 32 +++++++++++++++++++++-----------
- kernel/time/posix-cpu-timers.c | 12 +++++++++---
- 3 files changed, 31 insertions(+), 15 deletions(-)
-
-diff --git a/include/linux/posix-timers.h b/include/linux/posix-timers.h
-index 5bbcd280bfd2..9cf126c3b27f 100644
---- a/include/linux/posix-timers.h
-+++ b/include/linux/posix-timers.h
-@@ -253,7 +253,7 @@ void posix_cpu_timers_exit_group(struct task_struct *task);
- void set_process_cpu_timer(struct task_struct *task, unsigned int clock_idx,
- 			   u64 *newval, u64 *oldval);
- 
--void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
-+int update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
- 
- void posixtimer_rearm(struct kernel_siginfo *info);
- #endif
-diff --git a/kernel/sys.c b/kernel/sys.c
-index fb2a5e7c0589..073ae9db192f 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -1432,13 +1432,7 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
- 			return -EPERM;
- 	}
- 
--	/* protect tsk->signal and tsk->sighand from disappearing */
--	read_lock(&tasklist_lock);
--	if (!tsk->sighand) {
--		retval = -ESRCH;
--		goto out;
--	}
--
-+	/* Holding a refcount on tsk protects tsk->signal from disappearing. */
- 	rlim = tsk->signal->rlim + resource;
- 	task_lock(tsk->group_leader);
- 	if (new_rlim) {
-@@ -1467,10 +1461,26 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
- 	 */
- 	if (!retval && new_rlim && resource == RLIMIT_CPU &&
- 	    new_rlim->rlim_cur != RLIM_INFINITY &&
--	    IS_ENABLED(CONFIG_POSIX_TIMERS))
--		update_rlimit_cpu(tsk, new_rlim->rlim_cur);
--out:
--	read_unlock(&tasklist_lock);
-+	    IS_ENABLED(CONFIG_POSIX_TIMERS)) {
-+		if (update_rlimit_cpu(tsk, new_rlim->rlim_cur)) {
-+			/*
-+			 * update_rlimit_cpu can fail if the task is exiting.
-+			 * We already set the task group's rlim, so we need to
-+			 * update_rlimit_cpu for some other task in the process.
-+			 * If all of the tasks are exiting, then we don't need
-+			 * to update_rlimit_cpu.
-+			 */
-+			struct task_struct *t_i;
-+
-+			rcu_read_lock();
-+			for_each_thread(tsk, t_i) {
-+				if (!update_rlimit_cpu(t_i, new_rlim->rlim_cur))
-+					break;
-+			}
-+			rcu_read_unlock();
-+		}
-+	}
-+
- 	return retval;
- }
- 
-diff --git a/kernel/time/posix-cpu-timers.c b/kernel/time/posix-cpu-timers.c
-index 96b4e7810426..e13e628509fb 100644
---- a/kernel/time/posix-cpu-timers.c
-+++ b/kernel/time/posix-cpu-timers.c
-@@ -34,14 +34,20 @@ void posix_cputimers_group_init(struct posix_cputimers *pct, u64 cpu_limit)
-  * tsk->signal->posix_cputimers.bases[clock].nextevt expiration cache if
-  * necessary. Needs siglock protection since other code may update the
-  * expiration cache as well.
-+ *
-+ * Returns 0 on success, -ESRCH on failure.  Can fail if the task is exiting and
-+ * we cannot lock_task_sighand.  Cannot fail if task is current.
-  */
--void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new)
-+int update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new)
- {
- 	u64 nsecs = rlim_new * NSEC_PER_SEC;
-+	unsigned long irq_fl;
- 
--	spin_lock_irq(&task->sighand->siglock);
-+	if (!lock_task_sighand(task, &irq_fl))
-+		return -ESRCH;
- 	set_process_cpu_timer(task, CPUCLOCK_PROF, &nsecs, NULL);
--	spin_unlock_irq(&task->sighand->siglock);
-+	unlock_task_sighand(task, &irq_fl);
-+	return 0;
- }
- 
- /*
--- 
-2.34.1.448.ga2b2bfdf31-goog
-
+I'll yank it out for the next version, assuming I didn't forget some detail...
