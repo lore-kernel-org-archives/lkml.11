@@ -2,148 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E8C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BEE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244704AbiAEWDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 17:03:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244642AbiAEWC7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:02:59 -0500
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769BCC061212
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 14:02:58 -0800 (PST)
-Received: by mail-pg1-x533.google.com with SMTP id i8so349918pgt.13
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 14:02:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YKCFFRAciZpcdqJmTFTjz+wKvbhjzm225M4aIDaCuiU=;
-        b=fW9ulu/h4JJhF3zfksJLWMb/bqR8giX/dFE0CouDR+T4lybi6lRauIYAouP9mYL2XX
-         YguWms/IVaiZ3ZDCwIsKnjiIpWbcleacvZ/EO7P0mqySNH9ebGIcBvSMfi/iaLmwASwe
-         2TlHkMJirJyvPG3B30LCRQ1HdqX38PzwsH4j8PyaMwKJiOg8OC8vWl1TGwkY5wOioE2K
-         GqaN3SZNTMLLsyolLb/ExYbL9PgCKZxj1oaZkD2S2bVAWDfqROpz0mplyuwiV1bqPgo4
-         xWF2cFWOwG70irBz41p2OphNPPmUXrSGaQUwvoSs6suQBfsw7AgL669rhPB5Uu7wAo7P
-         nsoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YKCFFRAciZpcdqJmTFTjz+wKvbhjzm225M4aIDaCuiU=;
-        b=eO6AqN+6y2Qtegar01CZA+rmKYKAFHL8odU+8ppiaYWYgo9tBIWQep5bvRuSQ8bVq3
-         DHe1k4AeuQxg7EOVl+Y92JPxZZkMv9To8cv30oEJBWUi5migXG0v+A1oXpbn0qgm5w+R
-         uHrP2vfpZC61epablJz9atbGkj2DcSaKPnTDN4cp8zQdy/GMSXGUICTl6xRG7NlKU5Lc
-         XPVZZ87SLWUSMErs7NlSir+f79uOsdoki9c1Qg08NCXo0Cer45uUu+LgfglelRHPu+tR
-         dqGJyQsuukd8qWxnFKrwC/QVMJtnSdAPhJlV7ISAz16yj/WEyj1xoGR0ZNkvHR+jSWbz
-         UPNw==
-X-Gm-Message-State: AOAM533VicaCcLkzSeiIM86V+53oufTUx91rjyh5Qyw9rTc2wJ49qAY4
-        HlwCuqpDUBzVZnobCX2uEStPrg==
-X-Google-Smtp-Source: ABdhPJy1j3iKKZs35n/KzJTCkqL0HcCrjjmYG6bssNBIFzGISkV5H8QpwsTR9BEo9HcizmPRobCqBQ==
-X-Received: by 2002:a62:7c58:0:b0:4bb:314b:86b9 with SMTP id x85-20020a627c58000000b004bb314b86b9mr57302956pfc.84.1641420177751;
-        Wed, 05 Jan 2022 14:02:57 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 36sm20676pgq.94.2022.01.05.14.02.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 14:02:57 -0800 (PST)
-Date:   Wed, 5 Jan 2022 22:02:53 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Michael Roth <michael.roth@amd.com>
-Cc:     linux-kselftest@vger.kernel.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Nathan Tempelman <natet@google.com>,
-        Marc Orr <marcorr@google.com>,
-        Steve Rutherford <srutherford@google.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        David Woodhouse <dwmw@amazon.co.uk>,
-        Ricardo Koller <ricarkol@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        kvmarm@lists.cs.columbia.edu
-Subject: Re: [RFC PATCH 00/10] KVM: selftests: Add support for
- test-selectable ucall implementations
-Message-ID: <YdYVjfMqf+GjsU+p@google.com>
-References: <20211210164620.11636-1-michael.roth@amd.com>
- <Yc4gcJdhxthBKUUd@google.com>
- <20220104233517.kxjbdw4t7taymab5@amd.com>
- <YdTjnRZQID5IabK0@google.com>
- <20220105170244.jwr6i2erecbhx3fz@amd.com>
- <YdXYuaoXJux6lHrF@google.com>
- <20220105191107.qx67wf2coc3q6giu@amd.com>
- <YdX0SRoBXReggrVA@google.com>
- <20220105213519.g746jzf756nax562@amd.com>
+        id S244723AbiAEWHC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 17:07:02 -0500
+Received: from mga18.intel.com ([134.134.136.126]:19133 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244716AbiAEWG5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 17:06:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641420417; x=1672956417;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=A3S6i6P/bWmDPC68jtKB8TMGT9TJaBRTy/Rny9domTk=;
+  b=BO+47DQRmCKIGaOIVaeCsgYoAkF9g4+q9DwvNujYmBTSOOKhAIpot9uW
+   fKasz9dHIGgbSsBYGZg0PXBHwZcytDXT/n3jnPTQZYEhMGgilo3SIySM1
+   O8ww2fgTXFlnU5u32GTK05RVX/9wS3uJYDvXZG5CSGGFjBinnRzT3LoH6
+   xeYe2w8Dke7JlugFUG54tynr9pTU+BltQwR6wJjabbtOYNTrnuHNGtc/c
+   9wnVJx5EOq8EM8wRxvlM098AkMmPewN1t2bmpXwqwyY9jm4OdLOjWAAHA
+   X4HBx+rOmFrrL1NnO2R7BKTmwi/DI4BETeD4+CzPz+qB991oqHvfhISkz
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="229358708"
+X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
+   d="scan'208";a="229358708"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 14:06:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
+   d="scan'208";a="689168076"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 05 Jan 2022 14:06:55 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5EQo-000H4c-Jm; Wed, 05 Jan 2022 22:06:54 +0000
+Date:   Thu, 6 Jan 2022 06:06:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:kprobe/multi 4/14]
+ drivers/gpu/drm/i915/gem/i915_gem_internal.c:174:6: error: shift count >=
+ width of type
+Message-ID: <202201060655.KDdXDde2-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220105213519.g746jzf756nax562@amd.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022, Michael Roth wrote:
-> On Wed, Jan 05, 2022 at 07:40:57PM +0000, Sean Christopherson wrote:
-> > As for ucall_init(), I think the best approach would be to make kvm_vm_elf_load()
-> > a static and replace all calls with:
-> > 
-> > 	kvm_vm_load_guest(vm);
-> > 
-> > where its implementation is:
-> > 
-> >   void kvm_vm_load_guest(struct kvm_vm *vm)
-> >   {
-> >   	kvm_vm_elf_load(vm, program_invocation_name);
-> > 
-> > 	ucall_init(vm);
-> >   }
-> > 
-> > The logic being that if a test creates a VM but never loads any code into the guest,
-> > e.g. kvm_create_max_vcpus, then it _can't_ make ucalls.
-> 
-> Makes sense. And if different ops are needed for vmgexit()/tdcall() it
-> could be something like (if based on patches 1-5 of this series, and
-> extending vm_guest_mode as you suggested earlier):
-> 
->    void kvm_vm_load_guest(struct kvm_vm *vm)
->    {
-> 
->      kvm_vm_elf_load(vm, program_invocation_name);
->   
->      if (vm->mode == VM_MODE_SEV)
->   	    ucall_init_ops(vm, ucall_ops_pio_vmgexit);
->      else (vm->vm_type == VM_MODE_TDX)
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git kprobe/multi
+head:   27d253a29de023f664387fcc049edeeaadf23c8e
+commit: fbf6ec1e4f8e6c1fed1e1d14f16595e2dc01902d [4/14] kprobe: Add support to register multiple ftrace kprobes
+config: x86_64-randconfig-r011-20220105 (https://download.01.org/0day-ci/archive/20220106/202201060655.KDdXDde2-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=fbf6ec1e4f8e6c1fed1e1d14f16595e2dc01902d
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf kprobe/multi
+        git checkout fbf6ec1e4f8e6c1fed1e1d14f16595e2dc01902d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/gpu/drm/i915/
 
-I don't think we want to do this here, but instead down in the arch-specific
-ucall_init().  Also, not sure if I was clear before (can't tell what you interpreted
-based on the above snippet), but I think we'll want VM_MODE_SEV etc... to be
-modifiers on top of the VA/PA stuff.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->   	    ucall_init_ops(vm, ucall_ops_pio_tdcall);
->      else
->   	    ucall_init_ops(vm, ucall_ops_pio);
-> 
-> Shame we have to update all the kvm_vm_elf_load() call-sites, but
-> they'd end up potentially breaking things if left as-is anyway.
-> 
-> Were you planning on sending patches for these changes, or should I incorporate
-> your prototype and take a stab at the other changes as part of v2 of this
-> series?
+All errors (new ones prefixed by >>):
 
-Nope, all yours.  Thanks!
+   In file included from drivers/gpu/drm/i915/gem/i915_gem_internal.c:11:
+   In file included from drivers/gpu/drm/i915/i915_drv.h:41:
+   In file included from include/linux/backlight.h:13:
+   In file included from include/linux/fb.h:6:
+   In file included from include/linux/kgdb.h:19:
+   include/linux/kprobes.h:77:21: error: field has incomplete type 'struct ftrace_ops'
+                   struct ftrace_ops ops;
+                                     ^
+   include/linux/ftrace.h:332:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   In file included from drivers/gpu/drm/i915/gem/i915_gem_internal.c:11:
+   In file included from drivers/gpu/drm/i915/i915_drv.h:84:
+   In file included from drivers/gpu/drm/i915/gt/intel_engine.h:18:
+   In file included from drivers/gpu/drm/i915/gt/intel_gt_types.h:18:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc.h:9:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_guc.h:19:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h:13:
+   In file included from drivers/gpu/drm/i915/i915_vma.h:34:
+   drivers/gpu/drm/i915/gem/i915_gem_object.h:43:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+           if (overflows_type(size, obj->base.size))
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
+           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
+                                         ^  ~~~~~~~~~~~~~~~~
+>> drivers/gpu/drm/i915/gem/i915_gem_internal.c:174:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+           if (overflows_type(size, obj->base.size))
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
+           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
+                                         ^  ~~~~~~~~~~~~~~~~
+   3 errors generated.
+--
+   In file included from drivers/gpu/drm/i915/i915_query.c:9:
+   In file included from drivers/gpu/drm/i915/i915_drv.h:41:
+   In file included from include/linux/backlight.h:13:
+   In file included from include/linux/fb.h:6:
+   In file included from include/linux/kgdb.h:19:
+   include/linux/kprobes.h:77:21: error: field has incomplete type 'struct ftrace_ops'
+                   struct ftrace_ops ops;
+                                     ^
+   include/linux/ftrace.h:332:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   In file included from drivers/gpu/drm/i915/i915_query.c:9:
+   In file included from drivers/gpu/drm/i915/i915_drv.h:84:
+   In file included from drivers/gpu/drm/i915/gt/intel_engine.h:18:
+   In file included from drivers/gpu/drm/i915/gt/intel_gt_types.h:18:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc.h:9:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_guc.h:19:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h:13:
+   In file included from drivers/gpu/drm/i915/i915_vma.h:34:
+   drivers/gpu/drm/i915/gem/i915_gem_object.h:43:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+           if (overflows_type(size, obj->base.size))
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
+           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
+                                         ^  ~~~~~~~~~~~~~~~~
+>> drivers/gpu/drm/i915/i915_query.c:512:7: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+                   if (overflows_type(item.query_id - 1, unsigned long))
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
+           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
+                                         ^  ~~~~~~~~~~~~~~~~
+   3 errors generated.
+--
+   In file included from drivers/gpu/drm/i915/display/intel_fb.c:9:
+   In file included from drivers/gpu/drm/i915/display/intel_display.h:28:
+   In file included from include/drm/drm_util.h:36:
+   In file included from include/linux/kgdb.h:19:
+   include/linux/kprobes.h:77:21: error: field has incomplete type 'struct ftrace_ops'
+                   struct ftrace_ops ops;
+                                     ^
+   include/linux/ftrace.h:332:8: note: forward declaration of 'struct ftrace_ops'
+   struct ftrace_ops;
+          ^
+   In file included from drivers/gpu/drm/i915/display/intel_fb.c:10:
+   In file included from drivers/gpu/drm/i915/display/intel_display_types.h:47:
+   In file included from drivers/gpu/drm/i915/i915_drv.h:84:
+   In file included from drivers/gpu/drm/i915/gt/intel_engine.h:18:
+   In file included from drivers/gpu/drm/i915/gt/intel_gt_types.h:18:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc.h:9:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_guc.h:19:
+   In file included from drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h:13:
+   In file included from drivers/gpu/drm/i915/i915_vma.h:34:
+   drivers/gpu/drm/i915/gem/i915_gem_object.h:43:6: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+           if (overflows_type(size, obj->base.size))
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
+           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
+                                         ^  ~~~~~~~~~~~~~~~~
+>> drivers/gpu/drm/i915/display/intel_fb.c:863:2: error: shift count >= width of type [-Werror,-Wshift-count-overflow]
+           assign_chk_ovf(i915, remap_info->offset, obj_offset);
+           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/display/intel_fb.c:845:28: note: expanded from macro 'assign_chk_ovf'
+           drm_WARN_ON(&(i915)->drm, overflows_type(val, var)); \
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/i915/i915_utils.h:126:32: note: expanded from macro 'overflows_type'
+           (sizeof(x) > sizeof(T) && (x) >> BITS_PER_TYPE(T))
+                                         ^
+   include/drm/drm_print.h:593:19: note: expanded from macro 'drm_WARN_ON'
+           drm_WARN((drm), (x), "%s",                                      \
+           ~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/drm/drm_print.h:583:7: note: expanded from macro 'drm_WARN'
+           WARN(condition, "%s %s: " format,                               \
+           ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/asm-generic/bug.h:130:25: note: expanded from macro 'WARN'
+           int __ret_warn_on = !!(condition);                              \
+                                  ^~~~~~~~~
+   3 errors generated.
+
+
+vim +174 drivers/gpu/drm/i915/gem/i915_gem_internal.c
+
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  147  
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  148  /**
+40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  149   * i915_gem_object_create_internal: create an object with volatile pages
+40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  150   * @i915: the i915 device
+40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  151   * @size: the size in bytes of backing storage to allocate for the object
+40f46095db0691b drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2018-02-08  152   *
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  153   * Creates a new object that wraps some internal memory for private use.
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  154   * This object is not backed by swappable storage, and as such its contents
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  155   * are volatile and only valid whilst pinned. If the object is reaped by the
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  156   * shrinker, its pages and data will be discarded. Equally, it is not a full
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  157   * GEM object and so not valid for access from userspace. This makes it useful
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  158   * for hardware interfaces like ringbuffers (which are pinned from the time
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  159   * the request is written to the time the hardware stops accessing it), but
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  160   * not for contexts (which need to be preserved when not active for later
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  161   * reuse). Note that it is not cleared upon allocation.
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  162   */
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  163  struct drm_i915_gem_object *
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  164  i915_gem_object_create_internal(struct drm_i915_private *i915,
+fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12  165  				phys_addr_t size)
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  166  {
+7867d709959927e drivers/gpu/drm/i915/gem/i915_gem_internal.c Chris Wilson 2019-10-22  167  	static struct lock_class_key lock_class;
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  168  	struct drm_i915_gem_object *obj;
+b8f55be64453ea7 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-08-11  169  	unsigned int cache_level;
+920cf4194954ec6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2016-10-28  170  
+fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12  171  	GEM_BUG_ON(!size);
+bf6b2030bed9371 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-16  172  	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
+fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12  173  
+fcd46e53449c4d6 drivers/gpu/drm/i915/i915_gem_internal.c     Chris Wilson 2017-01-12 @174  	if (overflows_type(size, obj->base.size))
+
+:::::: The code at line 174 was first introduced by commit
+:::::: fcd46e53449c4d659ffbedcd2823ea2f73e39927 drm/i915: Declare i915_gem_object_create_internal() as taking phys_addr_t size
+
+:::::: TO: Chris Wilson <chris@chris-wilson.co.uk>
+:::::: CC: Chris Wilson <chris@chris-wilson.co.uk>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
