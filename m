@@ -2,105 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35517C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB91C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242572AbiAERw0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:52:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242581AbiAERwQ (ORCPT
+        id S242583AbiAERw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:52:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59346 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242575AbiAERwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:52:16 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68037C061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 09:52:15 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id j18so84622919wrd.2
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 09:52:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J5GT6AWgowXMeNIuQyJYxsilVHwUS2CUc3fcBKbiq5M=;
-        b=Z4UaC+WcOqG1yJseMWSPH9mDiu4olkW2I0tHm5x4PXwZ413u/NenAQZ5o5LUlc0DTM
-         V2DLOD0kwfnuPlFLo0gcu9GoQXmxww9za1w3i6X9D6XzrQQEGeskyjn2+R6aVc1DryqJ
-         oYGII0Yt336SXJgYycaWvEN2WGURvyyl4wct8xyqE5aLu/jbE25zKgudmOqRJi4VV0gK
-         kg6/61YfaywhiDs0nssIdhcVDzw7pXazrjTsnkqdj0dUU0YY2ac5jkrAgR2nKD1bbNWG
-         0L/K7KzXalozcC5o4pj924GYVepD5oEfTtlj/E3eet8NSjDEsHuNjDwMsSOYgVjHIa7y
-         XpIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J5GT6AWgowXMeNIuQyJYxsilVHwUS2CUc3fcBKbiq5M=;
-        b=y2mRg/dWAlpYeI67AoA1kC2wUUEuJbnX4kG9mZdL7MoSwYV+YnryMjhBekjsL/AsMq
-         hO3D1kqVV3U5cYe1ddG7sLPNrv4jcK11nZFlvaXFD3o6wC1++biibk4Ze+u+odP74QoL
-         b6FMQeZY+WYnnFSJQBbdB85PImXvYfhVM0hqceJ3T6enlTxyg8WE0W7/WFEx0CTgUA25
-         x+rUCZod1zO9quOGQJg1dMpt6oDFVzCVo9ck/z9x3A9DK77kKbXvjCWvjZNnXOg+o+Op
-         Mk0jiRi/kA9nu3W65tOIVhCqxBp2YpkNxS3VftsS5ys3paEMfkNJXSTUfaGwx0eQuTiD
-         sXew==
-X-Gm-Message-State: AOAM533wWQ/rfypy/ZgV5k40xH0hzkTdkhvoEiEWwiiMiNxkeQPypu17
-        uWfk4qFEzLaZ5YNIADL307dTyA==
-X-Google-Smtp-Source: ABdhPJxkDT3SlyZ2BvvPWw1OKwAZ5KiuQVU4U7TxsMzATu+Vxw+3+4t1wNjyxIq7/1Yldgo+a/ewtA==
-X-Received: by 2002:adf:ef01:: with SMTP id e1mr10927619wro.647.1641405133760;
-        Wed, 05 Jan 2022 09:52:13 -0800 (PST)
-Received: from localhost ([2a02:168:96c5:1:55ed:514f:6ad7:5bcc])
-        by smtp.gmail.com with ESMTPSA id b1sm47085290wrd.92.2022.01.05.09.52.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 09:52:13 -0800 (PST)
-From:   Jann Horn <jannh@google.com>
-To:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+        Wed, 5 Jan 2022 12:52:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 529F06185A;
+        Wed,  5 Jan 2022 17:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E27C36AE0;
+        Wed,  5 Jan 2022 17:52:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641405170;
+        bh=w6D+tWsjSSHuHo93oJpb8lN0kLDVlj0dTMFRl/odXmI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=LDlFR1ANjZuW3UqMzSVze32bGV7Wal5UCphdrHab2Uhf35thLbhnh5c9GIL4stzMh
+         gqDOXjRE6BDryRdLV9CHB/Gj4sbRa1UWQjZcVA8m1oxxLlPwok7G+7QMa9+VlP2Ehk
+         L8akett14Q9W9d1+iCCuVtAbD1hfMF+0+WdbH2nI=
+Date:   Wed, 5 Jan 2022 18:52:47 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Rob Landley <rob@landley.net>
 Cc:     linux-kernel@vger.kernel.org,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>,
-        Jann Horn <jannh@google.com>
-Subject: [PATCH] mm, oom: OOM sysrq should always kill a process
-Date:   Wed,  5 Jan 2022 18:51:15 +0100
-Message-Id: <20220105175115.605074-1-jannh@google.com>
-X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, linux-sh@vger.kernel.org
+Subject: Re: [PATCH] sh: sq: use default_groups in kobj_type
+Message-ID: <YdXa7y+3seYoV85z@kroah.com>
+References: <20220104162240.1309639-1-gregkh@linuxfoundation.org>
+ <4622e641-1423-e72a-4f6d-5f2cc747a148@landley.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4622e641-1423-e72a-4f6d-5f2cc747a148@landley.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The OOM kill sysrq (alt+sysrq+F) should allow the user to kill the
-process with the highest OOM badness with a single execution.
+On Wed, Jan 05, 2022 at 11:46:28AM -0600, Rob Landley wrote:
+> On 1/4/22 10:22 AM, Greg Kroah-Hartman wrote:
+> > There are currently 2 ways to create a set of sysfs files for a
+> > kobj_type, through the default_attrs field, and the default_groups
+> > field.  Move the sh sq sysfs code to use default_groups field which has
+> > been the preferred way since aa30f47cf666 ("kobject: Add support for
+> > default attribute groups to kobj_type") so that we can soon get rid of
+> > the obsolete default_attrs field.
+> 
+> Let's see, sh4-specific, depends on CONFIG_SH_STORE_QUEUES... it built but I'm
+> not finding an "sq" entry under /proc. (Or anything with "mapping" in it...)
+> 
+> Oh well, probably right? Didn't break anything for me:
+> 
+> Tested-by: Rob Landley <rob@landley.net>
 
-However, at the moment, the OOM kill can bail out if an OOM notifier
-(e.g. the i915 one) says that it reclaimed a tiny amount of memory
-from somewhere. That's probably not what the user wants.
+Thanks!  Seems to pass 0-day testing as well :)
 
-As documented in struct oom_control, order =3D=3D -1 means the oom kill is
-required by sysrq. So check for that, and if it's true, don't bail out
-no matter what the OOM notifiers say.
+Should I take this in my tree?
 
-Signed-off-by: Jann Horn <jannh@google.com>
----
- mm/oom_kill.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-index 1ddabefcfb5a..dc645cbc6e0d 100644
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -1051,13 +1051,14 @@ EXPORT_SYMBOL_GPL(unregister_oom_notifier);
- bool out_of_memory(struct oom_control *oc)
- {
- 	unsigned long freed =3D 0;
-+	bool sysrq_forced =3D oc->order =3D=3D -1;
-=20
- 	if (oom_killer_disabled)
- 		return false;
-=20
- 	if (!is_memcg_oom(oc)) {
- 		blocking_notifier_call_chain(&oom_notify_list, 0, &freed);
--		if (freed > 0)
-+		if (freed > 0 && !sysrq_forced)
- 			/* Got some memory back in the last second. */
- 			return true;
- 	}
-
-base-commit: c9e6606c7fe92b50a02ce51dda82586ebdf99b48
---=20
-2.34.1.448.ga2b2bfdf31-goog
-
+greg k-h
