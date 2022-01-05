@@ -2,178 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422E1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0D0C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244330AbiAEVHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 16:07:14 -0500
-Received: from mga02.intel.com ([134.134.136.20]:45654 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244325AbiAEVG7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 16:06:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641416819; x=1672952819;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L6FP8dJmdlUmtztac4+1qDGI/UW+ITXa6OTVsEd7AIw=;
-  b=bCYkPBpB2hMfG4mlHI7kDMTWZ9K9RqA6gxC4vRtzug1UwgNP+Ey79+9F
-   6RawyLXSDqi6mpcI76HY8GW73fyMEK/2CYe9NQeSGbHnW0sFBsJyXR4SY
-   pzs5B+XihOISB9ulp83qLWt9E1yOFA1ikawfXaJxJBIlVcooKtSaQHfbC
-   oMD79tKCZgwkbsSjHkkkmti0P9lbZ9ysFzQoEoEWParBvaHAlb9rwfUE6
-   XE4rcefFhHGQ+DtD5pd1DMgX5zN2BINBMB0bNcXxbFwQRBXvDIPedtLwB
-   m7RlnEfLroEjHOK9QvaHUvO4yKvyKo+16uMq1QxUKCZ+v8nRxCz6fOrC0
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="229859825"
-X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
-   d="scan'208";a="229859825"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 13:06:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
-   d="scan'208";a="611596015"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 05 Jan 2022 13:06:54 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5DUj-000H2k-RO; Wed, 05 Jan 2022 21:06:53 +0000
-Date:   Thu, 6 Jan 2022 05:05:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Roman Bacik <roman.bacik@broadcom.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <helgaas@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: iproc: Set all 24 bits of PCI class code
-Message-ID: <202201060511.mczwwaNF-lkp@intel.com>
-References: <20220105093552.27542-1-pali@kernel.org>
+        id S244332AbiAEVHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 16:07:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244333AbiAEVHn (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 16:07:43 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197D8C061201
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 13:07:43 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id t204so801527oie.7
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 13:07:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=PpDjDQ0Z79SEzn7VTSB0P0l9isRbUhXOzNth2TsOPjg=;
+        b=CvSYazyKDMOUtrjmU/TOamyLERCVnlRPhk2UWeaLQEFMYqL6IvRmMkycP//LeP21tn
+         YQfAS3dhwjNdbgCt/FoJJq0q6ocKxF93oE3uR09AfoFnvgszwqd2Cfox+NyWpKll3b6f
+         9PVCsGtBSvz9Y7D+pLluCQuvpiSFy6z2P0PlI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=PpDjDQ0Z79SEzn7VTSB0P0l9isRbUhXOzNth2TsOPjg=;
+        b=TaA1+/lkfoFX16u8VFZ891CTDKLnbN10n96sn3nUAJaONBO5J8/WPsmSoonrXYKmj2
+         KU06Iard1KgPj4c4/NSEH0Pb7mO2EACOiqcxVdRLYsjM7u4vpb8uHKM+rYh2tmFJGLHt
+         xPuY1M0WwP3LfM0aptQ3gJ/hH/brg054YZWxFygFP+nBXBhkxG7tiXi4YbPsbv6DknZX
+         qGLI771cthfVhKT1gP35NaLj8ejLedX+lFHzdtyEemlnRSM5jbYgpBn+GscyuS4+Wt3f
+         ackJ3Zgntgv9flWjxU/6+NhGxYbYZRW42BlkxWQjaPbUwcXTvd01KOjwTNg0/VQEikbP
+         uN/g==
+X-Gm-Message-State: AOAM530PQs/dFs9yfQaauDphRDYUxuU1fjf6l9Viyy3h0V7SdCBg2p9w
+        vYRVjRc0LvylUZZtWTiF+BN4PyZvln+7EYOR3CNoYg==
+X-Google-Smtp-Source: ABdhPJwq7ROdWEu2C2UDt68Bywy/sRKVp6YDj3fImBJxbCHcoDnsJd0SyOIaso9Uiwev9rxexyDz4KI5zo4Z7/NdAhE=
+X-Received: by 2002:aca:4382:: with SMTP id q124mr3952010oia.64.1641416862460;
+ Wed, 05 Jan 2022 13:07:42 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Wed, 5 Jan 2022 13:07:41 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105093552.27542-1-pali@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1641208380-15510-3-git-send-email-quic_srivasam@quicinc.com>
+References: <1641208380-15510-1-git-send-email-quic_srivasam@quicinc.com> <1641208380-15510-3-git-send-email-quic_srivasam@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.9.1
+Date:   Wed, 5 Jan 2022 13:07:41 -0800
+Message-ID: <CAE-0n51QAJFBALV7eEKLDunQaCNqPyTmdHRRUt7Khvkt8st=_g@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] arm64: dts: qcom: sc7280: Add lpass cpu node
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        agross@kernel.org, bjorn.andersson@linaro.org,
+        devicetree@vger.kernel.org, dianders@chromium.org,
+        judyhsiao@chromium.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        rohitkr@codeaurora.org, srinivas.kandagatla@linaro.org
+Cc:     Venkata Prasad Potturu <quic_potturu@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Pali,
+Quoting Srinivasa Rao Mandadapu (2022-01-03 03:12:59)
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index c0d9de3..68c7755 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -17,6 +17,7 @@
+>  #include <dt-bindings/reset/qcom,sdm845-aoss.h>
+>  #include <dt-bindings/reset/qcom,sdm845-pdc.h>
+>  #include <dt-bindings/soc/qcom,rpmh-rsc.h>
+> +#include <dt-bindings/sound/qcom,lpass.h>
+>  #include <dt-bindings/thermal/thermal.h>
+>
+>  / {
+> @@ -1840,6 +1841,62 @@
+>                         #size-cells = <0>;
+>                 };
+>
+> +               lpass_cpu: qcom,lpass@3260000 {
 
-I love your patch! Yet something to improve:
+audio-subsystem@3260000?
 
-[auto build test ERROR on helgaas-pci/next]
-[also build test ERROR on v5.16-rc8 next-20220105]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> +                       compatible = "qcom,sc7280-lpass-cpu";
+> +                       reg = <0 0x3260000 0 0xC000>,
+> +                               <0 0x3280000 0 0x29000>,
+> +                               <0 0x3340000 0 0x29000>,
+> +                               <0 0x336C000 0 0x3000>,
+> +                               <0 0x3987000 0 0x68000>,
+> +                               <0 0x3B00000 0 0x29000>;
+> +                       reg-names = "lpass-rxtx-cdc-dma-lpm",
+> +                                       "lpass-rxtx-lpaif",
+> +                                       "lpass-va-lpaif",
+> +                                       "lpass-va-cdc-dma-lpm",
+> +                                       "lpass-hdmiif",
+> +                                       "lpass-lpaif";
+> +
+> +                       iommus = <&apps_smmu 0x1820 0>,
+> +                               <&apps_smmu 0x1821 0>,
+> +                               <&apps_smmu 0x1832 0>;
+> +                       status = "disabled";
+> +
+> +                       power-domains = <&rpmhpd SC7280_LCX>;
+> +                       power-domain-names = "lcx";
+> +                       required-opps = <&rpmhpd_opp_nom>;
+> +
+> +                       clocks = <&lpass_aon LPASS_AON_CC_AUDIO_HM_H_CLK>,
+> +                                       <&lpasscc LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK>,
+> +                                       <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM0_CLK>,
+> +                                       <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM1_CLK>,
+> +                                       <&lpass_audiocc LPASS_AUDIO_CC_CODEC_MEM2_CLK>,
+> +                                       <&lpasscc LPASS_CORE_CC_EXT_IF0_IBIT_CLK>,
+> +                                       <&lpasscc LPASS_CORE_CC_EXT_IF1_IBIT_CLK>,
+> +                                       <&lpass_aon LPASS_AON_CC_VA_MEM0_CLK>;
+> +                       clock-names = "aon_cc_audio_hm_h",
+> +                                       "core_cc_sysnoc_mport_core",
+> +                                       "audio_cc_codec_mem0",
+> +                                       "audio_cc_codec_mem1",
+> +                                       "audio_cc_codec_mem2",
+> +                                       "core_cc_ext_if0_ibit",
+> +                                       "core_cc_ext_if1_ibit",
+> +                                       "aon_cc_va_mem0";
 
-url:    https://github.com/0day-ci/linux/commits/Pali-Roh-r/PCI-iproc-Set-all-24-bits-of-PCI-class-code/20220105-173704
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git next
-config: arm-randconfig-r001-20220105 (https://download.01.org/0day-ci/archive/20220106/202201060511.mczwwaNF-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/0day-ci/linux/commit/8ef1acfb84c08a0331930f9a60884fdd6d7c5e88
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Pali-Roh-r/PCI-iproc-Set-all-24-bits-of-PCI-class-code/20220105-173704
-        git checkout 8ef1acfb84c08a0331930f9a60884fdd6d7c5e88
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Please align these things on " and <.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> +
+> +                       #sound-dai-cells = <1>;
+> +                       #address-cells = <1>;
+> +                       #size-cells = <0>;
+> +
+> +                       interrupts = <GIC_SPI 160 IRQ_TYPE_LEVEL_HIGH>,
+> +                                               <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>,
+> +                                               <GIC_SPI 180 IRQ_TYPE_LEVEL_HIGH>,
+> +                                               <GIC_SPI 268 IRQ_TYPE_LEVEL_HIGH>;
+> +
+> +                       interrupt-names = "lpass-irq-lpaif",
+> +                                       "lpass-irq-vaif",
+> +                                       "lpass-irq-rxtxif",
+> +                                       "lpass-irq-hdmi";
 
-All errors (new ones prefixed by >>):
+Same.
 
->> drivers/pci/controller/pcie-iproc.c:798:11: error: use of undeclared identifier 'PCI_CLASS_BRIDGE_PCI_NORMAL'
-           class |= PCI_CLASS_BRIDGE_PCI_NORMAL;
-                    ^
-   1 error generated.
-
-
-vim +/PCI_CLASS_BRIDGE_PCI_NORMAL +798 drivers/pci/controller/pcie-iproc.c
-
-   765	
-   766	static int iproc_pcie_check_link(struct iproc_pcie *pcie)
-   767	{
-   768		struct device *dev = pcie->dev;
-   769		u32 hdr_type, link_ctrl, link_status, class, val;
-   770		bool link_is_active = false;
-   771	
-   772		/*
-   773		 * PAXC connects to emulated endpoint devices directly and does not
-   774		 * have a Serdes.  Therefore skip the link detection logic here.
-   775		 */
-   776		if (pcie->ep_is_internal)
-   777			return 0;
-   778	
-   779		val = iproc_pcie_read_reg(pcie, IPROC_PCIE_LINK_STATUS);
-   780		if (!(val & PCIE_PHYLINKUP) || !(val & PCIE_DL_ACTIVE)) {
-   781			dev_err(dev, "PHY or data link is INACTIVE!\n");
-   782			return -ENODEV;
-   783		}
-   784	
-   785		/* make sure we are not in EP mode */
-   786		iproc_pci_raw_config_read32(pcie, 0, PCI_HEADER_TYPE, 1, &hdr_type);
-   787		if ((hdr_type & 0x7f) != PCI_HEADER_TYPE_BRIDGE) {
-   788			dev_err(dev, "in EP mode, hdr=%#02x\n", hdr_type);
-   789			return -EFAULT;
-   790		}
-   791	
-   792		/* force class to PCI_CLASS_BRIDGE_PCI_NORMAL (0x060400) */
-   793	#define PCI_BRIDGE_CTRL_REG_OFFSET	0x43c
-   794	#define PCI_BRIDGE_CTRL_REG_CLASS_MASK	0xffffff
-   795		iproc_pci_raw_config_read32(pcie, 0, PCI_BRIDGE_CTRL_REG_OFFSET,
-   796					    4, &class);
-   797		class &= ~PCI_BRIDGE_CTRL_REG_CLASS_MASK;
- > 798		class |= PCI_CLASS_BRIDGE_PCI_NORMAL;
-   799		iproc_pci_raw_config_write32(pcie, 0, PCI_BRIDGE_CTRL_REG_OFFSET,
-   800					     4, class);
-   801	
-   802		/* check link status to see if link is active */
-   803		iproc_pci_raw_config_read32(pcie, 0, IPROC_PCI_EXP_CAP + PCI_EXP_LNKSTA,
-   804					    2, &link_status);
-   805		if (link_status & PCI_EXP_LNKSTA_NLW)
-   806			link_is_active = true;
-   807	
-   808		if (!link_is_active) {
-   809			/* try GEN 1 link speed */
-   810	#define PCI_TARGET_LINK_SPEED_MASK	0xf
-   811	#define PCI_TARGET_LINK_SPEED_GEN2	0x2
-   812	#define PCI_TARGET_LINK_SPEED_GEN1	0x1
-   813			iproc_pci_raw_config_read32(pcie, 0,
-   814						    IPROC_PCI_EXP_CAP + PCI_EXP_LNKCTL2,
-   815						    4, &link_ctrl);
-   816			if ((link_ctrl & PCI_TARGET_LINK_SPEED_MASK) ==
-   817			    PCI_TARGET_LINK_SPEED_GEN2) {
-   818				link_ctrl &= ~PCI_TARGET_LINK_SPEED_MASK;
-   819				link_ctrl |= PCI_TARGET_LINK_SPEED_GEN1;
-   820				iproc_pci_raw_config_write32(pcie, 0,
-   821						IPROC_PCI_EXP_CAP + PCI_EXP_LNKCTL2,
-   822						4, link_ctrl);
-   823				msleep(100);
-   824	
-   825				iproc_pci_raw_config_read32(pcie, 0,
-   826						IPROC_PCI_EXP_CAP + PCI_EXP_LNKSTA,
-   827						2, &link_status);
-   828				if (link_status & PCI_EXP_LNKSTA_NLW)
-   829					link_is_active = true;
-   830			}
-   831		}
-   832	
-   833		dev_info(dev, "link: %s\n", link_is_active ? "UP" : "DOWN");
-   834	
-   835		return link_is_active ? 0 : -ENODEV;
-   836	}
-   837	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +               };
+> +
+>                 vamacro: codec@3370000 {
+>                         compatible = "qcom,sc7280-lpass-va-macro";
+>                         pinctrl-0 = <&dmic01_active>;
+> --
+> 2.7.4
+>
