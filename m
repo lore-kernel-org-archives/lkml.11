@@ -2,90 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64855C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C825EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234349AbiAEWKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 17:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244799AbiAEWI0 (ORCPT
+        id S244950AbiAEWKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 17:10:52 -0500
+Received: from out02.mta.xmission.com ([166.70.13.232]:54012 "EHLO
+        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244988AbiAEWIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:08:26 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702DCC033241
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 14:07:37 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id 205so610417pfu.0
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 14:07:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=joT4Hamr7nYYsX0sIQtfBrT59kXuUShi7UkeBn3j3RA=;
-        b=Zfg/NHmiXaeR9Ee9SbID3n8FNUluxp7uH32s1HGGjON6yeZ4a+1NCK9vE/Dr45/Avc
-         2jNCgKJcWI9h3q9P9WuCwJB23BTkninpded66iLip/4/RxDCqmLPaJ8uUdhB2dtNO9Ke
-         2SMwqLCZ3p+0GWDefa6R06nG3y0/6eIYi3U24=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=joT4Hamr7nYYsX0sIQtfBrT59kXuUShi7UkeBn3j3RA=;
-        b=Z0gkcbYA0nsPVgyWBWetWKWxS6xp+CL+9WI1qiY0CsCYjUOi+z5A4mB2txHCWarEm6
-         FiI/Xw3EIRSvAupx2A3JHAkLodAxL4Zq3hDG81ch5uTxwgNebcVNps3HkvBhkKy4s9IB
-         li3sJA47P8op7FgdowdqAxdEnFXpqXH4+LvyvHPBW6z0nCeTDQ1j4EKxlqjRVdYT2ep6
-         c4sT5SyoE7AKE/MDy1uy39uGo0MauY8pXjGepog5VkrrmIE8TvXY8/sJpdXqRlxKYhJH
-         wOl/JiG8x/w1zKDeBSwuxmiK1L2twsusG1ajx19E9dHlJLspLngWMeLd/j10eEK5m3KW
-         nVWw==
-X-Gm-Message-State: AOAM5309Mc1bWTs33iHjbDWSq3902LBkhrYyJsFlQI6+x3EX+pIcBMgU
-        Xd4TxEVxanEQeXVk59w9cjaSdA==
-X-Google-Smtp-Source: ABdhPJwfPfDT1z9x6OW0mb2fLPTf3i1CvbbFd6UYGViO1N5c7itG3VJW4in7BtsefpkbU0Vy/yLy8A==
-X-Received: by 2002:a63:6f49:: with SMTP id k70mr39086646pgc.358.1641420457055;
-        Wed, 05 Jan 2022 14:07:37 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:7fcd:6709:f1b5:a22a])
-        by smtp.gmail.com with UTF8SMTPSA id j16sm88106pfu.216.2022.01.05.14.07.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 14:07:36 -0800 (PST)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     bleung@chromium.org, groeck@chromium.org, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com, benjamin.tissoires@redhat.com,
-        jic23@kernel.org, dtor@chromium.org, hverkuil-cisco@xs4all.nl,
-        mchehab@kernel.org, lee.jones@linaro.org, pmalani@chromium.org,
-        sre@kernel.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lgirdwood@gmail.com,
-        a.zummo@towertech.it, cychiang@chromium.org, perex@perex.cz
-Cc:     linux-kernel@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 17/17] ASoC: cros_ec_codec: Add PL_CHROMEOS dependency
-Date:   Wed,  5 Jan 2022 14:06:53 -0800
-Message-Id: <20220105220653.122451-18-gwendal@chromium.org>
-X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
-In-Reply-To: <20220105220653.122451-1-gwendal@chromium.org>
-References: <20220105220653.122451-1-gwendal@chromium.org>
+        Wed, 5 Jan 2022 17:08:44 -0500
+Received: from in01.mta.xmission.com ([166.70.13.51]:58414)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n5ESW-00Dedm-DM; Wed, 05 Jan 2022 15:08:40 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:49816 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n5ESM-00BfDb-JM; Wed, 05 Jan 2022 15:08:34 -0700
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Barret Rhoden <brho@google.com>
+Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        William Cohen <wcohen@redhat.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Chris Hyser <chris.hyser@oracle.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Xiaofeng Cao <caoxiaofeng@yulong.com>,
+        David Hildenbrand <david@redhat.com>,
+        Cyrill Gorcunov <gorcunov@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <20220105212828.197013-1-brho@google.com>
+        <20220105212828.197013-4-brho@google.com>
+Date:   Wed, 05 Jan 2022 16:05:59 -0600
+In-Reply-To: <20220105212828.197013-4-brho@google.com> (Barret Rhoden's
+        message of "Wed, 5 Jan 2022 16:28:28 -0500")
+Message-ID: <874k6h7s8o.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1n5ESM-00BfDb-JM;;;mid=<874k6h7s8o.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX18DoukBPd+s/ngfCYWPj270qSJarSKqIoI=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v2 3/3] prlimit: do not grab the tasklist_lock
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use 'make nsdeps' to add missing dependencies.
+Barret Rhoden <brho@google.com> writes:
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- sound/soc/codecs/cros_ec_codec.c | 1 +
- 1 file changed, 1 insertion(+)
+> Unnecessarily grabbing the tasklist_lock can be a scalability bottleneck
+> for workloads that also must grab the tasklist_lock for waiting,
+> killing, and cloning.
+>
+> The tasklist_lock was grabbed to protect tsk->sighand from disappearing
+> (becoming NULL).  tsk->signal was already protected by holding a
+> reference to tsk.
+>
+> update_rlimit_cpu() assumed tsk->sighand != NULL.  With this commit, it
+> attempts to lock_task_sighand().  However, this means that
+> update_rlimit_cpu() can fail.  This only happens when a task is exiting.
+> Note that during exec, sighand may *change*, but it will not be NULL.
+>
+> Prior to this commit, the do_prlimit() ensured that update_rlimit_cpu()
+> would not fail by read locking the tasklist_lock and checking tsk->sighand
+> != NULL.
+>
+> If update_rlimit_cpu() fails, there may be other tasks that are not
+> exiting that share tsk->signal.  We need to run update_rlimit_cpu() on
+> one of them.   We can't "back out" the new rlim - once we unlocked
+> task_lock(group_leader), the rlim is essentially changed.
+>
+> The only other caller of update_rlimit_cpu() is
+> selinux_bprm_committing_creds().  It has tsk == current, so
+> update_rlimit_cpu() cannot fail (current->sighand cannot disappear
+> until current exits).
+>
+> This change resulted in a 14% speedup on a microbenchmark where parents
+> kill and wait on their children, and children getpriority, setpriority,
+> and getrlimit.
+>
+> Signed-off-by: Barret Rhoden <brho@google.com>
+> ---
+>  include/linux/posix-timers.h   |  2 +-
+>  kernel/sys.c                   | 32 +++++++++++++++++++++-----------
+>  kernel/time/posix-cpu-timers.c | 12 +++++++++---
+>  3 files changed, 31 insertions(+), 15 deletions(-)
+>
+> diff --git a/include/linux/posix-timers.h b/include/linux/posix-timers.h
+> index 5bbcd280bfd2..9cf126c3b27f 100644
+> --- a/include/linux/posix-timers.h
+> +++ b/include/linux/posix-timers.h
+> @@ -253,7 +253,7 @@ void posix_cpu_timers_exit_group(struct task_struct *task);
+>  void set_process_cpu_timer(struct task_struct *task, unsigned int clock_idx,
+>  			   u64 *newval, u64 *oldval);
+>  
+> -void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
+> +int update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
+>  
+>  void posixtimer_rearm(struct kernel_siginfo *info);
+>  #endif
+> diff --git a/kernel/sys.c b/kernel/sys.c
+> index fb2a5e7c0589..073ae9db192f 100644
+> --- a/kernel/sys.c
+> +++ b/kernel/sys.c
+> @@ -1432,13 +1432,7 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
+>  			return -EPERM;
+>  	}
+>  
+> -	/* protect tsk->signal and tsk->sighand from disappearing */
+> -	read_lock(&tasklist_lock);
+> -	if (!tsk->sighand) {
+> -		retval = -ESRCH;
+> -		goto out;
+> -	}
+> -
+> +	/* Holding a refcount on tsk protects tsk->signal from disappearing. */
+>  	rlim = tsk->signal->rlim + resource;
+>  	task_lock(tsk->group_leader);
+>  	if (new_rlim) {
+> @@ -1467,10 +1461,26 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
+>  	 */
+>  	if (!retval && new_rlim && resource == RLIMIT_CPU &&
+>  	    new_rlim->rlim_cur != RLIM_INFINITY &&
+> -	    IS_ENABLED(CONFIG_POSIX_TIMERS))
+> -		update_rlimit_cpu(tsk, new_rlim->rlim_cur);
+> -out:
+> -	read_unlock(&tasklist_lock);
+> +	    IS_ENABLED(CONFIG_POSIX_TIMERS)) {
+> +		if (update_rlimit_cpu(tsk, new_rlim->rlim_cur)) {
+> +			/*
+> +			 * update_rlimit_cpu can fail if the task is exiting.
+> +			 * We already set the task group's rlim, so we need to
+> +			 * update_rlimit_cpu for some other task in the process.
+> +			 * If all of the tasks are exiting, then we don't need
+> +			 * to update_rlimit_cpu.
+> +			 */
+> +			struct task_struct *t_i;
+> +
+> +			rcu_read_lock();
+> +			for_each_thread(tsk, t_i) {
+> +				if (!update_rlimit_cpu(t_i, new_rlim->rlim_cur))
+> +					break;
+> +			}
+> +			rcu_read_unlock();
+> +		}
 
-diff --git a/sound/soc/codecs/cros_ec_codec.c b/sound/soc/codecs/cros_ec_codec.c
-index 9b92e1a0d1a3a7..8d8fb8403fb80a 100644
---- a/sound/soc/codecs/cros_ec_codec.c
-+++ b/sound/soc/codecs/cros_ec_codec.c
-@@ -1062,6 +1062,7 @@ static struct platform_driver cros_ec_codec_platform_driver = {
- module_platform_driver(cros_ec_codec_platform_driver);
- 
- MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(PL_CHROMEOS);
- MODULE_DESCRIPTION("ChromeOS EC codec driver");
- MODULE_AUTHOR("Cheng-Yi Chiang <cychiang@chromium.org>");
- MODULE_ALIAS("platform:cros-ec-codec");
--- 
-2.34.1.448.ga2b2bfdf31-goog
+I look at this and I ask can't we do this better?
 
+Because you are right that if the thread you landed on is exiting this
+is a problem.  It is only a problem for prlimit64, as all of the rest
+of the calls to do_prlimit happen from current so you know they are not
+exiting.
+
+I think the simple solution is just:
+	update_rlimit_cpu(tsk->group_leader)
+
+As the group leader is guaranteed to be the last thread of the thread
+group to be processed in release_task, and thus the last thread with a
+sighand.  Nothing needs to be done if it does not have a sighand.
+
+How does that sound?
+
+> +	}
+> +
+>  	return retval;
+>  }
+
+Eric
