@@ -2,148 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BAAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 16:43:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7059C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 16:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241990AbiAEQnm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 11:43:42 -0500
-Received: from mail4.swissbit.com ([176.95.1.100]:40850 "EHLO
-        mail4.swissbit.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235747AbiAEQni (ORCPT
+        id S242003AbiAEQpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 11:45:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45310 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235747AbiAEQpp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 11:43:38 -0500
-Received: from mail4.swissbit.com (localhost [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 40B6F1231A8;
-        Wed,  5 Jan 2022 17:43:36 +0100 (CET)
-Received: from mail4.swissbit.com (localhost [127.0.0.1])
-        by DDEI (Postfix) with ESMTP id 3032D122E00;
-        Wed,  5 Jan 2022 17:43:36 +0100 (CET)
-X-TM-AS-ERS: 10.149.2.84-127.5.254.253
-X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
-X-DDEI-TLS-USAGE: Used
-Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
-        by mail4.swissbit.com (Postfix) with ESMTPS;
-        Wed,  5 Jan 2022 17:43:36 +0100 (CET)
-Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
- (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Wed, 5 Jan 2022
- 17:43:35 +0100
-Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
- sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
- 15.02.0986.014; Wed, 5 Jan 2022 17:43:35 +0100
-From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
-To:     "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
-        =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>,
-        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Avri Altman <Avri.Altman@wdc.com>
-Subject: [PATCH] mmc: block: fix read single on recovery logic
-Thread-Topic: [PATCH] mmc: block: fix read single on recovery logic
-Thread-Index: AQHYAlL02lgrcWpb+EOcEaPCcQdJlw==
-Date:   Wed, 5 Jan 2022 16:43:35 +0000
-Message-ID: <5e5f2e45d0a14a55a8b7a9357846114b@hyperstone.com>
-Accept-Language: en-US, de-DE
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.154.1.4]
-Content-Type: text/plain;
-        charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        Wed, 5 Jan 2022 11:45:45 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FAFC061245
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 08:45:45 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id a11-20020a17090a854b00b001b11aae38d6so6806742pjw.2
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 08:45:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JzhaTzKc19y3Wpdk/3J2jH8xYo/xM6G6LVHFT+aj3mw=;
+        b=aLR3XPzMRrTZJboycEOPjD3N3ADRjWxJrADrUM1vAgyD9yRB/cjUqNuxpD6D1zOAmh
+         OTlxK6M59BBTMdKbHLb9g6+g7lOOh6VZ4/qDWuPwogwqXeIz//BWdDMmse71XKun02Lu
+         G04xPe73oSZqxQ/sy9Lj5nEW4XoOHJ/pcEv6sVHzjo/DrPyZjd3XxDfC4rApX5sJJNuM
+         7NKta/ZTK/r2ZYTqrHgT17CPS9TWRex9/ZhxhmcmEHTpTUtPhnpmYSK9l7CEiPZWu2xz
+         o+vWlB3XVpmKTtJuS6YG2Z7qNp9iowJUszGZWjwe44ltq3lZukQ4WbMgvfWWg0n7//yf
+         aZsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JzhaTzKc19y3Wpdk/3J2jH8xYo/xM6G6LVHFT+aj3mw=;
+        b=PdVJeLhRS71fDZ1NeRD9CzPbncMzeqAL0E2ufucbr4qXT3l4SDWiJ53YnUay4/kpvC
+         TPneYculTjAOwaWMPmsMHFGGMlIZewCWzGBWBn1Fv8YRDDpN4JK5W06qARE0yZRsnr6B
+         nGw0HoGFBgXRf+xP+TYI/dnWQ1iljoXoKYi4ZE+xJ1jCtSd4wmVSIFKN5LrKV4YV7Ove
+         VztKUDiJbWURbl+uKntP/DX+gIPTJy6QgmwvTjpavVEpH3JMVkUKS3GxLZGs+ieD9ZX5
+         firhC4vsQfoccPVmW53R/92SCmyzppYliTJzc+ODE/s5CiZwuacUNZJ2JhSfeT0ejh0w
+         fPKw==
+X-Gm-Message-State: AOAM531AxYdbc5plI0R4ZPS0uh1oM0APL5zqNRP4OF3XX08GCV3x2+s2
+        N/UcyEJq1XDo3AGevmq53cWIdw==
+X-Google-Smtp-Source: ABdhPJyUMGeECuuJZDVhCnWrGj1J1NoGFjgCRrQnkt+A+rXmyUORqD/IbRnzmnd1id6Y/amClQGp1Q==
+X-Received: by 2002:a17:903:11c9:b0:149:bef4:2d7d with SMTP id q9-20020a17090311c900b00149bef42d7dmr13255819plh.48.1641401144538;
+        Wed, 05 Jan 2022 08:45:44 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id m14sm48537966pfk.3.2022.01.05.08.45.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 08:45:43 -0800 (PST)
+Date:   Wed, 5 Jan 2022 16:45:40 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Lai Jiangshan <laijs@linux.alibaba.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [RFC PATCH 5/6] KVM: X86: Alloc pae_root shadow page
+Message-ID: <YdXLNEwCY8cqV7KS@google.com>
+References: <20211210092508.7185-1-jiangshanlai@gmail.com>
+ <20211210092508.7185-6-jiangshanlai@gmail.com>
+ <YdTCKoTgI5IgOvln@google.com>
+ <CAJhGHyAOyR6yGdyxsKydt_+HboGjxc-psbbSCqsrBo4WgUgQsQ@mail.gmail.com>
 MIME-Version: 1.0
-X-TMASE-Version: DDEI-5.1-8.6.1018-26636.001
-X-TMASE-Result: 10--2.408700-10.000000
-X-TMASE-MatchedRID: GBgFBUqwD4F0/jNwxBmuZiyKzJY7d2nbunSyiaV8TbOUCwv1X+STMl2d
-        sxCRbuoB8FHDcHdF1rYVKH14MhLRlzdhl84+mwvCqg0gbtLVIa9uchTq5J5u9LytS1u1Z7z6a3A
-        6hcNu8nD0YXQzpNvE/P5nI8KIHQ65o1cymYpfRxUzL6MySEJ0VvmoZ6x4ZgCU+frbXg+Uc4XbJM
-        bTT9K/Ta3aC25avUua2v4PzRk1tzI5s4xK97Sm/8cAZFxtq8nGfrTt+hmA5bKTsyhw1KPqkJyoU
-        xokiBvh4vM1YF6AJbZ0uL0K7fOJNyAHAopEd76vRiK5VgwNkzoXKKE/gxfQuw/o6vK5qgcSrdc8
-        vz7URqK3qhmDdxKBFQ==
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
-X-TMASE-INERTIA: 0-0;;;;
-X-TMASE-XGENCLOUD: 29473343-c73e-473e-a9cf-b5bcb904cece-0-0-200-0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJhGHyAOyR6yGdyxsKydt_+HboGjxc-psbbSCqsrBo4WgUgQsQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On reads with MMC_READ_MULTIPLE_BLOCK that fail,
-the recovery handler will use MMC_READ_SINGLE_BLOCK for
-each of the blocks, up to MMC_READ_SINGLE_RETRIES times each.
-The logic for this is fixed to never report unsuccessful reads
-as success to the block layer.
+On Wed, Jan 05, 2022, Lai Jiangshan wrote:
+> On Wed, Jan 5, 2022 at 5:54 AM Sean Christopherson <seanjc@google.com> wrote:
+> 
+> > >
+> > > default_pae_pdpte is needed because the cpu expect PAE pdptes are
+> > > present when VMenter.
+> >
+> > That's incorrect.  Neither Intel nor AMD require PDPTEs to be present.  Not present
+> > is perfectly ok, present with reserved bits is what's not allowed.
+> >
+> > Intel SDM:
+> >   A VM entry that checks the validity of the PDPTEs uses the same checks that are
+> >   used when CR3 is loaded with MOV to CR3 when PAE paging is in use[7].  If MOV to CR3
+> >   would cause a general-protection exception due to the PDPTEs that would be loaded
+> >   (e.g., because a reserved bit is set), the VM entry fails.
+> >
+> >   7. This implies that (1) bits 11:9 in each PDPTE are ignored; and (2) if bit 0
+> >      (present) is clear in one of the PDPTEs, bits 63:1 of that PDPTE are ignored.
+> 
+> But in practice, the VM entry fails if the present bit is not set in the
+> PDPTE for the linear address being accessed (when EPT enabled at least).  The
+> host kvm complains and dumps the vmcs state.
 
-On command error with retries remaining, blk_update_request was
-called with whatever value error was set last to.
-In case it was last set to BLK_STS_OK (default), the read will be
-reported as success, even though there was no data read from the device.
-This could happen on a CRC mismatch for the response,
-a card rejecting the command (e.g. again due to a CRC mismatch).
-In case it was last set to BLK_STS_IOERR, the error is reported correctly,
-but no retries will be attempted.
+That doesn't make any sense.  If EPT is enabled, KVM should never use a pae_root.
+The vmcs.GUEST_PDPTRn fields are in play, but those shouldn't derive from KVM's
+shadow page tables.
 
-The patch now will count both command and data errors as retries and
-send BLK_STS_IOERR if there are no retries remaining,
-or BLK_STS_OK if the single read was successful in the meantime.
+And I doubt there is a VMX ucode bug at play, as KVM currently uses '0' in its
+shadow page tables for not-present PDPTEs.
 
-Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
----
- drivers/mmc/core/block.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/mmc/core/block.c b/drivers/mmc/core/block.c
-index 90e1bcd03b46..d7d880ce0f8a 100644
---- a/drivers/mmc/core/block.c
-+++ b/drivers/mmc/core/block.c
-@@ -1682,31 +1682,31 @@ static void mmc_blk_read_single(struct mmc_queue *mq, struct request *req)
- 	struct mmc_card *card = mq->card;
- 	struct mmc_host *host = card->host;
- 	blk_status_t error = BLK_STS_OK;
--	int retries = 0;
- 
- 	do {
- 		u32 status;
- 		int err;
-+		int retries = 0;
- 
--		mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
-+		while (retries++ < MMC_READ_SINGLE_RETRIES) {
-+			mmc_blk_rw_rq_prep(mqrq, card, 1, mq);
- 
--		mmc_wait_for_req(host, mrq);
-+			mmc_wait_for_req(host, mrq);
- 
--		err = mmc_send_status(card, &status);
--		if (err)
--			goto error_exit;
--
--		if (!mmc_host_is_spi(host) &&
--		    !mmc_ready_for_data(status)) {
--			err = mmc_blk_fix_state(card, req);
-+			err = mmc_send_status(card, &status);
- 			if (err)
- 				goto error_exit;
--		}
- 
--		if (mrq->cmd->error && retries++ < MMC_READ_SINGLE_RETRIES)
--			continue;
-+			if (!mmc_host_is_spi(host) &&
-+			    !mmc_ready_for_data(status)) {
-+				err = mmc_blk_fix_state(card, req);
-+				if (err)
-+					goto error_exit;
-+			}
- 
--		retries = 0;
-+			if (!mrq->cmd->error && !mrq->data->error)
-+				break;
-+		}
- 
- 		if (mrq->cmd->error ||
- 		    mrq->data->error ||
--- 
-2.34.1
-Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
-Managing Director: Dr. Jan Peter Berns.
-Commercial register of local courts: Freiburg HRB381782
-
+If you can post/provide the patches that lead to VM-Fail, I'd be happy to help
+debug.
