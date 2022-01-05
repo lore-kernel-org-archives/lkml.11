@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CB5C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:29:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 438E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242328AbiAER3r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:29:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
+        id S242306AbiAER3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242235AbiAER3b (ORCPT
+        with ESMTP id S242269AbiAER31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:29:31 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4898C061201;
-        Wed,  5 Jan 2022 09:29:30 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so2150760wmb.1;
-        Wed, 05 Jan 2022 09:29:30 -0800 (PST)
+        Wed, 5 Jan 2022 12:29:27 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F822C061245;
+        Wed,  5 Jan 2022 09:29:26 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id o3so26318392wrh.10;
+        Wed, 05 Jan 2022 09:29:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/KLdWPq2TSaneQFglZodsHn4AgWZAik17MpBqvatAUA=;
-        b=BAn3+iUQ0dqioR3HJwq+czhX93m962svq4IVH6J3qNJRzpSb3YJJUvH08ve/94iTM3
-         u21cpMA8eel3N0sX3VG0bDUYMTVOk/MVPoR5ySWY2bGn3w/WnLA2/lDlMT9Da9fsvIQR
-         jMoopLNOP95QxBioY4NDmrSF2AN1P0gTbS8iPxnr5h2EQlziWu6w92GEgSFAfmHwZj/v
-         JtYzmlBzv4G6XYcq6qOS37krkR7F9g+XhbaldWX0WCdULvcGkTZPGrBJWsWbGnTD3DVF
-         /8aTd2BSPa7cUnEKTW10ur2u9Wzmt0aLERjzIrdGKGsYA3e+JQTyC7q0efzWP9NHSvEg
-         V7cg==
+        bh=mislRvWvSm9MQvo2DuLYAbpGhpBV7rP9idLOw8BlRh8=;
+        b=YjLV5zr+sk+iKrzT+BMdnFUDzjG1220eB/Gwlw3ZqLLy29PS2ZqGUzKAA1C5Koh5FD
+         55sY3m3A2mMh7oIm+0xGml8Yf5AJ2tv2OLvovLmMDDJL0YIBKkekpJvV5Cpqzsl1JbSh
+         +okK/xrORSlJap7SRWIGLCQO0WQiC7/y7tt6WQOPSKGsLSATZpZWo0BYdFoMHvRy+GW1
+         VkqJccxoukFnj6KTV9osNdiEJBse8kJ7fJB+CldKLTspO8bhJPyu8RkuDvwsqBeQskjd
+         WByu2oT7U3kLJa1bIl4XW+PRFWNwGsq7q3dJhM1e6/2enpF/8x6s01etN43jOGQWeHro
+         Ohqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/KLdWPq2TSaneQFglZodsHn4AgWZAik17MpBqvatAUA=;
-        b=et0nhsdDjFOOL9vmM4Q5pz03vzT0Lu8gKTDfeunKaI2yKKHS2BfaxHJIwTYh8/X/wE
-         AuwjXZUiZB3k0U5d5DrTEGAWDyqYFovf0X8UM/EHCB/gkPmzLBmeWa3hl7mY4dMckHZu
-         GSFtJucmV+Hemwj3VeShmrFLDEyGeVbgKPrvO92M4C7M16L5uGeNZtbK1drBQaXA3XVv
-         XibCYaJ7a8sDovAhpfMF5yEwRoAQuvOlmjJVy83MzmInqaSUCFEDlCz+HZAlMlMl7UDB
-         g9hEJhJ9rTT1PYiSEso03oTpyJSC2Ch4fyeXjuNrRaP+kcHijjm+YTDOnar3xHUuSM94
-         NgwQ==
-X-Gm-Message-State: AOAM533+ZgoWLJD9msEKRrUEaKxcG7jnK9gNerbOEE9UcxXcA+gis2NX
-        g3PreE06NKWa+pekfQbqVPU=
-X-Google-Smtp-Source: ABdhPJwVS4+SzhHbQTHSejCm1ylGwMd7EpICFV/Iu43Pvr7T7PFRWlZKMdVMlcjFcGInXBKBmTwWVQ==
-X-Received: by 2002:a05:600c:3589:: with SMTP id p9mr3822613wmq.65.1641403769390;
-        Wed, 05 Jan 2022 09:29:29 -0800 (PST)
+        bh=mislRvWvSm9MQvo2DuLYAbpGhpBV7rP9idLOw8BlRh8=;
+        b=CE+ZkOfyqlItLnH3Y1EQ/tCFZ4JkMIlm81D9Rfz/Nmh/Mz4BIrNSqsr+vh3WOBH8/b
+         e7SC4Pt/nTjw/6ZFdVShVvmba0W0qqKVIPQj8QQX0qttrcqpGH8CKMNKxLH1Q62uBFIi
+         qLGpGhHKlfeFE1yqNfKzG/72ijzlg8wQwlgxs39EhKbQ2+A/RO1/PmifpdXjhpqLT/cm
+         qrvW5Ze4u5LlWKC8JwdWlhgrAPlNrO1leFxej266vpUY8OjLTVvgp57hxTR4/OjRKER6
+         6srrpR2RNgdDZ+ruLnWHwfyF7heBayvAcXA4EX56U7UuSWbgQphp4ouKjp3KWEDhfWL9
+         hs9Q==
+X-Gm-Message-State: AOAM530i4LCPqEOHBN9XMDZLCv61ArLfYOtb8jZwHEA39k1bHiet2C3B
+        WtEzybELvdj355spn7+MHGQ=
+X-Google-Smtp-Source: ABdhPJzY2mjFA2TSoOhJs8T8YWWy17fDTaWlr4dngcV+O5iSK3tVuF/LEU13Rv/7jzFrehQzhZ+83A==
+X-Received: by 2002:a5d:64a7:: with SMTP id m7mr46391357wrp.687.1641403765287;
+        Wed, 05 Jan 2022 09:29:25 -0800 (PST)
 Received: from localhost.localdomain ([217.113.240.86])
-        by smtp.gmail.com with ESMTPSA id g6sm43071442wri.67.2022.01.05.09.29.28
+        by smtp.gmail.com with ESMTPSA id g6sm43071442wri.67.2022.01.05.09.29.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 09:29:29 -0800 (PST)
+        Wed, 05 Jan 2022 09:29:24 -0800 (PST)
 From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
 To:     jikos@kernel.org
 Cc:     benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
         linux-kernel@vger.kernel.org, spbnick@gmail.com,
         =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH 4/4] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_frame_init_v1_buttonpad
-Date:   Wed,  5 Jan 2022 18:29:15 +0100
-Message-Id: <20220105172915.131091-5-jose.exposito89@gmail.com>
+Subject: [PATCH 2/4] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_get_str_desc
+Date:   Wed,  5 Jan 2022 18:29:13 +0100
+Message-Id: <20220105172915.131091-3-jose.exposito89@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220105172915.131091-1-jose.exposito89@gmail.com>
 References: <20220105172915.131091-1-jose.exposito89@gmail.com>
@@ -73,34 +73,34 @@ Initialize the udev variable after the sanity check to avoid a
 possible NULL pointer dereference.
 
 Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
-Addresses-Coverity-ID: 1443763 ("Null pointer dereference")
+Addresses-Coverity-ID: 1443827 ("Null pointer dereference")
 Signed-off-by: José Expósito <jose.exposito89@gmail.com>
 ---
  drivers/hid/hid-uclogic-params.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index 4136837e4d15..3e70f969fb84 100644
+index 3c10b858cf74..3a83e2c39b4f 100644
 --- a/drivers/hid/hid-uclogic-params.c
 +++ b/drivers/hid/hid-uclogic-params.c
-@@ -452,7 +452,7 @@ static int uclogic_params_frame_init_v1_buttonpad(
+@@ -66,7 +66,7 @@ static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
+ 					__u8 idx, size_t len)
  {
  	int rc;
- 	bool found = false;
--	struct usb_device *usb_dev = hid_to_usb_dev(hdev);
-+	struct usb_device *usb_dev;
- 	char *str_buf = NULL;
- 	const size_t str_len = 16;
+-	struct usb_device *udev = hid_to_usb_dev(hdev);
++	struct usb_device *udev;
+ 	__u8 *buf = NULL;
  
-@@ -462,6 +462,8 @@ static int uclogic_params_frame_init_v1_buttonpad(
+ 	/* Check arguments */
+@@ -75,6 +75,8 @@ static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
  		goto cleanup;
  	}
  
-+	usb_dev = hid_to_usb_dev(hdev);
++	udev = hid_to_usb_dev(hdev);
 +
- 	/*
- 	 * Enable generic button mode
- 	 */
+ 	buf = kmalloc(len, GFP_KERNEL);
+ 	if (buf == NULL) {
+ 		rc = -ENOMEM;
 -- 
 2.25.1
 
