@@ -2,134 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2935C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 19:01:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 260A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 19:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243262AbiAETBL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 14:01:11 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:37068 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243251AbiAETBK (ORCPT
+        id S243273AbiAETCs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 14:02:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48428 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243251AbiAETCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 14:01:10 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B50811F37F;
-        Wed,  5 Jan 2022 19:01:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1641409268; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XMk/iBCnuolFfaVy2sRecgDIKimfkn7v/VHUdkSCka4=;
-        b=VtYseXoPFrEXNU/xiEHDrVD53w0VlbY0RAoEVKmDwu5MOcoE6wQEns0mxnoFWm4KdghqcE
-        iFE7LBE/MtOMpy1Iiair3N4zhFnbOzDH4+Uravan9ZYMJKvJ6Txjfk//Bda0MREidaBTjm
-        YTvVn6bhyJhtEHefWg9j4T+2xQY0+Z0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1641409268;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XMk/iBCnuolFfaVy2sRecgDIKimfkn7v/VHUdkSCka4=;
-        b=DokSUB8No6Xf8uFG+iQtw++vQ1lCVr1hAzWfJ8DHuH02B1pS96+jYMIcpJURwBaiDeAB8U
-        mvNxAwVyPfVaagAA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 96D0B13C09;
-        Wed,  5 Jan 2022 19:01:08 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id tbhDI/Tq1WEJSgAAMHmgww
-        (envelope-from <bp@suse.de>); Wed, 05 Jan 2022 19:01:08 +0000
-Date:   Wed, 5 Jan 2022 20:01:10 +0100
-From:   Borislav Petkov <bp@suse.de>
-To:     "Dr. David Alan Gilbert" <dgilbert@redhat.com>
-Cc:     Dov Murik <dovmurik@linux.ibm.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        linux-efi@vger.kernel.org, Ashish Kalra <ashish.kalra@amd.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Andrew Scull <ascull@google.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        James Bottomley <jejb@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
-        Jim Cadden <jcadden@ibm.com>,
-        Daniele Buono <dbuono@linux.vnet.ibm.com>,
-        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 0/5] Allow guest access to EFI confidential computing
- secret area
-Message-ID: <YdXq9t75aYLJfb69@zn.tnic>
-References: <20211129114251.3741721-1-dovmurik@linux.ibm.com>
- <YdNHgtuVoLofL4cW@zn.tnic>
- <0280e20e-8459-dd35-0b7d-8dbc1e4a274a@linux.ibm.com>
- <YdSRWmqdNY7jRcer@zn.tnic>
- <YdWEXRt7Ixm6/+Dq@work-vm>
+        Wed, 5 Jan 2022 14:02:46 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D842EC061201
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 11:02:45 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id i6so361884pla.0
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 11:02:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C5TGxSihMQO3IXFdvvnm4Z/BjCSMQVybEIBkkH4uWd0=;
+        b=HBJacN4jBaXROANJNZOIsFCQr+cw2jAtH4pkRI5I0lWUCoa92DjpcPfElpngDicJzA
+         0YyiOx5jgXBKIJ5sic5Wlmw5GLmGQaw/f6lvVmLi5zTn618CwkkKi6SqMJfbw9DZaCxa
+         nfyKvwXyGMHeXdC0ZGBuJhg6GdPua+6zJu52b+eSYfcZZz2KeeKkyOdb1ak69MwvXNS7
+         OQJd3WVIpvcprUaSnHlu4JHAKjMloofyJeKbNNo0zyTclI0eQ8VmpfzpTq6iytqyBm2D
+         nq++D6Xs4Gg3FrMu2idotXpK7jS54v9lhWU6lSrkp4qK81/QiMV+fhJaBeOdBhMl8lle
+         /4FQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C5TGxSihMQO3IXFdvvnm4Z/BjCSMQVybEIBkkH4uWd0=;
+        b=I/bIzbu+4PygFto6X25FdfXXL+7kbpe7H7TygEcf1mUcKkwpRgle8RADmkA5sVSlSb
+         NqOeitfSD5ThqUXngfJW6uiA22wovz1adLCZabJC2ztWEn5gkmTemL8fOd73GkUHsdD7
+         NHYq67jHPlk4YE5qasmXJXwOs3leS++2DU0y5ieFKmNjbDF4qIqrss0+BnNcUPYl/i+M
+         dZeosPHPfBHOJj5WPQL88BXHo3mP9ODuRtgx43FvKfHcr/tFrxqIRxNLScS//8maUOGO
+         A8pxQXvfEf1mnTU1CfbT2ucK5JVtWXgDehZqahk9TG7/Nn2aJs10tO+rtyRxBMVAFdS5
+         CKbA==
+X-Gm-Message-State: AOAM531gOP1AC3C6QWu7CvMqr/8H8JBdEwqkDR1MG7v5c4p61WGlzSi+
+        41SND9Ij+0WZNz+o30FAJSif8Q==
+X-Google-Smtp-Source: ABdhPJxUdnM3b6DqognTobDbG9Dmm0Ti/SDctNLZ/xAkOE4liZ0NPc+FLQpmerY5LVHMbecEx6BgSQ==
+X-Received: by 2002:a17:902:8e84:b0:149:a2cb:4dac with SMTP id bg4-20020a1709028e8400b00149a2cb4dacmr30257117plb.22.1641409365057;
+        Wed, 05 Jan 2022 11:02:45 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id y129sm10931675pfy.164.2022.01.05.11.02.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 11:02:44 -0800 (PST)
+Date:   Wed, 5 Jan 2022 19:02:41 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     David Stevens <stevensd@chromium.org>
+Cc:     Marc Zyngier <maz@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+Subject: Re: [PATCH v5 4/4] KVM: mmu: remove over-aggressive warnings
+Message-ID: <YdXrURHO/R82puD4@google.com>
+References: <20211129034317.2964790-1-stevensd@google.com>
+ <20211129034317.2964790-5-stevensd@google.com>
+ <Yc4G23rrSxS59br5@google.com>
+ <CAD=HUj5Q6rW8UyxAXUa3o93T0LBqGQb7ScPj07kvuM3txHMMrQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdWEXRt7Ixm6/+Dq@work-vm>
+In-Reply-To: <CAD=HUj5Q6rW8UyxAXUa3o93T0LBqGQb7ScPj07kvuM3txHMMrQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 11:43:25AM +0000, Dr. David Alan Gilbert wrote:
-> There's more than one type of dance;
+On Wed, Jan 05, 2022, David Stevens wrote:
+> On Fri, Dec 31, 2021 at 4:22 AM Sean Christopherson <seanjc@google.com> wrote:
+> > >        */
+> > > -     if (!pfn_valid(pfn) || WARN_ON_ONCE(!page_count(pfn_to_page(pfn))))
+> > > +     if (!pfn_valid(pfn) || !page_count(pfn_to_page(pfn)))
+> >
+> > Hrm, I know the whole point of this series is to support pages without an elevated
+> > refcount, but this WARN was extremely helpful in catching several use-after-free
+> > bugs in the TDP MMU.  We talked about burying a slow check behind MMU_WARN_ON, but
+> > that isn't very helpful because no one runs with MMU_WARN_ON, and this is also a
+> > type of check that's most useful if it runs in production.
+> >
+> > IIUC, this series explicitly disallows using pfns that have a struct page without
+> > refcounting, and the issue with the WARN here is that kvm_is_zone_device_pfn() is
+> > called by kvm_is_reserved_pfn() before ensure_pfn_ref() rejects problematic pages,
+> > i.e. triggers false positive.
+> >
+> > So, can't we preserve the use-after-free benefits of the check by moving it to
+> > where KVM releases the PFN?  I.e.
+> >
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index fbca2e232e94..675b835525fa 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -2904,15 +2904,19 @@ EXPORT_SYMBOL_GPL(kvm_release_pfn_dirty);
+> >
+> >  void kvm_set_pfn_dirty(kvm_pfn_t pfn)
+> >  {
+> > -       if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn))
+> > +       if (!kvm_is_reserved_pfn(pfn) && !kvm_is_zone_device_pfn(pfn)) {
+> > +               WARN_ON_ONCE(!page_count(pfn_to_page(pfn)));
+> >                 SetPageDirty(pfn_to_page(pfn));
+> > +       }
+> >  }
+> >  EXPORT_SYMBOL_GPL(kvm_set_pfn_dirty);
+> 
+> I'm still seeing this warning show up via __handle_changed_spte
+> calling kvm_set_pfn_dirty:
+> 
+> [  113.350473]  kvm_set_pfn_dirty+0x26/0x3e
+> [  113.354861]  __handle_changed_spte+0x452/0x4f6
+> [  113.359841]  __handle_changed_spte+0x452/0x4f6
+> [  113.364819]  __handle_changed_spte+0x452/0x4f6
+> [  113.369790]  zap_gfn_range+0x1de/0x27a
+> [  113.373992]  kvm_tdp_mmu_zap_invalidated_roots+0x64/0xb8
+> [  113.379945]  kvm_mmu_zap_all_fast+0x18c/0x1c1
+> [  113.384827]  kvm_page_track_flush_slot+0x55/0x87
+> [  113.390000]  kvm_set_memslot+0x137/0x455
+> [  113.394394]  kvm_delete_memslot+0x5c/0x91
+> [  113.398888]  __kvm_set_memory_region+0x3c0/0x5e6
+> [  113.404061]  kvm_set_memory_region+0x45/0x74
+> [  113.408844]  kvm_vm_ioctl+0x563/0x60c
+> 
+> I wasn't seeing it for my particular test case, but the gfn aging code
+> might trigger the warning as well.
 
-So Brijesh and I talked about this a bit yesterday. There's all kinds of
-dances...
+Ah, I got royally confused by ensure_pfn_ref()'s comment
 
-> this partially varies depending on the system (SEV/TDX etc)
+  * Certain IO or PFNMAP mappings can be backed with valid
+  * struct pages, but be allocated without refcounting e.g.,
+  * tail pages of non-compound higher order allocations, which
+  * would then underflow the refcount when the caller does the
+  * required put_page. Don't allow those pages here.
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+that doesn't apply here because kvm_faultin_pfn() uses the low level
+__gfn_to_pfn_page_memslot().
 
-By "SEV" I guess you mean pre-SNP because SNP attestation is reportedly
-much better.
+and my understanding is that @page will be non-NULL in ensure_pfn_ref() iff the
+page has an elevated refcount.
 
-TDX I'm being told is not interested in something like that atm. I guess
-they wanna do something different wrt attestation.
+Can you update the changelogs for the x86+arm64 "use gfn_to_pfn_page" patches to
+explicitly call out the various ramifications of moving to gfn_to_pfn_page()?
 
-So what we're talking about here is pre-SNP attestation, AFAICT.
+Side topic, s/covert/convert in both changelogs :-)
 
-> and also depends on how you depend to boot your VM (separate kernel
-> or VM disk). Also it's important to note that when the dance happens
-> varies - in SEV and SEV-ES this happens before the guest executes any
-> code. So at the end of the dance, the guest owner hands over that
-> secret - but only then does the geust start booting;
+> I don't know if setting the dirty/accessed bits in non-refcounted
+> struct pages is problematic.
 
-Right.
+Without knowing exactly what lies behind such pages, KVM needs to set dirty bits,
+otherwise there's a potential for data lost.
 
-> that secret has to go somewhere to be used by something later. For
-> example, something might pull out that key and use it to decrypt a
-> disk that then has other secrets on it (e.g. your ssh key).
+> The only way I can see to avoid it would be to try to map from the spte to
+> the vma and then check its flags. If setting the flags is benign, then we'd
+> need to do that lookup to differentiate the safe case from the use-after-free
+> case. Do you have any advice on how to handle this?
 
-That is the other example I heard about.
+Hrm.  I can't think of a clever generic solution.  But for x86-64, we can use a
+software available bit to mark SPTEs as being refcounted use that flag to assert
+the refcount is elevated when marking the backing pfn dirty/accessed.  It'd be
+64-bit only because we're out of software available bits for PAE paging, but (a)
+practically no one cares about 32-bit and (b) odds are slim that a use-after-free
+would be unique to 32-bit KVM.
 
-So, to sum up: this looks like part of a pre-SNP attestation flow, i.e.,
-for SEV and SEV-ES guests.
+But that can all go in after your series is merged, e.g. I'd prefer to cleanup
+make_spte()'s prototype to use @fault adding yet another parameter, and that'll
+take a few patches to make happen since FNAME(sync_page) also uses make_spte().
 
-Follow-up question: is this going to be used by other cloud vendors too?
-Or am I gonna get another implementation of sharing secrets with a guest
-which is just a little bit different but sender #2 can't use this one
-because raisins?
-
-Because that would not be good.
-
-So, is this what cloud vendors using SEV/-ES guests would like to use
-and what they all agree upon?
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
+TL;DR: continue as you were, I'll stop whining about this :-)
