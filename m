@@ -2,62 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 782EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77451C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 21:31:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244437AbiAEVbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 16:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53938 "EHLO
+        id S244447AbiAEVbd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 16:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244426AbiAEVbI (ORCPT
+        with ESMTP id S244439AbiAEVb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 16:31:08 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABB3C061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 13:31:08 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id kc16so462043qvb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 13:31:08 -0800 (PST)
+        Wed, 5 Jan 2022 16:31:28 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4645CC061245
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 13:31:28 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b144-20020a253496000000b0060bddc72114so1231076yba.4
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 13:31:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KaugUz46tW8OmhBqIZ9jwiqPis52Cy1fNqiGsGfoTG8=;
-        b=imnzYCQ5MsamiVJKUgz/DAmOxeFUztOWBxZ8rpHXsoPFwt1QIta5OVZ8P7Sbp3RLE4
-         lTC0HUWrzyaBAnblC65Xuwu/+MoSx9JEw99xpn4Alxo3N/oIMu8ZeR2S036RBFtQLPLb
-         SU3LJrFvYlsO6DR2ojsMyAXtIqpeipPKmK4BnQvd2O9l9mo2zFjGt1EHjqHk1hEROetx
-         njzS/MqS1jcndiXHnJ1fzcmaoWEzWXY50wfHUBwgfJsQP9s3HZFKjUpjw1k0cRrTNyxG
-         es6r/drZFkPiWMESLgkq0qTfiDLAIl8RxlUO932XRX5PIpIETZY2TLzVPr3nFgtvYEVr
-         lGpA==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=/c+hupHolpNezWXPsUIEtILMcSftWF7JWna4vjK/AJs=;
+        b=de7Q4G3fJEQF5UTIrNkDt6hX7dxiERqP01VvYVK3KMyXKDNwZDIwz5s9S2rIoxH/69
+         VT3Kg5uv7uxHTT4KbSjFlvml09+gDUnC7HpxvhE+o6BnOWcpdwFfhQY5zWro27Ph549M
+         +CwUofeHBhDKTABFsMdoVv2kqjqYXCJGHVpwsz3Y36SBsLehGtqzA2psW+6OdEQuUUb3
+         Ol5dU/x8ts5UIlAZFSv03c3sKG7Og18ZGp5+C3rNHYCsXNjim7i5r95oQEwJYRm4BSkP
+         OUtWtzhJB7FGB/hBvuUnR2VL4nswP0UVYD0TrUTMgdKypq5rdpxS8jG2mLfulo3qOENd
+         X1EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KaugUz46tW8OmhBqIZ9jwiqPis52Cy1fNqiGsGfoTG8=;
-        b=yhL8+T/poEp8mBCQfZ+fj4bP2gHadospDRBMCPwDv915bOGEMwl2D+yKWu6XT6uUqY
-         Y/L2tcwx/lBDYRwrguYhvQeTnSiXRqwyme5EDrtQv/XOAbh0F0E++MeCbshQFEdPBJcF
-         J7DAcGhBQFtGGF0A2OftPPIDG1+Xb6kHUZqX5fT0rss/oDC53ufZNjlmIc1+SN0spm12
-         lzqxZcK3BmWMlvqFwv9T1+G1OyzdP2rejXKeTKkjcAV4aVvYH8Ah/hL8byVWUBm59GzS
-         6Xuf3cnglXdyejkmGVLld7vqdYQmtB/sRifJe6BvMrVGv9xeNzaTpjYDNqMDRxJsWFYV
-         0L/Q==
-X-Gm-Message-State: AOAM53230cvNO3RzKuCheUc9Z78tALLAIPxSYSFbGLbm+RwkjsLlKrrS
-        ZgBVjuSVxLQFzRcnsUb1LdIxag==
-X-Google-Smtp-Source: ABdhPJy7VyTmEoBTsJdjaQQhxyBAh+c5MvjENhOKOpyyCC8MG09jgKANOY0TEU057qCllHgmuKtK4w==
-X-Received: by 2002:ad4:5aa9:: with SMTP id u9mr52496438qvg.50.1641418267445;
-        Wed, 05 Jan 2022 13:31:07 -0800 (PST)
-Received: from [192.168.0.111] (d-65-175-178-104.nh.cpe.atlanticbb.net. [65.175.178.104])
-        by smtp.gmail.com with ESMTPSA id 22sm47790qtw.12.2022.01.05.13.31.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 13:31:07 -0800 (PST)
-Message-ID: <28405360-ea08-acdd-d62b-b925c9904dff@google.com>
-Date:   Wed, 5 Jan 2022 16:31:05 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.3.2
-Subject: Re: [PATCH] rlimits: do not grab tasklist_lock for do_prlimit on
- current
-Content-Language: en-US
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=/c+hupHolpNezWXPsUIEtILMcSftWF7JWna4vjK/AJs=;
+        b=rnpdRAT61gMZy8vvhZWGGFa+cxsZWc+yh57pLH4Ntvm8KFfea+VkI9JkBWh0zLA1mZ
+         ZA4hs0ctVlS1nqnJCHUzCSl0zoh7s8IezlJUEq1KfNB/ul73aVWhryIpUVKFhIl4wO9H
+         vd2OjHEkeGaiTsGQi89Khx/cYgu9Z0sTK7vT+uaCOUbMME/QMv5jWmc4n57VAU6iZme2
+         4ulSYLTRGNjiBX+F6ZcIa4uciVYE7Sz9RgYAA8ghkuuYtkyNb616agjbmjVujoXU/+hk
+         7wLRWl2DW1Hv1yQiDAO3GsHkiawLBCAWYdAwSp18NerFd7UMya70BRIiMkj/7lixUNRf
+         Jefw==
+X-Gm-Message-State: AOAM533FUsmSUkoscF08grA99p6pAnTAHAjsm0ROitY/+S9p+Kf7soGb
+        /kavtFTv5YMXiB4dT3+bcn/9gi9M
+X-Google-Smtp-Source: ABdhPJyWgIBHuYnsd2kQNibQ2qyHm/PrjNUg/NEAx+nGQ2fRsKrxQD014t6XxgFIN+puZFw6X1bB3iP1
+X-Received: from gnomeregan.cam.corp.google.com ([2620:15c:6:412:3ab7:a23:e07a:5e22])
+ (user=brho job=sendgmr) by 2002:a25:add7:: with SMTP id d23mr63761902ybe.583.1641418287448;
+ Wed, 05 Jan 2022 13:31:27 -0800 (PST)
+Date:   Wed,  5 Jan 2022 16:28:25 -0500
+Message-Id: <20220105212828.197013-1-brho@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
+Subject: [PATCH v2 0/3] prlimit and set/getpriority tasklist_lock optimizations
+From:   Barret Rhoden <brho@google.com>
+To:     ebiederm@xmission.com
 Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Alexey Gladkov <legion@kernel.org>,
@@ -70,31 +62,90 @@ Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
         David Hildenbrand <david@redhat.com>,
         Cyrill Gorcunov <gorcunov@gmail.com>,
         linux-kernel@vger.kernel.org
-References: <20211213220401.1039578-1-brho@google.com>
- <8735mww2w3.fsf@email.froward.int.ebiederm.org>
- <456a056e-453e-71b0-0f9e-03511b9f56b1@google.com>
- <87zgp1psd3.fsf@email.froward.int.ebiederm.org>
-From:   Barret Rhoden <brho@google.com>
-In-Reply-To: <87zgp1psd3.fsf@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/15/21 14:42, Eric W. Biederman wrote:
-> In update_rlimit_cpu use lock_task_sighand instead of unconditionally
-> grabbing sighand->siglock (because without tasklist_lock sighand might
-> be NULL).
+The tasklist_lock popped up as a scalability bottleneck on some testing
+workloads.  The readlocks in do_prlimit and set/getpriority are not
+necessary in all cases.
 
-this ended up being a minor complication, since update_rlimit_cpu() 
-could fail if the task was exiting, but i think i sorted it out.
+Based on a cycles profile, it looked like ~87% of the time was spent in
+the kernel, ~42% of which was just trying to get *some* spinlock
+(queued_spin_lock_slowpath, not necessarily the tasklist_lock).
 
-i'll send out revised patchset shortly with this change, including 
-making do_prlimit() static.
+The big offenders (with rough percentages in cycles of the overall trace):
 
-thanks,
+- do_wait 11%
+- setpriority 8% (this patchset)
+- kill 8%
+- do_exit 5%
+- clone 3%
+- prlimit64 2%   (this patchset)
+- getrlimit 1%   (this patchset)
 
-barret
+I can't easily test this patchset on the original workload for various
+reasons.  Instead, I used the microbenchmark below to at least verify
+there was some improvement.  This patchset had a 28% speedup (12% from
+baseline to set/getprio, then another 14% for prlimmit).
 
+One interesting thing is that my libc's getrlimit() was calling
+prlimit64, so hoisting the read_lock(tasklist_lock) into sys_prlimit64
+had no effect - it essentially optimized the older syscalls only.  I
+didn't do that in this patchset, but figured I'd mention it since it was
+an option from the previous patch's discussion.
+
+v1: https://lore.kernel.org/lkml/20211213220401.1039578-1-brho@google.com/
+
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char **argv)
+{
+	pid_t child;
+	struct rlimit rlim[1];
+
+	fork(); fork(); fork(); fork(); fork(); fork();
+
+	for (int i = 0; i < 5000; i++) {
+		child = fork();
+		if (child < 0)
+			exit(1);
+		if (child > 0) {
+			usleep(1000);
+			kill(child, SIGTERM);
+			waitpid(child, NULL, 0);
+		} else {
+			for (;;) {
+				setpriority(PRIO_PROCESS, 0,
+					    getpriority(PRIO_PROCESS, 0));
+				getrlimit(RLIMIT_CPU, rlim);
+			}
+		}
+	}
+
+	return 0;
+}
+
+
+Barret Rhoden (3):
+  setpriority: only grab the tasklist_lock for PRIO_PGRP
+  prlimit: make do_prlimit() static
+  prlimit: do not grab the tasklist_lock
+
+ include/linux/posix-timers.h   |   2 +-
+ include/linux/resource.h       |   2 -
+ kernel/sys.c                   | 134 ++++++++++++++++++---------------
+ kernel/time/posix-cpu-timers.c |  12 ++-
+ 4 files changed, 83 insertions(+), 67 deletions(-)
+
+-- 
+2.34.1.448.ga2b2bfdf31-goog
 
