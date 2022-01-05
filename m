@@ -2,93 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CE21C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 18:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E29B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 18:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243137AbiAESlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 13:41:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33606 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243116AbiAESlJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 13:41:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0D6C6B81D46;
-        Wed,  5 Jan 2022 18:41:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F37C36AE0;
-        Wed,  5 Jan 2022 18:41:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641408066;
-        bh=i0KRcBQtthz/kEcTgYuuCYQynolYf9Qi/rP3f/111/g=;
-        h=From:To:Cc:Subject:Date:From;
-        b=QvN+J1mZ5Ca33TbowC/mjDThCj71fiUMbrcGvBO0n9dacBRf4rzbA/BBACCbtcJO+
-         Iyn1jbKWI39B4OtCcCsfvFHtypdpuKlqoBFifeDuYy2hYPmsni6MXOeG32+Ey+CVjg
-         ls5zuKR4tGWCoXi3AlUtRmUV+cbZYpuW7hcc6CiU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Cristobal Forno <cforno12@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
-Subject: [PATCH] ethernet: ibmveth: use default_groups in kobj_type
-Date:   Wed,  5 Jan 2022 19:41:01 +0100
-Message-Id: <20220105184101.2859410-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
+        id S243146AbiAESly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 13:41:54 -0500
+Received: from mga17.intel.com ([192.55.52.151]:27796 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243116AbiAESlv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 13:41:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641408111; x=1672944111;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9jWTwzcroPAB6SjOmCs6Db9zm5qd0qwmZSImoWib7kg=;
+  b=T9Aa1bwoptpb0XjVXKfCb3BpXL45dFNMDjNR7VMHZoBiWGPYQ5Vg84wK
+   U35zJudFeVWRN7ocXzjFoz8FuihBWLWPoeyJIBwClGDKQ86rWS3/6St4u
+   zWOtHwdJFNmdbVbcsPm26nTcxbNxSP/OJMtXLr/kYp7AsyMpcMfiosm7g
+   tLhVfuO53synGIZ6Z9fOuLMrk9CTsn8l3ViKiUwxJaG/4xh3H0mfpmg9j
+   6wCCmX7tAkXk+bInY6eaZ6wr/C656adBTR1pKBcVXV9MW3UPjPUo/vgKY
+   KXfCkIXInZTLO8hwTS73Sy0cakKMU5clbtcTSlTzrKUrIF4vrEztdEP5I
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="223195768"
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="223195768"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 10:41:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,264,1635231600"; 
+   d="scan'208";a="668198888"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 05 Jan 2022 10:41:49 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5BEK-000Gwl-QQ; Wed, 05 Jan 2022 18:41:48 +0000
+Date:   Thu, 6 Jan 2022 02:41:35 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, linmq006@gmail.com,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        linux-phy@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] phy: mapphone-mdm6600: Fix PM disable depth imbalance in
+ phy_mdm6600_probe
+Message-ID: <202201060211.yT7coTKI-lkp@intel.com>
+References: <20220105123947.17946-1-linmq006@gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1636; h=from:subject; bh=i0KRcBQtthz/kEcTgYuuCYQynolYf9Qi/rP3f/111/g=; b=owGbwMvMwCRo6H6F97bub03G02pJDIlXn9nenXbIUcI1aH7F5NsT562zlVtpqNBq+sD7lnFc1qGH Mzcc74hlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJHH/BME9bOu3LvGMJd5ev+vHg8a Tf4SE8TR8Z5rtu8VTkf3504yfFUwW55k/zV810mgIA
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105123947.17946-1-linmq006@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are currently 2 ways to create a set of sysfs files for a
-kobj_type, through the default_attrs field, and the default_groups
-field.  Move the ibmveth sysfs code to use default_groups
-field which has been the preferred way since aa30f47cf666 ("kobject: Add
-support for default attribute groups to kobj_type") so that we can soon
-get rid of the obsolete default_attrs field.
+Hi Miaoqian,
 
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: Cristobal Forno <cforno12@linux.ibm.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: linuxppc-dev@lists.ozlabs.org
-Cc: netdev@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on linus/master]
+[also build test WARNING on v5.16-rc8 next-20220105]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Miaoqian-Lin/phy-mapphone-mdm6600-Fix-PM-disable-depth-imbalance-in-phy_mdm6600_probe/20220105-204113
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git c9e6606c7fe92b50a02ce51dda82586ebdf99b48
+config: hexagon-randconfig-r035-20220105 (https://download.01.org/0day-ci/archive/20220106/202201060211.yT7coTKI-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/62cad5a4dd9feab731b40f99e6e0bf7a2429f1ed
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Miaoqian-Lin/phy-mapphone-mdm6600-Fix-PM-disable-depth-imbalance-in-phy_mdm6600_probe/20220105-204113
+        git checkout 62cad5a4dd9feab731b40f99e6e0bf7a2429f1ed
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/phy/motorola/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/phy/motorola/phy-mapphone-mdm6600.c:633:1: warning: unused label 'disable_pm' [-Wunused-label]
+   disable_pm:
+   ^~~~~~~~~~~
+   1 warning generated.
+
+
+vim +/disable_pm +633 drivers/phy/motorola/phy-mapphone-mdm6600.c
+
+   555	
+   556	static int phy_mdm6600_probe(struct platform_device *pdev)
+   557	{
+   558		struct phy_mdm6600 *ddata;
+   559		int error;
+   560	
+   561		ddata = devm_kzalloc(&pdev->dev, sizeof(*ddata), GFP_KERNEL);
+   562		if (!ddata)
+   563			return -ENOMEM;
+   564	
+   565		INIT_DELAYED_WORK(&ddata->bootup_work,
+   566				  phy_mdm6600_deferred_power_on);
+   567		INIT_DELAYED_WORK(&ddata->status_work, phy_mdm6600_status);
+   568		INIT_DELAYED_WORK(&ddata->modem_wake_work, phy_mdm6600_modem_wake);
+   569		init_completion(&ddata->ack);
+   570	
+   571		ddata->dev = &pdev->dev;
+   572		platform_set_drvdata(pdev, ddata);
+   573	
+   574		/* Active state selected in phy_mdm6600_power_on() */
+   575		error = pinctrl_pm_select_sleep_state(ddata->dev);
+   576		if (error)
+   577			dev_warn(ddata->dev, "%s: error with sleep_state: %i\n",
+   578				 __func__, error);
+   579	
+   580		error = phy_mdm6600_init_lines(ddata);
+   581		if (error)
+   582			return error;
+   583	
+   584		phy_mdm6600_init_irq(ddata);
+   585		schedule_delayed_work(&ddata->bootup_work, 0);
+   586	
+   587		/*
+   588		 * See phy_mdm6600_device_power_on(). We should be able
+   589		 * to remove this eventually when ohci-platform can deal
+   590		 * with -EPROBE_DEFER.
+   591		 */
+   592		msleep(PHY_MDM6600_PHY_DELAY_MS + 500);
+   593	
+   594		/*
+   595		 * Enable PM runtime only after PHY has been powered up properly.
+   596		 * It is currently only needed after USB suspends mdm6600 and n_gsm
+   597		 * needs to access the device. We don't want to do this earlier as
+   598		 * gpio mode0 pin doubles as mdm6600 wake-up gpio.
+   599		 */
+   600		pm_runtime_use_autosuspend(ddata->dev);
+   601		pm_runtime_set_autosuspend_delay(ddata->dev,
+   602						 MDM6600_MODEM_IDLE_DELAY_MS);
+   603		pm_runtime_enable(ddata->dev);
+   604		error = pm_runtime_get_sync(ddata->dev);
+   605		if (error < 0) {
+   606			dev_warn(ddata->dev, "failed to wake modem: %i\n", error);
+   607			pm_runtime_put_noidle(ddata->dev);
+   608			goto cleanup;
+   609		}
+   610	
+   611		ddata->generic_phy = devm_phy_create(ddata->dev, NULL, &gpio_usb_ops);
+   612		if (IS_ERR(ddata->generic_phy)) {
+   613			error = PTR_ERR(ddata->generic_phy);
+   614			goto idle;
+   615		}
+   616	
+   617		phy_set_drvdata(ddata->generic_phy, ddata);
+   618	
+   619		ddata->phy_provider =
+   620			devm_of_phy_provider_register(ddata->dev,
+   621						      of_phy_simple_xlate);
+   622		if (IS_ERR(ddata->phy_provider))
+   623			error = PTR_ERR(ddata->phy_provider);
+   624	
+   625	idle:
+   626		pm_runtime_mark_last_busy(ddata->dev);
+   627		pm_runtime_put_autosuspend(ddata->dev);
+   628	
+   629	cleanup:
+   630		if (error < 0)
+   631			phy_mdm6600_device_power_off(ddata);
+   632	
+ > 633	disable_pm:
+   634		pm_runtime_disable(ddata->dev);
+   635	
+   636		return error;
+   637	}
+   638	
+
 ---
- drivers/net/ethernet/ibm/ibmveth.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index 45ba40cf4d07..22fb0d109a68 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1890,6 +1890,7 @@ static struct attribute *veth_pool_attrs[] = {
- 	&veth_size_attr,
- 	NULL,
- };
-+ATTRIBUTE_GROUPS(veth_pool);
- 
- static const struct sysfs_ops veth_pool_ops = {
- 	.show   = veth_pool_show,
-@@ -1899,7 +1900,7 @@ static const struct sysfs_ops veth_pool_ops = {
- static struct kobj_type ktype_veth_pool = {
- 	.release        = NULL,
- 	.sysfs_ops      = &veth_pool_ops,
--	.default_attrs  = veth_pool_attrs,
-+	.default_groups = veth_pool_groups,
- };
- 
- static int ibmveth_resume(struct device *dev)
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
