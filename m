@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F126AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D382AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:10:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245028AbiAEWJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 17:09:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
+        id S244859AbiAEWKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 17:10:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244818AbiAEWH3 (ORCPT
+        with ESMTP id S244952AbiAEWIW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:07:29 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E98DC061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 14:07:29 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id z3so587450plg.8
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 14:07:29 -0800 (PST)
+        Wed, 5 Jan 2022 17:08:22 -0500
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A608DC0611FF
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 14:07:31 -0800 (PST)
+Received: by mail-pf1-x42a.google.com with SMTP id v11so576473pfu.2
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 14:07:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tVr5tsBIFoV2HC1TEE5aaTaB9VBlhsL3hfLUSJOK4IA=;
-        b=PlLsNKNRkuwQbKEq9tWO6/GHbn35IlnQUZOUMdLDDlKuSeBmmOOry0mMQ579fwox5k
-         SbCs6GmzLlVDOZDPufp5vMlZgTm5ClSu9APFIYZ7AXH5dX3sTg6o/3kQXl++JM8B4IO1
-         bDLHZhaaws95zyFGN0HhzgXfhXqeXg0/NhpAg=
+        bh=AnF/PMMXPgqrzjGZxNd1Cfi5pPniRXa/jw39Jq8eJUY=;
+        b=dteM1IkhUOToqUOluSnJ0ckjadPywtJbsK3R27MYd6/MnsSEU5fkedN+x1bGs0nbJk
+         4mOh1R64TgRxG6iNWHCXCIXB+2pLR2cn7628eLrlC1/XCK2+JRfMw88l+QUOlA5BpETK
+         TVPVe4UKeR8Dv5ZNa8f15L9Df4kFcTP/JVRqs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tVr5tsBIFoV2HC1TEE5aaTaB9VBlhsL3hfLUSJOK4IA=;
-        b=5sriyVknOmoQJu1LszX9yZbc17Mb6372Q9uvUXexecr1fY3cGN9pdgi4hJ7978fk3V
-         NkYsVDslreS8kNxO5ef9Zu8bjycHwsK+TUzwA+N/5+Saz75RE/qQ2j6hB/6UYC7HEpJK
-         E/Jgyp8BSuJiAUrJCm782t+RCwo+XietxyjQFPzgLUMm5zy+VlI5dGRVlAvbtssFUx31
-         kPVja92O6B5ZtHaCgjQfEXH2dOw8ap5A8ctW2cKFI0oi828LWw216WELen8Uoa8oCGL2
-         V2E4uaW8NcC9L5xsEjEmA/EeSLMaJgBaH7QgzT4mFNG7XvBGRnIuFb1+/64bh1impLkX
-         Hghw==
-X-Gm-Message-State: AOAM532Vy4OkebNC2Z1jVZG//L5dv88OiBogtqE5kBzRrIQ0+Lc/8jSk
-        U83Wq4TK91fUQaEeSserZB5XX3CqTKipWA==
-X-Google-Smtp-Source: ABdhPJzWhuqiVnUhxPvgWyJvDNWpjUiA2zzpJIGjB+Sp7v4l0DlnD38MAIe+DBaH89q7VWXRXrk10A==
-X-Received: by 2002:a17:902:dac4:b0:148:fde0:692a with SMTP id q4-20020a170902dac400b00148fde0692amr55966395plx.47.1641420449178;
-        Wed, 05 Jan 2022 14:07:29 -0800 (PST)
+        bh=AnF/PMMXPgqrzjGZxNd1Cfi5pPniRXa/jw39Jq8eJUY=;
+        b=BKbErhQk+nmCkBv1Vn5myqjvwof+8MEjA12AqhVTf4HmVfMRBwJd/lmxsLqna3jS2L
+         eQEAyELklwo8hwRAnxftoF5zS7YsZSHXbQ1kZrJ5NZjkHw0EuIozVFt6zSCsCBnzFQUe
+         tC4cRTDpm5KZ/rfZzqIEoZ5aAbg3LfsOu3pMnFaGSS4kgoiRgdg3rkkyf8GEitQ4W0/Q
+         ukyGOShQAILtNB1n6L+R2A1l8Bm+4cCJScFji1i4WrnE1vCkgtt+pNWhgcpY3r0o9q5R
+         I1IxPLCixAWubfLWdxAm5xdgPDasSXFe9maiz5eZ5j/j2jN6UJtONwHXMQs/NizRIfP7
+         ZzOg==
+X-Gm-Message-State: AOAM531gcLQgEFzD4zEPwo8uxEU7XnxY0mTsVcI/4UTXQ391YFkEhVqZ
+        TmKeoZQplsN2wnrLCYcUwCZSjA==
+X-Google-Smtp-Source: ABdhPJzA6rNMxTpCHBpNVAk+T8oWyyI1sooyCvffmIDPRC9SvASw6Unguv/Tm6Ao1sVb/NItxiOB9Q==
+X-Received: by 2002:a63:754c:: with SMTP id f12mr43111552pgn.117.1641420451126;
+        Wed, 05 Jan 2022 14:07:31 -0800 (PST)
 Received: from localhost ([2620:15c:202:201:7fcd:6709:f1b5:a22a])
-        by smtp.gmail.com with UTF8SMTPSA id k23sm3049499pji.3.2022.01.05.14.07.27
+        by smtp.gmail.com with UTF8SMTPSA id c9sm92012pfb.126.2022.01.05.14.07.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 14:07:28 -0800 (PST)
+        Wed, 05 Jan 2022 14:07:30 -0800 (PST)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     bleung@chromium.org, groeck@chromium.org, myungjoo.ham@samsung.com,
         cw00.choi@samsung.com, benjamin.tissoires@redhat.com,
@@ -55,9 +55,9 @@ To:     bleung@chromium.org, groeck@chromium.org, myungjoo.ham@samsung.com,
         a.zummo@towertech.it, cychiang@chromium.org, perex@perex.cz
 Cc:     linux-kernel@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 13/17] media: cros-ec-cec: Add PL_CHROMEOS dependency
-Date:   Wed,  5 Jan 2022 14:06:49 -0800
-Message-Id: <20220105220653.122451-14-gwendal@chromium.org>
+Subject: [PATCH 14/17] power: supply: PCHG: Add PL_CHROMEOS dependency
+Date:   Wed,  5 Jan 2022 14:06:50 -0800
+Message-Id: <20220105220653.122451-15-gwendal@chromium.org>
 X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
 In-Reply-To: <20220105220653.122451-1-gwendal@chromium.org>
 References: <20220105220653.122451-1-gwendal@chromium.org>
@@ -71,18 +71,19 @@ Use 'make nsdeps' to add missing dependencies.
 
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
- drivers/media/cec/platform/cros-ec/cros-ec-cec.c | 1 +
+ drivers/power/supply/cros_peripheral_charger.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/cec/platform/cros-ec/cros-ec-cec.c b/drivers/media/cec/platform/cros-ec/cros-ec-cec.c
-index 2d95e16cd24893..273af1688c4cda 100644
---- a/drivers/media/cec/platform/cros-ec/cros-ec-cec.c
-+++ b/drivers/media/cec/platform/cros-ec/cros-ec-cec.c
-@@ -352,4 +352,5 @@ module_platform_driver(cros_ec_cec_driver);
- MODULE_DESCRIPTION("CEC driver for ChromeOS ECs");
- MODULE_AUTHOR("Neil Armstrong <narmstrong@baylibre.com>");
+diff --git a/drivers/power/supply/cros_peripheral_charger.c b/drivers/power/supply/cros_peripheral_charger.c
+index 305f10dfc06d1b..cb0d63c9a2bd80 100644
+--- a/drivers/power/supply/cros_peripheral_charger.c
++++ b/drivers/power/supply/cros_peripheral_charger.c
+@@ -382,5 +382,6 @@ static struct platform_driver cros_pchg_driver = {
+ module_platform_driver(cros_pchg_driver);
+ 
  MODULE_LICENSE("GPL");
 +MODULE_IMPORT_NS(PL_CHROMEOS);
+ MODULE_DESCRIPTION("ChromeOS EC peripheral device charger");
  MODULE_ALIAS("platform:" DRV_NAME);
 -- 
 2.34.1.448.ga2b2bfdf31-goog
