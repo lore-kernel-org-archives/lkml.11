@@ -2,101 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9272C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 19:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF02C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243769AbiAETzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 14:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243767AbiAETz3 (ORCPT
+        id S243795AbiAEUBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 15:01:18 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:60761 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243779AbiAEUBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 14:55:29 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89D54C061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 11:55:29 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id g79-20020a9d12d5000000b0058f08f31338so612328otg.2
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 11:55:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JlPJsMW5yVPe7P3RKOvMwPlqeJN1/Nu2FfKIApHsgbo=;
-        b=DwPxC3cLLNM8XVTzd55gQ7bhxNML705Ttl/ErwNTDEyJwlW4XJMuoiodES7QQ//mSL
-         NqvSpNl3q6yIa44pWFb8gv6RfQh9JDnxYAV18DuYJc10XKzkRm4oMwtHC9HPCapN6hMm
-         iqc0/E4iLeL6kOCUEBwGPMA/dnUvUs7BdnY/Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JlPJsMW5yVPe7P3RKOvMwPlqeJN1/Nu2FfKIApHsgbo=;
-        b=Sinl/eJe7C9VsGxin9xhzNXZw6zYVv97V/EB7QrNF89exvvjNApRoZ0Xc3i6ZvFCFN
-         QJ1pumkBXHEX4TZd7jLPkIvGvMTXV7FeDQ44G1Xn2QX3Y8tnKLYvXbSGIw/fyuirVI0H
-         yUH+WyyJwxJig8ruVe0Ub2UQjoll6PBSZudC9DJCBNxy5pZJUJg9hn/c3skgIllVmCDO
-         I01YmApGrItZW6FAW4hH5GckpcheRp/pd/F/SWgzMrsDLG0pPYy2xmwxMcMA+sGtkgKm
-         j9yCgiX7uVD/EPuGW2eRFFy833di7SPohSwlDeIZsQkSKYzfmvYRGicnrtclP/qjugvK
-         Jqig==
-X-Gm-Message-State: AOAM532eNe+koMebWZ+eORRse+lnEsPT97WRA3mGwt4rlPtuVqh21uQE
-        hAlZ/vLWH6XMbljI2EOfHf3/UrnQMJ/s1Q==
-X-Google-Smtp-Source: ABdhPJymYbIVgSGZw/dDvu0o40dfOW1JIEKyxS3/8Ru1+tF09VoIkCwfPEP+7AWJyCdYFehQhZECgw==
-X-Received: by 2002:a05:6830:1258:: with SMTP id s24mr40764767otp.226.1641412528508;
-        Wed, 05 Jan 2022 11:55:28 -0800 (PST)
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com. [209.85.167.180])
-        by smtp.gmail.com with ESMTPSA id be30sm9566103oib.50.2022.01.05.11.55.27
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 11:55:27 -0800 (PST)
-Received: by mail-oi1-f180.google.com with SMTP id r131so573756oig.1
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 11:55:27 -0800 (PST)
-X-Received: by 2002:a05:6808:3097:: with SMTP id bl23mr3823157oib.77.1641412527103;
- Wed, 05 Jan 2022 11:55:27 -0800 (PST)
+        Wed, 5 Jan 2022 15:01:14 -0500
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 5811D100004;
+        Wed,  5 Jan 2022 20:01:11 +0000 (UTC)
+Date:   Wed, 5 Jan 2022 21:01:10 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Hugo Villeneuve <hugo@hugovil.com>
+Cc:     Alessandro Zummo <a.zummo@towertech.it>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] rtc: isl1208: avoid unnecessary rc variable tests
+Message-ID: <YdX5BocOfHE/0twa@piout.net>
+References: <20220105193440.151359-1-hugo@hugovil.com>
 MIME-Version: 1.0
-References: <20211001144212.v2.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
-In-Reply-To: <20211001144212.v2.1.I773a08785666ebb236917b0c8e6c05e3de471e75@changeid>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Wed, 5 Jan 2022 11:55:05 -0800
-X-Gmail-Original-Message-ID: <CA+ASDXOEv3xigBaEwtYcGM7Q9uNHrwijoWTHoiLg--UT=vA7TA@mail.gmail.com>
-Message-ID: <CA+ASDXOEv3xigBaEwtYcGM7Q9uNHrwijoWTHoiLg--UT=vA7TA@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/bridge: analogix_dp: Grab runtime PM reference for DP-AUX
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>
-Cc:     Sean Paul <sean@poorly.run>, Jonas Karlman <jonas@kwiboo.se>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        stable <stable@vger.kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105193440.151359-1-hugo@hugovil.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(updating Andrzej's email)
+On 05/01/2022 14:34:39-0500, Hugo Villeneuve wrote:
+> From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> 
+> The rc variable doesn't need to be tested a second time when the <if> block
+> evaluates to false.
+> 
 
-On Fri, Oct 1, 2021 at 2:50 PM Brian Norris <briannorris@chromium.org> wrote:
-> If the display is not enable()d, then we aren't holding a runtime PM
-> reference here. Thus, it's easy to accidentally cause a hang, if user
-> space is poking around at /dev/drm_dp_aux0 at the "wrong" time.
->
-> Let's get the panel and PM state right before trying to talk AUX.
->
-> Fixes: 0d97ad03f422 ("drm/bridge: analogix_dp: Remove duplicated code")
-> Cc: <stable@vger.kernel.org>
-> Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
+rc is not tested a second time, here is the relevant listing:
+
+-	if (client->irq > 0)
++	if (client->irq > 0) {
+ ffffffff81aef647:	41 8b b5 bc 01 00 00 	mov    0x1bc(%r13),%esi
+ ffffffff81aef64e:	85 f6                	test   %esi,%esi
+ ffffffff81aef650:	0f 8f 35 01 00 00    	jg     ffffffff81aef78b <isl1208_probe+0x314>
+ 		rc = isl1208_setup_irq(client, client->irq);
+ 	if (rc)
+ 		return rc;
++	}
+ 
+-	if (evdet_irq > 0 && evdet_irq != client->irq)
++	if (evdet_irq > 0 && evdet_irq != client->irq) {
+ ffffffff81aef656:	85 db                	test   %ebx,%ebx
+ ffffffff81aef658:	7e 0d                	jle    ffffffff81aef667 <isl1208_probe+0x1f0>
+ ffffffff81aef65a:	41 39 9d bc 01 00 00 	cmp    %ebx,0x1bc(%r13)
+@@ -1663,6 +1664,7 @@ ffffffff81aef661:	0f 85 0a 01 00 00
+ 		rc = isl1208_setup_irq(client, evdet_irq);
+ 	if (rc)
+ 		return rc;
++	}
+
+As you can see, no change in assembly but it is worse to read. gcc on
+arm behaves the same way.
+
+> Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
 > ---
->
-> Changes in v2:
-> - Fix spelling in Subject
-> - DRM_DEV_ERROR() -> drm_err()
-> - Propagate errors from un-analogix_dp_prepare_panel()
->
->  .../drm/bridge/analogix/analogix_dp_core.c    | 21 ++++++++++++++++++-
->  1 file changed, 20 insertions(+), 1 deletion(-)
+>  drivers/rtc/rtc-isl1208.c | 14 ++++++++------
+>  1 file changed, 8 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/rtc/rtc-isl1208.c b/drivers/rtc/rtc-isl1208.c
+> index 182dfa605515..c7f04df5a0b6 100644
+> --- a/drivers/rtc/rtc-isl1208.c
+> +++ b/drivers/rtc/rtc-isl1208.c
+> @@ -880,15 +880,17 @@ isl1208_probe(struct i2c_client *client, const struct i2c_device_id *id)
+>  	if (rc)
+>  		return rc;
+>  
+> -	if (client->irq > 0)
+> +	if (client->irq > 0) {
+>  		rc = isl1208_setup_irq(client, client->irq);
+> -	if (rc)
+> -		return rc;
+> +		if (rc)
+> +			return rc;
+> +	}
+>  
+> -	if (evdet_irq > 0 && evdet_irq != client->irq)
+> +	if (evdet_irq > 0 && evdet_irq != client->irq) {
+>  		rc = isl1208_setup_irq(client, evdet_irq);
+> -	if (rc)
+> -		return rc;
+> +		if (rc)
+> +			return rc;
+> +	}
+>  
+>  	rc = devm_rtc_nvmem_register(isl1208->rtc, &isl1208->nvmem_config);
+>  	if (rc)
+> -- 
+> 2.30.2
+> 
 
-Ping? Do I need to do anything more here?
-
-Thanks,
-Brian
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
