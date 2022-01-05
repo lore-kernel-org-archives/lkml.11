@@ -2,367 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D376C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 16:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 885C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 16:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242039AbiAEQxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 11:53:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242030AbiAEQw7 (ORCPT
+        id S242046AbiAEQyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 11:54:02 -0500
+Received: from mailout4.samsung.com ([203.254.224.34]:34776 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231598AbiAEQx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 11:52:59 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 419DFC061245
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 08:52:58 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id o30so23426798wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 08:52:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XRM4a6/fTN7jDwpdltnlYTJO8nRFYJpwsCNvB/kveKI=;
-        b=ZARpPt8mAJ2yS+jSLvyeLv6rOgR1KGdpik5gApOVcQxKhD+3rqVVc4okLIl+b2/W3I
-         YQLQUn9Xo4wx7dYTV8Jd20XAttp+APJ1tzbPkCQsWwnNF05OY3qOxj63YiC1UKW+D85J
-         F+7fN+5oxNW7+qtd5DXWo3ursyPyWP2Dm6KakPjl4hZKsEOtFOabJrXykwn+rzyHYzwJ
-         2XdC+6qDgYhqvCVaJ4GWlbIZuTVzDZ4g6ifV2zHrgejFBFfrRgRjzeyp8g5RyYrZPAMh
-         hInxMgmO6o8Wnq2mmyVFZxmd+ihrv0ByTFhZjZjaBs4H8SjqhIVLzIK2oES6hTsM9m87
-         RFOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XRM4a6/fTN7jDwpdltnlYTJO8nRFYJpwsCNvB/kveKI=;
-        b=NVncUJ+AEB2yqR1e+UThVNduLZXee1TQTePYmF1SPDH/g31ZqfHXHsPMWPmuhpE09T
-         glUaKX0GwbWwLZ62oGEQlLz2+RWhDR1tWmU47aj8eo6CKQXKRKTjvEuYfxLyKA4L9O0Q
-         RGsuFVZfGYnSLxYBMLnitveR5IiBAVy/O6u/c6DJ2YliL5sEY6keKTFIg5FInpl+A+sV
-         dhfyVmAMbDwPqr+6Kx03Xhpa4Qii3MypT3ad4XDBnnWfdou5CdDdAs9MhLS7ixwhMbjW
-         9Haxbw5LlL/VA4DoXHqXIGh+VQ+L7hRy3gNkSTQBHbTqZsl3aB0BkJg6E0Q2yEGT8D0m
-         FLDg==
-X-Gm-Message-State: AOAM530CrrvE3WeNjZj8VV6nBhqN7vRwlFTLxZdI6mbQCpbcAwaoveor
-        oZaM4pzCgACQePPSE6s3WRNJ
-X-Google-Smtp-Source: ABdhPJzpY6iUgjI+scEPq0Phq7bMPG9GOeWLkVTkpkO73HWbPdl0tcNlX8D6e9Tgf/SiCuW3uojhJg==
-X-Received: by 2002:a05:600c:4410:: with SMTP id u16mr3593002wmn.46.1641401576467;
-        Wed, 05 Jan 2022 08:52:56 -0800 (PST)
-Received: from google.com ([2a00:79e0:d:209:59b9:fbad:c09a:b4fd])
-        by smtp.gmail.com with ESMTPSA id h2sm64426wmq.20.2022.01.05.08.52.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 08:52:56 -0800 (PST)
-Date:   Wed, 5 Jan 2022 16:52:51 +0000
-From:   Wedson Almeida Filho <wedsonaf@google.com>
-To:     David Brazdil <dbrazdil@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Scull <ascull@google.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] misc: open-dice: Add driver to expose DICE data
- to userspace
-Message-ID: <YdXM44q07C5iQydu@google.com>
-References: <20211221174502.63891-1-dbrazdil@google.com>
- <20211221174502.63891-3-dbrazdil@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211221174502.63891-3-dbrazdil@google.com>
+        Wed, 5 Jan 2022 11:53:58 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220105165356epoutp04de453f327c3872a0cde5afb6dd7958b1~Hbhd_a38N0727307273epoutp04T
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 16:53:56 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220105165356epoutp04de453f327c3872a0cde5afb6dd7958b1~Hbhd_a38N0727307273epoutp04T
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1641401636;
+        bh=RQ99m1jJPhIHUCeFdUy2vwQ1cn9LOk9p3qwSLPtVGdE=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=RYJy7DsERlxDCT0pjOyu+lSfM92rTg3U0vqAFkiL3lIcd9HpRcSV70lBXmyG9bfDY
+         LR4qkHS1TCjeWKIsYhoFipI4jcNF8OAU/fl0G3V7Y6Js0xv3Tncig0vCPzIXqlilaB
+         bEW3WOiHftauWoJ3PMZ2NV3SiV2YUpfpUShWlGsM=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
+        20220105165355epcas5p4ff4619c163ce7dc7a3074e6d9446f9e7~HbhdU1EDm0428504285epcas5p4E;
+        Wed,  5 Jan 2022 16:53:55 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.183]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4JTbD03RXnz4x9Pv; Wed,  5 Jan
+        2022 16:53:52 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        8F.F9.06423.02DC5D16; Thu,  6 Jan 2022 01:53:52 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220105165351epcas5p100b28a19d5a5e5614ea82adf5e0037b0~HbhZiT5pX3051430514epcas5p1L;
+        Wed,  5 Jan 2022 16:53:51 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220105165351epsmtrp25a3646999e445649587770840215a756~HbhZhut9j0460604606epsmtrp2T;
+        Wed,  5 Jan 2022 16:53:51 +0000 (GMT)
+X-AuditID: b6c32a49-b13ff70000001917-aa-61d5cd2008ee
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        C7.02.08738.F1DC5D16; Thu,  6 Jan 2022 01:53:51 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220105165350epsmtip194c9172598c1fd71327517cd6fadeafb~HbhYp2gnZ0640706407epsmtip1J;
+        Wed,  5 Jan 2022 16:53:50 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     krzysztof.kozlowski@canonical.com, s.nawrocki@samsung.com,
+        linux-samsung-soc@vger.kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH] MAINTAINERS: add reviewer entry for Samsung/Exynos platform
+Date:   Wed,  5 Jan 2022 22:13:41 +0530
+Message-Id: <20220105164341.27479-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrMKsWRmVeSWpSXmKPExsWy7bCmuq7C2auJBn3PVCwezNvGZrHx7Q8m
+        i8u75rBZzDi/j8ni8Jt2VgdWj1kNvWwefVtWMXp83iQXwByVbZORmpiSWqSQmpecn5KZl26r
+        5B0c7xxvamZgqGtoaWGupJCXmJtqq+TiE6DrlpkDtFJJoSwxpxQoFJBYXKykb2dTlF9akqqQ
+        kV9cYquUWpCSU2BSoFecmFtcmpeul5daYmVoYGBkClSYkJ2x4e801oK93BVXNpxiamB8x9nF
+        yMkhIWAiseX9DpYuRi4OIYHdjBIPWv6yQzifGCV6Ws8zQzifGSUm/Z7PAtPyrG0ZG0RiF6PE
+        w9YjUE4Lk8SOnrlsIFVsAtoSd6dvYQKxRQQUJDb3PmMFKWIW6GSU2HrgDDNIQljAR2Jbxw4w
+        m0VAVWLZo3tgNq+AjUTTzC1sEOvkJVZvOAB2h4RAP7vE708L2SESLhJPVy5ggrCFJV4d3wIV
+        l5L4/G4vUDMHkJ0t0bPLGCJcI7F03jGoF+wlDlyZwwJSwiygKbF+lz5ImFmAT6L39xMmiE5e
+        iY42IYhqVYnmd1ehOqUlJnZ3s0LYHhI/r50Bu1JIIFai+30b4wRGmVkIQxcwMq5ilEwtKM5N
+        Ty02LTDMSy2HR05yfu4mRnDq0fLcwXj3wQe9Q4xMHIyHGCU4mJVEeP9KX0oU4k1JrKxKLcqP
+        LyrNSS0+xGgKDKWJzFKiyfnA5JdXEm9oYmlgYmZmZmJpbGaoJM57On1DopBAemJJanZqakFq
+        EUwfEwenVANTaRuzV1rN3rDZ3BP1K/eYJTZoOItlT1VfVdt/rr3UqGeT8Op3873zmGdpBzdU
+        H82wO9umzNC+OmtBw5KglKvW7A8YI6Ol/VgeR3Gq2Nv1KJY7dJz3idriNKnttbWfas3GiZoz
+        VqqpvtwTMyHGQzpQs+5C9SHnLclOCsJ7k1c5Xej+tWNeBnPnXo86OQOzqx2nNuUIP5EsTftu
+        amN3pMtg/qYZf37c9Lste6JUmOt5kolBWcRCnauH5QzEF0W63djWsGTOqrPzT0s9f+l57p+j
+        yr57a/SKfq9bWFh568HLpJNZSw5k3DVg2RsRcMfz6MpNgU82nFttz62wtPris/3cnr15deFz
+        FLvyt69LLVZiKc5INNRiLipOBABzFMxUxgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrNJMWRmVeSWpSXmKPExsWy7bCSnK782auJBi2vVC0ezNvGZrHx7Q8m
+        i8u75rBZzDi/j8ni8Jt2VgdWj1kNvWwefVtWMXp83iQXwBzFZZOSmpNZllqkb5fAlbHh7zTW
+        gr3cFVc2nGJqYHzH2cXIySEhYCLxrG0ZWxcjF4eQwA5GiSn3z7BCJKQlrm+cwA5hC0us/Pcc
+        zBYSaGKS6FrmC2KzCWhL3J2+hQnEFhFQkNjc+4wVZBCzQC+jREvzFxaQhLCAj8S2jh3MIDaL
+        gKrEskf3wGxeARuJpplb2CAWyEus3nCAeQIjzwJGhlWMkqkFxbnpucWGBUZ5qeV6xYm5xaV5
+        6XrJ+bmbGMHhoaW1g3HPqg96hxiZOBgPMUpwMCuJ8P6VvpQoxJuSWFmVWpQfX1Sak1p8iFGa
+        g0VJnPdC18l4IYH0xJLU7NTUgtQimCwTB6dUA1PBesXYfIVVqTzl6ff8mOwyBJfbNZ1yZi7P
+        DF5Z29S6wuSNyFLtlksR+7Z03vLrn2Uz61ecDYtfsHrtQ8sS1XYFx2/q2YJMMed+Pn/rv2Zh
+        8Cv9j2ZcvaFzFs3qDj758uARRo3CVScjzn/fvl965vv1EWUsPf/dZh8vfOvwReXG+87jXXvc
+        p50u2aolF67GEuiygyOmvXdu0pO3m1Se6OvMPK7pcUP4WbrLBi0jsSudUdxrVebfW68cGMmY
+        s2XBxSfa134eU05nri7X+iQnaLZ1yYaL/m61a0P4OU990Lkt/FaSp/FwbpOY7F19Abl3uydt
+        +K94X+7vtOBtfeE7dds6Zi//bvfrxcVlHKpfQpVYijMSDbWYi4oTAUwi7BZ+AgAA
+X-CMS-MailID: 20220105165351epcas5p100b28a19d5a5e5614ea82adf5e0037b0
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220105165351epcas5p100b28a19d5a5e5614ea82adf5e0037b0
+References: <CGME20220105165351epcas5p100b28a19d5a5e5614ea82adf5e0037b0@epcas5p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 21, 2021 at 05:45:02PM +0000, David Brazdil wrote:
-> Open Profile for DICE is an open protocol for measured boot compatible
-> with the Trusted Computing Group's Device Identifier Composition
-> Engine (DICE) specification. The generated Compound Device Identifier
-> (CDI) certificates represent the hardware/software combination measured
-> by DICE, and can be used for remote attestation and sealing.
-> 
-> Add a driver that exposes reserved memory regions populated by firmware
-> with DICE CDIs and exposes them to userspace via a character device.
-> 
-> Userspace obtains the memory region's size from read() and calls mmap()
-> to create a mapping of the memory region in its address space. The
-> mapping is not allowed to be write+shared, giving userspace a guarantee
-> that the data were not overwritten by another process.
-> 
-> Userspace can also call write(), which triggers a wipe of the DICE data
-> by the driver. Because both the kernel and userspace mappings use
-> write-combine semantics, all clients observe the memory as zeroed after
-> the syscall has returned.
-> 
-> Cc: Andrew Scull <ascull@google.com>
-> Cc: Will Deacon <will@kernel.org>
-> Signed-off-by: David Brazdil <dbrazdil@google.com>
-> ---
->  drivers/misc/Kconfig     |  12 +++
->  drivers/misc/Makefile    |   1 +
->  drivers/misc/open-dice.c | 188 +++++++++++++++++++++++++++++++++++++++
->  drivers/of/platform.c    |   1 +
->  4 files changed, 202 insertions(+)
->  create mode 100644 drivers/misc/open-dice.c
-> 
-> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-> index 0f5a49fc7c9e..a2b26426efba 100644
-> --- a/drivers/misc/Kconfig
-> +++ b/drivers/misc/Kconfig
-> @@ -470,6 +470,18 @@ config HISI_HIKEY_USB
->  	  switching between the dual-role USB-C port and the USB-A host ports
->  	  using only one USB controller.
->  
-> +config OPEN_DICE
-> +	tristate "Open Profile for DICE driver"
-> +	depends on OF_RESERVED_MEM
-> +	help
-> +	  This driver exposes a DICE reserved memory region to userspace via
-> +	  a character device. The memory region contains Compound Device
-> +	  Identifiers (CDIs) generated by firmware as an output of DICE
-> +	  measured boot flow. Userspace can use CDIs for remote attestation
-> +	  and sealing.
-> +
-> +	  If unsure, say N.
-> +
->  source "drivers/misc/c2port/Kconfig"
->  source "drivers/misc/eeprom/Kconfig"
->  source "drivers/misc/cb710/Kconfig"
-> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-> index a086197af544..70e800e9127f 100644
-> --- a/drivers/misc/Makefile
-> +++ b/drivers/misc/Makefile
-> @@ -59,3 +59,4 @@ obj-$(CONFIG_UACCE)		+= uacce/
->  obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
->  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
->  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
-> +obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
-> diff --git a/drivers/misc/open-dice.c b/drivers/misc/open-dice.c
-> new file mode 100644
-> index 000000000000..f1819f951173
-> --- /dev/null
-> +++ b/drivers/misc/open-dice.c
-> @@ -0,0 +1,188 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2021 - Google LLC
-> + * Author: David Brazdil <dbrazdil@google.com>
-> + *
-> + * Driver for Open Profile for DICE.
-> + *
-> + * This driver takes ownership of a reserved memory region containing data
-> + * generated by the Open Profile for DICE measured boot protocol. The memory
-> + * contents are not interpreted by the kernel but can be mapped into a userspace
-> + * process via a misc device. Userspace can also request a wipe of the memory.
-> + *
-> + * Userspace can access the data with (w/o error handling):
-> + *
-> + *     fd = open("/dev/open-dice0", O_RDWR);
-> + *     read(fd, &size, sizeof(unsigned long));
-> + *     data = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
-> + *     write(fd, NULL, 0); // wipe
-> + *     close(fd);
-> + */
-> +
-> +#include <linux/io.h>
-> +#include <linux/miscdevice.h>
-> +#include <linux/mm.h>
-> +#include <linux/module.h>
-> +#include <linux/of_reserved_mem.h>
-> +#include <linux/platform_device.h>
-> +
-> +#define DRIVER_NAME "open-dice"
-> +
-> +struct open_dice_drvdata {
-> +	spinlock_t lock;
-> +	char name[16];
-> +	struct reserved_mem *rmem;
-> +	struct miscdevice misc;
-> +};
-> +
-> +static inline struct open_dice_drvdata *to_open_dice_drvdata(struct file *filp)
-> +{
-> +	return container_of(filp->private_data, struct open_dice_drvdata, misc);
-> +}
-> +
-> +static int open_dice_wipe(struct open_dice_drvdata *drvdata)
-> +{
-> +	void *kaddr;
-> +
-> +	spin_lock(&drvdata->lock);
-> +	kaddr = devm_memremap(drvdata->misc.this_device, drvdata->rmem->base,
-> +			      drvdata->rmem->size, MEMREMAP_WC);
-> +	if (IS_ERR(kaddr)) {
-> +		spin_unlock(&drvdata->lock);
-> +		return PTR_ERR(kaddr);
-> +	}
-> +
-> +	memset(kaddr, 0, drvdata->rmem->size);
-> +	devm_memunmap(drvdata->misc.this_device, kaddr);
-> +	spin_unlock(&drvdata->lock);
-> +	return 0;
-> +}
-> +
-> +/*
-> + * Copies the size of the reserved memory region to the user-provided buffer.
-> + */
-> +static ssize_t open_dice_read(struct file *filp, char __user *ptr, size_t len,
-> +			      loff_t *off)
-> +{
-> +	unsigned long val = to_open_dice_drvdata(filp)->rmem->size;
+Adds myself as reviewer for Samsung/Exynos platform to help
+in review of current and upcoming SoCs patches.
 
-There's a UAF issue here (and in all file operations that call
-to_open_dice_drvdata) when the platform device in unbounded from the driver
-while userspace has an instance of the misc device open: after open_dice_remove
-is called, all managed resources are freed (which includes this
-open_dice_drvdata allocation).
+Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+---
+ MAINTAINERS | 3 +++
+ 1 file changed, 3 insertions(+)
 
-No new miscdev files can be created, but the existing ones continue to exist
-with a now dangling pointer stored in private_data. So read/write/mmap syscalls
-from userspace will lead to dereferencing this dangling pointer.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 13f9a84a617e..ddc8e8552e8b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2544,6 +2544,7 @@ N:	rockchip
+ 
+ ARM/SAMSUNG S3C, S5P AND EXYNOS ARM ARCHITECTURES
+ M:	Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
++R:	Alim Akhtar <alim.akhtar@samsung.com>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ L:	linux-samsung-soc@vger.kernel.org
+ S:	Maintained
+@@ -15110,6 +15111,7 @@ PIN CONTROLLER - SAMSUNG
+ M:	Tomasz Figa <tomasz.figa@gmail.com>
+ M:	Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+ M:	Sylwester Nawrocki <s.nawrocki@samsung.com>
++R:	Alim Akhtar <alim.akhtar@samsung.com>
+ L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+ L:	linux-samsung-soc@vger.kernel.org
+ S:	Maintained
+@@ -16868,6 +16870,7 @@ SAMSUNG SOC CLOCK DRIVERS
+ M:	Sylwester Nawrocki <s.nawrocki@samsung.com>
+ M:	Tomasz Figa <tomasz.figa@gmail.com>
+ M:	Chanwoo Choi <cw00.choi@samsung.com>
++R:	Alim Akhtar <alim.akhtar@samsung.com>
+ L:	linux-samsung-soc@vger.kernel.org
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/snawrocki/clk.git
 
-> +
-> +	return simple_read_from_buffer(ptr, len, off, &val, sizeof(val));
-> +}
-> +
-> +/*
-> + * Triggers a wipe of the reserved memory region. The user-provided pointer
-> + * is never dereferenced.
-> + */
-> +static ssize_t open_dice_write(struct file *filp, const char __user *ptr,
-> +			       size_t len, loff_t *off)
-> +{
-> +	if (open_dice_wipe(to_open_dice_drvdata(filp)))
-> +		return -EIO;
-> +
-> +	/* Consume the input buffer. */
-> +	return len;
-> +}
-> +
-> +/*
-> + * Creates a mapping of the reserved memory region in user address space.
-> + */
-> +static int open_dice_mmap(struct file *filp, struct vm_area_struct *vma)
-> +{
-> +	struct open_dice_drvdata *drvdata = to_open_dice_drvdata(filp);
-> +
-> +	/* Do not allow userspace to modify the underlying data. */
-> +	if ((vma->vm_flags & VM_WRITE) && (vma->vm_flags & VM_SHARED))
-> +		return -EPERM;
-> +
-> +	/* Create write-combine mapping so all clients observe a wipe. */
-> +	vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
-> +	vma->vm_flags |= VM_DONTCOPY | VM_DONTDUMP;
-> +	return vm_iomap_memory(vma, drvdata->rmem->base, drvdata->rmem->size);
-> +}
+base-commit: 2585cf9dfaaddf00b069673f27bb3f8530e2039c
+-- 
+2.17.1
 
-Is there a reason for mapping this memory instead of, say, copying it to
-userspace via read?
-
-I ask because there's also a problem here related to unbind. Specifically, after
-the device is unbound (open_dice_remove is called), the driver should stop using
-the device resources. But if userspace has mapped these pages in, the resources
-are still in use despite the unbind.
-
-So if we really want to map this to userspace, it seems like we need to keep
-track of all mappings and tear them down on remove.
-
-> +
-> +static const struct file_operations open_dice_fops = {
-> +	.owner = THIS_MODULE,
-> +	.read = open_dice_read,
-> +	.write = open_dice_write,
-> +	.mmap = open_dice_mmap,
-> +};
-> +
-> +static int __init open_dice_probe(struct platform_device *pdev)
-> +{
-> +	static unsigned int dev_idx;
-> +	struct device *dev = &pdev->dev;
-> +	struct reserved_mem *rmem;
-> +	struct open_dice_drvdata *drvdata;
-> +	int ret;
-> +
-> +	rmem = of_reserved_mem_lookup(dev->of_node);
-> +	if (!rmem) {
-> +		dev_err(dev, "failed to lookup reserved memory\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!rmem->size || (rmem->size > ULONG_MAX)) {
-> +		dev_err(dev, "invalid memory region size\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!PAGE_ALIGNED(rmem->base) || !PAGE_ALIGNED(rmem->size)) {
-> +		dev_err(dev, "memory region must be page-aligned\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	drvdata = devm_kmalloc(dev, sizeof(*drvdata), GFP_KERNEL);
-> +	if (!drvdata)
-> +		return -ENOMEM;
-> +
-> +	*drvdata = (struct open_dice_drvdata){
-> +		.lock = __SPIN_LOCK_UNLOCKED(drvdata->lock),
-> +		.rmem = rmem,
-> +		.misc = (struct miscdevice){
-> +			.parent	= dev,
-> +			.name	= drvdata->name,
-> +			.minor	= MISC_DYNAMIC_MINOR,
-> +			.fops	= &open_dice_fops,
-> +			.mode	= 0600,
-> +		},
-> +	};
-> +
-> +	/* Index overflow check not needed, misc_register() will fail. */
-> +	snprintf(drvdata->name, sizeof(drvdata->name), DRIVER_NAME"%u", dev_idx++);
-> +
-> +	ret = misc_register(&drvdata->misc);
-> +	if (ret) {
-> +		dev_err(dev, "failed to register misc device '%s': %d\n",
-> +			drvdata->name, ret);
-> +		return ret;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, drvdata);
-> +	return 0;
-> +}
-> +
-> +static int open_dice_remove(struct platform_device *pdev)
-> +{
-> +	struct open_dice_drvdata *drvdata = platform_get_drvdata(pdev);
-> +
-> +	misc_deregister(&drvdata->misc);
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id open_dice_of_match[] = {
-> +	{ .compatible = "google,open-dice" },
-> +	{},
-> +};
-> +
-> +static struct platform_driver open_dice_driver = {
-> +	.remove = open_dice_remove,
-> +	.driver = {
-> +		.name = DRIVER_NAME,
-> +		.of_match_table = open_dice_of_match,
-> +	},
-> +};
-> +
-> +module_platform_driver_probe(open_dice_driver, open_dice_probe);
-> +
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_AUTHOR("David Brazdil <dbrazdil@google.com>");
-> diff --git a/drivers/of/platform.c b/drivers/of/platform.c
-> index b3faf89744aa..d659ed0be342 100644
-> --- a/drivers/of/platform.c
-> +++ b/drivers/of/platform.c
-> @@ -514,6 +514,7 @@ static const struct of_device_id reserved_mem_matches[] = {
->  	{ .compatible = "qcom,smem" },
->  	{ .compatible = "ramoops" },
->  	{ .compatible = "nvmem-rmem" },
-> +	{ .compatible = "google,open-dice" },
->  	{}
->  };
->  
-> -- 
-> 2.34.1.307.g9b7440fafd-goog
-> 
