@@ -2,134 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63BFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 23:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A25EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 23:50:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245530AbiAEXuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 18:50:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57658 "EHLO
+        id S245547AbiAEXuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 18:50:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245498AbiAEXuF (ORCPT
+        with ESMTP id S245498AbiAEXuj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 18:50:05 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF3FEC061245;
-        Wed,  5 Jan 2022 15:50:04 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        Wed, 5 Jan 2022 18:50:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0180C061245
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 15:50:39 -0800 (PST)
+Received: from mail.kernel.org (unknown [198.145.29.99])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2EEA01EC0409;
-        Thu,  6 Jan 2022 00:49:58 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1641426598;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=yh2HPjhLeSr8ETcMJz1jKaFAeC0HLCRpCRK2exZKb7A=;
-        b=T7rQ8/pTGTLLpgmVHQ6OnV/xoabedB8nMW6rkq/qq5eTJfT6rOAatO5CT+7XW8oKV+aiN5
-        MesceBAIVCXWiBZej3U7pz/2BmZ9fzlNHvy39Wq1kUHJPe7P2kUrDDWt5kUcRs4ixg/veR
-        VFomTwZ/EVb0Sq17zd0PQZMC5h9yOWM=
-Date:   Thu, 6 Jan 2022 00:50:00 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v8 24/40] x86/compressed/acpi: move EFI system table
- lookup to helper
-Message-ID: <YdYuqFcFkcK1d+XP@zn.tnic>
-References: <20211210154332.11526-1-brijesh.singh@amd.com>
- <20211210154332.11526-25-brijesh.singh@amd.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211210154332.11526-25-brijesh.singh@amd.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D7A061849
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 23:50:39 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DA8060E53;
+        Wed,  5 Jan 2022 23:50:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1641426638;
+        bh=ECuVqa+UfngjSq+bE2+WEGaQuS3rZerBbiEQ21q0ux0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=L0Medc595gwxt1HZvx4ptWpcX+QEo0C3RplWIMUxCL9cB9hJWFf6FbkNIIcr9nRaj
+         NXfDom/EJLv3fuVQX2OJi53MWPoIoD2OtTdC8XURV7jmwT+d5NYXrQqP7MGNatjW73
+         b47LYy8ykXLUKvDWjN1/C63rHz/R8MZlc7MdRcGE=
+Date:   Wed, 5 Jan 2022 15:50:36 -0800
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     syzbot <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
+Cc:     glider@google.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] KMSAN: uninit-value in mpol_rebind_task (2)
+Message-Id: <20220105155036.1ee64ea3a4322085b6fbb431@linux-foundation.org>
+In-Reply-To: <00000000000004591305d4bebf11@google.com>
+References: <00000000000004591305d4bebf11@google.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 09:43:16AM -0600, Brijesh Singh wrote:
-> +int efi_get_system_table(struct boot_params *boot_params, unsigned long *sys_tbl_pa,
-> +			 bool *is_efi_64)
+On Tue, 04 Jan 2022 02:03:17 -0800 syzbot <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com> wrote:
 
-Nah, that's doing two things in one function.
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    81c325bbf94e kmsan: hooks: do not check memory in kmsan_in..
+> git tree:       https://github.com/google/kmsan.git master
+> console output: https://syzkaller.appspot.com/x/log.txt?x=112b8f7db00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=2d8b9a11641dc9aa
+> dashboard link: https://syzkaller.appspot.com/bug?extid=217f792c92599518a2ab
+> compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13366ea5b00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14526cb3b00000
 
-The signature should be a lot simpler:
+Thanks.  I don't get it.
 
-unsigned long efi_get_system_table(struct boot_params *bp)
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com
+> 
+> =====================================================
+> BUG: KMSAN: uninit-value in mpol_rebind_policy mm/mempolicy.c:352 [inline]
+> BUG: KMSAN: uninit-value in mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
+>  mpol_rebind_policy mm/mempolicy.c:352 [inline]
 
-returns 0 on failure, non-null on success and then it returns the
-physical address of the system table.
+Appears to be
 
-> +{
-> +	unsigned long sys_tbl;
-> +	struct efi_info *ei;
-> +	bool efi_64;
-> +	char *sig;
-> +
-> +	if (!sys_tbl_pa || !is_efi_64)
-> +		return -EINVAL;
-> +
+	if (!mpol_store_user_nodemask(pol) &&
 
-This...
+But if so, why didn't it also report
 
-> +	ei = &boot_params->efi_info;
-> +	sig = (char *)&ei->efi_loader_signature;
-> +
-> +	if (!strncmp(sig, EFI64_LOADER_SIGNATURE, 4)) {
-> +		efi_64 = true;
-> +	} else if (!strncmp(sig, EFI32_LOADER_SIGNATURE, 4)) {
-> +		efi_64 = false;
-> +	} else {
-> +		debug_putstr("Wrong EFI loader signature.\n");
-> +		return -EOPNOTSUPP;
-> +	}
+	mpol_store_user_nodemask mm/mempolicy.c:184 [inline]
 
-... up to here needs to be another function:
+which is where the 
 
-enum get_efi_type(sig)
+	return pol->flags & MPOL_MODE_FLAGS;
 
-where enum is { EFI64, EFI32, INVALID } or so.
+actually happened?
 
-And you call this function at the call sites:
+>  mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
+>  cpuset_change_task_nodemask kernel/cgroup/cpuset.c:1711 [inline]
+>  cpuset_attach+0x787/0x15e0 kernel/cgroup/cpuset.c:2278
+>  cgroup_migrate_execute+0x1023/0x1d20 kernel/cgroup/cgroup.c:2515
+>  cgroup_migrate kernel/cgroup/cgroup.c:2771 [inline]
+>  cgroup_attach_task+0x540/0x8b0 kernel/cgroup/cgroup.c:2804
+>  __cgroup1_procs_write+0x5cc/0x7a0 kernel/cgroup/cgroup-v1.c:520
+>  cgroup1_tasks_write+0x94/0xb0 kernel/cgroup/cgroup-v1.c:539
+>  cgroup_file_write+0x4c2/0x9e0 kernel/cgroup/cgroup.c:3852
+>  kernfs_fop_write_iter+0x66a/0x9f0 fs/kernfs/file.c:296
+>  call_write_iter include/linux/fs.h:2162 [inline]
+>  new_sync_write fs/read_write.c:503 [inline]
+>  vfs_write+0x1318/0x2030 fs/read_write.c:590
+>  ksys_write+0x28b/0x510 fs/read_write.c:643
+>  __do_sys_write fs/read_write.c:655 [inline]
+>  __se_sys_write fs/read_write.c:652 [inline]
+>  __x64_sys_write+0xdb/0x120 fs/read_write.c:652
+>  do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+>  do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> Uninit was created at:
+>  slab_post_alloc_hook mm/slab.h:524 [inline]
+>  slab_alloc_node mm/slub.c:3251 [inline]
+>  slab_alloc mm/slub.c:3259 [inline]
+>  kmem_cache_alloc+0x902/0x11c0 mm/slub.c:3264
+>  mpol_new mm/mempolicy.c:293 [inline]
 
-	if (efi_get_type(sig) == INVALID)
-		error...
+But mpol_new() does
 
-	sys_tbl_pa = efi_get_system_table(bp);
-	if (!sys_tbl_pa)
-		error...
+	policy->flags = flags;
 
 
-Completely pseudo but you get the idea.
+>  do_set_mempolicy+0x421/0xb70 mm/mempolicy.c:853
+>  kernel_set_mempolicy mm/mempolicy.c:1504 [inline]
+>  __do_sys_set_mempolicy mm/mempolicy.c:1510 [inline]
+>  __se_sys_set_mempolicy+0x44c/0xb60 mm/mempolicy.c:1507
+>  __x64_sys_set_mempolicy+0xd8/0x110 mm/mempolicy.c:1507
+>  do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+>  do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+>  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> 
+> CPU: 1 PID: 3479 Comm: syz-executor124 Not tainted 5.16.0-rc5-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> =====================================================
 
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
