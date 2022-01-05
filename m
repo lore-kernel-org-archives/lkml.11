@@ -2,193 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D47F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 952B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244872AbiAEWMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 17:12:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
+        id S244853AbiAEWUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 17:20:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244851AbiAEWLx (ORCPT
+        with ESMTP id S244826AbiAEWTd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:11:53 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1D40C034002
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 14:11:51 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so5817187pjj.2
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 14:11:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=23epZgha1vduYGwfVlyJXoEQeuHeRLa9G6BF3JRJdSs=;
-        b=bfeddHzRv9HtJY5mtsQRXVAOEmYWMs7ngEG2ATROmYEtn24O+nonhf7KXPUwBbWEoo
-         Wdhdhi1DkRY1Ss9sS4fVkhXWyStKlzF3BgmTaRXF8RixyXt4QlFk/ZjxDMkUfcSZLAkI
-         Yaai59wXJJwwANPPLgBNPHaBM5LgVDD4YPl+E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=23epZgha1vduYGwfVlyJXoEQeuHeRLa9G6BF3JRJdSs=;
-        b=kAzYM43d5Fwn1cswx9FylDVkDrwyAxHPvIlZR0ubXIrmlCz1k3SLOW8KgO+WOxZ57l
-         G9kNZmA7f5NUY1sIy+hFNibI1zVk6XxICHIUpw2C1+TngXs0Nfrqn8ubANByCn5sp9ki
-         ko9uMiKfwErJm9Rvug5FBbgmdgtWHKIF8mDtHfFnCPMAft/eRtTMo5tstTq4f6nAcQhW
-         F18WueXUBGhWdkTRx5b5pZuwlQc+EpgnlNE2PIP4FzvXPAIv0+QGAf2zh27nmEYw2l/Y
-         1wGeQAhPaliW3hnftVj7PvkDUflMZV/WlZwLthFIvUSxp9Nv6fKwJV0eJ8wBqnNMEGef
-         aFYQ==
-X-Gm-Message-State: AOAM531YvF0jWZlupAaUZv8Hn8YEOcOe54X9q49/tCm/1/Wb+oQKlXNt
-        18I7DcA4zZ9fj626afJWS+7IZg==
-X-Google-Smtp-Source: ABdhPJzA1QQolIAGWUj/J4KwNJXn9ApDguH+fthMfPH6jJn1bm/a3nte3k2RSaxKz4wYYdX6DKcLWQ==
-X-Received: by 2002:a17:902:d507:b0:149:e668:e340 with SMTP id b7-20020a170902d50700b00149e668e340mr2314029plg.66.1641420711267;
-        Wed, 05 Jan 2022 14:11:51 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id ot7sm4268637pjb.12.2022.01.05.14.11.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 14:11:51 -0800 (PST)
-Date:   Wed, 5 Jan 2022 14:11:50 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Lyude Paul <lyude@redhat.com>, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] drm/dp: Remove common Post Cursor2 register handling
-Message-ID: <202201051410.8F65E4E0@keescook>
-References: <20220105173507.2420910-1-keescook@chromium.org>
- <878rvujc4t.fsf@intel.com>
+        Wed, 5 Jan 2022 17:19:33 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574FDC061245;
+        Wed,  5 Jan 2022 14:19:28 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JTkRb0srmz4xnF;
+        Thu,  6 Jan 2022 09:19:23 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641421163;
+        bh=QfDjSUj+Bm1/JoRgYzugmB60OsqL++bY3C4BCxzpAVw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=CPNFhlnPI2e/VloHquRN7DqRN9MBDvvHY057ULTc4XqvnT+C9jCWoDXPVG2+SVFQo
+         5acWM/cgVqs8x8hLKp5nRmrhmLaZIstH3Ljv9D3j5yCUXss1mB1qUrq4UjwOJhE51m
+         lyGHoBFUlQ7XS9vbRs+cNBOJMMIq8fyh9dQ6sxVeqYgMzF0Et66J8FF7LMenK9enpV
+         7bD5hPnzelilHl2+gNb1W1HnlmTigbUEFVsp7/UWlfZn6Pp+zNgveBYGIfiATBJ8ip
+         ecsClE9z/oZoXj+ZHf3PL3TVNPLZ5eSQj+cTKT0+N8kEe8JAi+NjprvRy2ScVOSgql
+         IjrD0v8MigTGg==
+Date:   Thu, 6 Jan 2022 09:19:21 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Kajol Jain <kjain@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: build failure after merge of the perf tree
+Message-ID: <20220106091921.3fa617bc@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <878rvujc4t.fsf@intel.com>
+Content-Type: multipart/signed; boundary="Sig_/ad2mF1w6wTRuKxYawgn1ioK";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 08:00:50PM +0200, Jani Nikula wrote:
-> On Wed, 05 Jan 2022, Kees Cook <keescook@chromium.org> wrote:
-> > The link_status array was not large enough to read the Adjust Request
-> > Post Cursor2 register, so remove the common helper function to avoid
-> > an OOB read, found with a -Warray-bounds build:
-> >
-> > drivers/gpu/drm/drm_dp_helper.c: In function 'drm_dp_get_adjust_request_post_cursor':
-> > drivers/gpu/drm/drm_dp_helper.c:59:27: error: array subscript 10 is outside array bounds of 'const u8[6]' {aka 'const unsigned char[6]'} [-Werror=array-bounds]
-> >    59 |         return link_status[r - DP_LANE0_1_STATUS];
-> >       |                ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
-> > drivers/gpu/drm/drm_dp_helper.c:147:51: note: while referencing 'link_status'
-> >   147 | u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
-> >       |                                          ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >
-> > Replace the only user of the helper with an open-coded fetch and decode,
-> > similar to drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c.
-> >
-> > Fixes: 79465e0ffeb9 ("drm/dp: Add helper to get post-cursor adjustments")
-> > Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> > Cc: Maxime Ripard <mripard@kernel.org>
-> > Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> > Cc: David Airlie <airlied@linux.ie>
-> > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > Cc: dri-devel@lists.freedesktop.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> > ---
-> > This is the alternative to:
-> > https://lore.kernel.org/lkml/20211203084354.3105253-1-keescook@chromium.org/
-> > ---
-> >  drivers/gpu/drm/drm_dp_helper.c | 10 ----------
-> >  drivers/gpu/drm/tegra/dp.c      | 11 ++++++++++-
-> >  include/drm/drm_dp_helper.h     |  2 --
-> >  3 files changed, 10 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/gpu/drm/drm_dp_helper.c b/drivers/gpu/drm/drm_dp_helper.c
-> > index 23f9073bc473..c9528aa62c9c 100644
-> > --- a/drivers/gpu/drm/drm_dp_helper.c
-> > +++ b/drivers/gpu/drm/drm_dp_helper.c
-> > @@ -144,16 +144,6 @@ u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
-> >  }
-> >  EXPORT_SYMBOL(drm_dp_get_adjust_tx_ffe_preset);
-> >  
-> > -u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
-> > -					 unsigned int lane)
-> > -{
-> > -	unsigned int offset = DP_ADJUST_REQUEST_POST_CURSOR2;
-> > -	u8 value = dp_link_status(link_status, offset);
-> > -
-> > -	return (value >> (lane << 1)) & 0x3;
-> > -}
-> > -EXPORT_SYMBOL(drm_dp_get_adjust_request_post_cursor);
-> > -
-> >  static int __8b10b_clock_recovery_delay_us(const struct drm_dp_aux *aux, u8 rd_interval)
-> >  {
-> >  	if (rd_interval > 4)
-> > diff --git a/drivers/gpu/drm/tegra/dp.c b/drivers/gpu/drm/tegra/dp.c
-> > index 70dfb7d1dec5..f5535eb04c6b 100644
-> > --- a/drivers/gpu/drm/tegra/dp.c
-> > +++ b/drivers/gpu/drm/tegra/dp.c
-> > @@ -549,6 +549,15 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
-> >  {
-> >  	struct drm_dp_link_train_set *adjust = &link->train.adjust;
-> >  	unsigned int i;
-> > +	u8 post_cursor;
-> > +	int err;
-> > +
-> > +	err = drm_dp_dpcd_read(link->aux, DP_ADJUST_REQUEST_POST_CURSOR2,
-> > +			       &post_cursor, sizeof(post_cursor));
-> 
-> There's a drm_dp_dpcd_readb() for the common 1-byte reads. Other than
-> that,
-> 
-> Reviewed-by: Jani Nikula <jani.nikula@intel.com>
+--Sig_/ad2mF1w6wTRuKxYawgn1ioK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Thanks!
+Hi all,
 
-> 
-> Though obviously that's not enough to actually merge to tegra.
+After merging the perf tree, today's linux-next build (powerpc
+ppc64_defconfig) failed like this:
 
-As in, "a review by Jani isn't sufficient to land via the tegra tree"?
+In file included from include/linux/perf_event.h:17,
+                 from arch/powerpc/perf/isa207-common.h:12,
+                 from arch/powerpc/perf/isa207-common.c:9:
+arch/powerpc/perf/isa207-common.c: In function 'isa207_find_source':
+include/uapi/linux/perf_event.h:1339:11: error: 'PERF_MEM_HOPS_2' undeclare=
+d (first use in this function); did you mean 'PERF_MEM_HOPS_0'?
+ 1339 |  (((__u64)PERF_MEM_##a##_##s) << PERF_MEM_##a##_SHIFT)
+      |           ^~~~~~~~~
+arch/powerpc/perf/isa207-common.h:273:20: note: in expansion of macro 'PERF=
+_MEM_S'
+  273 | #define P(a, b)    PERF_MEM_S(a, b)
+      |                    ^~~~~~~~~~
+arch/powerpc/perf/isa207-common.c:240:51: note: in expansion of macro 'P'
+  240 |     ret |=3D PH(LVL, REM_RAM1) | REM | LEVEL(RAM) | P(HOPS, 2);
+      |                                                   ^
+include/uapi/linux/perf_event.h:1339:11: note: each undeclared identifier i=
+s reported only once for each function it appears in
+ 1339 |  (((__u64)PERF_MEM_##a##_##s) << PERF_MEM_##a##_SHIFT)
+      |           ^~~~~~~~~
+arch/powerpc/perf/isa207-common.h:273:20: note: in expansion of macro 'PERF=
+_MEM_S'
+  273 | #define P(a, b)    PERF_MEM_S(a, b)
+      |                    ^~~~~~~~~~
+arch/powerpc/perf/isa207-common.c:240:51: note: in expansion of macro 'P'
+  240 |     ret |=3D PH(LVL, REM_RAM1) | REM | LEVEL(RAM) | P(HOPS, 2);
+      |                                                   ^
+include/uapi/linux/perf_event.h:1339:11: error: 'PERF_MEM_HOPS_3' undeclare=
+d (first use in this function); did you mean 'PERF_MEM_HOPS_0'?
+ 1339 |  (((__u64)PERF_MEM_##a##_##s) << PERF_MEM_##a##_SHIFT)
+      |           ^~~~~~~~~
+arch/powerpc/perf/isa207-common.h:273:20: note: in expansion of macro 'PERF=
+_MEM_S'
+  273 | #define P(a, b)    PERF_MEM_S(a, b)
+      |                    ^~~~~~~~~~
+arch/powerpc/perf/isa207-common.c:244:51: note: in expansion of macro 'P'
+  244 |     ret |=3D PH(LVL, REM_RAM2) | REM | LEVEL(RAM) | P(HOPS, 3);
+      |                                                   ^
 
-What should next steps be?
+Caused by commit
 
--Kees
+  af2b24f228a0 ("perf powerpc: Add data source encodings for power10 platfo=
+rm")
 
-> 
-> > +	if (err < 0) {
-> > +		DRM_ERROR("failed to read post_cursor2: %d\n", err);
-> > +		post_cursor = 0;
-> > +	}
-> >  
-> >  	for (i = 0; i < link->lanes; i++) {
-> >  		adjust->voltage_swing[i] =
-> > @@ -560,7 +569,7 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
-> >  				DP_TRAIN_PRE_EMPHASIS_SHIFT;
-> >  
-> >  		adjust->post_cursor[i] =
-> > -			drm_dp_get_adjust_request_post_cursor(status, i);
-> > +			(post_cursor >> (i << 1)) & 0x3;
-> >  	}
-> >  }
-> >  
-> > diff --git a/include/drm/drm_dp_helper.h b/include/drm/drm_dp_helper.h
-> > index 472dac376284..fdf3cf6ccc02 100644
-> > --- a/include/drm/drm_dp_helper.h
-> > +++ b/include/drm/drm_dp_helper.h
-> > @@ -1528,8 +1528,6 @@ u8 drm_dp_get_adjust_request_pre_emphasis(const u8 link_status[DP_LINK_STATUS_SI
-> >  					  int lane);
-> >  u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
-> >  				   int lane);
-> > -u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
-> > -					 unsigned int lane);
-> >  
-> >  #define DP_BRANCH_OUI_HEADER_SIZE	0xc
-> >  #define DP_RECEIVER_CAP_SIZE		0xf
-> 
-> -- 
-> Jani Nikula, Intel Open Source Graphics Center
+It looks like patch 1/4 of this series is missing ...
 
--- 
-Kees Cook
+I have used the perf tree from next-20220105 for today.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/ad2mF1w6wTRuKxYawgn1ioK
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHWGWkACgkQAVBC80lX
+0GwPFAf/TiloP1qFatishWP3Y03cnXzCVOaarDGWUcg5mrz+NNa82eqGF/kZaMb5
+bToevb+403g72ChHNdbfR94s+4kSF2rVFimLX2BC++hy0L7i8oHH9AEFek5dammC
+E6I9lnM6OwFaSjs0ugheeD0hszishpQd8zEGs/1kYasz4RsGd2YYtY0vBxIgrIi3
+nCQRSFx5RcFMoZm4CRiIk9f50ePKHhKrvDr11s29J9/NpxPOCorouUIdMpAm2YO6
+OZhArysYQcLadW1di02fKJOStTt+WSbvg09wO1YE3N+Y5hr4BbForZS8UlkNjCMi
+DoWdwOIzaiBapQJMq/BDizUFUXZZkQ==
+=WwQb
+-----END PGP SIGNATURE-----
+
+--Sig_/ad2mF1w6wTRuKxYawgn1ioK--
