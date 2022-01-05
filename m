@@ -2,135 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 17:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242648AbiAERyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 12:54:50 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:35596 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242614AbiAERyj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 12:54:39 -0500
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 205Hh0CM024207;
-        Wed, 5 Jan 2022 17:54:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=Ev05CCMpM+4xVv2FkPcOQa9cW4aBBNjgmR99qDddj/I=;
- b=XnYweohWhqpjwt3+I2gguvXpSeydAZBW/QxI3CQbv1API3hwAfyemUN1CHvMc64JpyVR
- pCS7WeUp9zTtg6mVcvYBGTyI6hE2TwdbvX2szGix1yQFiHwndeUvp+BZvSe9b0ag7Q4K
- HfDw4ypo9ex5Dl7lxgEEH9exEffOFsLGIpuEULJDWIJ9Taup04cbk7KADDEogdXLX/H5
- 3JOz9vsYj/4JbKdxVpwJth2zzUKg5rBj6AYZ/UVWdkv/UYpIbr5WDYfMwjDbNMP1edca
- 5tp4YEcAazySVObkvvDCtNK2mWvO3JZu9MPJvco6Pca8rOlXKWa3f9d88QGbSAIAiq0K ww== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dckgpq4m4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jan 2022 17:54:35 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 205HiwAJ032123;
-        Wed, 5 Jan 2022 17:54:34 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dckgpq4kk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jan 2022 17:54:34 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 205HmA4m021400;
-        Wed, 5 Jan 2022 17:54:32 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3dae7k3wra-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Jan 2022 17:54:32 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 205HsSl737224880
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 5 Jan 2022 17:54:28 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B889042047;
-        Wed,  5 Jan 2022 17:54:28 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 79E584203F;
-        Wed,  5 Jan 2022 17:54:26 +0000 (GMT)
-Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.129.18])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  5 Jan 2022 17:54:26 +0000 (GMT)
-From:   Nayna Jain <nayna@linux.ibm.com>
-To:     linux-integrity@vger.kernel.org, keyrings@vger.kernel.org
-Cc:     dhowells@redhat.com, zohar@linux.ibm.com, jarkko@kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dimitri.ledkov@canonical.com,
-        seth@forshee.me, Nayna Jain <nayna@linux.ibm.com>
-Subject: [PATCH v7 2/3] integrity: make integrity_keyring_from_id() non-static
-Date:   Wed,  5 Jan 2022 12:54:09 -0500
-Message-Id: <20220105175410.554444-3-nayna@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220105175410.554444-1-nayna@linux.ibm.com>
-References: <20220105175410.554444-1-nayna@linux.ibm.com>
+        id S242673AbiAERy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 12:54:59 -0500
+Received: from mail-dm6nam10on2065.outbound.protection.outlook.com ([40.107.93.65]:37856
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242596AbiAERyk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 12:54:40 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jIFQv7wJWI6Znnsn7PcASTK1WUC0171nXaWYPJ4WZrHmYWcEWxPy/a6sd2fvERh+5LTUCj/682OmRAn0RvTUphgM0GK5Cfdx4WhSYjm9ky21pu10DIlYY8UexaLctlsK2LnZpUnOIhpDQa+8EMCv5VA2dbUOwC5r3/KFlihliXS5OI1n/Ve4YUPH4wg3RWETW7RSvOI1EWqULPaBY64TrLckBo0kLMzKHG1kJq1ix3KeZAf41hDUsJBll4+i0fKjrS1cIVWyrILyRMeBKHdkEmpOIqVeMvnSvhv9e/77kStwdUR+tw1Q5WTcDjdOWdcWE1QptXt5Ag2sK+fm3ifcxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iTE0zJLepjNx0tId+Tpxddmk8tT+tUbN0axQWmBrtTE=;
+ b=ildZ/OgUQIg088aMNk+iPe09UE2cSzqavYCaoyIHLSMh0pVwjlla9+4oWCOfmxN15LoTwgxU0/8FuAPuJxU+1w3UUAshlgXqOV8HObosfH4BE6l2ErXIzRczryejP2onXGM96MepWX0Q1yAYYrxUBHMD8IyvMAUSdcoF8d8f3z0/ebzesayoQVmGqatUNHdREO3pnIBBr/47xbnqheq/PFcmOTMHbUh09WcrucPpWofc5TFdWSwjTrPZF/EZMJp63xinBcLloIEn80AwV60S/968Kwb8sTrJeRuxD5ItbtNv0uWon3pIr+EptVAxZW9u9Rrfbc74p71sK/GaY9zPdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iTE0zJLepjNx0tId+Tpxddmk8tT+tUbN0axQWmBrtTE=;
+ b=KacWi1d0pskKEMv0XtbAlcEHjDNp2p/fh9QrbJrAhVYnRK2XaOZdd1+bFefedeIxtnxTYc/S/qtTj5jQhMl6duy9FTyX2TAYMMiVexgDc/LPN3dqINqeF4nTU8N2AYS0qJz6OkIbVUceEA8AZyBn2lMzSOsDGkERJuZk1t9GxMJjNeChZrFDhRQKvEoLINkqedWdHwOKJmHXfGAgAU72PuMC+JEE8PqsTKS3ROvpNwpR8Msw1GiSqB/H5dcrCZVQDdJcg03BZMST1oiPuEe4C/m+d8qmk2MnF2nrzTlzOQ8pIofW/LioM2ddSG/qrvtRSqAVZ/hGzdKBGaSFVv9BqA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5064.namprd12.prod.outlook.com (2603:10b6:208:30a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Wed, 5 Jan
+ 2022 17:54:39 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::464:eb3d:1fde:e6af]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::464:eb3d:1fde:e6af%5]) with mapi id 15.20.4867.009; Wed, 5 Jan 2022
+ 17:54:39 +0000
+Date:   Wed, 5 Jan 2022 13:54:32 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     cgel.zte@gmail.com
+Cc:     devesh.s.sharma@oracle.com, chi.minghao@zte.com.cn,
+        dledford@redhat.com, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, zealci@zte.com.cn, zyjzyj2000@gmail.com
+Subject: Re: [PATCH for-next v2] RDMA/rxe: remove redundant err variable
+Message-ID: <20220105175432.GA2844657@nvidia.com>
+References: <CO6PR10MB56353FD77836D5605CDDB8DEDD769@CO6PR10MB5635.namprd10.prod.outlook.com>
+ <20211215075258.442930-1-chi.minghao@zte.com.cn>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211215075258.442930-1-chi.minghao@zte.com.cn>
+X-ClientProxiedBy: YT2PR01CA0021.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:38::26) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: th7ZWrvkxiV3qLe8xKoHr-uBxFqIy_Q1
-X-Proofpoint-ORIG-GUID: tlHwiohzxd5x44tPaCII1iO9KTkLsvPz
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-05_05,2022-01-04_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- adultscore=0 spamscore=0 mlxlogscore=999 mlxscore=0 clxscore=1015
- lowpriorityscore=0 impostorscore=0 priorityscore=1501 suspectscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201050116
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a6653dce-aabc-4fa5-a097-08d9d07471b9
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5064:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB50647E9EB64568A36785BCE5C24B9@BL1PR12MB5064.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0yTxVhgpFB/NKAz/y/XEPCRk6raEArCtTo31lYyjTIoVEAOu+W4+4r+Vss860HZEq/E+X468Ibsdsj3pEEl6uEftxdtZ/mnwrXrV5vtYZ3pEdDycYXD71sS6n/mkIiZXkmkHaH5/yTo9+C6T3mt/HwNNkbW6PDcdKqIpMl7IFb5Hh0X8VqTz2lsIucov3EaKrh362eL/2wL59G2dQWbKglTatL7G5dvMfDGZV4UcSBy/r/F/dTRppbt/L4SZUQvPfPemcMkW/O8igjRR6J35qkUOplKQ4ZenjpWja4AkTJxIyOSRpxj/5oA5RdWb311jbsbSu7Lcg6NWmmUKaugxZTJKsVVYPZoVJx0tRVqr5KyPxvY72UHIwjErr+h3gwRUL+6wWKxeOHytPf7w4IFn/dQbdeH4lxdzjEs9CdNnK2r6uKc93Zyyc9Gh05bKbBpLNKSymoB4PfDFzC2iBt5YVf6kft7LPSYInk54ajB1+EuxUhIMh3P7SlVp5Q5MbfLvmOYPcTs/oACxqlnFcCqclpsMmKd+pvY/uGZTaGSyveo/SnZ4+qfqwPZyq01uWMAmT46ry7/kmDXexvgzm0k7Bbe93Ql9RQkYyVdVDjIH4VOqTXFbX30XKSAxDWaLMWpIOHr6/ihqzUx7052W/0zWMw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(36756003)(86362001)(2616005)(83380400001)(8936002)(33656002)(8676002)(5660300002)(6512007)(6506007)(4744005)(66946007)(1076003)(26005)(66556008)(66476007)(6486002)(2906002)(6666004)(508600001)(4326008)(38100700002)(6916009)(316002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?F9/y5x1HY/lQl0gc5hai4aGlvfmm1v5VtUVThjlb/a3WTpqHJbMCmgY7PTrm?=
+ =?us-ascii?Q?WwuM5V3pbLy6nMuc8l6TtYtMdyuLEd90ZOuYGw6rQfDl8ZgOmCVLe4aVDoYE?=
+ =?us-ascii?Q?kdMdcvsgslWzkaar1pmyQK4nurSp8gQLWetbxfJDJFf3+e1GofMcG0rvIdMo?=
+ =?us-ascii?Q?dUp/2xP1ywiVwHNhzJchgSGM4PKy7/hMfICv6Rulfc2HKZXl262DlabEwshs?=
+ =?us-ascii?Q?hoZ0N+YGgIvC6tqpfYw0TF41z1uqK86Wmu9hWHj6K2eisstfh2NW6gh/8ovM?=
+ =?us-ascii?Q?A2Iezj6UM3MOZjbuHTEdDsEkHdpYIKHcsYtlfXhjqHbg5l7Eh5zUPiTeVRzz?=
+ =?us-ascii?Q?myjl/0iJLgCSonJznlY0avgsI9WxqhzLn2TxkNl7MadUmrf3DlD42Z+WQIot?=
+ =?us-ascii?Q?3h0ecFiJtmBUXreBhbM8mhp7xL3U4pd6LiGavV+LcassEG/NoCu3cDX2dmvZ?=
+ =?us-ascii?Q?ESFh3HmjyQBrzKqDFKatioGtwzqNmX6CU0d97ImzLS501GElAhmSuYI4XxTM?=
+ =?us-ascii?Q?w8MI8rUMWKsbznuBNvV6avkBSR4okgulWsqabJP34UZtjg7ZFJUIiC5CONLG?=
+ =?us-ascii?Q?ffvvyrOFnMkgoh6OBUwQRQ0mH+wjK8a2/voXmw+KE0YFAS3GR+Xim4StnRb1?=
+ =?us-ascii?Q?6aAkw56kDgPHpiGDFOoUu8Lv+S7NxNxaF5g2uq23uVt0YjNFLmdwSVU9zHF0?=
+ =?us-ascii?Q?RqnsRQtLkVJqbNwMpt/U6l9dWcYpRfA+Gw4Yfjl1cyqYfNI08A4yZacpaFju?=
+ =?us-ascii?Q?3X/J/lZWK9l6fp8svRa8cMNfcel0SSQOFUz/xN7pVbeucFmOfhObeISgw7GJ?=
+ =?us-ascii?Q?9IvjSLj9hpR9Xw0tChGPmoVGjq3whZ7IkQOf6qfvViIprYtwE5BQBE+o/XXl?=
+ =?us-ascii?Q?2mEtVYuxpVkfdjgSCXVfesUR4rNVQZTUPkJtWO1U3kyAFyBszPo56Y9RS+rn?=
+ =?us-ascii?Q?PdQgNpqRlc2XLmXt8odKDAwWcZT4npah/7Bw3tWNmzOYGIKSNKNBDAqrDXnn?=
+ =?us-ascii?Q?jqPmAPUGwlkbxlCGCOTuyAb2/PhqiYactgB960rQJPwXZwstSVGDjrvGshb4?=
+ =?us-ascii?Q?GU5Xfew1N+b+HxSaj2LCZGq60pcSMliejX2UHyC9Z5wI9CRHkekRdVNvnjAl?=
+ =?us-ascii?Q?KmVmrOrcZZ6Yv4JwOua5egVBzcF8TmfFwfkaonbCapCUgEzMh0tYPOBjL/ur?=
+ =?us-ascii?Q?+GZsL3UWsWc6IW0wYERbD54GZlwkWk6hW9QVcG/8wZjrrWw2n6prjyu3mfzS?=
+ =?us-ascii?Q?UmnsSc/Pp9sOtvwhnEuO95tjR09NdYfS4tYBZwdm+UfvQumogZLP6EjnO+2d?=
+ =?us-ascii?Q?fgeuoFkuHUqGsqOwklFEkzdge9+Wr13TO2D+d6NUVhni78wtGT/iE4ypa3XQ?=
+ =?us-ascii?Q?gctmexQ6U1/Znu2xOC3XcfP2zhsmFfVH4up/dRu3RC3sjEFftrpHTFyMrAv+?=
+ =?us-ascii?Q?C6kUNMafRTk3JK6wdr0GtJ1A1vzLZAwcFFtyj2Xy33Ks4Gp6zJkC6O79+HFG?=
+ =?us-ascii?Q?eP6Au/Hw2EZeG3Kvh/XVw+EwGVQI8LGi2bIOIr4Njgc1UEo+cw+c/6lWYUGT?=
+ =?us-ascii?Q?eB0vCwx9n9Tyn9Scamc=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6653dce-aabc-4fa5-a097-08d9d07471b9
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jan 2022 17:54:39.4284
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lVQ6cH5jzWGzK7G1gjaXvBMt3w+DXxflIe2EOAhtD1HIoAyVLqucL2kL1cmkAlds
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5064
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make integrity_keyring_from_id() non-static so that it is accessible
-by other files in security/integrity.
+On Wed, Dec 15, 2021 at 07:52:58AM +0000, cgel.zte@gmail.com wrote:
+> From: Minghao Chi <chi.minghao@zte.com.cn>
+> 
+> Return value directly instead of taking this
+> in another redundant variable.
+> 
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
+> ---
+>  drivers/infiniband/sw/rxe/rxe_net.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
 
-Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-Signed-off-by: Nayna Jain <nayna@linux.ibm.com>
----
- security/integrity/digsig.c    | 2 +-
- security/integrity/integrity.h | 6 ++++++
- 2 files changed, 7 insertions(+), 1 deletion(-)
+Applied to for-next, thanks
 
-diff --git a/security/integrity/digsig.c b/security/integrity/digsig.c
-index 3b06a01bd0fd..0ea40ed8dfcb 100644
---- a/security/integrity/digsig.c
-+++ b/security/integrity/digsig.c
-@@ -38,7 +38,7 @@ static const char * const keyring_name[INTEGRITY_KEYRING_MAX] = {
- #define restrict_link_to_ima restrict_link_by_builtin_trusted
- #endif
- 
--static struct key *integrity_keyring_from_id(const unsigned int id)
-+struct key *integrity_keyring_from_id(const unsigned int id)
- {
- 	if (id >= INTEGRITY_KEYRING_MAX)
- 		return ERR_PTR(-EINVAL);
-diff --git a/security/integrity/integrity.h b/security/integrity/integrity.h
-index 547425c20e11..feb84e1b1105 100644
---- a/security/integrity/integrity.h
-+++ b/security/integrity/integrity.h
-@@ -167,6 +167,7 @@ int __init integrity_init_keyring(const unsigned int id);
- int __init integrity_load_x509(const unsigned int id, const char *path);
- int __init integrity_load_cert(const unsigned int id, const char *source,
- 			       const void *data, size_t len, key_perm_t perm);
-+struct key *integrity_keyring_from_id(const unsigned int id);
- #else
- 
- static inline int integrity_digsig_verify(const unsigned int id,
-@@ -194,6 +195,11 @@ static inline int __init integrity_load_cert(const unsigned int id,
- {
- 	return 0;
- }
-+
-+static inline struct key *integrity_keyring_from_id(const unsigned int id)
-+{
-+	return ERR_PTR(-EOPNOTSUPP);
-+}
- #endif /* CONFIG_INTEGRITY_SIGNATURE */
- 
- #ifdef CONFIG_INTEGRITY_ASYMMETRIC_KEYS
--- 
-2.27.0
-
+Jason
