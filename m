@@ -2,142 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 22:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C12C43217
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 23:01:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245250AbiAEW5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 17:57:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45970 "EHLO
+        id S245272AbiAEXBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 18:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245203AbiAEW52 (ORCPT
+        with ESMTP id S245258AbiAEXBd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 17:57:28 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE55C061245;
-        Wed,  5 Jan 2022 14:57:28 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id c2so659122pfc.1;
-        Wed, 05 Jan 2022 14:57:28 -0800 (PST)
+        Wed, 5 Jan 2022 18:01:33 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E9FC061201
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 15:01:33 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so560444pjb.5
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 15:01:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DlCMujE1/OmNnvwwZTqguq1pdTbjjaD9QBsoFGAZY5o=;
-        b=Hod97O7eHY5pJOJOH1z0I335xtcE3oGtGAqR59E0P0HcffpgVcr2pyWgwcR0D7lWzB
-         pUBOAkJNBw8TlfxhtNkA5EYUxUIN4dBMy52tTrBztsRmh9SEiJCj8rNtKVv49MPtwTKO
-         MuiVzoNhLVf9a6XDXvArPYrzvBIfviYT/GlCG27dDu11eJu4cwRTXB2vnP8KYPkgF/vD
-         wF1dGygeIYHwFaGgBGaqtK9bxnfaMKRD9zKQ6u8Mq2Fjug+fN49oxyT+KYdjJfFR8iis
-         xR2x0KbYmFxEq3Ejrz8se1V2DXmGEWApikbikZho4MLPgqto1Sh7qu2NgOqoD8rx3TTW
-         Pv2A==
+        d=intel-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lYUQ0jogQjWg2SKVQ30dsRSlcaeazzEtqXlzWbNNuus=;
+        b=6/Bg0iJxptBJ5muNxEYKrhAdId1eegrkiDTwzcOkRNG/1pZwpe1Kc0tU6bymS70DU+
+         8ESBLtk3380N/aKA8dhXdtVbUKbQsElmA07znjldaLWcH03yYl0NJ+Q3XI9jXdeV+wTA
+         qiCK76kfVGn9XvWsW5PPFXZDbq1/msVbB258rBMaV3S/YjxN4yci+XoYeyeBXenxbope
+         yR2CxFbsnkQBSpIRlpWUkp2grrtqnY9HE9vcXNYsrBYd/F9pbY0XWdeUm3fL70Gb4cVx
+         1lwv7FgulwaSqIh8FBqTbxrhxp9I7C4OUgas3UZmtPvyetq/ZpjcVvDGItfdG8xgBLGW
+         CJ0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DlCMujE1/OmNnvwwZTqguq1pdTbjjaD9QBsoFGAZY5o=;
-        b=Sd/FOFjpqYJiOw2q+J8iJFinJg9ndUnKQAV8SFT5JFl13oYRyUbDTd8QaPzk0bo5dx
-         ocdiP7ZCYRdtqH7HHdd9PO8pTxMwvu+wxwUUfOM/wfwQmHCWlRUmLmo9DyhjUcWH9im6
-         DAOwRbsgR1YLFS+ySqe8XYf79sVi70cv8CVKRnSfkTo3Z7EYzNSRNtn/x3+zovLVIS9Q
-         esyPDBfz7+WicwnVlhlqdivn1FPUTIGoTPaGtGZIqRwUE1EUO43bx411W/s+YfZ9w3p4
-         T/cu1v5bFiSYIVTuhbVKWGk2lemslqbUNQIfXnm5yQe9E738euUCOXbMnKQKwjSzvatO
-         zGfA==
-X-Gm-Message-State: AOAM530BOK0aEL+GdQLHTV+9yikfVfYVdiWbG7dGidqwyhYTc85/c7pZ
-        7w7hgoacsV75hKU+/kiMG/79wzuRsBk=
-X-Google-Smtp-Source: ABdhPJwPgbApNZNhCp7Y2clmVhB/DVQ5vm7YxX5Jqp6RXmiRXEUZ9J9pJzcDY18nZbYi6aSsnE1dhQ==
-X-Received: by 2002:a63:9049:: with SMTP id a70mr50526530pge.625.1641423447988;
-        Wed, 05 Jan 2022 14:57:27 -0800 (PST)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id t8sm140372pfj.114.2022.01.05.14.57.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 14:57:27 -0800 (PST)
-Subject: Re: [PATCH 1/1] scripts: sphinx-pre-install: add required ctex
- dependency
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     hch@lst.de, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, corbet@lwn.net
-References: <87mtkcxws9.fsf@meer.lwn.net>
- <eeb773ef-0354-be1f-8438-07e3324fa9f6@gmail.com>
- <07f8cf68-525b-4fca-a1f9-fd40150fc6e1@gmail.com>
- <20220104090548.76112534@coco.lan>
- <73e62b16-7685-ace2-18d4-e1b79f543caf@gmail.com>
- <20220105084809.157e3f34@coco.lan>
- <241d31e4-5447-a075-69b6-11c14427582d@gmail.com>
- <20220105224230.0700351f@coco.lan>
-From:   Akira Yokosawa <akiyks@gmail.com>
-Message-ID: <84f90b41-7a18-d83c-8739-1d394175f74a@gmail.com>
-Date:   Thu, 6 Jan 2022 07:57:22 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lYUQ0jogQjWg2SKVQ30dsRSlcaeazzEtqXlzWbNNuus=;
+        b=Vtpbi8NzIhTIVDjUIvmtkw6D0ODRTYrpaQ5/uhIR/1y9F4fC8GgL8aq2oD7pKC4EZM
+         F0gvZF2OIi/6En1FlOK+5k1xowzyj9gc9iUTzAhhbOyA63SAoeh93ihB/EPqXKFnlKXV
+         2GLxGUX9UXy9SgHPAcf4d/kHeDfpvx1IfgVp+89Dib1R+g7dMOF/c/NHji3gNCm0mFrf
+         R1kYUJK1TGElesvhFuD52qEtBs/eK4+VWzSTWW3EtP+evkAVAjwpkQ5iUD3eefVxto30
+         +bYTsO+IxzI+ybToB/HLbjNxuoY26xz3QIWeUoBVqYdCZeW4F1/j/tuwwCZgm8tBQ6Ln
+         L/sQ==
+X-Gm-Message-State: AOAM531zkYxlaxU8svjvPiRoXyp8Lp7bSfZKILk0g+RxItgh9dhh8xlp
+        xiNJCwu/41ASsBB8R24cxx1AIRgsr0vk9jqPA3qfGQ==
+X-Google-Smtp-Source: ABdhPJzf5eJTSEClLg5zwO6K5qaFfN5H8KDGlVe5p8PWRR8tnpS8qX7iqOl0I8aQyNguu6qYdaAdcFHeQgkO1dL21w0=
+X-Received: by 2002:a17:90a:e7cb:: with SMTP id kb11mr6739703pjb.8.1641423693104;
+ Wed, 05 Jan 2022 15:01:33 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220105224230.0700351f@coco.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211226143439.3985960-1-ruansy.fnst@fujitsu.com>
+ <20211226143439.3985960-3-ruansy.fnst@fujitsu.com> <20220105181230.GC398655@magnolia>
+ <CAPcyv4iTaneUgdBPnqcvLr4Y_nAxQp31ZdUNkSRPsQ=9CpMWHg@mail.gmail.com>
+ <20220105185626.GE398655@magnolia> <CAPcyv4h3M9f1-C5e9kHTfPaRYR_zN4gzQWgR+ZyhNmG_SL-u+A@mail.gmail.com>
+ <20220105224727.GG398655@magnolia>
+In-Reply-To: <20220105224727.GG398655@magnolia>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Wed, 5 Jan 2022 15:01:22 -0800
+Message-ID: <CAPcyv4iZ88FPeZC1rt_bNdWHDZ5oh7ua31NuET2-oZ1UcMrH2Q@mail.gmail.com>
+Subject: Re: [PATCH v9 02/10] dax: Introduce holder for dax_device
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     Shiyang Ruan <ruansy.fnst@fujitsu.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-xfs <linux-xfs@vger.kernel.org>,
+        Linux NVDIMM <nvdimm@lists.linux.dev>,
+        Linux MM <linux-mm@kvack.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        david <david@fromorbit.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Jane Chu <jane.chu@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 5 Jan 2022 22:42:30 +0100, Mauro Carvalho Chehab wrote:
-> Em Wed, 5 Jan 2022 21:09:59 +0900
-> Akira Yokosawa <akiyks@gmail.com> escreveu:
-> 
-[...]
->>
->> I'll test it under various distros/setups.
->> It may take a while.
-> 
-> Did a quick test here with this lxc container:
-> 
-> 	$ OS=debian REL=bullseye ;lxc-create -n ${OS} -t /usr/share/lxc/templates/lxc-download -- --dist ${OS} --release ${REL} --arch amd64
-> 
-> If we add check_missing_tex(), it will then complain about lots
-> of packages that don't exist in Debian (se logs at the end).
+On Wed, Jan 5, 2022 at 2:47 PM Darrick J. Wong <djwong@kernel.org> wrote:
+>
+> On Wed, Jan 05, 2022 at 11:20:12AM -0800, Dan Williams wrote:
+> > On Wed, Jan 5, 2022 at 10:56 AM Darrick J. Wong <djwong@kernel.org> wrote:
+> > >
+> > > On Wed, Jan 05, 2022 at 10:23:08AM -0800, Dan Williams wrote:
+> > > > On Wed, Jan 5, 2022 at 10:12 AM Darrick J. Wong <djwong@kernel.org> wrote:
+> > > > >
+> > > > > On Sun, Dec 26, 2021 at 10:34:31PM +0800, Shiyang Ruan wrote:
+> > > > > > To easily track filesystem from a pmem device, we introduce a holder for
+> > > > > > dax_device structure, and also its operation.  This holder is used to
+> > > > > > remember who is using this dax_device:
+> > > > > >  - When it is the backend of a filesystem, the holder will be the
+> > > > > >    instance of this filesystem.
+> > > > > >  - When this pmem device is one of the targets in a mapped device, the
+> > > > > >    holder will be this mapped device.  In this case, the mapped device
+> > > > > >    has its own dax_device and it will follow the first rule.  So that we
+> > > > > >    can finally track to the filesystem we needed.
+> > > > > >
+> > > > > > The holder and holder_ops will be set when filesystem is being mounted,
+> > > > > > or an target device is being activated.
+> > > > > >
+> > > > > > Signed-off-by: Shiyang Ruan <ruansy.fnst@fujitsu.com>
+> > > > > > ---
+> > > > > >  drivers/dax/super.c | 62 +++++++++++++++++++++++++++++++++++++++++++++
+> > > > > >  include/linux/dax.h | 29 +++++++++++++++++++++
+> > > > > >  2 files changed, 91 insertions(+)
+> > > > > >
+> > > > > > diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+> > > > > > index c46f56e33d40..94c51f2ee133 100644
+> > > > > > --- a/drivers/dax/super.c
+> > > > > > +++ b/drivers/dax/super.c
+> > > > > > @@ -20,15 +20,20 @@
+> > > > > >   * @inode: core vfs
+> > > > > >   * @cdev: optional character interface for "device dax"
+> > > > > >   * @private: dax driver private data
+> > > > > > + * @holder_data: holder of a dax_device: could be filesystem or mapped device
+> > > > > >   * @flags: state and boolean properties
+> > > > > > + * @ops: operations for dax_device
+> > > > > > + * @holder_ops: operations for the inner holder
+> > > > > >   */
+> > > > > >  struct dax_device {
+> > > > > >       struct inode inode;
+> > > > > >       struct cdev cdev;
+> > > > > >       void *private;
+> > > > > >       struct percpu_rw_semaphore rwsem;
+> > > > > > +     void *holder_data;
+> > > > > >       unsigned long flags;
+> > > > > >       const struct dax_operations *ops;
+> > > > > > +     const struct dax_holder_operations *holder_ops;
+> > > > > >  };
+> > > > > >
+> > > > > >  static dev_t dax_devt;
+> > > > > > @@ -192,6 +197,29 @@ int dax_zero_page_range(struct dax_device *dax_dev, pgoff_t pgoff,
+> > > > > >  }
+> > > > > >  EXPORT_SYMBOL_GPL(dax_zero_page_range);
+> > > > > >
+> > > > > > +int dax_holder_notify_failure(struct dax_device *dax_dev, u64 off,
+> > > > > > +                           u64 len, int mf_flags)
+> > > > > > +{
+> > > > > > +     int rc;
+> > > > > > +
+> > > > > > +     dax_read_lock(dax_dev);
+> > > > > > +     if (!dax_alive(dax_dev)) {
+> > > > > > +             rc = -ENXIO;
+> > > > > > +             goto out;
+> > > > > > +     }
+> > > > > > +
+> > > > > > +     if (!dax_dev->holder_ops) {
+> > > > > > +             rc = -EOPNOTSUPP;
+> > > > > > +             goto out;
+> > > > > > +     }
+> > > > > > +
+> > > > > > +     rc = dax_dev->holder_ops->notify_failure(dax_dev, off, len, mf_flags);
+> > > > > > +out:
+> > > > > > +     dax_read_unlock(dax_dev);
+> > > > > > +     return rc;
+> > > > > > +}
+> > > > > > +EXPORT_SYMBOL_GPL(dax_holder_notify_failure);
+> > > > > > +
+> > > > > >  #ifdef CONFIG_ARCH_HAS_PMEM_API
+> > > > > >  void arch_wb_cache_pmem(void *addr, size_t size);
+> > > > > >  void dax_flush(struct dax_device *dax_dev, void *addr, size_t size)
+> > > > > > @@ -254,6 +282,10 @@ void kill_dax(struct dax_device *dax_dev)
+> > > > > >               return;
+> > > > > >       dax_write_lock(dax_dev);
+> > > > > >       clear_bit(DAXDEV_ALIVE, &dax_dev->flags);
+> > > > > > +
+> > > > > > +     /* clear holder data */
+> > > > > > +     dax_dev->holder_ops = NULL;
+> > > > > > +     dax_dev->holder_data = NULL;
+> > > > > >       dax_write_unlock(dax_dev);
+> > > > > >  }
+> > > > > >  EXPORT_SYMBOL_GPL(kill_dax);
+> > > > > > @@ -401,6 +433,36 @@ void put_dax(struct dax_device *dax_dev)
+> > > > > >  }
+> > > > > >  EXPORT_SYMBOL_GPL(put_dax);
+> > > > > >
+> > > > > > +void dax_register_holder(struct dax_device *dax_dev, void *holder,
+> > > > > > +             const struct dax_holder_operations *ops)
+> > > > > > +{
+> > > > > > +     if (!dax_alive(dax_dev))
+> > > > > > +             return;
+> > > > > > +
+> > > > > > +     dax_dev->holder_data = holder;
+> > > > > > +     dax_dev->holder_ops = ops;
+> > > > >
+> > > > > Shouldn't this return an error code if the dax device is dead or if
+> > > > > someone already registered a holder?  I'm pretty sure XFS should not
+> > > > > bind to a dax device if someone else already registered for it...
+> > > >
+> > > > Agree, yes.
+> > > >
+> > > > >
+> > > > > ...unless you want to use a notifier chain for failure events so that
+> > > > > there can be multiple consumers of dax failure events?
+> > > >
+> > > > No, I would hope not. It should be 1:1 holders to dax-devices. Similar
+> > > > ownership semantics like bd_prepare_to_claim().
+> > >
+> > > Does each partition on a pmem device still have its own dax_device?
+> >
+> > No, it never did...
+> >
+> > Just as before, each dax-device is still associated with a gendisk /
+> > whole-block_device. The recent change is that instead of needing that
+> > partition-block_device plumbed to convert a relative block number to
+> > its absolute whole-block_device offset the filesystem now handles that
+> > at iomap_begin() time. See:
+> >
+> >                 if (mapping_flags & IOMAP_DAX)
+> >                         iomap->addr += target->bt_dax_part_off;
+> >
+> > ...in xfs_bmbt_to_iomap() (in -next). I.e. bdev_dax_pgoff() is gone
+> > with the lead-in reworks.
+>
+> OH.  Crap, Dan's right:
+>
+> XFS (pmem0p1): ddev dax = 0xffff88800304ed00 bdev = 0xffff8880480d6180
+> XFS (pmem0p2): ddev dax = 0xffff88800304ed00 bdev = 0xffff8880480d4380
+>
+> Unless you're planning to remove partition support too, this patch needs
+> to be reworked so that multiple filesystems in separate partitions can
+> each call dax_register_holder to receive memory_failure notifications
+> for their partition.
 
-Now I think I understand what kind of tests we need.
+Oh, crap indeed. I think this gets back to the slow tip-toeing away
+from dax + partition support. While FSDAX can continue to support
+"legacy/experimental" operation on partitions of DAX capable block
+devices, I think failure notification + reflink support is where we
+draw the line and say "DAX on partitions was a mistake, it's too late
+to undo that mistake, but going forward for new FSDAX features it
+requires switching from block-device partitions to pmem-namespaces if
+you need sub-division support and new DAX features."
 
-My plan was to intentionally uninstall texlive-ctex (or whichever
-package contains ctexhook.sty) and see if the lack of ctexhook.sty
-is detected or not.
+> /methinks this sharing is all a little scary...
 
-Apparently, such a test would mean little for sphinx_pre_install.
-
-> 
-> That's one of the biggest issue with texlive: each distro splits it on
-> different ways. So, basically, the %texlive hash at the script is meant
-> to the way Fedora and openSuse distros usually map packages. I would
-> expect that Mageia would also be similar if not identical, but other
-> distros map packages on different ways.
-> 
-> I'll prepare another patch for fixing the debian issue.
-
-Then I'll wait for it.
-
-        Thanks, Akira
-
-> 
-> Regards,
-> Mauro
-> 
-> ---
-> 
-> mchehab@debian:~/docs$ make pdfdocs
-> Documentation/Makefile:41: The 'sphinx-build' command was not found. Make sure you have Sphinx installed and in PATH, or set the SPHINXBUILD make variable to point to the full path of the 'sphinx-build' executable.
-> 
-> Detected OS: Debian GNU/Linux 11.
-> Warning: better to also install "convert".
-> Warning: better to also install "dot".
-> Warning: better to also install "dvipng".
-> Warning: better to also install "fonts-dejavu".
-> Warning: better to also install "fonts-noto-cjk".
-> ERROR: please install "gcc", otherwise, build won't work.
-> Warning: better to also install "latexmk".
-> ERROR: please install "python", otherwise, build won't work.
-> Warning: better to also install "rsvg-convert".
-> Warning: better to also install "texlive-amscls".
-> Warning: better to also install "texlive-amsfonts".
-> Warning: better to also install "texlive-amsmath".
-> Warning: better to also install "texlive-anyfontsize".
-> Warning: better to also install "texlive-capt-of".
-> Warning: better to also install "texlive-cmap".
-> Warning: better to also install "texlive-ctex".
-[...]
-
+Yes, I think we should just fail the holder registration and
+DAX+reflink unless the FS being mounted on a whole device. I know Ted
+and others had reservations about moving filesystems to be mounted on
+dax-devices directly, but hopefully the whole-block_device requirement
+is a workable middle ground?
