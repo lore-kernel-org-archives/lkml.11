@@ -2,237 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFD1C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 367CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed,  5 Jan 2022 20:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244184AbiAEUpf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 15:45:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55716 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231591AbiAEUpd (ORCPT
+        id S244195AbiAEUq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 15:46:27 -0500
+Received: from out03.mta.xmission.com ([166.70.13.233]:54592 "EHLO
+        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244187AbiAEUqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 15:45:33 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6608BB81D6D;
-        Wed,  5 Jan 2022 20:45:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0A16C36AE9;
-        Wed,  5 Jan 2022 20:45:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641415531;
-        bh=G7G9G+DNY8AQXWaodNb7uY5xeH89Trio4fhtqX8RDis=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tNFzoQ4NpV/Bn6E2XIV+Yaa6ujiMyq6eqcmvNSIZV2avo7ACXhMzgh/brzF+5BUoD
-         PjTmA9DsNSjNBN8Jjz41/QX99go6ZAydjktxW8Jp7yZSTxF9y2+kfnIjeF/QGBYcfX
-         QPw506ttW3X0Rfp7IH9HeKAq/1Ass2e+a7mFnqrV3Wpf8frKNKXRHJIutyEwn2iWfL
-         2xWOSbz0FjJeevsEotlbvF8so9tzzoupYElQSd4brcFhFUIlWbU0tySa1Db3GbwuRn
-         NVimxwXzwfXGcfQCVxDj9aFaO787tmHCKGm5TvqCozRK+5QxevYb/3whoLWAdlwHun
-         PQwYKjfPVDBEQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 5.16-final
-Date:   Wed,  5 Jan 2022 12:45:30 -0800
-Message-Id: <20220105204530.3706167-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        Wed, 5 Jan 2022 15:46:23 -0500
+Received: from in01.mta.xmission.com ([166.70.13.51]:38802)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n5DAr-001UfZ-0r; Wed, 05 Jan 2022 13:46:21 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:47550 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n5DAn-00BQ0p-Mf; Wed, 05 Jan 2022 13:46:20 -0700
+From:   ebiederm@xmission.com (Eric W. Biederman)
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>,
+        Chris Zankel <chris@zankel.net>,
+        Max Filippov <jcmvbkbc@gmail.com>
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+        <20211208202532.16409-2-ebiederm@xmission.com>
+        <YdUmN7n4W5YETUhW@zeniv-ca.linux.org.uk>
+Date:   Wed, 05 Jan 2022 14:46:10 -0600
+In-Reply-To: <YdUmN7n4W5YETUhW@zeniv-ca.linux.org.uk> (Al Viro's message of
+        "Wed, 5 Jan 2022 05:01:43 +0000")
+Message-ID: <871r1l9ai5.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1n5DAn-00BQ0p-Mf;;;mid=<871r1l9ai5.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/cxTE75XzmaE/dsLVkJGQ6nZA+2vo0yWw=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 02/10] exit: Add and use make_task_dead.
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus!
+Al Viro <viro@zeniv.linux.org.uk> writes:
 
-One last PR, turns out some of the recent fixes did more harm than good.
+> On Wed, Dec 08, 2021 at 02:25:24PM -0600, Eric W. Biederman wrote:
+>> There are two big uses of do_exit.  The first is it's design use to be
+>> the guts of the exit(2) system call.  The second use is to terminate
+>> a task after something catastrophic has happened like a NULL pointer
+>> in kernel code.
+>> 
+>> Add a function make_task_dead that is initialy exactly the same as
+>> do_exit to cover the cases where do_exit is called to handle
+>> catastrophic failure.  In time this can probably be reduced to just a
+>> light wrapper around do_task_dead. For now keep it exactly the same so
+>> that there will be no behavioral differences introducing this new
+>> concept.
+>> 
+>> Replace all of the uses of do_exit that use it for catastraphic
+>> task cleanup with make_task_dead to make it clear what the code
+>> is doing.
+>> 
+>> As part of this rename rewind_stack_do_exit
+>> rewind_stack_and_make_dead.
+>
+> Umm...   What about .Linvalid_mask: in arch/xtensa/kernel/entry.S?
+> That's an obvious case for your make_task_dead().
 
-The following changes since commit 74c78b4291b4466b44a57b3b7c3b98ad02628686:
+Good catch.
 
-  Merge tag 'net-5.16-rc8' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-12-30 11:12:12 -0800)
+Being in assembly it did not have anything after the name do_exit so it
+hid from my regex "[^A-Za-z0-9_]do_exit[^A-Za-z0-9]".  Thank you for
+finding that.
 
-are available in the Git repository at:
+Skimming the surrounding code it looks like Linvalid_mask can only be
+reached by buggy hardware or buggy kernel code.    If userspace could
+trigger the condition it would be a candidate for force_exit_sig.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.16-final
+I am a bit puzzled why die is not called, instead of die being
+handrolled there.
 
-for you to fetch changes up to db54c12a3d7e3eedd37aa08efc9362e905f07716:
+xtensa folks any thoughts?
 
-  selftests: set amt.sh executable (2022-01-05 10:27:19 -0800)
+If not I will queue up a minimal patch to replace do_exit with
+make_task_dead.
 
-----------------------------------------------------------------
-Networking fixes for 5.16-final, including fixes from bpf, and WiFi.
+Eric
 
-Current release - regressions:
-
-  - Revert "xsk: Do not sleep in poll() when need_wakeup set",
-    made the problem worse
-
-  - Revert "net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in
-    __fixed_phy_register", broke EPROBE_DEFER handling
-
-  - Revert "net: usb: r8152: Add MAC pass-through support for more
-    Lenovo Docks", broke setups without a Lenovo dock
-
-Current release - new code bugs:
-
-  - selftests: set amt.sh executable
-
-Previous releases - regressions:
-
-  - batman-adv: mcast: don't send link-local multicast to mcast routers
-
-Previous releases - always broken:
-
-  - ipv4/ipv6: check attribute length for RTA_FLOW / RTA_GATEWAY
-
-  - sctp: hold endpoint before calling cb in
-	sctp_transport_lookup_process
-
-  - mac80211: mesh: embed mesh_paths and mpp_paths into
-    ieee80211_if_mesh to avoid complicated handling of sub-object
-    allocation failures
-
-  - seg6: fix traceroute in the presence of SRv6
-
-  - tipc: fix a kernel-infoleak in __tipc_sendmsg()
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Aaron Ma (1):
-      Revert "net: usb: r8152: Add MAC passthrough support for more Lenovo Docks"
-
-Andrew Lunn (3):
-      seg6: export get_srh() for ICMP handling
-      icmp: ICMPV6: Examine invoking packet for Segment Route Headers.
-      udp6: Use Segment Routing Header for dest address if present
-
-Arthur Kiyanovski (3):
-      net: ena: Fix undefined state when tx request id is out of bounds
-      net: ena: Fix wrong rx request id by resetting device
-      net: ena: Fix error handling when calculating max IO queues number
-
-Christoph Hellwig (1):
-      netrom: fix copying in user data in nr_setsockopt
-
-Colin Ian King (1):
-      bpf, selftests: Fix spelling mistake "tained" -> "tainted"
-
-David Ahern (7):
-      ipv4: Check attribute length for RTA_GATEWAY in multipath route
-      ipv4: Check attribute length for RTA_FLOW in multipath route
-      ipv6: Check attribute length for RTA_GATEWAY in multipath route
-      ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
-      lwtunnel: Validate RTA_ENCAP_TYPE attribute length
-      ipv6: Continue processing multipath route even if gateway attribute is invalid
-      ipv6: Do cleanup if attribute validation fails in multipath route
-
-David S. Miller (4):
-      Merge branch 'mpr-len-checks' David Ahern says:
-      Merge branch 'ena-fixes'
-      Merge branch 'srv6-traceroute'
-      Merge branch '40GbE' of git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue
-
-Di Zhu (1):
-      i40e: fix use-after-free in i40e_sync_filters_subtask()
-
-Eric Dumazet (1):
-      sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
-
-Florian Fainelli (1):
-      Revert "net: phy: fixed_phy: Fix NULL vs IS_ERR() checking in __fixed_phy_register"
-
-Gagan Kumar (1):
-      mctp: Remove only static neighbour on RTM_DELNEIGH
-
-Haimin Zhang (1):
-      net ticp:fix a kernel-infoleak in __tipc_sendmsg()
-
-Jakub Kicinski (4):
-      Merge https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge tag 'batadv-net-pullrequest-20220103' of git://git.open-mesh.org/linux-merge
-      Merge tag 'mac80211-for-net-2022-01-04' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211
-      Merge tag 'ieee802154-for-net-2022-01-05' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan
-
-Jedrzej Jagielski (1):
-      i40e: Fix incorrect netdev's real number of RX/TX queues
-
-Jianguo Wu (1):
-      selftests: net: udpgro_fwd.sh: explicitly checking the available ping feature
-
-Karen Sornek (1):
-      iavf: Fix limit of total number of queues to active queues of VF
-
-Linus Lüssing (1):
-      batman-adv: mcast: don't send link-local multicast to mcast routers
-
-Magnus Karlsson (1):
-      Revert "xsk: Do not sleep in poll() when need_wakeup set"
-
-Markus Koch (1):
-      net/fsl: Remove leftover definition in xgmac_mdio
-
-Martin Habets (1):
-      sfc: The RX page_ring is optional
-
-Mateusz Palczewski (2):
-      i40e: Fix to not show opcode msg on unsuccessful VF MAC change
-      i40e: Fix for displaying message regarding NVM version
-
-Pavel Skripkin (2):
-      mac80211: mesh: embedd mesh_paths and mpp_paths into ieee80211_if_mesh
-      ieee802154: atusb: fix uninit value in atusb_set_extended_addr
-
-Taehee Yoo (1):
-      selftests: set amt.sh executable
-
-Thomas Toye (1):
-      rndis_host: support Hytera digital radios
-
-Tom Rix (1):
-      mac80211: initialize variable have_higher_than_11mbit
-
-Xin Long (1):
-      sctp: hold endpoint before calling cb in sctp_transport_lookup_process
-
- drivers/net/ethernet/amazon/ena/ena_netdev.c       | 49 +++++++-----
- drivers/net/ethernet/freescale/xgmac_mdio.c        |  1 -
- drivers/net/ethernet/intel/i40e/i40e_main.c        | 60 ++++++++++++---
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 40 ++++++++--
- drivers/net/ethernet/intel/iavf/iavf_main.c        |  5 +-
- drivers/net/ethernet/sfc/falcon/rx.c               |  5 ++
- drivers/net/ethernet/sfc/rx_common.c               |  5 ++
- drivers/net/ieee802154/atusb.c                     | 10 ++-
- drivers/net/phy/fixed_phy.c                        |  4 +-
- drivers/net/usb/r8152.c                            |  9 ++-
- drivers/net/usb/rndis_host.c                       |  5 ++
- include/linux/ipv6.h                               |  2 +
- include/net/sctp/sctp.h                            |  3 +-
- include/net/seg6.h                                 | 21 +++++
- net/batman-adv/multicast.c                         | 15 ++--
- net/batman-adv/multicast.h                         | 10 ++-
- net/batman-adv/soft-interface.c                    |  7 +-
- net/core/lwtunnel.c                                |  4 +
- net/ipv4/fib_semantics.c                           | 49 ++++++++++--
- net/ipv6/icmp.c                                    |  6 +-
- net/ipv6/route.c                                   | 32 +++++++-
- net/ipv6/seg6.c                                    | 59 ++++++++++++++
- net/ipv6/seg6_local.c                              | 33 +-------
- net/ipv6/udp.c                                     |  3 +-
- net/mac80211/ieee80211_i.h                         | 24 +++++-
- net/mac80211/mesh.h                                | 22 +-----
- net/mac80211/mesh_pathtbl.c                        | 89 ++++++++--------------
- net/mac80211/mlme.c                                |  2 +-
- net/mctp/neigh.c                                   |  9 ++-
- net/netrom/af_netrom.c                             |  2 +-
- net/sched/sch_qfq.c                                |  6 +-
- net/sctp/diag.c                                    | 46 +++++------
- net/sctp/socket.c                                  | 22 ++++--
- net/tipc/socket.c                                  |  2 +
- net/xdp/xsk.c                                      |  4 +-
- .../selftests/bpf/verifier/value_ptr_arith.c       |  2 +-
- tools/testing/selftests/net/amt.sh                 |  0
- tools/testing/selftests/net/udpgro_fwd.sh          |  3 +-
- 38 files changed, 441 insertions(+), 229 deletions(-)
- mode change 100644 => 100755 tools/testing/selftests/net/amt.sh
