@@ -2,147 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B558C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 09:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF92C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 09:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237425AbiAFJaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 04:30:21 -0500
-Received: from mga12.intel.com ([192.55.52.136]:44861 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237421AbiAFJaO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 04:30:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641461414; x=1672997414;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=w8I0J4izNXxXkIN6vEUQC3vPe1VVLMTNagn0bV6wM8o=;
-  b=AGy1iNJl20d4RqTcb7tnyTBsGp+9XpJQXquKW3awi5cphUmcRmXd9SVM
-   PQ+/5NhHSSXSnw8t9bZPLb6umfWa/8Jd2yFQwtSNiXdDw0s0JR6CXh295
-   wVOEul2IdPq0UWD9KoQWWAdXPo4AyKliYBe0HCxFjWtIBGuhVu2z/NcyZ
-   j4Fn3jaZ8Ne3XCA0+O6qMfYpChoaA9wsqAG5s8HMYFsIYu4w917P5msNm
-   +bUSv465BcgbLOjf4ZE6R75RiDJmL55OAAfl09AsmUJElHaJ1dneauxYj
-   X4at8u2SahfxSTsQt8gSO+4q3qDmDC9jPJFl4G0+ksFCjOrnACJ6rJ55A
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="222622318"
-X-IronPort-AV: E=Sophos;i="5.88,266,1635231600"; 
-   d="scan'208";a="222622318"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 01:30:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,266,1635231600"; 
-   d="scan'208";a="488884424"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 06 Jan 2022 01:30:11 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5P62-000HX7-Sx; Thu, 06 Jan 2022 09:30:10 +0000
-Date:   Thu, 6 Jan 2022 17:29:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Prasad Sodagudi <psodagud@codeaurora.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Yogesh Lal <quic_ylal@quicinc.com>,
-        Elliot Berman <eberman@codeaurora.org>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
- 1113/2496] kernel/module.c:4789:6: warning: no previous prototype for
- function 'android_debug_for_each_module'
-Message-ID: <202201061725.15rSGzxq-lkp@intel.com>
+        id S237427AbiAFJbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 04:31:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233845AbiAFJbQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 04:31:16 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA5EC061245
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 01:31:15 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so2546510pjb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 01:31:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=BMLt2QumeGD9jQLaoBjlJLURrJZ4jSTbdeE0pBvjO0w=;
+        b=jA+tR3qz5fx0WcVnQNT1NftyBwt7OnSF/WGYaL4GzLzZPkhiUKaoEmkEmgRiZLpfEK
+         QOxmGg+JHDy8NDbexrsDwpMqR4cMCkEcJU04syQfiuQft3qXC0U+HVhsZvGF/sfQbDn0
+         YwQ4CYks7SYGGBymFIagDMP/yZA9/A+lB0UFwdOw3kWCILldKknzcdNdJTnkO8GbJuBW
+         tumQZnzy7IHjxE5gXt0m6u76hfs6P2u6GqD1dVr0sqXEa6HSm0lqO1dp5dfdNp6VoyhI
+         2QW6SvRJ/MNn0hfHwIBj65HO8zHIqU5xzRN6ay5+t/vUTMlm0kiiO9O1QDbFLRzUlkY/
+         PY2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=BMLt2QumeGD9jQLaoBjlJLURrJZ4jSTbdeE0pBvjO0w=;
+        b=BpwuB855GrUpxDFkaPrS2w3nQZMEiU6R8iTmPKDYoeEskKWxV1kaH8/L0Q8rWfqsSM
+         QF5yOYb4GM6iFaviTCcO6kvaD4ByLxV+4pk2w0YVM/R/yR+lliC+fvtIPeY/84Wc8Ra0
+         Ud30Q0bcFJ83tXsdOW2QyPwVNl3oK7oQLLaEYJuxFLpV3ZclViKwXwXapn86eCIYQgqf
+         uhg7t77/Vplbc5MIZWUUiVhXjC/UapKtj9EjTyKrgz14/G+9l/mEbsUwH2trRvRXquTj
+         iJc2tyPM7RbjYiRHSB6IUTc81G+ewpHXWSqPKFhZMCqapIxXSS1N7GQqqYThxDN5A+Nj
+         /mSQ==
+X-Gm-Message-State: AOAM532aOSjfoQKuL+FFXkvbU5Nr6dF+7hTK9uKQNPznVHXO0XzSolCF
+        5V5DYcAxQ06tMPlMm5JAqWRO5nBt3iw9HmBv
+X-Google-Smtp-Source: ABdhPJxjJ0lB2F47YWMXm6HPXLKir2XERaDOFDlKiokXss965OvQDvJdUTJJoO7uBRRtudAGuDQ4VA==
+X-Received: by 2002:a17:90b:4b0d:: with SMTP id lx13mr8923107pjb.89.1641461475394;
+        Thu, 06 Jan 2022 01:31:15 -0800 (PST)
+Received: from mail.google.com (122-58-164-114-fibre.sparkbb.co.nz. [122.58.164.114])
+        by smtp.gmail.com with ESMTPSA id r9sm5510303pjo.14.2022.01.06.01.31.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 01:31:15 -0800 (PST)
+Date:   Thu, 6 Jan 2022 22:31:10 +1300
+From:   Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
+To:     gregkh@linuxfoundation.org, paulo.miguel.almeida.rodenas@gmail.com,
+        realwakka@gmail.com
+Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: pi433: move get version func to where all other
+ functions are
+Message-ID: <20220106093110.GA20011@mail.google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
-head:   f8bd6cf70dec3961c8b15b987866af33be2ce82b
-commit: b2df67a932b5cbd6535de9f1a6e63004992ad014 [1113/2496] ANDROID: android: Create debug_symbols driver
-config: i386-randconfig-a006-20220106 (https://download.01.org/0day-ci/archive/20220106/202201061725.15rSGzxq-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project ca7ffe09dc6e525109e3cd570cc5182ce568be13)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/b2df67a932b5cbd6535de9f1a6e63004992ad014
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
-        git checkout b2df67a932b5cbd6535de9f1a6e63004992ad014
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+As a convention for the pi433 driver, all routines that deals with the
+rf69 chip are defined in the rf69.c file. There was an exception in
+which the uC version verification was being done directly elsewhere.
+While at it, the Version Register hardcoded value was replaced with a
+pre-existing constant in the driver.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+This patch adds rf69_get_chip_version function to rf69.c
 
-All warnings (new ones prefixed by >>):
+Additionally, the patch below must be applied first as it was sent
+before and touches the same file.
+https://lore.kernel.org/lkml/20220103222334.GA6814@mail.google.com/
 
->> kernel/module.c:4789:6: warning: no previous prototype for function 'android_debug_for_each_module' [-Wmissing-prototypes]
-   void android_debug_for_each_module(int (*fn)(const char *mod_name, void *mod_addr, void *data),
-        ^
-   kernel/module.c:4789:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void android_debug_for_each_module(int (*fn)(const char *mod_name, void *mod_addr, void *data),
-   ^
-   static 
-   1 warning generated.
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for DRM_MIPI_DSI
-   Depends on HAS_IOMEM && DRM
-   Selected by
-   - GKI_HIDDEN_DRM_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_JACK
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for DRM_KMS_CMA_HELPER
-   Depends on HAS_IOMEM && DRM
-   Selected by
-   - GKI_HIDDEN_DRM_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_VMASTER
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_PCM_IEC958
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_SOC_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_JACK_INPUT_DEV
-   Depends on SOUND && !UML && SND && SND_JACK
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_PCM_ELD
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS
-   WARNING: unmet direct dependencies detected for DRM_GEM_CMA_HELPER
-   Depends on HAS_IOMEM && DRM
-   Selected by
-   - GKI_HIDDEN_DRM_CONFIGS
-   WARNING: unmet direct dependencies detected for SND_INTEL_NHLT
-   Depends on SOUND && !UML && SND
-   Selected by
-   - GKI_HIDDEN_SND_CONFIGS && ACPI
-
-
-vim +/android_debug_for_each_module +4789 kernel/module.c
-
-  4787	
-  4788	#ifdef CONFIG_ANDROID_DEBUG_SYMBOLS
-> 4789	void android_debug_for_each_module(int (*fn)(const char *mod_name, void *mod_addr, void *data),
-  4790		void *data)
-  4791	{
-  4792		struct module *module;
-  4793		preempt_disable();
-  4794		list_for_each_entry_rcu(module, &modules, list) {
-  4795			if (fn(module->name, module->core_layout.base, data))
-  4796				goto out;
-  4797		}
-  4798	out:
-  4799		preempt_enable();
-  4800	}
-  4801	EXPORT_SYMBOL_NS_GPL(android_debug_for_each_module, MINIDUMP);
-  4802	#endif
-  4803	
-
+Signed-off-by: Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/staging/pi433/pi433_if.c | 4 +---
+ drivers/staging/pi433/rf69.c     | 8 ++++++++
+ drivers/staging/pi433/rf69.h     | 1 +
+ 3 files changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/pi433/pi433_if.c b/drivers/staging/pi433/pi433_if.c
+index 29bd37669059..a19afda5b188 100644
+--- a/drivers/staging/pi433/pi433_if.c
++++ b/drivers/staging/pi433/pi433_if.c
+@@ -1116,9 +1116,7 @@ static int pi433_probe(struct spi_device *spi)
+ 		spi->mode, spi->bits_per_word, spi->max_speed_hz);
+ 
+ 	/* Ping the chip by reading the version register */
+-	retval = spi_w8r8(spi, 0x10);
+-	if (retval < 0)
+-		return retval;
++	retval = rf69_get_chip_version(spi);
+ 
+ 	switch (retval) {
+ 	case 0x24:
+diff --git a/drivers/staging/pi433/rf69.c b/drivers/staging/pi433/rf69.c
+index d64df072d8e8..1516012f9bb7 100644
+--- a/drivers/staging/pi433/rf69.c
++++ b/drivers/staging/pi433/rf69.c
+@@ -102,6 +102,14 @@ static inline int rf69_read_mod_write(struct spi_device *spi, u8 reg,
+ 
+ /*-------------------------------------------------------------------------*/
+ 
++int rf69_get_chip_version(struct spi_device *spi)
++{
++	int retval;
++
++	retval = rf69_read_reg(spi, REG_VERSION);
++	return retval;
++}
++
+ int rf69_set_mode(struct spi_device *spi, enum mode mode)
+ {
+ 	static const u8 mode_map[] = {
+diff --git a/drivers/staging/pi433/rf69.h b/drivers/staging/pi433/rf69.h
+index b648ba5fff89..ca9b75267840 100644
+--- a/drivers/staging/pi433/rf69.h
++++ b/drivers/staging/pi433/rf69.h
+@@ -17,6 +17,7 @@
+ #define FIFO_SIZE	66		/* bytes */
+ #define FIFO_THRESHOLD	15		/* bytes */
+ 
++int rf69_get_chip_version(struct spi_device *spi);
+ int rf69_set_mode(struct spi_device *spi, enum mode mode);
+ int rf69_set_data_mode(struct spi_device *spi, u8 data_mode);
+ int rf69_set_modulation(struct spi_device *spi, enum modulation modulation);
+-- 
+2.25.4
+
