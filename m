@@ -2,334 +2,284 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:06:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FD0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241550AbiAFRGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:06:37 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:62173 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241500AbiAFRGg (ORCPT
+        id S241565AbiAFRHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:07:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241500AbiAFRHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:06:36 -0500
+        Thu, 6 Jan 2022 12:07:50 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92CCC061245
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:07:49 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id r17so6111526wrc.3
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 09:07:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1641488796; x=1673024796;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=0Om1XFUlGd3CTNSK5EHsdaWuRS9pVMnTkDAr2gouZXQ=;
-  b=J60Z+OJlSkS9cJYe/ka9sFec2o9vfAidB0/oZiZGllDI1vrqMh7HBYUt
-   7gf9e4rLdq7fEBHqVfWv3nBKaFJZTkc5ksDEAgeI38X7tlHxy1EcZ58ji
-   FdEaqDiMP5PFMm13T3mfhgw52F9VA82nubB843fAvJuUb+e9HHVvsJvgw
-   8=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 06 Jan 2022 09:06:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 09:06:35 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 6 Jan 2022 09:06:34 -0800
-Received: from hu-charante-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Thu, 6 Jan 2022 09:06:31 -0800
-From:   Charan Teja Reddy <quic_charante@quicinc.com>
-To:     <hughd@google.com>, <akpm@linux-foundation.org>,
-        <willy@infradead.org>, <vbabka@suse.cz>, <rientjes@google.com>,
-        <mhocko@suse.com>, <surenb@google.com>, <shakeelb@google.com>,
-        <linux-mm@kvack.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        Charan Teja Reddy <charante@codeaurora.org>,
-        Charan Teja Reddy <quic_charante@quicinc.com>
-Subject: [PATCH v3 RESEND] mm: shmem: implement POSIX_FADV_[WILL|DONT]NEED for shmem
-Date:   Thu, 6 Jan 2022 22:35:17 +0530
-Message-ID: <1641488717-13865-1-git-send-email-quic_charante@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=q5W5GNbNv+lNqJbdK7nMqxroMio7ZmtRhFKmthSKK6c=;
+        b=kfMpKi9FrkUiUYYqINHwXVQDqPCGAzqmW9cyt0+EJzJFUnASbgjmlnPuAqG3YWMn1X
+         XSyf54/y/6uUeIt0bsYB76umnOgpBfOceS9lHSCPbQ50thPZ9HqaC8Xu45ZfOtFMJoFD
+         qah3nc1uK0lmuYTC0Aq7eMJF7pLYhVrjFmz3SdeZv9uku4xGUWGihoFfxMULg60UDojr
+         sG0cNrjSMBtvGnoejW7h5sI7bSkImfh3cNoR9i9382E0HainFEnpETeJaleU0p8ABxi3
+         gsqE2OFWgQiIJ4MuonXM/danat92kUMjfJB8ugsPhy0Gx1w9DBU1bD1ZKhFQmAXb24dK
+         aS1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q5W5GNbNv+lNqJbdK7nMqxroMio7ZmtRhFKmthSKK6c=;
+        b=kmxLa9kqI2V/ukhHL0lbedOXvfyKiAcl5ZpZr2AnEejmmG4w1NVdDpzP2AYMU0koyA
+         GSRVwxNhlxzlXdIHB/UMkIXF1CnQU5VQEavFaBhdJ3DQumFd1CdST0dGqiREeEKDw8i1
+         PvUIvxuReI4MuVI/f7KXzm8qwC+LzKuopvS1citrAFVHrRc5fNUvvZNO6Ycxbm0QHgcC
+         8ewHHVq57vEA/5sSr7iMTbVlYhCSVoQjk3c0jjcZ6a0j3uAe1+JcihWNADEw2Pj9VvOQ
+         978RnRRcWllwochg3jBT4uK+VDyyN7dLnBvs2w+uoeDsUAIYWvF9s7KH/OLO1AUBK+0Y
+         cNCg==
+X-Gm-Message-State: AOAM532iNGR7zVgK3olxs+aajKaVUnyVii5zDy/ns5qmATzFX5Lj915l
+        5igTzsN12UQj9dGIzTEQKZzLfQ==
+X-Google-Smtp-Source: ABdhPJx0IDUhsF3g7P5ZHSdVvDnLqGq9g07WaXYqgjEGd+nmwNNJUjDi0oj6dUlNpk1Uw8HhROwaEw==
+X-Received: by 2002:a05:6000:18a2:: with SMTP id b2mr53070435wri.277.1641488868173;
+        Thu, 06 Jan 2022 09:07:48 -0800 (PST)
+Received: from google.com ([2a00:79e0:d:209:800e:fc7:4177:c8b2])
+        by smtp.gmail.com with ESMTPSA id z9sm2790652wmk.0.2022.01.06.09.07.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 09:07:47 -0800 (PST)
+Date:   Thu, 6 Jan 2022 17:07:43 +0000
+From:   David Brazdil <dbrazdil@google.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Wedson Almeida Filho <wedsonaf@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Andrew Scull <ascull@google.com>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/2] misc: open-dice: Add driver to expose DICE data
+ to userspace
+Message-ID: <Ydch333UxlCKO8Wa@google.com>
+References: <20211221174502.63891-1-dbrazdil@google.com>
+ <20211221174502.63891-3-dbrazdil@google.com>
+ <YdXM44q07C5iQydu@google.com>
+ <YdbJgf+IWnlCHQA7@google.com>
+ <YdbSi+ANXw1JRkUj@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdbSi+ANXw1JRkUj@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charan Teja Reddy <charante@codeaurora.org>
+Hi Greg,
 
-Currently fadvise(2) is supported only for the files that doesn't
-associated with noop_backing_dev_info thus for the files, like shmem,
-fadvise results into NOP. But then there is file_operations->fadvise()
-that lets the file systems to implement their own fadvise
-implementation. Use this support to implement some of the POSIX_FADV_XXX
-functionality for shmem files.
+On Thu, Jan 06, 2022 at 12:29:15PM +0100, Greg Kroah-Hartman wrote:
+> On Thu, Jan 06, 2022 at 10:50:41AM +0000, David Brazdil wrote:
+> > Hi Wedson,
+> > 
+> > On Wed, Jan 05, 2022 at 04:52:51PM +0000, Wedson Almeida Filho wrote:
+> > > On Tue, Dec 21, 2021 at 05:45:02PM +0000, David Brazdil wrote:
+> > > > Open Profile for DICE is an open protocol for measured boot compatible
+> > > > with the Trusted Computing Group's Device Identifier Composition
+> > > > Engine (DICE) specification. The generated Compound Device Identifier
+> > > > (CDI) certificates represent the hardware/software combination measured
+> > > > by DICE, and can be used for remote attestation and sealing.
+> > > > 
+> > > > Add a driver that exposes reserved memory regions populated by firmware
+> > > > with DICE CDIs and exposes them to userspace via a character device.
+> > > > 
+> > > > Userspace obtains the memory region's size from read() and calls mmap()
+> > > > to create a mapping of the memory region in its address space. The
+> > > > mapping is not allowed to be write+shared, giving userspace a guarantee
+> > > > that the data were not overwritten by another process.
+> > > > 
+> > > > Userspace can also call write(), which triggers a wipe of the DICE data
+> > > > by the driver. Because both the kernel and userspace mappings use
+> > > > write-combine semantics, all clients observe the memory as zeroed after
+> > > > the syscall has returned.
+> > > > 
+> > > > Cc: Andrew Scull <ascull@google.com>
+> > > > Cc: Will Deacon <will@kernel.org>
+> > > > Signed-off-by: David Brazdil <dbrazdil@google.com>
+> > > > ---
+> > > >  drivers/misc/Kconfig     |  12 +++
+> > > >  drivers/misc/Makefile    |   1 +
+> > > >  drivers/misc/open-dice.c | 188 +++++++++++++++++++++++++++++++++++++++
+> > > >  drivers/of/platform.c    |   1 +
+> > > >  4 files changed, 202 insertions(+)
+> > > >  create mode 100644 drivers/misc/open-dice.c
+> > > > 
+> > > > diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+> > > > index 0f5a49fc7c9e..a2b26426efba 100644
+> > > > --- a/drivers/misc/Kconfig
+> > > > +++ b/drivers/misc/Kconfig
+> > > > @@ -470,6 +470,18 @@ config HISI_HIKEY_USB
+> > > >  	  switching between the dual-role USB-C port and the USB-A host ports
+> > > >  	  using only one USB controller.
+> > > >  
+> > > > +config OPEN_DICE
+> > > > +	tristate "Open Profile for DICE driver"
+> > > > +	depends on OF_RESERVED_MEM
+> > > > +	help
+> > > > +	  This driver exposes a DICE reserved memory region to userspace via
+> > > > +	  a character device. The memory region contains Compound Device
+> > > > +	  Identifiers (CDIs) generated by firmware as an output of DICE
+> > > > +	  measured boot flow. Userspace can use CDIs for remote attestation
+> > > > +	  and sealing.
+> > > > +
+> > > > +	  If unsure, say N.
+> > > > +
+> > > >  source "drivers/misc/c2port/Kconfig"
+> > > >  source "drivers/misc/eeprom/Kconfig"
+> > > >  source "drivers/misc/cb710/Kconfig"
+> > > > diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+> > > > index a086197af544..70e800e9127f 100644
+> > > > --- a/drivers/misc/Makefile
+> > > > +++ b/drivers/misc/Makefile
+> > > > @@ -59,3 +59,4 @@ obj-$(CONFIG_UACCE)		+= uacce/
+> > > >  obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+> > > >  obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
+> > > >  obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
+> > > > +obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
+> > > > diff --git a/drivers/misc/open-dice.c b/drivers/misc/open-dice.c
+> > > > new file mode 100644
+> > > > index 000000000000..f1819f951173
+> > > > --- /dev/null
+> > > > +++ b/drivers/misc/open-dice.c
+> > > > @@ -0,0 +1,188 @@
+> > > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > > +/*
+> > > > + * Copyright (C) 2021 - Google LLC
+> > > > + * Author: David Brazdil <dbrazdil@google.com>
+> > > > + *
+> > > > + * Driver for Open Profile for DICE.
+> > > > + *
+> > > > + * This driver takes ownership of a reserved memory region containing data
+> > > > + * generated by the Open Profile for DICE measured boot protocol. The memory
+> > > > + * contents are not interpreted by the kernel but can be mapped into a userspace
+> > > > + * process via a misc device. Userspace can also request a wipe of the memory.
+> > > > + *
+> > > > + * Userspace can access the data with (w/o error handling):
+> > > > + *
+> > > > + *     fd = open("/dev/open-dice0", O_RDWR);
+> > > > + *     read(fd, &size, sizeof(unsigned long));
+> > > > + *     data = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
+> > > > + *     write(fd, NULL, 0); // wipe
+> > > > + *     close(fd);
+> > > > + */
+> > > > +
+> > > > +#include <linux/io.h>
+> > > > +#include <linux/miscdevice.h>
+> > > > +#include <linux/mm.h>
+> > > > +#include <linux/module.h>
+> > > > +#include <linux/of_reserved_mem.h>
+> > > > +#include <linux/platform_device.h>
+> > > > +
+> > > > +#define DRIVER_NAME "open-dice"
+> > > > +
+> > > > +struct open_dice_drvdata {
+> > > > +	spinlock_t lock;
+> > > > +	char name[16];
+> > > > +	struct reserved_mem *rmem;
+> > > > +	struct miscdevice misc;
+> > > > +};
+> > > > +
+> > > > +static inline struct open_dice_drvdata *to_open_dice_drvdata(struct file *filp)
+> > > > +{
+> > > > +	return container_of(filp->private_data, struct open_dice_drvdata, misc);
+> > > > +}
+> > > > +
+> > > > +static int open_dice_wipe(struct open_dice_drvdata *drvdata)
+> > > > +{
+> > > > +	void *kaddr;
+> > > > +
+> > > > +	spin_lock(&drvdata->lock);
+> > > > +	kaddr = devm_memremap(drvdata->misc.this_device, drvdata->rmem->base,
+> > > > +			      drvdata->rmem->size, MEMREMAP_WC);
+> > > > +	if (IS_ERR(kaddr)) {
+> > > > +		spin_unlock(&drvdata->lock);
+> > > > +		return PTR_ERR(kaddr);
+> > > > +	}
+> > > > +
+> > > > +	memset(kaddr, 0, drvdata->rmem->size);
+> > > > +	devm_memunmap(drvdata->misc.this_device, kaddr);
+> > > > +	spin_unlock(&drvdata->lock);
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > > +/*
+> > > > + * Copies the size of the reserved memory region to the user-provided buffer.
+> > > > + */
+> > > > +static ssize_t open_dice_read(struct file *filp, char __user *ptr, size_t len,
+> > > > +			      loff_t *off)
+> > > > +{
+> > > > +	unsigned long val = to_open_dice_drvdata(filp)->rmem->size;
+> > > 
+> > > There's a UAF issue here (and in all file operations that call
+> > > to_open_dice_drvdata) when the platform device in unbounded from the driver
+> > > while userspace has an instance of the misc device open: after open_dice_remove
+> > > is called, all managed resources are freed (which includes this
+> > > open_dice_drvdata allocation).
+> > > 
+> > > No new miscdev files can be created, but the existing ones continue to exist
+> > > with a now dangling pointer stored in private_data. So read/write/mmap syscalls
+> > > from userspace will lead to dereferencing this dangling pointer.
+> > 
+> > Please correct me if I'm wrong, but I don't think this can happen
+> > without tainting the kernel.
+> > 
+> > To call open_dice_remove, we have to remove the module. And any process
+> > holding an FD of the misc device will increase the module's refcounter,
+> > which is zero-checked in SYS_delete_module. The only way to get past
+> > that check is by compiling the kernel with CONFIG_MODULE_FORCE_UNLOAD,
+> > which changes the implementation of try_force_unload (kernel/module.c)
+> > and adds taint. Otherwise SYS_delete_module returns an error.
+> > 
+> > Unless there is another way how to trigger this situation, I think the
+> > existing protection is sufficient. The user cannot force the removal of
+> > the module without agreeing to the consequences.
+> 
+> You can remove the driver from the device by writing to the "unbind"
+> file in sysfs for this driver.
+> 
+> Otherwise, yes, you are correct, you can not remove the module from the
+> system if the file is open, but that does not prevent the driver from
+> being unbound from the device.
+> 
+> Yes, it is rare, and only able to be done by root, and even then is
+> something that many drivers fail at.  But for new ones, when we notice
+> it, it should be fixed up before merging just to prevent any future
+> problems.
 
-This patch aims to implement POSIX_FADV_WILLNEED and POSIX_FADV_DONTNEED
-advices to shmem files which can be helpful for the drivers who may want
-to manage the shmem pages of the files that are created through
-shmem_file_setup[_with_mnt]().  An example usecase may be like, driver
-can create the shmem file of the size equal to its requirements and
-map the pages for DMA and then pass the fd to user. The user who knows
-well about the usage of these pages can now decide when these pages are
-not required push them to swap through DONTNEED thus free up memory well
-in advance rather than relying on the reclaim and use WILLNEED when it
-decide that they are useful in the near future. IOW, it lets the clients
-to free up/read the memory when it wants to. Another usecase is that GEM
-objets which are currenlty allocated and managed through shmem files can
-use vfs_fadvise(DONT|WILLNEED) on shmem fd when the driver comes to
-know(like through some hints from user space) that GEM objects are not
-going to use/will need in the near future.
+Ah, I see. I'd opt for just setting 'suppress_bind_attrs=true' to
+prevent that, unless you think unbinding needs to be supported. I don't
+see a use for that on our side and would prefer to keep the code simple.
 
-Some questions asked while reviewing this patch:
+> 
+> > > > +	/* Create write-combine mapping so all clients observe a wipe. */
+> > > > +	vma->vm_page_prot = pgprot_writecombine(vma->vm_page_prot);
+> > > > +	vma->vm_flags |= VM_DONTCOPY | VM_DONTDUMP;
+> > > > +	return vm_iomap_memory(vma, drvdata->rmem->base, drvdata->rmem->size);
+> > > > +}
+> > > 
+> > > Is there a reason for mapping this memory instead of, say, copying it to
+> > > userspace via read?
+> > 
+> > The data should be treated as secret, so the idea is that avoiding
+> > reading it in the kernel means we don't need to worry about it leakage
+> > via the stack, etc. The reason for this is that the DICE derivation
+> > chain may continue in userspace, so we want to minimize the chance of
+> > a child process getting the parent secret from the kernel.
+> 
+> The kernel stack is already secret, this should not be an issue.  And
+> even then, you can always erase it before the call returns to ensure
+> that it does not stick around, like many crypto functions do.
 
-Q) Can the same thing be achieved with FD mapped to user and use
-madvise?
-A) All drivers are not mapping all the shmem fd's to user space and want
-to manage them with in the kernel. Ex: shmem memory can be mapped to the
-other subsystems and they fill in the data and then give it to other
-subsystem for further processing, where, the user mapping is not at all
-required.  A simple example, memory that is given for gpu subsystem
-which can be filled directly and give to display subsystem. And the
-respective drivers know well about when to keep that memory in ram or
-swap based on may be a user activity.
+I can rewrite it and memzero_explicit the memory if you or Wedson feel
+strongly about this, but I actually really like mmap() because it avoids
+the need for dealing with that.
 
-Q) Should we add the documentation section in Manual pages?
-A) The man[1] pages for the fadvise() whatever says is also applicable
-for shmem files. so couldn't feel it correct to add specific to shmem
-files separately.
-[1] https://linux.die.net/man/2/fadvise
-
-Q) The proposed semantics of POSIX_FADV_DONTNEED is actually similar to
-MADV_PAGEOUT and different from MADV_DONTNEED. This is a user facing API
-and this difference will cause confusion?
-A) man pages [1] says that "POSIX_FADV_DONTNEED attempts to free cached
-pages associated with the specified region." This means on issuing this
-FADV, it is expected to free the file cache pages. And it is
-implementation defined If the dirty pages may be attempted to writeback.
-And the unwritten dirty pages will not be freed. So, FADV_DONTNEED also
-covers the semantics of MADV_PAGEOUT for file pages and there is no
-purpose of PAGEOUT for file pages.
-[1] https://man7.org/linux/man-pages/man2/posix_fadvise.2.html
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Charan Teja Reddy <quic_charante@quicinc.com>
----
-
-Changes in V3:
-  -- Considered THP pages while doing FADVISE_[DONT|WILL]NEED, identified by Matthew.
-  -- xarray used properly, as identified by Matthew.
-  -- Excluded mapped pages as it requires unmapping and the man pages of fadvise don't talk about them.
-  -- RESEND: Fixed the compilation issue when CONFIG_TMPFS is not defined.
-
-Changes in V2:
-  -- Rearranged the code to not to sleep with rcu_lock while using xas_() functionality.
-  -- Addressed the comments from Suren.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1638442253-1591-1-git-send-email-quic_charante@quicinc.com/
-
-changes in V1:
-  -- Created the interface for fadvise(2) to work on shmem files.
-  -- https://patchwork.kernel.org/project/linux-mm/patch/1633701982-22302-1-git-send-email-charante@codeaurora.org/
-
- mm/shmem.c | 172 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 172 insertions(+)
-
-diff --git a/mm/shmem.c b/mm/shmem.c
-index 23c91a8..dd3ac2e 100644
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -39,6 +39,8 @@
- #include <linux/frontswap.h>
- #include <linux/fs_parser.h>
- #include <linux/swapfile.h>
-+#include <linux/mm_inline.h>
-+#include <linux/fadvise.h>
- 
- static struct vfsmount *shm_mnt;
- 
-@@ -2275,6 +2277,175 @@ static int shmem_mmap(struct file *file, struct vm_area_struct *vma)
- 	return 0;
- }
- 
-+static void shmem_isolate_pages_range(struct address_space *mapping, loff_t start,
-+				loff_t end, struct list_head *list)
-+{
-+	XA_STATE(xas, &mapping->i_pages, start);
-+	struct page *page;
-+
-+	rcu_read_lock();
-+	xas_for_each(&xas, page, end) {
-+		if (xas_retry(&xas, page))
-+			continue;
-+		if (xa_is_value(page))
-+			continue;
-+		if (!get_page_unless_zero(page))
-+			continue;
-+		if (isolate_lru_page(page))
-+			continue;
-+
-+		list_add(&page->lru, list);
-+		__mod_node_page_state(page_pgdat(page),
-+				NR_ISOLATED_ANON + page_is_file_lru(page), compound_nr(page));
-+		put_page(page);
-+		if (need_resched()) {
-+			xas_pause(&xas);
-+			cond_resched_rcu();
-+		}
-+	}
-+	rcu_read_unlock();
-+}
-+
-+static int shmem_fadvise_dontneed(struct address_space *mapping, loff_t start,
-+				loff_t end)
-+{
-+	int ret;
-+	struct page *page;
-+	LIST_HEAD(list);
-+	struct writeback_control wbc = {
-+		.sync_mode = WB_SYNC_NONE,
-+		.nr_to_write = LONG_MAX,
-+		.range_start = 0,
-+		.range_end = LLONG_MAX,
-+		.for_reclaim = 1,
-+	};
-+
-+	if (!shmem_mapping(mapping))
-+		return -EINVAL;
-+
-+	if (!total_swap_pages)
-+		return 0;
-+
-+	lru_add_drain();
-+	shmem_isolate_pages_range(mapping, start, end, &list);
-+
-+	while (!list_empty(&list)) {
-+		page = lru_to_page(&list);
-+		list_del(&page->lru);
-+		if (page_mapped(page))
-+			goto keep;
-+		if (!trylock_page(page))
-+			goto keep;
-+		if (unlikely(PageTransHuge(page))) {
-+			if (split_huge_page_to_list(page, &list))
-+				goto keep;
-+		}
-+
-+		clear_page_dirty_for_io(page);
-+		SetPageReclaim(page);
-+		ret = shmem_writepage(page, &wbc);
-+		if (ret || PageWriteback(page)) {
-+			if (ret)
-+				unlock_page(page);
-+			goto keep;
-+		}
-+
-+		if (!PageWriteback(page))
-+			ClearPageReclaim(page);
-+
-+		/*
-+		 * shmem_writepage() place the page in the swapcache.
-+		 * Delete the page from the swapcache and release the
-+		 * page.
-+		 */
-+		__mod_node_page_state(page_pgdat(page),
-+				NR_ISOLATED_ANON + page_is_file_lru(page), compound_nr(page));
-+		lock_page(page);
-+		delete_from_swap_cache(page);
-+		unlock_page(page);
-+		put_page(page);
-+		continue;
-+keep:
-+		putback_lru_page(page);
-+		__mod_node_page_state(page_pgdat(page),
-+				NR_ISOLATED_ANON + page_is_file_lru(page), compound_nr(page));
-+	}
-+
-+	return 0;
-+}
-+
-+static int shmem_fadvise_willneed(struct address_space *mapping,
-+				 pgoff_t start, pgoff_t long end)
-+{
-+	XA_STATE(xas, &mapping->i_pages, start);
-+	struct page *page;
-+
-+	rcu_read_lock();
-+	xas_for_each(&xas, page, end) {
-+		if (!xa_is_value(page))
-+			continue;
-+		xas_pause(&xas);
-+		rcu_read_unlock();
-+
-+		page = shmem_read_mapping_page(mapping, xas.xa_index);
-+		if (!IS_ERR(page))
-+			put_page(page);
-+
-+		rcu_read_lock();
-+		if (need_resched()) {
-+			xas_pause(&xas);
-+			cond_resched_rcu();
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
-+static int shmem_fadvise(struct file *file, loff_t offset, loff_t len, int advice)
-+{
-+	loff_t endbyte;
-+	pgoff_t start_index;
-+	pgoff_t end_index;
-+	struct address_space *mapping;
-+	int ret = 0;
-+
-+	mapping = file->f_mapping;
-+	if (!mapping || len < 0)
-+		return -EINVAL;
-+
-+	endbyte = (u64)offset + (u64)len;
-+	if (!len || endbyte < len)
-+		endbyte = -1;
-+	else
-+		endbyte--;
-+
-+
-+	start_index = offset >> PAGE_SHIFT;
-+	end_index   = endbyte >> PAGE_SHIFT;
-+	switch (advice) {
-+	case POSIX_FADV_DONTNEED:
-+		ret = shmem_fadvise_dontneed(mapping, start_index, end_index);
-+		break;
-+	case POSIX_FADV_WILLNEED:
-+		ret = shmem_fadvise_willneed(mapping, start_index, end_index);
-+		break;
-+	case POSIX_FADV_NORMAL:
-+	case POSIX_FADV_RANDOM:
-+	case POSIX_FADV_SEQUENTIAL:
-+	case POSIX_FADV_NOREUSE:
-+		/*
-+		 * No bad return value, but ignore advice. May have to
-+		 * implement in future.
-+		 */
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
- static struct inode *shmem_get_inode(struct super_block *sb, const struct inode *dir,
- 				     umode_t mode, dev_t dev, unsigned long flags)
- {
-@@ -3826,6 +3997,7 @@ static const struct file_operations shmem_file_operations = {
- 	.splice_write	= iter_file_splice_write,
- 	.fallocate	= shmem_fallocate,
- #endif
-+	.fadvise	= shmem_fadvise,
- };
- 
- static const struct inode_operations shmem_inode_operations = {
--- 
-2.7.4
-
+David
