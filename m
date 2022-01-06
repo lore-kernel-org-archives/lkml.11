@@ -2,158 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48FF3C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 23:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC99C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 23:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245396AbiAFXJh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 18:09:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234795AbiAFXJg (ORCPT
+        id S245409AbiAFXLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 18:11:22 -0500
+Received: from www62.your-server.de ([213.133.104.62]:47918 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234795AbiAFXLU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 18:09:36 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7909BC061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 15:09:35 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JVMW130qnz4xts;
-        Fri,  7 Jan 2022 10:09:33 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1641510573;
-        bh=B+bWhhgzDSj+fEAQVcMQLTtKkWLuJI8V8ABaSomc3R0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=eaYopRoHSCly3KuF1RT//gnvMY/nRhG9qGnvHOkbkpX7NPp5Xxe0QcnEwTKkzN2Wb
-         ODNKaaPw4toaKi0gfn4+x1NuQklg4fDWzSzBgQS/IGBmHBmZfjp7XfLkLgwUWvlLW4
-         XkWM+3p9ajCtUQaKZ+q+do3N0kOLvmEX4SNu+TdhifWylLLmcwMmuenroD09gQoE7g
-         2B91JXTz63WNhPGFFYNGl3XE1Tgr1TlS5vKqsdFgEcnIJlHBwnqiJob7VtintImJ28
-         izl6Ejt73W3dUop4dWdtufMHjsVWCHprr0x4/KFRMehDZIh6WF3yAD3xXPnL+X9BkX
-         rAun794XQgv/w==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Laurent Dufour <ldufour@linux.ibm.com>
-Cc:     Nathan Lynch <nathanl@linux.ibm.com>, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v4] powerpc/pseries: read the lpar name from the firmware
-In-Reply-To: <25527544-b0ac-596c-3876-560493b99f6b@linux.ibm.com>
-References: <20211207171109.22793-1-ldufour@linux.ibm.com>
- <25527544-b0ac-596c-3876-560493b99f6b@linux.ibm.com>
-Date:   Fri, 07 Jan 2022 10:09:32 +1100
-Message-ID: <87h7ag31hv.fsf@mpe.ellerman.id.au>
+        Thu, 6 Jan 2022 18:11:20 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1n5bue-000436-GF; Fri, 07 Jan 2022 00:11:16 +0100
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1n5bue-000LZU-3b; Fri, 07 Jan 2022 00:11:16 +0100
+Subject: Re: [PATCH bpf-next v4 1/3] bpf: Add map tracing functions and call
+ sites
+To:     Joe Burton <jevburton.kernel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, ppenkov@google.com,
+        sdf@google.com, haoluo@google.com
+Cc:     Joe Burton <jevburton@google.com>
+References: <20220105030345.3255846-1-jevburton.kernel@gmail.com>
+ <20220105030345.3255846-2-jevburton.kernel@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <52eb82c3-2272-1707-9de7-8347b57b933c@iogearbox.net>
+Date:   Fri, 7 Jan 2022 00:11:15 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20220105030345.3255846-2-jevburton.kernel@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26414/Thu Jan  6 10:26:00 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Laurent Dufour <ldufour@linux.ibm.com> writes:
-> Happy New Year, Michael!
->
-> Do you consider taking that patch soon?
+On 1/5/22 4:03 AM, Joe Burton wrote:
+> From: Joe Burton <jevburton@google.com>
+> 
+> Add two functions that fentry/fexit/fmod_ret programs can attach to:
+> 	bpf_map_trace_update_elem
+> 	bpf_map_trace_delete_elem
+> These functions have the same arguments as bpf_map_{update,delete}_elem.
+> 
+> Invoke these functions from the following map types:
+> 	BPF_MAP_TYPE_ARRAY
+> 	BPF_MAP_TYPE_PERCPU_ARRAY
+> 	BPF_MAP_TYPE_HASH
+> 	BPF_MAP_TYPE_PERCPU_HASH
+> 	BPF_MAP_TYPE_LRU_HASH
+> 	BPF_MAP_TYPE_LRU_PERCPU_HASH
+> 
+> The only guarantee about these functions is that they are invoked before
+> the corresponding action occurs. Other conditions may prevent the
+> corresponding action from occurring after the function is invoked.
+> 
+> Signed-off-by: Joe Burton <jevburton@google.com>
+> ---
+>   kernel/bpf/Makefile    |  2 +-
+>   kernel/bpf/arraymap.c  |  4 +++-
+>   kernel/bpf/hashtab.c   | 20 +++++++++++++++++++-
+>   kernel/bpf/map_trace.c | 17 +++++++++++++++++
+>   kernel/bpf/map_trace.h | 19 +++++++++++++++++++
+>   5 files changed, 59 insertions(+), 3 deletions(-)
+>   create mode 100644 kernel/bpf/map_trace.c
+>   create mode 100644 kernel/bpf/map_trace.h
+> 
+> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+> index c1a9be6a4b9f..0cf38dab339a 100644
+> --- a/kernel/bpf/Makefile
+> +++ b/kernel/bpf/Makefile
+> @@ -9,7 +9,7 @@ CFLAGS_core.o += $(call cc-disable-warning, override-init) $(cflags-nogcse-yy)
+>   obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
+>   obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
+>   obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
+> -obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
+> +obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o map_trace.o
+>   obj-${CONFIG_BPF_LSM}	  += bpf_inode_storage.o
+>   obj-$(CONFIG_BPF_SYSCALL) += disasm.o
+>   obj-$(CONFIG_BPF_JIT) += trampoline.o
+> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+> index c7a5be3bf8be..e9e7bd27ffad 100644
+> --- a/kernel/bpf/arraymap.c
+> +++ b/kernel/bpf/arraymap.c
+> @@ -13,6 +13,7 @@
+>   #include <linux/rcupdate_trace.h>
+>   
+>   #include "map_in_map.h"
+> +#include "map_trace.h"
+>   
+>   #define ARRAY_CREATE_FLAG_MASK \
+>   	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | \
+> @@ -329,7 +330,8 @@ static int array_map_update_elem(struct bpf_map *map, void *key, void *value,
+>   			copy_map_value(map, val, value);
+>   		check_and_free_timer_in_array(array, val);
+>   	}
+> -	return 0;
+> +
+> +	return bpf_map_trace_update_elem(map, key, value, map_flags);
 
-I did but I was hoping you and Nathan could come to an agreement.
+Given post-update, do you have a use case where you make use of the fmod_ret for
+propagating non-zero ret codes?
 
-Looks like you did while I was sleeping, perfect :)
+Could you also extend commit description on rationale to not add these dummy
+funcs more higher level, e.g. into map_update_elem() upon success?
 
-I'll pick up v5.
+[...]
+> @@ -1133,6 +1137,10 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
+>   		/* unknown flags */
+>   		return -EINVAL;
+>   
+> +	ret = bpf_map_trace_update_elem(map, key, value, map_flags);
+> +	if (unlikely(ret))
+> +		return ret;
+> +
+>   	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_trace_held() &&
+>   		     !rcu_read_lock_bh_held());
+>   
+> @@ -1182,6 +1190,8 @@ static int htab_lru_map_update_elem(struct bpf_map *map, void *key, void *value,
+>   	else if (l_old)
+>   		htab_lru_push_free(htab, l_old);
+>   
+> +	if (!ret)
+> +		ret = bpf_map_trace_update_elem(map, key, value, map_flags);
+>   	return ret;
+>   }
 
-cheers
+Here, it's pre and post update, is that intentional?
 
-
-> On 07/12/2021, 18:11:09, Laurent Dufour wrote:
->> The LPAR name may be changed after the LPAR has been started in the HMC.
->> In that case lparstat command is not reporting the updated value because it
->> reads it from the device tree which is read at boot time.
->> 
->> However this value could be read from RTAS.
->> 
->> Adding this value in the /proc/powerpc/lparcfg output allows to read the
->> updated value.
->> 
->> Cc: Nathan Lynch <nathanl@linux.ibm.com>
->> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
->> ---
->> v4:
->>  address Nathan's new comments limiting size of the buffer.
->> v3:
->>  address Michael's comments.
->> v2:
->>  address Nathan's comments.
->>  change title to partition_name aligning with existing partition_id
->> ---
->>  arch/powerpc/platforms/pseries/lparcfg.c | 54 ++++++++++++++++++++++++
->>  1 file changed, 54 insertions(+)
->> 
->> diff --git a/arch/powerpc/platforms/pseries/lparcfg.c b/arch/powerpc/platforms/pseries/lparcfg.c
->> index f71eac74ea92..058d9a5fe545 100644
->> --- a/arch/powerpc/platforms/pseries/lparcfg.c
->> +++ b/arch/powerpc/platforms/pseries/lparcfg.c
->> @@ -311,6 +311,59 @@ static void parse_mpp_x_data(struct seq_file *m)
->>  		seq_printf(m, "coalesce_pool_spurr=%ld\n", mpp_x_data.pool_spurr_cycles);
->>  }
->>  
->> +/*
->> + * PAPR defines, in section "7.3.16 System Parameters Option", the token 55 to
->> + * read the LPAR name, and the largest output data to 4000 + 2 bytes length.
->> + */
->> +#define SPLPAR_LPAR_NAME_TOKEN	55
->> +#define GET_SYS_PARM_BUF_SIZE	4002
->> +#if GET_SYS_PARM_BUF_SIZE > RTAS_DATA_BUF_SIZE
->> +#error "GET_SYS_PARM_BUF_SIZE is larger than RTAS_DATA_BUF_SIZE"
->> +#endif
->> +static void read_lpar_name(struct seq_file *m)
->> +{
->> +	int rc, len, token;
->> +	union {
->> +		char raw_buffer[GET_SYS_PARM_BUF_SIZE];
->> +		struct {
->> +			__be16 len;
->> +			char name[GET_SYS_PARM_BUF_SIZE-2];
->> +		};
->> +	} *local_buffer;
->> +
->> +	token = rtas_token("ibm,get-system-parameter");
->> +	if (token == RTAS_UNKNOWN_SERVICE)
->> +		return;
->> +
->> +	local_buffer = kmalloc(sizeof(*local_buffer), GFP_KERNEL);
->> +	if (!local_buffer)
->> +		return;
->> +
->> +	do {
->> +		spin_lock(&rtas_data_buf_lock);
->> +		memset(rtas_data_buf, 0, sizeof(*local_buffer));
->> +		rc = rtas_call(token, 3, 1, NULL, SPLPAR_LPAR_NAME_TOKEN,
->> +			       __pa(rtas_data_buf), sizeof(*local_buffer));
->> +		if (!rc)
->> +			memcpy(local_buffer->raw_buffer, rtas_data_buf,
->> +			       sizeof(local_buffer->raw_buffer));
->> +		spin_unlock(&rtas_data_buf_lock);
->> +	} while (rtas_busy_delay(rc));
->> +
->> +	if (!rc) {
->> +		/* Force end of string */
->> +		len = min((int) be16_to_cpu(local_buffer->len),
->> +			  (int) sizeof(local_buffer->name)-1);
->> +		local_buffer->name[len] = '\0';
->> +
->> +		seq_printf(m, "partition_name=%s\n", local_buffer->name);
->> +	} else
->> +		pr_err_once("Error calling get-system-parameter (0x%x)\n", rc);
->> +
->> +	kfree(local_buffer);
->> +}
->> +
->> +
->>  #define SPLPAR_CHARACTERISTICS_TOKEN 20
->>  #define SPLPAR_MAXLENGTH 1026*(sizeof(char))
->>  
->> @@ -496,6 +549,7 @@ static int pseries_lparcfg_data(struct seq_file *m, void *v)
->>  
->>  	if (firmware_has_feature(FW_FEATURE_SPLPAR)) {
->>  		/* this call handles the ibm,get-system-parameter contents */
->> +		read_lpar_name(m);
->>  		parse_system_parameter_string(m);
->>  		parse_ppp_data(m);
->>  		parse_mpp_data(m);
+Thanks,
+Daniel
