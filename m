@@ -2,169 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0720C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 00:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B124C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 00:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343766AbiAFAX4 (ORCPT
+        id S1343799AbiAFAYI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 19:23:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        Wed, 5 Jan 2022 19:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343696AbiAFAXM (ORCPT
+        with ESMTP id S1343703AbiAFAXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 19:23:12 -0500
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE14C0611FD
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 16:23:01 -0800 (PST)
-Received: by mail-il1-x134.google.com with SMTP id d3so805788ilr.10
-        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 16:23:01 -0800 (PST)
+        Wed, 5 Jan 2022 19:23:17 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36AFC034003;
+        Wed,  5 Jan 2022 16:23:16 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id c126-20020a1c9a84000000b00346f9ebee43so278649wme.4;
+        Wed, 05 Jan 2022 16:23:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=qM66frqSTNt4dFZB0j1ZH1Mn4CyZd86KqXUvtn5X9jw=;
-        b=ZHoFR5/pJxHKNkB/NTxw6M8o1NnM97P8YYxvMXpya6+eu+CN+pA4r70o1kmQM64H2d
-         wKX0aCIW5jjx1d89szGGN0ulOXK1nY1CKxl1OooV291oQ5exIFQpvDu37auzZu5CypFS
-         EtrBkbupZCxxUFQN9fB8iTW5vxq9f8TwqP6Ts=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LtbJ7TD9znxzhf98x0PHy/SqzW7ZVDB+4Aleb2LR+tc=;
+        b=hm8//BPPbFhrIDzJYowb5oFbAdkOAQqY0Drc1KsxzS8Vuca6ZQ4YoCiHHlOXdoi/PY
+         CXAuEcjbHoYriLebucFP1lHBz/nldh8amCJIAO+4iZYBkS9CKyopNWWovCj/L2sZTqxZ
+         V/O+WtrL/K+4A6QvMZEscSkTY+NnZUSptQqk/hGPJ8fc1zbSsJve8zEWFNYeXVVjKHcy
+         10tyeKZbgazhtRf8/x46KcJM4Ww3tVliwKGm1bVwvXDQY/CGxV2iA7hvxbjmo/7wJxeI
+         mh7mpSD85dHYkCp73haOpCzQhOHPF8oVzZ0ZNUWpSRz8x4qe0yzyYoHRVbJRUcvrpFrI
+         r1ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=qM66frqSTNt4dFZB0j1ZH1Mn4CyZd86KqXUvtn5X9jw=;
-        b=j+nqvGWoGeAMQ++qIF6dllgHfJ0N9Byl8PiLfTCIGYeIxXTcw8Vo7C0FVChzV1bcwA
-         eE/m9/aaL4+EhGoLbFVmy2eUMAemtcR8rx5h/+hddzvenPRaeLVEkimHwlKO0NeubWCv
-         Udw7hKerWkDZ2u+kFLCn0dMVaiQ2OhGd+K0iQCIcj9iUR/mVVYfzZjWEN8phtLNlqXbT
-         ng1Sd7af58/8bjgDKCCJXBQ6r9v50IenFjWJsrjh+0qrMkwKalI8DDJqLEdgTTvAGxl8
-         6XXco0XkkGjxaDF9km1y93HKV1Bzl0exLKf7eKuYcnfMY6/5lsdxmq0PKREdhQbCz8Dk
-         PpQQ==
-X-Gm-Message-State: AOAM5302sGNXuIxTI0+7fMvRjRSyEVGMebX7sNAZLqN9ehOMVrT9V4Rq
-        gmAVC3BUAQfphO191kXqIme/eQ==
-X-Google-Smtp-Source: ABdhPJzGYqIg1uV2fFiAFp1N6QpUHaJbLKmzuL39SUFpDMurp27BDLYmnVyFZR90KFStJhOOttNnyg==
-X-Received: by 2002:a05:6e02:1c2e:: with SMTP id m14mr27941503ilh.121.1641428581210;
-        Wed, 05 Jan 2022 16:23:01 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id y1sm242320ilv.10.2022.01.05.16.23.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 16:23:00 -0800 (PST)
-Message-ID: <0d850b27-5684-2ecf-fc96-3258c0462d3d@ieee.org>
-Date:   Wed, 5 Jan 2022 18:22:59 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LtbJ7TD9znxzhf98x0PHy/SqzW7ZVDB+4Aleb2LR+tc=;
+        b=I5sFcQUAs/FAP5d4NidRH119G9ncVC1yllj1EC66NJRIGI5ikID40NVgPbi8XtToP6
+         ByuX1T2z2Qi9Xz3ZpQ3VPfw1ZLlZDhKSN11khHaAbzlE8/b/9XjzVqzoYhmRQzVTiBrk
+         EU8l5MPPi+y7lI21H7CeyFkRCtFyWquLrwbxkaHriX6PdhlCKFWK4pxOboB13lFXR0V0
+         PldhombY39HVGyB/9/c8xjB7H2K1tnExZWxq+Z9WppeIxVVJuOgbRmj6JbJONDxDqFSL
+         OZ+fy1pbVzW5JXeN8dSp0e2zfNTzJNOAab6tL+GqGY5k99k8Pa+pnPUYTKUfp7eaNC07
+         zG4w==
+X-Gm-Message-State: AOAM531/Z3HlV0fq24TNpxVQ2CnXvlU9Eafkrru2z/HbxAg0d66pcEfS
+        pJIUh7GyjiLwIS3WeA1f76rQFQrtCOflXsPjzPek4q99udA=
+X-Google-Smtp-Source: ABdhPJxwVU92PbeiEsPXmYrPJ+CTjuJsI2k8EV3VJh4/qbdXFirVB51FerExeLPe1Oj+yyb9zEpWh8SsJv9A1SN2BzM=
+X-Received: by 2002:a1c:ed01:: with SMTP id l1mr4906259wmh.185.1641428595576;
+ Wed, 05 Jan 2022 16:23:15 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-From:   Alex Elder <elder@ieee.org>
-Subject: Re: [PATCH 03/20] bus: mhi: Make mhi_state_str[] array static const
- and move to common.h
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        mhi@lists.linux.dev
-Cc:     hemantk@codeaurora.org, bbhatt@codeaurora.org,
-        quic_jhugo@quicinc.com, vinod.koul@linaro.org,
-        bjorn.andersson@linaro.org, dmitry.baryshkov@linaro.org,
-        skananth@codeaurora.org, vpernami@codeaurora.org,
-        vbadigan@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20211202113553.238011-1-manivannan.sadhasivam@linaro.org>
- <20211202113553.238011-4-manivannan.sadhasivam@linaro.org>
-Content-Language: en-US
-In-Reply-To: <20211202113553.238011-4-manivannan.sadhasivam@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
+ <20211222155743.256280-18-miquel.raynal@bootlin.com> <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
+ <SN6PR08MB4464D7124FCB5D0801D26B94E0459@SN6PR08MB4464.namprd08.prod.outlook.com>
+ <CAB_54W6ikdGe=ZYqOsMgBdb9KBtfAphkBeu4LLp6S4R47ZDHgA@mail.gmail.com> <20220105094849.0c7e9b65@xps13>
+In-Reply-To: <20220105094849.0c7e9b65@xps13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Wed, 5 Jan 2022 19:23:04 -0500
+Message-ID: <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
+Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
+ beacons implementation
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     David Girault <David.Girault@qorvo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        Romuald Despres <Romuald.Despres@qorvo.com>,
+        Frederic Blain <Frederic.Blain@qorvo.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        kernel list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/2/21 5:35 AM, Manivannan Sadhasivam wrote:
-> mhi_state_str[] array could be used by MHI endpoint stack also. So let's
-> make the array as "static const" and move it inside the "common.h" header
-> so that the endpoint stack could also make use of it. Otherwise, the
-> structure definition should be present in both host and endpoint stack and
-> that'll result in duplication.
-> 
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Hi,
 
-This result in common source code (which is good), but it will be
-duplicated in everything that includes this file.
+On Wed, 5 Jan 2022 at 03:48, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> alex.aring@gmail.com wrote on Thu, 30 Dec 2021 14:48:41 -0500:
+>
+> > Hi,
+> >
+> > On Thu, 30 Dec 2021 at 12:00, David Girault <David.Girault@qorvo.com> wrote:
+> > >
+> > > Hi Alexander,
+> > >
+> > > At Qorvo, we have developped a SoftMAC driver for our DW3000 chip that will benefit such API.
+> > >
+> > Do you want to bring this driver upstream as well? Currently those
+> > callbacks will be introduced but no user is there.
+>
+> I think so far the upstream fate of the DW3000 driver has not been ruled
+> out so let's assume it won't be upstreamed (at least not fully), that's
+> also why we decided to begin with the hwsim driver.
+>
 
-Do you have no common code, available to both the endpoint and host?
-You could (in drivers/bus/mhi/common.c, for example).
+ok.
 
-If you don't, I have a different suggestion, below.  It does
-basically the same thing you're doing here, but I much prefer
-duplicating an inline function than a data structure.
+> However, when designing this series, it appeared quite clear that any
+> hardMAC driver would need this type of interface. The content of the
+> interface, I agree, could be further discussed and even edited, but the
+> main idea of giving the information to the phy driver about what is
+> happening regarding eg. scan operations or beacon frames, might make
+> sense regardless of the current users, no?
+>
 
-> ---
->   drivers/bus/mhi/common.h    | 13 ++++++++++++-
->   drivers/bus/mhi/host/init.c | 12 ------------
->   2 files changed, 12 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/bus/mhi/common.h b/drivers/bus/mhi/common.h
-> index 0f4f3b9f3027..2ea438205617 100644
-> --- a/drivers/bus/mhi/common.h
-> +++ b/drivers/bus/mhi/common.h
-> @@ -174,7 +174,18 @@ struct mhi_cmd_ctxt {
->   	__u64 wp __packed __aligned(4);
->   };
->   
-> -extern const char * const mhi_state_str[MHI_STATE_MAX];
-> +static const char * const mhi_state_str[MHI_STATE_MAX] = {
-> +	[MHI_STATE_RESET] = "RESET",
-> +	[MHI_STATE_READY] = "READY",
-> +	[MHI_STATE_M0] = "M0",
-> +	[MHI_STATE_M1] = "M1",
-> +	[MHI_STATE_M2] = "M2",
-> +	[MHI_STATE_M3] = "M3",
-> +	[MHI_STATE_M3_FAST] = "M3 FAST",
-> +	[MHI_STATE_BHI] = "BHI",
-> +	[MHI_STATE_SYS_ERR] = "SYS ERROR",
-> +};
-> +
->   #define TO_MHI_STATE_STR(state) ((state >= MHI_STATE_MAX || \
->   				  !mhi_state_str[state]) ? \
->   				"INVALID_STATE" : mhi_state_str[state])
+A HardMAC driver does not use this driver interface... but there
+exists a SoftMAC driver for a HardMAC transceiver. This driver
+currently works because we use dataframes only... It will not support
+scanning currently and somehow we should make iit not available for
+drivers like that and for drivers which don't set symbol duration.
+They need to be fixed.
 
-You could easily and safely define this as an inline function instead.
+> This being said, if other people decide to upstream a hardMAC driver
+> and need these hooks to behave a little bit differently, it's their
+> right to tweak them and that would also be part of the game.
+>
+> Although we might not need these hooks in a near future at all if we
+> move to the filtering modes, because the promiscuous call with the
+> specific level might indicate to the device how it should configure
+> itself already.
+>
 
-#define MHI_STATE_CASE(x)	case MHI_STATE_ ## x: return #x
-static inline const char *mhi_state_string(enum mhi_state state)
-{
-	switch(state) {
-	MHI_STATE_CASE(RESET);
-	MHI_STATE_CASE(READY);
-	MHI_STATE_CASE(M0);
-	MHI_STATE_CASE(M1);
-	MHI_STATE_CASE(M2);
-	MHI_STATE_CASE(M3_FAST);
-	MHI_STATE_CASE(BHI);
-	MHI_STATE_CASE(SYS_ERR);
-	default: return "(unrecognized MHI state)";
-	}
-}
-#undef MHI_STATE_CASE
+My concern is that somebody else might want to remove those callbacks
+because they are not used.
 
-					-Alex
-
-> diff --git a/drivers/bus/mhi/host/init.c b/drivers/bus/mhi/host/init.c
-> index 5aaca6d0f52b..fa904e7468d8 100644
-> --- a/drivers/bus/mhi/host/init.c
-> +++ b/drivers/bus/mhi/host/init.c
-> @@ -44,18 +44,6 @@ const char * const dev_state_tran_str[DEV_ST_TRANSITION_MAX] = {
->   	[DEV_ST_TRANSITION_DISABLE] = "DISABLE",
->   };
->   
-> -const char * const mhi_state_str[MHI_STATE_MAX] = {
-> -	[MHI_STATE_RESET] = "RESET",
-> -	[MHI_STATE_READY] = "READY",
-> -	[MHI_STATE_M0] = "M0",
-> -	[MHI_STATE_M1] = "M1",
-> -	[MHI_STATE_M2] = "M2",
-> -	[MHI_STATE_M3] = "M3",
-> -	[MHI_STATE_M3_FAST] = "M3 FAST",
-> -	[MHI_STATE_BHI] = "BHI",
-> -	[MHI_STATE_SYS_ERR] = "SYS ERROR",
-> -};
-> -
->   const char * const mhi_ch_state_type_str[MHI_CH_STATE_TYPE_MAX] = {
->   	[MHI_CH_STATE_TYPE_RESET] = "RESET",
->   	[MHI_CH_STATE_TYPE_STOP] = "STOP",
-> 
-
+- Alex
