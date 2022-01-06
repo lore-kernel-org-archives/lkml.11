@@ -2,240 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 638B6C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 10:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2421BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 10:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237965AbiAFKaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 05:30:02 -0500
-Received: from smtp08.smtpout.orange.fr ([80.12.242.130]:63727 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237940AbiAFK36 (ORCPT
+        id S237983AbiAFKaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 05:30:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49860 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237940AbiAFKaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 05:29:58 -0500
-Received: from localhost.localdomain ([124.33.176.97])
-        by smtp.orange.fr with ESMTPA
-        id 5Q1hnk12SPnAJ5Q1pnsyfm; Thu, 06 Jan 2022 11:29:56 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
-X-ME-Date: Thu, 06 Jan 2022 11:29:56 +0100
-X-ME-IP: 124.33.176.97
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [RFC PATCH v3] iplink_can: add ctrlmode_{supported,_static} to the "--details --json" output
-Date:   Thu,  6 Jan 2022 19:29:37 +0900
-Message-Id: <20220106102937.2824-1-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.34.1
+        Thu, 6 Jan 2022 05:30:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8990161B14;
+        Thu,  6 Jan 2022 10:30:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B35ADC36AE3;
+        Thu,  6 Jan 2022 10:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641465017;
+        bh=AEUEKRvg76KMQjAE75Y8qZ3DdjJA0ls98F6fkt74Q3Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=BgnoiHBfsRG62UCju9J4NqZLmn02Wcr/KkvJ8+Qf3PIMVLGW1rTDjMgOoshmufJtb
+         W8GLzzI7B47KdR1gK4b6ElugYeccp2hnOJQ+3ppmP8p/uRK+Jpl6lwB09dZ0u6rTLQ
+         xHAjldNujXTEDHk56AuI1kPFjWIlSGL55ns/UUxslkW3G8wAVGKympfcAbxpxDkNFe
+         Q6x5Q2+AOEUdO8vFybJ+IrbBQTjVCH6bKRUsxEluX/jgsGPQvNqCCFpTmTZqatEh7r
+         LGHdpEDt91JbfoBEkQy64onOX3vlxqcmYkeqQZdDesILBsuvT011Rb3T0JEaOzdRiM
+         hXvXxlvbomx4A==
+Date:   Thu, 6 Jan 2022 10:30:09 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Subject: Re: [PATCH v6 1/9] mm: x86, arm64: add arch_has_hw_pte_young()
+Message-ID: <20220106103009.GA4420@willie-the-truck>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <20220104202227.2903605-2-yuzhao@google.com>
+ <20220105104526.GA3015@willie-the-truck>
+ <YdYDzKvYbBwjfU3W@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdYDzKvYbBwjfU3W@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch is the userland counterpart of [1]. Indeed, [1] allows the
-can netlink interface to report the CAN controller capabilities.
+On Wed, Jan 05, 2022 at 01:47:08PM -0700, Yu Zhao wrote:
+> On Wed, Jan 05, 2022 at 10:45:26AM +0000, Will Deacon wrote:
+> > On Tue, Jan 04, 2022 at 01:22:20PM -0700, Yu Zhao wrote:
+> > > diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+> > > index 870c39537dd0..56e4ef5d95fa 100644
+> > > --- a/arch/arm64/tools/cpucaps
+> > > +++ b/arch/arm64/tools/cpucaps
+> > > @@ -36,6 +36,7 @@ HAS_STAGE2_FWB
+> > >  HAS_SYSREG_GIC_CPUIF
+> > >  HAS_TLB_RANGE
+> > >  HAS_VIRT_HOST_EXTN
+> > > +HW_AF
+> > >  HW_DBM
+> > >  KVM_PROTECTED_MODE
+> > >  MISMATCHED_CACHE_TYPE
+> > 
+> > As discussed in the previous threads, we really don't need the complexity
+> > of the additional cap for the arm64 part. Please can you just use the
+> > existing code instead? It's both simpler and, as you say, it's equivalent
+> > for existing hardware.
+> > 
+> > That way, this patch just ends up being a renaming exercise and we're all
+> > good.
+> 
+> No, renaming alone isn't enough. A caller needs to disable preemption
+> before calling system_has_hw_af(), and I don't think it's reasonable
+> to ask this caller to do it on x86 as well.
+> 
+> It seems you really prefer not to have HW_AF. So the best I can
+> accommodate, considering other potential archs, e.g., risc-v (I do
+> plan to provide benchmark results on risc-v, btw), is:
+> 
+>   static inline bool arch_has_hw_pte_young(bool local)
+>   {
+> 	bool hw_af;
+> 
+>   	if (local) {
+>   		WARN_ON(preemptible());
+>   		return cpu_has_hw_af();
+>   	}
+>   
+> 	preempt_disable();
+>   	hw_af = system_has_hw_af();
+> 	preempt_enable();
+> 
+> 	return hw_af;
+>   }
+> 
+> Or please give me something else I can call without disabling
+> preemption, sounds good?
 
-Previously, only the options which were switched on were reported
-(i.e. can_priv::ctrlmode). Here, we add two additional pieces of
-information to the json report:
+Sure thing, let me take a look. Do you have your series on a public git
+tree someplace?
 
-  - ctrlmode_supported: the options that can be modified by netlink
+Cheers,
 
-  - ctrlmode_static: option which are statically enabled by the driver
-    (i.e. can not be turned off)
-
-For your information, we borrowed the naming convention from struct
-can_priv [2].
-
-Contrary to the ctrlmode, the ctrlmode_{supported,_static} are only
-reported in the json context. The reason is that this newly added
-information can quickly become very verbose and we do not want to
-overload the default output. You can think of the "ip --details link
-show canX" output as the verbose mode and the "ip --details --json
-link show canX" output as the *very* verbose mode.
-
-*Example:*
-
-This is how the output would look like for a dummy driver which would
-have:
-
-  - CAN_CTRLMODE_LOOPBACK, CAN_CTRLMODE_LISTENONLY,
-    CAN_CTRLMODE_3_SAMPLES, CAN_CTRLMODE_FD, CAN_CTRLMODE_CC_LEN8_DLC
-    and TDC-AUTO supported by the driver
-
-  - CAN_CTRLMODE_CC_LEN8_DLC turned on by the user
-
-  - CAN_CTRLMODE_FD_NON_ISO statically enabled by the driver
-
-| $ ip link set can0 type can cc-len8-dlc on
-| $ ip --details --json --pretty link show can0
-| [ {
-|         "ifindex": 1,
-|         "ifname": "can0",
-|         "flags": [ "NOARP","ECHO" ],
-|         "mtu": 16,
-|         "qdisc": "noop",
-|         "operstate": "DOWN",
-|         "linkmode": "DEFAULT",
-|         "group": "default",
-|         "txqlen": 10,
-|         "link_type": "can",
-|         "promiscuity": 0,
-|         "min_mtu": 0,
-|         "max_mtu": 0,
-|         "linkinfo": {
-|             "info_kind": "can",
-|             "info_data": {
-|                 "ctrlmode": [ "FD-NON-ISO","CC-LEN8-DLC" ],
-|                 "ctrlmode_supported": [ "LOOPBACK","LISTEN-ONLY","TRIPLE-SAMPLING","FD","CC-LEN8-DLC","TDC-AUTO" ],
-|                 "ctrlmode_static": [ "FD-NON-ISO" ],
-|                 "state": "STOPPED",
-|                 "restart_ms": 0,
-|                 "bittiming_const": {
-|                     "name": "DUMMY_CAN_DEV",
-|                     "tseg1": {
-|                         "min": 2,
-|                         "max": 256
-|                     },
-|                     "tseg2": {
-|                         "min": 2,
-|                         "max": 128
-|                     },
-|                     "sjw": {
-|                         "min": 1,
-|                         "max": 128
-|                     },
-|                     "brp": {
-|                         "min": 1,
-|                         "max": 512
-|                     },
-|                     "brp_inc": 1
-|                 },
-|                 "data_bittiming_const": {
-|                     "name": "DUMMY_CAN_DEV",
-|                     "tseg1": {
-|                         "min": 2,
-|                         "max": 32
-|                     },
-|                     "tseg2": {
-|                         "min": 1,
-|                         "max": 16
-|                     },
-|                     "sjw": {
-|                         "min": 1,
-|                         "max": 8
-|                     },
-|                     "brp": {
-|                         "min": 1,
-|                         "max": 32
-|                     },
-|                     "brp_inc": 1,
-|                     "tdc": {
-|                         "tdco": {
-|                             "min": 0,
-|                             "max": 127
-|                         },
-|                         "tdcf": {
-|                             "min": 0,
-|                             "max": 127
-|                         }
-|                     }
-|                 },
-|                 "clock": 80000000
-|             }
-|         },
-|         "num_tx_queues": 1,
-|         "num_rx_queues": 1,
-|         "gso_max_size": 65536,
-|         "gso_max_segs": 65535,
-|         "parentbus": "usb",
-|         "parentdev": "1-10:1.1"
-|     } ]
-
-As mentioned above, the default output remains unchanged:
-
-| $ ip --details link show can0
-| 1: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
-|     link/can  promiscuity 0 minmtu 0 maxmtu 0
-|     can <FD-NON-ISO,CC-LEN8-DLC> state STOPPED restart-ms 0
-| 	  DUMMY_CAN_DEV: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
-| 	  DUMMY_CAN_DEV: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp_inc 1
-| 	  tdco 0..127 tdcf 0..127
-| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 parentbus usb parentdev 1-10:1.1
-
-[1] commit 383f0993fc77 ("can: netlink: report the CAN controller mode
-    supported flags")
-    https://lore.kernel.org/linux-can/20220105144402.1174191-16-mkl@pengutronix.de/T/#u
-
-[2] https://elixir.bootlin.com/linux/v5.14/source/include/linux/can/dev.h#61
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
-I am sending a last RFC because I would like to gather people's
-opinion on the output format. I will reply to my own message just
-after with more details.
-
-* Changelog *
-
-v2 -> v3
-
-  - Rebased on the latest version of iproute2-next.
-  - Minor changes in the commit description.
-
-v1 -> v2
-
-  - The kernel uapi was modified to use a new NLA_NESTED entry instead
-    of reusing struct can_ctrlmode. The second and third patch of the
-    series were updated accordingly.
-
-Vincent Mailhol (3):
-  iplink_can: code refactoring of print_ctrlmode()
-  iplink_can: add ctrlmode_{supported,_static} to the "--details --json"
-    output
-  can: netlink: add new field to struct can_ctrlmode to report
-    capabilities
----
- ip/iplink_can.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/ip/iplink_can.c b/ip/iplink_can.c
-index f4b37528..854ccc31 100644
---- a/ip/iplink_can.c
-+++ b/ip/iplink_can.c
-@@ -396,6 +396,20 @@ static void can_print_tdc_const_opt(FILE *f, struct rtattr *tdc_attr)
- 	close_json_object();
- }
- 
-+static void can_print_ctrlmode_ext(FILE *f, struct rtattr *ctrlmode_ext_attr,
-+				   __u32 cm_flags)
-+{
-+	struct rtattr *tb[IFLA_CAN_CTRLMODE_MAX + 1];
-+
-+	parse_rtattr_nested(tb, IFLA_CAN_CTRLMODE_MAX, ctrlmode_ext_attr);
-+	if (tb[IFLA_CAN_CTRLMODE_SUPPORTED]) {
-+		__u32 *supported = RTA_DATA(tb[IFLA_CAN_CTRLMODE_SUPPORTED]);
-+
-+		print_ctrlmode(PRINT_JSON, *supported, "ctrlmode_supported");
-+		print_ctrlmode(PRINT_JSON, cm_flags & ~*supported, "ctrlmode_static");
-+	}
-+}
-+
- static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- {
- 	if (!tb)
-@@ -405,6 +419,9 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 		struct can_ctrlmode *cm = RTA_DATA(tb[IFLA_CAN_CTRLMODE]);
- 
- 		print_ctrlmode(PRINT_ANY, cm->flags, "ctrlmode");
-+		if (tb[IFLA_CAN_CTRLMODE_EXT])
-+			can_print_ctrlmode_ext(f, tb[IFLA_CAN_CTRLMODE_EXT],
-+					       cm->flags);
- 	}
- 
- 	if (tb[IFLA_CAN_STATE]) {
--- 
-2.34.1
-
+Will
