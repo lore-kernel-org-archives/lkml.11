@@ -2,90 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 15:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC5BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 15:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240342AbiAFPAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 10:00:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
+        id S240337AbiAFPBZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 10:01:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240287AbiAFPAE (ORCPT
+        with ESMTP id S240274AbiAFPBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 10:00:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE418C061212;
-        Thu,  6 Jan 2022 07:00:03 -0800 (PST)
+        Thu, 6 Jan 2022 10:01:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164D8C061245;
+        Thu,  6 Jan 2022 07:01:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8B23B8222C;
-        Thu,  6 Jan 2022 15:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61426C36AF5;
-        Thu,  6 Jan 2022 15:00:01 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1n5UFE-000sMz-HC;
-        Thu, 06 Jan 2022 10:00:00 -0500
-Message-ID: <20220106150000.366357523@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Thu, 06 Jan 2022 09:57:19 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-Subject: [for-linus][PATCH 3/3] tracing: Tag trace_percpu_buffer as a percpu pointer
-References: <20220106145716.663267282@goodmis.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B38BF61AA5;
+        Thu,  6 Jan 2022 15:01:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A686C36AE0;
+        Thu,  6 Jan 2022 15:01:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641481283;
+        bh=xgIrLzK988oAekXQpBh/T0gHpcqm8TEJusYJeFnj26w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A92iI0iB5/KOq7rV9+kXOx8cHZhLPscsNXwRf43MFDbAReQak6JorjorOWngwAMia
+         ZKw480S40WIqtIW7X4GKXY9QYQxSxwHES4QJsYCFXKKf/v7Q1fCMKRpVV/KLtPuddl
+         S8f78WOudtAycf4N/n8Ruaq5lIYzI9k3CQsb/FG4=
+Date:   Thu, 6 Jan 2022 16:01:20 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] tty/serial: Check for null pointer after calling
+ devm_ioremap
+Message-ID: <YdcEQPS30BHTPQJo@kroah.com>
+References: <20220106090631.2714586-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220106090631.2714586-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+On Thu, Jan 06, 2022 at 05:06:31PM +0800, Jiasheng Jiang wrote:
+> As the possible failure of the allocation, the devm_ioremap() may return
+> NULL pointer.
 
-Tag trace_percpu_buffer as a percpu pointer to resolve warnings
-reported by sparse:
-  /linux/kernel/trace/trace.c:3218:46: warning: incorrect type in initializer (different address spaces)
-  /linux/kernel/trace/trace.c:3218:46:    expected void const [noderef] __percpu *__vpp_verify
-  /linux/kernel/trace/trace.c:3218:46:    got struct trace_buffer_struct *
-  /linux/kernel/trace/trace.c:3234:9: warning: incorrect type in initializer (different address spaces)
-  /linux/kernel/trace/trace.c:3234:9:    expected void const [noderef] __percpu *__vpp_verify
-  /linux/kernel/trace/trace.c:3234:9:    got int *
+I do not understand this sentence.
 
-Link: https://lkml.kernel.org/r/ebabd3f23101d89cb75671b68b6f819f5edc830b.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
+> And the 'port->membase' will be directly used in mlb_usio_startup().
 
-Cc: stable@vger.kernel.org
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 07d777fe8c398 ("tracing: Add percpu buffers for trace_printk()")
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
----
- kernel/trace/trace.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This does not make sense either.
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index e1f55851e53f..78ea542ce3bc 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -3207,7 +3207,7 @@ struct trace_buffer_struct {
- 	char buffer[4][TRACE_BUF_SIZE];
- };
- 
--static struct trace_buffer_struct *trace_percpu_buffer;
-+static struct trace_buffer_struct __percpu *trace_percpu_buffer;
- 
- /*
-  * This allows for lockless recording.  If we're nested too deeply, then
-@@ -3236,7 +3236,7 @@ static void put_trace_buf(void)
- 
- static int alloc_percpu_trace_buffer(void)
- {
--	struct trace_buffer_struct *buffers;
-+	struct trace_buffer_struct __percpu *buffers;
- 
- 	if (trace_percpu_buffer)
- 		return 0;
--- 
-2.33.0
+
+> Therefore, in order to avoid the dereference of the NULL pointer, it
+> should be better to add the sanity check.
+
+What do you mean by "sanity check"?
+
+confused,
+
+greg k-h
