@@ -2,184 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66DE3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 07:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B632C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 07:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236146AbiAFHzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 02:55:53 -0500
-Received: from esa1.hgst.iphmx.com ([68.232.141.245]:28816 "EHLO
-        esa1.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235701AbiAFHzw (ORCPT
+        id S236241AbiAFH5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 02:57:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235701AbiAFH53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 02:55:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1641455752; x=1672991752;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9hiyN3diJQDZOnngksGKn3A2YNPvEM2B2/Gn5E4IP+8=;
-  b=GInok0nkMPOmUKV5FlqZuyqU2NY03YfS/jsBPd+IrEEh9C4gVRBrShNH
-   D3NcqHtx3KBa5jmQgmoZqhZwO2RiHXCk23md3Yd9uA+JEi7bzeayiP/iu
-   pImE8P4ebCR9v+MjCWtd5ruAqvkSVeQPZ/iWAH6OfmKYBhBThZ9zhM+VB
-   QCq/Rc20xd87cgNRQVo8gPG0EcdqW04awH2S2Tkq7P5SbbzohJNUW/WOh
-   +PGHW7PouHBQmoApDoVHfEM+0hP0Aselp/kAP7M0StZVL6czaj+AEq0GE
-   QnHhOspHzA/6YIpwH9OyESLp2EVbiRqnLsVenUvT7JxvwqVOShkUJOqUV
-   g==;
-X-IronPort-AV: E=Sophos;i="5.88,266,1635177600"; 
-   d="scan'208";a="301685293"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 06 Jan 2022 15:55:52 +0800
-IronPort-SDR: eci/wDvjhs3BmcY8xDVjnS0HsS62ftDNRO5aY5lOx0MBbjpzQerhxefK/VfE04a6XpqoWpfjle
- XQ3LQtQjlmBhYwAs8nT1+Jrswmi1OIB4SdtqJ2nHvN2yisIZo7wI2lSHtzc2cwEvwWCaywW+ay
- nWuQqvmqPoIkS8th0oAjVnXxxYGGvv5tXNcmT6SDtmJbtbLDz/hSJjfssNW6nUYjxNgZUM9hpF
- B30EUluh1hY1r/3PMW2vs51h3uKVFC3mUB1L99rqPvEb01tu3vSYx01OtUP+WyG6melk0nc8p5
- O1w4sP4yN0xZTcubh3Pbjcgk
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 23:29:42 -0800
-IronPort-SDR: 4PXYOrIv5EFUQSb8ZodwOPhKoZOFoccyVziyE5uxd6j06he+Yf+/FMcGb+3z1bLAoctQMUgSg3
- /2tuIcyuN82LkdVpd/1gNSsaiVxxcf/Cxgzqojevz3Qv8iVyQIv5jjmPb63Nj+hS3+4xrggJhb
- 9XsWyyybZvvwKxxfc93nDuNMa75NbPr9HkJILUH+cjAYxvCCKYPlr6IeucjBmVZlLZrQj/xBJn
- vW9lRTbmm1Wsw5NzVq7H3ZitqKgWAPadxR8fzzo8yQGfLQ0JPrpz7FH9RQQpM8uVSf3YCeCYcV
- UKs=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 23:55:53 -0800
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JTzDl6RFFz1VSkZ
-        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 23:55:51 -0800 (PST)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1641455751; x=1644047752; bh=9hiyN3diJQDZOnngksGKn3A2YNPvEM2B2/G
-        n5E4IP+8=; b=o0aXcvK2o1YuEcLQOWeEXiFNj8cKWIPKSu/a6dFFL5H8tyXN4wt
-        50wkHJKLGDivdhQt7f0uoMDn1Ac17vFBcDe366mDjpRwPNIsiUEruSFqbeoKi6QQ
-        UvyB3k8/KENatrdfh+enw8265tljbHXMVHhIC6Lqvfg/f6CcuEfs++SF5kCUppMj
-        SAwYN3siS88cY6o/zT7mmbry5geI4VYVH+hXVtVeGljwUGwFt4h0vPtSoieW0ak3
-        jFeN4wRFFURq87VdJ2DAT/vg+OIbn1bpW7I8cOQA+CjLdDAIJznDZsxIHwU5Bl3I
-        PM6I9uK4gn5X/UNmRggKfpLsNbBaCUB7MSQ==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id TyG63QHuQXQd for <linux-kernel@vger.kernel.org>;
-        Wed,  5 Jan 2022 23:55:51 -0800 (PST)
-Received: from [10.225.163.43] (unknown [10.225.163.43])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JTzDk6YQzz1VSkV;
-        Wed,  5 Jan 2022 23:55:50 -0800 (PST)
-Message-ID: <1665d5a4-994a-b9df-33a9-c748bd5c17be@opensource.wdc.com>
-Date:   Thu, 6 Jan 2022 16:55:49 +0900
+        Thu, 6 Jan 2022 02:57:29 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5294EC061245
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 23:57:29 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id n19-20020a7bc5d3000000b003466ef16375so3239722wmk.1
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 23:57:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fQP2YfUpb4fHqOMssL3eeo2Ym6aNx9vMkOEeNtp9unE=;
+        b=aYNR0bGpAowqlxd/DOt/e+Ls1z7NRf778/koD7Cfa4+aVe7SVH+l8cErlXs82QKLEw
+         Z5qGDZsPuh3rS6h9gfhiFpaAoOT4rU3I3l2iVJicEu1BzGdr90SSsLQMyOsASziVgdgJ
+         YObi8gEoE/VRIabA8frRa8WyJo3Ucx/Mk6bbSP6eOSBwDLlgIvJuiVh63rNzbUkZDAP+
+         4LxsmWvV0H7qYyfWTpzUIDFrfSwTp1wY6RxRI9jOwufUZ8uu3M2zh9iuNYJrN8yxv498
+         seyFX4qcU3HNv0Nn5+u2G2wEro1HFcF5M9s20AFKmkpikZM2Win0JKxgMQUltsO1uEOL
+         1rZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fQP2YfUpb4fHqOMssL3eeo2Ym6aNx9vMkOEeNtp9unE=;
+        b=2yQc+e+rNINEwxZxP+mnLwBa0vEiFzSEYWrKvJSYTjZjJNjT0teIkuVo5U1roeLe7g
+         lVpyp1lEaKtPmIcxKCftPoMbZd2NuXWSFcC1gL1viJgszJTH+D07F6xuKrCE6FsmtpDi
+         OqhLYpw3uXljVpSi+lOnUXP1KfNxn0DOw4yrDfVYHJOjmNiv/2L/LFZ8VUjabmuCYEzA
+         49zuaLhib21MfLyChO8OPY7LyCWQwKup9HHhYsv8wTkxEoS1he50oYRLmaBaeWZ6ecgj
+         KQza61eeqO3mr3rWsHG1iQG8GgSFhFSlwMs1MqZHtTPgP5moVuoD1abb5guu38kyXU4A
+         Ccjg==
+X-Gm-Message-State: AOAM530Xchadnhc4PF4jn2r0cm4aL8n6wR6IlFpdMIhXra2LNwuaGZPR
+        92ayZ4MQoy9ze1axT3f+7xD6lM0FfjA=
+X-Google-Smtp-Source: ABdhPJxQPpd9VYMQ00wMYZnHD+Ixv+8leGTwWWRu6T1/iyWI3JOX8CMjxO/l4Sh29QcFkIxKIELWbA==
+X-Received: by 2002:a05:600c:4e4a:: with SMTP id e10mr5838746wmq.15.1641455847995;
+        Wed, 05 Jan 2022 23:57:27 -0800 (PST)
+Received: from ?IPV6:2a02:8108:96c0:3b88::b8a2? ([2a02:8108:96c0:3b88::b8a2])
+        by smtp.gmail.com with ESMTPSA id a2sm1556343wri.17.2022.01.05.23.57.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 23:57:27 -0800 (PST)
+Message-ID: <1bc4945c-9087-41dc-1e30-0844e661ed5d@gmail.com>
+Date:   Thu, 6 Jan 2022 08:57:26 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v4 1/2] ahci: Rename flag `ATA_LFLAG_NO_DB_DELAY` to
- `ATA_LFLAG_NO_DEBOUNCE_DELAY`
+ Thunderbird/91.4.1
+Subject: Re: [PATCH 0/7] staging: r8188eu: clean up tx power arrays
 Content-Language: en-US
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220105153618.2395-1-pmenzel@molgen.mpg.de>
- <d5130eed-d881-f654-3e24-b552609abce9@opensource.wdc.com>
- <e19a8764-2943-f370-f1d9-bb399a2aa1ac@molgen.mpg.de>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <e19a8764-2943-f370-f1d9-bb399a2aa1ac@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8
+To:     Martin Kaiser <martin@kaiser.cx>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220105083426.177128-1-martin@kaiser.cx>
+From:   Michael Straube <straube.linux@gmail.com>
+In-Reply-To: <20220105083426.177128-1-martin@kaiser.cx>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/6/22 16:35, Paul Menzel wrote:
-> Dear Damien,
+On 1/5/22 09:34, Martin Kaiser wrote:
+> This set removes unused tx power arrays and changes some other arrays from
+> multidimensional to one-dimensional.
 > 
+> Martin Kaiser (7):
+>    staging: r8188eu: rfPath is always 0
+>    staging: r8188eu: make Index24G_CCK_Base a 1-D array
+>    staging: r8188eu: make Index24G_BW40_Base a 1-D array
+>    staging: r8188eu: CCK_24G_Diff is set but not used
+>    staging: r8188eu: BW40_24G_Diff is set but not used
+>    staging: r8188eu: make OFDM_24G_Diff a 1-D array
+>    staging: r8188eu: make BW20_24G_Diff a 1-D array
 > 
-> Am 06.01.22 um 03:52 schrieb Damien Le Moal:
->> On 1/6/22 00:36, Paul Menzel wrote:
->>> The new name is longer, but clearer.
->>
->> It looks like you sent an incremental change on top of your previous
->> patches. Please send a cleaned up series. One patch to introduce the
->> ATA_LFLAG_NO_DEBOUNCE_DELAY flag & msleep bypass and another to add the
->> AMD chipset.
->>
->> The commit message of this version patch 2 should be the explanation for
->> the ATA_LFLAG_NO_DEBOUNCE_DELAY flag, not for adding a new chipset ID.
+>   .../staging/r8188eu/hal/rtl8188e_hal_init.c   | 25 ++++++++-----------
+>   drivers/staging/r8188eu/hal/rtl8188e_phycfg.c | 12 ++++-----
+>   .../staging/r8188eu/include/rtl8188e_hal.h    | 10 +++-----
+>   3 files changed, 20 insertions(+), 27 deletions(-)
 > 
-> Sorry, but I think you misread the patch. The flag 
-> `ATA_LFLAG_NO_DB_DELAY` exists since commit e39b2bb3b7 (libata: skip 
-> debounce delay on link resume).
 
-Arg. Indeed. Ignore my comment :)
+For all patches:
 
-Let's wait to see if there are any more comments and I will queue this
-up for 5.17.
-
-Going forward, it would be interesting to work on reversing the default:
-no delay by default and mark all old & unknown adapters as needing the
-delay. As you mentioned, most modern AHCI adapters most likely do not
-need it.
-
-Are you willing to take this and send a patches ?
-
-> 
-> 
-> Kind regards,
-> 
-> Paul
-> 
-> 
->>> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
->>> ---
->>>   drivers/ata/ahci_brcm.c   | 2 +-
->>>   drivers/ata/libata-sata.c | 2 +-
->>>   include/linux/libata.h    | 2 +-
->>>   3 files changed, 3 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/ata/ahci_brcm.c b/drivers/ata/ahci_brcm.c
->>> index 6e9c5ade4c2ea..649815c196ed0 100644
->>> --- a/drivers/ata/ahci_brcm.c
->>> +++ b/drivers/ata/ahci_brcm.c
->>> @@ -333,7 +333,7 @@ static struct ata_port_operations ahci_brcm_platform_ops = {
->>>   
->>>   static const struct ata_port_info ahci_brcm_port_info = {
->>>   	.flags		= AHCI_FLAG_COMMON | ATA_FLAG_NO_DIPM,
->>> -	.link_flags	= ATA_LFLAG_NO_DB_DELAY,
->>> +	.link_flags	= ATA_LFLAG_NO_DEBOUNCE_DELAY,
->>>   	.pio_mask	= ATA_PIO4,
->>>   	.udma_mask	= ATA_UDMA6,
->>>   	.port_ops	= &ahci_brcm_platform_ops,
->>> diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
->>> index b9c77885b8726..67b2e7cf3cc4e 100644
->>> --- a/drivers/ata/libata-sata.c
->>> +++ b/drivers/ata/libata-sata.c
->>> @@ -317,7 +317,7 @@ int sata_link_resume(struct ata_link *link, const unsigned long *params,
->>>   		 * immediately after resuming.  Delay 200ms before
->>>   		 * debouncing.
->>>   		 */
->>> -		if (!(link->flags & ATA_LFLAG_NO_DB_DELAY))
->>> +		if (!(link->flags & ATA_LFLAG_NO_DEBOUNCE_DELAY))
->>>   			ata_msleep(link->ap, 200);
->>>   
->>>   		/* is SControl restored correctly? */
->>> diff --git a/include/linux/libata.h b/include/linux/libata.h
->>> index 2a8404b26083c..15802e644962d 100644
->>> --- a/include/linux/libata.h
->>> +++ b/include/linux/libata.h
->>> @@ -191,7 +191,7 @@ enum {
->>>   	ATA_LFLAG_NO_LPM	= (1 << 8), /* disable LPM on this link */
->>>   	ATA_LFLAG_RST_ONCE	= (1 << 9), /* limit recovery to one reset */
->>>   	ATA_LFLAG_CHANGED	= (1 << 10), /* LPM state changed on this link */
->>> -	ATA_LFLAG_NO_DB_DELAY	= (1 << 11), /* no debounce delay on link resume */
->>> +	ATA_LFLAG_NO_DEBOUNCE_DELAY = (1 << 11), /* no debounce delay on link resume */
->>>   
->>>   	/* struct ata_port flags */
->>>   	ATA_FLAG_SLAVE_POSS	= (1 << 0), /* host supports slave dev */
->>
->>
-
-
--- 
-Damien Le Moal
-Western Digital Research
+Acked-by: Michael Straube <straube.linux@gmail.com>
