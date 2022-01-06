@@ -2,115 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08142C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 22:20:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 258EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 22:25:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245035AbiAFWUh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 17:20:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29837 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244984AbiAFWUf (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 17:20:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641507634;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=GyovoCuLjjHHt9QM/ZJ1ih4ScrXqH+W+bjbDOcUozq8=;
-        b=Spd0XgOPY7I6nM8++0CAOU/jTrKWRRCYthP3KJ/1DEvPRaEJjVkeo9B8DHB9gMW9WLZMCl
-        2011LgNm1LTw4Sq0JzIOdVHZfgULEN32U1kbYsjKi2f2tDqU3Aj1K71AulDWR/qTxQMuXe
-        w7fyahvE5QZOvVySHv1AwyQ0mH89teo=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-641-CDbGcIbENP68RLgbXLLwhg-1; Thu, 06 Jan 2022 17:20:33 -0500
-X-MC-Unique: CDbGcIbENP68RLgbXLLwhg-1
-Received: by mail-wr1-f71.google.com with SMTP id e21-20020adf9bd5000000b001a472da8091so1659293wrc.17
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 14:20:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GyovoCuLjjHHt9QM/ZJ1ih4ScrXqH+W+bjbDOcUozq8=;
-        b=RrxvpxSG0eOXuUMwLXwWAyqQ3+vZy+NhW7gKEwHK0f0CfOB5KIH+O5X3Pk9DtvZh81
-         Yyhyfn3Qa0IfFAkIWuogodEUannOW2fEvgB6De9mavHv76q8YgkWQlBKtS/uq2DJ7Yes
-         nYZwrZREZPnxXANKDzF08Iojp7mxO1m4obWCGlyEr2uqIxXO+f5uZr4UIVL2cyNKY1ID
-         6+9qu86I30I6K8f+RPSyWYDX7ar7LLvkXiaxw1jyjW8uy77Z8U7aGOSTUi2WtQyPGVvx
-         ZgK0IC4k6gofIyfJJcV+da/KqDVpupNZQBhoztUYTWKneMNavVjD0pjufKRT+niNh14X
-         4j1g==
-X-Gm-Message-State: AOAM532OslRuFwCL6e7ViLGtXTwgUWPrgWwezbDvmwGyp0V3OQM/hIfq
-        i8HZsWPNXPs43TjzVbasc8FENg2LIwk5rnGfHasrJg3Y+Wn1/1rYavkBxnhjatOilIMCZvoIQD0
-        vOkqnHb/LWr4uhmzJrbpSKx+l
-X-Received: by 2002:a7b:c7d0:: with SMTP id z16mr8769258wmk.76.1641507632035;
-        Thu, 06 Jan 2022 14:20:32 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxXYxtoAPX07hgPRDdhYyGPJM8/IYHeoCGK/503A3m4aTKkHkgY4kBBl4cGOPR9eroZ8W0fPg==
-X-Received: by 2002:a7b:c7d0:: with SMTP id z16mr8769251wmk.76.1641507631889;
-        Thu, 06 Jan 2022 14:20:31 -0800 (PST)
-Received: from krava.redhat.com ([83.240.63.12])
-        by smtp.gmail.com with ESMTPSA id n12sm3668066wrf.29.2022.01.06.14.20.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 14:20:31 -0800 (PST)
-From:   Jiri Olsa <jolsa@redhat.com>
-X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Christy Lee <christyc.y.lee@gmail.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org
-Subject: [PATCH] perf trace: Move SIGCHLD handler init to trace__run
-Date:   Thu,  6 Jan 2022 23:20:30 +0100
-Message-Id: <20220106222030.227499-1-jolsa@kernel.org>
-X-Mailer: git-send-email 2.33.1
+        id S245037AbiAFWY7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 17:24:59 -0500
+Received: from ms.lwn.net ([45.79.88.28]:51090 "EHLO ms.lwn.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244638AbiAFWY6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 17:24:58 -0500
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 3D4AE5BF;
+        Thu,  6 Jan 2022 22:24:57 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 3D4AE5BF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1641507897; bh=6mEAHDrv0nvuTG1xKnA33KLkJmQKOzodBO65//BEm0g=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=D2ofowbfbQN04i6JhH0LvDu1OXNyN3vYnTlm5Bfysq6TOUTQsrk8DBHCigruBHWZ0
+         d+hQ/4IpmL+qp6CToKMQLLeMnoD/Lv/qgjsi/3bWDQa6bda5afSl8d1h/i49tS17Yg
+         Tk4qM3yG9sTlj1NDmHlUgaaFEPooZV5reioE1XKOXWHsdmwVLI/nURZ4OTjr4unHYh
+         yZNL/PYUFwqfUVy/HV11ih+OhIMAqnxRgEdcGn7/B8m8uCYybc8UJBNH8pXWkALDO3
+         MaQnSC6Q13StgJL2wzVTKJ0AU+MmhY5gdym0h77Qqy6qLf2vphEkboaojt4bGLXffS
+         LdR/1Z1nauLrQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     James Clark <james.clark@arm.com>, nfraprado@protonmail.com,
+        n@nfraprado.net, linux-doc@vger.kernel.org
+Cc:     mchehab+huawei@kernel.org, James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] docs: automarkup.py: Fix invalid HTML link
+ output and broken URI fragments
+In-Reply-To: <20220105143640.330602-2-james.clark@arm.com>
+References: <20220105143640.330602-1-james.clark@arm.com>
+ <20220105143640.330602-2-james.clark@arm.com>
+Date:   Thu, 06 Jan 2022 15:25:03 -0700
+Message-ID: <87h7agpkn4.fsf@meer.lwn.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When running perf trace with bpf object like:
-  # perf trace -e openat,/.../tools/perf/examples/bpf/hello.c
+James Clark <james.clark@arm.com> writes:
 
-the event parsing eventually calls llvm__get_kbuild_opts function
-that runs script and that ends up with SIGCHLD delivered to perf
-trace handler, which assumes the workload process is done and quits
-perf trace.
+> Since commit d18b01789ae5 ("docs: Add automatic cross-reference for
+> documentation pages"), references that were already explicitly defined
+> with "ref:" and referred to other pages with a path have been doubled.
+> This is reported as the following error by Firefox:
+[...]
+> The fix is to check that nodes in the document to be modified are not
+> already references. A reference is counted as any text that is a
+> descendant of a reference type node. Only plain text should be converted
+> to new references, otherwise the doubling occurs.
 
-Moving the SIGCHLD handler setup directly to trace__run, where the
-event is parsed and object already compiled.
+This seems like a good fix.  Applied, thanks.
 
-Cc: Christy Lee <christyc.y.lee@gmail.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/perf/builtin-trace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-index 94d62a92f1a1..4282ef9ec354 100644
---- a/tools/perf/builtin-trace.c
-+++ b/tools/perf/builtin-trace.c
-@@ -3925,6 +3925,7 @@ static int trace__run(struct trace *trace, int argc, const char **argv)
- 	bool draining = false;
- 
- 	trace->live = true;
-+	signal(SIGCHLD, sig_handler);
- 
- 	if (!trace->raw_augmented_syscalls) {
- 		if (trace->trace_syscalls && trace__add_syscall_newtp(trace))
-@@ -4876,7 +4877,6 @@ int cmd_trace(int argc, const char **argv)
- 
- 	signal(SIGSEGV, sighandler_dump_stack);
- 	signal(SIGFPE, sighandler_dump_stack);
--	signal(SIGCHLD, sig_handler);
- 	signal(SIGINT, sig_handler);
- 
- 	trace.evlist = evlist__new();
--- 
-2.33.1
-
+jon
