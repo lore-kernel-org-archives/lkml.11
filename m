@@ -2,118 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 22:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A17C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 22:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245223AbiAFWnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 17:43:17 -0500
-Received: from mga02.intel.com ([134.134.136.20]:40617 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245174AbiAFWnQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 17:43:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641508996; x=1673044996;
-  h=from:to:cc:subject:date:message-id;
-  bh=J0lYaPKiO3Z2fUqHbeBLy4j704xQ/+PqCtoBeTZQGlQ=;
-  b=STg+x+QLdY4/6V77pNZ/IbgMQtmbG2e4tdzkFD3EOWLA0ZtQhE8wF713
-   0vYKzSV3DP9lEvLjHdaUuKKHuPC1b9JMac8VNliw4RNc9cuXqr2QMpJgL
-   Ji4K3gYXwPwwMHcRSSRMaAmTFXHElXy1JkNcDl0gDvNqOMFmUSzHf9SjC
-   GSxE0nFch0SgWmoJ330QqKceOMqwkNNKJPnNHkuho6E5bbN8AyKtKe8HY
-   NqTikBBTTd84/GcHt/NunMTmfi+tj9eOvSyCXHXtYW9SYBsO8STLv3Pdl
-   QqVODRjzR2RYxB6iEHjULxZTeKzdNsLbYjE25jxJ/6oLhcd6bPwVmzp33
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="230095719"
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
-   d="scan'208";a="230095719"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 14:43:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,267,1635231600"; 
-   d="scan'208";a="489092865"
-Received: from brillo-chrome.jf.intel.com ([10.54.77.27])
-  by orsmga002.jf.intel.com with ESMTP; 06 Jan 2022 14:43:12 -0800
-From:   Sanrio Alvares <sanrio.alvares@intel.com>
-To:     bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     mika.westerberg@linux.intel.com,
-        Sanrio Alvares <sanrio.alvares@intel.com>
-Subject: [PATCH] PCI / thunderbolt: Add quirk to handle incorrect Supported Link Speeds
-Date:   Thu,  6 Jan 2022 22:42:40 +0000
-Message-Id: <20220106224240.31052-1-sanrio.alvares@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S245237AbiAFWoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 17:44:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245223AbiAFWoJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 17:44:09 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4397BC061245;
+        Thu,  6 Jan 2022 14:44:09 -0800 (PST)
+Received: from pendragon.lan (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id E6E711414;
+        Thu,  6 Jan 2022 23:44:06 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1641509047;
+        bh=TTqB7Ua6ydtiTPPtx5b//2HRwPIaNssqss7QoV49ehg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Zb2LdJbrzo4f85KRRUqC4P182lwxDfD5PbRtmUvB9g9eYvnILIwZwEoRZzHX9ax15
+         gPtqwh8Sc5HndqYqdkZdYUR2YV2fJvudNJS1tGXEwN1jZfsktczlNGPys4dIHny393
+         ptYFgvIxyXtax66PJ06DjBl+U50Fc1LNcWCoD5TM=
+From:   Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Watson Chow <watson.chow@avnet.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v2 1/2] dt-bindings: regulators: Add bindings for Maxim MAX20086-MAX20089
+Date:   Fri,  7 Jan 2022 00:43:49 +0200
+Message-Id: <20220106224350.16957-2-laurent.pinchart+renesas@ideasonboard.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220106224350.16957-1-laurent.pinchart+renesas@ideasonboard.com>
+References: <20220106224350.16957-1-laurent.pinchart+renesas@ideasonboard.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In PCIe config space the "Supported Link Speeds" Vector value is 0x07,
-in all downstream ports for Intel Titan Ridge. Which means link
-supports Gen1, Gen2 and Gen3. While actually max link speed is 2.5GT/s
-so the value of this vector should be 0x01.
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-As a consequence of reporting >2.5GT/s, we need to delay the full 1s
-which makes resuming longer than needed.
+The MAX20086-MAX20089 are dual/quad power protectors for cameras. Add
+corresponding DT bindings.
 
-Signed-off-by: Sanrio Alvares <sanrio.alvares@intel.com>
-Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 ---
- drivers/pci/pci.c    |  4 ++++
- drivers/pci/quirks.c | 14 ++++++++++++++
- include/linux/pci.h  |  1 +
- 3 files changed, 19 insertions(+)
+Changes since v1:
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 3d2fb394986a..92401552d385 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -6136,6 +6136,10 @@ enum pci_bus_speed pcie_get_speed_cap(struct pci_dev *dev)
- {
- 	u32 lnkcap2, lnkcap;
- 
-+	/* Use overridden value of Supported Link Speed */
-+	if (dev->supported_link_speed)
-+		return dev->supported_link_speed;
+- Make OUT nodes optional
+---
+ .../bindings/regulator/maxim,max20086.yaml    | 106 ++++++++++++++++++
+ 1 file changed, 106 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max20086.yaml
+
+diff --git a/Documentation/devicetree/bindings/regulator/maxim,max20086.yaml b/Documentation/devicetree/bindings/regulator/maxim,max20086.yaml
+new file mode 100644
+index 000000000000..05f72391185e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/regulator/maxim,max20086.yaml
+@@ -0,0 +1,106 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/regulator/maxim,max20086.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 	/*
- 	 * Link Capabilities 2 was added in PCIe r3.0, sec 7.8.18.  The
- 	 * implementation note there recommends using the Supported Link
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 003950c738d2..f1c11a3bb56c 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -5293,6 +5293,20 @@ static void quirk_intel_qat_vf_cap(struct pci_dev *pdev)
- }
- DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x443, quirk_intel_qat_vf_cap);
- 
-+/*
-+ * Intel Titan Ridge returns incorrect Supported Link Speeds Vector
-+ * when max Link Speed is 2.5GT/s. This results in an extra 1s delay during
-+ * resume_noirq with pcie tunneling enabled. Override that value:
-+ */
-+void quirk_intel_tbt_supported_link_speeds(struct pci_dev *pdev)
-+{
-+	pci_info(pdev, "applying Supported Link Speeds quirk\n");
-+	pdev->supported_link_speed = PCIE_SPEED_2_5GT;
-+}
-+DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x15e7, quirk_intel_tbt_supported_link_speeds);
-+DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x15ea, quirk_intel_tbt_supported_link_speeds);
-+DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_INTEL, 0x15ef, quirk_intel_tbt_supported_link_speeds);
++title: Maxim Integrated MAX20086-MAX20089 Camera Power Protector
 +
- /*
-  * FLR may cause the following to devices to hang:
-  *
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 18a75c8e615c..633e81e9fe3b 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -502,6 +502,7 @@ struct pci_dev {
- 	struct pci_p2pdma __rcu *p2pdma;
- #endif
- 	u16		acs_cap;	/* ACS Capability offset */
-+	u8		supported_link_speed; /* Override Supported Link Speed value from device */
- 	phys_addr_t	rom;		/* Physical address if not from BAR */
- 	size_t		romlen;		/* Length if not from BAR */
- 	char		*driver_override; /* Driver name to force a match */
++maintainers:
++  - Laurent Pinchart <laurent.pinchart@ideasonboard.com>
++
++description: |
++  The MAX20086-MAX20089 are dual/quad camera power protectors, designed to
++  deliver power over coax for radar and camera modules. They support
++  software-configurable output switching and monitoring. The output voltage and
++  current limit are fixed by the hardware design.
++
++properties:
++  compatible:
++    enum:
++      - maxim,max20086
++      - maxim,max20087
++      - maxim,max20088
++      - maxim,max20089
++
++  reg:
++    maxItems: 1
++
++  enable-gpios:
++    maxItems: 1
++    description: GPIO connected to the EN pin, active high
++
++  in-supply:
++    description: Input supply for the camera outputs (IN pin, 3.0V to 15.0V)
++
++  vdd-supply:
++    description: Input supply for the device (VDD pin, 3.0V to 5.5V)
++
++  regulators:
++    type: object
++
++    patternProperties:
++      "^OUT[1-4]$":
++        type: object
++        $ref: regulator.yaml#
++
++    additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - in-supply
++  - vdd-supply
++  - regulators
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - maxim,max20088
++              - maxim,max20089
++    then:
++      properties:
++        regulators:
++          properties:
++            OUT3: false
++            OUT4: false
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        regulator@28 {
++            compatible = "maxim,max20087";
++            reg = <0x28>;
++
++            in-supply = <&reg_12v0>;
++            vdd-supply = <&reg_3v3>;
++
++            enable-gpios = <&gpio 108 GPIO_ACTIVE_HIGH>;
++
++            regulators {
++                OUT1 {
++                    regulator-name = "VOUT1";
++                };
++                OUT2 {
++                    regulator-name = "VOUT2";
++                };
++                OUT3 {
++                    regulator-name = "VOUT3";
++                };
++                OUT4 {
++                    regulator-name = "VOUT4";
++                };
++            };
++        };
++    };
++...
 -- 
-2.17.1
+Regards,
+
+Laurent Pinchart
 
