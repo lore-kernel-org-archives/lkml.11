@@ -2,218 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 22:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B793C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 22:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245095AbiAFW2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 17:28:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
+        id S245072AbiAFW3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 17:29:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245066AbiAFW2J (ORCPT
+        with ESMTP id S245078AbiAFW3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 17:28:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FCA7C061245;
-        Thu,  6 Jan 2022 14:28:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BE01B8238B;
-        Thu,  6 Jan 2022 22:28:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E646EC36AE5;
-        Thu,  6 Jan 2022 22:28:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641508086;
-        bh=gKZ9uIwSdNuZH5C6HWnebUa0lLQlAO3jYGmiE36lrYQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Lzt6GUJEvlZDm6pykPtS2nGPKa45LwuUmO3oH6HYqtVOZMFlCSeaFDCBe/WcBlT83
-         G0vT4vxW2FIXeaulodFEGpLVwNlclRlm0oZbVLk3D5jnwCzoJS9qug3vdY+rlE6AKB
-         dNUjIPYyPbBay5KJnlehTf7P4SMnqdNN6LIws6GelL53Dn6C6Z1tKQTVA+x2artUbi
-         /jwdAS6R0fgT7vQMvLSdwaGyNDhF2g6yaImjDNMg0RLRrQ5j5vPg2ObJJa5i43PC1n
-         1hFT56KQAiAq9usT7+nBMjoeLswLzY5z+lu805RVrvT+BtQBpF0n9oS2zEbDvpgCHo
-         t4Grht5Zb/gJg==
-Date:   Thu, 6 Jan 2022 16:28:04 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 16/16] PCI: Remove usage of the deprecated
- "pci-dma-compat.h" API
-Message-ID: <20220106222804.GA330366@bhelgaas>
+        Thu, 6 Jan 2022 17:29:18 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF8CCC061245;
+        Thu,  6 Jan 2022 14:29:17 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id e5so2797911wmq.1;
+        Thu, 06 Jan 2022 14:29:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4Yj9TyVs3tZ8xF5+eDrRhCv6AhgJyNZykIrYVPdyDhM=;
+        b=Yzd4uU1MEvSWRs83Jcf7WUNk6iLqH1szDwS3OQyDl/2GwGccNiD3xxxsv0kxq3eTKS
+         EUePpCNIm0RQ/XEZBktuoJ9eYY0l7vjudsTAj3r5lsA1Xdex0H4GXOCBQLoikifbeBwb
+         ewAwnHbJP97kAwf+gwNPaEM8UlBNS5Eg7oa00QdAZowkCt+9MnnU5ilwWfzb+qFriIh2
+         9YPF054Ky4qiSF7puGeBfI+FjL/oYcNFpQOt+O6rp47xQQebw669YJRRytIWGYVYxPBh
+         OPaKN3kv9KY/d4ZZI+nNRrznrGURuq403PQRiom4HOm0aJHS2xoEfyGlNDhKZ7YQFzjJ
+         0HZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4Yj9TyVs3tZ8xF5+eDrRhCv6AhgJyNZykIrYVPdyDhM=;
+        b=bybPPpGGHsFrha5aPx/nuQ70cANsue4PKceSlyxQEqXjFkbGLg4i64NQNtDMzWoA6p
+         yoRuuDseNretk5kapU2c/PdYrt3PNx+UiR9sLHUMKj6m2g72dZ/Dwxm7RqtGuYcySg13
+         SwQxzhu2s+rDYIrUFiP8YUoTjpLS1PGMvM7x+viSu/qUZA3/PxKfq10Aigre1e1eKsip
+         3Ah+bohQAsVme2WynTTDk+PTw9+ipKv0A4Gya8QCTY8tZGtTy+qHHBhkDm/UlcRg8Z2k
+         mgf3VPXS2v7hgz+ttOtbfZyblHRnKHiElzPFhwzElGXJyz1XD9ncsyJgjD9GVskRUprp
+         VaXA==
+X-Gm-Message-State: AOAM532IiiNCn7WmxCMQ/Q4t/UswIgvXRRBNvne/wtMM2dpJWjErBKzq
+        BcCICLCkXuZdq6UUdu+Tq7o=
+X-Google-Smtp-Source: ABdhPJzUbPFEzAVkbsnsoDqQI4DFEH5G+Yq7+JyqDCGVRj5Esr4Tza0s5oLegECSow1KKD1qCqRS5A==
+X-Received: by 2002:a05:600c:a45:: with SMTP id c5mr8595220wmq.127.1641508156508;
+        Thu, 06 Jan 2022 14:29:16 -0800 (PST)
+Received: from 168.52.45.77 (201.ip-51-68-45.eu. [51.68.45.201])
+        by smtp.gmail.com with ESMTPSA id n4sm3132226wrc.1.2022.01.06.14.29.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 06 Jan 2022 14:29:16 -0800 (PST)
+Message-ID: <2efeb63e-a3ee-82a7-69bc-84d39745a4f8@gmail.com>
+Date:   Thu, 6 Jan 2022 23:29:13 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e965573211f8c81c8ba978cfbc21925810a662b1.1641500561.git.christophe.jaillet@wanadoo.fr>
+User-Agent: nano 6.4
+Subject: Re: [PATCH] Bluetooth: btusb: Add a new quirk to skip
+ HCI_FLT_CLEAR_ALL on fake CSR controllers
+Content-Language: en-US
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hans de Goede <hdegoede@redhat.com>
+References: <6a3f5e8b-fbc1-bad8-aef0-3e2cf9be364e@gmail.com>
+ <3BCA0ABD-6BFC-4487-A5DE-3AF043A6ADE0@holtmann.org>
+From:   Ismael Ferreras Morezuelas <swyterzone@gmail.com>
+In-Reply-To: <3BCA0ABD-6BFC-4487-A5DE-3AF043A6ADE0@holtmann.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 10:55:33PM +0100, Christophe JAILLET wrote:
-> Final step, remove pci-dma-compat.h
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Hi again, Marcel.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-
-Obviously this has to be applied after all the others, so I assume
-somebody else will take this.
-
-> ---
->  include/linux/pci-dma-compat.h | 129 ---------------------------------
->  include/linux/pci.h            |   3 -
->  2 files changed, 132 deletions(-)
->  delete mode 100644 include/linux/pci-dma-compat.h
+>> 		/* Clear the reset quirk since this is not an actual
+>> 		 * early Bluetooth 1.1 device from CSR.
+>> @@ -1942,16 +1943,16 @@ static int btusb_setup_csr(struct hci_dev *hdev)
+>> 		/*
+>> 		 * Special workaround for these BT 4.0 chip clones, and potentially more:
+>> 		 *
+>> -		 * - 0x0134: a Barrot 8041a02                 (HCI rev: 0x1012 sub: 0x0810)
+>> +		 * - 0x0134: a Barrot 8041a02                 (HCI rev: 0x0810 sub: 0x1012)
 > 
-> diff --git a/include/linux/pci-dma-compat.h b/include/linux/pci-dma-compat.h
-> deleted file mode 100644
-> index 249d4d7fbf18..000000000000
-> --- a/include/linux/pci-dma-compat.h
-> +++ /dev/null
-> @@ -1,129 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 */
-> -/* include this file if the platform implements the dma_ DMA Mapping API
-> - * and wants to provide the pci_ DMA Mapping API in terms of it */
-> -
-> -#ifndef _ASM_GENERIC_PCI_DMA_COMPAT_H
-> -#define _ASM_GENERIC_PCI_DMA_COMPAT_H
-> -
-> -#include <linux/dma-mapping.h>
-> -
-> -/* This defines the direction arg to the DMA mapping routines. */
-> -#define PCI_DMA_BIDIRECTIONAL	DMA_BIDIRECTIONAL
-> -#define PCI_DMA_TODEVICE	DMA_TO_DEVICE
-> -#define PCI_DMA_FROMDEVICE	DMA_FROM_DEVICE
-> -#define PCI_DMA_NONE		DMA_NONE
-> -
-> -static inline void *
-> -pci_alloc_consistent(struct pci_dev *hwdev, size_t size,
-> -		     dma_addr_t *dma_handle)
-> -{
-> -	return dma_alloc_coherent(&hwdev->dev, size, dma_handle, GFP_ATOMIC);
-> -}
-> -
-> -static inline void *
-> -pci_zalloc_consistent(struct pci_dev *hwdev, size_t size,
-> -		      dma_addr_t *dma_handle)
-> -{
-> -	return dma_alloc_coherent(&hwdev->dev, size, dma_handle, GFP_ATOMIC);
-> -}
-> -
-> -static inline void
-> -pci_free_consistent(struct pci_dev *hwdev, size_t size,
-> -		    void *vaddr, dma_addr_t dma_handle)
-> -{
-> -	dma_free_coherent(&hwdev->dev, size, vaddr, dma_handle);
-> -}
-> -
-> -static inline dma_addr_t
-> -pci_map_single(struct pci_dev *hwdev, void *ptr, size_t size, int direction)
-> -{
-> -	return dma_map_single(&hwdev->dev, ptr, size, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_unmap_single(struct pci_dev *hwdev, dma_addr_t dma_addr,
-> -		 size_t size, int direction)
-> -{
-> -	dma_unmap_single(&hwdev->dev, dma_addr, size, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline dma_addr_t
-> -pci_map_page(struct pci_dev *hwdev, struct page *page,
-> -	     unsigned long offset, size_t size, int direction)
-> -{
-> -	return dma_map_page(&hwdev->dev, page, offset, size, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_unmap_page(struct pci_dev *hwdev, dma_addr_t dma_address,
-> -	       size_t size, int direction)
-> -{
-> -	dma_unmap_page(&hwdev->dev, dma_address, size, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline int
-> -pci_map_sg(struct pci_dev *hwdev, struct scatterlist *sg,
-> -	   int nents, int direction)
-> -{
-> -	return dma_map_sg(&hwdev->dev, sg, nents, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_unmap_sg(struct pci_dev *hwdev, struct scatterlist *sg,
-> -	     int nents, int direction)
-> -{
-> -	dma_unmap_sg(&hwdev->dev, sg, nents, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_dma_sync_single_for_cpu(struct pci_dev *hwdev, dma_addr_t dma_handle,
-> -		    size_t size, int direction)
-> -{
-> -	dma_sync_single_for_cpu(&hwdev->dev, dma_handle, size, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_dma_sync_single_for_device(struct pci_dev *hwdev, dma_addr_t dma_handle,
-> -		    size_t size, int direction)
-> -{
-> -	dma_sync_single_for_device(&hwdev->dev, dma_handle, size, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_dma_sync_sg_for_cpu(struct pci_dev *hwdev, struct scatterlist *sg,
-> -		int nelems, int direction)
-> -{
-> -	dma_sync_sg_for_cpu(&hwdev->dev, sg, nelems, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline void
-> -pci_dma_sync_sg_for_device(struct pci_dev *hwdev, struct scatterlist *sg,
-> -		int nelems, int direction)
-> -{
-> -	dma_sync_sg_for_device(&hwdev->dev, sg, nelems, (enum dma_data_direction)direction);
-> -}
-> -
-> -static inline int
-> -pci_dma_mapping_error(struct pci_dev *pdev, dma_addr_t dma_addr)
-> -{
-> -	return dma_mapping_error(&pdev->dev, dma_addr);
-> -}
-> -
-> -#ifdef CONFIG_PCI
-> -static inline int pci_set_dma_mask(struct pci_dev *dev, u64 mask)
-> -{
-> -	return dma_set_mask(&dev->dev, mask);
-> -}
-> -
-> -static inline int pci_set_consistent_dma_mask(struct pci_dev *dev, u64 mask)
-> -{
-> -	return dma_set_coherent_mask(&dev->dev, mask);
-> -}
-> -#else
-> -static inline int pci_set_dma_mask(struct pci_dev *dev, u64 mask)
-> -{ return -EIO; }
-> -static inline int pci_set_consistent_dma_mask(struct pci_dev *dev, u64 mask)
-> -{ return -EIO; }
-> -#endif
-> -
-> -#endif
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index d4308f847e58..ba8771eaf380 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -2455,9 +2455,6 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
->  void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
->  #endif
->  
-> -/* Provide the legacy pci_dma_* API */
-> -#include <linux/pci-dma-compat.h>
-> -
->  #define pci_printk(level, pdev, fmt, arg...) \
->  	dev_printk(level, &(pdev)->dev, fmt, ##arg)
->  
-> -- 
-> 2.32.0
+> Don’t get this change.
 > 
+
+I swapped both numbers by mistake in my last commit when I moved it from
+a conditional into a comment This is explained in the changeset as:
+
+ > Also, swapped the HCI subver and LMP subver numbers for the Barrot
+ > in the comment, which I copied wrong the last time around.
+
+Thought I might as well fix it here, because it may never get corrected otherwise; it's misleading.
+
+
+>> 		 * - 0x7558: IC markings FR3191AHAL 749H15143 (HCI rev/sub-version: 0x0709)
+>> 		 *
+>> 		 * These controllers are really messed-up.
+>> 		 *
+>> 		 * 1. Their bulk RX endpoint will never report any data unless
+>> -		 * the device was suspended at least once (yes, really).
+>> +		 *    the device was suspended at least once (yes, really).
+>> 		 * 2. They will not wakeup when autosuspended and receiving data
+>> -		 * on their bulk RX endpoint from e.g. a keyboard or mouse
+>> -		 * (IOW remote-wakeup support is broken for the bulk endpoint).
+>> +		 *    on their bulk RX endpoint from e.g. a keyboard or mouse
+>> +		 *    (IOW remote-wakeup support is broken for the bulk endpoint).
+> 
+> Fix the style issues separately.
+
+Fair enough, I can obviate this part, no worries.
+
+
+> 
+>> 		 *
+>> 		 * To fix 1. enable runtime-suspend, force-suspend the
+>> 		 * HCI and then wake-it up by disabling runtime-suspend.
+>> @@ -1971,7 +1972,7 @@ static int btusb_setup_csr(struct hci_dev *hdev)
+>> 		if (ret >= 0)
+>> 			msleep(200);
+>> 		else
+>> -			bt_dev_err(hdev, "CSR: Failed to suspend the device for our Barrot 8041a02 receive-issue workaround");
+>> +			bt_dev_warn(hdev, "CSR: Couldn't suspend the device for our Barrot 8041a02 receive-issue workaround");
+> 
+> Why change this?
+>
+
+Because depending on the clone this print may end up showing all the time;
+we *try* doing it, but some clones don't like it. I thought showing it
+as a warning would make sense. Tweaking the text a bit again helps
+when tracking down which version of the workaround the user is
+running, we can narrow it by just grepping the log itself.
+
+If it doesn't work it doesn't really affect anything, and we can't
+whitelist something half the clones use to get unstuck and the other
+half just ignore and stay peachy. We're trying an unified solution.
+
+
+>>
+>> 		pm_runtime_forbid(&data->udev->dev);
+>>
+>> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+>> index 63065bc01..4e5d5979d 100644
+>> --- a/include/net/bluetooth/hci.h
+>> +++ b/include/net/bluetooth/hci.h
+>> @@ -246,6 +246,12 @@ enum {
+>> 	 * HCI after resume.
+>> 	 */
+>> 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
+>> +
+>> +	/* When this quirk is set, HCI_OP_SET_EVENT_FLT requests with
+>> +	 * HCI_FLT_CLEAR_ALL are ignored. A subset of the CSR controller
+>> +	 * clones struggle with this and instantly lock up.
+>> +	 */
+>> +	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
+>> };
+>>
+>> /* HCI device flags */
+>> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+>> index 8d33aa648..7af649afc 100644
+>> --- a/net/bluetooth/hci_core.c
+>> +++ b/net/bluetooth/hci_core.c
+>> @@ -150,6 +150,7 @@ static void bredr_setup(struct hci_request *req)
+>> {
+>> 	__le16 param;
+>> 	__u8 flt_type;
+>> +	struct hci_dev *hdev = req->hdev;
+> 
+> This should always go first in a function.
+> 
+>>
+>> 	/* Read Buffer Size (ACL mtu, max pkt, etc.) */
+>> 	hci_req_add(req, HCI_OP_READ_BUFFER_SIZE, 0, NULL);
+>> @@ -169,9 +170,13 @@ static void bredr_setup(struct hci_request *req)
+>> 	/* Read Current IAC LAP */
+>> 	hci_req_add(req, HCI_OP_READ_CURRENT_IAC_LAP, 0, NULL);
+>>
+>> -	/* Clear Event Filters */
+>> -	flt_type = HCI_FLT_CLEAR_ALL;
+>> -	hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &flt_type);
+>> +	/* Clear Event Filters; some fake CSR controllers lock up after setting
+>> +	 * this type of filter, so avoid sending the request altogether.
+>> +	 */
+>> +	if (!test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks)) {
+>> +		flt_type = HCI_FLT_CLEAR_ALL;
+>> +		hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &flt_type);
+>> +	}
+>>
+>> 	/* Connection accept timeout ~20 secs */
+>> 	param = cpu_to_le16(0x7d00);
+>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+>> index 92611bfc0..cfcf64c0c 100644
+>> --- a/net/bluetooth/hci_request.c
+>> +++ b/net/bluetooth/hci_request.c
+>> @@ -980,11 +980,15 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
+>> static void hci_req_clear_event_filter(struct hci_request *req)
+>> {
+>> 	struct hci_cp_set_event_filter f;
+>> +	struct hci_dev *hdev = req->hdev;
+>> +
+>> +	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
+>> +		return;
+>>
+>> -	if (!hci_dev_test_flag(req->hdev, HCI_BREDR_ENABLED))
+>> +	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
+>> 		return;
+>>
+>> -	if (hci_dev_test_flag(req->hdev, HCI_EVENT_FILTER_CONFIGURED)) {
+>> +	if (hci_dev_test_flag(hdev, HCI_EVENT_FILTER_CONFIGURED)) {
+>> 		memset(&f, 0, sizeof(f));
+>> 		f.flt_type = HCI_FLT_CLEAR_ALL;
+>> 		hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
+> 
+> This is not enough. If you do not have clear event filter, we need to disable suspend/resume support. These device can for obvious reason not sleep accordingly.
+
+Would adding HCI_QUIRK_NO_SUSPEND_NOTIFIER be enough here? I'll take another look at the
+codebase, any comments about the best/simplest way to tackle this would help me a lot.
+
+As you can see I'm still getting my feet wet around the Bluetooth subsystem.
+
+In theory adding another quirk condition in hci_req_set_event_filter() or anything that leads
+to it (i.e. hci_suspend_dev() / BT_SUSPEND_CONFIGURE_WAKE) may also do the trick.
+
+The least code I touch the better. Right now I'm thinking of mirroring my hci_req_clear_event_filter()
+nop-out in hci_req_set_event_filter() *and* just setting the NO_SUSPEND_NOTIFIER quirk.
+
+
+Thanks for bearing with me, I'm still learning. It's fun.
