@@ -2,166 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 08:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF82C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 08:52:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237075AbiAFItd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 03:49:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiAFIta (ORCPT
+        id S237113AbiAFIwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 03:52:35 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:20388 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237097AbiAFIwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 03:49:30 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42690C061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 00:49:30 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id h23so3430197wrc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 00:49:30 -0800 (PST)
+        Thu, 6 Jan 2022 03:52:32 -0500
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2067Xq6c018915;
+        Thu, 6 Jan 2022 08:52:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=8l6I8bkWQFIM9/cNHM8XNSfHTqI83aJWs3Qvu2VNB10=;
+ b=rwG50ecNRvGHM30lZzqhVjJrGOujEk2/uZ0fbtsFBIiZeYQr9peZVBLiv6Qhma2OA0i4
+ g3hiank6IDrdz/UQEuqjVS3Sz4i4iX3KPKoBjh4CsLt9leviIaGjo2y5jatrfkd15TJT
+ HR6w/7XRhurd57/g9/3Jf3nGtrNJL3S3M9fCCUjv7sWv3c3QvwmId/ebPUg9jiu6dGL7
+ Xi+9BY9Ax1SgL5CKJxeItFXaxLhZPFwTuU0WnfYxlEkj+sR/dxWQHVq68RI57FygB1Ah
+ zrlcd+DGUMLnIOIzORJfkRJaMutUsmDVijTyh+7OrkOXEr9E7UVoNulmbKQMDvyj0fLB rQ== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3ddmpp957t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 06 Jan 2022 08:52:25 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2068jKHQ103798;
+        Thu, 6 Jan 2022 08:52:24 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2172.outbound.protection.outlook.com [104.47.73.172])
+        by userp3020.oracle.com with ESMTP id 3ddmq6cukr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 06 Jan 2022 08:52:24 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gphR3GDLbpCq7M7FLms+ji5E9CxhOd6X0IKuH3xD9gEkOj9HJ+5sIHox1Px0g4AJRbq1wQN8kHQbqKo1aJbNZ472OX+g37neLDUMCwGMtQj01YG8/kuCCewr+kv/vFcMKgUpQ5Oo7ZdEQpxtQdqEPkFZQFGdM6n31cEM8mkSvBM2LguyYwTamsO5A9pA9ROstG2QAeDUznom8ER4SBvlNZyUXcuydH0xQQkZ71PZbcWysgMJkTcsrv24DWaV9eaq9Rv7CMiE5UWU7ZWjeIsJC8ANvDYeDNY/fJ6SVRGfXPq5vKdkS5eyX0SqXsA7jksF/xPMpJGYQeF7IwhRdZgf/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8l6I8bkWQFIM9/cNHM8XNSfHTqI83aJWs3Qvu2VNB10=;
+ b=EJjFCRdtMSKO5NKDGS8Rtr8x7N8PLoA+PB3vLLERhUyTF7UjPHp4jivb1W544zR28U82zlaZTED65CEDMheuE/K0nsLGGa5rTlYcbiw/CsYAN31oLcE2jOKNGTrgk/8aBgc7ENLNyLdtCIQbWI+oRr+i1uNvnQuR8niXXpvygnthPaNWTuBskE8Lyk42++9u/AKy6qbZ25dnwac3G1ZFlu0Njp57WO9xTznklGq4TVmJ75uYrA+U329l04tvIK5YGZ3SllUMGhUwzQ7ymXj1RumMbuTZ4Wtb1k39v93Rt4FqQCoY+EC3tB6CTLWDLkLJWoZopovj2c0T9ix9r5H6VA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version:content-transfer-encoding;
-        bh=nY4pcVTt6C1OfBYYq7bKgEYzMZ9c3SJrVRdzsfNxtoc=;
-        b=T2EsDtKFmFLkTNp0bKgIcsr20z2haV/dtIngzpsHvMqwbEKvnEBsJUeu+IB8V/gtuX
-         YcSeDGbKI93QDJ6wRfXgtXzMFa53I1g1ODEXjvQdK/FMvviStTonEH7LAbHkxzKb58LQ
-         mydsxrUVU0vpEkSIw5rWcZ038ug2eSV1NOX6q83pdT4dPax3nNKDl7NOaCEFRRyNqB02
-         +zbp1emsXjOhF4ffaR8rLBlI4FVJ8+agiN2zxt78Hz/pM0BGrL/sVylOk5Tn9p3Ez6Az
-         xwgKz1JgHs/GoFvH+wXDgEnSiAOy13gD0YVdXMI2ElcQGiqwzeJp1S8R6o5CtHf5lsMJ
-         eF2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version:content-transfer-encoding;
-        bh=nY4pcVTt6C1OfBYYq7bKgEYzMZ9c3SJrVRdzsfNxtoc=;
-        b=Vn8O+l1OPxIHV5ydjUxAydwMDEAA2cdonm6TFcpWiIy+BOgNws91nC5H5PeEbuSd4E
-         6t/nJSW11RwaoHWRMQP8qM30XI8zj7e7x064nPAjQkHDuVEH3Kproq8WKOAqpsApLnWV
-         7p0BjaAIcaJrz1rhkUCLpe5zCpD6mo/CLbjk5IBfCzsFhYOZ3SNj+GZ/WvANZi3Wh/9r
-         QZPH3ziYNUJqVEHCyr3xot8Zqk0JceZB22Cg8L8Z+YeHqJf5bbbRVnbXXfqop9w9hnwj
-         W7qwO34oqG0s5N4AUR3vBFBqi+Fb0X1xAiOf5f6niN8wupbyD1lgsCImMlaCQ9pOlDO+
-         vuqg==
-X-Gm-Message-State: AOAM530YiLLNIX9AVG6jvBG3NIjYo7XDW6X7/g2p1PJbZET2yTPdDkOd
-        k3Mc7v3AFqr/Gd07oj8CnMRFYQ==
-X-Google-Smtp-Source: ABdhPJyUR3+Mk2jA/15s+4ovyFOsOB62zACYqVptdsGlpIwmjtMb1e5b2QbWGfesWg3zVOcnMkVvQw==
-X-Received: by 2002:adf:c10e:: with SMTP id r14mr50609653wre.558.1641458968749;
-        Thu, 06 Jan 2022 00:49:28 -0800 (PST)
-Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id r11sm1614797wrz.78.2022.01.06.00.49.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 00:49:28 -0800 (PST)
-References: <20220106033130.37623-1-liang.yang@amlogic.com>
- <20220106091246.08ca66e0@xps13>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Liang Yang <liang.yang@amlogic.com>
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org, Richard Weinberger <richard@nod.at>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: nand: meson: fix controller clock
-Date:   Thu, 06 Jan 2022 09:43:56 +0100
-In-reply-to: <20220106091246.08ca66e0@xps13>
-Message-ID: <1jbl0pz1t4.fsf@starbuckisacylon.baylibre.com>
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8l6I8bkWQFIM9/cNHM8XNSfHTqI83aJWs3Qvu2VNB10=;
+ b=ZMbnxUup4yNUBLl8QHzSJx4h+qIk1wgzv5PY6c2R4ATHNRu2il3n6F4Co+bmOLrOhwoJ12Fv1bt/vXh4RlIF8W4P+tT+YUQsVGc0cR5Kn2R3unz9M5zN4ku2WssTt2PDaGrSRKzaqX0hsQd9KcGSXk6vy7qpJRSoEdAYJQfw4ag=
+Authentication-Results: kaiser.cx; dkim=none (message not signed)
+ header.d=none;kaiser.cx; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MW5PR10MB5713.namprd10.prod.outlook.com
+ (2603:10b6:303:19a::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.15; Thu, 6 Jan
+ 2022 08:52:22 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b889:5c86:23c0:82b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b889:5c86:23c0:82b8%4]) with mapi id 15.20.4844.016; Thu, 6 Jan 2022
+ 08:52:22 +0000
+Date:   Thu, 6 Jan 2022 11:52:03 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Martin Kaiser <martin@kaiser.cx>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/10] staging: r8188eu: remove the private "test" ioctl
+Message-ID: <20220106085202.GJ7674@kadam>
+References: <20211226212535.197989-1-martin@kaiser.cx>
+ <20211226212535.197989-10-martin@kaiser.cx>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211226212535.197989-10-martin@kaiser.cx>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0045.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::33)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5409dfa4-8f4d-469b-9ca9-08d9d0f1daaf
+X-MS-TrafficTypeDiagnostic: MW5PR10MB5713:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MW5PR10MB5713A6D0B9D08054E87731398E4C9@MW5PR10MB5713.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: mfUNlxHs2aKo4RtJu8JKSStQaXHxyj7973DBBldroCke4+N6LkJYLEbSz3IPnZASE4XV+ugZYQlEacgbBJADjX1HZ0G1/u7fJzrLD4I+8LWZ2PYJL7jDp05U2YV5fUcaeF439Q1D+mn67nLONMucm2JVzSaXQSvTfS96ggeC0MK+K2cXVECXgKiKBePf5X1VMXUN7RN11T/eO6I7NnB29WQ/1TSaSQ/ZcUlQPEgqpfv2Hed1VNJ/vScgf1UDEZGB2uZNoxkS7ZBESWQGbXa4VLcmuHYjhVpCvo10OHNPb0HLxR1Td+aIOzalnath8p8X7iyy729dwiEiZqOP6GpmldQF7B5sqp/XpaIUQJaX0M+2fW69TmWhtbLDua8Fbfw7HpV+ukrGPvQjaLsrp89kDtHrK6yJga0saAvY9btcoY9HfvRKNzdvWhiay7MXJWp7hWZCnuAG+ZHgoGpDwMhk0cT56OhpEifLfmJWBwJQSWqSIDLmU4IJGeXBd/x/LVtL8dYvAbyq3c2rr5MMujIJ8pna13LwyqF1uu+Otl/uBW2R2rMrDxLp8BGQApZ7xquRiDlEkiWXPTsqolFeCgQMosy44NYfeowDf4UYWY9osMsoMoDUzljA7gg1DlmDZD+dTuFI1k1D0vxPPDYzn/hQXlHJaBxs22RvGMnHaVs+SXUuctdpfKbvlOdV9Em4IGcD4eTmpNjS6WLw/nU/8f+TPg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(54906003)(33716001)(9686003)(38100700002)(1076003)(6512007)(38350700002)(4326008)(6486002)(6666004)(52116002)(508600001)(26005)(66946007)(6506007)(186003)(66476007)(8936002)(8676002)(86362001)(66556008)(6916009)(5660300002)(558084003)(316002)(44832011)(33656002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?lmO0VGBwPtetpbi9zOB9OZ7Cw1UaTu9q9n/K8pvis+LCLOMuORaLicccx/WV?=
+ =?us-ascii?Q?dKiOM2P6wWJRCE1IeFU5rjvu4b2Jk+ZusM9tfvQyRm4d8rU+JBvnwkNIlmyR?=
+ =?us-ascii?Q?BidXBVmzAdd4Q9sAb4WEJH9FPyZlsG71NLZB6Nd9VkLhcf0bfWwbca42mBbB?=
+ =?us-ascii?Q?G9bXrBdFZzUQXksNVObixBUD68qq4SEtMlVVFIeiJ+0fnfXqY5h1lUV+bra9?=
+ =?us-ascii?Q?kzZDWtXHpCniFNnagmVuxufA1YYM3Y4KDQENzOaph2Cm7JgH0aNLoaxonySU?=
+ =?us-ascii?Q?nKq4NkKNVoHAAKgwlBZ0Dh136MIq9zAFamQb0pjHg3spYI2mwoHbJ0CIAl6a?=
+ =?us-ascii?Q?0FliJDmLS6vZ47/fTFKgdxlfBp6RGjxZ7NvQAGRxiybOcjriZZwhBkuSfC65?=
+ =?us-ascii?Q?Sha7ilnhFrOFVT5Uv7MMR95OCFKCmk9NmlrHDKgZV/auJPyq52NigEF9yGXC?=
+ =?us-ascii?Q?BSKOd9kfpMIPyh99NAhFscHdwBrVB7pVqN9R6OjKpoj9/v4Lk2Ru2jp7ANnh?=
+ =?us-ascii?Q?nlr2pCRsBqkm+G0uWhuAwbzMf/xqByV8J3SDEXR6srW1zj4tpLnQlG53lP/F?=
+ =?us-ascii?Q?egyAxVlxcFzIPQPvqbPcLsxeZqkebPvApo65HOvazOJ/Gn3f3jET/vJrXkiA?=
+ =?us-ascii?Q?tdxu60Ry9srXeEvJogkpacuI5yyAJSgS0C235nleq3nj5MssQGPLIeIlrWpe?=
+ =?us-ascii?Q?0KEUxUwblydMMMWvZ8vbnC46pWKaomT4LAMOMo4FKRcBIU+U8ecYfHTBWbgq?=
+ =?us-ascii?Q?HuH9SZqs07b9Z8g17cN5Tos2EG3n5Azx5pGykGh+RXTlsZcNPvqcOx/bc/Xt?=
+ =?us-ascii?Q?azjvZXKAa5Zl0hvWOSu61gyvVTWtyr/eJJcBiwZ96bnTzjREI3xzZYJtogPv?=
+ =?us-ascii?Q?5LV+6ff97PqYmRY0Dl9GVPkFmRCyVdVacBCPgZ3F6tNYy/4RPqcTdtMgFocO?=
+ =?us-ascii?Q?Emt+gl0VeVE1I32XaSgZTWT6v+1VzXQ9f7HcJgvb4YBygYX1qZgB4Gi7Tbus?=
+ =?us-ascii?Q?3uKCQWOl+rfMCU2v0XZn3hubLdsALQkC04owAwaTmXuFVc/5lAXd6/17uALl?=
+ =?us-ascii?Q?GYrpJaWw58X8lgM0xbGZt5ZdWP21GIVvfWxi2cFruZxn4sj04zXRgBnUKHb1?=
+ =?us-ascii?Q?PYoLdXDCezZOZZoK59ZusccjSOdKjsMhXOWiDURPlVNoiAb32C9wj3DANKBT?=
+ =?us-ascii?Q?fGgtqhcNRIvHBdWaKLrwl1EXQtvPzTQ5hngpxZ63MhwkCnncSJBuZvQOKiad?=
+ =?us-ascii?Q?DPirdJKz2GPGT3K49yt0bBRgy63ckMcQgR5yqRPLfkuNuYJaYo12c0Gz6qp4?=
+ =?us-ascii?Q?JJagYov+8lNwp/hqJYQNzJ8r?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5409dfa4-8f4d-469b-9ca9-08d9d0f1daaf
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 08:52:22.5835
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3N5ycNBfUPyIDD6ejpTFaKaJ/add6nEqDmhN4VldNs2VMlLI+aBeTX/i6WWyU5B1eDwrN+8AN8C2/p8Z3z+zMSVAHG4PKjTj4kUjqD041xQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR10MB5713
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10218 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0 spamscore=0
+ suspectscore=0 mlxlogscore=704 phishscore=0 bulkscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2112160000
+ definitions=main-2201060062
+X-Proofpoint-ORIG-GUID: ulfAX4EekwJZ8yckhAFfVSN35uiWlel2
+X-Proofpoint-GUID: ulfAX4EekwJZ8yckhAFfVSN35uiWlel2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, Dec 26, 2021 at 10:25:34PM +0100, Martin Kaiser wrote:
+> Remove the private "test" ioctl. It copies data from user space,
+> this data is not used.
 
-On Thu 06 Jan 2022 at 09:12, Miquel Raynal <miquel.raynal@bootlin.com> wrot=
-e:
+It also had some memory corruption bugs because of the lack of NUL
+termination.
 
-> liang.yang@amlogic.com wrote on Thu, 6 Jan 2022 11:31:30 +0800:
->
->> Change-Id: I1425b491d8b95061e1ce358ef33143433fc94d24
->> ---
->>  .../bindings/mtd/amlogic,meson-nand.txt        | 18 +++---------------
->
-> I forgot to mention, while you're at it, after fixing the bindings,
-> could you please convert it to yaml?
->
->>  1 file changed, 3 insertions(+), 15 deletions(-)
->>=20
->> diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.tx=
-t b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
->> index 5794ab1147c1..37f16fe4fe66 100644
->> --- a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
->> +++ b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
->> @@ -14,11 +14,6 @@ Required properties:
->>  - clock-names: Should contain the following:
->>  	"core" - NFC module gate clock
->>  	"device" - device clock from eMMC sub clock controller
-
-If I refer to the related driver change, this is not true anymore and
-should be updated
-
->> -	"rx" - rx clock phase
->> -	"tx" - tx clock phase
->> -
->> -- amlogic,mmc-syscon	: Required for NAND clocks, it's shared with SD/eM=
-MC
->> -				controller port C
->>=20=20
->>  Optional children nodes:
->>  Children nodes represent the available nand chips.
->> @@ -28,11 +23,6 @@ see Documentation/devicetree/bindings/mtd/nand-contro=
-ller.yaml for generic bindi
->>=20=20
->>  Example demonstrate on AXG SoC:
->>=20=20
->> -	sd_emmc_c_clkc: mmc@7000 {
->> -		compatible =3D "amlogic,meson-axg-mmc-clkc", "syscon";
->> -		reg =3D <0x0 0x7000 0x0 0x800>;
->> -	};
->> -
->>  	nand-controller@7800 {
->>  		compatible =3D "amlogic,meson-axg-nfc";
->>  		reg =3D <0x0 0x7800 0x0 0x100>;
->> @@ -41,11 +31,9 @@ Example demonstrate on AXG SoC:
->>  		interrupts =3D <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
->>=20=20
->>  		clocks =3D <&clkc CLKID_SD_EMMC_C>,
->> -			<&sd_emmc_c_clkc CLKID_MMC_DIV>,
->> -			<&sd_emmc_c_clkc CLKID_MMC_PHASE_RX>,
->> -			<&sd_emmc_c_clkc CLKID_MMC_PHASE_TX>;
->> -		clock-names =3D "core", "device", "rx", "tx";
->> -		amlogic,mmc-syscon =3D <&sd_emmc_c_clkc>;
->> +			<&clkc CLKID_FCLK_DIV2>;
->> +		clock-names =3D "core", "device";
-
-If you want to re-implement the mmc clock part directly in the nand
-driver, you should provide both clock inputs, like the mmc driver (in
-addition to the pclk) ... Even if you plan on using only FDIV2 in the
-driver, this what the HW is.
-
-Something like:
-
-clock-names =3D "core", "clkin0", "clkin1";
-clocks =3D <&clkc CLKID_SD_EMMC_C>,
-         <&clkc CLKID_SD_EMMC_C_CLK0>,
-	 <&clkc CLKID_FCLK_DIV2>;
-
->> +		sd_emmc_c_clkc =3D <0xffe07000>;
-
-This is not how you provide memory regions
-
->>=20=20
->>  		pinctrl-names =3D "default";
->>  		pinctrl-0 =3D <&nand_pins>;
->
->
-> Thanks,
-> Miqu=C3=A8l
+regards,
+dan carpenter
 
