@@ -2,113 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0496C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:21:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 335D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229956AbiAFDVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 22:21:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiAFDV2 (ORCPT
+        id S230007AbiAFDWU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 22:22:20 -0500
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:59668 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229773AbiAFDWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 22:21:28 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20953C061245;
-        Wed,  5 Jan 2022 19:21:28 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id q14so1572542plx.4;
-        Wed, 05 Jan 2022 19:21:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tEPOl6WBbxtpmGNTfqniAvqTV4WFMzRNYr4mY/ilgcY=;
-        b=o/J3+ItZGt862U17CUDwLME3HfmwNUJ9LtdM++CsDtVrKXE1rhHzg3y4rwqNQiZUi3
-         OMHP7dzsbfJaWsKKFA6cTBgp2pHIf1PAhHaX+2SYHZvydEwUSI2TAbek+In6FruFPPiB
-         YJriM7UTD5iGGHIcAuo3I/IyPtZArrKe7ZzQfKj/p/NZFFHm1O1WXszVmJOm+KhdbMdx
-         BKvHJNLjkCakykmE6fHG6BYe9hw8IY0ndwUWEpS5gaNAchNvfpRBzkmX8YZ4J+fHMyyp
-         hB5REgNkqt6H4RVTMcybfOols7slgmTp0j8FVSbtF/PXQzfDB5+7CeNsmueRxWqpUQMr
-         x3pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tEPOl6WBbxtpmGNTfqniAvqTV4WFMzRNYr4mY/ilgcY=;
-        b=LY0q6o8U1cQhcEIltXc7FiTA1u0FGmItL45ukcCq33HeneQAqx2jvL72guMJcj8BpP
-         V6cdx43m9qT0BkrQkSQcwL6Z/h7Ugtja1fqHLpu8PcYiRLeYh7caraa945QJwd8JS9b5
-         v36OPDtPR+Jy+bb+14ozYhdgvqOBE2NiUaMCLrYZ14jz20NfrCD9C3/o/r2g0oEGZkV3
-         ZaMHBJ6vWaG146pBBP6YM9Q3RQdvJbT5PQ35Zf0H3TBSyd8tX4GumE2vUbMgLOcAqObn
-         4JEmbXmX+PPSM1otJsl2jTfGObd2yG4ECOHSKUOkG0Qc7XZ6zIO6LXavTYHAJfdt25wx
-         hEuw==
-X-Gm-Message-State: AOAM531bcOvNmSlsWRCKymeK+vov5l8ZIG1IlX1NIRUn1ME+MPgJe/Sm
-        r/nwjKSbvX34mq+GF2C4GnU=
-X-Google-Smtp-Source: ABdhPJzZhHSyhOL30UTh+4XpMXnBLst+jA55JfVAndmfd8TBVcfubteD+376QDXWRfkC3St+JCQvbQ==
-X-Received: by 2002:a17:90a:cf90:: with SMTP id i16mr949608pju.67.1641439287684;
-        Wed, 05 Jan 2022 19:21:27 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id x5sm366665pjq.39.2022.01.05.19.21.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 19:21:27 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] KVM: x86/pmu: Make top-down.slots event unavailable in supported leaf
-Date:   Thu,  6 Jan 2022 11:21:18 +0800
-Message-Id: <20220106032118.34459-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.33.1
+        Wed, 5 Jan 2022 22:22:19 -0500
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 2063MBO3016171
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 5 Jan 2022 22:22:11 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id BDDED15C00E1; Wed,  5 Jan 2022 22:22:10 -0500 (EST)
+Date:   Wed, 5 Jan 2022 22:22:10 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Xin Yin <yinxin.x@bytedance.com>
+Cc:     harshadshirwadkar@gmail.com, adilger.kernel@dilger.ca,
+        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND] ext4:fix different behavior of fsync when use
+ fast commit
+Message-ID: <YdZgYvC4K87PiMfO@mit.edu>
+References: <20211224065728.5820-1-yinxin.x@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211224065728.5820-1-yinxin.x@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+On Fri, Dec 24, 2021 at 02:57:28PM +0800, Xin Yin wrote:
+> For the follow test example:
+> -mkdir test/
+> -create&write test/a.txt
+> -fsync test/a.txt
+> -crash (before a full commit)
+> 
+> If fast commit is used then "a.txt" will lost, while the normal
+> journaling can recover it.
 
-When we choose to disable the fourth fixed counter TOPDOWN.SLOTS,
-we also need to comply with the specification and set 0AH.EBX.[bit 7]
-to 1 if the guest (e.g. on the ICX) has a value of 0AH.EAX[31:24] > 7.
+The problem is that your proposed fix: 
 
-Fixes: 2e8cd7a3b8287 ("kvm: x86: limit the maximum number of vPMU fixed counters to 3")
-Signed-off-by: Like Xu <likexu@tencent.com>
----
-v1 -> v2 Changelog:
-- Make it simpler to keep forward compatibility; (Sean)
-- Wrap related comment at ~80 chars; (Sean)
+> diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
+> index 3deb97b22ca4..4b843648ffe5 100644
+> --- a/fs/ext4/fast_commit.c
+> +++ b/fs/ext4/fast_commit.c
+> @@ -423,7 +423,7 @@ void __ext4_fc_track_create(handle_t *handle, struct inode *inode,
+>  	args.op = EXT4_FC_TAG_CREAT;
+>  
+>  	ret = ext4_fc_track_template(handle, inode, __track_dentry_update,
+> -					(void *)&args, 0);
+> +					(void *)&args, 1);
+>  	trace_ext4_fc_track_create(inode, dentry, ret);
+>  }
 
-Previous:
-https://lore.kernel.org/kvm/20220105050711.67280-1-likexu@tencent.com/
+affects both file creations as well as directory creations (mkdir).
+Putting the inode on the fast commit list is something that is meant
+for files, and means that on a fast commit we need to force the data
+blocks out.  So it seems that isn't the right fix for the problem.
 
- arch/x86/kvm/cpuid.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Why do something really simple?  Look at the parent directory's inode,
+and check its i_sync_tid.  If it's not equal to
+handle->h_transaction->t_tid, then it's safe to do the fast commit.
+If it's equal to the current transaction, we can either force a full
+commit.
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 0b920e12bb6d..4fe17a537084 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -782,6 +782,18 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
- 		eax.split.mask_length = cap.events_mask_len;
- 
- 		edx.split.num_counters_fixed = min(cap.num_counters_fixed, MAX_FIXED_COUNTERS);
-+
-+		/*
-+		 * The 8th Intel architectural event (Topdown Slots) will be supported
-+		 * if the 4th fixed counter exists && EAX[31:24] > 7 && EBX[7] = 0.
-+		 *
-+		 * Currently, KVM needs to set EAX[31:24] < 8 or EBX[7] == 1
-+		 * to make this event unavailable in a consistent way.
-+		 */
-+		if (edx.split.num_counters_fixed < 4 &&
-+		    eax.split.mask_length > 7)
-+			cap.events_mask |= BIT_ULL(7);
-+
- 		edx.split.bit_width_fixed = cap.bit_width_fixed;
- 		if (cap.version)
- 			edx.split.anythread_deprecated = 1;
--- 
-2.33.1
+Optionally, in the case where i_sync_tid == current tid, since there's
+a chance that the parent directory's inode could have been freshly
+fetched from disk (see __ext4_iget() in fs/ext4/inode.c), we could
+compare its i_crtime against ktime_get_real_seconds(), and if the
+inode was created in the last 2*journal->j_commit_interval/HZ seconds,
+it's safe to do a fast commit; otherwise do a full commit.
 
+Cheers,
+
+					- Ted
