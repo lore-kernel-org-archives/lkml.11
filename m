@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A28C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 18:25:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B22AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 18:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242750AbiAFSZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 13:25:33 -0500
-Received: from mail-oi1-f170.google.com ([209.85.167.170]:35630 "EHLO
-        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242733AbiAFSZa (ORCPT
+        id S242780AbiAFSZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 13:25:34 -0500
+Received: from mail-oo1-f42.google.com ([209.85.161.42]:45604 "EHLO
+        mail-oo1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242739AbiAFSZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 13:25:30 -0500
-Received: by mail-oi1-f170.google.com with SMTP id s127so4942819oig.2;
-        Thu, 06 Jan 2022 10:25:30 -0800 (PST)
+        Thu, 6 Jan 2022 13:25:31 -0500
+Received: by mail-oo1-f42.google.com with SMTP id l10-20020a4a840a000000b002dc09752694so852250oog.12;
+        Thu, 06 Jan 2022 10:25:31 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=cF7NOXX0VCxREtaDxxcjv4QjL9Wd5MC7Ra3H6nrdF+Q=;
-        b=4GQhrBv0Vv8o31hoG2ragc4hC/myINIowC5fFJI1O/SeXjtRhkNYV9Va2ZdDRoT1ra
-         MuCHhR2pifF/Vs76eAA7qp2aK6m4BJ4jhv37PNKkwxydDsY5r9Tp2SQg8wxkhNrkDb1y
-         044SRJ2kipmNQgTRUPR/LCgbodVfJTEKJ+qNjq8yNBm2rtS/VOJQalbas989YXfHPgUy
-         UN9V+mb97In6U9TmuNJpY/9fZDZb//kmloQdEzqARYbF0EXu+bWKS48GOry+XJD8+ajA
-         mS2bgp6Kn46uAXHaIEsTOm6AItaF2xfcn7mUTFeduFAryYlb7zGDOcA/bM9R8/7b17RX
-         08Rg==
-X-Gm-Message-State: AOAM531XBCizEJNRaGwk1/3tMQFKY5WGa8Hz+9T24E4DBr29N4hKQldB
-        N9k3RYqC4Vi013zrTbMIKCzzW6nFwA==
-X-Google-Smtp-Source: ABdhPJwHKljtbw4ST1iRI0MgRmPXUWUCv2jaJpK16yDsCDmvGPMgVOe4pZe1zQTLwFkxzyBK9SArBw==
-X-Received: by 2002:aca:4385:: with SMTP id q127mr6763971oia.39.1641493529683;
-        Thu, 06 Jan 2022 10:25:29 -0800 (PST)
+        bh=+1b8xpRYxZ8vmZgumm9JuvwJZHTxs74RlVPJnbYxN54=;
+        b=6LQ8G/u5/vITcAYomYrGqQaDApTOEOLmMl3h7OnqqropHSE7xvNWq63vaBLvtwXswF
+         FfEzdIWy0ekLFia7xkKe2l0c2RYSO31UPFpArrjo7L9v2K+ncZn85NBqc+KeCB6i30Uc
+         yP64NfxASa/44MvvqS8auIUn/4c58h8h6jkAtBbho4pgdI3JLu+Orp3379tTIYOYCuy5
+         X4OohLx9VxFitUpeV044pr7vyWdiR1G31hTBF+s6L2ts/1SQ5J+eTWMy/chUITm0qWeX
+         K6KpV32nUImzqAtYIMl7iHkXCPiexX9Ljnq4cA8XNod020y1KFy+CJVkJ5inUaJAGdMo
+         IakA==
+X-Gm-Message-State: AOAM531byy0GLEkxd1eN53FW/Imem5cGprnGFM4zGWLiTr9qz7untqmc
+        ZvfxUawAROYDRyVBvQ8nTLlgdDakUQ==
+X-Google-Smtp-Source: ABdhPJxOg9d7S+nH7Ow7Pl1QUcRGuNmgke+MFJ4NpJB8DgqESzYqHfSD7oJu/egfBzNw/9xjD79V1A==
+X-Received: by 2002:a4a:be90:: with SMTP id o16mr36439739oop.28.1641493531034;
+        Thu, 06 Jan 2022 10:25:31 -0800 (PST)
 Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.googlemail.com with ESMTPSA id r13sm484949oth.21.2022.01.06.10.25.28
+        by smtp.googlemail.com with ESMTPSA id r13sm484949oth.21.2022.01.06.10.25.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 10:25:29 -0800 (PST)
+        Thu, 06 Jan 2022 10:25:30 -0800 (PST)
 From:   Rob Herring <robh@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Tony Lindgren <tony@atomide.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: dma-controller: Split interrupt fields in example
-Date:   Thu,  6 Jan 2022 12:25:10 -0600
-Message-Id: <20220106182518.1435497-2-robh@kernel.org>
+Subject: [PATCH] dt-bindings: iio/adc: ti,palmas-gpadc: Split interrupt fields in example
+Date:   Thu,  6 Jan 2022 12:25:11 -0600
+Message-Id: <20220106182518.1435497-3-robh@kernel.org>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -53,28 +55,26 @@ value.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/dma/dma-controller.yaml | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml        | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/dma/dma-controller.yaml b/Documentation/devicetree/bindings/dma/dma-controller.yaml
-index 0043b91da95e..6d3727267fa8 100644
---- a/Documentation/devicetree/bindings/dma/dma-controller.yaml
-+++ b/Documentation/devicetree/bindings/dma/dma-controller.yaml
-@@ -24,10 +24,10 @@ examples:
-     dma: dma-controller@48000000 {
-         compatible = "ti,omap-sdma";
-         reg = <0x48000000 0x1000>;
--        interrupts = <0 12 0x4
--                      0 13 0x4
--                      0 14 0x4
--                      0 15 0x4>;
-+        interrupts = <0 12 0x4>,
-+                     <0 13 0x4>,
-+                     <0 14 0x4>,
-+                     <0 15 0x4>;
-         #dma-cells = <1>;
-         dma-channels = <32>;
-         dma-requests = <127>;
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
+index 7b895784e008..57a31356082e 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
+@@ -74,9 +74,9 @@ examples:
+         compatible = "ti,twl6035-pmic", "ti,palmas-pmic";
+         adc {
+             compatible = "ti,palmas-gpadc";
+-            interrupts = <18 0
+-                          16 0
+-                          17 0>;
++            interrupts = <18 0>,
++                         <16 0>,
++                         <17 0>;
+             #io-channel-cells = <1>;
+             ti,channel0-current-microamp = <5>;
+             ti,channel3-current-microamp = <10>;
 -- 
 2.32.0
 
