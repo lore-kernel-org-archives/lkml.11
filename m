@@ -2,101 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD37C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 13:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D616DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 13:01:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239266AbiAFNA5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 08:00:57 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:36274 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239262AbiAFNAy (ORCPT
+        id S239214AbiAFNBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 08:01:42 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:57539 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232971AbiAFNBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 08:00:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641474053;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=nwzCKRlarcXm1RHufaPsJW9CI1uQM/UHS6c0Nx6knro=;
-        b=Fucu49jY671i6KGsWAFJ/4EIgggWgDSXbRacLghyVJ4EvarqtyfjPdhtqpt022b6pFJIhI
-        SGEBMqpnoVSAFQXOzFUARmWMLFPkr77+DVmYLYbVkwyYvzCmXeUIZeI0RL1dwArimMxkoZ
-        XMsHcrhRnaoPaw0GfDNBge8Jolusf/o=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-225-GPcRkzHRNLGJSmux_JF8wA-1; Thu, 06 Jan 2022 08:00:52 -0500
-X-MC-Unique: GPcRkzHRNLGJSmux_JF8wA-1
-Received: by mail-wm1-f70.google.com with SMTP id n3-20020a05600c3b8300b00345c3fc40b0so3042325wms.3
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 05:00:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=nwzCKRlarcXm1RHufaPsJW9CI1uQM/UHS6c0Nx6knro=;
-        b=FHA64VeOwZGKeHFxN/4oK9AS8PGGrXT5O3f0o89UBGhwhGwzOl4q9TNj89S1CQ8RJd
-         heFNHKRQdqiPENNn0fgnAEv/kRE6ngDzCi9Lau/WFPxde2itoxTWRER4OfggGY1tN+Ut
-         YKdIz20n0R/814o7kaJmojFaKT2xYpFv3229AeER94TIWMZUXoCmqbrIz4ce49SplKK8
-         DVBA8ZA/wVBskIxy6pXS8oHL/P8Ft8m8p9UZCFN8dX2wLMBZwcrLVdUWGrDxRXf0Zi/p
-         wUkfxSGPc4PpWJfVZ6583SjkXWGKDlsmdWqm2RcKI/4N1/vZQ+VGkyzj2zwm+NKhL7Kl
-         mnWg==
-X-Gm-Message-State: AOAM531SOILq5ueNPIsmYgFBkqBEovOUxcKZs0+bIM5K+mTLXPClVLip
-        nXvMsHdwa9fn+HmxGE9uG7T32qQvz7qZqMJt40c/ULB6H0sW+yx/iTpTaKcFhlZCltbWD54BfRt
-        RNkI0Z+PJl7wh94amyaL5UHYE5ZCSM9upCgZ2eU8sBPrONwmwARDVoWvjx0cev0QLE7nxDw==
-X-Received: by 2002:a5d:47c3:: with SMTP id o3mr50571969wrc.29.1641474051023;
-        Thu, 06 Jan 2022 05:00:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw8sjEET+CFZdglHMPDN4E8uNhAyHPhpS/seTRaepk7Pmro3HZna6jkZjGbwE/mzv/D/1wVFg==
-X-Received: by 2002:a5d:47c3:: with SMTP id o3mr50571942wrc.29.1641474050718;
-        Thu, 06 Jan 2022 05:00:50 -0800 (PST)
-Received: from redhat.com ([2a03:c5c0:207e:991b:6857:5652:b903:a63b])
-        by smtp.gmail.com with ESMTPSA id o8sm2436559wry.20.2022.01.06.05.00.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 05:00:50 -0800 (PST)
-Date:   Thu, 6 Jan 2022 08:00:48 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH] virtio_ring: mark ring unused on error
-Message-ID: <20220106130046.422417-1-mst@redhat.com>
+        Thu, 6 Jan 2022 08:01:40 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=baolin.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V16880g_1641474096;
+Received: from 30.15.242.178(mailfrom:baolin.wang@linux.alibaba.com fp:SMTPD_---0V16880g_1641474096)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 06 Jan 2022 21:01:37 +0800
+Message-ID: <a9ca235a-1324-9c76-953c-16295f8ce3b8@linux.alibaba.com>
+Date:   Thu, 6 Jan 2022 21:02:27 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH] mm/damon: Remove redundant page validation
+To:     SeongJae Park <sj@kernel.org>
+Cc:     akpm@linux-foundation.org, dan.carpenter@oracle.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+References: <20220106114047.6595-1-sj@kernel.org>
+From:   Baolin Wang <baolin.wang@linux.alibaba.com>
+In-Reply-To: <20220106114047.6595-1-sj@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A recently added error path does not mark ring unused when exiting on
-OOM, which will lead to BUG on the next entry in debug builds.
+Hi SeongJae,
 
-TODO: refactor code so we have START_USE and END_USE in the same function.
+On 1/6/2022 7:40 PM, SeongJae Park wrote:
+> Hi Baolin,
+> 
+> 
+> Thank you always for your great contribution!  As always, trivial comments
+> below.
+> 
+> On Thu, 6 Jan 2022 18:40:11 +0800 Baolin Wang <baolin.wang@linux.alibaba.com> wrote:
+> 
+>> It will never get a NULL page by pte_page(), thus remove the redundant
+>> page validation to fix below Smatch static checker warning.
+> 
+> I guess the issue has reported in the open place[1], right?  I think it would
+> be better to add the link in this commit message, so that future readers can
+> read and learn from your discussion in the mail thread.
+> 
+> [1] https://lore.kernel.org/linux-mm/20220106091200.GA14564@kili/
 
-Fixes: fc6d70f40b3d ("virtio_ring: check desc == NULL when using indirect with packed")
-Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/virtio/virtio_ring.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+OK.
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 028b05d44546..962f1477b1fa 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -1197,8 +1197,10 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
- 	if (virtqueue_use_indirect(_vq, total_sg)) {
- 		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
- 						    in_sgs, data, gfp);
--		if (err != -ENOMEM)
-+		if (err != -ENOMEM) {
-+			END_USE(vq);
- 			return err;
-+		}
- 
- 		/* fall back on direct */
- 	}
--- 
-MST
+> 
+>>
+>> mm/damon/vaddr.c:405 damon_hugetlb_mkold()
+>> warn: 'page' can't be NULL.
+> 
+> Sorry for continuously obsessing about this trivial and personal taste, but...
+> Could you please indent quoting blocks like above (hopefully with 4 spaces)?
+> That makes the message much easier to read for me, and I'd like to keep the
+> commit messages for DAMON consistent and easy to read, at least for me.
 
+Sure, I will keep the rule of DAMON in mind.
+
+Andrew, could you help to change the commit message format as SeongJae 
+suggested when you apply this patch? Thanks.
+
+> 
+> Other than that,
+> 
+> Reviewed-by: SeongJae Park <sj@kernel.org>
+
+Thanks.
