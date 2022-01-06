@@ -2,123 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1374C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ABBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241910AbiAFRbz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:31:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241884AbiAFRbs (ORCPT
+        id S242014AbiAFRb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:31:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33162 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241917AbiAFRbw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:31:48 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B81FC061201
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:31:48 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id q8so6161524wra.12
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 09:31:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dkvyhO6hJ0wvUK/T32ySbQpnfAXyEhGAp68FW2iN8Bc=;
-        b=sPbhahkc70MjDaDWZtVKd5uyYPFnyqkebv/WA+WbNFCrElp+YeS8Q/7nukv8MJ5eV4
-         xsRbH+NlRFD+tx9HFPAOy5ABjKRkstViWfZHh+xQOmeL1hWYr604YayQ5qV4WS7L0GC/
-         S+Mlt43i8W7hxT/gjCisF7PjVOhP+NNS/vocqO8tzJZz0Wjqsh1Q3yj4XG2hTQ1lfzHB
-         XQs9Zu86ttxw6MgMCsZ0A0Ao19n2ru+OiT3bcbYKuo6vuUYHcM6J0+mW8em9YtA9nYXa
-         JkIdHyEwqnXw3jEcERwuqQQx9zDtjs65kXE3wc4N5HhNtJd49SSNEQzUK6Dz/YhkVBKb
-         ULSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dkvyhO6hJ0wvUK/T32ySbQpnfAXyEhGAp68FW2iN8Bc=;
-        b=I3uKFVTTzaegEmLzTjePh5JwZZxPYvQVCYTK1hA+lgLWBdRo9uAxpDFf+4H++qPPIv
-         0JXHwO10yxzEpoHP+PjD2h+0ffdg5Qtyv/XxkIGt2P2DZhEV4yEMly8jtQKQ+i29Aa6t
-         oT0ZL5GQfzcBWOraVZvTuCNkOdmnTeoFNvG4tDdu/qdUWyUUZy3LnDXrKLqvNuzJxmUp
-         UaVYVW5++SCi0L3l/pTI3bN27AyWV5yyaIhwgsUwLjFq78DiXpEIY96rlgn/KLkeJtQQ
-         Udxwgmq3I1EvSwXF4jgVj08gZdIQTEghHASxxxK0gDcP6KtEpe6MrJse9OWVT6Vt9zuj
-         F7/g==
-X-Gm-Message-State: AOAM531MU54RMrRNmHJ1RxoF4OySQOQB8IdP4eak1IPNKS1ZZUCh7ANC
-        YkrnTdsONXxba1uXwwsWEr2QUg==
-X-Google-Smtp-Source: ABdhPJwU0MWrOP33qrBEeDQX1h3YbvV3GD7GOCTJ1TluDAs3DSWjtp2vBbsMGsgaUjw+zQGvIyQAJA==
-X-Received: by 2002:adf:a40b:: with SMTP id d11mr50432985wra.209.1641490306821;
-        Thu, 06 Jan 2022 09:31:46 -0800 (PST)
-Received: from localhost.localdomain ([81.178.195.252])
-        by smtp.gmail.com with ESMTPSA id b16sm2575594wmq.41.2022.01.06.09.31.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 09:31:46 -0800 (PST)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org
-Subject: [PATCH v3 0/7] iio: adc: introduce Qualcomm SPMI Round Robin ADC
-Date:   Thu,  6 Jan 2022 17:31:24 +0000
-Message-Id: <20220106173131.3279580-1-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 6 Jan 2022 12:31:52 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA9E7B82296
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 17:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF31C36AEF;
+        Thu,  6 Jan 2022 17:31:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641490309;
+        bh=DWUb70EqUNGqpynK9qIu2Jz/xw4KmZw58v+XcOcQxeI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=loe9/OEfImfU1V3yCKDFiPVBRlDRAbtStqMKGl51dt+ZxIB/W7IBeKPtu6HFAkYBr
+         EuENbe2SQNhqRabhkhf+yxQ7fAd33/JfWq9uSwTNNDZbMFUeFjhWhdWgWouk3kgGo2
+         X2KKFAUhw4b99Qg1gzccefL03cqVIxUGkFxnPhbZJyh3axpOlpJv7xHLPiRUEd7Zkd
+         XPWS6syQoou04aHEuEoaRn+H/qAXSqmyqCPmX8qhI44q/NgxXu9BxQ0Y2mSnS9GO17
+         2xOAEDyO3M9E5mBrR4LFlFHzfaqs67PT6ymQvGVThAGtBRhsitomEvsxxFNxn1gsMn
+         qhfaIS/glISag==
+Date:   Thu, 6 Jan 2022 17:31:45 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     matthias.schiffer@ew.tq-group.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] regmap: debugfs: Free the previous allocated
+ debugfs_name buffer
+Message-ID: <YdcngYVZwC2s+Pin@sirena.org.uk>
+References: <20220106171537.3091643-1-festevam@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uGmHJ3AUYiAioGCT"
+Content-Disposition: inline
+In-Reply-To: <20220106171537.3091643-1-festevam@gmail.com>
+X-Cookie: I think we're in trouble.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The RRADC is responsible for reading data about the current and
-voltage from the USB or DC in jacks, it can also read the battery
-ID (resistence) and some temperatures. It is found on the PMI8998 and
-PM660 Qualcomm PMICs.
 
-The RRADC has to calibrate some ADC values based on which chip fab
-the PMIC was produced in, to facilitate this the patch
-("mfd: qcom-spmi-pmic: expose the PMIC revid information to clients")
-exposes the PMIC revision information as a struct and registers it
-as driver data in the Qualcomm SPMI PMIC driver so that it can be 
-read by the RRADC.
+--uGmHJ3AUYiAioGCT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Changes since v2:
- * Add missing include (thanks kernel test robot :D)
- * Rework some confusing function return values, specifically
-   rradc_read_status_in_cont_mode and rradc_prepare_batt_id_conversion
-   both of which didn't correctly handle "ret". This also bought up an
-   issue as the previous implementation didn't actually wait for the
-   channel to be ready. It doesn't seem like that's strictly necessary
-   (same data is reported if I wait for the status to be good or not)
-   but I've included it anyway for good measure.
+On Thu, Jan 06, 2022 at 02:15:37PM -0300, Fabio Estevam wrote:
 
-Changes since v1:
- * Rework the RRADC driver based on Jonathan's feedback
- * Pick up Rob's reviewed by for the dt-binding patch.
+> debugfs: Directory 'dummy-iomuxc-gpr@20e0000' with parent 'regmap' alread=
+y present!
+>=20
+> By inspecting the duplicate directory name:=20
+>=20
+> [    0.274418] platform panel: Fixing up cyclic dependency with ldb
+> [    0.276896] ************ 1: devname is dummy
+> [    0.276926] ************ 2: name is iomuxc-gpr@20e0000
 
-Caleb Connolly (7):
-  mfd: qcom-spmi-pmic: expose the PMIC revid information to clients
-  dt-bindings: iio: adc: document qcom-spmi-rradc
-  iio: adc: qcom-spmi-rradc: introduce round robin adc
-  arm64: dts: qcom: pmi8998: add rradc node
-  arm64: dts: qcom: sdm845-oneplus: enable rradc
-  arm64: dts: qcom: sdm845-db845c: enable rradc
-  arm64: dts: qcom: sdm845-xiaomi-beryllium: enable RRADC
+It's quite hard to read these kernel logs and tie them into anything -
+they're fairly verbose and weirdly formatted with all the *********s.
 
- .../bindings/iio/adc/qcom,spmi-rradc.yaml     |   54 +
- arch/arm64/boot/dts/qcom/pmi8998.dtsi         |    8 +
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts    |    4 +
- .../boot/dts/qcom/sdm845-oneplus-common.dtsi  |    4 +
- .../boot/dts/qcom/sdm845-xiaomi-beryllium.dts |    4 +
- drivers/iio/adc/Kconfig                       |   13 +
- drivers/iio/adc/Makefile                      |    1 +
- drivers/iio/adc/qcom-spmi-rradc.c             | 1070 +++++++++++++++++
- drivers/mfd/qcom-spmi-pmic.c                  |  108 +-
- include/soc/qcom/qcom-pmic.h                  |   63 +
- 10 files changed, 1272 insertions(+), 57 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
- create mode 100644 drivers/iio/adc/qcom-spmi-rradc.c
- create mode 100644 include/soc/qcom/qcom-pmic.h
+> +++ b/drivers/base/regmap/regmap-debugfs.c
+> @@ -589,6 +589,7 @@ void regmap_debugfs_init(struct regmap *map)
+>  				return;
+>  		}
+>  		name =3D map->debugfs_name;
+> +		kfree(map->debugfs_name);
+>  	} else {
+>  		name =3D devname;
+>  	}
+> @@ -600,6 +601,7 @@ void regmap_debugfs_init(struct regmap *map)
+>  		if (!map->debugfs_name)
+>  				return;
+>  		name =3D map->debugfs_name;
+> +		kfree(map->debugfs_name);
 
--- 
-2.34.1
+This is fairly clearly introducing a use after free bug - we've taken a
+copy of map->debugfs_name in name then immediately free map->debugfs_name
+so any use of name will be referencing freed memory.  If this works it
+will be because something went and zeroed the memory, it's just as
+likely to cause us to crash.
 
+--uGmHJ3AUYiAioGCT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHXJ4AACgkQJNaLcl1U
+h9C7Cwf/cfREzK+slDlKxKwlzgyTvagPlh3Np0n2zqlMt3YRum8nByZhtUXWQzjD
+qiC35DcdldJMw571dmfywMDcfBREHUZWmwFmYXiatr5d9upMV6zNUwW4Iv8izcq3
+3YQNIbocUULyQ34fqtcgr1Kf0CJECT8tj1ZH5/MsBy4eDhRfHmRFHT0ZXe1qBumP
+9tdisAVBzmRHZmiZeMv5CLt5Om5/c8QcQTCaKGq7X7hdXw1D1kinlAycBhW2G3Jf
+sQ31oDzDzMX7o91AK4rSHzBm817V2rC2UH4nyO6qu6YCQdEw43IG/dLyzu6soFW/
+a4VzAOmouXVMtXDSESM9LroxddiuoA==
+=c000
+-----END PGP SIGNATURE-----
+
+--uGmHJ3AUYiAioGCT--
