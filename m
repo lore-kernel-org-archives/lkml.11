@@ -2,100 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD517C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 11:11:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10185C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 11:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238320AbiAFLLP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 06:11:15 -0500
-Received: from mga02.intel.com ([134.134.136.20]:45908 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238304AbiAFLLO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 06:11:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641467474; x=1673003474;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=pRxGZic71BOxqn8qKdxkMUjgBeOF6SFtA8ONOF0q13o=;
-  b=MxgVOo/CwvM3xduiJmHGZ1lhZii4Nwg8uOG8o3cNbUGxdGiq7A8VY+tH
-   1zu/JKWd/T5xBYHo7yh9eRK5wBH4VSslXQtsOMwhb/wKBZcOfliZqRfP1
-   JvIAP5KJd82Ondtv/6LkITZMGFpNWu4Yu51fBTOJ9XnXkyPB9azzrMR/P
-   4wktkVMonlvyAJoFFgVVYHGMqz5ayIIWaYKTVsTFHDjUxv4ThioRoH1S+
-   eTF7LGpRHIiDHzbVZm5LEd081NWW0EwWpdnpSyC1vUTTd83b5GVcACH+Y
-   l1xkYI+tIYpTuG7gFpSVW1E+G1JYS6+qLO0nTdTz/aoLNR94l6X8bbBfh
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="229966205"
-X-IronPort-AV: E=Sophos;i="5.88,266,1635231600"; 
-   d="scan'208";a="229966205"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 03:11:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,266,1635231600"; 
-   d="scan'208";a="472852766"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 06 Jan 2022 03:11:12 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5Qfo-000HaU-A3; Thu, 06 Jan 2022 11:11:12 +0000
-Date:   Thu, 6 Jan 2022 19:10:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sven Peter <sven@svenpeter.dev>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [asahilinux:nvme/dev 18/18] apple.c:undefined reference to
- `apple_sart_remove_allowed_region'
-Message-ID: <202201061938.mkpqWe1k-lkp@intel.com>
+        id S238344AbiAFLMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 06:12:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231532AbiAFLMO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 06:12:14 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC01C061245;
+        Thu,  6 Jan 2022 03:12:13 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 1BA1741F55;
+        Thu,  6 Jan 2022 11:12:02 +0000 (UTC)
+Message-ID: <562e7680-6a85-024e-e544-f585aad7d394@marcan.st>
+Date:   Thu, 6 Jan 2022 20:12:00 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt
+ paths
+Content-Language: en-US
+To:     Arend van Spriel <arend.vanspriel@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-5-marcan@marcan.st>
+ <fd95636e-b879-0c82-a7ba-a5c239f4f611@broadcom.com>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <fd95636e-b879-0c82-a7ba-a5c239f4f611@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux nvme/dev
-head:   95d74d28463059dbd4d9cf8e62a2ea0a71d15d06
-commit: 95d74d28463059dbd4d9cf8e62a2ea0a71d15d06 [18/18] WIP: nvme-apple: add initial Apple SoC NVMe driver
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220106/202201061938.mkpqWe1k-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/AsahiLinux/linux/commit/95d74d28463059dbd4d9cf8e62a2ea0a71d15d06
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux nvme/dev
-        git checkout 95d74d28463059dbd4d9cf8e62a2ea0a71d15d06
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+On 2022/01/06 19:43, Arend van Spriel wrote:
+>> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+>> index e290dec9c53d..7f4e6e359c82 100644
+>> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+>> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.h
+>> @@ -11,6 +11,8 @@
+>>   
+>>   #define BRCMF_FW_DEFAULT_PATH		"brcm/"
+>>   
+>> +#define BRCMF_FW_MAX_ALT_PATHS	8
+>> +
+> 
+> Any motivation to have 8 here today? In patch #9 I see a list of 6 paths 
+> in the commit message so you need 6 and rounded up here to power of 2?
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Heh, yeah, that's just my powers-of-two-are-nice-numbers habit. I can
+drop it down to 6 if you prefer.
 
-All errors (new ones prefixed by >>):
-
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_free':
->> apple.c:(.text+0x6d0): undefined reference to `apple_sart_remove_allowed_region'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_sart_dma_alloc':
->> apple.c:(.text+0x7d2): undefined reference to `apple_sart_add_allowed_region'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_probe':
->> apple.c:(.text+0x23aa): undefined reference to `apple_sart_get'
-   s390-linux-ld: apple.c:(.text+0x2852): undefined reference to `devm_apple_rtkit_init'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_disable':
->> apple.c:(.text+0x431c): undefined reference to `apple_rtkit_is_crashed'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_shutdown':
->> apple.c:(.text+0x479a): undefined reference to `apple_rtkit_is_running'
-   s390-linux-ld: apple.c:(.text+0x47ce): undefined reference to `apple_rtkit_shutdown'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_remove':
-   apple.c:(.text+0x4894): undefined reference to `apple_rtkit_is_running'
-   s390-linux-ld: apple.c:(.text+0x48c8): undefined reference to `apple_rtkit_shutdown'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_timeout':
-   apple.c:(.text+0x4bac): undefined reference to `apple_rtkit_is_crashed'
-   s390-linux-ld: drivers/nvme/host/apple.o: in function `apple_nvme_reset_work':
-   apple.c:(.text+0x4ef2): undefined reference to `apple_rtkit_is_crashed'
-   s390-linux-ld: apple.c:(.text+0x4fae): undefined reference to `apple_rtkit_is_running'
-   s390-linux-ld: apple.c:(.text+0x50cc): undefined reference to `apple_rtkit_shutdown'
-   s390-linux-ld: apple.c:(.text+0x5106): undefined reference to `apple_rtkit_reinit'
-   s390-linux-ld: apple.c:(.text+0x51dc): undefined reference to `apple_rtkit_boot'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
