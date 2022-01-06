@@ -2,96 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D7EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 06:02:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E5ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 06:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234349AbiAFGCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 01:02:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbiAFGCs (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 01:02:48 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3268C061245;
-        Wed,  5 Jan 2022 22:02:47 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id g80so4680033ybf.0;
-        Wed, 05 Jan 2022 22:02:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nS2yMVkGz+ps+zT6am8AF/1mxQGXi0VAWBoJudmXHPc=;
-        b=HPhlvhwnoZsWjZ39b/M1Qkh2gF/e9cUKF7B/ThBVMIFie1XWAteoYg6OLDih9uZbWl
-         bq5ozFyoBIUS4xvLmhqVB43gNd56C9JME8hfNh/Y17bifPQ7W1zeisEKpI3BjzJIZrxC
-         TLAG5kbT13DU5uH5nJin6FGECvFm+AGSmR7i5uM/45J5LOKa6T9gnp2g7l2Knd89Gmij
-         2GA8FnsNd4/mKGqr1Jy5L1faMdNyE7QFZy8BdSWSVAcD3XLKJWV9+Hyx2K6QB7MJRTKp
-         CtQqKEWnVMVet0uSVgDyLmV+toll2PL26CKEwmUz4gRuzHSZP24g08WQorM5k12BA+Dw
-         odpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nS2yMVkGz+ps+zT6am8AF/1mxQGXi0VAWBoJudmXHPc=;
-        b=Wj9riMcA4oXAmK5vTLLkBiHd9sp76eHbTqGpsi7ImBJ7glYGM0JXwlPSPCQQji8z2n
-         F0+/KJ8llsJ3IrmA0n82zhExhzI2ETKjs4ivQI2YiAep/J4FoD8+rqTWPaVmCreP9pfT
-         Uy13A2X9CTShpFphAMe9oIxBfA2j8t4h3f+JlFIGPXHPX/ZdEs56hKQNK9FposcC4b80
-         MafqW0gOdLtaB69omhrLTngE8WzRdNC7mNWTHz8wC3m7HwW4Dt6T5a7E29tCAyntCHmk
-         grUFSCQlxFoLSFosHWRiTI7+mpkiUek7P4A2LymhvyZsMtELVzK48AMY+xHZ5xYAfOoR
-         9Dkw==
-X-Gm-Message-State: AOAM5318SzBxs1hV27PxAZuhUV6BU3qmVwVosmXhNuYk1wiMx15fzf4k
-        FUPcSER/3hZEIYbTeRx7eQsl/egDv/5j2YRpd7w5LtP5cAA=
-X-Google-Smtp-Source: ABdhPJy7iUitjcn5oppNAM26KLOKBXIs4/V+QaoDLcXzbV9JP4wn+ooEMLT/JRhoo9LdAuLJ9hjFRVfhWvvZWFHGdrk=
-X-Received: by 2002:a05:6902:120d:: with SMTP id s13mr201994ybu.498.1641448967089;
- Wed, 05 Jan 2022 22:02:47 -0800 (PST)
+        id S234379AbiAFGHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 01:07:12 -0500
+Received: from mga07.intel.com ([134.134.136.100]:19763 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229560AbiAFGHM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 01:07:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641449232; x=1672985232;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TavuDjlr6ehK951KTTK7qs2mHQh60DUn8Pis0q2fbio=;
+  b=IyF6opBv4wxA3IyUfhSh5rTjG61aQM0BsVy+wrfiGKvWcc29d9Fc/cmU
+   dxPDJqJzF26eFF1jBkhs5yJwf/egoTo+DJuwkXnRzXPqpeGF/rOoITJ+E
+   8nmRg/+HstpzyDX/2+IhgoBKy7prVzZazox+Oy+c2Qa9xTHbDlzgOs5KU
+   nom2QeGYm/dYMoICdX402a6ihHnH6WxCABfP8Ofqzg2pL4wavHpxsHAWX
+   u3+Ow701hI3cXWpSwJJ8Rd41UPHXq7jHBnSxu7pgSRiWLrEMfLqGn/6DI
+   T/+1S39A7n2lfWkvMYQYRF8YWQpulRylOYOVXeCo9fIxu1pN/CQ24U7TH
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="305951829"
+X-IronPort-AV: E=Sophos;i="5.88,266,1635231600"; 
+   d="scan'208";a="305951829"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 22:07:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,266,1635231600"; 
+   d="scan'208";a="611725351"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 05 Jan 2022 22:07:07 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5LvX-000HOj-7V; Thu, 06 Jan 2022 06:07:07 +0000
+Date:   Thu, 6 Jan 2022 14:06:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Charan Teja Reddy <quic_charante@quicinc.com>, hughd@google.com,
+        akpm@linux-foundation.org, willy@infradead.org, vbabka@suse.cz,
+        rientjes@google.com, mhocko@suse.com, surenb@google.com,
+        shakeelb@google.com, linux-mm@kvack.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] mm: shmem: implement POSIX_FADV_[WILL|DONT]NEED for
+ shmem
+Message-ID: <202201061353.4vrJlOAk-lkp@intel.com>
+References: <1641395025-7922-1-git-send-email-quic_charante@quicinc.com>
 MIME-Version: 1.0
-References: <CAFcO6XMpbL4OsWy1Pmsnvf8zut7wFXdvY_KofR-m0WK1Bgutpg@mail.gmail.com>
- <CAADnVQJK5mPOB7B4KBa6q1NRYVQx1Eya5mtNb6=L0p-BaCxX=w@mail.gmail.com>
- <CAFcO6XMxZqQo4_C7s0T2dv3JRn4Vq4RDFqJO6ZQFr6kZzsnx9g@mail.gmail.com> <CAADnVQ+HJnZOqGjXKXut51BUqi=+na4cj=PFaE35u9QwZDgeVQ@mail.gmail.com>
-In-Reply-To: <CAADnVQ+HJnZOqGjXKXut51BUqi=+na4cj=PFaE35u9QwZDgeVQ@mail.gmail.com>
-From:   butt3rflyh4ck <butterflyhuangxx@gmail.com>
-Date:   Thu, 6 Jan 2022 14:02:36 +0800
-Message-ID: <CAFcO6XP6+=S1C_m28JF_aA5az=WiswS-J3d8X2dBsYyQ4nwzkg@mail.gmail.com>
-Subject: Re: A slab-out-of-bounds Read bug in __htab_map_lookup_and_delete_batch
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1641395025-7922-1-git-send-email-quic_charante@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> >
-> > Hi, the attachment is a reproducer. Enjoy it.
->
-> Please do not top-post.
-> Forwarding a syzbot reproducer with zero effort to analyze
-> what's going on is kinda lame.
+Hi Charan,
 
-Hi, I am sorry for that.
+Thank you for the patch! Yet something to improve:
 
-> Maybe try harder and come up with a fix?
-> Or at least try git bisect and based on a commit find and
-> cc an author so it can be fixed (assuming issue still exists
-> in bpf-next) ?
->
+[auto build test ERROR on hnaz-mm/master]
 
-Thank you for your suggestions.
-I spent a few days on git bisect and locked the bad commit, the commit
-is d635a69dd4981cc51f90293f5f64268620ed1565.
-The commit is a Merge tag 'net-next-5.11' and Contains multiple
-commits, currently not locked to a single commit.
+url:    https://github.com/0day-ci/linux/commits/Charan-Teja-Reddy/mm-shmem-implement-POSIX_FADV_-WILL-DONT-NEED-for-shmem/20220105-230604
+base:   https://github.com/hnaz/linux-mm master
+config: hexagon-randconfig-r013-20220105 (https://download.01.org/0day-ci/archive/20220106/202201061353.4vrJlOAk-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/6bdb2636187d2f6cb78d6cdc05f2b7e0b79c750a
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Charan-Teja-Reddy/mm-shmem-implement-POSIX_FADV_-WILL-DONT-NEED-for-shmem/20220105-230604
+        git checkout 6bdb2636187d2f6cb78d6cdc05f2b7e0b79c750a
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> mm/shmem.c:4000:13: error: use of undeclared identifier 'shmem_fadvise'; did you mean 'shmem_file'?
+           .fadvise        = shmem_fadvise,
+                             ^~~~~~~~~~~~~
+                             shmem_file
+   include/linux/shmem_fs.h:118:20: note: 'shmem_file' declared here
+   static inline bool shmem_file(struct file *file)
+                      ^
+>> mm/shmem.c:4000:13: error: incompatible function pointer types initializing 'int (*)(struct file *, loff_t, loff_t, int)' (aka 'int (*)(struct file *, long long, long long, int)') with an expression of type 'bool (struct file *)' (aka '_Bool (struct file *)') [-Werror,-Wincompatible-function-pointer-types]
+           .fadvise        = shmem_fadvise,
+                             ^~~~~~~~~~~~~
+   2 errors generated.
 
 
-Regards,
- but3rflyh4ck.
+vim +4000 mm/shmem.c
 
---
-Active Defense Lab of Venustech
+  3987	
+  3988	static const struct file_operations shmem_file_operations = {
+  3989		.mmap		= shmem_mmap,
+  3990		.get_unmapped_area = shmem_get_unmapped_area,
+  3991	#ifdef CONFIG_TMPFS
+  3992		.llseek		= shmem_file_llseek,
+  3993		.read_iter	= shmem_file_read_iter,
+  3994		.write_iter	= generic_file_write_iter,
+  3995		.fsync		= noop_fsync,
+  3996		.splice_read	= generic_file_splice_read,
+  3997		.splice_write	= iter_file_splice_write,
+  3998		.fallocate	= shmem_fallocate,
+  3999	#endif
+> 4000		.fadvise	= shmem_fadvise,
+  4001	};
+  4002	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
