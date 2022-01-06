@@ -2,1083 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A761AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 23:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 23:47:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343654AbiAFXn7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 18:43:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57534 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343574AbiAFXnh (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 18:43:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641512616;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Xa7dxlntY/DpkYx7DfautLpI2nhSdeShR7fEHZvJHJg=;
-        b=aD3LzDNb4hq7gxLooNnIy7ILmNLaMrAPe/silLJqmetcxiGGVZOsTCn7qO4jdiZbcb3m2p
-        73nojKeD9zCRD4exq/A6miabp6uZl9gbPFXPM22o+vjX3j+8/OwquVMtA7TX8D4dQkQcgH
-        fqOjgV9kPPmMIP+syx7ivkxNl9anjiA=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-466-JRusDsT9OfuGXdhLlOTo_w-1; Thu, 06 Jan 2022 18:43:34 -0500
-X-MC-Unique: JRusDsT9OfuGXdhLlOTo_w-1
-Received: by mail-wm1-f72.google.com with SMTP id n3-20020a05600c3b8300b00345c3fc40b0so3722090wms.3
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 15:43:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Xa7dxlntY/DpkYx7DfautLpI2nhSdeShR7fEHZvJHJg=;
-        b=a25+RIhIY19byQFDFizWrGP84ZzGHvOeaiR1MvfjyI18YELaNe9neTYoRmlZ96xuOY
-         tP6/cWAS5Zm2vHzY2nzZ68xij6EYkf20Ie0B4v5GL+h5z3lok4NmkZ56S133jlx9WHQb
-         0smozbaFde4AFXANr3k18NiSGFgHqwgQulUNTgnOQLI2BHeNlfiLelXoQCs6lcMLbdqI
-         mqEOhWsyMAMzw/sDIQk0LEvg+DcEp+I47U3O0RKDGbxVIXtHP/IEoLkmEvD78YcVHCf2
-         ENg4MjfzBg3vF1TJCeeMHmNRe9TDxAvyzh07DNkvMzzivAtdNJL+11CCZUpoI3ZtTfba
-         RStw==
-X-Gm-Message-State: AOAM530nKoZcUJYnPuCxfV8rPLjwe62YxtBr+vOJs2EcBtWkHf7wcfxb
-        bdgDc2aucajC5vfoit36+d51RT2qVqMvX0n7hRQE5Cy74+Cnj1mCIyhOzjhGDyfH68mC7syDZT9
-        ndyddemz9DRCNNYbfRbmPHso=
-X-Received: by 2002:a05:600c:acf:: with SMTP id c15mr8618422wmr.7.1641512613231;
-        Thu, 06 Jan 2022 15:43:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwYi0IUIjY7uXXzRft+logWjKTsDcDZEyyzve+eSrxW4uDeB68hFATvGattYB/iBqHvsCOOsg==
-X-Received: by 2002:a05:600c:acf:: with SMTP id c15mr8618406wmr.7.1641512612878;
-        Thu, 06 Jan 2022 15:43:32 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id d18sm1278192wrn.102.2022.01.06.15.43.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 15:43:32 -0800 (PST)
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     mcgrof@kernel.org
-Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, allen.lkml@gmail.com
-Subject: [RFC PATCH v2 11/13] module: Move sysfs support into a separate file
-Date:   Thu,  6 Jan 2022 23:43:17 +0000
-Message-Id: <20220106234319.2067842-12-atomlin@redhat.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220106234319.2067842-1-atomlin@redhat.com>
-References: <20220106234319.2067842-1-atomlin@redhat.com>
+        id S245712AbiAFXrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 18:47:04 -0500
+Received: from mga11.intel.com ([192.55.52.93]:33091 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245659AbiAFXrD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 18:47:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641512823; x=1673048823;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=MlcIliNXnU/0YHbLtPYu2mdiKchWQF9DNScNEs7jEqQ=;
+  b=HTsmvTdC2EQNKRh/vHrHAZlX11a4WQ2tF13/IGv765CMauNysF4sdWDM
+   qrbJ8g3+iYbOmp0pXXALnqxZmqsYSIYgnK4tBGdG/phnpMPRUpx1hwvKz
+   H17sKJaAjFfNwQI49qdZR5nqxGFW+KfiAgF6iXzIVCuc+A8KSJTzKIlId
+   GpjH+em5js3XS7mFtSxZklTYLNffk8tzx2l4KBG1Gjv20nxoLzwYXc09S
+   hmLmnHpQ0dUtYSpx6l677pwdJUY+P8i8bN7DBR0Lw8AMxobSxbm5yB/Nj
+   1m8HpKqgr5/WowCtTD+EHK5oPCnCS8+EMAaDMWmq5eQ5hRNTxebKAs0Wf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="240315740"
+X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
+   d="scan'208";a="240315740"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 15:47:02 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
+   d="scan'208";a="763670111"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga005.fm.intel.com with ESMTP; 06 Jan 2022 15:47:02 -0800
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 6 Jan 2022 15:47:02 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Thu, 6 Jan 2022 15:47:02 -0800
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.48) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Thu, 6 Jan 2022 15:47:01 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SGxD93LkbcD1F7kp+KFctRc8ywVtOUB/KaGnRSiTj6yEghpJbEpxO2htCT/De1VZdc4vpQb/pNOx/g29wex1hSkryySQs2wNAine3Sy0MBI2MigEApuGsyYZhOyGcgrSnn+Ndstnrlw277Lp4mpl+XquPjw6oeYnnEYxYzpoUHGi9Vq1E0CVH9kVzgBKLxhMEgTzsqO7ZXWo5xwpwZRG60xc2tcPixo8PpAv7vjBowEbkX89V6bDfzLKR+VgSd5m3a9RMSXu+dEoDUcAqzBCLeZoc8ytKEujusP7SzGzuLloOmPh7DOJHRI6AdhhAZdsN8zVgSarUrcWSkT+GQElig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SgFa+N1PqoIiuRHeDHmt7NjWX9x0NYUSM1IKVxCiy5o=;
+ b=aoYk/lOrjW6XdzsbRcxgjf+Lm4prS34xrtp+53211pR6gl7B5v9/cbCMCHYZ36TOWXoU9LcRmPcBfDegoAMThm1kdn/72ZhjvS2etth+8sJJPOGbYC6sdUPxM0Elw8KsBQ8kaa1dxwXjzPEE28g7Hnf8y7tHSQqVvNwPQIqNqaEMI08cfknut8PZLVdp3RRjEr+yjPpV14E/8n6Xlq9VGZ+Rnpwbrq+kr+90gXTYJZlY3Rltg524zKA6k01EbIMKPQIDmYC58Kmwgk3VE3NfGUwt8nsk4FCB48pnFaCt10qul27kdPwAcMcV9FBkhzVZGMHpSDys+SESEx/DiyujcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
+ by BN6PR11MB1298.namprd11.prod.outlook.com (2603:10b6:404:48::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.10; Thu, 6 Jan
+ 2022 23:47:00 +0000
+Received: from BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::a113:192a:3201:1e0]) by BN0PR11MB5744.namprd11.prod.outlook.com
+ ([fe80::a113:192a:3201:1e0%6]) with mapi id 15.20.4867.010; Thu, 6 Jan 2022
+ 23:47:00 +0000
+Message-ID: <e10e4e8f-97a0-3fba-bd51-a2b14f40499e@intel.com>
+Date:   Thu, 6 Jan 2022 15:46:56 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.4.0
+Subject: Re: [PATCH v2 1/5] selftests/resctrl: Kill the child process created
+ by fork() when the SIGTERM signal comes
+Content-Language: en-US
+To:     Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>,
+        Fenghua Yu <fenghua.yu@intel.com>,
+        Shuah Khan <shuah@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>
+References: <20211213100154.180599-1-tan.shaopeng@jp.fujitsu.com>
+ <20211213100154.180599-2-tan.shaopeng@jp.fujitsu.com>
+From:   Reinette Chatre <reinette.chatre@intel.com>
+In-Reply-To: <20211213100154.180599-2-tan.shaopeng@jp.fujitsu.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR07CA0020.namprd07.prod.outlook.com
+ (2603:10b6:300:116::30) To BN0PR11MB5744.namprd11.prod.outlook.com
+ (2603:10b6:408:166::16)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 71443388-27f4-43d5-e771-08d9d16ed4b1
+X-MS-TrafficTypeDiagnostic: BN6PR11MB1298:EE_
+X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+X-Microsoft-Antispam-PRVS: <BN6PR11MB1298C5C58539F7F5CDF5008CF84C9@BN6PR11MB1298.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wcZOldSffMpcVml6jtqEiokTaEz+F3lhdd1B6GP2TsGkQRUSWCRM4YIeqm0W/J5rP0DitxeqECS7LuBb9NyHmhjZ0gJ4+tUVyvVJEwgEK+R7p7MF6Nngie+xy8fg+kxyrkaaeyKtRTgwJe6nBtezkYA5QC09rcrCpvPoTuE0Qv8MjmgT63ZMu9gQHb9kHcU76T1+q5svlfP3f3zEDaRjFxaVQYwYNcWvJmSWDN96SETYz00GK/g2cWGppw8k4XTya9d4qBteelLzjLXZWd6MU+b9poVljAP2465P9unNFbtZiUWyB44RJ8fWueuP0u5P2xKm9Du2CyZxPqJdIbcT8qunRIZURC22DuCISNejiD6NO3q5lVOcx0frmhh6d4Ceok8ZUBDRxRu4agxz8SxsjV9OWEu/04a5xZv6Y0Bp5x1tqv+OJnzk4OUVGnU1q1U8lFe4rchHCWYYFpWcW3RyLMrD8JYHzfyC3GQfa1JcexNexD6KJ643eGZw/v7ilCBfiOY424cCkfYeFfiG/+cgxiSKK/7aBkGt86MuYxLcEKvgl4TpZc4lexxD2DdteBGsqHx9bOYyKosgQask/cka0Po24V3XtTgfkbyN7rjO9OV95CvTA4u92AGwTRdZg/YSFgacXtVkiVWMwUUAIwD2DbviU9R3ahPjtlDXRudDVCazJ8guDGdwoDpDMLJEypvMPTa9fvhwF15TlLE+Ywy7gFrYOqKp3Y+w+XA59YZEjdgicHMFNKAVUNbzP1QplU/9
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(4326008)(36756003)(38100700002)(6666004)(53546011)(83380400001)(5660300002)(6486002)(31696002)(316002)(82960400001)(186003)(86362001)(110136005)(26005)(2616005)(6512007)(44832011)(66476007)(66556008)(66946007)(2906002)(31686004)(8676002)(8936002)(6506007)(508600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YXNMMmZzSHg0VzFWVVJnVWpDeEdjakZXclBhYlE2WWpaUHl1bnpLeHNYdHpE?=
+ =?utf-8?B?M1BGRy9LQXQrL0FtcndaQldwWC9oLzYrZnZaZXhndXJVQzFyV3QxWjVFaGRy?=
+ =?utf-8?B?ODFST015T1l4MmtJR3ZkZEVrclFwQ2xxNnJNZldIbDlTdzRwRjROSm1PQnZt?=
+ =?utf-8?B?UFh6LzVLVHJ1R3pZT2JxWnJ4WU5SK0hJWWk4amZhSWs3Z2hkYzlWWTVoaW4z?=
+ =?utf-8?B?UWhDenZQY09WeFBkSmlJMVl6UklKeWpHZTJpclBCRnNPSFg3clpVVEdaRmd5?=
+ =?utf-8?B?bEVOZ1NQWGxlaWprSkcxT1gvS24vNHZGRTBia0JmSnhvYnJML1hjNUt4d0o0?=
+ =?utf-8?B?ODM2WFliSVVORFMwdE5UZ0tPNXlYMUh5aTc3anBrV1VHbE04NjIxUFd0S0N3?=
+ =?utf-8?B?eHpDUFB0M3JOVm5MSGNIb2FnRmt5RFlqZFgyekhPZWcxVmQ1Wm5QcnRXU3NM?=
+ =?utf-8?B?ZDk1UW16QnMyUUhkMEZmdFJFYU5sVHpDcTlIWUI4STRlZ3J5MVhHRUVTMjBL?=
+ =?utf-8?B?V2RkOVdKMUcvQS9wMlRITWRyQTZJaXk1SUd3a2tITGN1bUZseDZkb0txOVUz?=
+ =?utf-8?B?NGlFQng0RnhMMUJLUkJHaFJSbGcxQnB0MThsT1dyMkEvWnFkTzFoQkV5cG9X?=
+ =?utf-8?B?QU83NzYxNUhVVHpibXJEcEpYUXl6OFlXV2FGK0pZMUFXV0wwRWxUU2p1SGJU?=
+ =?utf-8?B?Um9oa3ppTVBLZmt4OEI1MkNOTm1IQnB6Z2UybThyWCtFMlhTWkxYdUo4VnlE?=
+ =?utf-8?B?S296ZUNIdkIwZGtiakswU0dzMHBjajdoUnZiNGh0TTJhc3Y1RlFSRklXZWtu?=
+ =?utf-8?B?cEl6SE1UMEl2Y3IxNittQVdVNW8yUnBTalczQVB5MlpNWGxTeFlQZjNIRVQx?=
+ =?utf-8?B?WXJVSDdJdmxzZW1sUWk4WStmSkF1OEVJUEljNUEycDZrQ3FEbGgxdVBtNXUw?=
+ =?utf-8?B?Zk15Qk9SNDd3UzdwV0V1OElFOTZwZ2xjcXpNNHhuOWdBTHhMSExNeWQ5K0JY?=
+ =?utf-8?B?RW9KSDV4UWhmSlB4YjZMZFphL29JZDl0Z2dqRGNCK2hMQ1o0LzR1ODV0Mzd2?=
+ =?utf-8?B?b082a0h2ZTZPdDBPc2UyMG5wMmxnNURzT2Z2ODNNWlJtdFFveUVMQStTZk5D?=
+ =?utf-8?B?VWpxTnRXMDJta2MyakNKQXI1NzRHRldUaHhGdHpTa0ZDSTJwcEpKd2tyVUVl?=
+ =?utf-8?B?RVNMcUdoRjBTcUFaTCtaRlF5aldBcVNPN2ZsblF0MDhKcVFmODdST2dWTnJX?=
+ =?utf-8?B?b0RGbW1zTjljU04rWTd3QVh1YytBZGJTOFZ2S3FYMjF0YTF0bm5WZEZObmMv?=
+ =?utf-8?B?ZkFxak04RTZFVFNLNlZmU0VNWXpldW9COGI2NTBNNkNXcXFMRVFyaHc4MjFR?=
+ =?utf-8?B?ZXVQMVR3MnJIVFNGRlhuVE9Tbm9jeC93Rm82R0pLNXNVSkd4b254S2FvK005?=
+ =?utf-8?B?RmcyOFdiR2tjaVRZSUZOUDcxU3NTVnFHMGhHdkxuVmJUQTZyNG50UHlNSCtz?=
+ =?utf-8?B?NnVIb0MwbExOM3dDazBobzRNZWl2OHZsVm9UZmMxR3l1cDFONUVlNWdXakI3?=
+ =?utf-8?B?aVgycWdSTGo3Y3d3KzZGaFl5SWpLcHJNeWY3ZWN5NEdNR0Y3NGRJK1pqalZJ?=
+ =?utf-8?B?dmIzZERPQVVWWC9BQngydWxKbkdXS09ZOG9xN0dzVEpyKzJZTDNzMyszOE1i?=
+ =?utf-8?B?QlJkYXZlMzV2V3lyd3BjdUxtUnRhckpXdkl1NzRkS0drREJOdkd2Nm93amJu?=
+ =?utf-8?B?bjRCUzUwU2lQV1FwMVJjT09LeGFxdEx1VW9RRjZZTGRzanlJUHJTTGw1dmlx?=
+ =?utf-8?B?aTg3R3J6S3pUdkh3N3NDaWtPa3RMeVdtcjZTM2FXS2hHM2tKUjcxcEdURGtp?=
+ =?utf-8?B?cXp5eFppL0tNazdnTnl6SFZSTkM4akkrWWpHdnhDSzJqMWhsRS9yNUpTRzdI?=
+ =?utf-8?B?UnNyR0tMK0hRTlJuZW9CWXM1SjBYU0ZVTHVDblFiekNXcHk3eHdrQjZuQ2M2?=
+ =?utf-8?B?bnV5UzJKMFlvdWJ2WXVDa0x1dllsSVMrY2ZPN3lsNHR0NldRZDNOK1F5amJs?=
+ =?utf-8?B?YU82SnArbkMvVjdQRE9na2kvRkUxaGlWQVFqWmVkaDhWUS95WVkxaTU4b3Bo?=
+ =?utf-8?B?NG1iTlVySGlmcjdQaWY1amVsT2puN25MdEZwTGQ5aFJ2WndVUkNWZi9idytS?=
+ =?utf-8?B?VUF0QmFtUnN3b3gxck1VdEY1OTd0WDQyV3pva1lOWWNjWE5pSGc3dUJIajlo?=
+ =?utf-8?Q?QvL2RJau49JXFpzoPliY8Zq5JSnYrXdH05NA0I5Prk=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71443388-27f4-43d5-e771-08d9d16ed4b1
+X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 23:46:59.9046
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: evb6g1qmz8Yb8NRqXfMXtmg6fK2nqigz42VNMGgcLiMV073XfU+VTeObmCrF5WuPAdGj4f8rUSebZphTbsWMPF9YFhQcWhO+WuVDZw0riAU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1298
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-No functional change.
+Hi Shaopeng Tan, 
 
-This patch migrates module sysfs support out of core code into
-kernel/module/sysfs.c. In addition simple code refactoring to
-make this possible.
+On 12/13/2021 2:01 AM, Shaopeng Tan wrote:
+> In kselftest framework there is a limited time for each sub test,
+> when the time limit comes SIGTEM signal will be sent to sub test by
 
-Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
----
- kernel/module/Makefile   |   1 +
- kernel/module/internal.h |  20 ++
- kernel/module/main.c     | 462 +--------------------------------------
- kernel/module/procfs.c   |   3 +
- kernel/module/sysfs.c    | 426 ++++++++++++++++++++++++++++++++++++
- 5 files changed, 455 insertions(+), 457 deletions(-)
- create mode 100644 kernel/module/sysfs.c
+SIGTEM -> SIGTERM ?
 
-diff --git a/kernel/module/Makefile b/kernel/module/Makefile
-index cba3e608b4ca..917910302ac0 100644
---- a/kernel/module/Makefile
-+++ b/kernel/module/Makefile
-@@ -13,3 +13,4 @@ obj-$(CONFIG_STRICT_MODULE_RWX) += strict_rwx.o
- obj-$(CONFIG_DEBUG_KMEMLEAK) += debug_kmemleak.o
- obj-$(CONFIG_KALLSYMS) += kallsyms.o
- obj-$(CONFIG_PROC_FS) += procfs.o
-+obj-$(CONFIG_SYSFS) += sysfs.o
-diff --git a/kernel/module/internal.h b/kernel/module/internal.h
-index 119d42c304a1..4d81eb1f58ef 100644
---- a/kernel/module/internal.h
-+++ b/kernel/module/internal.h
-@@ -99,3 +99,23 @@ static inline char *find_kallsyms_symbol(struct module *mod, unsigned long addr,
- 	return NULL;
- }
- #endif /* CONFIG_KALLSYMS */
-+
-+#ifdef CONFIG_SYSFS
-+extern int mod_sysfs_setup(struct module *mod, const struct load_info *info, struct kernel_param *kparam, unsigned int num_params);
-+extern void mod_sysfs_fini(struct module *mod);
-+extern void module_remove_modinfo_attrs(struct module *mod, int end);
-+extern void del_usage_links(struct module *mod);
-+extern void init_param_lock(struct module *mod);
-+#else /* !CONFIG_SYSFS */
-+static int mod_sysfs_setup(struct module *mod,
-+                          const struct load_info *info,
-+                          struct kernel_param *kparam,
-+                          unsigned int num_params)
-+{
-+       return 0;
-+}
-+static inline void mod_sysfs_fini(struct module *mod) { }
-+static inline void module_remove_modinfo_attrs(struct module *mod, int end) { }
-+static inline void del_usage_links(struct module *mod) { }
-+static inline void init_param_lock(struct module *mod) { }
-+#endif /* CONFIG_SYSFS */
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 2da580c7b069..354fb2697188 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -13,9 +13,7 @@
- #include <linux/trace_events.h>
- #include <linux/init.h>
- #include <linux/kallsyms.h>
--#include <linux/file.h>
- #include <linux/fs.h>
--#include <linux/sysfs.h>
- #include <linux/kernel.h>
- #include <linux/kernel_read_file.h>
- #include <linux/slab.h>
-@@ -801,7 +799,7 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
- 	return ret;
- }
- 
--static inline void print_unload_info(struct seq_file *m, struct module *mod)
-+inline void print_unload_info(struct seq_file *m, struct module *mod)
- {
- 	struct module_use *use;
- 	int printed_something = 0;
-@@ -1017,7 +1015,7 @@ static ssize_t show_taint(struct module_attribute *mattr,
- static struct module_attribute modinfo_taint =
- 	__ATTR(taint, 0444, show_taint, NULL);
- 
--static struct module_attribute *modinfo_attrs[] = {
-+struct module_attribute *modinfo_attrs[] = {
- 	&module_uevent,
- 	&modinfo_version,
- 	&modinfo_srcversion,
-@@ -1031,6 +1029,8 @@ static struct module_attribute *modinfo_attrs[] = {
- 	NULL,
- };
- 
-+size_t modinfo_attrs_count = ARRAY_SIZE(modinfo_attrs);
-+
- static const char vermagic[] = VERMAGIC_STRING;
- 
- static int try_to_force_load(struct module *mod, const char *reason)
-@@ -1281,458 +1281,6 @@ resolve_symbol_wait(struct module *mod,
- 	return ksym;
- }
- 
--/*
-- * /sys/module/foo/sections stuff
-- * J. Corbet <corbet@lwn.net>
-- */
--#ifdef CONFIG_SYSFS
--
--#ifdef CONFIG_KALLSYMS
--struct module_sect_attr {
--	struct bin_attribute battr;
--	unsigned long address;
--};
--
--struct module_sect_attrs {
--	struct attribute_group grp;
--	unsigned int nsections;
--	struct module_sect_attr attrs[];
--};
--
--static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
--				struct bin_attribute *battr,
--				char *buf, loff_t pos, size_t count)
--{
--	struct module_sect_attr *sattr =
--		container_of(battr, struct module_sect_attr, battr);
--	char bounce[MODULE_SECT_READ_SIZE + 1];
--	size_t wrote;
--
--	if (pos != 0)
--		return -EINVAL;
--
--	/*
--	 * Since we're a binary read handler, we must account for the
--	 * trailing NUL byte that sprintf will write: if "buf" is
--	 * too small to hold the NUL, or the NUL is exactly the last
--	 * byte, the read will look like it got truncated by one byte.
--	 * Since there is no way to ask sprintf nicely to not write
--	 * the NUL, we have to use a bounce buffer.
--	 */
--	wrote = scnprintf(bounce, sizeof(bounce), "0x%px\n",
--			 kallsyms_show_value(file->f_cred)
--				? (void *)sattr->address : NULL);
--	count = min(count, wrote);
--	memcpy(buf, bounce, count);
--
--	return count;
--}
--
--static void free_sect_attrs(struct module_sect_attrs *sect_attrs)
--{
--	unsigned int section;
--
--	for (section = 0; section < sect_attrs->nsections; section++)
--		kfree(sect_attrs->attrs[section].battr.attr.name);
--	kfree(sect_attrs);
--}
--
--static void add_sect_attrs(struct module *mod, const struct load_info *info)
--{
--	unsigned int nloaded = 0, i, size[2];
--	struct module_sect_attrs *sect_attrs;
--	struct module_sect_attr *sattr;
--	struct bin_attribute **gattr;
--
--	/* Count loaded sections and allocate structures */
--	for (i = 0; i < info->hdr->e_shnum; i++)
--		if (!sect_empty(&info->sechdrs[i]))
--			nloaded++;
--	size[0] = ALIGN(struct_size(sect_attrs, attrs, nloaded),
--			sizeof(sect_attrs->grp.bin_attrs[0]));
--	size[1] = (nloaded + 1) * sizeof(sect_attrs->grp.bin_attrs[0]);
--	sect_attrs = kzalloc(size[0] + size[1], GFP_KERNEL);
--	if (sect_attrs == NULL)
--		return;
--
--	/* Setup section attributes. */
--	sect_attrs->grp.name = "sections";
--	sect_attrs->grp.bin_attrs = (void *)sect_attrs + size[0];
--
--	sect_attrs->nsections = 0;
--	sattr = &sect_attrs->attrs[0];
--	gattr = &sect_attrs->grp.bin_attrs[0];
--	for (i = 0; i < info->hdr->e_shnum; i++) {
--		Elf_Shdr *sec = &info->sechdrs[i];
--		if (sect_empty(sec))
--			continue;
--		sysfs_bin_attr_init(&sattr->battr);
--		sattr->address = sec->sh_addr;
--		sattr->battr.attr.name =
--			kstrdup(info->secstrings + sec->sh_name, GFP_KERNEL);
--		if (sattr->battr.attr.name == NULL)
--			goto out;
--		sect_attrs->nsections++;
--		sattr->battr.read = module_sect_read;
--		sattr->battr.size = MODULE_SECT_READ_SIZE;
--		sattr->battr.attr.mode = 0400;
--		*(gattr++) = &(sattr++)->battr;
--	}
--	*gattr = NULL;
--
--	if (sysfs_create_group(&mod->mkobj.kobj, &sect_attrs->grp))
--		goto out;
--
--	mod->sect_attrs = sect_attrs;
--	return;
--  out:
--	free_sect_attrs(sect_attrs);
--}
--
--static void remove_sect_attrs(struct module *mod)
--{
--	if (mod->sect_attrs) {
--		sysfs_remove_group(&mod->mkobj.kobj,
--				   &mod->sect_attrs->grp);
--		/*
--		 * We are positive that no one is using any sect attrs
--		 * at this point.  Deallocate immediately.
--		 */
--		free_sect_attrs(mod->sect_attrs);
--		mod->sect_attrs = NULL;
--	}
--}
--
--/*
-- * /sys/module/foo/notes/.section.name gives contents of SHT_NOTE sections.
-- */
--
--struct module_notes_attrs {
--	struct kobject *dir;
--	unsigned int notes;
--	struct bin_attribute attrs[];
--};
--
--static ssize_t module_notes_read(struct file *filp, struct kobject *kobj,
--				 struct bin_attribute *bin_attr,
--				 char *buf, loff_t pos, size_t count)
--{
--	/*
--	 * The caller checked the pos and count against our size.
--	 */
--	memcpy(buf, bin_attr->private + pos, count);
--	return count;
--}
--
--static void free_notes_attrs(struct module_notes_attrs *notes_attrs,
--			     unsigned int i)
--{
--	if (notes_attrs->dir) {
--		while (i-- > 0)
--			sysfs_remove_bin_file(notes_attrs->dir,
--					      &notes_attrs->attrs[i]);
--		kobject_put(notes_attrs->dir);
--	}
--	kfree(notes_attrs);
--}
--
--static void add_notes_attrs(struct module *mod, const struct load_info *info)
--{
--	unsigned int notes, loaded, i;
--	struct module_notes_attrs *notes_attrs;
--	struct bin_attribute *nattr;
--
--	/* failed to create section attributes, so can't create notes */
--	if (!mod->sect_attrs)
--		return;
--
--	/* Count notes sections and allocate structures.  */
--	notes = 0;
--	for (i = 0; i < info->hdr->e_shnum; i++)
--		if (!sect_empty(&info->sechdrs[i]) &&
--		    (info->sechdrs[i].sh_type == SHT_NOTE))
--			++notes;
--
--	if (notes == 0)
--		return;
--
--	notes_attrs = kzalloc(struct_size(notes_attrs, attrs, notes),
--			      GFP_KERNEL);
--	if (notes_attrs == NULL)
--		return;
--
--	notes_attrs->notes = notes;
--	nattr = &notes_attrs->attrs[0];
--	for (loaded = i = 0; i < info->hdr->e_shnum; ++i) {
--		if (sect_empty(&info->sechdrs[i]))
--			continue;
--		if (info->sechdrs[i].sh_type == SHT_NOTE) {
--			sysfs_bin_attr_init(nattr);
--			nattr->attr.name = mod->sect_attrs->attrs[loaded].battr.attr.name;
--			nattr->attr.mode = S_IRUGO;
--			nattr->size = info->sechdrs[i].sh_size;
--			nattr->private = (void *) info->sechdrs[i].sh_addr;
--			nattr->read = module_notes_read;
--			++nattr;
--		}
--		++loaded;
--	}
--
--	notes_attrs->dir = kobject_create_and_add("notes", &mod->mkobj.kobj);
--	if (!notes_attrs->dir)
--		goto out;
--
--	for (i = 0; i < notes; ++i)
--		if (sysfs_create_bin_file(notes_attrs->dir,
--					  &notes_attrs->attrs[i]))
--			goto out;
--
--	mod->notes_attrs = notes_attrs;
--	return;
--
--  out:
--	free_notes_attrs(notes_attrs, i);
--}
--
--static void remove_notes_attrs(struct module *mod)
--{
--	if (mod->notes_attrs)
--		free_notes_attrs(mod->notes_attrs, mod->notes_attrs->notes);
--}
--
--#else
--
--static inline void add_sect_attrs(struct module *mod,
--				  const struct load_info *info)
--{
--}
--
--static inline void remove_sect_attrs(struct module *mod)
--{
--}
--
--static inline void add_notes_attrs(struct module *mod,
--				   const struct load_info *info)
--{
--}
--
--static inline void remove_notes_attrs(struct module *mod)
--{
--}
--#endif /* CONFIG_KALLSYMS */
--
--static void del_usage_links(struct module *mod)
--{
--#ifdef CONFIG_MODULE_UNLOAD
--	struct module_use *use;
--
--	mutex_lock(&module_mutex);
--	list_for_each_entry(use, &mod->target_list, target_list)
--		sysfs_remove_link(use->target->holders_dir, mod->name);
--	mutex_unlock(&module_mutex);
--#endif
--}
--
--static int add_usage_links(struct module *mod)
--{
--	int ret = 0;
--#ifdef CONFIG_MODULE_UNLOAD
--	struct module_use *use;
--
--	mutex_lock(&module_mutex);
--	list_for_each_entry(use, &mod->target_list, target_list) {
--		ret = sysfs_create_link(use->target->holders_dir,
--					&mod->mkobj.kobj, mod->name);
--		if (ret)
--			break;
--	}
--	mutex_unlock(&module_mutex);
--	if (ret)
--		del_usage_links(mod);
--#endif
--	return ret;
--}
--
--static void module_remove_modinfo_attrs(struct module *mod, int end);
--
--static int module_add_modinfo_attrs(struct module *mod)
--{
--	struct module_attribute *attr;
--	struct module_attribute *temp_attr;
--	int error = 0;
--	int i;
--
--	mod->modinfo_attrs = kzalloc((sizeof(struct module_attribute) *
--					(ARRAY_SIZE(modinfo_attrs) + 1)),
--					GFP_KERNEL);
--	if (!mod->modinfo_attrs)
--		return -ENOMEM;
--
--	temp_attr = mod->modinfo_attrs;
--	for (i = 0; (attr = modinfo_attrs[i]); i++) {
--		if (!attr->test || attr->test(mod)) {
--			memcpy(temp_attr, attr, sizeof(*temp_attr));
--			sysfs_attr_init(&temp_attr->attr);
--			error = sysfs_create_file(&mod->mkobj.kobj,
--					&temp_attr->attr);
--			if (error)
--				goto error_out;
--			++temp_attr;
--		}
--	}
--
--	return 0;
--
--error_out:
--	if (i > 0)
--		module_remove_modinfo_attrs(mod, --i);
--	else
--		kfree(mod->modinfo_attrs);
--	return error;
--}
--
--static void module_remove_modinfo_attrs(struct module *mod, int end)
--{
--	struct module_attribute *attr;
--	int i;
--
--	for (i = 0; (attr = &mod->modinfo_attrs[i]); i++) {
--		if (end >= 0 && i > end)
--			break;
--		/* pick a field to test for end of list */
--		if (!attr->attr.name)
--			break;
--		sysfs_remove_file(&mod->mkobj.kobj, &attr->attr);
--		if (attr->free)
--			attr->free(mod);
--	}
--	kfree(mod->modinfo_attrs);
--}
--
--static void mod_kobject_put(struct module *mod)
--{
--	DECLARE_COMPLETION_ONSTACK(c);
--	mod->mkobj.kobj_completion = &c;
--	kobject_put(&mod->mkobj.kobj);
--	wait_for_completion(&c);
--}
--
--static int mod_sysfs_init(struct module *mod)
--{
--	int err;
--	struct kobject *kobj;
--
--	if (!module_sysfs_initialized) {
--		pr_err("%s: module sysfs not initialized\n", mod->name);
--		err = -EINVAL;
--		goto out;
--	}
--
--	kobj = kset_find_obj(module_kset, mod->name);
--	if (kobj) {
--		pr_err("%s: module is already loaded\n", mod->name);
--		kobject_put(kobj);
--		err = -EINVAL;
--		goto out;
--	}
--
--	mod->mkobj.mod = mod;
--
--	memset(&mod->mkobj.kobj, 0, sizeof(mod->mkobj.kobj));
--	mod->mkobj.kobj.kset = module_kset;
--	err = kobject_init_and_add(&mod->mkobj.kobj, &module_ktype, NULL,
--				   "%s", mod->name);
--	if (err)
--		mod_kobject_put(mod);
--
--out:
--	return err;
--}
--
--static int mod_sysfs_setup(struct module *mod,
--			   const struct load_info *info,
--			   struct kernel_param *kparam,
--			   unsigned int num_params)
--{
--	int err;
--
--	err = mod_sysfs_init(mod);
--	if (err)
--		goto out;
--
--	mod->holders_dir = kobject_create_and_add("holders", &mod->mkobj.kobj);
--	if (!mod->holders_dir) {
--		err = -ENOMEM;
--		goto out_unreg;
--	}
--
--	err = module_param_sysfs_setup(mod, kparam, num_params);
--	if (err)
--		goto out_unreg_holders;
--
--	err = module_add_modinfo_attrs(mod);
--	if (err)
--		goto out_unreg_param;
--
--	err = add_usage_links(mod);
--	if (err)
--		goto out_unreg_modinfo_attrs;
--
--	add_sect_attrs(mod, info);
--	add_notes_attrs(mod, info);
--
--	return 0;
--
--out_unreg_modinfo_attrs:
--	module_remove_modinfo_attrs(mod, -1);
--out_unreg_param:
--	module_param_sysfs_remove(mod);
--out_unreg_holders:
--	kobject_put(mod->holders_dir);
--out_unreg:
--	mod_kobject_put(mod);
--out:
--	return err;
--}
--
--static void mod_sysfs_fini(struct module *mod)
--{
--	remove_notes_attrs(mod);
--	remove_sect_attrs(mod);
--	mod_kobject_put(mod);
--}
--
--static void init_param_lock(struct module *mod)
--{
--	mutex_init(&mod->param_lock);
--}
--#else /* !CONFIG_SYSFS */
--
--static int mod_sysfs_setup(struct module *mod,
--			   const struct load_info *info,
--			   struct kernel_param *kparam,
--			   unsigned int num_params)
--{
--	return 0;
--}
--
--static void mod_sysfs_fini(struct module *mod)
--{
--}
--
--static void module_remove_modinfo_attrs(struct module *mod, int end)
--{
--}
--
--static void del_usage_links(struct module *mod)
--{
--}
--
--static void init_param_lock(struct module *mod)
--{
--}
--#endif /* CONFIG_SYSFS */
--
- static void mod_sysfs_teardown(struct module *mod)
- {
- 	del_usage_links(mod);
-@@ -3505,7 +3053,7 @@ static void cfi_cleanup(struct module *mod)
- }
- 
- /* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
--static char *module_flags(struct module *mod, char *buf)
-+char *module_flags(struct module *mod, char *buf)
- {
- 	int bx = 0;
- 
-diff --git a/kernel/module/procfs.c b/kernel/module/procfs.c
-index 98d898250475..365d5e52ac23 100644
---- a/kernel/module/procfs.c
-+++ b/kernel/module/procfs.c
-@@ -12,6 +12,9 @@
- #include <linux/proc_fs.h>
- #include "internal.h"
- 
-+extern void print_unload_info(struct seq_file *m, struct module *mod);
-+extern char *module_flags(struct module *mod, char *buf);
-+
- /* Called by the /proc file system to return a list of modules. */
- static void *m_start(struct seq_file *m, loff_t *pos)
- {
-diff --git a/kernel/module/sysfs.c b/kernel/module/sysfs.c
-new file mode 100644
-index 000000000000..1cd91c214b72
---- /dev/null
-+++ b/kernel/module/sysfs.c
-@@ -0,0 +1,426 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * kernel/module/sysfs.c - module sysfs support
-+ *
-+ * Copyright (C) 2008 Rusty Russell
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/kernel.h>
-+#include <linux/fs.h>
-+#include <linux/sysfs.h>
-+#include <linux/slab.h>
-+#include <linux/kallsyms.h>
-+#include <linux/mutex.h>
-+#include "internal.h"
-+
-+/*
-+ * /sys/module/foo/sections stuff
-+ * J. Corbet <corbet@lwn.net>
-+ */
-+#ifdef CONFIG_KALLSYMS
-+struct module_sect_attr {
-+	struct bin_attribute battr;
-+	unsigned long address;
-+};
-+
-+struct module_sect_attrs {
-+	struct attribute_group grp;
-+	unsigned int nsections;
-+	struct module_sect_attr attrs[];
-+};
-+
-+static ssize_t module_sect_read(struct file *file, struct kobject *kobj,
-+				struct bin_attribute *battr,
-+				char *buf, loff_t pos, size_t count)
-+{
-+	struct module_sect_attr *sattr =
-+		container_of(battr, struct module_sect_attr, battr);
-+	char bounce[MODULE_SECT_READ_SIZE + 1];
-+	size_t wrote;
-+
-+	if (pos != 0)
-+		return -EINVAL;
-+
-+	/*
-+	 * Since we're a binary read handler, we must account for the
-+	 * trailing NUL byte that sprintf will write: if "buf" is
-+	 * too small to hold the NUL, or the NUL is exactly the last
-+	 * byte, the read will look like it got truncated by one byte.
-+	 * Since there is no way to ask sprintf nicely to not write
-+	 * the NUL, we have to use a bounce buffer.
-+	 */
-+	wrote = scnprintf(bounce, sizeof(bounce), "0x%px\n",
-+			 kallsyms_show_value(file->f_cred)
-+				? (void *)sattr->address : NULL);
-+	count = min(count, wrote);
-+	memcpy(buf, bounce, count);
-+
-+	return count;
-+}
-+
-+static void free_sect_attrs(struct module_sect_attrs *sect_attrs)
-+{
-+	unsigned int section;
-+
-+	for (section = 0; section < sect_attrs->nsections; section++)
-+		kfree(sect_attrs->attrs[section].battr.attr.name);
-+	kfree(sect_attrs);
-+}
-+
-+static void add_sect_attrs(struct module *mod, const struct load_info *info)
-+{
-+	unsigned int nloaded = 0, i, size[2];
-+	struct module_sect_attrs *sect_attrs;
-+	struct module_sect_attr *sattr;
-+	struct bin_attribute **gattr;
-+
-+	/* Count loaded sections and allocate structures */
-+	for (i = 0; i < info->hdr->e_shnum; i++)
-+		if (!sect_empty(&info->sechdrs[i]))
-+			nloaded++;
-+	size[0] = ALIGN(struct_size(sect_attrs, attrs, nloaded),
-+			sizeof(sect_attrs->grp.bin_attrs[0]));
-+	size[1] = (nloaded + 1) * sizeof(sect_attrs->grp.bin_attrs[0]);
-+	sect_attrs = kzalloc(size[0] + size[1], GFP_KERNEL);
-+	if (sect_attrs == NULL)
-+		return;
-+
-+	/* Setup section attributes. */
-+	sect_attrs->grp.name = "sections";
-+	sect_attrs->grp.bin_attrs = (void *)sect_attrs + size[0];
-+
-+	sect_attrs->nsections = 0;
-+	sattr = &sect_attrs->attrs[0];
-+	gattr = &sect_attrs->grp.bin_attrs[0];
-+	for (i = 0; i < info->hdr->e_shnum; i++) {
-+		Elf_Shdr *sec = &info->sechdrs[i];
-+		if (sect_empty(sec))
-+			continue;
-+		sysfs_bin_attr_init(&sattr->battr);
-+		sattr->address = sec->sh_addr;
-+		sattr->battr.attr.name =
-+			kstrdup(info->secstrings + sec->sh_name, GFP_KERNEL);
-+		if (sattr->battr.attr.name == NULL)
-+			goto out;
-+		sect_attrs->nsections++;
-+		sattr->battr.read = module_sect_read;
-+		sattr->battr.size = MODULE_SECT_READ_SIZE;
-+		sattr->battr.attr.mode = 0400;
-+		*(gattr++) = &(sattr++)->battr;
-+	}
-+	*gattr = NULL;
-+
-+	if (sysfs_create_group(&mod->mkobj.kobj, &sect_attrs->grp))
-+		goto out;
-+
-+	mod->sect_attrs = sect_attrs;
-+	return;
-+  out:
-+	free_sect_attrs(sect_attrs);
-+}
-+
-+static void remove_sect_attrs(struct module *mod)
-+{
-+	if (mod->sect_attrs) {
-+		sysfs_remove_group(&mod->mkobj.kobj,
-+				   &mod->sect_attrs->grp);
-+		/*
-+		 * We are positive that no one is using any sect attrs
-+		 * at this point.  Deallocate immediately.
-+		 */
-+		free_sect_attrs(mod->sect_attrs);
-+		mod->sect_attrs = NULL;
-+	}
-+}
-+
-+/*
-+ * /sys/module/foo/notes/.section.name gives contents of SHT_NOTE sections.
-+ */
-+
-+struct module_notes_attrs {
-+	struct kobject *dir;
-+	unsigned int notes;
-+	struct bin_attribute attrs[];
-+};
-+
-+static ssize_t module_notes_read(struct file *filp, struct kobject *kobj,
-+				 struct bin_attribute *bin_attr,
-+				 char *buf, loff_t pos, size_t count)
-+{
-+	/*
-+	 * The caller checked the pos and count against our size.
-+	 */
-+	memcpy(buf, bin_attr->private + pos, count);
-+	return count;
-+}
-+
-+static void free_notes_attrs(struct module_notes_attrs *notes_attrs,
-+			     unsigned int i)
-+{
-+	if (notes_attrs->dir) {
-+		while (i-- > 0)
-+			sysfs_remove_bin_file(notes_attrs->dir,
-+					      &notes_attrs->attrs[i]);
-+		kobject_put(notes_attrs->dir);
-+	}
-+	kfree(notes_attrs);
-+}
-+
-+static void add_notes_attrs(struct module *mod, const struct load_info *info)
-+{
-+	unsigned int notes, loaded, i;
-+	struct module_notes_attrs *notes_attrs;
-+	struct bin_attribute *nattr;
-+
-+	/* failed to create section attributes, so can't create notes */
-+	if (!mod->sect_attrs)
-+		return;
-+
-+	/* Count notes sections and allocate structures.  */
-+	notes = 0;
-+	for (i = 0; i < info->hdr->e_shnum; i++)
-+		if (!sect_empty(&info->sechdrs[i]) &&
-+		    (info->sechdrs[i].sh_type == SHT_NOTE))
-+			++notes;
-+
-+	if (notes == 0)
-+		return;
-+
-+	notes_attrs = kzalloc(struct_size(notes_attrs, attrs, notes),
-+			      GFP_KERNEL);
-+	if (notes_attrs == NULL)
-+		return;
-+
-+	notes_attrs->notes = notes;
-+	nattr = &notes_attrs->attrs[0];
-+	for (loaded = i = 0; i < info->hdr->e_shnum; ++i) {
-+		if (sect_empty(&info->sechdrs[i]))
-+			continue;
-+		if (info->sechdrs[i].sh_type == SHT_NOTE) {
-+			sysfs_bin_attr_init(nattr);
-+			nattr->attr.name = mod->sect_attrs->attrs[loaded].battr.attr.name;
-+			nattr->attr.mode = S_IRUGO;
-+			nattr->size = info->sechdrs[i].sh_size;
-+			nattr->private = (void *) info->sechdrs[i].sh_addr;
-+			nattr->read = module_notes_read;
-+			++nattr;
-+		}
-+		++loaded;
-+	}
-+
-+	notes_attrs->dir = kobject_create_and_add("notes", &mod->mkobj.kobj);
-+	if (!notes_attrs->dir)
-+		goto out;
-+
-+	for (i = 0; i < notes; ++i)
-+		if (sysfs_create_bin_file(notes_attrs->dir,
-+					  &notes_attrs->attrs[i]))
-+			goto out;
-+
-+	mod->notes_attrs = notes_attrs;
-+	return;
-+
-+  out:
-+	free_notes_attrs(notes_attrs, i);
-+}
-+
-+static void remove_notes_attrs(struct module *mod)
-+{
-+	if (mod->notes_attrs)
-+		free_notes_attrs(mod->notes_attrs, mod->notes_attrs->notes);
-+}
-+
-+#else /* !CONFIG_KALLSYMS */
-+static inline void add_sect_attrs(struct module *mod, const struct load_info *info) { }
-+static inline void remove_sect_attrs(struct module *mod) { }
-+static inline void add_notes_attrs(struct module *mod, const struct load_info *info) { }
-+static inline void remove_notes_attrs(struct module *mod) { }
-+#endif /* CONFIG_KALLSYMS */
-+
-+void del_usage_links(struct module *mod)
-+{
-+#ifdef CONFIG_MODULE_UNLOAD
-+	struct module_use *use;
-+
-+	mutex_lock(&module_mutex);
-+	list_for_each_entry(use, &mod->target_list, target_list)
-+		sysfs_remove_link(use->target->holders_dir, mod->name);
-+	mutex_unlock(&module_mutex);
-+#endif
-+}
-+
-+static int add_usage_links(struct module *mod)
-+{
-+	int ret = 0;
-+#ifdef CONFIG_MODULE_UNLOAD
-+	struct module_use *use;
-+
-+	mutex_lock(&module_mutex);
-+	list_for_each_entry(use, &mod->target_list, target_list) {
-+		ret = sysfs_create_link(use->target->holders_dir,
-+					&mod->mkobj.kobj, mod->name);
-+		if (ret)
-+			break;
-+	}
-+	mutex_unlock(&module_mutex);
-+	if (ret)
-+		del_usage_links(mod);
-+#endif
-+	return ret;
-+}
-+
-+extern struct module_attribute *modinfo_attrs[];
-+extern size_t modinfo_attrs_count;
-+
-+static int module_add_modinfo_attrs(struct module *mod)
-+{
-+	struct module_attribute *attr;
-+	struct module_attribute *temp_attr;
-+	int error = 0;
-+	int i;
-+
-+	mod->modinfo_attrs = kzalloc((sizeof(struct module_attribute) *
-+					(modinfo_attrs_count + 1)),
-+					GFP_KERNEL);
-+	if (!mod->modinfo_attrs)
-+		return -ENOMEM;
-+
-+	temp_attr = mod->modinfo_attrs;
-+	for (i = 0; (attr = modinfo_attrs[i]); i++) {
-+		if (!attr->test || attr->test(mod)) {
-+			memcpy(temp_attr, attr, sizeof(*temp_attr));
-+			sysfs_attr_init(&temp_attr->attr);
-+			error = sysfs_create_file(&mod->mkobj.kobj,
-+					&temp_attr->attr);
-+			if (error)
-+				goto error_out;
-+			++temp_attr;
-+		}
-+	}
-+
-+	return 0;
-+
-+error_out:
-+	if (i > 0)
-+		module_remove_modinfo_attrs(mod, --i);
-+	else
-+		kfree(mod->modinfo_attrs);
-+	return error;
-+}
-+
-+void module_remove_modinfo_attrs(struct module *mod, int end)
-+{
-+	struct module_attribute *attr;
-+	int i;
-+
-+	for (i = 0; (attr = &mod->modinfo_attrs[i]); i++) {
-+		if (end >= 0 && i > end)
-+			break;
-+		/* pick a field to test for end of list */
-+		if (!attr->attr.name)
-+			break;
-+		sysfs_remove_file(&mod->mkobj.kobj, &attr->attr);
-+		if (attr->free)
-+			attr->free(mod);
-+	}
-+	kfree(mod->modinfo_attrs);
-+}
-+
-+static void mod_kobject_put(struct module *mod)
-+{
-+	DECLARE_COMPLETION_ONSTACK(c);
-+	mod->mkobj.kobj_completion = &c;
-+	kobject_put(&mod->mkobj.kobj);
-+	wait_for_completion(&c);
-+}
-+
-+static int mod_sysfs_init(struct module *mod)
-+{
-+	int err;
-+	struct kobject *kobj;
-+
-+	if (!module_sysfs_initialized) {
-+		pr_err("%s: module sysfs not initialized\n", mod->name);
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	kobj = kset_find_obj(module_kset, mod->name);
-+	if (kobj) {
-+		pr_err("%s: module is already loaded\n", mod->name);
-+		kobject_put(kobj);
-+		err = -EINVAL;
-+		goto out;
-+	}
-+
-+	mod->mkobj.mod = mod;
-+
-+	memset(&mod->mkobj.kobj, 0, sizeof(mod->mkobj.kobj));
-+	mod->mkobj.kobj.kset = module_kset;
-+	err = kobject_init_and_add(&mod->mkobj.kobj, &module_ktype, NULL,
-+				   "%s", mod->name);
-+	if (err)
-+		mod_kobject_put(mod);
-+
-+out:
-+	return err;
-+}
-+
-+int mod_sysfs_setup(struct module *mod,
-+			   const struct load_info *info,
-+			   struct kernel_param *kparam,
-+			   unsigned int num_params)
-+{
-+	int err;
-+
-+	err = mod_sysfs_init(mod);
-+	if (err)
-+		goto out;
-+
-+	mod->holders_dir = kobject_create_and_add("holders", &mod->mkobj.kobj);
-+	if (!mod->holders_dir) {
-+		err = -ENOMEM;
-+		goto out_unreg;
-+	}
-+
-+	err = module_param_sysfs_setup(mod, kparam, num_params);
-+	if (err)
-+		goto out_unreg_holders;
-+
-+	err = module_add_modinfo_attrs(mod);
-+	if (err)
-+		goto out_unreg_param;
-+
-+	err = add_usage_links(mod);
-+	if (err)
-+		goto out_unreg_modinfo_attrs;
-+
-+	add_sect_attrs(mod, info);
-+	add_notes_attrs(mod, info);
-+
-+	return 0;
-+
-+out_unreg_modinfo_attrs:
-+	module_remove_modinfo_attrs(mod, -1);
-+out_unreg_param:
-+	module_param_sysfs_remove(mod);
-+out_unreg_holders:
-+	kobject_put(mod->holders_dir);
-+out_unreg:
-+	mod_kobject_put(mod);
-+out:
-+	return err;
-+}
-+
-+void mod_sysfs_fini(struct module *mod)
-+{
-+	remove_notes_attrs(mod);
-+	remove_sect_attrs(mod);
-+	mod_kobject_put(mod);
-+}
-+
-+void init_param_lock(struct module *mod)
-+{
-+	mutex_init(&mod->param_lock);
-+}
--- 
-2.31.1
+> "timeout --foregroup <seconds>" command.
 
+foregroup?
+
+This is a bit confusing though since it mentions that the "timeout" utility
+is called after the test times out. Perhaps you can just describe that, if
+present, the test is run using the timeout utility and it will
+send SIGTERM to the test upon timeout.
+
+> In resctrl_tests, fork() is used to create a child process.
+> This commit ensures child process to be killed before parent process
+
+Especially since I know you are planning more changes in the x86 area
+where this is enforced more strictly, please do get into the habit of
+describing your changes in imperative mood. Please search for
+"This patch" in Documentation/process/submitting-patches.rst (your
+usage of "This commit" is equivalent to "This patch") for more details.
+
+Please address this in all your patches where "This commit" is frequently
+used. 
+
+> exiting if SIGTERM signal comes.
+> 
+> Signed-off-by: Shaopeng Tan <tan.shaopeng@jp.fujitsu.com>
+> ---
+>  tools/testing/selftests/resctrl/resctrl_val.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/tools/testing/selftests/resctrl/resctrl_val.c b/tools/testing/selftests/resctrl/resctrl_val.c
+> index 95224345c78e..b32b96356ec7 100644
+> --- a/tools/testing/selftests/resctrl/resctrl_val.c
+> +++ b/tools/testing/selftests/resctrl/resctrl_val.c
+> @@ -678,6 +678,7 @@ int resctrl_val(char **benchmark_cmd, struct resctrl_val_param *param)
+>  	sigemptyset(&sigact.sa_mask);
+>  	sigact.sa_flags = SA_SIGINFO;
+>  	if (sigaction(SIGINT, &sigact, NULL) ||
+> +	    sigaction(SIGTERM, &sigact, NULL) ||
+>  	    sigaction(SIGHUP, &sigact, NULL)) {
+>  		perror("# sigaction");
+>  		ret = errno;
+
+The change looks good. Since this snippet is preceded with a comment
+that describes its usage you could also update it with the expanded
+use of the kselftest framework.
+
+Reinette
