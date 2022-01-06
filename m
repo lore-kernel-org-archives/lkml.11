@@ -2,227 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 12:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 12:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238598AbiAFMZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 07:25:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57162 "EHLO
+        id S238808AbiAFM0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 07:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238788AbiAFMZD (ORCPT
+        with ESMTP id S238754AbiAFM0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 07:25:03 -0500
+        Thu, 6 Jan 2022 07:26:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517A7C061245;
-        Thu,  6 Jan 2022 04:25:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8019C061245;
+        Thu,  6 Jan 2022 04:26:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19C4AB81E8B;
-        Thu,  6 Jan 2022 12:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E69CBC36AE5;
-        Thu,  6 Jan 2022 12:24:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641471900;
-        bh=7GTTtf7eu4RoZ9dWQBGOYY0gMIrhN8Iyq+VpX5N94Jo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Gft7t8m6QsRRVsarlT4YIejzSI8Na0Dyo3ua3VrXwRPErKEhrwwM6Sq5+D/GxMwXm
-         aSCtmOaAU8kMfYju2aKU7NFbxwk+Vy7t9aE7hEUOBeKIF1W51xTxyR/TJYReZ4zk7w
-         UvgFnscY4mNBk2mEWnCEgCzfM91HBV+/mqmMijmdASooVSN32K4alumsZ1SAUZ39QB
-         lfGB7VW6eAQtjk+wk5RAoD8Zk/KurxxvMasY2euW+/uLNOsnaGvtCEZHYZiB+/xUst
-         KYQ70RqFU+KuIhCzMsAIoX3tab5SKnIeaum/7K7VOi+GVhPu16gnKDTBA739jM/+hT
-         4998/AaxIMtTA==
-From:   Wolfram Sang <wsa@kernel.org>
-To:     linux-i2c@vger.kernel.org
-Cc:     "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
-        Konstantin Kharlamov <hi-angel@yandex.ru>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Subject: [PATCH] Revert "i2c: core: support bus regulator controlling in adapter"
-Date:   Thu,  6 Jan 2022 13:24:52 +0100
-Message-Id: <20220106122452.18719-1-wsa@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D3EEB81FBB;
+        Thu,  6 Jan 2022 12:26:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A52C5C36AE3;
+        Thu,  6 Jan 2022 12:26:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641471992;
+        bh=F+VRetsdQhDk6RTHaHN8OZEU4IjmNt0fu6rA5nIO7a4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=L4i9FukbcjQ8Ru8J0XU9nV2k/NPxE63fFvocJtu1H/UlWa7/rt/WArU7Sk/mrxIio
+         KRC5V3u2O+v0x75+J7m0U8e5kv94ylqTcYiTQ+n3mqfQRx93ER3vmjbsd2jjDcdcIk
+         SYNnsBhTC7y1YhprLKgVSQMUxakRMU9sKSPGo5z8=
+Date:   Thu, 6 Jan 2022 13:26:29 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     linux-stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: txtimestamp.c:164:29: warning: format '0' expects argument of
+ type 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+ int'} [-Wformat=]
+Message-ID: <Ydbf9UV1ga2aytJX@kroah.com>
+References: <CA+G9fYtaoxVF-bL40kt=FKcjjaLUnS+h8hNf=wQv_dKKWn_MNQ@mail.gmail.com>
+ <YdbGZiKKdVgh8A4i@kroah.com>
+ <CA+G9fYtNQh8KygC7ufvkMuB_d7PX-meknhOpDcuQiPx8oBcrCA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtNQh8KygC7ufvkMuB_d7PX-meknhOpDcuQiPx8oBcrCA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This largely reverts commit 5a7b95fb993ec399c8a685552aa6a8fc995c40bd. It
-breaks suspend with AMD GPUs, and we couldn't incrementally fix it. So,
-let's remove the code and go back to the drawing board. We keep the
-header extension to not break drivers already populating the regulator.
-We expect to re-add the code handling it soon.
+On Thu, Jan 06, 2022 at 05:38:16PM +0530, Naresh Kamboju wrote:
+> On Thu, 6 Jan 2022 at 16:07, Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Thu, Jan 06, 2022 at 03:39:09PM +0530, Naresh Kamboju wrote:
+> > > While building selftests the following warnings were noticed for arm
+> > > architecture on Linux stable v5.15.13 kernel and also on Linus's tree.
+> > >
+> > > arm-linux-gnueabihf-gcc -Wall -Wl,--no-as-needed -O2 -g
+> > > -I../../../../usr/include/    txtimestamp.c  -o
+> > > /home/tuxbuild/.cache/tuxmake/builds/current/kselftest/net/txtimestamp
+> > > txtimestamp.c: In function 'validate_timestamp':
+> > > txtimestamp.c:164:29: warning: format '0' expects argument of type
+> > > 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+> > > int'} [-Wformat=]
+> > >   164 |   fprintf(stderr, "ERROR: 0 us expected between 0 and 0\n",
+> 
+> <trim>
+> 
+> > Same question as before, is this a regression, and if so, any pointers
+> > to a fix?
+> 
+> This is a known warning on Linus's tree.
 
-Reported-by: "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
-Link: https://lore.kernel.org/r/1295184560.182511.1639075777725@mail.yahoo.com
-Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
-Link: https://lore.kernel.org/r/7143a7147978f4104171072d9f5225d2ce355ec1.camel@yandex.ru
-BugLink: https://gitlab.freedesktop.org/drm/amd/-/issues/1850
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
----
+Great, please report the issue there, as there's nothing I can do about
+it in the 5.15.y tree until it is resolved there as you know.
 
-So far, I tested it on a Renesas R-Car M3-N board verifying that I2C
-still works. I'll apply it to my for-next branch right away to get the
-buildbots involved as well. But I am still open for comments until I
-apply it to my for-current branch, probably tomorrow.
+thanks,
 
- drivers/i2c/i2c-core-base.c | 95 -------------------------------------
- 1 file changed, 95 deletions(-)
-
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index f193f9058584..73253e667de1 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -466,14 +466,12 @@ static int i2c_smbus_host_notify_to_irq(const struct i2c_client *client)
- static int i2c_device_probe(struct device *dev)
- {
- 	struct i2c_client	*client = i2c_verify_client(dev);
--	struct i2c_adapter	*adap;
- 	struct i2c_driver	*driver;
- 	int status;
- 
- 	if (!client)
- 		return 0;
- 
--	adap = client->adapter;
- 	client->irq = client->init_irq;
- 
- 	if (!client->irq) {
-@@ -539,14 +537,6 @@ static int i2c_device_probe(struct device *dev)
- 
- 	dev_dbg(dev, "probe\n");
- 
--	if (adap->bus_regulator) {
--		status = regulator_enable(adap->bus_regulator);
--		if (status < 0) {
--			dev_err(&adap->dev, "Failed to enable bus regulator\n");
--			goto err_clear_wakeup_irq;
--		}
--	}
--
- 	status = of_clk_set_defaults(dev->of_node, false);
- 	if (status < 0)
- 		goto err_clear_wakeup_irq;
-@@ -605,10 +595,8 @@ static int i2c_device_probe(struct device *dev)
- static void i2c_device_remove(struct device *dev)
- {
- 	struct i2c_client	*client = to_i2c_client(dev);
--	struct i2c_adapter      *adap;
- 	struct i2c_driver	*driver;
- 
--	adap = client->adapter;
- 	driver = to_i2c_driver(dev->driver);
- 	if (driver->remove) {
- 		int status;
-@@ -623,8 +611,6 @@ static void i2c_device_remove(struct device *dev)
- 	devres_release_group(&client->dev, client->devres_group_id);
- 
- 	dev_pm_domain_detach(&client->dev, !i2c_acpi_waive_d0_probe(dev));
--	if (!pm_runtime_status_suspended(&client->dev) && adap->bus_regulator)
--		regulator_disable(adap->bus_regulator);
- 
- 	dev_pm_clear_wake_irq(&client->dev);
- 	device_init_wakeup(&client->dev, false);
-@@ -634,86 +620,6 @@ static void i2c_device_remove(struct device *dev)
- 		pm_runtime_put(&client->adapter->dev);
- }
- 
--#ifdef CONFIG_PM_SLEEP
--static int i2c_resume_early(struct device *dev)
--{
--	struct i2c_client *client = i2c_verify_client(dev);
--	int err;
--
--	if (!client)
--		return 0;
--
--	if (pm_runtime_status_suspended(&client->dev) &&
--		client->adapter->bus_regulator) {
--		err = regulator_enable(client->adapter->bus_regulator);
--		if (err)
--			return err;
--	}
--
--	return pm_generic_resume_early(&client->dev);
--}
--
--static int i2c_suspend_late(struct device *dev)
--{
--	struct i2c_client *client = i2c_verify_client(dev);
--	int err;
--
--	if (!client)
--		return 0;
--
--	err = pm_generic_suspend_late(&client->dev);
--	if (err)
--		return err;
--
--	if (!pm_runtime_status_suspended(&client->dev) &&
--		client->adapter->bus_regulator)
--		return regulator_disable(client->adapter->bus_regulator);
--
--	return 0;
--}
--#endif
--
--#ifdef CONFIG_PM
--static int i2c_runtime_resume(struct device *dev)
--{
--	struct i2c_client *client = i2c_verify_client(dev);
--	int err;
--
--	if (!client)
--		return 0;
--
--	if (client->adapter->bus_regulator) {
--		err = regulator_enable(client->adapter->bus_regulator);
--		if (err)
--			return err;
--	}
--
--	return pm_generic_runtime_resume(&client->dev);
--}
--
--static int i2c_runtime_suspend(struct device *dev)
--{
--	struct i2c_client *client = i2c_verify_client(dev);
--	int err;
--
--	if (!client)
--		return 0;
--
--	err = pm_generic_runtime_suspend(&client->dev);
--	if (err)
--		return err;
--
--	if (client->adapter->bus_regulator)
--		return regulator_disable(client->adapter->bus_regulator);
--	return 0;
--}
--#endif
--
--static const struct dev_pm_ops i2c_device_pm = {
--	SET_LATE_SYSTEM_SLEEP_PM_OPS(i2c_suspend_late, i2c_resume_early)
--	SET_RUNTIME_PM_OPS(i2c_runtime_suspend, i2c_runtime_resume, NULL)
--};
--
- static void i2c_device_shutdown(struct device *dev)
- {
- 	struct i2c_client *client = i2c_verify_client(dev);
-@@ -773,7 +679,6 @@ struct bus_type i2c_bus_type = {
- 	.probe		= i2c_device_probe,
- 	.remove		= i2c_device_remove,
- 	.shutdown	= i2c_device_shutdown,
--	.pm		= &i2c_device_pm,
- };
- EXPORT_SYMBOL_GPL(i2c_bus_type);
- 
--- 
-2.30.2
-
+greg k-h
