@@ -2,184 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E139EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF2DC4321E
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244398AbiAFVoh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 16:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43726 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244268AbiAFVod (ORCPT
+        id S244397AbiAFVpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 16:45:32 -0500
+Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:65231 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244363AbiAFVpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 16:44:33 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FEEC061245;
-        Thu,  6 Jan 2022 13:44:33 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id q5so4784642ioj.7;
-        Thu, 06 Jan 2022 13:44:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CI6yuteSkCYc97vTodk0hHsFeqfx9VN/CKTtNora0Ng=;
-        b=nfJwb8GxfndCAX+8A+g4bSw2XTQ+rhTZLOFadTqThUXYqxQf+rROIXPXj5bcYsRyec
-         dBA3COn0tfnO/4GJWgAvZq+qacbtlr6cYVZU3Xr2zp5rk9kZj8O00XuuUIUsyEq9MNWm
-         9YgeLTiLoIfFAzP3yywWsDnpHGaaDqXbOdMhGfpUmnfAlF/Es0KXoplKBBHHy3RPo878
-         9wyYGa86il7dvzi+eaJjO4j9QCLiwwY7nNyTq3pvYhqdr8PHpPwh5d6+VJ/l9pUQEHSU
-         RBUDITWmy6MftocDW5Q/fwJ1at4O4bxcWhB6pLcaK9iqNLJQqI0VAIAIdPk/sbBd7Vgh
-         7bYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CI6yuteSkCYc97vTodk0hHsFeqfx9VN/CKTtNora0Ng=;
-        b=Z0AxPr861COUyO3BJbLmFC2dVGb5sOfZhFeOb7Undk9CPn4BvEF1i4vJMn4WuW8TI6
-         0ADX1Lk+oNHkbO7KKwfEqiFPgcSrohEM/LBem38lqLXbpxjiPaUk3PmxNiErT5zAmvhj
-         N5SfAhCdZzNy5PAinOimNhQ9dd8PuH+928TGuw4Beaib4huBGGitIF08uP9fqFdvhpdd
-         8VGjwWB6f1LKq0s1U0Q6h20WYXgrVOQ0jAY2AjkHeLXrrKR14TRjfwH5/mhN9vozuFYI
-         XialUPsEG48lmx0ycBEwn+xgLDomQXbuYqsWC6xBo4hz5BIcYWnuelz/NAi8GkTHLF2Q
-         6bFA==
-X-Gm-Message-State: AOAM533bEZc+MKAmzTr7UFRQ04ExzmaZhkWXDQ8Ib/wEBuR1Qp92d/sr
-        Lj8+pBHiFCibKiqFT3PCBwJIR/GrtYPABv3VCbM=
-X-Google-Smtp-Source: ABdhPJzaEc8AAontvkBWkT5/qItC3vQc4c3R02zK/htm81AmVIhot4sHlHwELeyN0UgCO/37FXgzNkvm/Ml/utyYZp0=
-X-Received: by 2002:a6b:3b51:: with SMTP id i78mr28578270ioa.63.1641505472685;
- Thu, 06 Jan 2022 13:44:32 -0800 (PST)
+        Thu, 6 Jan 2022 16:45:30 -0500
+Received: from pop-os.home ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 5aZQntTbg2lVY5aZRnSkzN; Thu, 06 Jan 2022 22:45:28 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Thu, 06 Jan 2022 22:45:28 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org,
+        rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        davem@davemloft.net, airlied@linux.ie, vkoul@kernel.org,
+        hao.wu@intel.com, trix@redhat.com, mdf@kernel.org,
+        yilun.xu@intel.com, awalls@md.metrocast.net, mchehab@kernel.org,
+        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com, mporter@kernel.crashing.org,
+        alex.bou9@gmail.com, bhelgaas@google.com
+Cc:     linux-alpha@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        sparclinux@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-fpga@vger.kernel.org, linux-media@vger.kernel.org,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h" API
+Date:   Thu,  6 Jan 2022 22:45:13 +0100
+Message-Id: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <YddEVgNKBJiqcV6Y@kernel.org> <YddGjjmlMZzxUZbN@kernel.org>
- <YddHmYhvtVvgqZb/@kernel.org> <CAP-5=fU2QAr9BMHqm9i6uDKPaUFsY2EAqt+oO1AO8ovBXCh5xQ@mail.gmail.com>
-In-Reply-To: <CAP-5=fU2QAr9BMHqm9i6uDKPaUFsY2EAqt+oO1AO8ovBXCh5xQ@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 6 Jan 2022 13:44:21 -0800
-Message-ID: <CAEf4BzbbOHQZUAe6iWaehKCPQAf3VC=hq657buqe2_yRKxaK-A@mail.gmail.com>
-Subject: Re: perf build broken seemingly due to libbpf changes, checking...
-To:     Ian Rogers <irogers@google.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Song Liu <songliubraving@fb.com>, Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 1:42 PM Ian Rogers <irogers@google.com> wrote:
->
-> On Thu, Jan 6, 2022 at 11:48 AM Arnaldo Carvalho de Melo
-> <acme@kernel.org> wrote:
-> >
-> > Em Thu, Jan 06, 2022 at 04:44:14PM -0300, Arnaldo Carvalho de Melo escr=
-eveu:
-> > > Em Thu, Jan 06, 2022 at 04:34:46PM -0300, Arnaldo Carvalho de Melo es=
-creveu:
-> > > > After merging torvalds/master to perf/urgent I'm getting this:
-> > > >
-> > > > util/bpf-event.c:25:21: error: no previous prototype for =E2=80=98b=
-tf__load_from_kernel_by_id=E2=80=99 [-Werror=3Dmissing-prototypes]
-> > > >    25 | struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
-> > > >       |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > > util/bpf-event.c:37:1: error: no previous prototype for =E2=80=98bp=
-f_object__next_program=E2=80=99 [-Werror=3Dmissing-prototypes]
-> > > >    37 | bpf_object__next_program(const struct bpf_object *obj, stru=
-ct bpf_program *prev)
-> > > >       | ^~~~~~~~~~~~~~~~~~~~~~~~
-> > > > util/bpf-event.c:46:1: error: no previous prototype for =E2=80=98bp=
-f_object__next_map=E2=80=99 [-Werror=3Dmissing-prototypes]
-> > > >    46 | bpf_object__next_map(const struct bpf_object *obj, const st=
-ruct bpf_map *prev)
-> > > >       | ^~~~~~~~~~~~~~~~~~~~
-> > > > util/bpf-event.c:55:1: error: no previous prototype for =E2=80=98bt=
-f__raw_data=E2=80=99 [-Werror=3Dmissing-prototypes]
-> > > >    55 | btf__raw_data(const struct btf *btf_ro, __u32 *size)
-> > > >       | ^~~~~~~~~~~~~
-> > > > cc1: all warnings being treated as errors
-> > > > make[4]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:96=
-: /tmp/build/perf/util/bpf-event.o] Error 1
-> > > > make[4]: *** Waiting for unfinished jobs....
-> > > > util/bpf_counter.c: In function =E2=80=98bpf_target_prog_name=E2=80=
-=99:
-> > > > util/bpf_counter.c:82:15: error: implicit declaration of function =
-=E2=80=98btf__load_from_kernel_by_id=E2=80=99 [-Werror=3Dimplicit-function-=
-declaration]
-> > > >    82 |         btf =3D btf__load_from_kernel_by_id(info_linear->in=
-fo.btf_id);
-> > > >       |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-> > > > util/bpf_counter.c:82:13: error: assignment to =E2=80=98struct btf =
-*=E2=80=99 from =E2=80=98int=E2=80=99 makes pointer from integer without a =
-cast [-Werror=3Dint-conversion]
-> > > >    82 |         btf =3D btf__load_from_kernel_by_id(info_linear->in=
-fo.btf_id);
-> > > >       |             ^
-> > > > cc1: all warnings being treated as errors
-> > > > make[4]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:96=
-: /tmp/build/perf/util/bpf_counter.o] Error 1
-> > > >
-> > > > I'm checking now...
-> > > >
-> > > > BTW I test perf builds with:
-> > > >
-> > > > make -k BUILD_BPF_SKEL=3D1 CORESIGHT=3D1 PYTHON=3Dpython3 O=3D/tmp/=
-build/perf -C tools/perf install-bin && git status && perf test python
-> > >
-> > > Nevermind, this was due to a patch by Ian Rogers I was testing,
-> > > bisecting get up to the last patch, since I had merged torvalds/maste=
-r
-> > > today it got me to a wrong correlation, sorry for the disturbance.
-> > >
-> > > For reference, this is the patch:
-> > >
-> > > http://lore.kernel.org/lkml/20220106072627.476524-1-irogers@google.co=
-m
-> >
-> > Ian, I have libbpf-devel installed:
-> >
-> > =E2=AC=A2[acme@toolbox perf]$ rpm -qa | grep libbpf
-> > libbpf-0.4.0-1.fc34.x86_64
-> > libbpf-devel-0.4.0-1.fc34.x86_64
-> > =E2=AC=A2[acme@toolbox perf]$
-> >
-> > But I'm not using LIBBPF_DYNAMIC=3D1, so you can't just give precedence=
- to
-> > system headers for all of the homies in tools/lib/.
-> >
-> > I bet that if I remove the libbpf-devel package it works, yeah, just
-> > tested. So we need to make those overrides dependent on using
-> > LIBBPF_DYNAMIC=3D1, LIBTRACEEVENT_DYNAMIC=3D1, etc and avoid the big ha=
-mmer
-> > that is -Itools/lib/, using a more finegrained approach, right?
->
-> Ugh, this is messy. The -I for tools/lib is overloaded and being used
-> in tools/perf/util/bpf-event.c so that bpf/bpf.h, bpf/btf.h and
+This serie axes all the remaining usages of the deprecated "pci-dma-compat.h"
+API.
 
-can you do `make install` for libbpf instead and have it install
-headers into a dedicated target directory which can be added into -I
-search path. Quentin did this for all the other libbpf users in kernel
-tree (bpftool, resolve_btfids, etc) and it works great.
+All these patches have already been posted.
+
+They have been generated with a coccinelle script.
+The tricky parts are patches that use dma_alloc_coherent() because the correct
+GFP flag has to be used in place of the previous embedded GFP_ATOMIC.
+
+Patches 1-3 are already Reviewed. References to the corresponding mail is
+given below the ---
+
+Patch 1-2,4-10 are just generated from the coccinelle script. Only too long
+lines have been hand modified. dma_alloc_coherent() modification are NOT part
+of these patches.
+
+Patch 3 also includes some 'dma_set_mask_and_coherent()' instead of
+'pci_set_dma_mask()/pci_set_consistent_dma_mask()'.
+I've left this additional modification because it was reviewed with it.
+
+Patch 10-15 are the tricky parts. Explanation of which GFP flag is the right one
+is given in each patch. It has been divided in several patches to ease review.
+
+Patch 15 is the only one I'm slighly unsure with. The old code was using a
+GFP_USER flag in the function. I'm not familiar with it.
+I *guess*  that GFP_KERNEL is fine, but maybe it should also be GFP_USER or left
+as GFP_ATOMIC so that nothing is changed.
+
+Patch 16 is the last step that remove "pci-dma-compat.h" and its only usage.
 
 
-> bpf/libbpf.h can be found. Likewise, for tools/perf/util/debug.c it is
-> used to pick up traceevent/event-parse.h.
->
-> Assuming  LIBBPF_DYNAMIC=3D1 and LIBTRACEEVENT_DYNAMIC=3D1 then we get
-> different combinations of:
-> libtraceevent >=3D 1.3 && libbpf >=3D 0.6 - -I is broken for debug.c,
-> -idirafter okay
-> libtraceevent >=3D 1.3 && libbpf < 0.6 - -I is broken for debug.c,
-> -idirafter broken for bpf-event.c
-> libtraceevent < 1.3 && libbpf >=3D 0.6 - -I should build okay but
-> headers mismatched, -idirafter okay
-> libtraceevent < 1.3 && libbpf < 0.6 - -I will fail to link
-> bpf-event.c, -idirafter broken for bpf-event.c
->
-> As the choice of -I and -idirafter are binary then there will always
-> be a way to break the build. We could modify the build so that the
-> -I/-idirafter only applies to the affected C files. This postpones the
-> problem to when libbpf and libtracevent are in the same file, which
-> doesn't happen currently. I think if you want the dynamic behavior
-> then you need to use idirafter.
->
-> Thanks,
-> Ian
+All patches, exept 1-2,6 that are architecture specific, have been compile tested.
+
+
+After all that, a few rst files, 1 or 2 strings in error messages and some
+error branching labels should still need some attention. 
+This is some minor issues.
+
+
+Only the cover letter is sent to every one. Each patch is sent to the
+corresponding maintainer(s) + Andrew Morton, Christoph Hellwig and Arnd Bergmann.
+
+
+Best regards.
+
+
+Christophe JAILLET (16):
+  alpha: Remove usage of the deprecated "pci-dma-compat.h" API
+  floppy: Remove usage of the deprecated "pci-dma-compat.h" API
+  fpga: dfl: pci: Remove usage of the deprecated "pci-dma-compat.h" API
+  media: Remove usage of the deprecated "pci-dma-compat.h" API
+  agp/intel: Remove usage of the deprecated "pci-dma-compat.h" API
+  sparc: Remove usage of the deprecated "pci-dma-compat.h" API
+  dmaengine: pch_dma: Remove usage of the deprecated "pci-dma-compat.h"
+    API
+  rapidio/tsi721: Remove usage of the deprecated "pci-dma-compat.h" API
+  media: v4l2-pci-skeleton: Remove usage of the deprecated
+    "pci-dma-compat.h" API
+  scsi: message: fusion: Remove usage of the deprecated
+    "pci-dma-compat.h" API
+  scsi: mptbase: Use dma_alloc_coherent() in 'mpt_alloc_fw_memory()'
+  scsi: mptbase: Use dma_alloc_coherent()
+  scsi: mptsas: Use dma_alloc_coherent() in
+    mptsas_exp_repmanufacture_info()
+  scsi: mptsas: Use dma_alloc_coherent()
+  scsi: mptctl: Use dma_alloc_coherent()
+  PCI: Remove usage of the deprecated "pci-dma-compat.h" API
+
+ arch/alpha/include/asm/floppy.h     |   7 +-
+ arch/alpha/kernel/pci_iommu.c       |  12 +--
+ arch/powerpc/include/asm/floppy.h   |   8 +-
+ arch/sparc/kernel/ioport.c          |   2 +-
+ drivers/char/agp/intel-gtt.c        |  26 ++---
+ drivers/dma/pch_dma.c               |   2 +-
+ drivers/fpga/dfl-pci.c              |  14 +--
+ drivers/media/pci/cx18/cx18-queue.h |   6 +-
+ drivers/media/pci/ivtv/ivtv-queue.h |  25 +++--
+ drivers/media/pci/ivtv/ivtv-udma.h  |   8 +-
+ drivers/message/fusion/mptbase.c    | 149 ++++++++++++++++------------
+ drivers/message/fusion/mptctl.c     |  82 +++++++++------
+ drivers/message/fusion/mptlan.c     |  90 +++++++++--------
+ drivers/message/fusion/mptsas.c     |  94 +++++++++---------
+ drivers/rapidio/devices/tsi721.c    |   8 +-
+ include/linux/pci-dma-compat.h      | 129 ------------------------
+ include/linux/pci.h                 |   3 -
+ samples/v4l/v4l2-pci-skeleton.c     |   2 +-
+ 18 files changed, 289 insertions(+), 378 deletions(-)
+ delete mode 100644 include/linux/pci-dma-compat.h
+
+-- 
+2.32.0
+
