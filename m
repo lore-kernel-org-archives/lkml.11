@@ -2,64 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC78C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80091C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244460AbiAFVq3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 16:46:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44132 "EHLO
+        id S244522AbiAFVqd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 16:46:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244436AbiAFVqH (ORCPT
+        with ESMTP id S244435AbiAFVqO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 16:46:07 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A96BEC034002
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 13:46:06 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id n30-20020a17090a5aa100b001b2b6509685so4545454pji.3
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 13:46:06 -0800 (PST)
+        Thu, 6 Jan 2022 16:46:14 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07AB7C06118A
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 13:46:14 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so10051410pjj.2
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 13:46:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wHTGmIfG7F9SDIRewz7zNR4I/bW/soPNx1fVWL7SSqg=;
-        b=jYXk75wBy5JTKs0io9za+IJePm5iRhd7PFw86GocJ/ZOIe8Q6PyOQEn/CB2Cc+TLm3
-         2ZhD/R0KNvDY8/P18/zqcaiUA0Yx/ifq5S5qwkg8S+P1l8gL0SUCzPhIdPJk901WtDca
-         M3+Gli2Px1dUVedOgR1fVqZIO2cdFooC+y2hk=
+        bh=NsjwfsQuiDMEQ+TXne3j17pwDv7xto97Rnhld6OcLgM=;
+        b=UfX8IpxE7Xm8m0THPaEOlj7kVL2i9xBXvepNNTPjRZ4zlKvYKJEDRvcbsFMFQ/irYV
+         5Bf5aVv5JZ7qUuUqHXTUO8t1mGACN+ojn2ZDY0bM3Mg0eKxbkx7xhxdycW9FfTTWdHZo
+         3UM63Knx5hZTA/deRQPpqN0cu4ZGbjK9i0N+s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wHTGmIfG7F9SDIRewz7zNR4I/bW/soPNx1fVWL7SSqg=;
-        b=0z8ukP2/d26eTC+xwtQspf1cRVitStU0TaGSweI2JKK8hZ6X5qCePWKQpyVBSAePOF
-         YFf1/Z/DBUbVAMVnYaiFUliQDLiBgujMpeA5bIigWf7mmKq3aBvjJvy1sJW01zrg4/W+
-         vO199f9+byfRAYRyD742uAty6lDfUFY37MIKdHAlb0QVA3nW0m0M4ZZSt+/HNwRd0pwH
-         iu0BiwZf0eUrKop+9fnLzGxpXGcaPFjmSjKcS1/JN6YiUKkUL6NTWr5Y8qJQAxYOYxJr
-         leT8VazOUOSSazL61mz/hOUxlfxvNd+I/Dwo2NR9cS9vwmCacGVScFsXNPspfN85rT0x
-         FkBQ==
-X-Gm-Message-State: AOAM531UVnLo43pCFLaadD2PsD/YDrZraLdLT47GhZ3jBYyjXbX/tAa7
-        4B85hsJj+NX1vSnfsyIReFZ+Hg==
-X-Google-Smtp-Source: ABdhPJyrZfgLqySabEnQeFQoN6950iKcXddByevHgRq0wc/gtN1aTk6rss1QjaXFw4vTw780Dtn9OQ==
-X-Received: by 2002:a17:902:7681:b0:149:bb15:c53f with SMTP id m1-20020a170902768100b00149bb15c53fmr21842657pll.159.1641505564986;
-        Thu, 06 Jan 2022 13:46:04 -0800 (PST)
+        bh=NsjwfsQuiDMEQ+TXne3j17pwDv7xto97Rnhld6OcLgM=;
+        b=FLc9k0xM3Ks+o3dqEudO22kEKIeenBKXTHKOL0UKvvqCTsZlp/UedAQkM9iibaWzBv
+         g/0m9CRpNvmcO1XwKGQBzB0KPay1qvemPqK1itTmACuHqR7aIP7M4VXZzaqcrJ+a8bAG
+         FcebJwvvucPIuwZi0CS01uF5AOmzGkG6wZHczH3H83JR/IkiOG6AcNqGogrU+yqdals5
+         6d/aR/wKdrqyVuMYIsb2C0yz6L1HPdCRlqzYnzscHg1Yc+Q5KSlkG6utZzmLL1UZebMS
+         m1GbeWtxv4eHtF7zPdIsBEgK24aQrQ6DWbryBPK/CivhcYMcfLFaNp9PnLiA4fPqwIlD
+         ObEA==
+X-Gm-Message-State: AOAM531arzCxPoISFnKofJJ/ABqaIuBCcTHbaw6NOjre57zHWpLRMWvI
+        n5EP8GTHWVH5f5rXcFN7etxZvw==
+X-Google-Smtp-Source: ABdhPJyk/M15t+lyhtoh1b/2CEQ3pV+TQZFLl1SvsJLFKiODwyiIibw9MBABprRy3lEFWknjr9AaqA==
+X-Received: by 2002:a17:90b:1d8b:: with SMTP id pf11mr6100787pjb.119.1641505573602;
+        Thu, 06 Jan 2022 13:46:13 -0800 (PST)
 Received: from smtp.gmail.com ([2620:15c:202:201:1ebe:a8fd:f9b0:7e85])
-        by smtp.gmail.com with ESMTPSA id 10sm3539960pfm.56.2022.01.06.13.46.03
+        by smtp.gmail.com with ESMTPSA id 10sm3539960pfm.56.2022.01.06.13.46.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 13:46:04 -0800 (PST)
+        Thu, 06 Jan 2022 13:46:13 -0800 (PST)
 From:   Stephen Boyd <swboyd@chromium.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Douglas Anderson <dianders@chromium.org>
 Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        Daniel Vetter <daniel@ffwll.ch>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Russell King <linux+etnaviv@armlinux.org.uk>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
         Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Rob Clark <robdclark@gmail.com>,
-        Russell King <rmk+kernel@arm.linux.org.uk>,
         Saravana Kannan <saravanak@google.com>
-Subject: [PATCH v5 04/32] component: Add {bind,unbind}_component() ops that take aggregate device
-Date:   Thu,  6 Jan 2022 13:45:27 -0800
-Message-Id: <20220106214556.2461363-5-swboyd@chromium.org>
+Subject: [PATCH v5 11/32] drm/etnaviv: Migrate to aggregate driver
+Date:   Thu,  6 Jan 2022 13:45:34 -0800
+Message-Id: <20220106214556.2461363-12-swboyd@chromium.org>
 X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
 In-Reply-To: <20220106214556.2461363-1-swboyd@chromium.org>
 References: <20220106214556.2461363-1-swboyd@chromium.org>
@@ -69,112 +69,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We'd like to get more device model features in the component framework
-so let's pass the struct aggregate_device pointer instead of the parent
-device pointer to the component binding functions. This will allow
-drivers to inspect and control things related to the aggregate device in
-case they need it, and they'll always be able to get back to the device
-they were using before by using the 'parent' member of the aggregate
-device struct.
+Use an aggregate driver instead of component ops so that we can get
+proper driver probe ordering of the aggregate device with respect to all
+the component devices that make up the aggregate device.
 
-Suggested-by: Daniel Vetter <daniel@ffwll.ch>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Russell King <linux+etnaviv@armlinux.org.uk>
+Cc: Christian Gmeiner <christian.gmeiner@gmail.com>
 Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc: "Rafael J. Wysocki" <rafael@kernel.org>
 Cc: Rob Clark <robdclark@gmail.com>
-Cc: Russell King <rmk+kernel@arm.linux.org.uk>
 Cc: Saravana Kannan <saravanak@google.com>
 Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
- drivers/base/component.c  | 14 +++++++++++---
- include/linux/component.h | 22 ++++++++++++++++++++++
- 2 files changed, 33 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/etnaviv/etnaviv_drv.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/base/component.c b/drivers/base/component.c
-index dc38a8939ae6..e9e58b56cda4 100644
---- a/drivers/base/component.c
-+++ b/drivers/base/component.c
-@@ -699,8 +699,13 @@ static void component_unbind(struct component *component,
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_drv.c b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+index 7dcc6392792d..95d1e518ff13 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_drv.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+@@ -494,8 +494,9 @@ static const struct drm_driver etnaviv_drm_driver = {
+ /*
+  * Platform driver:
+  */
+-static int etnaviv_bind(struct device *dev)
++static int etnaviv_bind(struct aggregate_device *adev)
  {
- 	WARN_ON(!component->bound);
++	struct device *dev = adev->parent;
+ 	struct etnaviv_drm_private *priv;
+ 	struct drm_device *drm;
+ 	int ret;
+@@ -552,8 +553,9 @@ static int etnaviv_bind(struct device *dev)
+ 	return ret;
+ }
  
--	if (component->ops && component->ops->unbind)
--		component->ops->unbind(component->dev, adev->parent, data);
-+	if (component->ops) {
-+		if (component->ops->unbind)
-+			component->ops->unbind(component->dev, adev->parent, data);
-+		else if (component->ops->unbind_component)
-+			component->ops->unbind_component(component->dev, adev, data);
-+	}
-+
- 	component->bound = false;
+-static void etnaviv_unbind(struct device *dev)
++static void etnaviv_unbind(struct aggregate_device *adev)
+ {
++	struct device *dev = adev->parent;
+ 	struct drm_device *drm = dev_get_drvdata(dev);
+ 	struct etnaviv_drm_private *priv = drm->dev_private;
  
- 	/* Release all resources claimed in the binding of this component */
-@@ -765,7 +770,10 @@ static int component_bind(struct component *component, struct aggregate_device *
- 	dev_dbg(adev->parent, "binding %s (ops %ps)\n",
- 		dev_name(component->dev), component->ops);
+@@ -569,9 +571,13 @@ static void etnaviv_unbind(struct device *dev)
+ 	drm_dev_put(drm);
+ }
  
--	ret = component->ops->bind(component->dev, adev->parent, data);
-+	if (component->ops->bind_component)
-+		ret = component->ops->bind_component(component->dev, adev, data);
-+	else
-+		ret = component->ops->bind(component->dev, adev->parent, data);
- 	if (!ret) {
- 		component->bound = true;
- 
-diff --git a/include/linux/component.h b/include/linux/component.h
-index e99cf8e910f0..d8dcbf9733da 100644
---- a/include/linux/component.h
-+++ b/include/linux/component.h
-@@ -6,6 +6,7 @@
- #include <linux/device.h>
- 
- struct component_match;
-+struct aggregate_device;
- 
- /**
-  * struct component_ops - callbacks for component drivers
-@@ -19,18 +20,39 @@ struct component_ops {
- 	 *
- 	 * Called through component_bind_all() when the aggregate driver is
- 	 * ready to bind the overall driver.
-+	 *
-+	 * Deprecated: Use bind_component() instead.
- 	 */
- 	int (*bind)(struct device *comp, struct device *master,
- 		    void *master_data);
-+	/**
-+	 * @bind_component:
-+	 *
-+	 * Called through component_bind_all() when the aggregate driver is
-+	 * ready to bind the overall driver.
-+	 */
-+	int (*bind_component)(struct device *comp, struct aggregate_device *adev,
-+			      void *aggregate_data);
- 	/**
- 	 * @unbind:
- 	 *
- 	 * Called through component_unbind_all() when the aggregate driver is
- 	 * ready to bind the overall driver, or when component_bind_all() fails
- 	 * part-ways through and needs to unbind some already bound components.
-+	 *
-+	 * Deprecated: Use unbind_component() instead.
- 	 */
- 	void (*unbind)(struct device *comp, struct device *master,
- 		       void *master_data);
-+	/**
-+	 * @unbind_component:
-+	 *
-+	 * Called through component_unbind_all() when the aggregate driver is
-+	 * ready to unbind the overall driver, or when component_bind_all() fails
-+	 * part-ways through and needs to unbind some already bound components.
-+	 */
-+	int (*unbind_component)(struct device *comp, struct aggregate_device *adev,
-+				void *aggregate_data);
+-static const struct component_master_ops etnaviv_master_ops = {
+-	.bind = etnaviv_bind,
+-	.unbind = etnaviv_unbind,
++static struct aggregate_driver etnaviv_aggregate_driver = {
++	.probe = etnaviv_bind,
++	.remove = etnaviv_unbind,
++	.driver = {
++		.name = "etnaviv_drm",
++		.owner = THIS_MODULE,
++	},
  };
  
- int component_add(struct device *, const struct component_ops *);
+ static int compare_of(struct device *dev, void *data)
+@@ -609,12 +615,12 @@ static int etnaviv_pdev_probe(struct platform_device *pdev)
+ 			component_match_add(dev, &match, compare_str, names[i]);
+ 	}
+ 
+-	return component_master_add_with_match(dev, &etnaviv_master_ops, match);
++	return component_aggregate_register(dev, &etnaviv_aggregate_driver, match);
+ }
+ 
+ static int etnaviv_pdev_remove(struct platform_device *pdev)
+ {
+-	component_master_del(&pdev->dev, &etnaviv_master_ops);
++	component_aggregate_unregister(&pdev->dev, &etnaviv_aggregate_driver);
+ 
+ 	return 0;
+ }
 -- 
 https://chromeos.dev
 
