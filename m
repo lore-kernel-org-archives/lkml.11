@@ -2,106 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 058F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD696C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:21:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229729AbiAFDTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 22:19:12 -0500
-Received: from mga11.intel.com ([192.55.52.93]:13445 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229543AbiAFDTK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 22:19:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641439150; x=1672975150;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=jVs1PWNNKTf5pqsikfeVCGpxxqUkOICSdcJS6faPCaM=;
-  b=MvKbXQ4wF3qU6a/wkmKEKpY4wVAGI4VQxJd/Uq5Xd8/1lzq7Oj/AEV9Z
-   nV9SuiAg82yUL7ydIrGI5RTLaIoyZDmwbVn6NLlPbR2KotqP8bjtrVAmV
-   wOi/gMS2VthEJ5zkhZuGoHp/BpQDIpFuMGBarm0LmeaP/eptUdncXLGyJ
-   gt9q47sHXtaUBlCOl5qe8b7zannkUBooRZb1kzVzuPWNj9OKaTLAQYocp
-   UgLJKYms7ihvmcgARoT1IYVU9WJb6HalnKlj67qXqNYIR1kxeZThZNSPt
-   lEpZ3VscZudu+Dqwu+fnbwW0zc/cE7P3GIaE0HJGoqGCMbPJKzhGEHKVG
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="240127293"
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="240127293"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 19:19:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="526808939"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 05 Jan 2022 19:19:03 -0800
-Cc:     baolu.lu@linux.intel.com, Christoph Hellwig <hch@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 01/14] iommu: Add dma ownership management interfaces
-To:     Jason Gunthorpe <jgg@nvidia.com>,
-        Bjorn Helgaas <helgaas@kernel.org>
-References: <YdQcgFhIMYvUwABV@infradead.org>
- <20220104164100.GA101735@bhelgaas> <20220104192348.GK2328285@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <370335ad-0a2f-3668-9229-c65896f12828@linux.intel.com>
-Date:   Thu, 6 Jan 2022 11:18:24 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20220104192348.GK2328285@nvidia.com>
+        id S229847AbiAFDV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 22:21:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229759AbiAFDV1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 22:21:27 -0500
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A48AC0611FD
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 19:21:27 -0800 (PST)
+Received: by mail-pj1-x1029.google.com with SMTP id l16-20020a17090a409000b001b2e9628c9cso1758108pjg.4
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 19:21:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L1kt8i+PKHaNiwL3dKZWcYg8PXU//JPnPYFIcwDdGfc=;
+        b=2R0Da2tFc7++Xc3yybYIx+8Lh8wqtM9Mjox4PAZuIEDFcqITJek0A59lpXRvWUlXk0
+         uF53KE3M8oeji64aGEwHFwT3WuJpkD+dBsw7/yt4ubkkB8RynEGp3sfCH/ChZNHdRwKV
+         wABF92HSTztHwKgLaHghfMnbWBLGRE5sSZVgf1vJ2XOGqIkPIbjgSN5Ko5Ug0MmuwO6n
+         5PoPoJpw9tpp4ir0O4bJ8UNC9v4JELpYzA2L/Db9H3U+iYpeHBAOM8ZbeHareODlS+Zv
+         AfkBEf8hxLpqlT3pBLEj4e2rA0NByIlRmkZFefYd6/xhOPOueMj/79HVhTXkMXJ1XGqO
+         qvFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=L1kt8i+PKHaNiwL3dKZWcYg8PXU//JPnPYFIcwDdGfc=;
+        b=mK1Sb2Pp8AijCg5aDgf/uQxJV6NF9HyKQs+K7xBRquslrJlpyK31pTvdvKW02+zQ35
+         JQgma+8W8I+1uIzAjE7BRnem1/xtBT/EWdGRK0Juc8J4kmEbQIrN84/3mT2IVDH5g+A3
+         7JVc7r7YYgEQYeYeP3AT1Y+VgEraMhicnVSwp+AP6uz5+2f898UwL2Qy2Tz/INZ7TVxn
+         L8t6kn3R8+oO/8q66TBwN46xpRWIlKXjq/wnfX6C/25C31KhgHlNTLDlf5p/vR6zuCSX
+         k+GIZM0sNyaRjkuBtH67FOnuCwsDUXgxAPCwpdKl5jEtqeibQ2B2QNUDyj27yyB5/Hzt
+         tm9A==
+X-Gm-Message-State: AOAM5300YJhjq4q8rF0ttKRw3YoDzByg0pNH8RqwrEukf/OCNAqti4PU
+        /sSpxKTUuZtXjvhqUDSIQ6OTfQ==
+X-Google-Smtp-Source: ABdhPJx+qsaW9e3nS8xYE3uGzJD868WVU1ZiRYqaH/dQax0aODKoR/36iJxLlMJS1PRFkPjsegb6YA==
+X-Received: by 2002:a17:903:1cf:b0:149:b6f:4e98 with SMTP id e15-20020a17090301cf00b001490b6f4e98mr56918701plh.118.1641439286739;
+        Wed, 05 Jan 2022 19:21:26 -0800 (PST)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id q21sm467662pfu.176.2022.01.05.19.21.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Jan 2022 19:21:26 -0800 (PST)
+Date:   Wed, 05 Jan 2022 19:21:26 -0800 (PST)
+X-Google-Original-Date: Wed, 05 Jan 2022 19:20:58 PST (-0800)
+Subject:     Re: [PATCH 09/12] riscv: extable: add `type` and `data` fields
+In-Reply-To: <20211118152155.GB9977@lakrids.cambridge.arm.com>
+CC:     jszhang3@mail.ustc.edu.cn, tglx@linutronix.de,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, john.fastabend@gmail.com,
+        kpsingh@kernel.org, masahiroy@kernel.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com, wangkefeng.wang@huawei.com,
+        tongtiangen@huawei.com, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kbuild@vger.kernel.org
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     mark.rutland@arm.com
+Message-ID: <mhng-84ef2902-21c8-4cde-9d02-aa89f913a981@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/5/22 3:23 AM, Jason Gunthorpe wrote:
->>>> The vfio oriented interfaces are,
->>>>
->>>> 	int iommu_group_set_dma_owner(struct iommu_group *group,
->>>> 				      void *owner);
->>>> 	void iommu_group_release_dma_owner(struct iommu_group *group);
->>>> 	bool iommu_group_dma_owner_claimed(struct iommu_group *group);
->>>>
->>>> The device userspace assignment must be disallowed if the set dma owner
->>>> interface returns failure.
->> Can you connect this back to the "never a mixture" from the beginning?
->> If all you cared about was prevent an IOMMU group from containing
->> devices with a mixture of kernel drivers and userspace drivers, I
->> assume you could do that without iommu_device_use_dma_api().  So is
->> this a way to*allow*  a mixture under certain restricted conditions?
-> It is not about user/kernel, it is about arbitrating the shared
-> group->domain against multiple different requests to set it to
-> something else.
-> 
-> Lu, Given that the word 'user' was deleted from the API entirely it
-> makes sense to reword these commit messages to focus less on user vs
-> kernel and more on ownership of the domain pointer.
+On Thu, 18 Nov 2021 07:21:55 PST (-0800), mark.rutland@arm.com wrote:
+> On Thu, Nov 18, 2021 at 07:42:49PM +0800, Jisheng Zhang wrote:
+>> On Thu, 18 Nov 2021 19:26:05 +0800 Jisheng Zhang wrote:
+>>
+>> > From: Jisheng Zhang <jszhang@kernel.org>
+>> >
+>> > This is a riscv port of commit d6e2cc564775("arm64: extable: add `type`
+>> > and `data` fields").
+>> >
+>> > We will add specialized handlers for fixups, the `type` field is for
+>> > fixup handler type, the `data` field is used to pass specific data to
+>> > each handler, for example register numbers.
+>> >
+>> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+>
+>> > diff --git a/scripts/sorttable.c b/scripts/sorttable.c
+>> > index 0c031e47a419..5b5472b543f5 100644
+>> > --- a/scripts/sorttable.c
+>> > +++ b/scripts/sorttable.c
+>> > @@ -376,9 +376,11 @@ static int do_file(char const *const fname, void *addr)
+>> >  	case EM_PARISC:
+>> >  	case EM_PPC:
+>> >  	case EM_PPC64:
+>> > -	case EM_RISCV:
+>> >  		custom_sort = sort_relative_table;
+>> >  		break;
+>> > +	case EM_RISCV:
+>> > +		custom_sort = arm64_sort_relative_table;
+>>
+>> Hi Mark, Thomas,
+>>
+>> x86 and arm64 version of sort_relative_table routine are the same, I want to
+>> unify them, and then use the common function for riscv, but I'm not sure
+>> which name is better. Could you please suggest?
+>
+> I sent a patch last week which unifies them as
+> sort_relative_table_with_data():
+>
+>   https://lore.kernel.org/linux-arm-kernel/20211108114220.32796-1-mark.rutland@arm.com/
+>
+> Thomas, are you happy with that patch?
+>
+> With your ack it could go via the riscv tree for v5.17 as a preparatory
+> cleanup in this series.
+>
+> Maybe we could get it in as a cleanup for v5.16-rc{2,3} ?
 
-Sure. Will do it.
+I don't see anything on that thread, and looks like last time I had to 
+touch sorttable I just took it via the RISC-V tree.  I went ahead and 
+put Mark's patch, along with this patch set, on my for-next.  I had to 
+fix up a few minor issues, so LMK if anything went off the rails.
 
-Best regards,
-baolu
+Thanks!
