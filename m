@@ -2,110 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 12:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0082C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 13:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239157AbiAFM7f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 07:59:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22722 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238827AbiAFM7b (ORCPT
+        id S239167AbiAFNAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 08:00:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238827AbiAFNAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 07:59:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641473971;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5WAXUnIE5VkO2N/WW0e+ntcocAshJvWgVTBusRNRoBM=;
-        b=Z07kWzKqvVWOFLqA/fDNW7zz+X+r68ILcJvw4w69ZmYTo9Ur2VG/SYmtyIoc+9gSJlcsYw
-        8um3vgLqGeUv2JC9zg1IIq9gaAY4ktPRtliEJPSkOqwjKhyTquEnMcVjgyjnfOfi/tHuhh
-        accsAnI6Rtj+Fq7mJ1+m/yKDdb+vFmI=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-15-KlBJdBprOZ-RbVeGLr0XFw-1; Thu, 06 Jan 2022 07:59:29 -0500
-X-MC-Unique: KlBJdBprOZ-RbVeGLr0XFw-1
-Received: by mail-wm1-f70.google.com with SMTP id k40-20020a05600c1ca800b00345bf554707so1905304wms.4
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 04:59:29 -0800 (PST)
+        Thu, 6 Jan 2022 08:00:10 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7572CC061245;
+        Thu,  6 Jan 2022 05:00:10 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id m13so2410749pji.3;
+        Thu, 06 Jan 2022 05:00:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HGq3ShW2TTQdgs+pbYsqrAkWXmM8JdNsZZVvPiYmWKw=;
+        b=S5GuvVdSsndX1HCvgu99dl1b0+yb/LWHzBknETYeUEwz5SNpj1WvKZsPiU/oFfqqAJ
+         z2w+uLuO2Fktgt0CqKXRBVmo7821oc+ZFHO7BpJ28MmMcXtHdVwJZoblMJ8wjaB4HC3N
+         GdeuDC3ER/8CmeCFExawkuYuHVIVQ3fI8I0m3ZUp31STGaFn7clxn0D4/rFo7e8xgDl4
+         N13/GJTQHBNR2/FBBNdT/qfUCMSn5gWXD+2G7rYHmnwr/pSvTNcf8684knxJHQ2d0wue
+         VPzR1afnhCYhc/l7IWNOQJBaVfbLQKp4LJm2P1Em6QU9mCEXecNc12XgnNNDNcodO7G+
+         qQ4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5WAXUnIE5VkO2N/WW0e+ntcocAshJvWgVTBusRNRoBM=;
-        b=YclcfUsZUdkhyL+uwvVRuv+oIop6u0JFR4Rv6Vuw67h3THiBkYUa8GLPI5pcJbKxZ5
-         icl/LlKv6tnlMj79Jin1w9e9Hg5QIYXfNDbxB6IEnsPYEiYJckkfkJc9cWJ1Ut9sbkfK
-         gwpj6MDnrvElVN5BZ/GevDl2b+W4MhwPae+nvpC5SLhSF6QTOQdwWdOFPVCRdO3ol+jg
-         4VIUoCT5DKbLtXOZqgOaDo3LatEpE7RO9/e7ZUCksvYhF/X5mLIotIzxcmowxl7Qck5Q
-         cUD+J0VzDW5Lvf+so69Lx0L2G8u6nUeGa6fjWSQ6VC/vjvHVnTlzb4kbVhHG3emV2NLv
-         5D2g==
-X-Gm-Message-State: AOAM532aCeJGfVp6H3LvJx+fiym9Fpu+VvB5pIrFgbX4ktycDPXVfuon
-        BpuCs98f+dlX+hbOThBPq7wkX3hBk3sXDow1kogNDk2Rx5P0ULm6bTXCABvjdJpvk+al1TGez3q
-        gg4ohTwh5aCMeE2DTO29Ha4ga
-X-Received: by 2002:a5d:47cd:: with SMTP id o13mr50910677wrc.669.1641473968662;
-        Thu, 06 Jan 2022 04:59:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzk/EB7gBSw+8TNfGdRn9vLKyEkOGA9jgxYXDa9oIkZ9y8w7ZQqRax7nQjOp89r1Ux1UWKooQ==
-X-Received: by 2002:a5d:47cd:: with SMTP id o13mr50910672wrc.669.1641473968510;
-        Thu, 06 Jan 2022 04:59:28 -0800 (PST)
-Received: from redhat.com ([2a03:c5c0:207e:991b:6857:5652:b903:a63b])
-        by smtp.gmail.com with ESMTPSA id l2sm2111421wrs.43.2022.01.06.04.59.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HGq3ShW2TTQdgs+pbYsqrAkWXmM8JdNsZZVvPiYmWKw=;
+        b=5URJ9NQrzg8XCIbTILY02yPjT7NKyAEs9H5AimqpRZrwckwVNeizl+1626B9vFT6cQ
+         Mh0V3pppcGIxml5i3EEq0e5UeYWTrwGHHbeCb6PaqZFu0j69Urf1XvFd57VMD8U+pdu/
+         xbMZYbYl2P0Kq0gjI2z5z/pBtzGV15G9eEHmlxwlIPEbpjpbnEinPwakcqh49M03P22F
+         wwoWZGfBX1MZzrXrG0bfULKUKU40yutvWphvOp9Hxc4RluQXFpmFSY9AKIthRpQdYB0k
+         +jh8lQZNjWKjI3xaPMjRz64Ok4eobk0+59pnk8McpJE+aYYwSy3c0NNjdcy3Z79jknHa
+         QKlA==
+X-Gm-Message-State: AOAM53024tTKMJBk0aJYftaqJNpemPBqyQbcRgKi+ZdE1ae40EmQh79h
+        XaswpQ299hAUnqrKcO/9xFVUQIXJqyjsCQ==
+X-Google-Smtp-Source: ABdhPJzrWLCKt28CCVACH5wx3Z9oJR6uXcvKjjwKNC2oMisaqwnXkajkF6v2W8QWOFDARz1vweDSWg==
+X-Received: by 2002:a17:903:191:b0:148:e4d3:e8a9 with SMTP id z17-20020a170903019100b00148e4d3e8a9mr57994598plg.101.1641474010037;
+        Thu, 06 Jan 2022 05:00:10 -0800 (PST)
+Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
+        by smtp.gmail.com with ESMTPSA id g14sm2052583pgp.76.2022.01.06.05.00.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 04:59:27 -0800 (PST)
-Date:   Thu, 6 Jan 2022 07:59:24 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] virtio_ring: Check null pointer
-Message-ID: <20220106075459-mutt-send-email-mst@kernel.org>
-References: <20220104151251.1988036-1-jiasheng@iscas.ac.cn>
+        Thu, 06 Jan 2022 05:00:09 -0800 (PST)
+From:   Cixi Geng <gengcixi@gmail.com>
+To:     orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
+        jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        lgirdwood@gmail.com, broonie@kernel.org
+Cc:     yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/7] iio: adc: sc27xx: adjust structure and add PMIC's support
+Date:   Thu,  6 Jan 2022 20:59:40 +0800
+Message-Id: <20220106125947.139523-1-gengcixi@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220104151251.1988036-1-jiasheng@iscas.ac.cn>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 11:12:51PM +0800, Jiasheng Jiang wrote:
-> As the alloc_indirect_packed() returns kmalloc_array() that could
-> allocation fail and return null pointer, it should be check in order to
-> prevent the dereference of null pointer.
-> 
-> Fixes: 1ce9e6055fa0 ("virtio_ring: introduce packed ring support")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Cixi Geng <cixi.geng1@unisoc.com>
 
+this patchset add a sc27xx_adc_variant_data structure
+and add sc272*,sc273* and ump9620 PMIC support.
+also add ump9620 PMIC suspend and resume pm implement.
 
-Well upstream has:
+Cixi Geng (7):
+  dt-bindings:iio:adc: add sprd,ump9620-adc dtbindings
+  iio: adc: sc27xx: fix read big scale voltage not right
+  iio: adc: sc27xx: structure adjuststment and optimization
+  iio: adc: sc27xx: add support for PMIC sc2720 and sc2721
+  iio: adc: sc27xx: add support for PMIC sc2730
+  iio: adc: sc27xx: add support for PMIC ump9620
+  iio: adc: sc27xx: add Ump9620 ADC suspend and resume pm support
 
-    virtio_ring: check desc == NULL when using indirect with packed
+ .../bindings/iio/adc/sprd,sc2720-adc.yaml     |  19 +
+ drivers/iio/adc/sc27xx_adc.c                  | 767 +++++++++++++++++-
+ 2 files changed, 759 insertions(+), 27 deletions(-)
 
-so this no longer applies.
-I think we do need to fix it: the END_USE is missing there.
-Sending a patch.
-
-
-> ---
-> v2: Remove the redundant empty line.
-> ---
->  drivers/virtio/virtio_ring.c | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index 71e16b53e9c1..2923d8a68dc3 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -992,6 +992,10 @@ static int virtqueue_add_indirect_packed(struct vring_virtqueue *vq,
->  
->  	head = vq->packed.next_avail_idx;
->  	desc = alloc_indirect_packed(total_sg, gfp);
-> +	if (!desc) {
-> +		END_USE(vq);
-> +		return -ENOMEM;
-> +	}
->  
->  	if (unlikely(vq->vq.num_free < 1)) {
->  		pr_debug("Can't add buf len 1 - avail = 0\n");
-> -- 
-> 2.25.1
+-- 
+2.25.1
 
