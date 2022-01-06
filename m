@@ -2,135 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E90C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D97C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiAFDYG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 22:24:06 -0500
-Received: from mga09.intel.com ([134.134.136.24]:9768 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229694AbiAFDYG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 22:24:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641439446; x=1672975446;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=P3sSACmSpQXLtf2LZOVO9lkkPSb6OkBFtsV4kzyxeYM=;
-  b=nt1cCDVWlXRsnpjMaoB7as/kgJ/pun9HCOw+Q63F5MV+4HduGw2reHJc
-   4x7EeMdyMhOKpN6FQWfbsTnQyk0gH8+UBXQbNSa3HahTbYMzviTkyU/3R
-   wN/y8bUIdFfLd+0adVOzErTU6OD6Bvd3oxHH+xbqgX9UYQClOVvfIz1mX
-   Bw6l8K1YOOa82S1jHmpeI+mik75bubAN/haUmNGMdacYN+u7jlC/VMze1
-   7gEe+kyWuCZSwS6RdElcol2/xbwAc0efW+wGNiX9xm4JpJ+NMAWLJHh3F
-   H9voCtBzTvZxdFC2om1BR7FjE9V7/mzMMt+GRXj/1egCk04pBnPLZeupn
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="242378039"
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="242378039"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 19:24:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="689245195"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 05 Jan 2022 19:24:04 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5JNj-000HI1-Je; Thu, 06 Jan 2022 03:24:03 +0000
-Date:   Thu, 6 Jan 2022 11:23:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jonas =?iso-8859-1?Q?Dre=DFler?= <verdre@v0yd.nl>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: drivers/net/wireless/marvell/mwifiex/pcie.c:659:13: warning:
- variable 'retval' set but not used
-Message-ID: <202201061102.dFgIQVH0-lkp@intel.com>
+        id S230171AbiAFD3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 22:29:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229694AbiAFD3d (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 22:29:33 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECF3C061245;
+        Wed,  5 Jan 2022 19:29:33 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id i8so1405383pgt.13;
+        Wed, 05 Jan 2022 19:29:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:organization:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=tjtACa9dE3yrERfBZgjLjugoAKnm+TzTAioGUarOG2g=;
+        b=fdS0Ewrp3lhlDeRpuNhaM+HtKAAd+U6bqXE1bMfSzOMQ3CWl/qmkGHFQzkKuqztQME
+         K1tkCMVKmkFeQUjteo4qeP2cyEEd0CFuez/MABKMNbsw79Dee9LJRKkZLBcOjC4wfh5S
+         vdbNrTJTec01DKgu7PLdeXwjZtcskgDkvwa6TR+D9ruruROpFAqjkvqcjFnqlfPpLHEq
+         bhqD5bohcM4BzZ9D2nmqJwIDxHeM8PmdTfG7cXRDdt3GwBZ4YPiMISjLOn9PvZicTUZY
+         jP7WQbRcws+35uLRSv0jifzphpZSZdPTa4q4H666+dVMPxDpMrHx525zzitj3qo0+b/P
+         igMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=tjtACa9dE3yrERfBZgjLjugoAKnm+TzTAioGUarOG2g=;
+        b=UL2et+RxXZ+OcPKy6bwnsjlm3e9vcqIhnWK+WgKv4x8uaf9ldLd8QY3ZwjxKZKS3fF
+         XKLaI8l/GO/nijapgwMPi7Y0zEpDFrem7qv7pMq/mgDPyNRcydo3B3IZCjpSaY7SilAk
+         W0QA3gY/DN+Qp4Glje1dtUUmuSIRajwkO3DoLhgZqC/82q6IXSofEvMMcjaNotksqfhn
+         PBMn6uFS0dtPTvdNsz4SaPEqFOjQwFNpHrVQjXe+AxbAUG+KStmYDyYr4i0BsziEal/R
+         YjVoJ9FqPgvFMCoaOCjzFYnlxkkjCXFaYy4nBHQKL0h6/gJ9WbOoaPFosjKldCZhzVeg
+         RkOQ==
+X-Gm-Message-State: AOAM532zgoIp7q0pYAtDYMMZjHiBzbq60cp5UA7FeBdMuIq3p1l5MbF5
+        PMlbulwBvv14s3yWhMx60yeeR9O9ESfzeOO4yo215w==
+X-Google-Smtp-Source: ABdhPJywRfexzWwcSLBCIzGj14LT9dcmfvwd6/YztzU5gZr7oIKz4U/00eaD51mR7yNqrz+DWI7Lpw==
+X-Received: by 2002:a63:d046:: with SMTP id s6mr50389112pgi.367.1641439770484;
+        Wed, 05 Jan 2022 19:29:30 -0800 (PST)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id k3sm372968pgq.54.2022.01.05.19.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 05 Jan 2022 19:29:30 -0800 (PST)
+Message-ID: <212cea42-e445-d6f2-2730-88ccaa65b2cb@gmail.com>
+Date:   Thu, 6 Jan 2022 11:29:19 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Content-Language: en-US
+To:     Jim Mattson <jmattson@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Like Xu <likexu@tencent.com>,
+        Dongli Cao <caodongli@kingsoft.com>,
+        Li RongQing <lirongqing@baidu.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        "Thomas Gleixner (kernel-recipes.org)" <tglx@linutronix.de>,
+        "Borislav Petkov (kernel-recipes.org)" <bp@alien8.de>,
+        Sean Christopherson <seanjc@google.com>
+References: <20211222133428.59977-1-likexu@tencent.com>
+ <CALMp9eTgO4XuNHwuxWahZc7jQqZ10DchW8xXvecBH2ovGPLU9g@mail.gmail.com>
+ <d3a9a73f-cdc2-bce0-55e6-e4c9f5c237de@gmail.com>
+ <CALMp9eTm7R-69p3z9P37yXmD6QpzJhEJO564czqHQtDdCRK-SQ@mail.gmail.com>
+ <CALMp9eTVjKztZC_11-DZo4MFhpxoVa31=p7Am2LYnEPuYBV8aw@mail.gmail.com>
+ <22776732-0698-c61b-78d9-70db7f1b907d@gmail.com>
+ <CALMp9eQQ7SvDNy3iKSrRTn9QUR9h1M-tSnuYO0Y4_-+bgV72sg@mail.gmail.com>
+ <bf7fc07f-d49c-1c73-9a31-03585e99ff09@gmail.com>
+ <CALMp9eQmO1zS9urH_B8DeoLp30P7Yxxp9qMwavjmoyt_BSC23A@mail.gmail.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+Organization: Tencent
+Subject: Re: [PATCH v2] KVM: X86: Emulate APERF/MPERF to report actual vCPU
+ frequency
+In-Reply-To: <CALMp9eQmO1zS9urH_B8DeoLp30P7Yxxp9qMwavjmoyt_BSC23A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jonas,
+On 6/1/2022 6:51 am, Jim Mattson wrote:
+> On Thu, Dec 30, 2021 at 11:48 PM Like Xu <like.xu.linux@gmail.com> wrote:
+>>
+>> On 31/12/2021 9:29 am, Jim Mattson wrote:
+> 
+>>> At sched-in:
+>>> 1. Save host APERF/MPERF values from the MSRs.
+>>> 2. Load the "current" guest APERF/MPERF values into the MSRs (if the
+>>> vCPU configuration allows for unintercepted reads).
+>>>
+>>> At sched-out:
+>>> 1. Calculate the guest APERF/MPERF deltas for use in step 3.
+>>> 2. Save the "current" guest APERF/MPERF values.
+>>> 3. "Restore" the host APERF/MPERF values, but add in the deltas from step 1.
+>>>
+>>> Without any writes to IA32_MPERF, I would expect these MSRs to be
+>>> synchronized across all logical processors, and the proposal above
+>>> would break that synchronization.
+> 
+> I am learning more about IA32_APERF and IA32_MPERF this year. :-)
 
-FYI, the error/warning still remains.
+Uh, thanks for your attention.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   75acfdb6fd922598a408a0d864486aeb167c1a97
-commit: 8e3e59c31fea5de95ffc52c46f0c562c39f20c59 mwifiex: Try waking the firmware until we get an interrupt
-date:   3 months ago
-config: ia64-randconfig-r001-20220106 (https://download.01.org/0day-ci/archive/20220106/202201061102.dFgIQVH0-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8e3e59c31fea5de95ffc52c46f0c562c39f20c59
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 8e3e59c31fea5de95ffc52c46f0c562c39f20c59
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/wireless/marvell/mwifiex/
+> 
+> My worry above is unfounded. These MSRs only increment in C0, so they
+> are not likely to be synchronized.
+> 
+> This also raises another issue with your original fast-path
+> implementation: the host MSRs will continue to count while the guest
+> is halted. However, the guest MSRs should not count while the guest is
+> halted.
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The emulation based on guest TSC semantics w/ low precision may work it out.
+TBH, I still haven't given up on the idea of a pass-through approach.
 
-All warnings (new ones prefixed by >>):
-
-   drivers/net/wireless/marvell/mwifiex/pcie.c: In function 'mwifiex_pm_wakeup_card':
->> drivers/net/wireless/marvell/mwifiex/pcie.c:659:13: warning: variable 'retval' set but not used [-Wunused-but-set-variable]
-     659 |         int retval;
-         |             ^~~~~~
-
-
-vim +/retval +659 drivers/net/wireless/marvell/mwifiex/pcie.c
-
-   653	
-   654	/* This function wakes up the card by reading fw_status register. */
-   655	static int mwifiex_pm_wakeup_card(struct mwifiex_adapter *adapter)
-   656	{
-   657		struct pcie_service_card *card = adapter->card;
-   658		const struct mwifiex_pcie_card_reg *reg = card->pcie.reg;
- > 659		int retval;
-   660	
-   661		mwifiex_dbg(adapter, EVENT,
-   662			    "event: Wakeup device...\n");
-   663	
-   664		if (reg->sleep_cookie)
-   665			mwifiex_pcie_dev_wakeup_delay(adapter);
-   666	
-   667		/* The 88W8897 PCIe+USB firmware (latest version 15.68.19.p21) sometimes
-   668		 * appears to ignore or miss our wakeup request, so we continue trying
-   669		 * until we receive an interrupt from the card.
-   670		 */
-   671		if (read_poll_timeout(mwifiex_write_reg, retval,
-   672				      READ_ONCE(adapter->int_status) != 0,
-   673				      500, 500 * N_WAKEUP_TRIES_SHORT_INTERVAL,
-   674				      false,
-   675				      adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
-   676			if (read_poll_timeout(mwifiex_write_reg, retval,
-   677					      READ_ONCE(adapter->int_status) != 0,
-   678					      10000, 10000 * N_WAKEUP_TRIES_LONG_INTERVAL,
-   679					      false,
-   680					      adapter, reg->fw_status, FIRMWARE_READY_PCIE)) {
-   681				mwifiex_dbg(adapter, ERROR,
-   682					    "Firmware didn't wake up\n");
-   683				return -EIO;
-   684			}
-   685		}
-   686	
-   687		if (reg->sleep_cookie) {
-   688			mwifiex_pcie_dev_wakeup_delay(adapter);
-   689			mwifiex_dbg(adapter, INFO,
-   690				    "PCIE wakeup: Setting PS_STATE_AWAKE\n");
-   691			adapter->ps_state = PS_STATE_AWAKE;
-   692		}
-   693	
-   694		return 0;
-   695	}
-   696	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
