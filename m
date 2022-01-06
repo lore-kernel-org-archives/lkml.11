@@ -2,76 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EB94C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 04:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 04:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbiAFEKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 23:10:15 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:48387 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229907AbiAFEKO (ORCPT
+        id S232333AbiAFENQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 23:13:16 -0500
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:35978
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232228AbiAFENP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 23:10:14 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Wed, 5 Jan 2022 23:13:15 -0500
+Received: from localhost.localdomain (1-171-96-105.dynamic-ip.hinet.net [1.171.96.105])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JTtDN3fjjz4xd4;
-        Thu,  6 Jan 2022 15:10:12 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1641442212;
-        bh=Ved6JHdmzhtZe5QjKz9X6ODAkx9dqx1to5coknU5gdk=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Uwj77FXqfXLH3HbsO3/ufvHvTCHnOJXk1MddT+beRtdhO3WNZt1NtZe2EP01aF6iZ
-         w8P9/tvLX/PiKy9EW9+SqGWjv1CDZd5go8gAlDGKlL+4nCG7IQIjBy1rKSqSAsCVto
-         JEImhtXaI5Bjo4JnHYZ/N/lkP6XfdhareHo290gXzddNp0NJydsr+5FgT8uMX9yevY
-         SbzgNgAHBYaTmJi9vCjfwhoaflLLszrBTpH5UfaLvW4UM0q5hkFFPYjWyDhQYI8q6x
-         fg6z3H9Fx98/mnLIJV1FpR5GHgFB9dsRwth7PDheBLabUe/1piKPWO7QPnHECKMOa6
-         ck4DAIdaKNYGw==
-Date:   Thu, 6 Jan 2022 15:10:10 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: please clean up the keys tree
-Message-ID: <20220106151010.500e4f83@canb.auug.org.au>
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 2CF1340004;
+        Thu,  6 Jan 2022 04:13:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641442387;
+        bh=VoTmhA7NUUNc/uB6IQmih/xqmEaFhzeTWWfbBBkxzE8=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=L0EeAUCh4cxxC4lGY96cC7jA9vng84AuWvDi7RM5X44onf8Y5/5P8Xic8c4N9Xx/q
+         fD7NdtuLwfTqfLuQuuthnKb+nh4xuc0doeo4j5P7vuYIhkHMdFh1PqSoroBBbJSO3g
+         feOYuNMsoDBzJzEyw7DgB1mz2FwxNAh8fHQai1SZ1etDILiYbep4DLIf/ZYjlzFbcw
+         P3oFs9jh7j5162vj/04a08h38cBf0PYWdYglRNDJVsllRZ8ohACZ/Isnm668JOL/+x
+         cQQjjfmPkpWn28cgPtWoDkLd/cpko2NrMxonxz0jGBkqD7sn/2i+ViSicZCFlD67al
+         r5c0crFtz1QWw==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     andy.shevchenko@gmail.com,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Chris Lesiak <chris.lesiak@licor.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: humidity: hdc100x: Add ACPI HID table
+Date:   Thu,  6 Jan 2022 12:12:56 +0800
+Message-Id: <20220106041257.927664-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/8MBV+HpNehm5g+O9jpIX3OM";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/8MBV+HpNehm5g+O9jpIX3OM
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+x86 boards may use ACPI HID "TXN1010" to for hdc100x device.
 
-Hi David,
+So add an ACPI match table for that accordingly.
 
-All the commits in the keys tree
-(git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git#keys-n=
-ext)
-are also in Linus' tree as different commits.  Please clean that up as
-it is causing merge conflicts against later work.
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+v2:
+ - Change the ID to follow ACPI Spec
+ - Add __maybe_unused to avoid compiler warning
 
---=20
-Cheers,
-Stephen Rothwell
+ drivers/iio/humidity/hdc100x.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---Sig_/8MBV+HpNehm5g+O9jpIX3OM
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index 9e0fce917ce4c..c6c71ca1d2017 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -417,10 +417,18 @@ static const struct of_device_id hdc100x_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
+ 
++static const struct acpi_device_id __maybe_unused hdc100x_acpi_match[] = {
++	{ "TXN1010" },
++	{ },
++};
++
++MODULE_DEVICE_TABLE(acpi, hdc100x_acpi_match);
++
+ static struct i2c_driver hdc100x_driver = {
+ 	.driver = {
+ 		.name	= "hdc100x",
+ 		.of_match_table = hdc100x_dt_ids,
++		.acpi_match_table = ACPI_PTR(hdc100x_acpi_match),
+ 	},
+ 	.probe = hdc100x_probe,
+ 	.id_table = hdc100x_id,
+-- 
+2.33.1
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHWa6IACgkQAVBC80lX
-0Gy9kAgAi8L+l7i56isbP6GaPUpJpoYNea+b/MlrO1Uf3c8CwbNWws2ypFvv1A7y
-YZ1qmc+bCWo4yqa5ca0ia+9k5hWq7oJ5ZQxvVun74MZn+XGx5trq3t2LdIWd9vz4
-FGQ/Js/hOyx8+O1L2zlWaHYrOjT9g0TxBYdVsMRcI+oTqp+U/OoZRPzZA7hBQbah
-VdVRlyKp0iRpTjZPzg5Os/rt0gGIAUWXB2K9hcq+a2r2LGgisqH+NkUlwd4mZma4
-oI9ALV3oz+Fmxo08o0R/oQ34R3vtzT55HvrEr3PAcHanlM406VPrHwi7ggkrVvBH
-zpfZKgadHTphi9kJCCrC7b/cCKABgA==
-=zHbj
------END PGP SIGNATURE-----
-
---Sig_/8MBV+HpNehm5g+O9jpIX3OM--
