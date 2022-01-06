@@ -2,103 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58804C43217
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 06:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A83E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 06:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235259AbiAFGyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 01:54:32 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:38866 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235172AbiAFGy2 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 01:54:28 -0500
-X-UUID: 8b137e16475741028ed2340d384d0748-20220106
-X-UUID: 8b137e16475741028ed2340d384d0748-20220106
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1150771980; Thu, 06 Jan 2022 14:54:26 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 6 Jan 2022 14:54:24 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 6 Jan
- 2022 14:54:18 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 6 Jan 2022 14:54:18 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <lee.jones@linaro.org>, <robh+dt@kernel.org>, <broonie@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH 4/4] dt-bindings: regulator: Add MT6358 regulators
-Date:   Thu, 6 Jan 2022 14:54:07 +0800
-Message-ID: <20220106065407.16036-5-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220106065407.16036-1-johnson.wang@mediatek.com>
-References: <20220106065407.16036-1-johnson.wang@mediatek.com>
+        id S235266AbiAFG5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 01:57:21 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:35392 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S234429AbiAFG5U (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 01:57:20 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowACnrZ26ktZhISPhBQ--.63675S2;
+        Thu, 06 Jan 2022 14:56:58 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     eric.piel@tremplin-utc.net, arnd@arndb.de,
+        gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] drivers/misc/lis3lv02d/lis3lv02d_i2c.c: Check for error return from regulator_bulk_enable in lis3_i2c_init
+Date:   Thu,  6 Jan 2022 14:56:57 +0800
+Message-Id: <20220106065657.2667748-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowACnrZ26ktZhISPhBQ--.63675S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKF48WF18tr18tr4xJw1DZFb_yoWDurc_GF
+        9xZry7Zr98Z397X3ZxGa40vFyIkr4DWa4SgrWxKF43ta47GF1xGrykAry3X3y8JFWUWr1j
+        qr4vv34Iqw42qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r47
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfU8xR6UUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add buck_vcore_sshub and ldo_vsram_others_sshub
-regulators to binding document for MT6358 and MT6366.
+Because of the possible failure of the consumer, the
+regulator_bulk_enable() may return error.
+Therefore, it should be better to check the return value of the
+lis3_reg_ctrl().
+There are two callers, and I submit two patches to fix separately.
+This patch is about lis3_i2c_init().
 
-Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+Fixes: ec400c9fab99 ("lis3lv02d: make regulator API usage unconditional")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- .../bindings/regulator/mt6358-regulator.txt   | 22 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ drivers/misc/lis3lv02d/lis3lv02d_i2c.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/regulator/mt6358-regulator.txt b/Documentation/devicetree/bindings/regulator/mt6358-regulator.txt
-index 9a90a92f2d7e..7034cdca54e0 100644
---- a/Documentation/devicetree/bindings/regulator/mt6358-regulator.txt
-+++ b/Documentation/devicetree/bindings/regulator/mt6358-regulator.txt
-@@ -8,14 +8,14 @@ Documentation/devicetree/bindings/regulator/regulator.txt.
+diff --git a/drivers/misc/lis3lv02d/lis3lv02d_i2c.c b/drivers/misc/lis3lv02d/lis3lv02d_i2c.c
+index 52555d2e824b..4001e3c0a167 100644
+--- a/drivers/misc/lis3lv02d/lis3lv02d_i2c.c
++++ b/drivers/misc/lis3lv02d/lis3lv02d_i2c.c
+@@ -69,7 +69,9 @@ static int lis3_i2c_init(struct lis3lv02d *lis3)
+ 	u8 reg;
+ 	int ret;
  
- The valid names for regulators are::
- BUCK:
--  buck_vdram1, buck_vcore, buck_vpa, buck_vproc11, buck_vproc12, buck_vgpu,
--  buck_vs2, buck_vmodem, buck_vs1
-+  buck_vdram1, buck_vcore, buck_vcore_sshub, buck_vpa, buck_vproc11,
-+  buck_vproc12, buck_vgpu, buck_vs2, buck_vmodem, buck_vs1
- LDO:
-   ldo_vdram2, ldo_vsim1, ldo_vibr, ldo_vrf12, ldo_vio18, ldo_vusb, ldo_vcamio,
-   ldo_vcamd, ldo_vcn18, ldo_vfe28, ldo_vsram_proc11, ldo_vcn28, ldo_vsram_others,
--  ldo_vsram_gpu, ldo_vxo22, ldo_vefuse, ldo_vaux18, ldo_vmch, ldo_vbif28,
--  ldo_vsram_proc12, ldo_vcama1, ldo_vemc, ldo_vio28, ldo_va12, ldo_vrf18,
--  ldo_vcn33_bt, ldo_vcn33_wifi, ldo_vcama2, ldo_vmc, ldo_vldo28, ldo_vaud28,
-+  ldo_vsram_others_sshub, ldo_vsram_gpu, ldo_vxo22, ldo_vefuse, ldo_vaux18,
-+  ldo_vmch, ldo_vbif28, ldo_vsram_proc12, ldo_vcama1, ldo_vemc, ldo_vio28, ldo_va12,
-+  ldo_vrf18, ldo_vcn33_bt, ldo_vcn33_wifi, ldo_vcama2, ldo_vmc, ldo_vldo28, ldo_vaud28,
-   ldo_vsim2
+-	lis3_reg_ctrl(lis3, LIS3_REG_ON);
++	ret = lis3_reg_ctrl(lis3, LIS3_REG_ON);
++	if (ret)
++		return ret;
  
- Example:
-@@ -354,5 +354,17 @@ Example:
- 				regulator-max-microvolt = <3100000>;
- 				regulator-enable-ramp-delay = <540>;
- 			};
-+
-+			mt6358_vcore_sshub_reg: buck_vcore_sshub {
-+				regulator-name = "vcore_sshub";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+			};
-+
-+			mt6358_vsram_others_sshub_reg: ldo_vsram_others_sshub {
-+				regulator-name = "vsram_others_sshub";
-+				regulator-min-microvolt = <500000>;
-+				regulator-max-microvolt = <1293750>;
-+			};
- 		};
- 	};
+ 	lis3->read(lis3, WHO_AM_I, &reg);
+ 	if (reg != lis3->whoami)
 -- 
-2.18.0
+2.25.1
 
