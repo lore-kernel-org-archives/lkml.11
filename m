@@ -2,160 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 613F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 02:24:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 334D7C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 02:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344931AbiAFCYN (ORCPT
+        id S1344757AbiAFCZx convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 21:24:13 -0500
-Received: from mga12.intel.com ([192.55.52.136]:3337 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344722AbiAFCWv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 21:22:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641435771; x=1672971771;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AR5i2NMwGfSOdi+HLgKnhlt3tjHftmsXmPOft4wFOHU=;
-  b=goOwz0FsPCDiwKiIIRNd6XvrIt+KHMOZuKcd5wpTo3Fpo/ZrRFpiseln
-   aifPXPlKhCWy034PriWEDuE3hBwdjCLM99DSYNYAh2nAydLqcUdD2EXI1
-   ak7U4h35oU3PYjaDW9dQW0N/JVyXX6NgiHSJuU0MBbsNWTW//A9YgXLMa
-   AZ7uOG1T3iIyhAx9bM1sG5yN85WTRMEvfHlKlFsEIU7t3vvzzucD6rTfp
-   EH5dgsXLGVcDhqKQ6ce3Es213mVkJjJ6S3sYaKsKpxTcK7gWdUrWgvbwT
-   L9DtOribYaY3aCJj+/jolE2guCSWdZ0rR2eLoUarzJ71iXy60NmAfuLPi
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="222571011"
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="222571011"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 18:22:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="526794556"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 05 Jan 2022 18:22:40 -0800
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-To:     Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Will Deacon <will@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v1 8/8] iommu: Remove iommu_attach/detach_group()
-Date:   Thu,  6 Jan 2022 10:20:53 +0800
-Message-Id: <20220106022053.2406748-9-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+        Wed, 5 Jan 2022 21:25:53 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:55828 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1344721AbiAFCZw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 21:25:52 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.1.2/8.16.1.2) with ESMTP id 205N62L1026812
+        for <linux-kernel@vger.kernel.org>; Wed, 5 Jan 2022 18:25:52 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3ddmq3gtjx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 18:25:51 -0800
+Received: from twshared7460.02.ash7.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 5 Jan 2022 18:25:51 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 9144A273E53FA; Wed,  5 Jan 2022 18:25:38 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <song@kernel.org>
+Subject: [PATCH v3 bpf-next 0/7] bpf_prog_pack allocator
+Date:   Wed, 5 Jan 2022 18:25:26 -0800
+Message-ID: <20220106022533.2950016-1-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: _L4qm0RdGY2BsxT46rPSlKCe2HJsFbQd
+X-Proofpoint-ORIG-GUID: _L4qm0RdGY2BsxT46rPSlKCe2HJsFbQd
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-05_08,2022-01-04_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 lowpriorityscore=0
+ mlxscore=0 mlxlogscore=659 clxscore=1015 priorityscore=1501 malwarescore=0
+ bulkscore=0 impostorscore=0 adultscore=0 suspectscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2112160000 definitions=main-2201060011
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The iommu_attach/detach_group() interfaces have no reference in the tree
-anymore. Remove them to avoid dead code.
+Changes v2 => v3:
+1. Fix tailcall.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h | 15 ---------------
- drivers/iommu/iommu.c | 20 --------------------
- 2 files changed, 35 deletions(-)
+Changes v1 => v2:
+1. Use text_poke instead of writing through linear mapping. (Peter)
+2. Avoid making changes to non-x86_64 code.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 66ebce3d1e11..2568ab0d0872 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -457,10 +457,6 @@ iommu_alloc_resv_region(phys_addr_t start, size_t length, int prot,
- extern int iommu_get_group_resv_regions(struct iommu_group *group,
- 					struct list_head *head);
- 
--extern int iommu_attach_group(struct iommu_domain *domain,
--			      struct iommu_group *group);
--extern void iommu_detach_group(struct iommu_domain *domain,
--			       struct iommu_group *group);
- extern struct iommu_group *iommu_group_alloc(void);
- extern void *iommu_group_get_iommudata(struct iommu_group *group);
- extern void iommu_group_set_iommudata(struct iommu_group *group,
-@@ -818,17 +814,6 @@ static inline bool iommu_default_passthrough(void)
- 	return true;
- }
- 
--static inline int iommu_attach_group(struct iommu_domain *domain,
--				     struct iommu_group *group)
--{
--	return -ENODEV;
--}
--
--static inline void iommu_detach_group(struct iommu_domain *domain,
--				      struct iommu_group *group)
--{
--}
--
- static inline struct iommu_group *iommu_group_alloc(void)
- {
- 	return ERR_PTR(-ENODEV);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2c9efd85e447..33f7027e677f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2308,18 +2308,6 @@ static int __iommu_attach_group(struct iommu_domain *domain,
- 	return ret;
- }
- 
--int iommu_attach_group(struct iommu_domain *domain, struct iommu_group *group)
--{
--	int ret;
--
--	mutex_lock(&group->mutex);
--	ret = __iommu_attach_group(domain, group);
--	mutex_unlock(&group->mutex);
--
--	return ret;
--}
--EXPORT_SYMBOL_GPL(iommu_attach_group);
--
- static int iommu_group_do_detach_device(struct device *dev, void *data)
- {
- 	struct iommu_domain *domain = data;
-@@ -2357,14 +2345,6 @@ static void __iommu_detach_group(struct iommu_domain *domain,
- 		group->domain = group->default_domain;
- }
- 
--void iommu_detach_group(struct iommu_domain *domain, struct iommu_group *group)
--{
--	mutex_lock(&group->mutex);
--	__iommu_detach_group(domain, group);
--	mutex_unlock(&group->mutex);
--}
--EXPORT_SYMBOL_GPL(iommu_detach_group);
--
- phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
- 	if (domain->type == IOMMU_DOMAIN_IDENTITY)
--- 
-2.25.1
+Most BPF programs are small, but they consume a page each. For systems
+with busy traffic and many BPF programs, this could also add significant
+pressure to instruction TLB.
 
+This set tries to solve this problem with customized allocator that pack
+multiple programs into a huge page.
+
+Patches 1-5 prepare the work. Patch 6 contains key logic of the allocator.
+Patch 7 uses this allocator in x86_64 jit compiler.
+
+Song Liu (7):
+  x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+  bpf: use bytes instead of pages for bpf_jit_[charge|uncharge]_modmem
+  bpf: use size instead of pages in bpf_binary_header
+  bpf: add a pointer of bpf_binary_header to bpf_prog
+  x86/alternative: introduce text_poke_jit
+  bpf: introduce bpf_prog_pack allocator
+  bpf, x86_64: use bpf_prog_pack allocator
+
+ arch/x86/Kconfig                     |   1 +
+ arch/x86/include/asm/text-patching.h |   1 +
+ arch/x86/kernel/alternative.c        |  28 ++++
+ arch/x86/net/bpf_jit_comp.c          | 133 +++++++++++++----
+ include/linux/bpf.h                  |   4 +-
+ include/linux/filter.h               |  23 ++-
+ kernel/bpf/core.c                    | 213 ++++++++++++++++++++++++---
+ kernel/bpf/trampoline.c              |   6 +-
+ 8 files changed, 350 insertions(+), 59 deletions(-)
+
+--
+2.30.2
