@@ -2,95 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A878C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241490AbiAFRAP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:00:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241426AbiAFRAO (ORCPT
+        id S241517AbiAFRES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:04:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53274 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241500AbiAFRER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:00:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E57C061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:00:13 -0800 (PST)
+        Thu, 6 Jan 2022 12:04:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89526B82295
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 17:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F0FC36AEB;
-        Thu,  6 Jan 2022 17:00:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06054B82298;
+        Thu,  6 Jan 2022 17:04:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CAA3C36AE3;
+        Thu,  6 Jan 2022 17:04:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641488411;
-        bh=22PQNwSRS5YEIY51QytBLxTIdXQaOtaK6c/x+LqB/VI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=sB0Qk0VeIRsvybT4EiAYRJVEz6ehugcxVDIVmhVZcg+gozQYMU6EBaInI1Dt401VY
-         ysSDB/tB7QE5LSBsfzLo2gGdrXzq8kNhscHf/8c4Y/XyZNth1v4jtU3HOL1O9T0rnr
-         8Y5pSveTXaZYZMYHrdx7bzmAWSRd1rFeblb2DRH4MzERsrEmiJSbmAzhQliGQdR+Xr
-         kzxJUq7cE6Of2f3nlDlHoitHYibW3s4JlnaOOuARq/egWOHwaP8pixc5CAUJb2HBMz
-         oyM5DjD0nN2zcpH18PXniJa1z5hwrf/xKRtiOPxnx3iI2Sp4RCkUUl1Qa0IShY2FhN
-         7ejbj0BBeCRjA==
-Date:   Thu, 6 Jan 2022 17:00:02 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     =?iso-8859-1?Q?Andr=E9?= Werner 
-        <andre.werner@systec-electronic.com>
-Cc:     lgirdwood@gmail.com, anson.huang@nxp.com, yibin.gong@nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] linux: regulator: pca9450.h: Correct register masks for
- LDOs
-Message-ID: <YdcgErc/fN7Z1HzM@sirena.org.uk>
-References: <59372065.103064.1638543313537@ox4u.de>
- <c8a8b54f-3784-e473-a59b-3fa202f79f96@systec-electronic.com>
+        s=k20201202; t=1641488654;
+        bh=OfsFRMXkW6wyAm27mg3yHrw/CY6UA9QwJwGwK1qoOOU=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=M5JmIJFm5CVqYZvQb5iNNtPZwRbdgYkSGpOklZBzh2W69iylExR2mhD2+bHGXhjQf
+         sSGke+rdClH2pHLi3SnWqi0DvxDWx5dfPNbYyVU/rCc2tvy6lCfSI3ejbigHfNCDqr
+         hw7+bCxHL05rSCeqMTS15KL/oYsyHDwDfPY8X6glV9cKvX1ml9aIzEDNu/nC413X4t
+         Wv348pOqGAnX3JvwypwHsiExpVQbZr2JGP12PNR5cCCrrN10uiMQF+z68d2DfsBECG
+         LUVMgfyB+aVBGactk/YK5rIcOF6sittIwSfWCDlVwcBoXCJ5o+uVxcoTIRXYwJLSPQ
+         8+iJwtxFsShEA==
+Message-ID: <88d7f8970dcc0fd0ead891b1f42f160b8d17d60e.camel@kernel.org>
+Subject: Re: [PATCH v4 38/68] vfs, cachefiles: Mark a backing file in use
+ with an inode flag
+From:   Jeff Layton <jlayton@kernel.org>
+To:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com
+Cc:     Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Omar Sandoval <osandov@osandov.com>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 06 Jan 2022 12:04:12 -0500
+In-Reply-To: <164021541207.640689.564689725898537127.stgit@warthog.procyon.org.uk>
+References: <164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk>
+         <164021541207.640689.564689725898537127.stgit@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="UNf3GG0UEVA2t872"
-Content-Disposition: inline
-In-Reply-To: <c8a8b54f-3784-e473-a59b-3fa202f79f96@systec-electronic.com>
-X-Cookie: Kill Ugly Radio
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2021-12-22 at 23:23 +0000, David Howells wrote:
+> Use an inode flag, S_KERNEL_FILE, to mark that a backing file is in use by
+> the kernel to prevent cachefiles or other kernel services from interfering
+> with that file.
+> 
+> Alter rmdir to reject attempts to remove a directory marked with this flag.
+> This is used by cachefiles to prevent cachefilesd from removing them.
+> 
+> Using S_SWAPFILE instead isn't really viable as that has other effects in
+> the I/O paths.
+> 
+> Changes
+> =======
+> ver #3:
+>  - Check for the object pointer being NULL in the tracepoints rather than
+>    the caller.
+> 
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: linux-cachefs@redhat.com
+> Link: https://lore.kernel.org/r/163819630256.215744.4815885535039369574.stgit@warthog.procyon.org.uk/ # v1
+> Link: https://lore.kernel.org/r/163906931596.143852.8642051223094013028.stgit@warthog.procyon.org.uk/ # v2
+> Link: https://lore.kernel.org/r/163967141000.1823006.12920680657559677789.stgit@warthog.procyon.org.uk/ # v3
+> ---
+> 
+>  fs/cachefiles/Makefile            |    1 +
+>  fs/cachefiles/namei.c             |   43 +++++++++++++++++++++++++++++++++++++
+>  fs/namei.c                        |    3 ++-
+>  include/linux/fs.h                |    1 +
+>  include/trace/events/cachefiles.h |   42 ++++++++++++++++++++++++++++++++++++
+>  5 files changed, 89 insertions(+), 1 deletion(-)
+>  create mode 100644 fs/cachefiles/namei.c
+> 
+> diff --git a/fs/cachefiles/Makefile b/fs/cachefiles/Makefile
+> index 463e3d608b75..e0b092ca077f 100644
+> --- a/fs/cachefiles/Makefile
+> +++ b/fs/cachefiles/Makefile
+> @@ -7,6 +7,7 @@ cachefiles-y := \
+>  	cache.o \
+>  	daemon.o \
+>  	main.o \
+> +	namei.o \
+>  	security.o
+>  
+>  cachefiles-$(CONFIG_CACHEFILES_ERROR_INJECTION) += error_inject.o
+> diff --git a/fs/cachefiles/namei.c b/fs/cachefiles/namei.c
+> new file mode 100644
+> index 000000000000..913f83f1c900
+> --- /dev/null
+> +++ b/fs/cachefiles/namei.c
+> @@ -0,0 +1,43 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/* CacheFiles path walking and related routines
+> + *
+> + * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
+> + * Written by David Howells (dhowells@redhat.com)
+> + */
+> +
+> +#include <linux/fs.h>
+> +#include "internal.h"
+> +
+> +/*
+> + * Mark the backing file as being a cache file if it's not already in use.  The
+> + * mark tells the culling request command that it's not allowed to cull the
+> + * file or directory.  The caller must hold the inode lock.
+> + */
+> +static bool __cachefiles_mark_inode_in_use(struct cachefiles_object *object,
+> +					   struct dentry *dentry)
+> +{
+> +	struct inode *inode = d_backing_inode(dentry);
+> +	bool can_use = false;
+> +
+> +	if (!(inode->i_flags & S_KERNEL_FILE)) {
 
---UNf3GG0UEVA2t872
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+nit: most of the other S_* flags have a corresponding IS_* macro. Should
+this be:
 
-On Tue, Dec 07, 2021 at 10:05:56AM +0100, Andr=E9 Werner wrote:
->  From 6dda12150785665ddd1059d53aa22bf902bfe4aa Mon Sep 17 00:00:00 2001
-> From: Andre Werner <andre.werner@systec-electronic.com>
-> Date: Mon, 22 Nov 2021 15:40:17 +0100
-> Subject: [PATCH] linux: regulator: pca9450.h: Correct register masks for=
-=20
-> LDOs
->=20
-> Within the defines of the register masks for LDO3 and LDO4,
-> the most significant bit was missing. The datasheet said
-> the range is 4:0 bits. Thus, the output voltage cannot be
-> set above 1.7V for each.
+    IS_KERNEL_FILE(inode)
 
-Please submit patches using subject lines and a format reflecting the
-style for the subsystem, this makes it easier for people to identify
-relevant patches.  Look at what existing commits in the area you're
-changing are doing and make sure your subject lines visually resemble
-what they're doing.  There's no need to resubmit to fix this alone.
+?
 
---UNf3GG0UEVA2t872
-Content-Type: application/pgp-signature; name="signature.asc"
+> +		inode->i_flags |= S_KERNEL_FILE;
+> +		trace_cachefiles_mark_active(object, inode);
+> +		can_use = true;
+> +	} else {
+> +		pr_notice("cachefiles: Inode already in use: %pd\n", dentry);
+> +	}
+> +
+> +	return can_use;
+> +}
+> +
+> +/*
+> + * Unmark a backing inode.  The caller must hold the inode lock.
+> + */
+> +static void __cachefiles_unmark_inode_in_use(struct cachefiles_object *object,
+> +					     struct dentry *dentry)
+> +{
+> +	struct inode *inode = d_backing_inode(dentry);
+> +
+> +	inode->i_flags &= ~S_KERNEL_FILE;
+> +	trace_cachefiles_mark_inactive(object, inode);
+> +}
+> diff --git a/fs/namei.c b/fs/namei.c
+> index 1f9d2187c765..d81f04f8d818 100644
+> --- a/fs/namei.c
+> +++ b/fs/namei.c
+> @@ -3958,7 +3958,8 @@ int vfs_rmdir(struct user_namespace *mnt_userns, struct inode *dir,
+>  	inode_lock(dentry->d_inode);
+>  
+>  	error = -EBUSY;
+> -	if (is_local_mountpoint(dentry))
+> +	if (is_local_mountpoint(dentry) ||
+> +	    (dentry->d_inode->i_flags & S_KERNEL_FILE))
+>  		goto out;
+>  
+>  	error = security_inode_rmdir(dir, dentry);
+> diff --git a/include/linux/fs.h b/include/linux/fs.h
+> index 2c0b8e77d9ab..bcf1ca430139 100644
+> --- a/include/linux/fs.h
+> +++ b/include/linux/fs.h
+> @@ -2249,6 +2249,7 @@ struct super_operations {
+>  #define S_ENCRYPTED	(1 << 14) /* Encrypted file (using fs/crypto/) */
+>  #define S_CASEFOLD	(1 << 15) /* Casefolded file */
+>  #define S_VERITY	(1 << 16) /* Verity file (using fs/verity/) */
+> +#define S_KERNEL_FILE	(1 << 17) /* File is in use by the kernel (eg. fs/cachefiles) */
+>  
+>  /*
+>   * Note that nosuid etc flags are inode-specific: setting some file-system
+> diff --git a/include/trace/events/cachefiles.h b/include/trace/events/cachefiles.h
+> index 9bd5a8a60801..6331cd29880d 100644
+> --- a/include/trace/events/cachefiles.h
+> +++ b/include/trace/events/cachefiles.h
+> @@ -83,6 +83,48 @@ cachefiles_error_traces;
+>  #define E_(a, b)	{ a, b }
+>  
+>  
+> +TRACE_EVENT(cachefiles_mark_active,
+> +	    TP_PROTO(struct cachefiles_object *obj,
+> +		     struct inode *inode),
+> +
+> +	    TP_ARGS(obj, inode),
+> +
+> +	    /* Note that obj may be NULL */
+> +	    TP_STRUCT__entry(
+> +		    __field(unsigned int,		obj		)
+> +		    __field(ino_t,			inode		)
+> +			     ),
+> +
+> +	    TP_fast_assign(
+> +		    __entry->obj	= obj ? obj->debug_id : 0;
+> +		    __entry->inode	= inode->i_ino;
+> +			   ),
+> +
+> +	    TP_printk("o=%08x i=%lx",
+> +		      __entry->obj, __entry->inode)
+> +	    );
+> +
+> +TRACE_EVENT(cachefiles_mark_inactive,
+> +	    TP_PROTO(struct cachefiles_object *obj,
+> +		     struct inode *inode),
+> +
+> +	    TP_ARGS(obj, inode),
+> +
+> +	    /* Note that obj may be NULL */
+> +	    TP_STRUCT__entry(
+> +		    __field(unsigned int,		obj		)
+> +		    __field(ino_t,			inode		)
+> +			     ),
+> +
+> +	    TP_fast_assign(
+> +		    __entry->obj	= obj ? obj->debug_id : 0;
+> +		    __entry->inode	= inode->i_ino;
+> +			   ),
+> +
+> +	    TP_printk("o=%08x i=%lx",
+> +		      __entry->obj, __entry->inode)
+> +	    );
+> +
+>  TRACE_EVENT(cachefiles_vfs_error,
+>  	    TP_PROTO(struct cachefiles_object *obj, struct inode *backer,
+>  		     int error, enum cachefiles_error_trace where),
+> 
+> 
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHXIBEACgkQJNaLcl1U
-h9ATlwf+OAYxcjU3KAb1ZNrCHVGe6dPmDCcxtHbDV+/9eq/1020YY1T1hD6HZi2H
-TP1k0M7qEA9k+Q7ot+Svx0tAF7cG/PdV/X4czdtjDfT42HxyjYXn3e/EfY1JrV2S
-FtkeW3lRpi4SX/p3ei/xg2fWqkVLjA8591jMwz5dhU8OI3FfRSi9nAo2Vjp8IoM6
-kO03++/2kuPQVdI+1/CQBUHJwNemDXNrfmGWaNqEOnCZwdXQ+ZYF11SNM8hneHWh
-5EpAnbWzmZ9+5YkTh4eSCyEO52KGU6aRsA3PYPLjxo+OkJjtEp+u9Zp8Y3kREhTt
-1Bp3XPhr8YszTMI0PI5exbocOiOG5g==
-=mL9B
------END PGP SIGNATURE-----
-
---UNf3GG0UEVA2t872--
+-- 
+Jeff Layton <jlayton@kernel.org>
