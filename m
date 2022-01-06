@@ -2,70 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B8B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 14:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 14:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240174AbiAFOeJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 09:34:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58120 "EHLO
+        id S240182AbiAFOer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 09:34:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240163AbiAFOeH (ORCPT
+        with ESMTP id S240163AbiAFOeq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 09:34:07 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E054C061245;
-        Thu,  6 Jan 2022 06:34:07 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id 30so8546754edv.3;
-        Thu, 06 Jan 2022 06:34:07 -0800 (PST)
+        Thu, 6 Jan 2022 09:34:46 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4232EC061245;
+        Thu,  6 Jan 2022 06:34:46 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id j21so10124859edt.9;
+        Thu, 06 Jan 2022 06:34:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FobZFKR3ktosOzan7NztFj7JY9CFV7TYjbXDVZknTnA=;
-        b=f0G+OVXckKpe5TRarnXTa3N7O2i0E+LM+JlAKrQda7V3sjkTpF4q0cDofAtWsOK13w
-         y+LCfACqK/Ppr5Pvtrz5B30r5bBSM9rM/RBbd/6mwVdD19QblWDSXuF6DzE5Eiy9vSJS
-         CVkfatmoyyBRu3f3J//6BNWXJxvtdKsmqcPChx1joxQ+Un76/Ln0YSWWICQnYId4M9+W
-         ubYQrQCvzh2rIbB1wbaBeFlq5HjEsFPLHuWe+rijpIrdjvBWXQl9b3M1rI1xQ/sfe4Hi
-         t4IMgx+pbGrGlM+LYT8CNbtnDsmG7ekkCwuUbRmBxAtXIJTBy4XOX1teN0R0b7r/l23d
-         koGw==
+        bh=BUe6YDJn8/YUK5uuxVc1cV6eQGCStzVD0xbFRP9ogOY=;
+        b=duw5Vuz9b4CX2X7CiJTPr1yyK7urT9/yj2Vxr+YIjLbxxUyEuuDqCNNSZ+hK3RSFmK
+         AZt+QyN5fHV7uFx5nhtSWGobfCYdkClopP4JnnMhkSo4bskbuQw47SvlvvzSYXbi31cT
+         F8u+lFV5BASlwYUROhG199fexFzH/skaDYbRmoCBspGooorNv/u+FzXsYN3fym+yf3GI
+         WXyEwHBydOU2VYOlmkPDxoOuK5FhQC9CAMDFka9qqgVvngiqY7SZdVFZ36YQ6hKpwAWv
+         4IAYsMO9SsRpmF43NJWl3WJOUQaPmFFjz6XvTDmpfC5uIkJGVcjp4AUakH2me4klAi6R
+         6XgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FobZFKR3ktosOzan7NztFj7JY9CFV7TYjbXDVZknTnA=;
-        b=ennaD7LikLZdYD4IYVj3NtsyapvHFx+g6ph6ZNIbIG0QaEjnTZ5V6A4x+sHQYKqNbx
-         SNawSUCXhe7mh00fScpAl00CydUNWXoOvzE4Gvn3dJ/74ZGpxjc4pat9aqRiulCuXJrP
-         WoRvcK+qz9UG8bwABFJoou/FnClfEtkDLVR5uguFLaMtnUx73iZV+RkUphXiOFBhPumf
-         dQvKouVb9I36J6jZ/WwEZZZC9K9GkpFzTHTeX+ZctzkmuXb9yrAKF0Fij/l7SyDKjXia
-         7RQlmLvc+rLiDEDQZJdmc5ZH+4q0u3yL8cgPhu4DVZ3mfoUAx2z9WQTSabCtKQMBHtNR
-         +RvQ==
-X-Gm-Message-State: AOAM531E+nM2zODKcAp3VJSK+3uLnMAs/O6iv+DkEgdgis04DHvIFNSQ
-        1EtZaMm56xGXoMv6XmPyCf6ZsfJctrryV7fLSPfcyD1PfrZLhg==
-X-Google-Smtp-Source: ABdhPJxFTTW5eEBwAQwjqvLVigTgsAyHhGmbRbQOwdT2va/JiYwDVTaHsnL0gfkBoGo103l3it4k7dOOl//rChRNfRA=
-X-Received: by 2002:a05:6402:2693:: with SMTP id w19mr56420317edd.158.1641479646167;
- Thu, 06 Jan 2022 06:34:06 -0800 (PST)
+        bh=BUe6YDJn8/YUK5uuxVc1cV6eQGCStzVD0xbFRP9ogOY=;
+        b=ipm0AgrI67S3ZLOYmheyxcD8gidhOc7TsaNLSPosvfegJVqlnqhmW/W5gMa0rw1dZT
+         SqD7MDc3ImFUDdDWIt1Y7aLO4FDyTQVe1wPARFXr5cZLvZqhQ/WDnWUEZ6uUn4Jn2JoV
+         21gNomFeqe8FRgHyH0ldy/QqxKiygge/ff2MzbtaifumZ4cKgCZgSvQluQX1L1oaj0zD
+         NzfXptbyXdeSk3XuRa13oGk6aQJAoz/d2OHY3Ol6HCDTGoLa5/9jSNUTcz0+Kg7VI5ma
+         dsOzJhgqwo/vgds3S0HPCcSD991OXcD/3LYUWXNB77r21t6OskZraG9inJBvPjxqv5xV
+         jblw==
+X-Gm-Message-State: AOAM530QKYbqn4pL89nFzw8CKoWTBF60dCoeyQlmKHiRwHM/98q4/NDp
+        fJwnl/dKB1TzVDJG7codMBEF2RUQjoGRwWzjzBo=
+X-Google-Smtp-Source: ABdhPJxFeIxFijPPQQXMHowmkJMvHVjo68XMpUtPKIAZQ9cWkWbNrblNY3txHDmJtv7AvsYmTMIE5v2/pJUK2t041ZA=
+X-Received: by 2002:a05:6402:12c4:: with SMTP id k4mr56539100edx.218.1641479684878;
+ Thu, 06 Jan 2022 06:34:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220106044350.930087-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20220106044350.930087-1-kai.heng.feng@canonical.com>
+References: <20220106053810.934797-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20220106053810.934797-1-kai.heng.feng@canonical.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 6 Jan 2022 16:33:30 +0200
-Message-ID: <CAHp75VektuiaaR-MKJPXMXGUXj5wXrKtp7bqdAUqhfojdSnmJw@mail.gmail.com>
-Subject: Re: [PATCH] iio: dps310: Add ACPI HID table
+Date:   Thu, 6 Jan 2022 16:34:08 +0200
+Message-ID: <CAHp75Vf3OAoPvz_iO4FHb=uwj6yiJeiZDpy6+aNs+nJ5wXUC7g@mail.gmail.com>
+Subject: Re: [PATCH] Input: adxl34x: Add ACPI HID table
 To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Eddie James <eajames@linux.ibm.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
+Cc:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        linux-input <linux-input@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 6:44 AM Kai-Heng Feng
+On Thu, Jan 6, 2022 at 7:38 AM Kai-Heng Feng
 <kai.heng.feng@canonical.com> wrote:
 >
-> x86 boards may use ACPI HID "IFX3100" to for dps310 device.
+> x86 boards may use ACPI HID "ADS0345" to for adxl34x device.
 >
 > So add an ACPI match table for that accordingly.
 
