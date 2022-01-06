@@ -2,132 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A07C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E40C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:55:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346542AbiAGJyd (ORCPT
+        id S1346566AbiAGJzA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:54:33 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:25662 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236845AbiAGJyc (ORCPT
+        Fri, 7 Jan 2022 04:55:00 -0500
+Received: from mailout4.samsung.com ([203.254.224.34]:43009 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237163AbiAGJy5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:54:32 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20788OXF030221;
-        Fri, 7 Jan 2022 09:54:29 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=yn+LZK13t96NQ70dE3DDtgrpMgvTlTKwsCocVjhcrlM=;
- b=kCpJgZ6XWEOg7iDo3ScCRRv1jB3J2D5ZkBfHViPNz/o4l3Sg1Eh6JX7DJGw4hZcntbsn
- YEmCuvM7DPRg5Id0wYr+GbqDkL1qxjIwjqQwMVUvYrOi9tb/JgMrbdoZ6iPybFqM/a6v
- q63FGVWRdWWWvzhe9RwHhSmuUqfFkA19MFj4pWbENmzVa+aOOc8pm6gsFuPwX/2Ci4mn
- 9tYxwfZub019ppL/eQEfTdB8cHJP5Hoqo3sSKGBx3CBlLw+fUehQtiMI1ueq/y5Nyd/7
- +s2mYRlS9j/SpLLng5QcmEj6AO4MIb4FpZWknkuC5BS4cOa76Uof/thlIkKGr5smz6t9 9w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4wkpgm6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 09:54:29 +0000
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2079lLxe009385;
-        Fri, 7 Jan 2022 09:54:28 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4wkpgkv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 09:54:28 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2079rgH3016632;
-        Fri, 7 Jan 2022 09:54:27 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3de4xgct3f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 09:54:26 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2079sOmP44368218
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 7 Jan 2022 09:54:24 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9265B11C04C;
-        Fri,  7 Jan 2022 09:54:24 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 255A111C050;
-        Fri,  7 Jan 2022 09:54:24 +0000 (GMT)
-Received: from [9.145.27.136] (unknown [9.145.27.136])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  7 Jan 2022 09:54:24 +0000 (GMT)
-Message-ID: <ed37164f-74b1-de58-8308-4a11ea352faa@linux.ibm.com>
-Date:   Fri, 7 Jan 2022 10:54:29 +0100
+        Fri, 7 Jan 2022 04:54:57 -0500
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220107095454epoutp049018de6eeb6faaab94cc14d64e0b5999~H9GLxPB6k3123631236epoutp04b
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 09:54:54 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220107095454epoutp049018de6eeb6faaab94cc14d64e0b5999~H9GLxPB6k3123631236epoutp04b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1641549295;
+        bh=0EUpvzWXJPRM0Kl1jaYy3rZSClH2Bw4XoaVDqebiRPQ=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=mDdC8POIGqyF4U4igFsHDkRf2syDG1WwYN8eE0Zq5LVT4rH9Sqltq8bCVb+/44rJu
+         K1JB0pNEqOF/Od/zJTxMEmmnKY+/dgGg0o5aJ19uAdHUPJDR1XHgrqm8dbldtMIeYz
+         z6JqSO2N7u7fWfqCrv+wL+WAm5w5XZgXdgoazDeQ=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220107095453epcas2p1c06b86c0c701148537d7a09c7a66a292~H9GKwaxUU0991109911epcas2p1k;
+        Fri,  7 Jan 2022 09:54:53 +0000 (GMT)
+Received: from epsmges2p1.samsung.com (unknown [182.195.36.99]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4JVdqc4ltkz4x9Py; Fri,  7 Jan
+        2022 09:54:52 +0000 (GMT)
+Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
+        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        DA.07.51767.CED08D16; Fri,  7 Jan 2022 18:54:52 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912~H9GI5LPY53119431194epcas2p2i;
+        Fri,  7 Jan 2022 09:54:51 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220107095451epsmtrp1e0ab28c947ac4d7c557b4ce11f03be7f~H9GI4ObQm1528415284epsmtrp1B;
+        Fri,  7 Jan 2022 09:54:51 +0000 (GMT)
+X-AuditID: b6c32a45-447ff7000000ca37-7c-61d80dec3783
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        03.0C.08738.BED08D16; Fri,  7 Jan 2022 18:54:51 +0900 (KST)
+Received: from rack03.dsn.sec.samsung.com (unknown [12.36.155.109]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220107095451epsmtip244aebc901a71c08ef2e5019042e54a4b~H9GIsE-l21849418494epsmtip2k;
+        Fri,  7 Jan 2022 09:54:51 +0000 (GMT)
+From:   SEO HOYOUNG <hy50.seo@samsung.com>
+To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        asutoshd@codeaurora.org, cang@codeaurora.org, bvanassche@acm.org
+Cc:     SEO HOYOUNG <hy50.seo@samsung.com>
+Subject: [PATCH v2] scsi: ufs: modify Tactive time setting conditions
+Date:   Fri,  7 Jan 2022 06:39:24 +0900
+Message-Id: <20220106213924.186263-1-hy50.seo@samsung.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH net v2 1/2] net/smc: Resolve the race between link
- group access and termination
-Content-Language: en-US
-To:     Wen Gu <guwen@linux.alibaba.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dust.li@linux.alibaba.com,
-        tonylu@linux.alibaba.com
-References: <1640704432-76825-1-git-send-email-guwen@linux.alibaba.com>
- <1640704432-76825-2-git-send-email-guwen@linux.alibaba.com>
- <4ec6e460-96d1-fedc-96ff-79a98fd38de8@linux.ibm.com>
- <0a972bf8-1d7b-a211-2c11-50e86c87700e@linux.alibaba.com>
- <4df6c3c1-7d52-6bfa-9b0d-365de5332c06@linux.ibm.com>
- <095c6e45-dd9e-1809-ae51-224679783241@linux.alibaba.com>
- <1cf77005-1825-0d34-6d34-e1b513c28113@linux.ibm.com>
- <747c3399-4e6f-0353-95bf-6b6f3a0f5f60@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <747c3399-4e6f-0353-95bf-6b6f3a0f5f60@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: HGC5T7kzdwfc6PxtRwMDCpgBrMvzg27r
-X-Proofpoint-ORIG-GUID: ldC3e0SUjeuOkS4n9fU1amkxicM9Yumk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-07_03,2022-01-06_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 impostorscore=0 suspectscore=0 mlxlogscore=999 mlxscore=0
- clxscore=1015 phishscore=0 priorityscore=1501 bulkscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201070068
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrIJsWRmVeSWpSXmKPExsWy7bCmhe4b3huJBid2K1o8mLeNzWJv2wl2
+        i5c/r7JZHHzYyWIx7cNPZotP65exWqxe/IDFYtGNbUwWl3fNYbPovr6DzWL58X9MDtwel694
+        e1zu62XymLDoAKPH9/UdbB4fn95i8ejbsorR4/MmOY/2A91MARxR2TYZqYkpqUUKqXnJ+SmZ
+        eem2St7B8c7xpmYGhrqGlhbmSgp5ibmptkouPgG6bpk5QIcqKZQl5pQChQISi4uV9O1sivJL
+        S1IVMvKLS2yVUgtScgrMC/SKE3OLS/PS9fJSS6wMDQyMTIEKE7Izlt7oYS14yl5xrmsfcwPj
+        XrYuRk4OCQETiT19TUA2F4eQwA5Gia3L/zKBJIQEPjFKTJpSC5H4zCgx+coBJpiOx4sfMUIk
+        djFKbJj/iR3C+cEosb/rGSNIFZuAhsSaY4eYQBIiAt8YJRb/fQHWziygJvH57jIWEFtYwFVi
+        z5dLrCA2i4CqxM3+12A1vAJWEmv71rJArJOXWNTwGyouKHFy5hMWiDnyEs1bZzODLJAQ+Msu
+        0b97J9AgDiDHRWLRhyqIXmGJV8e3sEPYUhIv+9vYIeqbGSXWz5zDBOFMYZSY++wpK0SVscSs
+        Z+2MIIOYBTQl1u/Sh5ipLHHkFtRePomOw3/ZIcK8Eh1tQhCNShJn5t6GCktIHJydAxH2kJgy
+        ZzcrJERjJQ5/fsI4gVF+FpJnZiF5ZhbC2gWMzKsYxVILinPTU4uNCgzhkZqcn7uJEZxWtVx3
+        ME5++0HvECMTB+MhRgkOZiUR3ql7ryUK8aYkVlalFuXHF5XmpBYfYjQFBu9EZinR5HxgYs8r
+        iTc0sTQwMTMzNDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cDEwrzb+nOAgWmNyeSL
+        4d+j1j5h1RVSmfkkNphpmXTmdM15AuZ2ksylB1zY/dZ6Wtc4XWY+zpp+ZnoJ14vv+z5Ymu1+
+        LevPeHny59hjN+dMvRupHujJXmnzO+nGo3qu57qbFz36sF16r8mL/TM/c1i4nGStNVF4vmr6
+        b5m3FUs02BQUkidWnZx4NLriROFCp3vcWvukd8jWWuyRFW89yD2x2mvy0x2zNp4R7Oqv+TLn
+        w/8zj4ze7jsrIRK1Y+2vlyZNlX5qaSsOsU3peLzOze7VdaYDInd500SfSvhdXCfGx7GncfrS
+        aZNcbV6xftr6/bhxFBPHTvukXq+fGrnZnFI733AujnK997Z14rro2jolJZbijERDLeai4kQA
+        8cK0WjQEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrELMWRmVeSWpSXmKPExsWy7bCSvO5r3huJBt035CwezNvGZrG37QS7
+        xcufV9ksDj7sZLGY9uEns8Wn9ctYLVYvfsBisejGNiaLy7vmsFl0X9/BZrH8+D8mB26Py1e8
+        PS739TJ5TFh0gNHj+/oONo+PT2+xePRtWcXo8XmTnEf7gW6mAI4oLpuU1JzMstQifbsEroyl
+        N3pYC56yV5zr2sfcwLiXrYuRk0NCwETi8eJHjF2MXBxCAjsYJR50dLNAJCQk/i9uYoKwhSXu
+        txxhhSj6xiix5c9vsASbgIbEmmOHmEASIgJNTBIbPt8H62YWUJP4fHcZmC0s4Cqx58slVhCb
+        RUBV4mb/a7BmXgEribV9a6G2yUssavgNFReUODnzCdQceYnmrbOZJzDyzUKSmoUktYCRaRWj
+        ZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnCwa2ntYNyz6oPeIUYmDsZDjBIczEoivFP3
+        XksU4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1Oqgals4u/L
+        u+/df3uwo+69luHDNz2Rxwrc1FyOesTdlLpcUrbh8gXmuVLrduU5iaj7uYnyhF1vV1jAm/3D
+        kvPJRIPwpZc35klc7WL1P3733Tw/U7MHi5TW58x83LhGq+JE2cP5fUFyj5Pe7ImYdug316Hr
+        eeoORtdrV2xYcXPvgZQXQfbbrITFLSMW3I9wEFr2OMdrdtBs/4qYG+tfxwc98rpySzn2/J/i
+        vHkJvEUxvW+vLOTn8qnPPX1sXq3Imy+yboLihwWFvrjNnqZ0JqFZ4Jy857bFr3ycZu5Z/Hz/
+        pvcWH9zc5rzTdOm/WLk56PC7l6JsHTz2h/ZOehX4yfXK5DUdU7+ZHN79V1jvT6fJ9uKXSizF
+        GYmGWsxFxYkAz5nEBuUCAAA=
+X-CMS-MailID: 20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912
+References: <CGME20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 06/01/2022 14:02, Wen Gu wrote:
-> Thanks for your reply.
-> 
-> On 2022/1/5 8:03 pm, Karsten Graul wrote:
->> On 05/01/2022 09:27, Wen Gu wrote:
->>> On 2022/1/3 6:36 pm, Karsten Graul wrote:
->>>> On 31/12/2021 10:44, Wen Gu wrote:
->>>>> On 2021/12/29 8:56 pm, Karsten Graul wrote:
->>>>>> On 28/12/2021 16:13, Wen Gu wrote:
->>>>>>> We encountered some crashes caused by the race between the access
->>>>>>> and the termination of link groups.
-> So I am trying this way:
-> 
-> 1) Introduce a new helper smc_conn_lgr_state() to check the three stages mentioned above.
-> 
->   enum smc_conn_lgr_state {
->          SMC_CONN_LGR_ORPHAN,    /* conn was never registered in a link group */
->          SMC_CONN_LGR_VALID,     /* conn is registered in a link group now */
->          SMC_CONN_LGR_INVALID,   /* conn was registered in a link group, but now
->                                     is unregistered from it and conn->lgr should
->                                     not be used any more */
->   };
-> 
-> 2) replace the current conn->lgr check with the new helper.
-> 
-> These new changes are under testing now.
-> 
-> What do you think about it? :)
+The Tactive time determine the waiting time before burst
+at hibern8 exit and is determined by H/W at linkup state
+However, in the case of samsung devices, guided host's Tactive time
++100us for stability.
+If the HCI's Tactive time is equal or greater than the device,
++100us should be set.
 
-Sounds good, but is it really needed to separate 3 cases, i.e. who is really using them 3?
-Doesn't it come down to a more simple smc_conn_lgr_valid() which is easier to implement in
-the various places in the code? (i.e.: if (smc_conn_lgr_valid()) ....)
-Valid would mean conn->lgr != NULL and conn->alert_token_local != 0. The more special cases
-would check what they want by there own.
+Signed-off-by: SEO HOYOUNG <hy50.seo@samsung.com>
+---
+ drivers/scsi/ufs/ufshcd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 1049e41abd5b..460d2b440d2e 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -7815,7 +7815,7 @@ static int ufshcd_quirk_tune_host_pa_tactivate(struct ufs_hba *hba)
+ 	peer_pa_tactivate_us = peer_pa_tactivate *
+ 			     gran_to_us_table[peer_granularity - 1];
+ 
+-	if (pa_tactivate_us > peer_pa_tactivate_us) {
++	if (pa_tactivate_us >= peer_pa_tactivate_us) {
+ 		u32 new_peer_pa_tactivate;
+ 
+ 		new_peer_pa_tactivate = pa_tactivate_us /
+-- 
+2.26.0
+
