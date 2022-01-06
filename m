@@ -2,62 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55588C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 09:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B79CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 09:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237409AbiAFJ3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 04:29:44 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:43594 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237186AbiAFJ3m (ORCPT
+        id S237419AbiAFJ3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 04:29:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46180 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237186AbiAFJ3p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 04:29:42 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 3A5031F37F;
-        Thu,  6 Jan 2022 09:29:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1641461381; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y/GNNjKeLfGD7wvNr18egAh+0Lf4ytydDR7VI/qFwnE=;
-        b=PuCayK7k533kZ3ZVczu+Pc7Cj/HuGMGzqMGQNis0E2guRz8tEnucnYllx+lUVP2XtLl8U4
-        ryGX0PLF/Y0yBYq7DNlfTMWPQgsekn1GINcZlllQ1DLte33QtbKFx6s/YOd1TdwjwNohT0
-        J3QuvMIziEhQruhTA7Txjs8VIc4Kkd4=
-Received: from suse.cz (unknown [10.100.224.162])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EF644A3B81;
-        Thu,  6 Jan 2022 09:29:40 +0000 (UTC)
-Date:   Thu, 6 Jan 2022 10:29:40 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] MAINTAINERS: Update information about printk git tree
-Message-ID: <Yda2hHoVIRQxDJ+H@alley>
-References: <20220105094157.26216-1-pmladek@suse.com>
+        Thu, 6 Jan 2022 04:29:45 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B95EDC061245
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 01:29:44 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id n30-20020a17090a5aa100b001b2b6509685so2552245pji.3
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 01:29:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fPr1nBHiTSgph/tTGH5kJPnXHbDmfAq4bys7S0VY+v0=;
+        b=aM/LrGv2rQk/Pv4J+BPxttat1R8Ou8GuDntATvl1kGiENNx9xqFxp5OI8SbG06Trai
+         fk80sMZVXCI1GVpWV4iBHN3dYBZvzCvkBnTd9vO7kZ2VLi/q0oHJC9UDyTiD3yHbHwbP
+         iZCM7ZrPfybKTDeSjf1yIDrdG273/VFpjnQswo0LmO+3qu//py7U4Jomi/wWazGa0qca
+         UniZR83cSOTj+l302efM3g3UtL2R6f7/m5/kVWYZaq645a8vzmvCPNMZq5GjxC7FN5Wu
+         UL6y6EyaRccNwxjGdQXq8kNe/mNFrMdaazyQJyNWVjnbU2LkXFhlG/236myRLA2ospE9
+         kUrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fPr1nBHiTSgph/tTGH5kJPnXHbDmfAq4bys7S0VY+v0=;
+        b=gb1a9ZRziiTrx+xxOwoUUbTQwevfb/LRDTTBKJBWgPBZf/ifztLCavZJUxbCe36P5F
+         hamuC3wKgZC/ytI+lFHYJqAFyUaaArfA635UuLH2/ohJLn19ZPV4qdYdvctBeWPLfGRi
+         UGy4N2cofL2Kv2y3u5/RwjOtDQrRPcokA49Pt03RathS9gJkQsrWGjcRA/ZlNm/YwgZI
+         QBl42WmQRCJwhVmFgREAjl6tPdS9VcaYn6wgMeH1YvIjNvOmq4o+7xW1BO+PJLF15cq1
+         7wpWRaW4rHb8UkCN1LiBFff/7G+2smWcvhcQSppiIZ0AmcNW1r7L1EdkbDGoCqFft1jI
+         BJLg==
+X-Gm-Message-State: AOAM530WMXfcdKyMQPmKG9sTaJ8+dAgzMEF3JWtt0igSq8/JkazES8wY
+        Nw6PbEtDVH23D/43BDqJqZI=
+X-Google-Smtp-Source: ABdhPJwf73l4jLY2UjJyhmnaA/8ASiTX8YUzJY3tfkfrZJHHEdLXj8Qe9C34SXMZigHJaNJ/vXgxAg==
+X-Received: by 2002:a17:902:ab85:b0:149:ca14:4a15 with SMTP id f5-20020a170902ab8500b00149ca144a15mr7738385plr.169.1641461384280;
+        Thu, 06 Jan 2022 01:29:44 -0800 (PST)
+Received: from localhost.localdomain ([94.177.118.151])
+        by smtp.googlemail.com with ESMTPSA id rm6sm5712002pjb.35.2022.01.06.01.29.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 01:29:44 -0800 (PST)
+From:   Qinghua Jin <qhjin.dev@gmail.com>
+Cc:     Qinghua Jin <qhjin.dev@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ASoC: topology: Fix typo
+Date:   Thu,  6 Jan 2022 17:28:47 +0800
+Message-Id: <20220106092847.357035-1-qhjin.dev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105094157.26216-1-pmladek@suse.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-01-05 10:41:55, Petr Mladek wrote:
-> I have noticed one outdated and one missing link to the printk git tree.
-> I am not sure if it is worth sending for review and having two patches.
-> I just want to avoid possible complains ;-)
-> 
-> Petr Mladek (2):
->   MAINTAINERS/vsprintf: Update link to printk git tree
->   MAINTAIERS/printk: Add link to printk git
+change 'postion' to 'position'
 
-JFYI, both patches has been committed into printk/linux.git,
-branch for-5.17.
+Signed-off-by: Qinghua Jin <qhjin.dev@gmail.com>
+---
+ sound/soc/soc-topology.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best Regards,
-Petr
+diff --git a/sound/soc/soc-topology.c b/sound/soc/soc-topology.c
+index f5b9e66ac3b8..2630df024dff 100644
+--- a/sound/soc/soc-topology.c
++++ b/sound/soc/soc-topology.c
+@@ -56,7 +56,7 @@ struct soc_tplg {
+ 	const struct firmware *fw;
+ 
+ 	/* runtime FW parsing */
+-	const u8 *pos;		/* read postion */
++	const u8 *pos;		/* read position */
+ 	const u8 *hdr_pos;	/* header position */
+ 	unsigned int pass;	/* pass number */
+ 
+-- 
+2.30.2
+
