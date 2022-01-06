@@ -2,115 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B3AC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C314C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244079AbiAFVBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 16:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244010AbiAFVBk (ORCPT
+        id S244099AbiAFVFe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 16:05:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38428 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244069AbiAFVFc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 16:01:40 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D30C061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 13:01:40 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id i30so3680618pgl.0
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 13:01:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ft4KTDnmfGNxrsGxX/0Cc8w5WOpSQF6ljEU4UL8RaD8=;
-        b=oQv+P66yLtYEjzRdtw6E+azvb1+cssHtxap+eylA/E6oDuldn/j9leLANeLuYuXGu+
-         196ocDCi50FISgMjWsuWaMgbWeJ9p2GINm85nplZL1qYWzUawKSrIhB9lybagNk4HTC/
-         pJJqrBWGcpOlGa7ieS+EawyTLVVXFx/x0017f1S7LiquuXr7fJJW22Qzm6La7qWcyj0l
-         3XCNP7DEQ24c7MBLo/yMFqYzFL/9GGsCXAIbXUv5OxHvVM6nmF5pp9hoDI2HUrj/G9ZH
-         vFJH6UODT8yMbQb5OLhVh6KCP4t9YiGgusl+iCFeIFb6eekicCxm9it/iKOuL08QVT+i
-         ZlNQ==
+        Thu, 6 Jan 2022 16:05:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641503131;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bfNEPHx1xDfNOOR4ZfuMpjosG1jEJyn3a9yDJ8UdTKY=;
+        b=ZLKlFr4C/HWFUXDCwBLknBS18TzBJ+XskL5d1Hnof86EIpIEekJe3iETWUWYExBBJa/ij8
+        +GjsmuBJiEPKvOmpR3rBCWf9Ldd9bpFWSRP5b0T/uvz4M0itp66FBberIwK7o1ZBDQvAn5
+        qaaG5lSjzI8I4ns2NNmRjzuMa7XXSb4=
+Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
+ [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-436-Ar8RuZ7ROFSlzKCAzmGNmg-1; Thu, 06 Jan 2022 16:05:30 -0500
+X-MC-Unique: Ar8RuZ7ROFSlzKCAzmGNmg-1
+Received: by mail-oo1-f69.google.com with SMTP id r25-20020a4ae5d9000000b002c9ad00c5a5so2215538oov.22
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 13:05:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ft4KTDnmfGNxrsGxX/0Cc8w5WOpSQF6ljEU4UL8RaD8=;
-        b=Bx4uAXllCNiV0g3iFY2N4KRuPgfn3RHTkdp1mZmnKMwmUWqXDjaYl2YIdw9MyFoYxy
-         CGbS9XBu1namjU/FS/hcI13mEScVO8huIEed1yP+xvmkpuqZhkSRhoa+u5VN5l69fJ4J
-         QogxeUeJ9wpeXU36OmKLy5WrHuIgG0ndP9PEBA2ZZCMn62tflwEAIZEMFV9+vHn+b9E6
-         OQiWwp0GxQrZQTy7U5NIPy9WAiITwKCu3deSd5LVI/+NccHMeeNfA+SrYd9gLf4CwWMF
-         WwTeBBlSWJBqwfwte0tOFKeUaGUaF60MoeWN4uMjjxvB52WIy8U4ZcqtMuAWflHGgK63
-         y9aQ==
-X-Gm-Message-State: AOAM5300KI290GCdFcJsQPvvg33pwmsly7m3nBpReXoJKNmr5KWzab6q
-        RgTwfKSW89cqftQ0jQJayvg=
-X-Google-Smtp-Source: ABdhPJyUAM2wF97lFOwI55hw8C21xSxvLscFnuutC/Yawdg8EhM6MeUMQobVIDOJ/tdMtHo/FghKXw==
-X-Received: by 2002:a63:b20d:: with SMTP id x13mr8730426pge.310.1641502900186;
-        Thu, 06 Jan 2022 13:01:40 -0800 (PST)
-Received: from mail.google.com (122-58-164-114-fibre.sparkbb.co.nz. [122.58.164.114])
-        by smtp.gmail.com with ESMTPSA id t126sm2739702pgc.61.2022.01.06.13.01.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=bfNEPHx1xDfNOOR4ZfuMpjosG1jEJyn3a9yDJ8UdTKY=;
+        b=R9QKhd6w6yjeZRRfYvPYdwdg1qM7gG2e3Nsjz0jeYei0swJBGKXmUa0+5VvR/HH8m7
+         shEDlfHyke4OlJMuFnXma8PfYIaDTxMUSzRY+tvJjNVdF6Yr2dqhqCZpGYDob+Na7tJW
+         a+vIBvv0QywfWfRZWt59iDQCrqXeXWQYRjlT1VYTDN4/QXYACbYrYuKymsXcstJLkTWM
+         NWCZDLBBdDjcje4zYRtaTpITqysaTlq5K+AH4JOiFdSsD/Lw/lhuQVOxZ1VFJ755wo8P
+         25uPakmxDBv1IpDEtPLR8Eg12eiDMiH5TWQJyFb6kOz8WTiDzUlZ+7alxz4KfjIhRvEz
+         v3IA==
+X-Gm-Message-State: AOAM532f6fUJ6lrEWlqMcrdzo+hV2T9d13aW7U63QbsLsHzKD2KQTR9d
+        t+S76hQbZWR2XIM/mVBL+vFYzRssrDd5bsGpi0ZWo+Wm8Ho9nh/c2X9nqLAhpdPVXOuDm7UQVQ5
+        or1Wu8h100Ti8mbbKw3MMEgIr
+X-Received: by 2002:a4a:dd08:: with SMTP id m8mr37690417oou.25.1641503129793;
+        Thu, 06 Jan 2022 13:05:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxJJHuHyvhX6fNO7GsfowW/AaCDltzBsOD9eqaeIHK+3O5wnNGjVkNDhjuWIf6dAb0cTtDPNA==
+X-Received: by 2002:a4a:dd08:: with SMTP id m8mr37690401oou.25.1641503129553;
+        Thu, 06 Jan 2022 13:05:29 -0800 (PST)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id r23sm615480oiw.20.2022.01.06.13.05.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 13:01:39 -0800 (PST)
-Date:   Fri, 7 Jan 2022 10:01:34 +1300
-From:   Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     realwakka@gmail.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: pi433: move get version func to where all other
- functions are
-Message-ID: <20220106210134.GB3416@mail.google.com>
-References: <20220106093110.GA20011@mail.google.com>
- <Ydb22Tuvm0MwfpOK@kroah.com>
+        Thu, 06 Jan 2022 13:05:29 -0800 (PST)
+Date:   Thu, 6 Jan 2022 14:05:27 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Daniel Jordan <daniel.m.jordan@oracle.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Segall <bsegall@google.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ingo Molnar <mingo@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Michal Hocko <mhocko@suse.com>, Nico Pache <npache@redhat.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Steve Sistare <steven.sistare@oracle.com>,
+        Tejun Heo <tj@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-mm@kvack.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [RFC 08/16] vfio/type1: Cache locked_vm to ease mmap_lock
+ contention
+Message-ID: <20220106140527.5c292d34.alex.williamson@redhat.com>
+In-Reply-To: <20220106123456.GZ2328285@nvidia.com>
+References: <20220106004656.126790-1-daniel.m.jordan@oracle.com>
+        <20220106004656.126790-9-daniel.m.jordan@oracle.com>
+        <20220106005339.GX2328285@nvidia.com>
+        <20220106011708.6ajbhzgreevu62gl@oracle.com>
+        <20220106123456.GZ2328285@nvidia.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ydb22Tuvm0MwfpOK@kroah.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 03:04:09PM +0100, Greg KH wrote:
-> > --- a/drivers/staging/pi433/pi433_if.c
-> > +++ b/drivers/staging/pi433/pi433_if.c
-> > @@ -1116,9 +1116,7 @@ static int pi433_probe(struct spi_device *spi)
-> >  		spi->mode, spi->bits_per_word, spi->max_speed_hz);
-> >  
-> >  	/* Ping the chip by reading the version register */
-> > -	retval = spi_w8r8(spi, 0x10);
-> > -	if (retval < 0)
-> > -		return retval;
-> > +	retval = rf69_get_chip_version(spi);
+On Thu, 6 Jan 2022 08:34:56 -0400
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, Jan 05, 2022 at 08:17:08PM -0500, Daniel Jordan wrote:
+> > On Wed, Jan 05, 2022 at 08:53:39PM -0400, Jason Gunthorpe wrote:  
+> > > On Wed, Jan 05, 2022 at 07:46:48PM -0500, Daniel Jordan wrote:  
+> > > > padata threads hold mmap_lock as reader for the majority of their
+> > > > runtime in order to call pin_user_pages_remote(), but they also
+> > > > periodically take mmap_lock as writer for short periods to adjust
+> > > > mm->locked_vm, hurting parallelism.
+> > > > 
+> > > > Alleviate the write-side contention with a per-thread cache of locked_vm
+> > > > which allows taking mmap_lock as writer far less frequently.
+> > > > 
+> > > > Failure to refill the cache due to insufficient locked_vm will not cause
+> > > > the entire pinning operation to error out.  This avoids spurious failure
+> > > > in case some pinned pages aren't accounted to locked_vm.
+> > > > 
+> > > > Cache size is limited to provide some protection in the unlikely event
+> > > > of a concurrent locked_vm accounting operation in the same address space
+> > > > needlessly failing in case the cache takes more locked_vm than it needs.  
+> > > 
+> > > Why not just do the pinned page accounting once at the start? Why does
+> > > it have to be done incrementally?  
+> > 
+> > Yeah, good question.  I tried doing it that way recently and it did
+> > improve performance a bit, but I thought it wasn't enough of a gain to
+> > justify how it overaccounted by the size of the entire pin.  
 > 
-> This can not fail anymore, like it used to be able to.  So I think you
-> just broke the functionality for why this call was being made in the
-> first place (i.e. ping the chip to see if it was alive, and fail if it
-> is not.)
->
+> Why would it over account?
 
-I thought that this if statement was somewhat redudant because right
-after obtaining the chip version, there is a switch statement that
-checks if the value is what we expect or return an error otherwise.
+We'd be guessing that the entire virtual address mapping counts against
+locked memory limits, but it might include PFNMAP pages or pages that
+are already account via the page pinning interface that mdev devices
+use.  At that point we're risking that the user isn't concurrently
+doing something else that could fail as a result of pre-accounting and
+fixup later schemes like this.  Thanks,
 
-Unfortunately, in the patch file generated the whole switch statement 
-isn't visible so I admit that it looks funny at first. I will paste the
-routine here:
-
-/* Ping the chip by reading the version register */
-retval = rf69_get_chip_version(spi);
-
-switch (retval) {
-case 0x24:
-	dev_dbg(&spi->dev, "found pi433 (ver. 0x%x)", retval);
-	break;
-default:
-	dev_dbg(&spi->dev, "unknown chip version: 0x%x", retval);
-	return -ENODEV;
-}
-
-Let me know if you agree with the approach I've taken, otherwise I am
-more than happy to add the original if statement if you think I'm
-missing any edge case here.
-
-Once again, thanks for taking the time to review my patch :)
-
-thanks,
-
-Paulo A.
+Alex
 
