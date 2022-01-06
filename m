@@ -2,110 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2B6C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 10:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 299B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 10:37:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238002AbiAFKfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 05:35:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52278 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237059AbiAFKfm (ORCPT
+        id S238018AbiAFKhe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 05:37:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33232 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232212AbiAFKhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 05:35:42 -0500
+        Thu, 6 Jan 2022 05:37:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97723C061245;
+        Thu,  6 Jan 2022 02:37:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2A7561B40;
-        Thu,  6 Jan 2022 10:35:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B584BC36AE5;
-        Thu,  6 Jan 2022 10:35:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E1A5B82057;
+        Thu,  6 Jan 2022 10:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05247C36AE5;
+        Thu,  6 Jan 2022 10:37:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641465341;
-        bh=pzYHtW7rDiBGloTUUhaQ7LQqAvbWo8l6BVRCzNEBE4c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=xGLOTJUnMH5qNBWct+gzIT0L3UXrVPjNytYujZbbexE0z6ShbyExyw1XGDLt6/vvQ
-         IHiH39DWyfOTsCxVwO+RhuQKdVuMGopcfVBjEX+Pqg5SleBBjpIRH3/2pl26KxoacC
-         V4C22yGbPIADWWMO1pASo5A7+jPK7KaHM88cHQGQ=
+        s=korg; t=1641465448;
+        bh=X0wz0lYz05U9K22FsPT6MUcN3arQdAhXiAZ56bH2CSI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Gt95TYUPkA4UQBChqQPMIliP5XM4d7x/yUG6SGtPBMp4Z0Bryje/FeGy/dm+CcPEO
+         vg4JSvGoA7Sd429ktTkEARmpS6XwGN5FN86/mH1C2MB+SuiTC48uauQObpOJsWY3lQ
+         KrWsD372kF37sEKjLYMCho/ordJi6O95nP0Xvey0=
+Date:   Thu, 6 Jan 2022 11:37:26 +0100
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-edac@vger.kernel.org
-Subject: [PATCH v2] x86/CPU/AMD: use default_groups in kobj_type
-Date:   Thu,  6 Jan 2022 11:35:37 +0100
-Message-Id: <20220106103537.3663852-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     linux-stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: txtimestamp.c:164:29: warning: format '0' expects argument of
+ type 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+ int'} [-Wformat=]
+Message-ID: <YdbGZiKKdVgh8A4i@kroah.com>
+References: <CA+G9fYtaoxVF-bL40kt=FKcjjaLUnS+h8hNf=wQv_dKKWn_MNQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2323; h=from:subject; bh=pzYHtW7rDiBGloTUUhaQ7LQqAvbWo8l6BVRCzNEBE4c=; b=owGbwMvMwCRo6H6F97bub03G02pJDInXjn5/5/2ii73yZtjEp707u3d62x66dLPrQtbMqOVzvnK9 VPD92RHLwiDIxCArpsjyZRvP0f0VhxS9DG1Pw8xhZQIZwsDFKQATMXFgmO96bs6OCZ+2ZnaUTxMUa1 jocOak1mSGeVbWxz81LlQ0TjVQ1xXckFAicFYoEwA=
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtaoxVF-bL40kt=FKcjjaLUnS+h8hNf=wQv_dKKWn_MNQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are currently 2 ways to create a set of sysfs files for a
-kobj_type, through the default_attrs field, and the default_groups
-field.  Move the AMD mce sysfs code to use default_groups field which
-has been the preferred way since aa30f47cf666 ("kobject: Add support for
-default attribute groups to kobj_type") so that we can soon get rid of
-the obsolete default_attrs field.
+On Thu, Jan 06, 2022 at 03:39:09PM +0530, Naresh Kamboju wrote:
+> While building selftests the following warnings were noticed for arm
+> architecture on Linux stable v5.15.13 kernel and also on Linus's tree.
+> 
+> arm-linux-gnueabihf-gcc -Wall -Wl,--no-as-needed -O2 -g
+> -I../../../../usr/include/    txtimestamp.c  -o
+> /home/tuxbuild/.cache/tuxmake/builds/current/kselftest/net/txtimestamp
+> txtimestamp.c: In function 'validate_timestamp':
+> txtimestamp.c:164:29: warning: format '0' expects argument of type
+> 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+> int'} [-Wformat=]
+>   164 |   fprintf(stderr, "ERROR: 0 us expected between 0 and 0\n",
+>       |                           ~~^
+>       |                             |
+>       |                             long unsigned int
+>       |                           0
+>   165 |     cur64 - start64, min_delay, max_delay);
+>       |     ~~~~~~~~~~~~~~~
+>       |           |
+>       |           int64_t {aka long long int}
+> txtimestamp.c: In function '__print_ts_delta_formatted':
+> txtimestamp.c:173:22: warning: format '0' expects argument of type
+> 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+> int'} [-Wformat=]
+>   173 |   fprintf(stderr, "0 ns", ts_delta);
+>       |                    ~~^      ~~~~~~~~
+>       |                      |      |
+>       |                      |      int64_t {aka long long int}
+>       |                      long unsigned int
+>       |                    0
+> txtimestamp.c:175:22: warning: format '0' expects argument of type
+> 'long unsigned int', but argument 3 has type 'int64_t' {aka 'long long
+> int'} [-Wformat=]
+>   175 |   fprintf(stderr, "0 us", ts_delta / NSEC_PER_USEC);
+>       |                    ~~^
+>       |                      |
+>       |                      long unsigned int
+>       |                    0
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> 
+> build link:
+> https://builds.tuxbuild.com/23HFntxpqyCx0RbiuadfGZ36Kym/
+> 
+> metadata:
+>   git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+>   git commit: 734eb1fd2073f503f5c6b44f1c0d453ca6986b84
+>   git describe: v5.15.13
+>   toolchain: gcc-11
+>   kernel-config: https://builds.tuxbuild.com/23HFntxpqyCx0RbiuadfGZ36Kym/config
+> 
+> 
+> # To install tuxmake on your system globally:
+> # sudo pip3 install -U tuxmake
+> 
+> tuxmake --runtime podman --target-arch arm --toolchain gcc-10 \
+>  --kconfig https://builds.tuxbuild.com/23HFntxpqyCx0RbiuadfGZ36Kym/config \
+>   dtbs dtbs-legacy headers kernel kselftest kselftest-merge modules
 
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: x86@kernel.org
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: linux-edac@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
-v2: fix up direct pointers through the kobj_type to the default_attrs
-    The logic here still isn't all that nice, ideally the is_visible()
-    callback for the attribute group should be used instead as that is
-    what it is for.
+Same question as before, is this a regression, and if so, any pointers
+to a fix?
 
- arch/x86/kernel/cpu/mce/amd.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+thanks,
 
-diff --git a/arch/x86/kernel/cpu/mce/amd.c b/arch/x86/kernel/cpu/mce/amd.c
-index fc85eb17cb6d..a165e8065e7f 100644
---- a/arch/x86/kernel/cpu/mce/amd.c
-+++ b/arch/x86/kernel/cpu/mce/amd.c
-@@ -1171,6 +1171,7 @@ static struct attribute *default_attrs[] = {
- 	NULL,	/* possibly interrupt_enable if supported, see below */
- 	NULL,
- };
-+ATTRIBUTE_GROUPS(default);
- 
- #define to_block(k)	container_of(k, struct threshold_block, kobj)
- #define to_attr(a)	container_of(a, struct threshold_attr, attr)
-@@ -1207,7 +1208,7 @@ static void threshold_block_release(struct kobject *kobj);
- 
- static struct kobj_type threshold_ktype = {
- 	.sysfs_ops		= &threshold_ops,
--	.default_attrs		= default_attrs,
-+	.default_groups		= default_groups,
- 	.release		= threshold_block_release,
- };
- 
-@@ -1279,10 +1280,10 @@ static int allocate_threshold_blocks(unsigned int cpu, struct threshold_bank *tb
- 	b->threshold_limit	= THRESHOLD_MAX;
- 
- 	if (b->interrupt_capable) {
--		threshold_ktype.default_attrs[2] = &interrupt_enable.attr;
-+		default_attrs[2] = &interrupt_enable.attr;
- 		b->interrupt_enable = 1;
- 	} else {
--		threshold_ktype.default_attrs[2] = NULL;
-+		default_attrs[2] = NULL;
- 	}
- 
- 	INIT_LIST_HEAD(&b->miscj);
--- 
-2.34.1
-
+greg k-h
