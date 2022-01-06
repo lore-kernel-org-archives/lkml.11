@@ -2,66 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09327C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 18:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 18:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242724AbiAFSZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 13:25:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240698AbiAFSZN (ORCPT
+        id S242735AbiAFSZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 13:25:30 -0500
+Received: from mail-oo1-f51.google.com ([209.85.161.51]:39435 "EHLO
+        mail-oo1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242685AbiAFSZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 13:25:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46208C061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 10:25:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3CBF61D69
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 18:25:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DB0BC36AEB;
-        Thu,  6 Jan 2022 18:25:11 +0000 (UTC)
-Date:   Thu, 6 Jan 2022 13:25:10 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] MAINTAINERS: Update information about printk git
- tree
-Message-ID: <20220106132510.0a460fed@gandalf.local.home>
-In-Reply-To: <20220105094157.26216-1-pmladek@suse.com>
-References: <20220105094157.26216-1-pmladek@suse.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 6 Jan 2022 13:25:29 -0500
+Received: by mail-oo1-f51.google.com with SMTP id t13-20020a4a760d000000b002dab4d502dfso864913ooc.6;
+        Thu, 06 Jan 2022 10:25:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WtCQ64pgnWNLBdjxVsdLoyMOG4H3ImMrrn1XpG3ExcA=;
+        b=4YpOrtgsYqKG+ThblPcG/YT7aaNA/Qt7pvIaFEIBRUxeh7wFSzdoFKP3tamUxzcKzY
+         Y3jUGlVbL/sb6IA0CiUkjIp9CFLISdJWyK0FvUnVL/7PDmLc7FCS29MFX6FHEtX3RfyY
+         nBwfs5gHjWXKqeCeXiFEG70rdb/hjresHF1gSybEUk6b4VY4yT337Cecou+EYs593xuM
+         P5ZVIg9GuYvomLEFwtwxyOc01brH60ROdcjS506LID16daz+DGNTuYvRTl7cJO4O4FJo
+         a9UrpbytMTib4iUBIxkmjy+tYzwyt5UZq5e8y42N4vcYWBXUqrRUnuNOf+IFITTA7T92
+         LDEw==
+X-Gm-Message-State: AOAM530l1voEnnpQbHCMhsnUKVLJy8GSVdor/R9z0ABmqtfF4YB1TTG0
+        ZyrfJzqQHpd+m4DlFG2R7g==
+X-Google-Smtp-Source: ABdhPJzKDWd6vBFFNsqBd4lZyEsZpnUl3yI1fJXxIsRANiAi/P4L/f0feB7E4LSMjdWW3N4GAg6dLg==
+X-Received: by 2002:a4a:2f81:: with SMTP id p123mr36268575oop.77.1641493528400;
+        Thu, 06 Jan 2022 10:25:28 -0800 (PST)
+Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.googlemail.com with ESMTPSA id r13sm484949oth.21.2022.01.06.10.25.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 10:25:27 -0800 (PST)
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: clock: imx5: Drop clock consumer node from example
+Date:   Thu,  6 Jan 2022 12:25:09 -0600
+Message-Id: <20220106182518.1435497-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed,  5 Jan 2022 10:41:55 +0100
-Petr Mladek <pmladek@suse.com> wrote:
+The example nodes have different sized interrupt cells which is not valid
+given no interrupt-parent is specified. As provider examples don't need to
+show the consumer side in the first place, just drop the consumer node.
 
-> I have noticed one outdated and one missing link to the printk git tree.
-> I am not sure if it is worth sending for review and having two patches.
-> I just want to avoid possible complains ;-)
-> 
-> Petr Mladek (2):
->   MAINTAINERS/vsprintf: Update link to printk git tree
->   MAINTAIERS/printk: Add link to printk git
-> 
->  MAINTAINERS | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/clock/imx5-clock.yaml | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-Acked-by: Steven Rostedt <rostedt@goodmis.org>
+diff --git a/Documentation/devicetree/bindings/clock/imx5-clock.yaml b/Documentation/devicetree/bindings/clock/imx5-clock.yaml
+index b1740d7abe68..c0e19ff92c76 100644
+--- a/Documentation/devicetree/bindings/clock/imx5-clock.yaml
++++ b/Documentation/devicetree/bindings/clock/imx5-clock.yaml
+@@ -55,11 +55,4 @@ examples:
+                      <0 72 IRQ_TYPE_LEVEL_HIGH>;
+         #clock-cells = <1>;
+     };
+-
+-    can@53fc8000 {
+-        compatible = "fsl,imx53-flexcan", "fsl,imx25-flexcan";
+-        reg = <0x53fc8000 0x4000>;
+-        interrupts = <82>;
+-        clocks = <&clks IMX5_CLK_CAN1_IPG_GATE>, <&clks IMX5_CLK_CAN1_SERIAL_GATE>;
+-        clock-names = "ipg", "per";
+-    };
++...
+-- 
+2.32.0
 
-for both patches.
-
-Thanks Petr,
-
--- Steve
