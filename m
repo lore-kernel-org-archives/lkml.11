@@ -2,90 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD45C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:27:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241770AbiAFR0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:26:32 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29607 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230063AbiAFR0a (ORCPT
+        id S241811AbiAFR1C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:27:02 -0500
+Received: from mail-qk1-f171.google.com ([209.85.222.171]:43583 "EHLO
+        mail-qk1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241717AbiAFR0x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:26:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641489990;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/tjE9Rl0cFSbYTg7KMQimkZAPm0+MbhtQojTHAS147M=;
-        b=OVkk5hkdRvhAo6Sx2cZwvLAbnwC/DQb/phVmxm3nhyyEwxIP1RIA2Cuvr9Lf4p6iibsIN7
-        JGs6ot3tFdJNrBkmbqK5q1zk9gGRDt5E1zskOt3iCZuANUVNSS16qSUuqjSP8+Omt1iubP
-        nxCDaszW3+fCqq95fGaGGJa4y+NPex8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-542-bi9hAoHVPyGleDTpkeyzYQ-1; Thu, 06 Jan 2022 12:26:27 -0500
-X-MC-Unique: bi9hAoHVPyGleDTpkeyzYQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A09E981CCB4;
-        Thu,  6 Jan 2022 17:26:25 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-3.gru2.redhat.com [10.97.112.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BA2D07FBAD;
-        Thu,  6 Jan 2022 17:25:58 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 153F341885DA; Thu,  6 Jan 2022 10:43:23 -0300 (-03)
-Date:   Thu, 6 Jan 2022 10:43:23 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>, Tejun Heo <tj@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Alex Belits <abelits@marvell.com>,
-        Nitesh Lal <nilal@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Nicolas Saenz <nsaenzju@redhat.com>,
-        Christoph Lameter <cl@gentwo.de>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Paul Gortmaker <paul.gortmaker@windriver.com>,
-        "Paul E . McKenney" <paulmck@kernel.org>
-Subject: Re: [PATCH 0/8] sched/isolation: Split housekeeping cpumask
-Message-ID: <20220106134323.GA165892@fuller.cnet>
-References: <20220104144944.1278663-1-frederic@kernel.org>
+        Thu, 6 Jan 2022 12:26:53 -0500
+Received: by mail-qk1-f171.google.com with SMTP id f138so3332293qke.10;
+        Thu, 06 Jan 2022 09:26:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y5Mh5bVpmK8eYyep3yxqYOdNWT89jlaMb60StPy485A=;
+        b=cKPai63QXCOULd+JYweRNthK+EFz4BKyWWc8Q5dbhzW41L8rnpF7LhT7X5pxDLaW9T
+         Qm4ynb54PiW3ktsE0anNODJoPIoDyg7P6NkMitAiSomzaeYB4OLfDaKug8WQMZNXn9YV
+         FoRyt2y14r71al3XrKlCjP346fIRL+h4ncfzsEtQDZLi/zHxpIW6fW4ITf3+lpyo7wz+
+         QPCcTX67aVI9DVaqOFqdbcLvvsDZY6SvcaRzzDloTtMgMoeyGRQ7CBD9qz/0CsO0k8dF
+         NcKGcpmGwuHO3khUe2ELXH7OcEGrVZ/cD8e/Nr+qpIRO/eegkPNJtZjLPIbgxWbdX76y
+         OjFw==
+X-Gm-Message-State: AOAM531m0madbb1ipaw+g4/Bv8HYBNH/qmr12aSK0Js8M0KzR1mv8EYa
+        xEY7OZXYYqTnpNN2yShzpBMnzEYdT0yhFz1uGaE=
+X-Google-Smtp-Source: ABdhPJxtsqp8aUZfHoLl5dtQbIUKostepyMhKdNiM8HK9Tx9ep8MgjIudv2L7QVSqHIgf5RaQYlkr87oh5ASoEKjMSY=
+X-Received: by 2002:a05:620a:4721:: with SMTP id bs33mr43755838qkb.8.1641490012648;
+ Thu, 06 Jan 2022 09:26:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220104144944.1278663-1-frederic@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+References: <20220104164351.1360316-1-gregkh@linuxfoundation.org>
+In-Reply-To: <20220104164351.1360316-1-gregkh@linuxfoundation.org>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 6 Jan 2022 18:26:41 +0100
+Message-ID: <CAJZ5v0jS3NBSiO0W+phmP3wQUN4fJpRv4_ogG6EXA6dHbcr3Yg@mail.gmail.com>
+Subject: Re: [PATCH] cpuidle: use default_groups in kobj_type
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 03:49:36PM +0100, Frederic Weisbecker wrote:
-> Hi,
-> 
-> To prepare for extending cpusets to control CPU isolation features
-> (nohz_full, rcu_nocbs, unbound timers, workqueues, kthreads affinity...),
-> we need to split the global housekeeping_mask to one cpumask per isolation
-> feature.
-> 
-> Doing so is quite a chunk already so I'm working on that as a standalone
-> patchset. Once that get merged, the next step is to finally provide a
-> cpuset interface for one of these isolation features: rcu_nocb could
-> be interesting to handle first as nohz_full depends on it.
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/frederic/linux-dynticks.git
-> 	isolation/split
-> 
-> HEAD: 2c07a16ff50d1e722babee28b926d70522e6bd3e
-> 
-> Thanks,
-> 	Frederic
+On Tue, Jan 4, 2022 at 5:43 PM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> There are currently 2 ways to create a set of sysfs files for a
+> kobj_type, through the default_attrs field, and the default_groups
+> field.  Move the cpuidle sysfs code to use default_groups field which
+> has been the preferred way since aa30f47cf666 ("kobject: Add support for
+> default attribute groups to kobj_type") so that we can soon get rid of
+> the obsolete default_attrs field.
+>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: linux-pm@vger.kernel.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/cpuidle/sysfs.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/cpuidle/sysfs.c b/drivers/cpuidle/sysfs.c
+> index 469e18547d06..565ed005833a 100644
+> --- a/drivers/cpuidle/sysfs.c
+> +++ b/drivers/cpuidle/sysfs.c
+> @@ -335,6 +335,7 @@ static struct attribute *cpuidle_state_default_attrs[] = {
+>         &attr_default_status.attr,
+>         NULL
+>  };
+> +ATTRIBUTE_GROUPS(cpuidle_state_default);
+>
+>  struct cpuidle_state_kobj {
+>         struct cpuidle_state *state;
+> @@ -448,7 +449,7 @@ static void cpuidle_state_sysfs_release(struct kobject *kobj)
+>
+>  static struct kobj_type ktype_state_cpuidle = {
+>         .sysfs_ops = &cpuidle_state_sysfs_ops,
+> -       .default_attrs = cpuidle_state_default_attrs,
+> +       .default_groups = cpuidle_state_default_groups,
+>         .release = cpuidle_state_sysfs_release,
+>  };
+>
+> @@ -591,10 +592,11 @@ static struct attribute *cpuidle_driver_default_attrs[] = {
+>         &attr_driver_name.attr,
+>         NULL
+>  };
+> +ATTRIBUTE_GROUPS(cpuidle_driver_default);
+>
+>  static struct kobj_type ktype_driver_cpuidle = {
+>         .sysfs_ops = &cpuidle_driver_sysfs_ops,
+> -       .default_attrs = cpuidle_driver_default_attrs,
+> +       .default_groups = cpuidle_driver_default_groups,
+>         .release = cpuidle_driver_sysfs_release,
+>  };
+>
+> --
 
-Looks good.
-
-Reviewed-by: Marcelo Tosatti <mtosatti@redhat.com>
-
-
+Applied as 5.17 material, thanks!
