@@ -2,147 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E5A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB160C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245626AbiAFVrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 16:47:39 -0500
-Received: from smtp07.smtpout.orange.fr ([80.12.242.129]:57800 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244683AbiAFVqz (ORCPT
+        id S245012AbiAFVru (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 16:47:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245028AbiAFVrF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 16:46:55 -0500
-Received: from pop-os.home ([90.11.185.88])
-        by smtp.orange.fr with ESMTPA
-        id 5aazntU632lVY5aaznSl6v; Thu, 06 Jan 2022 22:46:53 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Thu, 06 Jan 2022 22:46:53 +0100
-X-ME-IP: 90.11.185.88
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org,
-        rth@twiddle.net, ink@jurassic.park.msu.ru, mattst88@gmail.com
-Cc:     linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH 01/16] alpha: Remove usage of the deprecated "pci-dma-compat.h" API
-Date:   Thu,  6 Jan 2022 22:46:52 +0100
-Message-Id: <30686538ee42aaa4c2dd0788c42edbc6df07f250.1641500561.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
-References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+        Thu, 6 Jan 2022 16:47:05 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F719C02982E
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 13:46:36 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so10052175pjj.2
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 13:46:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7Yh3mBEg2nfQJzEtBIxus+8u5VcBe7iEDAWACHn4tN4=;
+        b=bQgFVNcdsjnA7zW9FFXSITmcWjYkWGAB8wIRURyJ5ti0xuNPsSAy9ghoYEb1syKKJs
+         CGLf/Q/oMrQcJwXU3CDgbPhlA20klKs2lFHi/PEmoc8VHgh96v1EkUV6JppBc9bUOpOY
+         flarDI+B9t/W/Ty3wNZQQPlH80IiRnLiaJXmQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7Yh3mBEg2nfQJzEtBIxus+8u5VcBe7iEDAWACHn4tN4=;
+        b=5y2mqkkIiY9b/b7P33vvYpdmWnAPIMLrLlngodKxignkacf51FvrrTTR+Q4Qko8pCa
+         JfixgZaXUp59Wsr7kB+HNYE9ngmpImnvtKvyV+SyaHlqz3PE8hcRltbuO3caGzINhu7l
+         PNP3R0/HmCf3VXB7fB33WsEmW9gBA4nGI5RxD0F3+9IS3ec+OKqJJt4I/Rk7IrDsOOkf
+         /JShNpQN3fQGHxY06VGR5gLJZKn7yYwO+yOQpqRIIDYpi9NwV0026o1XE7H/kznXH8sV
+         eB50B5mNSLfp7yCaN6yj/yOs4y3ZWx+OQBC/RhI/kVVb7CIMOsDma96HbsmUkRVZWUMI
+         YKPg==
+X-Gm-Message-State: AOAM5333Zld1DLhzk1wVDZaUGb2/1Z6EUaMR4VHKpXShnUg2etxVm7DM
+        mPcgljB8UpUHWMO0sBo+7TxXEA==
+X-Google-Smtp-Source: ABdhPJx3yLhPBYfq8wjRHSBRsuhDLs2BYE0BBSiTReIZmuvnjn2UxO8YtDDtwxw4qwXOdHpY78HYvw==
+X-Received: by 2002:a17:903:188:b0:149:512a:e69c with SMTP id z8-20020a170903018800b00149512ae69cmr60164734plg.40.1641505596109;
+        Thu, 06 Jan 2022 13:46:36 -0800 (PST)
+Received: from smtp.gmail.com ([2620:15c:202:201:1ebe:a8fd:f9b0:7e85])
+        by smtp.gmail.com with ESMTPSA id 10sm3539960pfm.56.2022.01.06.13.46.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 13:46:35 -0800 (PST)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Douglas Anderson <dianders@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        linux-omap@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        Saravana Kannan <saravanak@google.com>
+Subject: [PATCH v5 28/32] fbdev: omap2: Migrate to aggregate driver
+Date:   Thu,  6 Jan 2022 13:45:51 -0800
+Message-Id: <20220106214556.2461363-29-swboyd@chromium.org>
+X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
+In-Reply-To: <20220106214556.2461363-1-swboyd@chromium.org>
+References: <20220106214556.2461363-1-swboyd@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In [1], Christoph Hellwig has proposed to remove the wrappers in
-include/linux/pci-dma-compat.h.
+Use an aggregate driver instead of component ops so that we can get
+proper driver probe ordering of the aggregate device with respect to all
+the component devices that make up the aggregate device.
 
-Some reasons why this API should be removed have been given by Julia
-Lawall in [2].
-
-A coccinelle script has been used to perform the needed transformation.
-It can be found in [3].
-
-[1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
-[2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
-[3]: https://lore.kernel.org/kernel-janitors/20200716192821.321233-1-christophe.jaillet@wanadoo.fr/
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Cc: <linux-omap@vger.kernel.org>
+Cc: <linux-fbdev@vger.kernel.org>
+Cc: Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>
+Cc: Russell King <rmk+kernel@arm.linux.org.uk>
+Cc: Saravana Kannan <saravanak@google.com>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
-Reviewed in: https://lore.kernel.org/kernel-janitors/CAK8P3a2XwFveAd8nSCexZG3_UZga2PQ+EXHxQLGaWkLjCwrBxQ@mail.gmail.com/
----
- arch/alpha/include/asm/floppy.h |  7 ++++---
- arch/alpha/kernel/pci_iommu.c   | 12 ++++++------
- 2 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/video/fbdev/omap2/omapfb/dss/dss.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/arch/alpha/include/asm/floppy.h b/arch/alpha/include/asm/floppy.h
-index 8dfdb3aa1d96..588758685439 100644
---- a/arch/alpha/include/asm/floppy.h
-+++ b/arch/alpha/include/asm/floppy.h
-@@ -43,17 +43,18 @@ alpha_fd_dma_setup(char *addr, unsigned long size, int mode, int io)
- 	static int prev_dir;
- 	int dir;
- 
--	dir = (mode != DMA_MODE_READ) ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE;
-+	dir = (mode != DMA_MODE_READ) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
- 
- 	if (bus_addr 
- 	    && (addr != prev_addr || size != prev_size || dir != prev_dir)) {
- 		/* different from last time -- unmap prev */
--		pci_unmap_single(isa_bridge, bus_addr, prev_size, prev_dir);
-+		dma_unmap_single(&isa_bridge->dev, bus_addr, prev_size,
-+				 prev_dir);
- 		bus_addr = 0;
- 	}
- 
- 	if (!bus_addr)	/* need to map it */
--		bus_addr = pci_map_single(isa_bridge, addr, size, dir);
-+		bus_addr = dma_map_single(&isa_bridge->dev, addr, size, dir);
- 
- 	/* remember this one as prev */
- 	prev_addr = addr;
-diff --git a/arch/alpha/kernel/pci_iommu.c b/arch/alpha/kernel/pci_iommu.c
-index 21f9ac101324..e83a02ed5267 100644
---- a/arch/alpha/kernel/pci_iommu.c
-+++ b/arch/alpha/kernel/pci_iommu.c
-@@ -333,7 +333,7 @@ static dma_addr_t alpha_pci_map_page(struct device *dev, struct page *page,
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
- 	int dac_allowed;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	dac_allowed = pdev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0; 
- 	return pci_map_single_1(pdev, (char *)page_address(page) + offset, 
-@@ -356,7 +356,7 @@ static void alpha_pci_unmap_page(struct device *dev, dma_addr_t dma_addr,
- 	struct pci_iommu_arena *arena;
- 	long dma_ofs, npages;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	if (dma_addr >= __direct_map_base
- 	    && dma_addr < __direct_map_base + __direct_map_size) {
-@@ -460,7 +460,7 @@ static void alpha_pci_free_coherent(struct device *dev, size_t size,
- 				    unsigned long attrs)
- {
- 	struct pci_dev *pdev = alpha_gendev_to_pci(dev);
--	pci_unmap_single(pdev, dma_addr, size, PCI_DMA_BIDIRECTIONAL);
-+	dma_unmap_single(&pdev->dev, dma_addr, size, DMA_BIDIRECTIONAL);
- 	free_pages((unsigned long)cpu_addr, get_order(size));
- 
- 	DBGA2("pci_free_consistent: [%llx,%zx] from %ps\n",
-@@ -639,7 +639,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
- 	dma_addr_t max_dma;
- 	int dac_allowed;
- 
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
- 
- 	dac_allowed = dev ? pci_dac_dma_supported(pdev, pdev->dma_mask) : 0;
- 
-@@ -702,7 +702,7 @@ static int alpha_pci_map_sg(struct device *dev, struct scatterlist *sg,
- 	/* Some allocation failed while mapping the scatterlist
- 	   entries.  Unmap them now.  */
- 	if (out > start)
--		pci_unmap_sg(pdev, start, out - start, dir);
-+		dma_unmap_sg(&pdev->dev, start, out - start, dir);
- 	return -ENOMEM;
+diff --git a/drivers/video/fbdev/omap2/omapfb/dss/dss.c b/drivers/video/fbdev/omap2/omapfb/dss/dss.c
+index a6b1c1598040..f12663c39ceb 100644
+--- a/drivers/video/fbdev/omap2/omapfb/dss/dss.c
++++ b/drivers/video/fbdev/omap2/omapfb/dss/dss.c
+@@ -1067,8 +1067,9 @@ static int dss_video_pll_probe(struct platform_device *pdev)
  }
  
-@@ -722,7 +722,7 @@ static void alpha_pci_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	dma_addr_t max_dma;
- 	dma_addr_t fbeg, fend;
+ /* DSS HW IP initialisation */
+-static int dss_bind(struct device *dev)
++static int dss_bind(struct aggregate_device *adev)
+ {
++	struct device *dev = adev->parent;
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct resource *dss_mem;
+ 	u32 rev;
+@@ -1167,8 +1168,9 @@ static int dss_bind(struct device *dev)
+ 	return r;
+ }
  
--	BUG_ON(dir == PCI_DMA_NONE);
-+	BUG_ON(dir == DMA_NONE);
+-static void dss_unbind(struct device *dev)
++static void dss_unbind(struct aggregate_device *adev)
+ {
++	struct device *dev = adev->parent;
+ 	struct platform_device *pdev = to_platform_device(dev);
  
- 	if (! alpha_mv.mv_pci_tbi)
- 		return;
+ 	dss_initialized = false;
+@@ -1188,9 +1190,13 @@ static void dss_unbind(struct device *dev)
+ 	dss_put_clocks();
+ }
+ 
+-static const struct component_master_ops dss_component_ops = {
+-	.bind = dss_bind,
+-	.unbind = dss_unbind,
++static struct aggregate_driver dss_aggregate_driver = {
++	.probe = dss_bind,
++	.remove = dss_unbind,
++	.driver = {
++		.name = "dss_fbdev",
++		.owner = THIS_MODULE,
++	},
+ };
+ 
+ static int dss_component_compare(struct device *dev, void *data)
+@@ -1225,7 +1231,7 @@ static int dss_probe(struct platform_device *pdev)
+ 	/* add all the child devices as components */
+ 	device_for_each_child(&pdev->dev, &match, dss_add_child_component);
+ 
+-	r = component_master_add_with_match(&pdev->dev, &dss_component_ops, match);
++	r = component_aggregate_register(&pdev->dev, &dss_aggregate_driver, match);
+ 	if (r)
+ 		return r;
+ 
+@@ -1234,7 +1240,7 @@ static int dss_probe(struct platform_device *pdev)
+ 
+ static int dss_remove(struct platform_device *pdev)
+ {
+-	component_master_del(&pdev->dev, &dss_component_ops);
++	component_aggregate_unregister(&pdev->dev, &dss_aggregate_driver);
+ 	return 0;
+ }
+ 
 -- 
-2.32.0
+https://chromeos.dev
 
