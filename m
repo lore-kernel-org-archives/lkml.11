@@ -2,138 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B749C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 23:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A18DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 23:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245546AbiAFX0H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 18:26:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
+        id S245548AbiAFXbn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 18:31:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245568AbiAFX0B (ORCPT
+        with ESMTP id S245518AbiAFXbm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 18:26:01 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DB94C0611FD;
-        Thu,  6 Jan 2022 15:26:01 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id v11so3756045pfu.2;
-        Thu, 06 Jan 2022 15:26:01 -0800 (PST)
+        Thu, 6 Jan 2022 18:31:42 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89EEFC0611FD
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 15:31:42 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id w19-20020a056830061300b0058f1dd48932so4787055oti.11
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 15:31:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YMrJVY+JiLwYXB7dJ9LWCcuUUtmuetN3onx/+nxsDCc=;
-        b=IVs1AD/IgQVkc2A10fm+jmdrb1k5hgdiGzycUnpLTAmbrb1jVOZCbgA1MRbFBBoxwr
-         GzoZNTJh9pTzOgI7pWQoR8blc1rhUOpDicv4vwIjHF8Eu7W8NPyns8Riznc7TdPUUZ9c
-         tVcg56T0F98D8f1GWslFLou+CoBYnNdnX0gohzDrz5JUQ1FVX37r81C7He7MmrYltDzH
-         S6X4anoow+6AU+TZbt5gvdOJDrBvfMaTrOhDzQCnVBfq/ua8KTkItkRTPrQfodCHTKHu
-         9+TPITjyWy2MQ9QicOgDn8LXM9CNr5I3IAs6KKB3ZwfIPufE3UOpeCqo6uislhqfbdXW
-         wIWg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=U/iQuGmfWVCkASUQJWaEZjxwQAvZNH3XGdLjyGaFqjM=;
+        b=QYekmvEyoXHRscB62NK9bJUtGw8ZD99/DIFRGyeHrPx3wzvFj/kwtu+NC4BYqZl8I/
+         8BgPS2GskUr/7xzGX//DJdT4KPVPHNdSr8VotN9gPvsqZgPV9AjoahEjTv60wfNrSL44
+         68XfzjkVYMo1XYk1fdTw/jHVwlPDt/RrYeQhw7uZ+xuP1ZR84chvBSzZ2kUeeXPGVlGI
+         fCdZcsaVHOSajq8XA3RX49EbeS7bHBJRXOLhtCPcKWnB9I8Ptzph1P0sAKhDVs7hFZoP
+         NTm0fwdXH+6ppEyfgZc6EaEZHPg/2WcGKiokFtDLBo+NgCQUDLLDBFabFTd+4L/0eYby
+         kIMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YMrJVY+JiLwYXB7dJ9LWCcuUUtmuetN3onx/+nxsDCc=;
-        b=xBvYdqs5yE91hmEkYz1GN5Udv6lkq/mgW1JE8iKwIi6Akq+y2jkx2hr3yKla8XXOQs
-         IK9XbL5NZHZzD5XQobcPbgWrJoEvaZKJZVLFP7r9iiyQuoRKMtmD8FkXWRBtBT53OJHV
-         jRTVI4iatkhRWg+2/Qz2h1rbI3OueC3SHgJbU2fbUFwtM/hUBuefz9viQD6ERIM4413T
-         nyj80Rb4hWe0dmNMVEmyHS/isxcYiPlD/rETawP7rLFpwemsPauX2wQru1F2FRgQkW0M
-         sI7vwQVPviChhmBdVi8ivhCNLwY7VAHxWZG0MtmjjCX0cmvzP3zj1aZdt04Q6IxvHxFI
-         vFIw==
-X-Gm-Message-State: AOAM531Pe6E4b6+GCilvvhVaOEJAbxumo3IBaq9kg0xIMNbNl/ns+N+o
-        G1eVxeQE731A0GBSHZcNCPE=
-X-Google-Smtp-Source: ABdhPJxGHfbTtKRwAwJlZcc+6oM4ko44yV0uEpvhyzUduZfp5eHXf3nWJb9qTur2jEiu2IGmXAtesQ==
-X-Received: by 2002:a63:6ece:: with SMTP id j197mr46697247pgc.322.1641511561093;
-        Thu, 06 Jan 2022 15:26:01 -0800 (PST)
-Received: from goshun.usen.ad.jp (113x33x71x97.ap113.ftth.ucom.ne.jp. [113.33.71.97])
-        by smtp.gmail.com with ESMTPSA id r13sm2937078pga.29.2022.01.06.15.25.58
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=U/iQuGmfWVCkASUQJWaEZjxwQAvZNH3XGdLjyGaFqjM=;
+        b=Do79sxGJiyDCveDrSx4uqhmDZO2bEYIFLOTOk5oY2SEo6ODJRZAm4HNwgEzYxSO34O
+         ypZ+ldiZUGk4tjqs49jqJMIoDebYI+lhWAN5YraJA9m1ylK8LpIPlBgyp4bogV+IDTs9
+         OYYlOjLb6Nwk2a4oA1pw8/k4glwJLU4S3F6S+DsIBAlhRXhN26YlsP3EQCe6RL/xnmRs
+         ZkOlC+9bBTMgw5L7+BSwxeMJqymNm4JE6L8c+KIOXySlrAA3S6ds3PcSNs4bg8gNipyj
+         B/rRYw2AjZ4iidpDsAbG/bgGPrkOJOXfTxDkNJ5uFseeL7kGQpsrbMKsZFE0WHhOMeQo
+         r/vg==
+X-Gm-Message-State: AOAM530/PcrzS4z3e/1DMoS+CbG3UWctpwBQXFdgcmkJLk09PVIf9Jc7
+        ++JDkvg3oh7JapzojdjjVKfffg==
+X-Google-Smtp-Source: ABdhPJwwvy1O+83ffycRY9f/jcSNfUXGTP0v3GbYn5nK1x1SBIZ23uQYgrNJb6+fJc8BSLGhw3LwBA==
+X-Received: by 2002:a9d:700b:: with SMTP id k11mr42420380otj.141.1641511901355;
+        Thu, 06 Jan 2022 15:31:41 -0800 (PST)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id 2sm613946otm.41.2022.01.06.15.31.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 15:26:00 -0800 (PST)
-From:   Akira Kawata <akirakawata1@gmail.com>
-To:     akpm@linux-foundation.org, adobriyan@gmail.com,
-        viro@zeniv.linux.org.uk, keescook@chromium.org,
-        linux-fsdevel@vger.kernel.org, lukas.bulwahn@gmail.com
-Cc:     akirakawata1@gmail.com, Eric Biederman <ebiederm@xmission.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 RESEND 2/2] fs/binfmt_elf: Refactor load_elf_binary function
-Date:   Fri,  7 Jan 2022 08:25:13 +0900
-Message-Id: <20220106232513.143014-3-akirakawata1@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220106232513.143014-1-akirakawata1@gmail.com>
-References: <20220106232513.143014-1-akirakawata1@gmail.com>
+        Thu, 06 Jan 2022 15:31:41 -0800 (PST)
+Date:   Thu, 6 Jan 2022 15:32:28 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Thara Gopinath <thara.gopinath@linaro.org>
+Cc:     agross@kernel.org, daniel.lezcano@linaro.org, rafael@kernel.org,
+        rui.zhang@intel.com, robh+dt@kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [Patch v3 1/3] thermal: qcom: lmh: Add support for sm8150
+Message-ID: <Ydd8DAAEClRcklTy@ripper>
+References: <20220106173138.411097-1-thara.gopinath@linaro.org>
+ <20220106173138.411097-2-thara.gopinath@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220106173138.411097-2-thara.gopinath@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I delete load_addr because it is not used anymore. And I rename
-load_addr_set to first_pt_load because it is used only to capture the
-first iteration of the loop.
+On Thu 06 Jan 09:31 PST 2022, Thara Gopinath wrote:
 
-Signed-off-by: Akira Kawata <akirakawata1@gmail.com>
----
- fs/binfmt_elf.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+> Add compatible to support LMh for sm8150 SoC.
+> sm8150 does not require explicit enabling for various LMh subsystems.
+> Add a variable indicating the same as match data which is set for sdm845.
+> Execute the piece of code enabling various LMh subsystems only if
+> enable algorithm match data is present.
+> 
+> Signed-off-by: Thara Gopinath <thara.gopinath@linaro.org>
 
-diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
-index 828e88841cb4..48206fd1a20e 100644
---- a/fs/binfmt_elf.c
-+++ b/fs/binfmt_elf.c
-@@ -822,8 +822,8 @@ static int parse_elf_properties(struct file *f, const struct elf_phdr *phdr,
- static int load_elf_binary(struct linux_binprm *bprm)
- {
- 	struct file *interpreter = NULL; /* to shut gcc up */
--	unsigned long load_addr, load_bias = 0, phdr_addr = 0;
--	int load_addr_set = 0;
-+	unsigned long load_bias = 0, phdr_addr = 0;
-+	int first_pt_load = 1;
- 	unsigned long error;
- 	struct elf_phdr *elf_ppnt, *elf_phdata, *interp_elf_phdata = NULL;
- 	struct elf_phdr *elf_property_phdata = NULL;
-@@ -1073,12 +1073,12 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 
- 		vaddr = elf_ppnt->p_vaddr;
- 		/*
--		 * The first time through the loop, load_addr_set is false:
-+		 * The first time through the loop, first_pt_load is true:
- 		 * layout will be calculated. Once set, use MAP_FIXED since
- 		 * we know we've already safely mapped the entire region with
- 		 * MAP_FIXED_NOREPLACE in the once-per-binary logic following.
- 		 */
--		if (load_addr_set) {
-+		if (!first_pt_load) {
- 			elf_flags |= MAP_FIXED;
- 		} else if (elf_ex->e_type == ET_EXEC) {
- 			/*
-@@ -1138,10 +1138,10 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 
- 		/*
- 		 * Calculate the entire size of the ELF mapping (total_size).
--		 * (Note that load_addr_set is set to true later once the
-+		 * (Note that first_pt_load is set to false later once the
- 		 * initial mapping is performed.)
- 		 */
--		if (!load_addr_set) {
-+		if (first_pt_load) {
- 			total_size = total_mapping_size(elf_phdata,
- 							elf_ex->e_phnum);
- 			if (!total_size) {
-@@ -1158,13 +1158,11 @@ static int load_elf_binary(struct linux_binprm *bprm)
- 			goto out_free_dentry;
- 		}
- 
--		if (!load_addr_set) {
--			load_addr_set = 1;
--			load_addr = (elf_ppnt->p_vaddr - elf_ppnt->p_offset);
-+		if (first_pt_load) {
-+			first_pt_load = 0;
- 			if (elf_ex->e_type == ET_DYN) {
- 				load_bias += error -
- 				             ELF_PAGESTART(load_bias + vaddr);
--				load_addr += load_bias;
- 				reloc_func_desc = load_bias;
- 			}
- 		}
--- 
-2.25.1
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
+Thanks Thara,
+Bjorn
+
+> ---
+> 
+> v2->v3:
+> 	- use of_device_get_match_data to get the data from match table
+> 	  rather than using of_match_device and subsequent ->data, as per
+> 	  Bjorn's review comments.
+> 	- Minor fixes as per Bjorn's review comments.
+> 
+> v1->v2:
+> 	- Added LMH_ENABLE_ALGOS of_device_id match data to indicate
+> 	  whether LMh subsytems need explicit enabling or not.
+>  drivers/thermal/qcom/lmh.c | 62 +++++++++++++++++++++-----------------
+>  1 file changed, 35 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/thermal/qcom/lmh.c b/drivers/thermal/qcom/lmh.c
+> index eafa7526eb8b..c7f91cbdccc7 100644
+> --- a/drivers/thermal/qcom/lmh.c
+> +++ b/drivers/thermal/qcom/lmh.c
+> @@ -28,6 +28,8 @@
+>  
+>  #define LMH_REG_DCVS_INTR_CLR		0x8
+>  
+> +#define LMH_ENABLE_ALGOS		1
+> +
+>  struct lmh_hw_data {
+>  	void __iomem *base;
+>  	struct irq_domain *domain;
+> @@ -90,6 +92,7 @@ static int lmh_probe(struct platform_device *pdev)
+>  	struct device_node *cpu_node;
+>  	struct lmh_hw_data *lmh_data;
+>  	int temp_low, temp_high, temp_arm, cpu_id, ret;
+> +	unsigned int enable_alg;
+>  	u32 node_id;
+>  
+>  	lmh_data = devm_kzalloc(dev, sizeof(*lmh_data), GFP_KERNEL);
+> @@ -141,32 +144,36 @@ static int lmh_probe(struct platform_device *pdev)
+>  	if (!qcom_scm_lmh_dcvsh_available())
+>  		return -EINVAL;
+>  
+> -	ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_CRNT, LMH_ALGO_MODE_ENABLE, 1,
+> -				 LMH_NODE_DCVS, node_id, 0);
+> -	if (ret)
+> -		dev_err(dev, "Error %d enabling current subfunction\n", ret);
+> -
+> -	ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_REL, LMH_ALGO_MODE_ENABLE, 1,
+> -				 LMH_NODE_DCVS, node_id, 0);
+> -	if (ret)
+> -		dev_err(dev, "Error %d enabling reliability subfunction\n", ret);
+> -
+> -	ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_BCL, LMH_ALGO_MODE_ENABLE, 1,
+> -				 LMH_NODE_DCVS, node_id, 0);
+> -	if (ret)
+> -		dev_err(dev, "Error %d enabling BCL subfunction\n", ret);
+> -
+> -	ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_THERMAL, LMH_ALGO_MODE_ENABLE, 1,
+> -				 LMH_NODE_DCVS, node_id, 0);
+> -	if (ret) {
+> -		dev_err(dev, "Error %d enabling thermal subfunction\n", ret);
+> -		return ret;
+> -	}
+> -
+> -	ret = qcom_scm_lmh_profile_change(0x1);
+> -	if (ret) {
+> -		dev_err(dev, "Error %d changing profile\n", ret);
+> -		return ret;
+> +	enable_alg = (uintptr_t)of_device_get_match_data(dev);
+> +
+> +	if (enable_alg) {
+> +		ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_CRNT, LMH_ALGO_MODE_ENABLE, 1,
+> +					 LMH_NODE_DCVS, node_id, 0);
+> +		if (ret)
+> +			dev_err(dev, "Error %d enabling current subfunction\n", ret);
+> +
+> +		ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_REL, LMH_ALGO_MODE_ENABLE, 1,
+> +					 LMH_NODE_DCVS, node_id, 0);
+> +		if (ret)
+> +			dev_err(dev, "Error %d enabling reliability subfunction\n", ret);
+> +
+> +		ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_BCL, LMH_ALGO_MODE_ENABLE, 1,
+> +					 LMH_NODE_DCVS, node_id, 0);
+> +		if (ret)
+> +			dev_err(dev, "Error %d enabling BCL subfunction\n", ret);
+> +
+> +		ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_THERMAL, LMH_ALGO_MODE_ENABLE, 1,
+> +					 LMH_NODE_DCVS, node_id, 0);
+> +		if (ret) {
+> +			dev_err(dev, "Error %d enabling thermal subfunction\n", ret);
+> +			return ret;
+> +		}
+> +
+> +		ret = qcom_scm_lmh_profile_change(0x1);
+> +		if (ret) {
+> +			dev_err(dev, "Error %d changing profile\n", ret);
+> +			return ret;
+> +		}
+>  	}
+>  
+>  	/* Set default thermal trips */
+> @@ -213,7 +220,8 @@ static int lmh_probe(struct platform_device *pdev)
+>  }
+>  
+>  static const struct of_device_id lmh_table[] = {
+> -	{ .compatible = "qcom,sdm845-lmh", },
+> +	{ .compatible = "qcom,sdm845-lmh", .data = (void *)LMH_ENABLE_ALGOS},
+> +	{ .compatible = "qcom,sm8150-lmh", },
+>  	{}
+>  };
+>  MODULE_DEVICE_TABLE(of, lmh_table);
+> -- 
+> 2.25.1
+> 
