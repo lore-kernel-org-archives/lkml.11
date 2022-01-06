@@ -2,46 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD634C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 09:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 012F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 09:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237616AbiAFJyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 04:54:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56116 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236542AbiAFJyH (ORCPT
+        id S237626AbiAFJ4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 04:56:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236542AbiAFJ4P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 04:54:07 -0500
+        Thu, 6 Jan 2022 04:56:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 262A9C061245
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 01:56:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A7A1B81FEA;
-        Thu,  6 Jan 2022 09:54:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B739EC36AEB;
-        Thu,  6 Jan 2022 09:54:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 869A9619C2
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:56:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44ABBC36AE5;
+        Thu,  6 Jan 2022 09:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641462845;
-        bh=NWaWhTkm2DfWR/QEVcmB4mj8lYkY2Fnm02M8eheZ2mU=;
+        s=korg; t=1641462974;
+        bh=g2OTglO7kNt/1C9rH1eMGfeioryhDpMhIlFqJBCB/nU=;
         h=From:To:Cc:Subject:Date:From;
-        b=oLULddqmS2MV2NewRLh9QI8Wq+pJXWNFz42Yo2vspQhsCPugPl7KU7bO1K0Bbr0oK
-         4oLut7abHwpZJ5iJHS3wUSz87ax1p/0G5qMh8JSk8yAP7nvWnonjWCvxYhSE168H38
-         vrxys8InQXE/aH0Od4cEJhmprH7B9gIUUbARwyEE=
+        b=UtlwpY27Hi40UW/6ZzEqlLUTopJNXx7nPPJwPu9uvIPwIxDEsdfltgYDzEjZeA4qj
+         XzunqvFVzviK1PdrHgh+6QoMSwQt7ICq8LuAU4fBY2Df+9UYioSE3a4Knlxjd38WqK
+         eXfwRs1E1ohUeE3dl5jyDw1C8dE2+oXY0MxiD1gc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linux-s390@vger.kernel.org
-Subject: [PATCH] s390/dasd: use default_groups in kobj_type
-Date:   Thu,  6 Jan 2022 10:54:01 +0100
-Message-Id: <20220106095401.3274637-1-gregkh@linuxfoundation.org>
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        John Clements <john.clements@amd.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Jonathan Kim <jonathan.kim@amd.com>,
+        Kevin Wang <kevin1.wang@amd.com>,
+        shaoyunl <shaoyun.liu@amd.com>, Tao Zhou <tao.zhou1@amd.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH] drm/amdgpu: use default_groups in kobj_type
+Date:   Thu,  6 Jan 2022 10:56:10 +0100
+Message-Id: <20220106095610.3275631-1-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1415; h=from:subject; bh=NWaWhTkm2DfWR/QEVcmB4mj8lYkY2Fnm02M8eheZ2mU=; b=owGbwMvMwCRo6H6F97bub03G02pJDInX9ljuPXVs2hdrQ3YF46eMW57VZB8/pnVv3697b8OnaIW5 5n7Q6YhlYRBkYpAVU2T5so3n6P6KQ4pehranYeawMoEMYeDiFICJxDxiWDD5uZDVrt8aB1cePZLKmN 00OadCP5Vhfo5G5sF3t2Y/E/DftmDaeh/LU5wfkwE=
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1984; h=from:subject; bh=g2OTglO7kNt/1C9rH1eMGfeioryhDpMhIlFqJBCB/nU=; b=owGbwMvMwCRo6H6F97bub03G02pJDInX9uyyrZZY3yDCcVOo9ml7unfUk6gPXxdHa+naSk8RXy1Z /X5VRywLgyATg6yYIsuXbTxH91ccUvQytD0NM4eVCWQIAxenAEyk5yLDgsmGTv967jFYL/sda3Fv1X lRqdKGLoYFWxPWliQ6dKaH+Z1Z97no9s+tm+fJAgA=
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -50,40 +59,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 There are currently 2 ways to create a set of sysfs files for a
 kobj_type, through the default_attrs field, and the default_groups
-field.  Move the s390 dasd sysfs code to use default_groups field which
-has been the preferred way since aa30f47cf666 ("kobject: Add support for
+field.  Move the amdgpu sysfs code to use default_groups field which has
+been the preferred way since aa30f47cf666 ("kobject: Add support for
 default attribute groups to kobj_type") so that we can soon get rid of
 the obsolete default_attrs field.
 
-Cc: Stefan Haberland <sth@linux.ibm.com>
-Cc: Jan Hoeppner <hoeppner@linux.ibm.com>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-Cc: linux-s390@vger.kernel.org
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Christian König" <christian.koenig@amd.com>
+Cc: "Pan, Xinhui" <Xinhui.Pan@amd.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Hawking Zhang <Hawking.Zhang@amd.com>
+Cc: John Clements <john.clements@amd.com>
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Jonathan Kim <jonathan.kim@amd.com>
+Cc: Kevin Wang <kevin1.wang@amd.com>
+Cc: shaoyunl <shaoyun.liu@amd.com>
+Cc: Tao Zhou <tao.zhou1@amd.com>
+Cc: amd-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/s390/block/dasd_devmap.c | 3 ++-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/s390/block/dasd_devmap.c b/drivers/s390/block/dasd_devmap.c
-index 6043c832d09e..811e79c9f59c 100644
---- a/drivers/s390/block/dasd_devmap.c
-+++ b/drivers/s390/block/dasd_devmap.c
-@@ -1824,10 +1824,11 @@ static struct attribute *paths_info_attrs[] = {
- 	&path_fcs_attribute.attr,
- 	NULL,
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
+index 567df2db23ac..94dcb004988d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_xgmi.c
+@@ -208,6 +208,7 @@ static struct attribute *amdgpu_xgmi_hive_attrs[] = {
+ 	&amdgpu_xgmi_hive_id,
+ 	NULL
  };
-+ATTRIBUTE_GROUPS(paths_info);
++ATTRIBUTE_GROUPS(amdgpu_xgmi_hive);
  
- static struct kobj_type path_attr_type = {
- 	.release	= dasd_path_release,
--	.default_attrs	= paths_info_attrs,
-+	.default_groups	= paths_info_groups,
- 	.sysfs_ops	= &kobj_sysfs_ops,
+ static ssize_t amdgpu_xgmi_show_attrs(struct kobject *kobj,
+ 	struct attribute *attr, char *buf)
+@@ -237,7 +238,7 @@ static const struct sysfs_ops amdgpu_xgmi_hive_ops = {
+ struct kobj_type amdgpu_xgmi_hive_type = {
+ 	.release = amdgpu_xgmi_hive_release,
+ 	.sysfs_ops = &amdgpu_xgmi_hive_ops,
+-	.default_attrs = amdgpu_xgmi_hive_attrs,
++	.default_groups = amdgpu_xgmi_hive_groups,
  };
  
+ static ssize_t amdgpu_xgmi_show_device_id(struct device *dev,
 -- 
 2.34.1
 
