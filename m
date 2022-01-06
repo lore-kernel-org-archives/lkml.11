@@ -2,150 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 10:19:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1778C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 10:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237847AbiAFKT5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 05:19:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237841AbiAFKT4 (ORCPT
+        id S237855AbiAFKUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 05:20:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38064 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237810AbiAFKUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 05:19:56 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1B75C061212
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 02:19:55 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id s15so2138804pfk.6
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 02:19:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=H3j3OBM8zalTDzIk5cZKKGbGfOPu4uEf9KmgtZeTqBw=;
-        b=j3AIMULN87EQ8JeCbKonwMvBB8mnMshBTr357TwGdx6h+wKLPVBElr4UlP5GlpJVxh
-         1x0jWASYLFuE5lHfCDiXCE+5hNZZgyPOvACz0umqZicetVOE2CzP4R+ujDPHxTnzpOP2
-         fHHS+n/cNX6xDu0uWmQ0XKC24yxH+Kbd58w0wGxBJI57AYho1tDK1GcRKayZUlbWcmo5
-         8mjThdFXD5DSznaB6Xe3e4RiMBfnXLg8a2oiqckYkvgrmqFvx0ANf7PzrBRdMEGjmqVM
-         keMSj9CoZNrI4paLNnP7VYcH1k8Ny1D+zLpr4Yu1I9KCh2r/LGURj0Qaad7cvaCR0hgs
-         wYww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=H3j3OBM8zalTDzIk5cZKKGbGfOPu4uEf9KmgtZeTqBw=;
-        b=jy9A8dqxtolhB/gsS4nhyI312xrlbv/ktGjy5HDktO5RzJfZWR1vCaYcuXtGkwZ09t
-         pZQMDW+f8sXoymEhVgZdpUdvBv7M1aUlnGpDvlSBmcV7HtUSv+q/slS+vMPSaD2er+FE
-         qDCtbyTpTqolOl7ZrfbYx+Eo/iY66vjKJeFsAZ2QRUoUdovg7FTP1bAPDBwquZbt5p9V
-         iO2emKvG9C8cs1A35ptFhJ4HeRfxBSWrWXpfqqNA1cDWkrmFSFjpUtX1sPQprm2KN8d7
-         Sg/Iy+qMUbTw54OvHWK0G+lVKZrs7J/tPaG4S898mcvjyPGk1me0+8soOQEc5Q9iwbB/
-         h9Gw==
-X-Gm-Message-State: AOAM530awYnc1r2pu2B9Yudgpt5Prg+KfeybkU7jxy/C74PypzBRNMjb
-        lhgCskrSA99t9pJfa+PlXGI=
-X-Google-Smtp-Source: ABdhPJx7S0Pqw2sMVIPTNFhfAVp8sEM3Cn1nW7X2eXcb8p6RbxBSAlw7+xP64R0nGQGMEUSr8JjT5A==
-X-Received: by 2002:a63:3101:: with SMTP id x1mr52105577pgx.113.1641464395244;
-        Thu, 06 Jan 2022 02:19:55 -0800 (PST)
-Received: from realwakka ([59.12.165.26])
-        by smtp.gmail.com with ESMTPSA id q17sm2133922pfj.119.2022.01.06.02.19.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 02:19:55 -0800 (PST)
-Date:   Thu, 6 Jan 2022 10:19:46 +0000
-From:   Sidong Yang <realwakka@gmail.com>
-To:     Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: pi433: move get version func to where all other
- functions are
-Message-ID: <20220106101946.GA23794@realwakka>
-References: <20220106093110.GA20011@mail.google.com>
+        Thu, 6 Jan 2022 05:20:34 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C148B82027
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 10:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B8ADC36AE3;
+        Thu,  6 Jan 2022 10:20:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641464431;
+        bh=W9u8F+egG7FJT2/aw81C8uDLm3ZwqvfOJn6J5z/Jd3Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gGY6KgsrLpLgla+eN+5WgKdMkTjJGQIpcB1g1A9mSDmA9l3WGrytXxWsql6zk/PU5
+         xD++mpPci/kq9fGtUTzLXbgp+iaU8nNjb3M1eOHLIUe7H53oi1lwVoiHmIjeDu2qbH
+         nWGqkjm3SYMtSrLJIe3mxq83fYx68zHZplROyB3A=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        ocfs2-devel@oss.oracle.com
+Subject: [PATCH] ocfs2: cluster: use default_groups in kobj_type
+Date:   Thu,  6 Jan 2022 11:20:28 +0100
+Message-Id: <20220106102028.3345634-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220106093110.GA20011@mail.google.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2200; h=from:subject; bh=W9u8F+egG7FJT2/aw81C8uDLm3ZwqvfOJn6J5z/Jd3Q=; b=owGbwMvMwCRo6H6F97bub03G02pJDInXDuVo7ey6n/KjoHDJd/7fCexs7PFCGwStrm8NbSgK+/Pp 9k3vjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZhI6i2G+QGXdhg/1EsusE/bwaES82 dn7oSekwzzPcuaBUIjfgfUXzt5vfGTAltVQAwbAA==
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 10:31:10PM +1300, Paulo Miguel Almeida wrote:
+There are currently 2 ways to create a set of sysfs files for a
+kobj_type, through the default_attrs field, and the default_groups
+field.  Move the ocfs2 cluster sysfs code to use default_groups field
+which has been the preferred way since aa30f47cf666 ("kobject: Add
+support for default attribute groups to kobj_type") so that we can soon
+get rid of the obsolete default_attrs field.
 
+Cc: Mark Fasheh <mark@fasheh.com>
+Cc: Joel Becker <jlbec@evilplan.org>
+Cc: Joseph Qi <joseph.qi@linux.alibaba.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Miguel Ojeda <ojeda@kernel.org>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: ocfs2-devel@oss.oracle.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/ocfs2/cluster/masklog.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-> As a convention for the pi433 driver, all routines that deals with the
-> rf69 chip are defined in the rf69.c file. There was an exception in
-> which the uC version verification was being done directly elsewhere.
-> While at it, the Version Register hardcoded value was replaced with a
-> pre-existing constant in the driver.
-> 
-> This patch adds rf69_get_chip_version function to rf69.c
-> 
-> Additionally, the patch below must be applied first as it was sent
-> before and touches the same file.
-> https://lore.kernel.org/lkml/20220103222334.GA6814@mail.google.com/
-> 
-> Signed-off-by: Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
+diff --git a/fs/ocfs2/cluster/masklog.c b/fs/ocfs2/cluster/masklog.c
+index 810d32815593..563881ddbf00 100644
+--- a/fs/ocfs2/cluster/masklog.c
++++ b/fs/ocfs2/cluster/masklog.c
+@@ -120,7 +120,8 @@ static struct mlog_attribute mlog_attrs[MLOG_MAX_BITS] = {
+ 	define_mask(KTHREAD),
+ };
+ 
+-static struct attribute *mlog_attr_ptrs[MLOG_MAX_BITS] = {NULL, };
++static struct attribute *mlog_default_attrs[MLOG_MAX_BITS] = {NULL, };
++ATTRIBUTE_GROUPS(mlog_default);
+ 
+ static ssize_t mlog_show(struct kobject *obj, struct attribute *attr,
+ 			 char *buf)
+@@ -144,8 +145,8 @@ static const struct sysfs_ops mlog_attr_ops = {
+ };
+ 
+ static struct kobj_type mlog_ktype = {
+-	.default_attrs = mlog_attr_ptrs,
+-	.sysfs_ops     = &mlog_attr_ops,
++	.default_groups = mlog_default_groups,
++	.sysfs_ops      = &mlog_attr_ops,
+ };
+ 
+ static struct kset mlog_kset = {
+@@ -157,10 +158,10 @@ int mlog_sys_init(struct kset *o2cb_kset)
+ 	int i = 0;
+ 
+ 	while (mlog_attrs[i].attr.mode) {
+-		mlog_attr_ptrs[i] = &mlog_attrs[i].attr;
++		mlog_default_attrs[i] = &mlog_attrs[i].attr;
+ 		i++;
+ 	}
+-	mlog_attr_ptrs[i] = NULL;
++	mlog_default_attrs[i] = NULL;
+ 
+ 	kobject_set_name(&mlog_kset.kobj, "logmask");
+ 	mlog_kset.kobj.kset = o2cb_kset;
+-- 
+2.34.1
 
-Hi, Paulo. 
-Thanks for a patch.
-
-I think it's good overall. But I have some opinion below.
-
-> ---
->  drivers/staging/pi433/pi433_if.c | 4 +---
->  drivers/staging/pi433/rf69.c     | 8 ++++++++
->  drivers/staging/pi433/rf69.h     | 1 +
->  3 files changed, 10 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/pi433/pi433_if.c b/drivers/staging/pi433/pi433_if.c
-> index 29bd37669059..a19afda5b188 100644
-> --- a/drivers/staging/pi433/pi433_if.c
-> +++ b/drivers/staging/pi433/pi433_if.c
-> @@ -1116,9 +1116,7 @@ static int pi433_probe(struct spi_device *spi)
->  		spi->mode, spi->bits_per_word, spi->max_speed_hz);
->  
->  	/* Ping the chip by reading the version register */
-> -	retval = spi_w8r8(spi, 0x10);
-> -	if (retval < 0)
-> -		return retval;
-> +	retval = rf69_get_chip_version(spi);
->  
->  	switch (retval) {
->  	case 0x24:
-> diff --git a/drivers/staging/pi433/rf69.c b/drivers/staging/pi433/rf69.c
-> index d64df072d8e8..1516012f9bb7 100644
-> --- a/drivers/staging/pi433/rf69.c
-> +++ b/drivers/staging/pi433/rf69.c
-> @@ -102,6 +102,14 @@ static inline int rf69_read_mod_write(struct spi_device *spi, u8 reg,
->  
->  /*-------------------------------------------------------------------------*/
->  
-> +int rf69_get_chip_version(struct spi_device *spi)
-> +{
-> +	int retval;
-> +
-> +	retval = rf69_read_reg(spi, REG_VERSION);
-> +	return retval;
-> +}
-> +
-If we don't modify retval, why don't we just return directly without
-retval?
-
->  int rf69_set_mode(struct spi_device *spi, enum mode mode)
->  {
->  	static const u8 mode_map[] = {
-> diff --git a/drivers/staging/pi433/rf69.h b/drivers/staging/pi433/rf69.h
-> index b648ba5fff89..ca9b75267840 100644
-> --- a/drivers/staging/pi433/rf69.h
-> +++ b/drivers/staging/pi433/rf69.h
-> @@ -17,6 +17,7 @@
->  #define FIFO_SIZE	66		/* bytes */
->  #define FIFO_THRESHOLD	15		/* bytes */
->  
-> +int rf69_get_chip_version(struct spi_device *spi);
-IMHO, I think that we don't need to include 'chip'. Because all other
-functions in this code don't have 'chip' in function name. and version
-code seems to be more accurate representation.
-
->  int rf69_set_mode(struct spi_device *spi, enum mode mode);
->  int rf69_set_data_mode(struct spi_device *spi, u8 data_mode);
->  int rf69_set_modulation(struct spi_device *spi, enum modulation modulation);
-> -- 
-> 2.25.4
-> 
