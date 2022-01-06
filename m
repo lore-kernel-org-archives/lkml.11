@@ -2,163 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9331C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 08:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2C8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 08:42:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236825AbiAFIlx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 03:41:53 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:24666 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236793AbiAFIlw (ORCPT
+        id S236856AbiAFImf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 03:42:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236797AbiAFIm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 03:41:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641458511;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=B6cO0By3xfU7a9n6TEUm5Q0O0rT0zqzS45h4TsZ5dLM=;
-        b=Bl7gttkmQZHecyTqB0Nh6cJmBusFYbgq+Hm2PeN9Kv6s3bUXPqz6A/x75H1+d2MmyRom33
-        c3VCTKn647eoLrpzEphdTGutft0KAbKAk3+wA3BqZ8INmc0igwsMBA/xpMw8sxpT3fvA1T
-        u137Ze9YnVCSjWDe0CnYxImy9ME/cpo=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-393-j3qihre0N5eM6wn0FIUM3g-1; Thu, 06 Jan 2022 03:41:50 -0500
-X-MC-Unique: j3qihre0N5eM6wn0FIUM3g-1
-Received: by mail-ed1-f70.google.com with SMTP id w6-20020a05640234c600b003f916e1b615so1407428edc.17
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 00:41:50 -0800 (PST)
+        Thu, 6 Jan 2022 03:42:28 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125CEC061212
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 00:42:28 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id y22so6836388edq.2
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 00:42:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/au2t0n9VIeyTxqbpNihOs1HXF/Qnzq9Nav0Zut7TVY=;
+        b=K7UYXAi1Eop0upWJUh77qE3m1OyyQmIkT3i1vRFge93o4wGmoBn8rPz9PJgS3CRTR0
+         N7etZasKwFKeCiWLvwPbB63BrexoooWHypXU/f1Vi6Pd8XJn3laf+XVYNtuvukQ5ZUlI
+         QsiDydKY4/XUsbAiyRHWf0DyXZh2aad0q+LtpjMnro0khMITM10XSin4EgjSIxzTSSOT
+         tN6HnWiCUUe1mQvhKg9iH93MIqAfzlaRZe7PEv06HVIsyJW2HTFIP5NVGL2UdJ4OUfTs
+         Bq6DaFYHiZ9+N+rvE6TAtzFQs0F+ha1ErZ5BxGR4va0pZOAt3G99Z/5oaMuHNJMlR0u8
+         +1Pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B6cO0By3xfU7a9n6TEUm5Q0O0rT0zqzS45h4TsZ5dLM=;
-        b=HdM9nZ2O+wlOub6CPiq/lVODNFMkVQ+WCrRHmLd+JOdmhcqHkyD1ZtrcjjT6Swvb0e
-         o+u2s1d6QhgdpqbAwUm1Dwz5ruyUQ7m2aGqasPEf2BmpffvRVRw0mEmTVoU9gNWufycI
-         5DxqmSQAb7VOyFl7Yl4AB2q64/x+3MAo5oETJLHJQqTGUCmL4+iNWYnM6XLidCDjkSrA
-         7tgQzSA+7OGJ2vHFJKOfQ9XojIVoBySq85UV4T2lIwCIdVPEIFWKE7BzUcVhHIl38Url
-         m194H9hBP0yM2yXrF/z6Ka0UEYrL6vBwtZX1yDU3vmrjndp5nuLStv+hJ+j1Isxjo+IU
-         WO+Q==
-X-Gm-Message-State: AOAM530x70ZmI9e9ChTlC7cZmVgFtrAcBLR/ZLuqAp4gJp9aSsMtF7dL
-        ibfSNGknbljngyyIaSclcxmL6hofLmb+hK4xTmJ1PxWONLd+XwgS08fwo7V9UBZsdJWDV9a0+zC
-        AhC0TWu5USzEH4UjGVAvpzZL7
-X-Received: by 2002:a05:6402:b41:: with SMTP id bx1mr55483119edb.292.1641458509066;
-        Thu, 06 Jan 2022 00:41:49 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyQIYkJhAAbOd6J0hHVNMxZpM46ATJPB6IQAd2TD7n+qeYiIloSdNHNaqNQIwh69l8u33Z77A==
-X-Received: by 2002:a05:6402:b41:: with SMTP id bx1mr55483112edb.292.1641458508882;
-        Thu, 06 Jan 2022 00:41:48 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id q20sm479615edt.13.2022.01.06.00.41.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 00:41:47 -0800 (PST)
-Date:   Thu, 6 Jan 2022 09:41:46 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 08/13] bpf: Add kprobe link for attaching raw kprobes
-Message-ID: <YdarSovbcmoY9lI6@krava>
-References: <20220104080943.113249-1-jolsa@kernel.org>
- <20220104080943.113249-9-jolsa@kernel.org>
- <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/au2t0n9VIeyTxqbpNihOs1HXF/Qnzq9Nav0Zut7TVY=;
+        b=jE9fJklLhqwCZkgrBJh5fg79piweUcujWJgCdSO/gDmz23lfWnBW31uANshoFtk6e4
+         /d1ipRIu19spU/jisRgd+hbhluY0BNmnj8/n3u0gu2PwXjZQREQgP3dsctcEB8r8bG4X
+         9dWGFptbqFwGDF+d5lalb43UcexjWLg6Nx4Pq/oOVa3Gt50SO55eGDRwVgZliWh78pq2
+         pYTnQGCN/gLLFgCV2y56HqylPWqxnwh8qeVOYTEAApt/Dv7BMFr7Cro85UM6P5dLR4sS
+         L7te8piPEim9XqNel4WuwBWNE1EclUYrlXGT1q7ddUHU1Npf+95oQwpDOrkrwk+GycNQ
+         btmw==
+X-Gm-Message-State: AOAM531mryNAvFgBd9TLFyvnOKGcWbikpl9lzsAA6tYS97GXPtq6FsTn
+        lq6GIJiV1zksqthFTgz8hr9tg9U+EEnJBCq6OhULUQ==
+X-Google-Smtp-Source: ABdhPJwz3SBdeElQDXb8HB+0rOFnGBs2qr+FlINLy3eYTny8r4pAogIXFdY34hulIQntnBIwJ5temFHTmYc9MMHQ8us=
+X-Received: by 2002:a17:907:7208:: with SMTP id dr8mr47093600ejc.697.1641458546603;
+ Thu, 06 Jan 2022 00:42:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZ7s=Pp+2xY3qKX9u6KrPdGW9NNfoiep7nGW+=_s=JJJA@mail.gmail.com>
+References: <20211223122639.86923-1-andriy.shevchenko@linux.intel.com> <YdWp09bj4SP5oNvc@smile.fi.intel.com>
+In-Reply-To: <YdWp09bj4SP5oNvc@smile.fi.intel.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Thu, 6 Jan 2022 09:42:15 +0100
+Message-ID: <CAMRc=McdH7EebcM5AJb1jT2T_cP_yXyS7t+TP675f6kw92wbRA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] gpio: tegra: Get rid of duplicate of_node assignment
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Thierry Reding <treding@nvidia.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-tegra@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 08:30:56PM -0800, Andrii Nakryiko wrote:
-> On Tue, Jan 4, 2022 at 12:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
+On Wed, Jan 5, 2022 at 3:33 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> On Thu, Dec 23, 2021 at 02:26:39PM +0200, Andy Shevchenko wrote:
+> > GPIO library does copy the of_node from the parent device of
+> > the GPIO chip, there is no need to repeat this in the individual
+> > drivers. Remove these assignment all at once.
 > >
-> > Adding new link type BPF_LINK_TYPE_KPROBE to attach kprobes
-> > directly through register_kprobe/kretprobe API.
-> >
-> > Adding new attach type BPF_TRACE_RAW_KPROBE that enables
-> > such link for kprobe program.
-> >
-> > The new link allows to create multiple kprobes link by using
-> > new link_create interface:
-> >
-> >   struct {
-> >     __aligned_u64   addrs;
-> >     __u32           cnt;
-> >     __u64           bpf_cookie;
-> 
-> I'm afraid bpf_cookie has to be different for each addr, otherwise
-> it's severely limiting. So it would be an array of cookies alongside
-> an array of addresses
+> > For the details one may look into the of_gpio_dev_init() implementation.
+>
+> Any comments on this one?
+>
 
-ok
+It looks good to me but I wanted to wait for Thierry's ack.
 
-> 
-> >   } kprobe;
-> >
-> > Plus new flag BPF_F_KPROBE_RETURN for link_create.flags to
-> > create return probe.
-> >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  include/linux/bpf_types.h      |   1 +
-> >  include/uapi/linux/bpf.h       |  12 +++
-> >  kernel/bpf/syscall.c           | 191 ++++++++++++++++++++++++++++++++-
-> >  tools/include/uapi/linux/bpf.h |  12 +++
-> >  4 files changed, 211 insertions(+), 5 deletions(-)
-> >
-> 
-> [...]
-> 
-> > @@ -1111,6 +1113,11 @@ enum bpf_link_type {
-> >   */
-> >  #define BPF_F_SLEEPABLE                (1U << 4)
-> >
-> > +/* link_create flags used in LINK_CREATE command for BPF_TRACE_RAW_KPROBE
-> > + * attach type.
-> > + */
-> > +#define BPF_F_KPROBE_RETURN    (1U << 0)
-> > +
-> 
-> we have plenty of flexibility to have per-link type fields, so why not
-> add `bool is_retprobe` next to addrs and cnt?
-
-well I thought if I do that, people would suggest to use the empty
-flags field instead ;-) 
-
-we can move it there as you suggest, but I wonder it's good idea to
-use bool in uapi headers, because the bool size definition is vague
-
-jirka
-
-> 
-> >  /* When BPF ldimm64's insn[0].src_reg != 0 then this can have
-> >   * the following extensions:
-> >   *
-> > @@ -1465,6 +1472,11 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __aligned_u64   addrs;
-> > +                               __u32           cnt;
-> > +                               __u64           bpf_cookie;
-> > +                       } kprobe;
-> >                 };
-> >         } link_create;
-> >
-> 
-> [...]
-> 
-
+Bart
