@@ -2,232 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98526C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:21:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42629C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241731AbiAFRVC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:21:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241684AbiAFRU5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:20:57 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9BCC0611FF
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:20:56 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id b10-20020a251b0a000000b0060a7fbb7a64so6133586ybb.23
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 09:20:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=VaVcglQQWQyd+D8xYsm++asUm3d2zSMstiXGMzeYRRg=;
-        b=Hr6WeOoUTwdN4ffE+1b6oJc7c04qmGPJdYFf0sYZD1i9sdfRJczM+1F+Kfgnf+lg/W
-         KWlsdvHQbnmd7MH4BT3RkNEKKZYntVTPT2vWczi/C+KRN7wYleegIKyEjw+V7sQ9DTBa
-         Eg6nvFvrgO0PMFFEd5aDpVLm6mBK07R6SsKQQzoV/+RsiE8tWb+NBfcUV/hAWE+3zEx2
-         tZ7aPdpYNL8KZlXU0fQcvKIOfWQXA0WWV781zdRtCa0c5RdpvbjZW51Bq8BVgzBfbDwd
-         bzNlxfzC0n95SzUBwU0LS2nAh0CCxYM2dUBmyIxP+hOQu+au14MCb2hcr+Usk9MR9D1c
-         HWoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=VaVcglQQWQyd+D8xYsm++asUm3d2zSMstiXGMzeYRRg=;
-        b=6jBD/rSP5xfENgYG9VfbETb/IEDh8ELe+cC0lK0Dg67PR5LX42rZvkKt8k73TeoVPy
-         3q/65BDg217nnPx3mB4pb2qPKBW5LN36a3pVsPMuIxw8IujeYx4HnOtDgz9VWnqP14CZ
-         AVLlYptHanNGQPEjyTI6moitLRXl4Pn4A40esD6NiAjPOOrc99c4W6Ll7L7puvfaIj57
-         nv/cwm/sUmYLEOW87ItZPD+A8WVgs/8dkkCFa1NdfdAsbzhqwDLeIEg9nbrN4G2i/MEA
-         BBm7hMUqQMRpXxQqSRAWt6397Ryuf8MVHmp9oCXelfhHXylRWJ4QK31YPs3XZbNGuFis
-         QlhQ==
-X-Gm-Message-State: AOAM531J9/I2alsGrco5eE65evbEkh2tfbPtaAOqu1KqSbVQiqbCVFSW
-        qtKO1BkSSl8v1p1+kThlfinR6gp+
-X-Google-Smtp-Source: ABdhPJxH4wialPDTtm2tQJ8QBYOiePs4jx8BQYI3Lan0gm90jVSj+a/A8LSxPT+6XdO30SQsiWBFyYSN
-X-Received: from gnomeregan.cam.corp.google.com ([2620:15c:6:412:f130:19b6:8678:c9d1])
- (user=brho job=sendgmr) by 2002:a5b:74b:: with SMTP id s11mr22180493ybq.90.1641489656140;
- Thu, 06 Jan 2022 09:20:56 -0800 (PST)
-Date:   Thu,  6 Jan 2022 12:20:40 -0500
-In-Reply-To: <20220106172041.522167-1-brho@google.com>
-Message-Id: <20220106172041.522167-3-brho@google.com>
-Mime-Version: 1.0
-References: <20220106172041.522167-1-brho@google.com>
-X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
-Subject: [PATCH v3 2/3] prlimit: make do_prlimit() static
-From:   Barret Rhoden <brho@google.com>
-To:     ebiederm@xmission.com
-Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        William Cohen <wcohen@redhat.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Chris Hyser <chris.hyser@oracle.com>,
-        Peter Collingbourne <pcc@google.com>,
-        Xiaofeng Cao <caoxiaofeng@yulong.com>,
-        David Hildenbrand <david@redhat.com>,
-        Cyrill Gorcunov <gorcunov@gmail.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        id S241708AbiAFRW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:22:56 -0500
+Received: from mail-dm6nam10on2046.outbound.protection.outlook.com ([40.107.93.46]:62499
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241633AbiAFRWy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 12:22:54 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UpiB77ntcxFS6xrkz0LJaTIjX8oUe5DdteT3CYtu+STqCVuhKO5UiFHwBh3bV21mYXtGtSkocHwil1oMOEhOf75kdUc+o1rFQM0z4P3QAZhC2Ol4YbwK+zaL+wDnM6ARBFsJL5Xr6r7uswD3FKuKfHA6uQ+9IFO30QqOJMjz0wY6PmKPORjz9vb3vkZJuosmVizZYQz8o12DSm+9SkGK3vboFc6brFRLPiV0uyDPhAUivgLZCLVrptRgqsxUJmuqOiVOvg6FB4C7YD5Z9aAj5mdRcplro+0oOtTIyCRhJgcwB5pXGKhW1A/zJWCQIeppCUAuJxsG0lMZKpZiIQzRhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xO3ZX4/IJuvy6YJB7dKW1EEoy/wEJ9lxPQERUhZtvDY=;
+ b=i5CZjCzw5fkNxqWGLHMcBcgY0aLv2ozfkGzsgcGwYwIIevALfZGccaUX6MSGbYM8KDHsdjoG3tO1dcq4i22bnK3IJldn/vv/DjkorP9/GUR0gdmv8DvHJ1WKu4pNX8IoNLIJjCxhdjjDi8wq8m9XYc56o4cygea0ECmZsYIPH7GzNds6XimRfKqvRg8spbFLzDIM8M6ipXAmzjpg8yxObEaLOfHLtlNEj6s9Onbm2NCpbx3GZJNd9V7spzlA+i3AHtJUFY/fBwLqzm3phKSEmdpncaJOO7Qmq+wPLTTdOVNZw7W2u/q9y8+JsQJBF4Gl+xESE8EkEfv6CT5z7pXy5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xO3ZX4/IJuvy6YJB7dKW1EEoy/wEJ9lxPQERUhZtvDY=;
+ b=Q+uRr8D0epIrcB3lxDuIDQClUYY8mlwn+VGzNqv+eLUeSHhB4hVrdSdhrT3O/seBj6A/Ya1mB2NXlMeIJPsFBD4uj2FmnD0pQJnxe0CKra7UD1oH1Dvmkr+ceY6lqOATxDfOe0EaZGsldjacqfhDoESci0Gn+wqrnBcaiG5jHBBwZza498srZL674M/zOPK4tpJ3pdZ2p8BZBsEImnM188T2Qv0qeKzeJEMGP/ZnBBkWvw9kXMbq/7RPL2gykY95youmn1MKl6liAOmQe/7sNI3wFhSaJuHBWY9/jzUuZRa/SiphVEITtOxy4ijQQ8jtUqXadl1x+MAlpnN7LYtGJg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5256.namprd12.prod.outlook.com (2603:10b6:208:319::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Thu, 6 Jan
+ 2022 17:22:52 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::464:eb3d:1fde:e6af]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::464:eb3d:1fde:e6af%5]) with mapi id 15.20.4867.009; Thu, 6 Jan 2022
+ 17:22:52 +0000
+Date:   Thu, 6 Jan 2022 13:22:49 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Will Deacon <will@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
+        Diana Craciun <diana.craciun@oss.nxp.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
+ multi-device groups
+Message-ID: <20220106172249.GJ2328285@nvidia.com>
+References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
+ <20220106022053.2406748-4-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220106022053.2406748-4-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: BYAPR06CA0053.namprd06.prod.outlook.com
+ (2603:10b6:a03:14b::30) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fa0ac544-07c2-4ab2-c7bf-08d9d1392b7a
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5256:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52561791D90A755292839434C24C9@BL1PR12MB5256.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:546;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e7vzGJeBsAYCbPKdWM2I2uz100L6d8Hpo+HAvRSnfZg5qozCrw27JOZey6QGyVzFOupEmSwLbF5ffU1suWAEzYoGKS5R3xvOYnkNypxSUZKxUfNrE5zm2UWzkdJ27006G0yrz/1/G0eV4AjorU8W6r6WRV8SnJwhGxqmTvNJwwisQrlvP2m1GAHJDps/GJWm12pc5uctNZm7+kFqWi+wwZVT2nTnQG4nVp8scs5fbTZXt9SSk7+i65qHHeZ2vLrpC2aL+GQ137J8FoV/7jJWcIptgpmU9HEEAIoCkyXZFKN2H1YFbHF32s61ky9jSg/b9wwWZvk1TivTwPy+bDKSQLXFUPiAYFsqSOWoIunSMtpVCiYRUGzF7CnZlgoa1/ty+LzKUZ47jT1bYyj2LkcWvzbHnAXT2j6ivVaJd5B8Fc9KTHG8RBIoyONeRjFYnT/pvNAM8V73FcsHzTX+/BwLbdQ/utbhFIvLz1gBk52bDxihKxRSP0somvHnjYrYQemw0VFk+irTi2D9MBcxLVgPVO8xcpxJSCzE3J/OORte6XiMHnQ/XjWyS8vubUHh+2r5jI+HlTrZ39mW/+lBQIyb+nPn76JSe4/2xZj2e8fxslnMca1uxWLJE8NM2UIiZ4SEgrzWux+CdUx/bBE0HWYuew==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2906002)(8676002)(38100700002)(2616005)(54906003)(7416002)(6506007)(4326008)(1076003)(66946007)(5660300002)(8936002)(6916009)(66476007)(66556008)(33656002)(83380400001)(316002)(6486002)(6666004)(6512007)(26005)(186003)(508600001)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0m6kuAdIIIMZMmc/lNxDGarbup1AP/dUEOX+FwIV9iA5f92737Sbj2ID39gN?=
+ =?us-ascii?Q?pllP0bcXD9QUA4Dd8Xt33TIH7wc8UknsESCd6S6UTAucF4eVqD93h0lxFbVQ?=
+ =?us-ascii?Q?DUUMEgFpHFCQZHYaqTVYnjnKZjMueHEv7jsiou/+BJVTLNdFUdCpNqySLDcH?=
+ =?us-ascii?Q?WF2c5FF+nbb8E3yDnBmUKn25nuE1NTIcovPzje4sMiCz0cP/dHm3J8wMSxdf?=
+ =?us-ascii?Q?sF6wvVVDSP1bTPVcsC8A3eAk2yX6BoFg5qg63erHRSGYRPe9FOyYsPpCdSxh?=
+ =?us-ascii?Q?zAoWuy32GoHNGpGktGgyuDAdlFSu9CmkyxLwLh9wM76FPYpMyXqNv2g8eZfj?=
+ =?us-ascii?Q?zYVGq/XQdwY/pEWSr5CWLFNsAkUIb+HxDUb/PTN1gxi2X/GdZIj1k2hU4uLH?=
+ =?us-ascii?Q?ptaTAe8Blw2x8xyXOhn3ThV0Fp0PmsaCQigbgkmVK0t87fAsv45VOhBuukfR?=
+ =?us-ascii?Q?JppTVAh39ggTN41vX8FpQtVgYV6Ytv5C4zaHF2CyAES0huFPoAtRZax5NiNE?=
+ =?us-ascii?Q?3w5uSNqtX728zmGBPETcEqAlaD6HmgruQa2hkYytk/dNweNWPSWak9nT9DQN?=
+ =?us-ascii?Q?wrPviKMDbM14RTB23z3HVFrVN6p8FEOw1WRtWGV6pyPB7LUNeO2c5Hufq3II?=
+ =?us-ascii?Q?b9DgwarcZrt8RgAScg5eVx3MAnWLY9fY/co9Zgs2DmbWyo4gOiJDdkfDRqp8?=
+ =?us-ascii?Q?rubs9V1teQSSsG1HlXF5lQfcAp0OUVI1pZzyT+h4hrUY9g5htpjgLultnsFr?=
+ =?us-ascii?Q?rQ7+ruD2pIyTx8sABqUApneBLErIcyMD9zZc4h3p2pPcq24YXIasr7m64xvc?=
+ =?us-ascii?Q?dVhSdHr15KDHlYMCLiUjRfMZGnMthA/iVHMifxKp2SPL+pWarST3f7Eybx9I?=
+ =?us-ascii?Q?zAuYqkxROJPvlFBHpSyKz5P/cViI9APPvVhaSSfSIZOJbPmXHd6qVsAqU30C?=
+ =?us-ascii?Q?uLT4OKxuaif40IJfjkoRR+mNbU02td+anPPA/Naq/HDoUGQOfimb/Wlu0U5e?=
+ =?us-ascii?Q?bds4ABIWSbMn6uU9hxQMByd26PPo4086DIkfjXDiK81Sg/Wyh/ui7tLz6IPo?=
+ =?us-ascii?Q?wTSYfoLZkdpOAne9qJTCTnPcJDT3emdOz/NzpSW1IjI7E95lDw8Z328ZaeQk?=
+ =?us-ascii?Q?pJbMkTcuRLsMkF1BvQmgXahJjT+Jb91q89misfc0gYxRaIDgZW8RN75yXiwI?=
+ =?us-ascii?Q?94iIF7Ml7i+w19BNDy3XXJ0097aq5JhiCEuw5c6MgueYaqSDyrJTOAmNwNEL?=
+ =?us-ascii?Q?ZN66QOaJLNz1fT0HdxVJz9sJ/TMWxZMkTleX4Sh8XGo53xiUzLlYG0rxiwoS?=
+ =?us-ascii?Q?USuCm0cx/G+WR3xBDZ56G+Anjc8VLJd6JIG4gno1TAgsPxywQNZ2k1ayloqB?=
+ =?us-ascii?Q?t4E9jT3+1R8uK4okCm8kOMW6j4yfZ3bCQTxrV3ecdE12Gk/ncE2MZa+lk/5I?=
+ =?us-ascii?Q?iHdsKw7vIdsgiIjx5fKfy2DdHn35dwjnagLvY/+UHnXfSXmrCKfK7uRjdXaW?=
+ =?us-ascii?Q?KiW20IY70nmZI4qFI30kAjFdhCL1OSor6vawFISTP6llGh4+4bmGc59TJOM1?=
+ =?us-ascii?Q?zYapY2qXGK5pBZk/z4w=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa0ac544-07c2-4ab2-c7bf-08d9d1392b7a
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Jan 2022 17:22:52.4630
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6rgfx+GwePA8y6nHiwhc6tgDS47aO9pkJ4hfiCYlysFwgY0g/70xqvPJ4wmdK9++
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are no other callers in the kernel.
+On Thu, Jan 06, 2022 at 10:20:48AM +0800, Lu Baolu wrote:
+> The iommu_attach/detach_device() interfaces were exposed for the device
+> drivers to attach/detach their own domains. The commit <426a273834eae>
+> ("iommu: Limit iommu_attach/detach_device to device with their own group")
+> restricted them to singleton groups to avoid different device in a group
+> attaching different domain.
+> 
+> As we've introduced device DMA ownership into the iommu core. We can now
+> extend these interfaces for muliple-device groups, and "all devices are in
+> the same address space" is still guaranteed.
+> 
+> For multiple devices belonging to a same group, iommu_device_use_dma_api()
+> and iommu_attach_device() are exclusive. Therefore, when drivers decide to
+> use iommu_attach_domain(), they cannot call iommu_device_use_dma_api() at
+> the same time.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>  drivers/iommu/iommu.c | 79 +++++++++++++++++++++++++++++++++----------
+>  1 file changed, 62 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index ab8ab95969f5..2c9efd85e447 100644
+> +++ b/drivers/iommu/iommu.c
+> @@ -47,6 +47,7 @@ struct iommu_group {
+>  	struct iommu_domain *domain;
+>  	struct list_head entry;
+>  	unsigned int owner_cnt;
+> +	unsigned int attach_cnt;
 
-Fixed up a comment format and whitespace issue when moving do_prlimit()
-higher in sys.c.
+Why did we suddenly need another counter? None of the prior versions
+needed this. I suppose this is being used a some flag to indicate if
+owner_cnt == 1 or owner_cnt == 0 should restore the default domain?
+Would rather a flag 'auto_no_kernel_dma_api_compat' or something
 
-Signed-off-by: Barret Rhoden <brho@google.com>
----
- include/linux/resource.h |   2 -
- kernel/sys.c             | 116 ++++++++++++++++++++-------------------
- 2 files changed, 59 insertions(+), 59 deletions(-)
 
-diff --git a/include/linux/resource.h b/include/linux/resource.h
-index bdf491cbcab7..4fdbc0c3f315 100644
---- a/include/linux/resource.h
-+++ b/include/linux/resource.h
-@@ -8,7 +8,5 @@
- struct task_struct;
- 
- void getrusage(struct task_struct *p, int who, struct rusage *ru);
--int do_prlimit(struct task_struct *tsk, unsigned int resource,
--		struct rlimit *new_rlim, struct rlimit *old_rlim);
- 
- #endif
-diff --git a/kernel/sys.c b/kernel/sys.c
-index 558e52fa5bbd..fb2a5e7c0589 100644
---- a/kernel/sys.c
-+++ b/kernel/sys.c
-@@ -1415,6 +1415,65 @@ SYSCALL_DEFINE2(setdomainname, char __user *, name, int, len)
- 	return errno;
- }
- 
-+/* make sure you are allowed to change @tsk limits before calling this */
-+static int do_prlimit(struct task_struct *tsk, unsigned int resource,
-+		      struct rlimit *new_rlim, struct rlimit *old_rlim)
-+{
-+	struct rlimit *rlim;
-+	int retval = 0;
-+
-+	if (resource >= RLIM_NLIMITS)
-+		return -EINVAL;
-+	if (new_rlim) {
-+		if (new_rlim->rlim_cur > new_rlim->rlim_max)
-+			return -EINVAL;
-+		if (resource == RLIMIT_NOFILE &&
-+				new_rlim->rlim_max > sysctl_nr_open)
-+			return -EPERM;
-+	}
-+
-+	/* protect tsk->signal and tsk->sighand from disappearing */
-+	read_lock(&tasklist_lock);
-+	if (!tsk->sighand) {
-+		retval = -ESRCH;
-+		goto out;
-+	}
-+
-+	rlim = tsk->signal->rlim + resource;
-+	task_lock(tsk->group_leader);
-+	if (new_rlim) {
-+		/*
-+		 * Keep the capable check against init_user_ns until cgroups can
-+		 * contain all limits.
-+		 */
-+		if (new_rlim->rlim_max > rlim->rlim_max &&
-+				!capable(CAP_SYS_RESOURCE))
-+			retval = -EPERM;
-+		if (!retval)
-+			retval = security_task_setrlimit(tsk, resource, new_rlim);
-+	}
-+	if (!retval) {
-+		if (old_rlim)
-+			*old_rlim = *rlim;
-+		if (new_rlim)
-+			*rlim = *new_rlim;
-+	}
-+	task_unlock(tsk->group_leader);
-+
-+	/*
-+	 * RLIMIT_CPU handling. Arm the posix CPU timer if the limit is not
-+	 * infinite. In case of RLIM_INFINITY the posix CPU timer code
-+	 * ignores the rlimit.
-+	 */
-+	if (!retval && new_rlim && resource == RLIMIT_CPU &&
-+	    new_rlim->rlim_cur != RLIM_INFINITY &&
-+	    IS_ENABLED(CONFIG_POSIX_TIMERS))
-+		update_rlimit_cpu(tsk, new_rlim->rlim_cur);
-+out:
-+	read_unlock(&tasklist_lock);
-+	return retval;
-+}
-+
- SYSCALL_DEFINE2(getrlimit, unsigned int, resource, struct rlimit __user *, rlim)
- {
- 	struct rlimit value;
-@@ -1558,63 +1617,6 @@ static void rlim64_to_rlim(const struct rlimit64 *rlim64, struct rlimit *rlim)
- 		rlim->rlim_max = (unsigned long)rlim64->rlim_max;
- }
- 
--/* make sure you are allowed to change @tsk limits before calling this */
--int do_prlimit(struct task_struct *tsk, unsigned int resource,
--		struct rlimit *new_rlim, struct rlimit *old_rlim)
--{
--	struct rlimit *rlim;
--	int retval = 0;
--
--	if (resource >= RLIM_NLIMITS)
--		return -EINVAL;
--	if (new_rlim) {
--		if (new_rlim->rlim_cur > new_rlim->rlim_max)
--			return -EINVAL;
--		if (resource == RLIMIT_NOFILE &&
--				new_rlim->rlim_max > sysctl_nr_open)
--			return -EPERM;
--	}
--
--	/* protect tsk->signal and tsk->sighand from disappearing */
--	read_lock(&tasklist_lock);
--	if (!tsk->sighand) {
--		retval = -ESRCH;
--		goto out;
--	}
--
--	rlim = tsk->signal->rlim + resource;
--	task_lock(tsk->group_leader);
--	if (new_rlim) {
--		/* Keep the capable check against init_user_ns until
--		   cgroups can contain all limits */
--		if (new_rlim->rlim_max > rlim->rlim_max &&
--				!capable(CAP_SYS_RESOURCE))
--			retval = -EPERM;
--		if (!retval)
--			retval = security_task_setrlimit(tsk, resource, new_rlim);
--	}
--	if (!retval) {
--		if (old_rlim)
--			*old_rlim = *rlim;
--		if (new_rlim)
--			*rlim = *new_rlim;
--	}
--	task_unlock(tsk->group_leader);
--
--	/*
--	 * RLIMIT_CPU handling. Arm the posix CPU timer if the limit is not
--	 * infinite. In case of RLIM_INFINITY the posix CPU timer code
--	 * ignores the rlimit.
--	 */
--	 if (!retval && new_rlim && resource == RLIMIT_CPU &&
--	     new_rlim->rlim_cur != RLIM_INFINITY &&
--	     IS_ENABLED(CONFIG_POSIX_TIMERS))
--		update_rlimit_cpu(tsk, new_rlim->rlim_cur);
--out:
--	read_unlock(&tasklist_lock);
--	return retval;
--}
--
- /* rcu lock must be held */
- static int check_prlimit_permission(struct task_struct *task,
- 				    unsigned int flags)
--- 
-2.34.1.448.ga2b2bfdf31-goog
+> +/**
+> + * iommu_attach_device() - attach external or UNMANAGED domain to device
+> + * @domain: the domain about to attach
+> + * @dev: the device about to be attached
+> + *
+> + * For devices belonging to the same group, iommu_device_use_dma_api() and
+> + * iommu_attach_device() are exclusive. Therefore, when drivers decide to
+> + * use iommu_attach_domain(), they cannot call iommu_device_use_dma_api()
+> + * at the same time.
+> + */
+>  int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+>  {
+>  	struct iommu_group *group;
+> +	int ret = 0;
+> +
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+>  
+>  	group = iommu_group_get(dev);
+>  	if (!group)
+>  		return -ENODEV;
+>  
+> +	if (group->owner_cnt) {
+> +		/*
+> +		 * Group has been used for kernel-api dma or claimed explicitly
+> +		 * for exclusive occupation. For backward compatibility, device
+> +		 * in a singleton group is allowed to ignore setting the
+> +		 * drv.no_kernel_api_dma field.
 
+BTW why is this call 'no kernel api dma' ? That reads backwards 'no
+kernel dma api' right?
+
+Aother appeal of putting no_kernel_api_dma in the struct device_driver
+is that this could could simply do 'dev->driver->no_kernel_api_dma' to
+figure out how it is being called and avoid this messy implicitness.
+
+Once we know our calling context we can always automatic switch from
+DMA API mode to another domain without any trouble or special
+counters:
+
+if (!dev->driver->no_kernel_api_dma) {
+    if (group->owner_cnt > 1 || group->owner)
+        return -EBUSY;
+    return __iommu_attach_group(domain, group);
+}
+
+if (!group->owner_cnt) {
+    ret = __iommu_attach_group(domain, group);
+    if (ret)
+        return ret;
+} else if (group->owner || group->domain != domain)
+    return -EBUSY;
+group->owner_cnt++;
+
+Right?
+
+> +	if (!group->attach_cnt) {
+> +		ret = __iommu_attach_group(domain, group);
+
+How come we don't have to detatch the default domain here? Doesn't
+that mean that the iommu_replace_group could also just call attach
+directly without going through detatch?
+
+Jason
