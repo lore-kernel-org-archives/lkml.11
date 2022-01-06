@@ -2,102 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 02:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA827C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 02:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344922AbiAFC3N (ORCPT
+        id S1344786AbiAFC32 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 21:29:13 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:2088 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344873AbiAFC1r (ORCPT
+        Wed, 5 Jan 2022 21:29:28 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31974 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344851AbiAFC2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 21:27:47 -0500
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 205NVlgM025068;
-        Thu, 6 Jan 2022 02:27:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=2bkmRI1o1Iio7qwcCZEeN0robRx1Vq/JzF/96Pt+6SE=;
- b=Mi5cpy2jx43WqWJwC8WT2qjJW06lJeydxr52hKpocFF6gCuJod7F0Lt07BPm143thjhl
- G88c4zV4xcGfyq1ThDnLTgrb7EQQNSNHer6NTICFo7XmZl7hirSmULNOvU1XQTbWeQ1E
- tGMzFKgZwPwTHN7tFLWcpfm2PvLyeE5xGCI5xViWrT2zfXdQdE3/AT3rFo5YEvoMidN1
- WS64sletc29AmhRy16FhSJ50dcJLVqUrQZ9QXNAo8Sh3wD8MWyR7Al7cAEf7ywJ6nXDw
- GpZXvPw/UvO0jGK80KVy8VOPvbMhZ42ShxtwPvyC4L9Mz02ioytk3Rvc/gluJNYC0HxY KA== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3ddn37jaqy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Jan 2022 02:27:39 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2062RXFt010700;
-        Thu, 6 Jan 2022 02:27:38 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma04wdc.us.ibm.com with ESMTP id 3ddna6t7vt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Jan 2022 02:27:38 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2062RbVG21168516
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 6 Jan 2022 02:27:38 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E38F628059;
-        Thu,  6 Jan 2022 02:27:37 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 396EE2805A;
-        Thu,  6 Jan 2022 02:27:37 +0000 (GMT)
-Received: from oc6857751186.ibm.com (unknown [9.160.94.20])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu,  6 Jan 2022 02:27:37 +0000 (GMT)
-Subject: Re: [PATCH v4] powerpc/pseries: read the lpar name from the firmware
-To:     Nathan Lynch <nathanl@linux.ibm.com>
-Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-References: <20211207171109.22793-1-ldufour@linux.ibm.com>
- <25527544-b0ac-596c-3876-560493b99f6b@linux.ibm.com>
- <8735m1ixd6.fsf@li-e15d104c-2135-11b2-a85c-d7ef17e56be6.ibm.com>
- <ac208963-d334-1f46-0db2-4a8d073b2963@linux.ibm.com>
- <87ee5lve64.fsf@li-e15d104c-2135-11b2-a85c-d7ef17e56be6.ibm.com>
-From:   Tyrel Datwyler <tyreld@linux.ibm.com>
-Message-ID: <f9df21b5-00fe-f648-4cdb-3d4e7abc855f@linux.ibm.com>
-Date:   Wed, 5 Jan 2022 18:27:36 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Wed, 5 Jan 2022 21:28:53 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 205N7PXd005928
+        for <linux-kernel@vger.kernel.org>; Wed, 5 Jan 2022 18:28:53 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3ddmqsgtmh-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Wed, 05 Jan 2022 18:28:53 -0800
+Received: from twshared7572.23.frc3.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 5 Jan 2022 18:28:51 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id EA94B273E541A; Wed,  5 Jan 2022 18:25:50 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <song@kernel.org>, Song Liu <songliubraving@fb.com>
+Subject: [PATCH v3 bpf-next 4/7] bpf: add a pointer of bpf_binary_header to bpf_prog
+Date:   Wed, 5 Jan 2022 18:25:30 -0800
+Message-ID: <20220106022533.2950016-5-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220106022533.2950016-1-song@kernel.org>
+References: <20220106022533.2950016-1-song@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <87ee5lve64.fsf@li-e15d104c-2135-11b2-a85c-d7ef17e56be6.ibm.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6Xl4ZTK77-D5CHdpfrAQbWfUZb2wTeMk
-X-Proofpoint-GUID: 6Xl4ZTK77-D5CHdpfrAQbWfUZb2wTeMk
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: u1G3eyR9zdDtOPUrT4dO29qFW5FcBvmk
+X-Proofpoint-GUID: u1G3eyR9zdDtOPUrT4dO29qFW5FcBvmk
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-05_08,2022-01-04_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- priorityscore=1501 mlxlogscore=830 phishscore=0 suspectscore=0
- adultscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2112160000 definitions=main-2201060009
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 adultscore=0
+ malwarescore=0 priorityscore=1501 spamscore=0 phishscore=0 suspectscore=0
+ bulkscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0 clxscore=1034
+ mlxlogscore=429 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2112160000 definitions=main-2201060011
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/5/22 5:36 PM, Nathan Lynch wrote:
-> Tyrel Datwyler <tyreld@linux.ibm.com> writes:
->> On 1/5/22 3:19 PM, Nathan Lynch wrote:
->>>
->>
->> Is there benefit of adding a partition_name field/value pair to lparcfg? The
->> lparstat utility can just as easily make the get_sysparm call via librtas.
->> Further, rtas_filters allows this particular RTAS call from userspace.
-> 
-> The RTAS syscall is root-only, but we want the partition name (whether
-> supplied by RTAS or the device tree) to be available to unprivileged
-> programs.
-> 
+With sub page allocation, we cannot simply use bpf_func & PAGE_MASK to
+find the bpf_binary_header. Add a pointer to struct bpf_prog to avoid
+this logic.
 
-Ah, right. I recall this discussion now from previous iterations.
+Use this point for x86_64. If the pointer is not set by the jit engine,
+fall back to original logic.
 
--Tyrel
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ arch/x86/net/bpf_jit_comp.c |  2 ++
+ include/linux/filter.h      | 10 ++++++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index ce1f86f245c9..fe4f08e25a1d 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -2339,6 +2339,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 			if (header)
+ 				bpf_jit_binary_free(header);
+ 			prog = orig_prog;
++			header = NULL;
+ 			goto out_addrs;
+ 		}
+ 		if (image) {
+@@ -2406,6 +2407,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	if (tmp_blinded)
+ 		bpf_jit_prog_release_other(prog, prog == orig_prog ?
+ 					   tmp : orig_prog);
++	prog->hdr = header;
+ 	return prog;
+ }
+ 
+diff --git a/include/linux/filter.h b/include/linux/filter.h
+index 6d73d89c99a4..b5c7e12f7675 100644
+--- a/include/linux/filter.h
++++ b/include/linux/filter.h
+@@ -584,6 +584,7 @@ struct bpf_prog {
+ 					    const struct bpf_insn *insn);
+ 	struct bpf_prog_aux	*aux;		/* Auxiliary fields */
+ 	struct sock_fprog_kern	*orig_prog;	/* Original BPF program */
++	struct bpf_binary_header *hdr;
+ 	/* Instructions for interpreter */
+ 	union {
+ 		DECLARE_FLEX_ARRAY(struct sock_filter, insns);
+@@ -893,9 +894,14 @@ static inline void bpf_jit_binary_lock_ro(struct bpf_binary_header *hdr)
+ static inline struct bpf_binary_header *
+ bpf_jit_binary_hdr(const struct bpf_prog *fp)
+ {
+-	unsigned long real_start = (unsigned long)fp->bpf_func;
+-	unsigned long addr = real_start & PAGE_MASK;
++	unsigned long real_start;
++	unsigned long addr;
+ 
++	if (fp->hdr)
++		return fp->hdr;
++
++	real_start = (unsigned long)fp->bpf_func;
++	addr = real_start & PAGE_MASK;
+ 	return (void *)addr;
+ }
+ 
+-- 
+2.30.2
+
