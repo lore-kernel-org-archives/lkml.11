@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D97C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5477CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 03:31:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230171AbiAFD3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 22:29:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiAFD3d (ORCPT
+        id S230245AbiAFDbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 5 Jan 2022 22:31:44 -0500
+Received: from mail-sz.amlogic.com ([211.162.65.117]:10288 "EHLO
+        mail-sz.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229694AbiAFDbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 22:29:33 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0ECF3C061245;
-        Wed,  5 Jan 2022 19:29:33 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id i8so1405383pgt.13;
-        Wed, 05 Jan 2022 19:29:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:organization:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=tjtACa9dE3yrERfBZgjLjugoAKnm+TzTAioGUarOG2g=;
-        b=fdS0Ewrp3lhlDeRpuNhaM+HtKAAd+U6bqXE1bMfSzOMQ3CWl/qmkGHFQzkKuqztQME
-         K1tkCMVKmkFeQUjteo4qeP2cyEEd0CFuez/MABKMNbsw79Dee9LJRKkZLBcOjC4wfh5S
-         vdbNrTJTec01DKgu7PLdeXwjZtcskgDkvwa6TR+D9ruruROpFAqjkvqcjFnqlfPpLHEq
-         bhqD5bohcM4BzZ9D2nmqJwIDxHeM8PmdTfG7cXRDdt3GwBZ4YPiMISjLOn9PvZicTUZY
-         jP7WQbRcws+35uLRSv0jifzphpZSZdPTa4q4H666+dVMPxDpMrHx525zzitj3qo0+b/P
-         igMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=tjtACa9dE3yrERfBZgjLjugoAKnm+TzTAioGUarOG2g=;
-        b=UL2et+RxXZ+OcPKy6bwnsjlm3e9vcqIhnWK+WgKv4x8uaf9ldLd8QY3ZwjxKZKS3fF
-         XKLaI8l/GO/nijapgwMPi7Y0zEpDFrem7qv7pMq/mgDPyNRcydo3B3IZCjpSaY7SilAk
-         W0QA3gY/DN+Qp4Glje1dtUUmuSIRajwkO3DoLhgZqC/82q6IXSofEvMMcjaNotksqfhn
-         PBMn6uFS0dtPTvdNsz4SaPEqFOjQwFNpHrVQjXe+AxbAUG+KStmYDyYr4i0BsziEal/R
-         YjVoJ9FqPgvFMCoaOCjzFYnlxkkjCXFaYy4nBHQKL0h6/gJ9WbOoaPFosjKldCZhzVeg
-         RkOQ==
-X-Gm-Message-State: AOAM532zgoIp7q0pYAtDYMMZjHiBzbq60cp5UA7FeBdMuIq3p1l5MbF5
-        PMlbulwBvv14s3yWhMx60yeeR9O9ESfzeOO4yo215w==
-X-Google-Smtp-Source: ABdhPJywRfexzWwcSLBCIzGj14LT9dcmfvwd6/YztzU5gZr7oIKz4U/00eaD51mR7yNqrz+DWI7Lpw==
-X-Received: by 2002:a63:d046:: with SMTP id s6mr50389112pgi.367.1641439770484;
-        Wed, 05 Jan 2022 19:29:30 -0800 (PST)
-Received: from [192.168.255.10] ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id k3sm372968pgq.54.2022.01.05.19.29.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 05 Jan 2022 19:29:30 -0800 (PST)
-Message-ID: <212cea42-e445-d6f2-2730-88ccaa65b2cb@gmail.com>
-Date:   Thu, 6 Jan 2022 11:29:19 +0800
+        Wed, 5 Jan 2022 22:31:43 -0500
+X-Greylist: delayed 383 seconds by postgrey-1.27 at vger.kernel.org; Wed, 05 Jan 2022 22:31:43 EST
+Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
+ (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Thu, 6 Jan 2022
+ 11:31:42 +0800
+From:   Liang Yang <liang.yang@amlogic.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        <linux-mtd@lists.infradead.org>
+CC:     Liang Yang <liang.yang@amlogic.com>,
+        Richard Weinberger <richard@nod.at>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH] dt-bindings: nand: meson: fix controller clock
+Date:   Thu, 6 Jan 2022 11:31:30 +0800
+Message-ID: <20220106033130.37623-1-liang.yang@amlogic.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Content-Language: en-US
-To:     Jim Mattson <jmattson@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Like Xu <likexu@tencent.com>,
-        Dongli Cao <caodongli@kingsoft.com>,
-        Li RongQing <lirongqing@baidu.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        "Thomas Gleixner (kernel-recipes.org)" <tglx@linutronix.de>,
-        "Borislav Petkov (kernel-recipes.org)" <bp@alien8.de>,
-        Sean Christopherson <seanjc@google.com>
-References: <20211222133428.59977-1-likexu@tencent.com>
- <CALMp9eTgO4XuNHwuxWahZc7jQqZ10DchW8xXvecBH2ovGPLU9g@mail.gmail.com>
- <d3a9a73f-cdc2-bce0-55e6-e4c9f5c237de@gmail.com>
- <CALMp9eTm7R-69p3z9P37yXmD6QpzJhEJO564czqHQtDdCRK-SQ@mail.gmail.com>
- <CALMp9eTVjKztZC_11-DZo4MFhpxoVa31=p7Am2LYnEPuYBV8aw@mail.gmail.com>
- <22776732-0698-c61b-78d9-70db7f1b907d@gmail.com>
- <CALMp9eQQ7SvDNy3iKSrRTn9QUR9h1M-tSnuYO0Y4_-+bgV72sg@mail.gmail.com>
- <bf7fc07f-d49c-1c73-9a31-03585e99ff09@gmail.com>
- <CALMp9eQmO1zS9urH_B8DeoLp30P7Yxxp9qMwavjmoyt_BSC23A@mail.gmail.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-Subject: Re: [PATCH v2] KVM: X86: Emulate APERF/MPERF to report actual vCPU
- frequency
-In-Reply-To: <CALMp9eQmO1zS9urH_B8DeoLp30P7Yxxp9qMwavjmoyt_BSC23A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.28.8.21]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/1/2022 6:51 am, Jim Mattson wrote:
-> On Thu, Dec 30, 2021 at 11:48 PM Like Xu <like.xu.linux@gmail.com> wrote:
->>
->> On 31/12/2021 9:29 am, Jim Mattson wrote:
-> 
->>> At sched-in:
->>> 1. Save host APERF/MPERF values from the MSRs.
->>> 2. Load the "current" guest APERF/MPERF values into the MSRs (if the
->>> vCPU configuration allows for unintercepted reads).
->>>
->>> At sched-out:
->>> 1. Calculate the guest APERF/MPERF deltas for use in step 3.
->>> 2. Save the "current" guest APERF/MPERF values.
->>> 3. "Restore" the host APERF/MPERF values, but add in the deltas from step 1.
->>>
->>> Without any writes to IA32_MPERF, I would expect these MSRs to be
->>> synchronized across all logical processors, and the proposal above
->>> would break that synchronization.
-> 
-> I am learning more about IA32_APERF and IA32_MPERF this year. :-)
+Change-Id: I1425b491d8b95061e1ce358ef33143433fc94d24
+---
+ .../bindings/mtd/amlogic,meson-nand.txt        | 18 +++---------------
+ 1 file changed, 3 insertions(+), 15 deletions(-)
 
-Uh, thanks for your attention.
-
-> 
-> My worry above is unfounded. These MSRs only increment in C0, so they
-> are not likely to be synchronized.
-> 
-> This also raises another issue with your original fast-path
-> implementation: the host MSRs will continue to count while the guest
-> is halted. However, the guest MSRs should not count while the guest is
-> halted.
-> 
-
-The emulation based on guest TSC semantics w/ low precision may work it out.
-TBH, I still haven't given up on the idea of a pass-through approach.
+diff --git a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
+index 5794ab1147c1..37f16fe4fe66 100644
+--- a/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
++++ b/Documentation/devicetree/bindings/mtd/amlogic,meson-nand.txt
+@@ -14,11 +14,6 @@ Required properties:
+ - clock-names: Should contain the following:
+ 	"core" - NFC module gate clock
+ 	"device" - device clock from eMMC sub clock controller
+-	"rx" - rx clock phase
+-	"tx" - tx clock phase
+-
+-- amlogic,mmc-syscon	: Required for NAND clocks, it's shared with SD/eMMC
+-				controller port C
+ 
+ Optional children nodes:
+ Children nodes represent the available nand chips.
+@@ -28,11 +23,6 @@ see Documentation/devicetree/bindings/mtd/nand-controller.yaml for generic bindi
+ 
+ Example demonstrate on AXG SoC:
+ 
+-	sd_emmc_c_clkc: mmc@7000 {
+-		compatible = "amlogic,meson-axg-mmc-clkc", "syscon";
+-		reg = <0x0 0x7000 0x0 0x800>;
+-	};
+-
+ 	nand-controller@7800 {
+ 		compatible = "amlogic,meson-axg-nfc";
+ 		reg = <0x0 0x7800 0x0 0x100>;
+@@ -41,11 +31,9 @@ Example demonstrate on AXG SoC:
+ 		interrupts = <GIC_SPI 34 IRQ_TYPE_EDGE_RISING>;
+ 
+ 		clocks = <&clkc CLKID_SD_EMMC_C>,
+-			<&sd_emmc_c_clkc CLKID_MMC_DIV>,
+-			<&sd_emmc_c_clkc CLKID_MMC_PHASE_RX>,
+-			<&sd_emmc_c_clkc CLKID_MMC_PHASE_TX>;
+-		clock-names = "core", "device", "rx", "tx";
+-		amlogic,mmc-syscon = <&sd_emmc_c_clkc>;
++			<&clkc CLKID_FCLK_DIV2>;
++		clock-names = "core", "device";
++		sd_emmc_c_clkc = <0xffe07000>;
+ 
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&nand_pins>;
+-- 
+2.34.1
 
