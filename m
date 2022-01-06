@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E375C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241712AbiAFRVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:21:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        id S241728AbiAFRVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241666AbiAFRUz (ORCPT
+        with ESMTP id S241708AbiAFRVA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:20:55 -0500
+        Thu, 6 Jan 2022 12:21:00 -0500
 Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 612D3C061201
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:20:55 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id s83-20020a255e56000000b0060c46cc1890so6074767ybb.16
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 09:20:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DF9C06118A
+        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 09:20:58 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id b10-20020a251b0a000000b0060a7fbb7a64so6133691ybb.23
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 09:20:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=OXcWrdqzZ/LJa8MsNyqLit5QE2f2wr1XJUDpKBKFn9M=;
-        b=kZSdwWIqyPhTSuB53f4VjBfc7Xb76bIC+Is8zxCJcb0bKgm4qXs/pPlLVkozbH0ki+
-         YBw/3CbGAfccFjdVnf8cw73rjHtSrXxQFTfF4SMLVgx1u48S4NugDxA2PhtuVmcF4oxB
-         S4CJuGgLhtf9zUe44UG//df3smOzAkYjUzh+Z9HFDwUEsdooMHcwLn2BXs13YVHOgXwb
-         ocmHFXMGmcXvWinYOJ/okP0BPWAFmfhHU1T4qsqYLozuDfm339uaOPALhg3MU/56ZDGc
-         jYFERPu11DuNLCvhx/juf+UYXsO95GlKf0GdLNT82XSYO/5qbVttkUOnz4YFdpWRRgsv
-         Z1DQ==
+        bh=DdZQv1doZLKYKHs3Sz1XKfB4tATz7avSalIIxv9XLzY=;
+        b=DEesoxeTzQUQHNtWQiXl06nmGTd7LbJlQJALRjDgCmwAExVNv4Zxh6X/UQYKaEE5zZ
+         7PhV3ti8GM3/52z4+OU7pqo8w2Jt64CBSuMkK0RduVg4jQM/9VCXRsgVeFX7jDzeOTD0
+         oTrzf/VL+y84wRVuT4eMaFGCKWJt/vqva7N4s7SflExTNSJJa6gmGZdywaa7nmy3qCEc
+         g9sC8n4/TuTf1tCgySOkccy567f0AT0gXn2xc5fWvbkJjyX/vzFjVfYPSnb/39gQsSnQ
+         iLC/Mb355rYWFvmOnnt7mnAyHMSPNGGpV4jQRZzySHmM554CHZ3An7BV5xPmB8eI10D6
+         5i5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=OXcWrdqzZ/LJa8MsNyqLit5QE2f2wr1XJUDpKBKFn9M=;
-        b=yLqVO+D9s+jmm6xz2N9qh+zSHh4d1IHo9D9e0M+82fjhoZDQ6ILgJ9EEPZ7bUx4b6j
-         g5/pfwNMsk0oYegO7RFzrOPqDi7FwZNQitzJshicGhPMxNIw1ra7xSNvO411ME3M+ilQ
-         aUZlg2vqwJjT1p8AOUFAIBYCpc61OqFNHqtZQkoFGaBTJwB4hnD+2sdtBoS5Ku4NVV2Q
-         3dJj7VO+Ic7xOQMQww6zoBE3bxFffaXI3gghLh/cVmNJQIzbwuCJTV6g0DhBLYO83D8F
-         WZ88+9uwv2dJ19lofx3D4Q8z8m5Rr+lkI9T5+W+5MJg1d7HErb8Fz0mluAPzuS3F3DfD
-         WxiA==
-X-Gm-Message-State: AOAM533BjOfhFlbeBYDwRSI7/nTfUjLiBVZbW45Tx6a9aVXJp0w7FMgg
-        G4vvx+yvJ8gWaxyKgsM4+02eTBlf
-X-Google-Smtp-Source: ABdhPJwoMQLAddFJICdKDWy+ImRQXv8fmsh4pVwQzqlsIgtdlFR7aiM6B3T7Hs9Q3Ig032HhLHTaQzcg
+        bh=DdZQv1doZLKYKHs3Sz1XKfB4tATz7avSalIIxv9XLzY=;
+        b=Og/2aYUADsVczKTG5Mg+GQ3A6yf7lzi3bULbifYtMnivbBoD/xorEBtHy7MLtQrORN
+         AhAR0A5FcDpVtaz7VnHbEHKM3scVQKyk8uRFil/7Dcp29gz6h1hRi5ymx5b+QIcg2NqE
+         wah5qoiKua8b6JgHx2NxLQBme0WevR/vCK2pF++omJW3YjhMOTlj2zNMWracw1/luqfR
+         UmDRb/DBDic2JUJ+DWi4/aHUDm/smyKWgNv0MA6AkiIHgNlgnCgYJCfoPGDTGH1c/i2V
+         naIEVNtHTeB67G8EGglFv9Xkb5bhhcKNWpLKX5CwqNRlA0VEW5ipWnnb3MRtktuqHUj3
+         dXOQ==
+X-Gm-Message-State: AOAM530KVe7G3WTATr2GNitDM64pb4yhyjarzK5wrgSAuVUsHCltu8Ns
+        vYvqs0ZSJhycdKKHMcC1660Rqx5Z
+X-Google-Smtp-Source: ABdhPJw15q+XRsuRZYgyKZUfyKjmP2jedsN3meW+MT79Q4lLZzYHxFIEEoR12+DVM9ZenKNXT2I467HV
 X-Received: from gnomeregan.cam.corp.google.com ([2620:15c:6:412:f130:19b6:8678:c9d1])
- (user=brho job=sendgmr) by 2002:a25:c245:: with SMTP id s66mr32796965ybf.243.1641489654639;
- Thu, 06 Jan 2022 09:20:54 -0800 (PST)
-Date:   Thu,  6 Jan 2022 12:20:39 -0500
+ (user=brho job=sendgmr) by 2002:a25:260d:: with SMTP id m13mr61028627ybm.29.1641489657787;
+ Thu, 06 Jan 2022 09:20:57 -0800 (PST)
+Date:   Thu,  6 Jan 2022 12:20:41 -0500
 In-Reply-To: <20220106172041.522167-1-brho@google.com>
-Message-Id: <20220106172041.522167-2-brho@google.com>
+Message-Id: <20220106172041.522167-4-brho@google.com>
 Mime-Version: 1.0
 References: <20220106172041.522167-1-brho@google.com>
 X-Mailer: git-send-email 2.34.1.448.ga2b2bfdf31-goog
-Subject: [PATCH v3 1/3] setpriority: only grab the tasklist_lock for PRIO_PGRP
+Subject: [PATCH v3 3/3] prlimit: do not grab the tasklist_lock
 From:   Barret Rhoden <brho@google.com>
 To:     ebiederm@xmission.com
 Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
@@ -71,90 +71,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The tasklist_lock is necessary only for PRIO_PGRP for both setpriority()
-and getpriority().
-
 Unnecessarily grabbing the tasklist_lock can be a scalability bottleneck
 for workloads that also must grab the tasklist_lock for waiting,
 killing, and cloning.
 
-This change resulted in a 12% speedup on a microbenchmark where parents
+The tasklist_lock was grabbed to protect tsk->sighand from disappearing
+(becoming NULL).  tsk->signal was already protected by holding a
+reference to tsk.
+
+update_rlimit_cpu() assumed tsk->sighand != NULL.  With this commit, it
+attempts to lock_task_sighand().  However, this means that
+update_rlimit_cpu() can fail.  This only happens when a task is exiting.
+Note that during exec, sighand may *change*, but it will not be NULL.
+
+Prior to this commit, the do_prlimit() ensured that update_rlimit_cpu()
+would not fail by read locking the tasklist_lock and checking tsk->sighand
+!= NULL.
+
+If update_rlimit_cpu() fails, there may be other tasks that are not
+exiting that share tsk->signal.  However, the group_leader is the last
+task to be released, so if we cannot update_rlimit_cpu(group_leader),
+then the entire process is exiting.
+
+The only other caller of update_rlimit_cpu() is
+selinux_bprm_committing_creds().  It has tsk == current, so
+update_rlimit_cpu() cannot fail (current->sighand cannot disappear
+until current exits).
+
+This change resulted in a 14% speedup on a microbenchmark where parents
 kill and wait on their children, and children getpriority, setpriority,
 and getrlimit.
 
 Signed-off-by: Barret Rhoden <brho@google.com>
 ---
- kernel/sys.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ include/linux/posix-timers.h   |  2 +-
+ kernel/sys.c                   | 25 ++++++++++++++-----------
+ kernel/time/posix-cpu-timers.c | 12 +++++++++---
+ 3 files changed, 24 insertions(+), 15 deletions(-)
 
+diff --git a/include/linux/posix-timers.h b/include/linux/posix-timers.h
+index 5bbcd280bfd2..9cf126c3b27f 100644
+--- a/include/linux/posix-timers.h
++++ b/include/linux/posix-timers.h
+@@ -253,7 +253,7 @@ void posix_cpu_timers_exit_group(struct task_struct *task);
+ void set_process_cpu_timer(struct task_struct *task, unsigned int clock_idx,
+ 			   u64 *newval, u64 *oldval);
+ 
+-void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
++int update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new);
+ 
+ void posixtimer_rearm(struct kernel_siginfo *info);
+ #endif
 diff --git a/kernel/sys.c b/kernel/sys.c
-index 8fdac0d90504..558e52fa5bbd 100644
+index fb2a5e7c0589..d155b21f4ba1 100644
 --- a/kernel/sys.c
 +++ b/kernel/sys.c
-@@ -220,7 +220,6 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
- 		niceval = MAX_NICE;
- 
- 	rcu_read_lock();
--	read_lock(&tasklist_lock);
- 	switch (which) {
- 	case PRIO_PROCESS:
- 		if (who)
-@@ -231,6 +230,7 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
- 			error = set_one_prio(p, niceval, error);
- 		break;
- 	case PRIO_PGRP:
-+		read_lock(&tasklist_lock);
- 		if (who)
- 			pgrp = find_vpid(who);
- 		else
-@@ -238,6 +238,7 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
- 		do_each_pid_thread(pgrp, PIDTYPE_PGID, p) {
- 			error = set_one_prio(p, niceval, error);
- 		} while_each_pid_thread(pgrp, PIDTYPE_PGID, p);
-+		read_unlock(&tasklist_lock);
- 		break;
- 	case PRIO_USER:
- 		uid = make_kuid(cred->user_ns, who);
-@@ -258,7 +259,6 @@ SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
- 		break;
+@@ -1432,13 +1432,7 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
+ 			return -EPERM;
  	}
- out_unlock:
--	read_unlock(&tasklist_lock);
- 	rcu_read_unlock();
- out:
- 	return error;
-@@ -283,7 +283,6 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
- 		return -EINVAL;
  
- 	rcu_read_lock();
+-	/* protect tsk->signal and tsk->sighand from disappearing */
 -	read_lock(&tasklist_lock);
- 	switch (which) {
- 	case PRIO_PROCESS:
- 		if (who)
-@@ -297,6 +296,7 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
- 		}
- 		break;
- 	case PRIO_PGRP:
-+		read_lock(&tasklist_lock);
- 		if (who)
- 			pgrp = find_vpid(who);
- 		else
-@@ -306,6 +306,7 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
- 			if (niceval > retval)
- 				retval = niceval;
- 		} while_each_pid_thread(pgrp, PIDTYPE_PGID, p);
-+		read_unlock(&tasklist_lock);
- 		break;
- 	case PRIO_USER:
- 		uid = make_kuid(cred->user_ns, who);
-@@ -329,7 +330,6 @@ SYSCALL_DEFINE2(getpriority, int, which, int, who)
- 		break;
- 	}
- out_unlock:
+-	if (!tsk->sighand) {
+-		retval = -ESRCH;
+-		goto out;
+-	}
+-
++	/* Holding a refcount on tsk protects tsk->signal from disappearing. */
+ 	rlim = tsk->signal->rlim + resource;
+ 	task_lock(tsk->group_leader);
+ 	if (new_rlim) {
+@@ -1467,10 +1461,19 @@ static int do_prlimit(struct task_struct *tsk, unsigned int resource,
+ 	 */
+ 	if (!retval && new_rlim && resource == RLIMIT_CPU &&
+ 	    new_rlim->rlim_cur != RLIM_INFINITY &&
+-	    IS_ENABLED(CONFIG_POSIX_TIMERS))
+-		update_rlimit_cpu(tsk, new_rlim->rlim_cur);
+-out:
 -	read_unlock(&tasklist_lock);
- 	rcu_read_unlock();
- 
++	    IS_ENABLED(CONFIG_POSIX_TIMERS)) {
++		/*
++		 * update_rlimit_cpu can fail if the task is exiting, but there
++		 * may be other tasks in the thread group that are not exiting,
++		 * and they need their cpu timers adjusted.
++		 *
++		 * The group_leader is the last task to be released, so if we
++		 * cannot update_rlimit_cpu on it, then the entire process is
++		 * exiting and we do not need to update at all.
++		 */
++		update_rlimit_cpu(tsk->group_leader, new_rlim->rlim_cur);
++	}
++
  	return retval;
+ }
+ 
+diff --git a/kernel/time/posix-cpu-timers.c b/kernel/time/posix-cpu-timers.c
+index 96b4e7810426..e13e628509fb 100644
+--- a/kernel/time/posix-cpu-timers.c
++++ b/kernel/time/posix-cpu-timers.c
+@@ -34,14 +34,20 @@ void posix_cputimers_group_init(struct posix_cputimers *pct, u64 cpu_limit)
+  * tsk->signal->posix_cputimers.bases[clock].nextevt expiration cache if
+  * necessary. Needs siglock protection since other code may update the
+  * expiration cache as well.
++ *
++ * Returns 0 on success, -ESRCH on failure.  Can fail if the task is exiting and
++ * we cannot lock_task_sighand.  Cannot fail if task is current.
+  */
+-void update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new)
++int update_rlimit_cpu(struct task_struct *task, unsigned long rlim_new)
+ {
+ 	u64 nsecs = rlim_new * NSEC_PER_SEC;
++	unsigned long irq_fl;
+ 
+-	spin_lock_irq(&task->sighand->siglock);
++	if (!lock_task_sighand(task, &irq_fl))
++		return -ESRCH;
+ 	set_process_cpu_timer(task, CPUCLOCK_PROF, &nsecs, NULL);
+-	spin_unlock_irq(&task->sighand->siglock);
++	unlock_task_sighand(task, &irq_fl);
++	return 0;
+ }
+ 
+ /*
 -- 
 2.34.1.448.ga2b2bfdf31-goog
 
