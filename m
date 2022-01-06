@@ -2,261 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FE58C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 02:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 02:53:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345086AbiAFCto (ORCPT
+        id S1345011AbiAFCxB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 5 Jan 2022 21:49:44 -0500
-Received: from mga04.intel.com ([192.55.52.120]:35152 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344936AbiAFCtZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 5 Jan 2022 21:49:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641437365; x=1672973365;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=kaB8tLk1lhb8W+rT7/16+mJ4M42irVpYYrkqFKQYIWg=;
-  b=FRlpmAG3HhmaLsgSDK9TOUSnRn5bKbzBiupiDN13Gj2q2/TIHAapes+2
-   wkSocyA6nIQUQjVcxnwCYOojm0wZBKvF/E58tCAaM5o89xyzl5Ejfx6HE
-   zclDW6jEvIsHo2N7IkludeyBV5T9mD+jFtYM+u3eoo1yRx9utu9ff1N3u
-   0lkoCHRJ63ArUxZIB0zUAbwXJ9vuXPxRrum55x95VSunRwoQ/WtikuTA8
-   ENz494hlepQSyIjzuhUfOPNHGfy3DaCgsPVwYdX5DnrswXvJldq8Ifa/1
-   pPAFEuwsBcHXa4M+AGHf7lC15TRH998bGcc++xAAN0HgIfCZs/XhB55uU
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="241397539"
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="241397539"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 18:49:24 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,265,1635231600"; 
-   d="scan'208";a="488796548"
-Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
-  by orsmga002.jf.intel.com with ESMTP; 05 Jan 2022 18:49:23 -0800
-From:   Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-pm@vger.kernel.org
-Cc:     x86@kernel.org, linux-doc@vger.kernel.org,
-        Len Brown <len.brown@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 6/7] thermal: netlink: Add a new event to notify CPU capabilities change
-Date:   Wed,  5 Jan 2022 18:50:58 -0800
-Message-Id: <20220106025059.25847-7-ricardo.neri-calderon@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220106025059.25847-1-ricardo.neri-calderon@linux.intel.com>
-References: <20220106025059.25847-1-ricardo.neri-calderon@linux.intel.com>
+        Wed, 5 Jan 2022 21:53:01 -0500
+Received: from esa1.hgst.iphmx.com ([68.232.141.245]:14316 "EHLO
+        esa1.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344935AbiAFCw4 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 5 Jan 2022 21:52:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1641437575; x=1672973575;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=98OiUdHi4swFi06EIaky9B6rH6+M+tkp9KhtFug2Fok=;
+  b=PU+kSNkRsrV61+hTYnGun6yf+qwaeY1DNV16gGesJgdGNEc9T4DbZwnn
+   OIZmew7aSwgleaZ4897GRLaTuMZK3xMwtLUwjTUv4ouEaHH1K7E9Ve848
+   4phkkEKB870kZatfw75sLSRuWuHoHVH9wbcMJZVSzkQw9gN8HA7KaQC+x
+   VSOZ1qlAPlpyL7YLVgBaB91osU31t9cl/HmRqHny/637zTJrTGKXk7z64
+   fwgOZ0PKY9arM7OM6+2AOV3W3jZLOrUCsb0wfxHE7EGMb56emA/fFu1vg
+   +3MjuZZh9kgjyMKd0oBOh6wrcSJfD4hzAO7tT4HN7ENdaVcU2xcULAB46
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,265,1635177600"; 
+   d="scan'208";a="301664733"
+Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 06 Jan 2022 10:52:52 +0800
+IronPort-SDR: kg6bgnPXTn9tRJ8Fqzfd3cli9twBoZ/iEX3KDi0NfuIeA5ewyjDNicGqJkI47UugL2iMxD4149
+ 3v4dM5ztCzVC7dtPlm89naJBZSv//Xl/QFsOstHt5MVkWF8bisywlmTXrtqfhbP/mwo1al9fXO
+ 1XwtxLdCf8xbqxzZIXGooINeNM/846Ftr+IvNMcKG6+KvM0GnH8TFuOlQ14JOfLZ662VgzgNea
+ DAZ5F2STeS/0QeZ0q4PCr4q67B2SPLPvwcvND6YHVhwYsRYg42hApPrpuQCAMqzcaLlpu6b0v/
+ cDd07zMDS8N7TmFR+uc/GfHc
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 18:26:42 -0800
+IronPort-SDR: 9Pa55bP6zHR69utqf985qnuDb9BnhjgeERXUZZebj6bLS7aXtdM/+CWEdoHJi2uKgoA49F/wnK
+ mAQ/mBwnX//BtSSJQCe3WsliBtPL0/SHKRG0BZLAtP5WsxJOwZD65ha3Xi660vt3lX4W/JCnZx
+ tVtkmpyH3L+qTTtX6mGyNEkhzMAa6Jvnk9HbGJ7ILvxHIjQFAYWVfbkZ0esuoQ4wML9h/iSFg/
+ enBhX8miKtilwp3U7Bv5ufQbQKQwg9CTqMUHlJewhREUX/VQp3kBr2As64PQz3FrwHyiFkokYq
+ /I0=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jan 2022 18:52:53 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JTrW76dYPz1VSkg
+        for <linux-kernel@vger.kernel.org>; Wed,  5 Jan 2022 18:52:51 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1641437571; x=1644029572; bh=98OiUdHi4swFi06EIaky9B6rH6+M+tkp9Kh
+        tFug2Fok=; b=eNolhVbJzbZU7z20M7JO0GfuLuYaPXY5+//wbbIiTzxW9TC6mfv
+        U39zcHoD3NrXlb6flJDjeaW5rrpPg+eNISEU1yOSZRw15M8jouSdVcPiOEORAL6K
+        6nqATDohAlWOTED2jsYMDufccRuiuhtB5WdG73xytyJCTIw/CCxKlQFSOyzpxybH
+        D4Psnr8MFUpIZqA8t9ZHtG2oQsME7h39ZgrUCcmo8s1Zyf1vQqTmF7QAj3PvdPOO
+        Fm0DZH2OT8k0GhHqzXAYjeUwKZYwxlpkzH3yDDdKerYKj9gmAWAJExLRxl4RzxKS
+        /l8qDKRQ/AZWu8mdyfn4T2YpgSPx7CIDkFA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id 80s0U7CmTYn4 for <linux-kernel@vger.kernel.org>;
+        Wed,  5 Jan 2022 18:52:51 -0800 (PST)
+Received: from [10.225.163.43] (unknown [10.225.163.43])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JTrW66Xk0z1VSkV;
+        Wed,  5 Jan 2022 18:52:50 -0800 (PST)
+Message-ID: <d5130eed-d881-f654-3e24-b552609abce9@opensource.wdc.com>
+Date:   Thu, 6 Jan 2022 11:52:49 +0900
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 1/2] ahci: Rename flag `ATA_LFLAG_NO_DB_DELAY` to
+ `ATA_LFLAG_NO_DEBOUNCE_DELAY`
+Content-Language: en-US
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220105153618.2395-1-pmenzel@molgen.mpg.de>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220105153618.2395-1-pmenzel@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+On 1/6/22 00:36, Paul Menzel wrote:
+> The new name is longer, but clearer.
 
-Add a new netlink event to notify change in CPU capabilities in terms of
-performance and efficiency.
+It looks like you sent an incremental change on top of your previous
+patches. Please send a cleaned up series. One patch to introduce the
+ATA_LFLAG_NO_DEBOUNCE_DELAY flag & msleep bypass and another to add the
+AMD chipset.
 
-Firmware may change CPU capabilities as a result of thermal events in the
-system or to account for changes in the TDP (thermal design power) level.
+The commit message of this version patch 2 should be the explanation for
+the ATA_LFLAG_NO_DEBOUNCE_DELAY flag, not for adding a new chipset ID.
 
-This notification type will allow user space to avoid running workloads
-on certain CPUs or proactively adjust power limits to avoid future events.
+> 
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+> ---
+>  drivers/ata/ahci_brcm.c   | 2 +-
+>  drivers/ata/libata-sata.c | 2 +-
+>  include/linux/libata.h    | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/ata/ahci_brcm.c b/drivers/ata/ahci_brcm.c
+> index 6e9c5ade4c2ea..649815c196ed0 100644
+> --- a/drivers/ata/ahci_brcm.c
+> +++ b/drivers/ata/ahci_brcm.c
+> @@ -333,7 +333,7 @@ static struct ata_port_operations ahci_brcm_platform_ops = {
+>  
+>  static const struct ata_port_info ahci_brcm_port_info = {
+>  	.flags		= AHCI_FLAG_COMMON | ATA_FLAG_NO_DIPM,
+> -	.link_flags	= ATA_LFLAG_NO_DB_DELAY,
+> +	.link_flags	= ATA_LFLAG_NO_DEBOUNCE_DELAY,
+>  	.pio_mask	= ATA_PIO4,
+>  	.udma_mask	= ATA_UDMA6,
+>  	.port_ops	= &ahci_brcm_platform_ops,
+> diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+> index b9c77885b8726..67b2e7cf3cc4e 100644
+> --- a/drivers/ata/libata-sata.c
+> +++ b/drivers/ata/libata-sata.c
+> @@ -317,7 +317,7 @@ int sata_link_resume(struct ata_link *link, const unsigned long *params,
+>  		 * immediately after resuming.  Delay 200ms before
+>  		 * debouncing.
+>  		 */
+> -		if (!(link->flags & ATA_LFLAG_NO_DB_DELAY))
+> +		if (!(link->flags & ATA_LFLAG_NO_DEBOUNCE_DELAY))
+>  			ata_msleep(link->ap, 200);
+>  
+>  		/* is SControl restored correctly? */
+> diff --git a/include/linux/libata.h b/include/linux/libata.h
+> index 2a8404b26083c..15802e644962d 100644
+> --- a/include/linux/libata.h
+> +++ b/include/linux/libata.h
+> @@ -191,7 +191,7 @@ enum {
+>  	ATA_LFLAG_NO_LPM	= (1 << 8), /* disable LPM on this link */
+>  	ATA_LFLAG_RST_ONCE	= (1 << 9), /* limit recovery to one reset */
+>  	ATA_LFLAG_CHANGED	= (1 << 10), /* LPM state changed on this link */
+> -	ATA_LFLAG_NO_DB_DELAY	= (1 << 11), /* no debounce delay on link resume */
+> +	ATA_LFLAG_NO_DEBOUNCE_DELAY = (1 << 11), /* no debounce delay on link resume */
+>  
+>  	/* struct ata_port flags */
+>  	ATA_FLAG_SLAVE_POSS	= (1 << 0), /* host supports slave dev */
 
-The netlink message consists of a nested attribute
-(THERMAL_GENL_ATTR_CPU_CAPABILITY) with three attributes:
 
- * THERMAL_GENL_ATTR_CPU_CAPABILITY_ID (type u32):
-   -- logical CPU number
- * THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE (type u32):
-   -- Scaled performance from 0-1023
- * THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY (type u32):
-   -- Scaled efficiency from 0-1023
-
-Cc: Andi Kleen <ak@linux.intel.com>
-Cc: Aubrey Li <aubrey.li@linux.intel.com>
-Cc: Lukasz Luba <lukasz.luba@arm.com>
-Cc: Tim Chen <tim.c.chen@linux.intel.com>
-Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
-Reviewed-by: Len Brown <len.brown@intel.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
-Changes since v2:
-  * None
-
-Changes since v1:
-  * Reworded commit message.
-  * Reworded the members of struct cpu_capacity for clarity. (Lukasz)
-  * Defined the CPU capability attributes to be scaled in the [0, 1023]
-    interval. (Lukasz)
----
- drivers/thermal/thermal_netlink.c | 55 +++++++++++++++++++++++++++++++
- drivers/thermal/thermal_netlink.h | 13 ++++++++
- include/uapi/linux/thermal.h      |  6 +++-
- 3 files changed, 73 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/thermal/thermal_netlink.c b/drivers/thermal/thermal_netlink.c
-index a16dd4d5d710..38e6c20f460c 100644
---- a/drivers/thermal/thermal_netlink.c
-+++ b/drivers/thermal/thermal_netlink.c
-@@ -43,6 +43,11 @@ static const struct nla_policy thermal_genl_policy[THERMAL_GENL_ATTR_MAX + 1] =
- 	[THERMAL_GENL_ATTR_CDEV_MAX_STATE]	= { .type = NLA_U32 },
- 	[THERMAL_GENL_ATTR_CDEV_NAME]		= { .type = NLA_STRING,
- 						    .len = THERMAL_NAME_LENGTH },
-+	/* CPU capabilities */
-+	[THERMAL_GENL_ATTR_CPU_CAPABILITY]		= { .type = NLA_NESTED },
-+	[THERMAL_GENL_ATTR_CPU_CAPABILITY_ID]		= { .type = NLA_U32 },
-+	[THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE]	= { .type = NLA_U32 },
-+	[THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY]	= { .type = NLA_U32 },
- };
- 
- struct param {
-@@ -58,6 +63,8 @@ struct param {
- 	int temp;
- 	int cdev_state;
- 	int cdev_max_state;
-+	struct cpu_capability *cpu_capabilities;
-+	int cpu_capabilities_count;
- };
- 
- typedef int (*cb_t)(struct param *);
-@@ -190,6 +197,45 @@ static int thermal_genl_event_gov_change(struct param *p)
- 	return 0;
- }
- 
-+static int thermal_genl_event_cpu_capability_change(struct param *p)
-+{
-+	struct cpu_capability *cpu_cap = p->cpu_capabilities;
-+	struct sk_buff *msg = p->msg;
-+	struct nlattr *start_cap;
-+	int i, ret;
-+
-+	start_cap = nla_nest_start(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY);
-+	if (!start_cap)
-+		return -EMSGSIZE;
-+
-+	for (i = 0; i < p->cpu_capabilities_count; ++i) {
-+		if (nla_put_u32(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY_ID,
-+				cpu_cap->cpu)) {
-+			ret = -EMSGSIZE;
-+			goto out_cancel_nest;
-+		}
-+		if (nla_put_u32(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE,
-+				cpu_cap->performance)) {
-+			ret = -EMSGSIZE;
-+			goto out_cancel_nest;
-+		}
-+		if (nla_put_u32(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY,
-+				cpu_cap->efficiency)) {
-+			ret = -EMSGSIZE;
-+			goto out_cancel_nest;
-+		}
-+		++cpu_cap;
-+	}
-+
-+	nla_nest_end(msg, start_cap);
-+
-+	return 0;
-+out_cancel_nest:
-+	nla_nest_cancel(msg, start_cap);
-+
-+	return ret;
-+}
-+
- int thermal_genl_event_tz_delete(struct param *p)
- 	__attribute__((alias("thermal_genl_event_tz")));
- 
-@@ -219,6 +265,7 @@ static cb_t event_cb[] = {
- 	[THERMAL_GENL_EVENT_CDEV_DELETE]	= thermal_genl_event_cdev_delete,
- 	[THERMAL_GENL_EVENT_CDEV_STATE_UPDATE]	= thermal_genl_event_cdev_state_update,
- 	[THERMAL_GENL_EVENT_TZ_GOV_CHANGE]	= thermal_genl_event_gov_change,
-+	[THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE] = thermal_genl_event_cpu_capability_change,
- };
- 
- /*
-@@ -356,6 +403,14 @@ int thermal_notify_tz_gov_change(int tz_id, const char *name)
- 	return thermal_genl_send_event(THERMAL_GENL_EVENT_TZ_GOV_CHANGE, &p);
- }
- 
-+int thermal_genl_cpu_capability_event(int count, struct cpu_capability *caps)
-+{
-+	struct param p = { .cpu_capabilities_count = count, .cpu_capabilities = caps };
-+
-+	return thermal_genl_send_event(THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE, &p);
-+}
-+EXPORT_SYMBOL_GPL(thermal_genl_cpu_capability_event);
-+
- /*************************** Command encoding ********************************/
- 
- static int __thermal_genl_cmd_tz_get_id(struct thermal_zone_device *tz,
-diff --git a/drivers/thermal/thermal_netlink.h b/drivers/thermal/thermal_netlink.h
-index e554f76291f4..44bc3dec5568 100644
---- a/drivers/thermal/thermal_netlink.h
-+++ b/drivers/thermal/thermal_netlink.h
-@@ -4,6 +4,12 @@
-  *  Author: Daniel Lezcano <daniel.lezcano@linaro.org>
-  */
- 
-+struct cpu_capability {
-+	int cpu;
-+	int performance;
-+	int efficiency;
-+};
-+
- /* Netlink notification function */
- #ifdef CONFIG_THERMAL_NETLINK
- int __init thermal_netlink_init(void);
-@@ -23,6 +29,7 @@ int thermal_notify_cdev_add(int cdev_id, const char *name, int max_state);
- int thermal_notify_cdev_delete(int cdev_id);
- int thermal_notify_tz_gov_change(int tz_id, const char *name);
- int thermal_genl_sampling_temp(int id, int temp);
-+int thermal_genl_cpu_capability_event(int count, struct cpu_capability *caps);
- #else
- static inline int thermal_netlink_init(void)
- {
-@@ -101,4 +108,10 @@ static inline int thermal_genl_sampling_temp(int id, int temp)
- {
- 	return 0;
- }
-+
-+static inline int thermal_genl_cpu_capability_event(int count, struct cpu_capability *caps)
-+{
-+	return 0;
-+}
-+
- #endif /* CONFIG_THERMAL_NETLINK */
-diff --git a/include/uapi/linux/thermal.h b/include/uapi/linux/thermal.h
-index 9aa2fedfa309..fc78bf3aead7 100644
---- a/include/uapi/linux/thermal.h
-+++ b/include/uapi/linux/thermal.h
-@@ -44,7 +44,10 @@ enum thermal_genl_attr {
- 	THERMAL_GENL_ATTR_CDEV_MAX_STATE,
- 	THERMAL_GENL_ATTR_CDEV_NAME,
- 	THERMAL_GENL_ATTR_GOV_NAME,
--
-+	THERMAL_GENL_ATTR_CPU_CAPABILITY,
-+	THERMAL_GENL_ATTR_CPU_CAPABILITY_ID,
-+	THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE,
-+	THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY,
- 	__THERMAL_GENL_ATTR_MAX,
- };
- #define THERMAL_GENL_ATTR_MAX (__THERMAL_GENL_ATTR_MAX - 1)
-@@ -71,6 +74,7 @@ enum thermal_genl_event {
- 	THERMAL_GENL_EVENT_CDEV_DELETE,		/* Cdev unbound */
- 	THERMAL_GENL_EVENT_CDEV_STATE_UPDATE,	/* Cdev state updated */
- 	THERMAL_GENL_EVENT_TZ_GOV_CHANGE,	/* Governor policy changed  */
-+	THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE,	/* CPU capability changed */
- 	__THERMAL_GENL_EVENT_MAX,
- };
- #define THERMAL_GENL_EVENT_MAX (__THERMAL_GENL_EVENT_MAX - 1)
 -- 
-2.17.1
-
+Damien Le Moal
+Western Digital Research
