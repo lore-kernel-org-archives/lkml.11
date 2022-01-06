@@ -2,123 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74C26C43217
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 17:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5871BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 18:00:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242481AbiAFR7S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:59:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242232AbiAFR7Q (ORCPT
+        id S242493AbiAFSAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 13:00:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52790 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242478AbiAFSAa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 12:59:16 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90101C061245;
-        Thu,  6 Jan 2022 09:59:15 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id w16so12398542edc.11;
-        Thu, 06 Jan 2022 09:59:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Xu3gtBGXL1jf6kCxzSaeWpzGpdunrBP5nIzH9T+JX7A=;
-        b=QABhckc492awaaxXuAXNmNQu84OS4dvWLO16RonMxReG9y4I9SOXpp9WNwch9Fu6UD
-         wmm3heRhU9A29LYtvo6Fn7aozoN+g991Jwt9RQ7xtA5tdoKYkbngv0/w3NI4ZVAmWjEe
-         Qf4FaRnSLHeLAijAeS/SW44fLuapJUWTDIGRkFNvJpXa8kJPYZ+hODXTxDEvfvkWa3zg
-         T6+U8IghcX2VT+PrROhDOtA9Sc5BZrHyPtOxSVkXOiPtglKvyuZManVi2xWmII9unYNd
-         sqJ+ex5Wb8WXfDFg6t08ESunjSYjwNDofHokjRvAm3QXtSggwSxZDRb7FLTRRDuEpWPv
-         48Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Xu3gtBGXL1jf6kCxzSaeWpzGpdunrBP5nIzH9T+JX7A=;
-        b=V5MWU30OhNB7Epl0PXpk98tB9JE17mQCpHrrwl6U7KSQQ8ZkA3X2zSHEdu7jFAwV6E
-         axKGcgcFZimeC6sl6E0nlsJcYykwzK8GuQ7HLPVg5BPQFu8HjA1QJ4G2iSUCUHOY6/0h
-         JB4eEmR1vjfsMUkobX6EbpyrQkr903BtDCdVskkgs5roFD9rLlciFtTrwfbsv/UBisrw
-         cehX9FsOXGZntjrgZmRMm9lua0H1WAbG1TehKQmo3N9CGxiQBILEnmp4ObhIGmQ+ZSgk
-         b8bC2DcDs/LRASQLI5tyzpDkzSJxlxM2gROn99L9x2bshrT7RVDs+CX7ahV6PpVFrcl2
-         PyzA==
-X-Gm-Message-State: AOAM533BhJ8y7qI86syCGmfFVbA9Ms97BYonjU6DAngL5HBFqDLtXlFw
-        i923WQzGlF8/PP44OsHnPsq7BDmUJZUiTBJiuSbZ7hP1hiE=
-X-Google-Smtp-Source: ABdhPJzBNWHoXSccLNv4/kXTZMpIBFu2W7xWcOFWFZ0eKIGCw7v4B7Ac94VkJf5xLM106JYy95MA0G2b5DDQhfv1iuU=
-X-Received: by 2002:a05:6402:d51:: with SMTP id ec17mr7460258edb.296.1641491954182;
- Thu, 06 Jan 2022 09:59:14 -0800 (PST)
+        Thu, 6 Jan 2022 13:00:30 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CA7761CF7;
+        Thu,  6 Jan 2022 18:00:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 992D8C36AEB;
+        Thu,  6 Jan 2022 18:00:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641492028;
+        bh=DYydbgnS2Q5LXHtJFrES1pqwbao4Pez939AcN9KBnvw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=EOsILy3tM+xI/hjivi2NyurzDUrBiXloFSZzBXiTaFxplMSJHHuDMSw/uveKJpPko
+         xjglSC2viJAaYds5RhVnMvlQi7OtPw91HxCXBINDMvmOyXmKm9OuBe0RMU4El8CPcs
+         aZJS+/6iNnuhH2bqTohmg8FJXELmIs30dp76K1eOAVtk4kdA60kk0nAWbP1sD6ayvM
+         4XwHnnprTyOy+QtE3YtAMpyGLvuIud1axMj4fnNUzmjMQ6E7U+nxwL4vSKykxHf+E6
+         qknivFyA+YuMfvPPyLbpbW4q/MSHCr4JSWIKIVHjKnSkuzkLlfvOKSlLrvJBMA2QNA
+         AEUBfAQuLA//Q==
+Date:   Thu, 6 Jan 2022 12:00:26 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Ray Jui <ray.jui@broadcom.com>,
+        Roman Bacik <roman.bacik@broadcom.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        bcm-kernel-feedback-list@broadcom.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] PCI: iproc: Set all 24 bits of PCI class code
+Message-ID: <20220106180026.GA295674@bhelgaas>
 MIME-Version: 1.0
-References: <20220104072658.69756-1-marcan@marcan.st> <20220104072658.69756-5-marcan@marcan.st>
- <5ddde705-f3fa-ff78-4d43-7a02d6efaaa6@gmail.com> <7c8d5655-a041-e291-95c1-be200233f87f@marcan.st>
- <8394dbcd-f500-b1ae-fcd8-15485d8c0888@gmail.com> <6a936aea-ada4-fe2d-7ce6-7a42788e4d63@marcan.st>
- <57716712-024d-af7e-394b-72ca9cb008d0@gmail.com>
-In-Reply-To: <57716712-024d-af7e-394b-72ca9cb008d0@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 6 Jan 2022 19:58:37 +0200
-Message-ID: <CAHp75VdXk87x7oDT1O5Q32ZsL4n0HYt-fijeiXw8n9fgypkOgg@mail.gmail.com>
-Subject: Re: [PATCH v2 04/35] brcmfmac: firmware: Support having multiple alt paths
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Hector Martin <marcan@marcan.st>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220105181306.mkratasqg36tjf4e@pali>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 7:40 PM Dmitry Osipenko <digetx@gmail.com> wrote:
-> 05.01.2022 16:22, Hector Martin =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > On 05/01/2022 07.09, Dmitry Osipenko wrote:
+On Wed, Jan 05, 2022 at 07:13:06PM +0100, Pali Rohár wrote:
+> On Wednesday 05 January 2022 09:51:48 Ray Jui wrote:
+> > On 1/5/2022 1:35 AM, Pali Rohár wrote:
 
-...
+> > 2. I suppose 'PCI_CLASS_BRIDGE_PCI_NORMAL' is defined in some common PCI
+> > header in a separate patch as described in the commit message. Then how
+> > come these patches are not constructed with a patch series?
+> 
+> Yes, PCI_CLASS_BRIDGE_PCI_NORMAL is a new constant for common pci header
+> file defined in patch linked in commit message.
+> https://lore.kernel.org/linux-pci/20211220145140.31898-1-pali@kernel.org/
+> 
+> Originally I included this change in v1 of linked patch in December but
+> I realized that it does not match standard PCI config space (different
+> offset 0x43c vs 0x08 and also different shift 0x8 vs 0x0) and probably
+> there is something either incorrect or really non-standard. So later in
+> December I dropped iproc_pcie_check_link() change in v2 of the linked
+> patch where is introduced PCI_CLASS_BRIDGE_PCI_NORMAL and now sent new
+> change for iproc_pcie_check_link() separately.
+> 
+> Technically, linked patch in commit message is just extracting code into
+> the common macros without any functional changed. But change in this
+> iproc_pcie_check_link() has also functional change as now also lower 8
+> bits of class code are changed. So in my opinion this patch should be
+> really separate of linked patch.
+> 
+> I hope that Lorenzo and Bjorn take patches in correct order...
 
-> > I'm confused; the array size is constant. What would index contain and
-> > why would would brcm_free_alt_fw_paths use it? Just as an iterator
-> > variable instead of using a local variable? Or do you mean count?
->
-> Yes, use index for the count of active entries in the alt_paths[].
->
-> for (i =3D 0; i < alt_paths.index; i++)
->         kfree(alt_paths.path[i]);
->
-> alt_paths.index =3D 0;
->
-> or
->
-> while (alt_paths.index)
->         kfree(alt_paths.path[--alt_paths.index]);
+If patches are not sent together in a series, you can't assume
+anything about the order they'll be applied in.  Adding a note about
+"this patch depends patch X" helps a little but adds a fair amount of
+friction to the process.
 
-Usual pattern is
-
-  while (x--)
-    kfree(x);
-
-easier to read, extend (if needed).
-
---=20
-With Best Regards,
-Andy Shevchenko
+Bjorn
