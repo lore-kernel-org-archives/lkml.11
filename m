@@ -2,201 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5851C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0090C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu,  6 Jan 2022 21:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244056AbiAFVA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 16:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244010AbiAFVA0 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 16:00:26 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3AFC061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 13:00:26 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id p65so4692776iof.3
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 13:00:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AmzdgAiuO/8SZ4ChbNLcS7C9Wx3iWh+y/OvXPCFKxrw=;
-        b=bF0zHrf6cn7DZ9x7Pn4rON78LlB/Hv4SZOT1CUj/MS6/n3ZRZRuCOzw38oA9zXUnUq
-         bmPYvez6eiYkBvk7XWVrAWDC9k/UQm1G+UlfndAwfmWfa9a8OmebJf30pHRvKVOH7vLs
-         jt6bGvG2Aqd9ZHc94cDDGoxmgy4g8E5zyYL9iT0hbk68Fbwp9h6N8bAzGBvI8eheAF4z
-         FcEVNjkDqF28luZRsiDiFQOfedRFwy+Cm991Ddau75kShcGF2h70VZ4zhwsPu2abAa0c
-         bafGpZZYjVq8h0wtrhrDmHrDlIiTeia1yeNt14TfbkApq+o7nqg88SGsPY1GhFNAVaZV
-         RgNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AmzdgAiuO/8SZ4ChbNLcS7C9Wx3iWh+y/OvXPCFKxrw=;
-        b=bFsH37ONWXG+3tk2stl8YrX2ZYAthSROLFFrayN2D2gzDQw7uP8wKrvaiSitA22sBA
-         8cQSKJX5nPUtCLu321kalCP/7mzrGAypKTUft/fhMUtsU2PTiUuMcQVyxt8aTxjkg/ML
-         7lxu907rGJvt9rk0SHLghiH35ok8yWCJAly5EXlC4mVn4X2l0K3HemM4Tz+TyR0X1Hc/
-         tiwumAtCU9iNXBJMUq9zevYgsE47FMlpR6BOB6ruIOEriQagKz4b4y+ku3KYCZEmkA6e
-         KL7ElsAHiMV8I6M9dHGzO8iqofsF74JN81xQFcTQ6g3EviJhOwYYApt96R/7KMpc81MB
-         DFCQ==
-X-Gm-Message-State: AOAM533KwhW90+zX2Al5jTQ09GIYoJ3ZCtjBE1n7ELJH33Ri5FaCMTZW
-        eGy93Ka/rCJ3POJ4E4n0qj69SaCXf9Ux37OVur4=
-X-Google-Smtp-Source: ABdhPJyMPlDYOazAJHlrg63PALPvUxYHWGsXkLSVu4lQmb//VCulO817Wx8LlBVYawaWZLOwDu/PsbsVmaBAVu8/IEM=
-X-Received: by 2002:a05:6638:33a6:: with SMTP id h38mr28475446jav.194.1641502825423;
- Thu, 06 Jan 2022 13:00:25 -0800 (PST)
+        id S244067AbiAFVBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 6 Jan 2022 16:01:34 -0500
+Received: from mga04.intel.com ([192.55.52.120]:5325 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244010AbiAFVBd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 16:01:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641502893; x=1673038893;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=MExrm/ErUuEdtAK9P7TMNk3mOSTTZQ4Fo8qfxxOVe5E=;
+  b=AJ7SOiwh9OI44LYoGdIyMtpxvC0ERbqdxlt4ZuL/P76vUKEEUt9BWL+X
+   Floj+Ag/vsfwzVuvnHSfUdskTXQqn+Xjt9fH7b1jDxa4yJJyf2V8bFZMj
+   K/5WIAmOipl5c5pvE+Al4cRWWm3oUUCiHI8+rED+r9g9tswJbtBrs1C5O
+   dg58uLPNlJLLVTKKxxXHYrb/R3rfync/SFvE7hafdKaTqptv5knhs/nu0
+   14lfLmqn1f7pEI5MBQDk6X+uGu9KKVFXbETEnUXBYp+SEA8DHAfFozuIZ
+   qzj5Y9qQfPRQnajs36jYM9GvcDtTbeWJCGhDkZHsmAv74Fde7X/E289Fe
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="241553896"
+X-IronPort-AV: E=Sophos;i="5.88,267,1635231600"; 
+   d="scan'208";a="241553896"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 13:01:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,267,1635231600"; 
+   d="scan'208";a="557044627"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 06 Jan 2022 13:01:30 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5Zt3-000Hxc-CF; Thu, 06 Jan 2022 21:01:29 +0000
+Date:   Fri, 7 Jan 2022 05:00:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "F.A.Sulaiman" <asha.16@itfac.mrt.ac.lk>,
+        gregkh@linuxfoundation.org, fabioaiuto83@gmail.com,
+        marcocesati@gmail.com, dan.carpenter@oracle.com,
+        hdegoede@redhat.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        "F.A.Sulaiman" <asha.16@itfac.mrt.ac.lk>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] rtl8723bs: fix memory leak error
+Message-ID: <202201070423.WeoyORXE-lkp@intel.com>
+References: <20220105123447.24674-1-asha.16@itfac.mrt.ac.lk>
 MIME-Version: 1.0
-References: <20211201180653.35097-1-alcooperx@gmail.com> <20211201180653.35097-2-alcooperx@gmail.com>
- <YahNIinbEwB569C1@matsya>
-In-Reply-To: <YahNIinbEwB569C1@matsya>
-From:   Alan Cooper <alcooperx@gmail.com>
-Date:   Thu, 6 Jan 2022 16:01:53 -0500
-Message-ID: <CAOGqxeVS0sQg=vAQKOC3ksuGfdCO-TzgMdOmhtQJZBcuj3YFdg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] phy: usb: Leave some clocks running during suspend
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     ": Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        BCM Kernel Feedback <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-phy@lists.infradead.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105123447.24674-1-asha.16@itfac.mrt.ac.lk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Dec 1, 2021 at 11:35 PM Vinod Koul <vkoul@kernel.org> wrote:
->
-> On 01-12-21, 13:06, Al Cooper wrote:
-> > The PHY client driver does a phy_exit() call on suspend or rmmod and
-> > the PHY driver needs to know the difference because some clocks need
-> > to be kept running for suspend but can be shutdown on unbind/rmmod
-> > (or if there are no PHY clients at all).
-> >
-> > The fix is to use a PM notifier so the driver can tell if a PHY
-> > client is calling exit() because of a system suspend or a driver
-> > unbind/rmmod.
-> >
-> > Signed-off-by: Al Cooper <alcooperx@gmail.com>
-> > ---
-> >  drivers/phy/broadcom/phy-brcm-usb.c | 38 +++++++++++++++++++++++++++++
-> >  1 file changed, 38 insertions(+)
-> >
-> > diff --git a/drivers/phy/broadcom/phy-brcm-usb.c b/drivers/phy/broadcom/phy-brcm-usb.c
-> > index 116fb23aebd9..0f1deb6e0eab 100644
-> > --- a/drivers/phy/broadcom/phy-brcm-usb.c
-> > +++ b/drivers/phy/broadcom/phy-brcm-usb.c
-> > @@ -18,6 +18,7 @@
-> >  #include <linux/soc/brcmstb/brcmstb.h>
-> >  #include <dt-bindings/phy/phy.h>
-> >  #include <linux/mfd/syscon.h>
-> > +#include <linux/suspend.h>
-> >
-> >  #include "phy-brcm-usb-init.h"
-> >
-> > @@ -70,12 +71,35 @@ struct brcm_usb_phy_data {
-> >       int                     init_count;
-> >       int                     wake_irq;
-> >       struct brcm_usb_phy     phys[BRCM_USB_PHY_ID_MAX];
-> > +     struct notifier_block   pm_notifier;
-> > +     bool                    pm_active;
-> >  };
-> >
-> >  static s8 *node_reg_names[BRCM_REGS_MAX] = {
-> >       "crtl", "xhci_ec", "xhci_gbl", "usb_phy", "usb_mdio", "bdc_ec"
-> >  };
-> >
-> > +static int brcm_pm_notifier(struct notifier_block *notifier,
-> > +                         unsigned long pm_event,
-> > +                         void *unused)
-> > +{
-> > +     struct brcm_usb_phy_data *priv =
-> > +             container_of(notifier, struct brcm_usb_phy_data, pm_notifier);
-> > +
-> > +     switch (pm_event) {
-> > +     case PM_HIBERNATION_PREPARE:
-> > +     case PM_SUSPEND_PREPARE:
-> > +             priv->pm_active = true;
-> > +             break;
-> > +     case PM_POST_RESTORE:
-> > +     case PM_POST_HIBERNATION:
-> > +     case PM_POST_SUSPEND:
-> > +             priv->pm_active = false;
-> > +             break;
-> > +     }
-> > +     return NOTIFY_DONE;
-> > +}
-> > +
-> >  static irqreturn_t brcm_usb_phy_wake_isr(int irq, void *dev_id)
-> >  {
-> >       struct phy *gphy = dev_id;
-> > @@ -91,6 +115,9 @@ static int brcm_usb_phy_init(struct phy *gphy)
-> >       struct brcm_usb_phy_data *priv =
-> >               container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
-> >
-> > +     if (priv->pm_active)
-> > +             return 0;
-> > +
-> >       /*
-> >        * Use a lock to make sure a second caller waits until
-> >        * the base phy is inited before using it.
-> > @@ -120,6 +147,9 @@ static int brcm_usb_phy_exit(struct phy *gphy)
-> >       struct brcm_usb_phy_data *priv =
-> >               container_of(phy, struct brcm_usb_phy_data, phys[phy->id]);
-> >
-> > +     if (priv->pm_active)
-> > +             return 0;
-> > +
-> >       dev_dbg(&gphy->dev, "EXIT\n");
-> >       if (phy->id == BRCM_USB_PHY_2_0)
-> >               brcm_usb_uninit_eohci(&priv->ini);
-> > @@ -488,6 +518,9 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
-> >       if (err)
-> >               return err;
-> >
-> > +     priv->pm_notifier.notifier_call = brcm_pm_notifier;
-> > +     register_pm_notifier(&priv->pm_notifier);
-> > +
-> >       mutex_init(&priv->mutex);
-> >
-> >       /* make sure invert settings are correct */
-> > @@ -528,7 +561,10 @@ static int brcm_usb_phy_probe(struct platform_device *pdev)
-> >
-> >  static int brcm_usb_phy_remove(struct platform_device *pdev)
-> >  {
-> > +     struct brcm_usb_phy_data *priv = dev_get_drvdata(&pdev->dev);
-> > +
-> >       sysfs_remove_group(&pdev->dev.kobj, &brcm_usb_phy_group);
-> > +     unregister_pm_notifier(&priv->pm_notifier);
-> >
-> >       return 0;
-> >  }
-> > @@ -539,6 +575,7 @@ static int brcm_usb_phy_suspend(struct device *dev)
-> >       struct brcm_usb_phy_data *priv = dev_get_drvdata(dev);
-> >
-> >       if (priv->init_count) {
-> > +             dev_dbg(dev, "SUSPEND\n");
->
-> debug artifact?
->
-> >               priv->ini.wake_enabled = device_may_wakeup(dev);
-> >               if (priv->phys[BRCM_USB_PHY_3_0].inited)
-> >                       brcm_usb_uninit_xhci(&priv->ini);
-> > @@ -578,6 +615,7 @@ static int brcm_usb_phy_resume(struct device *dev)
-> >        * Uninitialize anything that wasn't previously initialized.
-> >        */
-> >       if (priv->init_count) {
-> > +             dev_dbg(dev, "RESUME\n");
->
-> here too
+Hi "F.A.Sulaiman",
 
-I left these in intentionally because they are very useful for debug.
+Thank you for the patch! Perhaps something to improve:
 
->
-> >               if (priv->wake_irq >= 0)
-> >                       disable_irq_wake(priv->wake_irq);
-> >               brcm_usb_init_common(&priv->ini);
-> > --
-> > 2.17.1
->
-> --
-> ~Vinod
+[auto build test WARNING on staging/staging-testing]
+[also build test WARNING on v5.16-rc8 next-20220106]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/F-A-Sulaiman/rtl8723bs-fix-memory-leak-error/20220105-203752
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git 0640d18b15d86ab76275e63f36f5841db5f52e74
+config: hexagon-allyesconfig (https://download.01.org/0day-ci/archive/20220107/202201070423.WeoyORXE-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/1a1faafe5fcac0069aad1036ce1757e87ba847d3
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review F-A-Sulaiman/rtl8723bs-fix-memory-leak-error/20220105-203752
+        git checkout 1a1faafe5fcac0069aad1036ce1757e87ba847d3
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/mmc/host/ drivers/staging/rtl8723bs/ fs/xfs/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c:421:1: warning: unused label 'release_fw1' [-Wunused-label]
+   release_fw1:
+   ^~~~~~~~~~~~
+   drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c:957:5: warning: variable 'hoffset' set but not used [-Wunused-but-set-variable]
+           u8 hoffset = 0, hworden = 0;
+              ^
+   drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c:1050:5: warning: variable 'hoffset' set but not used [-Wunused-but-set-variable]
+           u8 hoffset = 0, hworden = 0;
+              ^
+   3 warnings generated.
+
+
+vim +/release_fw1 +421 drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
+
+554c0a3abf216c Hans de Goede  2017-03-29  286  
+554c0a3abf216c Hans de Goede  2017-03-29  287  /*  */
+554c0a3abf216c Hans de Goede  2017-03-29  288  /* 	Description: */
+554c0a3abf216c Hans de Goede  2017-03-29  289  /* 		Download 8192C firmware code. */
+554c0a3abf216c Hans de Goede  2017-03-29  290  /*  */
+554c0a3abf216c Hans de Goede  2017-03-29  291  /*  */
+554c0a3abf216c Hans de Goede  2017-03-29  292  s32 rtl8723b_FirmwareDownload(struct adapter *padapter, bool  bUsedWoWLANFw)
+554c0a3abf216c Hans de Goede  2017-03-29  293  {
+554c0a3abf216c Hans de Goede  2017-03-29  294  	s32 rtStatus = _SUCCESS;
+554c0a3abf216c Hans de Goede  2017-03-29  295  	u8 write_fw = 0;
+554c0a3abf216c Hans de Goede  2017-03-29  296  	unsigned long fwdl_start_time;
+554c0a3abf216c Hans de Goede  2017-03-29  297  	struct hal_com_data *pHalData = GET_HAL_DATA(padapter);
+554c0a3abf216c Hans de Goede  2017-03-29  298  	struct rt_firmware *pFirmware;
+554c0a3abf216c Hans de Goede  2017-03-29  299  	struct rt_firmware *pBTFirmware;
+554c0a3abf216c Hans de Goede  2017-03-29  300  	struct rt_firmware_hdr *pFwHdr = NULL;
+554c0a3abf216c Hans de Goede  2017-03-29  301  	u8 *pFirmwareBuf;
+554c0a3abf216c Hans de Goede  2017-03-29  302  	u32 FirmwareLen;
+554c0a3abf216c Hans de Goede  2017-03-29  303  	const struct firmware *fw;
+554c0a3abf216c Hans de Goede  2017-03-29  304  	struct device *device = dvobj_to_dev(padapter->dvobj);
+554c0a3abf216c Hans de Goede  2017-03-29  305  	u8 *fwfilepath;
+554c0a3abf216c Hans de Goede  2017-03-29  306  	struct dvobj_priv *psdpriv = padapter->dvobj;
+554c0a3abf216c Hans de Goede  2017-03-29  307  	struct debug_priv *pdbgpriv = &psdpriv->drv_dbg;
+554c0a3abf216c Hans de Goede  2017-03-29  308  	u8 tmp_ps;
+554c0a3abf216c Hans de Goede  2017-03-29  309  
+554c0a3abf216c Hans de Goede  2017-03-29  310  	pFirmware = kzalloc(sizeof(struct rt_firmware), GFP_KERNEL);
+7e2b0aaec63351 Larry Finger   2017-04-08  311  	if (!pFirmware)
+7e2b0aaec63351 Larry Finger   2017-04-08  312  		return _FAIL;
+554c0a3abf216c Hans de Goede  2017-03-29  313  	pBTFirmware = kzalloc(sizeof(struct rt_firmware), GFP_KERNEL);
+7e2b0aaec63351 Larry Finger   2017-04-08  314  	if (!pBTFirmware) {
+7e2b0aaec63351 Larry Finger   2017-04-08  315  		kfree(pFirmware);
+7e2b0aaec63351 Larry Finger   2017-04-08  316  		return _FAIL;
+554c0a3abf216c Hans de Goede  2017-03-29  317  	}
+554c0a3abf216c Hans de Goede  2017-03-29  318  	tmp_ps = rtw_read8(padapter, 0xa3);
+554c0a3abf216c Hans de Goede  2017-03-29  319  	tmp_ps &= 0xf8;
+554c0a3abf216c Hans de Goede  2017-03-29  320  	tmp_ps |= 0x02;
+554c0a3abf216c Hans de Goede  2017-03-29  321  	/* 1. write 0xA3[:2:0] = 3b'010 */
+554c0a3abf216c Hans de Goede  2017-03-29  322  	rtw_write8(padapter, 0xa3, tmp_ps);
+554c0a3abf216c Hans de Goede  2017-03-29  323  	/* 2. read power_state = 0xA0[1:0] */
+554c0a3abf216c Hans de Goede  2017-03-29  324  	tmp_ps = rtw_read8(padapter, 0xa0);
+554c0a3abf216c Hans de Goede  2017-03-29  325  	tmp_ps &= 0x03;
+709c8e49b51c37 Fabio Aiuto    2021-04-07  326  	if (tmp_ps != 0x01)
+554c0a3abf216c Hans de Goede  2017-03-29  327  		pdbgpriv->dbg_downloadfw_pwr_state_cnt++;
+554c0a3abf216c Hans de Goede  2017-03-29  328  
+554c0a3abf216c Hans de Goede  2017-03-29  329  	fwfilepath = "rtlwifi/rtl8723bs_nic.bin";
+554c0a3abf216c Hans de Goede  2017-03-29  330  
+b388285205609c Colin Ian King 2017-04-11  331  	pr_info("rtl8723bs: acquire FW from file:%s\n", fwfilepath);
+554c0a3abf216c Hans de Goede  2017-03-29  332  
+554c0a3abf216c Hans de Goede  2017-03-29  333  	rtStatus = request_firmware(&fw, fwfilepath, device);
+554c0a3abf216c Hans de Goede  2017-03-29  334  	if (rtStatus) {
+554c0a3abf216c Hans de Goede  2017-03-29  335  		pr_err("Request firmware failed with error 0x%x\n", rtStatus);
+554c0a3abf216c Hans de Goede  2017-03-29  336  		rtStatus = _FAIL;
+554c0a3abf216c Hans de Goede  2017-03-29  337  		goto exit;
+554c0a3abf216c Hans de Goede  2017-03-29  338  	}
+554c0a3abf216c Hans de Goede  2017-03-29  339  
+554c0a3abf216c Hans de Goede  2017-03-29  340  	if (!fw) {
+554c0a3abf216c Hans de Goede  2017-03-29  341  		pr_err("Firmware %s not available\n", fwfilepath);
+554c0a3abf216c Hans de Goede  2017-03-29  342  		rtStatus = _FAIL;
+554c0a3abf216c Hans de Goede  2017-03-29  343  		goto exit;
+554c0a3abf216c Hans de Goede  2017-03-29  344  	}
+554c0a3abf216c Hans de Goede  2017-03-29  345  
+554c0a3abf216c Hans de Goede  2017-03-29  346  	if (fw->size > FW_8723B_SIZE) {
+554c0a3abf216c Hans de Goede  2017-03-29  347  		rtStatus = _FAIL;
+554c0a3abf216c Hans de Goede  2017-03-29  348  		goto exit;
+554c0a3abf216c Hans de Goede  2017-03-29  349  	}
+554c0a3abf216c Hans de Goede  2017-03-29  350  
+93998817a169c0 Quytelda Kahja 2018-05-22  351  	pFirmware->fw_buffer_sz = kmemdup(fw->data, fw->size, GFP_KERNEL);
+93998817a169c0 Quytelda Kahja 2018-05-22  352  	if (!pFirmware->fw_buffer_sz) {
+554c0a3abf216c Hans de Goede  2017-03-29  353  		rtStatus = _FAIL;
+554c0a3abf216c Hans de Goede  2017-03-29  354  		goto exit;
+554c0a3abf216c Hans de Goede  2017-03-29  355  	}
+554c0a3abf216c Hans de Goede  2017-03-29  356  
+93998817a169c0 Quytelda Kahja 2018-05-22  357  	pFirmware->fw_length = fw->size;
+554c0a3abf216c Hans de Goede  2017-03-29  358  	release_firmware(fw);
+93998817a169c0 Quytelda Kahja 2018-05-22  359  	if (pFirmware->fw_length > FW_8723B_SIZE) {
+554c0a3abf216c Hans de Goede  2017-03-29  360  		rtStatus = _FAIL;
+79df841b435018 Fabio Aiuto    2021-04-15  361  		netdev_emerg(padapter->pnetdev,
+79df841b435018 Fabio Aiuto    2021-04-15  362  			     "Firmware size:%u exceed %u\n",
+79df841b435018 Fabio Aiuto    2021-04-15  363  			     pFirmware->fw_length, FW_8723B_SIZE);
+1a1faafe5fcac0 F.A.Sulaiman   2022-01-05  364  		goto exit;
+554c0a3abf216c Hans de Goede  2017-03-29  365  	}
+554c0a3abf216c Hans de Goede  2017-03-29  366  
+93998817a169c0 Quytelda Kahja 2018-05-22  367  	pFirmwareBuf = pFirmware->fw_buffer_sz;
+93998817a169c0 Quytelda Kahja 2018-05-22  368  	FirmwareLen = pFirmware->fw_length;
+554c0a3abf216c Hans de Goede  2017-03-29  369  
+554c0a3abf216c Hans de Goede  2017-03-29  370  	/*  To Check Fw header. Added by tynli. 2009.12.04. */
+554c0a3abf216c Hans de Goede  2017-03-29  371  	pFwHdr = (struct rt_firmware_hdr *)pFirmwareBuf;
+554c0a3abf216c Hans de Goede  2017-03-29  372  
+699ad73456d6c9 Quytelda Kahja 2018-05-22  373  	pHalData->FirmwareVersion =  le16_to_cpu(pFwHdr->version);
+699ad73456d6c9 Quytelda Kahja 2018-05-22  374  	pHalData->FirmwareSubVersion = le16_to_cpu(pFwHdr->subversion);
+699ad73456d6c9 Quytelda Kahja 2018-05-22  375  	pHalData->FirmwareSignature = le16_to_cpu(pFwHdr->signature);
+554c0a3abf216c Hans de Goede  2017-03-29  376  
+554c0a3abf216c Hans de Goede  2017-03-29  377  	if (IS_FW_HEADER_EXIST_8723B(pFwHdr)) {
+554c0a3abf216c Hans de Goede  2017-03-29  378  		/*  Shift 32 bytes for FW header */
+554c0a3abf216c Hans de Goede  2017-03-29  379  		pFirmwareBuf = pFirmwareBuf + 32;
+554c0a3abf216c Hans de Goede  2017-03-29  380  		FirmwareLen = FirmwareLen - 32;
+554c0a3abf216c Hans de Goede  2017-03-29  381  	}
+554c0a3abf216c Hans de Goede  2017-03-29  382  
+554c0a3abf216c Hans de Goede  2017-03-29  383  	/*  Suggested by Filen. If 8051 is running in RAM code, driver should inform Fw to reset by itself, */
+554c0a3abf216c Hans de Goede  2017-03-29  384  	/*  or it will cause download Fw fail. 2010.02.01. by tynli. */
+554c0a3abf216c Hans de Goede  2017-03-29  385  	if (rtw_read8(padapter, REG_MCUFWDL) & RAM_DL_SEL) { /* 8051 RAM code */
+554c0a3abf216c Hans de Goede  2017-03-29  386  		rtw_write8(padapter, REG_MCUFWDL, 0x00);
+554c0a3abf216c Hans de Goede  2017-03-29  387  		rtl8723b_FirmwareSelfReset(padapter);
+554c0a3abf216c Hans de Goede  2017-03-29  388  	}
+554c0a3abf216c Hans de Goede  2017-03-29  389  
+554c0a3abf216c Hans de Goede  2017-03-29  390  	_FWDownloadEnable(padapter, true);
+554c0a3abf216c Hans de Goede  2017-03-29  391  	fwdl_start_time = jiffies;
+554c0a3abf216c Hans de Goede  2017-03-29  392  	while (
+554c0a3abf216c Hans de Goede  2017-03-29  393  		!padapter->bDriverStopped &&
+554c0a3abf216c Hans de Goede  2017-03-29  394  		!padapter->bSurpriseRemoved &&
+554c0a3abf216c Hans de Goede  2017-03-29  395  		(write_fw++ < 3 || jiffies_to_msecs(jiffies - fwdl_start_time) < 500)
+554c0a3abf216c Hans de Goede  2017-03-29  396  	) {
+554c0a3abf216c Hans de Goede  2017-03-29  397  		/* reset FWDL chksum */
+554c0a3abf216c Hans de Goede  2017-03-29  398  		rtw_write8(padapter, REG_MCUFWDL, rtw_read8(padapter, REG_MCUFWDL)|FWDL_ChkSum_rpt);
+554c0a3abf216c Hans de Goede  2017-03-29  399  
+554c0a3abf216c Hans de Goede  2017-03-29  400  		rtStatus = _WriteFW(padapter, pFirmwareBuf, FirmwareLen);
+554c0a3abf216c Hans de Goede  2017-03-29  401  		if (rtStatus != _SUCCESS)
+554c0a3abf216c Hans de Goede  2017-03-29  402  			continue;
+554c0a3abf216c Hans de Goede  2017-03-29  403  
+554c0a3abf216c Hans de Goede  2017-03-29  404  		rtStatus = polling_fwdl_chksum(padapter, 5, 50);
+554c0a3abf216c Hans de Goede  2017-03-29  405  		if (rtStatus == _SUCCESS)
+554c0a3abf216c Hans de Goede  2017-03-29  406  			break;
+554c0a3abf216c Hans de Goede  2017-03-29  407  	}
+554c0a3abf216c Hans de Goede  2017-03-29  408  	_FWDownloadEnable(padapter, false);
+554c0a3abf216c Hans de Goede  2017-03-29  409  	if (_SUCCESS != rtStatus)
+554c0a3abf216c Hans de Goede  2017-03-29  410  		goto fwdl_stat;
+554c0a3abf216c Hans de Goede  2017-03-29  411  
+554c0a3abf216c Hans de Goede  2017-03-29  412  	rtStatus = _FWFreeToGo(padapter, 10, 200);
+554c0a3abf216c Hans de Goede  2017-03-29  413  	if (_SUCCESS != rtStatus)
+554c0a3abf216c Hans de Goede  2017-03-29  414  		goto fwdl_stat;
+554c0a3abf216c Hans de Goede  2017-03-29  415  
+554c0a3abf216c Hans de Goede  2017-03-29  416  fwdl_stat:
+554c0a3abf216c Hans de Goede  2017-03-29  417  
+554c0a3abf216c Hans de Goede  2017-03-29  418  exit:
+93998817a169c0 Quytelda Kahja 2018-05-22  419  	kfree(pFirmware->fw_buffer_sz);
+554c0a3abf216c Hans de Goede  2017-03-29  420  	kfree(pFirmware);
+7e2b0aaec63351 Larry Finger   2017-04-08 @421  release_fw1:
+554c0a3abf216c Hans de Goede  2017-03-29  422  	kfree(pBTFirmware);
+554c0a3abf216c Hans de Goede  2017-03-29  423  	return rtStatus;
+554c0a3abf216c Hans de Goede  2017-03-29  424  }
+554c0a3abf216c Hans de Goede  2017-03-29  425  
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
