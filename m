@@ -2,167 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1641AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:52:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ACF7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231809AbiAGXwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 18:52:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231708AbiAGXwH (ORCPT
+        id S231843AbiAGXwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 18:52:34 -0500
+Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:44740
+        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231812AbiAGXw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 18:52:07 -0500
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCF7C061574;
-        Fri,  7 Jan 2022 15:52:07 -0800 (PST)
-Received: by mail-qt1-x829.google.com with SMTP id q14so7107799qtx.10;
-        Fri, 07 Jan 2022 15:52:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=aU8/5mVKlEMT/Qttq5O3DrV9RFJs3vfNMkN1OVYl94g=;
-        b=T4+XCh3ftAIzbtt6LmDGuXNGec6C43LntQC5i7/C8HYKmZwGU4u7r24REaDJeSEtA/
-         zR3ebKwPeraqdH4kX28aYgydtUbXPLe4W+7F7I1+KX5EhGyLX1WOt5c6HDgaRNzEXQZ3
-         B5BOx+wOgekab4gN5/tQrRjVKUfRA3mk4SDwbuPpSFBr17DfkCivQfbIuCehRQD3uPfs
-         mldbt//G5L6ADXvSYeDQfCMjnmFoTLzcHVL69TVir+Uw1LNlW38+51udxrZ+nB3kA0Ae
-         xduGQX5iqtsLr4/y5XrblwVQw1psd0C/oextHRYqE0k7bS0GhK2WV5eqiasQZlHSoG1q
-         El1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=aU8/5mVKlEMT/Qttq5O3DrV9RFJs3vfNMkN1OVYl94g=;
-        b=XGx6aQRQPBDG7Hde2iuguFipXz8X5hzA9Te23QgdDT+P7hkN6FsBZuSZIgWgm+n1uN
-         l3FFUiNHwNxE4lY+lREfuXfSDsE+rC1JKH+8epYe6InsG23aj5hGSZlpgd8/2j1ddrWR
-         DUjaosJcCZgIev8bIF+JXm35UqX+4vU1qdyMACp46Ij6D7yxgQJc937CR1hgua3fuV/l
-         n8tfwBIXbuUf2IX6NjD6NLxQZnrdmGyXsiHY2NeIk7mzVrO42gE6JCe5NMb+TVshCbej
-         9S26Y6iESpmgKoqhmJAkhnVMBo7TWj8cDjlVvXAUypohdJNjchlkKMvMVtBJi1Jgstx6
-         EpGw==
-X-Gm-Message-State: AOAM533zktX+u48kvWbHOumaZxWBqleWeYWQ3VnnhtNLDbwFabXhmBut
-        ROPgQeb6zS+aO66YytDDiaM=
-X-Google-Smtp-Source: ABdhPJzVrNtO+yZnVgnRKPZ02xfBJ44/6rIzZC/wm4x6y67anqWEKcF9mt4dRk2NK9iOVHJEVPvm+Q==
-X-Received: by 2002:ac8:5942:: with SMTP id 2mr55955504qtz.239.1641599526268;
-        Fri, 07 Jan 2022 15:52:06 -0800 (PST)
-Received: from errol.ini.cmu.edu (pool-108-39-235-221.pitbpa.fios.verizon.net. [108.39.235.221])
-        by smtp.gmail.com with ESMTPSA id m20sm93186qkp.112.2022.01.07.15.52.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 15:52:05 -0800 (PST)
-Date:   Fri, 7 Jan 2022 18:52:03 -0500
-From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Kamil Rakoczy <krakoczy@antmicro.com>,
-        "mdudek@internships.antmicro.com" <mdudek@internships.antmicro.com>,
-        Paul Mackerras <paulus@ozlabs.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Stafford Horne <shorne@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "david.abdurachmanov@sifive.com" <david.abdurachmanov@sifive.com>,
-        Florent Kermarrec <florent@enjoy-digital.fr>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 3/3] mmc: Add driver for LiteX's LiteSDCard interface
-Message-ID: <YdjSI1R9qdnYHFNB@errol.ini.cmu.edu>
-References: <20220107170616.2041589-1-gsomlo@gmail.com>
- <20220107170616.2041589-4-gsomlo@gmail.com>
- <YdhzmE8eBsvkRCBn@errol.ini.cmu.edu>
- <CAHp75Ve5T-yNV-BJww_kN+6y8P9FyHodKfZ4nfi2POynp6BPVg@mail.gmail.com>
- <YdivZYknD2IQ1Wzy@errol.ini.cmu.edu>
- <CAHp75VfMJyeF4dpz63TqZv9UCMBWmQu0U622SOV7wLmn7Qm0mQ@mail.gmail.com>
- <CAHp75Vfo=uJ3eY0GtjdjTk32KkaQfOFYw6kF5oZqQLb38AnhbA@mail.gmail.com>
+        Fri, 7 Jan 2022 18:52:27 -0500
+Received: from integral2.. (unknown [36.68.70.227])
+        by gnuweeb.org (Postfix) with ESMTPSA id 8A478C17CA;
+        Fri,  7 Jan 2022 23:52:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
+        s=default; t=1641599544;
+        bh=NWy+Wlzi8SPi1Do3lakRbwYr/LHTBJck7Fu+hasZIqo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fPNB6A1ZFG3sr0EuPpXiS2lu/8yTJlFZKz9MjVYjhI5+PyvS58j3ICsQMFuE70DY+
+         xPoWLk4EhhU6Xw3q66AHozIcFWPKlMD6SKhsnnj/gHvEK3TuTeE9q2xzpQk7yt+8Xm
+         Bwzo7QUvY8Wy8+4TeVZEZM/A5eYG36D6WH3+ynPJtwCieYVdtKASpslABkCO+V604p
+         XMRSDaRNOueVz+qcpgRDVWEG4TICwJ5hktVnNlME0YfuGwwBwj1hWn5uhSJOpIZbIo
+         2SimraBJQ0i7PuCGsjaLUtOEKC8gY0MzZw+juqy6oaF+Yk9ba4dskp95uLN4hMXYxo
+         tNCmho3cyKxkQ==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>, x86-ml <x86@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>
+Subject: [PATCH v1 1/3] x86/entry/64: Clean up spaces after the instruction
+Date:   Sat,  8 Jan 2022 06:52:08 +0700
+Message-Id: <20220107235210.1339168-2-ammarfaizi2@gnuweeb.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220107235210.1339168-1-ammarfaizi2@gnuweeb.org>
+References: <20220107235210.1339168-1-ammarfaizi2@gnuweeb.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHp75Vfo=uJ3eY0GtjdjTk32KkaQfOFYw6kF5oZqQLb38AnhbA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 01:40:06AM +0200, Andy Shevchenko wrote:
-> 
-> 
-> On Saturday, January 8, 2022, Andy Shevchenko <andy.shevchenko@gmail.com>
-> wrote:
-> 
-> 
-> 
->     On Friday, January 7, 2022, Gabriel L. Somlo <gsomlo@gmail.com> wrote:
-> 
->         On Fri, Jan 07, 2022 at 10:50:02PM +0200, Andy Shevchenko wrote:
->         > > > +             .of_match_table = of_match_ptr(litex_match),
->         > >
->         > > You said "Wrong usage of of_match_ptr()" here, and all I have to go
->         by
->         > > is a bunch of other `drivers/mmc/host/*.c` files that use it in a
->         > > similar way, so can you please clarify and/or provide an example of
->         how
->         > > to do it properly?
->         >
->         > First of all, you have a dependency to OF, try to remove it and
->         > compile with OF=n and you will immediately see the issue. You may
->         also
->         > go for  `git log --no-merges --grep of_match_ptr` and analyze the
->         > result.
-> 
->         Ah, grepping for "of_match_ptr" was *never* going to show me the
->         "right way of using of_match_ptr()" :)
-> 
-> 
-> 
->     Hmm... this is strange. The above command is grepping in the commit
->     messages, and not in the code.
->      
-> 
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?qt=
-> grep&q=of_match_ptr
-> 
-> Shows a lot of the commits that I referred to.
-> 
+Most of lines here use a tab as a separator between the instruction
+and its operand(s). But there are several parts that use spaces.
 
-Right. I was originally looking at *code* for current usage examples.
+Replace these spaces with a tab for consistency.
 
-I get that you were referring to grepping through *commits*, which
-seems to be the new way of figuring out what's canonical (as a lot of
-the existing code seems to be in need of update :)
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: "H. Peter Anvin" <hpa@zytor.com>
+Cc: x86-ml <x86@kernel.org>
+Cc: lkml <linux-kernel@vger.kernel.org>
+Cc: GNU/Weeb Mailing List <gwml@gnuweeb.org>
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+ arch/x86/entry/entry_64.S | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-Thanks,
---Gabriel
-  
-> 
-> 
->         OTOH, grepping for "of_match_table" (and of course the commits
->         returned by your command line) suggests that I simply should *not*
->         use it at all, and assign its argument directly to .of_match_table.
-> 
->         Got it, fixed it, thanks!
-> 
->         Now, on to the probe ordering issue... :)
-> 
->         Thanks,
->         --G
-> 
-> 
-> 
->     --
->     With Best Regards,
->     Andy Shevchenko
-> 
-> 
-> 
-> 
-> 
-> --
-> With Best Regards,
-> Andy Shevchenko
-> 
-> 
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 97b1f84bb53f..e432dd075291 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -305,13 +305,13 @@ SYM_CODE_END(ret_from_fork)
+ 
+ .macro DEBUG_ENTRY_ASSERT_IRQS_OFF
+ #ifdef CONFIG_DEBUG_ENTRY
+-	pushq %rax
++	pushq	%rax
+ 	SAVE_FLAGS
+-	testl $X86_EFLAGS_IF, %eax
+-	jz .Lokay_\@
++	testl	$X86_EFLAGS_IF, %eax
++	jz	.Lokay_\@
+ 	ud2
+ .Lokay_\@:
+-	popq %rax
++	popq	%rax
+ #endif
+ .endm
+ 
+@@ -749,8 +749,8 @@ SYM_CODE_START_LOCAL_NOALIGN(.Lbad_gs)
+ 	swapgs					/* switch back to user gs */
+ .macro ZAP_GS
+ 	/* This can't be a string because the preprocessor needs to see it. */
+-	movl $__USER_DS, %eax
+-	movl %eax, %gs
++	movl	$__USER_DS, %eax
++	movl	%eax, %gs
+ .endm
+ 	ALTERNATIVE "", "ZAP_GS", X86_BUG_NULL_SEG
+ 	xorl	%eax, %eax
+@@ -1135,7 +1135,7 @@ SYM_CODE_START(asm_exc_nmi)
+ 	pushq	2*8(%rdx)	/* pt_regs->cs */
+ 	pushq	1*8(%rdx)	/* pt_regs->rip */
+ 	UNWIND_HINT_IRET_REGS
+-	pushq   $-1		/* pt_regs->orig_ax */
++	pushq	$-1		/* pt_regs->orig_ax */
+ 	PUSH_AND_CLEAR_REGS rdx=(%rdx)
+ 	ENCODE_FRAME_POINTER
+ 
+-- 
+2.32.0
+
