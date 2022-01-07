@@ -2,94 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EE3C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:02:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2418AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348677AbiAGSCm (ORCPT
+        id S1348689AbiAGSEN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240374AbiAGSCl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:02:41 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2784FC06173E;
-        Fri,  7 Jan 2022 10:02:41 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id w20so12522510wra.9;
-        Fri, 07 Jan 2022 10:02:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YAopufrfMZ51IGtrg3jTbLpMge5spZgYt27uOrZnXBA=;
-        b=TraUtI5RVcXWtWTIjSiw3vhiP+xVKrVen0TTg3S6WOZZadQeV/I9gKp0ErVnV5X7NB
-         udlB60AKz5HaagNq/WOQYUbNk5E1wvbXIYXRyK9+8mFwKFqRVy3KXioQEBkpxvm3vap1
-         6lg+OnWERGHE+B96SI0B31iPMdFj+zCY5oGnGbmw0jXqssKsydD5rkAvv0IJWxLFuXTJ
-         P44hgMKJu8zsnwjSeB7EbgXMWzcPjoZn9w6Aoib0tyZOtrCAQhjBHl3HhfxrEnAQGApZ
-         0FFDY4fsn/p0J7m5D0gONllJjyzeYKQ3qBZXVERzjbrxL8/hRuyQm7+wgKe0DSVwuyCl
-         XHrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YAopufrfMZ51IGtrg3jTbLpMge5spZgYt27uOrZnXBA=;
-        b=7OEf619EgHtH45bEaKg7XwLVQ2q2/RV3JuX+seh4PKLTld4FBpcItaJ2RL/p5KtvWm
-         sa7UeoYjpZ/Znrxwqqfil6IxAorJ53pf4U7wMzzJ48kPMhTnGkObL7ULj0DLI/B+VI+o
-         MtDJlVMR1H6zJmN83SqSMeLDkfTB87fg/xt/EQmhisJwJZBRZTeB66F/7DDmyII23PFP
-         RjpmL7+ha1XgVdU/9Ab+xBznyuxOUEM1yPHIo0NhynwFokSrnO3YY0sPsd6nDI2ENOLL
-         dQXT4rYhEC3t11nVdtmCo1gkMCxlyd7g0vdb9w0625whC+UHsOY4h+RYQlafMIuKS9vl
-         V82w==
-X-Gm-Message-State: AOAM532re63l7iId37B+cvaV7vtNFTQqyRvMEOLdwn/5Mtcnjq6EeA9+
-        kvLZjvQoGZLeMAng/r0ysY4=
-X-Google-Smtp-Source: ABdhPJzertBGoCCYZjM0BZgTRmAr5XsP7j92armg0TkxwVJ3M5CFmVwZ8SawLXy6vxtw2ghzKLh1Og==
-X-Received: by 2002:a05:6000:1e15:: with SMTP id bj21mr10622402wrb.118.1641578559742;
-        Fri, 07 Jan 2022 10:02:39 -0800 (PST)
-Received: from localhost.localdomain ([217.113.240.86])
-        by smtp.gmail.com with ESMTPSA id c11sm10131449wmq.48.2022.01.07.10.02.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 10:02:39 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     maarten.lankhorst@linux.intel.com
-Cc:     mripard@kernel.org, tzimmermann@suse.de, airlied@linux.ie,
-        daniel@ffwll.ch, corbet@lwn.net, dri-devel@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH RESEND] drm/doc: Fix TTM acronym
-Date:   Fri,  7 Jan 2022 19:02:30 +0100
-Message-Id: <20220107180230.132666-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 7 Jan 2022 13:04:13 -0500
+Received: from mout.perfora.net ([74.208.4.194]:47955 "EHLO mout.perfora.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348678AbiAGSEM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:04:12 -0500
+Received: from localhost.localdomain ([194.191.235.54]) by mrelay.perfora.net
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MUoHN-1mxTYg35xR-00Qle6;
+ Fri, 07 Jan 2022 19:03:48 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        =?UTF-8?q?Oliver=20St=C3=A4bler?= <oliver.staebler@bytesatwork.ch>,
+        Olof Johansson <olof@lixom.net>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 01/14] arm64: dts: imx8mm: fix strange hex notation
+Date:   Fri,  7 Jan 2022 19:03:01 +0100
+Message-Id: <20220107180314.1816515-2-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220107180314.1816515-1-marcel@ziswiler.com>
+References: <20220107180314.1816515-1-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:Agtd2KULb4KbSyLtL1KrrX1DGxizXppFEHW5vtbd994J34X8ov1
+ s/aLIDBUK/PIEeYfPSRD2JSWhyJJConkXlEqH76PikcaFlNMU2L59XyjYFx1ROwZzRMgJaz
+ oU77EQViX7Vh2yDMiyoTV5gm1v8xs+JDeo6k3hBjk/hnOgs7Xm49AHaboWFQasi/RMiPI0r
+ gBBvcde3s4ZUyspVEz5ew==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:OGTKMnhA35s=:S5UOzWON+ARNCqA85bA/qF
+ 6FY3+/ZjYIwOMyith5UL617TDwvHGeVbj0nSpgsG4E69etT3SCsOoXfH7VkaAVjivGnuSIHog
+ aUa8FzOtOTQYYtJhxDx4clMPOjkT7Zip9TYza65DUJMjvtqxTjqVNaP0YITSHO4QsaB9HUuTn
+ W2RyqXZy+cAbS1K4yf6KMJ1CYGCo4XWCB8tLYKGK/AmnLTACaQ2PqYuuzU8keL3zhcRbizwQ6
+ zxMWFIv38/VhyzilX8ECvnLQXfhFlIbNJz6tJe/exZdVb8J3uw2aUhhhqoLgw1ZWIjRsvko8I
+ XFv1woK4pSLlz+8xk+GIeOrO8FdPKxHx7ICgCop4IF25ogGEVnGdSpN2NASG1wlFRxMMJ3eQm
+ RJoBtcBN7mqgSgCbQqPWWd7GOriTkMbVxawP83UiT9gzUW7VgS6iBxrJEkNj2PcNDx7XAiGZS
+ 2hG/IF3aIYIkY3gxNeKM707GHDTeaugyBxVq4JOH2Iupp+Cu0rOuJYhUK9meT+M3EndmSFlTX
+ glHJwTf06ikyRMBgNmheZFDAVD3U0nfIVqpAYXkwxppR/XjmXFd05MKSvz797RtkfigjRdSMv
+ ymcnr8ahmVnpFtB9k9AJuCkPNErWIwWZNtGDOZ2cydB+ysOJS3fezmmj1j4QWsrVm9ALQXyJi
+ JYSaZTpVILsuH7Qml5svWbeoQIRyhxTsMbtcvlohV8V8e9bpvFiskct0Osbplz5sjR+Q=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TTM acronym is defined for the first time in the documentation as
-"Translation Table Maps". Afterwards, "Translation Table Manager" is
-used as definition.
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Fix the first definition to avoid confusion.
+Fix strange hex notation with mixed lower-case and upper-case letters.
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
- Documentation/gpu/drm-mm.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/gpu/drm-mm.rst b/Documentation/gpu/drm-mm.rst
-index e0538083a2c0..198bcc1affa1 100644
---- a/Documentation/gpu/drm-mm.rst
-+++ b/Documentation/gpu/drm-mm.rst
-@@ -8,7 +8,7 @@ the very dynamic nature of many of that data, managing graphics memory
- efficiently is thus crucial for the graphics stack and plays a central
- role in the DRM infrastructure.
- 
--The DRM core includes two memory managers, namely Translation Table Maps
-+The DRM core includes two memory managers, namely Translation Table Manager
- (TTM) and Graphics Execution Manager (GEM). TTM was the first DRM memory
- manager to be developed and tried to be a one-size-fits-them all
- solution. It provides a single userspace API to accommodate the need of
+ arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h b/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h
+index a003e6af3353..c68a5e456025 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h
++++ b/arch/arm64/boot/dts/freescale/imx8mm-pinfunc.h
+@@ -279,7 +279,7 @@
+ #define MX8MM_IOMUXC_SAI5_RXD2_SAI1_TX_DATA4                                0x150 0x3B8 0x000 0x1 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD2_SAI1_TX_SYNC                                 0x150 0x3B8 0x4CC 0x2 0x1
+ #define MX8MM_IOMUXC_SAI5_RXD2_SAI5_TX_BCLK                                 0x150 0x3B8 0x4E8 0x3 0x0
+-#define MX8MM_IOMUXC_SAI5_RXD2_PDM_DATA2                                    0x150 0x3B8 0x53c 0x4 0x0
++#define MX8MM_IOMUXC_SAI5_RXD2_PDM_DATA2                                    0x150 0x3B8 0x53C 0x4 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD2_GPIO3_IO23                                   0x150 0x3B8 0x000 0x5 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD3_SAI5_RX_DATA3                                0x154 0x3BC 0x4E0 0x0 0x0
+ #define MX8MM_IOMUXC_SAI5_RXD3_SAI1_TX_DATA5                                0x154 0x3BC 0x000 0x1 0x0
+@@ -486,7 +486,7 @@
+ #define MX8MM_IOMUXC_SAI3_TXFS_SAI3_TX_SYNC                                 0x1D8 0x440 0x000 0x0 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_GPT1_CAPTURE2                                0x1D8 0x440 0x000 0x1 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_SAI5_RX_DATA1                                0x1D8 0x440 0x4D8 0x2 0x2
+-#define MX8MM_IOMUXC_SAI3_TXFS_UART2_DCE_RX                                 0x1D8 0x440 0x4Fc 0x4 0x2
++#define MX8MM_IOMUXC_SAI3_TXFS_UART2_DCE_RX                                 0x1D8 0x440 0x4FC 0x4 0x2
+ #define MX8MM_IOMUXC_SAI3_TXFS_UART2_DTE_TX                                 0x1D8 0x440 0x000 0x4 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_GPIO4_IO31                                   0x1D8 0x440 0x000 0x5 0x0
+ #define MX8MM_IOMUXC_SAI3_TXFS_TPSMP_HDATA1                                 0x1D8 0x440 0x000 0x7 0x0
+@@ -494,7 +494,7 @@
+ #define MX8MM_IOMUXC_SAI3_TXC_GPT1_COMPARE2                                 0x1DC 0x444 0x000 0x1 0x0
+ #define MX8MM_IOMUXC_SAI3_TXC_SAI5_RX_DATA2                                 0x1DC 0x444 0x4DC 0x2 0x2
+ #define MX8MM_IOMUXC_SAI3_TXC_UART2_DCE_TX                                  0x1DC 0x444 0x000 0x4 0x0
+-#define MX8MM_IOMUXC_SAI3_TXC_UART2_DTE_RX                                  0x1DC 0x444 0x4Fc 0x4 0x3
++#define MX8MM_IOMUXC_SAI3_TXC_UART2_DTE_RX                                  0x1DC 0x444 0x4FC 0x4 0x3
+ #define MX8MM_IOMUXC_SAI3_TXC_GPIO5_IO0                                     0x1DC 0x444 0x000 0x5 0x0
+ #define MX8MM_IOMUXC_SAI3_TXC_TPSMP_HDATA2                                  0x1DC 0x444 0x000 0x7 0x0
+ #define MX8MM_IOMUXC_SAI3_TXD_SAI3_TX_DATA0                                 0x1E0 0x448 0x000 0x0 0x0
 -- 
-2.25.1
+2.33.1
 
