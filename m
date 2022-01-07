@@ -2,60 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A04C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 03:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9C8C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 03:59:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345968AbiAGD7l (ORCPT
+        id S1345970AbiAGD7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 22:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
+        Thu, 6 Jan 2022 22:59:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346004AbiAGD7h (ORCPT
+        with ESMTP id S1345981AbiAGD7r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 22:59:37 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF71AC061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 19:59:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=o14k3lob1LTdFyJ9g753T6yDTZQc8a/tHHRGqgTFESY=; b=u4VVQ6PLWYCiOF5EkumPCV2SZH
-        Cf+oInyTBlyPFdYAu7wfD+9oLumzDgANa5FN5Q+BT9lal88keSOwrYJ9DlEPUH0d3Xzl1jsrbZvu/
-        wVA5piW6bC33Q0bAaaVo/eXlmDwsR2OmIOEUCJnbBbbj2jMX1DLSFsGYCQ6NNG9lCaULBadnuNepa
-        exSx9qpKQdbVXvoNREtBLOx6PsmLOLxkM2ErFx9z8NESaB8x6I3rTGJkp4E9qf1FWOmtquq8rNa2T
-        wqUfYegR0sJr4oau3sakAPbBBJMhw/i+EX63IqcnCdE9CckHSpwVNoPvxmoY6dOjhKhGo0PIKZ/ZY
-        MnrwiESg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n5gP7-00G2Oa-OC; Fri, 07 Jan 2022 03:59:02 +0000
-Date:   Fri, 7 Jan 2022 03:59:01 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Wei Yang <richard.weiyang@gmail.com>
-Cc:     peterz@infradead.org, akpm@linux-foundation.org, vbabka@suse.cz,
-        will@kernel.org, linyunsheng@huawei.com, aarcange@redhat.com,
-        feng.tang@intel.com, ebiederm@xmission.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: remove offset check on page->compound_head and
- folio->lru
-Message-ID: <Yde6hZ41agqa2zs3@casper.infradead.org>
-References: <20220106235254.19190-1-richard.weiyang@gmail.com>
+        Thu, 6 Jan 2022 22:59:47 -0500
+Received: from zeniv-ca.linux.org.uk (zeniv-ca.linux.org.uk [IPv6:2607:5300:60:148a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5612BC061245;
+        Thu,  6 Jan 2022 19:59:47 -0800 (PST)
+Received: from viro by zeniv-ca.linux.org.uk with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n5gPp-000GSv-9P; Fri, 07 Jan 2022 03:59:45 +0000
+Date:   Fri, 7 Jan 2022 03:59:45 +0000
+From:   Al Viro <viro@zeniv.linux.org.uk>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>
+Subject: Re: [PATCH 09/10] kthread: Ensure struct kthread is present for all
+ kthreads
+Message-ID: <Yde6sQqp9Rx0Zm5I@zeniv-ca.linux.org.uk>
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+ <20211208202532.16409-9-ebiederm@xmission.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220106235254.19190-1-richard.weiyang@gmail.com>
+In-Reply-To: <20211208202532.16409-9-ebiederm@xmission.com>
+Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 11:52:54PM +0000, Wei Yang wrote:
-> FOLIO_MATCH() is used to make sure struct page and folio has identical
-> layout for the first several words.
+On Wed, Dec 08, 2021 at 02:25:31PM -0600, Eric W. Biederman wrote:
+> Today the rules are a bit iffy and arbitrary about which kernel
+> threads have struct kthread present.  Both idle threads and thread
+> started with create_kthread want struct kthread present so that is
+> effectively all kernel threads.  Make the rule that if PF_KTHREAD
+> and the task is running then struct kthread is present.
 > 
-> The comparison of offset between page->compound_head and folio->lru is
-> more like an internal check in struct page.
-> 
-> This patch just removes it.
-> 
-> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+> This will allow the kernel thread code to using tsk->exit_code
+> with different semantics from ordinary processes.
 
-No.
+Getting rid of ->exit_code abuse is independent from this.
+I'm not saying that this change is a bad idea, but it's an
+independent thing.  Simply turn these two failure exits
+into do_exit(0) in 06/10 and that's it.  Then this one
+would get rid of if (!self) and the second of those two
+calls, but it won't be nailed to that point of queue.
