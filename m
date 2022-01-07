@@ -2,118 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A93EEC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346203AbiAGItQ (ORCPT
+        id S1346183AbiAGIue (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 03:49:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51778 "EHLO
+        Fri, 7 Jan 2022 03:50:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346181AbiAGItO (ORCPT
+        with ESMTP id S236255AbiAGIud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 03:49:14 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02396C061201
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 00:49:14 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id g11so13155048lfu.2
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 00:49:13 -0800 (PST)
+        Fri, 7 Jan 2022 03:50:33 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8927DC061245;
+        Fri,  7 Jan 2022 00:50:33 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id v25so4938175pge.2;
+        Fri, 07 Jan 2022 00:50:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XFIR/uG+ezKrSRft5Fjc/6qgQZpqXtpbYwZlKrolyBI=;
-        b=EPjRpFxeAOL5ruGpOFP9TB1lKbJCbfoKYbxjlUtpeTvc+gd53NIICxNWvl3R1Y9601
-         9bwUwDFv+PCYE1hSyjaATzGGtQ0GebLMpf1FWs3khCbXQ0I7DxRmjW5BLkJMRxtkJMIv
-         Lt0Xzt56zUCwRWeUCy0cLvrkQCVtb7epfWkemPi9spuNw8b9/D9rXZUrUT5cmZASuspk
-         pvgYGvtM/4+ZCzLfaa8ZW+36xDieteTr98WJoJWOE6VcqGDj2L6iAMxs4MzM80UyJ27/
-         M+Qp+7DMRzoG5LmyXx+lUqnWcj+kUQsnjxwI6yb3vaiqHWn96NIgZAZp23k69YUi3I+7
-         7NlA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=IQS4J/qtHwJGGOnAQs0o0rtK4NFNyvH92Ln82XpYq1E=;
+        b=BR9uftG+cCtV8P36GOU+YlObjfqGNjV8mIZYTwYw5+DCzL+BOwdPwVbM3W2Gruavzu
+         32qKXVL3Pm05dggOZeyGMYvmCVPqcnm644blBcdbV+bKenZmugHuv991x8t0KfqfwIQV
+         72D0fgW9hmUTsgWjbgKZS4YCyBQ6kgfjpKzcwJtq1bvHQx4X4zTIOnNbJAxtClRLGJZi
+         1zSj3Oy67PRKgvBwhkJl8UPb6juw9oepXa+8aF6xLEm5RXNB/y3goROq2NB66Nv9KWMr
+         AfoSW1ItYV32P/T0irVa6Bw4SK9lVifs8P2m69RBE0IXafbaxoNuzUp8px1kY9ZYE5wB
+         Mxhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XFIR/uG+ezKrSRft5Fjc/6qgQZpqXtpbYwZlKrolyBI=;
-        b=ztv2Yx1Po/Y4vMnBpLy3N/lYt9ORXiQH4v+PJZm5+jjAglsuNnxoEaoGsUBH/B7dnb
-         lXJsMztPzWZ8jMqdG/VxLC15nV9xT1vUfcw+nETolX0L3js/ou2oZej5ZCk48Trnw1/r
-         JQJvtF0Co9QRsdvPMKIhDPZ4OrnmjIO9gx4Ctg8SEsZOVGOLRroLv86MVA4qx9yoxMpf
-         UyEimsEHFbbHBJodalRrY18BmkPcQjVD1ytVrc+UcgSSOx70sny2HAjXOLPDFQZal+SQ
-         vUMtY4gXegql8pnXAV26t6w0cbEP2BmeXmWS532M2gxfq/ZvhsU3FFNLRdTFvGW/pQUv
-         d2DQ==
-X-Gm-Message-State: AOAM530sueNCdQJaV1CjlRQ1exBL3oXmMZEMeZcZmRR26zHF8BuaDqyQ
-        cumUT/g+b5uVKZRzXdlXkGaCsLBKSFbHD/fk5SLrJEGy9+C9rw==
-X-Google-Smtp-Source: ABdhPJzAv2NLTpJ1v0haPGOEU+pdJb4gIC5IXAchiRWpKGjAMTLWgrBbxhgux6AyqMYBZ5E/WzWCGOor5Zjj7bUhh1w=
-X-Received: by 2002:ac2:4895:: with SMTP id x21mr56297330lfc.336.1641545351905;
- Fri, 07 Jan 2022 00:49:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20211224065728.5820-1-yinxin.x@bytedance.com> <YdZgYvC4K87PiMfO@mit.edu>
-In-Reply-To: <YdZgYvC4K87PiMfO@mit.edu>
-From:   Xin Yin <yinxin.x@bytedance.com>
-Date:   Fri, 7 Jan 2022 16:49:01 +0800
-Message-ID: <CAK896s7kJ47Q857u-+vBsera95tSJkxMy2Qhqk-91YjbR3QSdA@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH RESEND] ext4:fix different behavior of
- fsync when use fast commit
-To:     "Theodore Ts'o" <tytso@mit.edu>
-Cc:     harshadshirwadkar@gmail.com, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=IQS4J/qtHwJGGOnAQs0o0rtK4NFNyvH92Ln82XpYq1E=;
+        b=VOvnUCf5X7LXaC7OJfaHyZA89O1UjxpEWNEfkrDrT4w9WngsF/5/pNBJ+8Sx4ELsyn
+         N5ckMDs6fpiKv1kfyjP2RoV5lPehgZ2aJjlS2ezwDBKxm4V5C8ePsbwJTgiVwb7Z6gHc
+         mzyJTRqTaXAeTX82mC0mSUbSQA/IYmmRpjmnobJ83sXhDuOoih8DGPzlAToCGCJk36nI
+         5ahxUgCHUJ3IJ2FkuXEWK50sxuo1luvVbTA/kAQfQPXFVHgEr47ICm1clVO2jPXw4x75
+         C9Q9FTdbWFAt8MFEWlrMkcCSkkYZENLBBXv2obz0TrjMeqFJyBKil7IcPBxBp+PPps4X
+         FkIg==
+X-Gm-Message-State: AOAM531vGqQlFcF2rJIr/I2mdfKSC1v6Vhbwzzwe7CskblqHVdgQrUjj
+        rntUSmEYfsz3v/gO4HF7Zw8=
+X-Google-Smtp-Source: ABdhPJzrezcJmoyT8I5bb9IzMr0GwT31Qhm2NI7Dx6C7H3w2cx5/PuMuN/+otYHv28cEYnq5kQUd5w==
+X-Received: by 2002:a63:8149:: with SMTP id t70mr55367147pgd.71.1641545433164;
+        Fri, 07 Jan 2022 00:50:33 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id f20sm5167583pfe.166.2022.01.07.00.50.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 00:50:32 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+Cc:     linmq006@gmail.com, Rob Clark <robdclark@gmail.com>,
+        Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Jyri Sarha <jyri.sarha@iki.fi>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Archit Taneja <architt@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/msm/hdmi: Fix missing put_device() call in msm_hdmi_get_phy
+Date:   Fri,  7 Jan 2022 08:50:22 +0000
+Message-Id: <20220107085026.23831-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for the explanation and direction , I will do another fix for this issue.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
+Fixes: e00012b256d4 ("drm/msm/hdmi: Make HDMI core get its PHY")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/gpu/drm/msm/hdmi/hdmi.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/gpu/drm/msm/hdmi/hdmi.c b/drivers/gpu/drm/msm/hdmi/hdmi.c
+index 75b64e6ae035..a439794a32e8 100644
+--- a/drivers/gpu/drm/msm/hdmi/hdmi.c
++++ b/drivers/gpu/drm/msm/hdmi/hdmi.c
+@@ -95,10 +95,15 @@ static int msm_hdmi_get_phy(struct hdmi *hdmi)
+ 
+ 	of_node_put(phy_node);
+ 
+-	if (!phy_pdev || !hdmi->phy) {
++	if (!phy_pdev) {
+ 		DRM_DEV_ERROR(&pdev->dev, "phy driver is not ready\n");
+ 		return -EPROBE_DEFER;
+ 	}
++	if (!hdmi->phy) {
++		DRM_DEV_ERROR(&pdev->dev, "phy driver is not ready\n");
++		put_device(&phy_pdev->dev);
++		return -EPROBE_DEFER;
++	}
+ 
+ 	hdmi->phy_dev = get_device(&phy_pdev->dev);
+ 
+-- 
+2.17.1
 
-Best Regards,
-Xin Yin
-
-
-On Thu, Jan 6, 2022 at 11:22 AM Theodore Ts'o <tytso@mit.edu> wrote:
->
-> On Fri, Dec 24, 2021 at 02:57:28PM +0800, Xin Yin wrote:
-> > For the follow test example:
-> > -mkdir test/
-> > -create&write test/a.txt
-> > -fsync test/a.txt
-> > -crash (before a full commit)
-> >
-> > If fast commit is used then "a.txt" will lost, while the normal
-> > journaling can recover it.
->
-> The problem is that your proposed fix:
->
-> > diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
-> > index 3deb97b22ca4..4b843648ffe5 100644
-> > --- a/fs/ext4/fast_commit.c
-> > +++ b/fs/ext4/fast_commit.c
-> > @@ -423,7 +423,7 @@ void __ext4_fc_track_create(handle_t *handle, struct inode *inode,
-> >       args.op = EXT4_FC_TAG_CREAT;
-> >
-> >       ret = ext4_fc_track_template(handle, inode, __track_dentry_update,
-> > -                                     (void *)&args, 0);
-> > +                                     (void *)&args, 1);
-> >       trace_ext4_fc_track_create(inode, dentry, ret);
-> >  }
->
-> affects both file creations as well as directory creations (mkdir).
-> Putting the inode on the fast commit list is something that is meant
-> for files, and means that on a fast commit we need to force the data
-> blocks out.  So it seems that isn't the right fix for the problem.
->
-> Why do something really simple?  Look at the parent directory's inode,
-> and check its i_sync_tid.  If it's not equal to
-> handle->h_transaction->t_tid, then it's safe to do the fast commit.
-> If it's equal to the current transaction, we can either force a full
-> commit.
->
-> Optionally, in the case where i_sync_tid == current tid, since there's
-> a chance that the parent directory's inode could have been freshly
-> fetched from disk (see __ext4_iget() in fs/ext4/inode.c), we could
-> compare its i_crtime against ktime_get_real_seconds(), and if the
-> inode was created in the last 2*journal->j_commit_interval/HZ seconds,
-> it's safe to do a fast commit; otherwise do a full commit.
->
-> Cheers,
->
->                                         - Ted
