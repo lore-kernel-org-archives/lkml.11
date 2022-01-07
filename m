@@ -2,119 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8418CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E74C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237031AbiAGJgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:36:42 -0500
-Received: from mail-ua1-f46.google.com ([209.85.222.46]:34308 "EHLO
-        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346482AbiAGJgZ (ORCPT
+        id S237140AbiAGJiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 04:38:24 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:59004 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236870AbiAGJiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:36:25 -0500
-Received: by mail-ua1-f46.google.com with SMTP id y4so9213305uad.1;
-        Fri, 07 Jan 2022 01:36:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xs5sARW7mpfzDA0KwWiz8yZyJQ7czca4eMuvBIQUrKc=;
-        b=zoaa7OyJa1OgsfkA4h6N2EnPfJ99FtaL2s/ybK/hz1ZIczbYjrfKFhNfJeBGqCgyZj
-         tNBkaB+EjjbevED0wKtUX4Vf5SYDzSQH2wBr1qFjtzxVYpLXj7CeoxQNRmcC8oEJX1GH
-         JdQkSiOtRkn2WiUg3eH7omcGWOhDV3HWu0xyo1NlA59dJsQpCLPfrtPEdOWG9LW7xvB4
-         BzqM60Y8u7UzcbkTkPIH7FkQsmlpfGf+Xfdh9P6peKE1PpheAL3UBZhM2sktVPtG33WK
-         a+eoFEZ8d/pizOwvjIgInLEIsta6I1N6mCn4+LxeYijM2yk00k3p2qnnV8imURm7F6au
-         As3g==
-X-Gm-Message-State: AOAM533ZSjclzHdkXsaD1UTMFT/05dKPoZFqv2Nc/+J1Tdyx8qXFHRNM
-        wgjphB5/NFKToUwOV0/TteKPnHr5/d3wEg==
-X-Google-Smtp-Source: ABdhPJwYFwF4jsFgKBpxI/AHtYDqxp0T1psqtf+9OE/vDHWVlpF03Griu5wja/kSDL4ozhSj64UJWg==
-X-Received: by 2002:a05:6102:38ce:: with SMTP id k14mr20332637vst.70.1641548184771;
-        Fri, 07 Jan 2022 01:36:24 -0800 (PST)
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com. [209.85.221.181])
-        by smtp.gmail.com with ESMTPSA id k15sm3211134vsj.3.2022.01.07.01.36.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 01:36:24 -0800 (PST)
-Received: by mail-vk1-f181.google.com with SMTP id o2so3360135vkn.0;
-        Fri, 07 Jan 2022 01:36:23 -0800 (PST)
-X-Received: by 2002:a05:6122:189e:: with SMTP id bi30mr6708723vkb.0.1641548183865;
- Fri, 07 Jan 2022 01:36:23 -0800 (PST)
+        Fri, 7 Jan 2022 04:38:21 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 282701F39C;
+        Fri,  7 Jan 2022 09:38:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641548300; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nkfXnq2z3Bzy30uRxyBjVD1CQJwqnvsmJPgDU2tAnvU=;
+        b=lGgwfy+B7SrRjFNAuYG39p9S314V5PF2hGoHu1so7bh5izsOVYuV1uLWSzdPE/+M5EohMn
+        4JFi6fPa/E+AefxEBY6KIb5utYFjE96FYG/eSkNEPJrOiUIE7Jm/qoYB2ziENrK5KXthn9
+        UEFzU5f3E5Dd5k9nqVH5qQobXUnkz2Y=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 70CA9A3B84;
+        Fri,  7 Jan 2022 09:38:19 +0000 (UTC)
+Date:   Fri, 7 Jan 2022 10:38:18 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org
+Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
+Message-ID: <YdgKClGAuHlkzVbQ@dhcp22.suse.cz>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <YdSuSHa/Vjl6bPkg@google.com>
 MIME-Version: 1.0
-References: <20220106174803.1773876-1-gsomlo@gmail.com> <20220106174803.1773876-4-gsomlo@gmail.com>
- <CAHp75Ve_jWmo3+Es0G5SyMpcdC_=hWfxHoa866Difd+X3F0uxg@mail.gmail.com> <YddyMI7hJE7u0jQ/@errol.ini.cmu.edu>
-In-Reply-To: <YddyMI7hJE7u0jQ/@errol.ini.cmu.edu>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 7 Jan 2022 10:36:12 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdX2ujViu9GivVHtgAqC6AdiL3CvdJM58pVteJe9KdvdqQ@mail.gmail.com>
-Message-ID: <CAMuHMdX2ujViu9GivVHtgAqC6AdiL3CvdJM58pVteJe9KdvdqQ@mail.gmail.com>
-Subject: Re: [PATCH v6 3/3] mmc: Add driver for LiteX's LiteSDCard interface
-To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Karol Gugala <kgugala@antmicro.com>,
-        Mateusz Holenko <mholenko@antmicro.com>,
-        Kamil Rakoczy <krakoczy@antmicro.com>,
-        mdudek@internships.antmicro.com,
-        Paul Mackerras <paulus@ozlabs.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Stafford Horne <shorne@gmail.com>,
-        david.abdurachmanov@sifive.com,
-        Florent Kermarrec <florent@enjoy-digital.fr>,
-        Randy Dunlap <rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdSuSHa/Vjl6bPkg@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Gabriel,
+On Tue 04-01-22 13:30:00, Yu Zhao wrote:
+[...]
+> Hi Andrew, Linus,
+> 
+> Can you please take a look at this patchset and let me know if it's
+> 5.17 material?
 
-On Thu, Jan 6, 2022 at 11:50 PM Gabriel L. Somlo <gsomlo@gmail.com> wrote:
-> On Thu, Jan 06, 2022 at 08:19:39PM +0200, Andy Shevchenko wrote:
-> > On Thu, Jan 6, 2022 at 7:48 PM Gabriel Somlo <gsomlo@gmail.com> wrote:
-> > >
-> > > LiteX (https://github.com/enjoy-digital/litex) is a SoC framework
-> > > that targets FPGAs. LiteSDCard is a small footprint, configurable
-> > > SDCard core commonly used in LiteX designs.
-> > >
-> > > The driver was first written in May 2020 and has been maintained
-> > > cooperatively by the LiteX community. Thanks to all contributors!
-> >
-> > > +config MMC_LITEX
-> > > +       tristate "LiteX MMC Host Controller support"
-> > > +       depends on OF
-> > > +       depends on PPC_MICROWATT || LITEX || COMPILE_TEST
-> > > +       help
-> > > +         This selects support for the MMC Host Controller found in LiteX SoCs.
-> > > +
-> > > +         If unsure, say N.
-> >
-> > What would be the module name if built as a module?
->
-> litex_mmc.ko -- why are you asking? I.e., should I mention that anywhere
-> in the Kconfig blurb (I don't see other blurbs doing that, fwiw)?
+I am still not done with the review and have seen at least few problems
+that would need to be addressed.
 
-Many (most?) blurbs do mention the module name.
+But more fundamentally I believe there are really some important
+questions to be answered. First and foremost this is a major addition
+to the memory reclaim and there should be a wider consensus that we
+really want to go that way. The patchset doesn't have a single ack nor
+reviewed-by AFAICS. I haven't seen a lot of discussion since v2
+(http://lkml.kernel.org/r/20210413065633.2782273-1-yuzhao@google.com)
+nor do I see any clarification on how concerns raised there have been
+addressed or at least how they are planned to be addressed.
 
-> > > +       div = min(max(div, 2U), 256U);
-> >
-> > clamp_t() / clamp_val() ?
->
-> OK, changed to `div = clamp_val(div, 2U, 256U);`
+Johannes has made some excellent points
+http://lkml.kernel.org/r/YHcpzZYD2fQyWvEQ@cmpxchg.org. Let me quote
+for reference part of it I find the most important:
+: Realistically, I think incremental changes are unavoidable to get this
+: merged upstream.
+: 
+: Not just in the sense that they need to be smaller changes, but also
+: in the sense that they need to replace old code. It would be
+: impossible to maintain both, focus development and testing resources,
+: and provide a reasonably stable experience with both systems tugging
+: at a complicated shared code base.
+: 
+: On the other hand, the existing code also has billions of hours of
+: production testing and tuning. We can't throw this all out overnight -
+: it needs to be surgical and the broader consequences of each step need
+: to be well understood.
+: 
+: We also have millions of servers relying on being able to do upgrades
+: for drivers and fixes in other subsystems that we can't put on hold
+: until we stabilized a new reclaim implementation from scratch.
 
-Please use clamp() instead of clamp_val(), as all three parameters
-have the same type (clamp_val() uses casts to align all parameters;
-casts are evil).
+Fully agreed on all points here.
 
-Gr{oetje,eeting}s,
+I do appreciate there is a lot of work behind this patchset and I
+also do understand it has gained a considerable amount of testing as
+well. Your numbers are impressive but my experience tells me that it is
+equally important to understand the worst case behavior and there is not
+really much mentioned about those in changelogs.
 
-                        Geert
+We also shouldn't ignore costs the code is adding. One of them would be
+a further page flags depletion. We have been hitting problems on that
+front for years and many features had to be reworked to bypass a lack of
+space in page->flags.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+I will be looking more into the code (especially the memcg side of it)
+but I really believe that a consensus on above Johannes' points need to
+be found first before this work can move forward.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks!
+-- 
+Michal Hocko
+SUSE Labs
