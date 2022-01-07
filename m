@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4AB8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7276CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233516AbiAGTxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:53:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbiAGTxw (ORCPT
+        id S233711AbiAGT61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:58:27 -0500
+Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:11236 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232217AbiAGT60 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:53:52 -0500
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83B7BC061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:53:51 -0800 (PST)
-Received: by mail-ot1-x32f.google.com with SMTP id s8-20020a0568301e0800b00590a1c8cc08so1827766otr.9
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 11:53:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QCWW9l5TYpSQZW7IxxLh+Bgf0Q6VOgQSqAtLWyGSPG8=;
-        b=TSvb+oZLVoX48cum8Tneyp4hOVRDoWpx43qobWvAqcV210AucgvxhLWdQdLxxtWQQB
-         jAtLe7wcu5JD1u9jwbPfnqPiDwIUNhW5t3rT2A6TenGk26VT7u7QFw1xIsNysbO1GoJK
-         EOw2wRBVkRwMtvgoIBXfJ0aE4Gvcaop5VWoojwhdL2CvNnrlZDEiju2vwIRk87XegqRe
-         w8KSPFDuZtQl8jR5NqlutMQ5Q/eKDXZl7CZ8yIMBt0Xm1zgEAR/yBwAZmswQS7kBJ+4Z
-         IyxFY5DVfV3Dcd5VIryoTDS40YVJsRt7rLGB8B12lwpjQtYDz+nHesX/aIA2Q10S07nv
-         lDYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QCWW9l5TYpSQZW7IxxLh+Bgf0Q6VOgQSqAtLWyGSPG8=;
-        b=TmFxdTFth0dXnDGrIV6RdKasblCpoan04orNmdKKvrwbJaMrNaE1E/tXEieZRcbNBM
-         C38RpCAs64Yp2Lh9jasTJ7wB3r/K32kr/uNmPzqqbcPjNHmusDjerl8iU6rI9GeQbNAQ
-         S+iFkQw7g8bPF4tYTF539BQxI6pN8B3DjrjRaSNdbsL5Qwa1og/Llud2+Ukwx/obaTWK
-         3l0fqnsB4VsAM0j+YSebGlnEVItPrkidwV8z7A1xuKt7EhFhuJTwvH0nKC/tUbCfdVyo
-         7cqLH8YefC7lvOmbNp1Ha0R62rQSIIsEDOS+1z/qztUlJU3IOVs6wRVaI0gGM8kA8mnD
-         c6Cg==
-X-Gm-Message-State: AOAM533soBQsAhEyOs8xPy+mG+1AVaJLmoA8Mw6ljlgkoEtdVeyk51cI
-        8MAld+XOVYo/eQis/ebSfOgydbw0A5ShJbvFc4I=
-X-Google-Smtp-Source: ABdhPJyXnHKGLUUrWi9ONP1JYi50W6b4XY0LDv8Cc+uSqLxZ1hoRdPKME4Nr7/LktZjOyhNhOIlrzo3B7/+IwHBnZcI=
-X-Received: by 2002:a9d:6390:: with SMTP id w16mr48527995otk.200.1641585230853;
- Fri, 07 Jan 2022 11:53:50 -0800 (PST)
+        Fri, 7 Jan 2022 14:58:26 -0500
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 207Fo27V008191;
+        Fri, 7 Jan 2022 13:58:24 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=ZcE6+fIEhouQflq6SsdYNwRtkbBAzXLAZhmoezOqjSU=;
+ b=RlejFORZ7J3XxJb1dGzlxucpDW8KW+3N4m2u0ICJvy7e+k7RMBIdYH2EOyhGwv2GGQPQ
+ sg4oQuKqnrSs6YiziGgqNllWcTowjyy4wJ927KinznYDrUFu48F+MjrZjzcXdZnhzTIP
+ epRo4bZCALDDiMLLxlLc6jKIfojLjT7JmDeEoV0WUZEs9iOw0I5ztrMM6RCvD+PQw+Gc
+ ymkL7DGLlhamN5m43O9ifaZ2SSLjIT8Gc9HWwuOId95KS9Yr1YgTDeFM9gurwOfCv0Hp
+ /cE8L1IhY6mFkb2wNGuKNZ1WQDibAa3Z8xtvxvi706iTFNdpUsVpNJYtB5KqF07HXoPC lQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dergng88j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 07 Jan 2022 13:58:24 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Fri, 7 Jan
+ 2022 19:58:22 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 7 Jan 2022 19:58:22 +0000
+Received: from ricardo-lws.crystal.cirrus.com (ricardo-lws.ad.cirrus.com [141.131.206.19])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 92D6B2A9;
+        Fri,  7 Jan 2022 19:58:21 +0000 (UTC)
+From:   Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
+To:     <sre@kernel.org>, <linux-pm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
+CC:     Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
+Subject: [PATCH v2 1/2] power: supply: Introduces bypass charging property
+Date:   Fri, 7 Jan 2022 13:58:05 -0600
+Message-ID: <20220107195806.100956-2-rriveram@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220107195806.100956-1-rriveram@opensource.cirrus.com>
+References: <20220107195806.100956-1-rriveram@opensource.cirrus.com>
 MIME-Version: 1.0
-References: <20211230040626.646807-1-victor.liu@nxp.com>
-In-Reply-To: <20211230040626.646807-1-victor.liu@nxp.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 7 Jan 2022 14:53:39 -0500
-Message-ID: <CADnq5_PsxrYeZ+p5NbXRks3EaJrYNMN+vbUJkiKHZ4cf=x=dsg@mail.gmail.com>
-Subject: Re: [PATCH] drm/atomic: Check new_crtc_state->active to determine if
- CRTC needs disable in self refresh mode
-To:     Liu Ying <victor.liu@nxp.com>
-Cc:     Maling list - DRI developers <dri-devel@lists.freedesktop.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Rob Clark <robdclark@chromium.org>,
-        David Airlie <airlied@linux.ie>,
-        Sean Paul <seanpaul@chromium.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: Nr7gaWx5kCf2MvR99VsFb00hGDR_Qh-K
+X-Proofpoint-ORIG-GUID: Nr7gaWx5kCf2MvR99VsFb00hGDR_Qh-K
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Dec 29, 2021 at 11:07 PM Liu Ying <victor.liu@nxp.com> wrote:
->
-> Actual hardware state of CRTC is controlled by the member 'active' in
-> struct drm_crtc_state instead of the member 'enable', according to the
-> kernel doc of the member 'enable'.  In fact, the drm client modeset
-> and atomic helpers are using the member 'active' to do the control.
->
-> Referencing the member 'enable' of new_crtc_state, the function
-> crtc_needs_disable() may fail to reflect if CRTC needs disable in
-> self refresh mode, e.g., when the framebuffer emulation will be blanked
-> through the client modeset helper with the next commit, the member
-> 'enable' of new_crtc_state is still true while the member 'active' is
-> false, hence the relevant potential encoder and bridges won't be disabled.
->
-> So, let's check new_crtc_state->active to determine if CRTC needs disable
-> in self refresh mode instead of new_crtc_state->enable.
->
-> Fixes: 1452c25b0e60 ("drm: Add helpers to kick off self refresh mode in drivers")
-> Cc: Sean Paul <seanpaul@chromium.org>
-> Cc: Rob Clark <robdclark@chromium.org>
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Adds a POWER_SUPPLY_CHARGE_TYPE_BYPASS option to the POWER_SUPPLY_PROP_CHARGE_TYPE
+property to facilitate bypass charging operation.
 
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+In bypass charging operation, the charger bypasses the charging path around the
+integrated converter allowing for a "smart" wall adaptor to perform the power
+conversion externally.
 
-Do you need someone to push this for you?
+This operational mode is critical for the USB PPS standard of power adaptors and is
+becoming a common feature in modern charging ICs such as:
 
-Alex
+- BQ25980
+- BQ25975
+- BQ25960
+- LN8000
+- LN8410
 
-> ---
->  drivers/gpu/drm/drm_atomic_helper.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_atomic_helper.c
-> index a7a05e1e26bb..9603193d2fa1 100644
-> --- a/drivers/gpu/drm/drm_atomic_helper.c
-> +++ b/drivers/gpu/drm/drm_atomic_helper.c
-> @@ -1016,7 +1016,7 @@ crtc_needs_disable(struct drm_crtc_state *old_state,
->          * it's in self refresh mode and needs to be fully disabled.
->          */
->         return old_state->active ||
-> -              (old_state->self_refresh_active && !new_state->enable) ||
-> +              (old_state->self_refresh_active && !new_state->active) ||
->                new_state->self_refresh_active;
->  }
->
-> --
-> 2.25.1
->
+Signed-off-by: Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
+---
+ drivers/power/supply/power_supply_sysfs.c | 1 +
+ include/linux/power_supply.h              | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/supply/power_supply_sysfs.c
+index 6ac88fbee3cb..52c909bae457 100644
+--- a/drivers/power/supply/power_supply_sysfs.c
++++ b/drivers/power/supply/power_supply_sysfs.c
+@@ -89,6 +89,7 @@ static const char * const POWER_SUPPLY_CHARGE_TYPE_TEXT[] = {
+ 	[POWER_SUPPLY_CHARGE_TYPE_ADAPTIVE]	= "Adaptive",
+ 	[POWER_SUPPLY_CHARGE_TYPE_CUSTOM]	= "Custom",
+ 	[POWER_SUPPLY_CHARGE_TYPE_LONGLIFE]	= "Long Life",
++	[POWER_SUPPLY_CHARGE_TYPE_BYPASS]	= "Bypass",
+ };
+ 
+ static const char * const POWER_SUPPLY_HEALTH_TEXT[] = {
+diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
+index 86b4d5c4dab9..164779bc7e8f 100644
+--- a/include/linux/power_supply.h
++++ b/include/linux/power_supply.h
+@@ -49,6 +49,7 @@ enum {
+ 	POWER_SUPPLY_CHARGE_TYPE_ADAPTIVE,	/* dynamically adjusted speed */
+ 	POWER_SUPPLY_CHARGE_TYPE_CUSTOM,	/* use CHARGE_CONTROL_* props */
+ 	POWER_SUPPLY_CHARGE_TYPE_LONGLIFE,	/* slow speed, longer life */
++	POWER_SUPPLY_CHARGE_TYPE_BYPASS,	/* bypassing the charger */
+ };
+ 
+ enum {
+-- 
+2.25.1
+
