@@ -2,104 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB6DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:58:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D794C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238559AbiAGL6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:58:37 -0500
-Received: from mga01.intel.com ([192.55.52.88]:48988 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238319AbiAGL6f (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:58:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641556714; x=1673092714;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EdSqS4VAyQDEtNmAwMFPIrwHE7KgmcEsvaxdDJqC04A=;
-  b=EYEapJBaskHXfatOtARIVbsP6dRBEgvpu/KQfHS9w0M0U8JeHqsH7rAQ
-   CEnM4XC+ynk1TJuHlMeJC6xHmK7H9OQTFhKYcxwytkUlw2jBvMHQhdqbl
-   udePKmwnuz1JQzEiSIdvWxYjGwy2fklOUXeLvjmMUE6gZMNO21e7kuo5K
-   c2hQwI1wNa6jxekv0XhqmU9kKiY2Cq/XONKGwB3Exo02i4v0I6tIuHipX
-   IEtNQMXqWR2AHH/ZQtDM1ejQNqPs+CSSKLP57g7QfcHlRBKfNQ7vnq0L5
-   cMdcslXbgF/eIMJAIirKeQNnZzuQ+DL9sZy7MWLcBVxguhRLj8XS04Bfh
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="267154513"
-X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
-   d="scan'208";a="267154513"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 03:58:34 -0800
-X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
-   d="scan'208";a="557243987"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 03:58:31 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n5nru-007Mat-Eu;
-        Fri, 07 Jan 2022 13:57:14 +0200
-Date:   Fri, 7 Jan 2022 13:57:14 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH v1 1/5] nvmem: core: Remove unused devm_nvmem_unregister()
-Message-ID: <YdgqmvBTQ2vZAjsn@smile.fi.intel.com>
-References: <20220104133843.44272-1-andriy.shevchenko@linux.intel.com>
- <202201060932.tcQFIVfQ-lkp@intel.com>
+        id S238443AbiAGL7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 06:59:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232237AbiAGL7D (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 06:59:03 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B97BC061245
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 03:59:03 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1n5ntc-0004Qo-QE; Fri, 07 Jan 2022 12:59:00 +0100
+Message-ID: <8fa36ec0a6252db4b0c7fbbf09de5e816d634206.camel@pengutronix.de>
+Subject: Re: [PATCH v3 2/2] arm64: dts: imx8m: define proper status for caam
+ jr
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Michael Walle <michael@walle.cc>,
+        Rouven Czerwinski <r.czerwinski@pengutronix.de>
+Cc:     ZHIZHIKIN Andrey <andrey.zhizhikin@leica-geosystems.com>,
+        linux-kernel@vger.kernel.org, peng.fan@nxp.com, ping.bai@nxp.com,
+        alice.guo@nxp.com, agx@sigxcpu.org, krzk@kernel.org,
+        leonard.crestez@nxp.com, festevam@gmail.com, marex@denx.de,
+        herbert@gondor.apana.org.au, horia.geanta@nxp.com,
+        daniel.baluta@nxp.com, frieder.schrempf@kontron.de,
+        linux-imx@nxp.com, devicetree@vger.kernel.org,
+        hongxing.zhu@nxp.com, s.hauer@pengutronix.de, pankaj.gupta@nxp.com,
+        robh+dt@kernel.org, thunder.leizhen@huawei.com, martink@posteo.de,
+        aford173@gmail.com, linux-arm-kernel@lists.infradead.org,
+        gregkh@linuxfoundation.org, shengjiu.wang@nxp.com,
+        qiangqing.zhang@nxp.com, op-tee@lists.trustedfirmware.org,
+        linux-crypto@vger.kernel.org, kernel@pengutronix.de,
+        shawnguo@kernel.org, davem@davemloft.net, jun.li@nxp.com
+Date:   Fri, 07 Jan 2022 12:58:58 +0100
+In-Reply-To: <4ed84dc354eee36067ade567097ddd68@walle.cc>
+References: <20211111164601.13135-1-andrey.zhizhikin@leica-geosystems.com>
+         <20211207230206.14637-1-andrey.zhizhikin@leica-geosystems.com>
+         <20211207230206.14637-3-andrey.zhizhikin@leica-geosystems.com>
+         <aa84249b7e099cf23b49016433b22ae541c0a41d.camel@pengutronix.de>
+         <AM6PR06MB469100A5D7A069AF84A83EEFA64C9@AM6PR06MB4691.eurprd06.prod.outlook.com>
+         <30312d09effae6b78309723a7261f85915b8d5b8.camel@pengutronix.de>
+         <4ed84dc354eee36067ade567097ddd68@walle.cc>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202201060932.tcQFIVfQ-lkp@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 09:11:47AM +0800, kernel test robot wrote:
-> Hi Andy,
+Am Freitag, dem 07.01.2022 um 12:47 +0100 schrieb Michael Walle:
+> Hi Rouven,
 > 
-> I love your patch! Perhaps something to improve:
+> Am 2022-01-07 10:46, schrieb Rouven Czerwinski:
+> > .. since AFAIK i.MX8M* can not be run without TF-A.
 > 
-> [auto build test WARNING on mtd/mtd/next]
-> [also build test WARNING on mtd/mtd/fixes char-misc/char-misc-testing linus/master v5.16-rc8 next-20220105]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Andy-Shevchenko/nvmem-core-Remove-unused-devm_nvmem_unregister/20220104-213933
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git mtd/next
-> config: mips-randconfig-r002-20220105 (https://download.01.org/0day-ci/archive/20220106/202201060932.tcQFIVfQ-lkp@intel.com/config)
-> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d5b6e30ed3acad794dd0aec400e617daffc6cc3d)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install mips cross compiling tool for clang build
->         # apt-get install binutils-mips-linux-gnu
->         # https://github.com/0day-ci/linux/commit/7877de3d47433a75d2beea38b696b3c4fde62082
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Andy-Shevchenko/nvmem-core-Remove-unused-devm_nvmem_unregister/20220104-213933
->         git checkout 7877de3d47433a75d2beea38b696b3c4fde62082
->         # save the config file to linux build tree
->         mkdir build_dir
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/nvmem/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
-> >> drivers/nvmem/core.c:946:12: warning: unused function 'devm_nvmem_match'
+> Are you sure? There probably aren't any boards out there
+> without TF-A, but why shouldn't it work without it?
 
-Ah, even more to clean up ;)
+PSCI, i.e. the only means to start the secondary CPUs, is implemented
+in TF-A, so it's very unlikely that anyone would want to run a system
+without TF-A. Also quite a bit of the lowlevel SoC initialization is
+implemented in TF-A.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
+Regards,
+Lucas
 
