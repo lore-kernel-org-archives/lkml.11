@@ -2,144 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF64C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:42:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbiAGXgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 18:36:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54998 "EHLO
+        id S231679AbiAGXmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 18:42:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231545AbiAGXgQ (ORCPT
+        with ESMTP id S231605AbiAGXmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 18:36:16 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32266C061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:36:16 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id o7so9040499ioo.9
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:36:16 -0800 (PST)
+        Fri, 7 Jan 2022 18:42:06 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A0EC061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:42:05 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id g2so6975262pgo.9
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:42:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=xYu9qteuFVNrHyo1i7aEmcfHOTj3gefz8I1p+xu99cE=;
-        b=KVMWEcwAp4WTr2X5uSFAYSIb1gUJnxmuasFdE3TRGGuc9UPxRC1uEOaA//819Vna+R
-         e9pELwJ72UnnP7NVDJw7XrozwhzL7wNV4H0GV2T4b8gpxk7axMm4pExfS9/MaG3i6JGJ
-         Z8S4aOFzx5B381qYvSPzTu5BJTrmtIv1ta/fUPycwLNiPf1Pym5MuhqHYhl89EwEfffD
-         dxpEejJr/Qlyh1TY1lKhv+BBjEtQhaYJFnqsK8x+2h5JwQlcsGqV/YIBJPMCubPsaWsX
-         q8NP4iA/07CScovcAUk4KMBQ/aNkFtrHYjB2enZvlLociLWQWb9+rmYQARL8qQ7iRn6D
-         eAaA==
+        bh=dl5NjrPyqtirGqh/44w+tOXwcC+wnrBXDnBxl8SYaOs=;
+        b=Y47yKd48acltCAFbzaPkvvplMuEGDM8zkr59CRe4GzPOZbM6Y6Gw5IyJttHP8FZrau
+         wQdnfzAzHqQhqWt65NFhLodOCyaeDDfG2pHlrFTo9Qoub8lR0RRbd15y5MNbWLnAcvqq
+         AkCzTZCqnqx3W0l/za6lj3lppZHDBWBSwbzJoh4P9awe/QLQTOr9YSd1dBg9bJsRryXv
+         UHhC4EY74xD+W9SQfZeT6EmrhzyJWDTOX8PF0PuxFG/Rk7QcSa1luANXQZupXdp015pI
+         LPcEH+3AwWTsafuO/os5SIF4LfuoaVOfwR+a2nxa+BoyqDy6pQMIPi3/vg7xwc82sHKz
+         xzig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=xYu9qteuFVNrHyo1i7aEmcfHOTj3gefz8I1p+xu99cE=;
-        b=uTiZ0Ds3Shgxn67rUB1CXOXNGrBRqv5saehBQInQG6rsPqWksPAsBiQaTtvTWN2Cgl
-         srOKxuUeKN+53HQ6VRYWWDSyLugMpdM9jJloASyhv4nxNhqhRKIlgngouAGyHCluqMEF
-         fJ6+ED2onGK5IWh0/PkarlKOkwVs1niDqIfUsxdgN05DEG2tRW8jtqtcsxGqYx7Y4k+j
-         8Oympt6JTDAG88v2Hdb1h2BHasnLLCduLr9hzhnGwjRg5XDbLvw+BcZZeE6mPpW1noyN
-         Mv0TuAS9gyz2I4SwxVROB2GOPUnpugUGX0i64NwfAPGLwRtXczz2LZDouqX9zBiDIOap
-         P+Ug==
-X-Gm-Message-State: AOAM533DcQ+JxnzozsOFRNZ49JhKLxVSw+y2TUWLYvf9O04N8hIXgzFU
-        cmalIDsp07JjW0hz2OA3avy0PQ==
-X-Google-Smtp-Source: ABdhPJzDj049VbsKt/EYYdSUgiTzJatv/z9OgEricIXR1zpNkxJjKeELDnzLfrvVCz7m4TJ/mII9Dg==
-X-Received: by 2002:a05:6602:1410:: with SMTP id t16mr32400729iov.160.1641598575473;
-        Fri, 07 Jan 2022 15:36:15 -0800 (PST)
-Received: from google.com ([2620:15c:183:200:8b41:537d:f5d3:269c])
-        by smtp.gmail.com with ESMTPSA id w7sm48105ilu.27.2022.01.07.15.36.14
+        bh=dl5NjrPyqtirGqh/44w+tOXwcC+wnrBXDnBxl8SYaOs=;
+        b=qfcEZIlAuEUAAJM12qzPOgBTpDjaaUIeLi5uUeNqVjerTbCxBreXJfxBWLVSm+TEd9
+         JT8Uxw0bk/Za+vH4KVI3XwUYG++CMvahu7FH5V510utevrinoISyp709JciPiLxjTcHN
+         86FveIGARLwZR5XZXWhp+hfbXzzTgn+LmpKJ0kgd2OY17beZnu5ucZvzAqHiD1aWoFpS
+         m3JPvBmyioLWxXHBPBu6NQ/iAkkLh61n9FR3Tfk7sx2Z+d3BDbNHhh/2U0vfhwiqn1nE
+         OJjMt1ZWN86DsBOyHnWmma57EKBKRc5AtgoS0pC7Xk9rO40XMwHC+iDGTHbzBPd32nFR
+         tTYQ==
+X-Gm-Message-State: AOAM533mp00Jc+gQymvmvdVjo+xlutsH2hs8zudqRDMguKDkRoiTfQyK
+        8hlYtzE0opNU27oyS1XgVoWUug==
+X-Google-Smtp-Source: ABdhPJzPRIFNYJhGqnUuIdQe/e5MBW+Jo0uHATwazr1k7KOnw4yas1RlTdSzYpZPOo7fjsVlB/N9BA==
+X-Received: by 2002:a63:3c18:: with SMTP id j24mr2547358pga.204.1641598924961;
+        Fri, 07 Jan 2022 15:42:04 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id na9sm92585pjb.0.2022.01.07.15.42.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 15:36:15 -0800 (PST)
-Date:   Fri, 7 Jan 2022 16:36:11 -0700
-From:   Yu Zhao <yuzhao@google.com>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        Fri, 07 Jan 2022 15:42:03 -0800 (PST)
+Date:   Fri, 7 Jan 2022 23:42:00 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
+        Jim Mattson <jmattson@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Joerg Roedel <joro@8bytes.org>,
+        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
         Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Subject: Re: [PATCH v6 6/9] mm: multigenerational lru: aging
-Message-ID: <YdjOazilBEkdUT7x@google.com>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <20220104202227.2903605-7-yuzhao@google.com>
- <Ydg8AeE6JIUnC+ps@dhcp22.suse.cz>
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Ingo Molnar <mingo@redhat.com>
+Subject: Re: [PATCH v2 3/5] KVM: SVM: fix race between interrupt delivery and
+ AVIC inhibition
+Message-ID: <YdjPyCRwZDoV11ox@google.com>
+References: <20211213104634.199141-1-mlevitsk@redhat.com>
+ <20211213104634.199141-4-mlevitsk@redhat.com>
+ <YdTPvdY6ysjXMpAU@google.com>
+ <628ac6d9b16c6b3a2573f717df0d2417df7caddb.camel@redhat.com>
+ <6a11edec-c29a-95df-393e-363e1af46257@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ydg8AeE6JIUnC+ps@dhcp22.suse.cz>
+In-Reply-To: <6a11edec-c29a-95df-393e-363e1af46257@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 02:11:29PM +0100, Michal Hocko wrote:
-> On Tue 04-01-22 13:22:25, Yu Zhao wrote:
-> [...]
-> > +static void lru_gen_age_node(struct pglist_data *pgdat, struct scan_control *sc)
-> > +{
-> > +	struct mem_cgroup *memcg;
-> > +	bool success = false;
-> > +	unsigned long min_ttl = READ_ONCE(lru_gen_min_ttl);
-> > +
-> > +	VM_BUG_ON(!current_is_kswapd());
-> > +
-> > +	current->reclaim_state->mm_walk = &pgdat->mm_walk;
-> > +
-> > +	memcg = mem_cgroup_iter(NULL, NULL, NULL);
-> > +	do {
-> > +		struct lruvec *lruvec = mem_cgroup_lruvec(memcg, pgdat);
-> > +
-> > +		if (age_lruvec(lruvec, sc, min_ttl))
-> > +			success = true;
-> > +
-> > +		cond_resched();
-> > +	} while ((memcg = mem_cgroup_iter(NULL, memcg, NULL)));
-> > +
-> > +	if (!success && mutex_trylock(&oom_lock)) {
-> > +		struct oom_control oc = {
-> > +			.gfp_mask = sc->gfp_mask,
-> > +			.order = sc->order,
-> > +		};
-> > +
-> > +		if (!oom_reaping_in_progress())
-> > +			out_of_memory(&oc);
-> > +
-> > +		mutex_unlock(&oom_lock);
-> > +	}
+On Fri, Jan 07, 2022, Paolo Bonzini wrote:
+> On 1/5/22 12:03, Maxim Levitsky wrote:
+> > > > -	if (!vcpu->arch.apicv_active)
+> > > > -		return -1;
+> > > > -
+> > > > +	/*
+> > > > +	 * Below, we have to handle anyway the case of AVIC being disabled
+> > > > +	 * in the middle of this function, and there is hardly any overhead
+> > > > +	 * if AVIC is disabled.  So, we do not bother returning -1 and handle
+> > > > +	 * the kick ourselves for disabled APICv.
+> > > Hmm, my preference would be to keep the "return -1" even though apicv_active must
+> > > be rechecked.  That would help highlight that returning "failure" after this point
+> > > is not an option as it would result in kvm_lapic_set_irr() being called twice.
+> > I don't mind either - this will fix the tracepoint I recently added to report the
+> > number of interrupts that were delivered by AVIC/APICv - with this patch,
+> > all of them count as such.
 > 
-> Why do you need to trigger oom killer from this path? Why cannot you
-> rely on the page allocator to do that like we do now?
+> The reasoning here is that, unlike VMX, we have to react anyway to
+> vcpu->arch.apicv_active becoming false halfway through the function.
+> 
+> Removing the early return means that there's one less case of load
+> (mis)reordering that the reader has to check.
 
-This is per desktop users' (repeated) requests. The can't tolerate
-thrashing as servers do because of UI lags; and they usually don't
-have fancy tools like oomd.
+Yeah, I don't disagree, but the flip side is that without the early check, it's
+not all that obvious that SVM must not return -1.  And when AVIC isn't supported
+or is disabled at the module level, flowing into AVIC "specific" IRR logic is
+a bit weird.  And the LAPIC code effectively becomes Intel-only.
 
-Related discussions I saw:
-https://github.com/zen-kernel/zen-kernel/issues/218
-https://lore.kernel.org/lkml/20101028191523.GA14972@google.com/
-https://lore.kernel.org/lkml/20211213051521.21f02dd2@mail.inbox.lv/
-https://lore.kernel.org/lkml/54C2C89C.8080002@gmail.com/
-https://lore.kernel.org/lkml/d9802b6a-949b-b327-c4a6-3dbca485ec20@gmx.com/
+To make everyone happy, and fix the tracepoint issue, what about moving delivery
+into vendor code?  E.g. the below (incomplete), with SVM functions renamed so that
+anything that isn't guaranteed to be AVIC specific uses svm_ instead of avic_.
 
-From patch 8:
-  Personal computers
-  ------------------
-  :Thrashing prevention: Write ``N`` to
-   ``/sys/kernel/mm/lru_gen/min_ttl_ms`` to prevent the working set of
-   ``N`` milliseconds from getting evicted. The OOM killer is invoked if
-   this working set can't be kept in memory. Based on the average human
-   detectable lag (~100ms), ``N=1000`` usually eliminates intolerable
-   lags due to thrashing. Larger values like ``N=3000`` make lags less
-   noticeable at the cost of more OOM kills.
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index baca9fa37a91..a9ac724c6305 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1096,14 +1096,7 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
+                                                       apic->regs + APIC_TMR);
+                }
+
+-               if (static_call(kvm_x86_deliver_posted_interrupt)(vcpu, vector)) {
+-                       kvm_lapic_set_irr(vector, apic);
+-                       kvm_make_request(KVM_REQ_EVENT, vcpu);
+-                       kvm_vcpu_kick(vcpu);
+-               } else {
+-                       trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode,
+-                                                  trig_mode, vector);
+-               }
++               static_call(kvm_x86_deliver_interrupt)(vcpu, vector);
+                break;
+
+        case APIC_DM_REMRD:
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index fe06b02994e6..1fadd14ea884 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -4012,6 +4012,18 @@ static int vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector)
+        return 0;
+ }
+
++static void vmx_deliver_interrupt(struct kvm_vcpu *vcpu, int vector)
++{
++       if (vmx_deliver_posted_interrupt(vcpu, vector)) {
++               kvm_lapic_set_irr(vector, apic);
++               kvm_make_request(KVM_REQ_EVENT, vcpu);
++               kvm_vcpu_kick(vcpu);
++       } else {
++               trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode,
++                                          trig_mode, vector);
++       }
++}
++
+ /*
+  * Set up the vmcs's constant host-state fields, i.e., host-state fields that
+  * will not change in the lifetime of the guest.
+@@ -7651,7 +7663,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+        .hwapic_isr_update = vmx_hwapic_isr_update,
+        .guest_apic_has_interrupt = vmx_guest_apic_has_interrupt,
+        .sync_pir_to_irr = vmx_sync_pir_to_irr,
+-       .deliver_posted_interrupt = vmx_deliver_posted_interrupt,
++       .deliver_interrupt = vmx_deliver_interrupt,
+        .dy_apicv_has_pending_interrupt = pi_has_pending_interrupt,
+
+        .set_tss_addr = vmx_set_tss_addr,
+
