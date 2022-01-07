@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8ED5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345372AbiAGCXl (ORCPT
+        id S1344468AbiAGCZG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 21:23:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344468AbiAGCXj (ORCPT
+        Thu, 6 Jan 2022 21:25:06 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28559 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345374AbiAGCZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:23:39 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B549C061245
-        for <linux-kernel@vger.kernel.org>; Thu,  6 Jan 2022 18:23:39 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id 205so4052390pfu.0
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 18:23:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4WQ/8JHSUHdcC60H26iiWsvlZ6gMDmzCg30bgw7CA0o=;
-        b=FL4sc2NxYvM7CVA0ejjbQITIST/Lwlef9buy0Gi1qxucnL+bBNxx9HtfQ5A7zUyeIS
-         4SdEFiy9roL/i3Nu+kpbXkViLRtnlkVsk0TfkNNlMW1Wxiqan/VWs4LdKg5KknAbC/5P
-         cglaoA3R+Vkl/XM3HR0O6vwHTyDJXCSZDhtBtwX+R5OQjJeQfq1oHgZdCpXX3tmclTIv
-         Q/dK6fuWF6NWY34EAo3GJ1AacIXX7IfIi7xie7kTycTkDYA1BCppojRR+wobKtxAfjOh
-         OEEIXaNjCGP4QsyfEgoXTdrYc2UjbO3PXgowPe7zHwk4PqLZWB9NMEOeVQ7pSXCAHCEg
-         oZSA==
+        Thu, 6 Jan 2022 21:25:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641522304;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=NdLI+JY15a2+Gt1cY6WpfausBPRh25LVXAMJd9mKg3c=;
+        b=icoUFjVhcpBGrEIANTqun+Od2tvnv1vfyF/xZyli/IBbgC0+9SvwsHx0RVIP2UhYAsc9dC
+        WsDU8vIz2E2rtg1qBZj56rPnyU+btdWZlY2sO8pltjr2zlYghpfPWgoXnybFf3dOUHMKyk
+        oP4J4Ph4ZH7Koh55OrVRDRNEdLW70h0=
+Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
+ [209.85.167.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-528-ZQBGi6TNOjm6MMaLYK1L-w-1; Thu, 06 Jan 2022 21:25:03 -0500
+X-MC-Unique: ZQBGi6TNOjm6MMaLYK1L-w-1
+Received: by mail-lf1-f72.google.com with SMTP id g2-20020a19e042000000b00425cfac0e67so1306470lfj.10
+        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 18:25:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4WQ/8JHSUHdcC60H26iiWsvlZ6gMDmzCg30bgw7CA0o=;
-        b=dY5j82Ed+zOqLZ0MnMBoLAmb8qSEC8bqYxrPfHxwXsdxcgZIou4j4RcSPQvqm7EVyt
-         de0o4mgbVL2wRe2AYXNaXM72uiaZ5nshHaywKMu90Wwj0a+sIvE1IbHrmyh31OQGRYwI
-         OiMrEsoJNa+ec46bmfBRCUlFYpLaOpyRdeS5EgA8VkDkbxxe4WQr6YvRlrOB98otrxAY
-         eBKr2PshyRsXHYmqo2PqXBIFuqtkaM8y6oGLOivHP08uAlaeEOFWAn+/MApEXgfKYMh6
-         OacYyC1v29zPpYEAvkBYSJQVj/7lHIa2fZNVuxPJ8SVY+nRZaHXLXfAm1XilqmY26sVV
-         KlAQ==
-X-Gm-Message-State: AOAM530dm1A+aDsehExsLgsLJPIIaHEv+tjdQdobrHMc/c4OvHlyiRPy
-        E5CtVVB9HF99x4F0hvkQP0o=
-X-Google-Smtp-Source: ABdhPJw6bDSKRP5ew33JRHzIyIA8jawuyjfDgVbtuw55FeuP83NGxhrNbRGDiATaOoID+LN51S0NDQ==
-X-Received: by 2002:a63:8c1c:: with SMTP id m28mr50519636pgd.594.1641522218829;
-        Thu, 06 Jan 2022 18:23:38 -0800 (PST)
-Received: from localhost.localdomain ([94.177.118.38])
-        by smtp.googlemail.com with ESMTPSA id h4sm6439769pjk.2.2022.01.06.18.23.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 18:23:38 -0800 (PST)
-From:   Qinghua Jin <qhjin.dev@gmail.com>
-Cc:     qhjin_dev@163.com, Qinghua Jin <qhjin.dev@gmail.com>,
-        James Smart <james.smart@broadcom.com>,
-        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] nvme-fc: fix typo
-Date:   Fri,  7 Jan 2022 10:22:58 +0800
-Message-Id: <20220107022258.396058-1-qhjin.dev@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NdLI+JY15a2+Gt1cY6WpfausBPRh25LVXAMJd9mKg3c=;
+        b=sl4O9KL0eP3+d7TCaHIKkAXQd66kTlXlNpRBv4dsaXFT1moKZPUOUSjrsmciQnPZtY
+         ujWVe+5gXRxSe8PUtGAPltCwilDEsYF0Oc3tXL7QSS8Qt5/DgVXNvehgBYraBoR8SSH1
+         NNZUkPkIL1sglEsKNzqV8ASFTRSeoRuM8jYUSJfW8Up5R8xk+YMFtL/QraVNIZKBKyMF
+         3ZU5cvLB20LAnf4s+LXnUnPgcH/82I+k/Ump77Za0uAO2YakYt7eFpqYsRmy27au+HBn
+         QOgRJXMStJGWRAA9HOfhwH6cEn+UzEtxfOM8pwRwV2L0FNhzqeLrGvsYl1hxW1ar0qQj
+         4veA==
+X-Gm-Message-State: AOAM533o0Nhfjl7FUm7qydhSsEFUs6LKJIbuX4w7p1jEfxCzYWCahfjk
+        Ydgyw9jsDCrRivVsxAMt0keJu4y3cBM478RHBwoFc000la2MjAjXNVKe8XYtlyb0tQjjw4eMvBE
+        1qL0j5UKmUqumc+7ffhuiGa2ZicS3gfh5Opn4W9SK
+X-Received: by 2002:a2e:8543:: with SMTP id u3mr45052778ljj.307.1641522301427;
+        Thu, 06 Jan 2022 18:25:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwQdgl8Lhz6/KjVCb1IwvdC/dDvHzQIuoVfmyd1mtC2fcVs0Fp2KcMCv0CRdLYPdrAELdSHWNAe70sNvp+Z5sg=
+X-Received: by 2002:a2e:8543:: with SMTP id u3mr45052762ljj.307.1641522301235;
+ Thu, 06 Jan 2022 18:25:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220106130046.422417-1-mst@redhat.com>
+In-Reply-To: <20220106130046.422417-1-mst@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Fri, 7 Jan 2022 10:24:50 +0800
+Message-ID: <CACGkMEtitniJqz0gMp4YY=sf_Nb0v8Z-xXyF9P_rh=+58Sn6Yg@mail.gmail.com>
+Subject: Re: [PATCH] virtio_ring: mark ring unused on error
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        virtualization <virtualization@lists.linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-subsytem -> subsystem
+On Thu, Jan 6, 2022 at 9:00 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> A recently added error path does not mark ring unused when exiting on
+> OOM, which will lead to BUG on the next entry in debug builds.
+>
+> TODO: refactor code so we have START_USE and END_USE in the same function.
+>
+> Fixes: fc6d70f40b3d ("virtio_ring: check desc == NULL when using indirect with packed")
+> Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
+> Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-Signed-off-by: Qinghua Jin <qhjin.dev@gmail.com>
----
- include/linux/nvme-fc-driver.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-diff --git a/include/linux/nvme-fc-driver.h b/include/linux/nvme-fc-driver.h
-index cb909edb76c4..5358a5facdee 100644
---- a/include/linux/nvme-fc-driver.h
-+++ b/include/linux/nvme-fc-driver.h
-@@ -721,7 +721,7 @@ enum {
-  *
-  * Fields with static values for the port. Initialized by the
-  * port_info struct supplied to the registration call.
-- * @port_num:  NVME-FC transport subsytem port number
-+ * @port_num:  NVME-FC transport subsystem port number
-  * @node_name: FC WWNN for the port
-  * @port_name: FC WWPN for the port
-  * @private:   pointer to memory allocated alongside the local port
--- 
-2.30.2
+> ---
+>  drivers/virtio/virtio_ring.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 028b05d44546..962f1477b1fa 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -1197,8 +1197,10 @@ static inline int virtqueue_add_packed(struct virtqueue *_vq,
+>         if (virtqueue_use_indirect(_vq, total_sg)) {
+>                 err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
+>                                                     in_sgs, data, gfp);
+> -               if (err != -ENOMEM)
+> +               if (err != -ENOMEM) {
+> +                       END_USE(vq);
+>                         return err;
+> +               }
+>
+>                 /* fall back on direct */
+>         }
+> --
+> MST
+>
 
