@@ -2,109 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDF10C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96234C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:46:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345562AbiAGCpw (ORCPT
+        id S1344924AbiAGCq3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 21:45:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56136 "EHLO
+        Thu, 6 Jan 2022 21:46:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344689AbiAGCpu (ORCPT
+        with ESMTP id S231969AbiAGCq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:45:50 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DB7FC061245;
-        Thu,  6 Jan 2022 18:45:50 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id pj2so2821729pjb.2;
-        Thu, 06 Jan 2022 18:45:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nJhGdS30+uCnJBMCA7oLAq184lBQGokQoxsLttwuw5Y=;
-        b=OuzpKPg6XeqgVM9LvSRfobOAOmK3Y2f+JDVe8zGX21j2a+3oIdpgmU5IkapBKoz7Eo
-         aUnrZM9FcLarcg4YxCFGOVdNbQlcFme3vKigI0OpgvihwSVDZGdEdam1+EMwvaGHe8/8
-         aNhfai+4O7XwYvtxIfbQV5VUk0cgXGimaImnOo6jBIoSUtsA3tO3fJWElvo1A/FrW2Gk
-         x4qu1N+wD860uQRzi9ag+PaJRFnLnxCmH8qy2omFgHTzg615pak1kg7zWNlQvTY/SuHI
-         chhYrpdf9ddvVbLXadOHHXAE11QwjkBifNu9SY1p/V1ncKqY1ase+a5TLkezwaOBED7E
-         8GQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=nJhGdS30+uCnJBMCA7oLAq184lBQGokQoxsLttwuw5Y=;
-        b=Ehxw6UzdHC7qyTetZgcwFoA2OqWbEA4MdvIHeDAfKBTnhfd+dnXGH+5fhPhBFmVAki
-         n6IZqBnSPJiceOPYcgFl/c9hRkRqs//bRocA/R3KhPgui1WmfswXEwDY+dJmZbtlScXI
-         09Zjg4Kx8E+TmULGRt5Zd6EWYdh47S/W65ZGNslMyYEGAicshhoqWgSh4MZ4h5zBly/7
-         H0jua3zD92V7He4I65WP+XEFmwAp6O1PymdDu/qaZCV1Ts0otm+GvC51sYaw22lwBDsZ
-         MLpFEvnfUpYvrIwUgtxrZmo78czvnUN6VdLu/FnneqHboz3lyZJUDFuFEviL60y1nMnZ
-         QLSA==
-X-Gm-Message-State: AOAM531315n2ufQ3p+IvrNg6MDwrujtXDusff0pgldCoh1RKPHAlzRW0
-        UaSnArh/UOWs/pLd8TX3Iwo=
-X-Google-Smtp-Source: ABdhPJzyIk4GOWV1wfGptUIxf9J6mGghXrqwQtaFHmAcLvF8BMSQvXrTEsrKi3WItljjgSjZ0iZwNA==
-X-Received: by 2002:a17:902:714b:b0:149:f3bc:c4d6 with SMTP id u11-20020a170902714b00b00149f3bcc4d6mr4957732plm.11.1641523549973;
-        Thu, 06 Jan 2022 18:45:49 -0800 (PST)
-Received: from localhost.localdomain ([8.212.10.173])
-        by smtp.gmail.com with ESMTPSA id e9sm3049883pgp.39.2022.01.06.18.45.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 18:45:49 -0800 (PST)
-From:   "Zhou,Junde" <junde.zhou@gmail.com>
-To:     wsa@kernel.org
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhoujd@clounix.com
-Subject: [PATCH] check parameter for i2c driver interface and improve efficieny for the issues.
-Date:   Fri,  7 Jan 2022 10:45:24 +0800
-Message-Id: <20220107024524.2293-1-junde.zhou@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 6 Jan 2022 21:46:28 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3928C061245;
+        Thu,  6 Jan 2022 18:46:27 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JVSKB6RpJz4xts;
+        Fri,  7 Jan 2022 13:46:22 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641523583;
+        bh=ZkYFyl4ojtU9uYF94it7zWIo8pn2EQP2M9rmgHCBfwU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=EvjJniDIGszm08oz5lS/Lv9+pJ8E3D82qi+AhpuhbUUTI7RHLDVr35WfQp0KiaEi7
+         /mDUBIMD1mpOnLgQE4w/vRJHJvKByJnbRXzfb2ZFIv8wcewQ14Yf/SJc17vDr98fBj
+         WNW3rDlq9b0kfg01XzWb5DYoSEUPApiQx283Uz/q2UoYXaW7rO5MxUFIGUroy0zAzS
+         uBnYYb4j+gftvLMGboDAvjfZFwnLlvXgrCsI9jzTqGF9KcVYm2YEvm825PmqGTMnzv
+         ZajTaiBdghCm6372sZpsSJDMWjODf7AhVU8Qy+4CPRG9uU5akVxCxaO9NPsWg3YvQj
+         8Qti1lwF9r+uQ==
+Date:   Fri, 7 Jan 2022 13:46:21 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: state of the nfsd tree
+Message-ID: <20220107134621.7814487b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/R05/Lu/5BP.okjeZPRkFH+e";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Zhou,Junde" <zhoujd@clounix.com>
+--Sig_/R05/Lu/5BP.okjeZPRkFH+e
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-do parameter checking in drivers/i2c/i2c-core-smbus.c.
+Hi all,
 
-return -EINVAL when input parameter length is equal to 0.
+I noticed commit
 
-Signed-off-by: Zhou,Junde <zhoujd@clounix.com>
----
- drivers/i2c/i2c-core-smbus.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+  a71baee992c6 ("MAINTAINERS: remove bfields")
 
-diff --git a/drivers/i2c/i2c-core-smbus.c b/drivers/i2c/i2c-core-smbus.c
-index e5b2d1465e7e..9fbc96be6958 100644
---- a/drivers/i2c/i2c-core-smbus.c
-+++ b/drivers/i2c/i2c-core-smbus.c
-@@ -254,6 +254,8 @@ s32 i2c_smbus_write_block_data(const struct i2c_client *client, u8 command,
- 
- 	if (length > I2C_SMBUS_BLOCK_MAX)
- 		length = I2C_SMBUS_BLOCK_MAX;
-+	if (length == 0)
-+		return -EINVAL;
- 	data.block[0] = length;
- 	memcpy(&data.block[1], values, length);
- 	return i2c_smbus_xfer(client->adapter, client->addr, client->flags,
-@@ -271,6 +273,8 @@ s32 i2c_smbus_read_i2c_block_data(const struct i2c_client *client, u8 command,
- 
- 	if (length > I2C_SMBUS_BLOCK_MAX)
- 		length = I2C_SMBUS_BLOCK_MAX;
-+	if (length == 0)
-+		return -EINVAL;
- 	data.block[0] = length;
- 	status = i2c_smbus_xfer(client->adapter, client->addr, client->flags,
- 				I2C_SMBUS_READ, command,
-@@ -290,6 +294,8 @@ s32 i2c_smbus_write_i2c_block_data(const struct i2c_client *client, u8 command,
- 
- 	if (length > I2C_SMBUS_BLOCK_MAX)
- 		length = I2C_SMBUS_BLOCK_MAX;
-+	if (length == 0)
-+		return -EINVAL;
- 	data.block[0] = length;
- 	memcpy(data.block + 1, values, length);
- 	return i2c_smbus_xfer(client->adapter, client->addr, client->flags,
--- 
-2.25.1
+in the cel tree and was sondering if I shuld remove the nfsd tree
+(git://git.linux-nfs.org/~bfields/linux.git#nfsd-next) from linux-next.
+Maybe I sould rename the cel tree
+(git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux#for-next)
+to be the nfsd treeas well?
 
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/R05/Lu/5BP.okjeZPRkFH+e
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHXqX0ACgkQAVBC80lX
+0Gzw/wf/RZy3GNt+lkB5hxKtr+dvGBze6MczKvPVlnxjFq1YpNr3XfmZcxeMrZBh
+8xTcMhvCefxYbHXSJlSbom5ESe/gNyuVWQrhOZZTtZzXiXNafp/dSBRKX1F9SImg
+7iUIGfUliSHg72/p8BMnII5hAByGrJOsRQDCvlvQ5ER8euJTKOg2A5gMLbcwAjhE
+/H00rMc3IWW6mBleh5wuLfxJoH5UwzlHn2qENpmx5iLSIZGtLqAxI9xUPysmK5qJ
+Xzw5RcBr8DYBLp4LE4+FyOXNErtljfjjMXya63dDZOTEvFiDoL90yAOFJ4xoycee
+vS4u/pN5m8Q7Gqcjv65qX7bz2wx5VQ==
+=v5dq
+-----END PGP SIGNATURE-----
+
+--Sig_/R05/Lu/5BP.okjeZPRkFH+e--
