@@ -2,184 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 13:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 13:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347654AbiAGNpy (ORCPT
+        id S1347664AbiAGNqq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 08:45:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347641AbiAGNpx (ORCPT
+        Fri, 7 Jan 2022 08:46:46 -0500
+Received: from proxima.lasnet.de ([78.47.171.185]:52756 "EHLO
+        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233066AbiAGNqp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 08:45:53 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77CDDC061574;
-        Fri,  7 Jan 2022 05:45:53 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id iy13so5243803pjb.5;
-        Fri, 07 Jan 2022 05:45:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i+lccBWZs92uwFfTHiY+C7P7w5QeQD6HvfPbWszHYKA=;
-        b=WB3POu3MvaFnI14GT7AEAhJA/EAkXen3J6K8rXO3cqKNeQkXI9mDdbPRNyD1fhY/QK
-         mtQWQ6U+2TGtgvsWxlCwm/3PcnfLxpEjCm/EKgBhhvJrO32HKufu6u6QAKs4zmgzQBSZ
-         7t47bObKphlzgKBH126EHAk3y9nruMzegPyh1Leze8Sve6MGC/2Rd8dg1v0WGuRAyge0
-         wTJiPEeXWSJw7Jbv3IR7gaOND9MhQPwp1JZ1yWO2OTcVQN1It7q1dGkUvKR1Zna5ziQO
-         3p7rSTKmCZUCzNyxXc7dv3hhKCj/puhMyyHsu7+zpzYVFB90hXX86d/OMAPuRFIbLcvM
-         EiJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=i+lccBWZs92uwFfTHiY+C7P7w5QeQD6HvfPbWszHYKA=;
-        b=M1vnVxzJiA3BoNi0Pn9ICSz/5/4qcBNfdcfsk8mHwTJt7z9h7Ipi6WNqS00Dl+08PH
-         51+Qbzje1nK/T/xR38Yaw3N1UY1eCNFT/oVoOU271EnS6gadM6U4YEhOOFtqJARY4ta8
-         dKdTnJxLLOiSV4r/HSqs/Iv0A8hksABbbjFN1OxFNGv1RqX4ZvbX3jc97XBYYoo6YfXH
-         uPw41DDC+iaQmvCxAVtfmuTsDx24xQk7D0fFPRMepFqRA9vAGHvfXzJ/3ovRDgfWoWHU
-         J6RPlPcTLlK5oMJLW8VIL2ZHHj7adYO6HbsMkXt0D2GAmaLZrlokQMxs3oUW0++OFteP
-         69Rw==
-X-Gm-Message-State: AOAM533zgBuWNesIau2k/oPcNXnQOrPWb4wYBFaixbaTxDeCXQXGHmVD
-        GhCa0Q2aau2s9oloQUrU5Jo=
-X-Google-Smtp-Source: ABdhPJzN3koh93SG9baH8JM1gF3tNPNzQNNPHi3o3DE2ULeT07sBlCdaPY/yvvCkBZLgGgUAzCQ7iQ==
-X-Received: by 2002:a17:903:22c2:b0:148:fcc0:aae8 with SMTP id y2-20020a17090322c200b00148fcc0aae8mr64042522plg.148.1641563152990;
-        Fri, 07 Jan 2022 05:45:52 -0800 (PST)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id e30sm4566471pgb.10.2022.01.07.05.45.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 05:45:52 -0800 (PST)
-Subject: Re: [PATCH v2 0/4] docs: sphinx/kfigure.py: Improve conversion to PDF
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>
-References: <e01fe9f9-f600-c2fc-c6b3-ef6395655ffe@gmail.com>
-From:   Akira Yokosawa <akiyks@gmail.com>
-Message-ID: <e545803a-8f09-f0e7-4ca0-16b673ef1796@gmail.com>
-Date:   Fri, 7 Jan 2022 22:45:47 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 7 Jan 2022 08:46:45 -0500
+Received: from [IPV6:2003:e9:d724:9af0:641c:922:9a06:5c2c] (p200300e9d7249af0641c09229a065c2c.dip0.t-ipconnect.de [IPv6:2003:e9:d724:9af0:641c:922:9a06:5c2c])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 5A894C005A;
+        Fri,  7 Jan 2022 14:46:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1641563203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9ta7MOcivJtNYj5c/HQIfAoE0zlPdJosOBmR89DAXB8=;
+        b=jP5tLhBwcj7/nUdpKppFv9+9bSM986kOXpBVgu0qRTYHr99NNpNQScwVwOHOPvbnWdR53x
+        SMWeniQS9VoqhH7l7NRu6wGnwDbLaz+wxg/wz456Gk+TRO9kfUt+geOoOm4oH/3ZeQRZlr
+        cI0Xaywxu4aWBdcx9OYxJ0v8niAj/m8myM66/xy8bZG/QWgZQdRJlOT1a3LQMQEd7rysv1
+        kM8rfnm6k9KFbnzqd+ssl59BD9tyTgFuRMhuOoPvlto4hz61MdKTRoX52/jSkjOkwbiVtk
+        aKRJa0i2x66L8x4UQOSPX9b1GSdybR6kS8ncMOfvvsPgcri4yf2PZaTJrTfeEA==
+Message-ID: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
+Date:   Fri, 7 Jan 2022 14:46:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <e01fe9f9-f600-c2fc-c6b3-ef6395655ffe@gmail.com>
-Content-Type: text/plain; charset=utf-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH -next] ieee802154: atusb: move to new USB API
 Content-Language: en-US
+To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220105144947.12540-1-paskripkin@gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220105144947.12540-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 29 Dec 2021 20:42:00 +0900, Akira Yokosawa wrote:
-> This patch set improves conversions of DOT -> PDF and SVG -> PDF
-> for PDF docs.
 
-Gentle ping.
+Hello.
 
-Mauro, any comments?
+On 05.01.22 15:49, Pavel Skripkin wrote:
+> @@ -176,9 +105,13 @@ static int atusb_read_subreg(struct atusb *lp,
+>   			     unsigned int addr, unsigned int mask,
+>   			     unsigned int shift)
+>   {
+> -	int rc;
+> +	int rc, ret;
+> +
+> +	ret = usb_control_msg_recv(lp->usb_dev, 0, ATUSB_REG_READ, ATUSB_REQ_FROM_DEV,
 
-> 
-> * DOT -> PDF conversion
-> 
-> Current scheme uses "dot -Tpdf" (of graphviz).
-> 
-> Cons:
->   - openSUSE's dot(1) does not support -Tpdf.
->   - Other distro's dot(1) generates PDFs with unnecessarily wide
->     margins for inclusion into LaTeX docs.
-> 
-> Patch 1/4 changes the route to the following two steps:
-> 
->   1. DOT -> SVG by "dot -Tsvg"
->   2. SVG -> PDF by "rsvg-convert -f pdf" with fallback to convert(1)
-> 
-> Pros:
->   - Improved portability across distros
->   - Less space around graphs in final PDF documents
-> 
-> Con:
->   - On systems without rsvg-convert, generated PDF will be of raster
->     image.
-> 
-> Patch 2/4 avoids raster-image PDF by using "dot -Tpdf" on systems where
-> the option is available.
-> 
-> * SVG -> PDF conversion
-> 
-> Current scheme uses convert(1) (of ImageMagick)
+You are changing the meaning of the rc variable away from a return code. 
+Its the register value now. I would prefer if we change the name to 
+something like reg to reflect this new meaning.
 
-I was not aware of security concerns regarding ImageMagick until
-Christoph brought them up in another thread [1].
+> +				   0, addr, &rc, 1, 1000, GFP_KERNEL);
+> +	if (ret < 0)
+> +		return ret;
+>   
+> -	rc = atusb_read_reg(lp, addr);
+>   	rc = (rc & mask) >> shift;
+>   
+>   	return rc;
 
-[1]: https://lore.kernel.org/linux-doc/20220104131952.GA21933@lst.de/
+The change above and the bug fix I reported the other day is all that is 
+missing for this to be applied. You want to send a v2 with this changes 
+or do you prefer me doing them here locally and apply?
 
-Now I can add another Con as bellow.
-
-> 
-> Cons:
-    - ImageMagick is not allowed to read/write PDF by default under
-      Debian/Ubuntu and Gentoo systems.  The policy is a band-aide
-      fix to its security issues.
->   - Generated PDFs are of raster image.  Some of them look blurry.
->   - Raster images tend to be large in size.
->   - convert(1) delegates SVG decoding to rsvg-convert(1).
->     It doesn't cover full range of Inkscape-specific SVG features
->     and fails to convert some of SVG figures properly.
-
-        Thanks, Akira
-
-> 
-> Improper conversions are observed with SVGs listed below (incomplete,
-> conversion quality depends on the version of rsvg-convert):
->   - Documentation/userspace-api/media/v4l/selection.svg
->   - Documentation/userspace-api/media/v4l/vbi_525.svg
->   - Documentation/userspace-api/media/v4l/vbi_625.svg
->   - Documentation/userspace-api/media/v4l/vbi_hsync.svg
->   - Documentation/admin-guide/blockdev/drbd/DRBD-8.3-data-packets.svg
->   - Documentation/admin-guide/blockdev/drbd/DRBD-data-packages.svg
-> 
-> If you have Inkscape installed as well, convert(1) delegates SVG
-> decoding to inkscape(1) rather than to rsvg-convert(1) and SVGs listed
-> above can be rendered properly.
-> 
-> So if Inkscape is required for converting those SVGs properly, why not
-> use it directly in the first place?
-> 
-> Patches 3/4 and 4/4 add code to utilize inkscape(1) for SVG -> PDF
-> conversion when it is available.  They don't modify any existing
-> requirements for kernel-doc.
-> 
-> Patch 3/4 adds the alternative route of SVG -> PDF conversion by
-> inkscape(1).
-> Patch 4/4 delegates warning messages from inkscape(1) to kernellog.verbose
-> as they are likely harmless in command-line uses.
-> 
-> Pros:
->   - Generated PDFs are of vector graphics.
->   - Vector graphics tends to be smaller in size and looks nicer when
->     zoomed in.
->   - SVGs drawn by Inkscape are fully supported.
-> 
-> On systems without Inkscape, no regression is expected by these two
-> patches.
-> 
-> Changes since v1 (as of Patch 5/3) [1]:
-> 
-> - Reorder and merge patches to reduce/eliminate regression windows of
->   raster-image PDF and stderr redirection.
->     v1        v2
->     1/3       1/4
->     4/3       2/4
->     2/3       3/4
->     3/3+5/3   4/4
-> 
-> - Massage kernellog.verbose/warn messages. They now show command(s)
->   used in DOT -> PDF conversion.
-> 
-> - Pass actual exit code of inkscape(1) to kernellog.warn.
-> 
-> FWIW, diff of v1 vs. v2 follows:
-> 
-> --------------------------------------------------------------
-[...]
-
+regards
+Stefan Schmidt
