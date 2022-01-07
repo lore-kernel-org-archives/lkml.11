@@ -2,82 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F05C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD47C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 20:05:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233749AbiAGT62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:58:28 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:22418 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S231377AbiAGT60 (ORCPT
+        id S233906AbiAGUFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 15:05:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36428 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233027AbiAGUFu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:58:26 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 207Fo27U008191;
-        Fri, 7 Jan 2022 13:58:23 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=mtESrcOKgKXQmkilrqoNob9Tn40gKNW7FNM5KPZ6lbo=;
- b=otW07zScz2YLzJEEM/HVrSHwyN2F/djLUeGgSLyX+MTI1HTdb7k7oeTwWuGgvjcztPDw
- pNjphlG2r2jEn98gl1XyqAJBdaPaPYK2Gtw1DO/i3hUN24I2uuKfm+tXQjyEB807WEXW
- pUPTBPipfuGpfVsASbAk8EER42w1jplKdKmyWX5nv45JgIfgY5wcEY0zHAxJ2NUVkIbB
- kJXRbjXbIMpJIetzvjJ0HBfjDqPZvuhsqBKw1u3pAY0XbEd61S/eaDoqqVkZemkuo0wy
- b7/GbOZMHmj/Unq6TKClZ2erIxmOfyPvHSSJ46nhiXhSNl3e0mwlTtpxn7/ya9sKA0gN lQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dergng88h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 07 Jan 2022 13:58:23 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Fri, 7 Jan
- 2022 19:58:21 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 7 Jan 2022 19:58:21 +0000
-Received: from ricardo-lws.crystal.cirrus.com (ricardo-lws.ad.cirrus.com [141.131.206.19])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id DBA4E2A9;
-        Fri,  7 Jan 2022 19:58:19 +0000 (UTC)
-From:   Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
-To:     <sre@kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <patches@opensource.cirrus.com>
-CC:     Ricardo Rivera-Matos <rriveram@opensource.cirrus.com>
-Subject: [PATCH v2 0/2] Introduces bypass charge type property
-Date:   Fri, 7 Jan 2022 13:58:04 -0600
-Message-ID: <20220107195806.100956-1-rriveram@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 7 Jan 2022 15:05:50 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A18C06173E
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 12:05:50 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id u20so5978840pfi.12
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 12:05:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gbu1UV7Je4keqcQjWsILOs+1k4ApZXjllWNZvpUcAyY=;
+        b=Ggu+M7GRA58WAOXFL5u2VgLxDJSFBy7yc7+mqNI3FY7rP/LYXpT5BfXZFroBP+Zx9c
+         CQ6rTMNdT7youwhkgGq0RHKxHtXIYSYQmpPDBkC4BmkvtYFp8q7BxS8yX1KATD5rPEwa
+         zDFN2L+lKdIU9PP2gowGE2NC1Kyr2jBCOcp/s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gbu1UV7Je4keqcQjWsILOs+1k4ApZXjllWNZvpUcAyY=;
+        b=MbrosFAa3p7dqSCANXSPFmoYzkCZw2mqbJSyXTX8/L5WG89FuRIKd49NOdGbro9qeo
+         NOWhqh5CwMmfH9PQpmjXWdYkb35f07cHaIO8mrSPn6xrX9FUM9xO7rGOisGp2Z484Y66
+         36Uf9Hi/QDlaMrOxc5ouWP/imR3qnqc+3gQuwa2dlBa/dj9FgpcFvkEU6Z2Dbwg6hoHy
+         Nl01tTX2QqDRYbJldQKTjiHyGf8fJEQ9db4qtBoYPBJQ2OGXiP0YUf5fTHNyxDDQGMyH
+         gkRkzNToLGj8uZnHKkAtUN7E6HVYnN2lcJiJgDtVqBmQx3JuX1p1DoQCdz4XZ+dOG2im
+         Slqw==
+X-Gm-Message-State: AOAM531bPqrLYtz6qJNJZcrdtQEaEfCgCMlxQ5TXLR5F7ZJKhrc42wI3
+        Wety3wEsVaWkqU+gNjb+8Z362w==
+X-Google-Smtp-Source: ABdhPJzh4NsZEYJ4W8U++BkJJcARgLs5oZM7+ClhAagD5qU4JTrllIyfj/ssE8KrIKjdLFswYSSuYQ==
+X-Received: by 2002:a05:6a00:1a52:b0:4bb:3ab:88a6 with SMTP id h18-20020a056a001a5200b004bb03ab88a6mr66566958pfv.29.1641585949835;
+        Fri, 07 Jan 2022 12:05:49 -0800 (PST)
+Received: from kuabhs-cdev.c.googlers.com.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
+        by smtp.gmail.com with ESMTPSA id y18sm5929492pfn.202.2022.01.07.12.05.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 12:05:49 -0800 (PST)
+From:   Abhishek Kumar <kuabhs@chromium.org>
+To:     kvalo@codeaurora.org, dianders@chromium.org
+Cc:     pillair@codeaurora.org, kuabhs@chromium.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>, ath10k@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH 1/2] ath10k: search for default BDF name provided in DT
+Date:   Fri,  7 Jan 2022 20:04:30 +0000
+Message-Id: <20220107200417.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
+X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: uoxMeuUJ0Ge2r1-NdkQrl5DjQSOZmnNg
-X-Proofpoint-ORIG-GUID: uoxMeuUJ0Ge2r1-NdkQrl5DjQSOZmnNg
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+There can be cases where the board-2.bin does not contain
+any BDF matching the chip-id+board-id+variant combination.
+This causes the wlan probe to fail and renders wifi unusable.
+For e.g. if the board-2.bin has default BDF as:
+bus=snoc,qmi-board-id=67 but for some reason the board-id
+on the wlan chip is not programmed and read 0xff as the
+default value. In such cases there won't be any matching BDF
+because the board-2.bin will be searched with following:
+bus=snoc,qmi-board-id=ff
+To address these scenarios, there can be an option to provide
+fallback default BDF name in the device tree. If none of the
+BDF names match then the board-2.bin file can be searched with
+default BDF names assigned in the device tree.
 
-This patch series introduces a new POWER_SUPPLY_CHARGE_TYPE for bypass charging
-operation.
+The default BDF name can be set as:
+wifi@a000000 {
+	status = "okay";
+	qcom,ath10k-default-bdf = "bus=snoc,qmi-board-id=67";
+};
 
-In fast charging ICs, the bypass operation is used to bypass the charging path
-around the charging IC's integrated power converter to its load. This allows
-for "smart" wall adaptors (such as USB PPS standard power adaptors) to handle
-the power conversion and heat dissipation externally.
+Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
+Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+---
 
-Best Regards,
-Ricardo
+ drivers/net/wireless/ath/ath10k/core.c | 30 ++++++++++++++++++++++++++
+ drivers/net/wireless/ath/ath10k/core.h |  5 +++++
+ drivers/net/wireless/ath/ath10k/qmi.c  |  4 ++++
+ 3 files changed, 39 insertions(+)
 
-Ricardo Rivera-Matos (2):
-  power: supply: Introduces bypass charging property
-  power: supply: bq25980: Implements POWER_SUPPLY_CHARGE_TYPE_BYPASS
-
- drivers/power/supply/bq25980_charger.c    | 2 +-
- drivers/power/supply/power_supply_sysfs.c | 1 +
- include/linux/power_supply.h              | 1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index 8f5b8eb368fa..a7008c853f0f 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -1081,6 +1081,32 @@ int ath10k_core_check_dt(struct ath10k *ar)
+ }
+ EXPORT_SYMBOL(ath10k_core_check_dt);
+ 
++int ath10k_core_parse_default_bdf_dt(struct ath10k *ar)
++{
++	struct device_node *node;
++	const char *board_name = NULL;
++
++	ar->id.default_bdf[0] = '\0';
++
++	node = ar->dev->of_node;
++	if (!node)
++		return -ENOENT;
++
++	of_property_read_string(node, "qcom,ath10k-default-bdf",
++				&board_name);
++	if (!board_name)
++		return -ENODATA;
++
++	if (strscpy(ar->id.default_bdf,
++		    board_name, sizeof(ar->id.default_bdf)) < 0)
++		ath10k_warn(ar,
++			    "default board name is longer than allocated buffer, board_name: %s; allocated size: %d\n",
++			    board_name, sizeof(ar->id.default_bdf));
++
++	return 0;
++}
++EXPORT_SYMBOL(ath10k_core_parse_default_bdf_dt);
++
+ static int ath10k_download_fw(struct ath10k *ar)
+ {
+ 	u32 address, data_len;
+@@ -1441,6 +1467,10 @@ static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
+ 	if (ret == -ENOENT && fallback_boardname2)
+ 		ret = ath10k_core_search_bd(ar, fallback_boardname2, data, len);
+ 
++	/* check default BDF name if provided in device tree */
++	if (ret == -ENOENT && ar->id.default_bdf[0] != '\0')
++		ret = ath10k_core_search_bd(ar, ar->id.default_bdf, data, len);
++
+ 	if (ret == -ENOENT) {
+ 		ath10k_err(ar,
+ 			   "failed to fetch board data for %s from %s/%s\n",
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index 9f6680b3be0a..1201bb7bb8ab 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -79,6 +79,9 @@
+ /* The magic used by QCA spec */
+ #define ATH10K_SMBIOS_BDF_EXT_MAGIC "BDF_"
+ 
++/* Default BDF board name buffer size */
++#define ATH10K_DEFAULT_BDF_BUFFER_SIZE 0x40
++
+ /* Default Airtime weight multipler (Tuned for multiclient performance) */
+ #define ATH10K_AIRTIME_WEIGHT_MULTIPLIER  4
+ 
+@@ -1102,6 +1105,7 @@ struct ath10k {
+ 		bool ext_bid_supported;
+ 
+ 		char bdf_ext[ATH10K_SMBIOS_BDF_EXT_STR_LENGTH];
++		char default_bdf[ATH10K_DEFAULT_BDF_BUFFER_SIZE];
+ 	} id;
+ 
+ 	int fw_api;
+@@ -1342,6 +1346,7 @@ int ath10k_core_register(struct ath10k *ar,
+ void ath10k_core_unregister(struct ath10k *ar);
+ int ath10k_core_fetch_board_file(struct ath10k *ar, int bd_ie_type);
+ int ath10k_core_check_dt(struct ath10k *ar);
++int ath10k_core_parse_default_bdf_dt(struct ath10k *ar);
+ void ath10k_core_free_board_files(struct ath10k *ar);
+ 
+ #endif /* _CORE_H_ */
+diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
+index 80fcb917fe4e..a57675308014 100644
+--- a/drivers/net/wireless/ath/ath10k/qmi.c
++++ b/drivers/net/wireless/ath/ath10k/qmi.c
+@@ -831,6 +831,10 @@ static int ath10k_qmi_fetch_board_file(struct ath10k_qmi *qmi)
+ 	if (ret)
+ 		ath10k_dbg(ar, ATH10K_DBG_QMI, "DT bdf variant name not set.\n");
+ 
++	ret = ath10k_core_parse_default_bdf_dt(ar);
++	if (ret)
++		ath10k_dbg(ar, ATH10K_DBG_QMI, "Default BDF name not set in device tree.\n");
++
+ 	return ath10k_core_fetch_board_file(qmi->ar, ATH10K_BD_IE_BOARD);
+ }
+ 
 -- 
-2.25.1
+2.34.1.575.g55b058a8bb-goog
 
