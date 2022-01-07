@@ -2,87 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B96C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3612DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:04:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232350AbiAGTCa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:02:30 -0500
-Received: from out01.mta.xmission.com ([166.70.13.231]:40296 "EHLO
-        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232677AbiAGTC2 (ORCPT
+        id S231972AbiAGTEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:04:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229532AbiAGTEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:02:28 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:43986)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n5uVP-00HEhT-Dg; Fri, 07 Jan 2022 12:02:27 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:48656 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n5uVO-003OyS-Em; Fri, 07 Jan 2022 12:02:27 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <20211208202532.16409-3-ebiederm@xmission.com>
-        <YdUxGKRcSiDy8jGg@zeniv-ca.linux.org.uk>
-        <Yde2wwNmqzRTxh1f@zeniv-ca.linux.org.uk>
-Date:   Fri, 07 Jan 2022 13:02:19 -0600
-In-Reply-To: <Yde2wwNmqzRTxh1f@zeniv-ca.linux.org.uk> (Al Viro's message of
-        "Fri, 7 Jan 2022 03:42:59 +0000")
-Message-ID: <87mtk7wero.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 7 Jan 2022 14:04:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3700C061574;
+        Fri,  7 Jan 2022 11:04:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B476AB826D7;
+        Fri,  7 Jan 2022 19:04:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B472C36AF7;
+        Fri,  7 Jan 2022 19:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641582290;
+        bh=nNx8Ez8RuJzMEX0m/nrXYhE49DyWxePNuMQ+s2d9OD0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=m5gR7RqmffLGvhknYYWgFF3VAibsPeF8pQrWF6J3+O0Kwz6qm6XXlJkcskjX1N4Q5
+         /jKuE1HIfpPOcj538lEcF7XofVhmgV9bZnspFkZYIqt25o+CBtAuYTuwK07E4O4Eao
+         IgV8kJKtof1HzpHJ448rDdWmv4pdIolVmAbycc8M+57w03HK8IHG//VGh/BuFQeuW1
+         UYeWn8ZQhIBB0Nowg+kYaTHNYL/q61abrwLil2XugJ5CHdaYnlk0M5sBTabv0yV3fb
+         wihs/R7/mPeK7wvKs32NSOyaxq+xdF+lXIsK6Ny4Tee9ezGd6ggzhvCI8qQQxa20qw
+         Innkz7FsgnU5g==
+Received: by mail-ed1-f48.google.com with SMTP id u25so25766680edf.1;
+        Fri, 07 Jan 2022 11:04:50 -0800 (PST)
+X-Gm-Message-State: AOAM530KrgBE2f92QdT2Ea7Yzt3zwGlt6mj6RrKP18ficABe++9EAWJh
+        LidLXd1Brzm5BJ+bFXgB/0k1oCFgh2+7OWOaMQ==
+X-Google-Smtp-Source: ABdhPJw+wXf/3puw/6oK452xH+IpOasvCo6eBekERmd/axjyL/WBlDh/+JCf89iqY3bdCvCGkFWJtxidbbj8CqZW4bY=
+X-Received: by 2002:aa7:ce88:: with SMTP id y8mr5876517edv.303.1641582288710;
+ Fri, 07 Jan 2022 11:04:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1n5uVO-003OyS-Em;;;mid=<87mtk7wero.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19YtqG0d1ZS9sns+co2Ay8/Z9Im23FAtf4=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 03/10] exit: Move oops specific logic from do_exit into
- make_task_dead
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <20220107115345.9075-1-tinghan.shen@mediatek.com> <20220107115345.9075-3-tinghan.shen@mediatek.com>
+In-Reply-To: <20220107115345.9075-3-tinghan.shen@mediatek.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 7 Jan 2022 13:04:37 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKctALMWbNytCP7TGKEcCaoOVpm4eHQ3PUHDy2AKrwfmg@mail.gmail.com>
+Message-ID: <CAL_JsqKctALMWbNytCP7TGKEcCaoOVpm4eHQ3PUHDy2AKrwfmg@mail.gmail.com>
+Subject: Re: [PATCH v8 2/4] dt-bindings: arm: cpus: Add cortex-a78 compatible
+To:     Tinghan Shen <tinghan.shen@mediatek.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Al Viro <viro@zeniv.linux.org.uk> writes:
-
-> On Wed, Jan 05, 2022 at 05:48:08AM +0000, Al Viro wrote:
->> On Wed, Dec 08, 2021 at 02:25:25PM -0600, Eric W. Biederman wrote:
->> > The beginning of do_exit has become cluttered and difficult to read as
->> > it is filled with checks to handle things that can only happen when
->> > the kernel is operating improperly.
->> > 
->> > Now that we have a dedicated function for cleaning up a task when the
->> > kernel is operating improperly move the checks there.
->> 
->> Umm...  I would probably take profile_task_exit() crap out before that
->> point.
->> 	1) the damn thing is dead - nothing registers notifiers there
->> 	2) blocking_notifier_call_chain() is not a nice thing to do on oops...
->> 
->> I'll post a patch ripping the dead parts of kernel/profile.c out tomorrow
->> morning (there's also profile_handoff_task(), equally useless these days
->> and complicating things for __put_task_struct()).
+On Fri, Jan 7, 2022 at 5:54 AM Tinghan Shen <tinghan.shen@mediatek.com> wrote:
 >
-> Argh...  OK, so your subsequent series had pretty much the same thing.
-> My apologies - still digging myself out from mail pile that had accumulated
-> over two months ;-/
+> Add ARM cpu type cortex-a78.
+>
+> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> ---
+>  Documentation/devicetree/bindings/arm/cpus.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 
-No worries.  I really appreciate getting some detail review.  Some
-things just take another set of eyes to spot.
+I already have a patch for this pending for 5.17.
 
-Eric
-
+Rob
