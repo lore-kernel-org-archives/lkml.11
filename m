@@ -2,78 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3751C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61A76C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:27:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230064AbiAGLZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:25:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40254 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347093AbiAGLZm (ORCPT
+        id S1347101AbiAGL1F (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 06:27:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236924AbiAGL1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:25:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641554741;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LihP/f7kkQcoH5EB358WZj2ActRS2QGX7JqNWfqK9rU=;
-        b=gFvKGa1wWIPYVY+Frs5OfyVJxbZzmB3ATD13/EuvOAiFFafKl1AfK946JVFd1zwa5OPAtj
-        fbLK/terXisLsMuLBD2G3Zudyxz6daLbIx29vbsFnA9yjntGE8S+uEsRCqI1xZLQeChNIF
-        RhFw0UpnYPeZTJo/NZ8JfOFhyPBHvxg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-25-ujFKLBTZNaCuaYSpYvGkxQ-1; Fri, 07 Jan 2022 06:25:33 -0500
-X-MC-Unique: ujFKLBTZNaCuaYSpYvGkxQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C3041800D50;
-        Fri,  7 Jan 2022 11:25:31 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C1DF02A189;
-        Fri,  7 Jan 2022 11:25:17 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <94b5163b0652c6106aa01a0f4c03bdf57c0a7e71.camel@kernel.org>
-References: <94b5163b0652c6106aa01a0f4c03bdf57c0a7e71.camel@kernel.org> <164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk> <164021552299.640689.10578652796777392062.stgit@warthog.procyon.org.uk>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        Trond Myklebust <trondmy@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Omar Sandoval <osandov@osandov.com>,
-        JeffleXu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 46/68] cachefiles: Mark a backing file in use with an inode flag
+        Fri, 7 Jan 2022 06:27:02 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715C2C061245
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 03:27:02 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id g26so14390026lfv.11
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 03:27:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=RxWUtBRyBuu8CzF10hutvoPzGTvhxAChpkFfMOfJmvE=;
+        b=GA0Mf+iffPTAJnINy4M8AAt9tQbBULAZNoe8zLYeTstHuqComujV6aSKbEHJldF3gZ
+         +SirHlsCed9J1FeMafhn04vYGrqEHzujD7KmEp1E3sLfuiFPfFLQnkOyk/xApF+taYCP
+         sX9kYvcGx/npGKYFo6Fh5HSKuMIGEhgTOupbFE4bEFdZkZ31ckdVKz1kn4IStozwGaAV
+         AbrlpHtxYmAhKypfQq0Uld+lgYiu657i+3EPsAVt/Y7/AK8VoT/fnkpRp9zOF6tjN8xX
+         T6HZ4DZTKdgRQ9SmL2M+Q9hQFbgahgWswsEtv+zJ5vLQLdvZVgIiG4ZVeuJWaNzqa/YY
+         JaxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RxWUtBRyBuu8CzF10hutvoPzGTvhxAChpkFfMOfJmvE=;
+        b=LrRcev4mfW6N+rUFiQOKRLH066W6z1iP2uRqtDkphtypLXKwYZ89AvkKMi5nCBaDv/
+         ZSwbib/V4CDr7oiHEahbNVpzXGbVjtzPWMOHsCUEKTRtbyeg96a2A741AKQZQf1m/JFU
+         v1+O+bnSzdXCY1FZJYtNHoFnLIv88ag+bwMCC4SFfQBjvnB0dKsBdq9WZOQ4WiOyvi+J
+         qhd082Nw/WHHTPVWu2njVACpUchkl0KiEgGawOGoSVwPtGKdDu1TQBeg8ZrT6aFC1lBb
+         HbIwkEuYULO3ANNmk5CFTv6AMKdUmPaayJGgRSL55XL/XKtN+EHeNxHxF2Wb5fNmVSjD
+         O1cQ==
+X-Gm-Message-State: AOAM531e5kKXsMswk7GP/isyaBt76cHke1ti4chpgJlMwm/s0wwjciDh
+        JA9xgDm7yMANkv0NzV/Jkjs=
+X-Google-Smtp-Source: ABdhPJww9MRxbZpc0vn18WhW4VAK3hqhxh0WUsSaZY9VC/I3EJvcyZ+NUMJLAxDRTD3ZBd4oo2HE5Q==
+X-Received: by 2002:ac2:4e06:: with SMTP id e6mr55038059lfr.59.1641554820683;
+        Fri, 07 Jan 2022 03:27:00 -0800 (PST)
+Received: from [192.168.1.11] ([217.117.245.67])
+        by smtp.gmail.com with ESMTPSA id z10sm541947lfd.220.2022.01.07.03.26.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 03:27:00 -0800 (PST)
+Message-ID: <2a79a17c-5cfd-9aec-cf44-b44fb382eb6c@gmail.com>
+Date:   Fri, 7 Jan 2022 14:26:59 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3149601.1641554716.1@warthog.procyon.org.uk>
-Date:   Fri, 07 Jan 2022 11:25:16 +0000
-Message-ID: <3149602.1641554716@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH 03/19] staging: r8188eu: release_firmware is not called if
+ allocation fails
+Content-Language: en-US
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Michael Straube <straube.linux@gmail.com>,
+        Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220107103620.15648-1-straube.linux@gmail.com>
+ <20220107103620.15648-4-straube.linux@gmail.com>
+ <ca0548c0-b36c-98dc-3e49-b629b3d3fb6a@gmail.com> <YdgjJRwLjIBWVQvU@kroah.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <YdgjJRwLjIBWVQvU@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jeff Layton <jlayton@kernel.org> wrote:
+Hi Greg,
 
-> Probably, this patch should be merged with #38. The commit logs are the
-> same, and they are at least somewhat related.
+On 1/7/22 14:25, Greg KH wrote:
+>> Or, maybe, Greg knows some magic that will help here, we can wait him before
+>> you resend 20 patch series :)
+> 
+> It's just not worth it for this staging driver, and for an allocation
+> failure, to be backported here.  Allocation failures almost never happen
+> in real-world situations, and if they do, they are not alone, so this
+> would be the least of the problems happening here.
+> 
+> So no need to care about it, I can take this as-is.
+> 
 
-That's not so simple, unfortunately.  Patch 46 requires bits of patches 43 and
-45 in addition to patch 38 and patch 39 depends on patch 38.
+Got it, thanks.
 
-David
 
+With regards,
+Pavel Skripkin
