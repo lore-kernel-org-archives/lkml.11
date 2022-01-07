@@ -2,85 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB40C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 14:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3CF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 14:50:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347885AbiAGOtS (ORCPT
+        id S1347802AbiAGOuh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 09:49:18 -0500
-Received: from smtp21.cstnet.cn ([159.226.251.21]:60372 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1347864AbiAGOtQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 09:49:16 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowABnb5_VUthhJmv7BQ--.49088S2;
-        Fri, 07 Jan 2022 22:48:53 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org
-Cc:     jirislaby@kernel.org, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v2] tty/serial: Check for null pointer after calling devm_ioremap
-Date:   Fri,  7 Jan 2022 22:48:52 +0800
-Message-Id: <20220107144852.4081390-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Fri, 7 Jan 2022 09:50:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232065AbiAGOug (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 09:50:36 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53663C06173E
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 06:50:35 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id bp20so16354222lfb.6
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 06:50:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/d5KDjwbf/j/V9ij+JUJJfPSYLZLI5qkKPPbe9Vs//U=;
+        b=TSQQd9jhNzdgS3Q7sdJuidX/1KozmxZOJpekwqz4vCyTaQJ0rasZkimqN1gSikS1qU
+         5mTIIQNXHNFkJJmoA5pdw/tkU3piK6RSo9iAuhCZ4ECRPyCUn37RqLa+VaLiYxcMpuDb
+         t+MQR23xB1RR8nipc42nCm6hy/YFXKkZWTGznXBUP6P3IzFXsae/msC7jAE+Acavbo8c
+         NJstSG+EF0TJBxSzbOGmizrIzDc1R3FH+8O9ARcr40nG5PXAmJyQrBdDt4l3K4K7V9/C
+         Mg2bcG9+oMqHgGbOFonCBXRJHWjABVNejlF32e74emPbBAmYYZBaaCac17K+SqgWns6B
+         VY7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/d5KDjwbf/j/V9ij+JUJJfPSYLZLI5qkKPPbe9Vs//U=;
+        b=kGE56TfBQP7tTM4BM5sQE+CJwN2qjyddOn5yJGF4UjUj1/q0qsnHULdzjGsFfgrijc
+         8Nrza/mzP01oL5Fm1Ki3Ew6Qz2AZ+a/uWZNkNhSAgTbUkeGcxUHhaqvotVav3OxkHZKc
+         U3clOA+uj0Q0Wwc/0F/fmOgpDSQR+/pdKcyt56IH4iAMP+TKeKTNdO2LJ5xRRB7gUc63
+         2YGAlpdnscD0SCOjpQzfVaITUy6/V5rkTA7lpCHYOtxVPnQ4m2JwZ/qVI0ctEV1LvDA9
+         Xf2HqkT0D2zuSqYAc4qo0yjYdXNvYKY53A/cqYvAM+y148zo4/RiylW9hLfy1yizTFIe
+         IOuw==
+X-Gm-Message-State: AOAM532iiWQHRE5Gsw0F1bOTw1lNFwuWDgtS4JKIUFpu8wQYnr7mmDPm
+        0jjE/y5TCJ3BK5k31U/zOdHpt1c9QrXMe4175f3Asw==
+X-Google-Smtp-Source: ABdhPJxmiIoDwltqWIeYOccdeCvfhPekqAhRl5CsJTEvUjmfpP0Y4AOg8V9wqCb3uZc4dt7YhDpUhKnR9B/+dEVTtNk=
+X-Received: by 2002:a19:6748:: with SMTP id e8mr26227258lfj.358.1641567033566;
+ Fri, 07 Jan 2022 06:50:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowABnb5_VUthhJmv7BQ--.49088S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xw4UZry8tw4UKr17Cr45Jrb_yoWkCrg_GF
-        n5uan5Cw18CF4Fya17JryfZFWqq390vayxWrn2gr9Iq3sxAF4kXFZrWrn3Zw4UW3yqvFyU
-        CrZruF47Zr1UujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2AFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_JFI_Gr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s
-        1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0
-        cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJVW8Jw
-        ACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6ry5MxAI
-        w28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr
-        4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxG
-        rwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJw
-        CI42IY6xAIw20EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r4j6F4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUVxRhUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+References: <20211218130014.4037640-1-daniel.lezcano@linaro.org>
+ <20211218130014.4037640-2-daniel.lezcano@linaro.org> <CAPDyKFpY4i0Mtb==8zknsuG0HdhPW2fXFvEN+AJScVmT65A-ow@mail.gmail.com>
+ <556eca9c-4ce8-1c79-cc6d-08d0ec603bd4@linaro.org>
+In-Reply-To: <556eca9c-4ce8-1c79-cc6d-08d0ec603bd4@linaro.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Fri, 7 Jan 2022 15:49:56 +0100
+Message-ID: <CAPDyKFpWtVFoqhFrhMQOgHUjggvg_GPYwmeK-jkphQpA7KQZRw@mail.gmail.com>
+Subject: Re: [PATCH v5 1/6] powercap/drivers/dtpm: Move dtpm table from init
+ to data section
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rjw@rjwysocki.net, lukasz.luba@arm.com, robh@kernel.org,
+        heiko@sntech.de, arnd@linaro.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
+        <linux-arch@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the devres_alloc(), the devm_ioremap()
-may return NULL pointer.
-And the 'port->membase' will be used in mlb_usio_startup() without the
-check.
-Therefore, in order to avoid the dereference of the NULL pointer, it
-should be better to add the check to guarantee the success of the probe.
+On Fri, 7 Jan 2022 at 14:15, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>
+> On 31/12/2021 14:33, Ulf Hansson wrote:
+> > On Sat, 18 Dec 2021 at 14:00, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+> >>
+> >> The dtpm table is used to let the different dtpm backends to register
+> >> their setup callbacks in a single place and preventing to export
+> >> multiple functions all around the kernel. That allows the dtpm code to
+> >> be self-encapsulated.
+> >
+> > Well, that's not entirely true. The dtpm code and its backends (or
+> > ops, whatever we call them) are already maintained from a single
+> > place, the /drivers/powercap/* directory. I assume we intend to keep
+> > it like this going forward too, right?
+> >
+> > That is also what patch4 with the devfreq backend continues to conform to.
+> >
+> >>
+> >> The dtpm hierarchy will be passed as a parameter by a platform
+> >> specific code and that will lead to the creation of the different dtpm
+> >> nodes.
+> >>
+> >> The function creating the hierarchy could be called from a module at
+> >> init time or when it is loaded. However, at this moment the table is
+> >> already freed as it belongs to the init section and the creation will
+> >> lead to a invalid memory access.
+> >>
+> >> Fix this by moving the table to the data section.
+> >
+> > With the above said, I find it a bit odd to put a table in the data
+> > section like this. Especially, since the only remaining argument for
+> > why, is to avoid exporting functions, which isn't needed anyway.
+> >
+> > I mean, it would be silly if we should continue to put subsystem
+> > specific tables in here, to just let them contain a set of subsystem
+> > specific callbacks.
+>
+> So I tried to change the approach and right now I was not able to find
+> an alternative keeping the code self-encapsulate and without introducing
+> cyclic dependencies.
+>
+> I suggest to keep the patch as it is and double check if it makes sense
+> to change it after adding more dtpm backends
+>
+> Alternatively I can copy the table to a dynamically allocated table.
 
-Fixes: ba44dc043004 ("serial: Add Milbeaut serial control")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog
+I am not sure I understand the problem. You don't need a "table of
+callbacks" at all, at least to start with.
 
-v1 -> v2
+Instead, what you need is to make a call to a function, or actually
+one call per supported dtpm type from dtpm_setup_dt() (introduced in
+patch2).
 
-* Change 1. Refine the commit message to be more clear.
----
- drivers/tty/serial/milbeaut_usio.c | 4 ++++
- 1 file changed, 4 insertions(+)
+For CPUs, you would simply call dtpm_cpu_setup() (introduced in
+patch3) from dtpm_setup_dt(), rather than walking the dtpm table an
+invoking the ->setup() callback.
 
-diff --git a/drivers/tty/serial/milbeaut_usio.c b/drivers/tty/serial/milbeaut_usio.c
-index 8f2cab7f66ad..1ecbf6d0dc79 100644
---- a/drivers/tty/serial/milbeaut_usio.c
-+++ b/drivers/tty/serial/milbeaut_usio.c
-@@ -523,6 +523,10 @@ static int mlb_usio_probe(struct platform_device *pdev)
- 	}
- 	port->membase = devm_ioremap(&pdev->dev, res->start,
- 				resource_size(res));
-+	if (!port->membase) {
-+		ret = -ENOMEM;
-+		goto failed;
-+	}
- 
- 	ret = platform_get_irq_byname(pdev, "rx");
- 	mlb_usio_irq[index][RX] = ret;
--- 
-2.25.1
+Did that make sense to you?
 
+Going forward, when we decide to introduce the option to add/remove
+support for dtpm types dynamically, you can then convert to a
+dynamically allocated table.
+
+[...]
+
+Kind regards
+Uffe
