@@ -2,94 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1347CC43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347278AbiAGLyd (ORCPT
+        id S1347290AbiAGLyo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:54:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238151AbiAGLyb (ORCPT
+        Fri, 7 Jan 2022 06:54:44 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:50902 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1347281AbiAGLyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:54:31 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7C5C061245;
-        Fri,  7 Jan 2022 03:54:30 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EAEDB1EC050F;
-        Fri,  7 Jan 2022 12:54:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1641556464;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=3MIYGxgH8IVPjiqqCa7t3Lo2u7g3b4PoNQjM+91zpCA=;
-        b=FU1VPAiZExsp8CWcc+5uBx2KE8ofLRKwYAEacXKc/WoJmG5ix8y6YepFTfg6BrR2tFRIRc
-        8z842ggZG/47ZdrSHS02L3fV+tCk1vJb09JWLACRvLM0eEMcdDwYtkbv67Urt3x5VGyg9k
-        05DcM2HDWfspdY8zhbyqugm2KSUdDW4=
-Date:   Fri, 7 Jan 2022 12:54:25 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v8 27/40] x86/boot: Add Confidential Computing type to
- setup_data
-Message-ID: <Ydgp8bjPdFTpD9KC@zn.tnic>
-References: <20211210154332.11526-1-brijesh.singh@amd.com>
- <20211210154332.11526-28-brijesh.singh@amd.com>
- <1fdaca61-884a-ac13-fb33-a47db198f050@intel.com>
- <ba485a09-9c35-4115-decc-1b9c25519358@amd.com>
- <2a5cfbd0-865c-2a8b-b70b-f8f64aba5575@intel.com>
- <f442ca7f-4530-1443-27eb-206d6ca0e7a4@amd.com>
- <48625a39-9e31-d7f2-dccf-74e9c27126f5@intel.com>
+        Fri, 7 Jan 2022 06:54:43 -0500
+X-UUID: 349a3cbda6f84196adc94d99ed68ac75-20220107
+X-UUID: 349a3cbda6f84196adc94d99ed68ac75-20220107
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1003195188; Fri, 07 Jan 2022 19:54:40 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 7 Jan 2022 19:54:39 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 7 Jan 2022 19:54:39 +0800
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <ryder.lee@kernel.org>, <wenst@chromium.org>,
+        <chunfeng.yun@mediatek.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>
+Subject: [PATCH v8 0/4] Add basic SoC support for mediatek mt8195
+Date:   Fri, 7 Jan 2022 19:53:41 +0800
+Message-ID: <20220107115345.9075-1-tinghan.shen@mediatek.com>
+X-Mailer: git-send-email 2.15.GIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <48625a39-9e31-d7f2-dccf-74e9c27126f5@intel.com>
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 07:08:07AM -0800, Dave Hansen wrote:
-> Could you please make the structure's size invariant?  That's great if
-> there's no problem in today's implementation, but it's best no to leave
-> little land mines like this around.  Let's say someone copies your code
-> as an example of something that interacts with a firmware table a few
-> years or months down the road.
+This series adds basic SoC support for Mediatek's SoC MT8195.
 
-Btw, about that cc blob thing: is TDX going to need something like that
-too and if so, can they use it too?
+---
+Changes in v8:
+  - v7 mediatek,spi-mtk-nor.yaml patch is applied in branch for-5.17 at 
+    kernel/git/broonie/spi.git
+  - v7 pinctrl-mt8195.yaml patch is applied in branch for-next at 
+    kernel/git/linusw/linux-pinctrl.git
+  - add cortex-a78 compatible to cpus dt-bindings
+  - add mediatek,drive-strength-adv property to pinctrl dt-bindings
+  - fix evb dts
+    - remove i2c nodes with disabled status from dts
+    - fix pin properties not match pinctrl dt-bindings
+    - remove unnecessary u3port*
+  - fix dtsi
+    - fix node format
+    - reorder oscillator* nodes 
+    - fix node name of cpu idle nodes
+    - remove clock-frequency property in the timer node
+    - reorder clock and clock names in usb nodes
+Changes in v7:
+  - refine title of spi-nor dt-bindings patch
+  - refine commit message of pinctrl dt-bindings patch
+  - update pinctrl-mt8195.yaml
+    - change property pattern from 'pins' to '^pins'
+    - update examples with new property in descriptions
+    - add new example
+  - drop '_' from node names of pinctrl subnodes in mt8195-evb.dts
+Changes in v6:
+  - rebase on 5.16-rc1
+  - add new clock name to spi-nor dt-bindings
+  - add "pins" property in pinctrl dt-bindings
+  - fix fails of dtbs_checks
+    - remove "arm,armv8" not matched in yaml from cpu compatile
+    - fix node name of xhci
+    - remvoe xhci upstreaming wakeup properties
+    - remove xhci unused properties address-cells and size-cells
+    - fix node name of ufs-phy 
+    - fix node name of spi-nor
+    - fix node name and sub-nodes of pinctrl
+    - fix mmc compatible
+Changes in v5:
+  - enable basic nodes in mt8195-evb.dts
+  - remove dedicated clock nodes
+  - add mmc2 node
+  - fix interrupt number of pinctrl node
+  - update clock nodes to apply internal fixes
+  - add dt-bindings for perficfg node
+
+v4 thread:
+https://lore.kernel.org/all/20210922093303.23720-2-seiya.wang@mediatek.com/
+v3 thread:
+https://lore.kernel.org/all/20210601075350.31515-2-seiya.wang@mediatek.com/
+v2 thread:
+https://lore.kernel.org/all/20210319023427.16711-10-seiya.wang@mediatek.com/
+v1 thread:
+https://lore.kernel.org/all/20210316111443.3332-11-seiya.wang@mediatek.com/
+---
+
+Tinghan Shen (4):
+  dt-bindings: arm: mediatek: Add mt8195 pericfg compatible
+  dt-bindings: arm: cpus: Add cortex-a78 compatible
+  dt-bindings: pinctrl: mt8195: Add mediatek,drive-strength-adv property
+  arm64: dts: Add mediatek SoC mt8195 and evaluation board
+
+ .../devicetree/bindings/arm/cpus.yaml         |    1 +
+ .../arm/mediatek/mediatek,pericfg.yaml        |    1 +
+ .../bindings/pinctrl/pinctrl-mt8195.yaml      |   35 +
+ arch/arm64/boot/dts/mediatek/Makefile         |    1 +
+ arch/arm64/boot/dts/mediatek/mt8195-evb.dts   |  161 +++
+ arch/arm64/boot/dts/mediatek/mt8195.dtsi      | 1049 +++++++++++++++++
+ 6 files changed, 1248 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8195-evb.dts
+ create mode 100644 arch/arm64/boot/dts/mediatek/mt8195.dtsi
 
 -- 
-Regards/Gruss,
-    Boris.
+2.18.0
 
-https://people.kernel.org/tglx/notes-about-netiquette
