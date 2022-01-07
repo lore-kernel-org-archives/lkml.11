@@ -2,75 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04047C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 14:56:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 14:57:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239200AbiAGO4v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 09:56:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50718 "EHLO
+        id S239557AbiAGO5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 09:57:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239425AbiAGO4m (ORCPT
+        with ESMTP id S239219AbiAGO5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 09:56:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4023C061401;
-        Fri,  7 Jan 2022 06:56:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 829E561560;
-        Fri,  7 Jan 2022 14:56:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8184C36AEB;
-        Fri,  7 Jan 2022 14:56:39 +0000 (UTC)
-Date:   Fri, 7 Jan 2022 09:56:38 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-Cc:     Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>, <quic_psodagud@quicinc.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        Prasad Sodagudi <psodagud@codeaurora.org>
-Subject: Re: [PATCHv6 4/5] tracing: Add register read/write tracing support
-Message-ID: <20220107095638.7d81c1b9@gandalf.local.home>
-In-Reply-To: <df9b5a82-5f00-f3ec-14cf-0b212be2a7a7@quicinc.com>
-References: <cover.1638858746.git.quic_saipraka@quicinc.com>
-        <76983c26d889df7252a17017a48754163fb6b0d5.1638858747.git.quic_saipraka@quicinc.com>
-        <20220106131824.073fbe5c@gandalf.local.home>
-        <df9b5a82-5f00-f3ec-14cf-0b212be2a7a7@quicinc.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 7 Jan 2022 09:57:19 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B97C061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 06:57:18 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id l3so7329821iol.10
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 06:57:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MmKzdxi5tqqXaV9pr7x7K4Gv2kquAOpSYKeE1KvCgP0=;
+        b=C/TWWdHnG3Yy7oClfhVjhBYGKp0/W9wPweqNH480cAcO/Ghf9bAVQ/l2Xi2PefoEpS
+         QJ29L8NMETfujIGdiRKYv0HVnGajKrxfskdROkKulfal/11XXNlvo57XjyM92q0Ca5rK
+         jkLHuCVfempPfBnXeIUxvbzUlIxCmR1qD19TQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MmKzdxi5tqqXaV9pr7x7K4Gv2kquAOpSYKeE1KvCgP0=;
+        b=Or0jRdlmiagg5hA92fA1oRgwaUeG7JHczp0SNDn+A71alVqCcOi0ie/+WtKtR3juIT
+         6SK78arrwSRHY9OuDSsvsSPWmWgCjaf4IR4kSdFB8aNttyDJy1XsjBLnM7sGSS4j+C/c
+         MjNldblLalJjVniJgUUESot+SsgzRJCreKZ7B1uk1NGL2V9oWcJn5xyTc0/8YI54IYFl
+         y0AD23lmU+8qgqRlfd9xJoZelRmkNsaon+9qvgoTN5CalwyNzdaKmAvIP9ksbs5Cc6Lz
+         4VQUeC6Ws/rMKpBI/W4P211QMei93rIshpFytjuDH6iWoNfjiHHyusqaWxpy1YDsVToA
+         0ebA==
+X-Gm-Message-State: AOAM533Lex5EbMvGj2QYNTYywqGkARnGO1mrWkegSuKhgficn5MpuBx/
+        7OPs9num4w0HC3N9K9sh+a4NlraBHnuVrg==
+X-Google-Smtp-Source: ABdhPJwZDFHrSRrz3MV15s8u/GijoRMXFdGSsVLjdHKZaolzsNTg2Le35FhrlrV+2gxvqUoQFVB3HA==
+X-Received: by 2002:a02:aa8f:: with SMTP id u15mr30020688jai.63.1641567437927;
+        Fri, 07 Jan 2022 06:57:17 -0800 (PST)
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com. [209.85.166.44])
+        by smtp.gmail.com with ESMTPSA id b5sm2984205ilj.9.2022.01.07.06.57.17
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 06:57:17 -0800 (PST)
+Received: by mail-io1-f44.google.com with SMTP id s6so7460541ioj.0
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 06:57:17 -0800 (PST)
+X-Received: by 2002:a6b:e508:: with SMTP id y8mr28973111ioc.177.1641567437115;
+ Fri, 07 Jan 2022 06:57:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220107103056.1.Ifc6ce6bb655ddb8ebbb0f340fcaaa58369bb009c@changeid>
+In-Reply-To: <20220107103056.1.Ifc6ce6bb655ddb8ebbb0f340fcaaa58369bb009c@changeid>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 7 Jan 2022 06:57:05 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=U0-W_H=-u-GDc5GYm8GHSix0F1dKF+3eMNixP30fhtrQ@mail.gmail.com>
+Message-ID: <CAD=FV=U0-W_H=-u-GDc5GYm8GHSix0F1dKF+3eMNixP30fhtrQ@mail.gmail.com>
+Subject: Re: [PATCH] nvmem: qfprom: Increase fuse blow timeout to prevent
+ write fail.
+To:     Knox Chiou <knoxchiou@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Evan Green <evgreen@chromium.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 7 Jan 2022 10:40:05 +0530
-Sai Prakash Ranjan <quic_saipraka@quicinc.com> wrote:
+Hi,
 
-> Hi Steve,
-> 
-> On 1/6/2022 11:48 PM, Steven Rostedt wrote:
-> > This should not be in the kernel/trace directory. It should be in the  
-> 
-> Hmm these are called from low level generic io header file 
-> (include/asm-generic/) where
-> we wouldn't have any Kconfig to control this feature flexibly and as we 
-> can have this as
-> a generic feature selectable by other architectures, wouldn't this be 
-> suited in kernel/trace?
+On Thu, Jan 6, 2022 at 6:31 PM Knox Chiou <knoxchiou@chromium.org> wrote:
+>
+> sc7180 blow fuses got slightly chances to hit qfprom_reg_write timeout.
+> Current timeout is simply too low. Since blowing fuses is a
+> very rare operation, so the risk associated with overestimating this
+> number is low.
+> Increase fuse blow timeout from 1ms to 10ms.
+>
+> Signed-off-by: Knox Chiou <knoxchiou@chromium.org>
+> ---
+>
+>  drivers/nvmem/qfprom.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Isn't there a place for generic rwmmio code?
+Slight nit that ${SUBJECT} for patches usually doesn't end with a
+period. Presumably if Srinivas cares he can fix it while applying.
 
-> I thought you were ok with the folder structure in the initial versions 
-> of the series?
-
-Sorry, I missed the C file in kernel/trace. The files in kernel/trace tend
-to be specific for the internals of tracing. This C file is more to hold
-helper functions for mmio, which to me should be someplace for mmio code.
-Perhaps in mm/ ?
-
--- Steve
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
