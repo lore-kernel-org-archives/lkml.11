@@ -2,118 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 505FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BABC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230271AbiAGTPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:15:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        id S230476AbiAGTQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:16:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230056AbiAGTPh (ORCPT
+        with ESMTP id S230444AbiAGTQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:15:37 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55A8C061574;
-        Fri,  7 Jan 2022 11:15:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=grgsnELUEXZnuUjrVS4f5sHoasCVsBVCh9f+iJP67pA=; b=dHj0fodlh3VfjeW9VmH2pxwZSR
-        7Tn/gYIelKp6SQ/rG6Giu0IP4YvsNoWg3wXG+/OV//NQ+/8OBMcBCBiD8cCs3YUJ/WQgUvH2bNhXE
-        ISsP1V9AYlmg8ibVTX6h93pCfKoaIfqrDtkTrkV3ghkwC4T4vHkJay8QF06RtEmzuQh6IIWzkL29w
-        sa+gDnOytbBfSnQd+4cSBrFnu+wSAKuBXXzWGqCpONLnRf0tJ0zJFcPxWposgxZ+6LCIaumSme3XA
-        9JfR3pC4JGLCdRgY1yhJANs6P9hd3blMI1kE8agwZP1hllfTLaVsCRiG98MljmV8B/8ouTHW0pWde
-        aATHLDZw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56622)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n5ui0-0001k1-TT; Fri, 07 Jan 2022 19:15:28 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n5uhy-00029p-BZ; Fri, 07 Jan 2022 19:15:26 +0000
-Date:   Fri, 7 Jan 2022 19:15:26 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/15] PCI: mvebu: Handle invalid size of read config
- request
-Message-ID: <YdiRTjGGWelHZ9rA@shell.armlinux.org.uk>
-References: <20211125124605.25915-5-pali@kernel.org>
- <20220107184548.GA390934@bhelgaas>
+        Fri, 7 Jan 2022 14:16:19 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A83C06173F
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:16:19 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o12so19073804lfk.1
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 11:16:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=UBa8TIub3c8pRJx3V/U7Z+AnL0F11KM1pHQYfYCQSfE=;
+        b=KrbM0oijNYC/s0QrkLzFOE4pJ7VfLV2sz3ZRQE4BmZLvBBiYqz8BLiPARQR6ypW7cC
+         6LkELtaavqygIW+B1d4TlVGnWfoy+RFpt6Q7FXgF2C8XuPkXqXIiOV5HAKHDDnx6tzfu
+         LXVkI3V/mrFHfRuJsnvzyDwJDWoFFvquCfvRd3kiBzhxY6vqs6soJkppLxjW0ZbWegZh
+         GexGcqkRdPZ8ERdcu6VbK6E+kKAeg5oLNZZ6MW+y1Bz5caWPGLLUzGiXrhQa96tn6IBu
+         EAQDTyr4xELOqYbB/Dud+Car+0NPN2JyCHWjfYncMgHPplFRCdrSSpOpg1JRJhA/QN40
+         RXPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UBa8TIub3c8pRJx3V/U7Z+AnL0F11KM1pHQYfYCQSfE=;
+        b=xYw1ir+gLAzKwOQHBpUOmpl8bkJp56kEiTbnrsEWQ6I8LGo2Tal1MTR+d4rqcsetvP
+         1heAsUEhIZ4G3KbimGRLZdcTr76k3xptAl8EdqK4fcd2w9XMcPP48PBnW8+ZJaOifHU6
+         i4bxsfODBRz4UmhvYVXxWQefXlKTKbRCwd9rq6QpuF+lit7bfxqGaHGRQVtvaITPQVS5
+         j6NUVMeJYj4KGqhuQB9jK6Ujhi2w74OjIHjt+CmyoAHy4Ur66lvO0Be1QN6FhSuR3Ohn
+         cg73vFx3KoN5/eioc8yF7pH4e3V3/4iIOXl3E0rBuT76mepGuSL1D5H4nQCkJPj6Qin7
+         pO8g==
+X-Gm-Message-State: AOAM530Wh7Cg+SguASWK7OQXpbal2HFBdRJNpkUNA1j8ISDpA6QqCLzf
+        QkxXDsAKmIjcYBQB8F1L0f6YMqI0ppAaW4hsU+Qsww==
+X-Google-Smtp-Source: ABdhPJwc9hFf6RV7zJN6Wxk7n3MNRt1wyKE1/d66jX9gd/5RqFCaxpNL4bWnd1Ly12Sdc+RlpTZsyMeHdFr707d9p7U=
+X-Received: by 2002:a05:6512:2828:: with SMTP id cf40mr56909749lfb.644.1641582977032;
+ Fri, 07 Jan 2022 11:16:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220107184548.GA390934@bhelgaas>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+References: <20211129114251.3741721-1-dovmurik@linux.ibm.com>
+ <YdNHgtuVoLofL4cW@zn.tnic> <0280e20e-8459-dd35-0b7d-8dbc1e4a274a@linux.ibm.com>
+ <YdSRWmqdNY7jRcer@zn.tnic> <YdWEXRt7Ixm6/+Dq@work-vm> <YdXq9t75aYLJfb69@zn.tnic>
+ <YdX6aAwy0txT9Dk7@work-vm> <YdgrDRCJOOg4k1Za@zn.tnic>
+In-Reply-To: <YdgrDRCJOOg4k1Za@zn.tnic>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Fri, 7 Jan 2022 12:16:05 -0700
+Message-ID: <CAMkAt6qCHPzUT=COb_HQ51rRKwtaCC3Zxgc6k6ivB_dZUKx5Hw@mail.gmail.com>
+Subject: Re: [PATCH v6 0/5] Allow guest access to EFI confidential computing
+ secret area
+To:     Borislav Petkov <bp@suse.de>
+Cc:     "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        linux-efi@vger.kernel.org, Ashish Kalra <ashish.kalra@amd.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Andrew Scull <ascull@google.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        James Bottomley <jejb@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@linux.ibm.com>,
+        Jim Cadden <jcadden@ibm.com>,
+        Daniele Buono <dbuono@linux.vnet.ibm.com>,
+        linux-coco@lists.linux.dev, linux-security-module@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 12:45:48PM -0600, Bjorn Helgaas wrote:
-> On Thu, Nov 25, 2021 at 01:45:54PM +0100, Pali Rohár wrote:
-> > Function mvebu_pcie_hw_rd_conf() does not handle invalid size. So correctly
-> > set read value to all-ones and return appropriate error return value
-> > PCIBIOS_BAD_REGISTER_NUMBER like in mvebu_pcie_hw_wr_conf() function.
-> > 
-> > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > Cc: stable@vger.kernel.org
-> 
-> Is there a bug that this fixes?  If not, I would drop the stable tag
-> (as I see Lorenzo already did, thanks!).
-> 
-> > ---
-> >  drivers/pci/controller/pci-mvebu.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> > index 08274132cdfb..19c6ee298442 100644
-> > --- a/drivers/pci/controller/pci-mvebu.c
-> > +++ b/drivers/pci/controller/pci-mvebu.c
-> > @@ -261,6 +261,9 @@ static int mvebu_pcie_hw_rd_conf(struct mvebu_pcie_port *port,
-> >  	case 4:
-> >  		*val = readl_relaxed(conf_data);
-> >  		break;
-> > +	default:
-> > +		*val = 0xffffffff;
-> > +		return PCIBIOS_BAD_REGISTER_NUMBER;
-> 
-> Might be the right thing to do, but there are many config accessors
-> that do not set *val to ~0 before returning
-> PCIBIOS_BAD_REGISTER_NUMBER:
+On Fri, Jan 7, 2022 at 4:59 AM Borislav Petkov <bp@suse.de> wrote:
+>
+> On Wed, Jan 05, 2022 at 08:07:04PM +0000, Dr. David Alan Gilbert wrote:
+> > I thought I saw something in their patch series where they also had a
+> > secret that got passed down from EFI?
+>
+> Probably. I've seen so many TDX patchsets so that I'm completely
+> confused what is what.
+>
+> > As I remember they had it with an ioctl and something; but it felt to
+> > me if it would be great if it was shared.
+>
+> I guess we could try to share
+>
+> https://lore.kernel.org/r/20211210154332.11526-28-brijesh.singh@amd.com
+>
+> for SNP and TDX.
+>
+> > I'd love to hear from those other cloud vendors; I've not been able to
+> > find any detail on how their SEV(-ES) systems actually work.
+>
+> Same here.
+>
+> > However, this aims to be just a comms mechanism to pass that secret;
+> > so it's pretty low down in the stack and is there for them to use -
+> > hopefully it's general enough.
+>
+> Exactly!
+>
+> > (An interesting question is what exactly gets passed in this key and
+> > what it means).
+> >
+> > All the contentious stuff I've seen seems to be further up the stack - =
+like
+> > who does the attestation and where they get the secrets and how they
+> > know what a valid measurement looks like.
+>
+> It would be much much better if all the parties involved would sit down
+> and decide on a common scheme so that implementation can be shared but
+> getting everybody to agree is likely hard...
 
-I think a better question would be - how can this function be called
-with a size that isn't 1, 2 or 4? I suppose if someone were to add
-another PCI_OP_READ/PCI_OP_WRITE. However... they really need to audit
-every implementation if they do that.
+I saw a request for other cloud provider input here. A little
+background for our SEV VMs in GCE we rely on our vTPM for attestation,
+we do this because of SEV security properties quoting from AMD being
+to protect guests from a benign but vulnerable hypervisor. So a
+benign/compliant hypervisor's vTPM wouldn't lie to the guest. So we
+added a few bits in the PCRs to allow users to see their SEV status in
+vTPM quotes.
 
-The generic implementation does this:
+It would be very interesting to offer an attestation solution that
+doesn't rely on our virtual TPM. But after reading through this cover
+letter and the linked OVMF patches I am confused what's the high level
+flow you are working towards? Are you loading in some OVMF using
+LAUNCH_UPDATE_DATA, getting the measurement with LAUNCH_MEASURE, then
+sending that to the customer who can then craft a "secret" (maybe say
+SSH key) for injection with LAUNCH_SECRET? Thats sounds good but there
+are a lot details left unattested there, how do you know you will boot
+from the image loaded with the PSP into a known state? Do you have
+some documentation I could read through to try and understand a little
+more and apologies if I missed it.
 
-        if (size == 1)
-                *val = readb(addr);
-        else if (size == 2)
-                *val = readw(addr);
-        else
-                *val = readl(addr);
-
-and therefore completely ignores the size if it isn't 1 or 2. So I
-don't think this is something that needs fixing.
-
-If we're going to fix this in drivers, shouldn't we fix the generic
-implementation too?
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>
+> --
+> Regards/Gruss,
+>     Boris.
+>
+> SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG N=C3=
+=BCrnberg
+>
