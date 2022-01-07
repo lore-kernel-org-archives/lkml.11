@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ADB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 322C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233528AbiAGS4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:56:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53632 "EHLO
+        id S234552AbiAGS4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:56:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35717 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232797AbiAGSzh (ORCPT
+        by vger.kernel.org with ESMTP id S232350AbiAGSzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:55:37 -0500
+        Fri, 7 Jan 2022 13:55:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641581736;
+        s=mimecast20190719; t=1641581732;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rdAqC5HrpozUClKqNNRDatjhdtsPs0aa1M3Kmr/jRVs=;
-        b=dmUNGG+B3d/hu6GAMB4VKbQ1JWud/z9OmsELgffdkCE5FPKRqZYWmgUeo0vPZPonD0OmrF
-        GXCkiRQTT+EE3bbccwKLVqpZnNjp5nQKDGpviFprD51ZjLlYWgtkvaceRrclgD+z7EkVxt
-        SoQ0reC2FpYdE5/Ry/DwiZxCTwJPwEA=
+        bh=k4SnPRfohbWJYlYqIshsS8CG6xHH62BSu2K9MaE+rjk=;
+        b=FPnf/mkau1+87sZ9L1vmZwbm9kfFgm3bH+yCTnwrWiAZYlkrPFNMXoTNtCWJNlQbtDCrY1
+        dk9AWKY0qS4EoGlLCYSQqqqlFAl6IUU3CWSFBWtxpeiTZDYaR6xtO1aeBtHsJ/NOqeYj4B
+        ETkyKv9eMtwPssb9aoC6S7q/oN+ym9Q=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-161-3F_k6sFANsmlyRxpHlSF1Q-1; Fri, 07 Jan 2022 13:55:33 -0500
-X-MC-Unique: 3F_k6sFANsmlyRxpHlSF1Q-1
+ us-mta-163-VNWohdm5MxarjAglXM-Bwg-1; Fri, 07 Jan 2022 13:55:29 -0500
+X-MC-Unique: VNWohdm5MxarjAglXM-Bwg-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A75B110168C0;
-        Fri,  7 Jan 2022 18:55:31 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 445D181EE60;
+        Fri,  7 Jan 2022 18:55:27 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EFAFA8CB2B;
-        Fri,  7 Jan 2022 18:55:30 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 333F492FAF;
+        Fri,  7 Jan 2022 18:55:26 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
         seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
         yang.zhong@intel.com
-Subject: [PATCH v6 20/21] x86/fpu: Provide fpu_sync_guest_vmexit_xfd_state()
-Date:   Fri,  7 Jan 2022 13:55:11 -0500
-Message-Id: <20220107185512.25321-21-pbonzini@redhat.com>
+Subject: [PATCH v6 15/21] kvm: x86: Add XCR0 support for Intel AMX
+Date:   Fri,  7 Jan 2022 13:55:06 -0500
+Message-Id: <20220107185512.25321-16-pbonzini@redhat.com>
 In-Reply-To: <20220107185512.25321-1-pbonzini@redhat.com>
 References: <20220107185512.25321-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -52,82 +52,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Jing Liu <jing2.liu@intel.com>
 
-KVM can disable the write emulation for the XFD MSR when the vCPU's fpstate
-is already correctly sized to reduce the overhead.
+Two XCR0 bits are defined for AMX to support XSAVE mechanism. Bit 17
+is for tilecfg and bit 18 is for tiledata.
 
-When write emulation is disabled the XFD MSR state after a VMEXIT is
-unknown and therefore not in sync with the software states in fpstate and
-the per CPU XFD cache.
+The value of XCR0[17:18] is always either 00b or 11b. Also, SDM
+recommends that only 64-bit operating systems enable Intel AMX by
+setting XCR0[18:17]. 32-bit host kernel never sets the tile bits in
+vcpu->arch.guest_supported_xcr0.
 
-Provide fpu_sync_guest_vmexit_xfd_state() which has to be invoked after a
-VMEXIT before enabling interrupts when write emulation is disabled for the
-XFD MSR.
-
-It could be invoked unconditionally even when write emulation is enabled
-for the price of a pointless MSR read.
-
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Jing Liu <jing2.liu@intel.com>
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Message-Id: <20220105123532.12586-21-yang.zhong@intel.com>
+Message-Id: <20220105123532.12586-16-yang.zhong@intel.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/include/asm/fpu/api.h |  2 ++
- arch/x86/kernel/fpu/core.c     | 24 ++++++++++++++++++++++++
- 2 files changed, 26 insertions(+)
+ arch/x86/kvm/x86.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
-index e4d10155290b..a467eb80f9ed 100644
---- a/arch/x86/include/asm/fpu/api.h
-+++ b/arch/x86/include/asm/fpu/api.h
-@@ -142,8 +142,10 @@ extern int fpu_enable_guest_xfd_features(struct fpu_guest *guest_fpu, u64 xfeatu
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 2475b64cb762..993eee6451ea 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -211,7 +211,7 @@ static struct kvm_user_return_msrs __percpu *user_return_msrs;
+ #define KVM_SUPPORTED_XCR0     (XFEATURE_MASK_FP | XFEATURE_MASK_SSE \
+ 				| XFEATURE_MASK_YMM | XFEATURE_MASK_BNDREGS \
+ 				| XFEATURE_MASK_BNDCSR | XFEATURE_MASK_AVX512 \
+-				| XFEATURE_MASK_PKRU)
++				| XFEATURE_MASK_PKRU | XFEATURE_MASK_XTILE)
  
- #ifdef CONFIG_X86_64
- extern void fpu_update_guest_xfd(struct fpu_guest *guest_fpu, u64 xfd);
-+extern void fpu_sync_guest_vmexit_xfd_state(void);
- #else
- static inline void fpu_update_guest_xfd(struct fpu_guest *guest_fpu, u64 xfd) { }
-+static inline void fpu_sync_guest_vmexit_xfd_state(void) { }
- #endif
- 
- extern void fpu_copy_guest_fpstate_to_uabi(struct fpu_guest *gfpu, void *buf, unsigned int size, u32 pkru);
-diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-index de8e8c21f355..da51381cb64b 100644
---- a/arch/x86/kernel/fpu/core.c
-+++ b/arch/x86/kernel/fpu/core.c
-@@ -294,6 +294,30 @@ void fpu_update_guest_xfd(struct fpu_guest *guest_fpu, u64 xfd)
- 	fpregs_unlock();
- }
- EXPORT_SYMBOL_GPL(fpu_update_guest_xfd);
+ u64 __read_mostly host_efer;
+ EXPORT_SYMBOL_GPL(host_efer);
+@@ -1010,6 +1010,11 @@ static int __kvm_set_xcr(struct kvm_vcpu *vcpu, u32 index, u64 xcr)
+ 		if ((xcr0 & XFEATURE_MASK_AVX512) != XFEATURE_MASK_AVX512)
+ 			return 1;
+ 	}
 +
-+/**
-+ * fpu_sync_guest_vmexit_xfd_state - Synchronize XFD MSR and software state
-+ *
-+ * Must be invoked from KVM after a VMEXIT before enabling interrupts when
-+ * XFD write emulation is disabled. This is required because the guest can
-+ * freely modify XFD and the state at VMEXIT is not guaranteed to be the
-+ * same as the state on VMENTER. So software state has to be udpated before
-+ * any operation which depends on it can take place.
-+ *
-+ * Note: It can be invoked unconditionally even when write emulation is
-+ * enabled for the price of a then pointless MSR read.
-+ */
-+void fpu_sync_guest_vmexit_xfd_state(void)
-+{
-+	struct fpstate *fps = current->thread.fpu.fpstate;
++	if ((xcr0 & XFEATURE_MASK_XTILE) &&
++	    ((xcr0 & XFEATURE_MASK_XTILE) != XFEATURE_MASK_XTILE))
++		return 1;
 +
-+	lockdep_assert_irqs_disabled();
-+	if (fpu_state_size_dynamic()) {
-+		rdmsrl(MSR_IA32_XFD, fps->xfd);
-+		__this_cpu_write(xfd_state, fps->xfd);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(fpu_sync_guest_vmexit_xfd_state);
- #endif /* CONFIG_X86_64 */
+ 	vcpu->arch.xcr0 = xcr0;
  
- int fpu_swap_kvm_fpstate(struct fpu_guest *guest_fpu, bool enter_guest)
+ 	if ((xcr0 ^ old_xcr0) & XFEATURE_MASK_EXTEND)
 -- 
 2.31.1
 
