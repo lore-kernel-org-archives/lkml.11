@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3098BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 585BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346789AbiAGK3Z (ORCPT
+        id S1346804AbiAGK31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 05:29:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41820 "EHLO
+        Fri, 7 Jan 2022 05:29:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35423 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346770AbiAGK3W (ORCPT
+        by vger.kernel.org with ESMTP id S1346726AbiAGK3T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 05:29:22 -0500
+        Fri, 7 Jan 2022 05:29:19 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641551361;
+        s=mimecast20190719; t=1641551357;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2hdiEqoxV/I/QHzaf2ms/bq1XxWX9r52Y9OSh5ocFFE=;
-        b=eW99bVWBoTBMWbVbRZiVjGECrusKvqKjjD3gkhqomi0K6BTY4Cv/VmzFXrkWYDeVqAoDbn
-        Woum0mANDJn59alKw5rB5c5DNz+zfYUP2qJYFexz9QtaTjhTPUbm31UzgtfP6O19UdiYhe
-        F0/SmYfPkVfzrsjIu9O9aNS2FVaVRRc=
+        bh=9YeLr/AWKAX3341CQ/7V+98rvHnrsaSJrK/Ig2HVNV0=;
+        b=P74+F5QU502x1PB8YvyijU0DYiCQv6UIjFbMG+Kl98cJ8SodcXFn7O+rbmez2BghCrGZja
+        tU81AGlUs2rTkkBUlXomUBLFwyZo/g9yGyC5N+r4qeBi8CckZsS3SayuX5VJMXX+ixJu0m
+        3yKRQMYvGMkdThgJ8qbZruTQhvzYb5o=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-288-UXfBj-fJMIaYIMoxcwmLYw-1; Fri, 07 Jan 2022 05:29:18 -0500
-X-MC-Unique: UXfBj-fJMIaYIMoxcwmLYw-1
+ us-mta-283-OqXicnd9MG29vcjC5xuYfA-1; Fri, 07 Jan 2022 05:29:16 -0500
+X-MC-Unique: OqXicnd9MG29vcjC5xuYfA-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2163E81CCB5;
-        Fri,  7 Jan 2022 10:29:17 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA0661006AA7;
+        Fri,  7 Jan 2022 10:29:14 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C63C72FA7;
-        Fri,  7 Jan 2022 10:29:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 123E572FA2;
+        Fri,  7 Jan 2022 10:29:12 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -43,9 +43,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Jim Mattson <jmattson@google.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 5/5] KVM: nVMX: Allow VMREAD when Enlightened VMCS is in use
-Date:   Fri,  7 Jan 2022 11:28:59 +0100
-Message-Id: <20220107102859.1471362-6-vkuznets@redhat.com>
+Subject: [PATCH v2 4/5] KVM: nVMX: Implement evmcs_field_offset() suitable for handle_vmread()
+Date:   Fri,  7 Jan 2022 11:28:58 +0100
+Message-Id: <20220107102859.1471362-5-vkuznets@redhat.com>
 In-Reply-To: <20220107102859.1471362-1-vkuznets@redhat.com>
 References: <20220107102859.1471362-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -55,131 +55,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hyper-V TLFS explicitly forbids VMREAD and VMWRITE instructions when
-Enlightened VMCS interface is in use:
+In preparation to allowing reads from Enlightened VMCS from
+handle_vmread(), implement evmcs_field_offset() to get the correct
+read offset. get_evmcs_offset(), which is being used by KVM-on-Hyper-V,
+is almost what's needed but a few things need to be adjusted. First,
+WARN_ON() is unacceptable for handle_vmread() as any field can (in
+theory) be supplied by the guest and not all fields are defined in
+eVMCS v1. Second, we need to handle 'holes' in eVMCS (missing fields).
+It also sounds like a good idea to WARN_ON() if such fields are ever
+accessed by KVM-on-Hyper-V.
 
-"Any VMREAD or VMWRITE instructions while an enlightened VMCS is
-active is unsupported and can result in unexpected behavior.""
+Implement dedicated evmcs_field_offset() helper.
 
-Windows 11 + WSL2 seems to ignore this, attempts to VMREAD VMCS field
-0x4404 ("VM-exit interruption information") are observed. Failing
-these attempts with nested_vmx_failInvalid() makes such guests
-unbootable.
-
-Microsoft confirms this is a Hyper-V bug and claims that it'll get fixed
-eventually but for the time being we need a workaround. (Temporary) allow
-VMREAD to get data from the currently loaded Enlightened VMCS.
-
-Note: VMWRITE instructions remain forbidden, it is not clear how to
-handle them properly and hopefully won't ever be needed.
+No functional change intended.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/vmx/evmcs.h  | 12 +++++++++
- arch/x86/kvm/vmx/nested.c | 55 +++++++++++++++++++++++++++------------
- 2 files changed, 51 insertions(+), 16 deletions(-)
+ arch/x86/kvm/vmx/evmcs.c |  3 +--
+ arch/x86/kvm/vmx/evmcs.h | 32 ++++++++++++++++++++++++--------
+ 2 files changed, 25 insertions(+), 10 deletions(-)
 
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index a7ed30d5647a..87e3dc10edf4 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -12,8 +12,6 @@
+ 
+ DEFINE_STATIC_KEY_FALSE(enable_evmcs);
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-
+ #define EVMCS1_OFFSET(x) offsetof(struct hv_enlightened_vmcs, x)
+ #define EVMCS1_FIELD(number, name, clean_field)[ROL16(number, 6)] = \
+ 		{EVMCS1_OFFSET(name), clean_field}
+@@ -296,6 +294,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
+ };
+ const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
+ 
++#if IS_ENABLED(CONFIG_HYPERV)
+ __init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
+ {
+ 	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
 diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index 9bc2521b159e..8d70f9aea94b 100644
+index 3a461a32128b..9bc2521b159e 100644
 --- a/arch/x86/kvm/vmx/evmcs.h
 +++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -98,6 +98,18 @@ static __always_inline int evmcs_field_offset(unsigned long field,
+@@ -65,8 +65,6 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
+ #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
+ #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-
+ struct evmcs_field {
+ 	u16 offset;
+ 	u16 clean_field;
+@@ -75,26 +73,44 @@ struct evmcs_field {
+ extern const struct evmcs_field vmcs_field_to_evmcs_1[];
+ extern const unsigned int nr_evmcs_1_fields;
+ 
+-static __always_inline int get_evmcs_offset(unsigned long field,
+-					    u16 *clean_field)
++static __always_inline int evmcs_field_offset(unsigned long field,
++					      u16 *clean_field)
+ {
+ 	unsigned int index = ROL16(field, 6);
+ 	const struct evmcs_field *evmcs_field;
+ 
+-	if (unlikely(index >= nr_evmcs_1_fields)) {
+-		WARN_ONCE(1, "KVM: accessing unsupported EVMCS field %lx\n",
+-			  field);
++	if (unlikely(index >= nr_evmcs_1_fields))
+ 		return -ENOENT;
+-	}
+ 
+ 	evmcs_field = &vmcs_field_to_evmcs_1[index];
+ 
++	/*
++	 * Use offset=0 to detect holes in eVMCS. This offset belongs to
++	 * 'revision_id' but this field has no encoding and is supposed to
++	 * be accessed directly.
++	 */
++	if (unlikely(!evmcs_field->offset))
++		return -ENOENT;
++
+ 	if (clean_field)
+ 		*clean_field = evmcs_field->clean_field;
+ 
  	return evmcs_field->offset;
  }
  
-+static inline u64 evmcs_read_any(struct hv_enlightened_vmcs *evmcs,
-+				 unsigned long field, u16 offset)
++#if IS_ENABLED(CONFIG_HYPERV)
++
++static __always_inline int get_evmcs_offset(unsigned long field,
++					    u16 *clean_field)
 +{
-+	/*
-+	 * vmcs12_read_any() doesn't care whether the supplied structure
-+	 * is 'struct vmcs12' or 'struct hv_enlightened_vmcs' as it takes
-+	 * the exact offset of the required field, use it for convenience
-+	 * here.
-+	 */
-+	return vmcs12_read_any((void *)evmcs, field, offset);
++	int offset = evmcs_field_offset(field, clean_field);
++
++	WARN_ONCE(offset < 0, "KVM: accessing unsupported EVMCS field %lx\n",
++		  field);
++
++	return offset;
 +}
 +
- #if IS_ENABLED(CONFIG_HYPERV)
- 
- static __always_inline int get_evmcs_offset(unsigned long field,
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 5941ba05b509..62a6ce4a282e 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -7,6 +7,7 @@
- #include <asm/mmu_context.h>
- 
- #include "cpuid.h"
-+#include "evmcs.h"
- #include "hyperv.h"
- #include "mmu.h"
- #include "nested.h"
-@@ -5099,27 +5100,49 @@ static int handle_vmread(struct kvm_vcpu *vcpu)
- 	if (!nested_vmx_check_permission(vcpu))
- 		return 1;
- 
--	/*
--	 * In VMX non-root operation, when the VMCS-link pointer is INVALID_GPA,
--	 * any VMREAD sets the ALU flags for VMfailInvalid.
--	 */
--	if (vmx->nested.current_vmptr == INVALID_GPA ||
--	    (is_guest_mode(vcpu) &&
--	     get_vmcs12(vcpu)->vmcs_link_pointer == INVALID_GPA))
--		return nested_vmx_failInvalid(vcpu);
--
- 	/* Decode instruction info and find the field to read */
- 	field = kvm_register_read(vcpu, (((instr_info) >> 28) & 0xf));
- 
--	offset = get_vmcs12_field_offset(field);
--	if (offset < 0)
--		return nested_vmx_fail(vcpu, VMXERR_UNSUPPORTED_VMCS_COMPONENT);
-+	if (!evmptr_is_valid(vmx->nested.hv_evmcs_vmptr)) {
-+		/*
-+		 * In VMX non-root operation, when the VMCS-link pointer is INVALID_GPA,
-+		 * any VMREAD sets the ALU flags for VMfailInvalid.
-+		 */
-+		if (vmx->nested.current_vmptr == INVALID_GPA ||
-+		    (is_guest_mode(vcpu) &&
-+		     get_vmcs12(vcpu)->vmcs_link_pointer == INVALID_GPA))
-+			return nested_vmx_failInvalid(vcpu);
- 
--	if (!is_guest_mode(vcpu) && is_vmcs12_ext_field(field))
--		copy_vmcs02_to_vmcs12_rare(vcpu, vmcs12);
-+		offset = get_vmcs12_field_offset(field);
-+		if (offset < 0)
-+			return nested_vmx_fail(vcpu, VMXERR_UNSUPPORTED_VMCS_COMPONENT);
-+
-+		if (!is_guest_mode(vcpu) && is_vmcs12_ext_field(field))
-+			copy_vmcs02_to_vmcs12_rare(vcpu, vmcs12);
-+
-+		/* Read the field, zero-extended to a u64 value */
-+		value = vmcs12_read_any(vmcs12, field, offset);
-+	} else {
-+		/*
-+		 * Hyper-V TLFS (as of 6.0b) explicitly states, that while an
-+		 * enlightened VMCS is active VMREAD/VMWRITE instructions are
-+		 * unsupported. Unfortunately, certain versions of Windows 11
-+		 * don't comply with this requirement which is not enforced in
-+		 * genuine Hyper-V so KVM has implement a workaround allowing to
-+		 * read from enlightened VMCS with VMREAD.
-+		 * Note, enlightened VMCS is incompatible with shadow VMCS so
-+		 * all VMREADs from L2 should go to L1.
-+		 */
-+		if (WARN_ON_ONCE(is_guest_mode(vcpu)))
-+			return nested_vmx_failInvalid(vcpu);
- 
--	/* Read the field, zero-extended to a u64 value */
--	value = vmcs12_read_any(vmcs12, field, offset);
-+		offset = evmcs_field_offset(field, NULL);
-+		if (offset < 0)
-+			return nested_vmx_fail(vcpu, VMXERR_UNSUPPORTED_VMCS_COMPONENT);
-+
-+		/* Read the field, zero-extended to a u64 value */
-+		value = evmcs_read_any(vmx->nested.hv_evmcs, field, offset);
-+	}
- 
- 	/*
- 	 * Now copy part of this value to register or memory, as requested.
+ static __always_inline void evmcs_write64(unsigned long field, u64 value)
+ {
+ 	u16 clean_field;
 -- 
 2.33.1
 
