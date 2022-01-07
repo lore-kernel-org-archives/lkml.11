@@ -2,76 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DDEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6691DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:35:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344814AbiAGCez (ORCPT
+        id S1344840AbiAGCfX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 21:34:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344761AbiAGCey (ORCPT
+        Thu, 6 Jan 2022 21:35:23 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30260 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344761AbiAGCfV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:34:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C06C061245;
-        Thu,  6 Jan 2022 18:34:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DECEAB824B9;
-        Fri,  7 Jan 2022 02:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C52CC36AEB;
-        Fri,  7 Jan 2022 02:34:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641522891;
-        bh=v/UysLRyR3ZSlYOfKYLwtg+YpmYmJmwLdARF6BhGaVY=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=LfXDDepduhcDgcZ7TXNP2BmPlFyOTDxDpJ5agIb2ONPXGQ0jBrC7FFhXa7ddDXQLT
-         XxKIvKxLkPYR0mxTRNSC7FdgiEDvoLcArfcJmQ5crc/p+d33RaH/whKTW4Uj8Kg+Ql
-         GOpIVeaL/+ufR9dHez029Bm65QIihOsDb8tMcirq7zY2YJiJHX4I3endUqNYze+ZJK
-         6vQGD+54lZRXQO05QSP6BFG8yAW+OXxAbzJjoqR5uH8a8WBW7UlNZRO6Su5KDSKt/9
-         0SNRf+kxtULLtaXruJSGWoP8f7MyL/hVhNTRhyBPyHg3It7edBq05hkKBJa49ZETIA
-         P9GHYClRv+Onw==
-Content-Type: text/plain; charset="utf-8"
+        Thu, 6 Jan 2022 21:35:21 -0500
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JVS3m0vVjzbjnJ;
+        Fri,  7 Jan 2022 10:34:44 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 7 Jan 2022 10:35:19 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 7 Jan
+ 2022 10:35:19 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <ludovic.desroches@microchip.com>, <tudor.ambarus@microchip.com>,
+        <vkoul@kernel.org>
+Subject: [PATCH -next] dmaengine: at_xdmac: Fix missing unlock in at_xdmac_tasklet()
+Date:   Fri, 7 Jan 2022 10:40:47 +0800
+Message-ID: <20220107024047.1051915-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <CAGXv+5G5vnOuW46q7b7m6BDS+R4vCLJehrofjfv95uOFbwyzEg@mail.gmail.com>
-References: <20211110022258.2358-1-chun-jie.chen@mediatek.com> <CAGXv+5G5vnOuW46q7b7m6BDS+R4vCLJehrofjfv95uOFbwyzEg@mail.gmail.com>
-Subject: Re: [v1] clk: mediatek: use en_mask as a pure div_en_mask
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        srv_heupstream@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-To:     Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Date:   Thu, 06 Jan 2022 18:34:50 -0800
-User-Agent: alot/0.9.1
-Message-Id: <20220107023451.7C52CC36AEB@smtp.kernel.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Chen-Yu Tsai (2021-11-09 22:59:37)
-> Hi,
->=20
-> On Wed, Nov 10, 2021 at 10:23 AM Chun-Jie Chen
-> <chun-jie.chen@mediatek.com> wrote:
-> >
-> > We no longer allow en_mask to be a combination of
-> > pll_en_bit and div_en_mask, so remove pll_en_bit(bit0)
-> > from en_mask to make en_mask a pure en_mask that only
-> > used for pll dividers.
->=20
-> AFAICT this looks like it continues the work done in commit 7cc4e1bbe300
-> ("clk: mediatek: Fix asymmetrical PLL enable and disable control") and
-> commit f384c44754b7 ("clk: mediatek: Add configurable enable control to
-> mtk_pll_data").
->=20
-> It would be nice if you could mention this in your commit log to provide
-> more context.
+Add the missing unlock before return from at_xdmac_tasklet().
 
-Please resend.
+Fixes: e77e561925df ("dmaengine: at_xdmac: Fix race over irq_status")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/dma/at_xdmac.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
+index a1da2b4b6d73..1476156af74b 100644
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -1681,8 +1681,10 @@ static void at_xdmac_tasklet(struct tasklet_struct *t)
+ 		__func__, atchan->irq_status);
+ 
+ 	if (!(atchan->irq_status & AT_XDMAC_CIS_LIS) &&
+-	    !(atchan->irq_status & error_mask))
++	    !(atchan->irq_status & error_mask)) {
++		spin_unlock_irq(&atchan->lock);
+ 		return;
++	}
+ 
+ 	if (atchan->irq_status & error_mask)
+ 		at_xdmac_handle_error(atchan);
+-- 
+2.25.1
+
