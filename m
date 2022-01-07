@@ -2,139 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B76E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 16:31:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2796C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 16:33:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348215AbiAGQbj (ORCPT
+        id S1348246AbiAGQdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 11:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
+        Fri, 7 Jan 2022 11:33:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239847AbiAGQbi (ORCPT
+        with ESMTP id S240056AbiAGQdh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 11:31:38 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ADA2C061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 08:31:38 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id 8so5828515pgc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 08:31:38 -0800 (PST)
+        Fri, 7 Jan 2022 11:33:37 -0500
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D76C061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 08:33:37 -0800 (PST)
+Received: by mail-ua1-x92c.google.com with SMTP id b26so11143802uap.6
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 08:33:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8x5aau+9GId4X1fkS/Ix8Wi9zq+PLZoxIQ2oHrW+IM8=;
-        b=L9AJlkClDBCQp2d0qcZIwYZbbM0UJrWK7mAnAs7XoHi5p3eXECQk/DT7ZPdJL6dOLF
-         jIWwg4D0FCWGc+KY752pSLb0iqOUgyV4ueCX1tRs0iyIihUOfu+/nrN1UnQgQtHzU6Q9
-         E2bh0Vzff3Bi2MgEvD6x1btKH7Hj+ZDktF1TswaiGXH2itZ6sMNFH0eff2bzCSZIUzPx
-         Ljeu9mMpDh9SifesE99f/y4hFJusqSEbqQ+3QYY58RlPh7erzlf6CgVoHjBTmnzEr0gg
-         cXvZjK196zShjNX+a2OopX31KfOYlHQPnp5tpCH8PJpwA4n+VcXTb4X9AGr99mUZ2sKJ
-         dpBA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QKSah4ftdKgnYH/5hc63jfRi1amTCzCRzRwNFNBPqJ0=;
+        b=PFB+S1WQQgqerJaTeJSXsFDSjqsJ/DjTZMXnoe7RtHHVtZnt/VYOBea7F0AT+vJG7v
+         sD+BOlP32ooXAaU3H4iFa4HkKV2BgBGPiBIaVdu9iekxPUxRvc0HZVlTQZwmx+tUodMR
+         38au5sQ6vxvquDV4ra602cTBFsNolF1KR9ZSEiugeTQGcEQWYIUTYXWIwEmNQM7JnppQ
+         wpIC5uPsqbUuDJdk3mqa4FQ2gn4OzaLpS6WZFKVt7+gHnEU3wF+A7w1Gbax3yUm1Josx
+         iL96Qgqx//3j0Nztw6dFxLICsslE5KZ/OZWBebrCf6XR+bPtz9oWnMjzwtkRaDa8GR1v
+         ZJAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8x5aau+9GId4X1fkS/Ix8Wi9zq+PLZoxIQ2oHrW+IM8=;
-        b=WZkbkHkxobgw5+LXXpXSg8GVF/fvDJGeL463yVLWeqPBehoMmkUxcwhaWvilYCAZpV
-         xQwovYuDmhc9NkXvBkSMHfTfOCuajE06v6+JZWswy5duT0rfrDvl4K4kcLcetqV9D+E9
-         F07Y1QWEBXLmWG9nGDb+bFyMc8PTEGYzoyZwxjlSOQjHC2eKXN4mknwBWhAhjNND8Nhh
-         3fawinRty0x9rSPt3dOlVxBGydP3ALo1bmJ5rpA7Y0fZjOSMWKmujXCIl9jMNesG+BZw
-         4nmOCWAUwIGVms3HNHynr1TBNwgYLm2yooJ14veXvcOXeL+0ezeZHeMlAcXAIqahbZBC
-         Drig==
-X-Gm-Message-State: AOAM533txzlfIkwPLApJJum1/lEII4TcSFgsHpcj9FYjWVbMjALGXi+i
-        NvOQgTu8T/qGItXxDFKmFQc7XQ==
-X-Google-Smtp-Source: ABdhPJzgG47GKpuKWTf6oJSn9E2fBwBv84lP3oKIaE8NOaZd04A6CCABm5d7mq013onV7fWVKolFbQ==
-X-Received: by 2002:a63:3f88:: with SMTP id m130mr5233049pga.413.1641573097689;
-        Fri, 07 Jan 2022 08:31:37 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id v128sm4290920pfc.36.2022.01.07.08.31.37
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QKSah4ftdKgnYH/5hc63jfRi1amTCzCRzRwNFNBPqJ0=;
+        b=S+w+TNwOwB+ecAfGKtSroS+eWqpOM4QsPIjhnjX4xvkaLllqIvu1PFAnArTa7DYEtX
+         h87kDby1S46oJGtZbkqYLgd+Z5Yk+Jk6jBpjwihhaYUJe5vWorJ/GzsGQYaHJN0sLsmt
+         tQgP7Jxs6o9w39lL8bESyOd14qGlzQEPNWXn8gOsfwBfm2xpDNghehccjJcRZ3jrkYsR
+         XUVkJyp2zdg9UbxQ6vRWm8FWnRadobRRh6/Wkcv29Lsx77X7JxpuYBPyMlb2iH38sBAC
+         lZmPz5JH/eJSd7A3J0MVOp4cVv0MUTN18vRaravK7eROyTJiDu87INyXwaBCulT6cZmB
+         qTgQ==
+X-Gm-Message-State: AOAM532R958XWMU+dFxj5GcGHmLsSl9uR3n3qsG8gcqW0GrDNf6Vx/5k
+        ASiORnA+nmwyKeQc0DnkFdLGhi8noRk=
+X-Google-Smtp-Source: ABdhPJzmn0b45sNrcvPvCIwEm/UfjCEorJ1FNwL5ECsZeAj84HCca+jQUAD3jbOXlTbFZsu8UbVHYA==
+X-Received: by 2002:a67:e303:: with SMTP id j3mr21959298vsf.33.1641573216680;
+        Fri, 07 Jan 2022 08:33:36 -0800 (PST)
+Received: from localhost.localdomain ([2804:14c:485:504a:2bb5:b3f3:9180:c62b])
+        by smtp.gmail.com with ESMTPSA id j76sm1115880vke.27.2022.01.07.08.33.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 08:31:37 -0800 (PST)
-Date:   Fri, 7 Jan 2022 16:31:33 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     David Stevens <stevensd@chromium.org>
-Cc:     Marc Zyngier <maz@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Chia-I Wu <olv@chromium.org>
-Subject: Re: [PATCH v5 4/4] KVM: mmu: remove over-aggressive warnings
-Message-ID: <Ydhq5aHW+JFo15UF@google.com>
-References: <20211129034317.2964790-1-stevensd@google.com>
- <20211129034317.2964790-5-stevensd@google.com>
- <Yc4G23rrSxS59br5@google.com>
- <CAD=HUj5Q6rW8UyxAXUa3o93T0LBqGQb7ScPj07kvuM3txHMMrQ@mail.gmail.com>
- <YdXrURHO/R82puD4@google.com>
- <YdXvUaBUvaRPsv6m@google.com>
- <CAD=HUj736L5oxkzeL2JoPV8g1S6Rugy_TquW=PRt73YmFzP6Jw@mail.gmail.com>
- <YdcpIQgMZJrqswKU@google.com>
- <CAD=HUj5v37wZ9NuNC4QBDvCGO2SyNG2KAiTc9Jxfg=R7neCuTw@mail.gmail.com>
+        Fri, 07 Jan 2022 08:33:36 -0800 (PST)
+From:   Fabio Estevam <festevam@gmail.com>
+To:     broonie@kernel.org
+Cc:     matthias.schiffer@ew.tq-group.com, linux-kernel@vger.kernel.org,
+        Fabio Estevam <festevam@denx.de>
+Subject: [PATCH v3] regmap: Call regmap_debugfs_exit() prior to _init()
+Date:   Fri,  7 Jan 2022 13:33:07 -0300
+Message-Id: <20220107163307.335404-1-festevam@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAD=HUj5v37wZ9NuNC4QBDvCGO2SyNG2KAiTc9Jxfg=R7neCuTw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022, David Stevens wrote:
-> > > These are the type of pages which KVM is currently rejecting. Is this
-> > > something that KVM can support?
-> >
-> > I'm not opposed to it.  My complaint is that this series is incomplete in that it
-> > allows mapping the memory into the guest, but doesn't support accessing the memory
-> > from KVM itself.  That means for things to work properly, KVM is relying on the
-> > guest to use the memory in a limited capacity, e.g. isn't using the memory as
-> > general purpose RAM.  That's not problematic for your use case, because presumably
-> > the memory is used only by the vGPU, but as is KVM can't enforce that behavior in
-> > any way.
-> >
-> > The really gross part is that failures are not strictly punted to userspace;
-> > the resulting error varies significantly depending on how the guest "illegally"
-> > uses the memory.
-> >
-> > My first choice would be to get the amdgpu driver "fixed", but that's likely an
-> > unreasonable request since it sounds like the non-KVM behavior is working as intended.
-> >
-> > One thought would be to require userspace to opt-in to mapping this type of memory
-> > by introducing a new memslot flag that explicitly states that the memslot cannot
-> > be accessed directly by KVM, i.e. can only be mapped into the guest.  That way,
-> > KVM has an explicit ABI with respect to how it handles this type of memory, even
-> > though the semantics of exactly what will happen if userspace/guest violates the
-> > ABI are not well-defined.  And internally, KVM would also have a clear touchpoint
-> > where it deliberately allows mapping such memslots, as opposed to the more implicit
-> > behavior of bypassing ensure_pfn_ref().
-> 
-> Is it well defined when KVM needs to directly access a memslot?
+From: Fabio Estevam <festevam@denx.de>
 
-Not really, there's certainly no established rule.
+Since commit cffa4b2122f5 ("regmap: debugfs: Fix a memory leak when
+calling regmap_attach_dev"), the following debugfs error is seen
+on i.MX boards:
 
-> At least for x86, it looks like most of the use cases are related to nested
-> virtualization, except for the call in emulator_cmpxchg_emulated.
+debugfs: Directory 'dummy-iomuxc-gpr@20e0000' with parent 'regmap' already present!
 
-The emulator_cmpxchg_emulated() will hopefully go away in the nearish future[*].
-Paravirt features that communicate between guest and host via memory is the other
-case that often maps a pfn into KVM.
+In the attempt to fix the memory leak, the above commit added a NULL check
+for map->debugfs_name. For the first debufs entry, map->debugfs_name is NULL
+and then the new name is allocated via kasprintf().
 
-> Without being able to specifically state what should be avoided, a flag like
-> that would be difficult for userspace to use.
+For the second debugfs entry, map->debugfs_name() is no longer NULL, so
+it will keep using the old entry name and the duplicate name error is seen.
 
-Yeah :-(  I was thinking KVM could state the flag would be safe to use if and only
-if userspace could guarantee that the guest would use the memory for some "special"
-use case, but hadn't actually thought about how to word things.
+Quoting Mark Brown:
 
-The best thing to do is probably to wait for for kvm_vcpu_map() to be eliminated,
-as described in the changelogs for commits:
+"That means that if the device gets freed we'll end up with the old debugfs
+file hanging around pointing at nothing.
+...
+To be more explicit this means we need a call to regmap_debugfs_exit()
+which will clean up all the existing debugfs stuff before we loose
+references to it."
 
-  357a18ad230f ("KVM: Kill kvm_map_gfn() / kvm_unmap_gfn() and gfn_to_pfn_cache")
-  7e2175ebd695 ("KVM: x86: Fix recording of guest steal time / preempted status")
+Call regmap_debugfs_exit() prior to regmap_debugfs_init() to fix
+the problem.
 
-Once that is done, everything in KVM will either access guest memory through the
-userspace hva, or via a mechanism that is tied into the mmu_notifier, at which
-point accessing non-refcounted struct pages is safe and just needs to worry about
-not corrupting _refcount.
+Tested on i.MX6Q and i.MX6SX boards.
+
+Fixes: cffa4b2122f5 ("regmap: debugfs: Fix a memory leak when calling regmap_attach_dev")
+Suggested-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+---
+Changes since v2:
+- Use regmap_debugfs_exit() as suggested by Mark.
+
+ drivers/base/regmap/regmap.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 21a0c2562ec0..f7811641ed5a 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -647,6 +647,7 @@ int regmap_attach_dev(struct device *dev, struct regmap *map,
+ 	if (ret)
+ 		return ret;
+ 
++	regmap_debugfs_exit(map);
+ 	regmap_debugfs_init(map);
+ 
+ 	/* Add a devres resource for dev_get_regmap() */
+-- 
+2.25.1
+
