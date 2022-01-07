@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B956AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27789C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:37:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346963AbiAGKhF (ORCPT
+        id S1346921AbiAGKhI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 05:37:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47818 "EHLO
+        Fri, 7 Jan 2022 05:37:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346752AbiAGKgk (ORCPT
+        with ESMTP id S1346827AbiAGKgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 05:36:40 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B7C6C06118C
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 02:36:37 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id k15so20288470edk.13
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 02:36:37 -0800 (PST)
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAF4FC034002
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 02:36:38 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id m21so20659481edc.0
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 02:36:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rWGc25I9UHfLAvl83M8OVDS0k2GJV0r/8CZZ7jpKHXI=;
-        b=nOAYZAqJKCBfbha4LmVid9XfWWPF8Hn+fLbU/aq7W/Q9JkhTZYcFZq4Q7RH/601qps
-         IgSACDshJlwYL9A1jcY2HhwlME4gm7dqzsLXfRv9ioXSHBQYIsrwn5Blwqm94QXyoMC6
-         JOq+fJGC84cDB3dtPdCBLwOQqNw8czucTW0LZwFsg6o6xymMOVugVWmeQy3lSe1rDMb7
-         g4eQqg/pM8Nj1818gfdF0xxQxBlgzTUXZ9e4KnoIuPimi1U8mU+pN82Wc3RMBxjrqMlw
-         +ToD4pkcxuqa79274Ft2Dcbr96pWkU5MbcOi1GCYAuMCZkwgRuL19SK89e5F20XWcySZ
-         Rxyg==
+        bh=KedYO+3j4KJggZz3vqPPlAr+2ovOvnMpeqHl7HEWORI=;
+        b=e9j8GDZK8kMQnGn1CQn9AR67/Yy0cMuDu3UeIrSfvDV867PrMzwZm8fDVtGXzGL29i
+         wNveJiRtar3hTxM29Qofpvt/JMQJnm2PtybX8KgovLT/NiRdEfmLGeuoAZUa7aSTq8kc
+         5hOj1kS8iGFHIda8uqb+LzQXT5FvtTM4uJevot6DqQKcqLDTG65zZ7rwkv9j+T7ZauoE
+         fOMPa94E8HP74nxKL4MK4ysQOSwkP4TXNFIHrndvPmcZ83idtXs9q9lPQ0wLnIZOa9HL
+         OPV4e8uAcX9g/4P+1EXxrV0B7AP3fCxdMsFSMLTlf/1anBmLz7c2IIsoo5FBpSOwbYF0
+         ornw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rWGc25I9UHfLAvl83M8OVDS0k2GJV0r/8CZZ7jpKHXI=;
-        b=63cpRlFsPya9w7PSHdhTrPyiUxFSjyerApPiGcazQ7bHvA6ejxqfFB1QIIdaieH9I7
-         9lJ0KURn8g8V4KzdZWcDS0MEDF/ZyzdS6Vrfpe7hmFuSOWDxuFciPa1EpGexOQnsE1V3
-         kTuFXwWYCf4Cm0oA5o0Bn/VHWGP2/OrUMvJ8dJAXxUda34ktWyBCliNaBDLSQ8vjWn35
-         alPaxgDAqO/mo80WoJDypDAJDyu23JhznZyANbHWy/+rl5zNXWv0MiO21bC6/5vwc0GG
-         92MLzl2GHJ3XNTOJy71W5A/VRSccubOBNkNjEMuWyGskTALpx8xI8OoamNgT5UHD7PyT
-         SQwA==
-X-Gm-Message-State: AOAM532s6uT1QwO53bVcdOXPxp0bQKqb5cyON4Bgdz2367B4AFC0pO4X
-        DDicY12LFCrtL1p1MQkHcDtyGqb8/UQ=
-X-Google-Smtp-Source: ABdhPJxqzWL2cC5MH8XEMhWW9Z+kpyjzXks3CJZar9/yFi9O7GPdogFMNanyVhXCmXNKxhVm/P4HJg==
-X-Received: by 2002:a05:6402:4313:: with SMTP id m19mr63020648edc.326.1641551796090;
-        Fri, 07 Jan 2022 02:36:36 -0800 (PST)
+        bh=KedYO+3j4KJggZz3vqPPlAr+2ovOvnMpeqHl7HEWORI=;
+        b=Pv379ZxJg7BgH7drAQp0lQX/QEDE6f6yYr6RNrFxjplLa4k1fmBY7QIDk9CJV/e/aP
+         NmHcODRoBKBxuh4IICura9qyXRs1NUNKvT8U9j5VL6ljghoqwW4XmSVzpOGfsH4gheWq
+         T80IOu56TYuxPNac+bPMLYTOwg6vJ7GgTypn+bd7locGJ/iBUBWs67CWUPDTF+3XPTi4
+         rti5QpPRF0aguamvQGGGxHG+qoxlcUx3KECR7VzmOJypw2th2caF5JMSvqtQTtELQJBc
+         jWqTbJW3gmFK8oQRwmHV/82+rT62iQyTiH/45D+UDj92QOoHS1gm5cd9zSK2T+mpkWK9
+         hGnA==
+X-Gm-Message-State: AOAM5319ZLMWOtaHhEdzOjHidAgovTbo5YccTWcX5Einu9LpVlLy0PC9
+        uxMTR9hdqI3S9TSJOG0VSy4=
+X-Google-Smtp-Source: ABdhPJwd411hrRjscwXWt0OpLWsJczSErc7XfKMxP6e+O5p1muBjZgEZwVRtL4oH7V0qP/fOime91g==
+X-Received: by 2002:aa7:d0c4:: with SMTP id u4mr424196edo.70.1641551797379;
+        Fri, 07 Jan 2022 02:36:37 -0800 (PST)
 Received: from localhost.localdomain ([2a02:8108:96c0:3b88::51e2])
-        by smtp.gmail.com with ESMTPSA id v8sm1869857edt.10.2022.01.07.02.36.35
+        by smtp.gmail.com with ESMTPSA id v8sm1869857edt.10.2022.01.07.02.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 02:36:35 -0800 (PST)
+        Fri, 07 Jan 2022 02:36:37 -0800 (PST)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 11/19] staging: r8188eu: clean up rtw_reset_8051()
-Date:   Fri,  7 Jan 2022 11:36:12 +0100
-Message-Id: <20220107103620.15648-12-straube.linux@gmail.com>
+Subject: [PATCH 13/19] staging: r8188eu: rename Exit label in rtl8188e_firmware_download()
+Date:   Fri,  7 Jan 2022 11:36:14 +0100
+Message-Id: <20220107103620.15648-14-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220107103620.15648-1-straube.linux@gmail.com>
 References: <20220107103620.15648-1-straube.linux@gmail.com>
@@ -66,36 +66,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename the local variable u1bTmp in rtw_reset_8051() to avoid camel
-case and remove a call to DBG_88E that contains no important
-information.
+Rename the Exit label in rtl8188e_firmware_download() to avoid camel
+case.
+
+Exit -> exit
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-index b1f2d349c33a..d219882fc4a2 100644
+index f86b5cb2b6f9..f158bbf44094 100644
 --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
 +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-@@ -460,12 +460,11 @@ static int write_fw(struct adapter *padapter, void *buffer, u32 size)
+@@ -556,7 +556,7 @@ int rtl8188e_firmware_download(struct adapter *padapter)
+ 		rtStatus = load_firmware(&dvobj->firmware, device);
+ 	if (rtStatus == _FAIL) {
+ 		dvobj->firmware.data = NULL;
+-		goto Exit;
++		goto exit;
+ 	}
+ 	pFirmwareBuf = dvobj->firmware.data;
+ 	FirmwareLen = dvobj->firmware.size;
+@@ -604,16 +604,16 @@ int rtl8188e_firmware_download(struct adapter *padapter)
+ 	fw_download_enable(padapter, false);
+ 	if (_SUCCESS != rtStatus) {
+ 		DBG_88E("DL Firmware failed!\n");
+-		goto Exit;
++		goto exit;
+ 	}
  
- void rtw_reset_8051(struct adapter *padapter)
- {
--	u8 u1bTmp;
-+	u8 val8;
+ 	rtStatus = fw_free_to_go(padapter);
+ 	if (_SUCCESS != rtStatus) {
+ 		DBG_88E("DL Firmware failed!\n");
+-		goto Exit;
++		goto exit;
+ 	}
  
--	u1bTmp = rtw_read8(padapter, REG_SYS_FUNC_EN + 1);
--	rtw_write8(padapter, REG_SYS_FUNC_EN + 1, u1bTmp & (~BIT(2)));
--	rtw_write8(padapter, REG_SYS_FUNC_EN + 1, u1bTmp | (BIT(2)));
--	DBG_88E("=====> _8051Reset88E(): 8051 reset success .\n");
-+	val8 = rtw_read8(padapter, REG_SYS_FUNC_EN + 1);
-+	rtw_write8(padapter, REG_SYS_FUNC_EN + 1, val8 & (~BIT(2)));
-+	rtw_write8(padapter, REG_SYS_FUNC_EN + 1, val8 | (BIT(2)));
+-Exit:
++exit:
+ 	return rtStatus;
  }
  
- static s32 fw_free_to_go(struct adapter *padapter)
 -- 
 2.34.1
 
