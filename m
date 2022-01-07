@@ -2,193 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9502DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:46:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237737AbiAGKqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 05:46:46 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:57136 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S237590AbiAGKqo (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 05:46:44 -0500
-X-UUID: 04451892492a4c59b429afda7b875650-20220107
-X-UUID: 04451892492a4c59b429afda7b875650-20220107
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <johnson.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1319459887; Fri, 07 Jan 2022 18:46:40 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 7 Jan 2022 18:46:39 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 7 Jan
- 2022 18:46:38 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 7 Jan 2022 18:46:38 +0800
-From:   Johnson Wang <johnson.wang@mediatek.com>
-To:     <robh+dt@kernel.org>, <matthias.bgg@gmail.com>
-CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Johnson Wang <johnson.wang@mediatek.com>
-Subject: [PATCH v2 1/2] soc: mediatek: pwrap: add pwrap driver for MT8186 SoC
-Date:   Fri, 7 Jan 2022 18:46:32 +0800
-Message-ID: <20220107104633.7500-2-johnson.wang@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220107104633.7500-1-johnson.wang@mediatek.com>
-References: <20220107104633.7500-1-johnson.wang@mediatek.com>
+        id S237590AbiAGKq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 05:46:56 -0500
+Received: from foss.arm.com ([217.140.110.172]:39382 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237653AbiAGKqy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 05:46:54 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F49C13D5;
+        Fri,  7 Jan 2022 02:46:54 -0800 (PST)
+Received: from [192.168.178.6] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A639C3F66F;
+        Fri,  7 Jan 2022 02:46:52 -0800 (PST)
+Subject: Re: [RT] BUG in sched/cpupri.c
+To:     Valentin Schneider <valentin.schneider@arm.com>,
+        John Keeping <john@metanate.com>
+Cc:     linux-rt-users@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <Yb3vXx3DcqVOi+EA@donbot>
+ <71ddbe51-2b7f-2b13-5f22-9013506471dc@arm.com> <87zgou6iq1.mognet@arm.com>
+ <20211221164528.3c84543f.john@metanate.com>
+ <31a47e99-6de3-76ec-62ad-9c98d092ead5@arm.com> <87r1a4775a.mognet@arm.com>
+From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
+Message-ID: <f2d50e78-dc7b-6851-f12e-d702fbfea826@arm.com>
+Date:   Fri, 7 Jan 2022 11:46:45 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+In-Reply-To: <87r1a4775a.mognet@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MT8186 are highly integrated SoC and use PMIC_MT6366 for
-power management. This patch adds pwrap master driver to
-access PMIC_MT6366.
+On 22/12/2021 20:48, Valentin Schneider wrote:
+> On 22/12/21 18:46, Dietmar Eggemann wrote:
+>> On 21.12.21 17:45, John Keeping wrote:
+>>> On Tue, 21 Dec 2021 16:11:34 +0000
+>>> Valentin Schneider <valentin.schneider@arm.com> wrote:
+>>>
+>>>> On 20/12/21 18:35, Dietmar Eggemann wrote:
 
-Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
----
- drivers/soc/mediatek/mtk-pmic-wrap.c | 72 ++++++++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+[...]
 
-diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
-index 952bc554f443..78866ebf7f04 100644
---- a/drivers/soc/mediatek/mtk-pmic-wrap.c
-+++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
-@@ -30,6 +30,7 @@
- #define PWRAP_GET_WACS_REQ(x)		(((x) >> 19) & 0x00000001)
- #define PWRAP_STATE_SYNC_IDLE0		BIT(20)
- #define PWRAP_STATE_INIT_DONE0		BIT(21)
-+#define PWRAP_STATE_INIT_DONE0_V2	BIT(22)
- #define PWRAP_STATE_INIT_DONE1		BIT(15)
- 
- /* macro for WACS FSM */
-@@ -77,6 +78,8 @@
- #define PWRAP_CAP_INT1_EN	BIT(3)
- #define PWRAP_CAP_WDT_SRC1	BIT(4)
- #define PWRAP_CAP_ARB		BIT(5)
-+#define PWRAP_CAP_MONITOR_V2	BIT(6)
-+#define PWRAP_CAP_ARB_V2	BIT(8)
- 
- /* defines for slave device wrapper registers */
- enum dew_regs {
-@@ -1063,6 +1066,55 @@ static int mt8516_regs[] = {
- 	[PWRAP_MSB_FIRST] =		0x170,
- };
- 
-+static int mt8186_regs[] = {
-+	[PWRAP_MUX_SEL] =		0x0,
-+	[PWRAP_WRAP_EN] =		0x4,
-+	[PWRAP_DIO_EN] =		0x8,
-+	[PWRAP_RDDMY] =			0x20,
-+	[PWRAP_CSHEXT_WRITE] =		0x24,
-+	[PWRAP_CSHEXT_READ] =		0x28,
-+	[PWRAP_CSLEXT_WRITE] =		0x2C,
-+	[PWRAP_CSLEXT_READ] =		0x30,
-+	[PWRAP_EXT_CK_WRITE] =		0x34,
-+	[PWRAP_STAUPD_CTRL] =		0x3C,
-+	[PWRAP_STAUPD_GRPEN] =		0x40,
-+	[PWRAP_EINT_STA0_ADR] =		0x44,
-+	[PWRAP_EINT_STA1_ADR] =		0x48,
-+	[PWRAP_INT_CLR] =		0xC8,
-+	[PWRAP_INT_FLG] =		0xC4,
-+	[PWRAP_MAN_EN] =		0x7C,
-+	[PWRAP_MAN_CMD] =		0x80,
-+	[PWRAP_WACS0_EN] =		0x8C,
-+	[PWRAP_WACS1_EN] =		0x94,
-+	[PWRAP_WACS2_EN] =		0x9C,
-+	[PWRAP_INIT_DONE0] =		0x90,
-+	[PWRAP_INIT_DONE1] =		0x98,
-+	[PWRAP_INIT_DONE2] =		0xA0,
-+	[PWRAP_INT_EN] =		0xBC,
-+	[PWRAP_INT1_EN] =		0xCC,
-+	[PWRAP_INT1_FLG] =		0xD4,
-+	[PWRAP_INT1_CLR] =		0xD8,
-+	[PWRAP_TIMER_EN] =		0xF0,
-+	[PWRAP_WDT_UNIT] =		0xF8,
-+	[PWRAP_WDT_SRC_EN] =		0xFC,
-+	[PWRAP_WDT_SRC_EN_1] =		0x100,
-+	[PWRAP_WDT_FLG] =		0x104,
-+	[PWRAP_SPMINF_STA] =		0x1B4,
-+	[PWRAP_DCM_EN] =		0x1EC,
-+	[PWRAP_DCM_DBC_PRD] =		0x1F0,
-+	[PWRAP_GPSINF_0_STA] =		0x204,
-+	[PWRAP_GPSINF_1_STA] =		0x208,
-+	[PWRAP_WACS0_CMD] =		0xC00,
-+	[PWRAP_WACS0_RDATA] =		0xC04,
-+	[PWRAP_WACS0_VLDCLR] =		0xC08,
-+	[PWRAP_WACS1_CMD] =		0xC10,
-+	[PWRAP_WACS1_RDATA] =		0xC14,
-+	[PWRAP_WACS1_VLDCLR] =		0xC18,
-+	[PWRAP_WACS2_CMD] =		0xC20,
-+	[PWRAP_WACS2_RDATA] =		0xC24,
-+	[PWRAP_WACS2_VLDCLR] =		0xC28,
-+};
+>> switched_from_rt() -> rt_queue_pull_task(, pull_rt_task)
+>>   pull_rt_task()->tell_cpu_to_push()->irq_work_queue_on(&rq->rd->rto_push_work,)
+>>     rto_push_irq_work_func() -> push_rt_task(rq, true)
+>>
+>> seems to be the only way with pull=true.
+>>
+>> In my tests, rq->rt.rt_nr_running seems to be 0 when it happens.
+>>
+>> [   22.288537] CPU3 switched_to_rt: p=[ksoftirqd/3 35]
+>> [   22.288554] rt_mutex_setprio: CPU3 p=[ksoftirqd/3 35] pi_task=[rcu_preempt 11] queued=1 running=0 prio=98 oldprio=120
+>> [   22.288636] CPU3 switched_from_rt: p=[ksoftirqd/3 35] rq->rt.rt_nr_running=0
+>>                                                          ^^^^^^^^^^^^^^^^^^^^^^
+>> [   22.288649] rt_mutex_setprio: CPU3 p=[ksoftirqd/3 35] queued=1 running=1 prio=120 oldprio=98
+>> [   22.288681] CPU3 push_rt_task: next_task=[rcu_preempt 11] migr_dis=1 rq->curr=[ksoftirqd/3 35] pull=1
+>>                                                              ^^^^^^^^^^                           ^^^^^^
+> 
+> mark_wakeup_next_waiter() first deboosts the previous owner and then
+> wakeups the next top waiter. Seems like you somehow have the wakeup happen
+> before the push_rt_task IRQ work is run. Also, tell_cpu_to_push() should
+> only pick a CPU that is in rq->rd->rto_mask, which requires having at least
+> 2 RT tasks there...
+
+True, this_cpu has rt_nr_running = 0 and *cpu* has rt_nr_running >= 2:
+
+  mark_wakeup_next_waiter()
+
+    (1) /* deboost */
+    rt_mutex_adjust_prio()
+
+      rt_mutex_setprio(current, ...)
+
+        rq = __task_rq_lock(current, );
+        check_class_changed(rq, p, prev_class, oldprio)
+
+          switched_from_rt()
+
+            if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
+              return;
+
+            rt_queue_pull_task(rq)
+
+              queue_balance_callback(rq, ..., pull_rt_task);
+
+                pull_rt_task()
+
+                  tell_cpu_to_push()
+
+                    *cpu* = rto_next_cpu(rq->rd)
+                    irq_work_queue_on(&rq->rd->rto_push_work, *cpu*)
+
+                      rto_push_irq_work_func()
+                        push_rt_task(rq, true) <-- !!!
+
+    (2) /* waking the top waiter */
+    rt_mutex_wake_q_add(wqh, waiter);
+
+> Now, that wakeup from the rtmutex unlock would give us a resched_curr() via
+> check_preempt_curr() if required, which is good, though I think we are
+> still missing some for sched_setscheduler() (there are no wakeups
+> there). So if we just have to live with an IRQ work popping in before we
+> get to preempt_schedule_irq() (or somesuch), then perhaps the below would
+> be sufficient.
+
+I think that's the case here but we are on the RT overloaded CPU (*cpu*).
+
+> 
+>> What about slightly changing the layout in switched_from_rt() (only lightly tested):
+>>
+>>
+>> @@ -2322,7 +2338,15 @@ static void switched_from_rt(struct rq *rq, struct task_struct *p)
+>>          * we may need to handle the pulling of RT tasks
+>>          * now.
+>>          */
+>> -       if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
+>> +       if (!task_on_rq_queued(p))
+>> +               return;
+>> +
+>> +       if (task_current(rq, p) && (p->sched_class < &rt_sched_class)) {
+>> +               resched_curr(rq);
+>> +               return;
+>> +       }
+>> +
+>> +       if (rq->rt.rt_nr_running)
+>>                 return;
+>>
+>>         rt_queue_pull_task(rq);
+> 
+> If !rq->rt.rt_nr_running then there's no point in issuing a reschedule (at
+> least from RT's perspective; p->sched_class->switched_to() takes care of
+> the rest)
+
+Right.
+
+[...]
+
+>  /*
+> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+> index ef8228d19382..8f3e3a1367b6 100644
+> --- a/kernel/sched/rt.c
+> +++ b/kernel/sched/rt.c
+> @@ -1890,6 +1890,16 @@ static int push_rt_task(struct rq *rq, bool pull)
+>  	if (!next_task)
+>  		return 0;
+>  
+> +	/*
+> +	 * It's possible that the next_task slipped in of higher priority than
+> +	 * current, or current has *just* changed priority.  If that's the case
+> +	 * just reschedule current.
+> +	 */
+> +	if (unlikely(next_task->prio < rq->curr->prio)) {
+> +		resched_curr(rq);
+> +		return 0;
+> +	}
+
+IMHO, that's the bit which prevents the BUG.
+
+But this would also prevent the case in which rq->curr is an RT task
+with lower prio than next_task.
+
+Also `rq->curr = migration/X` goes still though which is somehow fine
+since find_lowest_rq() bails out for if (task->nr_cpus_allowed == 1).
+
+And DL tasks (like sugov:X go through and they can have
+task->nr_cpus_allowed > 1 (arm64 slow-switching boards with shared
+freuency domains with schedutil). cpupri_find_fitness()->convert_prio()
+can handle  task_pri, p->prio = -1 (CPUPRI_INVALID) although its somehow
+by coincidence.
+
+So maybe something like this:
+
+@ -1898,6 +1898,11 @@ static int push_rt_task(struct rq *rq, bool pull)
+                if (!pull || rq->push_busy)
+                        return 0;
+
++               if (rq->curr->sched_class != &rt_sched_class) {
++                       resched_curr(rq);
++                       return 0;
++               }
 +
- enum pmic_type {
- 	PMIC_MT6323,
- 	PMIC_MT6351,
-@@ -1083,6 +1135,7 @@ enum pwrap_type {
- 	PWRAP_MT8135,
- 	PWRAP_MT8173,
- 	PWRAP_MT8183,
-+	PWRAP_MT8186,
- 	PWRAP_MT8195,
- 	PWRAP_MT8516,
- };
-@@ -1535,6 +1588,7 @@ static int pwrap_init_cipher(struct pmic_wrapper *wrp)
- 	case PWRAP_MT6779:
- 	case PWRAP_MT6797:
- 	case PWRAP_MT8173:
-+	case PWRAP_MT8186:
- 	case PWRAP_MT8516:
- 		pwrap_writel(wrp, 1, PWRAP_CIPHER_EN);
- 		break;
-@@ -2069,6 +2123,19 @@ static struct pmic_wrapper_type pwrap_mt8516 = {
- 	.init_soc_specific = NULL,
- };
- 
-+static struct pmic_wrapper_type pwrap_mt8186 = {
-+	.regs = mt8186_regs,
-+	.type = PWRAP_MT8186,
-+	.arb_en_all = 0xfb27f,
-+	.int_en_all = 0xfffffffe, /* disable WatchDog Timeout for bit 1 */
-+	.int1_en_all =  0x000017ff, /* disable Matching interrupt for bit 13 */
-+	.spi_w = PWRAP_MAN_CMD_SPI_WRITE,
-+	.wdt_src = PWRAP_WDT_SRC_MASK_ALL,
-+	.caps = PWRAP_CAP_INT1_EN | PWRAP_CAP_MONITOR_V2 | PWRAP_CAP_ARB_V2,
-+	.init_reg_clock = pwrap_common_init_reg_clock,
-+	.init_soc_specific = NULL,
-+};
-+
- static const struct of_device_id of_pwrap_match_tbl[] = {
- 	{
- 		.compatible = "mediatek,mt2701-pwrap",
-@@ -2097,6 +2164,9 @@ static const struct of_device_id of_pwrap_match_tbl[] = {
- 	}, {
- 		.compatible = "mediatek,mt8183-pwrap",
- 		.data = &pwrap_mt8183,
-+	}, {
-+		.compatible = "mediatek,mt8186-pwrap",
-+		.data = &pwrap_mt8186,
- 	}, {
- 		.compatible = "mediatek,mt8195-pwrap",
- 		.data = &pwrap_mt8195,
-@@ -2209,6 +2279,8 @@ static int pwrap_probe(struct platform_device *pdev)
- 
- 	if (HAS_CAP(wrp->master->caps, PWRAP_CAP_ARB))
- 		mask_done = PWRAP_STATE_INIT_DONE1;
-+	else if (HAS_CAP(wrp->master->caps, PWRAP_CAP_ARB_V2))
-+		mask_done = PWRAP_STATE_INIT_DONE0_V2;
- 	else
- 		mask_done = PWRAP_STATE_INIT_DONE0;
- 
--- 
-2.18.0
+                cpu = find_lowest_rq(rq->curr);
 
+[...]
