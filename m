@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 05:30:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 05:30:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346222AbiAGFaI (ORCPT
+        id S1346247AbiAGFaK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 00:30:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36022 "EHLO
+        Fri, 7 Jan 2022 00:30:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346154AbiAGF3z (ORCPT
+        with ESMTP id S1346164AbiAGF36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 00:29:55 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75651C061245;
-        Thu,  6 Jan 2022 21:29:55 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id o1so3643525ilo.6;
-        Thu, 06 Jan 2022 21:29:55 -0800 (PST)
+        Fri, 7 Jan 2022 00:29:58 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE1CFC061245;
+        Thu,  6 Jan 2022 21:29:57 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id r16so2097924ile.8;
+        Thu, 06 Jan 2022 21:29:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dzzF7/8GOpzrKBOwrzHckJzGxvjjvSqXBZy9kNIR228=;
-        b=MWSI8cTZPy+vSDbzcCvskKGF68nj/ywu4/0G04NC/GBBSbv1Jls/TQxzBWMEet96WG
-         AfEoB+DR7klyRZFOdiPKA54Lgyi3OOa1tDTTvh7cH0S42eaaENGud0GamJdWkQNgFmVX
-         N9Uh/inRxdkZmJtVskb5jndWsazsHFP+hqWqHm61bafcXnQoZpzAQtIDEWVjWvVQZKvW
-         9L6OQb2hjIhLMThvt+JVsEL4GvpD0ayNeRJtcLS7R0/lu88DxFw1WNqp5bAAduLErTMd
-         Jxf6AKm8vLxSMiGVwM+YGvMDA/hGIAXYnKUURGD7uSI0u1AjIVwYvg0WHXUfjURDuCRx
-         rQRg==
+        bh=Hyui/9XEFQbqGCcGYlhpIzLPjJi33gkvYHXo74A0/3Q=;
+        b=IU3vT52kge4VoDiJuwOsA8j+GKfxVgh5ey5XO3SiQoirl1BeyHVYMo3q9CdLNtpcrs
+         SGcsf4M78LC6wtFBycVFPoB5fENHSmO4Vb/eBtGxCEDJc934TMbmZwW0crFlubOMlBf0
+         XY3zJUPST8ImY4vMCKatw4pF6DgsnMvhzgzhOJRpvM82Y3gvtScwll9A7sDQKM5RYxod
+         4ROxDZVJYThqdML5j3sjprkEa9EVX7AKYTfmLUXt6iNlLuJHTbCHz7/rEndJ5kagH2MD
+         GiNBT/4z1uCWwd/ulQzeyx2L39/iZUWfZi7Vp9VwgSB1L06MzoIweOQSh2Q78XiPNc1A
+         CcAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dzzF7/8GOpzrKBOwrzHckJzGxvjjvSqXBZy9kNIR228=;
-        b=N8K1tJCqexOdaRcGpGtUinlsGNwz5+OA73Sd7nVKiT9RzkmM/QGid+d0QtLW9QOm7R
-         nt2QdR8AEF7M0IqGKS1vNTFMSi3sU4xzSpf/bFYpSBLpSTKltm7wb+ZXORcmw8iIWjBA
-         iBkp7gzQ9kzimorJzyBAeJjMYd7fXNt+MkeXbi/qs3SZ/xTTOTc0AkRpM1O88guCa/CS
-         17Va0zNCQl/yqhnmTTkztlH2gB94mYrCeKml9v/INkZuuugEVJYTY18+Q8PfdMVnH83i
-         kTi+M1Qn5a30zwhnDffUhWZIxVaab6YUGNJAbQT/UhdBnTm8SkbFwGuDAEQ+/pkdxd5x
-         pRag==
-X-Gm-Message-State: AOAM5325PrVxe9IQ3EwGg+8uU/7Jna3xs3x/eOb//GHD8TU7PX9mUJQ2
-        AFD/toePZcnqmsre3YpAcfg=
-X-Google-Smtp-Source: ABdhPJyup5o4rcMhORpT6ZFSPR3dezD1mphacqC7xfzSWFaUJlmduh7V7awhW8PNm3PB34a2m2uxPw==
-X-Received: by 2002:a05:6e02:545:: with SMTP id i5mr27549553ils.128.1641533394782;
-        Thu, 06 Jan 2022 21:29:54 -0800 (PST)
+        bh=Hyui/9XEFQbqGCcGYlhpIzLPjJi33gkvYHXo74A0/3Q=;
+        b=g6V3DCQ4gu1V/scHNrw4K+3kDqK4gJMHOzDbFpyOM49QjgS3nQ2rSAu6xjRLWZaPZK
+         2XPQh+k1CeGqyiG1WA72YoudEdPDPld99u/6nb7b1yxKKQpNLAuAfeGb2u66uZag5lHN
+         d7UcFPL/tyd3LuEQuafi1bRYnt/95UtUJhnhbN35B7xlMOESr27FvWLMkjAnUh1LnhFY
+         rsUzwRVhz7AXPybuudOJEz6HqpGupfaOAekMaxKLZr5vBU+p8iIKZsfff22VGvlL1Jxy
+         uekpeVXYNIE6fi1HM93mdb+ywyC5C2FsAEP/V6brTUf2kjC6kpQ+/VPPhc5RKTy7wI5I
+         r6UQ==
+X-Gm-Message-State: AOAM533OoMfXCIoxEHdDo4ieZ3d1f78Y/XJECm1PDmr8a96vqJTeRjcX
+        XbY5puYk5hxX6QCI0zOpGbc=
+X-Google-Smtp-Source: ABdhPJzRNIRXh2SqL/+c3H8HIxlpBdAWgefXUkquh+C0fyO1fTdoZd3yCc+Z25Fbeh8t3hY83ngwJg==
+X-Received: by 2002:a05:6e02:18ce:: with SMTP id s14mr28271765ilu.0.1641533397322;
+        Thu, 06 Jan 2022 21:29:57 -0800 (PST)
 Received: from frodo.. (c-24-9-77-57.hsd1.co.comcast.net. [24.9.77.57])
-        by smtp.googlemail.com with ESMTPSA id c18sm1843446iod.18.2022.01.06.21.29.53
+        by smtp.googlemail.com with ESMTPSA id c18sm1843446iod.18.2022.01.06.21.29.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 21:29:54 -0800 (PST)
+        Thu, 06 Jan 2022 21:29:56 -0800 (PST)
 From:   Jim Cromie <jim.cromie@gmail.com>
 To:     jbaron@akamai.com, gregkh@linuxfoundation.org,
         linux@rasmusvillemoes.dk, rostedt@goodmis.org,
@@ -62,9 +62,9 @@ Cc:     quic_saipraka@quicinc.com, will@kernel.org,
         arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, mingo@redhat.com,
         jim.cromie@gmail.com
-Subject: [PATCH v11 04/19] dyndbg: add trace-events for pr_debug, dev_dbg
-Date:   Thu,  6 Jan 2022 22:29:27 -0700
-Message-Id: <20220107052942.1349447-5-jim.cromie@gmail.com>
+Subject: [PATCH v11 06/19] dyndbg: add class_id to callsites
+Date:   Thu,  6 Jan 2022 22:29:29 -0700
+Message-Id: <20220107052942.1349447-7-jim.cromie@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107052942.1349447-1-jim.cromie@gmail.com>
 References: <20220107052942.1349447-1-jim.cromie@gmail.com>
@@ -74,281 +74,259 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit HEAD~1, pr_debug temporarily issued a printk:console event.
-Replace that use with 2 new events:
+DRM defines/uses a 10 enum drm_debug_category to create exclusive
+classes of debug messages.  To support this directly in dynamic-debug,
+add the following:
 
-  bash-5.1# ls events/dyndbg/
-  devdbg  enable  filter  prdbg
+- struct _ddebug.class_id	4 bits is enough for drm_debug_category
 
-..called from pr_debug(), dev_dbg() respectively for dyndbg builds.
+and the query support:
 
-This links the old pr_debug API to tracefs, via dyndbg, allowing
-pr_debug()s etc to add just a little more user-context to the
-trace-logs, and then at users option, less syslog.
+- struct _ddebug_query.class_id
+- ddebug_change		- looks for "class" keyword
+- parse_class   	- accepts uint: 1-15, sets query->class_id
+- vpr_info_dq		- displays new field
+- ddebug_proc_show	- append column with "cls:%d"
 
-The 2 trace_* calls accept their caller's args respectively, keeping
-the available info w/o alteration; ISTM this is the best basis to add
-filtering later.
+With this patch, the following cmd is accepted w/o error:
 
-1- struct _ddebug *descriptor, giving tracefs all of dyndbg's info.
-2- struct device *dev, for trace_devdbg(), if !!dev
+  #> echo module drm class 2 +p > /proc/dynamic_debug/control
 
-To pass the descriptor into the trace_*() calls, the callchain up to
-__dynamic_{pr_debug,{dev,netdev,ibdev}_dbg} are altered to provide it.
+It currently does nothing, since no pr_debug callsites can yet be
+initialized with class_id != 0.
 
-The 2nd event also gets the struct device *dev if !!dev, otherwise a
-trace_prdbg() is issued, since we have an event for that, and don't
-need to waste the trace-buffer space.
+Note that this is specifically an error:
 
+  #> echo module drm class 0 +p > /proc/dynamic_debug/control
+
+parse_class() prohibits this, we reserve "class 0" as a non-category.
+This means that all good inputs are true, and 0 is special.
+
+NOTES:
+
+Patch extends DEFINE_DYNAMIC_DEBUG_METADATA() with a _CLS suffix, and
+a new cls param, and re-adds old name using extended name.  Then,
+repeats those mods up through the Factory macros that use the
+METADATA* .data constructors, so as to actually supply the category
+into the initializer.
+
+CC: Rasmus Villemoes <linux@rasmusvillemoes.dk>
 Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
 ---
- include/trace/events/dyndbg.h | 67 +++++++++++++++++++++++++++++++++++
- lib/dynamic_debug.c           | 53 ++++++++++++++-------------
- 2 files changed, 96 insertions(+), 24 deletions(-)
- create mode 100644 include/trace/events/dyndbg.h
+ .../admin-guide/dynamic-debug-howto.rst       | 11 +++++
+ include/linux/dynamic_debug.h                 | 41 +++++++++++++------
+ lib/dynamic_debug.c                           | 30 ++++++++++++--
+ 3 files changed, 67 insertions(+), 15 deletions(-)
 
-diff --git a/include/trace/events/dyndbg.h b/include/trace/events/dyndbg.h
-new file mode 100644
-index 000000000000..82620b10e968
---- /dev/null
-+++ b/include/trace/events/dyndbg.h
-@@ -0,0 +1,67 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM dyndbg
+diff --git a/Documentation/admin-guide/dynamic-debug-howto.rst b/Documentation/admin-guide/dynamic-debug-howto.rst
+index 3c8f104a143f..7e1322660b10 100644
+--- a/Documentation/admin-guide/dynamic-debug-howto.rst
++++ b/Documentation/admin-guide/dynamic-debug-howto.rst
+@@ -35,6 +35,7 @@ Dynamic debug has even more useful features:
+    - line number (including ranges of line numbers)
+    - module name
+    - format string
++   - class number:1-15
+ 
+  * Provides a debugfs control file: ``<debugfs>/dynamic_debug/control``
+    which can be read to display the complete list of known debug
+@@ -143,6 +144,7 @@ against.  Possible keywords are:::
+ 		 'module' string |
+ 		 'format' string |
+ 		 'line' line-range
++		 'class' integer:[1-15]
+ 
+   line-range ::= lineno |
+ 		 '-'lineno |
+@@ -217,6 +219,15 @@ line
+ 	line -1605          // the 1605 lines from line 1 to line 1605
+ 	line 1600-          // all lines from line 1600 to the end of the file
+ 
++class
++    This expects a single integer, in range: 1-15.
++    Using this specification constrains to exact class_id matches.
++    This is intended for DRM.debug enumerated categories, plus 1.
++    class_id = 0 is reserved, returns an error currently.
 +
-+#if !defined(_TRACE_DYNDBG_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_DYNDBG_H
++    This differs from the others primarily in that it is not displayed
++    in the control file currently, add later as an extra column.
 +
-+#include <linux/tracepoint.h>
+ The flags specification comprises a change operation followed
+ by one or more flag characters.  The change operation is one
+ of the characters::
+diff --git a/include/linux/dynamic_debug.h b/include/linux/dynamic_debug.h
+index e0c2d7c0938b..e9483cd9ac1c 100644
+--- a/include/linux/dynamic_debug.h
++++ b/include/linux/dynamic_debug.h
+@@ -20,6 +20,7 @@ struct _ddebug {
+ 	const char *function;
+ 	const char *filename;
+ 	const char *format;
++	unsigned int class_id:4;
+ 	unsigned int lineno:18;
+ 	/*
+ 	 * The flags field controls the behaviour at the callsite.
+@@ -91,7 +92,7 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
+ 			 const struct ib_device *ibdev,
+ 			 const char *fmt, ...);
+ 
+-#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt)		\
++#define DEFINE_DYNAMIC_DEBUG_METADATA_CLS(name, cls, fmt)	\
+ 	static struct _ddebug  __aligned(8)			\
+ 	__section("__dyndbg") name = {				\
+ 		.modname = KBUILD_MODNAME,			\
+@@ -100,9 +101,13 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
+ 		.format = (fmt),				\
+ 		.lineno = __LINE__,				\
+ 		.flags = _DPRINTK_FLAGS_DEFAULT,		\
++		.class_id = cls,				\
+ 		_DPRINTK_KEY_INIT				\
+ 	}
+ 
++#define DEFINE_DYNAMIC_DEBUG_METADATA(name, fmt)	\
++	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(name, 0, fmt)
 +
-+/* capture pr_debug() callsite descriptor and message */
-+TRACE_EVENT(prdbg,
-+	TP_PROTO(const struct _ddebug *desc, const char *text, size_t len),
+ #ifdef CONFIG_JUMP_LABEL
+ 
+ #ifdef DEBUG
+@@ -132,17 +137,21 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
+ 
+ #endif /* CONFIG_JUMP_LABEL */
+ 
+-#define __dynamic_func_call(id, fmt, func, ...) do {	\
+-	DEFINE_DYNAMIC_DEBUG_METADATA(id, fmt);		\
+-	if (DYNAMIC_DEBUG_BRANCH(id))			\
+-		func(&id, ##__VA_ARGS__);		\
++#define __dynamic_func_call_cls(id, cls, fmt, func, ...) do {	\
++	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(id, cls, fmt);	\
++	if (DYNAMIC_DEBUG_BRANCH(id))				\
++		func(&id, ##__VA_ARGS__);			\
+ } while (0)
++#define __dynamic_func_call(id, fmt, func, ...)				\
++	__dynamic_func_call_cls(id, 0, fmt, func, ##__VA_ARGS__)
+ 
+-#define __dynamic_func_call_no_desc(id, fmt, func, ...) do {	\
+-	DEFINE_DYNAMIC_DEBUG_METADATA(id, fmt);			\
+-	if (DYNAMIC_DEBUG_BRANCH(id))				\
+-		func(__VA_ARGS__);				\
++#define __dynamic_func_call_no_desc_cls(id, cls, fmt, func, ...) do {	\
++	DEFINE_DYNAMIC_DEBUG_METADATA_CLS(id, cls, fmt);		\
++	if (DYNAMIC_DEBUG_BRANCH(id))					\
++		func(__VA_ARGS__);					\
+ } while (0)
++#define __dynamic_func_call_no_desc(id, fmt, func, ...)			\
++	__dynamic_func_call_no_desc_cls(id, 0, fmt, func, ##__VA_ARGS__)
+ 
+ /*
+  * "Factory macro" for generating a call to func, guarded by a
+@@ -152,15 +161,23 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
+  * the varargs. Note that fmt is repeated in invocations of this
+  * macro.
+  */
++#define _dynamic_func_call_cls(cls, fmt, func, ...)			\
++	__dynamic_func_call_cls(__UNIQUE_ID(ddebug), cls, fmt, func, ##__VA_ARGS__)
+ #define _dynamic_func_call(fmt, func, ...)				\
+-	__dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
++	__dynamic_func_call_cls(__UNIQUE_ID(ddebug), 0, fmt, func, ##__VA_ARGS__)
 +
-+	TP_ARGS(desc, text, len),
+ /*
+  * A variant that does the same, except that the descriptor is not
+  * passed as the first argument to the function; it is only called
+  * with precisely the macro's varargs.
+  */
+-#define _dynamic_func_call_no_desc(fmt, func, ...)	\
+-	__dynamic_func_call_no_desc(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
++#define _dynamic_func_call_no_desc_cls(fmt, eCat, func, ...)		\
++	__dynamic_func_call_no_desc_cls(__UNIQUE_ID(ddebug), eCat,	\
++					fmt, func, ##__VA_ARGS__)
 +
-+	TP_STRUCT__entry(
-+		__dynamic_array(char, msg, len + 1)
-+	),
-+
-+	TP_fast_assign(
-+		/*
-+		 * Each trace entry is printed in a new line.
-+		 * If the msg finishes with '\n', cut it off
-+		 * to avoid blank lines in the trace.
-+		 */
-+		if ((len > 0) && (text[len-1] == '\n'))
-+			len -= 1;
-+
-+		memcpy(__get_str(msg), text, len);
-+		__get_str(msg)[len] = 0;
-+	),
-+
-+	TP_printk("%s", __get_str(msg))
-+
-+);
-+
-+/* capture dev_dbg() callsite descriptor, device, and message */
-+TRACE_EVENT(devdbg,
-+	TP_PROTO(const struct _ddebug *desc, const struct device *dev,
-+		 const char *text, size_t len),
-+
-+	TP_ARGS(desc, dev, text, len),
-+
-+	TP_STRUCT__entry(
-+		__dynamic_array(char, msg, len + 1)
-+	),
-+
-+	TP_fast_assign(
-+		/*
-+		 * Each trace entry is printed in a new line.
-+		 * If the msg finishes with '\n', cut it off
-+		 * to avoid blank lines in the trace.
-+		 */
-+		if ((len > 0) && (text[len-1] == '\n'))
-+			len -= 1;
-+
-+		memcpy(__get_str(msg), text, len);
-+		__get_str(msg)[len] = 0;
-+	),
-+
-+	TP_printk("%s", __get_str(msg))
-+);
-+
-+#endif /* _TRACE_DYNDBG_H */
-+
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
++#define _dynamic_func_call_no_desc(fmt, func, ...)		\
++	__dynamic_func_call_no_desc_cls(__UNIQUE_ID(ddebug), 0,	\
++					fmt, func, ##__VA_ARGS__)
+ 
+ #define dynamic_pr_debug(fmt, ...)				\
+ 	_dynamic_func_call(fmt,	__dynamic_pr_debug,		\
 diff --git a/lib/dynamic_debug.c b/lib/dynamic_debug.c
-index 3fd035cd4653..2efdc4f1553f 100644
+index 2efdc4f1553f..419d4664e724 100644
 --- a/lib/dynamic_debug.c
 +++ b/lib/dynamic_debug.c
-@@ -36,7 +36,9 @@
- #include <linux/sched.h>
- #include <linux/device.h>
- #include <linux/netdevice.h>
--#include <trace/events/printk.h>
-+
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/dyndbg.h>
+@@ -58,6 +58,7 @@ struct ddebug_query {
+ 	const char *function;
+ 	const char *format;
+ 	unsigned int first_lineno, last_lineno;
++	unsigned int class_id;
+ };
  
- #include <rdma/ib_verbs.h>
+ struct ddebug_iter {
+@@ -138,13 +139,13 @@ static void vpr_info_dq(const struct ddebug_query *query, const char *msg)
+ 			fmtlen--;
+ 	}
  
-@@ -648,7 +650,8 @@ struct dynamic_trace_bufs {
- static DEFINE_PER_CPU(struct dynamic_trace_bufs, dynamic_trace_bufs);
- static DEFINE_PER_CPU(int, dynamic_trace_reserve);
- 
--static void dynamic_trace(const char *fmt, va_list args)
-+static void dynamic_trace(struct _ddebug *desc, const struct device *dev,
-+			  const char *fmt, va_list args)
- {
- 	struct dynamic_trace_buf *buf;
- 	int bufidx;
-@@ -667,7 +670,11 @@ static void dynamic_trace(const char *fmt, va_list args)
- 	buf = this_cpu_ptr(dynamic_trace_bufs.bufs) + bufidx;
- 
- 	len = vscnprintf(buf->buf, sizeof(buf->buf), fmt, args);
--	trace_console(buf->buf, len);
-+
-+	if (dev == NULL)
-+		trace_prdbg(desc, buf->buf, len);
-+	else
-+		trace_devdbg(desc, dev, buf->buf, len);
- 
- out:
- 	/* As above. */
-@@ -676,9 +683,9 @@ static void dynamic_trace(const char *fmt, va_list args)
- 	preempt_enable_notrace();
+-	v3pr_info("%s: func=\"%s\" file=\"%s\" module=\"%s\" format=\"%.*s\" lineno=%u-%u\n",
++	v3pr_info("%s: func=\"%s\" file=\"%s\" module=\"%s\" format=\"%.*s\" lineno=%u-%u class=%u\n",
+ 		 msg,
+ 		 query->function ?: "",
+ 		 query->filename ?: "",
+ 		 query->module ?: "",
+ 		 fmtlen, query->format ?: "",
+-		 query->first_lineno, query->last_lineno);
++		 query->first_lineno, query->last_lineno, query->class_id);
  }
  
--static void dynamic_printk(unsigned int flags, const char *fmt, ...)
-+static void dynamic_printk(struct _ddebug *desc, const char *fmt, ...)
- {
--	if (flags & _DPRINTK_FLAGS_TRACE) {
-+	if (desc->flags & _DPRINTK_FLAGS_TRACE) {
- 		va_list args;
+ /*
+@@ -174,6 +175,10 @@ static int ddebug_change(const struct ddebug_query *query,
+ 		for (i = 0; i < dt->num_ddebugs; i++) {
+ 			struct _ddebug *dp = &dt->ddebugs[i];
  
- 		va_start(args, fmt);
-@@ -686,11 +693,11 @@ static void dynamic_printk(unsigned int flags, const char *fmt, ...)
- 		 * All callers include the KERN_DEBUG prefix to keep the
- 		 * vprintk case simple; strip it out for tracing.
- 		 */
--		dynamic_trace(fmt + strlen(KERN_DEBUG), args);
-+		dynamic_trace(desc, NULL, fmt + strlen(KERN_DEBUG), args);
- 		va_end(args);
++			/* match against the class_id, if > 0 */
++			if (query->class_id && query->class_id != dp->class_id)
++				continue;
++
+ 			/* match against the source filename */
+ 			if (query->filename &&
+ 			    !match_wildcard(query->filename, dp->filename) &&
+@@ -310,6 +315,22 @@ static inline int parse_lineno(const char *str, unsigned int *val)
  	}
- 
--	if (flags & _DPRINTK_FLAGS_PRINTK) {
-+	if (desc->flags & _DPRINTK_FLAGS_PRINTK) {
- 		va_list args;
- 
- 		va_start(args, fmt);
-@@ -699,19 +706,19 @@ static void dynamic_printk(unsigned int flags, const char *fmt, ...)
- 	}
+ 	return 0;
  }
++/*
++ * class_id is 0-15. 0 is default, is nonsense in active search
++ */
++static inline int parse_class(struct ddebug_query *query, const char *str)
++{
++	int rc;
++	unsigned int val;
++
++	rc = kstrtouint(str, 10, &val);
++	if (rc < 0 || !val || val > 15) {
++		pr_err("expecting class:[1-15], not %s\n", str);
++		return -EINVAL;
++	}
++	query->class_id = val;
++	return 0;
++}
  
--static void dynamic_dev_printk(unsigned int flags, const struct device *dev,
-+static void dynamic_dev_printk(struct _ddebug *desc, const struct device *dev,
- 			       const char *fmt, ...)
+ static int parse_linerange(struct ddebug_query *query, const char *first)
  {
+@@ -424,6 +445,9 @@ static int ddebug_parse_query(char *words[], int nwords,
+ 		} else if (!strcmp(keyword, "line")) {
+ 			if (parse_linerange(query, arg))
+ 				return -EINVAL;
++		} else if (!strcmp(keyword, "class")) {
++			if (parse_class(query, arg))
++				return -EINVAL;
+ 		} else {
+ 			pr_err("unknown keyword \"%s\"\n", keyword);
+ 			return -EINVAL;
+@@ -1007,7 +1031,7 @@ static int ddebug_proc_show(struct seq_file *m, void *p)
+ 		   iter->table->mod_name, dp->function,
+ 		   ddebug_describe_flags(dp->flags, &flags));
+ 	seq_escape(m, dp->format, "\t\r\n\"");
+-	seq_puts(m, "\"\n");
++	seq_printf(m, "\" cls:%u\n", dp->class_id);
  
--	if (flags & _DPRINTK_FLAGS_TRACE) {
-+	if (desc->flags & _DPRINTK_FLAGS_TRACE) {
- 		va_list args;
- 
- 		va_start(args, fmt);
--		dynamic_trace(fmt, args);
-+		dynamic_trace(desc, dev, fmt, args);
- 		va_end(args);
- 	}
- 
--	if (flags & _DPRINTK_FLAGS_PRINTK) {
-+	if (desc->flags & _DPRINTK_FLAGS_PRINTK) {
- 		va_list args;
- 
- 		va_start(args, fmt);
-@@ -734,7 +741,7 @@ void __dynamic_pr_debug(struct _ddebug *descriptor, const char *fmt, ...)
- 	vaf.fmt = fmt;
- 	vaf.va = &args;
- 
--	dynamic_printk(descriptor->flags, KERN_DEBUG "%s%pV",
-+	dynamic_printk(descriptor, KERN_DEBUG "%s%pV",
- 		       dynamic_emit_prefix(descriptor, buf), &vaf);
- 
- 	va_end(args);
-@@ -745,7 +752,6 @@ void __dynamic_dev_dbg(struct _ddebug *descriptor,
- 		      const struct device *dev, const char *fmt, ...)
- {
- 	struct va_format vaf;
--	unsigned int flags;
- 	va_list args;
- 
- 	BUG_ON(!descriptor);
-@@ -755,15 +761,14 @@ void __dynamic_dev_dbg(struct _ddebug *descriptor,
- 
- 	vaf.fmt = fmt;
- 	vaf.va = &args;
--	flags = descriptor->flags;
- 
- 	if (!dev) {
--		dynamic_printk(flags, KERN_DEBUG "(NULL device *): %pV",
-+		dynamic_printk(descriptor, KERN_DEBUG "(NULL device *): %pV",
- 			       &vaf);
- 	} else {
- 		char buf[PREFIX_SIZE] = "";
- 
--		dynamic_dev_printk(flags, dev, "%s%s %s: %pV",
-+		dynamic_dev_printk(descriptor, dev, "%s%s %s: %pV",
- 				   dynamic_emit_prefix(descriptor, buf),
- 				   dev_driver_string(dev), dev_name(dev),
- 				   &vaf);
-@@ -794,7 +799,7 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
- 	if (dev && dev->dev.parent) {
- 		char buf[PREFIX_SIZE] = "";
- 
--		dynamic_dev_printk(flags, dev->dev.parent,
-+		dynamic_dev_printk(descriptor, dev->dev.parent,
- 				   "%s%s %s %s%s: %pV",
- 				   dynamic_emit_prefix(descriptor, buf),
- 				   dev_driver_string(dev->dev.parent),
-@@ -802,10 +807,10 @@ void __dynamic_netdev_dbg(struct _ddebug *descriptor,
- 				   netdev_name(dev), netdev_reg_state(dev),
- 				   &vaf);
- 	} else if (dev) {
--		dynamic_printk(flags, KERN_DEBUG "%s%s: %pV",
--			       netdev_name(dev), netdev_reg_state(dev), &vaf);
-+		dynamic_dev_printk(descriptor, &dev->dev, KERN_DEBUG "%s%s: %pV",
-+				   netdev_name(dev), netdev_reg_state(dev), &vaf);
- 	} else {
--		dynamic_printk(flags, KERN_DEBUG "(NULL net_device): %pV",
-+		dynamic_printk(descriptor, KERN_DEBUG "(NULL net_device): %pV",
- 			       &vaf);
- 	}
- 
-@@ -833,7 +838,7 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
- 	if (ibdev && ibdev->dev.parent) {
- 		char buf[PREFIX_SIZE] = "";
- 
--		dynamic_dev_printk(flags, ibdev->dev.parent,
-+		dynamic_dev_printk(descriptor, ibdev->dev.parent,
- 				   "%s%s %s %s: %pV",
- 				   dynamic_emit_prefix(descriptor, buf),
- 				   dev_driver_string(ibdev->dev.parent),
-@@ -841,10 +846,10 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
- 				   dev_name(&ibdev->dev),
- 				   &vaf);
- 	} else if (ibdev) {
--		dynamic_printk(flags, KERN_DEBUG "%s%s: %pV",
--			       dev_name(&ibdev->dev), &vaf);
-+		dynamic_dev_printk(descriptor, &ibdev->dev, KERN_DEBUG "%s%s: %pV",
-+				   dev_name(&ibdev->dev), &vaf);
- 	} else {
--		dynamic_printk(flags, KERN_DEBUG "(NULL ip_device): %pV",
-+		dynamic_printk(descriptor, KERN_DEBUG "(NULL ip_device): %pV",
- 			       &vaf);
- 	}
- 
+ 	return 0;
+ }
 -- 
 2.33.1
 
