@@ -2,108 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89CD1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E65C2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:01:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233391AbiAGS6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:58:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37792 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233274AbiAGS5e (ORCPT
+        id S231478AbiAGTBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:01:15 -0500
+Received: from mail-oi1-f170.google.com ([209.85.167.170]:40885 "EHLO
+        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229836AbiAGTBN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:57:34 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDB2EB826D7;
-        Fri,  7 Jan 2022 18:57:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50D1AC36AE0;
-        Fri,  7 Jan 2022 18:57:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641581851;
-        bh=FyNWGzfcKGqhD6HtVa6E88uU1lNTBW4ZjhctypUoluc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=X3UaqwTkRQ4QWF0wTORaXJiwx4GaU2drKZdq0p20JD+53V3UkfxiPJ5KQJpOJ9FAs
-         NEFSfkLbGxAPFQMXoZvjuaPaEGxchG74+rq5IH3PvIVO6r5XQYsmt847tODk4SQkt0
-         jEecbKaEwTLuo4CH2NqApD0e52Nf64QVNy4GZ8bqCu38QiYWMq9h0dUZHT0owEROOO
-         Wyc2FmFWpnnVOLfoQ9nUF1JbqU4bqQjTD8o9juhy4EI3H2ti3PteIPFix9RCGo4W+t
-         0TvkUHHG7+UaPT75yOkuTh1psB8M4VeQHz7zl3YtlGQ5d+PrXWsTZT6oQaCp4HYKxH
-         iIzYrFD/A8QUg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 1D54740B92; Fri,  7 Jan 2022 15:57:28 -0300 (-03)
-Date:   Fri, 7 Jan 2022 15:57:28 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Christy Lee <christyc.y.lee@gmail.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Ingo Molnar <mingo@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Michael Petlan <mpetlan@redhat.com>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org
-Subject: Re: [PATCH] perf trace: Move SIGCHLD handler init to trace__run
-Message-ID: <YdiNGGNPG3DpTEUe@kernel.org>
-References: <20220106222030.227499-1-jolsa@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220106222030.227499-1-jolsa@kernel.org>
-X-Url:  http://acmel.wordpress.com
+        Fri, 7 Jan 2022 14:01:13 -0500
+Received: by mail-oi1-f170.google.com with SMTP id t204so9443630oie.7;
+        Fri, 07 Jan 2022 11:01:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=M9Ewz3je/UPVYnHWZBwxIw8fSnK7ld3cFu23OJRs32o=;
+        b=QSaiHZcUjaBlieoGO4ml/wWDA+vMLHMr1IjWVXohsvog7agq7DAsdQ9enlnOatOTr4
+         rc7S/torPYNqCv7cOI4aoTVd6/PwhvzNrU06C7p+UUlxIryJp5C2jC5dVpVySHSdjZxT
+         KlbqjYlwqzj57oRGQzAAfD9j4NMZAC/pv6THl04Omrb5OxklmR5+KxUKcGUVIYU29Qgj
+         uSYUA1UaVTib58btL9+uMT5j0NS6pIVtlc1c63OfgLjoAbPshDiC/ype0evbCVLROarC
+         TlTTMat8KlMVUx0eh7hzagSXVFgA2D5Q8lUw9Jo0o2VbebK2s/qBJohPcTFMrB6srYR2
+         OD3Q==
+X-Gm-Message-State: AOAM530eoln2lOrLfRhkfYCitqP610cMiw+5Zp163gRiNXiEepox2zyi
+        xo/UOVwVJDoBrFUyzLPl6A==
+X-Google-Smtp-Source: ABdhPJxquTndMbNj9kp8gfIWlQVYbrUBHSB+Weu7q94ndIncJ7r49i9m0gMX0OQlKB+LamGTAe7UxA==
+X-Received: by 2002:a05:6808:13ce:: with SMTP id d14mr10955251oiw.62.1641582073051;
+        Fri, 07 Jan 2022 11:01:13 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id be30sm1117011oib.50.2022.01.07.11.01.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 11:01:12 -0800 (PST)
+Received: (nullmailer pid 3702049 invoked by uid 1000);
+        Fri, 07 Jan 2022 19:01:11 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Roger Lu <roger.lu@mediatek.com>
+Cc:     HenryC Chen <HenryC.Chen@mediatek.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Nishanth Menon <nm@ti.com>, Rob Herring <robh+dt@kernel.org>,
+        Charles Yang <Charles.Yang@mediatek.com>,
+        linux-pm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Kevin Hilman <khilman@kernel.org>,
+        Nicolas Boichat <drinkcat@google.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Fan Chen <fan.chen@mediatek.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Angus Lin <Angus.Lin@mediatek.com>,
+        YT Lee <yt.lee@mediatek.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>
+In-Reply-To: <20220107095200.4389-2-roger.lu@mediatek.com>
+References: <20220107095200.4389-1-roger.lu@mediatek.com> <20220107095200.4389-2-roger.lu@mediatek.com>
+Subject: Re: [PATCH v21 1/8] dt-bindings: soc: mediatek: add mtk svs dt-bindings
+Date:   Fri, 07 Jan 2022 13:01:11 -0600
+Message-Id: <1641582071.084026.3702048.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Thu, Jan 06, 2022 at 11:20:30PM +0100, Jiri Olsa escreveu:
-> When running perf trace with bpf object like:
->   # perf trace -e openat,/.../tools/perf/examples/bpf/hello.c
+On Fri, 07 Jan 2022 17:51:53 +0800, Roger Lu wrote:
+> Document the binding for enabling mtk svs on MediaTek SoC.
 > 
-> the event parsing eventually calls llvm__get_kbuild_opts function
-> that runs script and that ends up with SIGCHLD delivered to perf
-> trace handler, which assumes the workload process is done and quits
-> perf trace.
-> 
-> Moving the SIGCHLD handler setup directly to trace__run, where the
-> event is parsed and object already compiled.
-
-
-Thanks, reproduced the problem without the patch, applied, tested again,
-works.
-
-- Arnaldo
-
- 
-> Cc: Christy Lee <christyc.y.lee@gmail.com>
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> Signed-off-by: Roger Lu <roger.lu@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 > ---
->  tools/perf/builtin-trace.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../bindings/soc/mediatek/mtk-svs.yaml        | 84 +++++++++++++++++++
+>  1 file changed, 84 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
 > 
-> diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-> index 94d62a92f1a1..4282ef9ec354 100644
-> --- a/tools/perf/builtin-trace.c
-> +++ b/tools/perf/builtin-trace.c
-> @@ -3925,6 +3925,7 @@ static int trace__run(struct trace *trace, int argc, const char **argv)
->  	bool draining = false;
->  
->  	trace->live = true;
-> +	signal(SIGCHLD, sig_handler);
->  
->  	if (!trace->raw_augmented_syscalls) {
->  		if (trace->trace_syscalls && trace__add_syscall_newtp(trace))
-> @@ -4876,7 +4877,6 @@ int cmd_trace(int argc, const char **argv)
->  
->  	signal(SIGSEGV, sighandler_dump_stack);
->  	signal(SIGFPE, sighandler_dump_stack);
-> -	signal(SIGCHLD, sig_handler);
->  	signal(SIGINT, sig_handler);
->  
->  	trace.evlist = evlist__new();
-> -- 
-> 2.33.1
 
--- 
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-- Arnaldo
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml: properties:nvmem-cells: {'minItems': 1, 'maxItems': 2, 'description': 'Phandle to the calibration data provided by a nvmem device.', 'items': [{'description': 'SVS efuse for SVS controller'}, {'description': 'Thermal efuse for SVS controller'}]} should not be valid under {'required': ['maxItems']}
+	hint: "maxItems" is not needed with an "items" list
+	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml: ignoring, error in schema: properties: nvmem-cells
+Documentation/devicetree/bindings/soc/mediatek/mtk-svs.example.dt.yaml:0:0: /example-0/soc/svs@1100b000: failed to match any schema with compatible: ['mediatek,mt8183-svs']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1576508
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
