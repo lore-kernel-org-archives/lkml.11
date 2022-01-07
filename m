@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11C5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D36C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:55:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232437AbiAGSzd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:55:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:42619 "EHLO
+        id S232367AbiAGSzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:55:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59804 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231428AbiAGSzX (ORCPT
+        by vger.kernel.org with ESMTP id S231504AbiAGSzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:55:23 -0500
+        Fri, 7 Jan 2022 13:55:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641581719;
+        s=mimecast20190719; t=1641581723;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=X/6dTkGCMxdSSMBeTmxzGgatvGMYNiCgl3Ne23BFT6g=;
-        b=N58YFL3jayaxuAXi4rb9YVXjWBF9fB10sOa36/k6r53Avj+5p1jWbagEhF4w42RxdLplOO
-        6aMluwBcStbdDBWC2bwbgC12xknBbS76ExliDTTTqbH07L14gAlKSXQE4TuAkmrNOjnH0S
-        XO/RGrjx71WRkMw9QeyWrWmveb3XeNQ=
+        bh=p/rfn+RuolTeMpS9Bczr/u6Wc8qLb2nR5Cu6H35D8xo=;
+        b=fQOWtV/oSD4KR7nrxHWwQwVDSVvutZmqhkCwt7Cs3/1L1QlyJ9gewJwPKj/4g1SxrhVd1A
+        x/LC7NBsjnCbwY7BW2qk6Bkugr9WfgXRET/bwzWMiLphb/KLkA8T8t0gR31Niq4GwCnP2e
+        sA3r3j67aNcOOJTODHF4RIlz6GP9DAA=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-199-ubVZrTNFNkqT-TT8EFz4qA-1; Fri, 07 Jan 2022 13:55:18 -0500
-X-MC-Unique: ubVZrTNFNkqT-TT8EFz4qA-1
+ us-mta-608-frbE_pRkOQGLwSt9Nbk1pw-1; Fri, 07 Jan 2022 13:55:20 -0500
+X-MC-Unique: frbE_pRkOQGLwSt9Nbk1pw-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EC4AC101F003;
-        Fri,  7 Jan 2022 18:55:16 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8281581EE60;
+        Fri,  7 Jan 2022 18:55:18 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1B71D838DD;
-        Fri,  7 Jan 2022 18:55:16 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB421838F0;
+        Fri,  7 Jan 2022 18:55:17 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
         seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
         yang.zhong@intel.com
-Subject: [PATCH v6 03/21] kvm: x86: Fix xstate_required_size() to follow XSTATE alignment rule
-Date:   Fri,  7 Jan 2022 13:54:54 -0500
-Message-Id: <20220107185512.25321-4-pbonzini@redhat.com>
+Subject: [PATCH v6 05/21] x86/fpu: Make XFD initialization in __fpstate_reset() a function argument
+Date:   Fri,  7 Jan 2022 13:54:56 -0500
+Message-Id: <20220107185512.25321-6-pbonzini@redhat.com>
 In-Reply-To: <20220107185512.25321-1-pbonzini@redhat.com>
 References: <20220107185512.25321-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,40 +54,72 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jing Liu <jing2.liu@intel.com>
 
-CPUID.0xD.1.EBX enumerates the size of the XSAVE area (in compacted
-format) required by XSAVES. If CPUID.0xD.i.ECX[1] is set for a state
-component (i), this state component should be located on the next
-64-bytes boundary following the preceding state component in the
-compacted layout.
+vCPU threads are different from native tasks regarding to the initial XFD
+value. While all native tasks follow a fixed value (init_fpstate::xfd)
+established by the FPU core at boot, vCPU threads need to obey the reset
+value (i.e. ZERO) defined by the specification, to meet the expectation of
+the guest.
 
-Fix xstate_required_size() to follow the alignment rule. AMX is the
-first state component with 64-bytes alignment to catch this bug.
+Let the caller supply an argument and adjust the host and guest related
+invocations accordingly.
 
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Jing Liu <jing2.liu@intel.com>
 Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Message-Id: <20220105123532.12586-4-yang.zhong@intel.com>
+Message-Id: <20220105123532.12586-6-yang.zhong@intel.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/cpuid.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/x86/kernel/fpu/core.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 0b920e12bb6d..f3e6fda6b858 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -42,7 +42,11 @@ static u32 xstate_required_size(u64 xstate_bv, bool compacted)
- 		if (xstate_bv & 0x1) {
- 		        u32 eax, ebx, ecx, edx, offset;
- 		        cpuid_count(0xD, feature_bit, &eax, &ebx, &ecx, &edx);
--			offset = compacted ? ret : ebx;
-+			/* ECX[1]: 64B alignment in compacted form */
-+			if (compacted)
-+				offset = (ecx & 0x2) ? ALIGN(ret, 64) : ret;
-+			else
-+				offset = ebx;
- 			ret = max(ret, offset + eax);
- 		}
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index eddeeb4ed2f5..a78bc547fc03 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -199,7 +199,7 @@ void fpu_reset_from_exception_fixup(void)
+ }
  
+ #if IS_ENABLED(CONFIG_KVM)
+-static void __fpstate_reset(struct fpstate *fpstate);
++static void __fpstate_reset(struct fpstate *fpstate, u64 xfd);
+ 
+ static void fpu_init_guest_permissions(struct fpu_guest *gfpu)
+ {
+@@ -231,7 +231,8 @@ bool fpu_alloc_guest_fpstate(struct fpu_guest *gfpu)
+ 	if (!fpstate)
+ 		return false;
+ 
+-	__fpstate_reset(fpstate);
++	/* Leave xfd to 0 (the reset value defined by spec) */
++	__fpstate_reset(fpstate, 0);
+ 	fpstate_init_user(fpstate);
+ 	fpstate->is_valloc	= true;
+ 	fpstate->is_guest	= true;
+@@ -454,21 +455,21 @@ void fpstate_init_user(struct fpstate *fpstate)
+ 		fpstate_init_fstate(fpstate);
+ }
+ 
+-static void __fpstate_reset(struct fpstate *fpstate)
++static void __fpstate_reset(struct fpstate *fpstate, u64 xfd)
+ {
+ 	/* Initialize sizes and feature masks */
+ 	fpstate->size		= fpu_kernel_cfg.default_size;
+ 	fpstate->user_size	= fpu_user_cfg.default_size;
+ 	fpstate->xfeatures	= fpu_kernel_cfg.default_features;
+ 	fpstate->user_xfeatures	= fpu_user_cfg.default_features;
+-	fpstate->xfd		= init_fpstate.xfd;
++	fpstate->xfd		= xfd;
+ }
+ 
+ void fpstate_reset(struct fpu *fpu)
+ {
+ 	/* Set the fpstate pointer to the default fpstate */
+ 	fpu->fpstate = &fpu->__fpstate;
+-	__fpstate_reset(fpu->fpstate);
++	__fpstate_reset(fpu->fpstate, init_fpstate.xfd);
+ 
+ 	/* Initialize the permission related info in fpu */
+ 	fpu->perm.__state_perm		= fpu_kernel_cfg.default_features;
 -- 
 2.31.1
 
