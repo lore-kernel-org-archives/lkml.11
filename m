@@ -2,218 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FE47C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6231C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344340AbiAGBP2 (ORCPT
+        id S1344384AbiAGBP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 20:15:28 -0500
-Received: from mga09.intel.com ([134.134.136.24]:7791 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239981AbiAGBP0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:15:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641518126; x=1673054126;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=nbnm/W/ou/jogJEbCGLPOkf+Msh2bjyG/ewZEC43WdY=;
-  b=QQuHNOYz6pe1n9AoEZgw61JM8/Po8hch+/Dq94c+VgdwouyzE6xK9s6f
-   UY7ttNiMcFan8vWmO/tnPZ9zv8Wa94CzYBgtLpuPWpn4KYZF6m5sJvkeJ
-   g9pD+Eyjgu3gjmRhSKhrG/fvT2Nsp4eSTvsr+FiyN9UUjf2FLEQdruP7t
-   IV+EEi+IXCd0ZXmaSmq8N06+yc/cjfpy/jhLLM4+4HFTvdgTLkGqvqXsh
-   HK6/p3VtIGmJqHx0176J7h7a1i0RVUVdDAYoCyUkpaX9UfHZ1g49EgySM
-   mRckYZuBUdVo74AW/YlisSZslEFoHv8A4GOK2PPvs2B5/Saf9hJpG9vee
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="242575074"
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
-   d="scan'208";a="242575074"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 17:15:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
-   d="scan'208";a="527199929"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 06 Jan 2022 17:15:18 -0800
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Will Deacon <will@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 3/8] iommu: Extend iommu_at[de]tach_device() for
- multi-device groups
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-4-baolu.lu@linux.intel.com>
- <20220106172249.GJ2328285@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <ec61dd78-7e21-c9ca-b042-32d396577a22@linux.intel.com>
-Date:   Fri, 7 Jan 2022 09:14:38 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Thu, 6 Jan 2022 20:15:57 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:52416 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239981AbiAGBPz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 20:15:55 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=zhangliguang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V18Dy8Y_1641518152;
+Received: from 30.225.24.19(mailfrom:zhangliguang@linux.alibaba.com fp:SMTPD_---0V18Dy8Y_1641518152)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 07 Jan 2022 09:15:53 +0800
+Message-ID: <544c8626-8330-6dd9-0076-c7cb73ec6054@linux.alibaba.com>
+Date:   Fri, 7 Jan 2022 09:15:53 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220106172249.GJ2328285@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: tick/sched: iowait_sleeptime resides in tick_cpu_sched structure
+ is a negative value
+To:     Frederic Weisbecker <frederic@kernel.org>
+Cc:     Frederic Weisbecker <fweisbec@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org
+References: <074a28e8-3794-5fee-f2ab-f08787149481@linux.alibaba.com>
+ <20220106134007.GA1313863@lothringen>
+From:   luanshi <zhangliguang@linux.alibaba.com>
+In-Reply-To: <20220106134007.GA1313863@lothringen>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+Hi Frederi,
 
-On 1/7/22 1:22 AM, Jason Gunthorpe wrote:
-> On Thu, Jan 06, 2022 at 10:20:48AM +0800, Lu Baolu wrote:
->> The iommu_attach/detach_device() interfaces were exposed for the device
->> drivers to attach/detach their own domains. The commit <426a273834eae>
->> ("iommu: Limit iommu_attach/detach_device to device with their own group")
->> restricted them to singleton groups to avoid different device in a group
->> attaching different domain.
+在 2022/1/6 21:40, Frederic Weisbecker 写道:
+> On Thu, Jan 06, 2022 at 05:14:02PM +0800, luanshi wrote:
+>> Hi All,
 >>
->> As we've introduced device DMA ownership into the iommu core. We can now
->> extend these interfaces for muliple-device groups, and "all devices are in
->> the same address space" is still guaranteed.
+>> We encounted a hardlockup problem on ARM server, after some debug found
+>> that:
 >>
->> For multiple devices belonging to a same group, iommu_device_use_dma_api()
->> and iommu_attach_device() are exclusive. Therefore, when drivers decide to
->> use iommu_attach_domain(), they cannot call iommu_device_use_dma_api() at
->> the same time.
+>> PID: 0      TASK: ffff0400064de300  CPU: 126  COMMAND: "swapper/126"
+>>   #0 [ffff8000250f3c90] __crash_kexec at ffff80001013a064
+>>   #1 [ffff8000250f3e30] panic at ffff800010afd028
+>>   #2 [ffff8000250f3f10] nmi_panic at ffff80001004a9e0
+>>   #3 [ffff8000250f3f20] watchdog_hardlockup_check at ffff80001017b7f0
+>>   #4 [ffff8000250f3f40] sdei_watchdog_callback at ffff80001003c9a4
+>>   #5 [ffff8000250f3f50] sdei_event_handler at ffff8000108816b8
+>>   #6 [ffff8000250f3f80] _sdei_handler at ffff800010b1c2e4
+>>   #7 [ffff8000250f3fd0] __sdei_handler at ffff800010b139b0
+>>   #8 [ffff8000250f3ff0] __sdei_asm_handler at ffff800010014c18
+>> --- <IRQ stack> ---
+>>   #9 [ffff800013973f10] __cpu_do_idle at ffff800010b13764
+>> #10 [ffff800013973f20] arch_cpu_idle at ffff800010b137ec
+>> #11 [ffff800013973f30] default_idle_call at ffff800010b1b5cc
+>> #12 [ffff800013973f50] cpuidle_idle_call at ffff80001009648c
+>> #13 [ffff800013973f90] do_idle at ffff8000100965b0
+>> #14 [ffff800013973fc0] cpu_startup_entry at ffff8000100967d4
+>> #15 [ffff800013973fe0] secondary_start_kernel at ffff800010026bb0
 >>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>   drivers/iommu/iommu.c | 79 +++++++++++++++++++++++++++++++++----------
->>   1 file changed, 62 insertions(+), 17 deletions(-)
 >>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index ab8ab95969f5..2c9efd85e447 100644
->> +++ b/drivers/iommu/iommu.c
->> @@ -47,6 +47,7 @@ struct iommu_group {
->>   	struct iommu_domain *domain;
->>   	struct list_head entry;
->>   	unsigned int owner_cnt;
->> +	unsigned int attach_cnt;
-> 
-> Why did we suddenly need another counter? None of the prior versions
-> needed this. I suppose this is being used a some flag to indicate if
-> owner_cnt == 1 or owner_cnt == 0 should restore the default domain?
+>> per_cpu(tick_cpu_sched, 126) = $1 = {
+>>    sched_timer = {
+>>      node = {
+>>        node = {
+>>          __rb_parent_color = 18446603337117384112,
+>>          rb_right = 0x0,
+>>          rb_left = 0x0
+>>        },
+>>        expires = 6108564000000
+>>      },
+>>      _softexpires = 6108564000000,
+>>      function = 0xffff800010122ec0 <tick_sched_timer>,
+>>      base = 0xffff04473bbcc780,
+>>      state = 1 '\001',
+>>      is_rel = 0 '\000',
+>>      is_soft = 0 '\000',
+>>      is_hard = 1 '\001'
+>>    },
+>>    check_clocks = 0,
+>>    nohz_mode = NOHZ_MODE_INACTIVE,
+>>    inidle = 1,
+>>    tick_stopped = 0,
+>>    idle_active = 1,
+>>    do_timer_last = 0,
+>>    got_idle_tick = 1,
+>>    last_tick = 0,
+>>    next_tick = 0,
+>>    idle_jiffies = 0,
+>>    idle_calls = 0,
+>>    idle_sleeps = 0,
+>>    idle_entrytime = 5012087709249,
+>>    idle_waketime = 0,
+>>    idle_exittime = 0,
+>>    idle_sleeptime = 4936136669951,
+>>    iowait_sleeptime = -1942739704,
+>>    last_jiffies = 0,
+>>    timer_expires = 0,
+>>    timer_expires_base = 0,
+>>    next_timer = 0,
+>>    idle_expires = 0,
+>>    tick_dep_mask = {
+>>      counter = 0
+>>    }
+>> }
+>>
+>> iowait_sleeptime = -1942739704,
+>> ----------
+>> iowait_sleeptime is monotonically increasing, under what circumstances iowait_sleeptime
+>> can be a negative value?
+>>
+>> For detailed information:
+>> https://bugzilla.kernel.org/show_bug.cgi?id=215458
+>>
+>>
+>> Can you give me some suggestions for debugging.
+> Some racy updates can happen if cpufreq or "cat /proc/stat" do concurrent
+> updates. But for that nohz needs to be running and I see your CPU clock has
+> NOHZ_MODE_INACTIVE. Perhaps it's only for that CPU though.
+>
+> What is the value of tick_nohz_active in your dump?
 
-Yes, exactly.
+nohz=off was configured in the startup parameters
 
-> Would rather a flag 'auto_no_kernel_dma_api_compat' or something
+crash> tick_nohz_enabled
+tick_nohz_enabled = $1 = false
+crash> tick_nohz_active
+tick_nohz_active = $2 = 0
 
-Adding a flag also works.
 
-> 
-> 
->> +/**
->> + * iommu_attach_device() - attach external or UNMANAGED domain to device
->> + * @domain: the domain about to attach
->> + * @dev: the device about to be attached
->> + *
->> + * For devices belonging to the same group, iommu_device_use_dma_api() and
->> + * iommu_attach_device() are exclusive. Therefore, when drivers decide to
->> + * use iommu_attach_domain(), they cannot call iommu_device_use_dma_api()
->> + * at the same time.
->> + */
->>   int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
->>   {
->>   	struct iommu_group *group;
->> +	int ret = 0;
->> +
->> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
->> +		return -EINVAL;
->>   
->>   	group = iommu_group_get(dev);
->>   	if (!group)
->>   		return -ENODEV;
->>   
->> +	if (group->owner_cnt) {
->> +		/*
->> +		 * Group has been used for kernel-api dma or claimed explicitly
->> +		 * for exclusive occupation. For backward compatibility, device
->> +		 * in a singleton group is allowed to ignore setting the
->> +		 * drv.no_kernel_api_dma field.
-> 
-> BTW why is this call 'no kernel api dma' ? That reads backwards 'no
-> kernel dma api' right?
+and current no cpufreq driver was used:
 
-Yes. Need to rephrase this wording.
+crash> cpufreq_driver
+cpufreq_driver = $4 = (struct cpufreq_driver *) 0x0
 
-> 
-> Aother appeal of putting no_kernel_api_dma in the struct device_driver
-> is that this could could simply do 'dev->driver->no_kernel_api_dma' to
-> figure out how it is being called and avoid this messy implicitness.
 
-Yes.
+Thanks,
 
-> 
-> Once we know our calling context we can always automatic switch from
-> DMA API mode to another domain without any trouble or special
-> counters:
-> 
-> if (!dev->driver->no_kernel_api_dma) {
->      if (group->owner_cnt > 1 || group->owner)
->          return -EBUSY;
->      return __iommu_attach_group(domain, group);
-> }
+Liguang
 
-Is there any lock issue when referencing dev->driver here? I guess this
-requires iommu_attach_device() only being called during the driver life
-(a.k.a. between driver .probe and .release).
-
-> 
-> if (!group->owner_cnt) {
->      ret = __iommu_attach_group(domain, group);
->      if (ret)
->          return ret;
-> } else if (group->owner || group->domain != domain)
->      return -EBUSY;
-> group->owner_cnt++;
-> 
-> Right?
-
-Yes. It's more straightforward if there's no issue around dev->driver
-referencing.
-
-> 
->> +	if (!group->attach_cnt) {
->> +		ret = __iommu_attach_group(domain, group);
-> 
-> How come we don't have to detatch the default domain here? Doesn't
-> that mean that the iommu_replace_group could also just call attach
-> directly without going through detatch?
-
-__iommu_attach_group() allows replacing the default domain with a
-private domain. Corresponding __iommu_detach_group() automatically
-replaces private domain with the default domain.
-
-The auto-switch logic should not apply to iommu_group_replace_domain()
-which is designed for components with iommu_set_dma_owner() called.
-
-> 
-> Jason
-> 
-
-Best regards,
-baolu
+>
+>
+>>
+>>
+>> Thanks,
+>> Liguang
+>>
