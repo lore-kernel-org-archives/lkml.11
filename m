@@ -2,66 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C754C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:20:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343983AbiAGAUa (ORCPT
+        id S1344016AbiAGAUd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 19:20:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344011AbiAGAUX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 19:20:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96157C061245;
-        Thu,  6 Jan 2022 16:20:23 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 526F661C55;
-        Fri,  7 Jan 2022 00:20:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5513C36AE0;
-        Fri,  7 Jan 2022 00:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641514821;
-        bh=LPZoZva39qia0NK5/RjsftEgY/50mELNLWNvxMkHfQk=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=Y5sm2IP3HHJr5yOfFnN68NqA8DQhtBu2hLRHjGPfpezLQK0uYuVquaeNBhB7aGKPX
-         2pJ0DbJOsRdcMZm9hrZCEFixvs/p77yLsPwk69K22RQjQFL05JhaFzrChtzfkT8Jnw
-         ql8F6XGr22N5krz5p1rMSokMqNpBkkNwsYWwj1GqLbbby4GYmaXToHgLeWQ3ksD6Br
-         dKja9ugX+R3A/u8eYvhY/CyXaE4hS//uRJ2CaKTvTvP5fCKK/QBChkCwW3ePx1vjbl
-         lXZOrI43740elH/dJbNomo8B1De4ooVePyH/hawgu/nekWMh3qwYav+ukz7gmc/Js7
-         /tPLE8ZfPX7vQ==
-Content-Type: text/plain; charset="utf-8"
+        Thu, 6 Jan 2022 19:20:33 -0500
+Received: from mout.gmx.net ([212.227.17.21]:34589 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1343988AbiAGAU2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 19:20:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1641514824;
+        bh=p1b7wAO7GiySvUynDsX7sMMM63WbWqelJ0kA4G/mEhM=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=FGV2ihuqoxK3uQM/d6S2JKWoP8YEs8g6uLBd+wxgWJlxSMEE3v0Vrzp7p3JDBxqfQ
+         btbhW7V8iWx9ChxwYE3sGMEJjREV495vpTFzbEjKnv320DsTJW1TCfzv9KuZ0H/WwC
+         c304WWrC7uJ5qqpgftVn5ZGLQwK7KjIVJ0e5J46s=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530 ([92.116.152.191]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MNbox-1ml5yO3KPL-00P1fX; Fri, 07
+ Jan 2022 01:20:23 +0100
+Date:   Fri, 7 Jan 2022 01:19:24 +0100
+From:   Helge Deller <deller@gmx.de>
+To:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
+Cc:     linux-parisc@vger.kernel.org
+Subject: [PATCH] usercopy: Do not fail on memory from former init sections
+Message-ID: <YdeHDDAP+TY5wNeT@ls3530>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Provags-ID: V03:K1:J678O3gfzGmPwfd41abDjWTRi2G6E7NS5C1gZ88lcYOQRYh7DNM
+ FHzG/SMP5Q+prn5lsiKGAeVQpjsD2g0WEnj17ZxpRm9wLS8Sl5n2gJLmf9K+D9x8TSEWqkK
+ YSPQuNJTe2OG1V8TRNxn39nqUXRwEi2gEQKcbbw0F6h9uk93tdinx0Xizso6icwj+vkTxa7
+ Fdg4GdwMWxzP6fOvEmngQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:OT7CU3w6s4Y=:KN+L6myiVw68C/EZgp78rn
+ uXM/TEb5xr5Wy2Wz58cAhIvFSsqUoOE3aUl4jVuz5C7sqXhPJaTUR20DHAcJAw2qoTVyDSFQl
+ m8EWYAXp1+Fxe1Qyy5ZGFNPzXdM6qB5ZcJjgxJ1lt7rK0u5NzY8fngWcaeKdyEyqywRu6zLso
+ 2SRG4LrCguc7u1FbZrb+giokYBiZ+BaT1Wus/llWUs8d5CTeQaAXK6iuu7YghGPiKrRFNnDFc
+ LirD1qsVNCKk2D2SrP4s+NU4DxBFE6oVGfZOKvR7q2D67KoBfcEM3IWxYtSowuD708aZKbaat
+ lgMvXwUR/5P2Wen3RjvB3JDrBqvwd1w+GsiqhjXL2z6LaE9dlme4A91Jgw9iILukJdl59cKNc
+ nCeXJ14hAgtcbJBq4PVOKzrnvwS6Ve56qQ9bnZ++EgbNQfudaEB32CjGBypQruFUOO5gCu4a2
+ 4boKRdMMMwK67BTu4+3xBzpGrTt8vapY4+cO7TJeOsd4Fa1LAqjVsjBG/rsoG/GIjjWDqh9TU
+ WL6swWpASzxRLMHYtSszpQlVnCiy12XkdU47PClALwt39Q4W0+vkLWsOPQ6X6V55yhaN4ANNg
+ RYx4LdslpXd03qejFLEBK6vfYekzbn/1PqtRzR3TSSVCtYvefWD8/1zQFs/OY5BD7oB9y/qxl
+ 7vi9KOiqV9qdEJGR8cP6UAJZ8p6DUSCTl7H02Bh9jgtFiNgpcmgVO9yfY+CtfRJ+M5G3aTCCf
+ YQAMTryoGuCjQZ5mjHohC+43fIdfgs4Y/l4yFO+MSxeGUn29ANBmnDOOlvb82zRcTcaPNGEC3
+ I8QicQb8tU+ZCW1CHEOVxWTtu3vGKeXko9asZdgn2FqgIRd4gTTRIBxCaNUiRfR0SFyTU9pLX
+ fl5k7K9SPL5M3UZJ+0X/UbYx/3LbRm66rkuvPC81HaWHpYoUUdj/F4me7Smun/Eu8OubyRLXF
+ cIwT9WT7Puf6HXs9LzO/ppJPOByKylUMW3kWqjo/1V5sOhCw+YsxmSDS3xPemeelk5QEhTpbf
+ YsyAnkJuf88TQpMwk8Tg3xryjzUNqyfQqScuuzkQdInZTc+763o92OiCqxPJ0DwHivtHguaUs
+ 7397Q8R0IYHzYU=
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220106182518.1435497-1-robh@kernel.org>
-References: <20220106182518.1435497-1-robh@kernel.org>
-Subject: Re: [PATCH] dt-bindings: clock: imx5: Drop clock consumer node from example
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-To:     Fabio Estevam <festevam@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Date:   Thu, 06 Jan 2022 16:20:20 -0800
-User-Agent: alot/0.9.1
-Message-Id: <20220107002021.A5513C36AE0@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Rob Herring (2022-01-06 10:25:09)
-> The example nodes have different sized interrupt cells which is not valid
-> given no interrupt-parent is specified. As provider examples don't need to
-> show the consumer side in the first place, just drop the consumer node.
->=20
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+On some platforms the memory area between the _stext and the _etext
+symbols includes the init sections (parisc and csky). If the init
+sections are freed after bootup, the kernel may reuse this memory.
 
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+In one test the usercopy checks if the given address is inside the .text
+section (from _stext to _etext), and it wrongly fails on the mentioned
+platforms if the memory is from the former init section.
+
+Fix this failure by first checking against the init sections before
+checking against the _stext/_etext section.
+
+Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 98400ad75e95 ("parisc: Fix backtrace to always include init funtion=
+ names")
+
+diff --git a/mm/usercopy.c b/mm/usercopy.c
+index b3de3c4eefba..37a35c6051bc 100644
+=2D-- a/mm/usercopy.c
++++ b/mm/usercopy.c
+@@ -113,6 +113,15 @@ static bool overlaps(const unsigned long ptr, unsigne=
+d long n,
+ 	return true;
+ }
+
++static bool inside_init_area(const unsigned long ptr, unsigned long n,
++		char *start, char *end)
++{
++	unsigned long initlow =3D (unsigned long) start;
++	unsigned long inithigh =3D (unsigned long) end;
++
++	return (ptr >=3D initlow && (ptr + n) < inithigh);
++}
++
+ /* Is this address range in the kernel text area? */
+ static inline void check_kernel_text_object(const unsigned long ptr,
+ 					    unsigned long n, bool to_user)
+@@ -121,6 +130,12 @@ static inline void check_kernel_text_object(const uns=
+igned long ptr,
+ 	unsigned long texthigh =3D (unsigned long)_etext;
+ 	unsigned long textlow_linear, texthigh_linear;
+
++	/* Ok if inside the former init sections */
++	if (inside_init_area(ptr, n, __init_begin, __init_end))
++		return;
++	if (inside_init_area(ptr, n, _sinittext, _einittext))
++		return;
++
+ 	if (overlaps(ptr, n, textlow, texthigh))
+ 		usercopy_abort("kernel text", NULL, to_user, ptr - textlow, n);
+
