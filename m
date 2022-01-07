@@ -2,80 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C84C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4650CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:45:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233258AbiAGTnk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:43:40 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:44004 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230209AbiAGTnj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:43:39 -0500
-Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 538241EC0464;
-        Fri,  7 Jan 2022 20:43:33 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1641584613;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=xT/Hp49EdTICk3VFgL8D3ISi+kG8cMrFjEZK0ltQXdI=;
-        b=b9mPYxy9efXiFExVz4Yp2WD82+Z3Dx8X3Kiye9rqZ4uUufJ4+4ZgTCaAuFBCYUHQGWrxCo
-        3l9QyG28YStnz5fmfNs8saMnE3vUp2TbWNf2oinDCWFED+7vnGViiKo7jf33L5W3yHHfo/
-        KzyOKpEV39+sf0dvpdoaKiSdIR9bivk=
-Date:   Fri, 7 Jan 2022 20:43:35 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
-        seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
-        yang.zhong@intel.com
-Subject: Re: [PATCH v6 05/21] x86/fpu: Make XFD initialization in
- __fpstate_reset() a function argument
-Message-ID: <YdiX5y4KxQ7GY7xn@zn.tnic>
-References: <20220107185512.25321-1-pbonzini@redhat.com>
- <20220107185512.25321-6-pbonzini@redhat.com>
+        id S233391AbiAGTpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:45:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233287AbiAGTo7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 14:44:59 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52CEEC06173E
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:44:59 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id s15so5968513pfk.6
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 11:44:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2fAVPS4vIomp45HwXYqp8+6IH/VBUNUy6V6mpZtei9A=;
+        b=H2Zi+3v6F0UJq0fBGzl10bvfvIsR/+/l9Ee6kLBS8epfOQYZTOSdUk3yAoo6b4KkzF
+         yxQFgikcyHRarnQcH0ybwI2CUfito3PTLxzDdwDz60OGhq5GaNC6iQskZBeaomRQnJpV
+         QUysX/YORJ9iWlV4ZXQGv8Xh6aPlmgyWGzRMw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2fAVPS4vIomp45HwXYqp8+6IH/VBUNUy6V6mpZtei9A=;
+        b=HVN4VIcooeZimmaEbqAW66OeqXay7mT+XS1GbgMPaij+4WXNL7zju1ih9kpXWPxfwO
+         hDoCSY2uZ60UQt0ctu3RwgxAzDOLjHk/pzPcOMUAWCFZy5IXr+TwGNeludqm8PnmCNDP
+         yUqZInQDZXbdAYejW6H1AajWRrCuZWGVPki+p4tlI57Cl6BIb0aL/kTVtVNTy1XKCNf0
+         kdvFZWTtOvXRMCJg+LEqKUVb5zoFXeglW2znu4fhf5pWJapkeO/Jy+5YuhYu3Wbv7ruR
+         Bxad1tWltAFrVFyDbP8lYHQ5wNYFrXk16umhehDTpyHdUjMyU88MmUbYBJ1GzlQpMBuh
+         6R2w==
+X-Gm-Message-State: AOAM531dN+f5pGujRiw9qDlg/nngN27wbWha0UiGp4x0hdK4KXcbrnQw
+        448gfd5jDZ8K10l4jAM7m1gWuA==
+X-Google-Smtp-Source: ABdhPJz3TzXqz213tky7ygNBL0rf27hl+uIVWpRq1mhythZMq2bKNEeYUzWoXuznW/GoFJXqxySv1g==
+X-Received: by 2002:a62:7545:0:b0:4bc:80a2:e08b with SMTP id q66-20020a627545000000b004bc80a2e08bmr30993274pfc.75.1641584698755;
+        Fri, 07 Jan 2022 11:44:58 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:3fb0:fef5:9c2f:25a3])
+        by smtp.gmail.com with UTF8SMTPSA id g21sm6472644pfc.75.2022.01.07.11.44.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 11:44:58 -0800 (PST)
+Date:   Fri, 7 Jan 2022 11:44:56 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>, Ohad Ben-Cohen <ohad@wizery.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Sibi Sankar <sibis@codeaurora.org>,
+        Sujit Kautkar <sujitka@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] rpmsg: char: Fix race between the release of
+ rpmsg_ctrldev and cdev
+Message-ID: <YdiYOP9mhmWay/Ho@google.com>
+References: <20211208125220.v4.1.Iaac908f3e3149a89190ce006ba166e2d3fd247a3@changeid>
+ <20211213173207.GB1396405@p14s>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220107185512.25321-6-pbonzini@redhat.com>
+In-Reply-To: <20211213173207.GB1396405@p14s>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 01:54:56PM -0500, Paolo Bonzini wrote:
-> From: Jing Liu <jing2.liu@intel.com>
+On Mon, Dec 13, 2021 at 10:32:07AM -0700, Mathieu Poirier wrote:
+> On Wed, Dec 08, 2021 at 12:52:28PM -0800, Matthias Kaehlcke wrote:
+> > From: Sujit Kautkar <sujitka@chromium.org>
+> > 
+> > From: Sujit Kautkar <sujitka@chromium.org>
+> > 
+> > struct rpmsg_ctrldev contains a struct cdev. The current code frees
+> > the rpmsg_ctrldev struct in rpmsg_ctrldev_release_device(), but the
+> > cdev is a managed object, therefore its release is not predictable
+> > and the rpmsg_ctrldev could be freed before the cdev is entirely
+> > released, as in the backtrace below.
+> > 
+> > [   93.625603] ODEBUG: free active (active state 0) object type: timer_list hint: delayed_work_timer_fn+0x0/0x7c
+> > [   93.636115] WARNING: CPU: 0 PID: 12 at lib/debugobjects.c:488 debug_print_object+0x13c/0x1b0
+> > [   93.644799] Modules linked in: veth xt_cgroup xt_MASQUERADE rfcomm algif_hash algif_skcipher af_alg uinput ip6table_nat fuse uvcvideo videobuf2_vmalloc venus_enc venus_dec videobuf2_dma_contig hci_uart btandroid btqca snd_soc_rt5682_i2c bluetooth qcom_spmi_temp_alarm snd_soc_rt5682v
+> > [   93.715175] CPU: 0 PID: 12 Comm: kworker/0:1 Tainted: G    B             5.4.163-lockdep #26
+> > [   93.723855] Hardware name: Google Lazor (rev3 - 8) with LTE (DT)
+> > [   93.730055] Workqueue: events kobject_delayed_cleanup
+> > [   93.735271] pstate: 60c00009 (nZCv daif +PAN +UAO)
+> > [   93.740216] pc : debug_print_object+0x13c/0x1b0
+> > [   93.744890] lr : debug_print_object+0x13c/0x1b0
+> > [   93.749555] sp : ffffffacf5bc7940
+> > [   93.752978] x29: ffffffacf5bc7940 x28: dfffffd000000000
+> > [   93.758448] x27: ffffffacdb11a800 x26: dfffffd000000000
+> > [   93.763916] x25: ffffffd0734f856c x24: dfffffd000000000
+> > [   93.769389] x23: 0000000000000000 x22: ffffffd0733c35b0
+> > [   93.774860] x21: ffffffd0751994a0 x20: ffffffd075ec27c0
+> > [   93.780338] x19: ffffffd075199100 x18: 00000000000276e0
+> > [   93.785814] x17: 0000000000000000 x16: dfffffd000000000
+> > [   93.791291] x15: ffffffffffffffff x14: 6e6968207473696c
+> > [   93.796768] x13: 0000000000000000 x12: ffffffd075e2b000
+> > [   93.802244] x11: 0000000000000001 x10: 0000000000000000
+> > [   93.807723] x9 : d13400dff1921900 x8 : d13400dff1921900
+> > [   93.813200] x7 : 0000000000000000 x6 : 0000000000000000
+> > [   93.818676] x5 : 0000000000000080 x4 : 0000000000000000
+> > [   93.824152] x3 : ffffffd0732a0fa4 x2 : 0000000000000001
+> > [   93.829628] x1 : ffffffacf5bc7580 x0 : 0000000000000061
+> > [   93.835104] Call trace:
+> > [   93.837644]  debug_print_object+0x13c/0x1b0
+> > [   93.841963]  __debug_check_no_obj_freed+0x25c/0x3c0
+> > [   93.846987]  debug_check_no_obj_freed+0x18/0x20
+> > [   93.851669]  slab_free_freelist_hook+0xbc/0x1e4
+> > [   93.856346]  kfree+0xfc/0x2f4
+> > [   93.859416]  rpmsg_ctrldev_release_device+0x78/0xb8
+> > [   93.864445]  device_release+0x84/0x168
+> > [   93.868310]  kobject_cleanup+0x12c/0x298
+> > [   93.872356]  kobject_delayed_cleanup+0x10/0x18
+> > [   93.876948]  process_one_work+0x578/0x92c
+> > [   93.881086]  worker_thread+0x804/0xcf8
+> > [   93.884963]  kthread+0x2a8/0x314
+> > [   93.888303]  ret_from_fork+0x10/0x18
+> > 
+> > The cdev_device_add/del() API was created to address this issue
+> > (see commit 233ed09d7fda), use it instead of cdev add/del().
+> > 
+> > Signed-off-by: Sujit Kautkar <sujitka@chromium.org>
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > ---
+> > 
+> > Changes in v4:
+> > - call cdev_device_del() from rpmsg_chrdev_remove() instead of
+> >   rpmsg_ctrldev_release_device()
+> > - updated subject (was: "rpmsg: glink: Update cdev add/del API in
+> >   rpmsg_ctrldev_release_device()")
+> > - updated commit message
+> > - replaced backtrace in commit message with one that doesn't have
+> >   a dump_backtrace() call
+> > 
+> > Changes in v3:
+> > - Remove unecessary error check as per Matthias's comment
+> > 
+> > Changes in v2:
+> > - Fix typo in commit message
+> > 
+> >  drivers/rpmsg/rpmsg_char.c | 11 ++---------
+> >  1 file changed, 2 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
+> > index b5907b80727c..b1b75ef04560 100644
+> > --- a/drivers/rpmsg/rpmsg_char.c
+> > +++ b/drivers/rpmsg/rpmsg_char.c
+> > @@ -459,7 +459,6 @@ static void rpmsg_ctrldev_release_device(struct device *dev)
+> >  
+> >  	ida_simple_remove(&rpmsg_ctrl_ida, dev->id);
+> >  	ida_simple_remove(&rpmsg_minor_ida, MINOR(dev->devt));
+> > -	cdev_del(&ctrldev->cdev);
+> >  	kfree(ctrldev);
+> >  }
+> >  
+> > @@ -494,19 +493,13 @@ static int rpmsg_chrdev_probe(struct rpmsg_device *rpdev)
+> >  	dev->id = ret;
+> >  	dev_set_name(&ctrldev->dev, "rpmsg_ctrl%d", ret);
+> >  
+> > -	ret = cdev_add(&ctrldev->cdev, dev->devt, 1);
+> > +	ret = cdev_device_add(&ctrldev->cdev, &ctrldev->dev);
+> >  	if (ret)
+> >  		goto free_ctrl_ida;
+> >  
+> >  	/* We can now rely on the release function for cleanup */
+> >  	dev->release = rpmsg_ctrldev_release_device;
+> >  
+> > -	ret = device_add(dev);
+> > -	if (ret) {
+> > -		dev_err(&rpdev->dev, "device_add failed: %d\n", ret);
+> > -		put_device(dev);
+> > -	}
+> > -
+> >  	dev_set_drvdata(&rpdev->dev, ctrldev);
+> >  
+> >  	return ret;
+> > @@ -532,7 +525,7 @@ static void rpmsg_chrdev_remove(struct rpmsg_device *rpdev)
+> >  	if (ret)
+> >  		dev_warn(&rpdev->dev, "failed to nuke endpoints: %d\n", ret);
+> >  
+> > -	device_del(&ctrldev->dev);
+> > +	cdev_device_del(&ctrldev->cdev, &ctrldev->dev);
+> >  	put_device(&ctrldev->dev);
 > 
-> vCPU threads are different from native tasks regarding to the initial XFD
-> value. While all native tasks follow a fixed value (init_fpstate::xfd)
-> established by the FPU core at boot, vCPU threads need to obey the reset
-> value (i.e. ZERO) defined by the specification, to meet the expectation of
-> the guest.
+> Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 > 
-> Let the caller supply an argument and adjust the host and guest related
-> invocations accordingly.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> I'll let Bjorn pick this one to make sure it doesn't break anything for current
+> users of the driver.
 
-If Jing is author, then tglx's SOB should come after Jing's to mean,
-tglx handled it further.
-
-As it is now, it looks wrong.
-
-Ditto for patches 10, 11, 12, 13.
-
-Also, I wonder if all those Signed-off-by's do mean "handled" or
-Co-developed-by but I haven't tracked that particular pile so...
-
-> Signed-off-by: Jing Liu <jing2.liu@intel.com>
-> Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-> Message-Id: <20220105123532.12586-6-yang.zhong@intel.com>
-> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Bjorn: can this land or is there any action pending on my side?
