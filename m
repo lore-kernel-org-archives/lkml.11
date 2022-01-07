@@ -2,118 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F17DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B363AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235575AbiAGHkl convert rfc822-to-8bit (ORCPT
+        id S1343957AbiAGHkr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 02:40:41 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:55251 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235176AbiAGHkf (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 02:40:35 -0500
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 431C31BF207;
-        Fri,  7 Jan 2022 07:40:30 +0000 (UTC)
-Date:   Fri, 7 Jan 2022 08:40:29 +0100
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     David Girault <David.Girault@qorvo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        Romuald Despres <Romuald.Despres@qorvo.com>,
-        Frederic Blain <Frederic.Blain@qorvo.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        kernel list <linux-kernel@vger.kernel.org>
-Subject: Re: [net-next 17/18] net: mac802154: Let drivers provide their own
- beacons implementation
-Message-ID: <20220107084029.21f341a4@xps13>
-In-Reply-To: <CAB_54W7=YJu7qJPcGX0O6nkBhmg7EmX2iTy+Q+EgffqE5+0NCQ@mail.gmail.com>
-References: <20211222155743.256280-1-miquel.raynal@bootlin.com>
-        <20211222155743.256280-18-miquel.raynal@bootlin.com>
-        <CAB_54W7o5b7a-2Gg5ZnzPj3o4Yw9FOAxJfykrA=LtpVf9naAng@mail.gmail.com>
-        <SN6PR08MB4464D7124FCB5D0801D26B94E0459@SN6PR08MB4464.namprd08.prod.outlook.com>
-        <CAB_54W6ikdGe=ZYqOsMgBdb9KBtfAphkBeu4LLp6S4R47ZDHgA@mail.gmail.com>
-        <20220105094849.0c7e9b65@xps13>
-        <CAB_54W4Z1KgT+Cx0SXptvkwYK76wDOFTueFUFF4e7G_ABP7kkA@mail.gmail.com>
-        <20220106201526.7e513f2f@xps13>
-        <CAB_54W7=YJu7qJPcGX0O6nkBhmg7EmX2iTy+Q+EgffqE5+0NCQ@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Fri, 7 Jan 2022 02:40:47 -0500
+Received: from mga07.intel.com ([134.134.136.100]:49043 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344827AbiAGHkq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 02:40:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641541245; x=1673077245;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rzUKGrIHlPEMqvM7zyx2deIcGLimwU2Ms3szre8ZO+g=;
+  b=TnGrsqfhUO0oOtu9tMJco5Pv7bd6BvDKrE6KHvzYwWuJlhu+IYLB7mVG
+   tUsX/hDzUMxkUL2WhSGYt4PDiUtp2VHGmTkSKn5X5+Ud/+5AoeeSHN+3v
+   QX6FO7/Q18TRjLetaLN7oqk5YL3Ol4NWEt0/gZhBZV5eOKSj3NA/4lUyz
+   i8Gfn66upgKwGRqkza41u6LIeeq3JZGKYsjhnr8oU3AShq9/57XlmubdG
+   iqhSh0+0kFeEDi7rZThL/OkTLQKcGtq+r6XENigCR4rRKKJ9w6zdrP1r3
+   VpcdzI9MMNbM7u7Nm0Z76PaY/YHo1+3jPT6a7wZwbBXU/zyqCY/mhcylv
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="306191849"
+X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
+   d="scan'208";a="306191849"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 23:40:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
+   d="scan'208";a="471233079"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 06 Jan 2022 23:40:44 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5jrf-000IQ5-T3; Fri, 07 Jan 2022 07:40:43 +0000
+Date:   Fri, 7 Jan 2022 15:40:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [RFC PATCH ammarfaizi2-block] EXP timers:
+ __pcpu_scope_tick_setup_sched_timer_help_needed can be static
+Message-ID: <20220107074006.GA18912@089a6aeb832b>
+References: <202201071509.qlXBeLQz-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202201071509.qlXBeLQz-lkp@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexander,
+kernel/time/tick-sched.c:1453:1: warning: symbol '__pcpu_scope_tick_setup_sched_timer_help_needed' was not declared. Should it be static?
 
-alex.aring@gmail.com wrote on Thu, 6 Jan 2022 23:21:45 -0500:
+Fixes: 3cda34a0004e ("EXP timers: Non-nohz_full last-resort jiffies update on IRQ entry")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+ tick-sched.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Hi,
-> 
-> On Thu, 6 Jan 2022 at 14:15, Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> >
-> > Hi Alexander,
-> >
-> > alex.aring@gmail.com wrote on Wed, 5 Jan 2022 19:23:04 -0500:
-> >  
-> ...
-> > >
-> > > A HardMAC driver does not use this driver interface... but there
-> > > exists a SoftMAC driver for a HardMAC transceiver. This driver
-> > > currently works because we use dataframes only... It will not support
-> > > scanning currently and somehow we should make iit not available for
-> > > drivers like that and for drivers which don't set symbol duration.
-> > > They need to be fixed.  
-> >
-> > My bad. I did not look at it correctly. I made a mistake when talking
-> > about a hardMAC.
-> >
-> > Instead, it is a "custom" low level MAC layer. I believe we can compare
-> > the current mac802154 layer mostly to the MLME that is mentioned in the
-> > spec. Well here the additional layer that needs these hooks would be
-> > the MCPS. I don't know if this will be upstreamed or not, but the need
-> > for these hooks is real if such an intermediate low level MAC layer
-> > gets introduced.
-> >
-> > In v2 I will get rid of the two patches adding "driver access" to scans
-> > and beacons in order to facilitate the merge of the big part. Then we
-> > will have plenty of time to discuss how we can create such an interface.
-> > Perhaps I'll be able to propose more code as well to make use of these
-> > hooks, we will see.
-> >  
-> 
-> That the we have a standardised interface between Ieee802154 and
-> (HardMAC or SoftMAC(mac802154)) (see cfg802154_ops) which is defined
-> according the spec would make it more "stable" that it will work with
-> different HardMAC transceivers (which follows that interface) and
-> mac802154 stack (which also follows that interface). If I understood
-> you correctly.
-
-
-I am not sure. I am really talking about a softMAC. I am not sure
-where to put that layer "vertically" but according to the spec the MCPS
-(MAC Common Part Sublayer) is the layer that contains the data
-primitives, while MLME has been designed for management and
-configuration.
-
-> I think this is one reason why we are not having any HardMAC
-> transceivers driver supported in a proper way yet.
-> 
-> I can also imagine about a hwsim HardMAC transceiver which redirects
-> cfg802154 to mac802154 SoftMAC instance again (something like that),
-> to have a virtual HardMAC transceiver for testing purpose, etc. In
-> theory that should work...
-
-Yeah I see what you mean, but IMHO that's basically duplicating the
-softMAC layer, we already have hwsim wired to cfg802154 through
-mac802154. In a certain way we could argue that this is a hardMAC =)
-
-Thanks,
-Miquèl
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 8790cd4834887c..1af62743be63e8 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -1450,7 +1450,7 @@ early_param("skew_tick", skew_tick);
+ 
+ static DEFINE_PER_CPU(unsigned long, tick_setup_sched_timer_jiffies);
+ static DEFINE_PER_CPU(int, tick_setup_sched_timer_jiffies_count);
+-DEFINE_PER_CPU(bool, tick_setup_sched_timer_help_needed);
++static DEFINE_PER_CPU(bool, tick_setup_sched_timer_help_needed);
+ 
+ /**
+  * tick_setup_sched_timer - setup the tick emulation timer
