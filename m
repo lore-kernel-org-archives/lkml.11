@@ -2,144 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC98C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:56:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00439C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347417AbiAGLz7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:55:59 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:42258 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347327AbiAGLzu (ORCPT
+        id S238529AbiAGL5C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 06:57:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238445AbiAGL4p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:55:50 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id BAE14210E7;
-        Fri,  7 Jan 2022 11:55:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1641556548; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nqg2LK2RR0K2SArFD6a351Dagvl6ePYklOBsSulm854=;
-        b=wqzQ9JNmejQgef5Jd0YGjZP5t7FO7ZyW6scuZ0ORyQs0XF8IwulgXMrO5DgPAyN6P3VQTb
-        S67UMpWZplmVfOidsonyJkkzYt2tgGUR5/6znWYcyhyEqnVuCcDMgZcZM+yDQHmsbNDAaq
-        303hLebnWxykHumQe1P8ewi+R7rIctY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1641556548;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nqg2LK2RR0K2SArFD6a351Dagvl6ePYklOBsSulm854=;
-        b=dnNpTvqZjfcWnvIfi7sgw2QkqVl1sxmElxdXPSjzchnee0YnDMIXNzGLYp5R1pAHfVGIXd
-        eyvkKdHrmKWkMgDA==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-        by relay2.suse.de (Postfix) with ESMTP id 6D199A3B89;
-        Fri,  7 Jan 2022 11:55:48 +0000 (UTC)
-From:   Michal Suchanek <msuchanek@suse.de>
-To:     keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org
-Cc:     Michal Suchanek <msuchanek@suse.de>, kexec@lists.infradead.org,
-        Philipp Rudo <prudo@redhat.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna <nayna@linux.vnet.ibm.com>, Rob Herring <robh@kernel.org>,
-        linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org,
-        David Howells <dhowells@redhat.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        Frank van der Linden <fllinden@amazon.com>,
-        Thiago Jung Bauermann <bauerman@linux.ibm.com>,
-        Daniel Axtens <dja@axtens.net>, buendgen@de.ibm.com,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Baoquan He <bhe@redhat.com>,
-        linux-security-module@vger.kernel.org
-Subject: [PATCH v3 1/6] s390/kexec_file: Don't opencode appended signature check.
-Date:   Fri,  7 Jan 2022 12:53:45 +0100
-Message-Id: <b647fc1916ba4574a2ca44c2efdda1858c02ae90.1641555875.git.msuchanek@suse.de>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1641555875.git.msuchanek@suse.de>
-References: <cover.1641555875.git.msuchanek@suse.de>
+        Fri, 7 Jan 2022 06:56:45 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFDAC034003;
+        Fri,  7 Jan 2022 03:56:45 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id u16so4713690plg.9;
+        Fri, 07 Jan 2022 03:56:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JLgB+8SwNkq1hxQ6rMptEY0LB++ryMfLvvofb8EfBbs=;
+        b=gPQ3FkicBPrX+aFjP0SyJpmjRm6CLsi6+aKZJVRRcQgGb4rsuHqN7+fXtKR1haiDFw
+         h1OpOSFfZ738pdrAI5qr+b7c7uKT0KNseERh1pvJkwKXNfZZyaxo9vU/Ox7ZPTMnp9IR
+         YFaqA75rAJ0+i9zMQdeaXeU7pHiwc807sRl7xRc0BLddaY6u6Fldv3zDd7Wp3jBIvnr1
+         D4XXpNTzRBawPzTgtkeX4qXUbgsV9PNyXhathIwnWHHHsmCrPDv205TRvhjmsCi2ZtPp
+         wge7F5qu3IJwjSkQynmvaEnXPp1bUsVpm0cKkF7HKhtMf+sOgT4Sz7YeCuOvY8jK1EXk
+         7qCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JLgB+8SwNkq1hxQ6rMptEY0LB++ryMfLvvofb8EfBbs=;
+        b=VpAo2sbTGcX9CQpS8GPPPxmGx5Q/ImXPudpgQkk6g3xzI6+U4819lR8EvvW4c1eqs6
+         wngA4j9M79vrAfnsD9usI/WpjOmHAhTlDyWsuZg/T6QZBpp0qLx4fSqQ3+xYGOtssGme
+         RBi+P0HmNquNosRkoeYfIKZgfHrUgW+W4YrUVr9z+agE1LcgSbRXVFifEIYaVy/dEVXS
+         P1kOf3bfF3MH/7YphrRO5UwlYbu5TQ+yyhCtoPpTBNvq9IA+Bz7Exb1zx70yePFGdv57
+         MioW4oTRyPf7bD5u+sLzVXwAq4PSqijN7oADU1pKuexh5wo5SwjUmij+XPCxCAciuuZK
+         c7FQ==
+X-Gm-Message-State: AOAM531YGwfrRFp4adKFN+CfQZ9ZhBMXkW4+RaV+wZWOlfVwWnrunGUj
+        AwGCy4RCw2dqLnE5ku3QchU=
+X-Google-Smtp-Source: ABdhPJwSKz9gRS4YXXsG0cGPlKpWY+DCW8zdfng9ZRZ47ARlJnxZvYrQS9W+LrU4kVWZyNJzWcY9uw==
+X-Received: by 2002:a17:902:8498:b0:149:f459:adfb with SMTP id c24-20020a170902849800b00149f459adfbmr6610921plo.85.1641556604847;
+        Fri, 07 Jan 2022 03:56:44 -0800 (PST)
+Received: from odroid ([114.29.23.242])
+        by smtp.gmail.com with ESMTPSA id e11sm5301883pjh.14.2022.01.07.03.56.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 03:56:44 -0800 (PST)
+Date:   Fri, 7 Jan 2022 11:56:38 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Christoph Hellwig <hch@lst.de>
+Cc:     Vlastimil Babka <vbabka@suse.cz>, Baoquan He <bhe@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        akpm@linux-foundation.org, cl@linux.com,
+        John.p.donnelly@oracle.com, kexec@lists.infradead.org,
+        stable@vger.kernel.org, Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Subject: Re: [PATCH v3 5/5] mm/slub: do not create dma-kmalloc if no managed
+ pages in DMA zone
+Message-ID: <20220107115638.GB2769814@odroid>
+References: <20211213122712.23805-1-bhe@redhat.com>
+ <20211213122712.23805-6-bhe@redhat.com>
+ <20211213134319.GA997240@odroid>
+ <20211214053253.GB2216@MiWiFi-R3L-srv>
+ <f5ff82eb-73b6-55b5-53d7-04ab73ce5035@suse.cz>
+ <20211215044818.GB1097530@odroid>
+ <20211215070335.GA1165926@odroid>
+ <20211215072710.GA3010@lst.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211215072710.GA3010@lst.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Module verification already implements appeded signature check.
+On Wed, Dec 15, 2021 at 08:27:10AM +0100, Christoph Hellwig wrote:
+> On Wed, Dec 15, 2021 at 07:03:35AM +0000, Hyeonggon Yoo wrote:
+> > I'm not sure that allocating from ZONE_DMA32 instead of ZONE_DMA
+> > for kdump kernel is nice way to solve this problem.
+> 
+> What is the problem with zones in kdump kernels?
+> 
+> > Devices that requires ZONE_DMA memory is rare but we still support them.
+> 
+> Indeed.
+> 
+> > >     1) Do not call warn_alloc in page allocator if will always fail
+> > >     to allocate ZONE_DMA pages.
+> > > 
+> > > 
+> > >     2) let's check all callers of kmalloc with GFP_DMA
+> > >     if they really need GFP_DMA flag and replace those by DMA API or
+> > >     just remove GFP_DMA from kmalloc()
+> > > 
+> > >     3) Drop support for allocating DMA memory from slab allocator
+> > >     (as Christoph Hellwig said) and convert them to use DMA32
+> > 
+> > 	(as Christoph Hellwig said) and convert them to use *DMA API*
+> > 
+> > >     and see what happens
+> 
+> This is the right thing to do, but it will take a while.  In fact
+> I dont think we really need the warning in step 1, a simple grep
+> already allows to go over them.  I just looked at the uses of GFP_DMA
+> in drivers/scsi for example, and all but one look bogus.
+> 
+> > > > > Yeah, I have the same guess too for get_capabilities(), not sure about other
+> > > > > callers. Or, as ChristophL and ChristophH said(Sorry, not sure if this is
+> > > > > the right way to call people when the first name is the same. Correct me if
+> > > > > it's wrong), any buffer requested from kmalloc can be used by device driver.
+> > > > > Means device enforces getting memory inside addressing limit for those
+> > > > > DMA transferring buffer which is usually large, Megabytes level with
+> > > > > vmalloc() or alloc_pages(), but doesn't care about this kind of small
+> > > > > piece buffer memory allocated with kmalloc()? Just a guess, please tell
+> > > > > a counter example if anyone happens to know, it could be easy.
+> 
+> The way this works is that the dma_map* calls will bounce buffer memory
+> that does to fall into the addressing limitations.  This is a performance
+> overhead, but allows drivers to address all memory in a system.  If the
+> driver controls memory allocation it should use one of the dma_alloc_*
+> APIs that allocate addressable memory from the start.  The allocator
+> will dip into ZONE_DMA and ZONE_DMA32 when needed.
 
-Reuse it for kexec_file.
+Hello Christoph, Baoquan and I started this cleanup.
+But we're a bit confused. I want to ask you something.
 
-Note: the kexec_file implementation uses EKEYREJECTED error in some
-cases when there is no key and the common implementation uses ENOPKG or
-EBADMSG instead.
+-   Did you mean dma_map_* can handle arbitrary buffer, (and dma_map_* will
+    bounce buffer when necessary) Can we assume it on every architectures
+    and buses?
 
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Heiko Carstens <hca@linux.ibm.com>
----
-v3: Philipp Rudo <prudo@redhat.com>: Update the commit with note about
-change of return value
----
- arch/s390/kernel/machine_kexec_file.c | 22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+    Reading at the DMA API documentation and code (dma_map_page_attrs(),
+    dma_direct_map_page()), I'm not sure about that.
 
-diff --git a/arch/s390/kernel/machine_kexec_file.c b/arch/s390/kernel/machine_kexec_file.c
-index 8f43575a4dd3..c944d71316c7 100644
---- a/arch/s390/kernel/machine_kexec_file.c
-+++ b/arch/s390/kernel/machine_kexec_file.c
-@@ -31,6 +31,7 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
- 	const unsigned long marker_len = sizeof(MODULE_SIG_STRING) - 1;
- 	struct module_signature *ms;
- 	unsigned long sig_len;
-+	int ret;
- 
- 	/* Skip signature verification when not secure IPLed. */
- 	if (!ipl_secure_flag)
-@@ -45,25 +46,12 @@ int s390_verify_sig(const char *kernel, unsigned long kernel_len)
- 	kernel_len -= marker_len;
- 
- 	ms = (void *)kernel + kernel_len - sizeof(*ms);
--	kernel_len -= sizeof(*ms);
-+	ret = mod_check_sig(ms, kernel_len, "kexec");
-+	if (ret)
-+		return ret;
- 
- 	sig_len = be32_to_cpu(ms->sig_len);
--	if (sig_len >= kernel_len)
--		return -EKEYREJECTED;
--	kernel_len -= sig_len;
--
--	if (ms->id_type != PKEY_ID_PKCS7)
--		return -EKEYREJECTED;
--
--	if (ms->algo != 0 ||
--	    ms->hash != 0 ||
--	    ms->signer_len != 0 ||
--	    ms->key_id_len != 0 ||
--	    ms->__pad[0] != 0 ||
--	    ms->__pad[1] != 0 ||
--	    ms->__pad[2] != 0) {
--		return -EBADMSG;
--	}
-+	kernel_len -= sizeof(*ms) + sig_len;
- 
- 	return verify_pkcs7_signature(kernel, kernel_len,
- 				      kernel + kernel_len, sig_len,
--- 
-2.31.1
+    In the documentation: (dma_map_single)
+    	Further, the DMA address of the memory must be within the
+	dma_mask of the device (the dma_mask is a bit mask of the
+	addressable region for the device, i.e., if the DMA address of
+	the memory ANDed with the dma_mask is still equal to the DMA
+	address, then the device can perform DMA to the memory).  To
+	ensure that the memory allocated by kmalloc is within the dma_mask,
+	the driver may specify various platform-dependent flags to restrict
+	the DMA address range of the allocation (e.g., on x86, GFP_DMA
+	guarantees to be within the first 16MB of available DMA addresses,
+	as required by ISA devices).
 
+-   In what function does the DMA API do bounce buffering?
+
+Thanks a lot,
+Hyeonggon
