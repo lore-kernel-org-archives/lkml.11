@@ -2,35 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71342C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6181FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346618AbiAGJ6C (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:58:02 -0500
-Received: from mailgw.kylinos.cn ([123.150.8.42]:6189 "EHLO nksmu.kylinos.cn"
+        id S236788AbiAGJ6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 04:58:06 -0500
+Received: from mailgw.kylinos.cn ([123.150.8.42]:6647 "EHLO nksmu.kylinos.cn"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236788AbiAGJ6B (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:58:01 -0500
-X-UUID: 51f8efc21ea04903991e1abefbd59d34-20220107
-X-CPASD-INFO: b29efc9df7c3401f828f9506db65018e@q4JzhZOVZ5SSV6V_g3N8oFhjaJZqYVC
-        FppxWZV5hZIWVhH5xTWJsXVKBfG5QZWNdYVN_eGpQY19gZFB5i3-XblBgXoZgUZB3sXRzhZaRaQ==
+        id S1346610AbiAGJ6E (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 04:58:04 -0500
+X-UUID: b4422ce86f974f36a6a8bb0102ab501a-20220107
+X-CPASD-INFO: 4652e3ea3efa4753b3b4e4a09666967f@fYZvUpJlk5Ffhaitg3qAbYJkkmSVYIF
+        _e3BWZmdmY4aVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3g3hvUpVhlQ==
 X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: b29efc9df7c3401f828f9506db65018e
+X-CLOUD-ID: 4652e3ea3efa4753b3b4e4a09666967f
 X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:187.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:1.0,CUTS:130.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:12,DUF:29770,ACD:157,DCD:259,SL:0,AG:0,CFC:0.168,CF
-        SR:0.366,UAT:0,RAF:0,VERSION:2.3.4
-X-CPASD-ID: 51f8efc21ea04903991e1abefbd59d34-20220107
-X-CPASD-BLOCK: 1001
+        VAL:181.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:98.0,IP:-2.0,MAL:0.0,ATTNUM:0.
+        0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CFO
+        B:0.0,SPC:0.0,SIG:-5,AUF:13,DUF:29771,ACD:157,DCD:259,SL:0,AG:0,CFC:0.239,CFS
+        R:0.16,UAT:0,RAF:0,VERSION:2.3.4
+X-CPASD-ID: b4422ce86f974f36a6a8bb0102ab501a-20220107
+X-CPASD-BLOCK: 1000
 X-CPASD-STAGE: 1, 1
-X-UUID: 51f8efc21ea04903991e1abefbd59d34-20220107
+X-UUID: b4422ce86f974f36a6a8bb0102ab501a-20220107
 X-User: lizhenneng@kylinos.cn
 Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
         (envelope-from <lizhenneng@kylinos.cn>)
         (Generic MTA)
-        with ESMTP id 1687336020; Fri, 07 Jan 2022 18:11:04 +0800
+        with ESMTP id 611986031; Fri, 07 Jan 2022 18:11:05 +0800
 From:   Zhenneng Li <lizhenneng@kylinos.cn>
 To:     Alex Deucher <alexander.deucher@amd.com>
 Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
@@ -41,38 +40,36 @@ Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         Harry Wentland <harry.wentland@amd.com>,
         amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org, Zhenneng Li <lizhenneng@kylinos.cn>
-Subject: [PATCH 0/2]
-Date:   Fri,  7 Jan 2022 17:57:30 +0800
-Message-Id: <20220107095732.982194-1-lizhenneng@kylinos.cn>
+Subject: [PATCH 2/2] drm/amdgpu: enable dcn support on arm64
+Date:   Fri,  7 Jan 2022 17:57:32 +0800
+Message-Id: <20220107095732.982194-3-lizhenneng@kylinos.cn>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220107095732.982194-1-lizhenneng@kylinos.cn>
+References: <20220107095732.982194-1-lizhenneng@kylinos.cn>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For adapting radeon rx6600 xt on arm64 platform,
-there report some compile errors.
+Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
+---
+ drivers/gpu/drm/amd/display/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Zhenneng Li (2):
-  drm/amdgpu: fix compile error for dcn on arm64
-  drm/amdgpu: enable dcn support on arm64
-
- drivers/gpu/drm/amd/display/Kconfig           |  2 +-
- drivers/gpu/drm/amd/display/dc/calcs/Makefile |  6 +++++
- .../gpu/drm/amd/display/dc/clk_mgr/Makefile   |  7 ++++++
- drivers/gpu/drm/amd/display/dc/dcn10/Makefile |  4 +++
- drivers/gpu/drm/amd/display/dc/dcn20/Makefile |  4 +++
- .../gpu/drm/amd/display/dc/dcn201/Makefile    |  6 +++++
- drivers/gpu/drm/amd/display/dc/dcn21/Makefile |  4 +++
- drivers/gpu/drm/amd/display/dc/dcn30/Makefile |  6 +++++
- .../gpu/drm/amd/display/dc/dcn302/Makefile    |  6 +++++
- .../gpu/drm/amd/display/dc/dcn303/Makefile    |  6 +++++
- drivers/gpu/drm/amd/display/dc/dcn31/Makefile |  6 +++++
- drivers/gpu/drm/amd/display/dc/dml/Makefile   | 25 +++++++++++++++++++
- drivers/gpu/drm/amd/display/dc/dsc/Makefile   |  7 ++++++
- 13 files changed, 88 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
+index 127667e549c1..1c6c4cb1fd0a 100644
+--- a/drivers/gpu/drm/amd/display/Kconfig
++++ b/drivers/gpu/drm/amd/display/Kconfig
+@@ -6,7 +6,7 @@ config DRM_AMD_DC
+ 	bool "AMD DC - Enable new display engine"
+ 	default y
+ 	select SND_HDA_COMPONENT if SND_HDA_CORE
+-	select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
++	select DRM_AMD_DC_DCN if (X86 || PPC64 || (ARM64 && KERNEL_MODE_NEON)) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
+ 	help
+ 	  Choose this option if you want to use the new display engine
+ 	  support for AMDGPU. This adds required support for Vega and
 -- 
 2.25.1
 
