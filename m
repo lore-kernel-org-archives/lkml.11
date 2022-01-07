@@ -2,163 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503DAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C16C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:59:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346280AbiAGI6w (ORCPT
+        id S1346270AbiAGI7Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 03:58:52 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:11314 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1346266AbiAGI6v (ORCPT
+        Fri, 7 Jan 2022 03:59:25 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:43990 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236446AbiAGI7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 03:58:51 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2078blLG013296;
-        Fri, 7 Jan 2022 08:58:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=oXCQfd4G/iTC0kL7PG2TR72N4GH+CGqN1sK2PO5maA4=;
- b=D+5P/ZGSyoi3qPYSV5EyGzW0qKo6ryygTzox/7qVNKhSLB1lrykaGTT0JoJOwFjIr6Pn
- OEjhEK2cN6QUuu/Y4jssOKdiS6t2/rajM/Jl2Ml06QNj7ldHkYteunRjf9mGGPsgLsCX
- xE2IEcGhrgxZqKuWCRIFrc5AlAObIn+/ON9uAVrAz6Q33NiR+zMfF//NjuL7gw4l3nWS
- 6YO01Re/4JbeoaGU9ViUW2/HU0RrhK7DMA4B/POH5HBhQg0asjiOiu0j45Uq6+1dTgxU
- TZv96eciIPkOsnjKSjEV5BUz1qKE8i4mVFKFIm6PV1agU2Weex2nKm768tPQdszwWx8k sQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4x350m6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 08:58:44 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2078nE1P020440;
-        Fri, 7 Jan 2022 08:58:44 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4x350kn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 08:58:44 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2078qEpg027940;
-        Fri, 7 Jan 2022 08:58:42 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma04ams.nl.ibm.com with ESMTP id 3de5gfvgt9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 07 Jan 2022 08:58:42 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2078wevl28246344
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 7 Jan 2022 08:58:40 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 00BD0A4066;
-        Fri,  7 Jan 2022 08:58:40 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B0738A405C;
-        Fri,  7 Jan 2022 08:58:38 +0000 (GMT)
-Received: from li-e8dccbcc-2adc-11b2-a85c-bc1f33b9b810.ibm.com (unknown [9.43.61.156])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri,  7 Jan 2022 08:58:38 +0000 (GMT)
-Subject: Re: linux-next: build failure after merge of the perf tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220106091921.3fa617bc@canb.auug.org.au>
-From:   kajoljain <kjain@linux.ibm.com>
-Message-ID: <6623bc13-d99c-74c1-29c8-b4ae7a570d99@linux.ibm.com>
-Date:   Fri, 7 Jan 2022 14:28:37 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-In-Reply-To: <20220106091921.3fa617bc@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: GoUI2xrrQd_i_kr9YxZgHF4IHXHPjdbS
-X-Proofpoint-GUID: hE6zumqYfke5FYWDYh6Ygh00xlRsjP2J
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Fri, 7 Jan 2022 03:59:23 -0500
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 2072SkQ9011025;
+        Fri, 7 Jan 2022 08:59:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2021-07-09;
+ bh=aQ/kUExtK0DEicMABoFU0D++En+Sl7kRRTb9ZmFTuic=;
+ b=z5dfR42rr96ZtSHd+TYRg8Z/1hLt0KfWbCqEX3daBwY+hjSjth8JLoMYP+7+887ITdQz
+ 2FqqGYUtcI69SpTgqX7PYghdhJkrcIHNeoCG47ZoPIvLW0KuSofk3nUnoJ6BY4vFfkGi
+ XYljbPnvpe2S9Ughk+B9ribzNYoljr2+vR+sLNksNSUK4eIREzBW7PeoaYSFtAKvqZUC
+ bZscZA5auv6N8j34YlXaHL4hmeuu+2H7MIu0kAfEJZUjebmHryk2CH+FZbk+qTZwz1Yk
+ wLYGk2XLWqbMJZgFzoAvqsWsNRaCwacyPCRaFqzKg+WZk5tynxl/iYTwRTUOF7mQ6wLn xA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3de4vb9ffa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Jan 2022 08:59:15 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 2078tOQf195782;
+        Fri, 7 Jan 2022 08:59:14 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2047.outbound.protection.outlook.com [104.47.66.47])
+        by userp3020.oracle.com with ESMTP id 3de4vnbx4a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 07 Jan 2022 08:59:14 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bo6y8d8AgdVLyrU7ejZjCuln3he0Db/+f5FEyH2oyyouw2eaC72W7RsJxx5L6KVSUm01niNSvOvm8sOxDps7XvI6pjupXef/aPaQAyi3Gl7dmQzgtr/AWyvDP4tcsnOIpnke14nFGRkt123tpx1l9itoDJLrorpndqAG7CzAgaOmoFYbPigBpRQVKMKmq2pr8mjg+LWb9hwKpz+BQReLAlGv4BgIWJJdJxWYWRxcFTBor08LEqg/SXvHZlwhLcBOSLxPq3K2qCowjM62/Lazw74N/jJivi1mEUXef8tOAsYsVn6o7GYc/lWthXK0C6XszxgQDtfrOlxI2f/GebdR8Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aQ/kUExtK0DEicMABoFU0D++En+Sl7kRRTb9ZmFTuic=;
+ b=JMI2QHnLrncYtWXE6woDAKzajAyFJ5PvqP66HJql/SK+GP/SQYjHK28T8NE97PdMKmA3NcRtFzttLvlK9SvrKcEkhoecBTqdCbR0xWRsQNE+oXdSwqoJYibZ7WoX2II4Bu4yMPWSUbJT01UDtQm82byOfgfsxzLSOIQFYXGdhRO5aNbCtCQhhKab5u+uXoH6DfZ1Gx5QkP/UaewMxkxRtY+YF55ZBwSImVGlXBvv4X03ZBvi4O6dfJjnDnkx05VF/L//4hi9IBrLXzH+MlbnWGTdxUUiGYQ2PZ6T5MUeMABU6whpEJIkfvfwK57XITygtcO69czt90uWkxmEUVw50Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aQ/kUExtK0DEicMABoFU0D++En+Sl7kRRTb9ZmFTuic=;
+ b=jXLS3e1TQ1Vnj6nAoa5tnomw0qm5iO+opGpED0wYEvVXtAKivGeC6y3PwM4eFeAhZcgCLAp7PTX7rtZS8T/DX1XBhBRxepVDXlh1K4L9D6jpRMVpjd+NcI8/baBEWtdNvtUMni33jRRUhMm/fp54TPxOPiQ7C+65dKvgpKH6Aqo=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MW4PR10MB5677.namprd10.prod.outlook.com
+ (2603:10b6:303:18b::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4844.16; Fri, 7 Jan
+ 2022 08:59:12 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b889:5c86:23c0:82b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b889:5c86:23c0:82b8%4]) with mapi id 15.20.4867.011; Fri, 7 Jan 2022
+ 08:59:12 +0000
+Date:   Fri, 7 Jan 2022 11:58:52 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Abdun Nihaal <abdun.nihaal@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, Larry.Finger@lwfinger.net,
+        phil@philpotter.co.uk, straube.linux@gmail.com, martin@kaiser.cx,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] staging: r8188eu: change functions to return void
+Message-ID: <20220107085852.GQ7674@kadam>
+References: <cover.1641490034.git.abdun.nihaal@gmail.com>
+ <9db6b08837bd6354c8e07a4b1c4bca662091f945.1641490034.git.abdun.nihaal@gmail.com>
+ <Ydct2sBt6aB+MChS@kroah.com>
+ <20220107065210.7utcwjenvcspydyk@nlap2>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107065210.7utcwjenvcspydyk@nlap2>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNAP275CA0070.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4f::18)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-07_03,2022-01-06_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 spamscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0
- malwarescore=0 phishscore=0 mlxscore=0 clxscore=1011 adultscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201070061
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b08617ce-390f-45c3-2d3a-08d9d1bbf909
+X-MS-TrafficTypeDiagnostic: MW4PR10MB5677:EE_
+X-Microsoft-Antispam-PRVS: <MW4PR10MB567761C77DFF260B66DCDF568E4D9@MW4PR10MB5677.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NBtAOUwkKVvUVzjoDI2pQhpeOoKaSIZbYfS9voYjAviBuBA7pYQ2OWsmCErZS0tErdtJBLCT/UFmELEcSwQRpOcwOeaAUMoZIIXQm0IhMatwz+0MCIjSO784Liy5EEib5/D361AI4WgHlPkckILSDVIw8BF5gKD5/C5md/0UNfeKY6avF+mmV4mrMJnD7SPeOue6tSc7dvWCYlAeFxd1vqVFSpGk5RElcHocAvHIDRu8sC/zaZGyocAPpJaa0byzhamBbSizeonFnq9TWD1t/+yl1duDVIGsSJdx+vl7CF0BREd+fx9pz/1smojZnsKhDbNsYO2KZZg0LpqTdUWFjr+ZPIoObqkh0Tl122ndqxF8HVzHP06mhGx06gN8k/3pw/FakWhPeLiBJ7bs3hqSETzvYXaj8bYvytjPtWGET6oWOp7/8FXRsx14Wu7/N3wezYAy7DQxoFCewN6Xl+vENpNXl0O9j2EObUVxZaw8+Z/TEzTlCn2e4Eh5Ao6JqzuFTkX7fNJ2XlULYzJ3EAsOThMQv8B9YtpMaFoHEqKZTvRCQuy4POn/Dg/XmvFh/H0GPPSi+yStAkuJgCyBl478CHTj6zK8lMP1XcPjXER48M+IF3+ZzhM2r8wZ4VgUjP/rpwdoqcpQwFeFaW6OLZ64rdthoemZbB8Vu2U4Ca7s/mPpnPxs1tdjWsVW9JA+Y/3I2MxJIbKiOKJC94PxgxK/bQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(83380400001)(66946007)(8676002)(4744005)(86362001)(6486002)(316002)(8936002)(26005)(6916009)(52116002)(4326008)(33716001)(44832011)(33656002)(5660300002)(186003)(2906002)(66556008)(38100700002)(38350700002)(66476007)(6666004)(1076003)(508600001)(6512007)(6506007)(9686003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dCJ7RprRfYQel0KY4n7NP6ineqzjMlZ3HsV3dt19AcdDiEH8JoRp1uqmg+Z1?=
+ =?us-ascii?Q?I6ICxainAkVfhIdgkC1A/00ctmvs4pKvqP7+di9iDdJZJrWBvSc2MynPbo/g?=
+ =?us-ascii?Q?QN+wKMWHv9v37QU1V93LjjAFterayTwj43rosDhKpQ7ioE0qFAYRDOhI7pul?=
+ =?us-ascii?Q?/e8yIEZAPbvtIhEsGUZn3uKATWf/4FkAUzIUI6Q8XlS8fYGnB1ir56BRUjcr?=
+ =?us-ascii?Q?Y4xK1COQKfwFz0BFIMvPK6Sa+gaFfQi/Ku3seZ3JnieKAuVnuy9Y+z4ENVdP?=
+ =?us-ascii?Q?ZdZuCT503jB6eK+vCyrJDZNWycAdbPqXA7a4X6Y0fOnxoIfryS6a/YqjvSgz?=
+ =?us-ascii?Q?YyVRjRmT2KOYKqB/xzOFHBzipQ0ntrQTe3YXNrXC3NXmXDGAtLyb0IcD8sbR?=
+ =?us-ascii?Q?tBvoYZuW1MAzMEHrLwgPGfAmdNhsOk6ZLs3RZ3aRAWIgXPyCbtzYR7LyohQm?=
+ =?us-ascii?Q?C+CCy46vuiuf+8jzsSZNrGeia279JJGiSr/y/Ii0B6o4dUyNRfoIMsWvGHMQ?=
+ =?us-ascii?Q?8dYezhK9BJHY+iC51FSaqFZEmtKBTlEVuWr2m+63o0v1gWpB8CoKkdaw14vV?=
+ =?us-ascii?Q?Qj9zGjydMf93QSrU4tbireqslnnRlcpY4RvSe1fXb0D3T15jqMnVFK4KmgMU?=
+ =?us-ascii?Q?UU9JLO2COpE5W+gUqUYXdJLjq31nOUnlvGYqpS/YV7dhmumN8oOEQjDNFaVk?=
+ =?us-ascii?Q?uBgO6jfuS8XTrT0UrVgyqCGuY/0Vz1y5RUMTXAPHsftT14/p0i3e76bqPclH?=
+ =?us-ascii?Q?RNHW43QTgfQwGQat+lpM/WKP8WBy715e/oPNWzvfRg5B8ROkR6iVbTPFBGnV?=
+ =?us-ascii?Q?Wa+tbpCkmk8WbPrdfuLZNUutOpy4AN8TasBiPyKP66mAWOJ+a0k7cRVhee7A?=
+ =?us-ascii?Q?ectePRVo1RcFdADdrQL3kStVLT0s6D4Sxz5k73dEmwin9HUanG/6QfdjAsem?=
+ =?us-ascii?Q?JeYLghemFyKPDTyPVLGte7oct7TLNkL9KHG45KQ03c/Ss71MzPi/6R3WqZac?=
+ =?us-ascii?Q?njBuIMi/BdBdQk4uQ8dPjH6Zfr6UwyC9AYAok25uPWEaaIFnJ+h53yMrypXS?=
+ =?us-ascii?Q?WcYdrRnKttuf1m0h56mTTOHiTTESGLzPiXJVWXyUCTQTo3oQju7AfLagFHAm?=
+ =?us-ascii?Q?NBU5W5i9mbXZFCAD4Ehxzp0VYv6cD/jqdOtW3OZjg4z9c7Wm2+yt6waCMUO1?=
+ =?us-ascii?Q?bOIqB/5zar6b46meBvB/0hy/Ep41G0eVbsVb4s5YEpBR2/y/sQJAf14SgxV7?=
+ =?us-ascii?Q?5isOXNIivv63K6dVZwkZ8WCRDJ5tmZNYBpQtKa9T/225HGf05m5PlmiIHma6?=
+ =?us-ascii?Q?1ONrd8T35zjPKzA7S3rOjrOfVHhorStQf54P6BlZRjnH+RefNAaiBxOWqrQA?=
+ =?us-ascii?Q?LrrYnLkg1ys0N46Kae9WW73DWUq6yI20ngV7we+F8O2Q6nYBOlpLfdsVRUBq?=
+ =?us-ascii?Q?uQNmxRmIBoLHklc409gRlhgaIQ5WuxREMhFrsFU22AnygdBID5oZxkNtldQ2?=
+ =?us-ascii?Q?iinScscUCFsykf1SaLpQwjeLellPlnFPyRgYnBkngD2PV/cAI6Hcg/HCTqVD?=
+ =?us-ascii?Q?z4zdEg6R+kkSp9rTFVtWQuO1mhIO58m6rWkU1h3uk0WbLjF2wHYenw9iNDjk?=
+ =?us-ascii?Q?y6N12CFZjSEL5jujsXLlw0HEMQoG0ilUWe/TLIylPrDsHjnOBbv/Wz9nnm1l?=
+ =?us-ascii?Q?iQtcX28/AgsQEZ05gCB635mLZ7k=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b08617ce-390f-45c3-2d3a-08d9d1bbf909
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2022 08:59:12.2009
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZowflKVK3B8WHVzn+U//OWnkCQOabJ+3rNAE7APDuS1SMApXDc3ImqPieIhCJ4vKVsXpIcZ0tTpfd+jVxirjKPJnZe7j/7b7hmUPuFPi2sw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB5677
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10219 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 malwarescore=0
+ mlxlogscore=872 adultscore=0 suspectscore=0 mlxscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201070064
+X-Proofpoint-ORIG-GUID: yKJFybVw2mxn7hzGBebub4W1LnpZT5Q4
+X-Proofpoint-GUID: yKJFybVw2mxn7hzGBebub4W1LnpZT5Q4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 1/6/22 3:49 AM, Stephen Rothwell wrote:
-> Hi all,
+On Fri, Jan 07, 2022 at 12:22:10PM +0530, Abdun Nihaal wrote:
+> Hello Greg,
 > 
-> After merging the perf tree, today's linux-next build (powerpc
-> ppc64_defconfig) failed like this:
+> On Thu, Jan 06, 2022 at 06:58:50PM +0100, Greg KH wrote:
+> > On Thu, Jan 06, 2022 at 11:11:52PM +0530, Abdun Nihaal wrote:
+> > > Some functions in ioctl_linux.c always returns 0 and their return values
+> > > are never used. Change return type of such functions to void.
+> > > 
+> > > While at it, align function arguments with open parenthesis to fix
+> > > checkpatch checks.
+> > > 
+> > > Suggested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Signed-off-by: Abdun Nihaal <abdun.nihaal@gmail.com>
+> > 
+> > Are you sure that checkpatch allowed this change?
 > 
-> In file included from include/linux/perf_event.h:17,
->                  from arch/powerpc/perf/isa207-common.h:12,
->                  from arch/powerpc/perf/isa207-common.c:9:
-> arch/powerpc/perf/isa207-common.c: In function 'isa207_find_source':
-> include/uapi/linux/perf_event.h:1339:11: error: 'PERF_MEM_HOPS_2' undeclared (first use in this function); did you mean 'PERF_MEM_HOPS_0'?
->  1339 |  (((__u64)PERF_MEM_##a##_##s) << PERF_MEM_##a##_SHIFT)
->       |           ^~~~~~~~~
-> arch/powerpc/perf/isa207-common.h:273:20: note: in expansion of macro 'PERF_MEM_S'
->   273 | #define P(a, b)    PERF_MEM_S(a, b)
->       |                    ^~~~~~~~~~
-> arch/powerpc/perf/isa207-common.c:240:51: note: in expansion of macro 'P'
->   240 |     ret |= PH(LVL, REM_RAM1) | REM | LEVEL(RAM) | P(HOPS, 2);
->       |                                                   ^
-> include/uapi/linux/perf_event.h:1339:11: note: each undeclared identifier is reported only once for each function it appears in
->  1339 |  (((__u64)PERF_MEM_##a##_##s) << PERF_MEM_##a##_SHIFT)
->       |           ^~~~~~~~~
-> arch/powerpc/perf/isa207-common.h:273:20: note: in expansion of macro 'PERF_MEM_S'
->   273 | #define P(a, b)    PERF_MEM_S(a, b)
->       |                    ^~~~~~~~~~
-> arch/powerpc/perf/isa207-common.c:240:51: note: in expansion of macro 'P'
->   240 |     ret |= PH(LVL, REM_RAM1) | REM | LEVEL(RAM) | P(HOPS, 2);
->       |                                                   ^
-> include/uapi/linux/perf_event.h:1339:11: error: 'PERF_MEM_HOPS_3' undeclared (first use in this function); did you mean 'PERF_MEM_HOPS_0'?
->  1339 |  (((__u64)PERF_MEM_##a##_##s) << PERF_MEM_##a##_SHIFT)
->       |           ^~~~~~~~~
-> arch/powerpc/perf/isa207-common.h:273:20: note: in expansion of macro 'PERF_MEM_S'
->   273 | #define P(a, b)    PERF_MEM_S(a, b)
->       |                    ^~~~~~~~~~
-> arch/powerpc/perf/isa207-common.c:244:51: note: in expansion of macro 'P'
->   244 |     ret |= PH(LVL, REM_RAM2) | REM | LEVEL(RAM) | P(HOPS, 3);
->       |                                                   ^
-> 
-> Caused by commit
-> 
->   af2b24f228a0 ("perf powerpc: Add data source encodings for power10 platform")
-> 
-> It looks like patch 1/4 of this series is missing ...
+> Yes, I ran checkpatch on both the patches and found no errors, warnings
+> or checks. Is there something that needs to be fixed?
 
-Hi Stephen,
-     Yes you are right, original patch series contain 4 patches, where
-1/4 patch contain kernel side changes for the same. Hence we are getting
-this error, as that patch is missing in the Arnaldo tree.
+You're not allowed to end a void function with a return statement.
 
-Link to the patchset: https://lkml.org/lkml/2021/12/6/143
+Checkpatch will only detect these if you run it again with the -f
+option.
 
-That kernel side patch is taken by Michael Ellermen via powerpc git.
-
-Link to the patchset on powerpc/next:
-
-[1/4] perf: Add new macros for mem_hops field
-https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git/commit/?id=cb1c4aba055f928ffae0c868e8dfe08eeab302e7
-
-
-[3/4] powerpc/perf: Add encodings to represent data based on newer
-composite PERF_MEM_LVLNUM* fields
- https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git/commit/?id=4a20ee106154ac1765dea97932faad29f0ba57fc
-
-[4/4] powerpc/perf: Add data source encodings for power10 platform
-https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git/commit/?id=6ed05a8efda56e5be11081954929421de19cce88
-
-Thanks,
-Kajol Jain
-
-> 
-> I have used the perf tree from next-20220105 for today.
-> 
+regards,
+dan carpenter
