@@ -2,117 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE26C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 534FBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:09:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240614AbiAGSHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:07:09 -0500
-Received: from mga06.intel.com ([134.134.136.31]:57947 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240587AbiAGSHI (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:07:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641578828; x=1673114828;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uJCOkQpN6ukIBCDg2aSBzPeLplMavJxmP1Qjzga/9wE=;
-  b=FeSr3/4Tidy7oESlXRGbB9XtdUGpC2m+ridLEzopWeroC0W3bp3M2SHg
-   qscFiB+ThDnuCNyIFw+RAdEhPgdasuslDjSfWxz23UGdAE2dhMjnfQVwa
-   4oymZoIKUqHUdZzigeBHFiMCg6Z/aYQCTYKVbdxV0QMRUmTNRh9Uw8HMx
-   pgzgVJHdcbywXy2vS9K1XuLJCOiLv9Houjbs8iLKAiSzfvDjU9nCHVHhE
-   f67BvjfmZytlDP+jEmwvu9DeRAfjrpjYCi8hEcXBz92Y9e6OxzkyMe2jg
-   9GJaFqTmCFZlpnHLkz6O0zCKnsG6RLBfTFONj7vrEMhsrx1xeuC9mxb7R
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="303655048"
-X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
-   d="scan'208";a="303655048"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 10:07:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
-   d="scan'208";a="622007250"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 07 Jan 2022 10:07:06 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5tdq-000Iv9-7i; Fri, 07 Jan 2022 18:07:06 +0000
-Date:   Sat, 8 Jan 2022 02:06:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stephen Dickey <quic_dickey@quicinc.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Todd Kjos <tkjos@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
- 21/2544] kernel/sched/core.c:2308:12: warning: no previous prototype for
- '__migrate_task'
-Message-ID: <202201080130.BU3Jp2mc-lkp@intel.com>
+        id S240663AbiAGSJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:09:04 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:44485 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240468AbiAGSJC (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:09:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641578942; x=1673114942;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=BmhPFW1q0OdAFsLIXcbkLXvE9OceVGBzXPJvOxfchrY=;
+  b=nRuo298CEn/tkSA6um9Sk0UgUt49lObcX2VAS5CXvnW5NuXjEshXet72
+   c4xNTqwKB8bGUbIvEqFiZXtV92Vog3mDE3Nzj2hp5DdFzKzaoJ39LKXWO
+   aTzB49DmbX+peCfQL4kYVs6gJ7xuzlFoYsvNtuuFmlIS/bZyy6Z8dwteH
+   g=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 07 Jan 2022 10:09:02 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 10:09:02 -0800
+Received: from blr-ubuntu-498.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 7 Jan 2022 10:08:56 -0800
+From:   Pintu Kumar <quic_pintu@quicinc.com>
+To:     <linux-kernel@vger.kernel.org>, <akpm@linux-foundation.org>,
+        <quic_pintu@quicinc.com>, <linux-mm@kvack.org>,
+        <ebiederm@xmission.com>, <christian.brauner@ubuntu.com>,
+        <sfr@canb.auug.org.au>, <legion@kernel.org>, <sashal@kernel.org>,
+        <gorcunov@gmail.com>, <chris.hyser@oracle.com>,
+        <ccross@google.com>, <pcc@google.com>, <dave@stgolabs.net>,
+        <caoxiaofeng@yulong.com>, <david@redhat.com>,
+        <pintu.ping@gmail.com>, <vbabka@suse.cz>
+CC:     <linux-api@vger.kernel.org>
+Subject: [PATCH v2] sysinfo: include availram field in sysinfo struct
+Date:   Fri, 7 Jan 2022 23:37:34 +0530
+Message-ID: <1641578854-14232-1-git-send-email-quic_pintu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1641483250-18839-1-git-send-email-quic_pintu@quicinc.com>
+References: <1641483250-18839-1-git-send-email-quic_pintu@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+The sysinfo member does not have any "available ram" field and
+the bufferram field is not much helpful either, to get a rough
+estimate of available ram needed for allocation.
 
-FYI, the error/warning still remains.
+One needs to parse MemAvailable field separately from /proc/meminfo
+to get this info instead of directly getting if from sysinfo itself.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
-head:   1d50adbe5ad4df334a576ab1d43c176306255e8a
-commit: ca2177d4a03ddc4e6b64e54e0e7a176e282b4e18 [21/2544] ANDROID: sched: allow access to critical common code for CPU Pause
-config: arc-randconfig-r043-20220107 (https://download.01.org/0day-ci/archive/20220108/202201080130.BU3Jp2mc-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/ca2177d4a03ddc4e6b64e54e0e7a176e282b4e18
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
-        git checkout ca2177d4a03ddc4e6b64e54e0e7a176e282b4e18
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash kernel/sched/
+Thus, this patch introduce a new field as availram in sysinfo
+so that all the info total/free/available can be retrieved from
+one place itself.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+There are couple of places in kernel as well where this can be improved.
+For example:
+In fs/proc/meminfo.c:
+meminfo_proc_show:
+   si_meminfo(&i);
+   available = si_mem_available();
+Now with this change the second call be avoided.
+Thus, we can directly do:
+show_val_kb(m, "MemAvailable:   ", i.availram);
 
-All warnings (new ones prefixed by >>):
+Note, this also requires update in procfs for free and other commands.
+Like in free command as well we frist call sysinfo then again parse
+/proc/meminfo to get available field.
+This can be avoided too with higher kernel version.
 
->> kernel/sched/core.c:2308:12: warning: no previous prototype for '__migrate_task' [-Wmissing-prototypes]
-    2308 | struct rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-         |            ^~~~~~~~~~~~~~
-   kernel/sched/core.c:3459:6: warning: no previous prototype for 'sched_set_stop_task' [-Wmissing-prototypes]
-    3459 | void sched_set_stop_task(int cpu, struct task_struct *stop)
-         |      ^~~~~~~~~~~~~~~~~~~
+A sample output with single sysinfo call is shown below:
+Total RAM: 248376 kB
+ Free RAM: 231540 kB
+Avail RAM: 230448 kB
 
-
-vim +/__migrate_task +2308 kernel/sched/core.c
-
-  2298	
-  2299	/*
-  2300	 * Move (not current) task off this CPU, onto the destination CPU. We're doing
-  2301	 * this because either it can't run here any more (set_cpus_allowed()
-  2302	 * away from this CPU, or CPU going down), or because we're
-  2303	 * attempting to rebalance this task on exec (sched_exec).
-  2304	 *
-  2305	 * So we race with normal scheduler movements, but that's OK, as long
-  2306	 * as the task is no longer on this CPU.
-  2307	 */
-> 2308	struct rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-  2309				  struct task_struct *p, int dest_cpu)
-  2310	{
-  2311		/* Affinity changed (again). */
-  2312		if (!is_cpu_allowed(p, dest_cpu))
-  2313			return rq;
-  2314	
-  2315		update_rq_clock(rq);
-  2316		rq = move_queued_task(rq, rf, p, dest_cpu);
-  2317	
-  2318		return rq;
-  2319	}
-  2320	EXPORT_SYMBOL_GPL(__migrate_task);
-  2321	
-
+Signed-off-by: Pintu Kumar <quic_pintu@quicinc.com>
+Signed-off-by: Pintu Agarwal <pintu.ping@gmail.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ include/uapi/linux/sysinfo.h | 3 ++-
+ kernel/sys.c                 | 4 ++++
+ mm/page_alloc.c              | 2 ++
+ 3 files changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/sysinfo.h b/include/uapi/linux/sysinfo.h
+index 435d5c2..fe84c6a 100644
+--- a/include/uapi/linux/sysinfo.h
++++ b/include/uapi/linux/sysinfo.h
+@@ -19,7 +19,8 @@ struct sysinfo {
+ 	__kernel_ulong_t totalhigh;	/* Total high memory size */
+ 	__kernel_ulong_t freehigh;	/* Available high memory size */
+ 	__u32 mem_unit;			/* Memory unit size in bytes */
+-	char _f[20-2*sizeof(__kernel_ulong_t)-sizeof(__u32)];	/* Padding: libc5 uses this.. */
++	__kernel_ulong_t availram;	/* Memory available for allocation */
++	char _f[20-3*sizeof(__kernel_ulong_t)-sizeof(__u32)];	/* Padding: libc5 uses this.. */
+ };
+ 
+ #endif /* _LINUX_SYSINFO_H */
+diff --git a/kernel/sys.c b/kernel/sys.c
+index ecc4cf0..7059515 100644
+--- a/kernel/sys.c
++++ b/kernel/sys.c
+@@ -2671,6 +2671,7 @@ static int do_sysinfo(struct sysinfo *info)
+ 	info->freeram <<= bitcount;
+ 	info->sharedram <<= bitcount;
+ 	info->bufferram <<= bitcount;
++	info->availram <<= bitcount;
+ 	info->totalswap <<= bitcount;
+ 	info->freeswap <<= bitcount;
+ 	info->totalhigh <<= bitcount;
+@@ -2700,6 +2701,7 @@ struct compat_sysinfo {
+ 	u32 freeram;
+ 	u32 sharedram;
+ 	u32 bufferram;
++	u32 availram;
+ 	u32 totalswap;
+ 	u32 freeswap;
+ 	u16 procs;
+@@ -2732,6 +2734,7 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
+ 		s.freeram >>= bitcount;
+ 		s.sharedram >>= bitcount;
+ 		s.bufferram >>= bitcount;
++		s.availram >>= bitcount;
+ 		s.totalswap >>= bitcount;
+ 		s.freeswap >>= bitcount;
+ 		s.totalhigh >>= bitcount;
+@@ -2747,6 +2750,7 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
+ 	s_32.freeram = s.freeram;
+ 	s_32.sharedram = s.sharedram;
+ 	s_32.bufferram = s.bufferram;
++	s_32.availram = s.availram;
+ 	s_32.totalswap = s.totalswap;
+ 	s_32.freeswap = s.freeswap;
+ 	s_32.procs = s.procs;
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index b5d62e1..5013c75 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -5786,6 +5786,7 @@ void si_meminfo(struct sysinfo *val)
+ 	val->sharedram = global_node_page_state(NR_SHMEM);
+ 	val->freeram = global_zone_page_state(NR_FREE_PAGES);
+ 	val->bufferram = nr_blockdev_pages();
++	val->availram = si_mem_available();
+ 	val->totalhigh = totalhigh_pages();
+ 	val->freehigh = nr_free_highpages();
+ 	val->mem_unit = PAGE_SIZE;
+@@ -5807,6 +5808,7 @@ void si_meminfo_node(struct sysinfo *val, int nid)
+ 	val->totalram = managed_pages;
+ 	val->sharedram = node_page_state(pgdat, NR_SHMEM);
+ 	val->freeram = sum_zone_node_page_state(nid, NR_FREE_PAGES);
++	val->availram = si_mem_available();
+ #ifdef CONFIG_HIGHMEM
+ 	for (zone_type = 0; zone_type < MAX_NR_ZONES; zone_type++) {
+ 		struct zone *zone = &pgdat->node_zones[zone_type];
+-- 
+2.7.4
+
