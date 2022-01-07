@@ -2,84 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 832B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:09:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8922C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345290AbiAGCJ1 (ORCPT
+        id S1345300AbiAGCKh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 21:09:27 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:45820 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229626AbiAGCJ0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:09:26 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowABnby+1oNdhU9M8BQ--.47377S2;
-        Fri, 07 Jan 2022 10:08:53 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     tiwai@suse.de
-Cc:     perex@perex.cz, tiwai@suse.com, leon@kernel.org,
-        broonie@kernel.org, joe@perches.com, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v3] ALSA: intel_hdmi: Check for error num after setting mask
-Date:   Fri,  7 Jan 2022 10:08:51 +0800
-Message-Id: <20220107020851.3095591-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 6 Jan 2022 21:10:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34352 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229618AbiAGCKd (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 21:10:33 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32C2DB82490;
+        Fri,  7 Jan 2022 02:10:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E932AC36AE3;
+        Fri,  7 Jan 2022 02:10:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641521431;
+        bh=djRrn1BCkoZjoqC6mQjBa9SC3D/NEGTiHMDRuQlCKRk=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=etWMUzXnVxiYjPMEZD1rJeLbDG2/xTA6oE5Jze6qz75s112D0bqXjTjYk8sw0kgda
+         LrSe5d1bAlKWBvDKFF59iSjN4mwhe6sphKZvQ7pXZJ/NvUgl47W1NlgfOx5qqAk56E
+         Pu0fBhVY+ihWCKvNM0jI2Fa8nPII/aKoxkCkh/YAyFo5tTZO4qKOfVXyPNvfC0pRrt
+         /3uWAywDRGvwSN7Y9GX5ajatwd9Y/FQOYNYXiPBBP9sH9BsPAWo/fqWWAIgkEASaLk
+         Krj1sSgly5EBzjOjdrOQ8XjbNPBxfy2eb79OvEYLy69K9Io1dTtqsKHvvSw2G3F4RH
+         to/lAQ88f+CAw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABnby+1oNdhU9M8BQ--.47377S2
-X-Coremail-Antispam: 1UD129KBjvdXoWruFyDKw1fAr4rXr15tw15CFg_yoWDZrg_Xw
-        1xWws7WFy5C34Ivw43CrWfAr9a939IvFWqqrn5tF17G34DJFW7Xw1UGr4fur1xua97Wry3
-        u3ZrtrWSyryakjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb4xFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVW8Jr
-        0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8
-        JwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r
-        1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij
-        64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr
-        0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4U
-        MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUHWlkUUU
-        UU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAMhs-H81xnaFqgTJT3jiNy_BBCuHhrA-t0A+0wMnp5Y0kFjGUQ@mail.gmail.com>
+References: <20211107074200.18911-1-sergio.paracuellos@gmail.com> <CAMhs-H81xnaFqgTJT3jiNy_BBCuHhrA-t0A+0wMnp5Y0kFjGUQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] clk: ralink: make system controller a reset provider
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        Greg KH <gregkh@linuxfoundation.org>,
+        NeilBrown <neil@brown.name>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+To:     COMMON CLK FRAMEWORK <linux-clk@vger.kernel.org>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Thu, 06 Jan 2022 18:10:29 -0800
+User-Agent: alot/0.9.1
+Message-Id: <20220107021030.E932AC36AE3@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To maintain the consistency of the code, it should be better to add the
-sanity check after calling dma_set_mask_and_coherent(), like
-tegra_pcm_dma_allocate() in `sound/soc/tegra/tegra_pcm.c`.
+Quoting Sergio Paracuellos (2021-12-13 04:00:17)
+> Hi Stephen,
+>=20
+> On Sun, Nov 7, 2021 at 8:42 AM Sergio Paracuellos
+> <sergio.paracuellos@gmail.com> wrote:
+> >
+> > Hi all,
+> >
+> > This patch series add minimal change to provide mt7621 resets properly
+> > defining them in the 'mediatek,mt7621-sysc' node which is the system
+> > controller of the SoC and is already providing clocks to the rest of
+> > the world.
+> >
+> > There is shared architecture code for all ralink platforms in 'reset.c'
+> > file located in 'arch/mips/ralink' but the correct thing to do to align
+> > hardware with software seems to define and add related reset code to the
+> > already mainlined clock driver.
+> >
+> > After this changes, we can get rid of the useless reset controller node
+> > in the device tree and use system controller node instead where the pro=
+perty
+> > '#reset-cells' has been added. Binding documentation for this nodeq has
+> > been updated with the new property accordly.
+> >
+> > This series also provide a bindings include header where all related
+> > reset bits for the MT7621 SoC are defined.
+> >
+> > Also, please take a look to this review [0] to understand better motiva=
+tion
 
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog
+Is [0] a link?
 
-v2 -> v3
+> > for this series.
+> >
+> > Regarding the way of merging this:
+> >  - I'd like patches 1 and 4 which are related going through staging tre=
+e.
+> >  - The other two (patches 2 and 3) can perfectly go through the clock t=
+ree.
+> >
+> > Thanks in advance for your feedback.
+> >
+> > Changes in v5:
+> >  - Move platform driver init process into 'arch_initcall' to be sure the
+> >    rest of the world can get the resets available when needed (since PC=
+Ie
+> >    controller driver has been moved from staging into 'drivers/pci/cont=
+roller'
+> >    is probed earlier and reset was not available so it was returning
+> >    -EPROBE_DEFER on firt try. Moving into 'arch_initcall' avoids the 'a=
+ bit
+> >    anoying' PCI first failed log trace.
+>=20
+> Gentle ping on this series.
+>=20
 
-* Change 1. Remove the fixes tag and change the message.
-* Change 2. Correct the patch to fit the lastest code.
----
- sound/x86/intel_hdmi_audio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+It looks to largely be a reset controller patch series. Can you get
+review from the reset maintainer?
 
-diff --git a/sound/x86/intel_hdmi_audio.c b/sound/x86/intel_hdmi_audio.c
-index 378826312abe..1c94eaff1931 100644
---- a/sound/x86/intel_hdmi_audio.c
-+++ b/sound/x86/intel_hdmi_audio.c
-@@ -1750,7 +1750,9 @@ static int hdmi_lpe_audio_probe(struct platform_device *pdev)
- 	card_ctx->irq = irq;
- 
- 	/* only 32bit addressable */
--	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-+	if (ret)
-+		return ret;
- 
- 	init_channel_allocations();
- 
--- 
-2.25.1
-
+RESET CONTROLLER FRAMEWORK
+M:	Philipp Zabel <p.zabel@pengutronix.de>
+S:	Maintained
