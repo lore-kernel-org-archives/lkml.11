@@ -2,89 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB77C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CA4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240782AbiAGSPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240848AbiAGSPR (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:15:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8536C061574;
-        Fri,  7 Jan 2022 10:15:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D06EB82691;
-        Fri,  7 Jan 2022 18:15:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C22F6C36AE0;
-        Fri,  7 Jan 2022 18:15:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641579314;
-        bh=KfKL7MpIagRPKLIHPgNwkikE/2lMY8PB5xDuLTe0wq8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=mhBz42H2UAPIGguatoTXJE2rOt0/4Z7LOduZe+kz2f1tnbd8pqDPrxgfK/UzY74Xz
-         DqTajoP7bxiOJKBmRgB0C4pb1p7m1VfNT8v+HObunVhXScMvkLXABD/IpdGkFuqlh1
-         /HngyplPvbyq42ccCvYJ12N74RASq8POxrgumpcT/WLz7ygpx5tA3N3iD16OmiytTW
-         Tmm4yONtjXlFAl5LcsXzx/2dYknPbcoGY/uI2fD92OK3v+2T3E2pgL+DNa1b8KNWUm
-         x+kWjvmB+VkTRfvb064eHDIb32gknnEVuAcNgubdhQk5kihbThOYxIZeELObVslb+A
-         4nY8wchxB8ghQ==
-Date:   Fri, 7 Jan 2022 12:15:12 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 03/15] PCI: mvebu: Check that PCI bridge specified in DT
- has function number zero
-Message-ID: <20220107181512.GA390598@bhelgaas>
+        id S240888AbiAGSRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:17:04 -0500
+Received: from mga01.intel.com ([192.55.52.88]:1308 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240782AbiAGSRA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:17:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641579420; x=1673115420;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XP2h4/KcSrzvOFafy2lvwH7BtxnbJ53o6WMyyJ0YgW4=;
+  b=hMnfjgEMRimtGaQnTFsk+A+qmcO2K7tF0gWNeP277ZjVHM1JtOaeZJdA
+   w1VsmQLwKPmJrqV5YbTs87aanebHYsdZ63+23EM2fRGFdV3W5GnZBoeOa
+   9efzBlaGBnJdyrwwxxYAK8NcGgJfiPTG7wQkmnqzsYQ7FRxDZc2FB34q6
+   2IeaDUrxPlEWd/wqSfVRF3LqC2m28ZWqA+6Br1uxKxuZaIRTbkffFOKcN
+   l2ONUmA7TCXxTUduW6sYxPofqCO01EyCzRu4A6GkjWp6J82pPBpv6VzJ0
+   3ksMPRLTFAuoTpq+duJr/OoxbfUAIld+NcgH3CKpO3R/GfSmhWwcW4lkz
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="267215174"
+X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
+   d="scan'208";a="267215174"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 10:17:00 -0800
+X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
+   d="scan'208";a="622009663"
+Received: from kcaccard-mobl.amr.corp.intel.com (HELO kcaccard-mobl1.jf.intel.com) ([10.212.25.179])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 10:16:59 -0800
+From:   Kristen Carlson Accardi <kristen@linux.intel.com>
+To:     linux-sgx@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Kristen Carlson Accardi <kristen@linux.intel.com>
+Subject: [PATCH v2 0/2] x86/sgx: Limit EPC overcommit
+Date:   Fri,  7 Jan 2022 10:16:15 -0800
+Message-Id: <20220107181618.6597-1-kristen@linux.intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211125124605.25915-4-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Nov 25, 2021 at 01:45:53PM +0100, Pali Rohár wrote:
-> Driver cannot handle PCI bridges at non-zero function address. So add
-> appropriate check. Currently all in-tree kernel DTS files set PCI bridge
-> function to zero.
+SGX currently allows EPC pages to be overcommitted. If the system is
+out of enclave memory, EPC pages are swapped to normal RAM via
+a per enclave shared memory area. This shared memory is not charged
+to the enclave or the task mapping it, making it hard to account
+for using normal methods. Since SGX will allow EPC pages to be
+overcommitted without limits, enclaves can consume system memory
+for these backing pages without limits.
 
-Why can the driver not handle bridges at non-zero function addresses?
-The PCI spec allows that, doesn't it?  Is this a hardware limitation?
+In order to prevent this, set a cap on the amount of overcommit SGX
+allows.  Whenever a backing page is requested by an enclave, track
+the total amount of shared memory pages used across all enclaves and
+return an error if the overcommit limit has been reached. This will
+restrict the total amount of backing pages that all enclaves can
+consume to a maximum amount, and prevent enclaves from consuming
+all the system RAM for backing pages.
 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> Cc: stable@vger.kernel.org
-> ---
->  drivers/pci/controller/pci-mvebu.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-> index 6197f7e7c317..08274132cdfb 100644
-> --- a/drivers/pci/controller/pci-mvebu.c
-> +++ b/drivers/pci/controller/pci-mvebu.c
-> @@ -864,6 +864,11 @@ static int mvebu_pcie_parse_port(struct mvebu_pcie *pcie,
->  	port->devfn = of_pci_get_devfn(child);
->  	if (port->devfn < 0)
->  		goto skip;
-> +	if (PCI_FUNC(port->devfn) != 0) {
-> +		dev_err(dev, "%s: invalid function number, must be zero\n",
-> +			port->name);
-> +		goto skip;
-> +	}
->  
->  	ret = mvebu_get_tgt_attr(dev->of_node, port->devfn, IORESOURCE_MEM,
->  				 &port->mem_target, &port->mem_attr);
-> -- 
-> 2.20.1
-> 
+The overcommit percentage has a value of 150, which limits shared
+memory page consumption to 1.5x the number of EPC pages in the system.
+
+Changes from v1
+----------------
+* removed module parameter and disable boolean
+* increased over commit percentage to 150% from 100%
+
+Kristen Carlson Accardi (2):
+  x86/sgx: Add accounting for tracking overcommit
+  x86/sgx: account backing pages
+
+ arch/x86/kernel/cpu/sgx/encl.c | 76 ++++++++++++++++++++++++++++++++--
+ arch/x86/kernel/cpu/sgx/encl.h |  6 ++-
+ arch/x86/kernel/cpu/sgx/main.c | 52 +++++++++++++++++++++--
+ arch/x86/kernel/cpu/sgx/sgx.h  |  2 +
+ 4 files changed, 128 insertions(+), 8 deletions(-)
+
+-- 
+2.20.1
+
