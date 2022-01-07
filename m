@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F72C43217
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 977A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:13:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345570AbiAGINT (ORCPT
+        id S1345671AbiAGINb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 03:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
+        Fri, 7 Jan 2022 03:13:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345560AbiAGINR (ORCPT
+        with ESMTP id S1345581AbiAGINR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 03:13:17 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE00C0611FD
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 00:13:14 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id v6so9516538wra.8
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 00:13:14 -0800 (PST)
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3C7C034000
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 00:13:16 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id l10so9549288wrh.7
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 00:13:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UqdRj1EmconcuS8b1F/rCY0dKZJIq6ZhPGwfLyW4b+Y=;
-        b=WPfeUfOnlhSOfGOHgN5PeWWc/KjXHsBD3ggQsMA5SngsdPvUDeylLDbubRb9YbKDGk
-         QO0UWkkK70YiTrGqaG5onQYmQ1E+gkQ2JD2tubl/p4bPAWJjDsDMEciF2w5fbAXKeEmv
-         fZw6HeDHavCBcle6tFSb7rCSNIc8k0pTuyhYM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=y5vv85VvwS9MS7JlafP+Njn1B1aPbUU7IaGWNQUgbis=;
+        b=iL8oFfe43QgftfpgHnQgjVBubyyuLqUpSLqUuyf72+AdnVY5pkBhR2O1qtoN8yBp2K
+         3A2ayZWo16ycvCobtZkcAr10oKUS3kiB3Syngs28BfMwZyba3NTBiaKqnrPZzd4sqmIV
+         AMuNWq3z2ioyIpUNGZOSvSTEV8BKw82l+Ucr4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UqdRj1EmconcuS8b1F/rCY0dKZJIq6ZhPGwfLyW4b+Y=;
-        b=GgYB8Qyu9JpFFgQ/LLFuFPmlzPyL51U3I082KHivHBrPT9r3NOFNYewS3N6ttiADYc
-         wlQQKBI7U1AKYVAIS48vOHxviqbJ3aekucdCY/r7vRx1Xq3mdxX2lAXnRm2FVcTOaGRu
-         m1y/ku8XE4tJoXIlJ+X/+Ooyl1osO5Arsqejj57gSYUbst44a8K+9UtHpUhQ659mXqzf
-         mcSTsqqluP4IrH//+fhTwLVbiYz1m2D8ilKkcZBK+WwvAsST47cQFbF/li/mGCcl0Dwi
-         bV/qjMZ4ky50/h9pTsGFgQz6iTe1HEn1C2m0TpUZqPsuubsys0yOJ/BowRlsNJwoCk8S
-         xJ/g==
-X-Gm-Message-State: AOAM530uCaF8ZkkPlka+bAZpQBtJixcp7c8bytqX++JrPHLQykdnlZ3I
-        Fa5DY1GlfdapMdaWW+WSogtjIkR9MRfFGQ==
-X-Google-Smtp-Source: ABdhPJyJ/bwB16MM5ozIXq1cXUNN7h5qKXxouxf4Co5jB+HxWmwlFvBPg/aC1WWQZKL0O8FlOg86Lg==
-X-Received: by 2002:a05:6000:382:: with SMTP id u2mr55089116wrf.331.1641543193020;
-        Fri, 07 Jan 2022 00:13:13 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=y5vv85VvwS9MS7JlafP+Njn1B1aPbUU7IaGWNQUgbis=;
+        b=HduNYOnkDJc91Ng/t0laer3x8o4owUFbnYH3HZIXsq8TwMdbhoJ+wPvToVnQFyDkvY
+         6IhTU+6qRNfqc+XIkln/xXjbIn+ODHrVfJN3v7RwTwLVJdA2zQfF0ktfpRafcsNKhwwR
+         4sAHH4PhfV/YvC45GwO0i5XEbbh8WdMvZhpmNjjljdSa4NLEDyTiFXApJg3ML/KJ+pi2
+         gyJxAkPq+Iy6DB2v/CiH3412R98yl1XQMTecMw8M6E0oxG3cZ/tKy/suLaALE4fKwOUf
+         OthdkKpjWIjiluhVjcEPFZ1wq84XuYFm6kTpdv52vQW+zaZaOs68NO/NMGvOIFoKIBHS
+         RVow==
+X-Gm-Message-State: AOAM532Atssuo5Qpc7jbZISlvV/B/V7VkM1dr2+S5gveCFTFTd1Te2NF
+        QY9q5z2OMb8ZeH5G3gacxMlLKySDTFYU/g==
+X-Google-Smtp-Source: ABdhPJyPwaMZa0yQeRjywazx6ncmfSazFg4h+xLedFtfm2vQlCvyJNrBejHstFH3Rpo0cAI3CmiyTA==
+X-Received: by 2002:a5d:4525:: with SMTP id j5mr9452235wra.519.1641543194804;
+        Fri, 07 Jan 2022 00:13:14 -0800 (PST)
 Received: from dario-ThinkPad-T14s-Gen-2i.amarulasolutions.com (mob-5-90-38-18.net.vodafone.it. [5.90.38.18])
-        by smtp.gmail.com with ESMTPSA id w17sm4280633wmc.14.2022.01.07.00.13.11
+        by smtp.gmail.com with ESMTPSA id w17sm4280633wmc.14.2022.01.07.00.13.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 00:13:12 -0800 (PST)
+        Fri, 07 Jan 2022 00:13:14 -0800 (PST)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
@@ -57,32 +57,64 @@ Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
         Jonathan Corbet <corbet@lwn.net>,
         M Chetan Kumar <m.chetan.kumar@intel.com>,
         linux-doc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH 0/2] Add the first documentation for a CAN driver
-Date:   Fri,  7 Jan 2022 09:13:04 +0100
-Message-Id: <20220107081306.3681899-1-dario.binacchi@amarulasolutions.com>
+Subject: [RFC PATCH 1/2] docs: networking: device drivers: add can sub-folder
+Date:   Fri,  7 Jan 2022 09:13:05 +0100
+Message-Id: <20220107081306.3681899-2-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220107081306.3681899-1-dario.binacchi@amarulasolutions.com>
+References: <20220107081306.3681899-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The series was born from the need to document the enabling at runtime
-reception of RTR frames for the Flexcan CAN controller.
-For more details see https://lore.kernel.org/all/20220106105415.pdmrdgnx6p2tyff6@pengutronix.de/
+Add the container for CAN drivers documentation.
 
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+---
 
-Dario Binacchi (2):
-  docs: networking: device drivers: add can sub-folder
-  docs: networking: device drivers: can: add flexcan
-
- .../device_drivers/can/freescale/flexcan.rst  | 25 +++++++++++++++++++
- .../networking/device_drivers/can/index.rst   | 20 +++++++++++++++
- .../networking/device_drivers/index.rst       |  1 +
- 3 files changed, 46 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/can/freescale/flexcan.rst
+ .../networking/device_drivers/can/index.rst    | 18 ++++++++++++++++++
+ .../networking/device_drivers/index.rst        |  1 +
+ 2 files changed, 19 insertions(+)
  create mode 100644 Documentation/networking/device_drivers/can/index.rst
 
+diff --git a/Documentation/networking/device_drivers/can/index.rst b/Documentation/networking/device_drivers/can/index.rst
+new file mode 100644
+index 000000000000..218276818968
+--- /dev/null
++++ b/Documentation/networking/device_drivers/can/index.rst
+@@ -0,0 +1,18 @@
++.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++
++Controller Area Network (CAN) Device Drivers
++============================================
++
++Device drivers for CAN devices.
++
++Contents:
++
++.. toctree::
++   :maxdepth: 2
++
++.. only::  subproject and html
++
++   Indices
++   =======
++
++   * :ref:`genindex`
+diff --git a/Documentation/networking/device_drivers/index.rst b/Documentation/networking/device_drivers/index.rst
+index 3a5a1d46e77e..5f5cfdb2a300 100644
+--- a/Documentation/networking/device_drivers/index.rst
++++ b/Documentation/networking/device_drivers/index.rst
+@@ -11,6 +11,7 @@ Contents:
+    appletalk/index
+    atm/index
+    cable/index
++   can/index
+    cellular/index
+    ethernet/index
+    fddi/index
 -- 
 2.32.0
 
