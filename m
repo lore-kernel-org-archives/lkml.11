@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A19DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31F4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232570AbiAGS4A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:56:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:57327 "EHLO
+        id S233033AbiAGS4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:56:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28051 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232609AbiAGSzf (ORCPT
+        by vger.kernel.org with ESMTP id S232853AbiAGSzh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:55:35 -0500
+        Fri, 7 Jan 2022 13:55:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641581734;
+        s=mimecast20190719; t=1641581737;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7sR7vxFiOYbciG3psN0s0MKUOYhjv+lmlyP32oWRaOM=;
-        b=B2FGNS+QgOgE6VsmVbETpk572roL3PVexyNHSxcKo23y00Xh6b36Ucw3OKB0pELpGjh12q
-        EKC9rPC8nRybhhqyjOuRoE+2ESpZZR6Mr4Fsvg1lo4aVtBMGnrlbuYhx+3/Vdun3cRHpHY
-        WiCNg/1tE9cXLFqAK0JL/J/H3en/whw=
+        bh=Ms8oamnV9ATtAzyj0HE2k4dLqAn6UNVYQIiTNYGjoYQ=;
+        b=OjRIMBeKApyMO9RneD94ciRALxSgC0ozcddSnJzJW68szfVHZw0SqwBZuLKhaKp9Vykyfo
+        3IeCBrpPfOD8aK+9qbXejQhA8s4GU0ullkPghCGCrVub0TrR9pj/fkQEkGpsueRk0Btx8S
+        zE6TSbKkr7dGBraZfguqGut3dmZ7Ba8=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-NU2hTLGuP023zVUQ-zUuhA-1; Fri, 07 Jan 2022 13:55:31 -0500
-X-MC-Unique: NU2hTLGuP023zVUQ-zUuhA-1
+ us-mta-414-9mXsQg6TOd6q09GtKhJZKQ-1; Fri, 07 Jan 2022 13:55:33 -0500
+X-MC-Unique: 9mXsQg6TOd6q09GtKhJZKQ-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C32E618C9F50;
-        Fri,  7 Jan 2022 18:55:29 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7BFAB10168D1;
+        Fri,  7 Jan 2022 18:55:32 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F41C08CB2B;
-        Fri,  7 Jan 2022 18:55:28 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C26378CB2B;
+        Fri,  7 Jan 2022 18:55:31 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
         seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
         yang.zhong@intel.com
-Subject: [PATCH v6 18/21] kvm: x86: Add support for getting/setting expanded xstate buffer
-Date:   Fri,  7 Jan 2022 13:55:09 -0500
-Message-Id: <20220107185512.25321-19-pbonzini@redhat.com>
+Subject: [PATCH v6 21/21] kvm: x86: Disable interception for IA32_XFD on demand
+Date:   Fri,  7 Jan 2022 13:55:12 -0500
+Message-Id: <20220107185512.25321-22-pbonzini@redhat.com>
 In-Reply-To: <20220107185512.25321-1-pbonzini@redhat.com>
 References: <20220107185512.25321-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -52,278 +52,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guang Zeng <guang.zeng@intel.com>
+From: Kevin Tian <kevin.tian@intel.com>
 
-With KVM_CAP_XSAVE, userspace uses a hardcoded 4KB buffer to get/set
-xstate data from/to KVM. This doesn't work when dynamic xfeatures
-(e.g. AMX) are exposed to the guest as they require a larger buffer
-size.
+Always intercepting IA32_XFD causes non-negligible overhead when this
+register is updated frequently in the guest.
 
-Introduce a new capability (KVM_CAP_XSAVE2). Userspace VMM gets the
-required xstate buffer size via KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2).
-KVM_SET_XSAVE is extended to work with both legacy and new capabilities
-by doing properly-sized memdup_user() based on the guest fpu container.
-KVM_GET_XSAVE is kept for backward-compatible reason. Instead,
-KVM_GET_XSAVE2 is introduced under KVM_CAP_XSAVE2 as the preferred
-interface for getting xstate buffer (4KB or larger size) from KVM
-(Link: https://lkml.org/lkml/2021/12/15/510)
+Disable r/w emulation after intercepting the first WRMSR(IA32_XFD)
+with a non-zero value.
 
-Also, update the api doc with the new KVM_GET_XSAVE2 ioctl.
+Disable WRMSR emulation implies that IA32_XFD becomes out-of-sync
+with the software states in fpstate and the per-cpu xfd cache. This
+leads to two additional changes accordingly:
 
-Signed-off-by: Guang Zeng <guang.zeng@intel.com>
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Signed-off-by: Jing Liu <jing2.liu@intel.com>
+  - Call fpu_sync_guest_vmexit_xfd_state() after vm-exit to bring
+    software states back in-sync with the MSR, before handle_exit_irqoff()
+    is called.
+
+  - Always trap #NM once write interception is disabled for IA32_XFD.
+    The #NM exception is rare if the guest doesn't use dynamic
+    features. Otherwise, there is at most one exception per guest
+    task given a dynamic feature.
+
+p.s. We have confirmed that SDM is being revised to say that
+when setting IA32_XFD[18] the AMX register state is not guaranteed
+to be preserved. This clarification avoids adding mess for a creative
+guest which sets IA32_XFD[18]=1 before saving active AMX state to
+its own storage.
+
 Signed-off-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Jing Liu <jing2.liu@intel.com>
 Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Message-Id: <20220105123532.12586-19-yang.zhong@intel.com>
+Message-Id: <20220105123532.12586-22-yang.zhong@intel.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- Documentation/virt/kvm/api.rst  | 42 ++++++++++++++++++++++++++++--
- arch/x86/include/uapi/asm/kvm.h | 16 +++++++++++-
- arch/x86/kvm/cpuid.c            |  2 +-
- arch/x86/kvm/cpuid.h            |  2 ++
- arch/x86/kvm/x86.c              | 45 ++++++++++++++++++++++++++++++++-
- include/uapi/linux/kvm.h        |  4 +++
- 6 files changed, 106 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/kvm_host.h |  1 +
+ arch/x86/kvm/vmx/vmx.c          | 24 +++++++++++++++++++-----
+ arch/x86/kvm/vmx/vmx.h          |  2 +-
+ arch/x86/kvm/x86.c              |  8 ++++++++
+ 4 files changed, 29 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index f4ea5e41a4d0..d3791a14eb9a 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -1569,6 +1569,7 @@ otherwise it will return EBUSY error.
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 6cbf97a2ebc4..89d1fdb39c46 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -647,6 +647,7 @@ struct kvm_vcpu_arch {
+ 	u64 smi_count;
+ 	bool tpr_access_reporting;
+ 	bool xsaves_enabled;
++	bool xfd_no_write_intercept;
+ 	u64 ia32_xss;
+ 	u64 microcode_version;
+ 	u64 arch_capabilities;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index b8b7f5c7b3df..15e30602782b 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -162,6 +162,7 @@ static u32 vmx_possible_passthrough_msrs[MAX_POSSIBLE_PASSTHROUGH_MSRS] = {
+ 	MSR_FS_BASE,
+ 	MSR_GS_BASE,
+ 	MSR_KERNEL_GS_BASE,
++	MSR_IA32_XFD,
+ 	MSR_IA32_XFD_ERR,
+ #endif
+ 	MSR_IA32_SYSENTER_CS,
+@@ -764,10 +765,11 @@ void vmx_update_exception_bitmap(struct kvm_vcpu *vcpu)
+ 	}
  
-   struct kvm_xsave {
- 	__u32 region[1024];
-+	__u32 extra[0];
-   };
+ 	/*
+-	 * Trap #NM if guest xfd contains a non-zero value so guest XFD_ERR
+-	 * can be saved timely.
++	 * Disabling xfd interception indicates that dynamic xfeatures
++	 * might be used in the guest. Always trap #NM in this case
++	 * to save guest xfd_err timely.
+ 	 */
+-	if (vcpu->arch.guest_fpu.fpstate->xfd)
++	if (vcpu->arch.xfd_no_write_intercept)
+ 		eb |= (1u << NM_VECTOR);
  
- This ioctl would copy current vcpu's xsave struct to the userspace.
-@@ -1577,7 +1578,7 @@ This ioctl would copy current vcpu's xsave struct to the userspace.
- 4.43 KVM_SET_XSAVE
- ------------------
+ 	vmcs_write32(EXCEPTION_BITMAP, eb);
+@@ -1978,9 +1980,21 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 		break;
+ 	case MSR_IA32_XFD:
+ 		ret = kvm_set_msr_common(vcpu, msr_info);
+-		/* Update #NM interception according to guest xfd */
+-		if (!ret)
++		/*
++		 * Always intercepting WRMSR could incur non-negligible
++		 * overhead given xfd might be changed frequently in
++		 * guest context switch. Disable write interception
++		 * upon the first write with a non-zero value (indicating
++		 * potential usage on dynamic xfeatures). Also update
++		 * exception bitmap to trap #NM for proper virtualization
++		 * of guest xfd_err.
++		 */
++		if (!ret && data) {
++			vmx_disable_intercept_for_msr(vcpu, MSR_IA32_XFD,
++						      MSR_TYPE_RW);
++			vcpu->arch.xfd_no_write_intercept = true;
+ 			vmx_update_exception_bitmap(vcpu);
++		}
+ 		break;
+ #endif
+ 	case MSR_IA32_SYSENTER_CS:
+diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
+index 69dd2f85abdc..f8fc7441baea 100644
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -349,7 +349,7 @@ struct vcpu_vmx {
+ 	struct lbr_desc lbr_desc;
  
--:Capability: KVM_CAP_XSAVE
-+:Capability: KVM_CAP_XSAVE and KVM_CAP_XSAVE2
- :Architectures: x86
- :Type: vcpu ioctl
- :Parameters: struct kvm_xsave (in)
-@@ -1588,9 +1589,18 @@ This ioctl would copy current vcpu's xsave struct to the userspace.
- 
-   struct kvm_xsave {
- 	__u32 region[1024];
-+	__u32 extra[0];
-   };
- 
--This ioctl would copy userspace's xsave struct to the kernel.
-+This ioctl would copy userspace's xsave struct to the kernel. It copies
-+as many bytes as are returned by KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2),
-+when invoked on the vm file descriptor. The size value returned by
-+KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2) will always be at least 4096.
-+Currently, it is only greater than 4096 if a dynamic feature has been
-+enabled with ``arch_prctl()``, but this may change in the future.
-+
-+The offsets of the state save areas in struct kvm_xsave follow the
-+contents of CPUID leaf 0xD on the host.
- 
- 
- 4.44 KVM_GET_XCRS
-@@ -5535,6 +5545,34 @@ the trailing ``'\0'``, is indicated by ``name_size`` in the header.
- The Stats Data block contains an array of 64-bit values in the same order
- as the descriptors in Descriptors block.
- 
-+4.42 KVM_GET_XSAVE2
-+------------------
-+
-+:Capability: KVM_CAP_XSAVE2
-+:Architectures: x86
-+:Type: vcpu ioctl
-+:Parameters: struct kvm_xsave (out)
-+:Returns: 0 on success, -1 on error
-+
-+
-+::
-+
-+  struct kvm_xsave {
-+	__u32 region[1024];
-+	__u32 extra[0];
-+  };
-+
-+This ioctl would copy current vcpu's xsave struct to the userspace. It
-+copies as many bytes as are returned by KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2)
-+when invoked on the vm file descriptor. The size value returned by
-+KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2) will always be at least 4096.
-+Currently, it is only greater than 4096 if a dynamic feature has been
-+enabled with ``arch_prctl()``, but this may change in the future.
-+
-+The offsets of the state save areas in struct kvm_xsave follow the contents
-+of CPUID leaf 0xD on the host.
-+
-+
- 5. The kvm_run structure
- ========================
- 
-diff --git a/arch/x86/include/uapi/asm/kvm.h b/arch/x86/include/uapi/asm/kvm.h
-index 5a776a08f78c..2da3316bb559 100644
---- a/arch/x86/include/uapi/asm/kvm.h
-+++ b/arch/x86/include/uapi/asm/kvm.h
-@@ -373,9 +373,23 @@ struct kvm_debugregs {
- 	__u64 reserved[9];
- };
- 
--/* for KVM_CAP_XSAVE */
-+/* for KVM_CAP_XSAVE and KVM_CAP_XSAVE2 */
- struct kvm_xsave {
-+	/*
-+	 * KVM_GET_XSAVE2 and KVM_SET_XSAVE write and read as many bytes
-+	 * as are returned by KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2)
-+	 * respectively, when invoked on the vm file descriptor.
-+	 *
-+	 * The size value returned by KVM_CHECK_EXTENSION(KVM_CAP_XSAVE2)
-+	 * will always be at least 4096. Currently, it is only greater
-+	 * than 4096 if a dynamic feature has been enabled with
-+	 * ``arch_prctl()``, but this may change in the future.
-+	 *
-+	 * The offsets of the state save areas in struct kvm_xsave follow
-+	 * the contents of CPUID leaf 0xD on the host.
-+	 */
- 	__u32 region[1024];
-+	__u32 extra[0];
- };
- 
- #define KVM_MAX_XCRS	16
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index ba4c3d5d2386..c55e57b30e81 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -32,7 +32,7 @@
- u32 kvm_cpu_caps[NR_KVM_CPU_CAPS] __read_mostly;
- EXPORT_SYMBOL_GPL(kvm_cpu_caps);
- 
--static u32 xstate_required_size(u64 xstate_bv, bool compacted)
-+u32 xstate_required_size(u64 xstate_bv, bool compacted)
- {
- 	int feature_bit = 0;
- 	u32 ret = XSAVE_HDR_SIZE + XSAVE_HDR_OFFSET;
-diff --git a/arch/x86/kvm/cpuid.h b/arch/x86/kvm/cpuid.h
-index c99edfff7f82..8a770b481d9d 100644
---- a/arch/x86/kvm/cpuid.h
-+++ b/arch/x86/kvm/cpuid.h
-@@ -30,6 +30,8 @@ int kvm_vcpu_ioctl_get_cpuid2(struct kvm_vcpu *vcpu,
- bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
- 	       u32 *ecx, u32 *edx, bool exact_only);
- 
-+u32 xstate_required_size(u64 xstate_bv, bool compacted);
-+
- int cpuid_query_maxphyaddr(struct kvm_vcpu *vcpu);
- u64 kvm_vcpu_reserved_gpa_bits_raw(struct kvm_vcpu *vcpu);
- 
+ 	/* Save desired MSR intercept (read: pass-through) state */
+-#define MAX_POSSIBLE_PASSTHROUGH_MSRS	14
++#define MAX_POSSIBLE_PASSTHROUGH_MSRS	15
+ 	struct {
+ 		DECLARE_BITMAP(read, MAX_POSSIBLE_PASSTHROUGH_MSRS);
+ 		DECLARE_BITMAP(write, MAX_POSSIBLE_PASSTHROUGH_MSRS);
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 993eee6451ea..bde18ca657db 100644
+index bde18ca657db..60da2331ec32 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -4314,6 +4314,14 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 		else
- 			r = 0;
- 		break;
-+	case KVM_CAP_XSAVE2: {
-+		u64 guest_perm = xstate_get_guest_group_perm();
-+
-+		r = xstate_required_size(supported_xcr0 & guest_perm, false);
-+		if (r < sizeof(struct kvm_xsave))
-+			r = sizeof(struct kvm_xsave);
-+		break;
-+	}
- 	default:
- 		break;
- 	}
-@@ -4917,6 +4925,16 @@ static void kvm_vcpu_ioctl_x86_get_xsave(struct kvm_vcpu *vcpu,
- 				       vcpu->arch.pkru);
- }
+@@ -10083,6 +10083,14 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+ 	vcpu->mode = OUTSIDE_GUEST_MODE;
+ 	smp_wmb();
  
-+static void kvm_vcpu_ioctl_x86_get_xsave2(struct kvm_vcpu *vcpu,
-+					  u8 *state, unsigned int size)
-+{
-+	if (fpstate_is_confidential(&vcpu->arch.guest_fpu))
-+		return;
++	/*
++	 * Sync xfd before calling handle_exit_irqoff() which may
++	 * rely on the fact that guest_fpu::xfd is up-to-date (e.g.
++	 * in #NM irqoff handler).
++	 */
++	if (vcpu->arch.xfd_no_write_intercept)
++		fpu_sync_guest_vmexit_xfd_state();
 +
-+	fpu_copy_guest_fpstate_to_uabi(&vcpu->arch.guest_fpu,
-+				       state, size, vcpu->arch.pkru);
-+}
-+
- static int kvm_vcpu_ioctl_x86_set_xsave(struct kvm_vcpu *vcpu,
- 					struct kvm_xsave *guest_xsave)
- {
-@@ -5370,6 +5388,10 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
- 		break;
- 	}
- 	case KVM_GET_XSAVE: {
-+		r = -EINVAL;
-+		if (vcpu->arch.guest_fpu.uabi_size > sizeof(struct kvm_xsave))
-+			break;
-+
- 		u.xsave = kzalloc(sizeof(struct kvm_xsave), GFP_KERNEL_ACCOUNT);
- 		r = -ENOMEM;
- 		if (!u.xsave)
-@@ -5384,7 +5406,9 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
- 		break;
- 	}
- 	case KVM_SET_XSAVE: {
--		u.xsave = memdup_user(argp, sizeof(*u.xsave));
-+		int size = vcpu->arch.guest_fpu.uabi_size;
-+
-+		u.xsave = memdup_user(argp, size);
- 		if (IS_ERR(u.xsave)) {
- 			r = PTR_ERR(u.xsave);
- 			goto out_nofree;
-@@ -5393,6 +5417,25 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
- 		r = kvm_vcpu_ioctl_x86_set_xsave(vcpu, u.xsave);
- 		break;
- 	}
-+
-+	case KVM_GET_XSAVE2: {
-+		int size = vcpu->arch.guest_fpu.uabi_size;
-+
-+		u.xsave = kzalloc(size, GFP_KERNEL_ACCOUNT);
-+		r = -ENOMEM;
-+		if (!u.xsave)
-+			break;
-+
-+		kvm_vcpu_ioctl_x86_get_xsave2(vcpu, u.buffer, size);
-+
-+		r = -EFAULT;
-+		if (copy_to_user(argp, u.xsave, size))
-+			break;
-+
-+		r = 0;
-+		break;
-+	}
-+
- 	case KVM_GET_XCRS: {
- 		u.xcrs = kzalloc(sizeof(struct kvm_xcrs), GFP_KERNEL_ACCOUNT);
- 		r = -ENOMEM;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index fbfd70d965c6..9563d294f181 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1132,6 +1132,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_ARM_MTE 205
- #define KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM 206
- #define KVM_CAP_VM_GPA_BITS 207
-+#define KVM_CAP_XSAVE2 208
+ 	static_call(kvm_x86_handle_exit_irqoff)(vcpu);
  
- #ifdef KVM_CAP_IRQ_ROUTING
- 
-@@ -1622,6 +1623,9 @@ struct kvm_enc_region {
- #define KVM_S390_NORMAL_RESET	_IO(KVMIO,   0xc3)
- #define KVM_S390_CLEAR_RESET	_IO(KVMIO,   0xc4)
- 
-+/* Available with KVM_CAP_XSAVE2 */
-+#define KVM_GET_XSAVE2		  _IOR(KVMIO,  0xcf, struct kvm_xsave)
-+
- struct kvm_s390_pv_sec_parm {
- 	__u64 origin;
- 	__u64 length;
+ 	if (vcpu->arch.guest_fpu.xfd_err)
 -- 
 2.31.1
-
 
