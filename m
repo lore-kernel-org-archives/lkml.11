@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9444C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:55:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F28F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:55:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiAGSzX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:55:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60654 "EHLO
+        id S231715AbiAGSzZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:55:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:44666 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231202AbiAGSzW (ORCPT
+        by vger.kernel.org with ESMTP id S230450AbiAGSzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 13:55:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641581718;
+        s=mimecast20190719; t=1641581720;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+3+EjMImidl9Lu9LCLBcfnoGdya+H44S/UpDLAGKtus=;
-        b=CJJwt+Grd3gXSRsOQJ2YLAmL1cjmM9lwGZxynOfgZPqoosvo0LIHEZhfvCygQkigWQ+vob
-        qBv0BCx4bPAJvYiL29ZTPO2oP/fqZM9W4lJuYYd0Z+cdctV1UTKPnlTERZhYiTmKP0bOzZ
-        lqxKdAaN+voGMC1j/8StrjDRdvDMEXM=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GTmVXVKmtdUy1XUL8CFeXbKtrEh0nbgpDf8coZp8Rr4=;
+        b=DH0vVQQIM4Am17eRD2OIKXOSbiN4Ji6+6uu6l5gQDG9z1QU0Po8ZwqVWp+K0jMiJEXp669
+        7/xvuEOKySUJFecv/J9OdliuJKZvTx4+FAsdMoxUlzhfpWlk6DY5BmGbnAIEcFkHzGmyXo
+        QrWWSzYsQ6q0jz50laduKlQco0VxiHk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-eyRDmh6XMBaaBr05XTclEw-1; Fri, 07 Jan 2022 13:55:15 -0500
-X-MC-Unique: eyRDmh6XMBaaBr05XTclEw-1
+ us-mta-473-WjgTdnbyOy2gEsjpochcLQ-1; Fri, 07 Jan 2022 13:55:17 -0500
+X-MC-Unique: WjgTdnbyOy2gEsjpochcLQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3E37264A7B;
-        Fri,  7 Jan 2022 18:55:14 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 009A5101F000;
+        Fri,  7 Jan 2022 18:55:16 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 323F9838FF;
-        Fri,  7 Jan 2022 18:55:13 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C8C1838DD;
+        Fri,  7 Jan 2022 18:55:15 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
         seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
         yang.zhong@intel.com
-Subject: [PATCH v6 00/21] AMX support for KVM
-Date:   Fri,  7 Jan 2022 13:54:51 -0500
-Message-Id: <20220107185512.25321-1-pbonzini@redhat.com>
+Subject: [PATCH v6 02/21] x86/fpu: Prepare guest FPU for dynamically enabled FPU features
+Date:   Fri,  7 Jan 2022 13:54:53 -0500
+Message-Id: <20220107185512.25321-3-pbonzini@redhat.com>
+In-Reply-To: <20220107185512.25321-1-pbonzini@redhat.com>
+References: <20220107185512.25321-1-pbonzini@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
@@ -49,77 +52,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are the final patches that I am committing.  They are the
-same as v5 except for some cosmetic changes in patch 7 that
-remove the need for the IS_ENABLED(CONFIG_X86_64) check, and
-a rebase on top of kvm/next.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Paolo
+To support dynamically enabled FPU features for guests prepare the guest
+pseudo FPU container to keep track of the currently enabled xfeatures and
+the guest permissions.
 
-Guang Zeng (1):
-  kvm: x86: Add support for getting/setting expanded xstate buffer
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jing Liu <jing2.liu@intel.com>
+Signed-off-by: Yang Zhong <yang.zhong@intel.com>
+Message-Id: <20220105123532.12586-3-yang.zhong@intel.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/include/asm/fpu/types.h | 13 +++++++++++++
+ arch/x86/kernel/fpu/core.c       | 26 +++++++++++++++++++++++++-
+ 2 files changed, 38 insertions(+), 1 deletion(-)
 
-Jing Liu (11):
-  kvm: x86: Fix xstate_required_size() to follow XSTATE alignment rule
-  kvm: x86: Exclude unpermitted xfeatures at KVM_GET_SUPPORTED_CPUID
-  x86/fpu: Make XFD initialization in __fpstate_reset() a function
-    argument
-  kvm: x86: Enable dynamic xfeatures at KVM_SET_CPUID2
-  kvm: x86: Add emulation for IA32_XFD
-  x86/fpu: Prepare xfd_err in struct fpu_guest
-  kvm: x86: Intercept #NM for saving IA32_XFD_ERR
-  kvm: x86: Emulate IA32_XFD_ERR for guest
-  kvm: x86: Disable RDMSR interception of IA32_XFD_ERR
-  kvm: x86: Add XCR0 support for Intel AMX
-  kvm: x86: Add CPUID support for Intel AMX
-
-Kevin Tian (2):
-  x86/fpu: Provide fpu_update_guest_xfd() for IA32_XFD emulation
-  kvm: x86: Disable interception for IA32_XFD on demand
-
-Sean Christopherson (1):
-  x86/fpu: Provide fpu_enable_guest_xfd_features() for KVM
-
-Thomas Gleixner (5):
-  x86/fpu: Extend fpu_xstate_prctl() with guest permissions
-  x86/fpu: Prepare guest FPU for dynamically enabled FPU features
-  x86/fpu: Add guest support to xfd_enable_feature()
-  x86/fpu: Add uabi_size to guest_fpu
-  x86/fpu: Provide fpu_sync_guest_vmexit_xfd_state()
-
-Wei Wang (1):
-  kvm: selftests: Add support for KVM_CAP_XSAVE2
-
- Documentation/virt/kvm/api.rst                |  46 +++++-
- arch/x86/include/asm/cpufeatures.h            |   2 +
- arch/x86/include/asm/fpu/api.h                |  11 ++
- arch/x86/include/asm/fpu/types.h              |  32 ++++
- arch/x86/include/asm/kvm_host.h               |   1 +
- arch/x86/include/uapi/asm/kvm.h               |  16 +-
- arch/x86/include/uapi/asm/prctl.h             |  26 ++--
- arch/x86/kernel/fpu/core.c                    |  99 +++++++++++-
- arch/x86/kernel/fpu/xstate.c                  | 147 +++++++++++-------
- arch/x86/kernel/fpu/xstate.h                  |  19 ++-
- arch/x86/kernel/process.c                     |   2 +
- arch/x86/kvm/cpuid.c                          |  86 +++++++---
- arch/x86/kvm/cpuid.h                          |   2 +
- arch/x86/kvm/vmx/vmcs.h                       |   5 +
- arch/x86/kvm/vmx/vmx.c                        |  68 ++++++++
- arch/x86/kvm/vmx/vmx.h                        |   2 +-
- arch/x86/kvm/x86.c                            | 112 ++++++++++++-
- include/uapi/linux/kvm.h                      |   4 +
- tools/arch/x86/include/uapi/asm/kvm.h         |  16 +-
- tools/include/uapi/linux/kvm.h                |   3 +
- .../selftests/kvm/include/kvm_util_base.h     |   2 +
- .../selftests/kvm/include/x86_64/processor.h  |  10 ++
- tools/testing/selftests/kvm/lib/kvm_util.c    |  32 ++++
- .../selftests/kvm/lib/x86_64/processor.c      |  67 +++++++-
- .../testing/selftests/kvm/x86_64/evmcs_test.c |   2 +-
- tools/testing/selftests/kvm/x86_64/smm_test.c |   2 +-
- .../testing/selftests/kvm/x86_64/state_test.c |   2 +-
- .../kvm/x86_64/vmx_preemption_timer_test.c    |   2 +-
- 28 files changed, 711 insertions(+), 107 deletions(-)
-
+diff --git a/arch/x86/include/asm/fpu/types.h b/arch/x86/include/asm/fpu/types.h
+index 6ddf80637697..c752d0aa23a4 100644
+--- a/arch/x86/include/asm/fpu/types.h
++++ b/arch/x86/include/asm/fpu/types.h
+@@ -504,6 +504,19 @@ struct fpu {
+  * Guest pseudo FPU container
+  */
+ struct fpu_guest {
++	/*
++	 * @xfeatures:			xfeature bitmap of features which are
++	 *				currently enabled for the guest vCPU.
++	 */
++	u64				xfeatures;
++
++	/*
++	 * @perm:			xfeature bitmap of features which are
++	 *				permitted to be enabled for the guest
++	 *				vCPU.
++	 */
++	u64				perm;
++
+ 	/*
+ 	 * @fpstate:			Pointer to the allocated guest fpstate
+ 	 */
+diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+index ab19b3d8b2f7..eddeeb4ed2f5 100644
+--- a/arch/x86/kernel/fpu/core.c
++++ b/arch/x86/kernel/fpu/core.c
+@@ -201,6 +201,26 @@ void fpu_reset_from_exception_fixup(void)
+ #if IS_ENABLED(CONFIG_KVM)
+ static void __fpstate_reset(struct fpstate *fpstate);
+ 
++static void fpu_init_guest_permissions(struct fpu_guest *gfpu)
++{
++	struct fpu_state_perm *fpuperm;
++	u64 perm;
++
++	if (!IS_ENABLED(CONFIG_X86_64))
++		return;
++
++	spin_lock_irq(&current->sighand->siglock);
++	fpuperm = &current->group_leader->thread.fpu.guest_perm;
++	perm = fpuperm->__state_perm;
++
++	/* First fpstate allocation locks down permissions. */
++	WRITE_ONCE(fpuperm->__state_perm, perm | FPU_GUEST_PERM_LOCKED);
++
++	spin_unlock_irq(&current->sighand->siglock);
++
++	gfpu->perm = perm & ~FPU_GUEST_PERM_LOCKED;
++}
++
+ bool fpu_alloc_guest_fpstate(struct fpu_guest *gfpu)
+ {
+ 	struct fpstate *fpstate;
+@@ -216,7 +236,11 @@ bool fpu_alloc_guest_fpstate(struct fpu_guest *gfpu)
+ 	fpstate->is_valloc	= true;
+ 	fpstate->is_guest	= true;
+ 
+-	gfpu->fpstate = fpstate;
++	gfpu->fpstate		= fpstate;
++	gfpu->xfeatures		= fpu_user_cfg.default_features;
++	gfpu->perm		= fpu_user_cfg.default_features;
++	fpu_init_guest_permissions(gfpu);
++
+ 	return true;
+ }
+ EXPORT_SYMBOL_GPL(fpu_alloc_guest_fpstate);
 -- 
 2.31.1
+
 
