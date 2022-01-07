@@ -2,121 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8A77C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D355C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240967AbiAGSVe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:21:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25445 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240926AbiAGSVX (ORCPT
+        id S240882AbiAGSY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240357AbiAGSY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:21:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641579681;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=y6HZu8WA2ydj4C6Y+yks4Ifx8Vim2n8c4t7+gsJ4hSQ=;
-        b=MlLommlk4W2f6ZpdG/2V/bj62CMI1NgA14JWcScYYg6PWXhXcwnymLeTG1CAoQVBKIOpLq
-        oQzSy8Lc72fRI/FXnraxIO+uDw+fCNQGCnOwallnVAzPu4SOkDaLj0eg0ZpcprBcQZKwY4
-        VGBImDTLuR6dq6yACaAnvLGeVmnT/hY=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-573-PWA91jP2MdOpNuzAHR4t-g-1; Fri, 07 Jan 2022 13:18:10 -0500
-X-MC-Unique: PWA91jP2MdOpNuzAHR4t-g-1
-Received: by mail-ed1-f71.google.com with SMTP id g11-20020a056402090b00b003f8fd1ac475so5346300edz.1
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 10:18:10 -0800 (PST)
+        Fri, 7 Jan 2022 13:24:56 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF63C061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 10:24:56 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id e9so11144615wra.2
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 10:24:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aMZSPHzmKlp4nB0z4xKj0z3g/eSIybOBv9g3NZ7AxBc=;
+        b=quivSkBIqvYx7HHIhNcVzJMk1g2PqMCIZD1U/C28SoY52KIZVa5erqh7Ecy9Tc/uZY
+         xy4im3rnanh7XX52x+uEDm25eQrSTTTTbNHMWzskQJXewA8l7Hv96MPweGA/piN6vemc
+         QVv2Q40zjmLPAkJb+NzuKcX+moy8OXQKB+eokdpiJE08XFhpn0xuE9Y0PsEAAJd29Wem
+         7htfnQKkQ5q7zRBKjmd3VSX0H9hNVHQib++OsGrYO+xrumfrsa18w+sFaev6RmewTxf6
+         A22wpqc3XnTwBa1i+0U1Vw9ykX9ZeZVRW1vvsZybcWbe5bdOjkgO1PPHNCfPXIwgn5t/
+         H8SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=y6HZu8WA2ydj4C6Y+yks4Ifx8Vim2n8c4t7+gsJ4hSQ=;
-        b=ARZXzU4gF/0iwaM3FJXq1jrtutx9vvYmCwESBydaGhm/vgQj9VaIFmCTiB17njpO2G
-         WW7f/nQ78JQE2eJjHCyrc/mlvG6BSE+fSJ5UFtk+RLePd1zIrUOh/WPgvMYRRbnr4kPK
-         05t7mmnFRizKLdgWCSVaQ7Ma+O3qD/Nf2OW+Mt1QxnvHRPiLQhtAsbX4qD0k5lJS03JT
-         EclR/q/WhFeLJaoJb8EHopqhIUw6Kruolt3qBL+Zr75bYoRKYsb9wKjc0UzwptsDYSPa
-         R0Es8T+9/7T0UQJfFguu/i0PU5QPUW/L0GliQzW6Qlu0Lk48u9FjfUf1/pMkqXvmupJq
-         cyuA==
-X-Gm-Message-State: AOAM5333lMoabEcWg++HpQHHQAA8k/pYA7cq7+WoGLKzS3bjqMGyRiFy
-        4f3vsIf3C0o/gQcLn9APT9GN3Zpof1kCP0Nn6QEUhP6D/o0e9C88Vx0/g2OYdGxM6wDFsrDmQp+
-        HQ2zpiGlkfVE93gayujn1YmpB
-X-Received: by 2002:a17:906:70b:: with SMTP id y11mr2268931ejb.364.1641579489097;
-        Fri, 07 Jan 2022 10:18:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyDYZ4ZBWSaGG8/mC9MAYNxHC55ystbMPGoIQqQuf/pU64IeQg+E8G2TfiSfXyqRSl3ZUx0ag==
-X-Received: by 2002:a17:906:70b:: with SMTP id y11mr2268920ejb.364.1641579488887;
-        Fri, 07 Jan 2022 10:18:08 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id e18sm2229374edq.77.2022.01.07.10.18.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 10:18:08 -0800 (PST)
-Message-ID: <88aad2b3-8f60-fda4-15fb-81ea712c1dae@redhat.com>
-Date:   Fri, 7 Jan 2022 19:18:07 +0100
+        bh=aMZSPHzmKlp4nB0z4xKj0z3g/eSIybOBv9g3NZ7AxBc=;
+        b=X6oJj8svwLcnoeyOaAqf23cSHvFLllJh3MQ1wCCRVb7v6Z5p/6aNIUNuFTRMK9VL9v
+         ov7RJY/QDBDy7Jviyau60e5cg8d3tlQEeKyH06a7xlCvoI30DmNa3v7FKLxsMZv2rRI1
+         Iz3S8vWU30kjMjwspvqYZWfDtkWIVq6yotE4nJVFX8YtAjHJofPb8sBEHJ334BitxqUU
+         zKrcrEJEDMqmEjUU1salEcnaSf+uWbYjlchfg2C67i2vW0VAAKIl1GGmSu3uOeiP96h4
+         tiqC0QAmRaOzosN2MrVd0Fh4OIKVOPcE56776cSnjzP0A0v7xjJ8IZ86AUqR3NUmLUHP
+         SFsg==
+X-Gm-Message-State: AOAM532sfA2fx+mbNVsa3FOSmHF+6gia4gZ/0N9ZRIgCnH1EtuZ9WzZE
+        Dp1Cn2OIJRw4VwyGdb6zzwA=
+X-Google-Smtp-Source: ABdhPJxIMdZG2/mErKh1SRRIvGw8qzcobjoNHtD+/pns9H9ulLIrwuZ3L3ZaYlzt5h+xMKGoMXaS6g==
+X-Received: by 2002:a05:6000:2a9:: with SMTP id l9mr55607369wry.71.1641579894699;
+        Fri, 07 Jan 2022 10:24:54 -0800 (PST)
+Received: from localhost.localdomain ([217.113.240.86])
+        by smtp.gmail.com with ESMTPSA id g18sm5305938wrv.42.2022.01.07.10.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 10:24:54 -0800 (PST)
+From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
+To:     mturquette@baylibre.com
+Cc:     sboyd@kernel.org, matthias.bgg@gmail.com, ikjn@chromium.org,
+        chun-jie.chen@mediatek.com, weiyi.lu@mediatek.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Chen-Yu Tsai <wenst@chromium.org>
+Subject: [PATCH RESEND v2] clk: mediatek: Fix memory leaks on probe
+Date:   Fri,  7 Jan 2022 19:24:51 +0100
+Message-Id: <20220107182451.139456-1-jose.exposito89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] KVM: x86/pt: Do not advertise Intel PT Event Trace
- capability
-Content-Language: en-US
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220106085533.84356-1-likexu@tencent.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220106085533.84356-1-likexu@tencent.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/6/22 09:55, Like Xu wrote:
-> From: Like Xu <likexu@tencent.com>
-> 
-> The Inte PT Event Trace capability (Intel SDM Vol3, 32.2.4 Event Tracing)
-> is a new CPU feature that "exposes details about the asynchronous events,
-> when they are generated, and when their corresponding software event
-> handler completes execution".
-> 
-> It is not possible for KVM to emulate all events including interrupts,
-> VM exits, VM entries, INIT, SIPI events and etc. for guests and to
-> emulate the simultaneous writing of Control Flow Events and Event Data
-> packets generated by the KVM to the guest PT buffer.
-> 
-> For KVM, it is best not to advertise the Event Trace feature and just
-> let it be a system-wide-only tracing capability.
-> 
-> Signed-off-by: Like Xu <likexu@tencent.com>
-> ---
-> Off topic, other new PT features such as "PSB and PMI Preservation Supported"
-> and "TNT disable" are under investigation or awaiting host support to move on.
+Handle the error branches to free memory where required.
 
-Yeah, I think it's better to be safe and ignore _all_ unknown capabilities.
+Addresses-Coverity-ID: 1491825 ("Resource leak")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
 
-Paolo
+---
 
->   arch/x86/kvm/cpuid.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 0b920e12bb6d..1028c57377e9 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -901,6 +901,8 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
->   			break;
->   		}
->   
-> +		/* Not advertise Event Trace capability due to endless emulation */
-> +		entry->ebx &= ~BIT(7);
->   		for (i = 1, max_idx = entry->eax; i <= max_idx; ++i) {
->   			if (!do_host_cpuid(array, function, i))
->   				goto out;
+v2: Add Reviewed-by tag
+---
+ drivers/clk/mediatek/clk-mt8192.c | 36 +++++++++++++++++++++++++------
+ 1 file changed, 30 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/clk/mediatek/clk-mt8192.c b/drivers/clk/mediatek/clk-mt8192.c
+index cbc7c6dbe0f4..79ddb3cc0b98 100644
+--- a/drivers/clk/mediatek/clk-mt8192.c
++++ b/drivers/clk/mediatek/clk-mt8192.c
+@@ -1236,9 +1236,17 @@ static int clk_mt8192_infra_probe(struct platform_device *pdev)
+ 
+ 	r = mtk_clk_register_gates(node, infra_clks, ARRAY_SIZE(infra_clks), clk_data);
+ 	if (r)
+-		return r;
++		goto free_clk_data;
++
++	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	if (r)
++		goto free_clk_data;
++
++	return r;
+ 
+-	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++free_clk_data:
++	mtk_free_clk_data(clk_data);
++	return r;
+ }
+ 
+ static int clk_mt8192_peri_probe(struct platform_device *pdev)
+@@ -1253,9 +1261,17 @@ static int clk_mt8192_peri_probe(struct platform_device *pdev)
+ 
+ 	r = mtk_clk_register_gates(node, peri_clks, ARRAY_SIZE(peri_clks), clk_data);
+ 	if (r)
+-		return r;
++		goto free_clk_data;
++
++	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	if (r)
++		goto free_clk_data;
+ 
+-	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	return r;
++
++free_clk_data:
++	mtk_free_clk_data(clk_data);
++	return r;
+ }
+ 
+ static int clk_mt8192_apmixed_probe(struct platform_device *pdev)
+@@ -1271,9 +1287,17 @@ static int clk_mt8192_apmixed_probe(struct platform_device *pdev)
+ 	mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
+ 	r = mtk_clk_register_gates(node, apmixed_clks, ARRAY_SIZE(apmixed_clks), clk_data);
+ 	if (r)
+-		return r;
++		goto free_clk_data;
+ 
+-	return of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
++	if (r)
++		goto free_clk_data;
++
++	return r;
++
++free_clk_data:
++	mtk_free_clk_data(clk_data);
++	return r;
+ }
+ 
+ static const struct of_device_id of_match_clk_mt8192[] = {
+-- 
+2.25.1
 
