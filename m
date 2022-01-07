@@ -2,110 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42FC7C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:14:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343756AbiAGANk (ORCPT
+        id S1343797AbiAGAOD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 19:13:40 -0500
-Received: from mout.gmx.net ([212.227.15.19]:37655 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232819AbiAGANj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 19:13:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641514390;
-        bh=EyPi8Y3Gc+gTu2ILQBh3edI82bKKE2zEKRdiyUFahW4=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=RcqA07djH1Kg19mjjHZT9kQEF5PBB0i+eBHqAXaC6T9NjHBCkybTynF/giLuDnIBk
-         o1hL4kgES4Z+FDB0zoVkVRjNS/wyuVImH+OQgV2PL8ZzWlZMoLIAl+pPrvfVK52dtb
-         Xsa+hpVlC6iKG5amEr6vxBqPsdcEcJXZXxPodJTY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [0.0.0.0] ([149.28.201.231]) by mail.gmx.net (mrgmx005
- [212.227.17.184]) with ESMTPSA (Nemesis) id 1MStCe-1mxUEN0uR4-00UK15; Fri, 07
- Jan 2022 01:13:10 +0100
-Message-ID: <db88497c-ea17-27ca-6158-2a987acb7a1c@gmx.com>
-Date:   Fri, 7 Jan 2022 08:13:01 +0800
+        Thu, 6 Jan 2022 19:14:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343764AbiAGAOC (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 19:14:02 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5888C061245;
+        Thu,  6 Jan 2022 16:14:01 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so10320395pjj.2;
+        Thu, 06 Jan 2022 16:14:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bHp8KHmssnLYTaOK1agSupyvSqkjwpt0DTwhR+0qxuQ=;
+        b=OXC+WfjOI7Dw/780ZlSKKOJzpuyxzgwPvAn3vd5y6IIL5/USBcS/+EaFEydk/P9fQW
+         I8seI4B9zA0/MGxPODSkOM9ZDZRH+cO8KQ6b0oDrQXmRtDE/44L5wYuaL8ZxDwXL1G3K
+         b3XBMgo5lMG9hXK0h5wObvGX5v+4NIBh7krq4ad1ieKoJ4O1jP44XxoEhjGH9jcwJwhz
+         ty6BtKXTF2hpc/1tgHTjkmdSf8x0jYj8LiAj69jCG2AOoYo1Q2ZvMX496O7PmOjiBO3d
+         CXkf7I9yF7IPB7Qo40feEfYj8pP6Qk3Qido+AHnwlFaM4t/7xP77Vr+tN10CWwrCcs2S
+         m5Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=bHp8KHmssnLYTaOK1agSupyvSqkjwpt0DTwhR+0qxuQ=;
+        b=W6PyeQnI7bT3TaPL+fArsyh7GkTjV5XvwgDcj9uRqtGpWsHgYYKaGR0AW4D3ItVUKd
+         wXwH/eFzblQjL1onUl2fFFzTv5g7+Q5OJin5s5polciu54O+BXKAQJTa7nnAEKUhuCT4
+         DSzoj8LU+2d1ToNFJHfgw9vWfS7r9xMa22DX0JsCImDGztiGUjUbWUXhk144yTaO2QPy
+         n/bPmvjwscmJi+TrcAbPJaRhNTGp/eaBrsfW2x5D5FgW0mXAegr3GPYQ0rcsdaUv+Olq
+         0OuTYbNOjZ75+peZFWyT8RPszGK5splPzHC7aiQTUVDP78IJsglldZ1z9Bn2EoZKMpEr
+         H5Hw==
+X-Gm-Message-State: AOAM530zngTVuBHh8Bmjj+wj1M3tRVuyBg6xM5APjmRIz0/NrLbARa2i
+        1a53bGryg1ZlY7MLV6hvPOE=
+X-Google-Smtp-Source: ABdhPJxs5ngIS8diKlG5kij1EnlAAnRL98ICjCAo5rn2ZWpvA4FWNRG7fhGUSWexig/0VqQWjrMFHQ==
+X-Received: by 2002:a17:903:300b:b0:149:f48b:e8b8 with SMTP id o11-20020a170903300b00b00149f48be8b8mr4420991pla.108.1641514441399;
+        Thu, 06 Jan 2022 16:14:01 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y3sm3301906pju.37.2022.01.06.16.13.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 16:14:00 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-mtd@lists.infradead.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Colin Ian King <colin.king@intel.com>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-wireless@vger.kernel.org (open list:BROADCOM SPECIFIC AMBA DRIVER
+        (BCMA)),
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM STB NAND
+        FLASH DRIVER)
+Subject: [PATCH v2 0/9] BCMA support for brcmnand
+Date:   Thu,  6 Jan 2022 16:13:19 -0800
+Message-Id: <20220107001328.2233896-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] fs: btrfs: Disable BTRFS on platforms having 256K pages
-Content-Language: en-US
-To:     Neal Gompa <ngompa13@gmail.com>
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
-        linux-hexagon@vger.kernel.org, Hector Martin <marcan@marcan.st>
-References: <a16c31f3caf448dda5d9315e056585b6fafc22c5.1623302442.git.christophe.leroy@csgroup.eu>
- <6c7a6762-6bec-842b-70b4-4a53297687d1@gmx.com>
- <CAEg-Je9UJDJ=hvLLqQDsHijWnxh1Z1CwaLKCFm+-bLTfCFingg@mail.gmail.com>
-From:   Qu Wenruo <quwenruo.btrfs@gmx.com>
-In-Reply-To: <CAEg-Je9UJDJ=hvLLqQDsHijWnxh1Z1CwaLKCFm+-bLTfCFingg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:anCYYKhzpZMxqykyFCq+8YxKtyr10cQ84WLxzimaPuneijGdCqz
- DCTt+qxKufcuCSCYh5BvF0kfQ7B0Ov4gS934FXjKQjR28CPsyZEYGntV8kpnaTxozhsyQRC
- PmkBHzOARVbxjBbf8Gsxv62DXHnI2kJv+jLn2ZfjzaKplUnXZJaOCfBKAPin1Ic1yimFXpN
- iHdKDG80XWbzbUv4D+TQg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:HhiphtxHIBA=:jKABz3jdZsxi6EwxEaeBRz
- /vugjzSA51qNzCKgJwvYaZa2YSql73GgHl83okMs26BXff4nbudCZBsGEKWxwZXwfbG6X0RCc
- 7ZqRNly6LqVLWdgP03qj0D3t1BR7lzWByjCbE6zAdXaLVodjh6K75ihOiNQO2WBfyDz7qnmcX
- mlPLUhIFTKDlZU6FgKxB8bUHGLSNKRPnqaaBDPdzs7Rv+xggVOMbyz+/CfbrSRdQxnmiMXjTv
- dnsN+qmcMtklx2FKtAht9pdsgmGOB1HrHc5WUuGfOdEreSYKmRmjztIrtWoR9eHws0Dzbz7zN
- 465Xbz9zbOPnEfp4Y+8HhJe9S1QeBOD1Ex0TFoVfrA9TGaSgApBs9Po5dC8H2Ia0vAxmlqOWZ
- ik9jJHgVDg6m/6jPVQTF20+blPD1aQ8osdqUTz+8DROWqjJD2QzSHRTb9ZuGBQRW3lCkNJ1FK
- zkNrPJXv0xpY4Lx4oAlUZECuudUudNJNQv+/41YIb+DeMq51xYqYntsNRKMMdqEak/NhbtIdI
- e8VE4TVb/5f2Ylvu+6OD85RxjdcbVT5a9rq1YT0LAh/O899lnI00oz5NWppzgstdqCW/iD49R
- 8qTZ5bx3jU1NEDjnUH/7qFeX5V9UdB/HC4puVARS23Z7FFf7iZ+YtfV0Ga3wDYqcbDsUfWP75
- +3vXsOOZN7SgtMCI88jFddjtWd6RtMIX1NlXny5YhphJrOtSANWJstJp1qOuGKAYaoxx/MBMH
- 7GfknbMczRPnhbprQ1Z68yC1wTkUnOhBs3f5d60ruWjSoJcccxt/cles38CuRyuP3z8V/Sqzp
- 8V+3J6T7c7SaBTcXJjLCKVx/6jCZTK3rHzewI6iC04ioXD4TKgZGw8cGl8PYBf5JDzYYVp0if
- 4tc9RiHfvCrFnhJ3DFB3oLDICGDWS7OR5Spz19FI7sN6suUSGMjHvEkwIbd+SBoC7ZCKYle6L
- Er/fry33el3L1GNK6G4UH0ABvT5k0o1L1NUu9enWZ13N8Tg/QemjSkEm+ZlRXtPtIZLZGPP25
- DPa/jDJ6GD1G1N8iAXD8pf8hLJD1wYQ7ElBvUlj05p6amX4OB7/VyDfCFUE90ZyzHhB9yWgn2
- Hha+O/UqdMb8Nc=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi all,
 
+This patch series adds support for the BRCMNAND controller revision 3.4
+embedded in MIPS-based SoCs such as 5357, typically found in the Netgear
+WNR3500L v2 and other kinds of Wi-Fi routers. The upstream platform that
+uses this controller is under arch/mips/bcm47xx/ and does not use Device
+Tree (and probably never will by now). BCMA (Broadcom AMBA) is a special
+kind of discoverable memory mapped interface which requires the use of
+special accessors to read from/write to the hardware block.
 
-On 2022/1/7 00:31, Neal Gompa wrote:
-> On Wed, Jan 5, 2022 at 7:05 AM Qu Wenruo <quwenruo.btrfs@gmx.com> wrote:
->>
->> Hi Christophe,
->>
->> I'm recently enhancing the subpage support for btrfs, and my current
->> branch should solve the problem for btrfs to support larger page sizes.
->>
->> But unfortunately my current test environment can only provide page siz=
-e
->> with 64K or 4K, no 16K or 128K/256K support.
->>
->> Mind to test my new branch on 128K page size systems?
->> (256K page size support is still lacking though, which will be addresse=
-d
->> in the future)
->>
->> https://github.com/adam900710/linux/tree/metadata_subpage_switch
->>
->
-> The Linux Asahi folks have a 16K page environment (M1 Macs)...
+The integration of brcmnand into that SoC is a bit quirky in that every
+register offering byte level data about the flash (OOB, device ID, etc.)
+requires byte swapping. The command shift should also have been 24, but
+is in fact 0, took me a while to understand why no reads were actually
+working because of that.
 
-Su Yue kindly helped me testing 16K page size, and it's pretty OK there.
+This has been tested with Linux 5.10.82 and Linus' master with OpenWrt
+and confirmed that the squashfs + jffs2 overlay that OpenWrt creates is
+entirely functional and that written data is made persistent.
 
-So I'm not that concerned.
+Changes in v2:
 
-It's 128K page size that I'm a little concerned, and I have not machine
-supporting that large page size to do the test.
+- re-ordered the patch such that the soc variable is initialized as
+  early as possible
+- corrected bug in the conversion of brcmnand_init_cs() which
+  incorrectly used the wrong device_node variable (parent instead of
+  child)
+- took Andy's feedback to make the test for a valid interrupt to be > 0
+  while calling platform_get_irq_optional()
+- utilized static branch (disabled by default) and conditional
+  compilation and confirm with disassembly that the generated code is
+  as efficient as before if not enabling the BCMA shim and as efficient
+  as possible if enabling BCMA shim
+- updated BCMA shim driver descriptor, author and added helper function
+  to encapsulate the container_of usage
+- added comment to explain why a slightly different platform device name
+  is used for the 5357-style NAND controller
 
-Thanks,
-Qu
+Florian Fainelli (9):
+  mtd: rawnand: brcmnand: Assign soc as early as possible
+  mtd: rawnand: brcmnand: Allow SoC to provide I/O operations
+  mtd: rawnand: brcmnand: Avoid pdev in brcmnand_init_cs()
+  mtd: rawnand: brcmnand: Move OF operations out of brcmnand_init_cs()
+  mtd: rawnand: brcmnand: Allow working without interrupts
+  mtd: rawnand: brcmnand: Add platform data structure for BCMA
+  mtd: rawnand: brcmnand: Allow platform data instantation
+  mtd: rawnand: brcmnand: BCMA controller uses command shift of 0
+  mtd: rawnand: brcmnand: Add BCMA shim
 
->
-> Hector, could you look at it too?
->
->
->
+ MAINTAINERS                                 |   1 +
+ drivers/bcma/driver_chipcommon_nflash.c     |  20 ++-
+ drivers/mtd/nand/raw/Kconfig                |  13 ++
+ drivers/mtd/nand/raw/brcmnand/Makefile      |   2 +
+ drivers/mtd/nand/raw/brcmnand/bcma_nand.c   | 132 ++++++++++++++++
+ drivers/mtd/nand/raw/brcmnand/brcmnand.c    | 160 +++++++++++++-------
+ drivers/mtd/nand/raw/brcmnand/brcmnand.h    |  29 ++++
+ include/linux/bcma/bcma_driver_chipcommon.h |   5 +
+ include/linux/platform_data/brcmnand.h      |  12 ++
+ 9 files changed, 321 insertions(+), 53 deletions(-)
+ create mode 100644 drivers/mtd/nand/raw/brcmnand/bcma_nand.c
+ create mode 100644 include/linux/platform_data/brcmnand.h
+
+-- 
+2.25.1
+
