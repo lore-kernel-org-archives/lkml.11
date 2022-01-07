@@ -2,92 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2395AC43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 12:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EA4C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 12:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238288AbiAGMJG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 07:09:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231474AbiAGMJF (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 07:09:05 -0500
-Received: from smtp-8faa.mail.infomaniak.ch (smtp-8faa.mail.infomaniak.ch [IPv6:2001:1600:4:17::8faa])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0357AC061245
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 04:09:04 -0800 (PST)
-Received: from smtp-2-0000.mail.infomaniak.ch (unknown [10.5.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4JVhpP4dy5zMwpPR;
-        Fri,  7 Jan 2022 13:09:01 +0100 (CET)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4JVhpM0bdNzlhSMW;
-        Fri,  7 Jan 2022 13:08:58 +0100 (CET)
-Message-ID: <86c5010e-a926-023a-8915-d6605cfc4f0a@digikod.net>
-Date:   Fri, 7 Jan 2022 13:14:30 +0100
+        id S238366AbiAGMJn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 07:09:43 -0500
+Received: from mga06.intel.com ([134.134.136.31]:33735 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231474AbiAGMJm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 07:09:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641557382; x=1673093382;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ONVVAebltRAi6Zc1gaT7ckSeHNyIUvdQOS3c0wVuDT4=;
+  b=dSvVEqF+uj1kBbQmxM47u06nfkR31p2/9oHdxTkqHR9++qPcOMllwEQh
+   6WwzA6y/yPjE4na19JzwslZmHcoW5HCK2LSprdtJMN5MH7XRhIs5A/mDB
+   iA20Lt8XJJFckOQSPF9JsWUVb4ztzcnCEVnuZsgLz2lZpIIFdqhdtd6Q+
+   y12l6wdLNOLiBwqjzS+iu1vBZ7nMY40smhsNlHTZThOUxSFoR2y4EZeU6
+   L+q3bDr+gAZGsi6LqOzSG+jI0lP+gpsuqIrZfYeJ0PC4n/MA7utOtvngc
+   3MBbqY4suHmaMS9AdefsVY0HsKdSYZ/AKhgTruCK92uWIgiJCYo/NbJZQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="303602281"
+X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
+   d="scan'208";a="303602281"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 04:09:41 -0800
+X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
+   d="scan'208";a="575081146"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 04:09:38 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n5o2g-007Ml3-Cn;
+        Fri, 07 Jan 2022 14:08:22 +0200
+Date:   Fri, 7 Jan 2022 14:08:22 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dyoung@redhat.com, linux-doc@vger.kernel.org, bhe@redhat.com,
+        vgoyal@redhat.com, stern@rowland.harvard.edu,
+        akpm@linux-foundation.org, corbet@lwn.net, halves@canonical.com,
+        kernel@gpiccoli.net
+Subject: Re: [PATCH V2] notifier/panic: Introduce panic_notifier_filter
+Message-ID: <YdgtNvd68kWakErr@smile.fi.intel.com>
+References: <20220106200007.112357-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Eric Snowberg <eric.snowberg@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        James Morris <jmorris@namei.org>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@linux.microsoft.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Andreas Rammhold <andreas@rammhold.de>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>
-References: <20210712170313.884724-1-mic@digikod.net>
- <7e8d27da-b5d4-e42c-af01-5c03a7f36a6b@digikod.net> <YcGVZitNa23PCSFV@iki.fi>
- <5030a9ff-a1d1-a9bd-902a-77c3d1d87446@digikod.net> <Ydc/E3S2vmtDOnpw@iki.fi>
- <YddADJJNLDlQAYRW@iki.fi>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v8 0/5] Enable root to update the blacklist keyring
-In-Reply-To: <YddADJJNLDlQAYRW@iki.fi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220106200007.112357-1-gpiccoli@igalia.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jan 06, 2022 at 05:00:07PM -0300, Guilherme G. Piccoli wrote:
+> The kernel notifier infrastructure allows function callbacks to be
+> added in multiple lists, which are then called in the proper time,
+> like in a reboot or panic event. The panic_notifier_list specifically
+> contains the callbacks that are executed during a panic event. As any
+> other notifier list, the panic one has no filtering and all functions
+> previously registered are executed.
+> 
+> The kdump infrastructure, on the other hand, enables users to set
+> a crash kernel that is kexec'ed in a panic event, and vmcore/logs
+> are collected in such crash kernel. When kdump is set, by default
+> the panic notifiers are ignored - the kexec jumps to the crash kernel
+> before the list is checked and callbacks executed.
+> 
+> There are some cases though in which kdump users might want to
+> allow panic notifier callbacks to execute _before_ the kexec to
+> the crash kernel, for a variety of reasons - for example, users
+> may think kexec is very prone to fail and want to give a chance
+> to kmsg dumpers to run (and save logs using pstore), or maybe
+> some panic notifier is required to properly quiesce some hardware
+> that must be used to the crash kernel. For these cases, we have
+> the kernel parameter "crash_kexec_post_notifiers".
+> 
+> But there's a problem: currently it's an "all-or-nothing" situation,
+> the kdump user choice is either to execute all panic notifiers or
+> none of them. Given that panic notifiers may increase the risk of a
+> kdump failure, this is a tough decision and may affect the debug of
+> hard to reproduce bugs, if for some reason the user choice is to
+> enable panic notifiers, but kdump then fails.
+> 
+> So, this patch aims to ease this decision: we hereby introduce a filter
+> for the panic notifier list, in which users may select specifically
+> which callbacks they wish to run, allowing a safer kdump. The allowlist
+> should be provided using the parameter "panic_notifier_filter=a,b,..."
+> where a, b are valid callback names. Invalid symbols are discarded.
+> 
+> Currently up to 16 symbols may be passed in this list, we consider
+> that this numbers allows enough flexibility (and no matter what
+> architecture is used, at most 30 panic callbacks are registered).
+> In an experiment using a qemu x86 virtual machine, by default only
+> six callbacks are registered in the panic notifier list.
+> Once a valid callback name is provided in the list, such function
+> is allowed to be registered/unregistered in the panic_notifier_list;
+> all other panic callbacks are ignored. Notice that this filter is
+> only for the panic notifiers and has no effect in the other notifiers.
 
-On 06/01/2022 20:16, Jarkko Sakkinen wrote:
-> On Thu, Jan 06, 2022 at 09:12:22PM +0200, Jarkko Sakkinen wrote:
->> On Tue, Jan 04, 2022 at 04:56:36PM +0100, Mickaël Salaün wrote:
->>>
->>> On 21/12/2021 09:50, Jarkko Sakkinen wrote:
->>>> On Mon, Dec 13, 2021 at 04:30:29PM +0100, Mickaël Salaün wrote:
->>>>> Hi Jarkko,
->>>>>
->>>>> Since everyone seems OK with this and had plenty of time to complain, could
->>>>> you please take this patch series in your tree? It still applies on
->>>>> v5.16-rc5 and it is really important to us. Please let me know if you need
->>>>> something more.
->>>>>
->>>>> Regards,
->>>>>    Mickaël
->>>>
->>>> I'm off-work up until end of the year, i.e. I will address only important
->>>> bug fixes and v5.16 up until that.
->>>>
->>>> If any of the patches is yet missing my ack, feel free to
->>>>
->>>> Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
->>>
->>> Thanks Jarkko. Can you please take it into your tree?
->>
->> I can yes, as I need to anyway do a revised PR for v5.17, as one commit
->> in my first trial had a truncated fixes tag.
-> 
-> Please check:
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git
-> 
-> /Jarkko
+...
 
-Great, thanks!
+> +static int __init panic_notifier_filter_setup(char *buf)
+> +{
+> +	char *func;
+> +	unsigned long addr;
+> +
+> +	if (!buf)
+> +		return -EINVAL;
+> +
+> +	while (buf) {
+> +		func = strsep(&buf, ",");
+
+Don't we have a parser of this format already?
+Anyway, you may reduce code by
+
+	unsigned long addr;
+	char *func = buf;
+
+	while ((func = strsep(&func, ",")) {
+
+> +		addr = kallsyms_lookup_name(func);
+> +
+> +		if (!addr) {
+> +			pr_info("panic_notifier_filter: invalid symbol %s\n", func);
+> +			continue;
+> +		}
+> +
+> +		if (panic_nf_count < PANIC_NF_MAX) {
+> +			panic_nf_functions[panic_nf_count] = addr;
+> +			panic_nf_count++;
+> +			pr_debug("panic_notifier_filter: added symbol %s\n", func);
+> +		} else {
+> +			pr_warn("panic_notifier_filter: exceeded maximum notifiers (%d), aborting\n",
+> +				PANIC_NF_MAX);
+> +			panic_nf_count = 0;
+> +			break;
+> +		}
+> +	}
+> +
+> +	return 0;
+> +}
+> +early_param("panic_notifier_filter", panic_notifier_filter_setup);
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
