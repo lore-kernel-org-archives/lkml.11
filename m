@@ -2,73 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23032C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 16:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C238C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 16:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348262AbiAGQ2l (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 11:28:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50484 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239960AbiAGQ2j (ORCPT
+        id S239960AbiAGQ3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 11:29:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239628AbiAGQ3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 11:28:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7402F611F9;
-        Fri,  7 Jan 2022 16:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D96DC36AE0;
-        Fri,  7 Jan 2022 16:28:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641572918;
-        bh=O7GVv9TCvTOEnZXB0zu68wx7KxRZ3e86I7G552kyMiE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mGD0zNm46gvEqdY8RPEaVergHfJWrHy52ju6wMFl/W45ewHvn5P4Q3XVQufRMar1d
-         d8U76avrN7Uh/I71Ihy4tZ9D1yi2/7TCOTKVX5gAdRdHdRjkp6NjSmZEWjybrzYZEe
-         A/ysI0HpVRdTWw/iBJT394HBzB2kj0zZwgJdub64=
-Date:   Fri, 7 Jan 2022 17:28:36 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Thorsten Leemhuis <linux@leemhuis.info>
-Cc:     linux-doc@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        workflows@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: Re: [RFC PATCH v2 0/2] docs: add a text about regressions to the
- Linux kernel's documentation
-Message-ID: <YdhqNHI/f2B/SlcE@kroah.com>
-References: <cover.1641565030.git.linux@leemhuis.info>
+        Fri, 7 Jan 2022 11:29:40 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E12FAC061574;
+        Fri,  7 Jan 2022 08:29:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=GcFqA5Nnb1zJRXY+qvcog6WAKwd2jF9I/R9PGMCiTkU=; b=Y0CgoumE3veAWuJnfOlez+3TgA
+        ivc+AlotRu7VZKVJNLTkjyA82XGfh3gy6albDzXNSxtlNqIlWIMWWCDFHy6io1x05SWnnl45y5/OE
+        hOXx2KZyEYjCDl5wkWDlEiqF65jaHiieRGsRxeix3G4m3lRlcYBcYLlJpbkUDCzNuSP3Q7PZS7wU/
+        Pkwbmjd8KYoyIOEBpFpQxJyA6tN+sJGvQ91nl5EgMJ8CIFUxZNdjYdmpEZsfVWuUYlseRZ45l1pYj
+        zQ+rF5kRM8XiT2gXRvQ2yWgBMyP12v871beu7CO2n7UtozWubUXQZxa+dT5MQE2Klgq6A3wmWGRMM
+        wy3Nka8g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56616)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n5s7Q-0001ca-Fo; Fri, 07 Jan 2022 16:29:32 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n5s7P-00023E-Al; Fri, 07 Jan 2022 16:29:31 +0000
+Date:   Fri, 7 Jan 2022 16:29:31 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] of: net: Add helper function of_get_ethdev_label()
+Message-ID: <Ydhqa+9ya6nHsvLq@shell.armlinux.org.uk>
+References: <20220107161222.14043-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <cover.1641565030.git.linux@leemhuis.info>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220107161222.14043-1-pali@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 03:21:00PM +0100, Thorsten Leemhuis wrote:
-> 'We don't cause regressions' might be the first rule of Linux kernel
-> development, but it and other aspects of regressions nevertheless are hardly
-> described in the Linux kernel's documentation. The following two patches change
-> this by creating a document dedicated to the topic.
+On Fri, Jan 07, 2022 at 05:12:21PM +0100, Pali Rohár wrote:
+> Adds a new helper function of_get_ethdev_label() which sets initial name of
+> specified netdev interface based on DT "label" property. It is same what is
+> doing DSA function dsa_port_parse_of() for DSA ports.
 > 
-> The second patch could easily be folded into the first one, but was kept
-> separate, as it might be a bit controversial. This also allows the patch
-> description to explain some backgrounds for this part of the document.
-> Additionally, ACKs and Reviewed-by tags can be collected separately this way.
+> This helper function can be useful for drivers to make consistency between
+> DSA and netdev interface names.
 > 
-> v2/RFC:
-> - a lot of small fixes, most are for spelling mistakes and grammar
->   errors/problems pointed out in the review feedback I got so far
-> - add ACK for the series from Greg
+> Signed-off-by: Pali Rohár <pali@kernel.org>
 
-My ack seems not to be here :(
+Doesn't this also need a patch to update the DT binding document
+Documentation/devicetree/bindings/net/ethernet-controller.yaml ?
 
-Also, this is a "real" series, no need for a RFC anymore, right?
+Also it needs a covering message for the series, and a well thought
+out argument why this is required. Consistency with DSA probably
+isn't a good enough reason.
 
-thanks,
+From what I remember, there have been a number of network interface
+naming proposals over the years, and as you can see, none of them have
+been successful... but who knows what will happen this time.
 
-greg k-h
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
