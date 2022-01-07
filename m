@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88093C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234781AbiAGS40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:56:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:26958 "EHLO
+        id S234047AbiAGS4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:56:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29142 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232157AbiAGSzc (ORCPT
+        by vger.kernel.org with ESMTP id S231992AbiAGSza (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:55:32 -0500
+        Fri, 7 Jan 2022 13:55:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641581731;
+        s=mimecast20190719; t=1641581730;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=T5k8Bmv/mklbDMXmexJRv1iLpUYmOvn5juqSzR6MIG8=;
-        b=A+r5gksRmKBZTwnrmw7bsPBFm7/t7HogKNH7dkHJibO/hfJWeeRsQq3T3byAierBdI4hfm
-        6GNpFqOhMZ0Y65+nTx/wzmjkAodSxBRAt7aE6W256FgdNF/+cimcY4oG55m2T7gmI6UTRF
-        B+viGFslcZ8Wuf0sBX8oA837kBNT99M=
+        bh=dBNFKUgWKdCqor0H5VfFU85e88DSuI1/0lzNTJj8o5s=;
+        b=GBr1XB1YnbAPBrYjLxg304FXHAXPCmYhQZFty9vQoQ67tWXS4isyycOIFJgXFAbSxvX2La
+        xhzkgJhSl+TWzuoA0WJZp6SAgAcQBTLDVo3yh1r4KfQC8DYsVpT6KwNgOHrw5xhkMEQMm7
+        sSRPHKkDSO0lKeJvtruUIiEgVFVRYqU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-41-SVbKEfrkMdWCf16q7rTBHw-1; Fri, 07 Jan 2022 13:55:27 -0500
-X-MC-Unique: SVbKEfrkMdWCf16q7rTBHw-1
+ us-mta-178-kBlLH0JxPEymU_zJgXZaTw-1; Fri, 07 Jan 2022 13:55:25 -0500
+X-MC-Unique: kBlLH0JxPEymU_zJgXZaTw-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 18E5C64A7A;
-        Fri,  7 Jan 2022 18:55:26 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A60A418C9F40;
+        Fri,  7 Jan 2022 18:55:23 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 62E728D5BF;
-        Fri,  7 Jan 2022 18:55:25 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id EF0CE92FAF;
+        Fri,  7 Jan 2022 18:55:22 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
         seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
         yang.zhong@intel.com
-Subject: [PATCH v6 14/21] kvm: x86: Disable RDMSR interception of IA32_XFD_ERR
-Date:   Fri,  7 Jan 2022 13:55:05 -0500
-Message-Id: <20220107185512.25321-15-pbonzini@redhat.com>
+Subject: [PATCH v6 11/21] x86/fpu: Prepare xfd_err in struct fpu_guest
+Date:   Fri,  7 Jan 2022 13:55:02 -0500
+Message-Id: <20220107185512.25321-12-pbonzini@redhat.com>
 In-Reply-To: <20220107185512.25321-1-pbonzini@redhat.com>
 References: <20220107185512.25321-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,56 +54,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jing Liu <jing2.liu@intel.com>
 
-This saves one unnecessary VM-exit in guest #NM handler, given that the
-MSR is already restored with the guest value before the guest is resumed.
+When XFD causes an instruction to generate #NM, IA32_XFD_ERR
+contains information about which disabled state components are
+being accessed. The #NM handler is expected to check this
+information and then enable the state components by clearing
+IA32_XFD for the faulting task (if having permission).
 
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+If the XFD_ERR value generated in guest is consumed/clobbered
+by the host before the guest itself doing so, it may lead to
+non-XFD-related #NM treated as XFD #NM in host (due to non-zero
+value in XFD_ERR), or XFD-related #NM treated as non-XFD #NM in
+guest (XFD_ERR cleared by the host #NM handler).
+
+Introduce a new field in fpu_guest to save the guest xfd_err value.
+KVM is expected to save guest xfd_err before interrupt is enabled
+and restore it right before entering the guest (with interrupt
+disabled).
+
+Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Jing Liu <jing2.liu@intel.com>
 Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Message-Id: <20220105123532.12586-15-yang.zhong@intel.com>
+Message-Id: <20220105123532.12586-12-yang.zhong@intel.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 6 ++++++
- arch/x86/kvm/vmx/vmx.h | 2 +-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/fpu/types.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 84f6904cdb6e..b8b7f5c7b3df 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -162,6 +162,7 @@ static u32 vmx_possible_passthrough_msrs[MAX_POSSIBLE_PASSTHROUGH_MSRS] = {
- 	MSR_FS_BASE,
- 	MSR_GS_BASE,
- 	MSR_KERNEL_GS_BASE,
-+	MSR_IA32_XFD_ERR,
- #endif
- 	MSR_IA32_SYSENTER_CS,
- 	MSR_IA32_SYSENTER_ESP,
-@@ -7288,6 +7289,11 @@ static void vmx_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		}
- 	}
+diff --git a/arch/x86/include/asm/fpu/types.h b/arch/x86/include/asm/fpu/types.h
+index c752d0aa23a4..3795d0573773 100644
+--- a/arch/x86/include/asm/fpu/types.h
++++ b/arch/x86/include/asm/fpu/types.h
+@@ -517,6 +517,11 @@ struct fpu_guest {
+ 	 */
+ 	u64				perm;
  
-+	if (kvm_cpu_cap_has(X86_FEATURE_XFD))
-+		vmx_set_intercept_for_msr(vcpu, MSR_IA32_XFD_ERR, MSR_TYPE_R,
-+					  !guest_cpuid_has(vcpu, X86_FEATURE_XFD));
++	/*
++	 * @xfd_err:			Save the guest value.
++	 */
++	u64				xfd_err;
 +
-+
- 	set_cr4_guest_host_mask(vmx);
- 
- 	vmx_write_encls_bitmap(vcpu, NULL);
-diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-index 18111368cf85..69dd2f85abdc 100644
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -349,7 +349,7 @@ struct vcpu_vmx {
- 	struct lbr_desc lbr_desc;
- 
- 	/* Save desired MSR intercept (read: pass-through) state */
--#define MAX_POSSIBLE_PASSTHROUGH_MSRS	13
-+#define MAX_POSSIBLE_PASSTHROUGH_MSRS	14
- 	struct {
- 		DECLARE_BITMAP(read, MAX_POSSIBLE_PASSTHROUGH_MSRS);
- 		DECLARE_BITMAP(write, MAX_POSSIBLE_PASSTHROUGH_MSRS);
+ 	/*
+ 	 * @fpstate:			Pointer to the allocated guest fpstate
+ 	 */
 -- 
 2.31.1
 
