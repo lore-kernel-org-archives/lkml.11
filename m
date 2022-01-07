@@ -2,101 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CBE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346307AbiAGJAu (ORCPT
+        id S1346321AbiAGJCz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:00:50 -0500
-Received: from mga05.intel.com ([192.55.52.43]:19632 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236362AbiAGJAs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:00:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641546048; x=1673082048;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=j7A4O0UTzUY86Hb7QTpTewvFDFLlSiE7gOqw7j3u7a8=;
-  b=dWjtre8k2iTEpbdqPhucpmK9fEYHe2IE411Iaarot2jFNuistW8p4Ccv
-   DjXA7h1g1UdPAAjMAVr0vzR9ruXR0S8P85FTgmGAxTrrbSFuAzp+hSQ+Q
-   m8aWuAlE7RxLX0dggN0KExLJ/4MvXUTwzDcyg4fMqqbxPP8VtXjgHyLJD
-   kmwg73BPScf+ODhAyoHiv/NrvBJmWTE130P0BNHUAioSiDPckhxkrjit5
-   REFi3KB/N20TbFsqKHtpkgVvHPG6/IH5TyGHxKgN3PriVkR2ECMoF2B6S
-   Ccb366cQdWQEH/jcciKEuwClDyR01MDZQfdYjB47rdveqyUVaChT8dsTD
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="329179243"
-X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
-   d="scan'208";a="329179243"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 01:00:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,269,1635231600"; 
-   d="scan'208";a="612131053"
-Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Jan 2022 01:00:46 -0800
-Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5l77-000ITc-Pn; Fri, 07 Jan 2022 09:00:45 +0000
-Date:   Fri, 7 Jan 2022 17:00:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Collingbourne <pcc@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: mm/kasan/sw_tags.c:211:6: warning: no previous prototype for
- function 'kasan_tag_mismatch'
-Message-ID: <202201071631.N1iQYfX7-lkp@intel.com>
+        Fri, 7 Jan 2022 04:02:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39180 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236447AbiAGJCx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 04:02:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641546173;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CJchP5kOngEUoTXC4a4FHodWajBGnUqSRJ+6FN2eEDs=;
+        b=S5a7WvbxjR2nFOMopatoPuxdO+FL/gI/dk+n0qAcTF/w3CL86xD6JBHogLnIKXCyJehHTA
+        UOEsffVFazgkbl+cmsRlmYP7LAhGAwSlFIgRwfmD5REqgfkdozlE5lKxLSmQno9Sp/G66Q
+        882ysD8iJjVSmCkvm1P7xj67YJY3vho=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-402-qTWjSXsXPI2N_r5u5P17Jg-1; Fri, 07 Jan 2022 04:02:51 -0500
+X-MC-Unique: qTWjSXsXPI2N_r5u5P17Jg-1
+Received: by mail-wm1-f72.google.com with SMTP id b9-20020a7bc249000000b00347c5699809so311179wmj.1
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 01:02:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=CJchP5kOngEUoTXC4a4FHodWajBGnUqSRJ+6FN2eEDs=;
+        b=kLLutbGt95N/0EqAcpHoWEvp+jI6uN2SK9ZKaP2v7FtK+8ndknCwFBJShAptUwryd+
+         7MJUBtddzL2vcWxy7jAE8FZuinwXEbaxHHMI6jTE72gAB8zRQtXBjPg2sphnnxzIb6zb
+         POOYo1STnpsFbOk6BHyETBZD7qggOH5uzIWC55jJtOIzi0J+E6GClWEaWpyZLXaC1CUN
+         TZOCAvvrLmmpf/0uXF4/zmdbsS5iNO46Klg/0jpkJEK4jOxrEWbSwCteViC0WCneEyDz
+         fmUgKy09e5+D7XQ4TL8K6K0BEcgX8c6740adgIgWjk2iHIhpkPie3JWyYAcxQ4++Hwt4
+         CAaw==
+X-Gm-Message-State: AOAM530nGbQalxmwPDV0gBRPAvcxPkFev6VzxyjrQ+ZvmPMCWu82rIo/
+        WxSWHEmluH4oyASHpLLl3Uow+gB5qDkB6BhvEmcw3v/KAczJPcXIUaLqR/V8GEKB6qbAaJxBAAB
+        byd2Seow9sA17eiXWEGwi7Q/Xny707wyEJJNjSG9eQGI5J5tqmX/zWU01iEMV1rz7l2+TH2mXDj
+        GM
+X-Received: by 2002:a05:6000:18af:: with SMTP id b15mr54674608wri.616.1641546170662;
+        Fri, 07 Jan 2022 01:02:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyUgmSz+l/wRVwxeLTLElb+dNEm/Bi1KmSXD60E+b+hiSO3aMTKaLSf5ws/BZMiISGTJPusOQ==
+X-Received: by 2002:a05:6000:18af:: with SMTP id b15mr54674587wri.616.1641546170411;
+        Fri, 07 Jan 2022 01:02:50 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id y11sm4159245wrp.86.2022.01.07.01.02.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 01:02:49 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Igor Mammedov <imammedo@redhat.com>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+In-Reply-To: <87o84qpk7d.fsf@redhat.com>
+References: <20211122175818.608220-1-vkuznets@redhat.com>
+ <20211122175818.608220-3-vkuznets@redhat.com>
+ <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
+ <20211227183253.45a03ca2@redhat.com>
+ <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com>
+ <87mtkdqm7m.fsf@redhat.com> <20220103104057.4dcf7948@redhat.com>
+ <875yr1q8oa.fsf@redhat.com>
+ <ceb63787-b057-13db-4624-b430c51625f1@redhat.com>
+ <87o84qpk7d.fsf@redhat.com>
+Date:   Fri, 07 Jan 2022 10:02:49 +0100
+Message-ID: <877dbbq5om.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Peter,
+Vitaly Kuznetsov <vkuznets@redhat.com> writes:
 
-FYI, the error/warning still remains.
+> Paolo Bonzini <pbonzini@redhat.com> writes:
+>
+>> On 1/3/22 13:56, Vitaly Kuznetsov wrote:
+>>>   'allowlist' of things which can change (and put
+>>> *APICids there) and only fail KVM_SET_CPUID{,2} when we see something
+>>> else changing.
+>>
+>> We could also go the other way and only deny changes that result in 
+>> changed CPU caps.  That should be easier to implement since we have 
+>> already a mapping from CPU capability words to CPUID leaves and registers.
+>>
+>
+> Good idea, I'll look into it (if noone beats me to it).
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   ddec8ed2d4905d0967ce2ec432e440e582aa52c6
-commit: 1cbdf60bd1b74e397d48aa877367cfc621f45ffe kasan: arm64: support specialized outlined tag mismatch checks
-date:   8 months ago
-config: arm64-randconfig-r021-20220107 (https://download.01.org/0day-ci/archive/20220107/202201071631.N1iQYfX7-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 32167bfe64a4c5dd4eb3f7a58e24f4cba76f5ac2)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=1cbdf60bd1b74e397d48aa877367cfc621f45ffe
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 1cbdf60bd1b74e397d48aa877367cfc621f45ffe
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash mm/kasan/
+(just getting to it)
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On the other hand, e.g. MAXPHYADDR (CPUID 0x80000008.EAX) is not a CPU
+cap but it's one of the main reasons why we want to forbid
+KVM_SET_CPUID{,2} after KVM_RUN in the first place. I'm also not sure
+about allowing PV feature bits changes (KVM, Hyper-V, Xen) and I don't
+think there's a need for that.
 
-All warnings (new ones prefixed by >>):
+I'm again leaning towards an allowlist and currently I see only two
+candidates:
 
->> mm/kasan/sw_tags.c:211:6: warning: no previous prototype for function 'kasan_tag_mismatch' [-Wmissing-prototypes]
-   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-        ^
-   mm/kasan/sw_tags.c:211:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-   ^
-   static 
-   1 warning generated.
+CPUID.01H.EBX bits 31:24 (initial LAPIC id)
+CPUID.0BH.EDX (x2APIC id)
 
+Anything else I'm missing?
 
-vim +/kasan_tag_mismatch +211 mm/kasan/sw_tags.c
+-- 
+Vitaly
 
-   210	
- > 211	void kasan_tag_mismatch(unsigned long addr, unsigned long access_info,
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
