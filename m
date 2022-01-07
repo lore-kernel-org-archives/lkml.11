@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BABD9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 05:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AC5C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 05:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346384AbiAGFal (ORCPT
+        id S1346302AbiAGFan (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 00:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36124 "EHLO
+        Fri, 7 Jan 2022 00:30:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346227AbiAGFaO (ORCPT
+        with ESMTP id S1346209AbiAGFaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 00:30:14 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B772DC061245;
-        Thu,  6 Jan 2022 21:30:13 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id q5so5820814ioj.7;
-        Thu, 06 Jan 2022 21:30:13 -0800 (PST)
+        Fri, 7 Jan 2022 00:30:08 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABAC4C06118C;
+        Thu,  6 Jan 2022 21:30:07 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id y18so5832410iob.8;
+        Thu, 06 Jan 2022 21:30:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WQJWjrpvTcrk4L61/TAk/KIkMk45wkVxi65EcBB2wtY=;
-        b=d2IudHU+bG8/bgad7PeXNNcoFRsOkHVCShVHm/vs56LEwWSHNLuOiFpEy9DKP9l6Tr
-         NRBxvirumd6cXxSnkNLyfQ8A+72NlcNsvL7hvZj4qmTJqiiF7Csdbvt56vxPZKgm+KVa
-         LrSlrBhRhlCqqGdxdNHqwGpDCyTnA+YPYbfsQ7G96lw32cSPWQqyRz6ZiwfsJR6RI6by
-         O/u4dN98TOOAoUCbAY7mPaIye9Ia4ZItYtBJMihh1+Ydm/s5SHgsKj5zmzh/47Sa491b
-         AMMv+xW6DkrMNDF0c1KBxG7IMcy/cHwsIMDRlFUpK5z1bz9+nVuZCJuiiCAmG8ZEJ5nx
-         Qodg==
+        bh=fs9SXvpvEEnkA+pZj7l54+pYQd7M1OVNoq6NoKKp5pE=;
+        b=BPvCeyaEsfkyYHJplLo278shtoIIb9ttoxvNbZHAmTThf0T7b3rtFx2a9vUqNjwfch
+         nioeXn9/nQgokrJmOmYK7+lr0g8nICaJBJ3Q4VI6rRotAKLBeTIMbxum2W3CpjVblIYE
+         M1NTdeWOTZn7ugu7aIsCs4JuwjgHyVnQTbaPdKo4G+cox7pD7igqayZaElp86ZUk496Q
+         kL7oKgoL7MofSKtlH8pkHPDrmGVacnLJTs3AuN2KCdUUYu5tRSweIKgg7xAq1gdSJjnK
+         JtZZ+tfuAwxsJ0/GoTVV2w7fUuyWt5NZSSib698HNisxorA4k54ln+rMEUBH9shuVVKj
+         Ut6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WQJWjrpvTcrk4L61/TAk/KIkMk45wkVxi65EcBB2wtY=;
-        b=niy51DWjezcZgjqN9F3M+8tYIfD7rzSTrOLGEhmvJk2EtZ8RuLsMadJHrWAWmm4CDp
-         np1P3TcWizh+ewQctLpYBY+xeOnqDJDGsCv/T+xUBhYehuuhRhwLkej3cgK89ZXk+QmM
-         0cZyfeBGCB1Nv8rzs+wQZRM9zg7gDpRnvsHQtzeOBDrrh0f80ZvpRin4/s0Ua68ht8lr
-         9W902dI/MGm78YeGGyfW6U5B5EeCCAhS09oGWbJUUYweQdROZ7BodG8Hmo//0dgb1uwR
-         uehAuovumuXSzfeGL2j+TASPIT6cOo+O6AOnR47HA8hrtZ6pDBYhQCQwNZ+F7TvZeoxY
-         FuRA==
-X-Gm-Message-State: AOAM530M4kQZd/tqvx1ypzadrhOVuQFsGScCZkTSCLArNI2sRuNouGy2
-        5+zprnaD4rYnjRW5y0zXGDA=
-X-Google-Smtp-Source: ABdhPJyGlqD7G+Do4+iTOVF8S6gJU+ENiyjS7KIHnyFyCqamp+AFbBw5NgCHK7Jn+6e1D4PE8CKoHg==
-X-Received: by 2002:a05:6602:2218:: with SMTP id n24mr29175293ion.182.1641533413048;
-        Thu, 06 Jan 2022 21:30:13 -0800 (PST)
+        bh=fs9SXvpvEEnkA+pZj7l54+pYQd7M1OVNoq6NoKKp5pE=;
+        b=F1jeRCf9SCiqWhbs2px015WJuZoku/FSVFmnucGuA65EkNSOUYYNGLarVih2tD8R9Q
+         ujtdcptTE2ElPSGnDyNbOqBvAfrWwBktoySzDO7TKPMV/xDwdF3vphieJCxQerANvDb4
+         D7EmEj3YzzfXV4bHYcB2rUb8qseabA8dFAGiveHH34SyuLb438cSKnc9Axc2nyTxUjRY
+         v/FWB4pOOxoSiaG1rKNJEWfbcg8YBh/wA68Bt/q336+MBzy8Km6SdrD/rgMdm/R0TzT0
+         Y9vz3HmEoYhxnJCoaoKAOs5vO9Mpd/3/iNv1MqYDoiCgkEZPgKtdzpwQwAPXwSKaHo7u
+         pLww==
+X-Gm-Message-State: AOAM532ixrqVywOrE7zVsBekvUcof/PIe6bUdrjlxcnq5BRIRQvxKQOc
+        HOgi+JI09cggI4ffN4Tda+M=
+X-Google-Smtp-Source: ABdhPJx7+AElBptGJel+f8XWKrTSvq1aQzmSbXkyUTKq/TkWKsGnfjRusoZRcHuw2zq/ku/ipdX6lA==
+X-Received: by 2002:a05:6638:1244:: with SMTP id o4mr26844964jas.80.1641533406977;
+        Thu, 06 Jan 2022 21:30:06 -0800 (PST)
 Received: from frodo.. (c-24-9-77-57.hsd1.co.comcast.net. [24.9.77.57])
-        by smtp.googlemail.com with ESMTPSA id c18sm1843446iod.18.2022.01.06.21.30.12
+        by smtp.googlemail.com with ESMTPSA id c18sm1843446iod.18.2022.01.06.21.30.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 21:30:12 -0800 (PST)
+        Thu, 06 Jan 2022 21:30:06 -0800 (PST)
 From:   Jim Cromie <jim.cromie@gmail.com>
 To:     jbaron@akamai.com, gregkh@linuxfoundation.org,
         linux@rasmusvillemoes.dk, rostedt@goodmis.org,
@@ -62,9 +62,9 @@ Cc:     quic_saipraka@quicinc.com, will@kernel.org,
         arnd@arndb.de, linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org, mingo@redhat.com,
         jim.cromie@gmail.com
-Subject: [PATCH v11 19/19] drm_print: use DEFINE_DYNAMIC_DEBUG_CLASSBITS for drm.debug
-Date:   Thu,  6 Jan 2022 22:29:42 -0700
-Message-Id: <20220107052942.1349447-20-jim.cromie@gmail.com>
+Subject: [PATCH v11 14/19] drm_print: prefer bare printk KERN_DEBUG on generic fn
+Date:   Thu,  6 Jan 2022 22:29:37 -0700
+Message-Id: <20220107052942.1349447-15-jim.cromie@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107052942.1349447-1-jim.cromie@gmail.com>
 References: <20220107052942.1349447-1-jim.cromie@gmail.com>
@@ -74,87 +74,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-if CONFIG_DRM_USE_DYNDBG=y, use new macro to create the sysfs bitmap
-to control drm.debug callsites.
+drm_print.c calls pr_debug() just once, from __drm_printfn_debug(),
+which is a generic/service fn.  The callsite is compile-time enabled
+by DEBUG in both DYNAMIC_DEBUG=y/n builds.
 
-DEFINE_DYNAMIC_DEBUG_CLASSBITS( debug, __drm_debug,
-	"drm.debug - control summary",
-	/* inline vector of dyndbg.class_id (uint:4, 0 is reserved) */
-	DRM_UT_CORE,
-	DRM_UT_DRIVER,
-	DRM_UT_KMS,
-	DRM_UT_PRIME,
-	DRM_UT_ATOMIC,
-	DRM_UT_VBL,
-	DRM_UT_STATE,
-	DRM_UT_LEASE,
-	DRM_UT_DP,
-	DRM_UT_DRMRES );
+For dyndbg builds, reverting this callsite back to bare printk is
+correcting a few anti-features:
 
-NOTES:
+1- callsite is generic, serves multiple drm users.
+   its hardwired on currently
+   could accidentally: #> echo -p > /proc/dynamic_debug/control
 
-dyndbg.class_id is uint:4, values 1-15 are valid. 0 is reserved
-primarily for non-classified callsites (aka: prdbgs), and is thus
-available to mark the end of the vector (and is added by the macro).
+2- optional "decorations" by dyndbg are unhelpful/misleading
+   they describe only the generic site, not end users
 
-RFC: how to fold this in, with multiple macro expansion ?
+IOW, 1,2 are unhelpful at best, and possibly confusing.
+
+reverting yields a nominal data and text shrink:
+
+   text    data     bss     dec     hex filename
+ 462583   36604   54592 553779   87333 /lib/modules/5.16.0-rc4-lm1-00008-ged3eac8ceeea/kernel/drivers/gpu/drm/drm.ko
+ 462515   36532   54592 553639   872a7 /lib/modules/5.16.0-rc4-lm1-00009-g6ce0b88d2539-dirty/kernel/drivers/gpu/drm/drm.ko
+
+NB: this was noticed using _drm_debug_enabled(), added earlier.
+
 Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
 ---
- drivers/gpu/drm/drm_print.c | 20 ++++++++++++++++++--
- include/drm/drm_print.h     |  2 +-
- 2 files changed, 19 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_print.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/gpu/drm/drm_print.c b/drivers/gpu/drm/drm_print.c
-index 0a15a4ec5ead..0de562e5306a 100644
+index aab29dd6cad1..b911f949af5b 100644
 --- a/drivers/gpu/drm/drm_print.c
 +++ b/drivers/gpu/drm/drm_print.c
-@@ -41,7 +41,7 @@
-  * __drm_debug: Enable debug output.
-  * Bitmask of DRM_UT_x. See include/drm/drm_print.h for details.
+@@ -23,8 +23,6 @@
+  * Rob Clark <robdclark@gmail.com>
   */
--unsigned int __drm_debug;
-+unsigned long __drm_debug;
- EXPORT_SYMBOL(__drm_debug);
  
- MODULE_PARM_DESC(debug, "Enable debug output, where each bit enables a debug category.\n"
-@@ -53,7 +53,23 @@ MODULE_PARM_DESC(debug, "Enable debug output, where each bit enables a debug cat
- "\t\tBit 5 (0x20)  will enable VBL messages (vblank code)\n"
- "\t\tBit 7 (0x80)  will enable LEASE messages (leasing code)\n"
- "\t\tBit 8 (0x100) will enable DP messages (displayport code)");
--module_param_named(debug, __drm_debug, int, 0600);
-+
-+#if !defined(CONFIG_DRM_USE_DYNAMIC_DEBUG)
-+module_param_named(debug, __drm_debug, ulong, 0600);
-+#else
-+DEFINE_DYNAMIC_DEBUG_CLASSBITS(debug, __drm_debug,
-+	"enable drm.debug categories - 1 bit per category",
-+	DRM_UT_CORE,
-+	DRM_UT_DRIVER,
-+	DRM_UT_KMS,
-+	DRM_UT_PRIME,
-+	DRM_UT_ATOMIC,
-+	DRM_UT_VBL,
-+	DRM_UT_STATE,
-+	DRM_UT_LEASE,
-+	DRM_UT_DP,
-+	DRM_UT_DRMRES);
-+#endif
+-#define DEBUG /* for pr_debug() */
+-
+ #include <linux/stdarg.h>
  
- void __drm_puts_coredump(struct drm_printer *p, const char *str)
+ #include <linux/io.h>
+@@ -165,7 +163,8 @@ EXPORT_SYMBOL(__drm_printfn_info);
+ 
+ void __drm_printfn_debug(struct drm_printer *p, struct va_format *vaf)
  {
-diff --git a/include/drm/drm_print.h b/include/drm/drm_print.h
-index 6d43b81a0ee4..ebed5ba2dc24 100644
---- a/include/drm/drm_print.h
-+++ b/include/drm/drm_print.h
-@@ -36,7 +36,7 @@
- #include <drm/drm.h>
+-	pr_debug("%s %pV", p->prefix, vaf);
++	/* pr_debug callsite decorations are unhelpful here */
++	printk(KERN_DEBUG "%s %pV", p->prefix, vaf);
+ }
+ EXPORT_SYMBOL(__drm_printfn_debug);
  
- /* Do *not* use outside of drm_print.[ch]! */
--extern unsigned int __drm_debug;
-+extern unsigned long __drm_debug;
- 
- /**
-  * DOC: print
 -- 
 2.33.1
 
