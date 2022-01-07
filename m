@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 462D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 15:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8A1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 15:05:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348015AbiAGPC6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 10:02:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52206 "EHLO
+        id S232477AbiAGPFT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 10:05:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239429AbiAGPC5 (ORCPT
+        with ESMTP id S229918AbiAGPFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 10:02:57 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E74DEC061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 07:02:56 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id y9so5617439pgr.11
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 07:02:56 -0800 (PST)
+        Fri, 7 Jan 2022 10:05:18 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4FF1C061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 07:05:17 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id e9so10086389wra.2
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 07:05:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=TXuTrO6Ha+huM7qcuvlq7qXNNB9UWgUz+upFeSphi/o=;
-        b=WX5TEAkaQFMLbDVoab+XQSLyFMshbrheqtOPJp3AKMLUzvamg/9f4JGtLWoSbQu2tN
-         tGxa4Zs4FQKbPEFF2Gyy1rSh+1IeMLLaBSNJ3UVlWqooYrILfII5JXoU79F92zTu/Ohm
-         IS7ZQ7yFmEKAoRSFR6UqQsc/aUdVAU2/LpPhRLqNMPGj34zgoDAS5Zl0joX6yQ49Rya3
-         N07t9SIWTUCZm4ZGqb3i9NmUdXdHHr1gp0EupLl7hpLh0mLp/2FTc8xctmbap4Cwo3a2
-         hKzF9uku1i5C2rpGD3pqBmttlpvtYpXBJhFp1pXbuVBjkUf+suIbbMp9gsE3UqNq7WcP
-         zLIg==
+        bh=6hNM7Jx0ka9c89ARXL18Y6Yomz5BgQ3R+02Ck2gVejo=;
+        b=znEnsrWNoFHGs0yDXT0ajFzwU3OmTsmRvzG8YPbXJWhTE3RvFvkGF0qip3OKuZ9hkV
+         pH1kfep0nAMkZa70Ig88zskk6DuT2hUovV8k3yDl8LUBRr6qLgWZGObYSafE1RoYr7aD
+         3ne8alY1BcDoA2PCxjhiFXWJ96tba09NTTPYRH3AtwJUcV9BSu+8S68ZP67CUrYEHhQi
+         pdKFBZje2nL9bik1Rf7F8fnK+Ju1ptnXg6R61JT304s+PUvM3NxkOAaBTGLNOxYUD733
+         genYxlDbbQnIMLpqnIYFS0ZGH4tjjOcRDrjgfIGMz+04huQVwJDrFynQbUif+tMZ83DJ
+         sOxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=TXuTrO6Ha+huM7qcuvlq7qXNNB9UWgUz+upFeSphi/o=;
-        b=IQAKu9yQ2ja17XAE+eOKjSM9DW8WVTkeSHxPBAB2rP2n4nfZ95axnyPGGUvnAzvKOK
-         Exv02TYNAkAA3c+RqHfbUsky9HCb2nld6xG5EyL2d+N8bWfffLodRpNhsgatHLRBcp4+
-         Iiij0bTg8m6tZpjEpig4aBBG0dVCCsyGl50avA/ZPGxzbsJWuBh0mHYpH4AiMdP7rduf
-         q8uLqCRZ+9e3E8S8utieYlJFLXg2mhy/3a4FSAH9ucFVUme1FEbKf69j+M/Unr2cvAVF
-         j4ZGXxL7xOztgRQTSxJLz0VaJZXjX310S+ROzMe69Jvb/Wq2gGvnq7sQlA8muHPAoTHX
-         hnmQ==
-X-Gm-Message-State: AOAM5334DDT31zx1rsVPoyLS7fZY6S4G7nRnBaCersxRxdfva/Gf/b1G
-        h18yv5bpkMLGvA8J99AnTQY=
-X-Google-Smtp-Source: ABdhPJxdHRTqcOth/t3EBnwzur31VOzzk0AxU8d3AjuAVfZlODS+uy5drS5cFm9VNuneDa1NdYplKQ==
-X-Received: by 2002:a05:6a00:2304:b0:4ba:4cbb:8289 with SMTP id h4-20020a056a00230400b004ba4cbb8289mr64533524pfh.79.1641567776490;
-        Fri, 07 Jan 2022 07:02:56 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.108])
-        by smtp.gmail.com with ESMTPSA id j8sm6903492pfc.11.2022.01.07.07.02.54
+        bh=6hNM7Jx0ka9c89ARXL18Y6Yomz5BgQ3R+02Ck2gVejo=;
+        b=qhFdaOhljQl+IfacsN9j2R00GRHATB+MhL+1qYruuLgojXJzUfXF1LxRBlHqXnGmwZ
+         Zy+LDKOkL6E0Eb7lb992Yj9khQAMPpKFVLYWvD7NTzQGmBIXJgyhjbTNLfkoefS3JUHy
+         BX5zQKO6rau1LYe5bzPdJdXav3Q3Na7C6hk1jHYSZwlMt5hZSzUMhx+P2h7/XMAf86uk
+         0Iov+/P88z0UJR6mZeH8lwHbOqpxj6ZrLvHgGmx8F6wHRieAl8eRs7L/zLtLnzGhTd+7
+         hFd0Jto+q/rmfkQyoDubqyYNcFHThiDNZpQ/LNhiG6LhvTIy8Nnee8id7ZvsHJMFkItT
+         rtpw==
+X-Gm-Message-State: AOAM531fk1c1u8YAIbQX987iDzHZcDcMAXcjukWZ78oAO81E1GooBI4H
+        XtSbDlJ3qxAH5CAPa1/TCApYQ1EB393/hQ==
+X-Google-Smtp-Source: ABdhPJwsYouaf+AyQmEepe6AEBBvuC5jNOW9Pb+QrOUDvWasENRXpdZ7054JoO1WwFi5HzBbNnHvhQ==
+X-Received: by 2002:adf:f103:: with SMTP id r3mr5618982wro.555.1641567916256;
+        Fri, 07 Jan 2022 07:05:16 -0800 (PST)
+Received: from localhost.localdomain ([2001:861:44c0:66c0:fc89:e826:8938:cbde])
+        by smtp.gmail.com with ESMTPSA id s194sm1848246wme.45.2022.01.07.07.05.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 07:02:56 -0800 (PST)
-From:   Xiangyang Zhang <xyz.sun.ok@gmail.com>
-To:     rostedt@goodmis.org
-Cc:     mingo@redhat.com, mhiramat@kernel.org, oleg@redhat.com,
-        linux-kernel@vger.kernel.org, xyz.sun.ok@gmail.com
-Subject: [PATCH v2] tracing/kprobes: 'nmissed' not showed correctly for kretprobe
-Date:   Fri,  7 Jan 2022 23:02:42 +0800
-Message-Id: <20220107150242.5019-1-xyz.sun.ok@gmail.com>
+        Fri, 07 Jan 2022 07:05:15 -0800 (PST)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     kishon@ti.com, vkoul@kernel.org
+Cc:     linux-phy@lists.infradead.org, linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH v3 0/2] phy: amlogic: Add support for the G12A Analog MIPI D-PHY
+Date:   Fri,  7 Jan 2022 16:05:10 +0100
+Message-Id: <20220107150512.614423-1-narmstrong@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,41 +63,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'nmissed' column of the 'kprobe_profile' file for kretprobe is
-not showed correctly, kretprobe can be skipped by two reasons,
-shortage of kretprobe_instance which is counted by tk->rp.nmissed,
-and kprobe itself is missed by some reason, so to show the sum.
+The Amlogic G12A SoCs embeds an Analog MIPI D-PHY to communicate with DSI
+panels, this adds the bindings.
+    
+This Analog D-PHY works with a separate Digital MIPI D-PHY.
 
-Fixes: 4a846b443b4e ("tracing/kprobes: Cleanup kprobe tracer code")
-Signed-off-by: Xiangyang Zhang <xyz.sun.ok@gmail.com>
----
- kernel/trace/trace_kprobe.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+This serie adds the Bindings and the PHY driver.
 
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index f8c26ee72de3..3d85323278ed 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -1170,15 +1170,18 @@ static int probes_profile_seq_show(struct seq_file *m, void *v)
- {
- 	struct dyn_event *ev = v;
- 	struct trace_kprobe *tk;
-+	unsigned long nmissed;
- 
- 	if (!is_trace_kprobe(ev))
- 		return 0;
- 
- 	tk = to_trace_kprobe(ev);
-+	nmissed = trace_kprobe_is_return(tk) ?
-+		tk->rp.kp.nmissed + tk->rp.nmissed : tk->rp.kp.nmissed;
- 	seq_printf(m, "  %-44s %15lu %15lu\n",
- 		   trace_probe_name(&tk->tp),
- 		   trace_kprobe_nhit(tk),
--		   tk->rp.kp.nmissed);
-+		   nmissed);
- 
- 	return 0;
- }
+Changes from v2 at [2]:
+- Bindings example fix
+
+Changes from v1 at [1]:
+- Bindings fixes
+
+[1] https://lore.kernel.org/r/20201123145157.300456-1-narmstrong@baylibre.com
+[2] https://lore.kernel.org/r/20210210080736.771803-1-narmstrong@baylibre.com
+
+Neil Armstrong (2):
+  dt-bindings: phy: add Amlogic G12A Analog MIPI D-PHY bindings
+  phy: amlogic: Add G12A Analog MIPI D-PHY driver
+
+ .../phy/amlogic,g12a-mipi-dphy-analog.yaml    |  35 ++++
+ drivers/phy/amlogic/Kconfig                   |  12 ++
+ drivers/phy/amlogic/Makefile                  |   1 +
+ .../amlogic/phy-meson-g12a-mipi-dphy-analog.c | 177 ++++++++++++++++++
+ 4 files changed, 225 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/amlogic,g12a-mipi-dphy-analog.yaml
+ create mode 100644 drivers/phy/amlogic/phy-meson-g12a-mipi-dphy-analog.c
+
 -- 
 2.25.1
 
