@@ -2,71 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC75C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3620AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344826AbiAGCo6 (ORCPT
+        id S1344873AbiAGCpq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 21:44:58 -0500
-Received: from helcar.hmeau.com ([216.24.177.18]:59070 "EHLO fornost.hmeau.com"
+        Thu, 6 Jan 2022 21:45:46 -0500
+Received: from marcansoft.com ([212.63.210.85]:36390 "EHLO mail.marcansoft.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344689AbiAGCo5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:44:57 -0500
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1n5fF4-0006RF-Jm; Fri, 07 Jan 2022 13:44:35 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 07 Jan 2022 13:44:34 +1100
-Date:   Fri, 7 Jan 2022 13:44:34 +1100
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Stephan Mueller <smueller@chronox.de>
-Cc:     Nicolai Stange <nstange@suse.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
-        Zaibo Xu <xuzaibo@huawei.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com
-Subject: Re: [PATCH v2 03/18] crypto: dh - optimize domain parameter
- serialization for well-known groups
-Message-ID: <YdepEhTI/LB9wdJr@gondor.apana.org.au>
-References: <20211209090358.28231-1-nstange@suse.de>
- <87r1a7thy0.fsf@suse.de>
- <YcvEkfS4cONDXXB9@gondor.apana.org.au>
- <2468270.qO8rWLYou6@tauon.chronox.de>
+        id S1344689AbiAGCpp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 21:45:45 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 70AEA43320;
+        Fri,  7 Jan 2022 02:45:40 +0000 (UTC)
+Message-ID: <d8cd9082-4514-9c6c-85c7-418356f1f66d@marcan.st>
+Date:   Fri, 7 Jan 2022 11:45:38 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2468270.qO8rWLYou6@tauon.chronox.de>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH] fs: btrfs: Disable BTRFS on platforms having 256K pages
+Content-Language: en-US
+To:     Qu Wenruo <quwenruo.btrfs@gmx.com>, Neal Gompa <ngompa13@gmail.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Btrfs BTRFS <linux-btrfs@vger.kernel.org>,
+        linux-hexagon@vger.kernel.org
+References: <a16c31f3caf448dda5d9315e056585b6fafc22c5.1623302442.git.christophe.leroy@csgroup.eu>
+ <6c7a6762-6bec-842b-70b4-4a53297687d1@gmx.com>
+ <CAEg-Je9UJDJ=hvLLqQDsHijWnxh1Z1CwaLKCFm+-bLTfCFingg@mail.gmail.com>
+ <db88497c-ea17-27ca-6158-2a987acb7a1c@gmx.com>
+From:   Hector Martin <marcan@marcan.st>
+In-Reply-To: <db88497c-ea17-27ca-6158-2a987acb7a1c@gmx.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 03:30:04PM +0100, Stephan Mueller wrote:
->
-> This means in FIPS mode, invoking the algo of "dh" should not be possible. 
-> Yet, on the other hand, we cannot mark "dh" as fips_allowed == 0 as the 
-> templates would not be able to instantiate them.
+On 2022/01/07 9:13, Qu Wenruo wrote:
+> 
+> 
+> On 2022/1/7 00:31, Neal Gompa wrote:
+>> On Wed, Jan 5, 2022 at 7:05 AM Qu Wenruo <quwenruo.btrfs@gmx.com> wrote:
+>>>
+>>> Hi Christophe,
+>>>
+>>> I'm recently enhancing the subpage support for btrfs, and my current
+>>> branch should solve the problem for btrfs to support larger page sizes.
+>>>
+>>> But unfortunately my current test environment can only provide page size
+>>> with 64K or 4K, no 16K or 128K/256K support.
+>>>
+>>> Mind to test my new branch on 128K page size systems?
+>>> (256K page size support is still lacking though, which will be addressed
+>>> in the future)
+>>>
+>>> https://github.com/adam900710/linux/tree/metadata_subpage_switch
+>>>
+>>
+>> The Linux Asahi folks have a 16K page environment (M1 Macs)...
+> 
+> Su Yue kindly helped me testing 16K page size, and it's pretty OK there.
+> 
+> So I'm not that concerned.
+> 
+> It's 128K page size that I'm a little concerned, and I have not machine
+> supporting that large page size to do the test.
+> 
+> Thanks,
+> Qu
 
-Right, we have exactly the same problem with sha1 where sha1
-per se should be not be allowed in FIPS mode but hmac(sha1)
-should be.
+I'm happy to test things on 16K in the future if you need me to :-)
 
-> Therefore, I think we should mark "dh" as CRYPTO_ALG_INTERNAL if in FIPS mode. 
-I think the annotation should be added to testmgr.c.  We could
-mark dh and sha1 as not fips_allowed but allowed as the parameter
-of a template.  This could then be represented in the crypto_alg
-object by a new flag.
-
-This flag could then be set automatically in crypto_grab_* to
-allow them to be picked up automatically for templates.
-
-I'm already writing this up for sha1 anyway so let me polish it
-off and I'll post it soon which you can then reuse it for dh.
-
-Cheers,
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
