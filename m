@@ -2,94 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 03:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFB9C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 03:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345740AbiAGDH0 (ORCPT
+        id S1345750AbiAGDH3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 22:07:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
+        Thu, 6 Jan 2022 22:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiAGDHZ (ORCPT
+        with ESMTP id S229462AbiAGDH1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 22:07:25 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54853C061245;
-        Thu,  6 Jan 2022 19:07:25 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id p14so3873613plf.3;
-        Thu, 06 Jan 2022 19:07:25 -0800 (PST)
+        Thu, 6 Jan 2022 22:07:27 -0500
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E137C061245;
+        Thu,  6 Jan 2022 19:07:27 -0800 (PST)
+Received: by mail-pg1-x543.google.com with SMTP id 200so4286350pgg.3;
+        Thu, 06 Jan 2022 19:07:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gnH114STT8YnsWgJhc87udMHHLSSILWXx2aVT6ZKp78=;
-        b=IPtQgxNXXye3vrO61LkJ9uDE1W3w/2a5prtcwAumWGMDH716B3ATudCOceRiQIGvVu
-         ClTCAue88GqvjnTOTM/N3WbwI+exZvo3zdgowAkAsPL2PRctIqjiFE2MI2wxVdqXE/lu
-         jz+W6cpabAklUajeNsI2tBV1T9DdwN8MY5rEAACdCkgWlAUwJ06g20jKHfCbcpS31sMu
-         4xls6eLfYI9MF32eqGFhLxSPzKYIV4rTpe92Sy2gMvVxvgMHmAN3t+A9xbAGix973k7P
-         bqQwirW4Ec86gWbMPgV/ZEZRJFtJTV1G5h2NMNRvveodp6hGSGpHA7ohlhHMNgADWvYM
-         GF+A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MrHlmIX3ye0jx29v1ryUPTnUa+JQoFItY+qNfZbdSu8=;
+        b=WT2C/Z93DPpWF4hga6hm/qiEapwtzLQAIigP7KHMqMD40QW1Htj8X5p1+RwT+EhovO
+         aTutOXerK0n0j6i93u/kCaZGxea9v2M1BMa3YnzvNV/x5ZrhN4Pe5cj2XIpqfhEMhH3H
+         Nyv63niP0L9p0/IWPc6bE5wInzNRVkuCpdGtw7eLHHqCba+i0GkAGq0Q7xnfLTNF8SUx
+         1tufdZcX9h6xpewBnwWccpcKuhQsgMnFN9YGZp4syBEAuc8uIPzQvL3z+BDUUPi7WdrT
+         PGHz5z5sARFmC/vdRsDP9ED+Tf6vsa+zf5lwbSIzQ7zA5hCZZIdbEpjvqaEVCTqR6SAY
+         2sew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gnH114STT8YnsWgJhc87udMHHLSSILWXx2aVT6ZKp78=;
-        b=JaFCEtDMon1FtjNw54cKoNXIbdHp3uNb0BS0AXGrWUTWPCVcfWgU9TJJm6Gm5iihwt
-         Nvb45+KLZpDNd01DFZfVWAOQCYwnE8VuAR5W14uwY6gegrP/tupLTac/ECPtxm7pgbUm
-         hUI2pS5we9weifRnwgwCxLXaz1Q7rO6ahE838rMOujwo8+LHjCqrv4v92yN0awsPeFxo
-         GvEAp7JJxeWQeYa9tnaUU9GO2ZCtckyFeQlvlD1hstjFkd3nXyJ11Kesu8ILZRcsrpWF
-         cyVkqT3PxHDCdlX1L7SUoMa3q0zQMy2iG3ZvA4zPHuzGIhHdAw64A6yFvTSAQdGLSWze
-         hCYA==
-X-Gm-Message-State: AOAM531Zn0Rywm2bmpAvGCsK2LMRszYm6C+7t2iXQkjOXY1DKYmPDyZA
-        yu3td7HvCZc9oFbXLTIxW8rio2jehs/FH6B1TBo=
-X-Google-Smtp-Source: ABdhPJx/0/4bNwc0VXDEcBX+xyEgn9woQacd0N8S7Y3rirlAECRGPTJF6s8/62NjceRipUETMVA0gg==
-X-Received: by 2002:a17:90b:3a85:: with SMTP id om5mr13434408pjb.145.1641524844899;
-        Thu, 06 Jan 2022 19:07:24 -0800 (PST)
-Received: from VICKYMQLIN-NB1.localdomain ([103.172.116.195])
-        by smtp.gmail.com with ESMTPSA id nk13sm3568005pjb.36.2022.01.06.19.07.22
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 06 Jan 2022 19:07:24 -0800 (PST)
-Date:   Fri, 7 Jan 2022 11:07:19 +0800
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     vladimir.zapolskiy@linaro.org, agross@kernel.org, balbi@kernel.org,
-        bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH v2] usb: dwc3: dwc3-qcom: Add missing
- platform_device_put() in dwc3_qcom_acpi_register_core
-Message-ID: <20220107030719.GA1972@VICKYMQLIN-NB1.localdomain>
-References: <83d55401-d8b3-f709-c77a-fa0e09fda27f@linaro.org>
- <20220105065517.6967-1-linmq006@gmail.com>
- <Ydb8LIgZ/xGZ/lYX@kroah.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=MrHlmIX3ye0jx29v1ryUPTnUa+JQoFItY+qNfZbdSu8=;
+        b=MX+cculV5tP3gtK3tOP1swaWvoOl0ElABfU14umCykzFdU87qBXbp2W3e4E5ey3oj/
+         gXzybZP5/5MBOnVY76wSW3F0b8RCX4Tcbkx3F1+a6k6EmhCAHsgF10lkFYBYe5rcilkl
+         Y7BV/xLMuIkLnVI/Ple1ZEebVJ1ydFgtraWzxIcpsxrkWbEwlrtUjue7uW3qdlai3zqv
+         hO19YkFHX3+KzXK3oujX+4AW4TKfzjrl45HxP1KrqcWQePBCYp1lo08HDhcyAA1KS9wp
+         aqG11BVyIUz+Rm7ArmERHsP4e1Z9QgmN16ALxrKyxi51zMPqyuZLyncW8Z256WA2dwrw
+         /5FQ==
+X-Gm-Message-State: AOAM533OYMIa8F6QmQR3cOqTGcMTI9V9+05sVRwlk7PgQ6ZLioOEPzm5
+        KNutcCxgS/uT2t1dSXmNPE0=
+X-Google-Smtp-Source: ABdhPJwWxca6Qy0lf9jKV5ryVkTp5hCx2FTfSEvqOCrsTSR8XEBBMjrGh9t24daNdH0PCFUTy74FeQ==
+X-Received: by 2002:a63:348a:: with SMTP id b132mr49836144pga.204.1641524847102;
+        Thu, 06 Jan 2022 19:07:27 -0800 (PST)
+Received: from localhost.localdomain ([94.177.118.38])
+        by smtp.googlemail.com with ESMTPSA id s29sm3062584pgo.34.2022.01.06.19.07.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 19:07:26 -0800 (PST)
+From:   Qinghua Jin <qhjin.dev@gmail.com>
+Cc:     Qinghua Jin <qhjin.dev@gmail.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Documentation: kunit: Fix typo
+Date:   Fri,  7 Jan 2022 11:05:53 +0800
+Message-Id: <20220107030553.398321-1-qhjin.dev@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ydb8LIgZ/xGZ/lYX@kroah.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi greg k-h:
-> > Fixes: 2bc02355f8ba ("usb: dwc3: qcom: Add support for booting with ACPI")
-> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> > ---
-> > Changes in v2:
-> > - add fixes tag.
-> > - do error handling in a unified way.
-> > - add necessary blank line.
-> > ---
-> >  drivers/usb/dwc3/dwc3-qcom.c | 11 +++++++++--
-> >  1 file changed, 9 insertions(+), 2 deletions(-)
-> 
-> 
-> Does not apply to my tree at all :(
-> 
-> Please rebase and resend.
+Fix a typo: actualy -> actual
 
-I see the v1 of this patch has been applied to usb-next branch.
-v2 has some format fixes. I am unsure should I rebase v2 on the top of usb-next?
-I am afraid to introduce more inconvenience.
+Signed-off-by: Qinghua Jin <qhjin.dev@gmail.com>
+---
+ Documentation/dev-tools/kunit/usage.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Regards,
-Miaoqian.
+diff --git a/Documentation/dev-tools/kunit/usage.rst b/Documentation/dev-tools/kunit/usage.rst
+index 63f1bb89ebf5..b9940758787c 100644
+--- a/Documentation/dev-tools/kunit/usage.rst
++++ b/Documentation/dev-tools/kunit/usage.rst
+@@ -615,7 +615,7 @@ kunit_tool) only fully supports running tests inside of UML and QEMU; however,
+ this is only due to our own time limitations as humans working on KUnit. It is
+ entirely possible to support other emulators and even actual hardware, but for
+ now QEMU and UML is what is fully supported within the KUnit Wrapper. Again, to
+-be clear, this is just the Wrapper. The actualy KUnit tests and the KUnit
++be clear, this is just the Wrapper. The actual KUnit tests and the KUnit
+ library they are written in is fully architecture agnostic and can be used in
+ virtually any setup, you just won't have the benefit of typing a single command
+ out of the box and having everything magically work perfectly.
+-- 
+2.30.2
+
