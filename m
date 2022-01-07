@@ -2,116 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39FFC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237472AbiAGKgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 05:36:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47640 "EHLO
+        id S237538AbiAGKgc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 05:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237395AbiAGKgF (ORCPT
+        with ESMTP id S237479AbiAGKga (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 05:36:05 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90773C061245;
-        Fri,  7 Jan 2022 02:36:04 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id w16so20348573edc.11;
-        Fri, 07 Jan 2022 02:36:04 -0800 (PST)
+        Fri, 7 Jan 2022 05:36:30 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C06C1C061245
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 02:36:29 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id j21so20393265edt.9
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 02:36:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bY4JV8PvHANaCuy0WETi+VNSc7nLUtCARUT2kHvG5ag=;
-        b=bl7zbdfbmadOtJ+Kp7IjDn3CTba7ItJMMRsnIfAePiKE+rqwUlWmP6Zck7KAWZD/2h
-         +CiG+Yzr4Uqh403Wn8bQXpp/Av4XoisCd9bGuNg/pAIhpeNcQPyUcxYk0cgDHGGDU70j
-         RGQdF7rwpwVIFwbbOYlgEzVgNRTavY5jh44Iqff/JfIlJavmXn5asWezjwXihjni/AbD
-         sKDWQxyUUIauYiqLBRE3M9lGwtSLMnK85VkYn50Z2PNLfFv0PD6eromj0abSVQzNIUsO
-         an/OtnJcKQpFPjik03MWaeXZ/HrheXejNwjwQG/yUy52Ch2YZCypZwWCO6wuLPLGHxw7
-         15Qg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=66unC0o6NAYb1N3MoU5TQCeMb7FNDSFj5FiR3BmbU7E=;
+        b=pEECgb0W4WEd8MXiCFFBi+LN8ajtK1xT65HeLPUzyxaYAXLMndztDGpJ88JA2vWQXB
+         FwNKYMbB3L+nkkKPOudieSd0OvuFUx5BlZkmQd9Dqe/qTsQIBweATxm0254YffHG8PHy
+         94GALaK+yO75TbPUiDxoFrcmcOblHZM0UssphI8D5a+wXD26mEcKB+Sj9slg9THoR8lN
+         oqpSiNTH+CKp6yaCjAAZ8QtdJLsl/xVgWdYj5KPIndhe2uYiyxA3VRGdUJacSrp4B5J5
+         vlv03lhyabMmgofead7NajmcYkY2VM+4DMPcOWGpMdEP+ASf9GOdYJNGAoY8F43sntAB
+         vBKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bY4JV8PvHANaCuy0WETi+VNSc7nLUtCARUT2kHvG5ag=;
-        b=vA9ar+DmVTGoad6HC/IxeBcElMjSbfporgzK5JzSo9NvjhVM/Im46OeKMRI/bS+jGU
-         4ikcoik+RBkO8i1UvNnqXmuqP8cnsqrbNpdLplS1kYKDbfJWkWFqEvIygqsGk/tYTLOr
-         l35bCWL177/7sxVjgAv86p9PvmP8Ra5V4F8H+ejIPZgYQWuOdUNCFzBp3CLxFGdUgnQi
-         BvLP+j31s6oyt/KMl9/jUGx4+Cryw7hgO+fHiXqNuP2Cjd7GGlXvsikF1kWJ2d5diCOM
-         eVzk2DP70909fpTQYHSz2UJI5Ua5Hoe1ZN9mwA+rGqF9joAhYJN2V8o8XbZGwepnwuiz
-         WvCw==
-X-Gm-Message-State: AOAM532WLSI55nYUGV4EX/BVzsocqVho2sssEdqMTzN527s2JQEI6D8J
-        O/+Kw8YLgdURtQ17qcUTATovOeTEAUhUIOwMhP8=
-X-Google-Smtp-Source: ABdhPJwOxFpt5QqjsgvDKHf9uAjVZglIOQSSGBAYKxFBQEhaHuBPoCqrlXRvr4tEGaOXx/Rs2Aq1z7ryjFymAst10OQ=
-X-Received: by 2002:a05:6402:4301:: with SMTP id m1mr60216587edc.125.1641551763189;
- Fri, 07 Jan 2022 02:36:03 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=66unC0o6NAYb1N3MoU5TQCeMb7FNDSFj5FiR3BmbU7E=;
+        b=0EfRW9VMNUHzNGl2R2gVwtm6MGdpb5U7SMxRAXLARhAlqkBhnSWe26foECSiXXzGne
+         36467noj5OYLOqHfLAsLdpzrFoUdkVVv8aP+wzAzdZra8E1tiMmPsTQYqhch88/uoWZN
+         1NFGgPrvzOx1WQn4F/JQMNekpdt9VWle+2YI34sDfMZsm0WGyGrwm5gnwWYsi+TqqOBN
+         e8NWmgjSrnz6QZntbgZPp1M9VnZSw9QR+/Bpxrg7X6mTBwZU8TdUuT4Nt7xXdVpr+U2p
+         Uq/eK1GSr9WOVdh4bKsadwJvFt9so7c3XCoOGDeulYjbnQB6DaYDky2xwaxCy1HpILu9
+         1uxw==
+X-Gm-Message-State: AOAM530q/3K2JdxV6lkAEcuL62sEXp8AWLYo7YDDGOcaJkhT2ZYaI9vE
+        vE9/7RClFRa89OCqGviLpuA=
+X-Google-Smtp-Source: ABdhPJxf7aBlPfvtyy5mxAyF8PAN/gPrs04OA1NVicRJd0xG7eDBW629T6SvFnY70waxhNHgsYcbRA==
+X-Received: by 2002:a17:907:a088:: with SMTP id hu8mr50451030ejc.56.1641551788383;
+        Fri, 07 Jan 2022 02:36:28 -0800 (PST)
+Received: from localhost.localdomain ([2a02:8108:96c0:3b88::51e2])
+        by smtp.gmail.com with ESMTPSA id v8sm1869857edt.10.2022.01.07.02.36.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 02:36:28 -0800 (PST)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH 00/19] staging: r8188eu: move firmware loading out of the hal layer
+Date:   Fri,  7 Jan 2022 11:36:01 +0100
+Message-Id: <20220107103620.15648-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220106041257.927664-1-kai.heng.feng@canonical.com>
- <CAHp75VdxV+4_yxJv1H1MZPpu02e2gHUkP55dduUqN7QJ2j6aGg@mail.gmail.com> <CAAd53p4nUDtuVmkFCqv2R1KEvGYQyLu+ibxJOsoUZs-SM6LuHw@mail.gmail.com>
-In-Reply-To: <CAAd53p4nUDtuVmkFCqv2R1KEvGYQyLu+ibxJOsoUZs-SM6LuHw@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 7 Jan 2022 12:35:26 +0200
-Message-ID: <CAHp75VdXw-G_zSkC7Vzyjeo-aV7Bum=birMMmR8UGsx+e43-bg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: humidity: hdc100x: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Chris Lesiak <chris.lesiak@licor.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 6:14 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
-> On Thu, Jan 6, 2022 at 10:33 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Thu, Jan 6, 2022 at 6:13 AM Kai-Heng Feng
-> > <kai.heng.feng@canonical.com> wrote:
+This series starts to clean up firmware related code and moves
+the firmware loading out of rtl8188e_hal_init.c into the new file
+core/rtw_fw.c.
 
-...
+Tested on x86_64 with Inter-Tech DMG-02.
 
-> > >  - Change the ID to follow ACPI Spec
-> >
-> > Is there any evidence Texas Instrument allocated this ID, or you just
-> > created it yourself?
-> > Please, add an excerpt from email from them to confirm this.
->
-> Sure, let me ask our customer to provide the excerpt.
+Michael Straube (19):
+  staging: r8188eu: remove Firmware* from struct hal_data_8188e
+  staging: r8188eu: remove rtl8188e_InitializeFirmwareVars()
+  staging: r8188eu: release_firmware is not called if allocation fails
+  staging: r8188eu: rename Exit label in load_firmware()
+  staging: r8188eu: rename rtStatus in load_firmware()
+  staging: r8188eu: convert type of return variable in load_firmware()
+  staging: r8188eu: rename parameter pFirmware of load_firmware()
+  staging: r8188eu: rename fields of struct rt_firmware
+  staging: r8188eu: use kmemdup instead of kzalloc and memcpy
+  staging: r8188eu: rename fw related functions to avoid camel case
+  staging: r8188eu: clean up rtw_reset_8051()
+  staging: r8188eu: convert two functions from s32 to int
+  staging: r8188eu: rename Exit label in rtl8188e_firmware_download()
+  staging: r8188eu: rename rtSatus in rtl8188e_firmware_download()
+  staging: r8188eu: rename FWDL_ChkSum_rpt
+  staging: r8188eu: rename writeFW_retry
+  staging: r8188eu: rename pFwHdr in rtl8188e_firmware_download()
+  staging: r8188eu: rename pFirmwareBuf and FirmwareLen
+  staging: r8188eu: move firmware loading code out of the hal layer
 
-Thanks! This is basically the most important point of review.
-
-...
-
-> > > +               .acpi_match_table = ACPI_PTR(hdc100x_acpi_match),
-> >
-> > It's the wrong usage of ACPI_PTR().
->
-> Can you please explain a bit more?
->
-> ACPI_PTR() turns the value to NULL when ACPI is not enabled, seems to
-> be correct?
-> Not to mention most other drivers also use ACPI_PTR() for acpi_match_table.
-
-ACPI_PTR() needs to be used along with the ugly ifdeffery (#ifdef
-CONFIG_ACPI). Rather not doing both simplifies the code and avoids
-unneeded macros or attributes (as you suggested below).
-
-> > >         },
-> >
-> > All the comments are applicable to all your patches. Some of them I
-> > already commented on and even kbuild bot has sent you a complaint.
->
-> That one should be solved by adding __maybe_unused to acpi_device_id array.
-
-This is illogical to add an ID table that we will know may be unused,
-don't you think? Better to always provide it. Yes, the downside is few
-dozens of bytes in the module even if it doesn't support, but OTOH
-this information still may be useful for users to know what devices
-the certain module might support.
+ drivers/staging/r8188eu/Makefile              |   1 +
+ drivers/staging/r8188eu/core/rtw_fw.c         | 284 ++++++++++++++++
+ .../staging/r8188eu/hal/rtl8188e_hal_init.c   | 303 +-----------------
+ drivers/staging/r8188eu/hal/usb_halinit.c     |   8 +-
+ drivers/staging/r8188eu/include/drv_types.h   |   4 +-
+ .../staging/r8188eu/include/rtl8188e_hal.h    |  10 -
+ .../staging/r8188eu/include/rtl8188e_spec.h   |   2 +-
+ drivers/staging/r8188eu/include/rtw_fw.h      |  14 +
+ drivers/staging/r8188eu/os_dep/os_intfs.c     |   4 +-
+ 9 files changed, 311 insertions(+), 319 deletions(-)
+ create mode 100644 drivers/staging/r8188eu/core/rtw_fw.c
+ create mode 100644 drivers/staging/r8188eu/include/rtw_fw.h
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
