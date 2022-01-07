@@ -2,84 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9161C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 388F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233945AbiAGHE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 02:04:28 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:44376 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229560AbiAGHE1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 02:04:27 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowABHKBXl5ddh41_HBQ--.14041S2;
-        Fri, 07 Jan 2022 15:04:05 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     damien.lemoal@opensource.wdc.com, davem@davemloft.net
-Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v2] ide: Check for null pointer after calling devm_ioremap
-Date:   Fri,  7 Jan 2022 15:04:04 +0800
-Message-Id: <20220107070404.3611861-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S234090AbiAGHJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 02:09:47 -0500
+Received: from mga02.intel.com ([134.134.136.20]:11492 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229560AbiAGHJp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 02:09:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641539385; x=1673075385;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=PyHCT8ZFTZQ143GrjnW0x82nS8khVUS+/ejprLVyYrY=;
+  b=YgMsU02+ELS1PC9kaxCPRftS6ySRuF2sWX353jwFnL/YJP/79fOOBbCO
+   ytg404nSvm10LhV/em3TzWJEeMtD6sZi2nn6Hgj8wCHtrJT70EglGCQGE
+   F/lJ/04anZE3mDb4f0dcXzUZ2PximLXfPbk10XA6DSCvi+Q+qlE1Uk/93
+   dY3IguIDl8BhXZjnWi0qsbGRFxI4fOCggqSTeHp4jDCeIxN4/OQSa6SWx
+   Nyh7q6U26rTfbfnt9zpG04Irsr9+gPiZQY1Ic/gTrOpFy9h5P2rekeg6y
+   ihrKXrs9HfSMOzAOFWB5SwonlN+M0+xt/bOuLaeJr0+hIaBeDwHNNDhfS
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="230163332"
+X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
+   d="scan'208";a="230163332"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 23:09:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
+   d="scan'208";a="618611333"
+Received: from lkp-server01.sh.intel.com (HELO e357b3ef1427) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 06 Jan 2022 23:09:43 -0800
+Received: from kbuild by e357b3ef1427 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5jNf-000IOA-72; Fri, 07 Jan 2022 07:09:43 +0000
+Date:   Fri, 7 Jan 2022 15:08:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:paulmck/linux-rcu/dev 51/53]
+ kernel/time/tick-sched.c:1455:6: warning: no previous prototype for function
+ 'tick_setup_sched_timer_dump'
+Message-ID: <202201071538.1zOsvPzw-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowABHKBXl5ddh41_HBQ--.14041S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xw4UtF4xKryxJF1xGFyUKFg_yoWkJrg_Aa
-        1ruFZxWw4rAr1ktF17tr13uryFv34q9rZ7urnxtwsIq3sxXr17JryUurs8Ja18WFyI9r9F
-        yFyDKw4fu343ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-        Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
-        jxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
-        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8CwCF
-        04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
-        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUh4SOUUUUU=
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the devres_alloc(), the devm_ioremap() and
-devm_ioport_map() may return NULL pointer.
-And then, the 'base' and 'alt_base' is used in plat_ide_setup_ports().
-Therefore, it should be better to add the check in order to avoid the
-dereference of the NULL pointer.
+tree:   https://github.com/ammarfaizi2/linux-block paulmck/linux-rcu/dev
+head:   56b8a9dc5e8aa4d625a09ce87015016ae339d44d
+commit: feba9f855e1f9231392df9e7c2ba94e2fe1bc822 [51/53] EXP timers: Debugging for last-resort jiffies update
+config: i386-randconfig-r014-20220107 (https://download.01.org/0day-ci/archive/20220107/202201071538.1zOsvPzw-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 32167bfe64a4c5dd4eb3f7a58e24f4cba76f5ac2)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/feba9f855e1f9231392df9e7c2ba94e2fe1bc822
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block paulmck/linux-rcu/dev
+        git checkout feba9f855e1f9231392df9e7c2ba94e2fe1bc822
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/kernel/ kernel/time/
 
-Fixes: 2bfba3c444fe ("ide: remove useless subdirs from drivers/ide/")
-Cc: 5.10
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> kernel/time/tick-sched.c:1455:6: warning: no previous prototype for function 'tick_setup_sched_timer_dump' [-Wmissing-prototypes]
+   void tick_setup_sched_timer_dump(void)
+        ^
+   kernel/time/tick-sched.c:1455:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void tick_setup_sched_timer_dump(void)
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/tick_setup_sched_timer_dump +1455 kernel/time/tick-sched.c
+
+  1454	
+> 1455	void tick_setup_sched_timer_dump(void)
+  1456	{
+  1457		int cpu;
+  1458		int j = jiffies;
+  1459	
+  1460		pr_alert("%s state", __func__);
+  1461		for_each_possible_cpu(cpu)
+  1462			pr_cont(" j/c %x/%d %c",
+  1463				(int)(j - per_cpu(tick_setup_sched_timer_jiffies, cpu)) & 0xfff,
+  1464				per_cpu(tick_setup_sched_timer_jiffies_count, cpu),
+  1465				".H"[per_cpu(tick_setup_sched_timer_help_needed, cpu)]);
+  1466		pr_cont("\n");
+  1467	}
+  1468	
+
 ---
-Changelog
-
-v1 -> v2
-
-* Change 1. Add cc.
----
- drivers/ide/ide_platform.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/ide/ide_platform.c b/drivers/ide/ide_platform.c
-index 91639fd6c276..8c6e1af7b6eb 100644
---- a/drivers/ide/ide_platform.c
-+++ b/drivers/ide/ide_platform.c
-@@ -85,6 +85,10 @@ static int plat_ide_probe(struct platform_device *pdev)
- 		alt_base = devm_ioport_map(&pdev->dev,
- 			res_alt->start, resource_size(res_alt));
- 	}
-+	if (!base || !alt_base) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 
- 	memset(&hw, 0, sizeof(hw));
- 	plat_ide_setup_ports(&hw, base, alt_base, pdata, res_irq->start);
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
