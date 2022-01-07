@@ -2,14 +2,14 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 322C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4086DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:56:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234552AbiAGS4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:56:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35717 "EHLO
+        id S232076AbiAGS4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:56:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53408 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232350AbiAGSzd (ORCPT
+        by vger.kernel.org with ESMTP id S232420AbiAGSzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 13:55:33 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
@@ -18,31 +18,31 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=k4SnPRfohbWJYlYqIshsS8CG6xHH62BSu2K9MaE+rjk=;
-        b=FPnf/mkau1+87sZ9L1vmZwbm9kfFgm3bH+yCTnwrWiAZYlkrPFNMXoTNtCWJNlQbtDCrY1
-        dk9AWKY0qS4EoGlLCYSQqqqlFAl6IUU3CWSFBWtxpeiTZDYaR6xtO1aeBtHsJ/NOqeYj4B
-        ETkyKv9eMtwPssb9aoC6S7q/oN+ym9Q=
+        bh=WTky+Ff5k+SsgPAlcEGFVL3q/vgzgcpj3M9H7vE1YZA=;
+        b=N3OhT/V4+grbmQ65nbPPmx2qKjCuw1CUcaMvCMeNV3mIKw28x9wBiR16ZWPgI5IzUj0voy
+        OjgHHTfjtPDIRzDhKkYI6Umkop5S00//7I345ewemeWNEL77Brk70cxP65ZFvBtomyCYgu
+        ArVSwd5ySMBaawajRHAQ8l+ApU3ce6o=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-163-VNWohdm5MxarjAglXM-Bwg-1; Fri, 07 Jan 2022 13:55:29 -0500
-X-MC-Unique: VNWohdm5MxarjAglXM-Bwg-1
+ us-mta-543-qXADCnr5OUW8e_ccQcvgmg-1; Fri, 07 Jan 2022 13:55:27 -0500
+X-MC-Unique: qXADCnr5OUW8e_ccQcvgmg-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 445D181EE60;
-        Fri,  7 Jan 2022 18:55:27 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4F9BF10168C0;
+        Fri,  7 Jan 2022 18:55:25 +0000 (UTC)
 Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 333F492FAF;
-        Fri,  7 Jan 2022 18:55:26 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 921A58CB2B;
+        Fri,  7 Jan 2022 18:55:24 +0000 (UTC)
 From:   Paolo Bonzini <pbonzini@redhat.com>
 To:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org
 Cc:     guang.zeng@intel.com, jing2.liu@intel.com, kevin.tian@intel.com,
         seanjc@google.com, tglx@linutronix.de, wei.w.wang@intel.com,
         yang.zhong@intel.com
-Subject: [PATCH v6 15/21] kvm: x86: Add XCR0 support for Intel AMX
-Date:   Fri,  7 Jan 2022 13:55:06 -0500
-Message-Id: <20220107185512.25321-16-pbonzini@redhat.com>
+Subject: [PATCH v6 13/21] kvm: x86: Emulate IA32_XFD_ERR for guest
+Date:   Fri,  7 Jan 2022 13:55:04 -0500
+Message-Id: <20220107185512.25321-14-pbonzini@redhat.com>
 In-Reply-To: <20220107185512.25321-1-pbonzini@redhat.com>
 References: <20220107185512.25321-1-pbonzini@redhat.com>
 MIME-Version: 1.0
@@ -54,48 +54,75 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jing Liu <jing2.liu@intel.com>
 
-Two XCR0 bits are defined for AMX to support XSAVE mechanism. Bit 17
-is for tilecfg and bit 18 is for tiledata.
+Emulate read/write to IA32_XFD_ERR MSR.
 
-The value of XCR0[17:18] is always either 00b or 11b. Also, SDM
-recommends that only 64-bit operating systems enable Intel AMX by
-setting XCR0[18:17]. 32-bit host kernel never sets the tile bits in
-vcpu->arch.guest_supported_xcr0.
+Only the saved value in the guest_fpu container is touched in the
+emulation handler. Actual MSR update is handled right before entering
+the guest (with preemption disabled)
 
+Signed-off-by: Zeng Guang <guang.zeng@intel.com>
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 Signed-off-by: Jing Liu <jing2.liu@intel.com>
-Signed-off-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Yang Zhong <yang.zhong@intel.com>
-Message-Id: <20220105123532.12586-16-yang.zhong@intel.com>
+Message-Id: <20220105123532.12586-14-yang.zhong@intel.com>
 Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 ---
- arch/x86/kvm/x86.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/kvm/x86.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 2475b64cb762..993eee6451ea 100644
+index bb9534590a3a..2475b64cb762 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -211,7 +211,7 @@ static struct kvm_user_return_msrs __percpu *user_return_msrs;
- #define KVM_SUPPORTED_XCR0     (XFEATURE_MASK_FP | XFEATURE_MASK_SSE \
- 				| XFEATURE_MASK_YMM | XFEATURE_MASK_BNDREGS \
- 				| XFEATURE_MASK_BNDCSR | XFEATURE_MASK_AVX512 \
--				| XFEATURE_MASK_PKRU)
-+				| XFEATURE_MASK_PKRU | XFEATURE_MASK_XTILE)
+@@ -1377,7 +1377,7 @@ static const u32 msrs_to_save_all[] = {
+ 	MSR_F15H_PERF_CTL3, MSR_F15H_PERF_CTL4, MSR_F15H_PERF_CTL5,
+ 	MSR_F15H_PERF_CTR0, MSR_F15H_PERF_CTR1, MSR_F15H_PERF_CTR2,
+ 	MSR_F15H_PERF_CTR3, MSR_F15H_PERF_CTR4, MSR_F15H_PERF_CTR5,
+-	MSR_IA32_XFD,
++	MSR_IA32_XFD, MSR_IA32_XFD_ERR,
+ };
  
- u64 __read_mostly host_efer;
- EXPORT_SYMBOL_GPL(host_efer);
-@@ -1010,6 +1010,11 @@ static int __kvm_set_xcr(struct kvm_vcpu *vcpu, u32 index, u64 xcr)
- 		if ((xcr0 & XFEATURE_MASK_AVX512) != XFEATURE_MASK_AVX512)
- 			return 1;
- 	}
-+
-+	if ((xcr0 & XFEATURE_MASK_XTILE) &&
-+	    ((xcr0 & XFEATURE_MASK_XTILE) != XFEATURE_MASK_XTILE))
-+		return 1;
-+
- 	vcpu->arch.xcr0 = xcr0;
+ static u32 msrs_to_save[ARRAY_SIZE(msrs_to_save_all)];
+@@ -3699,6 +3699,17 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  
- 	if ((xcr0 ^ old_xcr0) & XFEATURE_MASK_EXTEND)
+ 		fpu_update_guest_xfd(&vcpu->arch.guest_fpu, data);
+ 		break;
++	case MSR_IA32_XFD_ERR:
++		if (!msr_info->host_initiated &&
++		    !guest_cpuid_has(vcpu, X86_FEATURE_XFD))
++			return 1;
++
++		if (data & ~(XFEATURE_MASK_USER_DYNAMIC &
++			     vcpu->arch.guest_supported_xcr0))
++			return 1;
++
++		vcpu->arch.guest_fpu.xfd_err = data;
++		break;
+ #endif
+ 	default:
+ 		if (kvm_pmu_is_valid_msr(vcpu, msr))
+@@ -4028,6 +4039,13 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 
+ 		msr_info->data = vcpu->arch.guest_fpu.fpstate->xfd;
+ 		break;
++	case MSR_IA32_XFD_ERR:
++		if (!msr_info->host_initiated &&
++		    !guest_cpuid_has(vcpu, X86_FEATURE_XFD))
++			return 1;
++
++		msr_info->data = vcpu->arch.guest_fpu.xfd_err;
++		break;
+ #endif
+ 	default:
+ 		if (kvm_pmu_is_valid_msr(vcpu, msr_info->index))
+@@ -6465,6 +6483,7 @@ static void kvm_init_msr_list(void)
+ 				continue;
+ 			break;
+ 		case MSR_IA32_XFD:
++		case MSR_IA32_XFD_ERR:
+ 			if (!kvm_cpu_cap_has(X86_FEATURE_XFD))
+ 				continue;
+ 			break;
 -- 
 2.31.1
 
