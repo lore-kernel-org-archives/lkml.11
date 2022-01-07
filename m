@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37946C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 03:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76AE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 03:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345703AbiAGDEt (ORCPT
+        id S1345704AbiAGDFK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 22:04:49 -0500
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:35708 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344981AbiAGDEt (ORCPT
+        Thu, 6 Jan 2022 22:05:10 -0500
+Received: from mail-oi1-f169.google.com ([209.85.167.169]:42579 "EHLO
+        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344950AbiAGDFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 22:04:49 -0500
-Received: by mail-oi1-f182.google.com with SMTP id s127so6512294oig.2;
-        Thu, 06 Jan 2022 19:04:48 -0800 (PST)
+        Thu, 6 Jan 2022 22:05:09 -0500
+Received: by mail-oi1-f169.google.com with SMTP id w80so6460097oie.9;
+        Thu, 06 Jan 2022 19:05:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LyWkM4tBgwFCX05sZIe2VIqupQhhasHmfIXlEJszdhg=;
-        b=tyxRcmf2INP7z2PZdtMn0PXDdFuMd263Xi0ftMh+zqkwhmCPrBPcK903w5EteKwpI/
-         Io8D1kvnfQz2qIuod5V5ZumDNBRyrDBAYlxvp+RZp45dryr4+sqdtmjb1mMcQDQx0IhQ
-         5TgcIMKwArvuUWmOAjbtHJK3OYtPOrMcOLNS80M7zBl+FGtR+0T12qCB63lKQnxg+d6a
-         K1HxC/wsXEcnT5yFVc0KIMFSP2Py1D29R6lmzmUjsABeSAIKHz6iGj/c9wOFfoijYlAK
-         h381ZhmB8NoV7JhfuihH0I8EKUvvET+XGNFW2Bz6bmOQ9uUw9pF3g6PCvOfiPSnTzr0W
-         800w==
-X-Gm-Message-State: AOAM5330wtNXi5zaGi6dIIXfjxWEoqdOA0I1sRAVv3Pa79vSBU3/sGpU
-        2ntDJFWfc/bxkm5ptnRvoqZhu+2ajA==
-X-Google-Smtp-Source: ABdhPJwNWLclG7pcGqVKKoFpRqEDnbF4dkRo1by5R2tPaVNaQL9z0uXVtkGML4c9a3bIT8Y6DXV3yA==
-X-Received: by 2002:aca:ac93:: with SMTP id v141mr8597056oie.106.1641524688602;
-        Thu, 06 Jan 2022 19:04:48 -0800 (PST)
+        bh=Zsx3qDj2DvypF3b69YZdJxriNNUsp6EFVMJrxgh19EU=;
+        b=ncRfCPat9M1evSjlCAUbZljvzSbEoHMnK4E+6vAAwIxlEK+sjVn8/9FDGqUjDXgorE
+         AYHrtZF1AQ3pNxazZQCoXR71L2wjzVyyzWdWjw9UCiDBO+4dwJPQ8YmZXai0n25fUYn+
+         0eObE/hXL70l67kr1l5mtGcOAL3KKQXmOaLPzwaI+4RQXsQLzv18yrX6NksU6sQwpBea
+         AMvFv9aVGR4IC8mO20QSsed5TnUD7okglsX/yf+fwBicjPoMB4tzDZ6eI/nmyxlucgVt
+         GQfHO1mJRh4/7KjtG4tiBbFuzi7zvdoVGVng9i++mpODCe1CRaO/wVfOskTxz4hCYpZi
+         DfCg==
+X-Gm-Message-State: AOAM531TO51SQZnrINZSMpU510KGyAu1ssLhKonniMWdk2viaNidMXw/
+        AYNJCHCNAj+uOlDcWrI4qQ==
+X-Google-Smtp-Source: ABdhPJxoO85v786P50dk73DP0YuhspO0BtdFzkoW3DJQcQ3BmFECERFl6LAlAPvElshDGjsrHV8TSQ==
+X-Received: by 2002:a05:6808:19a5:: with SMTP id bj37mr2597227oib.132.1641524708699;
+        Thu, 06 Jan 2022 19:05:08 -0800 (PST)
 Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.googlemail.com with ESMTPSA id g17sm721400oiy.14.2022.01.06.19.04.47
+        by smtp.googlemail.com with ESMTPSA id p7sm665573ots.57.2022.01.06.19.05.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 19:04:48 -0800 (PST)
+        Thu, 06 Jan 2022 19:05:08 -0800 (PST)
 From:   Rob Herring <robh@kernel.org>
-To:     Iskren Chernev <iskren.chernev@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matheus Castello <matheus@castello.eng.br>,
-        Sebastian Reichel <sre@kernel.org>
-Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+To:     Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suman Anna <s-anna@ti.com>
+Cc:     linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: power: maxim,max17040: Fix incorrect type for 'maxim,rcomp'
-Date:   Thu,  6 Jan 2022 21:04:33 -0600
-Message-Id: <20220107030433.2381616-1-robh@kernel.org>
+Subject: [PATCH] dt-bindings: remoteproc: ti: Fix the number of mailboxes
+Date:   Thu,  6 Jan 2022 21:04:55 -0600
+Message-Id: <20220107030457.2383750-1-robh@kernel.org>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -53,30 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The 'maxim,rcomp' is defined as a uint32, but the description and users all
-say it is uint8-array with 1 or 2 elements. The tools missed checking this
-case.
+Based on the example, the TI K3 DSP and R5 have 2 mailboxes, but the schema
+says 1. Fix the schema.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/power/supply/maxim,max17040.yaml      | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml         | 2 +-
+ .../devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/power/supply/maxim,max17040.yaml b/Documentation/devicetree/bindings/power/supply/maxim,max17040.yaml
-index ffb344987a7b..6b4588a3253b 100644
---- a/Documentation/devicetree/bindings/power/supply/maxim,max17040.yaml
-+++ b/Documentation/devicetree/bindings/power/supply/maxim,max17040.yaml
-@@ -44,7 +44,9 @@ properties:
-       SoC == State of Charge == Capacity.
- 
-   maxim,rcomp:
--    $ref: /schemas/types.yaml#/definitions/uint32
-+    $ref: /schemas/types.yaml#/definitions/uint8-array
-+    minItems: 1
+diff --git a/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
+index 5ec6505ac408..648144fa1582 100644
+--- a/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/ti,k3-dsp-rproc.yaml
+@@ -53,7 +53,7 @@ properties:
+       OMAP Mailbox specifier denoting the sub-mailbox, to be used for
+       communication with the remote processor. This property should match
+       with the sub-mailbox node used in the firmware image.
+-    maxItems: 1
 +    maxItems: 2
-     description: |
-       A value to compensate readings for various battery chemistries and operating temperatures.
-       max17040,41 have 2 byte rcomp, default to 0x97 0x00.
+ 
+   memory-region:
+     minItems: 2
+diff --git a/Documentation/devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml b/Documentation/devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml
+index eeef255c4045..2c5f91ea5296 100644
+--- a/Documentation/devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/ti,k3-r5f-rproc.yaml
+@@ -135,7 +135,7 @@ patternProperties:
+           OMAP Mailbox specifier denoting the sub-mailbox, to be used for
+           communication with the remote processor. This property should match
+           with the sub-mailbox node used in the firmware image.
+-        maxItems: 1
++        maxItems: 2
+ 
+       memory-region:
+         description: |
 -- 
 2.32.0
 
