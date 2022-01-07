@@ -2,101 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FE2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344140AbiAGAOO (ORCPT
+        id S1344147AbiAGAOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 19:14:14 -0500
-Received: from mout.gmx.net ([212.227.17.20]:46757 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343788AbiAGAOE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 19:14:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641514442;
-        bh=GXWM4/EezVw90Q1yq7MNbtsLpD/+cAlg3y+cQMfbSB8=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=KBQqBfx+qMimh6e1iBpYxrQK3KIejIMEpuVSvP+Z2Y6lEmYcHo+Zf3E4+R4jicWX5
-         aqzKA7IClNDYPyf3xIO+lt5GayiGfq8AFNwt+0ImV7ptOUK5vwIPpJGq07VrBEa+di
-         dGmBp/WzP/JqCUhqQjZtA3cYYPvbqQy4XNPGiv2M=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from ls3530 ([92.116.152.191]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N5mKJ-1mKb1V0ist-017CsJ; Fri, 07
- Jan 2022 01:14:02 +0100
-Date:   Fri, 7 Jan 2022 01:13:02 +0100
-From:   Helge Deller <deller@gmx.de>
-To:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
-Cc:     linux-parisc@vger.kernel.org
-Subject: [PATCH] sections: Fix __is_kernel() to include init ranges
-Message-ID: <YdeFjo1OyhAD3/+K@ls3530>
+        Thu, 6 Jan 2022 19:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343860AbiAGAOH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 19:14:07 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71F4C061212;
+        Thu,  6 Jan 2022 16:14:06 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id t32so3987391pgm.7;
+        Thu, 06 Jan 2022 16:14:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Qnrm4M73pcXgG2prIGPXbohVD9PEy3lmOekq9Ie7yIc=;
+        b=ObYPBPNQI76IvDAFqWLlVXbar5bUsxlHdNYmKMlhDj1JMnwjejflYfRT4SpcXGU5aI
+         cj+ArGk2ej/+GfYyl2Y/LiBBLDXCoSE8iHQGjwEUcAlW5d3CYtT2BRPerazDhhQc6Ggm
+         ++ZCAlyw0GHtPz2mQnPEWZv4Lw7gj8TeSUxs9yYKFz2Zy+ApBv9AonaWoVUCqNXtTgnQ
+         aDaln5QjljfU3GXEkFtRzkUVVJYvFuKjR2DIXW3yUy/+bKW0yBNfF0hdObSOKzMHjLjs
+         /29YrbAHUb+scwzv2SqNYrM9sgdFIKf3N1yOy8aUN2VIO72s9+N5iIIK+dFjJpw2hRIt
+         nDZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Qnrm4M73pcXgG2prIGPXbohVD9PEy3lmOekq9Ie7yIc=;
+        b=D4R3NA3mCUUvNkmRHA+Ig6wmenFsI0YTAEKKTAXtdn+YKMQqR7l6A6H0m1WFSC/mYB
+         qiTAmvOcVjriyPzcH5J0f4uKk6YkMS7+uk6TBR78MV2L0onlufiLnCqg8yxvm9a61RqR
+         VGyNS+ezq85kG2GKLBc5MaI0SGlMZ0vuBovMNtA6wyRD0GSYqWAJtGEx+gcZ7KR0TODD
+         kL2SUbCVMtEnqii1v5H3zJxkShyYhC34RCCKSl+utiLwoM/++xMYfrNBGc7MMaUUEjB2
+         a3uUdPDxEwXQ7nYPv3qxUiF5dxCRsneoqKjQKE3zlVqPlhwgv1YQYn9CsnYOAALgkUTJ
+         Y2+Q==
+X-Gm-Message-State: AOAM530WSIwidH9hMxJaSdHG+mGp0BB8mvrifx4gQKvV8DxXyU3i29nT
+        ddcgdXJWCBbbmwyhFwyt3nM=
+X-Google-Smtp-Source: ABdhPJy/ay5oezAqQtSDT5SKYRsd02isnhXaeOH806ZvUoIyPwUpjWfGtPyaoihnmnkCwwsjnzD5aQ==
+X-Received: by 2002:a62:80d8:0:b0:4bb:a8c5:868 with SMTP id j207-20020a6280d8000000b004bba8c50868mr57972741pfd.25.1641514446464;
+        Thu, 06 Jan 2022 16:14:06 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y3sm3301906pju.37.2022.01.06.16.14.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 06 Jan 2022 16:14:06 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-mtd@lists.infradead.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Colin Ian King <colin.king@intel.com>,
+        linux-kernel@vger.kernel.org (open list),
+        linux-wireless@vger.kernel.org (open list:BROADCOM SPECIFIC AMBA DRIVER
+        (BCMA)),
+        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM STB NAND
+        FLASH DRIVER)
+Subject: [PATCH v2 3/9] mtd: rawnand: brcmnand: Avoid pdev in brcmnand_init_cs()
+Date:   Thu,  6 Jan 2022 16:13:22 -0800
+Message-Id: <20220107001328.2233896-4-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220107001328.2233896-1-f.fainelli@gmail.com>
+References: <20220107001328.2233896-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Provags-ID: V03:K1:l2V/NFTYg4pHP7N2VuiFMzJsYgHSpjx30pzLTEnEda3F8gvjLKL
- sG+UTVajAWFLn1IBdDBF6nGOZ/lyt5DgZVfzMCaUd9G0Y+6V0zgFirWSfZE1ctmHszUFHor
- l6YYr8ywKFnMlJ5AFG9f4noleezH9C2fEjEecLWso2msGTl7WVA9y1vYNZUglxD5TQR5FxK
- +dCCLVu8H5dG2acMZfzow==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:z21eSQYKMPY=:47dF8xUytUfpRYmsQ81rzW
- ACNWxPFTYMe2o0CuQaNtnyjtYvgI37yQs6TTgZv3y4b3N2x59B3NHqfeFkJQWNI4yxxpOrVp5
- zkvp9fzL+wTiaVpxpMzoBxTpqCop1AinDfDXDXhkfVtwY01JdUXXnTR1lSAehThrkKnLtSSaw
- /8krTi1Yf7KfC6zMdJ2BpJ7Sx/9Nrdr5MUlLBBWHicNYk3Emv6IVcpoJK5L0UxqD6PjSIjIyH
- auvatjpwsxwuf5gvPWrG6obMwn7Q5UDO2/j9BkKynSda3wLqnCn4ZaxM2rckstgaAkPSaUaNO
- 1uwapGPnHxvI77CncwS/1sMzNb/boOwiQ4v/5v81GZrcgSyxv2sKpF14sCzEbylO4aoVlJefL
- yyhYhIWrCvgDu/P68qEPTOao8tSHTOI2jD/oPuh2S8RuiSf7r28AUoocK/cJi+KHgAljXdAWA
- oM58TmLeti+cIOYUCl3Jr88Exxf2bqVB/TPSzBntchPiX9VvI/9zGiGzbBukIlmGOTYBp3D4x
- nfvi8tpPADDJV8mMt5vXHnsVQC/3i6rBUWVvASnxBHIGIXj6DBLXW92adUkrgpt/Z1AlJfSym
- LRgQmgYcw0YCgeA1sVuiVlclifSg/I11EzLw15whB1OFJBdataz/AZdvlwhUGc7OV6+lkIGEP
- q+l4UV4ymGaZNcQEJr6U7PPwOi7QwggvK4kj74slVgcrOWk+fVFQ4e1t7mB6lIrV0Cgy2Jn9d
- cpTYOY1sxU65KMf3meHIrnNrsJIyKnVcvz1E1M8yaMODjUfoKZF3b96OGyPPC+0XnoV72+vS2
- kt94w3evJC61duBiQdHJlf7AU9B6rf0lRoLjV8gk/VGWTByRhKb3I5kzFQBFZAgmmsBRMhSAy
- eG6nfe+3bGNOE/TugYY0AMHJk0OM1OXGT8O7kX3Zzzm9H9ZLu0n6hKj4vGzb2m4oPbTbqrAl8
- 1Fz/Ec4AF3gmqa3TKmerX4hfMFK9s+dH76+tsUuUk04qH7dRIh3ronkEJbnlZiJi2av/6IUvI
- Mx12zqXlF9DuqVse1EZwRj81VqT0eyrZRlZdwO5VM1Szq5TwiNFmUWL4NhWsm9Mbpc9ekovhm
- Xo9pxNRoKtfIt4=
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With CONFIG_KALLSYMS_ALL=3Dy, the function is_ksym_addr() is used to
-determine if a symbol is from inside the kernel range. For that the
-given symbol address is checked if it's inside the _stext to _end range.
+In preparation for encapsulation more of what the loop calling
+brcmnand_init_cs() does, avoid using platform_device when it is the
+device behind platform_device that we are using for printing errors.
 
-Although this is correct, some architectures (e.g. parisc) may have the
-init area before the _stext address and as such the check in
-is_ksym_addr() fails.  By extending the range check to include the init
-section, __is_kernel() will now detect symbols in this range as well.
+No functional change.
 
-This fixes an issue on parisc where addresses of kernel functions in
-init sections aren't resolved to their symbol names.
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/mtd/nand/raw/brcmnand/brcmnand.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-
-diff --git a/include/asm-generic/sections.h b/include/asm-generic/sections=
-.h
-index 1dfadb2e878d..00566b1fd699 100644
-=2D-- a/include/asm-generic/sections.h
-+++ b/include/asm-generic/sections.h
-@@ -193,12 +193,16 @@ static inline bool __is_kernel_text(unsigned long ad=
-dr)
-  * @addr: address to check
-  *
-  * Returns: true if the address is located in the kernel range, false oth=
-erwise.
-- * Note: an internal helper, only check the range of _stext to _end.
-+ * Note: an internal helper, check the range of _stext to _end,
-+ *       and range from __init_begin to __init_end, which can be outside
-+ *       of the _stext to _end range.
-  */
- static inline bool __is_kernel(unsigned long addr)
+diff --git a/drivers/mtd/nand/raw/brcmnand/brcmnand.c b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
+index 9c3909c34dc2..fc14765f7d23 100644
+--- a/drivers/mtd/nand/raw/brcmnand/brcmnand.c
++++ b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
+@@ -2771,7 +2771,7 @@ static const struct nand_controller_ops brcmnand_controller_ops = {
+ static int brcmnand_init_cs(struct brcmnand_host *host, struct device_node *dn)
  {
--	return addr >=3D (unsigned long)_stext &&
--	       addr < (unsigned long)_end;
-+	return ((addr >=3D (unsigned long)_stext &&
-+	         addr < (unsigned long)_end) ||
-+		(addr >=3D (unsigned long)__init_begin &&
-+		 addr < (unsigned long)__init_end));
- }
+ 	struct brcmnand_controller *ctrl = host->ctrl;
+-	struct platform_device *pdev = host->pdev;
++	struct device *dev = ctrl->dev;
+ 	struct mtd_info *mtd;
+ 	struct nand_chip *chip;
+ 	int ret;
+@@ -2779,7 +2779,7 @@ static int brcmnand_init_cs(struct brcmnand_host *host, struct device_node *dn)
+ 
+ 	ret = of_property_read_u32(dn, "reg", &host->cs);
+ 	if (ret) {
+-		dev_err(&pdev->dev, "can't get chip-select\n");
++		dev_err(dev, "can't get chip-select\n");
+ 		return -ENXIO;
+ 	}
+ 
+@@ -2788,13 +2788,13 @@ static int brcmnand_init_cs(struct brcmnand_host *host, struct device_node *dn)
+ 
+ 	nand_set_flash_node(chip, dn);
+ 	nand_set_controller_data(chip, host);
+-	mtd->name = devm_kasprintf(&pdev->dev, GFP_KERNEL, "brcmnand.%d",
++	mtd->name = devm_kasprintf(dev, GFP_KERNEL, "brcmnand.%d",
+ 				   host->cs);
+ 	if (!mtd->name)
+ 		return -ENOMEM;
+ 
+ 	mtd->owner = THIS_MODULE;
+-	mtd->dev.parent = &pdev->dev;
++	mtd->dev.parent = dev;
+ 
+ 	chip->legacy.cmd_ctrl = brcmnand_cmd_ctrl;
+ 	chip->legacy.cmdfunc = brcmnand_cmdfunc;
+-- 
+2.25.1
 
- #endif /* _ASM_GENERIC_SECTIONS_H_ */
