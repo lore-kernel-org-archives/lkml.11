@@ -2,64 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 05:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E856FC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 05:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232810AbiAGFNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 00:13:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60672 "EHLO
+        id S1346146AbiAGFNt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 00:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230199AbiAGFNk (ORCPT
+        with ESMTP id S232008AbiAGFNm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 00:13:40 -0500
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4258C061245;
-        Thu,  6 Jan 2022 21:13:39 -0800 (PST)
-Received: by mail-qv1-xf33.google.com with SMTP id a9so4495349qvd.12;
-        Thu, 06 Jan 2022 21:13:39 -0800 (PST)
+        Fri, 7 Jan 2022 00:13:42 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32547C0611FD;
+        Thu,  6 Jan 2022 21:13:42 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id l11so4896406qke.11;
+        Thu, 06 Jan 2022 21:13:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZMydJcrYBWYfz++yrfm9numu8P51rovdFWjDysMdzMU=;
-        b=a5jrSCUy1qzOk0ZWI58bGTSzjl7h9MI33mTRLrzjp7eqX8vy2OgCMm2NqzCxatLtgR
-         pTyMLjRvp+Yy8AnNOsoPYCIwX9PbUxcjR+7GXviasb2iEPKt42v23yzYdFuP4F20S2QP
-         8AXrB2iCLHTvGO2pwE7gjPdo2W/qBDPULbtokC0xvegiSt+EGi5yr2N2t86uh72aUZuQ
-         l/RbSq9sPih1MRDegj4CtJbcpmy5aHfi35ffmVMBNb5D2lNoTRHlUV19yUEvcDHv9ppz
-         OK94V3/VZj/t1WYEFVmH0UmVq00C4l2JTO04PRoGjMNn79VG74R78n3cfnkDRVEoJ143
-         7HxQ==
+        bh=ZnX2c/AivJPvE3M4KgpGz9qCvVjWTtRZpCLeFLJb/64=;
+        b=jhcH33f2rPJdslRUlsnQb/mI5egx3yjh1XRyMm1WHG3iNkzWWKLPWiwt1LvxANMrm6
+         +wuTlRzzaEJAHEnGVYo66bULDqob6E+XP08ruvluHzgCCyA9uaGV6lcQNpSkZcxPmHjC
+         laOvrBhyfeqEQW3rMlEiVYEWA49a6HrO+2RoScWGyP0sOK4A41q8iuW009sz8vN6oqNY
+         RGc5zybzvtgFd4MxIhYKAWU5RsjqqThBSNxNdHqW4nRrEv/l9re1/JyFT8Mk0t27stSa
+         nMZiHyg3qsS44wioLnKqSpvb1w72tzbUvOUzDp/c4Q8rTI47dNCm3BhEASgiYLrmLGpW
+         hJaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZMydJcrYBWYfz++yrfm9numu8P51rovdFWjDysMdzMU=;
-        b=MF6/+z89BqpoBmnk8OCjY7UQhxxZroO1IOAvJXmAwAd5CRKXINSLiUwIv+Y/Wf6Izm
-         b3R8Xj7yHhEeFCIXtkuuwRDm3zHd5JTed/fAbVkC5UEgcjaeOkf1kuosCkmOAXRv0Nk4
-         C9kV9aIlzHdN11JM4NxFWkN2oP4PiL75mNHvKVDaEy1iiqI3Ev/G2s0VeMaJAtW08xi9
-         gLeaIRwMdqBBRN3Iwceg/3FHoNGQK8lo4r/F1hrOV3W6wa9+aI0VSntLUUkVuJKyG5yW
-         IGclCuNU6CmBb1VHU23gxh82zWR387HXDxaCwsljB7MXKtcKSQudpWoQ/gP1xqDrANjN
-         ZIDQ==
-X-Gm-Message-State: AOAM530UdbA8v5c3EdNjPW4ihjkZo7FdDGmqAE0BWdjfnsuOzEdJTQg4
-        8Lg0DdnTizaKGTcJsPalj2Q=
-X-Google-Smtp-Source: ABdhPJzQlCJkK20myaaVTzColneVsGaenQ+DXHtAqF3mYdlYfCIYFWj4CwHF5nOdIFNiuMhMRqGISA==
-X-Received: by 2002:ad4:5beb:: with SMTP id k11mr53243086qvc.120.1641532418778;
-        Thu, 06 Jan 2022 21:13:38 -0800 (PST)
+        bh=ZnX2c/AivJPvE3M4KgpGz9qCvVjWTtRZpCLeFLJb/64=;
+        b=en8iMBU5x6I+RWr31o4BvDWGruTTp9k2/kUfFkJAD5JZ+xw8g3ZAdm2GF0uLFwUxDQ
+         RKFrubZQcs+PMW52ES1QqIDKc615oSqBIBnLGgNvHhO7gZvZNXbzVbBRHSz+BOAd+oR9
+         basjNx76PJmQFFuPYSwLgwEPgWjUAHjx7N6IMsg/FnXHB7w7IUL+9bjkvlwTCvuwgEHL
+         H/KNn5eMUGujZSqUlr3OgZYFKvn12IZdJ+UIJIA4KojSs+scpRXFNoC0w2SbbPx8APkI
+         71X05ZaVJJtBM6uDOHavk4fwojfqLgKW+H4y5bzbujIVQcxfijTpPCKbNrpWlAUuvy/9
+         HMeQ==
+X-Gm-Message-State: AOAM5333/OTw6X5OMC6H5orjRd5Nu2mOA3pdHiYL4JE/C0dJlhudE4Ig
+        8Eyyy6OSwmBIltsJan2S0w4=
+X-Google-Smtp-Source: ABdhPJyxvYrqYFDlkIi0IZIQpBfxEsFe8ZBlx2sEOe9KCyROC7cqYGRV1dzISY18pXdzDCCbz24+YA==
+X-Received: by 2002:a05:620a:25c8:: with SMTP id y8mr44783504qko.455.1641532421366;
+        Thu, 06 Jan 2022 21:13:41 -0800 (PST)
 Received: from master-x64.sparksnet (c-98-233-193-225.hsd1.dc.comcast.net. [98.233.193.225])
-        by smtp.gmail.com with ESMTPSA id d15sm1651461qka.3.2022.01.06.21.13.38
+        by smtp.gmail.com with ESMTPSA id d15sm1651461qka.3.2022.01.06.21.13.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 21:13:38 -0800 (PST)
+        Thu, 06 Jan 2022 21:13:41 -0800 (PST)
 From:   Peter Geis <pgwipeout@gmail.com>
-To:     Jagan Teki <jagan@amarulasolutions.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Peter Geis <pgwipeout@gmail.com>, dri-devel@lists.freedesktop.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/4] dt-bindings: display: panel: feiyang,fy07024di26a30d: make reset gpio optional
-Date:   Fri,  7 Jan 2022 00:13:32 -0500
-Message-Id: <20220107051335.3812535-2-pgwipeout@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>, Heiko Stuebner <heiko@sntech.de>
+Cc:     Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 4/4] arm64: dts: rockchip: enable the pine64 touch screen on rockpro64
+Date:   Fri,  7 Jan 2022 00:13:35 -0500
+Message-Id: <20220107051335.3812535-5-pgwipeout@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220107051335.3812535-1-pgwipeout@gmail.com>
 References: <20220107051335.3812535-1-pgwipeout@gmail.com>
@@ -69,26 +66,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some implementations do not use the reset signal, instead tying it to dvdd.
-Make the reset gpio optional to permit this.
+Enable the touch screen, backlight, and dsi nodes for the Pine64 touch panel
+attached to the rockpro64.
 
 Signed-off-by: Peter Geis <pgwipeout@gmail.com>
 ---
- .../bindings/display/panel/feiyang,fy07024di26a30d.yaml          | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml b/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml
-index 95acf9e96f1c..1cf84c8dd85e 100644
---- a/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/feiyang,fy07024di26a30d.yaml
-@@ -35,7 +35,6 @@ required:
-   - reg
-   - avdd-supply
-   - dvdd-supply
--  - reset-gpios
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
+index 158befb9a48c..f6c36fcd6db3 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
++++ b/arch/arm64/boot/dts/rockchip/rk3399-rockpro64.dtsi
+@@ -26,7 +26,7 @@ backlight: backlight {
+ 		pwms = <&pwm0 0 1000000 0>;
+ 		brightness-levels = <0 4 8 16 32 64 128 255>;
+ 		default-brightness-level = <5>;
+-		status = "disabled";
++		status = "okay";
+ 	};
  
- additionalProperties: false
+ 	clkin_gmac: external-gmac-clock {
+@@ -594,7 +594,7 @@ touch: touchscreen@5d {
+ 		interrupts = <RK_PD5 IRQ_TYPE_EDGE_FALLING>;
+ 		irq-gpios = <&gpio4 RK_PD5 GPIO_ACTIVE_HIGH>;
+ 		reset-gpios = <&gpio4 RK_PD6 GPIO_ACTIVE_HIGH>;
+-		status = "disabled";
++		status = "okay";
+ 	};
+ };
  
+@@ -633,7 +633,7 @@ &io_domains {
+ 
+ /* enable for pine64 panel display support */
+ &mipi_dsi {
+-	status = "disabled";
++	status = "okay";
+ 	clock-master;
+ 
+ 	ports {
 -- 
 2.32.0
 
