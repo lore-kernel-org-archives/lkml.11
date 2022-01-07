@@ -2,112 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C389DC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E77B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344028AbiAGAOM (ORCPT
+        id S1344140AbiAGAOO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 19:14:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343798AbiAGAOD (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 19:14:03 -0500
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93F52C061245;
-        Thu,  6 Jan 2022 16:14:03 -0800 (PST)
-Received: by mail-pg1-x534.google.com with SMTP id f5so3968511pgk.12;
-        Thu, 06 Jan 2022 16:14:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HAeEFO2qvIKP8NId8vfdtckbt5Y7Yjs9xWcmvkhoZSI=;
-        b=mdWAqTR9fyhSi8Df7gWYtdt7BHU2fsxRj+WXjvkMximiEO56VSnNXZa7g8cw7sTj8v
-         6cArDCX5bwiLMqs9LzNjVITJyqHY+8LYvBdtnKQ5bSzHS9hI0/Gw9Tvga5smTjlJi8Ed
-         f7r8lfJgtqBrr90aEeH7F3vhT/iFihgzY2X/0zzfWwexuKJwGCnbtKR1LnLuwP/gfw0g
-         ZTyOvLaEXJxZPFgAh2b/iX0v769jenBmV+cpIjmDo1zWX31/E8CNoZMizEbghMXH5cp3
-         L8mH7aiPI5Wc1qLDVqiYgaMLHo91C862JzSO3d3dy5IuYGc/YHbPpaEdLaeF96aEdYpG
-         8CRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HAeEFO2qvIKP8NId8vfdtckbt5Y7Yjs9xWcmvkhoZSI=;
-        b=GyxDo2UmhIi761unqONkC5bpHPZSXJ+wKi5YRUpb7zF7SyWHIQcC8nyDTEhY+NPxqI
-         i/46VX6OQFXo+9IU7CXQwXSqeAuHyJABKbBUGw4G8DgzbDlmxumdbni5W859c7JJkIiQ
-         hCGD9MDFb8FQRKFnxrPNh7Hkoo11e7Fra75LR+Ii//Av+pVW8w7QoQJRRfTYqeLmKzIu
-         orxDGi/VQRxRhxGA+W2ySbOGtGzz5RvVqXvLz2gHVLBX+Hjkv08X1p2quIaT3Z1/HTAl
-         kRuNAIG2XA7h6RTVVvAIZhJxVXQwq25Zuk/jlEAzLqNzf7aEObbySm7AAk4ETHK6owow
-         R4rQ==
-X-Gm-Message-State: AOAM532+RQIv57fSLpnI6RlByNju7Vqv31GJbdpBDHdlmtnzXaP3cPJx
-        gCKfVWBjhEwIeIkBOEpZqSo=
-X-Google-Smtp-Source: ABdhPJy5ireaJcIcq1W271fVNEhILDI0b0GWowJLlF8ZFeWfAlMMJ10PGn35Xapr3uV6erfEEaIAvA==
-X-Received: by 2002:a05:6a00:130a:b0:4bd:118:8071 with SMTP id j10-20020a056a00130a00b004bd01188071mr1376710pfu.28.1641514443085;
-        Thu, 06 Jan 2022 16:14:03 -0800 (PST)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y3sm3301906pju.37.2022.01.06.16.14.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 16:14:02 -0800 (PST)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-mtd@lists.infradead.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Colin Ian King <colin.king@intel.com>,
-        linux-kernel@vger.kernel.org (open list),
-        linux-wireless@vger.kernel.org (open list:BROADCOM SPECIFIC AMBA DRIVER
-        (BCMA)),
-        bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM STB NAND
-        FLASH DRIVER)
-Subject: [PATCH v2 1/9] mtd: rawnand: brcmnand: Assign soc as early as possible
-Date:   Thu,  6 Jan 2022 16:13:20 -0800
-Message-Id: <20220107001328.2233896-2-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220107001328.2233896-1-f.fainelli@gmail.com>
-References: <20220107001328.2233896-1-f.fainelli@gmail.com>
+        Thu, 6 Jan 2022 19:14:14 -0500
+Received: from mout.gmx.net ([212.227.17.20]:46757 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1343788AbiAGAOE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 19:14:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1641514442;
+        bh=GXWM4/EezVw90Q1yq7MNbtsLpD/+cAlg3y+cQMfbSB8=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=KBQqBfx+qMimh6e1iBpYxrQK3KIejIMEpuVSvP+Z2Y6lEmYcHo+Zf3E4+R4jicWX5
+         aqzKA7IClNDYPyf3xIO+lt5GayiGfq8AFNwt+0ImV7ptOUK5vwIPpJGq07VrBEa+di
+         dGmBp/WzP/JqCUhqQjZtA3cYYPvbqQy4XNPGiv2M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530 ([92.116.152.191]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N5mKJ-1mKb1V0ist-017CsJ; Fri, 07
+ Jan 2022 01:14:02 +0100
+Date:   Fri, 7 Jan 2022 01:13:02 +0100
+From:   Helge Deller <deller@gmx.de>
+To:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-arch@vger.kernel.org
+Cc:     linux-parisc@vger.kernel.org
+Subject: [PATCH] sections: Fix __is_kernel() to include init ranges
+Message-ID: <YdeFjo1OyhAD3/+K@ls3530>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Provags-ID: V03:K1:l2V/NFTYg4pHP7N2VuiFMzJsYgHSpjx30pzLTEnEda3F8gvjLKL
+ sG+UTVajAWFLn1IBdDBF6nGOZ/lyt5DgZVfzMCaUd9G0Y+6V0zgFirWSfZE1ctmHszUFHor
+ l6YYr8ywKFnMlJ5AFG9f4noleezH9C2fEjEecLWso2msGTl7WVA9y1vYNZUglxD5TQR5FxK
+ +dCCLVu8H5dG2acMZfzow==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:z21eSQYKMPY=:47dF8xUytUfpRYmsQ81rzW
+ ACNWxPFTYMe2o0CuQaNtnyjtYvgI37yQs6TTgZv3y4b3N2x59B3NHqfeFkJQWNI4yxxpOrVp5
+ zkvp9fzL+wTiaVpxpMzoBxTpqCop1AinDfDXDXhkfVtwY01JdUXXnTR1lSAehThrkKnLtSSaw
+ /8krTi1Yf7KfC6zMdJ2BpJ7Sx/9Nrdr5MUlLBBWHicNYk3Emv6IVcpoJK5L0UxqD6PjSIjIyH
+ auvatjpwsxwuf5gvPWrG6obMwn7Q5UDO2/j9BkKynSda3wLqnCn4ZaxM2rckstgaAkPSaUaNO
+ 1uwapGPnHxvI77CncwS/1sMzNb/boOwiQ4v/5v81GZrcgSyxv2sKpF14sCzEbylO4aoVlJefL
+ yyhYhIWrCvgDu/P68qEPTOao8tSHTOI2jD/oPuh2S8RuiSf7r28AUoocK/cJi+KHgAljXdAWA
+ oM58TmLeti+cIOYUCl3Jr88Exxf2bqVB/TPSzBntchPiX9VvI/9zGiGzbBukIlmGOTYBp3D4x
+ nfvi8tpPADDJV8mMt5vXHnsVQC/3i6rBUWVvASnxBHIGIXj6DBLXW92adUkrgpt/Z1AlJfSym
+ LRgQmgYcw0YCgeA1sVuiVlclifSg/I11EzLw15whB1OFJBdataz/AZdvlwhUGc7OV6+lkIGEP
+ q+l4UV4ymGaZNcQEJr6U7PPwOi7QwggvK4kj74slVgcrOWk+fVFQ4e1t7mB6lIrV0Cgy2Jn9d
+ cpTYOY1sxU65KMf3meHIrnNrsJIyKnVcvz1E1M8yaMODjUfoKZF3b96OGyPPC+0XnoV72+vS2
+ kt94w3evJC61duBiQdHJlf7AU9B6rf0lRoLjV8gk/VGWTByRhKb3I5kzFQBFZAgmmsBRMhSAy
+ eG6nfe+3bGNOE/TugYY0AMHJk0OM1OXGT8O7kX3Zzzm9H9ZLu0n6hKj4vGzb2m4oPbTbqrAl8
+ 1Fz/Ec4AF3gmqa3TKmerX4hfMFK9s+dH76+tsUuUk04qH7dRIh3ronkEJbnlZiJi2av/6IUvI
+ Mx12zqXlF9DuqVse1EZwRj81VqT0eyrZRlZdwO5VM1Szq5TwiNFmUWL4NhWsm9Mbpc9ekovhm
+ Xo9pxNRoKtfIt4=
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to key off the brcmnand_probe() code in subsequent changes
-depending upon ctlr->soc, assign that variable as early as possible,
-instead of much later when we have checked that it is non-NULL.
+With CONFIG_KALLSYMS_ALL=3Dy, the function is_ksym_addr() is used to
+determine if a symbol is from inside the kernel range. For that the
+given symbol address is checked if it's inside the _stext to _end range.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- drivers/mtd/nand/raw/brcmnand/brcmnand.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Although this is correct, some architectures (e.g. parisc) may have the
+init area before the _stext address and as such the check in
+is_ksym_addr() fails.  By extending the range check to include the init
+section, __is_kernel() will now detect symbols in this range as well.
 
-diff --git a/drivers/mtd/nand/raw/brcmnand/brcmnand.c b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-index f75929783b94..63080ae3aef1 100644
---- a/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-@@ -2998,6 +2998,7 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
- 
- 	dev_set_drvdata(dev, ctrl);
- 	ctrl->dev = dev;
-+	ctrl->soc = soc;
- 
- 	init_completion(&ctrl->done);
- 	init_completion(&ctrl->dma_done);
-@@ -3138,8 +3139,6 @@ int brcmnand_probe(struct platform_device *pdev, struct brcmnand_soc *soc)
- 	 * interesting ways
- 	 */
- 	if (soc) {
--		ctrl->soc = soc;
--
- 		ret = devm_request_irq(dev, ctrl->irq, brcmnand_irq, 0,
- 				       DRV_NAME, ctrl);
- 
--- 
-2.25.1
+This fixes an issue on parisc where addresses of kernel functions in
+init sections aren't resolved to their symbol names.
 
+Signed-off-by: Helge Deller <deller@gmx.de>
+
+diff --git a/include/asm-generic/sections.h b/include/asm-generic/sections=
+.h
+index 1dfadb2e878d..00566b1fd699 100644
+=2D-- a/include/asm-generic/sections.h
++++ b/include/asm-generic/sections.h
+@@ -193,12 +193,16 @@ static inline bool __is_kernel_text(unsigned long ad=
+dr)
+  * @addr: address to check
+  *
+  * Returns: true if the address is located in the kernel range, false oth=
+erwise.
+- * Note: an internal helper, only check the range of _stext to _end.
++ * Note: an internal helper, check the range of _stext to _end,
++ *       and range from __init_begin to __init_end, which can be outside
++ *       of the _stext to _end range.
+  */
+ static inline bool __is_kernel(unsigned long addr)
+ {
+-	return addr >=3D (unsigned long)_stext &&
+-	       addr < (unsigned long)_end;
++	return ((addr >=3D (unsigned long)_stext &&
++	         addr < (unsigned long)_end) ||
++		(addr >=3D (unsigned long)__init_begin &&
++		 addr < (unsigned long)__init_end));
+ }
+
+ #endif /* _ASM_GENERIC_SECTIONS_H_ */
