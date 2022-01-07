@@ -2,104 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E65C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 029B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:01:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231478AbiAGTBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:01:15 -0500
-Received: from mail-oi1-f170.google.com ([209.85.167.170]:40885 "EHLO
-        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229836AbiAGTBN (ORCPT
+        id S231801AbiAGTBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:01:42 -0500
+Received: from out01.mta.xmission.com ([166.70.13.231]:40118 "EHLO
+        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230439AbiAGTBk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:01:13 -0500
-Received: by mail-oi1-f170.google.com with SMTP id t204so9443630oie.7;
-        Fri, 07 Jan 2022 11:01:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=M9Ewz3je/UPVYnHWZBwxIw8fSnK7ld3cFu23OJRs32o=;
-        b=QSaiHZcUjaBlieoGO4ml/wWDA+vMLHMr1IjWVXohsvog7agq7DAsdQ9enlnOatOTr4
-         rc7S/torPYNqCv7cOI4aoTVd6/PwhvzNrU06C7p+UUlxIryJp5C2jC5dVpVySHSdjZxT
-         KlbqjYlwqzj57oRGQzAAfD9j4NMZAC/pv6THl04Omrb5OxklmR5+KxUKcGUVIYU29Qgj
-         uSYUA1UaVTib58btL9+uMT5j0NS6pIVtlc1c63OfgLjoAbPshDiC/ype0evbCVLROarC
-         TlTTMat8KlMVUx0eh7hzagSXVFgA2D5Q8lUw9Jo0o2VbebK2s/qBJohPcTFMrB6srYR2
-         OD3Q==
-X-Gm-Message-State: AOAM530eoln2lOrLfRhkfYCitqP610cMiw+5Zp163gRiNXiEepox2zyi
-        xo/UOVwVJDoBrFUyzLPl6A==
-X-Google-Smtp-Source: ABdhPJxquTndMbNj9kp8gfIWlQVYbrUBHSB+Weu7q94ndIncJ7r49i9m0gMX0OQlKB+LamGTAe7UxA==
-X-Received: by 2002:a05:6808:13ce:: with SMTP id d14mr10955251oiw.62.1641582073051;
-        Fri, 07 Jan 2022 11:01:13 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id be30sm1117011oib.50.2022.01.07.11.01.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 11:01:12 -0800 (PST)
-Received: (nullmailer pid 3702049 invoked by uid 1000);
-        Fri, 07 Jan 2022 19:01:11 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Roger Lu <roger.lu@mediatek.com>
-Cc:     HenryC Chen <HenryC.Chen@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Nishanth Menon <nm@ti.com>, Rob Herring <robh+dt@kernel.org>,
-        Charles Yang <Charles.Yang@mediatek.com>,
-        linux-pm@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Kevin Hilman <khilman@kernel.org>,
-        Nicolas Boichat <drinkcat@google.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Fan Chen <fan.chen@mediatek.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Angus Lin <Angus.Lin@mediatek.com>,
-        YT Lee <yt.lee@mediatek.com>,
-        Enric Balletbo Serra <eballetbo@gmail.com>
-In-Reply-To: <20220107095200.4389-2-roger.lu@mediatek.com>
-References: <20220107095200.4389-1-roger.lu@mediatek.com> <20220107095200.4389-2-roger.lu@mediatek.com>
-Subject: Re: [PATCH v21 1/8] dt-bindings: soc: mediatek: add mtk svs dt-bindings
-Date:   Fri, 07 Jan 2022 13:01:11 -0600
-Message-Id: <1641582071.084026.3702048.nullmailer@robh.at.kernel.org>
+        Fri, 7 Jan 2022 14:01:40 -0500
+Received: from in01.mta.xmission.com ([166.70.13.51]:58856)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n5uUc-00HEXO-Sv; Fri, 07 Jan 2022 12:01:38 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:48588 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n5uUb-002BFF-JJ; Fri, 07 Jan 2022 12:01:38 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Martin Schwidefsky <schwidefsky@de.ibm.com>,
+        Christoph Hellwig <hch@infradead.org>
+In-Reply-To: <YdUxGKRcSiDy8jGg@zeniv-ca.linux.org.uk> (Al Viro's message of
+        "Wed, 5 Jan 2022 05:48:08 +0000")
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+        <20211208202532.16409-3-ebiederm@xmission.com>
+        <YdUxGKRcSiDy8jGg@zeniv-ca.linux.org.uk>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+Date:   Fri, 07 Jan 2022 12:59:33 -0600
+Message-ID: <87tuefwewa.fsf@email.froward.int.ebiederm.org>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-XM-SPF: eid=1n5uUb-002BFF-JJ;;;mid=<87tuefwewa.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/ylOQ812OzYa8pP/ypTCEqNmeufvP4Onc=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 03/10] exit: Move oops specific logic from do_exit into
+ make_task_dead
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 07 Jan 2022 17:51:53 +0800, Roger Lu wrote:
-> Document the binding for enabling mtk svs on MediaTek SoC.
-> 
-> Signed-off-by: Roger Lu <roger.lu@mediatek.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->  .../bindings/soc/mediatek/mtk-svs.yaml        | 84 +++++++++++++++++++
->  1 file changed, 84 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml
-> 
+Al Viro <viro@zeniv.linux.org.uk> writes:
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> On Wed, Dec 08, 2021 at 02:25:25PM -0600, Eric W. Biederman wrote:
+>> -	/*
+>> -	 * If do_exit is called because this processes oopsed, it's possible
+>> -	 * that get_fs() was left as KERNEL_DS, so reset it to USER_DS before
+>> -	 * continuing. Amongst other possible reasons, this is to prevent
+>> -	 * mm_release()->clear_child_tid() from writing to a user-controlled
+>> -	 * kernel address.
+>> -	 */
+>> -	force_uaccess_begin();
+>
+> Are you sure about that one?  It shouldn't matter, but... it's a potential
+> change for do_exit() from a kernel thread.  As it is, we have that
+> force_uaccess_begin() for exiting threads and for kernel ones it's not
+> a no-op.  I'm not concerned about attempted userland access after that
+> point for those, obviously, but I'm not sure you won't step into something
+> subtle here.
+>
+> I would prefer to split that particular change off into a separate commit...
 
-yamllint warnings/errors:
+Thank you for catching that.  I was leaning too much on the description
+in the comment of why force_uaccess_begin is there.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml: properties:nvmem-cells: {'minItems': 1, 'maxItems': 2, 'description': 'Phandle to the calibration data provided by a nvmem device.', 'items': [{'description': 'SVS efuse for SVS controller'}, {'description': 'Thermal efuse for SVS controller'}]} should not be valid under {'required': ['maxItems']}
-	hint: "maxItems" is not needed with an "items" list
-	from schema $id: http://devicetree.org/meta-schemas/items.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/mediatek/mtk-svs.yaml: ignoring, error in schema: properties: nvmem-cells
-Documentation/devicetree/bindings/soc/mediatek/mtk-svs.example.dt.yaml:0:0: /example-0/soc/svs@1100b000: failed to match any schema with compatible: ['mediatek,mt8183-svs']
+Catching up on the state of set_fs/get_fs removal it appears like a lot
+of progress has been made and on a lot of architectures set_fs/get_fs is
+just gone, and force_uaccess_begin is a noop.
 
-doc reference errors (make refcheckdocs):
+On architectures that still have set_fs/get_fs it appears all of the old
+warts are present and kernel threads still run with set_fs(KERNEL_DS).
 
-See https://patchwork.ozlabs.org/patch/1576508
+Assuming it won't be too much longer before the rest of the arches have
+set_fs/get_fs removed it looks like it makes sense to leave the
+force_uaccess_begin where it is, and just let force_uaccess_begin be
+removed when set_fs/get_fs are removed from the tree.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+Christoph does it look like the set_fs/get_fs removal work is going
+to stall indefinitely on some architectures?  If so I think we want to
+find a way to get kernel threads to run with set_fs(USER_DS) on the
+stalled architectures.  Otherwise I think we have a real hazard of
+introducing bugs that will only show up on the stalled architectures.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+I finally understand now why when I updated set_child_tid in the kthread
+code early in fork why x86 was fine another architecture was not.
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+Eric
