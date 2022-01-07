@@ -2,347 +2,384 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D694C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiAGTNF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:13:05 -0500
-Received: from fanzine2.igalia.com ([213.97.179.56]:56522 "EHLO
-        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbiAGTNE (ORCPT
+        id S230159AbiAGTPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:15:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230055AbiAGTPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:13:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Mu1MS8v1YzWJzK/MkK2PdJuPfEK7bSkcuv2REn2NNb8=; b=dIi4im8Bs6aHDOq1WtOtg23xKy
-        GIqoPfETwRdhZGA5aVzai4O8s00JtAygFf6vxflWWwkRTphEQDAV+oyHzuI0CWmeNR7jVhOwEV6+y
-        EPiOTqO5F3Qz95gVMbbOD3M0PqeG841KF8LNkrBvcb2EW4JPE9oRpS1X4XuutPQIYvyAsGJmngt5W
-        ++XkmCOcrrimDnqAo7aklRvF20yHH/tN6/YOdjAFakbSTceqfevV56+g8T9Zes54rcfG5UcZk91Wj
-        nbGeejMi2gQ+4LvB+0PBEv5KKLzRnqDXvudvONQSB7P/Mhje5JR6qEXpjwBJTHPBg1Vnc68cZCo91
-        6qblIVfA==;
-Received: from [179.113.53.20] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1n5ufb-0004cp-Oy; Fri, 07 Jan 2022 20:13:00 +0100
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dyoung@redhat.com
-Cc:     linux-doc@vger.kernel.org, bhe@redhat.com, vgoyal@redhat.com,
-        stern@rowland.harvard.edu, akpm@linux-foundation.org,
-        andriy.shevchenko@linux.intel.com, corbet@lwn.net,
-        halves@canonical.com, gpiccoli@igalia.com, kernel@gpiccoli.net
-Subject: [PATCH V3] notifier/panic: Introduce panic_notifier_filter
-Date:   Fri,  7 Jan 2022 16:12:33 -0300
-Message-Id: <20220107191233.172644-1-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.34.1
+        Fri, 7 Jan 2022 14:15:02 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B709C061401
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:15:02 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id n17-20020a9d64d1000000b00579cf677301so7611717otl.8
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 11:15:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WtHO/Q1bDJN+G650TFpgg/0NiPkrLAPHRgb8v223Lbo=;
+        b=qONpMQerFVvJzeuaO7HJZFklpD0RhtVscnKhouQotEj2yGV1inUiOVjoIrwSdcu3u5
+         pziPKDh5Uy7aBsppkzh1MRIAQnoQOo0+/Oan2f5Bj8tvGHYrreKOHECnFdMpf+pTDVTp
+         P6BK9/snST6swA4g+dDgOQLIU8d7pSDbV61aSvYUOrljBJJXiH0SdGOvcadatIgcLwwb
+         o2Dm/tjA4ew7sIDw0kzYcHUzJtXgLZke1SNSx1SqM2mbIZmTmLWLSXe3rzX9t1lMOLqP
+         /5hdc7f/ubXWLgLzD84Vgk0ltCExiIb7IxZ2x+0lwtIZI7R10QI/lxhIGdDsYzUvkLZ+
+         pxaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WtHO/Q1bDJN+G650TFpgg/0NiPkrLAPHRgb8v223Lbo=;
+        b=MmeHHPltjC/eeZN73h1Vhx9ENEFuuVebgr/EvUJMBMVEs0OEYB1+CY39Gb3+b0F5jm
+         HaiVfXuErxlaaYtJlZPzNSN7AXQE4EwgUEm9Dx7LMWCHdg56yuL4Mk9oPStwN4uHpYqI
+         Z18pXy2xSvWxUzryhSv90nP8ELrdv18MN2nyuMPf0sqB52Hlb6JL6ZhC6GaWBj0SJIHd
+         9V00MIYk+W607qHkFfM3neQkayih0tOJV0ynxpqQ7bhDTsLxz8+IZYgBXnyCN+AFEBSL
+         SHxQHSi1P/3ilvmCvRhsUTgFhPNADxI/6oHusA7qYt3FX2AeWixQtdoDweAOMwcw4690
+         RCsA==
+X-Gm-Message-State: AOAM531bPFliE1WGYYxLz+YW4oqNZmhbgbrxPZqe9qovgp+jYFSfMy3Y
+        riT1/hJkSVamfypqVrElR5b5fA==
+X-Google-Smtp-Source: ABdhPJyER9T3EOwYSOIowyTf9EWMcugUaNVPtcM6nDpPtMfbdbEXtdMfAc/EnCINbs1sZwTKzmfUgQ==
+X-Received: by 2002:a9d:84c:: with SMTP id 70mr47330471oty.185.1641582901293;
+        Fri, 07 Jan 2022 11:15:01 -0800 (PST)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id h1sm992357oog.26.2022.01.07.11.15.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 11:15:00 -0800 (PST)
+Date:   Fri, 7 Jan 2022 11:15:49 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Vinod Koul <vkoul@kernel.org>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH 2/8] phy: qcom-qmp: Register typec mux and orientation
+ switch
+Message-ID: <YdiRZUV0oJfsdHZV@ripper>
+References: <20211228052116.1748443-1-bjorn.andersson@linaro.org>
+ <20211228052116.1748443-3-bjorn.andersson@linaro.org>
+ <Ycvx2qOlPsVIjkHq@matsya>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ycvx2qOlPsVIjkHq@matsya>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel notifier infrastructure allows function callbacks to be
-added in multiple lists, which are then called in the proper time,
-like in a reboot or panic event. The panic_notifier_list specifically
-contains the callbacks that are executed during a panic event. As any
-other notifier list, the panic one has no filtering and all functions
-previously registered are executed.
+On Tue 28 Dec 21:27 PST 2021, Vinod Koul wrote:
 
-The kdump infrastructure, on the other hand, enables users to set
-a crash kernel that is kexec'ed in a panic event, and vmcore/logs
-are collected in such crash kernel. When kdump is set, by default
-the panic notifiers are ignored - the kexec jumps to the crash kernel
-before the list is checked and callbacks executed.
+> On 27-12-21, 21:21, Bjorn Andersson wrote:
+> > The QMP PHY handles muxing of USB vs DisplayPort, as well as orientation
+> > switching of the SuperSpeed lanes. So register typec handlers for the
+> > two types.
+> > 
+> > The TypeC mux allows switching between four lanes of DisplayPort and a
+> > mixed USB+DP combination. This makes it possible to reach resolutions
+> > that requires 4 lanes.
+> > 
+> > The TypeC switch allows switching the SuperSpeed pins and have been
+> > tested with both 2 and 4 lane DisplayPort.
+> > 
+> > It's possible that in the USB mode the DP_MODE should be disabled, but
+> > this is left untouched.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> > 
+> > My suggestion is that if/once this patch is deemed acceptable the PHY
+> > maintainers could create a immutable branch/tag which can be merged into the
+> > PHY tree as well as the USB tree.
+> > 
+> >  drivers/phy/qualcomm/phy-qcom-qmp.c | 176 +++++++++++++++++++++++++---
+> >  1 file changed, 158 insertions(+), 18 deletions(-)
+> > 
+> > diff --git a/drivers/phy/qualcomm/phy-qcom-qmp.c b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > index 7bea6a60dc54..8d8139df9d8e 100644
+> > --- a/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > +++ b/drivers/phy/qualcomm/phy-qcom-qmp.c
+> > @@ -19,6 +19,8 @@
+> >  #include <linux/regulator/consumer.h>
+> >  #include <linux/reset.h>
+> >  #include <linux/slab.h>
+> > +#include <linux/usb/typec_dp.h>
+> > +#include <linux/usb/typec_mux.h>
+> >  
+> >  #include <dt-bindings/phy/phy.h>
+> >  
+> > @@ -3017,6 +3019,9 @@ struct qmp_phy_dp_clks {
+> >   * @phy_mutex: mutex lock for PHY common block initialization
+> >   * @init_count: phy common block initialization count
+> >   * @ufs_reset: optional UFS PHY reset handle
+> > + * @sw: typec switch for receiving orientation changes
+> > + * @mux: typec mux for DP muxing
+> > + * @orientation: carries current CC orientation
+> >   */
+> >  struct qcom_qmp {
+> >  	struct device *dev;
+> > @@ -3032,6 +3037,10 @@ struct qcom_qmp {
+> >  	int init_count;
+> >  
+> >  	struct reset_control *ufs_reset;
+> > +
+> > +	struct typec_switch *sw;
+> > +	struct typec_mux *mux;
+> > +	enum typec_orientation orientation;
+> >  };
+> >  
+> >  static void qcom_qmp_v3_phy_dp_aux_init(struct qmp_phy *qphy);
+> > @@ -4378,30 +4387,23 @@ static void qcom_qmp_v3_phy_configure_dp_tx(struct qmp_phy *qphy)
+> >  
+> >  static bool qcom_qmp_phy_configure_dp_mode(struct qmp_phy *qphy)
+> >  {
+> > +	const struct phy_configure_opts_dp *dp_opts = &qphy->dp_opts;
+> > +	bool reverse = qphy->qmp->orientation == TYPEC_ORIENTATION_REVERSE;
+> >  	u32 val;
+> > -	bool reverse = false;
+> >  
+> >  	val = DP_PHY_PD_CTL_PWRDN | DP_PHY_PD_CTL_AUX_PWRDN |
+> >  	      DP_PHY_PD_CTL_PLL_PWRDN | DP_PHY_PD_CTL_DP_CLAMP_EN;
+> >  
+> > -	/*
+> > -	 * TODO: Assume orientation is CC1 for now and two lanes, need to
+> > -	 * use type-c connector to understand orientation and lanes.
+> > -	 *
+> > -	 * Otherwise val changes to be like below if this code understood
+> > -	 * the orientation of the type-c cable.
+> > -	 *
+> > -	 * if (lane_cnt == 4 || orientation == ORIENTATION_CC2)
+> > -	 *	val |= DP_PHY_PD_CTL_LANE_0_1_PWRDN;
+> > -	 * if (lane_cnt == 4 || orientation == ORIENTATION_CC1)
+> > -	 *	val |= DP_PHY_PD_CTL_LANE_2_3_PWRDN;
+> > -	 * if (orientation == ORIENTATION_CC2)
+> > -	 *	writel(0x4c, qphy->pcs + QSERDES_V3_DP_PHY_MODE);
+> > -	 */
+> > -	val |= DP_PHY_PD_CTL_LANE_2_3_PWRDN;
+> > +	if (dp_opts->lanes == 4 || reverse)
+> > +		val |= DP_PHY_PD_CTL_LANE_0_1_PWRDN;
+> > +	if (dp_opts->lanes == 4 || !reverse)
+> > +		val |= DP_PHY_PD_CTL_LANE_2_3_PWRDN;
+> >  	writel(val, qphy->pcs + QSERDES_DP_PHY_PD_CTL);
+> >  
+> > -	writel(0x5c, qphy->pcs + QSERDES_DP_PHY_MODE);
+> > +	if (reverse)
+> > +		writel(0x4c, qphy->pcs + QSERDES_DP_PHY_MODE);
+> > +	else
+> > +		writel(0x5c, qphy->pcs + QSERDES_DP_PHY_MODE);
+> >  
+> >  	return reverse;
+> >  }
+> > @@ -5809,6 +5811,123 @@ static const struct dev_pm_ops qcom_qmp_phy_pm_ops = {
+> >  			   qcom_qmp_phy_runtime_resume, NULL)
+> >  };
+> >  
+> > +#if IS_ENABLED(CONFIG_TYPEC)
+> > +static int qcom_qmp_phy_typec_switch_set(struct typec_switch *sw,
+> > +		enum typec_orientation orientation)
+> 
+> pls align to preceding open brace (here and other places)
+> 
 
-There are some cases though in which kdump users might want to
-allow panic notifier callbacks to execute _before_ the kexec to
-the crash kernel, for a variety of reasons - for example, users
-may think kexec is very prone to fail and want to give a chance
-to kmsg dumpers to run (and save logs using pstore), or maybe
-some panic notifier is required to properly quiesce some hardware
-that must be used to the crash kernel. For these cases, we have
-the kernel parameter "crash_kexec_post_notifiers".
+Sure thing.
 
-But there's a problem: currently it's an "all-or-nothing" situation,
-the kdump user choice is either to execute all panic notifiers or
-none of them. Given that panic notifiers may increase the risk of a
-kdump failure, this is a tough decision and may affect the debug of
-hard to reproduce bugs, if for some reason the user choice is to
-enable panic notifiers, but kdump then fails.
+> > +{
+> > +	struct qcom_qmp *qmp = typec_switch_get_drvdata(sw);
+> > +	void __iomem *dp_com = qmp->dp_com;
+> > +
+> > +	qmp->orientation = orientation;
+> > +
+> > +	if (orientation == TYPEC_ORIENTATION_REVERSE)
+> > +		qphy_setbits(dp_com, QPHY_V3_DP_COM_TYPEC_CTRL, 0x01);
+> > +	else
+> > +		qphy_clrbits(dp_com, QPHY_V3_DP_COM_TYPEC_CTRL, 0x01);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int qcom_qmp_phy_typec_mux_set(struct typec_mux *mux,
+> > +				      struct typec_mux_state *state)
+> > +{
+> > +	struct qcom_qmp *qmp = typec_mux_get_drvdata(mux);
+> > +	void __iomem *dp_com = qmp->dp_com;
+> > +	bool dp_mode;
+> > +	bool usb_mode;
+> > +
+> > +	switch (state->mode) {
+> > +	case TYPEC_STATE_SAFE:
+> > +	case TYPEC_STATE_USB:
+> > +		/*
+> > +		 * TODO: Figure out if we should clear DP_MODE when we enter a
+> > +		 * USB-only state.
+> > +		 */
+> > +		dp_mode = true;
+> 
+> should this be false for these states?
+> 
 
-So, this patch aims to ease this decision: we hereby introduce a filter
-for the panic notifier list, in which users may select specifically
-which callbacks they wish to run, allowing a safer kdump. The allowlist
-should be provided using the parameter "panic_notifier_filter=a,b,..."
-where a, b are valid callback names. Invalid symbols are discarded.
+I think it should, but figured that I better change the behavior in a
+separate follow-up commit. Might also be that SAFE should be
+false/false - or in some other way turning off the output.
 
-Currently up to 16 symbols may be passed in this list, we consider
-that this numbers allows enough flexibility (and no matter what
-architecture is used, at most 30 panic callbacks are registered).
-In an experiment using a qemu x86 virtual machine, by default only
-six callbacks are registered in the panic notifier list.
-Once a valid callback name is provided in the list, such function
-is allowed to be registered/unregistered in the panic_notifier_list;
-all other panic callbacks are ignored. Notice that this filter is
-only for the panic notifiers and has no effect in the other notifiers.
+Hence the TODO.
 
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
----
+> > +		usb_mode = true;
+> > +		break;
+> > +	case TYPEC_DP_STATE_A:
+> > +	case TYPEC_DP_STATE_C:
+> > +	case TYPEC_DP_STATE_E:
+> > +		dp_mode = true;
+> > +		usb_mode = false;
+> > +		break;
+> > +	case TYPEC_DP_STATE_B:
+> > +	case TYPEC_DP_STATE_D:
+> > +	case TYPEC_DP_STATE_F:
+> > +		dp_mode = true;
+> > +		usb_mode = true;
+> > +		break;
+> > +	}
+> 
+> looks like dp_mode is true always. And only for DP state A C E, usb_mode
+> is false...
+> 
 
+A, C and E are 4-lanes DP, while B, D, F are 2-lane DP and 2-lane USB.
 
+> > +
+> > +	qphy_setbits(dp_com, QPHY_V3_DP_COM_RESET_OVRD_CTRL,
+> > +		     SW_DPPHY_RESET_MUX | SW_USB3PHY_RESET_MUX);
+> > +	if (dp_mode)
+> > +		qphy_setbits(dp_com, QPHY_V3_DP_COM_PHY_MODE_CTRL, DP_MODE);
+> > +	else
+> > +		qphy_clrbits(dp_com, QPHY_V3_DP_COM_PHY_MODE_CTRL, DP_MODE);
+> > +
+> > +	if (usb_mode)
+> > +		qphy_setbits(dp_com, QPHY_V3_DP_COM_PHY_MODE_CTRL, USB3_MODE);
+> > +	else
+> > +		qphy_clrbits(dp_com, QPHY_V3_DP_COM_PHY_MODE_CTRL, USB3_MODE);
+> > +
+> > +	qphy_setbits(dp_com, QPHY_V3_DP_COM_SW_RESET, SW_RESET);
+> > +	qphy_clrbits(dp_com, QPHY_V3_DP_COM_SWI_CTRL, 0x03);
+> > +	qphy_clrbits(dp_com, QPHY_V3_DP_COM_SW_RESET, SW_RESET);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int qcom_qmp_phy_typec_register(struct qcom_qmp *qmp,
+> > +				       const struct qmp_phy_cfg *cfg)
+> > +{
+> > +	struct typec_switch_desc sw_desc = {};
+> > +	struct typec_mux_desc mux_desc = {};
+> > +	struct device *dev = qmp->dev;
+> > +
+> > +	if (!cfg->has_phy_dp_com_ctrl)
+> > +		return 0;
+> > +
+> > +	sw_desc.drvdata = qmp;
+> > +	sw_desc.fwnode = dev->fwnode;
+> > +	sw_desc.set = qcom_qmp_phy_typec_switch_set;
+> > +	qmp->sw = typec_switch_register(dev, &sw_desc);
+> > +	if (IS_ERR(qmp->sw)) {
+> > +		dev_err(dev, "Error registering typec switch: %pe\n", qmp->sw);
+> > +		return PTR_ERR(qmp->sw);
+> > +	}
+> > +
+> > +	mux_desc.drvdata = qmp;
+> > +	mux_desc.fwnode = dev->fwnode;
+> > +	mux_desc.set = qcom_qmp_phy_typec_mux_set;
+> > +	qmp->mux = typec_mux_register(dev, &mux_desc);
+> > +	if (IS_ERR(qmp->mux)) {
+> > +		dev_err(dev, "Error registering typec mux: %pe\n", qmp->mux);
+> > +		typec_switch_unregister(qmp->sw);
+> > +		return PTR_ERR(qmp->mux);
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static void qcom_qmp_phy_typec_unregister(struct qcom_qmp *qmp)
+> > +{
+> > +	typec_mux_unregister(qmp->mux);
+> > +	typec_switch_unregister(qmp->sw);
+> > +}
+> > +#else
+> 
+> empty line here pls
+> 
 
-V3:
+Okay.
 
-* Implemented Alan's suggestion (thanks!), simplifying the check code
-in the notifiers register/unregister functions. Notice that the
-suggestion was missing a negative in the check function, I even
-renamed it now, to be more clear:
-s/is_panic_notifier_filtered/should_register_panic_notifier
+Thanks,
+Bjorn
 
-The condition is !(A && B && C), and C is the check function, that
-returns true when a symbol *is found* in the notifier filter; hence
-we need to invert that here, as you can see in the code.
-
-
-* Implemented Andy's suggestion (thanks!), to reduce the code in
-the parameter parsing loop. Notice that strsep() modifies the buffer,
-so not sure if it was a typo but the correct code here is:
-
-single_param = strsep(&full_param_buffer, ",");
-
-
-* "Bumped" the log output of the parsing function: users should be
-warned in the errors (invalid symbol or exceeded entries) and
-informed (pr_info) in case the parsing succeeded - I think pr_debug
-was useless there.
-
-Cheers,
-
-Guilherme
-
-
-
- .../admin-guide/kernel-parameters.txt         | 14 +++++-
- include/linux/panic_notifier.h                | 10 +++++
- kernel/notifier.c                             | 44 +++++++++++++++++--
- kernel/panic.c                                | 43 ++++++++++++++++++
- 4 files changed, 106 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 2fba82431efb..2dc4e98823ae 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -3727,13 +3727,25 @@
- 	panic_on_warn	panic() instead of WARN().  Useful to cause kdump
- 			on a WARN().
- 
-+	panic_notifier_filter=[function-list]
-+			Limit the functions registered by the panic notifier
-+			infrastructure. This allowlist is composed by function
-+			names, comma separated (invalid symbols are filtered
-+			out). Such functionality is useful for kdump users
-+			that set "crash_kexec_post_notifiers" in order to
-+			execute	panic notifiers, but at the same time wish to
-+			have just a subset of notifiers, not all of them. The
-+			list of functions is limited to 16 entries currently.
-+
- 	crash_kexec_post_notifiers
- 			Run kdump after running panic-notifiers and dumping
- 			kmsg. This only for the users who doubt kdump always
- 			succeeds in any situation.
- 			Note that this also increases risks of kdump failure,
- 			because some panic notifiers can make the crashed
--			kernel more unstable.
-+			kernel more unstable. See the "panic_notifier_filter"
-+			parameter to have more control of which notifiers to
-+			execute.
- 
- 	parkbd.port=	[HW] Parallel port number the keyboard adapter is
- 			connected to, default is 0.
-diff --git a/include/linux/panic_notifier.h b/include/linux/panic_notifier.h
-index 41e32483d7a7..9a96753e96d8 100644
---- a/include/linux/panic_notifier.h
-+++ b/include/linux/panic_notifier.h
-@@ -5,6 +5,16 @@
- #include <linux/notifier.h>
- #include <linux/types.h>
- 
-+/*
-+ * The panic notifier filter infrastructure - each array element holds a
-+ * function address, to be checked against panic_notifier register/unregister
-+ * operations; these functions are allowed to be registered in the panic
-+ * notifier list. This setting is useful for kdump, since users may want
-+ * some panic notifiers to execute, but not all of them.
-+ */
-+extern unsigned long panic_nf_functions[];
-+extern int panic_nf_count;
-+
- extern struct atomic_notifier_head panic_notifier_list;
- 
- extern bool crash_kexec_post_notifiers;
-diff --git a/kernel/notifier.c b/kernel/notifier.c
-index b8251dc0bc0f..4fc450bbf677 100644
---- a/kernel/notifier.c
-+++ b/kernel/notifier.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0-only
-+#include <linux/panic_notifier.h>
- #include <linux/kdebug.h>
- #include <linux/kprobes.h>
- #include <linux/export.h>
-@@ -127,12 +128,34 @@ static int notifier_call_chain_robust(struct notifier_block **nl,
-  *	use a spinlock, and call_chain is synchronized by RCU (no locks).
-  */
- 
-+/*
-+ * The following helper is part of the panic notifier filter infrastructure;
-+ * users can filter what functions they wish to allow being registered in the
-+ * notifier system, restricted to the panic notifier. This is useful for kdump
-+ * for example, when some notifiers are relevant but running all of them imposes
-+ * risks to the kdump kernel reliability.
-+ */
-+static bool should_register_panic_notifier(struct notifier_block *n)
-+{
-+	int i;
-+
-+	for (i = 0; i < panic_nf_count; i++) {
-+		if ((unsigned long)(n->notifier_call) == panic_nf_functions[i])
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- /**
-  *	atomic_notifier_chain_register - Add notifier to an atomic notifier chain
-  *	@nh: Pointer to head of the atomic notifier chain
-  *	@n: New entry in notifier chain
-  *
-  *	Adds a notifier to an atomic notifier chain.
-+ *	If "panic_notifier_filter" is provided, we hereby filter the
-+ *	panic_notifier_list and only allow registering the functions
-+ *	that are present in the filter.
-  *
-  *	Currently always returns zero.
-  */
-@@ -140,10 +163,15 @@ int atomic_notifier_chain_register(struct atomic_notifier_head *nh,
- 		struct notifier_block *n)
- {
- 	unsigned long flags;
--	int ret;
-+	int ret = 0;
- 
- 	spin_lock_irqsave(&nh->lock, flags);
--	ret = notifier_chain_register(&nh->head, n);
-+
-+	if (!(nh == &panic_notifier_list &&
-+	     (panic_nf_count > 0) &&
-+	     !should_register_panic_notifier(n)))
-+		ret = notifier_chain_register(&nh->head, n);
-+
- 	spin_unlock_irqrestore(&nh->lock, flags);
- 	return ret;
- }
-@@ -155,6 +183,9 @@ EXPORT_SYMBOL_GPL(atomic_notifier_chain_register);
-  *	@n: Entry to remove from notifier chain
-  *
-  *	Removes a notifier from an atomic notifier chain.
-+ *	If "panic_notifier_filter" is provided, we hereby filter the
-+ *	panic_notifier_list and only allow unregistering the functions
-+ *	that are present in the filter.
-  *
-  *	Returns zero on success or %-ENOENT on failure.
-  */
-@@ -162,10 +193,15 @@ int atomic_notifier_chain_unregister(struct atomic_notifier_head *nh,
- 		struct notifier_block *n)
- {
- 	unsigned long flags;
--	int ret;
-+	int ret = 0;
- 
- 	spin_lock_irqsave(&nh->lock, flags);
--	ret = notifier_chain_unregister(&nh->head, n);
-+
-+	if (!(nh == &panic_notifier_list &&
-+	     (panic_nf_count > 0) &&
-+	     !should_register_panic_notifier(n)))
-+		ret = notifier_chain_unregister(&nh->head, n);
-+
- 	spin_unlock_irqrestore(&nh->lock, flags);
- 	synchronize_rcu();
- 	return ret;
-diff --git a/kernel/panic.c b/kernel/panic.c
-index cefd7d82366f..2603700a07a4 100644
---- a/kernel/panic.c
-+++ b/kernel/panic.c
-@@ -31,6 +31,7 @@
- #include <linux/console.h>
- #include <linux/bug.h>
- #include <linux/ratelimit.h>
-+#include <linux/kallsyms.h>
- #include <linux/debugfs.h>
- #include <asm/sections.h>
- 
-@@ -67,6 +68,16 @@ EXPORT_SYMBOL_GPL(panic_timeout);
- #define PANIC_PRINT_ALL_PRINTK_MSG	0x00000020
- unsigned long panic_print;
- 
-+/*
-+ * Kernel has currently < 30 panic handlers no matter the arch,
-+ * based on some code counting; so 16 items seems a good amount;
-+ * users that are filtering panic notifiers shouldn't add all
-+ * of them in theory, that doesn't make sense...
-+ */
-+#define	PANIC_NF_MAX	16
-+unsigned long panic_nf_functions[PANIC_NF_MAX];
-+int panic_nf_count;
-+
- ATOMIC_NOTIFIER_HEAD(panic_notifier_list);
- 
- EXPORT_SYMBOL(panic_notifier_list);
-@@ -146,6 +157,38 @@ void nmi_panic(struct pt_regs *regs, const char *msg)
- }
- EXPORT_SYMBOL(nmi_panic);
- 
-+static int __init panic_notifier_filter_setup(char *buf)
-+{
-+	char *func;
-+	unsigned long addr;
-+
-+	if (!buf)
-+		return -EINVAL;
-+
-+	while ((func = strsep(&buf, ","))) {
-+		addr = kallsyms_lookup_name(func);
-+
-+		if (!addr) {
-+			pr_warn("panic_notifier_filter: invalid symbol %s\n", func);
-+			continue;
-+		}
-+
-+		if (panic_nf_count < PANIC_NF_MAX) {
-+			panic_nf_functions[panic_nf_count] = addr;
-+			panic_nf_count++;
-+			pr_info("panic_notifier_filter: added symbol %s\n", func);
-+		} else {
-+			pr_warn("panic_notifier_filter: exceeded maximum notifiers (%d), aborting\n",
-+				PANIC_NF_MAX);
-+			panic_nf_count = 0;
-+			break;
-+		}
-+	}
-+
-+	return 0;
-+}
-+early_param("panic_notifier_filter", panic_notifier_filter_setup);
-+
- static void panic_print_sys_info(void)
- {
- 	if (panic_print & PANIC_PRINT_ALL_PRINTK_MSG)
--- 
-2.34.1
-
+> > +static int qcom_qmp_phy_typec_register(struct qcom_qmp *qmp,
+> > +				       const struct qmp_phy_cfg *cfg)
+> > +{
+> > +	return 0;
+> > +}
+> > +
+> > +static void qcom_qmp_phy_typec_unregister(struct qcom_qmp *qmp)
+> > +{
+> > +}
+> > +#endif
+> > +
+> >  static int qcom_qmp_phy_probe(struct platform_device *pdev)
+> >  {
+> >  	struct qcom_qmp *qmp;
+> > @@ -5891,7 +6010,15 @@ static int qcom_qmp_phy_probe(struct platform_device *pdev)
+> >  		return ret;
+> >  	}
+> >  
+> > -	num = of_get_available_child_count(dev->of_node);
+> > +	ret = qcom_qmp_phy_typec_register(qmp, cfg);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	num = 0;
+> > +	for_each_available_child_of_node(dev->of_node, child) {
+> > +		if (!of_node_name_eq(child, "port"))
+> > +			num++;
+> > +	}
+> >  	/* do we have a rogue child node ? */
+> >  	if (num > expected_phys)
+> >  		return -EINVAL;
+> > @@ -5918,6 +6045,9 @@ static int qcom_qmp_phy_probe(struct platform_device *pdev)
+> >  			serdes = usb_serdes;
+> >  		}
+> >  
+> > +		if (of_node_name_eq(child, "port"))
+> > +			continue;
+> > +
+> >  		/* Create per-lane phy */
+> >  		ret = qcom_qmp_phy_create(dev, child, id, serdes, cfg);
+> >  		if (ret) {
+> > @@ -5962,8 +6092,18 @@ static int qcom_qmp_phy_probe(struct platform_device *pdev)
+> >  	return ret;
+> >  }
+> >  
+> > +static int qcom_qmp_phy_remove(struct platform_device *pdev)
+> > +{
+> > +	struct qcom_qmp *qmp = platform_get_drvdata(pdev);
+> > +
+> > +	qcom_qmp_phy_typec_unregister(qmp);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static struct platform_driver qcom_qmp_phy_driver = {
+> >  	.probe		= qcom_qmp_phy_probe,
+> > +	.remove		= qcom_qmp_phy_remove,
+> >  	.driver = {
+> >  		.name	= "qcom-qmp-phy",
+> >  		.pm	= &qcom_qmp_phy_pm_ops,
+> > -- 
+> > 2.33.1
+> 
+> -- 
+> ~Vinod
