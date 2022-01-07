@@ -2,137 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E40C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B62BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346566AbiAGJzA (ORCPT
+        id S1346575AbiAGJze (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:55:00 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:43009 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237163AbiAGJy5 (ORCPT
+        Fri, 7 Jan 2022 04:55:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43876 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236788AbiAGJzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:54:57 -0500
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220107095454epoutp049018de6eeb6faaab94cc14d64e0b5999~H9GLxPB6k3123631236epoutp04b
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 09:54:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220107095454epoutp049018de6eeb6faaab94cc14d64e0b5999~H9GLxPB6k3123631236epoutp04b
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1641549295;
-        bh=0EUpvzWXJPRM0Kl1jaYy3rZSClH2Bw4XoaVDqebiRPQ=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=mDdC8POIGqyF4U4igFsHDkRf2syDG1WwYN8eE0Zq5LVT4rH9Sqltq8bCVb+/44rJu
-         K1JB0pNEqOF/Od/zJTxMEmmnKY+/dgGg0o5aJ19uAdHUPJDR1XHgrqm8dbldtMIeYz
-         z6JqSO2N7u7fWfqCrv+wL+WAm5w5XZgXdgoazDeQ=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220107095453epcas2p1c06b86c0c701148537d7a09c7a66a292~H9GKwaxUU0991109911epcas2p1k;
-        Fri,  7 Jan 2022 09:54:53 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.99]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4JVdqc4ltkz4x9Py; Fri,  7 Jan
-        2022 09:54:52 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        DA.07.51767.CED08D16; Fri,  7 Jan 2022 18:54:52 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912~H9GI5LPY53119431194epcas2p2i;
-        Fri,  7 Jan 2022 09:54:51 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220107095451epsmtrp1e0ab28c947ac4d7c557b4ce11f03be7f~H9GI4ObQm1528415284epsmtrp1B;
-        Fri,  7 Jan 2022 09:54:51 +0000 (GMT)
-X-AuditID: b6c32a45-447ff7000000ca37-7c-61d80dec3783
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        03.0C.08738.BED08D16; Fri,  7 Jan 2022 18:54:51 +0900 (KST)
-Received: from rack03.dsn.sec.samsung.com (unknown [12.36.155.109]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220107095451epsmtip244aebc901a71c08ef2e5019042e54a4b~H9GIsE-l21849418494epsmtip2k;
-        Fri,  7 Jan 2022 09:54:51 +0000 (GMT)
-From:   SEO HOYOUNG <hy50.seo@samsung.com>
-To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        asutoshd@codeaurora.org, cang@codeaurora.org, bvanassche@acm.org
-Cc:     SEO HOYOUNG <hy50.seo@samsung.com>
-Subject: [PATCH v2] scsi: ufs: modify Tactive time setting conditions
-Date:   Fri,  7 Jan 2022 06:39:24 +0900
-Message-Id: <20220106213924.186263-1-hy50.seo@samsung.com>
-X-Mailer: git-send-email 2.26.0
+        Fri, 7 Jan 2022 04:55:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641549332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vU/+uDnZT4UsYy+CubW6TDRh/j2zvfOBIhbG7CAs8Bc=;
+        b=G5tNpvk4yU/GJyKrTIJ4b0KIRzY+FrACpGrn/afUr43ffxXRd457ZccrcBOMaHczjfmBap
+        rnzu9Obz+TYuq0dRv2Qc/zgUuUUM55H8EYZu2us98K+VlESHghauafWBg3x+UXpDOTryOy
+        JCzRDuAYGV4jtn7uHm3SA7GxABqybWk=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-453-fdkK6teXNHKEmguP6OIS_g-1; Fri, 07 Jan 2022 04:55:31 -0500
+X-MC-Unique: fdkK6teXNHKEmguP6OIS_g-1
+Received: by mail-ed1-f69.google.com with SMTP id r8-20020a05640251c800b003f9a52daa3fso4218076edd.22
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 01:55:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vU/+uDnZT4UsYy+CubW6TDRh/j2zvfOBIhbG7CAs8Bc=;
+        b=a4mUFwM2sn1qx9uao4TPuBgjww8GDAvlImvEvQyd9weZjmzvbkxb/K8ywWuIf3u6Ad
+         eDGkznvhpF8MAEJuYAXGjbaUH7qKn2d7k3ZDIMt9SRPdD9+qGvE8mvB+I/bOsZfR+Hag
+         BBMP9gET2C8sqs8m30dBIP3LGbqE5kceSh4EYLc/zv2LQe1KiqoyJHfDDQqW6I7lZjg6
+         rj7DMyjTTJQOlpQQU0WNE8bq4DCnGuc3B1U9FbS9nmhkM0nAVshA2hoJyAb7xsVsFg8n
+         WKL/G5Zxi76O81buGOlLC57iTHTenN5QUrb0hAQLZeLzOC7qu9lFMNkIwujzvMZw7+LR
+         q41g==
+X-Gm-Message-State: AOAM530rwclipqQoA6XRwPgUMdXdCOGpsogUMkhSnX2H3CfR+PHhKNj5
+        FS8ajVM97M9kUKPGZ8PpdpJ5E+P5yE94sSU4Zaipk9sQ6HX5GNu67CqUABD1Afaz0yTzAKF6pMP
+        v5IF+sDAfsJd9dpypsFRtw7Rn
+X-Received: by 2002:a17:907:16a8:: with SMTP id hc40mr47473813ejc.210.1641549330373;
+        Fri, 07 Jan 2022 01:55:30 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyHF9wCz78cGHX4ge90ZwZXWSxnboBDzrhueC6nzlzaqaV7drboEBAgy4xLeyAlpf3HJpDSng==
+X-Received: by 2002:a17:907:16a8:: with SMTP id hc40mr47473791ejc.210.1641549330082;
+        Fri, 07 Jan 2022 01:55:30 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id ho9sm1248874ejc.86.2022.01.07.01.55.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 01:55:29 -0800 (PST)
+Message-ID: <44981345-5889-e8bd-01f7-2b80114adfd8@redhat.com>
+Date:   Fri, 7 Jan 2022 10:55:28 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] Bluetooth: btusb: Add a new quirk to skip
+ HCI_FLT_CLEAR_ALL on fake CSR controllers
+Content-Language: en-US
+To:     Ismael Ferreras Morezuelas <swyterzone@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <6a3f5e8b-fbc1-bad8-aef0-3e2cf9be364e@gmail.com>
+ <3BCA0ABD-6BFC-4487-A5DE-3AF043A6ADE0@holtmann.org>
+ <2efeb63e-a3ee-82a7-69bc-84d39745a4f8@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <2efeb63e-a3ee-82a7-69bc-84d39745a4f8@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrIJsWRmVeSWpSXmKPExsWy7bCmhe4b3huJBid2K1o8mLeNzWJv2wl2
-        i5c/r7JZHHzYyWIx7cNPZotP65exWqxe/IDFYtGNbUwWl3fNYbPovr6DzWL58X9MDtwel694
-        e1zu62XymLDoAKPH9/UdbB4fn95i8ejbsorR4/MmOY/2A91MARxR2TYZqYkpqUUKqXnJ+SmZ
-        eem2St7B8c7xpmYGhrqGlhbmSgp5ibmptkouPgG6bpk5QIcqKZQl5pQChQISi4uV9O1sivJL
-        S1IVMvKLS2yVUgtScgrMC/SKE3OLS/PS9fJSS6wMDQyMTIEKE7Izlt7oYS14yl5xrmsfcwPj
-        XrYuRk4OCQETiT19TUA2F4eQwA5Gia3L/zKBJIQEPjFKTJpSC5H4zCgx+coBJpiOx4sfMUIk
-        djFKbJj/iR3C+cEosb/rGSNIFZuAhsSaY4eYQBIiAt8YJRb/fQHWziygJvH57jIWEFtYwFVi
-        z5dLrCA2i4CqxM3+12A1vAJWEmv71rJArJOXWNTwGyouKHFy5hMWiDnyEs1bZzODLJAQ+Msu
-        0b97J9AgDiDHRWLRhyqIXmGJV8e3sEPYUhIv+9vYIeqbGSXWz5zDBOFMYZSY++wpK0SVscSs
-        Z+2MIIOYBTQl1u/Sh5ipLHHkFtRePomOw3/ZIcK8Eh1tQhCNShJn5t6GCktIHJydAxH2kJgy
-        ZzcrJERjJQ5/fsI4gVF+FpJnZiF5ZhbC2gWMzKsYxVILinPTU4uNCgzhkZqcn7uJEZxWtVx3
-        ME5++0HvECMTB+MhRgkOZiUR3ql7ryUK8aYkVlalFuXHF5XmpBYfYjQFBu9EZinR5HxgYs8r
-        iTc0sTQwMTMzNDcyNTBXEuf1StmQKCSQnliSmp2aWpBaBNPHxMEp1cDEwrzb+nOAgWmNyeSL
-        4d+j1j5h1RVSmfkkNphpmXTmdM15AuZ2ksylB1zY/dZ6Wtc4XWY+zpp+ZnoJ14vv+z5Ymu1+
-        LevPeHny59hjN+dMvRupHujJXmnzO+nGo3qu57qbFz36sF16r8mL/TM/c1i4nGStNVF4vmr6
-        b5m3FUs02BQUkidWnZx4NLriROFCp3vcWvukd8jWWuyRFW89yD2x2mvy0x2zNp4R7Oqv+TLn
-        w/8zj4ze7jsrIRK1Y+2vlyZNlX5qaSsOsU3peLzOze7VdaYDInd500SfSvhdXCfGx7GncfrS
-        aZNcbV6xftr6/bhxFBPHTvukXq+fGrnZnFI733AujnK997Z14rro2jolJZbijERDLeai4kQA
-        8cK0WjQEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrELMWRmVeSWpSXmKPExsWy7bCSvO5r3huJBt035CwezNvGZrG37QS7
-        xcufV9ksDj7sZLGY9uEns8Wn9ctYLVYvfsBisejGNiaLy7vmsFl0X9/BZrH8+D8mB26Py1e8
-        PS739TJ5TFh0gNHj+/oONo+PT2+xePRtWcXo8XmTnEf7gW6mAI4oLpuU1JzMstQifbsEroyl
-        N3pYC56yV5zr2sfcwLiXrYuRk0NCwETi8eJHjF2MXBxCAjsYJR50dLNAJCQk/i9uYoKwhSXu
-        txxhhSj6xiix5c9vsASbgIbEmmOHmEASIgJNTBIbPt8H62YWUJP4fHcZmC0s4Cqx58slVhCb
-        RUBV4mb/a7BmXgEribV9a6G2yUssavgNFReUODnzCdQceYnmrbOZJzDyzUKSmoUktYCRaRWj
-        ZGpBcW56brFhgVFearlecWJucWleul5yfu4mRnCwa2ntYNyz6oPeIUYmDsZDjBIczEoivFP3
-        XksU4k1JrKxKLcqPLyrNSS0+xCjNwaIkznuh62S8kEB6YklqdmpqQWoRTJaJg1Oqgals4u/L
-        u+/df3uwo+69luHDNz2Rxwrc1FyOesTdlLpcUrbh8gXmuVLrduU5iaj7uYnyhF1vV1jAm/3D
-        kvPJRIPwpZc35klc7WL1P3733Tw/U7MHi5TW58x83LhGq+JE2cP5fUFyj5Pe7ImYdug316Hr
-        eeoORtdrV2xYcXPvgZQXQfbbrITFLSMW3I9wEFr2OMdrdtBs/4qYG+tfxwc98rpySzn2/J/i
-        vHkJvEUxvW+vLOTn8qnPPX1sXq3Imy+yboLihwWFvrjNnqZ0JqFZ4Jy857bFr3ycZu5Z/Hz/
-        pvcWH9zc5rzTdOm/WLk56PC7l6JsHTz2h/ZOehX4yfXK5DUdU7+ZHN79V1jvT6fJ9uKXSizF
-        GYmGWsxFxYkAz5nEBuUCAAA=
-X-CMS-MailID: 20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912
-References: <CGME20220107095451epcas2p2d06b23e50cbd46e910532e2d9078c912@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Tactive time determine the waiting time before burst
-at hibern8 exit and is determined by H/W at linkup state
-However, in the case of samsung devices, guided host's Tactive time
-+100us for stability.
-If the HCI's Tactive time is equal or greater than the device,
-+100us should be set.
+Hi,
 
-Signed-off-by: SEO HOYOUNG <hy50.seo@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 1/6/22 23:29, Ismael Ferreras Morezuelas wrote:
+> Hi again, Marcel.
+> 
+>>> 		/* Clear the reset quirk since this is not an actual
+>>> 		 * early Bluetooth 1.1 device from CSR.
+>>> @@ -1942,16 +1943,16 @@ static int btusb_setup_csr(struct hci_dev *hdev)
+>>> 		/*
+>>> 		 * Special workaround for these BT 4.0 chip clones, and potentially more:
+>>> 		 *
+>>> -		 * - 0x0134: a Barrot 8041a02                 (HCI rev: 0x1012 sub: 0x0810)
+>>> +		 * - 0x0134: a Barrot 8041a02                 (HCI rev: 0x0810 sub: 0x1012)
+>>
+>> Don’t get this change.
+>>
+> 
+> I swapped both numbers by mistake in my last commit when I moved it from
+> a conditional into a comment This is explained in the changeset as:
+> 
+>  > Also, swapped the HCI subver and LMP subver numbers for the Barrot
+>  > in the comment, which I copied wrong the last time around.
+> 
+> Thought I might as well fix it here, because it may never get corrected otherwise; it's misleading.
+> 
+> 
+>>> 		 * - 0x7558: IC markings FR3191AHAL 749H15143 (HCI rev/sub-version: 0x0709)
+>>> 		 *
+>>> 		 * These controllers are really messed-up.
+>>> 		 *
+>>> 		 * 1. Their bulk RX endpoint will never report any data unless
+>>> -		 * the device was suspended at least once (yes, really).
+>>> +		 *    the device was suspended at least once (yes, really).
+>>> 		 * 2. They will not wakeup when autosuspended and receiving data
+>>> -		 * on their bulk RX endpoint from e.g. a keyboard or mouse
+>>> -		 * (IOW remote-wakeup support is broken for the bulk endpoint).
+>>> +		 *    on their bulk RX endpoint from e.g. a keyboard or mouse
+>>> +		 *    (IOW remote-wakeup support is broken for the bulk endpoint).
+>>
+>> Fix the style issues separately.
+> 
+> Fair enough, I can obviate this part, no worries.
+> 
+> 
+>>
+>>> 		 *
+>>> 		 * To fix 1. enable runtime-suspend, force-suspend the
+>>> 		 * HCI and then wake-it up by disabling runtime-suspend.
+>>> @@ -1971,7 +1972,7 @@ static int btusb_setup_csr(struct hci_dev *hdev)
+>>> 		if (ret >= 0)
+>>> 			msleep(200);
+>>> 		else
+>>> -			bt_dev_err(hdev, "CSR: Failed to suspend the device for our Barrot 8041a02 receive-issue workaround");
+>>> +			bt_dev_warn(hdev, "CSR: Couldn't suspend the device for our Barrot 8041a02 receive-issue workaround");
+>>
+>> Why change this?
+>>
+> 
+> Because depending on the clone this print may end up showing all the time;
+> we *try* doing it, but some clones don't like it. I thought showing it
+> as a warning would make sense. Tweaking the text a bit again helps
+> when tracking down which version of the workaround the user is
+> running, we can narrow it by just grepping the log itself.
+> 
+> If it doesn't work it doesn't really affect anything, and we can't
+> whitelist something half the clones use to get unstuck and the other
+> half just ignore and stay peachy. We're trying an unified solution.
+> 
+> 
+>>>
+>>> 		pm_runtime_forbid(&data->udev->dev);
+>>>
+>>> diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
+>>> index 63065bc01..4e5d5979d 100644
+>>> --- a/include/net/bluetooth/hci.h
+>>> +++ b/include/net/bluetooth/hci.h
+>>> @@ -246,6 +246,12 @@ enum {
+>>> 	 * HCI after resume.
+>>> 	 */
+>>> 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
+>>> +
+>>> +	/* When this quirk is set, HCI_OP_SET_EVENT_FLT requests with
+>>> +	 * HCI_FLT_CLEAR_ALL are ignored. A subset of the CSR controller
+>>> +	 * clones struggle with this and instantly lock up.
+>>> +	 */
+>>> +	HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL,
+>>> };
+>>>
+>>> /* HCI device flags */
+>>> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+>>> index 8d33aa648..7af649afc 100644
+>>> --- a/net/bluetooth/hci_core.c
+>>> +++ b/net/bluetooth/hci_core.c
+>>> @@ -150,6 +150,7 @@ static void bredr_setup(struct hci_request *req)
+>>> {
+>>> 	__le16 param;
+>>> 	__u8 flt_type;
+>>> +	struct hci_dev *hdev = req->hdev;
+>>
+>> This should always go first in a function.
+>>
+>>>
+>>> 	/* Read Buffer Size (ACL mtu, max pkt, etc.) */
+>>> 	hci_req_add(req, HCI_OP_READ_BUFFER_SIZE, 0, NULL);
+>>> @@ -169,9 +170,13 @@ static void bredr_setup(struct hci_request *req)
+>>> 	/* Read Current IAC LAP */
+>>> 	hci_req_add(req, HCI_OP_READ_CURRENT_IAC_LAP, 0, NULL);
+>>>
+>>> -	/* Clear Event Filters */
+>>> -	flt_type = HCI_FLT_CLEAR_ALL;
+>>> -	hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &flt_type);
+>>> +	/* Clear Event Filters; some fake CSR controllers lock up after setting
+>>> +	 * this type of filter, so avoid sending the request altogether.
+>>> +	 */
+>>> +	if (!test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks)) {
+>>> +		flt_type = HCI_FLT_CLEAR_ALL;
+>>> +		hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &flt_type);
+>>> +	}
+>>>
+>>> 	/* Connection accept timeout ~20 secs */
+>>> 	param = cpu_to_le16(0x7d00);
+>>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+>>> index 92611bfc0..cfcf64c0c 100644
+>>> --- a/net/bluetooth/hci_request.c
+>>> +++ b/net/bluetooth/hci_request.c
+>>> @@ -980,11 +980,15 @@ void hci_req_add_le_passive_scan(struct hci_request *req)
+>>> static void hci_req_clear_event_filter(struct hci_request *req)
+>>> {
+>>> 	struct hci_cp_set_event_filter f;
+>>> +	struct hci_dev *hdev = req->hdev;
+>>> +
+>>> +	if (!hci_dev_test_flag(hdev, HCI_BREDR_ENABLED))
+>>> +		return;
+>>>
+>>> -	if (!hci_dev_test_flag(req->hdev, HCI_BREDR_ENABLED))
+>>> +	if (test_bit(HCI_QUIRK_BROKEN_FILTER_CLEAR_ALL, &hdev->quirks))
+>>> 		return;
+>>>
+>>> -	if (hci_dev_test_flag(req->hdev, HCI_EVENT_FILTER_CONFIGURED)) {
+>>> +	if (hci_dev_test_flag(hdev, HCI_EVENT_FILTER_CONFIGURED)) {
+>>> 		memset(&f, 0, sizeof(f));
+>>> 		f.flt_type = HCI_FLT_CLEAR_ALL;
+>>> 		hci_req_add(req, HCI_OP_SET_EVENT_FLT, 1, &f);
+>>
+>> This is not enough. If you do not have clear event filter, we need to disable suspend/resume support. These device can for obvious reason not sleep accordingly.
+> 
+> Would adding HCI_QUIRK_NO_SUSPEND_NOTIFIER be enough here? I'll take another look at the
+> codebase, any comments about the best/simplest way to tackle this would help me a lot.
+> 
+> As you can see I'm still getting my feet wet around the Bluetooth subsystem.
+> 
+> In theory adding another quirk condition in hci_req_set_event_filter() or anything that leads
+> to it (i.e. hci_suspend_dev() / BT_SUSPEND_CONFIGURE_WAKE) may also do the trick.
+> 
+> The least code I touch the better. Right now I'm thinking of mirroring my hci_req_clear_event_filter()
+> nop-out in hci_req_set_event_filter() *and* just setting the NO_SUSPEND_NOTIFIER quirk.
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 1049e41abd5b..460d2b440d2e 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -7815,7 +7815,7 @@ static int ufshcd_quirk_tune_host_pa_tactivate(struct ufs_hba *hba)
- 	peer_pa_tactivate_us = peer_pa_tactivate *
- 			     gran_to_us_table[peer_granularity - 1];
- 
--	if (pa_tactivate_us > peer_pa_tactivate_us) {
-+	if (pa_tactivate_us >= peer_pa_tactivate_us) {
- 		u32 new_peer_pa_tactivate;
- 
- 		new_peer_pa_tactivate = pa_tactivate_us /
--- 
-2.26.0
+Note we already disable runtime suspend for these broken clones in
+the btusb code, I think that in itself might be enough, together with
+a comment in the header where the quirk is defined that devices using this
+must disable runtime suspend ?
+
+Regards,
+
+Hans
 
