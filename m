@@ -2,131 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA966C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C037EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231547AbiAGXcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 18:32:23 -0500
-Received: from mail-ot1-f51.google.com ([209.85.210.51]:38862 "EHLO
-        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231465AbiAGXcW (ORCPT
+        id S231584AbiAGXeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 18:34:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231559AbiAGXeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 18:32:22 -0500
-Received: by mail-ot1-f51.google.com with SMTP id r7-20020a05683001c700b005906f5b0969so8280269ota.5;
-        Fri, 07 Jan 2022 15:32:22 -0800 (PST)
+        Fri, 7 Jan 2022 18:34:19 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1B4EC061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:34:19 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id s1so6970930pga.5
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:34:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zsOgJMsBCd5wqpBIMXgbd67V4MeoViUGyDjddUD4kPU=;
+        b=WeLsW8ODuu55sZfvXliZfwSV7Gi1JTHpwyKmxA9qyyxSeuO1pG9tYcekSizjBNwLnu
+         fp0AuBEmd8WeUr/hkPdOOLR+YjN9M6Lavc6Boqk57K/8WNnBgBifiYiG69vvhTvBHqzq
+         RSZEN5w+1UZM7ykn5RuUb1mplLWUin4ZAvsCA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=R3ENkgab0e+SbdBFwrmJdaPjCH96xjKxzUurbk8Ebuc=;
-        b=F25JiNa5e5kXbBaWw5IIM84481zGRaBm65SRLIuNu16BwnHOTnh4jBhq1jq8gTg+rF
-         cd0Z0ataHBWIX/Zmc+5ylvTxJQvPFxZEKp+4Q2P5Ce3S0Yi/v7H+8W99K7oMiYRrYiJT
-         IWVxuQbTH0+UXrtrXLzgX/Vz2diXZJC0ZJygIROSH5paRTTTClZ1bdg1k2ySJq76B7Yl
-         tS9dEV0BW/hEW1pfrgrGGDYtQ8O9acxEUAyQr/sKdQYirqn6JXTKRZKp/r7v15T8cfbN
-         C0r+rMKUvhhSUYNegIjC07FcnqBMSvtfaMEhuFQPRB9YQq993RXqGiGUviL0yDATevir
-         nrrA==
-X-Gm-Message-State: AOAM530KsloJRbw8PTp2kO00tgOBkYaGtSHqNtczefQT3kVBGiVWCRZS
-        vGZnOyT+3EFGN1/zzigJQw==
-X-Google-Smtp-Source: ABdhPJzw5D6DhWLfA91rZQrCqQmdnXJDFDoWEkx7U43DnC2SwAL28W6/9qzugOjavPvwuX64myseUQ==
-X-Received: by 2002:a9d:6351:: with SMTP id y17mr46724234otk.105.1641598341642;
-        Fri, 07 Jan 2022 15:32:21 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id t26sm21410oic.51.2022.01.07.15.32.20
+        bh=zsOgJMsBCd5wqpBIMXgbd67V4MeoViUGyDjddUD4kPU=;
+        b=KZ9e0fjORcA2mBDigcqMsUiMZpQ6X6PmDaVtYjtiGnT2hQpzrlsZldvEikHLWLoHli
+         6fea6HqluB9m+5yFs/UPwpsKriZUUGqdIRAdL56p1YK55F56aAnkd6DuVV1saIYgIBQl
+         8GQHWXn0P5JH2EAUab97GDj7uJh53jQqqVWNXPzLmf1IVcZnDifS2L5vqySnO/xvAdXg
+         58YJbJQXhS6NphgJi7iSysuq8JDjE38W3RR6hJM9sjROMV1G9pyA/ClrNf0KKCqH9tf7
+         cHj+9rqZ2X3xQVhgAgcxmfmIHAmzxg8ZfG/KuLK9Cpl31OGzgzHiMJCpRGEE4qjzsTUL
+         QLbA==
+X-Gm-Message-State: AOAM530cwh219Y/61qpfhfBjEnbXKUOxSKi3WldRDzBMdDfJsa4PWq1j
+        igwWezzeCiB5jRh8KV5U7qBnSw==
+X-Google-Smtp-Source: ABdhPJwUhZW9byS0cPGPMcT+LQ8VGZ/UJQsfgaNdtP9C91cQngX923SsGRxxbPGbb1MRbtm6h/ANsQ==
+X-Received: by 2002:a63:cd49:: with SMTP id a9mr58435443pgj.607.1641598459186;
+        Fri, 07 Jan 2022 15:34:19 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e11sm6873pjj.49.2022.01.07.15.34.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 15:32:21 -0800 (PST)
-Received: (nullmailer pid 4142582 invoked by uid 1000);
-        Fri, 07 Jan 2022 23:32:20 -0000
-Date:   Fri, 7 Jan 2022 17:32:20 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     devicetree@vger.kernel.org, Quentin Perret <qperret@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        linux-kernel@vger.kernel.org,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v4] of/fdt: Don't worry about non-memory region overlap
- for no-map
-Message-ID: <YdjNhIs9/GH3YJ0P@robh.at.kernel.org>
-References: <20220107194233.2793146-1-swboyd@chromium.org>
+        Fri, 07 Jan 2022 15:34:18 -0800 (PST)
+Date:   Fri, 7 Jan 2022 15:34:18 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     conleylee@foxmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6] sun4i-emac.c: add dma support
+Message-ID: <202201071532.57A08030@keescook>
+References: <20211228164817.1297c1c9@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220107194233.2793146-1-swboyd@chromium.org>
+In-Reply-To: <tencent_DE05ADA53D5B084D4605BE6CB11E49EF7408@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 07 Jan 2022 11:42:32 -0800, Stephen Boyd wrote:
-> In commit 8a5a75e5e9e5 ("of/fdt: Make sure no-map does not remove
-> already reserved regions") we returned -EBUSY when trying to mark
-> regions as no-map when they intersect with reserved memory. The goal was
-> to find bad no-map reserved memory DT nodes that would unmap the kernel
-> text/data sections.
-> 
-> The problem is the reserved memory check will still trigger if the DT
-> has a /memreserve/ that completely subsumes the no-map memory carveouts
-> in the reserved memory node _and_ that region is also not part of the
-> memory reg property. For example in sc7180.dtsi we have the following
-> reserved-memory and memory node:
-> 
->       memory@80000000 {
->           /* We expect the bootloader to fill in the size */
->           reg = <0 0x80000000 0 0>;
->       };
-> 
->       smem_mem: memory@80900000 {
->               reg = <0x0 0x80900000 0x0 0x200000>;
->               no-map;
->       };
-> 
-> and the memreserve filled in by the bootloader is
-> 
->       /memreserve/ 0x80800000 0x400000;
-> 
-> while the /memory node is transformed into
-> 
->       memory@80000000 {
->           /* The bootloader fills in the size, and adds another region */
->           reg = <0 0x80000000 0 0x00800000>,
->                 <0 0x80c00000 0 0x7f200000>;
->       };
-> 
-> The smem region is doubly reserved via /memreserve/ and by not being
-> part of the /memory reg property. This leads to the following warning
-> printed at boot.
-> 
->  OF: fdt: Reserved memory: failed to reserve memory for node 'memory@80900000': base 0x0000000080900000, size 2 MiB
-> 
-> Otherwise nothing really goes wrong because the smem region is not going
-> to be mapped by the kernel's direct linear mapping given that it isn't
-> part of the memory node. Therefore, let's only consider this to be a
-> problem if we're trying to mark a region as no-map and it is actually
-> memory that we're intending to keep out of the kernel's direct mapping
-> but it's already been reserved.
-> 
-> Acked-by: Mike Rapoport <rppt@kernel.org>
-> Cc: Douglas Anderson <dianders@chromium.org>
-> Cc: Nicolas Boichat <drinkcat@chromium.org>
-> Cc: Quentin Perret <qperret@google.com>
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> Fixes: 8a5a75e5e9e5 ("of/fdt: Make sure no-map does not remove already reserved regions")
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+On Wed, Dec 29, 2021 at 09:43:51AM +0800, conleylee@foxmail.com wrote:
+> From: Conley Lee <conleylee@foxmail.com>
+>
+> Thanks for your review. Here is the new version for this patch.
+>
+> This patch adds support for the emac rx dma present on sun4i. The emac
+> is able to move packets from rx fifo to RAM by using dma.
+>
+> Change since v4.
+>   - rename sbk field to skb
+>   - rename alloc_emac_dma_req to emac_alloc_dma_req
+>   - using kzalloc(..., GPF_ATOMIC) in interrupt context to avoid
+>     sleeping
+>   - retry by using emac_inblk_32bit when emac_dma_inblk_32bit fails
+>   - fix some code style issues
+>
+> Change since v5.
+>   - fix some code style issue
+>
+> Signed-off-by: Conley Lee <conleylee@foxmail.com>
 > ---
-> 
-> Changes from v3 (https://lore.kernel.org/r/20211215195354.634746-1-swboyd@chromium.org):
->  * Even more details in commit text
-> 
-> Changes from v2 (https://lore.kernel.org/r/20211215072011.496998-1-swboyd@chromium.org):
->  * More details in commit text
-> 
-> Changes from v1 (https://lore.kernel.org/r/20210520012731.3731314-1-swboyd@chromium.org):
->  * Use memblock_overlaps_region instead of memblock_is_region_memory()
->  * Add more details to commit text
-> 
->  drivers/of/fdt.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
-> 
+>  drivers/net/ethernet/allwinner/sun4i-emac.c | 200 ++++++++++++++++++++
+>  1 file changed, 200 insertions(+)
 
-Applied, thanks!
+This is causing build failures:
+
+$ make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 allmodconfig
+$ make CROSS_COMPILE=aarch64-linux-gnu- ARCH=arm64 -j... -k -s
+drivers/net/ethernet/allwinner/sun4i-emac.c: In function 'emac_configure_dma':
+drivers/net/ethernet/allwinner/sun4i-emac.c:922:60: error: format '%x' expects argument of type 'unsigned int', but argument 3 has type 'resource_size_t' {aka 'long long unsigned int'} [-Werror=format=]
+  922 |         netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
+      |                                                           ~^
+      |                                                            |                                      |                                                            unsigned int
+      |                                                           %llx
+  923 |                     regs->start, resource_size(regs));
+      |                     ~~~~~~~~~~~
+      |                         |
+      |                         resource_size_t {aka long long unsigned int}
+drivers/net/ethernet/allwinner/sun4i-emac.c:922:71: error: format '%u' expects argument of type 'unsigned int', but argument 4 has type 'resource_size_t' {aka 'long long unsigned int'} [-Werror=format=]
+  922 |         netdev_info(ndev, "get io resource from device: 0x%x, size = %u\n",
+      |                                                                      ~^
+      |                                                                       |
+      |                                                                       unsigned int
+      |                                                                      %llu
+  923 |                     regs->start, resource_size(regs));
+      |                                  ~~~~~~~~~~~~~~~~~~~
+      |                                  |
+      |                                  resource_size_t {aka long long unsigned int}
+
+
+--
+Kees Cook
