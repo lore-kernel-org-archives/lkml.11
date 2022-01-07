@@ -2,135 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2BABC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71768C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346121AbiAGIpq (ORCPT
+        id S1346127AbiAGIrL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 03:45:46 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27367 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345863AbiAGIpp (ORCPT
+        Fri, 7 Jan 2022 03:47:11 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31146 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231298AbiAGIrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 03:45:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641545145;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pJvdwM0wIIO+MMw5O2YidshZCxNzHMhgMOga0XHPFE4=;
-        b=TR6EBdE08qK7X5RNyZmzv4qRfxpelDZtKX2Nrnudb9U65VBTMd9nYkm48ChFsJx7nhnb7m
-        qWHwnV/BuLgplaBp0iol2S+D2ORJB32QUIdU5QY4r+QPUN5BXoqVGU9IfwfL7/ULf5FF3g
-        +UoXPo5ApfXcggRFmNp0MRMAB94ig+E=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-106-LE2A0o54NtKSUeKDsHyD0g-1; Fri, 07 Jan 2022 03:45:43 -0500
-X-MC-Unique: LE2A0o54NtKSUeKDsHyD0g-1
-Received: by mail-wr1-f69.google.com with SMTP id t26-20020adfa2da000000b001a585909b5dso833975wra.6
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 00:45:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=pJvdwM0wIIO+MMw5O2YidshZCxNzHMhgMOga0XHPFE4=;
-        b=G6lVQcmtcyCUxqsrWjt/MmyuneLIKXqNNB27Y4m0Ks+emRjrDBZxO4aPJLybrgZVGa
-         Rj+0lWwNsuf+Rp9OzfYGIAtBxH7o577s1xRuUiBGUTp6z4QNWbeMXftWnEKdEVYIBRei
-         mi+S/kDLzbOCAdQ+TXvviuu0jX2DUz9ONHTP82FKm54gf5QeS8cXILzN2zcvMhr8B0zx
-         +4h8SLJm1fGGtUgyYXjxX1vShvxpjXmbVWrju2Gg3ZavCuiAbPX552kXqSJVwac/d/pP
-         O8KDI2FowkLBgWJH7/5MyIvdgzAsC1DO7rolmwa4gPXrkFhn6Xpf25HTMxAdqPPXSrMr
-         y7Mg==
-X-Gm-Message-State: AOAM531n8N6BU3NFBQf387M9PmYDe/L0ucymHloATkXGP0CoyvFkJBOQ
-        USVXeIpSQGDpbImSlDqfzlXx/eqR/BimLUZo8R4nXCzkfL2xTN0xsMYhuEKFuI87Ruui6kXcIAM
-        ginHJQKKz7oGOQLu48oUZymCDuacG6WT0vnHRT0Y4LiLu9E03DmhPu7jTG6jMTcEoWUw31sSTJh
-        5Q
-X-Received: by 2002:a5d:47c7:: with SMTP id o7mr54569372wrc.642.1641545142552;
-        Fri, 07 Jan 2022 00:45:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxLAm59DpFY5G+3MCnkpoiNNNcWyFetrQkrVEx7412q7wq9YccEuMXwcnXpg+/qgwcRxCGMWw==
-X-Received: by 2002:a5d:47c7:: with SMTP id o7mr54569349wrc.642.1641545142353;
-        Fri, 07 Jan 2022 00:45:42 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id 6sm3297942wmo.42.2022.01.07.00.45.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 00:45:41 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/5] KVM: nVMX: Rename vmcs_to_field_offset{,_table} to
- vmcs12_field_offset{,_table}
-In-Reply-To: <Ydd9C7A56JtpSWnu@google.com>
-References: <20211214143859.111602-1-vkuznets@redhat.com>
- <20211214143859.111602-4-vkuznets@redhat.com>
- <Ydd9C7A56JtpSWnu@google.com>
-Date:   Fri, 07 Jan 2022 09:45:40 +0100
-Message-ID: <87czl4orwr.fsf@redhat.com>
+        Fri, 7 Jan 2022 03:47:08 -0500
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JVcGQ0Dxszbbjf;
+        Fri,  7 Jan 2022 16:44:30 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.58) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.20; Fri, 7 Jan 2022 16:47:07 +0800
+From:   chenxiang <chenxiang66@hisilicon.com>
+To:     <linux@armlinux.org.uk>, <vkoul@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>
+CC:     <coresight@lists.linaro.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, Xiang Chen <chenxiang66@hisilicon.com>
+Subject: [RFC PATCH] ACPI / amba: Skip creating amba device when associated cpu is not online
+Date:   Fri, 7 Jan 2022 16:41:46 +0800
+Message-ID: <1641544906-7069-1-git-send-email-chenxiang66@hisilicon.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
 Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sean Christopherson <seanjc@google.com> writes:
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-> On Tue, Dec 14, 2021, Vitaly Kuznetsov wrote:
->> vmcs_to_field_offset{,_table} may sound misleading as VMCS is an opaque
->> blob which is not supposed to be accessed directly. In fact,
->> vmcs_to_field_offset{,_table} are related to KVM defined VMCS12 structure.
->> 
->> No functional change intended.
->> 
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
->> ---
->> diff --git a/arch/x86/kvm/vmx/vmcs12.h b/arch/x86/kvm/vmx/vmcs12.h
->> index 2a45f026ee11..13e2bd017538 100644
->> --- a/arch/x86/kvm/vmx/vmcs12.h
->> +++ b/arch/x86/kvm/vmx/vmcs12.h
->> @@ -361,10 +361,10 @@ static inline void vmx_check_vmcs12_offsets(void)
->>  	CHECK_OFFSET(guest_pml_index, 996);
->>  }
->>  
->> -extern const unsigned short vmcs_field_to_offset_table[];
->> +extern const unsigned short vmcs12_field_offset_table[];
->
-> While we're tweaking names, what about dropping "table" and calling this
-> vmcs12_field_offsets?
->
+If not up all the cpus with command line "maxcpus=x", system will be
+blocked.
+We find that some amba devices such as ETM devices, are associated with
+special cpus, and if the cpu is not up, the register of associated device
+is not allowed to access. BIOS reports all the ETM device nodes and a
+amba device is created for every ETM device, so even if one cpu is not up,
+the amba device will still be created for the associated device, and also
+the register of device (pid and cid) will be accessed when adding amba
+device which will cause the issue.
+To fix it, skip creating amba device if it is associated with a cpu which
+is not online.
 
-Ok.
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+---
+ drivers/acpi/acpi_amba.c | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
->>  extern const unsigned int nr_vmcs12_fields;
->>  
->> -static inline short vmcs_field_to_offset(unsigned long field)
->> +static inline short vmcs12_field_offset(unsigned long field)
->
-> And get_vmcs12_field_offset() here to make it more obvious that it's translating
-> something to an offset, which is communicated by the "to" in the current name.
->
-
-I think we could've even used just 'vmcs12_field_offset()' as I don't
-see any ambiguity in it but 4 additional letters shouldn't hurt.
-
->>  {
->>  	unsigned short offset;
->>  	unsigned int index;
->> @@ -377,7 +377,7 @@ static inline short vmcs_field_to_offset(unsigned long field)
->>  		return -ENOENT;
->>  
->>  	index = array_index_nospec(index, nr_vmcs12_fields);
->> -	offset = vmcs_field_to_offset_table[index];
->> +	offset = vmcs12_field_offset_table[index];
->>  	if (offset == 0)
->>  		return -ENOENT;
->>  	return offset;
->> -- 
->> 2.33.1
->> 
->
-
+diff --git a/drivers/acpi/acpi_amba.c b/drivers/acpi/acpi_amba.c
+index ab8a4e0191b1..2369198f734b 100644
+--- a/drivers/acpi/acpi_amba.c
++++ b/drivers/acpi/acpi_amba.c
+@@ -16,6 +16,7 @@
+ #include <linux/ioport.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <acpi/processor.h>
+ 
+ #include "internal.h"
+ 
+@@ -45,6 +46,35 @@ static void amba_register_dummy_clk(void)
+ 	clk_register_clkdev(amba_dummy_clk, "apb_pclk", NULL);
+ }
+ 
++static int acpi_handle_to_cpuid(acpi_handle handle)
++{
++	int cpu = -1;
++	struct acpi_processor *pr;
++
++	for_each_possible_cpu(cpu) {
++		pr = per_cpu(processors, cpu);
++		if (pr && pr->handle == handle)
++			break;
++	}
++
++	return cpu;
++}
++
++static int acpi_dev_get_cpu(struct acpi_device *adev)
++{
++	acpi_handle cpu_handle;
++	acpi_status status;
++	int cpu;
++
++	status = acpi_get_parent(adev->handle, &cpu_handle);
++	if (ACPI_FAILURE(status))
++		return -1;
++	cpu = acpi_handle_to_cpuid(cpu_handle);
++	if (cpu >= nr_cpu_ids)
++		return -1;
++	return cpu;
++}
++
+ static int amba_handler_attach(struct acpi_device *adev,
+ 				const struct acpi_device_id *id)
+ {
+@@ -54,11 +84,17 @@ static int amba_handler_attach(struct acpi_device *adev,
+ 	bool address_found = false;
+ 	int irq_no = 0;
+ 	int ret;
++	int cpu;
+ 
+ 	/* If the ACPI node already has a physical device attached, skip it. */
+ 	if (adev->physical_node_count)
+ 		return 0;
+ 
++	/* If the cpu associated with the device is not online, skip it. */
++	cpu = acpi_dev_get_cpu(adev);
++	if (cpu >= 0 && !cpu_online(cpu))
++		return 0;
++
+ 	dev = amba_device_alloc(dev_name(&adev->dev), 0, 0);
+ 	if (!dev) {
+ 		dev_err(&adev->dev, "%s(): amba_device_alloc() failed\n",
 -- 
-Vitaly
+2.33.0
 
