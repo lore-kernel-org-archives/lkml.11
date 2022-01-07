@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A202C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 22:54:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADBDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 22:54:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231324AbiAGWyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 17:54:50 -0500
-Received: from mga18.intel.com ([134.134.136.126]:7113 "EHLO mga18.intel.com"
+        id S230496AbiAGWy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 17:54:56 -0500
+Received: from mga18.intel.com ([134.134.136.126]:7114 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230140AbiAGWys (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 17:54:48 -0500
+        id S231314AbiAGWyt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 17:54:49 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641596088; x=1673132088;
+  t=1641596089; x=1673132089;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=zc2g+5Xaa8F3zL1JthKmLIHh19yHSOuOELavALf191I=;
-  b=W83MvssmnsHiru/EwXf1hol92Bpk1/t/pFfBeZ72GdV4Nz3UkOLXuwRv
-   HbooWpdYy5JRzFb5KDtTH0E0w2z6SJCig+jANe7bQvgpkW1N/SuCKb4Lb
-   vJU95g/WQfEqPcKjgg6n2JOoVtSGJ5EOULHlu4SPXLUZpC/Nsz3Oj6/bM
-   LQdI5d/rtTuvrgnLTgAME+0g1GNvkQ5lahJTPizPtTfy8joSK1jYavh6L
-   wb/qbLtOGepEX2oYH41zfsIIt+OtrdSVUH8V/6J+ETSZeCWNCRwm/EAmD
-   HsEQo9AXRTSRRe+6UXx4TQWiPy+wmxD491tYnaEnRmI587EDwpwM2qzhU
+  bh=qmfpz3SI7hOmx8WOOhlhqqGue2zmZ7OVZMvBYNyL3rY=;
+  b=RMJSSqkbnrn4KoOBQi8O7erxtnIvsSlhx8E+gcYSO0S1J8ukX8YhzuRt
+   e2c6Wj+QawnxUdNNsRUfWOnSDF6G2WnV6sQbqfOSoV9HK9gRtT13SrUSf
+   5WQAC0dEgAYzdimn1w+QeCVUG+5nAFpCQj3GujCc9m9W79TrVgaVhFRtV
+   E0zjfVcdkrFI0L04hLvJii6PEDKVhmWYGxvZi6ulkFA6ZLDNikeVF2zaT
+   hFoP+BHyIT3SV8PL6sgChraz7hARMdoTRvgJrw5IOSKBTawYrkmc1e+1g
+   ofj+lc1q2BB66xw3+xTVv9FKJ0DF0C4Badvt+xKhg7f3Vxi76mRMNGB9E
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="229762183"
+X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="229762189"
 X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
-   d="scan'208";a="229762183"
+   d="scan'208";a="229762189"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 14:54:48 -0800
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 14:54:49 -0800
 X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
-   d="scan'208";a="471452456"
+   d="scan'208";a="471452469"
 Received: from agluck-desk2.sc.intel.com ([10.3.52.146])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 14:54:48 -0800
 From:   Tony Luck <tony.luck@intel.com>
@@ -42,9 +42,9 @@ Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
         Wei Huang <wei.huang2@amd.com>,
         Tom Lendacky <thomas.lendacky@amd.com>,
         patches@lists.linux.dev, Tony Luck <tony.luck@intel.com>
-Subject: [PATCH 1/5] x86/ras: Merge Intel and AMD ppin_init() functions
-Date:   Fri,  7 Jan 2022 14:54:38 -0800
-Message-Id: <20220107225442.1690165-2-tony.luck@intel.com>
+Subject: [PATCH 5/5] x86/sysfs: Add PPIN in sysfs under cpu topology
+Date:   Fri,  7 Jan 2022 14:54:42 -0800
+Message-Id: <20220107225442.1690165-6-tony.luck@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220107225442.1690165-1-tony.luck@intel.com>
 References: <20220107225442.1690165-1-tony.luck@intel.com>
@@ -54,225 +54,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The code to decide whether a system supports the PPIN (Protected
-Processor Inventory Number) MSR was cloned from the Intel
-implementation. Apart from the X86_FEATURE bit and the MSR numbers it is
-identical.
+PPIN is the Protected Processor Identification Number.
+This is used to identify the socket as a Field Replaceable Unit (FRU).
 
-Merge the two functions into common x86 code, but use x86_match_cpu()
-instead of the switch (c->x86_model) that was used by the old Intel
-code.
+Existing code only displays this when reporting errors. But this makes
+it inconvenient for large clusters to use it for its intended purpose
+of inventory control.
 
-No functional change.
+There are several privacy concerns associated with a unique
+platform identifier. But making the PPIN available shouldn't
+change anything important. Notes:
+
+1) The PPIN is only enabled on server CPUs (E.g. Intel Xeon
+"-E5", "-E7" and "-SP" parts).
+
+2) The PPIN MSR is may be implemented on some desktop/laptop parts.
+But this is for OEM inventory control. Production BIOS versions
+leave the PPIN_CTL MSR in the "locked disabled" mode.
+
+3) There may be a BIOS option to lock the MSR in disabled mode
+to prevent Linux from reading it.
+
+4) The /sys file added here is readable only by "root".
 
 Signed-off-by: Tony Luck <tony.luck@intel.com>
 ---
- arch/x86/kernel/cpu/amd.c       | 30 -------------
- arch/x86/kernel/cpu/common.c    | 76 +++++++++++++++++++++++++++++++++
- arch/x86/kernel/cpu/mce/intel.c | 41 ------------------
- 3 files changed, 76 insertions(+), 71 deletions(-)
+ Documentation/ABI/stable/sysfs-devices-system-cpu  | 4 ++++
+ Documentation/ABI/testing/sysfs-devices-system-cpu | 6 ++++++
+ arch/x86/include/asm/topology.h                    | 1 +
+ drivers/base/topology.c                            | 4 ++++
+ include/linux/topology.h                           | 3 +++
+ 5 files changed, 18 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/amd.c b/arch/x86/kernel/cpu/amd.c
-index 4edb6f0f628c..bad0fa4c1779 100644
---- a/arch/x86/kernel/cpu/amd.c
-+++ b/arch/x86/kernel/cpu/amd.c
-@@ -394,35 +394,6 @@ static void amd_detect_cmp(struct cpuinfo_x86 *c)
- 	per_cpu(cpu_llc_id, cpu) = c->cpu_die_id = c->phys_proc_id;
- }
+diff --git a/Documentation/ABI/stable/sysfs-devices-system-cpu b/Documentation/ABI/stable/sysfs-devices-system-cpu
+index 3965ce504484..902392d7eddf 100644
+--- a/Documentation/ABI/stable/sysfs-devices-system-cpu
++++ b/Documentation/ABI/stable/sysfs-devices-system-cpu
+@@ -86,6 +86,10 @@ What:           /sys/devices/system/cpu/cpuX/topology/die_cpus
+ Description:    internal kernel map of CPUs within the same die.
+ Values:         hexadecimal bitmask.
  
--static void amd_detect_ppin(struct cpuinfo_x86 *c)
--{
--	unsigned long long val;
--
--	if (!cpu_has(c, X86_FEATURE_AMD_PPIN))
--		return;
--
--	/* When PPIN is defined in CPUID, still need to check PPIN_CTL MSR */
--	if (rdmsrl_safe(MSR_AMD_PPIN_CTL, &val))
--		goto clear_ppin;
--
--	/* PPIN is locked in disabled mode, clear feature bit */
--	if ((val & 3UL) == 1UL)
--		goto clear_ppin;
--
--	/* If PPIN is disabled, try to enable it */
--	if (!(val & 2UL)) {
--		wrmsrl_safe(MSR_AMD_PPIN_CTL,  val | 2UL);
--		rdmsrl_safe(MSR_AMD_PPIN_CTL, &val);
--	}
--
--	/* If PPIN_EN bit is 1, return from here; otherwise fall through */
--	if (val & 2UL)
--		return;
--
--clear_ppin:
--	clear_cpu_cap(c, X86_FEATURE_AMD_PPIN);
--}
--
- u32 amd_get_nodes_per_socket(void)
- {
- 	return nodes_per_socket;
-@@ -947,7 +918,6 @@ static void init_amd(struct cpuinfo_x86 *c)
- 	amd_detect_cmp(c);
- 	amd_get_topology(c);
- 	srat_detect_node(c);
--	amd_detect_ppin(c);
++What:           /sys/devices/system/cpu/cpuX/topology/ppin
++Description:    per-socket protected processor inventory number
++Values:         hexadecimal.
++
+ What:           /sys/devices/system/cpu/cpuX/topology/die_cpus_list
+ Description:    human-readable list of CPUs within the same die.
+                 The format is like 0-3, 8-11, 14,17.
+diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
+index 69c65da16dff..18af7459adf8 100644
+--- a/Documentation/ABI/testing/sysfs-devices-system-cpu
++++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
+@@ -73,6 +73,7 @@ What:		/sys/devices/system/cpu/cpuX/topology/core_id
+ 		/sys/devices/system/cpu/cpuX/topology/physical_package_id
+ 		/sys/devices/system/cpu/cpuX/topology/thread_siblings
+ 		/sys/devices/system/cpu/cpuX/topology/thread_siblings_list
++		/sys/devices/system/cpu/cpuX/topology/ppin
+ Date:		December 2008
+ Contact:	Linux kernel mailing list <linux-kernel@vger.kernel.org>
+ Description:	CPU topology files that describe a logical CPU's relationship
+@@ -103,6 +104,11 @@ Description:	CPU topology files that describe a logical CPU's relationship
+ 		thread_siblings_list: human-readable list of cpuX's hardware
+ 		threads within the same core as cpuX
  
- 	init_amd_cacheinfo(c);
++		ppin: human-readable Protected Processor Identification
++		Number of the socket the cpu# belongs to. There should be
++		one per physical_package_id. File is readable only to
++		admin.
++
+ 		See Documentation/admin-guide/cputopology.rst for more information.
  
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 0083464de5e3..a1e29c0844d1 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -88,6 +88,80 @@ EXPORT_SYMBOL_GPL(get_llc_id);
- /* L2 cache ID of each logical CPU */
- DEFINE_PER_CPU_READ_MOSTLY(u16, cpu_l2c_id) = BAD_APICID;
  
-+static struct ppin_info {
-+	int	feature;
-+	int	msr_ppin_ctl;
-+	int	msr_ppin;
-+} ppin_info[] = {
-+	[X86_VENDOR_INTEL] = {
-+		.feature = X86_FEATURE_INTEL_PPIN,
-+		.msr_ppin_ctl = MSR_PPIN_CTL,
-+		.msr_ppin = MSR_PPIN
-+	},
-+	[X86_VENDOR_AMD] = {
-+		.feature = X86_FEATURE_AMD_PPIN,
-+		.msr_ppin_ctl = MSR_AMD_PPIN_CTL,
-+		.msr_ppin = MSR_AMD_PPIN
-+	},
-+};
-+
-+static const struct x86_cpu_id ppin_cpuids[] = {
-+	X86_MATCH_VENDOR_FEATURE(AMD, X86_FEATURE_AMD_PPIN, &ppin_info[X86_VENDOR_AMD]),
-+
-+	/* Legacy models without CPUID enumeration */
-+	X86_MATCH_INTEL_FAM6_MODEL(IVYBRIDGE_X, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(HASWELL_X, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_D, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(BROADWELL_X, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(SKYLAKE_X, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(ICELAKE_X, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(SAPPHIRERAPIDS_X, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(XEON_PHI_KNL, &ppin_info[X86_VENDOR_INTEL]),
-+	X86_MATCH_INTEL_FAM6_MODEL(XEON_PHI_KNM, &ppin_info[X86_VENDOR_INTEL]),
-+
-+	{}
-+};
-+
-+static void ppin_init(struct cpuinfo_x86 *c)
-+{
-+	const struct x86_cpu_id *id;
-+	unsigned long long val;
-+	struct ppin_info *info;
-+
-+	id = x86_match_cpu(ppin_cpuids);
-+	if (!id)
-+		return;
-+
-+	/*
-+	 * Testing the prescence of the MSR is not enough. Need to check
-+	 * that the PPIN_CTL allows reading of the PPIN.
-+	 */
-+	info = (struct ppin_info *)id->driver_data;
-+
-+	if (rdmsrl_safe(info->msr_ppin_ctl, &val))
-+		goto clear_ppin;
-+
-+	if ((val & 3UL) == 1UL) {
-+		/* PPIN locked in disabled mode */
-+		goto clear_ppin;
-+	}
-+
-+	/* If PPIN is disabled, try to enable */
-+	if (!(val & 2UL)) {
-+		wrmsrl_safe(info->msr_ppin_ctl,  val | 2UL);
-+		rdmsrl_safe(info->msr_ppin_ctl, &val);
-+	}
-+
-+	/* Is the enable bit set? */
-+	if (val & 2UL) {
-+		set_cpu_cap(c, info->feature);
-+		return;
-+	}
-+
-+clear_ppin:
-+	clear_cpu_cap(c, info->feature);
-+}
-+
- /* correctly size the local cpu masks */
- void __init setup_cpu_local_masks(void)
- {
-@@ -1655,6 +1729,8 @@ static void identify_cpu(struct cpuinfo_x86 *c)
- 			c->x86_capability[i] |= boot_cpu_data.x86_capability[i];
- 	}
+diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
+index cc164777e661..caba7db8c7b6 100644
+--- a/arch/x86/include/asm/topology.h
++++ b/arch/x86/include/asm/topology.h
+@@ -110,6 +110,7 @@ extern const struct cpumask *cpu_clustergroup_mask(int cpu);
+ #define topology_logical_die_id(cpu)		(cpu_data(cpu).logical_die_id)
+ #define topology_die_id(cpu)			(cpu_data(cpu).cpu_die_id)
+ #define topology_core_id(cpu)			(cpu_data(cpu).cpu_core_id)
++#define topology_ppin(cpu)			(cpu_data(cpu).ppin)
  
-+	ppin_init(c);
+ extern unsigned int __max_die_per_package;
+ 
+diff --git a/drivers/base/topology.c b/drivers/base/topology.c
+index 793c592e533a..4c8674715d36 100644
+--- a/drivers/base/topology.c
++++ b/drivers/base/topology.c
+@@ -54,6 +54,9 @@ static DEVICE_ATTR_RO(cluster_id);
+ define_id_show_func(core_id, "%d");
+ static DEVICE_ATTR_RO(core_id);
+ 
++define_id_show_func(ppin, "%llx");
++static DEVICE_ATTR_ADMIN_RO(ppin);
 +
- 	/* Init Machine Check Exception if available. */
- 	mcheck_cpu_init(c);
+ define_siblings_read_func(thread_siblings, sibling_cpumask);
+ static BIN_ATTR_RO(thread_siblings, 0);
+ static BIN_ATTR_RO(thread_siblings_list, 0);
+@@ -129,6 +132,7 @@ static struct attribute *default_attrs[] = {
+ #ifdef CONFIG_SCHED_DRAWER
+ 	&dev_attr_drawer_id.attr,
+ #endif
++	&dev_attr_ppin.attr,
+ 	NULL
+ };
  
-diff --git a/arch/x86/kernel/cpu/mce/intel.c b/arch/x86/kernel/cpu/mce/intel.c
-index bb9a46a804bf..95275a5e57e0 100644
---- a/arch/x86/kernel/cpu/mce/intel.c
-+++ b/arch/x86/kernel/cpu/mce/intel.c
-@@ -470,46 +470,6 @@ void intel_clear_lmce(void)
- 	wrmsrl(MSR_IA32_MCG_EXT_CTL, val);
- }
- 
--static void intel_ppin_init(struct cpuinfo_x86 *c)
--{
--	unsigned long long val;
--
--	/*
--	 * Even if testing the presence of the MSR would be enough, we don't
--	 * want to risk the situation where other models reuse this MSR for
--	 * other purposes.
--	 */
--	switch (c->x86_model) {
--	case INTEL_FAM6_IVYBRIDGE_X:
--	case INTEL_FAM6_HASWELL_X:
--	case INTEL_FAM6_BROADWELL_D:
--	case INTEL_FAM6_BROADWELL_X:
--	case INTEL_FAM6_SKYLAKE_X:
--	case INTEL_FAM6_ICELAKE_X:
--	case INTEL_FAM6_SAPPHIRERAPIDS_X:
--	case INTEL_FAM6_XEON_PHI_KNL:
--	case INTEL_FAM6_XEON_PHI_KNM:
--
--		if (rdmsrl_safe(MSR_PPIN_CTL, &val))
--			return;
--
--		if ((val & 3UL) == 1UL) {
--			/* PPIN locked in disabled mode */
--			return;
--		}
--
--		/* If PPIN is disabled, try to enable */
--		if (!(val & 2UL)) {
--			wrmsrl_safe(MSR_PPIN_CTL,  val | 2UL);
--			rdmsrl_safe(MSR_PPIN_CTL, &val);
--		}
--
--		/* Is the enable bit set? */
--		if (val & 2UL)
--			set_cpu_cap(c, X86_FEATURE_INTEL_PPIN);
--	}
--}
--
- /*
-  * Enable additional error logs from the integrated
-  * memory controller on processors that support this.
-@@ -534,7 +494,6 @@ void mce_intel_feature_init(struct cpuinfo_x86 *c)
- {
- 	intel_init_cmci();
- 	intel_init_lmce();
--	intel_ppin_init(c);
- 	intel_imc_init(c);
- }
- 
+diff --git a/include/linux/topology.h b/include/linux/topology.h
+index 0b3704ad13c8..789a900039e0 100644
+--- a/include/linux/topology.h
++++ b/include/linux/topology.h
+@@ -192,6 +192,9 @@ static inline int cpu_to_mem(int cpu)
+ #ifndef topology_core_id
+ #define topology_core_id(cpu)			((void)(cpu), 0)
+ #endif
++#ifndef topology_ppin
++#define topology_ppin(cpu)			((void)(cpu), 0ull)
++#endif
+ #ifndef topology_sibling_cpumask
+ #define topology_sibling_cpumask(cpu)		cpumask_of(cpu)
+ #endif
 -- 
 2.31.1
 
