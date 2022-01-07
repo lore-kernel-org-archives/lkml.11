@@ -2,113 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8498CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE863C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348859AbiAGSSm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:18:42 -0500
-Received: from aposti.net ([89.234.176.197]:54334 "EHLO aposti.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348826AbiAGSS1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:18:27 -0500
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     "Rafael J . Wysocki" <rafael@kernel.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Len Brown <len.brown@intel.com>,
-        Pavel Machek <pavel@ucw.cz>, list@opendingux.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-pm@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 6/6] iio: pressure: bmp280: Use new PM macros
-Date:   Fri,  7 Jan 2022 18:17:23 +0000
-Message-Id: <20220107181723.54392-7-paul@crapouillou.net>
-In-Reply-To: <20220107181723.54392-1-paul@crapouillou.net>
-References: <20220107181723.54392-1-paul@crapouillou.net>
+        id S240720AbiAGSVA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:21:00 -0500
+Received: from mailgate.ics.forth.gr ([139.91.1.2]:41118 "EHLO
+        mailgate.ics.forth.gr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240469AbiAGSUz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:20:55 -0500
+X-Greylist: delayed 1001 seconds by postgrey-1.27 at vger.kernel.org; Fri, 07 Jan 2022 13:20:55 EST
+Received: from av3.ics.forth.gr (av3in.ics.forth.gr [139.91.1.77])
+        by mailgate.ics.forth.gr (8.15.2/ICS-FORTH/V10-1.8-GATE) with ESMTP id 207I4Aol063114
+        for <linux-kernel@vger.kernel.org>; Fri, 7 Jan 2022 20:04:10 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; d=ics.forth.gr; s=av; c=relaxed/simple;
+        q=dns/txt; i=@ics.forth.gr; t=1641578645; x=1644170645;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=s5cE7HP13OGL6tOvFCkENHSYqRvjKRhAnn9y2DfklEY=;
+        b=Mp+IGz0UgN4HJYPOjgg+7qeQlNA4QDeHhRQoBpfVqFazG5PR9WJnNCeaRcTiWr3a
+        1t1JnTZ9zO4/i4CN1oa3KP2GBUeBGnNKjLpwDKoNzR80fp+ab12YXXaGEN+x5Naj
+        Jzp4ltQUFw7F4jw67r4Rc3rcJ9dhUQGk+fjYgfDy/ophM1p2+zx1fiOHyZ1wXRBL
+        LTZPjtM61sN9rSGmi120RKImF+IvzXAhehY3WUhuV/84/JthaQlbmSxybXvGSUYL
+        51jtxJUp8tm+oybQCq+GwKpwJWNXFT4D288s13sYZxJd9jqluXBE3kui7iCQ23tP
+        TDxotv07U3eKDgnLpV0htQ==;
+X-AuditID: 8b5b014d-9a2477000000460a-c1-61d880957c58
+Received: from enigma.ics.forth.gr (webmail.ics.forth.gr [139.91.151.35])
+        by av3.ics.forth.gr (Symantec Messaging Gateway) with SMTP id 8F.71.17930.59088D16; Fri,  7 Jan 2022 20:04:05 +0200 (EET)
+X-ICS-AUTH-INFO: Authenticated user:  at ics.forth.gr
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
+Date:   Fri, 07 Jan 2022 20:03:59 +0200
+From:   Nick Kossifidis <mick@ics.forth.gr>
+To:     Nick Kossifidis <mick@ics.forth.gr>
+Cc:     palmer@dabbelt.com, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Alexandre Ghiti <alex@ghiti.fr>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH 1/3] riscv: Don't use va_pa_offset on kdump
+Organization: FORTH
+In-Reply-To: <20211126180411.187597-1-mick@ics.forth.gr>
+References: <20211126180411.187597-1-mick@ics.forth.gr>
+Message-ID: <70fe8aa8bfe3923308e6248377577f58@mailhost.ics.forth.gr>
+X-Sender: mick@mailhost.ics.forth.gr
+User-Agent: Roundcube Webmail/1.3.16
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrILMWRmVeSWpSXmKPExsXSHT1dWXdqw41Eg2NTuC2e3fnKarH19yx2
+        i8u75rBZbPvcwmbR/O4cu8XLyz3MFm2z+C0WbHzE6MDh8eblSxaPwx1f2D3unZjG6vFw0yUm
+        j81L6j0uNV9n9/i8SS6APYrLJiU1J7MstUjfLoEr49ehPWwF87grrjedY29gbOHsYuTkkBAw
+        kbg/Zx5bFyMXh5DAUUaJAw+3MEEkTCVm7+1kBLF5BQQlTs58wgJiMwtYSEy9sp8RwpaXaN46
+        mxnEZhFQlZh9oxGsl01AU2L+pYNg9SIC6hKdz98wgixgFrjMKPFu4WqwBmEBe4nO9/vBbH4B
+        YYlPdy+ydjFycHACLdjxOxIkLCRgLvF+00pWiBtcJJ7e7WGFuE1F4sPvB+wg5aJA9ua5ShMY
+        BWchuXQWkktnIbl0ASPzKkaBxDJjvczkYr20/KKSDL30ok2M4Fhg9N3BeHvzW71DjEwcjIcY
+        JTiYlUR4p+69lijEm5JYWZValB9fVJqTWnyIUZqDRUmcl1dvQryQQHpiSWp2ampBahFMlomD
+        U6qBae99g7p1KWatCf+sQjh2H7+i/eYBl92ODdOOnG74Lr/487rZFamqpy7ubOCadPOIwqIf
+        U5OTg4yfirT+YXq9+jFvpqFF/cRv1+32T2Dfm3JAmbHuyn6Bu9wmNsqHBWe2h7O1XBWJWVGx
+        76QJ87KNihfyj0w0zTwZx79jl2m2vbex4M+ZFmw8sx7+rfQ6sOJz+mffb9O8PHP53XefDp9o
+        tmx5kVKPRMO/KoYL0yp+Rd0/9b4zx3vPbI7v/w5mLnyXZxOySONs6Mrym7u2adqE8X+8y2r2
+        LZQl8tzjS+XrtptKLBc1mCh0++e3FXO+xgctyZB/nXTKYb33HpdJLG1Rt2Yy+B9qY+Qsdnl/
+        ZLoIU4gSS3FGoqEWc1FxIgDELZZR9AIAAA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new EXPORT_RUNTIME_DEV_PM_OPS() macro. It allows the underlying
-dev_pm_ops struct as well as the suspend/resume callbacks to be detected
-as dead code in the case where CONFIG_PM is disabled, without having to
-wrap everything inside #ifdef CONFIG_PM guards.
+Hello Palmer,
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
+Any updates on those 3 patches ?
 
-Notes:
-    v2: New patch
-    v3: No change
+Regards,
+Nick
 
- drivers/iio/pressure/bmp280-core.c | 11 ++---------
- drivers/iio/pressure/bmp280-i2c.c  |  2 +-
- drivers/iio/pressure/bmp280-spi.c  |  2 +-
- 3 files changed, 4 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 6b7da40f99c8..bf8167f43c56 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -1138,7 +1138,6 @@ int bmp280_common_probe(struct device *dev,
- }
- EXPORT_SYMBOL(bmp280_common_probe);
- 
--#ifdef CONFIG_PM
- static int bmp280_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-@@ -1159,15 +1158,9 @@ static int bmp280_runtime_resume(struct device *dev)
- 	usleep_range(data->start_up_time, data->start_up_time + 100);
- 	return data->chip_info->chip_config(data);
- }
--#endif /* CONFIG_PM */
- 
--const struct dev_pm_ops bmp280_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
--				pm_runtime_force_resume)
--	SET_RUNTIME_PM_OPS(bmp280_runtime_suspend,
--			   bmp280_runtime_resume, NULL)
--};
--EXPORT_SYMBOL(bmp280_dev_pm_ops);
-+EXPORT_RUNTIME_DEV_PM_OPS(bmp280_dev_pm_ops, bmp280_runtime_suspend,
-+			  bmp280_runtime_resume, NULL);
- 
- MODULE_AUTHOR("Vlad Dogaru <vlad.dogaru@intel.com>");
- MODULE_DESCRIPTION("Driver for Bosch Sensortec BMP180/BMP280 pressure and temperature sensor");
-diff --git a/drivers/iio/pressure/bmp280-i2c.c b/drivers/iio/pressure/bmp280-i2c.c
-index 8b03ea15c0d0..35045bd92846 100644
---- a/drivers/iio/pressure/bmp280-i2c.c
-+++ b/drivers/iio/pressure/bmp280-i2c.c
-@@ -58,7 +58,7 @@ static struct i2c_driver bmp280_i2c_driver = {
- 	.driver = {
- 		.name	= "bmp280",
- 		.of_match_table = bmp280_of_i2c_match,
--		.pm = &bmp280_dev_pm_ops,
-+		.pm = pm_ptr(&bmp280_dev_pm_ops),
- 	},
- 	.probe		= bmp280_i2c_probe,
- 	.id_table	= bmp280_i2c_id,
-diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
-index 625b86878ad8..41f6cc56d229 100644
---- a/drivers/iio/pressure/bmp280-spi.c
-+++ b/drivers/iio/pressure/bmp280-spi.c
-@@ -109,7 +109,7 @@ static struct spi_driver bmp280_spi_driver = {
- 	.driver = {
- 		.name = "bmp280",
- 		.of_match_table = bmp280_of_spi_match,
--		.pm = &bmp280_dev_pm_ops,
-+		.pm = pm_ptr(&bmp280_dev_pm_ops),
- 	},
- 	.id_table = bmp280_spi_id,
- 	.probe = bmp280_spi_probe,
--- 
-2.34.1
+Στις 2021-11-26 20:04, Nick Kossifidis έγραψε:
+> On kdump instead of using an intermediate step to relocate the kernel,
+> that lives in a "control buffer" outside the current kernel's mapping,
+> we jump to the crash kernel directly by calling 
+> riscv_kexec_norelocate().
+> The current implementation uses va_pa_offset while switching to 
+> physical
+> addressing, however since we moved the kernel outside the linear 
+> mapping
+> this won't work anymore since riscv_kexec_norelocate() is part of the
+> kernel mapping and we should use kernel_map.va_kernel_pa_offset, and 
+> also
+> take XIP kernel into account.
+> 
+> We don't really need to use va_pa_offset on riscv_kexec_norelocate, we
+> can just set STVEC to the physical address of the new kernel instead 
+> and
+> let the hart jump to the new kernel on the next instruction after 
+> setting
+> SATP to zero. This fixes kdump and is also simpler/cleaner.
+> 
+> I tested this on the latest qemu and HiFive Unmatched and works as
+> expected.
+> 
+> v2: I removed the direct jump after setting satp as suggested.
+> 
+> Fixes: 2bfc6cd81bd1 ("riscv: Move kernel mapping outside of linear 
+> mapping")
+> 
+> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+> Reviewed-by: Alexandre Ghiti <alex@ghiti.fr>
+> Cc: <stable@vger.kernel.org> # 5.13
+> Cc: <stable@vger.kernel.org> # 5.14
 
