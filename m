@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 530FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20AEEC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:47:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231519AbiAGSq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:46:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46414 "EHLO
+        id S231478AbiAGSqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:46:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiAGSqm (ORCPT
+        with ESMTP id S230306AbiAGSqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:46:42 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE371C06173E;
-        Fri,  7 Jan 2022 10:46:41 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id l16-20020a17090a409000b001b2e9628c9cso7189382pjg.4;
-        Fri, 07 Jan 2022 10:46:41 -0800 (PST)
+        Fri, 7 Jan 2022 13:46:37 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA79C061574;
+        Fri,  7 Jan 2022 10:46:36 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id l8so3307784plt.6;
+        Fri, 07 Jan 2022 10:46:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0JfEaUNg0Xt4oVlLObtxcOjbJGRKPvqxT7EiLG9OykY=;
-        b=Qsf3bJ0cpgz8SPe3ih5YGUEyZ4sc+XaAwMIPja34cWro9K8RWO5srgLBKXE0I17vXK
-         Gx5ovBLMWl2F4d0yzZfagIZjb0sZmNUw/GHCvX+FukqEN4WluZTlkdma9gizAHPYucc9
-         qyt6Wt5CqBBTzZlHUgs57W7MX0QxdjmtJ9T7eS/WRRJlPj3oTo6JzA407REtDER49MYJ
-         uFigwlTXckxq1Kr87LMgbeN7oEd0MlTEQJWUZ9sGKeVS6SCa43xOYKCAYhgENpaKPCtb
-         Fjv1v46VC1lc0Nj3H/o/0lpR7aB5/nBlgFM3MvWV2bL/Dd/RzTRcTrLIYEM2TitSuYAT
-         U3WQ==
+        bh=xZ1NPwHOAF/AQNPHH9LVwlD3kjQZoYIgqFFS0X9ueYI=;
+        b=gdwYPVJj5AL9Sro58YVyH5wWqFz92B5ufSDbADqzyl+1QEh7J6G6D8FP3/k4xBYjj6
+         RlWrd1MdXQ3rZPIvr/UHiMxNh3ztIIQ/0TZ6sMRJRe5uV4NPdtNmQJcWYmMhDC3Xyocy
+         sznclV/UHl4z2OoaOo4UdXg1FV/NGdo2K3K9TtpslCZNqLFJ/gSqS2Qdh4S4pT9nqmlG
+         b3KLCtcyutltvBA8gxKP/38Wmgj/wGlahwds2aljXrCWCJ8QIgybIU9T1K7ITYBYEaNj
+         5vScfjerqGNn89/mr1bOKpg4ijTWXRKWLcejNB0dPKe44M7CaoWhydzblgqi2S+mlq0c
+         KV4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0JfEaUNg0Xt4oVlLObtxcOjbJGRKPvqxT7EiLG9OykY=;
-        b=QZDcU+ASVKILQhOl9nNBfEdAzlsgVrYeLd+4wVmVJb/u4CkTwra17Pk3Or+BBPUkM7
-         2bOpcXKm1YSf24ziNWk/bZErBr9EBAdD9rkQ/UAsJ5WSTbRU6/Oka6AOhA7LoiNO6YzI
-         MC5qt3C/JDOEVdkw5Y9tfwln6L61TKOMeHpTgCr1diUtdA9AR6UgJYlRm3vnyorROtNk
-         f3nqid4WyoywHgpVQoIEN6H5z/dXjbqMVo4spAYYZVpL6wIUPrdPwCsSNqxGrPrkS0G6
-         S8TOsEMKH8erYhsZNOnrZmX1jROpqQn0D0/7sQNuVR0N/XYlS9XktgoDxLM3/50aPbNn
-         pRsw==
-X-Gm-Message-State: AOAM530vd+tv4vBr5ugM631gt/9FMYGn/4poJdxbTtnTZs9HqQGYrHfr
-        Ibkp3lKWxX05Xd+9CGeeIR4=
-X-Google-Smtp-Source: ABdhPJwDs5ypKHiHBOBzudLLag56ivf9lWWCG0XQ8jccGHeJ4YgqxZfkIZwKtjpgM4sOdzHPIcjubQ==
-X-Received: by 2002:a17:902:bcc1:b0:149:a13f:af62 with SMTP id o1-20020a170902bcc100b00149a13faf62mr39057521pls.147.1641581201370;
-        Fri, 07 Jan 2022 10:46:41 -0800 (PST)
+        bh=xZ1NPwHOAF/AQNPHH9LVwlD3kjQZoYIgqFFS0X9ueYI=;
+        b=dxYnCLV+gm70LWq8d/LDduKE+PrWZ/5IOTrDF8x/Um2o4baW1fAm11BKVUFWNYY07y
+         /mzzIniSj1gIj9cEbcnvJXs5lUQZ7n3s1u8+XUTbrBWWlgKpaWkQadhJo3180fFHuFww
+         32+le4NwE4P/ZbwQlgwSFskxiQ3zGjIKTfQs4n2QPO7m87FTzYjUbwrmtVbkaak1fKKp
+         M0fAypGgYeN5B14cjyrkKQEZEYJOPx8uS2Rxkkee+wfHva4/copvsOBeJmh3MfKmCyL4
+         t2MChmfpCEBEQwHmVuOUhzx2ILzFvJEm8YNZ6unccCiI8D8/jdVLyBv1C1s9jo5l7Nh/
+         EYSQ==
+X-Gm-Message-State: AOAM5303lanRNLqz9J29BF0ha+7suoWDwJi05d0CPMSs/YfOD6wujjYF
+        tJXUyAY0F9wK6nEOOqVINe4=
+X-Google-Smtp-Source: ABdhPJyd1JMd6wKyQckUfHPUOYjmtP2LGWi0nKuIB0jRuzX3Xe/zyMQGEc933uGXxW11tKhYKKPWXA==
+X-Received: by 2002:a17:902:9001:b0:149:f2ae:6491 with SMTP id a1-20020a170902900100b00149f2ae6491mr8598993plp.39.1641581196338;
+        Fri, 07 Jan 2022 10:46:36 -0800 (PST)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x33sm7219417pfh.212.2022.01.07.10.46.39
+        by smtp.gmail.com with ESMTPSA id x33sm7219417pfh.212.2022.01.07.10.46.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 10:46:40 -0800 (PST)
+        Fri, 07 Jan 2022 10:46:35 -0800 (PST)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     linux-mtd@lists.infradead.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
@@ -65,224 +65,137 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         (BCMA)),
         bcm-kernel-feedback-list@broadcom.com (open list:BROADCOM STB NAND
         FLASH DRIVER)
-Subject: [PATCH v3 9/9] mtd: rawnand: brcmnand: Add BCMA shim
-Date:   Fri,  7 Jan 2022 10:46:14 -0800
-Message-Id: <20220107184614.2670254-10-f.fainelli@gmail.com>
+Subject: [PATCH v3 6/9] mtd: rawnand: brcmnand: Add platform data structure for BCMA
+Date:   Fri,  7 Jan 2022 10:46:11 -0800
+Message-Id: <20220107184614.2670254-7-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220107184614.2670254-1-f.fainelli@gmail.com>
 References: <20220107184614.2670254-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a BCMA shim to allow us to register the brcmnand driver using the
-BCMA bus which provides indirect memory mapped access to SoC registers.
-
-There are a number of registers that need to be byte swapped because
-they are natively big endian, coming directly from the NAND chip, and
-there is no bus interface unlike the iProc or STB platforms that
-performs the byte swapping for us.
+Update the BCMA's chipcommon nand flash driver to detect which
+chip-select is used and pass that information via platform data to the
+brcmnand driver. Make sure that the brcmnand platform data structure is
+always at the beginning of the platform data of the "nflash" device
+created by BCMA to allow brcmnand to safely de-reference it.
 
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- drivers/mtd/nand/raw/Kconfig              |  13 +++
- drivers/mtd/nand/raw/brcmnand/Makefile    |   2 +
- drivers/mtd/nand/raw/brcmnand/bcma_nand.c | 132 ++++++++++++++++++++++
- drivers/mtd/nand/raw/brcmnand/brcmnand.c  |   4 +
- 4 files changed, 151 insertions(+)
- create mode 100644 drivers/mtd/nand/raw/brcmnand/bcma_nand.c
+ MAINTAINERS                                 |  1 +
+ drivers/bcma/driver_chipcommon_nflash.c     | 20 +++++++++++++++++++-
+ include/linux/bcma/bcma_driver_chipcommon.h |  5 +++++
+ include/linux/platform_data/brcmnand.h      | 12 ++++++++++++
+ 4 files changed, 37 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/platform_data/brcmnand.h
 
-diff --git a/drivers/mtd/nand/raw/Kconfig b/drivers/mtd/nand/raw/Kconfig
-index 0a45d3c6c15b..7f385ac6e443 100644
---- a/drivers/mtd/nand/raw/Kconfig
-+++ b/drivers/mtd/nand/raw/Kconfig
-@@ -208,6 +208,19 @@ config MTD_NAND_BRCMNAND
- 	  originally designed for Set-Top Box but is used on various BCM7xxx,
- 	  BCM3xxx, BCM63xxx, iProc/Cygnus and more.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dd36acc87ce6..404f3eb8ff18 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3966,6 +3966,7 @@ L:	linux-mtd@lists.infradead.org
+ L:	bcm-kernel-feedback-list@broadcom.com
+ S:	Maintained
+ F:	drivers/mtd/nand/raw/brcmnand/
++F:	include/linux/platform_data/brcmnand.h
  
-+if MTD_NAND_BRCMNAND
-+
-+config MTD_NAND_BRCMNAND_BCMA
-+	tristate "Broadcom BCMA NAND controller"
-+	depends on BCMA_NFLASH
-+	depends on BCMA
-+	help
-+	  Enables the BRCMNAND controller over BCMA on BCM47186/BCM5358 SoCs.
-+	  The glue driver will take care of performing the low-level I/O
-+	  operations to interface the BRCMNAND controller over the BCMA bus.
-+
-+endif # MTD_NAND_BRCMNAND
-+
- config MTD_NAND_BCM47XXNFLASH
- 	tristate "BCM4706 BCMA NAND controller"
- 	depends on BCMA_NFLASH
-diff --git a/drivers/mtd/nand/raw/brcmnand/Makefile b/drivers/mtd/nand/raw/brcmnand/Makefile
-index 195b845e48b8..16dc7254200e 100644
---- a/drivers/mtd/nand/raw/brcmnand/Makefile
-+++ b/drivers/mtd/nand/raw/brcmnand/Makefile
-@@ -6,3 +6,5 @@ obj-$(CONFIG_MTD_NAND_BRCMNAND)		+= bcm63138_nand.o
- obj-$(CONFIG_MTD_NAND_BRCMNAND)		+= bcm6368_nand.o
- obj-$(CONFIG_MTD_NAND_BRCMNAND)		+= brcmstb_nand.o
- obj-$(CONFIG_MTD_NAND_BRCMNAND)		+= brcmnand.o
-+
-+obj-$(CONFIG_MTD_NAND_BRCMNAND_BCMA)	+= bcma_nand.o
-diff --git a/drivers/mtd/nand/raw/brcmnand/bcma_nand.c b/drivers/mtd/nand/raw/brcmnand/bcma_nand.c
-new file mode 100644
-index 000000000000..d7c62988c452
---- /dev/null
-+++ b/drivers/mtd/nand/raw/brcmnand/bcma_nand.c
-@@ -0,0 +1,132 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright © 2021 Broadcom
+ BROADCOM STB PCIE DRIVER
+ M:	Jim Quinlan <jim2101024@gmail.com>
+diff --git a/drivers/bcma/driver_chipcommon_nflash.c b/drivers/bcma/driver_chipcommon_nflash.c
+index d4f699aef8c4..a1a814750b4a 100644
+--- a/drivers/bcma/driver_chipcommon_nflash.c
++++ b/drivers/bcma/driver_chipcommon_nflash.c
+@@ -7,18 +7,28 @@
+ 
+ #include "bcma_private.h"
+ 
++#include <linux/bitops.h>
+ #include <linux/platform_device.h>
++#include <linux/platform_data/brcmnand.h>
+ #include <linux/bcma/bcma.h>
+ 
++/* Alternate NAND controller driver name in order to allow both bcm47xxnflash
++ * and bcma_brcmnand to be built into the same kernel image.
 + */
-+#include <linux/bcma/bcma.h>
-+#include <linux/bcma/bcma_driver_chipcommon.h>
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
++static const char *bcma_nflash_alt_name = "bcma_brcmnand";
 +
-+#include "brcmnand.h"
-+
-+struct brcmnand_bcma_soc {
-+	struct brcmnand_soc soc;
-+	struct bcma_drv_cc *cc;
-+};
-+
-+static inline bool brcmnand_bcma_needs_swapping(u32 offset)
-+{
-+	switch (offset) {
-+	case BCMA_CC_NAND_SPARE_RD0:
-+	case BCMA_CC_NAND_SPARE_RD4:
-+	case BCMA_CC_NAND_SPARE_RD8:
-+	case BCMA_CC_NAND_SPARE_RD12:
-+	case BCMA_CC_NAND_SPARE_WR0:
-+	case BCMA_CC_NAND_SPARE_WR4:
-+	case BCMA_CC_NAND_SPARE_WR8:
-+	case BCMA_CC_NAND_SPARE_WR12:
-+	case BCMA_CC_NAND_DEVID:
-+	case BCMA_CC_NAND_DEVID_X:
-+	case BCMA_CC_NAND_SPARE_RD16:
-+	case BCMA_CC_NAND_SPARE_RD20:
-+	case BCMA_CC_NAND_SPARE_RD24:
-+	case BCMA_CC_NAND_SPARE_RD28:
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static inline struct brcmnand_bcma_soc *to_bcma_soc(struct brcmnand_soc *soc)
-+{
-+	return container_of(soc, struct brcmnand_bcma_soc, soc);
-+}
-+
-+static u32 brcmnand_bcma_read_reg(struct brcmnand_soc *soc, u32 offset)
-+{
-+	struct brcmnand_bcma_soc *sc = to_bcma_soc(soc);
-+	u32 val;
-+
-+	/* Offset into the NAND block and deal with the flash cache separately */
-+	if (offset == BRCMNAND_NON_MMIO_FC_ADDR)
-+		offset = BCMA_CC_NAND_CACHE_DATA;
-+	else
-+		offset += BCMA_CC_NAND_REVISION;
-+
-+	val = bcma_cc_read32(sc->cc, offset);
-+
-+	/* Swap if necessary */
-+	if (brcmnand_bcma_needs_swapping(offset))
-+		val = be32_to_cpu(val);
-+	return val;
-+}
-+
-+static void brcmnand_bcma_write_reg(struct brcmnand_soc *soc, u32 val,
-+				    u32 offset)
-+{
-+	struct brcmnand_bcma_soc *sc = to_bcma_soc(soc);
-+
-+	/* Offset into the NAND block */
-+	if (offset == BRCMNAND_NON_MMIO_FC_ADDR)
-+		offset = BCMA_CC_NAND_CACHE_DATA;
-+	else
-+		offset += BCMA_CC_NAND_REVISION;
-+
-+	/* Swap if necessary */
-+	if (brcmnand_bcma_needs_swapping(offset))
-+		val = cpu_to_be32(val);
-+
-+	bcma_cc_write32(sc->cc, offset, val);
-+}
-+
-+static struct brcmnand_io_ops brcmnand_bcma_io_ops = {
-+	.read_reg	= brcmnand_bcma_read_reg,
-+	.write_reg	= brcmnand_bcma_write_reg,
-+};
-+
-+static void brcmnand_bcma_prepare_data_bus(struct brcmnand_soc *soc, bool prepare,
-+					   bool is_param)
-+{
-+	struct brcmnand_bcma_soc *sc = to_bcma_soc(soc);
-+
-+	/* Reset the cache address to ensure we are already accessing the
-+	 * beginning of a sub-page.
-+	 */
-+	bcma_cc_write32(sc->cc, BCMA_CC_NAND_CACHE_ADDR, 0);
-+}
-+
-+static int brcmnand_bcma_nand_probe(struct platform_device *pdev)
-+{
-+	struct bcma_nflash *nflash = dev_get_platdata(&pdev->dev);
-+	struct brcmnand_bcma_soc *soc;
-+
-+	soc = devm_kzalloc(&pdev->dev, sizeof(*soc), GFP_KERNEL);
-+	if (!soc)
-+		return -ENOMEM;
-+
-+	soc->cc = container_of(nflash, struct bcma_drv_cc, nflash);
-+	soc->soc.prepare_data_bus = brcmnand_bcma_prepare_data_bus;
-+	soc->soc.ops = &brcmnand_bcma_io_ops;
-+
-+	if (soc->cc->core->bus->chipinfo.id == BCMA_CHIP_ID_BCM4706) {
-+		dev_err(&pdev->dev, "Use bcm47xxnflash for 4706!\n");
-+		return -ENODEV;
-+	}
-+
-+	return brcmnand_probe(pdev, &soc->soc);
-+}
-+
-+static struct platform_driver brcmnand_bcma_nand_driver = {
-+	.probe			= brcmnand_bcma_nand_probe,
-+	.remove			= brcmnand_remove,
-+	.driver = {
-+		.name		= "bcma_brcmnand",
-+		.pm		= &brcmnand_pm_ops,
-+	}
-+};
-+module_platform_driver(brcmnand_bcma_nand_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_AUTHOR("Broadcom");
-+MODULE_DESCRIPTION("NAND controller driver glue for BCMA chips");
-diff --git a/drivers/mtd/nand/raw/brcmnand/brcmnand.c b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-index 4759303ece7c..c412f79b81db 100644
---- a/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-+++ b/drivers/mtd/nand/raw/brcmnand/brcmnand.c
-@@ -598,7 +598,11 @@ enum {
+ struct platform_device bcma_nflash_dev = {
+ 	.name		= "bcma_nflash",
+ 	.num_resources	= 0,
+ };
  
- static inline bool brcmnand_non_mmio_ops(struct brcmnand_controller *ctrl)
++static const char *probes[] = { "bcm47xxpart", NULL };
++
+ /* Initialize NAND flash access */
+ int bcma_nflash_init(struct bcma_drv_cc *cc)
  {
-+#if IS_ENABLED(CONFIG_MTD_NAND_BRCMNAND_BCMA)
- 	return static_branch_unlikely(&brcmnand_soc_has_ops_key);
-+#else
-+	return false;
-+#endif
- }
+ 	struct bcma_bus *bus = cc->core->bus;
++	u32 reg;
  
- static inline u32 nand_readreg(struct brcmnand_controller *ctrl, u32 offs)
+ 	if (bus->chipinfo.id != BCMA_CHIP_ID_BCM4706 &&
+ 	    cc->core->id.rev != 38) {
+@@ -33,8 +43,16 @@ int bcma_nflash_init(struct bcma_drv_cc *cc)
+ 
+ 	cc->nflash.present = true;
+ 	if (cc->core->id.rev == 38 &&
+-	    (cc->status & BCMA_CC_CHIPST_5357_NAND_BOOT))
++	    (cc->status & BCMA_CC_CHIPST_5357_NAND_BOOT)) {
+ 		cc->nflash.boot = true;
++		/* Determine the chip select that is being used */
++		reg = bcma_cc_read32(cc, BCMA_CC_NAND_CS_NAND_SELECT) & 0xff;
++		cc->nflash.brcmnand_info.chip_select = ffs(reg) - 1;
++		cc->nflash.brcmnand_info.part_probe_types = probes;
++		cc->nflash.brcmnand_info.ecc_stepsize = 512;
++		cc->nflash.brcmnand_info.ecc_strength = 1;
++		bcma_nflash_dev.name = bcma_nflash_alt_name;
++	}
+ 
+ 	/* Prepare platform device, but don't register it yet. It's too early,
+ 	 * malloc (required by device_private_init) is not available yet. */
+diff --git a/include/linux/bcma/bcma_driver_chipcommon.h b/include/linux/bcma/bcma_driver_chipcommon.h
+index d35b9206096d..e3314f746bfa 100644
+--- a/include/linux/bcma/bcma_driver_chipcommon.h
++++ b/include/linux/bcma/bcma_driver_chipcommon.h
+@@ -3,6 +3,7 @@
+ #define LINUX_BCMA_DRIVER_CC_H_
+ 
+ #include <linux/platform_device.h>
++#include <linux/platform_data/brcmnand.h>
+ #include <linux/gpio.h>
+ 
+ /** ChipCommon core registers. **/
+@@ -599,6 +600,10 @@ struct bcma_sflash {
+ 
+ #ifdef CONFIG_BCMA_NFLASH
+ struct bcma_nflash {
++	/* Must be the fist member for the brcmnand driver to
++	 * de-reference that structure.
++	 */
++	struct brcmnand_platform_data brcmnand_info;
+ 	bool present;
+ 	bool boot;		/* This is the flash the SoC boots from */
+ };
+diff --git a/include/linux/platform_data/brcmnand.h b/include/linux/platform_data/brcmnand.h
+new file mode 100644
+index 000000000000..8b8777985dce
+--- /dev/null
++++ b/include/linux/platform_data/brcmnand.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef BRCMNAND_PLAT_DATA_H
++#define BRCMNAND_PLAT_DATA_H
++
++struct brcmnand_platform_data {
++	int	chip_select;
++	const char * const *part_probe_types;
++	unsigned int ecc_stepsize;
++	unsigned int ecc_strength;
++};
++
++#endif /* BRCMNAND_PLAT_DATA_H */
 -- 
 2.25.1
 
