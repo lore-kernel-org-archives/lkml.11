@@ -2,170 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D25C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345184AbiAGBUC (ORCPT
+        id S1345169AbiAGBUU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 20:20:02 -0500
-Received: from mga07.intel.com ([134.134.136.100]:29381 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344352AbiAGBT6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:19:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641518398; x=1673054398;
-  h=cc:subject:to:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=Qmk7jfZS/XwH1zpKmsOoRjz7KHDFbSx87A5bcGdXK78=;
-  b=bEqS3AFxrJFUAEhfFuf0Amo1I4W71sotUuMEejJ3h2yKidA971Q58aTJ
-   68Gl4zUePRcVG8BznsZKq+OgWUVbyPwFaUhb7R+vBVyfTGg1uEbjwNLFD
-   v14SZ/Org+W5iLikM8Gj6/prHkJ6PKp0Le3R4sFl+rBY14FNZKOg8DNnM
-   7S+POt7JTLme5xDtNVNQRfKXHc+fCrYnPj2Y2+8Esjif3OWAp/O/G3qwJ
-   4oOgF8tYdJ36Dx5HywZSNy2yU53GtRXtPsOP+bYNxf9vS+SlqbRArjzho
-   J5XPgF6OK37A7StgtHSnmu3ZvteCwbEEmJjWlpFEXMMCiIh6cYCQ8V6GS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10217"; a="306150380"
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
-   d="scan'208";a="306150380"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jan 2022 17:19:57 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,268,1635231600"; 
-   d="scan'208";a="527201423"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118]) ([10.239.159.118])
-  by orsmga008.jf.intel.com with ESMTP; 06 Jan 2022 17:19:50 -0800
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Will Deacon <will@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>, rafael@kernel.org,
-        Diana Craciun <diana.craciun@oss.nxp.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Li Yang <leoyang.li@nxp.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        iommu@lists.linux-foundation.org, linux-pci@vger.kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 6/8] gpu/host1x: Use iommu_attach/detach_device()
-To:     Jason Gunthorpe <jgg@nvidia.com>
-References: <20220106022053.2406748-1-baolu.lu@linux.intel.com>
- <20220106022053.2406748-7-baolu.lu@linux.intel.com>
- <20220106153543.GD2328285@nvidia.com>
- <2befad17-05fe-3768-6fbb-67440a5befa3@linux.intel.com>
- <20220107004825.GP2328285@nvidia.com>
-From:   Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <0c80f52e-0529-b299-6f13-105f873be3a0@linux.intel.com>
-Date:   Fri, 7 Jan 2022 09:19:11 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Thu, 6 Jan 2022 20:20:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345195AbiAGBUH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 20:20:07 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FAAC061245;
+        Thu,  6 Jan 2022 17:20:07 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id z30so599286pge.4;
+        Thu, 06 Jan 2022 17:20:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fw29SMG9zs2Lc8ckvr2Ud0WuhWRxk7FcTRUOfZLouWI=;
+        b=qgGfeHebJnI2mPy1fCaGOSyNojWYJJpUjAS0OdJPR9/+jXwplYkVxXzIGHtZ6yjcnG
+         gz45mlXRnSdJoGaVF1j0pyWogtD33YnYYOzHmW5h/TURflIeHl5AMN11OB9iZv3unziS
+         DGbkpZVP7B9FkiiTC8TsWUtrR7EsO1Y+7/9oKnvAedR9PvCMOYXD6S5vjsQeQ5i1xIvZ
+         2HHm+39YJ4RJIBITnFPxrBA5si/NmSWxqtXV2wHMCXrBO4lBTf6Z0X8kwnWkkScUwDYX
+         7BCTErqGz9du0G5EVIMzE/vZll79EfE+cSW8qIWfRgQrBJV0adwIjwk80kisTUQFiNsq
+         D4ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fw29SMG9zs2Lc8ckvr2Ud0WuhWRxk7FcTRUOfZLouWI=;
+        b=UP2CECRIv7hieF+dbLFvjANXRepaxn6HjtKaRn4IMIiK+2VFHlklYO/TOQSHXnDbWc
+         pNOCVAh83M/uCWrCWH0mHWfKolqjeoXG2GNRQRgtEnQsP3VDNxrGzOjq/GCdBnZf7jJE
+         arF+R1jgcOX2Zb5kMkhnoEU6k8q4nppZfIeJaqOWV6vey7pBo0SQ1ySyxWCX9E+l07z1
+         4jVbFzHOkx4D729yyBqiWg/GA5XW+J8vS1jW8C9Lxe992Fccv2ZyKwulDuFXhyH1Bg/D
+         rG3rxkIVYxzglrMxlgt4bIUmBB7jI3BlGOtQWWdcGHreHv7mN0narUurTADFdQ5N2fgq
+         Sw4A==
+X-Gm-Message-State: AOAM533SyZpCEz9u0GuKGZjLw4F0T1MhUu0boW/lsFuhh3J+pgO4YMpM
+        0hvbUzy6uEUC9xxveT1kSBfHFKvXfVLpBf2bULM=
+X-Google-Smtp-Source: ABdhPJx9kdiC9H7F8/0GppMF32c4y0gvMqPnzyIsGPRGZbsOfetEhWFolPNs9CBWNyQg47YnFWEC9mNf+MukmnZnS10=
+X-Received: by 2002:a63:8f06:: with SMTP id n6mr55290339pgd.95.1641518407032;
+ Thu, 06 Jan 2022 17:20:07 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220107004825.GP2328285@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20220106132022.3470772-1-imagedong@tencent.com>
+In-Reply-To: <20220106132022.3470772-1-imagedong@tencent.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 6 Jan 2022 17:19:55 -0800
+Message-ID: <CAADnVQJQxaxDc6VPVRvqVbUyp7160TzxVOED_ZQgu5nxJLxQhg@mail.gmail.com>
+Subject: Re: [PATCH v5 net-next 0/3] net: bpf: handle return value of
+ post_bind{4,6} and add selftests for it
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/7/22 8:48 AM, Jason Gunthorpe wrote:
-> On Fri, Jan 07, 2022 at 08:35:34AM +0800, Lu Baolu wrote:
->> On 1/6/22 11:35 PM, Jason Gunthorpe wrote:
->>> On Thu, Jan 06, 2022 at 10:20:51AM +0800, Lu Baolu wrote:
->>>> Ordinary drivers should use iommu_attach/detach_device() for domain
->>>> attaching and detaching.
->>>>
->>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>>    drivers/gpu/host1x/dev.c | 4 ++--
->>>>    1 file changed, 2 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/drivers/gpu/host1x/dev.c b/drivers/gpu/host1x/dev.c
->>>> index fbb6447b8659..6e08cb6202cc 100644
->>>> +++ b/drivers/gpu/host1x/dev.c
->>>> @@ -265,7 +265,7 @@ static struct iommu_domain *host1x_iommu_attach(struct host1x *host)
->>>>    			goto put_cache;
->>>>    		}
->>>> -		err = iommu_attach_group(host->domain, host->group);
->>>> +		err = iommu_attach_device(host->domain, host->dev);
->>>>    		if (err) {
->>>>    			if (err == -ENODEV)
->>>>    				err = 0;
->>>> @@ -335,7 +335,7 @@ static void host1x_iommu_exit(struct host1x *host)
->>>>    {
->>>>    	if (host->domain) {
->>>>    		put_iova_domain(&host->iova);
->>>> -		iommu_detach_group(host->domain, host->group);
->>>> +		iommu_detach_device(host->domain, host->dev);
->>>>    		iommu_domain_free(host->domain);
->>>>    		host->domain = NULL;
->>>
->>> Shouldn't this add the flag to tegra_host1x_driver ?
->>
->> This is called for a single driver. The call trace looks like below:
->>
->> static struct platform_driver tegra_host1x_driver = {
->>          .driver = {
->>                  .name = "tegra-host1x",
->>                  .of_match_table = host1x_of_match,
->>          },
->>          .probe = host1x_probe,
->>          .remove = host1x_remove,
->> };
->>
->> host1x_probe(dev)
->> ->host1x_iommu_init(host)	//host is a wrapper of dev
->>       iommu_domain_alloc(&platform_bus_type)
->>       iommu_attach_group(domain, group);
-> 
-> The main question is if the iommu group is being shared with other
-> drivers, not the call chain for this function.
-> 
-> For tegra you have to go look in each entry of the of_match_table:
-> 
->          { .compatible = "nvidia,tegra114-host1x", .data = &host1x02_info, },
-> 
-> And find the DTS block:
-> 
->          host1x@50000000 {
->                  compatible = "nvidia,tegra114-host1x";
->                  reg = <0x50000000 0x00028000>;
->                  interrupts = <GIC_SPI 65 IRQ_TYPE_LEVEL_HIGH>, /* syncpt */
->                               <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>; /* general */
->                  interrupt-names = "syncpt", "host1x";
->                  clocks = <&tegra_car TEGRA114_CLK_HOST1X>;
->                  clock-names = "host1x";
->                  resets = <&tegra_car 28>;
->                  reset-names = "host1x";
->                  iommus = <&mc TEGRA_SWGROUP_HC>;
-> 
-> Then check if any other devices in the DTS use the same 'iommus' which
-> is how the groups are setup.
+On Thu, Jan 6, 2022 at 5:20 AM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> The return value of BPF_CGROUP_RUN_PROG_INET{4,6}_POST_BIND() in
+> __inet_bind() is not handled properly. While the return value
+> is non-zero, it will set inet_saddr and inet_rcv_saddr to 0 and
+> exit:
+> exit:
+>
+>         err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
+>         if (err) {
+>                 inet->inet_saddr = inet->inet_rcv_saddr = 0;
+>                 goto out_release_sock;
+>         }
+>
+> Let's take UDP for example and see what will happen. For UDP
+> socket, it will be added to 'udp_prot.h.udp_table->hash' and
+> 'udp_prot.h.udp_table->hash2' after the sk->sk_prot->get_port()
+> called success. If 'inet->inet_rcv_saddr' is specified here,
+> then 'sk' will be in the 'hslot2' of 'hash2' that it don't belong
+> to (because inet_saddr is changed to 0), and UDP packet received
+> will not be passed to this sock. If 'inet->inet_rcv_saddr' is not
+> specified here, the sock will work fine, as it can receive packet
+> properly, which is wired, as the 'bind()' is already failed.
+>
+> To undo the get_port() operation, introduce the 'put_port' field
+> for 'struct proto'. For TCP proto, it is inet_put_port(); For UDP
+> proto, it is udp_lib_unhash(); For icmp proto, it is
+> ping_unhash().
+>
+> Therefore, after sys_bind() fail caused by
+> BPF_CGROUP_RUN_PROG_INET4_POST_BIND(), it will be unbinded, which
+> means that it can try to be binded to another port.
+>
+> The second patch use C99 initializers in test_sock.c
+>
+> The third patch is the selftests for this modification.
+>
+> Changes since v4:
+> - use C99 initializers in test_sock.c before adding the test case
 
-Yes, exactly.
+Thanks for the fix. Applied.
 
-> 
-> I checked everything and it does look like this is a single device
-> group.
-
-Okay, thanks!
-
-> 
-> Jason
-> 
-
-Best regards,
-baolu
+In the future please make sure to tag your patches with
+[PATCH bpf-next]
+so that BPF CI can properly test it right away.
