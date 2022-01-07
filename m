@@ -2,108 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA74C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC75C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 02:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345553AbiAGCk6 (ORCPT
+        id S1344826AbiAGCo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 21:40:58 -0500
-Received: from mail-qt1-f171.google.com ([209.85.160.171]:42830 "EHLO
-        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345521AbiAGCk5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 21:40:57 -0500
-Received: by mail-qt1-f171.google.com with SMTP id y17so4244983qtx.9;
-        Thu, 06 Jan 2022 18:40:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a3oveBvk/TJ7E2R11hx57UheCl6wg4a+PXG4wzrlHrU=;
-        b=hjn9/K5rvc2Ha8WtWuYlzdDB7rXIUES/BGuCsw0Ze5c+xf0aDS3rCT2xdXH3UoDQz/
-         AnSMDlqbeevPSznDd/95ZyRDwjK3baP/wYgOtFk50XcnG+3X3SDmKveq23gP4IfpzZ/7
-         ELJpzEiqPtaLqC74AXP7JliExKdjamqeCpncKW06kpylkMSAiJo8NTmYvj8JXpLPMRjR
-         riALwYWbMiBwz8j1zx5sieDDmTHV9iB9ggaJmYzcnhWKjxx/q+aujbWaHVNJp3gBJ8b1
-         R/n8BCaqzaj3A2AThqQt/RP637blJL61XYjApzWyGYscWGQPHJENqxnwej3sn7k8tb6b
-         a1aw==
-X-Gm-Message-State: AOAM531j4zr/iupMDBZjWlZFATmZ4SmREUyPnkyf5rKVYYHIGdlT9WKM
-        zE9FhoESzs3GPuJVUV6vYdQVUN1nhlg5Fw==
-X-Google-Smtp-Source: ABdhPJy+98KZMdgRomHIl0wQjDyz6kJktgoGwWe6gB9SvpeCcSM2U5jMQWiwUSwgG06T1v5aP3Xh3g==
-X-Received: by 2002:a05:622a:11c3:: with SMTP id n3mr53518144qtk.213.1641523256268;
-        Thu, 06 Jan 2022 18:40:56 -0800 (PST)
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com. [209.85.160.172])
-        by smtp.gmail.com with ESMTPSA id p16sm2904028qtx.19.2022.01.06.18.40.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Jan 2022 18:40:56 -0800 (PST)
-Received: by mail-qt1-f172.google.com with SMTP id f17so1756295qtf.8;
-        Thu, 06 Jan 2022 18:40:55 -0800 (PST)
-X-Received: by 2002:ac8:4e85:: with SMTP id 5mr54938490qtp.416.1641523255287;
- Thu, 06 Jan 2022 18:40:55 -0800 (PST)
+        Thu, 6 Jan 2022 21:44:58 -0500
+Received: from helcar.hmeau.com ([216.24.177.18]:59070 "EHLO fornost.hmeau.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344689AbiAGCo5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 21:44:57 -0500
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
+        id 1n5fF4-0006RF-Jm; Fri, 07 Jan 2022 13:44:35 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 07 Jan 2022 13:44:34 +1100
+Date:   Fri, 7 Jan 2022 13:44:34 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Stephan Mueller <smueller@chronox.de>
+Cc:     Nicolai Stange <nstange@suse.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
+        Zaibo Xu <xuzaibo@huawei.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com
+Subject: Re: [PATCH v2 03/18] crypto: dh - optimize domain parameter
+ serialization for well-known groups
+Message-ID: <YdepEhTI/LB9wdJr@gondor.apana.org.au>
+References: <20211209090358.28231-1-nstange@suse.de>
+ <87r1a7thy0.fsf@suse.de>
+ <YcvEkfS4cONDXXB9@gondor.apana.org.au>
+ <2468270.qO8rWLYou6@tauon.chronox.de>
 MIME-Version: 1.0
-References: <1063e5a4738d897adcaffce2ab8e4e45f07998ff.1635969326.git.christophe.jaillet@wanadoo.fr>
- <4890990418ecbcfb8921efe8adb2019a03e5a1c1.1635969326.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <4890990418ecbcfb8921efe8adb2019a03e5a1c1.1635969326.git.christophe.jaillet@wanadoo.fr>
-From:   Li Yang <leoyang.li@nxp.com>
-Date:   Fri, 7 Jan 2022 10:40:43 +0800
-X-Gmail-Original-Message-ID: <CADRPPNTRE9sUX-4XxvtoQkGqOXzBPm_1h-FRSRepWsxdFz3Tvg@mail.gmail.com>
-Message-ID: <CADRPPNTRE9sUX-4XxvtoQkGqOXzBPm_1h-FRSRepWsxdFz3Tvg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] soc: fsl: guts: Add a missing memory allocation
- failure check
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     tyreld@linux.ibm.com, kernel-janitors@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2468270.qO8rWLYou6@tauon.chronox.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Nov 4, 2021 at 4:10 AM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
+On Thu, Jan 06, 2022 at 03:30:04PM +0100, Stephan Mueller wrote:
 >
-> If 'devm_kstrdup()' fails, we should return -ENOMEM.
->
-> While at it, move the 'of_node_put()' call in the error handling path and
-> after the 'machine' has been copied.
-> Better safe than sorry.
->
-> Suggested-by: Tyrel Datwyler <tyreld@linux.ibm.com>
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> This means in FIPS mode, invoking the algo of "dh" should not be possible. 
+> Yet, on the other hand, we cannot mark "dh" as fips_allowed == 0 as the 
+> templates would not be able to instantiate them.
 
-Applied with Fixes tag and Depends-on tag added.  Thanks.
+Right, we have exactly the same problem with sha1 where sha1
+per se should be not be allowed in FIPS mode but hmac(sha1)
+should be.
 
-> ---
-> Not sure of which Fixes tag to add. Should be a6fc3b698130, but since
-> another commit needs to be reverted for this patch to make sense, I'm
-> unsure of what to do. :(
-> So, none is given.
-> ---
->  drivers/soc/fsl/guts.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/soc/fsl/guts.c b/drivers/soc/fsl/guts.c
-> index af7741eafc57..5ed2fc1c53a0 100644
-> --- a/drivers/soc/fsl/guts.c
-> +++ b/drivers/soc/fsl/guts.c
-> @@ -158,9 +158,14 @@ static int fsl_guts_probe(struct platform_device *pdev)
->         root = of_find_node_by_path("/");
->         if (of_property_read_string(root, "model", &machine))
->                 of_property_read_string_index(root, "compatible", 0, &machine);
-> -       of_node_put(root);
-> -       if (machine)
-> +       if (machine) {
->                 soc_dev_attr.machine = devm_kstrdup(dev, machine, GFP_KERNEL);
-> +               if (!soc_dev_attr.machine) {
-> +                       of_node_put(root);
-> +                       return -ENOMEM;
-> +               }
-> +       }
-> +       of_node_put(root);
->
->         svr = fsl_guts_get_svr();
->         soc_die = fsl_soc_die_match(svr, fsl_soc_die);
-> --
-> 2.30.2
->
+> Therefore, I think we should mark "dh" as CRYPTO_ALG_INTERNAL if in FIPS mode. 
+I think the annotation should be added to testmgr.c.  We could
+mark dh and sha1 as not fips_allowed but allowed as the parameter
+of a template.  This could then be represented in the crypto_alg
+object by a new flag.
+
+This flag could then be set automatically in crypto_grab_* to
+allow them to be picked up automatically for templates.
+
+I'm already writing this up for sha1 anyway so let me polish it
+off and I'll post it soon which you can then reuse it for dh.
+
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
