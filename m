@@ -2,110 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:20:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AC38C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 00:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344016AbiAGAUd (ORCPT
+        id S1344073AbiAGAVe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 19:20:33 -0500
-Received: from mout.gmx.net ([212.227.17.21]:34589 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1343988AbiAGAU2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 19:20:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641514824;
-        bh=p1b7wAO7GiySvUynDsX7sMMM63WbWqelJ0kA4G/mEhM=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=FGV2ihuqoxK3uQM/d6S2JKWoP8YEs8g6uLBd+wxgWJlxSMEE3v0Vrzp7p3JDBxqfQ
-         btbhW7V8iWx9ChxwYE3sGMEJjREV495vpTFzbEjKnv320DsTJW1TCfzv9KuZ0H/WwC
-         c304WWrC7uJ5qqpgftVn5ZGLQwK7KjIVJ0e5J46s=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from ls3530 ([92.116.152.191]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MNbox-1ml5yO3KPL-00P1fX; Fri, 07
- Jan 2022 01:20:23 +0100
-Date:   Fri, 7 Jan 2022 01:19:24 +0100
-From:   Helge Deller <deller@gmx.de>
-To:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Cc:     linux-parisc@vger.kernel.org
-Subject: [PATCH] usercopy: Do not fail on memory from former init sections
-Message-ID: <YdeHDDAP+TY5wNeT@ls3530>
+        Thu, 6 Jan 2022 19:21:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343961AbiAGAVd (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 19:21:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DDCC061245;
+        Thu,  6 Jan 2022 16:21:32 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46AF0B82492;
+        Fri,  7 Jan 2022 00:21:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06963C36AF2;
+        Fri,  7 Jan 2022 00:21:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641514890;
+        bh=q2qMck5fOGv4y0jxtZgqjCAobqyuIwo9frnw8Ud7mxA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=J4ZYJCvHRBauWGbjUzeywmS/bUleaEcbcoOcQY2UxYQBtqBfsGGwZ8H2rocOhrk4z
+         ZkeB7DRHWe41pM3c2lAOv2Eo2wmqsHcaPH+pzvnLCJVS7BJ9th3pzALPrsIFfALlaf
+         cxrHwXu72Jo0Dq0WxycTh74+mXobOm7E7xPq2U5cuGekRlxbEawZhGftKkHnvufWmV
+         Vk+XQKI/6IMZHl1ggUFum1pZ0Sim/Vzt9+JfqUfFqP04Ya8I5kUIL/n2cO/Gv6x76F
+         v4qXx6nj7I7KH1UYamzPNzEAdjbtU6QTJbJiCf9BEQjymZSJ96o3jih1mD9oFyNJEp
+         fSsa34JOiJQrA==
+Received: by mail-yb1-f172.google.com with SMTP id p15so12124835ybk.10;
+        Thu, 06 Jan 2022 16:21:29 -0800 (PST)
+X-Gm-Message-State: AOAM531oAgn5XWSoCq0mdQ5lv3kSnNfIJniKLl4TkisaxUinCpYMt90x
+        8JFtP89/usq3917eKTOFyV4uNMMEq14y+qD6zXk=
+X-Google-Smtp-Source: ABdhPJxgLvLXYZlXmHmikXGfVflPrHS0ENCRiG/npwgmyeoYAYOZ9vVJX5r+xW8325l7foPEjweplWKnwXcGPABDWxs=
+X-Received: by 2002:a25:dc94:: with SMTP id y142mr485732ybe.282.1641514889137;
+ Thu, 06 Jan 2022 16:21:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Provags-ID: V03:K1:J678O3gfzGmPwfd41abDjWTRi2G6E7NS5C1gZ88lcYOQRYh7DNM
- FHzG/SMP5Q+prn5lsiKGAeVQpjsD2g0WEnj17ZxpRm9wLS8Sl5n2gJLmf9K+D9x8TSEWqkK
- YSPQuNJTe2OG1V8TRNxn39nqUXRwEi2gEQKcbbw0F6h9uk93tdinx0Xizso6icwj+vkTxa7
- Fdg4GdwMWxzP6fOvEmngQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:OT7CU3w6s4Y=:KN+L6myiVw68C/EZgp78rn
- uXM/TEb5xr5Wy2Wz58cAhIvFSsqUoOE3aUl4jVuz5C7sqXhPJaTUR20DHAcJAw2qoTVyDSFQl
- m8EWYAXp1+Fxe1Qyy5ZGFNPzXdM6qB5ZcJjgxJ1lt7rK0u5NzY8fngWcaeKdyEyqywRu6zLso
- 2SRG4LrCguc7u1FbZrb+giokYBiZ+BaT1Wus/llWUs8d5CTeQaAXK6iuu7YghGPiKrRFNnDFc
- LirD1qsVNCKk2D2SrP4s+NU4DxBFE6oVGfZOKvR7q2D67KoBfcEM3IWxYtSowuD708aZKbaat
- lgMvXwUR/5P2Wen3RjvB3JDrBqvwd1w+GsiqhjXL2z6LaE9dlme4A91Jgw9iILukJdl59cKNc
- nCeXJ14hAgtcbJBq4PVOKzrnvwS6Ve56qQ9bnZ++EgbNQfudaEB32CjGBypQruFUOO5gCu4a2
- 4boKRdMMMwK67BTu4+3xBzpGrTt8vapY4+cO7TJeOsd4Fa1LAqjVsjBG/rsoG/GIjjWDqh9TU
- WL6swWpASzxRLMHYtSszpQlVnCiy12XkdU47PClALwt39Q4W0+vkLWsOPQ6X6V55yhaN4ANNg
- RYx4LdslpXd03qejFLEBK6vfYekzbn/1PqtRzR3TSSVCtYvefWD8/1zQFs/OY5BD7oB9y/qxl
- 7vi9KOiqV9qdEJGR8cP6UAJZ8p6DUSCTl7H02Bh9jgtFiNgpcmgVO9yfY+CtfRJ+M5G3aTCCf
- YQAMTryoGuCjQZ5mjHohC+43fIdfgs4Y/l4yFO+MSxeGUn29ANBmnDOOlvb82zRcTcaPNGEC3
- I8QicQb8tU+ZCW1CHEOVxWTtu3vGKeXko9asZdgn2FqgIRd4gTTRIBxCaNUiRfR0SFyTU9pLX
- fl5k7K9SPL5M3UZJ+0X/UbYx/3LbRm66rkuvPC81HaWHpYoUUdj/F4me7Smun/Eu8OubyRLXF
- cIwT9WT7Puf6HXs9LzO/ppJPOByKylUMW3kWqjo/1V5sOhCw+YsxmSDS3xPemeelk5QEhTpbf
- YsyAnkJuf88TQpMwk8Tg3xryjzUNqyfQqScuuzkQdInZTc+763o92OiCqxPJ0DwHivtHguaUs
- 7397Q8R0IYHzYU=
-Content-Transfer-Encoding: quoted-printable
+References: <20211229215646.830451-1-void@manifault.com>
+In-Reply-To: <20211229215646.830451-1-void@manifault.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 6 Jan 2022 16:21:18 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5PL1w_72Hrbsp2b3jA-SGyzv5oLfgybkq=s8J5KL6kmw@mail.gmail.com>
+Message-ID: <CAPhsuW5PL1w_72Hrbsp2b3jA-SGyzv5oLfgybkq=s8J5KL6kmw@mail.gmail.com>
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+To:     void@manifault.com
+Cc:     live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>, jpoimboe@redhat.com,
+        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz,
+        joe.lawrence@redhat.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some platforms the memory area between the _stext and the _etext
-symbols includes the init sections (parisc and csky). If the init
-sections are freed after bootup, the kernel may reuse this memory.
+On Wed, Dec 29, 2021 at 1:57 PM David Vernet <void@manifault.com> wrote:
+>
+> When initializing a 'struct klp_object' in klp_init_object_loaded(), and
+> performing relocations in klp_resolve_symbols(), klp_find_object_symbol()
+> is invoked to look up the address of a symbol in an already-loaded module
+> (or vmlinux). This, in turn, calls kallsyms_on_each_symbol() or
+> module_kallsyms_on_each_symbol() to find the address of the symbol that is
+> being patched.
+>
+> It turns out that symbol lookups often take up the most CPU time when
+> enabling and disabling a patch, and may hog the CPU and cause other tasks
+> on that CPU's runqueue to starve -- even in paths where interrupts are
+> enabled.  For example, under certain workloads, enabling a KLP patch with
+> many objects or functions may cause ksoftirqd to be starved, and thus for
+> interrupts to be backlogged and delayed. This may end up causing TCP
+> retransmits on the host where the KLP patch is being applied, and in
+> general, may cause any interrupts serviced by softirqd to be delayed while
+> the patch is being applied.
+>
+> So as to ensure that kallsyms_on_each_symbol() does not end up hogging the
+> CPU, this patch adds a call to cond_resched() in kallsyms_on_each_symbol()
+> and module_kallsyms_on_each_symbol(), which are invoked when doing a symbol
+> lookup in vmlinux and a module respectively.  Without this patch, if a
+> live-patch is applied on a 36-core Intel host with heavy TCP traffic, a
+> ~10x spike is observed in TCP retransmits while the patch is being applied.
+> Additionally, collecting sched events with perf indicates that ksoftirqd is
+> awakened ~1.3 seconds before it's eventually scheduled.  With the patch, no
+> increase in TCP retransmit events is observed, and ksoftirqd is scheduled
+> shortly after it's awakened.
+>
+> Signed-off-by: David Vernet <void@manifault.com>
 
-In one test the usercopy checks if the given address is inside the .text
-section (from _stext to _etext), and it wrongly fails on the mentioned
-platforms if the memory is from the former init section.
+Acked-by: Song Liu <song@kernel.org>
 
-Fix this failure by first checking against the init sections before
-checking against the _stext/_etext section.
-
-Signed-off-by: Helge Deller <deller@gmx.de>
-Fixes: 98400ad75e95 ("parisc: Fix backtrace to always include init funtion=
- names")
-
-diff --git a/mm/usercopy.c b/mm/usercopy.c
-index b3de3c4eefba..37a35c6051bc 100644
-=2D-- a/mm/usercopy.c
-+++ b/mm/usercopy.c
-@@ -113,6 +113,15 @@ static bool overlaps(const unsigned long ptr, unsigne=
-d long n,
- 	return true;
- }
-
-+static bool inside_init_area(const unsigned long ptr, unsigned long n,
-+		char *start, char *end)
-+{
-+	unsigned long initlow =3D (unsigned long) start;
-+	unsigned long inithigh =3D (unsigned long) end;
-+
-+	return (ptr >=3D initlow && (ptr + n) < inithigh);
-+}
-+
- /* Is this address range in the kernel text area? */
- static inline void check_kernel_text_object(const unsigned long ptr,
- 					    unsigned long n, bool to_user)
-@@ -121,6 +130,12 @@ static inline void check_kernel_text_object(const uns=
-igned long ptr,
- 	unsigned long texthigh =3D (unsigned long)_etext;
- 	unsigned long textlow_linear, texthigh_linear;
-
-+	/* Ok if inside the former init sections */
-+	if (inside_init_area(ptr, n, __init_begin, __init_end))
-+		return;
-+	if (inside_init_area(ptr, n, _sinittext, _einittext))
-+		return;
-+
- 	if (overlaps(ptr, n, textlow, texthigh))
- 		usercopy_abort("kernel text", NULL, to_user, ptr - textlow, n);
-
+PS: Do we observe livepatch takes a longer time to load after this change?
+(I believe longer time shouldn't be a problem at all. Just curious.)
