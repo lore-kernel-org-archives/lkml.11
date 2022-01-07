@@ -2,19 +2,19 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D32B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED066C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:04:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348753AbiAGSEt (ORCPT
+        id S1348741AbiAGSEd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:04:49 -0500
-Received: from mout.perfora.net ([74.208.4.197]:38061 "EHLO mout.perfora.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348722AbiAGSEd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 13:04:33 -0500
+Received: from mout.perfora.net ([74.208.4.194]:60417 "EHLO mout.perfora.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240475AbiAGSEZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:04:25 -0500
 Received: from localhost.localdomain ([194.191.235.54]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1N0WTY-1mBkfS2l8u-00wY9n;
- Fri, 07 Jan 2022 19:04:15 +0100
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MOznU-1mitcv2HwS-00PPGZ;
+ Fri, 07 Jan 2022 19:04:06 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
@@ -30,37 +30,37 @@ Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Olof Johansson <olof@lixom.net>,
         Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v1 10/14] arm64: defconfig: build sdio mwifiex as a module
-Date:   Fri,  7 Jan 2022 19:03:10 +0100
-Message-Id: <20220107180314.1816515-11-marcel@ziswiler.com>
+Subject: [PATCH v1 07/14] arm64: defconfig: build ads1015 adc driver as a module
+Date:   Fri,  7 Jan 2022 19:03:07 +0100
+Message-Id: <20220107180314.1816515-8-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220107180314.1816515-1-marcel@ziswiler.com>
 References: <20220107180314.1816515-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:dIh7h5rlN33PwA3ovKLqpk5xtrn+ocqE3Q+4F0qvAetRS7aV3gh
- T9OCbdFqFB/olMszrN5q3SIOSDLdff/h6EmZGkV1Ux0IRTBISF5CzNa3t0GTCg5ELjqQU7y
- xwYU247UtwMK047lWSmYE2hnO9BPJBnND8DznTzGLZ0mNXMZh16rwtJUbyGpSEntjJMEzjw
- n98hlRJRMht2h5h0Z5IOQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hf4QyUbkLcI=:bnqA3jGG/t5smlC3SPKvSL
- MplKTCAxNX2JlnaF22ZlcYmE5WHo5Z7r0w/KWnvJOCwph9sSHlqBmBkVPKK3441IA0M72tWYB
- bKS1jh1FLkwvxFiA3f3v0fz7PW0EMlS799h8bmAjDy5RxXLD1+OG1hoH8EEfSlCo8CyHp6lm2
- mack66J/VAwRThizsv05ZlSq1F6Lv+rGNcUt8LNbRGl7uLsSbT4g3Ag9sz6EaN3HyMtPkXglC
- xrQ5Tn8XTaGMXpu6uMW7ct2OifzvIoBhwyE6u/kpYBltfrdPQ3VwRo4K7EnPMM4eip2/R+UZz
- Ravia2yyJYEJtrK6/NOh+4igAiqYeO0rJsL+FrH3c1KB7yJGhHsHwbclrAc+bFm80rh5yL6Bf
- xQhKa8P/BRebo2jsx7vO0JO1ioFKEFhtdyclMl3BG57viYWXJCr57J2dgFIbbr/bguyH/MR/z
- rp9jsiw95CRCbjVlAP5405thbu9/41MkPpsV5IiWrpCixu7BJ44MOnpj0EjZWoEw4ZSvIPB9n
- onOxhlRZi4+UjkAu1ViFtNRTM/LKbPKOy620EklAfjIm7NFb4uwN6NU3SDnife2KoXa0kD0kj
- i0U3VhMGCAdsbxHsAs4sP43huyLFRdqMl8kTK2nI6fzM/HnC6VWCTECu8p02cFZfV9lAOiMUi
- hrQ1uw1kncClZd0H0T8bspqxJ/Y6vcAGhpVj5R5TURCqdqXW8a8ZcJI7IKxzsgSIIkWA=
+X-Provags-ID: V03:K1:c3r6KQGKGeNTIT6j7Hnt1g1cDwAHJD/E37OZPAIuO9kfZNVCVDt
+ alvZ8oiJBEyRYjOUOklSqQfF38XTFNhKkbMp2HJzWK5AlGupwv92Fnjr8wDNCtoca9TZpYu
+ J23e1vka9NC3Zp/PVCjhHgGs2fQmtDZGhZeuiB7nwgst0FNc9kS1FKGn/2zIZLtKPaiFT88
+ e+hRDpUTHYY47TLgXji+g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Zdfv2+b2/bc=:dbysLBn7EgZEG58YMK9yIY
+ T615r4cGOt8sgriNeetEwgTOXqqe7nYszCy5FAkILvYtTYjzu3XcbIlXX/7fP0jcUOn9sW5wR
+ g/Na5tpCfdr29lzecw6bpRRpO2tjWat1yt5ohUlcapNUGhrFA+D/+Y7Een8zWCbUZ3mqiCrrq
+ IkPXdFoO/efWpsl1QwJBtrqIzsJXZw/3gdu0OrApi1v+5GUFjAg68Eh1f8JUcjXzx4JgXmSX8
+ xgZ+2CHCR4Pko6YtHhejZA3bE4HcrdaSbJejq62dJn8nqoS1deuGJvQtslNW3eAe0YURiOkmc
+ JPjqVI+q1SkENEYtVq7cuG7QRP8g6uF0kmJ//x373vIjC4i0bxbr5cpTIx0RvIJUPGKG6Kg3D
+ 0YgH0V39KUSq4aBozBrxlDcNnuJD0IvCLB40rPdmf2ZvxI99/eVn1RH71iTHfbb6l4RRXhcWz
+ 3DkHrSbLvRnWHnX8Y0Ae0ZyMSqXo9a+JaVjeShkzGb6O2DYpdWfJ5EhrMhXjVnxeDiX/1Muwm
+ LQ5p8cPMSDYumb5DoflxDV+uzSXuPfeSWRX+cZ4cJNQ1NowmgO7I0QotDgGT3/BIFEr1eMdhv
+ LRdeuO2wr05V/mnGCQ6MghiSveeIUxj+lS3eHNy8Jnyv0B+KWB8hwtjBYLNyIoGixGAkjB7zy
+ NRsr+LssZvofQ0jBvtNYF+SG79yjk9x+vLago7wdpkpW12bv2okGe5KFAljNIlZB0B0bS+TB5
+ LXb1gXh/L8SJkPyZ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Build NXP (formerly Marvell) SDIO MWIFIEX (CONFIG_MWIFIEX_SDIO) as a
-module.
+Build Texas Instruments ADS1015 ADC IIO driver as a module.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 ---
@@ -69,17 +69,17 @@ Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 870404a1957d..cb99bd97e736 100644
+index 86d39d8456c1..1d0fe0bd0059 100644
 --- a/arch/arm64/configs/defconfig
 +++ b/arch/arm64/configs/defconfig
-@@ -380,6 +380,7 @@ CONFIG_ATH10K_SNOC=m
- CONFIG_WCN36XX=m
- CONFIG_BRCMFMAC=m
- CONFIG_MWIFIEX=m
-+CONFIG_MWIFIEX_SDIO=m
- CONFIG_MWIFIEX_PCIE=m
- CONFIG_WL18XX=m
- CONFIG_WLCORE_SDIO=m
+@@ -1071,6 +1071,7 @@ CONFIG_QCOM_SPMI_VADC=m
+ CONFIG_QCOM_SPMI_ADC5=m
+ CONFIG_ROCKCHIP_SARADC=m
+ CONFIG_RZG2L_ADC=m
++CONFIG_TI_ADS1015=m
+ CONFIG_IIO_CROS_EC_SENSORS_CORE=m
+ CONFIG_IIO_CROS_EC_SENSORS=m
+ CONFIG_IIO_ST_LSM6DSX=m
 -- 
 2.33.1
 
