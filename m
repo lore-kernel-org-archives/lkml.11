@@ -2,164 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF64C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbiAGXmI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 18:42:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56288 "EHLO
+        id S231698AbiAGXmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 18:42:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231605AbiAGXmG (ORCPT
+        with ESMTP id S231605AbiAGXmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 18:42:06 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92A0EC061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:42:05 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id g2so6975262pgo.9
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:42:05 -0800 (PST)
+        Fri, 7 Jan 2022 18:42:31 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FA39C06173E
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:42:31 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id n2-20020a255902000000b0060f9d75eafeso14997181ybb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:42:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dl5NjrPyqtirGqh/44w+tOXwcC+wnrBXDnBxl8SYaOs=;
-        b=Y47yKd48acltCAFbzaPkvvplMuEGDM8zkr59CRe4GzPOZbM6Y6Gw5IyJttHP8FZrau
-         wQdnfzAzHqQhqWt65NFhLodOCyaeDDfG2pHlrFTo9Qoub8lR0RRbd15y5MNbWLnAcvqq
-         AkCzTZCqnqx3W0l/za6lj3lppZHDBWBSwbzJoh4P9awe/QLQTOr9YSd1dBg9bJsRryXv
-         UHhC4EY74xD+W9SQfZeT6EmrhzyJWDTOX8PF0PuxFG/Rk7QcSa1luANXQZupXdp015pI
-         LPcEH+3AwWTsafuO/os5SIF4LfuoaVOfwR+a2nxa+BoyqDy6pQMIPi3/vg7xwc82sHKz
-         xzig==
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=f1pXGfsk7avYpPXu3PeJjHEizsy/IQrvYVZ7vLNdmGI=;
+        b=TebD9wiX+C8MwdxWZ0VYyUFIfwlcBrKlegJNUBC42WT2g9QHmRDzcPCWX9qr9UdLCj
+         dpl46yFNSqhInLq2LjVn7oBCVowiLmveaogZog6DEOPO6axxPsWT+LznA+3RzRcjpgBU
+         CEtSW1w9wBgMHnBTSmgoSC/0Ij7cfgu4F5vhYtZwWeQJ6woRnMVVNGc/d9uXl+0eQMSD
+         Saq7LdyXrzHyi0IYEW+BjuRsEV/UjvL1ciRejxGEnxRI68sRe0AVI8fJNUNjKx9ZhVYl
+         t8G1IXGc8bs/ZkgcsoCfcpgu7LSY2dfekL8f2UMBv9bZ0wAVHbbB0Gn8/ArF6l/K4gT6
+         hGsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dl5NjrPyqtirGqh/44w+tOXwcC+wnrBXDnBxl8SYaOs=;
-        b=qfcEZIlAuEUAAJM12qzPOgBTpDjaaUIeLi5uUeNqVjerTbCxBreXJfxBWLVSm+TEd9
-         JT8Uxw0bk/Za+vH4KVI3XwUYG++CMvahu7FH5V510utevrinoISyp709JciPiLxjTcHN
-         86FveIGARLwZR5XZXWhp+hfbXzzTgn+LmpKJ0kgd2OY17beZnu5ucZvzAqHiD1aWoFpS
-         m3JPvBmyioLWxXHBPBu6NQ/iAkkLh61n9FR3Tfk7sx2Z+d3BDbNHhh/2U0vfhwiqn1nE
-         OJjMt1ZWN86DsBOyHnWmma57EKBKRc5AtgoS0pC7Xk9rO40XMwHC+iDGTHbzBPd32nFR
-         tTYQ==
-X-Gm-Message-State: AOAM533mp00Jc+gQymvmvdVjo+xlutsH2hs8zudqRDMguKDkRoiTfQyK
-        8hlYtzE0opNU27oyS1XgVoWUug==
-X-Google-Smtp-Source: ABdhPJzPRIFNYJhGqnUuIdQe/e5MBW+Jo0uHATwazr1k7KOnw4yas1RlTdSzYpZPOo7fjsVlB/N9BA==
-X-Received: by 2002:a63:3c18:: with SMTP id j24mr2547358pga.204.1641598924961;
-        Fri, 07 Jan 2022 15:42:04 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id na9sm92585pjb.0.2022.01.07.15.42.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 15:42:03 -0800 (PST)
-Date:   Fri, 7 Jan 2022 23:42:00 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Joerg Roedel <joro@8bytes.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Borislav Petkov <bp@alien8.de>, linux-kernel@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Ingo Molnar <mingo@redhat.com>
-Subject: Re: [PATCH v2 3/5] KVM: SVM: fix race between interrupt delivery and
- AVIC inhibition
-Message-ID: <YdjPyCRwZDoV11ox@google.com>
-References: <20211213104634.199141-1-mlevitsk@redhat.com>
- <20211213104634.199141-4-mlevitsk@redhat.com>
- <YdTPvdY6ysjXMpAU@google.com>
- <628ac6d9b16c6b3a2573f717df0d2417df7caddb.camel@redhat.com>
- <6a11edec-c29a-95df-393e-363e1af46257@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6a11edec-c29a-95df-393e-363e1af46257@redhat.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=f1pXGfsk7avYpPXu3PeJjHEizsy/IQrvYVZ7vLNdmGI=;
+        b=sPPSSHTrK1HlTaFNVKczZIymrldTN0VWKk3Biu2lt+W20FrQOHa82sLK6ZbX6BOcZL
+         VuJxbt8c1+icsS6x3fPAIaEZnJiNFzgWSCljUdW1ZGzRpKeZW5+EDOwCrGzK18IGG3mB
+         i9PMt0vfUQlV8yyAfaBVmfZS8zpJGu77v94Q/jz/DK7rzs/M6jUqP0QeD4f2rjg8tIbX
+         Ia9PMCSmb0B4IVIlmSWA5ckyOtIvsRs8j8APHfWq3el6z2lnvpbNBwCuiVNBV4Ag2Sqk
+         eQp/iCZUxzeGsdA0lDtzZlJJIGr+rTzAnk0xRnY03rMu0OFZZeMCB0JGQnoPfEaKHlJ2
+         VOpw==
+X-Gm-Message-State: AOAM533smSvOSBznEXZGiv/NA0ycXUmx19x9abNIMgvlxa3VTRaNqx5Q
+        jclYrygD0kMmTwR92wBEozpz441+0z1w
+X-Google-Smtp-Source: ABdhPJzodwUpF3ogCC2ZzwWTsJpUxVvsQNocM1flz4IkGFnNZVXeIBky/eXhk8rrT15s93xXB+lyJF3o+faZ
+X-Received: from joshdon.svl.corp.google.com ([2620:15c:2cd:202:6b45:ed9d:9cdc:3f67])
+ (user=joshdon job=sendgmr) by 2002:a25:908e:: with SMTP id
+ t14mr4570299ybl.133.1641598950397; Fri, 07 Jan 2022 15:42:30 -0800 (PST)
+Date:   Fri,  7 Jan 2022 15:41:37 -0800
+Message-Id: <20220107234138.1765668-1-joshdon@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
+Subject: [PATCH 1/2] cgroup: add cpu.stat_percpu
+From:   Josh Don <joshdon@google.com>
+To:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Josh Don <joshdon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022, Paolo Bonzini wrote:
-> On 1/5/22 12:03, Maxim Levitsky wrote:
-> > > > -	if (!vcpu->arch.apicv_active)
-> > > > -		return -1;
-> > > > -
-> > > > +	/*
-> > > > +	 * Below, we have to handle anyway the case of AVIC being disabled
-> > > > +	 * in the middle of this function, and there is hardly any overhead
-> > > > +	 * if AVIC is disabled.  So, we do not bother returning -1 and handle
-> > > > +	 * the kick ourselves for disabled APICv.
-> > > Hmm, my preference would be to keep the "return -1" even though apicv_active must
-> > > be rechecked.  That would help highlight that returning "failure" after this point
-> > > is not an option as it would result in kvm_lapic_set_irr() being called twice.
-> > I don't mind either - this will fix the tracepoint I recently added to report the
-> > number of interrupts that were delivered by AVIC/APICv - with this patch,
-> > all of them count as such.
-> 
-> The reasoning here is that, unlike VMX, we have to react anyway to
-> vcpu->arch.apicv_active becoming false halfway through the function.
-> 
-> Removing the early return means that there's one less case of load
-> (mis)reordering that the reader has to check.
+cpu.stat displays global metrics, such as cgroup usage. It would also be
+useful to be able to break these down by cpu; to that end, this patch
+adds a new interface, 'cpu.stat_percpu', to display the percpu values of
+these stats.
 
-Yeah, I don't disagree, but the flip side is that without the early check, it's
-not all that obvious that SVM must not return -1.  And when AVIC isn't supported
-or is disabled at the module level, flowing into AVIC "specific" IRR logic is
-a bit weird.  And the LAPIC code effectively becomes Intel-only.
+Each line of the output corresponds to a particular metric. The format
+of each line is the name of the metric, followed by space delimited
+percpu values. The reason for this approach (vs having each line
+correspond to a particular cpu) is to make it easier to display extra
+subsystem-specific percpu fields.
 
-To make everyone happy, and fix the tracepoint issue, what about moving delivery
-into vendor code?  E.g. the below (incomplete), with SVM functions renamed so that
-anything that isn't guaranteed to be AVIC specific uses svm_ instead of avic_.
+Signed-off-by: Josh Don <joshdon@google.com>
+---
+ include/linux/cgroup-defs.h     |   5 +
+ kernel/cgroup/cgroup-internal.h |   1 +
+ kernel/cgroup/cgroup.c          |  10 ++
+ kernel/cgroup/rstat.c           | 159 ++++++++++++++++++++++++++++----
+ 4 files changed, 155 insertions(+), 20 deletions(-)
 
-diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
-index baca9fa37a91..a9ac724c6305 100644
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -1096,14 +1096,7 @@ static int __apic_accept_irq(struct kvm_lapic *apic, int delivery_mode,
-                                                       apic->regs + APIC_TMR);
-                }
-
--               if (static_call(kvm_x86_deliver_posted_interrupt)(vcpu, vector)) {
--                       kvm_lapic_set_irr(vector, apic);
--                       kvm_make_request(KVM_REQ_EVENT, vcpu);
--                       kvm_vcpu_kick(vcpu);
--               } else {
--                       trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode,
--                                                  trig_mode, vector);
--               }
-+               static_call(kvm_x86_deliver_interrupt)(vcpu, vector);
-                break;
-
-        case APIC_DM_REMRD:
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index fe06b02994e6..1fadd14ea884 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -4012,6 +4012,18 @@ static int vmx_deliver_posted_interrupt(struct kvm_vcpu *vcpu, int vector)
-        return 0;
+diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
+index db2e147e069f..7778a011f457 100644
+--- a/include/linux/cgroup-defs.h
++++ b/include/linux/cgroup-defs.h
+@@ -461,6 +461,11 @@ struct cgroup {
+ 	struct cgroup_base_stat bstat;
+ 	struct prev_cputime prev_cputime;	/* for printing out cputime */
+ 
++	/* Per-cpu basic resource statistics. These are NULL on root. */
++	struct cgroup_base_stat __percpu *bstat_cpu;
++	struct cgroup_base_stat __percpu *last_bstat_cpu;
++	struct prev_cputime __percpu *prev_cputime_cpu;
++
+ 	/*
+ 	 * list of pidlists, up to two for each namespace (one for procs, one
+ 	 * for tasks); created on demand.
+diff --git a/kernel/cgroup/cgroup-internal.h b/kernel/cgroup/cgroup-internal.h
+index bfbeabc17a9d..07e932c4f875 100644
+--- a/kernel/cgroup/cgroup-internal.h
++++ b/kernel/cgroup/cgroup-internal.h
+@@ -254,6 +254,7 @@ int cgroup_rstat_init(struct cgroup *cgrp);
+ void cgroup_rstat_exit(struct cgroup *cgrp);
+ void cgroup_rstat_boot(void);
+ void cgroup_base_stat_cputime_show(struct seq_file *seq);
++void cgroup_base_stat_percpu_cputime_show(struct seq_file *seq);
+ 
+ /*
+  * namespace.c
+diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+index 919194de39c8..4f5ddce529eb 100644
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -3604,6 +3604,12 @@ static int cpu_stat_show(struct seq_file *seq, void *v)
+ 	return ret;
  }
-
-+static void vmx_deliver_interrupt(struct kvm_vcpu *vcpu, int vector)
+ 
++static int cpu_stat_percpu_show(struct seq_file *seq, void *v)
 +{
-+       if (vmx_deliver_posted_interrupt(vcpu, vector)) {
-+               kvm_lapic_set_irr(vector, apic);
-+               kvm_make_request(KVM_REQ_EVENT, vcpu);
-+               kvm_vcpu_kick(vcpu);
-+       } else {
-+               trace_kvm_apicv_accept_irq(vcpu->vcpu_id, delivery_mode,
-+                                          trig_mode, vector);
-+       }
++	cgroup_base_stat_percpu_cputime_show(seq);
++	return 0;
++}
++
+ #ifdef CONFIG_PSI
+ static int cgroup_io_pressure_show(struct seq_file *seq, void *v)
+ {
+@@ -5014,6 +5020,10 @@ static struct cftype cgroup_base_files[] = {
+ 		.name = "cpu.stat",
+ 		.seq_show = cpu_stat_show,
+ 	},
++	{
++		.name = "cpu.stat_percpu",
++		.seq_show = cpu_stat_percpu_show,
++	},
+ #ifdef CONFIG_PSI
+ 	{
+ 		.name = "io.pressure",
+diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
+index 1486768f2318..1af37333e5bf 100644
+--- a/kernel/cgroup/rstat.c
++++ b/kernel/cgroup/rstat.c
+@@ -253,7 +253,19 @@ int cgroup_rstat_init(struct cgroup *cgrp)
+ 	if (!cgrp->rstat_cpu) {
+ 		cgrp->rstat_cpu = alloc_percpu(struct cgroup_rstat_cpu);
+ 		if (!cgrp->rstat_cpu)
+-			return -ENOMEM;
++			goto error_nomem;
++
++		cgrp->last_bstat_cpu = alloc_percpu(struct cgroup_base_stat);
++		if (!cgrp->last_bstat_cpu)
++			goto error_nomem;
++
++		cgrp->bstat_cpu = alloc_percpu(struct cgroup_base_stat);
++		if (!cgrp->bstat_cpu)
++			goto error_nomem;
++
++		cgrp->prev_cputime_cpu = alloc_percpu(struct prev_cputime);
++		if (!cgrp->prev_cputime_cpu)
++			goto error_nomem;
+ 	}
+ 
+ 	/* ->updated_children list is self terminated */
+@@ -265,6 +277,21 @@ int cgroup_rstat_init(struct cgroup *cgrp)
+ 	}
+ 
+ 	return 0;
++
++error_nomem:
++	free_percpu(cgrp->rstat_cpu);
++	cgrp->rstat_cpu = NULL;
++
++	free_percpu(cgrp->last_bstat_cpu);
++	cgrp->last_bstat_cpu = NULL;
++
++	free_percpu(cgrp->bstat_cpu);
++	cgrp->bstat_cpu = NULL;
++
++	free_percpu(cgrp->prev_cputime_cpu);
++	cgrp->prev_cputime_cpu = NULL;
++
++	return -ENOMEM;
+ }
+ 
+ void cgroup_rstat_exit(struct cgroup *cgrp)
+@@ -284,6 +311,12 @@ void cgroup_rstat_exit(struct cgroup *cgrp)
+ 
+ 	free_percpu(cgrp->rstat_cpu);
+ 	cgrp->rstat_cpu = NULL;
++	free_percpu(cgrp->last_bstat_cpu);
++	cgrp->last_bstat_cpu = NULL;
++	free_percpu(cgrp->bstat_cpu);
++	cgrp->bstat_cpu = NULL;
++	free_percpu(cgrp->prev_cputime_cpu);
++	cgrp->prev_cputime_cpu = NULL;
+ }
+ 
+ void __init cgroup_rstat_boot(void)
+@@ -319,22 +352,29 @@ static void cgroup_base_stat_flush(struct cgroup *cgrp, int cpu)
+ 	struct cgroup_rstat_cpu *rstatc = cgroup_rstat_cpu(cgrp, cpu);
+ 	struct cgroup *parent = cgroup_parent(cgrp);
+ 	struct cgroup_base_stat cur, delta;
++	struct cgroup_base_stat *bstat_cpu, *last_bstat_cpu;
+ 	unsigned seq;
+ 
+ 	/* Root-level stats are sourced from system-wide CPU stats */
+ 	if (!parent)
+ 		return;
+ 
++	/* these are not present on root */
++	bstat_cpu = per_cpu_ptr(cgrp->bstat_cpu, cpu);
++	last_bstat_cpu = per_cpu_ptr(cgrp->last_bstat_cpu, cpu);
++
+ 	/* fetch the current per-cpu values */
+ 	do {
+ 		seq = __u64_stats_fetch_begin(&rstatc->bsync);
+ 		cur.cputime = rstatc->bstat.cputime;
+ 	} while (__u64_stats_fetch_retry(&rstatc->bsync, seq));
+ 
++
+ 	/* propagate percpu delta to global */
+ 	delta = cur;
+ 	cgroup_base_stat_sub(&delta, &rstatc->last_bstat);
+ 	cgroup_base_stat_add(&cgrp->bstat, &delta);
++	cgroup_base_stat_add(bstat_cpu, &delta);
+ 	cgroup_base_stat_add(&rstatc->last_bstat, &delta);
+ 
+ 	/* propagate global delta to parent (unless that's root) */
+@@ -343,6 +383,11 @@ static void cgroup_base_stat_flush(struct cgroup *cgrp, int cpu)
+ 		cgroup_base_stat_sub(&delta, &cgrp->last_bstat);
+ 		cgroup_base_stat_add(&parent->bstat, &delta);
+ 		cgroup_base_stat_add(&cgrp->last_bstat, &delta);
++
++		delta = *bstat_cpu;
++		cgroup_base_stat_sub(&delta, last_bstat_cpu);
++		cgroup_base_stat_add(per_cpu_ptr(parent->bstat_cpu, cpu), &delta);
++		cgroup_base_stat_add(last_bstat_cpu, &delta);
+ 	}
+ }
+ 
+@@ -400,6 +445,30 @@ void __cgroup_account_cputime_field(struct cgroup *cgrp,
+ 	cgroup_base_stat_cputime_account_end(cgrp, rstatc, flags);
+ }
+ 
++/* See root_cgroup_cputime. Note that this does not first reset cputime. */
++static void root_cgroup_add_cputime_cpu(struct task_cputime *cputime, int cpu)
++{
++	struct kernel_cpustat kcpustat;
++	u64 *cpustat = kcpustat.cpustat;
++	u64 user = 0;
++	u64 sys = 0;
++
++	kcpustat_cpu_fetch(&kcpustat, cpu);
++
++	user += cpustat[CPUTIME_USER];
++	user += cpustat[CPUTIME_NICE];
++	cputime->utime += user;
++
++	sys += cpustat[CPUTIME_SYSTEM];
++	sys += cpustat[CPUTIME_IRQ];
++	sys += cpustat[CPUTIME_SOFTIRQ];
++	cputime->stime += sys;
++
++	cputime->sum_exec_runtime += user;
++	cputime->sum_exec_runtime += sys;
++	cputime->sum_exec_runtime += cpustat[CPUTIME_STEAL];
 +}
 +
  /*
-  * Set up the vmcs's constant host-state fields, i.e., host-state fields that
-  * will not change in the lifetime of the guest.
-@@ -7651,7 +7663,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
-        .hwapic_isr_update = vmx_hwapic_isr_update,
-        .guest_apic_has_interrupt = vmx_guest_apic_has_interrupt,
-        .sync_pir_to_irr = vmx_sync_pir_to_irr,
--       .deliver_posted_interrupt = vmx_deliver_posted_interrupt,
-+       .deliver_interrupt = vmx_deliver_interrupt,
-        .dy_apicv_has_pending_interrupt = pi_has_pending_interrupt,
-
-        .set_tss_addr = vmx_set_tss_addr,
+  * compute the cputime for the root cgroup by getting the per cpu data
+  * at a global level, then categorizing the fields in a manner consistent
+@@ -414,25 +483,7 @@ static void root_cgroup_cputime(struct task_cputime *cputime)
+ 	cputime->utime = 0;
+ 	cputime->sum_exec_runtime = 0;
+ 	for_each_possible_cpu(i) {
+-		struct kernel_cpustat kcpustat;
+-		u64 *cpustat = kcpustat.cpustat;
+-		u64 user = 0;
+-		u64 sys = 0;
+-
+-		kcpustat_cpu_fetch(&kcpustat, i);
+-
+-		user += cpustat[CPUTIME_USER];
+-		user += cpustat[CPUTIME_NICE];
+-		cputime->utime += user;
+-
+-		sys += cpustat[CPUTIME_SYSTEM];
+-		sys += cpustat[CPUTIME_IRQ];
+-		sys += cpustat[CPUTIME_SOFTIRQ];
+-		cputime->stime += sys;
+-
+-		cputime->sum_exec_runtime += user;
+-		cputime->sum_exec_runtime += sys;
+-		cputime->sum_exec_runtime += cpustat[CPUTIME_STEAL];
++		root_cgroup_add_cputime_cpu(cputime, i);
+ 	}
+ }
+ 
+@@ -464,3 +515,71 @@ void cgroup_base_stat_cputime_show(struct seq_file *seq)
+ 		   "system_usec %llu\n",
+ 		   usage, utime, stime);
+ }
++
++void cgroup_base_stat_percpu_cputime_show(struct seq_file *seq)
++{
++	static DEFINE_MUTEX(mutex);
++	static DEFINE_PER_CPU(struct cgroup_base_stat, cached_percpu_stats);
++	struct cgroup_base_stat *cached_bstat;
++	struct cgroup *cgrp = seq_css(seq)->cgroup;
++	u64 val;
++	int cpu;
++
++	/* protects cached_percpu_stats */
++	mutex_lock(&mutex);
++
++	if (cgroup_parent(cgrp)) {
++		struct cgroup_base_stat *bstat_cpu;
++
++		cgroup_rstat_flush_hold(cgrp);
++
++		for_each_possible_cpu(cpu) {
++			bstat_cpu = per_cpu_ptr(cgrp->bstat_cpu, cpu);
++			cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
++
++			cached_bstat->cputime.sum_exec_runtime =
++				bstat_cpu->cputime.sum_exec_runtime;
++			cputime_adjust(&bstat_cpu->cputime,
++				       per_cpu_ptr(cgrp->prev_cputime_cpu, cpu),
++				       &cached_bstat->cputime.utime,
++				       &cached_bstat->cputime.stime);
++		}
++
++		cgroup_rstat_flush_release();
++	} else {
++		for_each_possible_cpu(cpu) {
++			cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
++			memset(cached_bstat, 0, sizeof(*cached_bstat));
++			root_cgroup_add_cputime_cpu(&cached_bstat->cputime, cpu);
++		}
++	}
++
++	seq_puts(seq, "usage_usec");
++	for_each_possible_cpu(cpu) {
++		cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
++		val = cached_bstat->cputime.sum_exec_runtime;
++		do_div(val, NSEC_PER_USEC);
++		seq_printf(seq, " %llu", val);
++	}
++	seq_puts(seq, "\n");
++
++	seq_puts(seq, "user_usec");
++	for_each_possible_cpu(cpu) {
++		cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
++		val = cached_bstat->cputime.utime;
++		do_div(val, NSEC_PER_USEC);
++		seq_printf(seq, " %llu", val);
++	}
++	seq_puts(seq, "\n");
++
++	seq_puts(seq, "system_usec");
++	for_each_possible_cpu(cpu) {
++		cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
++		val = cached_bstat->cputime.stime;
++		do_div(val, NSEC_PER_USEC);
++		seq_printf(seq, " %llu", val);
++	}
++	seq_puts(seq, "\n");
++
++	mutex_unlock(&mutex);
++}
+-- 
+2.34.1.575.g55b058a8bb-goog
 
