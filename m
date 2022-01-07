@@ -2,82 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E09A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:00:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7614AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345000AbiAGBAo (ORCPT
+        id S1345014AbiAGBCl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 20:00:44 -0500
-Received: from mout.kundenserver.de ([212.227.126.135]:33739 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236544AbiAGBAn (ORCPT
+        Thu, 6 Jan 2022 20:02:41 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:49214 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236544AbiAGBCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:00:43 -0500
-Received: from mail-wr1-f47.google.com ([209.85.221.47]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MD9jV-1nECKG2wcL-0097oP; Fri, 07 Jan 2022 02:00:41 +0100
-Received: by mail-wr1-f47.google.com with SMTP id r10so374715wrc.3;
-        Thu, 06 Jan 2022 17:00:41 -0800 (PST)
-X-Gm-Message-State: AOAM5335hx53U5HKfOMs7M8K3+PYufMuAtr0DC2nSITkFCuZIOAbc+T/
-        o3FOM69vDjCVNXG6i3xVgS3UPbHWGqItzuAlFsQ=
-X-Google-Smtp-Source: ABdhPJy+QxLYZAEh0tcKnUCPWH2awGby0oPIVh1+zunkAi9c20kfhXGBzIRZmpUDYW3Yto6/u5ecQOGKYn9Oed0f9pA=
-X-Received: by 2002:a5d:4651:: with SMTP id j17mr5394152wrs.219.1641517241345;
- Thu, 06 Jan 2022 17:00:41 -0800 (PST)
+        Thu, 6 Jan 2022 20:02:40 -0500
+Received: from kbox (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id DC85F20B7179;
+        Thu,  6 Jan 2022 17:02:39 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DC85F20B7179
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1641517360;
+        bh=7MujLBKMAl1m8N9IFyAHo4bpGQmMbjwholVVMf2oSSE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CizMKpRV5OZh5ReY+jZXQdsLL//O2Fa4dZMExiYNhzRVi5PDBfxEjRBJ69CoPrND/
+         rMdZnJyw+xB2LOBZzaBWeyecOj0JQLiRZ5z2nkvlm1l8dyDo2qWFXKE4QprSMX0Loq
+         rXC/HZRBICl/4dynEHROidcbzgIbZnlPt2Rw/2VQ=
+Date:   Thu, 6 Jan 2022 17:01:55 -0800
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     rostedt@goodmis.org, linux-trace-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v8 11/12] user_events: Validate user payloads for size
+ and null termination
+Message-ID: <20220107010155.GA7306@kbox>
+References: <20211216173511.10390-1-beaub@linux.microsoft.com>
+ <20211216173511.10390-12-beaub@linux.microsoft.com>
+ <20211223090822.a14244522fef64b4b4398fe0@kernel.org>
+ <20220103185308.GA15522@kbox>
+ <20220107083252.0da5237af9c5d041a3850dc6@kernel.org>
 MIME-Version: 1.0
-References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr> <bdcc562c16d2551d6eb87baf557813330de45127.1641500561.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <bdcc562c16d2551d6eb87baf557813330de45127.1641500561.git.christophe.jaillet@wanadoo.fr>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 6 Jan 2022 20:00:38 -0500
-X-Gmail-Original-Message-ID: <CAK8P3a1c_jOKX6EQihRY2TmjxMOkXDXDgdv4rUf_6e52+3o2Ag@mail.gmail.com>
-Message-ID: <CAK8P3a1c_jOKX6EQihRY2TmjxMOkXDXDgdv4rUf_6e52+3o2Ag@mail.gmail.com>
-Subject: Re: [PATCH 08/16] rapidio/tsi721: Remove usage of the deprecated
- "pci-dma-compat.h" API
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Alex Bounine <alex.bou9@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:b3f3bLRba7qTq2kT4lU5/vMkdzInvzsiOS8Ar7cIyd0kXMIzeyX
- efKjS9bsSSCCOcf4J3uqygkcj8pkEXPyMRkWQ6CZS3kH0oDtPOWAylHHC+8YCy3Wvpf+TX6
- YYM27lOVp0cpL2YRCJwh1gZgsh/v15NsmisFlM5tY57wXhizOpWYcaCcFBAz9q8v03vbCYo
- zHLBxLhmYwO+Kng305Y+g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nfYHcHTz8G8=:hLei3higSeMShsAvGcmrmn
- NQSKlIdE0l31lqiqvaBvJdbjQOKj0//9HUenyYvKtCj1FP9BWJ8JeWz4jg4U2Iolg8nf0609j
- vrq46QV8CvSsTeV7D+VgPOc7rxva2O8VrEOJqCCVaHV60/YrkC9VoEP+qQ//MAbyG/X/GTU04
- ekobFh02Nzt/OXcaVKRapLbBpMBKoEKvElA4TGOb0fPYRh7lKEjb5cV8N19+9y8ndQC8nlRIS
- oEhJixWW0BGGLbbofYXJoPEeu45KiJuoGzeY4cUeJA/jNMacFsbBibp1fjTosKt+VYwKXiN/0
- hqyslI7Q1+2YwdxKv6ebr3RSoC8GVLrFXydvYKoGBt/VyJ26Q9/DHK6z5hIEhcIRpEyAuHfsQ
- /VaNEN9N4XEHtbuEsr7S+NOljHXH81/gvuWP5cIgeverFv1ZUwTPyzo7Ob2bPSQK31TvtXd8w
- glHhQvW73lgV2DZT9om0tiGuQfJust0RJdnrxQZpEqk9a3ktQ4Zew9Fa1/8Th458vwSZ079QH
- lksQDohOQQ3zZ17zoqWJ9DUXnqPl/uib736qDTg18UaXqsX2Mm2l2gmtVDZgM4p9xuYB1f/Mb
- OK5N7pBeGaHLcRFmnexLFYtKdb4xHYSR9wu1zrmTsdGHfQ64O7YXBn2aWRiWNnWj0MoS4de6i
- PKlev0mSQvse3R8r+r4p4GG35PH8z5QVzkYSxRVPwRYgwyXsWkWUHe5s1aq4+K6BzUhS5HR8U
- gf0WluQppmSi3UocShZDh7Kg/563hdw6oeq8Zyx6BNChJJJ/hj28O+mi/WjCGPhuf+17U+Gfi
- 5oCBcBrIAxjkFYeEZLzh9zZ5+g9OMqDlszqGbJ/GSV+nao8HbM=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107083252.0da5237af9c5d041a3850dc6@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 4:52 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> In [1], Christoph Hellwig has proposed to remove the wrappers in
-> include/linux/pci-dma-compat.h.
->
-> Some reasons why this API should be removed have been given by Julia
-> Lawall in [2].
->
-> A coccinelle script has been used to perform the needed transformation.
-> It can be found in [3].
->
-> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
-> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
-> [3]: https://lore.kernel.org/kernel-janitors/20200716192821.321233-1-christophe.jaillet@wanadoo.fr/
->
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+On Fri, Jan 07, 2022 at 08:32:52AM +0900, Masami Hiramatsu wrote:
+> Hi Beau,
+> 
+> On Mon, 3 Jan 2022 10:53:08 -0800
+> Beau Belgrave <beaub@linux.microsoft.com> wrote:
+> 
+> [...]
+> > > >  typedef void (*user_event_func_t) (struct user_event *user, struct iov_iter *i,
+> > > > -				   void *tpdata);
+> > > > +				   void *tpdata, bool *faulted);
+> > > 
+> > > Why don't you just return "int" value? ;-)
+> > > 
+> > 
+> > There can be more than one callback attached per-probe, and in all cases
+> > where a return value is needed is for a faulted (or would have faulted)
+> > case. This allows less branches when data is being traced/logged as the
+> > return value does not need to be checked (nor should it short circuit
+> > other probes that are attached).
+> 
+> Would you mean overwriting the 'faulted' ? If so, you can do something like
+> 
+> faulted = 0;
+> for_each_user_event_func(user_event_func) {
+> 	faulted |= user_event_func();
+> }
+> if (faulted)
+>   ...
+> 
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Yeah, could OR it in, I don't see a big difference though to be honest
+:)
+
+> But I think if one user_event_func() fails to access the user data,
+> other funcs also fail. In this case, it is faster to skip others than
+> repeating faults.
+
+eBPF will not fault when perf/ftrace could, at the very least we want to
+ensure that callbacks get a chance to see data even if it faulted
+elsewhere. This ensures that we are not blind to the fact it is happening
+at least when eBPF is being used. We cannot guarantee probe/callback order.
+
+This has been a problem in the past for us, we've seen data disappear later
+to find out it was possibly due to a page fault occurring.
+
+In later versions I would like to add internal tracepoints for these
+conditions (and some others) so we can further track when they occur.
+
+Thanks,
+-Beau
