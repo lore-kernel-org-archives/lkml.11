@@ -2,55 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD409C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC30FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347116AbiAGL3s (ORCPT
+        id S1347135AbiAGLaX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:29:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236893AbiAGL3r (ORCPT
+        Fri, 7 Jan 2022 06:30:23 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:56877 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347109AbiAGLaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:29:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34540C061245;
-        Fri,  7 Jan 2022 03:29:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8A62B825A5;
-        Fri,  7 Jan 2022 11:29:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11AEBC36AE9;
-        Fri,  7 Jan 2022 11:29:42 +0000 (UTC)
-Date:   Fri, 7 Jan 2022 12:29:40 +0100
-From:   Christian Brauner <christian.brauner@ubuntu.com>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH] sysctl: Fix duplicate path separator in printed entries
-Message-ID: <20220107112940.rrn5gloahk5durwu@wittgenstein>
-References: <e3054d605dc56f83971e4b6d2f5fa63a978720ad.1641551872.git.geert+renesas@glider.be>
+        Fri, 7 Jan 2022 06:30:22 -0500
+Received: by mail-io1-f70.google.com with SMTP id d187-20020a6bb4c4000000b00601c0b8532aso3656021iof.23
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 03:30:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=twH3lIsDg1mK6ZZSNQSJNyI5AQBsCC6K6+Ds2Qz7NWk=;
+        b=4Z3SBvPzK+BTczOOZ3jDGCCsgSB3UXPf1xl02l+rAIkrW4Lo043vnA2gXNEVmMD48J
+         hoGVWmpCENE08Kme/E4j7hNH8Ylt9GXoxE3YvgX+IdeHb+kxDeqq2AScEg77XAEQVruL
+         KyyrtIlnPZWo+Xm3CuExccj+N1CUlKTW+Xg9VaPR7Ts4CJ5n1dIXUZc4Za6DQ7F4c5xc
+         QzEHTLVP/cTxI/HiZdIlRuU5CyNc7aZ+VAaSey3tu9PesiWlPiw1myKfyS5DpRBWcuwE
+         LblLPFqrSQhAM+v1s9Yk014QDG4vUKeNhuizA8BjYVJql6JvQLRf3DxFvoSdjES+dF81
+         A/TA==
+X-Gm-Message-State: AOAM531NletF+fQDigI/BMxNRbokxM/X3GxbeBueGZsfhElq+hIhQae1
+        lhcL8tRnOTgvXfL6vo75IJifW1AUKBeqlgWxugz9WLx2WRDk
+X-Google-Smtp-Source: ABdhPJx8+AuwAbAyNythFIFEgT9WXemyq3V4aiVKpF35RZGmzmc1IDHPqct/QgSSivDa9dO9u0zHh2QWwMTSfHQM4KqSie6FNJrE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <e3054d605dc56f83971e4b6d2f5fa63a978720ad.1641551872.git.geert+renesas@glider.be>
+X-Received: by 2002:a05:6638:4192:: with SMTP id az18mr29573189jab.252.1641555021228;
+ Fri, 07 Jan 2022 03:30:21 -0800 (PST)
+Date:   Fri, 07 Jan 2022 03:30:21 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000eb759205d4fc4f58@google.com>
+Subject: [syzbot] KMSAN: uninit-value in ip_fast_csum (2)
+From:   syzbot <syzbot+2e4b07b74e6ce750cd4d@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, dsahern@kernel.org,
+        glider@google.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 11:38:44AM +0100, Geert Uytterhoeven wrote:
-> sysctl_print_dir() always terminates the printed path name with a slash,
-> so printing a slash before the file part causes a duplicate like in
-> 
->     sysctl duplicate entry: /kernel//perf_user_access
-> 
-> Fix this by dropping the extra slash.
-> 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
+Hello,
 
-Seems good,
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+syzbot found the following issue on:
+
+HEAD commit:    81c325bbf94e kmsan: hooks: do not check memory in kmsan_in..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=11fb290db00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2d8b9a11641dc9aa
+dashboard link: https://syzkaller.appspot.com/bug?extid=2e4b07b74e6ce750cd4d
+compiler:       clang version 14.0.0 (/usr/local/google/src/llvm-git-monorepo 2b554920f11c8b763cd9ed9003f4e19b919b8e1f), GNU ld (GNU Binutils for Debian) 2.35.2
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+2e4b07b74e6ce750cd4d@syzkaller.appspotmail.com
+
+=====================================================
+BUG: KMSAN: uninit-value in do_csum lib/checksum.c:51 [inline]
+BUG: KMSAN: uninit-value in ip_fast_csum+0x429/0x5b0 lib/checksum.c:108
+ do_csum lib/checksum.c:51 [inline]
+ ip_fast_csum+0x429/0x5b0 lib/checksum.c:108
+ ip_send_check net/ipv4/ip_output.c:95 [inline]
+ ip_frag_next+0xd92/0xfd0 net/ipv4/ip_output.c:740
+ ip_do_fragment+0x1158/0x2a30 net/ipv4/ip_output.c:886
+ ip_fragment+0x378/0x4e0
+ __ip_finish_output+0x69b/0x960 net/ipv4/ip_output.c:297
+ ip_finish_output+0x15c/0x4d0 net/ipv4/ip_output.c:309
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0x333/0x6d0 net/ipv4/ip_output.c:423
+ dst_output include/net/dst.h:450 [inline]
+ NF_HOOK+0x180/0x450 include/linux/netfilter.h:307
+ raw_send_hdrinc+0x1a42/0x1f20 net/ipv4/raw.c:429
+ raw_sendmsg+0x276d/0x2e90 net/ipv4/raw.c:660
+ inet_sendmsg+0x15b/0x1d0 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ kernel_sendmsg+0x22c/0x2f0 net/socket.c:744
+ sock_no_sendpage+0x227/0x2c0 net/core/sock.c:3080
+ inet_sendpage+0x2c2/0x2f0 net/ipv4/af_inet.c:834
+ kernel_sendpage+0x4a0/0x5a0 net/socket.c:3504
+ sock_sendpage+0x161/0x1a0 net/socket.c:1003
+ pipe_to_sendpage+0x3f1/0x510 fs/splice.c:364
+ splice_from_pipe_feed fs/splice.c:418 [inline]
+ __splice_from_pipe+0x5c3/0x1000 fs/splice.c:562
+ splice_from_pipe fs/splice.c:597 [inline]
+ generic_splice_sendpage+0x1d5/0x2c0 fs/splice.c:746
+ do_splice_from fs/splice.c:767 [inline]
+ direct_splice_actor+0x1a4/0x240 fs/splice.c:936
+ splice_direct_to_actor+0xa7a/0x1410 fs/splice.c:891
+ do_splice_direct+0x3b2/0x600 fs/splice.c:979
+ do_sendfile+0xe3c/0x1f50 fs/read_write.c:1245
+ __do_sys_sendfile64 fs/read_write.c:1310 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1296 [inline]
+ __x64_sys_sendfile64+0x367/0x400 fs/read_write.c:1296
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ ip_frag_next+0x1b9/0xfd0 net/ipv4/ip_output.c:686
+ ip_do_fragment+0x1158/0x2a30 net/ipv4/ip_output.c:886
+ ip_fragment+0x378/0x4e0
+ __ip_finish_output+0x69b/0x960 net/ipv4/ip_output.c:297
+ ip_finish_output+0x15c/0x4d0 net/ipv4/ip_output.c:309
+ NF_HOOK_COND include/linux/netfilter.h:296 [inline]
+ ip_output+0x333/0x6d0 net/ipv4/ip_output.c:423
+ dst_output include/net/dst.h:450 [inline]
+ NF_HOOK+0x180/0x450 include/linux/netfilter.h:307
+ raw_send_hdrinc+0x1a42/0x1f20 net/ipv4/raw.c:429
+ raw_sendmsg+0x276d/0x2e90 net/ipv4/raw.c:660
+ inet_sendmsg+0x15b/0x1d0 net/ipv4/af_inet.c:819
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ kernel_sendmsg+0x22c/0x2f0 net/socket.c:744
+ sock_no_sendpage+0x227/0x2c0 net/core/sock.c:3080
+ inet_sendpage+0x2c2/0x2f0 net/ipv4/af_inet.c:834
+ kernel_sendpage+0x4a0/0x5a0 net/socket.c:3504
+ sock_sendpage+0x161/0x1a0 net/socket.c:1003
+ pipe_to_sendpage+0x3f1/0x510 fs/splice.c:364
+ splice_from_pipe_feed fs/splice.c:418 [inline]
+ __splice_from_pipe+0x5c3/0x1000 fs/splice.c:562
+ splice_from_pipe fs/splice.c:597 [inline]
+ generic_splice_sendpage+0x1d5/0x2c0 fs/splice.c:746
+ do_splice_from fs/splice.c:767 [inline]
+ direct_splice_actor+0x1a4/0x240 fs/splice.c:936
+ splice_direct_to_actor+0xa7a/0x1410 fs/splice.c:891
+ do_splice_direct+0x3b2/0x600 fs/splice.c:979
+ do_sendfile+0xe3c/0x1f50 fs/read_write.c:1245
+ __do_sys_sendfile64 fs/read_write.c:1310 [inline]
+ __se_sys_sendfile64 fs/read_write.c:1296 [inline]
+ __x64_sys_sendfile64+0x367/0x400 fs/read_write.c:1296
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+CPU: 1 PID: 6492 Comm: syz-executor.3 Not tainted 5.16.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+=====================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
