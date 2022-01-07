@@ -2,86 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E41C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 21:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33AECC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 21:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230143AbiAGVur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 16:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
+        id S230161AbiAGVuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 16:50:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229949AbiAGVuq (ORCPT
+        with ESMTP id S230151AbiAGVus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 16:50:46 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA18CC061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 13:50:45 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id v123so4834091wme.2
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 13:50:45 -0800 (PST)
+        Fri, 7 Jan 2022 16:50:48 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B158EC06173E
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 13:50:47 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id l10so13500564wrh.7
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 13:50:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wQnTAOzqfnEo9STtUG3p3gnrWCeSeGnMweWxCdq98J4=;
-        b=l3aYK2qsZES/UMTB5Dj5xMSWSGdqQggwJ3aZCUV0OcmD2G1e7ZquqML2OsMOl9sbU+
-         uUaoRUQ65f9Kt72KdVV5Fk4ItZ+gf0MzCs32xgmiAakVK+eulsGry8sKqhqgi6FdBMjF
-         PJy0i6/1ygrYUbixHPb9dBtPrNYa9K/hYTf2RUqOmKgX3f9zkFIv2YSjAqvG5/vSRIIf
-         PwOlKo8ccAEtWHD4FyHPijdz67t5nYevsDzcNfhptq0k/WcV7WLIzBoPmLqYylX/MIm0
-         w+7xv1NZUaT/uVIf/RJL60VAngX3Sc0TRtCcogE5SvLfsXa8NPaKeqwvMCbJfr35CljX
-         1n6Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9+Jxam6E4Q5QnqvejI5GJgZU6fnINaepxI7ZTcYPB+Q=;
+        b=f77GfOuz8rnN8Oty+x95W6xnQnMG6m8YG/w771iPkB14S3cAm0/pTuh0zllEPMhV/M
+         19q5FLt0JCqkj/wBjo0LQSCPwqNGwTc0khk+Hw1tN99VVEzAl+XecJhCA6HikC68dRk0
+         pLwvDbCeV4iBDDxaNd3EKiXEhaMCzphZkXhr+LuY+a1mRU4n7AvpeaDZMzgV/7myBJBE
+         WhW4AbW4Mul9sZmKShklHLKTNc9NCrJ1GIFm/hvABB7w6M0f0nKZ7r47+qmSs3MQsW36
+         Iif66/OAQ8vEyX0PWKtw0+ZaL/oIIVSYnK73jbiGyTUC+GF0G0uZYr0RwArb2QabbyM3
+         /FjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wQnTAOzqfnEo9STtUG3p3gnrWCeSeGnMweWxCdq98J4=;
-        b=epBKUfczMUFjQVD+jOKMMi65w+hIu5Mq0CbTuN4+LQPviEyqt6ELmANorXlZvFrORL
-         7b9Bys2VQciXfasIeHUN1DPmjusnNgZmU4bJ383rqfABC5CtG4h26Fa7oEiN91z0jfsC
-         rjex0vbBKHO9t49gDntrbqAOO6c27MVKi99Cmx8sQJ/bg5zLyQMEuTAu10VbEEbSZBra
-         jlfZT2DL3UEL/QQ8cF4ABKh25ElbOmh9/tHWmlczx7KQuTXj6P7KUOwHsvANhJb1uJ6L
-         oqwu9fY0qhNYaX3ijzcNkyFve6nohGCOTpo+p9lCcBeQgDv2oQHRJMdQpE7HFLHboiwf
-         S8wQ==
-X-Gm-Message-State: AOAM530wzo76Noe0d3DiC0HvqZho6+5ONtr3UitX2DUqHn5/07OlsXMX
-        DoDimM0LYN+EtYzG+VFKKN8=
-X-Google-Smtp-Source: ABdhPJz9FjU6RPQHxLJMyrC3sBYKcJwGoUxuDVqAat1O6y7hObS2LOthMSza8UlzN1X+k02m4SmHvA==
-X-Received: by 2002:a05:600c:1991:: with SMTP id t17mr12546723wmq.21.1641592244312;
-        Fri, 07 Jan 2022 13:50:44 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9+Jxam6E4Q5QnqvejI5GJgZU6fnINaepxI7ZTcYPB+Q=;
+        b=siNWVQWYiAW8xwkHTYA87+NvVFAARfg9HTsZlWU4+M90ZGn59sm/k2hEpZ4PlfW4Zr
+         vU1khZcTo6IaYTy646VTu4RjNRbBf8BFsvxQnsNdX7RXagIcC5YcBV7Q4iowQGTeLX1l
+         xMNzjiAXFA6sWvFJFV2h6DM3wVC4EDDqy1IujX+snhmrQMq/DF89VE0CGd44kh2SHSOs
+         bqnIcpI06p3eCj9o/LOiF0yJpntyVbSUkUSmYz6OULmA8ktDfLlxSgZN5QS+ZChUtgDa
+         3eGAx92Z/6MGEfG3+J6tVwBgfju19nBo0LlLgGfBqhCzV6i4Qh/+IGumH6sav4z9KAIm
+         mC5g==
+X-Gm-Message-State: AOAM533WJUEBCCJQdwIU6QDrLE7DSqALY2Ex+xkO5dAopZC07nGog7LB
+        eSKHU3H/oXDsV1N0HAA3xhA=
+X-Google-Smtp-Source: ABdhPJw+sAvX14hiDTJsak7x7k5L4NYXxLRPBrbUwR5IdEiHe3TDRZyVwmQktoPhYgDFLhYZnlvZDQ==
+X-Received: by 2002:adf:f14b:: with SMTP id y11mr1086311wro.151.1641592246342;
+        Fri, 07 Jan 2022 13:50:46 -0800 (PST)
 Received: from localhost.localdomain ([2a02:8108:96c0:3b88::51e2])
-        by smtp.gmail.com with ESMTPSA id k14sm1729161wrn.59.2022.01.07.13.50.43
+        by smtp.gmail.com with ESMTPSA id k14sm1729161wrn.59.2022.01.07.13.50.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 13:50:44 -0800 (PST)
+        Fri, 07 Jan 2022 13:50:46 -0800 (PST)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 0/6] staging: r8188eu: clean up GetHwReg8188EU()
-Date:   Fri,  7 Jan 2022 22:50:27 +0100
-Message-Id: <20220107215033.12257-1-straube.linux@gmail.com>
+Subject: [PATCH 2/6] staging: r8188eu: remove HW_VAR_TXPAUSE
+Date:   Fri,  7 Jan 2022 22:50:29 +0100
+Message-Id: <20220107215033.12257-3-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220107215033.12257-1-straube.linux@gmail.com>
+References: <20220107215033.12257-1-straube.linux@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series removes unused cases from GetHwReg8188EU(). Some of the
-cases are also unused in SetHwReg8188EU() and removed there as well.
+SetHwReg8188EU() and GetHwReg8188EU() are never called with
+HW_VAR_TXPAUSE. Remove that case from both functions.
 
-Tested on x86_64 with Inter-Tech DMG-02.
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/hal/usb_halinit.c  | 6 ------
+ drivers/staging/r8188eu/include/hal_intf.h | 1 -
+ 2 files changed, 7 deletions(-)
 
-Michael Straube (6):
-  staging: r8188eu: remove HW_VAR_BASIC_RATE from GetHwReg8188EU()
-  staging: r8188eu: remove HW_VAR_TXPAUSE
-  staging: r8188eu: remove HW_VAR_CURRENT_ANTENNA from GetHwReg8188EU()
-  staging: r8188eu: remove HW_VAR_EFUSE_BYTES from GetHwReg8188EU()
-  staging: r8188eu: EfuseUsedBytes is set but never used
-  staging: r8188eu: remove HW_VAR_APFM_ON_MAC
-
- .../staging/r8188eu/hal/rtl8188e_hal_init.c   |  3 ---
- drivers/staging/r8188eu/hal/usb_halinit.c     | 25 -------------------
- drivers/staging/r8188eu/include/hal_intf.h    |  5 ----
- .../staging/r8188eu/include/rtl8188e_hal.h    |  2 --
- 4 files changed, 35 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index b996580b30ba..72b008a78d75 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -1138,9 +1138,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 			rtw_write8(Adapter, REG_INIRTS_RATE_SEL, RateIndex);
+ 		}
+ 		break;
+-	case HW_VAR_TXPAUSE:
+-		rtw_write8(Adapter, REG_TXPAUSE, *((u8 *)val));
+-		break;
+ 	case HW_VAR_BCN_FUNC:
+ 		hw_var_set_bcn_func(Adapter, variable, val);
+ 		break;
+@@ -1592,9 +1589,6 @@ void GetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 	struct odm_dm_struct *podmpriv = &haldata->odmpriv;
+ 
+ 	switch (variable) {
+-	case HW_VAR_TXPAUSE:
+-		val[0] = rtw_read8(Adapter, REG_TXPAUSE);
+-		break;
+ 	case HW_VAR_BCN_VALID:
+ 		/* BCN_VALID, BIT(16) of REG_TDECTRL = BIT(0) of REG_TDECTRL+2 */
+ 		val[0] = (BIT(0) & rtw_read8(Adapter, REG_TDECTRL + 2)) ? true : false;
+diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
+index b4a7e0ce3116..77149eda7edf 100644
+--- a/drivers/staging/r8188eu/include/hal_intf.h
++++ b/drivers/staging/r8188eu/include/hal_intf.h
+@@ -16,7 +16,6 @@ enum hw_variables {
+ 	HW_VAR_BSSID,
+ 	HW_VAR_INIT_RTS_RATE,
+ 	HW_VAR_BASIC_RATE,
+-	HW_VAR_TXPAUSE,
+ 	HW_VAR_BCN_FUNC,
+ 	HW_VAR_CORRECT_TSF,
+ 	HW_VAR_CHECK_BSSID,
 -- 
 2.34.1
 
