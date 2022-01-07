@@ -2,214 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE886C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1347CC43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238079AbiAGLxn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:53:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37290 "EHLO
+        id S1347278AbiAGLyd (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 06:54:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237810AbiAGLxm (ORCPT
+        with ESMTP id S238151AbiAGLyb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:53:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25E0C061245;
-        Fri,  7 Jan 2022 03:53:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Fri, 7 Jan 2022 06:54:31 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7C5C061245;
+        Fri,  7 Jan 2022 03:54:30 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E707B8259E;
-        Fri,  7 Jan 2022 11:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6A9AC36AE5;
-        Fri,  7 Jan 2022 11:53:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641556419;
-        bh=uo4WZxRwd3p3Bnx7jX/0q2Y2n3W/q54d6WDL9IjTF0k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m/McJmExy6m1HgrSmvW8Ef8OjVr/3GUYuAuhkRug7yZeJCW5X88O0jF9EkEjT+aJR
-         qG0BtrIN0I7V+h0p3AWNmgg9U5aWnQi4ukye+JX9NJ8ZJGxEDNxU1anIe/O2bvKwUd
-         g0YCwxADs7oAWEAB+yynvgwm1FiseTdLhE5qlApxeWNuFe03DOAP4+vnpgu6+RKPjI
-         EY0NAaWvH1ZFsMqRWSTL8gjUS3svSCDIPIsyt1I5xvDIEe3OMdclSjNUItqSCCsu3q
-         gRGnc4v5b/rf7m35BqCYCgq+BzaA134BVaOGyzXHJtNJeJHTccsAhtySMSfbXp2LVY
-         l8Lvwdcq9R5Hw==
-Date:   Fri, 7 Jan 2022 13:53:34 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-        nathan@kernel.org, gregkh@linuxfoundation.org,
-        linux-sgx@vger.kernel.org, x86@kernel.org
-Subject: Re: [PATCH] [v3] x86/sgx: Fix NULL pointer dereference on non-SGX
- systems
-Message-ID: <YdgpvkqpIbRUw9yT@iki.fi>
-References: <20220104171527.5E8416A8@davehans-spike.ostc.intel.com>
- <YdgoNDt9dYaqfE7u@iki.fi>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id EAEDB1EC050F;
+        Fri,  7 Jan 2022 12:54:23 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1641556464;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=3MIYGxgH8IVPjiqqCa7t3Lo2u7g3b4PoNQjM+91zpCA=;
+        b=FU1VPAiZExsp8CWcc+5uBx2KE8ofLRKwYAEacXKc/WoJmG5ix8y6YepFTfg6BrR2tFRIRc
+        8z842ggZG/47ZdrSHS02L3fV+tCk1vJb09JWLACRvLM0eEMcdDwYtkbv67Urt3x5VGyg9k
+        05DcM2HDWfspdY8zhbyqugm2KSUdDW4=
+Date:   Fri, 7 Jan 2022 12:54:25 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Dave Hansen <dave.hansen@intel.com>
+Cc:     Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Subject: Re: [PATCH v8 27/40] x86/boot: Add Confidential Computing type to
+ setup_data
+Message-ID: <Ydgp8bjPdFTpD9KC@zn.tnic>
+References: <20211210154332.11526-1-brijesh.singh@amd.com>
+ <20211210154332.11526-28-brijesh.singh@amd.com>
+ <1fdaca61-884a-ac13-fb33-a47db198f050@intel.com>
+ <ba485a09-9c35-4115-decc-1b9c25519358@amd.com>
+ <2a5cfbd0-865c-2a8b-b70b-f8f64aba5575@intel.com>
+ <f442ca7f-4530-1443-27eb-206d6ca0e7a4@amd.com>
+ <48625a39-9e31-d7f2-dccf-74e9c27126f5@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YdgoNDt9dYaqfE7u@iki.fi>
+In-Reply-To: <48625a39-9e31-d7f2-dccf-74e9c27126f5@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 01:47:00PM +0200, Jarkko Sakkinen wrote:
-> On Tue, Jan 04, 2022 at 09:15:27AM -0800, Dave Hansen wrote:
-> > 
-> > From: Dave Hansen <dave.hansen@linux.intel.com>
-> > 
-> > == Problem ==
-> > 
-> > Nathan Chancellor reported an oops when aceessing the
-> > 'sgx_total_bytes' sysfs file:
-> > 
-> > 	https://lore.kernel.org/all/YbzhBrimHGGpddDM@archlinux-ax161/
-> > 
-> > The sysfs output code accesses the sgx_numa_nodes[] array
-> > unconditionally.  However, this array is allocated during SGX
-> > initialization, which only occurs on systems where SGX is
-> > supported.
-> > 
-> > If the sysfs file is accessed on systems without SGX support,
-> > sgx_numa_nodes[] is NULL and an oops occurs.
-> > 
-> > == Solution ==
-> > 
-> > To fix this, hide the entire nodeX/x86/ attribute group on
-> > systems without SGX support using the ->is_visible attribute
-> > group callback.
-> > 
-> > Unfortunately, SGX is initialized via a device_initcall() which
-> > occurs _after_ the ->is_visible() callback.  Instead of moving
-> > SGX initialization earlier, call sysfs_update_group() during
-> > SGX initialization to update the group visiblility.
-> > 
-> > This update requires moving the SGX sysfs code earlier in
-> > sgx/main.c.  There are no code changes other than the addition of
-> > arch_update_sysfs_visibility() and a minor whitespace fixup to
-> > arch_node_attr_is_visible() which checkpatch caught.
-> > 
-> > Fixes: 50468e431335 ("x86/sgx: Add an attribute for the amount of SGX memory in a NUMA node")
-> > Reported-by: Nathan Chancellor <nathan@kernel.org>
-> > Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-> > CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: Jarkko Sakkinen <jarkko@kernel.org>
-> > Cc: linux-sgx@vger.kernel.org
-> > Cc: x86@kernel.org
-> > ---
-> > 
-> >  b/arch/x86/kernel/cpu/sgx/main.c |   65 ++++++++++++++++++++++++++++-----------
-> >  1 file changed, 47 insertions(+), 18 deletions(-)
-> > 
-> > diff -puN arch/x86/kernel/cpu/sgx/main.c~sgx-null-ptr arch/x86/kernel/cpu/sgx/main.c
-> > --- a/arch/x86/kernel/cpu/sgx/main.c~sgx-null-ptr	2021-12-20 07:56:38.309584807 -0800
-> > +++ b/arch/x86/kernel/cpu/sgx/main.c	2022-01-04 08:43:17.042821249 -0800
-> > @@ -6,11 +6,13 @@
-> >  #include <linux/highmem.h>
-> >  #include <linux/kthread.h>
-> >  #include <linux/miscdevice.h>
-> > +#include <linux/node.h>
-> >  #include <linux/pagemap.h>
-> >  #include <linux/ratelimit.h>
-> >  #include <linux/sched/mm.h>
-> >  #include <linux/sched/signal.h>
-> >  #include <linux/slab.h>
-> > +#include <linux/sysfs.h>
-> >  #include <asm/sgx.h>
-> >  #include "driver.h"
-> >  #include "encl.h"
-> > @@ -780,6 +782,48 @@ static inline u64 __init sgx_calc_sectio
-> >  	       ((high & GENMASK_ULL(19, 0)) << 32);
-> >  }
-> >  
-> > +#ifdef CONFIG_NUMA
-> > +static ssize_t sgx_total_bytes_show(struct device *dev, struct device_attribute *attr, char *buf)
-> > +{
-> > +	return sysfs_emit(buf, "%lu\n", sgx_numa_nodes[dev->id].size);
-> > +}
-> > +static DEVICE_ATTR_RO(sgx_total_bytes);
-> > +
-> > +static umode_t arch_node_attr_is_visible(struct kobject *kobj,
-> > +		struct attribute *attr, int idx)
-> > +{
-> > +	/* Make all x86/ attributes invisible when SGX is not initialized: */
-> > +	if (nodes_empty(sgx_numa_mask))
-> > +		return 0;
-> > +
-> > +	return attr->mode;
-> > +}
-> > +
-> > +static struct attribute *arch_node_dev_attrs[] = {
-> > +	&dev_attr_sgx_total_bytes.attr,
-> > +	NULL,
-> > +};
-> > +
-> > +const struct attribute_group arch_node_dev_group = {
-> > +	.name = "x86",
-> > +	.attrs = arch_node_dev_attrs,
-> > +	.is_visible = arch_node_attr_is_visible,
-> > +};
-> > +
-> > +static void __init arch_update_sysfs_visibility(int nid)
-> > +{
-> > +	struct node *node = node_devices[nid];
-> > +	int ret;
-> > +
-> > +	ret = sysfs_update_group(&node->dev.kobj, &arch_node_dev_group);
-> > +
-> > +	if (ret)
-> > +		pr_err("sysfs update failed (%d), files may be invisible", ret);
-> > +}
-> > +#else /* !CONFIG_NUMA */
-> > +static void __init arch_update_sysfs_visibility(int nid) {}
-> > +#endif
-> > +
-> >  static bool __init sgx_page_cache_init(void)
-> >  {
-> >  	u32 eax, ebx, ecx, edx, type;
-> > @@ -826,6 +870,9 @@ static bool __init sgx_page_cache_init(v
-> >  			INIT_LIST_HEAD(&sgx_numa_nodes[nid].sgx_poison_page_list);
-> >  			node_set(nid, sgx_numa_mask);
-> >  			sgx_numa_nodes[nid].size = 0;
-> > +
-> > +			/* Make SGX-specific node sysfs files visible: */
-> > +			arch_update_sysfs_visibility(nid);
-> >  		}
-> >  
-> >  		sgx_epc_sections[i].node =  &sgx_numa_nodes[nid];
-> > @@ -903,24 +950,6 @@ int sgx_set_attribute(unsigned long *all
-> >  }
-> >  EXPORT_SYMBOL_GPL(sgx_set_attribute);
-> >  
-> > -#ifdef CONFIG_NUMA
-> > -static ssize_t sgx_total_bytes_show(struct device *dev, struct device_attribute *attr, char *buf)
-> > -{
-> > -	return sysfs_emit(buf, "%lu\n", sgx_numa_nodes[dev->id].size);
-> > -}
-> > -static DEVICE_ATTR_RO(sgx_total_bytes);
-> > -
-> > -static struct attribute *arch_node_dev_attrs[] = {
-> > -	&dev_attr_sgx_total_bytes.attr,
-> > -	NULL,
-> > -};
-> > -
-> > -const struct attribute_group arch_node_dev_group = {
-> > -	.name = "x86",
-> > -	.attrs = arch_node_dev_attrs,
-> > -};
-> > -#endif /* CONFIG_NUMA */
-> > -
-> >  static int __init sgx_init(void)
-> >  {
-> >  	int ret;
-> > _
-> 
-> Please add both:
-> 
-> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-> Tested-by: Jarkko Sakkinen <jarkko@kernel.org>
-> 
-> I explained the testing procedure in the other email.
+On Mon, Dec 13, 2021 at 07:08:07AM -0800, Dave Hansen wrote:
+> Could you please make the structure's size invariant?  That's great if
+> there's no problem in today's implementation, but it's best no to leave
+> little land mines like this around.  Let's say someone copies your code
+> as an example of something that interacts with a firmware table a few
+> years or months down the road.
 
-To add: I tested both this final version and also the earlier
-attached version.
+Btw, about that cc blob thing: is TDX going to need something like that
+too and if so, can they use it too?
 
-/Jarkko
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
