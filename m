@@ -2,89 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9918C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8FEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 11:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347082AbiAGLYz (ORCPT
+        id S1347090AbiAGLZe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 06:24:55 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4368 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234491AbiAGLYy (ORCPT
+        Fri, 7 Jan 2022 06:25:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58662 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234491AbiAGLZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 06:24:54 -0500
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JVgjm2KHrz67Ntg;
-        Fri,  7 Jan 2022 19:19:56 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 7 Jan 2022 12:24:52 +0100
-Received: from [10.47.89.210] (10.47.89.210) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 7 Jan
- 2022 11:24:51 +0000
-Subject: Re: PCI MSI issue for maxcpus=1
-To:     Marc Zyngier <maz@kernel.org>
-CC:     Thomas Gleixner <tglx@linutronix.de>,
-        chenxiang <chenxiang66@hisilicon.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "liuqi (BA)" <liuqi115@huawei.com>
-References: <78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com>
- <87a6g8vp8k.wl-maz@kernel.org>
-From:   John Garry <john.garry@huawei.com>
-Message-ID: <19d55cdf-9ef7-e4a3-5ae5-0970f0d7751b@huawei.com>
-Date:   Fri, 7 Jan 2022 11:24:38 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        Fri, 7 Jan 2022 06:25:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C55A61491
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:25:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0D9EC36AE0;
+        Fri,  7 Jan 2022 11:25:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641554728;
+        bh=NMdqiP2YC/upM7BO54bfCKqBt+mzx1tNSThOlVG9NWY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rHlBxW3gO02OmibTp6gW7ppQrTxm7SYzl5OI8tvxjhd1CzMPhq61R30weQ0F2AC95
+         26wznfgRog5Wu1jWwjU4E3fsdi0Meg181llDvH5tcdELo4LCIGAF/JqpHIMq0eKY41
+         12C2NfpHgl1xN8rcFQ5dmKvjGs6kykxiqWf+hW9M=
+Date:   Fri, 7 Jan 2022 12:25:25 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     Michael Straube <straube.linux@gmail.com>,
+        Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 03/19] staging: r8188eu: release_firmware is not called
+ if allocation fails
+Message-ID: <YdgjJRwLjIBWVQvU@kroah.com>
+References: <20220107103620.15648-1-straube.linux@gmail.com>
+ <20220107103620.15648-4-straube.linux@gmail.com>
+ <ca0548c0-b36c-98dc-3e49-b629b3d3fb6a@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <87a6g8vp8k.wl-maz@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.89.210]
-X-ClientProxiedBy: lhreml745-chm.china.huawei.com (10.201.108.195) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ca0548c0-b36c-98dc-3e49-b629b3d3fb6a@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marc,
-
->> So it's the driver call to pci_alloc_irq_vectors_affinity() which
->> errors [1]:
->>
->> [    9.619070] hisi_sas_v3_hw: probe of 0000:74:02.0 failed with error -2
-> Can you log what error is returned from pci_alloc_irq_vectors_affinity()?
-
--EINVAL
-
+On Fri, Jan 07, 2022 at 02:15:19PM +0300, Pavel Skripkin wrote:
+> Hi Michael,
 > 
->> Some details:
->> - device supports 32 MSI
->> - min and max msi for that function is 17 and 32, respect.
-> This 17 is a bit odd, owing to the fact that MultiMSI can only deal
-> with powers of 2. You will always allocate 32 in this case. Not sure
-> why that'd cause an issue though. Unless...
-
-Even though 17 is the min, we still try for nvec=32 in 
-msi_capability_init() as possible CPUs is 96.
-
+> On 1/7/22 13:36, Michael Straube wrote:
+> > In function load_firmware() release_firmware() is not called if the
+> > allocation of pFirmware->szFwBuffer fails or if fw->size is greater
+> > than FW_8188E_SIZE.
+> > 
+> > Move the call to release_firmware() to the exit label at the end of
+> > the function to fix this.
+> > 
+> > Signed-off-by: Michael Straube <straube.linux@gmail.com>
+> > ---
+> >   drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+> > index dc41682fd8d6..cfafbb6c42f7 100644
+> > --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+> > +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+> > @@ -538,10 +538,10 @@ static int load_firmware(struct rt_firmware *pFirmware, struct device *device)
+> >   	}
+> >   	memcpy(pFirmware->szFwBuffer, fw->data, fw->size);
+> >   	pFirmware->ulFwLength = fw->size;
+> > -	release_firmware(fw);
+> >   	dev_dbg(device, "!bUsedWoWLANFw, FmrmwareLen:%d+\n", pFirmware->ulFwLength);
+> >   Exit:
+> > +	release_firmware(fw);
+> >   	return rtStatus;
+> >   }
 > 
->> - affd pre and post are 16 and 0, respect.
->>
->> I haven't checked to see what the issue is yet and I think that the
->> pci_alloc_irq_vectors_affinity() usage is ok...
-> ... we really end-up with desc->nvec_used == 32 and try to activate
-> past vector 17 (which is likely to fail). Could you please check this?
+> 
+> This patch looks like a bug fix and it should go to stable kernels as well.
+> The problem is this patch is made on top of 2 previous clean up patches, so
+> it can't go to stable as is.
+> 
+> I think, the less painful way is to move this patch on the first place in
+> this series. On the other hand you can just resend this one separately.
+> 
+> 
+> Or, maybe, Greg knows some magic that will help here, we can wait him before
+> you resend 20 patch series :)
 
-Yeah, that looks to fail. Reason being that in the GIC ITS driver when 
-we try to activate the irq for this managed interrupt all cpus in the 
-affinity mask are offline. Calling its_irq_domain_activate() -> 
-its_select_cpu() it gives cpu=nr_cpu_ids. The affinity mask for that 
-interrupt is 24-29.
+It's just not worth it for this staging driver, and for an allocation
+failure, to be backported here.  Allocation failures almost never happen
+in real-world situations, and if they do, they are not alone, so this
+would be the least of the problems happening here.
 
-Thanks,
-John
+So no need to care about it, I can take this as-is.
+
+thanks,
+
+greg k-h
