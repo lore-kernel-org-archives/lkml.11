@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74879C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 21:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 861E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 21:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230205AbiAGVuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 16:50:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59664 "EHLO
+        id S230243AbiAGVu6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 16:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiAGVur (ORCPT
+        with ESMTP id S229949AbiAGVuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 16:50:47 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD2FBC061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 13:50:46 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id a5so9546869wrh.5
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 13:50:46 -0800 (PST)
+        Fri, 7 Jan 2022 16:50:50 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A71E0C061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 13:50:49 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id l25so2655782wrb.13
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 13:50:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=skpfr+woNwBWq/UkaJ/OM4D8M7RBtrPdTCE1iH30Ya4=;
-        b=I0tGo7QPDX1aHrxZWygj92ftpF+2hKsffErIQg9BPPly2LNCJo+UYePeRLT/Jltcd2
-         8R7l5FEU3l8tYlKj0WuXpBvr67azuHOo5rNtdktyjX/eAlmTZoh4MSx+TGL+PGOgs5mq
-         HfVUIVIXT0BdwUpNOl376MLpYsvbwkk+U0PWIhMlGIVNCXLB0PfCQSewxR3mMlNyJDzn
-         L2g11mmInqOMkLAvAAyHvWT0wxI1hj3oIZX+Av20IsR6Bj6+HZ8Cm8Nbqrx7aQoX9iUz
-         6vKSyAJoaiiJtTophsNBMj6zvElu1148BqSh2H09nUNDXCQADPiSwUss9NpJqoNjUYDz
-         k17w==
+        bh=/Ep42MnLkFZlrJ74AAV9uWHzBCOpHXZvB1eY1I6VZcA=;
+        b=eiJW1xFSgYimTpYHbuZMyHZkNTPU8Swy4orSrOqottjTnPVlC3u96iSHevzBZ4K6Oy
+         80fk7UhPLDPH9VyEeh7+HRiGRTL37Xxs8ZTrTct25l4CdUK+9MKufVQCYDN8vYk2hMAc
+         8AiTu4P1gCsv4w55Dj/ZteE2FQ7MTseIDMcEN/Ipjj7paQBnfc6AB5Au0hLnbDhIa61c
+         jFRNC5x7mCcy6l2FdhSNgV4YOrokSaQUYTwX0a2qSt9+jeTxAVWgSgTTalr4o3syiYkO
+         NpuROKuTlujJevJxqewO08IwI+PsEaE7pT31tazccsIZr2zDGcrEZRB+Nxeqn5ifWgXb
+         /h6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=skpfr+woNwBWq/UkaJ/OM4D8M7RBtrPdTCE1iH30Ya4=;
-        b=pjhMHzxO1LK8QsCladGVuNDgJ6DGYl+3/seXFe6Sx8zCEdhTQcdXLi1YpVjnNcD29Z
-         i7io/k2jFWhN3HY+/yPpyVrQ7QvrnayRyPMgZVDjWBDmLX2PCiySZ2wg42o4888rSw7+
-         aCwj629uC+vcImzxlAMkpgleXQQH9vokmjy+Rl4twp/3Fnr+cTbZMgdo48qjcSkDU5j0
-         CRjn4NdcatsW13/JW5oVE0Ug72XaDeoGjU56w7zhUhgx17Y6qXJNtaxh2avTBo3qN1aC
-         Jou5l5qKMNdmmRUJw9PN95iDU3wbUbpVFCwZTNtlyQ/epCUs3kvqj15SrpRoPJoHTogy
-         an/A==
-X-Gm-Message-State: AOAM532MTGTfBUaePtDGEbPNXdyoO19Hjn6osICX2MCYhiZHZN2Prcdy
-        TfsYSUJGbJoMN1/aFPomV5A=
-X-Google-Smtp-Source: ABdhPJwny7FT6SeNz720JLxmXrX6dzb12UysNF3RqlDgx8UKnfMXmuTOnsp1/ZAz2xwekdMiYXpUfw==
-X-Received: by 2002:a5d:64ad:: with SMTP id m13mr56861714wrp.714.1641592245392;
-        Fri, 07 Jan 2022 13:50:45 -0800 (PST)
+        bh=/Ep42MnLkFZlrJ74AAV9uWHzBCOpHXZvB1eY1I6VZcA=;
+        b=xtIJoACp3i0eBKFb+AOcG7hFNe/G0caxbYXpjmYFeE28D8eWQPjITptY8Tv1trr8cF
+         66jpXjR9OtdICgtjbhN2aT8n6dKokHdLt9qtpZ6qGoziS9XBQBsY6C5Zq0BcM2HdSJmD
+         8m8AFNFLbFRyPmZl/aIUTOc2P2WRKNuDPNErCjYJSl+4JBf9VRJ5MrqeEXq4tObZ8qSl
+         WwWSpnpI9STcpyJhh7AxemoEatKr/Bpi+2QQEDW26rM/qUxA6fEVHmeA7HRXjBQji4fP
+         6aS3beu8NtHHY85C/EQyisYMKKKn7KHQOSWsslVfSI8i9ZeQlQcWn+4yXImRlnpueX2M
+         J77w==
+X-Gm-Message-State: AOAM530tz7Vx63NzuY57axIg4G0rJPmM5gMU9UuZpJaEp6RfyJFTjvqF
+        7OEhGmkNAg9+INL6eDQu4Lk=
+X-Google-Smtp-Source: ABdhPJzQZNvgEuxGSnAUVjNxYEivHw1oWGioiYTl+nKKA9jiH8QB6Zjdyfw+kt6JOKdvHq7JXFAkKQ==
+X-Received: by 2002:a05:6000:12c3:: with SMTP id l3mr2893987wrx.638.1641592248395;
+        Fri, 07 Jan 2022 13:50:48 -0800 (PST)
 Received: from localhost.localdomain ([2a02:8108:96c0:3b88::51e2])
-        by smtp.gmail.com with ESMTPSA id k14sm1729161wrn.59.2022.01.07.13.50.44
+        by smtp.gmail.com with ESMTPSA id k14sm1729161wrn.59.2022.01.07.13.50.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 13:50:45 -0800 (PST)
+        Fri, 07 Jan 2022 13:50:48 -0800 (PST)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 1/6] staging: r8188eu: remove HW_VAR_BASIC_RATE from GetHwReg8188EU()
-Date:   Fri,  7 Jan 2022 22:50:28 +0100
-Message-Id: <20220107215033.12257-2-straube.linux@gmail.com>
+Subject: [PATCH 4/6] staging: r8188eu: remove HW_VAR_EFUSE_BYTES from GetHwReg8188EU()
+Date:   Fri,  7 Jan 2022 22:50:31 +0100
+Message-Id: <20220107215033.12257-5-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220107215033.12257-1-straube.linux@gmail.com>
 References: <20220107215033.12257-1-straube.linux@gmail.com>
@@ -65,7 +65,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GetHwReg8188EU() is never called with HW_VAR_BASIC_RATE. Remove that
+GetHwReg8188EU() is never called with HW_VAR_EFUSE_BYTES. Remove that
 case from the function.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
@@ -74,18 +74,18 @@ Signed-off-by: Michael Straube <straube.linux@gmail.com>
  1 file changed, 3 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 96db9a8e7667..b996580b30ba 100644
+index 33523ca90ee5..c1129c83ebf7 100644
 --- a/drivers/staging/r8188eu/hal/usb_halinit.c
 +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -1592,9 +1592,6 @@ void GetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
- 	struct odm_dm_struct *podmpriv = &haldata->odmpriv;
- 
- 	switch (variable) {
--	case HW_VAR_BASIC_RATE:
--		*((u16 *)(val)) = haldata->BasicRateSet;
--		fallthrough;
- 	case HW_VAR_TXPAUSE:
- 		val[0] = rtw_read8(Adapter, REG_TXPAUSE);
+@@ -1614,9 +1614,6 @@ void GetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
+ 			}
+ 		}
+ 		break;
+-	case HW_VAR_EFUSE_BYTES: /*  To get EFUE total used bytes, added by Roger, 2008.12.22. */
+-		*((u16 *)(val)) = haldata->EfuseUsedBytes;
+-		break;
+ 	case HW_VAR_APFM_ON_MAC:
+ 		*val = haldata->bMacPwrCtrlOn;
  		break;
 -- 
 2.34.1
