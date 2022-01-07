@@ -2,141 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03540C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9408DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346454AbiAGJbX (ORCPT
+        id S1346471AbiAGJbo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:31:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33020 "EHLO
+        Fri, 7 Jan 2022 04:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236635AbiAGJbW (ORCPT
+        with ESMTP id S1346462AbiAGJbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:31:22 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0349FC061245
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 01:31:22 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id g2so4992310pgo.9
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 01:31:21 -0800 (PST)
+        Fri, 7 Jan 2022 04:31:43 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9340CC0611FF
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 01:31:42 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id q25so11215688edb.2
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 01:31:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Snzve2VDTQKwZaO4ZqlxUOQ1EnmaNMLBwnYHXxG3WV0=;
-        b=bkH2MhCFBrGVQWHKMOz05SKwjfL4sbXGkcilrxRjbArW/bKE779ot7D59DPLSuoRrJ
-         LiY8cSwEqpBDfMEslAcGOWbydcWuRz3aS8PoXPooEKeMmF1cB5vhrVKhcoIratjOkgrA
-         Tuf8IH0GAJ4icniBEWB0NGfIibup9QkqpuCp623gSPjrNOv9lSFDuRSMm/is30LrdtZG
-         gBTv2NjLiQn+NqgWS1LOh8RBAnswekKXepXc5s4qG41HBUMYRACrtcTv2J67t+fW0kfi
-         D1agXDyMwZdbUoqc66ccWCsbRaOrh2lU4qKZWHynKl9MIwPHlaEFaqqI9jjCHR3fI6Qe
-         Im3g==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TezwQvy/GrVo/VcXl6Kmghnct9UHJH58seMMxyEI02A=;
+        b=w2V+iJUefGp3KlCNcBsEDN8BorejU5hp+6CahknIVFUn1oU3ZtxwjYoPDxNPziGlUz
+         a0NH22cY2sthTfr8gRtlzr68GQu94z9Vv96M1sr/BVNCzMP7KwH1oLc7Y7uPIprMBJGp
+         jTor+uLGWD9ND97HWJEqboKIKTNtxd8Zvqy6BGjuUSvq1G+ejn9P6ls5DRx/e8AnqPY1
+         oaAsTxnPIOOhhcMRfiaCuwrI7HEMhNpBw6z8s5N4t1kc9kc1BvoA7/mW0OOcWAqSy0qI
+         cnNGy3ahX/tVMOrHF3dRzQQbbFBVtWLE/ojZIbe0r6fp77jLr7sD41Ov5rETXekX5g/5
+         kEfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Snzve2VDTQKwZaO4ZqlxUOQ1EnmaNMLBwnYHXxG3WV0=;
-        b=D+QJMeDuCV7LYU9Z8/BbEAVbbCYuyJn9rPFLCZjLUK+f1aUtwXri6VBqk3lrQUOGdO
-         bxGXMnimCgc2cvBdZdtMcUb5MKZDJEcfKLQ6HZKFdEdbTMj6Fu3P+z6txgMmbZPgqR/l
-         1XoR0tl+qsbIhqlg6nXBhG4kRy+Hia3qcc07RfmTaewjZKEnzajSjnBY8NhzF/DLxccs
-         /u++xFhJWk59KqqdvH6JlyleV1XogYjQ8Tzp+dI00on92g9gRp5mC7WjDM91VaumnhA3
-         b8aFGmeumBibOQOWWFUvR2GeuGjBNuGGTAU5G/uJJ8AvlaI1EpQwiz1l42lN2gFDso3e
-         OK+g==
-X-Gm-Message-State: AOAM533Iv2WBIRf2+BRuADwAQyMHiz8mLjYVxsxEUpmJ/1Tg+XtyZvg8
-        gUHczi3uFefB4O337ayLKy4=
-X-Google-Smtp-Source: ABdhPJzlEFq4M8TGSeqiyPP4mzG+YNaZAJcoYb7r9zkEpnJE7BHdkiRoXegwfVr6GwDgs+X1o8hezA==
-X-Received: by 2002:aa7:9904:0:b0:4ba:5abb:aaf9 with SMTP id z4-20020aa79904000000b004ba5abbaaf9mr62943416pff.16.1641547881529;
-        Fri, 07 Jan 2022 01:31:21 -0800 (PST)
-Received: from localhost.localdomain ([43.128.2.63])
-        by smtp.gmail.com with ESMTPSA id g12sm5183617pfv.136.2022.01.07.01.31.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 01:31:21 -0800 (PST)
-From:   tcs.kernel@gmail.com
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
-        syzbot+b68d24ad0de64bdba684@syzkaller.appspotmail.com
-Subject: [PATCH] tty tty_buffer: fix uninit-value in n_tty_receive_buf_common
-Date:   Fri,  7 Jan 2022 17:30:58 +0800
-Message-Id: <20220107093058.1659772-1-tcs.kernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TezwQvy/GrVo/VcXl6Kmghnct9UHJH58seMMxyEI02A=;
+        b=FVltOIrcyW9IOAtBvJrkBZ8UfDP4///WZdtzz3TU0CjWzo17pmU851sVwZiWcv0HSb
+         21qZNHNUW9qKPUhDNhLEWZR45J4QEqat07vbS0AC1bXs7dv2xPhAYepj4LcjYc2ry+Fu
+         ZgURtKEk4omo/AgEVzB4GnbD2MrjKc1xzaJtV8Weymcv4JeetR6gl0HWACbV7g15n24T
+         gHjxWNGRrPI1J7aJyjzKJ5CKTu/LfXsbzLybba6ayLrSY8BZcB1R7EFVcAFS9JeD8CsN
+         joJ5dTYqChE6CbcCvzaFRioXbsbJUp/Qlg0a7FJF47rZzQhY8mmsWpilOAVvCAAgy2ac
+         lCKQ==
+X-Gm-Message-State: AOAM533CKVNu1eI6E3vuqGLzkjjhQKT/cXDYehWiwGGs1jPgMjFMunIM
+        yVh0COBTP58HIwv1utQbX9DvlfXbDHA3e7T5orEqZg==
+X-Google-Smtp-Source: ABdhPJy6Pd5StasJd8Vr9TrAn4EyS2U33Mwnkud6vbrw4HpmRdCGAwwGrmolTePbriBG/I8s4Z7aITOOhf8mDSkaceA=
+X-Received: by 2002:a17:907:386:: with SMTP id ss6mr6976366ejb.101.1641547901133;
+ Fri, 07 Jan 2022 01:31:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220107031905.2406176-1-robh@kernel.org>
+In-Reply-To: <20220107031905.2406176-1-robh@kernel.org>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Fri, 7 Jan 2022 10:31:30 +0100
+Message-ID: <CAMRc=MdmOMfyyiguowrU52BvoxMr8u3sLQfzCiY_Rqs=qUsX-Q@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Drop required 'interrupt-parent'
+To:     Rob Herring <robh@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Suman Anna <s-anna@ti.com>, - <patches@opensource.cirrus.com>,
+        John Crispin <john@phrozen.org>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Kumar Gogada <bharat.kumar.gogada@xilinx.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-ALSA <alsa-devel@alsa-project.org>,
+        netdev <netdev@vger.kernel.org>, linux-pci@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs.kernel@gmail.com>
+On Fri, Jan 7, 2022 at 4:19 AM Rob Herring <robh@kernel.org> wrote:
+>
+> 'interrupt-parent' is never required as it can be in a parent node or a
+> parent node itself can be an interrupt provider. Where exactly it lives is
+> outside the scope of a binding schema.
+>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../devicetree/bindings/gpio/toshiba,gpio-visconti.yaml  | 1 -
+>  .../devicetree/bindings/mailbox/ti,omap-mailbox.yaml     | 9 ---------
+>  Documentation/devicetree/bindings/mfd/cirrus,madera.yaml | 1 -
+>  .../devicetree/bindings/net/lantiq,etop-xway.yaml        | 1 -
+>  .../devicetree/bindings/net/lantiq,xrx200-net.yaml       | 1 -
+>  .../devicetree/bindings/pci/sifive,fu740-pcie.yaml       | 1 -
+>  .../devicetree/bindings/pci/xilinx-versal-cpm.yaml       | 1 -
+>  7 files changed, 15 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml b/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+> index 9ad470e01953..b085450b527f 100644
+> --- a/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+> +++ b/Documentation/devicetree/bindings/gpio/toshiba,gpio-visconti.yaml
+> @@ -43,7 +43,6 @@ required:
+>    - gpio-controller
+>    - interrupt-controller
+>    - "#interrupt-cells"
+> -  - interrupt-parent
+>
+>  additionalProperties: false
+>
+> diff --git a/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
+> index e864d798168d..d433e496ec6e 100644
+> --- a/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
+> +++ b/Documentation/devicetree/bindings/mailbox/ti,omap-mailbox.yaml
+> @@ -175,15 +175,6 @@ required:
+>    - ti,mbox-num-fifos
+>
+>  allOf:
+> -  - if:
+> -      properties:
+> -        compatible:
+> -          enum:
+> -            - ti,am654-mailbox
+> -    then:
+> -      required:
+> -        - interrupt-parent
+> -
+>    - if:
+>        properties:
+>          compatible:
+> diff --git a/Documentation/devicetree/bindings/mfd/cirrus,madera.yaml b/Documentation/devicetree/bindings/mfd/cirrus,madera.yaml
+> index 499c62c04daa..5dce62a7eff2 100644
+> --- a/Documentation/devicetree/bindings/mfd/cirrus,madera.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/cirrus,madera.yaml
+> @@ -221,7 +221,6 @@ required:
+>    - '#gpio-cells'
+>    - interrupt-controller
+>    - '#interrupt-cells'
+> -  - interrupt-parent
+>    - interrupts
+>    - AVDD-supply
+>    - DBVDD1-supply
+> diff --git a/Documentation/devicetree/bindings/net/lantiq,etop-xway.yaml b/Documentation/devicetree/bindings/net/lantiq,etop-xway.yaml
+> index 437502c5ca96..3ce9f9a16baf 100644
+> --- a/Documentation/devicetree/bindings/net/lantiq,etop-xway.yaml
+> +++ b/Documentation/devicetree/bindings/net/lantiq,etop-xway.yaml
+> @@ -46,7 +46,6 @@ properties:
+>  required:
+>    - compatible
+>    - reg
+> -  - interrupt-parent
+>    - interrupts
+>    - interrupt-names
+>    - lantiq,tx-burst-length
+> diff --git a/Documentation/devicetree/bindings/net/lantiq,xrx200-net.yaml b/Documentation/devicetree/bindings/net/lantiq,xrx200-net.yaml
+> index 7bc074a42369..5bc1a21ca579 100644
+> --- a/Documentation/devicetree/bindings/net/lantiq,xrx200-net.yaml
+> +++ b/Documentation/devicetree/bindings/net/lantiq,xrx200-net.yaml
+> @@ -38,7 +38,6 @@ properties:
+>  required:
+>    - compatible
+>    - reg
+> -  - interrupt-parent
+>    - interrupts
+>    - interrupt-names
+>    - "#address-cells"
+> diff --git a/Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml b/Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml
+> index 2b9d1d6fc661..72c78f4ec269 100644
+> --- a/Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/sifive,fu740-pcie.yaml
+> @@ -61,7 +61,6 @@ required:
+>    - num-lanes
+>    - interrupts
+>    - interrupt-names
+> -  - interrupt-parent
+>    - interrupt-map-mask
+>    - interrupt-map
+>    - clock-names
+> diff --git a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> index a2bbc0eb7220..32f4641085bc 100644
+> --- a/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> +++ b/Documentation/devicetree/bindings/pci/xilinx-versal-cpm.yaml
+> @@ -55,7 +55,6 @@ required:
+>    - reg-names
+>    - "#interrupt-cells"
+>    - interrupts
+> -  - interrupt-parent
+>    - interrupt-map
+>    - interrupt-map-mask
+>    - bus-range
+> --
+> 2.32.0
+>
 
-syzbot report an uninit-value issue in n_tty_receive_buf_common.
-The root case is in the tty_buffer_reset() which in tty_buffer_alloc()
-function, it initialized the tty_buffer struct but did not initialize 
-"data[]" points area. So we should initialize the points area to avoid
-using dirty data.
-The syzbot report is as follows:
+For GPIO:
 
-BUG: KMSAN: uninit-value in variable_test_bit arch/x86/include/asm/bitops.h:214 [inline]
-BUG: KMSAN: uninit-value in test_bit include/asm-generic/bitops/instrumented-non-atomic.h:135 [inline]
-BUG: KMSAN: uninit-value in n_tty_receive_buf_standard drivers/tty/n_tty.c:1557 [inline]
-BUG: KMSAN: uninit-value in __receive_buf drivers/tty/n_tty.c:1577 [inline]
-BUG: KMSAN: uninit-value in n_tty_receive_buf_common+0x1e6c/0x10360 drivers/tty/n_tty.c:1674
- variable_test_bit arch/x86/include/asm/bitops.h:214 [inline]
- test_bit include/asm-generic/bitops/instrumented-non-atomic.h:135 [inline]
- n_tty_receive_buf_standard drivers/tty/n_tty.c:1557 [inline]
- __receive_buf drivers/tty/n_tty.c:1577 [inline]
- n_tty_receive_buf_common+0x1e6c/0x10360 drivers/tty/n_tty.c:1674
- n_tty_receive_buf2+0xbe/0xd0 drivers/tty/n_tty.c:1709
- tty_ldisc_receive_buf+0x15e/0x390 drivers/tty/tty_buffer.c:471
- tty_port_default_receive_buf+0x14b/0x1e0 drivers/tty/tty_port.c:39
- receive_buf drivers/tty/tty_buffer.c:491 [inline]
- flush_to_ldisc+0x5bf/0xa10 drivers/tty/tty_buffer.c:543
- process_one_work+0xdc2/0x1820 kernel/workqueue.c:2298
- worker_thread+0x10f1/0x2290 kernel/workqueue.c:2445
- kthread+0x721/0x850 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- slab_alloc mm/slub.c:3259 [inline]
- __kmalloc+0xc3c/0x12d0 mm/slub.c:4437
- kmalloc include/linux/slab.h:595 [inline]
- tty_buffer_alloc drivers/tty/tty_buffer.c:177 [inline]
- __tty_buffer_request_room+0x4d2/0x900 drivers/tty/tty_buffer.c:275
- __tty_insert_flip_char+0xe5/0x3d0 drivers/tty/tty_buffer.c:392
- tty_insert_flip_char include/linux/tty_flip.h:36 [inline]
- uart_insert_char+0x495/0xb70 drivers/tty/serial/serial_core.c:3139
- serial8250_read_char+0x280/0x820 drivers/tty/serial/8250/8250_port.c:1769
- serial8250_rx_chars drivers/tty/serial/8250/8250_port.c:1784 [inline]
- serial8250_handle_irq+0x540/0x980 drivers/tty/serial/8250/8250_port.c:1927
- serial8250_default_handle_irq+0x18f/0x370 drivers/tty/serial/8250/8250_port.c:1949
- serial8250_interrupt+0x111/0x3f0 drivers/tty/serial/8250/8250_core.c:126
- __handle_irq_event_percpu+0x188/0xc90 kernel/irq/handle.c:158
- handle_irq_event_percpu kernel/irq/handle.c:198 [inline]
- handle_irq_event+0x188/0x420 kernel/irq/handle.c:215
- handle_edge_irq+0x472/0x13e0 kernel/irq/chip.c:822
- generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
- handle_irq arch/x86/kernel/irq.c:231 [inline]
- __common_interrupt+0xf8/0x360 arch/x86/kernel/irq.c:250
- common_interrupt+0xb1/0xd0 arch/x86/kernel/irq.c:240
- asm_common_interrupt+0x1e/0x40
-
-Reported-by: syzbot+b68d24ad0de64bdba684@syzkaller.appspotmail.com
-Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
----
- drivers/tty/tty_buffer.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/tty/tty_buffer.c b/drivers/tty/tty_buffer.c
-index 6c7e65b1d9a1..0e7f3547d971 100644
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -180,6 +180,7 @@ static struct tty_buffer *tty_buffer_alloc(struct tty_port *port, size_t size)
- 
- found:
- 	tty_buffer_reset(p, size);
-+	memset((char *)p + sizeof(struct tty_buffer), 0, 2 * size);
- 	atomic_add(size, &port->buf.mem_used);
- 	return p;
- }
--- 
-2.25.1
-
+Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
