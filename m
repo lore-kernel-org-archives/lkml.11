@@ -2,164 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 585BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17E6DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346804AbiAGK31 (ORCPT
+        id S1346859AbiAGK3i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 05:29:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35423 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1346726AbiAGK3T (ORCPT
+        Fri, 7 Jan 2022 05:29:38 -0500
+Received: from mail-ua1-f54.google.com ([209.85.222.54]:33569 "EHLO
+        mail-ua1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346799AbiAGK31 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 05:29:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641551357;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9YeLr/AWKAX3341CQ/7V+98rvHnrsaSJrK/Ig2HVNV0=;
-        b=P74+F5QU502x1PB8YvyijU0DYiCQv6UIjFbMG+Kl98cJ8SodcXFn7O+rbmez2BghCrGZja
-        tU81AGlUs2rTkkBUlXomUBLFwyZo/g9yGyC5N+r4qeBi8CckZsS3SayuX5VJMXX+ixJu0m
-        3yKRQMYvGMkdThgJ8qbZruTQhvzYb5o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-283-OqXicnd9MG29vcjC5xuYfA-1; Fri, 07 Jan 2022 05:29:16 -0500
-X-MC-Unique: OqXicnd9MG29vcjC5xuYfA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA0661006AA7;
-        Fri,  7 Jan 2022 10:29:14 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 123E572FA2;
-        Fri,  7 Jan 2022 10:29:12 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/5] KVM: nVMX: Implement evmcs_field_offset() suitable for handle_vmread()
-Date:   Fri,  7 Jan 2022 11:28:58 +0100
-Message-Id: <20220107102859.1471362-5-vkuznets@redhat.com>
-In-Reply-To: <20220107102859.1471362-1-vkuznets@redhat.com>
-References: <20220107102859.1471362-1-vkuznets@redhat.com>
+        Fri, 7 Jan 2022 05:29:27 -0500
+Received: by mail-ua1-f54.google.com with SMTP id u6so9459499uaq.0;
+        Fri, 07 Jan 2022 02:29:26 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Io2bK2EB9BrWpLhpSRU2u5xHS0wL/UWmqIaJGQJ1nnU=;
+        b=HynvkoVVs8DIjDHaHwje+Kt8nkp/Yo0XbMPpaWZMA7m3oT1YssQzmkHjfzrJ7tI00a
+         F38IM45brkv9D01uQa+/1QKfN9UwL40d5P8CKrj6m42OlM4vZ6LUa0fsRQpq2JpBnBhS
+         IZe+PNYiJMQ546Y3m42Ew5cUfA6vStw2tp6WKLp9qyPh1zolhFqccTmd3mcvJ1bL9dF8
+         R2bn+bG4lnyPl7QpUhTPZEe1dlvxdkbcY0oWhNnf9QIPW4zV93VtF6gNxpDRtuCwP7tZ
+         T2tjffiXClegdRAVLyv44gFFdaFWgi5HXwx3P14/StXwWqIqvEzGQPgtCndqNG1X6LXX
+         XaSA==
+X-Gm-Message-State: AOAM533WpQ5sUB24Ye2O/drWWls4xShjFWaBdfnvd9nlezmkpfEPi1Tj
+        Jh8CXwbqXnUKpYVrkw1jhLusvktuTopPgg==
+X-Google-Smtp-Source: ABdhPJzCzN5LGUpoo3Y564wS/N/dmHy/og0EyjsSqIWSHCNxbCNjtWuAIhNuSFbdRtiPDdX8gr70AQ==
+X-Received: by 2002:ab0:3148:: with SMTP id e8mr21920845uam.62.1641551366198;
+        Fri, 07 Jan 2022 02:29:26 -0800 (PST)
+Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com. [209.85.221.174])
+        by smtp.gmail.com with ESMTPSA id u7sm2919855vkf.12.2022.01.07.02.29.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 07 Jan 2022 02:29:24 -0800 (PST)
+Received: by mail-vk1-f174.google.com with SMTP id d189so3406508vkg.3;
+        Fri, 07 Jan 2022 02:29:24 -0800 (PST)
+X-Received: by 2002:ac5:c853:: with SMTP id g19mr23105681vkm.20.1641551364177;
+ Fri, 07 Jan 2022 02:29:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20220106174803.1773876-1-gsomlo@gmail.com> <20220106174803.1773876-4-gsomlo@gmail.com>
+ <CAHp75Ve_jWmo3+Es0G5SyMpcdC_=hWfxHoa866Difd+X3F0uxg@mail.gmail.com>
+ <YddyMI7hJE7u0jQ/@errol.ini.cmu.edu> <CAMuHMdX2ujViu9GivVHtgAqC6AdiL3CvdJM58pVteJe9KdvdqQ@mail.gmail.com>
+ <YdgSG7t2eG9YzkaG@antec> <CAHp75VdjP4jmUQHUV=eF2Ot+s=3==ZqUS7BFxMoPDw=NkCBm6Q@mail.gmail.com>
+In-Reply-To: <CAHp75VdjP4jmUQHUV=eF2Ot+s=3==ZqUS7BFxMoPDw=NkCBm6Q@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 7 Jan 2022 11:29:13 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdU1UqwKzE=tT4fdJb9EjJRJTsG2fGoLrBSOs_K22rY-sQ@mail.gmail.com>
+Message-ID: <CAMuHMdU1UqwKzE=tT4fdJb9EjJRJTsG2fGoLrBSOs_K22rY-sQ@mail.gmail.com>
+Subject: Re: [PATCH v6 3/3] mmc: Add driver for LiteX's LiteSDCard interface
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Stafford Horne <shorne@gmail.com>,
+        "Gabriel L. Somlo" <gsomlo@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Kamil Rakoczy <krakoczy@antmicro.com>,
+        mdudek@internships.antmicro.com,
+        Paul Mackerras <paulus@ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>, david.abdurachmanov@sifive.com,
+        Florent Kermarrec <florent@enjoy-digital.fr>,
+        Randy Dunlap <rdunlap@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to allowing reads from Enlightened VMCS from
-handle_vmread(), implement evmcs_field_offset() to get the correct
-read offset. get_evmcs_offset(), which is being used by KVM-on-Hyper-V,
-is almost what's needed but a few things need to be adjusted. First,
-WARN_ON() is unacceptable for handle_vmread() as any field can (in
-theory) be supplied by the guest and not all fields are defined in
-eVMCS v1. Second, we need to handle 'holes' in eVMCS (missing fields).
-It also sounds like a good idea to WARN_ON() if such fields are ever
-accessed by KVM-on-Hyper-V.
+Hi Andy,
 
-Implement dedicated evmcs_field_offset() helper.
+On Fri, Jan 7, 2022 at 11:25 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Fri, Jan 7, 2022 at 12:12 PM Stafford Horne <shorne@gmail.com> wrote:
+> > On Fri, Jan 07, 2022 at 10:36:12AM +0100, Geert Uytterhoeven wrote:
+> > > On Thu, Jan 6, 2022 at 11:50 PM Gabriel L. Somlo <gsomlo@gmail.com> wrote:
+>
+> ...
+>
+> > > Many (most?) blurbs do mention the module name.
+> >
+> > I was doubting this as well, but I searched and its true.  The text 'module will
+> > be called' shows up many times, there is also different text.
+> >
+> >  $ grep -r 'module will be called' drivers/ | wc
+> >    1347    9023   9086
+> >
+> >  $ grep -r 'tristate \"' drivers/ | wc
+> >    7169   47486  521795
+>
+> Just a side note: `git grep ...` is much faster in the Git trees.
 
-No functional change intended.
+Indeed.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/vmx/evmcs.c |  3 +--
- arch/x86/kvm/vmx/evmcs.h | 32 ++++++++++++++++++++++++--------
- 2 files changed, 25 insertions(+), 10 deletions(-)
+> And for this particular case I dare to advertise a script I wrote [1]
+> to help with recursive searches.
+>
+> [1]: https://github.com/andy-shev/home-bin-tools/blob/master/gl4func.sh
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index a7ed30d5647a..87e3dc10edf4 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -12,8 +12,6 @@
- 
- DEFINE_STATIC_KEY_FALSE(enable_evmcs);
- 
--#if IS_ENABLED(CONFIG_HYPERV)
--
- #define EVMCS1_OFFSET(x) offsetof(struct hv_enlightened_vmcs, x)
- #define EVMCS1_FIELD(number, name, clean_field)[ROL16(number, 6)] = \
- 		{EVMCS1_OFFSET(name), clean_field}
-@@ -296,6 +294,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
- };
- const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
- 
-+#if IS_ENABLED(CONFIG_HYPERV)
- __init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
- {
- 	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index 3a461a32128b..9bc2521b159e 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -65,8 +65,6 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
- #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
- #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
- 
--#if IS_ENABLED(CONFIG_HYPERV)
--
- struct evmcs_field {
- 	u16 offset;
- 	u16 clean_field;
-@@ -75,26 +73,44 @@ struct evmcs_field {
- extern const struct evmcs_field vmcs_field_to_evmcs_1[];
- extern const unsigned int nr_evmcs_1_fields;
- 
--static __always_inline int get_evmcs_offset(unsigned long field,
--					    u16 *clean_field)
-+static __always_inline int evmcs_field_offset(unsigned long field,
-+					      u16 *clean_field)
- {
- 	unsigned int index = ROL16(field, 6);
- 	const struct evmcs_field *evmcs_field;
- 
--	if (unlikely(index >= nr_evmcs_1_fields)) {
--		WARN_ONCE(1, "KVM: accessing unsupported EVMCS field %lx\n",
--			  field);
-+	if (unlikely(index >= nr_evmcs_1_fields))
- 		return -ENOENT;
--	}
- 
- 	evmcs_field = &vmcs_field_to_evmcs_1[index];
- 
-+	/*
-+	 * Use offset=0 to detect holes in eVMCS. This offset belongs to
-+	 * 'revision_id' but this field has no encoding and is supposed to
-+	 * be accessed directly.
-+	 */
-+	if (unlikely(!evmcs_field->offset))
-+		return -ENOENT;
-+
- 	if (clean_field)
- 		*clean_field = evmcs_field->clean_field;
- 
- 	return evmcs_field->offset;
- }
- 
-+#if IS_ENABLED(CONFIG_HYPERV)
-+
-+static __always_inline int get_evmcs_offset(unsigned long field,
-+					    u16 *clean_field)
-+{
-+	int offset = evmcs_field_offset(field, clean_field);
-+
-+	WARN_ONCE(offset < 0, "KVM: accessing unsupported EVMCS field %lx\n",
-+		  field);
-+
-+	return offset;
-+}
-+
- static __always_inline void evmcs_write64(unsigned long field, u64 value)
- {
- 	u16 clean_field;
--- 
-2.33.1
+Cool!
 
+My fingers are used to type
+
+    git grep -w <pat1> -- $(git grep -lw <pat2> -- ...)
+
+;-)
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
