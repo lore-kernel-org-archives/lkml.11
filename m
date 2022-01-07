@@ -2,83 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D740CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC16BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 18:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240563AbiAGSEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 13:04:51 -0500
-Received: from mout.perfora.net ([74.208.4.196]:59605 "EHLO mout.perfora.net"
+        id S1348726AbiAGSEz (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 13:04:55 -0500
+Received: from mout.perfora.net ([74.208.4.197]:52227 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348765AbiAGSEl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 13:04:41 -0500
+        id S240498AbiAGSEt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 13:04:49 -0500
 Received: from localhost.localdomain ([194.191.235.54]) by mrelay.perfora.net
- (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MAftU-1nCXQi2jZA-00B19H;
- Fri, 07 Jan 2022 19:04:21 +0100
+ (mreueus004 [74.208.5.2]) with ESMTPSA (Nemesis) id 1MY6bJ-1ms0S53enN-00YRgs;
+ Fri, 07 Jan 2022 19:03:45 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Arnd Bergmann <arnd@arndb.de>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Biju Das <biju.das.jz@bp.renesas.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
+        Christoph Niedermaier <cniedermaier@dh-electronics.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Dong Aisheng <aisheng.dong@nxp.com>,
         Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Frank Rowand <frowand.list@gmail.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Jagan Teki <jagan@amarulasolutions.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Li Yang <leoyang.li@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lucas Stach <dev@lynxeye.de>, Martin KaFai Lau <kafai@fb.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        =?UTF-8?q?Oliver=20St=C3=A4bler?= <oliver.staebler@bytesatwork.ch>,
         Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 12/14] arm64: defconfig: build nuvoton nau8822 as module
-Date:   Fri,  7 Jan 2022 19:03:12 +0100
-Message-Id: <20220107180314.1816515-13-marcel@ziswiler.com>
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        Will Deacon <will@kernel.org>, Yonghong Song <yhs@fb.com>,
+        bpf@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v1 00/14] arm64: prepare and add verdin imx8m mini support
+Date:   Fri,  7 Jan 2022 19:03:00 +0100
+Message-Id: <20220107180314.1816515-1-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220107180314.1816515-1-marcel@ziswiler.com>
-References: <20220107180314.1816515-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:RglWCQL/ycUWyK+EpYkHFPQu6qaub6+P0Mf8rU0Pw4AWhXkEkM/
- uXmNufRiXy5Lyhd7XJcC46n1iVsonv8BMNAwXtfbC7zlKwzYeKk9WVNDYl6zECduLoVP7BS
- PUB821Ai7Sm1Q4hBHUdpOREj/VnQ8GxEYvp2FOpp/hR8K9KtxQANbN/rlywd22I+/UbwQpx
- 8+SAgKpTf/Xgb0R9kYkHQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vcXZeGr1upk=:O+23h08cI1MSbpJ3GwmgF6
- BtQkSO99Wa9W2EBjGTnJJF/kwMT/M3S1VNUn/idvvdg1KvdLPl2aVEnFKb0eCMEm/3EwyG0CO
- kLPb7u8+SmgPE3SZd1TeKJdDXWiRA2n//n6EWD6wxuFZqkSQK2uWe0TqJx5+M7auiBB8JnVr5
- H8gHkm6kXqnv1tdSB6JL4sBZzlXqUVOrU9nSVba9lYjS5HR+Xs9dDx/mJjMDs9xiFkcMwJ3pp
- ekPkCSdImrBrFh4dheQRPkv0OzPFbbm6ftz3AI/aSX2nNau8MalQIsz5NzcXs4A5N2qJM9d1V
- YM4XBV61y5rEc11mRuBSQbeLDAiZGhDQwj1yi2BJI5gtDCi8DAMlAw1PkcLo2CD+pqzrSAqOd
- FwJ4Tq/PxFx7MWez14sGBZ/PSv/wuVIQV0x/RNtssDDSNsCotHo8ZnsBUGj9PaMWTFql/GqA6
- fHICld6gOANSmo1FIVgf/G+wyYnoAzOWVudeJpReFQxYlITeIXLq62K66RDont/w8dlDI1O9p
- epQSpDTEqy1QXoW0K9H3miMh5LlZrubAFPKJ3tlWoDSZ5DtNDusp+GHLbI81ayGtFGtTrui1Y
- vultvU0pqKosD4m1CEii89ixG0kPFoUCdkw2t1wAW5f86yXDfgqkNRjTkUNw8q+8p+W9lUXvf
- CAGEkPbL+PmJYXgoQmDBi2nqeyv5fAbdqrk9jTw8uMfdaGT11YaWJ2jz7NfPFpf1C9mmfPdIR
- v7tSeDgxz1/av4w/
+X-Provags-ID: V03:K1:lQAYnaUngUYQ76uILRN84VPgMhmWpzCUfkc68N9mfHP4fOWz9oG
+ srl/W09VoexdO/nFLY0mzed7FqBOJPadFZqt/OIN3041PKAPxqnCQJNEY1DKDFtHBKL2YwP
+ kp+6wSJMkeNyKxfobFhY3qke5JUzQ16a2+qm2po2aK/ANj/EBn5SwC4WCCXIrCAj/8BFK10
+ 5fNu6Iv0Vj8xvzCnz0Kyg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Weh7Ak+RbTA=:K2f77fyZEc1aauUeln3Ap2
+ wfC6wi/VaRKLM0Yzjn0l2cQqtNbTEGxH9VlDPp8nIv/Z2meMs+/0HPJPm3Oeb2Eml/1ogSs1q
+ wsfwP2KGaZoakhpK7Au2Y3FvwZwMvbT8kA24JmQQ2iujn8OohNor+UeGU29Lpepd5kgUtLxLs
+ XSqlkRDd1WA1i/wdBQkTBJXH2t5PTLtYCoVb26Kk2L770t5qn+gj95bJQGA2x40ZL1C7nT0Oy
+ S1S/VyVqBMWgQIuDq44KiaeraVtwdQ8T3+69H6k2bor4nhz4N0b0mW+/Rr4bj4I6TfSL8i7HM
+ wwQ+EQzg5XU1yFDsZIiQrlhqJ7Az6uW1EpEsaNLYFSRiooCbdKDBr/dqIye8gvLBBGNYGcOa+
+ HmpSkdd8/TwJYB3W24nctWuYKGPPuNc1In0VPhgCq96sU7OjQwLIGvzYv+4RNoyq7z+vbplFV
+ Q5PKL9HZRywcMjixW21GWCDF8yaVAEiXiRj4CVnVvAF3sVJeH1KgBs41JowooF1Tg+x3yz8ru
+ XwXyfsivqO29Mn90W//02heeC1W3XfwNOqEwN2PyyRt3e3w0wLFipux7Pj4bR3BYAQkorHAVY
+ ol0NzXqkwxsJoyTNipGFB/VkxtpaZgZQr+b+7Zl3+FT3Yl14loAEp8gToBexUiSdSQ9KpWjkB
+ c5DBUdP7cy1ayjI16M8mGQIkxGDYMHE6z3DufIWfztdBgQA68LYdkhaA4mXbYen2i5Ps=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Build Nuvoton NAU8822 sound SoC driver as a module.
 
-Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
----
+Fix strange hex notation and gpio-hog example, rebuild default
+configuration, enable various relevant configuration options mainly to
+be built as modules, add toradex,verdin-imx8mm et al. to dt-bindings and
+finally add initial support for verdin imx8m mini.
 
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index fe4da2a167ff..c6140cdd461c 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -789,6 +789,7 @@ CONFIG_SND_SOC_WM8960=m
- CONFIG_SND_SOC_WM8962=m
- CONFIG_SND_SOC_WM8978=m
- CONFIG_SND_SOC_WSA881X=m
-+CONFIG_SND_SOC_NAU8822=m
- CONFIG_SND_SOC_LPASS_WSA_MACRO=m
- CONFIG_SND_SOC_LPASS_VA_MACRO=m
- CONFIG_SND_SIMPLE_CARD=m
+Marcel Ziswiler (14):
+  arm64: dts: imx8mm: fix strange hex notation
+  dt-bindings: gpio: fix gpio-hog example
+  arm64: defconfig: rebuild default configuration
+  arm64: defconfig: enable bpf/cgroup firewalling
+  arm64: defconfig: build imx-sdma as a module
+  arm64: defconfig: build r8169 as a module
+  arm64: defconfig: build ads1015 adc driver as a module
+  arm64: defconfig: build lm75 temperature sensor driver as a module
+  arm64: defconfig: build mcp251xfd can as a module
+  arm64: defconfig: build sdio mwifiex as a module
+  arm64: defconfig: build nxp bluetooth as modules
+  arm64: defconfig: build nuvoton nau8822 as module
+  dt-bindings: arm: fsl: add toradex,verdin-imx8mm et al.
+  arm64: dts: freescale: add initial support for verdin imx8m mini
+
+ .../devicetree/bindings/arm/fsl.yaml          |   21 +
+ .../devicetree/bindings/gpio/gpio.txt         |    2 +-
+ arch/arm64/boot/dts/freescale/Makefile        |    4 +
+ .../arm64/boot/dts/freescale/imx8mm-pinfunc.h |    6 +-
+ .../dts/freescale/imx8mm-verdin-dahlia.dtsi   |  143 ++
+ .../boot/dts/freescale/imx8mm-verdin-dev.dtsi |   67 +
+ .../imx8mm-verdin-nonwifi-dahlia.dts          |   18 +
+ .../freescale/imx8mm-verdin-nonwifi-dev.dts   |   18 +
+ .../dts/freescale/imx8mm-verdin-nonwifi.dtsi  |   75 +
+ .../freescale/imx8mm-verdin-wifi-dahlia.dts   |   18 +
+ .../dts/freescale/imx8mm-verdin-wifi-dev.dts  |   18 +
+ .../dts/freescale/imx8mm-verdin-wifi.dtsi     |   95 ++
+ .../boot/dts/freescale/imx8mm-verdin.dtsi     | 1277 +++++++++++++++++
+ arch/arm64/configs/defconfig                  |  148 +-
+ 14 files changed, 1820 insertions(+), 90 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-dahlia.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-dev.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dahlia.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi-dev.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-nonwifi.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dahlia.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi-dev.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin-wifi.dtsi
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
+
 -- 
 2.33.1
 
