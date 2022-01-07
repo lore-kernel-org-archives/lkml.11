@@ -2,343 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 09:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D6E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346610AbiAGJ6I (ORCPT
+        id S1346561AbiAGKCn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 04:58:08 -0500
-Received: from mailgw.kylinos.cn ([123.150.8.42]:5262 "EHLO nksmu.kylinos.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1346627AbiAGJ6F (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 04:58:05 -0500
-X-UUID: 8e3757b0c058452db7c778104a764110-20220107
-X-CPASD-INFO: 4612c612bc964f4e962476339ee023a7@fYZrUpBoX2KOg3uCg6l_n1lnYmRnYlO
-        Ce5-FYGBjjVeVhH5xTWJsXVKBfG5QZWNdYVN_eGpQYl9gZFB5i3-XblBgXoZgUZB3g3hrUpNkYQ==
-X-CPASD-FEATURE: 0.0
-X-CLOUD-ID: 4612c612bc964f4e962476339ee023a7
-X-CPASD-SUMMARY: SIP:-1,APTIP:-2.0,KEY:0.0,FROMBLOCK:1,EXT:0.0,OB:0.0,URL:-5,T
-        VAL:181.0,ESV:0.0,ECOM:-5.0,ML:0.0,FD:0.0,CUTS:477.0,IP:-2.0,MAL:0.0,ATTNUM:0
-        .0,PHF:-5.0,PHC:-5.0,SPF:4.0,EDMS:-3,IPLABEL:4480.0,FROMTO:0,AD:0,FFOB:0.0,CF
-        OB:0.0,SPC:0.0,SIG:-5,AUF:14,DUF:29772,ACD:157,DCD:259,SL:0,AG:0,CFC:0.199,CF
-        SR:0.184,UAT:0,RAF:0,VERSION:2.3.4
-X-CPASD-ID: 8e3757b0c058452db7c778104a764110-20220107
-X-CPASD-BLOCK: 1000
-X-CPASD-STAGE: 1, 1
-X-UUID: 8e3757b0c058452db7c778104a764110-20220107
-X-User: lizhenneng@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.169)] by nksmu.kylinos.cn
-        (envelope-from <lizhenneng@kylinos.cn>)
-        (Generic MTA)
-        with ESMTP id 724892482; Fri, 07 Jan 2022 18:11:05 +0800
-From:   Zhenneng Li <lizhenneng@kylinos.cn>
-To:     Alex Deucher <alexander.deucher@amd.com>
-Cc:     =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Zhenneng Li <lizhenneng@kylinos.cn>
-Subject: [PATCH 1/2] drm/amdgpu: fix compile error for dcn on arm64
-Date:   Fri,  7 Jan 2022 17:57:31 +0800
-Message-Id: <20220107095732.982194-2-lizhenneng@kylinos.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220107095732.982194-1-lizhenneng@kylinos.cn>
-References: <20220107095732.982194-1-lizhenneng@kylinos.cn>
+        Fri, 7 Jan 2022 05:02:43 -0500
+Received: from cable.insite.cz ([84.242.75.189]:57899 "EHLO cable.insite.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236856AbiAGKCn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 05:02:43 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by cable.insite.cz (Postfix) with ESMTP id 11058A1A3D402;
+        Fri,  7 Jan 2022 11:02:41 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=ivitera.com; s=mail;
+        t=1641549761; bh=tizAdbtBw+SOGeryllpWwxHMqLzcos8YC+NWd72pqU0=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=X597OViHwuZn4OHb1y4j/UWAjISx/cVC+42lm3nKCMGoCPjOGAkF097CB7bDb+gd8
+         4xN7y2cWgBE4mpzL8EISLKaULEEuHBeRPzQOuGp3AL/mjrC1mO7vbtPs2xLRevfC8v
+         RW590hm9Bf1ogEcrt9vIztFyNe72atmagKOs/I+g=
+Received: from cable.insite.cz ([84.242.75.189])
+        by localhost (server.insite.cz [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CsquOWCR0EEf; Fri,  7 Jan 2022 11:02:35 +0100 (CET)
+Received: from [192.168.105.22] (dustin.pilsfree.net [81.201.58.138])
+        (Authenticated sender: pavel)
+        by cable.insite.cz (Postfix) with ESMTPSA id 6BBE1A1A3D401;
+        Fri,  7 Jan 2022 11:02:35 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=ivitera.com; s=mail;
+        t=1641549755; bh=tizAdbtBw+SOGeryllpWwxHMqLzcos8YC+NWd72pqU0=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=ksvbRsFtP9bsZKSlZjXDwa2VnfVV6aQvdsR7BKJAaXKoaHAO0hQ0A2I1kpENibHhr
+         2czlmOz91aC9DeSQcG0D3dUI0RtIIcAhBsToBnhzNCo3wh/zh/6se8GyoQdRBppTBm
+         m2OE6ke9Y0JjEau1xAzb/ePYleLiAc9zZAVYslLs=
+Subject: Re: linux-next: build warning after merge of the usb tree
+To:     Greg KH <greg@kroah.com>, Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220107024815.15dc7e04@canb.auug.org.au>
+ <YdcUd19eAmI1MwNT@kroah.com>
+From:   Pavel Hofman <pavel.hofman@ivitera.com>
+Message-ID: <8e3fe4fb-335e-58f5-84f4-3db224525fd0@ivitera.com>
+Date:   Fri, 7 Jan 2022 11:02:34 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdcUd19eAmI1MwNT@kroah.com>
+Content-Type: text/plain; charset=iso-8859-2; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For adapting radeon rx6600 xt on arm64,
-I enabled dcn on arm64 platform, compiler
-report not compatible with -mgeneral-regs-only
-and -mhard-float when compiling some source file.
 
-Signed-off-by: Zhenneng Li <lizhenneng@kylinos.cn>
----
- drivers/gpu/drm/amd/display/dc/calcs/Makefile |  6 +++++
- .../gpu/drm/amd/display/dc/clk_mgr/Makefile   |  7 ++++++
- drivers/gpu/drm/amd/display/dc/dcn10/Makefile |  4 +++
- drivers/gpu/drm/amd/display/dc/dcn20/Makefile |  4 +++
- .../gpu/drm/amd/display/dc/dcn201/Makefile    |  6 +++++
- drivers/gpu/drm/amd/display/dc/dcn21/Makefile |  4 +++
- drivers/gpu/drm/amd/display/dc/dcn30/Makefile |  6 +++++
- .../gpu/drm/amd/display/dc/dcn302/Makefile    |  6 +++++
- .../gpu/drm/amd/display/dc/dcn303/Makefile    |  6 +++++
- drivers/gpu/drm/amd/display/dc/dcn31/Makefile |  6 +++++
- drivers/gpu/drm/amd/display/dc/dml/Makefile   | 25 +++++++++++++++++++
- drivers/gpu/drm/amd/display/dc/dsc/Makefile   |  7 ++++++
- 12 files changed, 87 insertions(+)
+Dne 06. 01. 22 v 17:10 Greg KH napsal(a):
+> On Fri, Jan 07, 2022 at 02:48:15AM +1100, Stephen Rothwell wrote:
+>> Hi all,
+>>
+>> After merging the usb tree, today's linux-next build (htmldocs) produced
+>> this warning:
+>>
+>> Documentation/ABI/testing/configfs-usb-gadget-uac2:2: WARNIN
+>> G: Malformed table.
+>> Text in column margin in table line 27.
+>>
+>> =====================   =======================================
+>> c_chmask                capture channel mask
+>> c_srate                 capture sampling rate
+>> c_ssize                 capture sample size (bytes)
+>> c_sync                  capture synchronization type
+>>                          (async/adaptive)
+>> c_mute_present          capture mute control enable
+>> c_volume_present        capture volume control enable
+>> c_volume_min            capture volume control min value
+>>                          (in 1/256 dB)
+>> c_volume_max            capture volume control max value
+>>                          (in 1/256 dB)
+>> c_volume_res            capture volume control resolution
+>>                          (in 1/256 dB)
+>> fb_max                  maximum extra bandwidth in async mode
+>> p_chmask                playback channel mask
+>> p_srate                 playback sampling rate
+>> p_ssize                 playback sample size (bytes)
+>> p_mute_present          playback mute control enable
+>> p_volume_present        playback volume control enable
+>> _volume_present        playback volume control enable
+>> p_volume_min            playback volume control min value
+>>                          (in 1/256 dB)
+>> p_volume_max            playback volume control max value
+>>                          (in 1/256 dB)
+>> p_volume_res            playback volume control resolution
+>>                          (in 1/256 dB)
+>> req_number      the number of pre-allocated requests for both capture
+>>                          and playback
+>> =====================   =======================================
+>>
+>> Introduced by commit
+>>
+>>    e3088ebc1b97 ("docs: ABI: added missing num_requests param to UAC2")
+>>
+> 
+> Pavel, can you send a follow-on patch to fix this up?
+> 
 
-diff --git a/drivers/gpu/drm/amd/display/dc/calcs/Makefile b/drivers/gpu/drm/amd/display/dc/calcs/Makefile
-index f3c00f479e1c..1cb9925d9949 100644
---- a/drivers/gpu/drm/amd/display/dc/calcs/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/calcs/Makefile
-@@ -57,6 +57,12 @@ CFLAGS_REMOVE_$(AMDDALPATH)/dc/calcs/dcn_calcs.o := $(calcs_rcflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/calcs/dcn_calc_auto.o := $(calcs_rcflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/calcs/dcn_calc_math.o := $(calcs_rcflags)
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/calcs/dcn_calcs.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/calcs/dcn_calc_auto.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/calcs/dcn_calc_math.o += -mgeneral-regs-only
-+endif
-+
- BW_CALCS = dce_calcs.o bw_fixed.o custom_float.o
- 
- ifdef CONFIG_DRM_AMD_DC_DCN
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile b/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
-index 6bd73e49a6d2..6779c236ea30 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile
-@@ -145,6 +145,13 @@ AMD_DAL_CLK_MGR_DCN301 = $(addprefix $(AMDDALPATH)/dc/clk_mgr/dcn301/,$(CLK_MGR_
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_CLK_MGR_DCN301)
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/clk_mgr/dcn21/rn_clk_mgr.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/clk_mgr/dcn301/dcn30_clk_mgr.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/clk_mgr/dcn301/vg_clk_mgr.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/clk_mgr/dcn30/dcn30_clk_mgr.o += -mgeneral-regs-only
-+endif
-+
- ###############################################################################
- # DCN31
- ###############################################################################
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/Makefile b/drivers/gpu/drm/amd/display/dc/dcn10/Makefile
-index 62ad1a11bff9..5dc61ea5070c 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/Makefile
-@@ -29,6 +29,10 @@ DCN10 = dcn10_init.o dcn10_resource.o dcn10_ipp.o dcn10_hw_sequencer.o \
- 		dcn10_dpp_dscl.o dcn10_dpp_cm.o dcn10_cm_common.o \
- 		dcn10_hubbub.o dcn10_stream_encoder.o dcn10_link_encoder.o
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn10/dcn10_resource.o += -mgeneral-regs-only
-+endif
-+
- AMD_DAL_DCN10 = $(addprefix $(AMDDALPATH)/dc/dcn10/,$(DCN10))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_DCN10)
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/Makefile b/drivers/gpu/drm/amd/display/dc/dcn20/Makefile
-index 5fcaf78334ff..88c35a24e0cf 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn20/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn20/Makefile
-@@ -17,6 +17,10 @@ ifdef CONFIG_PPC64
- CFLAGS_$(AMDDALPATH)/dc/dcn20/dcn20_resource.o := -mhard-float -maltivec
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn20/dcn20_resource.o += -mgeneral-regs-only
-+endif
-+
- ifdef CONFIG_CC_IS_GCC
- ifeq ($(call cc-ifversion, -lt, 0701, y), y)
- IS_OLD_GCC = 1
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn201/Makefile b/drivers/gpu/drm/amd/display/dc/dcn201/Makefile
-index f68038ceb1b1..2124414d629f 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn201/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn201/Makefile
-@@ -14,12 +14,18 @@ ifdef CONFIG_PPC64
- CFLAGS_$(AMDDALPATH)/dc/dcn201/dcn201_resource.o := -mhard-float -maltivec
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn201/dcn201_resource.o += -mgeneral-regs-only
-+endif
-+
- ifdef CONFIG_CC_IS_GCC
- ifeq ($(call cc-ifversion, -lt, 0701, y), y)
- IS_OLD_GCC = 1
- endif
-+ifndef CONFIG_ARM64
- CFLAGS_$(AMDDALPATH)/dc/dcn201/dcn201_resource.o += -mhard-float
- endif
-+endif
- 
- ifdef CONFIG_X86
- ifdef IS_OLD_GCC
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn21/Makefile b/drivers/gpu/drm/amd/display/dc/dcn21/Makefile
-index bb8c95141082..df8ed3401b7f 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn21/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn21/Makefile
-@@ -30,6 +30,10 @@ CFLAGS_$(AMDDALPATH)/dc/dcn21/dcn21_resource.o += -msse2
- endif
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn21/dcn21_resource.o += -mgeneral-regs-only
-+endif
-+
- AMD_DAL_DCN21 = $(addprefix $(AMDDALPATH)/dc/dcn21/,$(DCN21))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_DCN21)
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/Makefile b/drivers/gpu/drm/amd/display/dc/dcn30/Makefile
-index dfd77b3cc84d..e52d10626dcc 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn30/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/Makefile
-@@ -45,9 +45,11 @@ ifdef CONFIG_CC_IS_GCC
- ifeq ($(call cc-ifversion, -lt, 0701, y), y)
- IS_OLD_GCC = 1
- endif
-+ifndef CONFIG_ARM64
- CFLAGS_$(AMDDALPATH)/dc/dcn30/dcn30_resource.o += -mhard-float
- CFLAGS_$(AMDDALPATH)/dc/dcn30/dcn30_optc.o += -mhard-float
- endif
-+endif
- 
- ifdef CONFIG_X86
- ifdef IS_OLD_GCC
-@@ -62,6 +64,10 @@ CFLAGS_$(AMDDALPATH)/dc/dcn30/dcn30_optc.o += -msse2
- endif
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn30/dcn30_resource.o += -mgeneral-regs-only
-+endif
-+
- AMD_DAL_DCN30 = $(addprefix $(AMDDALPATH)/dc/dcn30/,$(DCN30))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_DCN30)
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn302/Makefile b/drivers/gpu/drm/amd/display/dc/dcn302/Makefile
-index 101620a8867a..ac8faaf24e21 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn302/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn302/Makefile
-@@ -24,8 +24,10 @@ ifdef CONFIG_CC_IS_GCC
- ifeq ($(call cc-ifversion, -lt, 0701, y), y)
- IS_OLD_GCC = 1
- endif
-+ifndef CONFIG_ARM64
- CFLAGS_$(AMDDALPATH)/dc/dcn302/dcn302_resource.o += -mhard-float
- endif
-+endif
- 
- ifdef CONFIG_X86
- ifdef IS_OLD_GCC
-@@ -38,6 +40,10 @@ CFLAGS_$(AMDDALPATH)/dc/dcn302/dcn302_resource.o += -msse2
- endif
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn302/dcn302_resource.o += -mgeneral-regs-only
-+endif
-+
- AMD_DAL_DCN3_02 = $(addprefix $(AMDDALPATH)/dc/dcn302/,$(DCN3_02))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_DCN3_02)
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn303/Makefile b/drivers/gpu/drm/amd/display/dc/dcn303/Makefile
-index 6f7a1f2b49f0..2fb3a1f88f1e 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn303/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn303/Makefile
-@@ -20,8 +20,10 @@ ifdef CONFIG_CC_IS_GCC
- ifeq ($(call cc-ifversion, -lt, 0701, y), y)
- IS_OLD_GCC = 1
- endif
-+ifndef CONFIG_ARM64
- CFLAGS_$(AMDDALPATH)/dc/dcn303/dcn303_resource.o += -mhard-float
- endif
-+endif
- 
- ifdef CONFIG_X86
- ifdef IS_OLD_GCC
-@@ -34,6 +36,10 @@ CFLAGS_$(AMDDALPATH)/dc/dcn303/dcn303_resource.o += -msse2
- endif
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn303/dcn303_resource.o += -mgeneral-regs-only
-+endif
-+
- AMD_DAL_DCN3_03 = $(addprefix $(AMDDALPATH)/dc/dcn303/,$(DCN3_03))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_DCN3_03)
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
-index d20e3b8ccc30..c19669fe5996 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
-@@ -27,8 +27,10 @@ ifdef CONFIG_CC_IS_GCC
- ifeq ($(call cc-ifversion, -lt, 0701, y), y)
- IS_OLD_GCC = 1
- endif
-+ifndef CONFIG_ARM64
- CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o += -mhard-float
- endif
-+endif
- 
- ifdef CONFIG_X86
- ifdef IS_OLD_GCC
-@@ -41,6 +43,10 @@ CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o += -msse2
- endif
- endif
- 
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o += -mgeneral-regs-only
-+endif
-+
- AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
- 
- AMD_DISPLAY_FILES += $(AMD_DAL_DCN31)
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/Makefile b/drivers/gpu/drm/amd/display/dc/dml/Makefile
-index eee6672bd32d..dfce2af4f3b7 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dml/Makefile
-@@ -94,6 +94,31 @@ CFLAGS_$(AMDDALPATH)/dc/dml/display_rq_dlg_helpers.o := $(dml_ccflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dml1_display_rq_dlg_calc.o := $(dml_rcflags)
- CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/display_rq_dlg_helpers.o := $(dml_rcflags)
- 
-+ifdef CONFIG_ARM64
-+ifdef CONFIG_DRM_AMD_DC_DCN
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn20/display_mode_vba_20.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn20/display_rq_dlg_calc_20.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn20/display_mode_vba_20v2.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn20/display_rq_dlg_calc_20v2.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn20/dcn20_fpu.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn21/display_mode_vba_21.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn21/display_rq_dlg_calc_21.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn30/display_mode_vga_30.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn30/display_mode_vga_30.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn30/display_mode_vba_30.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn30/display_rq_dlg_calc_30.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn31/display_mode_vba_31.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn31/display_rq_dlg_calc_31.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dcn301/dcn301_fpu.o += -mgeneral-regs-only
-+endif
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/display_mode_lib.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/display_mode_vba.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dsc/rc_calc_fpu.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dml1_display_rq_dlg_calc.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/display_rq_dlg_helpers.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dml/dml_common_defs.o += -mgeneral-regs-only
-+endif
-+
- DML = display_mode_lib.o display_rq_dlg_helpers.o dml1_display_rq_dlg_calc.o \
- 
- ifdef CONFIG_DRM_AMD_DC_DCN
-diff --git a/drivers/gpu/drm/amd/display/dc/dsc/Makefile b/drivers/gpu/drm/amd/display/dc/dsc/Makefile
-index a2537229ee88..b783523ee5c9 100644
---- a/drivers/gpu/drm/amd/display/dc/dsc/Makefile
-+++ b/drivers/gpu/drm/amd/display/dc/dsc/Makefile
-@@ -1,6 +1,13 @@
- # SPDX-License-Identifier: MIT
- #
- # Makefile for the 'dsc' sub-component of DAL.
-+
-+ifdef CONFIG_ARM64
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dsc/rc_calc.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dsc/rc_calc_dpi.o += -mgeneral-regs-only
-+CFLAGS_REMOVE_$(AMDDALPATH)/dc/dsc/dc_dsc.o += -mgeneral-regs-only
-+endif
-+
- DSC = dc_dsc.o rc_calc.o rc_calc_dpi.o
- 
- AMD_DAL_DSC = $(addprefix $(AMDDALPATH)/dc/dsc/,$(DSC))
--- 
-2.25.1
+Greg, sorry for the inconvenience, of course I will do so. Please can 
+you point me to some doc describing the correct ABI format? There are 
+varying numbers of tabs in those files.
 
+Thanks a lot,
 
-No virus found
-		Checked by Hillstone Network AntiVirus
+Pavel.
