@@ -2,98 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1533DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62DCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344554AbiAGH0o (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 02:26:44 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:36908
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344321AbiAGH0e (ORCPT
+        id S235372AbiAGHbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 02:31:17 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:52080 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234589AbiAGHbP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 02:26:34 -0500
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 2FF9F3F225
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 07:26:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641540383;
-        bh=M9bA08m/4+qmYorXwlFuqKIOOS7D4thRY9R5eRYtFbs=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=CUnUfjCWP4RYcEeNH73ExObzqwUnzE2qPp6eHblTgAlOBAcJ5FWEKJgWGkeBsaR/C
-         4tAJAydfUxdsgq/hHPdFHaBPnyexgrgjdM3pMfXFOVHxcV33AbBdzgUW/Sz06lzwI4
-         3h1McXYSgzgD+KoqT9zHSU2gXBPMi9qxJuJ6WBv49+siGp8vuFqPyGJNikXRs4wfC7
-         dr/24VWM5VhFdcD5ZX/vcqPkpfaCksIwT63I3NofTbKAEiwbT0k579IlR2XJR9bkQb
-         Vze83ueJ4zf16bFgYdseekRB6C9XxX4mqhA1gEG8vIFTDCrt+Ey3sDrpZnzd2SM9zF
-         Dn83UFqhdVLSQ==
-Received: by mail-ed1-f71.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so3950805edb.4
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 23:26:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M9bA08m/4+qmYorXwlFuqKIOOS7D4thRY9R5eRYtFbs=;
-        b=H+Kvqvn36Dm+McL+EV9MNvXsB3lxVX+HdVHe+zF/r/5+GOVtZu5eAkcz7NYMBUVmdM
-         u7CoeJc/PQHleqPQUw5GyDf266NnSffPiPrkO0akpXuvRnTuEADZXWdhwe/82/SrSKdB
-         5xIMI5ke4/TEmsC5jPjc0WlMFIWUwmdJkR4Jk539EPkJZmRLFJ6qpZ/1GrNcWvL2Rrz2
-         4UDZV8AIH5dihcAUKk1vEuIp6/MZ6TWJN4JLQ8R3Pw70k2pHlB37yDIn4a9b6AWe5+nJ
-         6GCJXFDC9CRdoY2dJLqOH1HRwOTmaDJUVJWl3aLTgz2ByFYEkCExoL2wEI0q1EdvHBx8
-         zREw==
-X-Gm-Message-State: AOAM532BqQFxaKyNK7+wvtcQEwa7L2UhQJRV8M+bPW0gEJ0vViuv+46s
-        p9fgeGWsmKZJHddHFbwvKghQWJgvfkO6PhTFNnGNnGJ5pw6KiW9pNB8pMh9TFNeFHjVXwPT24xT
-        X/wb9PpOWyIKs4QT7GftdbYcWITlIRJBR+EH+YfGYbA==
-X-Received: by 2002:a17:906:3e44:: with SMTP id t4mr1013018eji.233.1641540382848;
-        Thu, 06 Jan 2022 23:26:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwb017p+Oc5AqO2GTx8LN7DviB/du5sQ9u+BbDoumqR10b5Wls3pJvkYlFJVzjLDs3uNuoJQw==
-X-Received: by 2002:a17:906:3e44:: with SMTP id t4mr1013010eji.233.1641540382728;
-        Thu, 06 Jan 2022 23:26:22 -0800 (PST)
-Received: from [192.168.1.126] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id f15sm1705500edq.33.2022.01.06.23.26.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 06 Jan 2022 23:26:22 -0800 (PST)
-Message-ID: <950a0cb6-be94-dc60-9878-0c4dd8581f1f@canonical.com>
-Date:   Fri, 7 Jan 2022 08:26:21 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH] dt-bindings: power: maxim,max17040: Fix incorrect type
- for 'maxim,rcomp'
-Content-Language: en-US
-To:     Rob Herring <robh@kernel.org>,
-        Iskren Chernev <iskren.chernev@gmail.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matheus Castello <matheus@castello.eng.br>,
-        Sebastian Reichel <sre@kernel.org>
-Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220107030433.2381616-1-robh@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220107030433.2381616-1-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+        Fri, 7 Jan 2022 02:31:15 -0500
+Received: from smtpclient.apple (p4fefca45.dip0.t-ipconnect.de [79.239.202.69])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 66A58CECE8;
+        Fri,  7 Jan 2022 08:31:14 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH v2] Bluetooth: btusb: Add support for Foxconn QCA 0xe0d0
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220107035909.14912-1-aaron.ma@canonical.com>
+Date:   Fri, 7 Jan 2022 08:31:14 +0100
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>
 Content-Transfer-Encoding: 7bit
+Message-Id: <67999A28-9971-4878-9BF3-EE16F8841B13@holtmann.org>
+References: <20211227102950.17968-1-aaron.ma@canonical.com>
+ <20220107035909.14912-1-aaron.ma@canonical.com>
+To:     Aaron Ma <aaron.ma@canonical.com>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/01/2022 04:04, Rob Herring wrote:
-> The 'maxim,rcomp' is defined as a uint32, but the description and users all
-> say it is uint8-array with 1 or 2 elements. The tools missed checking this
-> case.
+Hi Aaron,
+
+> Add an ID of Qualcomm Bluetooth SoC WCN6855.
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> T:  Bus=05 Lev=01 Prnt=01 Port=03 Cnt=02 Dev#=  4 Spd=12   MxCh= 0
+> D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+> P:  Vendor=0489 ProdID=e0d0 Rev= 0.01
+> C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
+> I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+> E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+> E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+> I:  If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+> I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+> I:* If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+> I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+> I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+> I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+> I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+> I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+> E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+> E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+> 
+> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
 > ---
->  .../devicetree/bindings/power/supply/maxim,max17040.yaml      | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+> V1 -> V2: rebase on bluetooth-next tree.
 > 
+> drivers/bluetooth/btusb.c | 3 +++
+> 1 file changed, 3 insertions(+)
 
+patch has been applied to bluetooth-next tree.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Regards
 
+Marcel
 
-Best regards,
-Krzysztof
