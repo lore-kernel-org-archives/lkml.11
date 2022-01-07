@@ -2,78 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1CB0C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 22:13:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A631C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 22:14:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230491AbiAGWN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 17:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        id S230504AbiAGWOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 17:14:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230442AbiAGWNz (ORCPT
+        with ESMTP id S230393AbiAGWOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 17:13:55 -0500
+        Fri, 7 Jan 2022 17:14:53 -0500
 Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CB9C061574;
-        Fri,  7 Jan 2022 14:13:54 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id b13so27213186edd.8;
-        Fri, 07 Jan 2022 14:13:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DC6C061574;
+        Fri,  7 Jan 2022 14:14:53 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id j21so27210142edt.9;
+        Fri, 07 Jan 2022 14:14:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gJ24AjqJEAwaxu2m+ogOnLjEEMZgY/uK7bliZmkm1W0=;
-        b=pmfhn4Ait4Dmyk1stZQDqFcMgsQ7HVYANrO8zy8yZ6ruFFTt1B8f8TWM8Mftqq2I9u
-         d01Nz3x1iBns5KqiqTXxV+EB2/g+ThONesdvtOinq/FQkic/6JK1GgYq2n4jAFoM2UAb
-         o2j5f8lQat0xJfrCVttBdRPGfqpNNxfW9QdCdj59kAi6BWWGfIEsV7HPHV8D1F9mod0q
-         bTbwtACgMjvSWO1mnS7ZoERhExkQ0V0BCHCIHajP8IkoBVAZdnKTBLkrhYUXsZ/fOXjh
-         M6Dt9UH5ZD20IxdxdXHm68Z9vmVsSa/Hy7OXXjJNIis9hduCnB8GiCMniJ+r8bv3QYlq
-         W4LA==
+        bh=SySDfXOcDDxrxdLlLmdKDsi07wKtcEMMXGppknRGrbk=;
+        b=QXF3IO5zOQty2LsLhkAjI+1Ed7n5kUIhbHd4d9nM8uYhasFHC/ZKIivnMX4GzrXxcy
+         Bp5VHzAbuRdgKl85GD2iC0lv5n9gabLxH4zJpJPaUbNQQ8r31BGGB3fn8cLPUzWAmmNu
+         FzCfShoplLGN01S01f0Aw8ayN1UifhovWLOK1EXS86yt9S2x1QLnYCqRKDzkR287aBLp
+         Z5tue5rIyi3RKW9YDDsaTj5CYVE5KS4xznc4oO26Pau35D48nQ7IdcSlrxB7HmauUd4G
+         7TFiLFioRbQmLQnYNWhnhG8tzA3MwdRnBujwDFNeidnBSLGf6rMln8BQd6y8A31zIClG
+         Tcuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gJ24AjqJEAwaxu2m+ogOnLjEEMZgY/uK7bliZmkm1W0=;
-        b=VLTx3A6yzL3IVjyFGB35vOYQM28lPN9r4h0YGTLjkzlWFbIAhXCZcsTsif9kMHvlZJ
-         CYEhXBMLGUAfkmPcOdEhtTsuP9U76va619B6zlqy8399fEPjCpaFJ0me960vOwUN66rU
-         nmBMF3mTcyB8SZTiBCheLQbZxttynEYgCNhVzc3B8Ez9rhBXwQJm2dEzGLqICwNtR8Pq
-         X27UcfhYECTa1EuG0mtRLx+k3RLJT/A1D7RmGPpGw0UHjLm+qtxkbQRN63T6/BlnHNJW
-         LJRtq4ZjtEE4F+IeNdD5uvOLGFx46fbAD9vFByDmUfNUL47TF7qMogoZpYY+bXY5wJNa
-         taRg==
-X-Gm-Message-State: AOAM5319fD7jeEwUIkjUPm4kPpzTyUJz+R/HG4CymbAI9678XmkMj9Mv
-        pnpvDmHzDplVh3LR39edX2wrADd3u9M7dcJl2vc=
-X-Google-Smtp-Source: ABdhPJxlZE8U5M+HBW8lH23GmrD0LQX5dipKcXifrGt4WjxlE7g7Qa0sbMTi3mw8ETsRuAl8A1geLSV6v9skx2rptuA=
-X-Received: by 2002:a17:906:519b:: with SMTP id y27mr5464637ejk.649.1641593633484;
- Fri, 07 Jan 2022 14:13:53 -0800 (PST)
+        bh=SySDfXOcDDxrxdLlLmdKDsi07wKtcEMMXGppknRGrbk=;
+        b=kz0872F+ZX+bwx8p+CBh7YldD9Zs/msZbmqVT5kAI/HXscYYyf47gWvlcjrA3EQp6r
+         +EWIpbxy6Ftyfm01UUmlFFG2od38Fz4agIaBvY0jO6zs79OcFGhXa5JN+dnPUc7v4Dpi
+         QOu7R4Y/bxUt3F+1SoJK7Q5wOoQegzovQngvQM5k6g2JOpTdxHwzYdTws0Q4eNhUQ4Ff
+         GgWuY7GAJmeX/bNTvzOHSTp/v/H90bxQ7eBmRy6TyUvkoW8Uhw9xDK6FD3TyIqo1Cotv
+         xO8dD1hBzzcrHgYqLF8JUmCgYqMdKl48OeTMPZBGoS9/56MeVZmwrFw20kHeDS+TFi2m
+         cOnA==
+X-Gm-Message-State: AOAM530XdV/hiXdjfOelHpUDVNUT/ihLfCOGeFuwMuKWi4jCP9OUmz9R
+        b8mUBVKP/N5RpcE7Jth1gWg9gaw3zi3sO9j/KNo=
+X-Google-Smtp-Source: ABdhPJwAVQUd7nG/enEXRg1iURonC7ksnQzp9JOzzkBuRvOF7MWlM/7EzXIRmvQCrE81lA1p/W6+VAkq/sYpAGsCL3E=
+X-Received: by 2002:a17:906:b89a:: with SMTP id hb26mr9338135ejb.147.1641593691749;
+ Fri, 07 Jan 2022 14:14:51 -0800 (PST)
 MIME-Version: 1.0
-References: <20220107150512.614423-1-narmstrong@baylibre.com> <20220107150512.614423-2-narmstrong@baylibre.com>
-In-Reply-To: <20220107150512.614423-2-narmstrong@baylibre.com>
+References: <20220107145515.613009-1-narmstrong@baylibre.com> <20220107145515.613009-3-narmstrong@baylibre.com>
+In-Reply-To: <20220107145515.613009-3-narmstrong@baylibre.com>
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Fri, 7 Jan 2022 23:13:42 +0100
-Message-ID: <CAFBinCDRx6VaaAubr6VRLnX=G4Ez8cGg-=6e-9GWrH8FwwBs-g@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: phy: add Amlogic G12A Analog MIPI
- D-PHY bindings
+Date:   Fri, 7 Jan 2022 23:14:41 +0100
+Message-ID: <CAFBinCArnZ8XtaBtWa0smmPTc-sHvAdD7_-3iTywxUJ08-uyMw@mail.gmail.com>
+Subject: Re: [PATCH 2/6] dt-bindings: display: meson-vpu: add third DPI output port
 To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     kishon@ti.com, vkoul@kernel.org, devicetree@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-amlogic@lists.infradead.org,
+Cc:     dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
-
-On Fri, Jan 7, 2022 at 4:05 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
-[...]
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#phy-cells"
-I also found a "MIPI DSI PHY clock" and "MIPI DSI PHY interrupt" in
-the datasheet.
-I'm no expert on this and I'm just asking in case you have missed one of these:
-Can you confirm that these belong to some other IP?
-
-
-Best regards,
-Martin
+On Fri, Jan 7, 2022 at 3:56 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+>
+> Add third port corresponding to the ENCL DPI encoder used to connect
+> to DSI or LVDS transceivers.
+>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
