@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D6FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 416B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231970AbiAGXx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 18:53:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59088 "EHLO
+        id S232131AbiAGXyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 18:54:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231974AbiAGXxp (ORCPT
+        with ESMTP id S231959AbiAGXxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 18:53:45 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDCAC061201
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:53:45 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so8275589pjp.0
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:53:45 -0800 (PST)
+        Fri, 7 Jan 2022 18:53:43 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AE7DC06175C
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 15:53:40 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id v11so6537170pfu.2
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 15:53:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vnBEku22nFoYufV2aPCfVzGav/5qYcDVrSLes2E+zqw=;
-        b=Ewu1LJLRf0snQq2dRiaVC6pWWngphFRDTOpkQ8Bi+K49SuQz9c3wIFTwLMNaGYBomH
-         yNxIWv1Kx0I0nutVfCLkOhxETOv6wOcC10qsfblc4uzqdjWaEC9/Yqp38vSsDee7t9aA
-         ilbHQYrt/zmhGPyyze+kyxSVuFvYHNn0WUafk=
+        bh=BwZYnZ40KbeJ7AlpMWe+FaFD9GCv+xkqOCr7TXF+b3A=;
+        b=cq+rL39e2SuXbNV4R/NBEY/tbIQC2k7A03THZsAhtXI3Wkr8/JpilReV4Fghu8TgMh
+         1CPQXkneJkFGvUaCOvkxRZDzc9HZiFk6Z/hla3uQPk99FB914B4StlrYZfVj5SfSKuPS
+         OYB+Ql1tjc1P7xattSY46D3sLwnAwQA49pMeA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vnBEku22nFoYufV2aPCfVzGav/5qYcDVrSLes2E+zqw=;
-        b=adve6oiYlLz/AuVo2+3u8QgFrHsWejDRcK3FAjFWNJrrEdxEs8ZZszYFlcUc1dY31Y
-         YIpx/BClHQ4E6tyMkovhOEILDhehkNsjgQZk/4F6oNLEp06pM10wiktkxFKzVNi+DvCt
-         KmxjM9Eh7AjiMZwOskDThmC7kCpoQxbXFl0+E+0mKmDGScM3M9wiXpUgq2ljQ/+Fw4F0
-         UxO+i2ETgarZm3IoLY8tqWUVxd5meMJcPrWpknsBdgQ28tWMrxI3UIVC+WXjXDqzAlK2
-         ZM7Eih6ymYOYw69qCg4RTFyk5JkAZq3WIUe+WQXJ94nOtioDrTP7iR81yE01besKS3eM
-         vhWw==
-X-Gm-Message-State: AOAM532R8c6/ZhmxNIQkqJz6uXyr4zZNM//H3Vb7bV+nit6nkrkifTML
-        zqDKWop6pbK835tlapVzilUUOg==
-X-Google-Smtp-Source: ABdhPJxSHaaq8+P1tjYNngGlMiqekaJ7/jtLTJDL6m/k3iyhZZNI45qDgrBzPEQ7Lddq74fCrB4/Lw==
-X-Received: by 2002:a17:90b:4c06:: with SMTP id na6mr17972774pjb.236.1641599624512;
-        Fri, 07 Jan 2022 15:53:44 -0800 (PST)
+        bh=BwZYnZ40KbeJ7AlpMWe+FaFD9GCv+xkqOCr7TXF+b3A=;
+        b=J4ejLtW05MNBVeXIxjlRuZeGlgCz95abmjRqO1COu3Dcl9D+0PutDDZz+ocoflhYV+
+         ikvb4Stw3l5MyfUvqoJ+JjjWRxb9lQxKKBfUKSLsMXUkQ3u9oHqtehyG3ZSib/ZQHSZh
+         /nYcBep2X1l5z6O/+cDj7XrZiboX70YfWuemInR/HCrBI90mQFdwxefe/W/0EgS6+9mW
+         8dVkjIbHI9SD1xTUnn0k3A6uR5hhdLL6dArvOH7obO3MSTFJDXlBF/V4FCDSTlhdzKbs
+         N7M6V9Qju6GFANG5NOgU5SlpenURvuoLt6UzYiVeKVI/8OzTFfaSYjALlK5R8rEgapLS
+         Emlg==
+X-Gm-Message-State: AOAM531R08q6KQPZG+k79gD8w5Ut7xHlTpUeTUGD6YszWTmpI28gCKRa
+        K+pCZWfwh6qpqKmEnTN2jky7nw==
+X-Google-Smtp-Source: ABdhPJwXb0FrFN8WR31ai2WKeI7DfmoehFLv8X/wr7YuQYumhseqi7xnA6sbbMiM/sFeYOdpRZa9iA==
+X-Received: by 2002:a63:914c:: with SMTP id l73mr3103999pge.471.1641599620106;
+        Fri, 07 Jan 2022 15:53:40 -0800 (PST)
 Received: from localhost ([2620:15c:202:201:db:1c60:693f:c24e])
-        by smtp.gmail.com with UTF8SMTPSA id q19sm48610pfk.153.2022.01.07.15.53.43
+        by smtp.gmail.com with UTF8SMTPSA id p16sm55372pfh.88.2022.01.07.15.53.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 07 Jan 2022 15:53:44 -0800 (PST)
+        Fri, 07 Jan 2022 15:53:39 -0800 (PST)
 From:   Brian Norris <briannorris@chromium.org>
 To:     MyungJoo Ham <myungjoo.ham@samsung.com>,
         Kyungmin Park <kyungmin.park@samsung.com>,
@@ -57,9 +57,9 @@ Cc:     Heiko Stuebner <heiko@sntech.de>,
         Derek Basehore <dbasehore@chromium.org>,
         linux-kernel@vger.kernel.org,
         Brian Norris <briannorris@chromium.org>
-Subject: [PATCH 07/10] PM / devfreq: rk3399_dmc: Use bitfield macro definitions for ODT_PD
-Date:   Fri,  7 Jan 2022 15:53:17 -0800
-Message-Id: <20220107155215.7.I0f36da588afd01d0dc9ce5866240efa34bd91e21@changeid>
+Subject: [PATCH 05/10] PM / devfreq: rk3399_dmc: Drop undocumented ondemand DT props
+Date:   Fri,  7 Jan 2022 15:53:15 -0800
+Message-Id: <20220107155215.5.I4bd77eb751d5bfce8346bfed576bcacb28e4550f@changeid>
 X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
 In-Reply-To: <20220107235320.965497-1-briannorris@chromium.org>
 References: <20220107235320.965497-1-briannorris@chromium.org>
@@ -69,106 +69,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We're going to add new usages, and it's cleaner to work with macros
-instead of comments and magic numbers.
+These properties are:
+
+* undocumented
+* directly representing software properties, not hardware properties
+* unused (no in-tree users, yet; this IP block has so far only been used
+  in downstream kernels)
+
+Let's just stick the values that downstream users have been using
+directly in the driver and call it a day.
 
 Signed-off-by: Brian Norris <briannorris@chromium.org>
 ---
 
- drivers/devfreq/rk3399_dmc.c | 43 ++++++++++++++++++++----------------
- 1 file changed, 24 insertions(+), 19 deletions(-)
+ drivers/devfreq/rk3399_dmc.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/devfreq/rk3399_dmc.c b/drivers/devfreq/rk3399_dmc.c
-index 8f447217303f..c4efbc15cbb1 100644
+index 293857ebfd75..e982862f6ac2 100644
 --- a/drivers/devfreq/rk3399_dmc.c
 +++ b/drivers/devfreq/rk3399_dmc.c
-@@ -5,6 +5,7 @@
-  */
- 
- #include <linux/arm-smccc.h>
-+#include <linux/bitfield.h>
- #include <linux/clk.h>
- #include <linux/delay.h>
- #include <linux/devfreq.h>
-@@ -23,6 +24,15 @@
- #include <soc/rockchip/rk3399_grf.h>
- #include <soc/rockchip/rockchip_sip.h>
- 
-+#define RK3399_SET_ODT_PD_0_SR_IDLE			GENMASK(7, 0)
-+#define RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE		GENMASK(15, 8)
-+#define RK3399_SET_ODT_PD_0_STANDBY_IDLE		GENMASK(31, 16)
-+
-+#define RK3399_SET_ODT_PD_1_PD_IDLE			GENMASK(11, 0)
-+#define RK3399_SET_ODT_PD_1_SRPD_LITE_IDLE		GENMASK(27, 16)
-+
-+#define RK3399_SET_ODT_PD_2_ODT_ENABLE			BIT(0)
-+
- struct rk3399_dmcfreq {
- 	struct device *dev;
- 	struct devfreq *devfreq;
-@@ -55,7 +65,6 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
- 	unsigned long old_clk_rate = dmcfreq->rate;
- 	unsigned long target_volt, target_rate;
- 	struct arm_smccc_res res;
--	bool odt_enable = false;
- 	int err;
- 
- 	opp = devfreq_recommended_opp(dev, freq, flags);
-@@ -72,8 +81,10 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
- 	mutex_lock(&dmcfreq->lock);
- 
- 	if (dmcfreq->regmap_pmu) {
-+		unsigned int odt_pd_arg2 = 0;
-+
- 		if (target_rate >= dmcfreq->odt_dis_freq)
--			odt_enable = true;
-+			odt_pd_arg2 |= RK3399_SET_ODT_PD_2_ODT_ENABLE;
- 
- 		/*
- 		 * This makes a SMC call to the TF-A to set the DDR PD
-@@ -83,7 +94,7 @@ static int rk3399_dmcfreq_target(struct device *dev, unsigned long *freq,
- 		arm_smccc_smc(ROCKCHIP_SIP_DRAM_FREQ, dmcfreq->odt_pd_arg0,
- 			      dmcfreq->odt_pd_arg1,
- 			      ROCKCHIP_SIP_CONFIG_DRAM_SET_ODT_PD,
--			      odt_enable, 0, 0, 0, &res);
-+			      odt_pd_arg2, 0, 0, 0, &res);
+@@ -430,10 +430,8 @@ static int rk3399_dmcfreq_probe(struct platform_device *pdev)
+ 		goto err_edev;
  	}
  
- 	/*
-@@ -316,23 +327,17 @@ static int rk3399_dmcfreq_probe(struct platform_device *pdev)
- 	/*
- 	 * In TF-A there is a platform SIP call to set the PD (power-down)
- 	 * timings and to enable or disable the ODT (on-die termination).
--	 * This call needs three arguments as follows:
--	 *
--	 * arg0:
--	 *     bit[0-7]   : sr_idle
--	 *     bit[8-15]  : sr_mc_gate_idle
--	 *     bit[16-31] : standby idle
--	 * arg1:
--	 *     bit[0-11]  : pd_idle
--	 *     bit[16-27] : srpd_lite_idle
--	 * arg2:
--	 *     bit[0]     : odt enable
- 	 */
--	data->odt_pd_arg0 = (data->sr_idle & 0xff) |
--			    ((data->sr_mc_gate_idle & 0xff) << 8) |
--			    ((data->standby_idle & 0xffff) << 16);
--	data->odt_pd_arg1 = (data->pd_idle & 0xfff) |
--			    ((data->srpd_lite_idle & 0xfff) << 16);
-+	data->odt_pd_arg0 =
-+		FIELD_PREP(RK3399_SET_ODT_PD_0_SR_IDLE, data->sr_idle) |
-+		FIELD_PREP(RK3399_SET_ODT_PD_0_SR_MC_GATE_IDLE,
-+			   data->sr_mc_gate_idle) |
-+		FIELD_PREP(RK3399_SET_ODT_PD_0_STANDBY_IDLE,
-+			   data->standby_idle);
-+	data->odt_pd_arg1 =
-+		FIELD_PREP(RK3399_SET_ODT_PD_1_PD_IDLE, data->pd_idle) |
-+		FIELD_PREP(RK3399_SET_ODT_PD_1_SRPD_LITE_IDLE,
-+			   data->srpd_lite_idle);
+-	of_property_read_u32(np, "upthreshold",
+-			     &data->ondemand_data.upthreshold);
+-	of_property_read_u32(np, "downdifferential",
+-			     &data->ondemand_data.downdifferential);
++	data->ondemand_data.upthreshold = 25;
++	data->ondemand_data.downdifferential = 15;
  
- 	/*
- 	 * We add a devfreq driver to our parent since it has a device tree node
+ 	data->rate = clk_get_rate(data->dmc_clk);
+ 
 -- 
 2.34.1.575.g55b058a8bb-goog
 
