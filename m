@@ -2,61 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7640C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D60D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 10:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347078AbiAGKhc (ORCPT
+        id S1347114AbiAGKhm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 05:37:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47826 "EHLO
+        Fri, 7 Jan 2022 05:37:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346830AbiAGKgl (ORCPT
+        with ESMTP id S1346763AbiAGKgk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 05:36:41 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73240C034006
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 02:36:39 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id k15so20288717edk.13
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 02:36:39 -0800 (PST)
+        Fri, 7 Jan 2022 05:36:40 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153CCC034000
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 02:36:38 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id o6so20494161edc.4
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 02:36:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Kdpn8r0JqvLlGfo3MqmUrRJbX7osy6ZEtxXCs41Q3Q4=;
-        b=m8el/STITfyN6+L+3eVLfgfQKOaL5yNtZpo+CYJZHH9TryY7WIWkuhL1AJZKh2wFlp
-         5FnaWCj8FvUPsByTCrZcrgvKxw3dYnXK3t1Yp7+lY116LKvhIipsB/9uiOebZJeNw2U5
-         xrATSW9D0eSym7vQ9waFCRogY2kfFsUOJBHx7LtBQQDxlLs8NQDDmcQ3tiPW2MvabkXt
-         JfXmUSDPJBOMGkVO0v+CYyXISSgTw8sCeUJNS9+PhkQWKWqrhOVJvctra47SkVZeu3dx
-         spGL8fsjWfdLfhBXT3QCSKTKcQ9udmHMXCKuOOOsX3gUiklQMhRf/mcvz41q03JDML9b
-         jSnw==
+        bh=Rhk/RIq8N8redhElMwVU53NrBizqJp1QMtudMdpPmpM=;
+        b=ORdZbD1syTbIu6mJjN3S3GMwVeAFXU0NZGz9hArxSzG1ubraJGzzF6CuYhMqDDfKoH
+         IO5tZIEOUR96VlbOxJyU0mjUdJJeg5eCb37z9ETmVLSDCaMSy20O434N4bRELigU34U7
+         CEFIS/ArPy8/+NhKLDvRuoZmcy70yfYHcF1WjKStC8a7jjxDls57qnXqCjpbdK2at7uu
+         q0H7HP7/TJWdolpdR/lofBBVbFPKRK757mlja2kLGXG3F86TANq9yhhhtZGBWuqlRsyC
+         Ihg+3vHJz0qlb72GRgGziBDVxgNs6gITZETCgwVKepaP/752yPpNncYZzfbo3VEZ+bl9
+         UPhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Kdpn8r0JqvLlGfo3MqmUrRJbX7osy6ZEtxXCs41Q3Q4=;
-        b=2jtV1JxLaNo41EqKhYhtDK7BiN1a5lRKjTF/D91udbVFC8YhMraPm5hxTrqMDCA54h
-         JaFcKJySZYZst/pJDnESKSvxg6B4/bFthNDeu2ZZKv9gKmOIifPxkYkYvvkWBPG5b345
-         dSakHe82sdEth6ybv6OurLQxG3LrnnEgDq7uQ+LZDAOTf+Jz0D600dO+gtCzM3ZsS1eP
-         xmIjtlrZGTVe8fick+zEzqSefKKQA5AqrCJ2n7K9jKqCZIJZRLCmxzz8nb/51TY91UOB
-         dGkD5QWXphHNLQryVEl8SqMnULlWlRHnyXi0/Ds8hf6D0bIl99T+S0E6WXafuELgoWkK
-         3yYg==
-X-Gm-Message-State: AOAM531zcQ/A3dhsHIDFXRKSQLJAvjiqLPD1SFR50xSB14d8mvSwI+5X
-        Us8gNeCcCOngRGfgNkRALnQ=
-X-Google-Smtp-Source: ABdhPJyuCsoVGiej5YvrWk/4ErGKYTzi7SoJXHRiCNDpsMh2g8ttfNFDC8ZfSECF3iRGU2bGPWKI6A==
-X-Received: by 2002:aa7:d8c5:: with SMTP id k5mr6063213eds.53.1641551798005;
-        Fri, 07 Jan 2022 02:36:38 -0800 (PST)
+        bh=Rhk/RIq8N8redhElMwVU53NrBizqJp1QMtudMdpPmpM=;
+        b=Y2QynWPPo50wCvn8grAdj93QduFk8c6g01ft/eKsWC6axwMcez8rSV3gTEbuU2C9hC
+         U8KTjwSWBw/D52mq2pBDMJW1FvReUWxzyV0j4cWyE3ez8SVs/oVVm7W/zQk4gHgL2nLB
+         zah/sNO0JOJcNvBe2OH6j9LcwIsqo9ZhvGYLmIRemhCcsFwxa6v1ZJ6epfobNfAvEbVV
+         94yRMG2s2CQgpojP35c25UQAMdw3CVQPb6XIhRIZ8OLdv/KJcdp09m3jEshjBCT0PR9H
+         TDZ/LLbVuAwp0zNlS2lbkh+0Q3bmn5Dv0+WAJW6HFcMzpuKyt93ECYnmB+t4BOBRMitR
+         G0ng==
+X-Gm-Message-State: AOAM5304DNVr2W/81eTucSnx/C9yhGnUNUT0I0PFNZUspo/IJqqdqnL3
+        KQvq+oGGvQi7+SHYgR9QbKE=
+X-Google-Smtp-Source: ABdhPJzCVdlFNRSiZiLnSKxbWk/jqyQfzQA4TzF2bHQZvmhfIq02kFr3gJcwfXr66PZL9/jFJDCH7g==
+X-Received: by 2002:a17:906:150c:: with SMTP id b12mr48050752ejd.284.1641551796705;
+        Fri, 07 Jan 2022 02:36:36 -0800 (PST)
 Received: from localhost.localdomain ([2a02:8108:96c0:3b88::51e2])
-        by smtp.gmail.com with ESMTPSA id v8sm1869857edt.10.2022.01.07.02.36.37
+        by smtp.gmail.com with ESMTPSA id v8sm1869857edt.10.2022.01.07.02.36.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 02:36:37 -0800 (PST)
+        Fri, 07 Jan 2022 02:36:36 -0800 (PST)
 From:   Michael Straube <straube.linux@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Michael Straube <straube.linux@gmail.com>
-Subject: [PATCH 14/19] staging: r8188eu: rename rtSatus in rtl8188e_firmware_download()
-Date:   Fri,  7 Jan 2022 11:36:15 +0100
-Message-Id: <20220107103620.15648-15-straube.linux@gmail.com>
+Subject: [PATCH 12/19] staging: r8188eu: convert two functions from s32 to int
+Date:   Fri,  7 Jan 2022 11:36:13 +0100
+Message-Id: <20220107103620.15648-13-straube.linux@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220107103620.15648-1-straube.linux@gmail.com>
 References: <20220107103620.15648-1-straube.linux@gmail.com>
@@ -66,76 +66,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename the variable rtStatus in rtl8188e_firmware_download() to avoid
-camel case.
-
-rtStatus -> ret
+Convert the return type of fw_free_to_go() and
+rtl8188e_firmware_download() from s32 to the more common int.
 
 Signed-off-by: Michael Straube <straube.linux@gmail.com>
 ---
- .../staging/r8188eu/hal/rtl8188e_hal_init.c    | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/staging/r8188eu/hal/rtl8188e_hal_init.c | 6 +++---
+ drivers/staging/r8188eu/include/rtl8188e_hal.h  | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-index f158bbf44094..1685386a7015 100644
+index d219882fc4a2..f86b5cb2b6f9 100644
 --- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
 +++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
-@@ -541,7 +541,7 @@ static int load_firmware(struct rt_firmware *rtfw, struct device *device)
+@@ -467,7 +467,7 @@ void rtw_reset_8051(struct adapter *padapter)
+ 	rtw_write8(padapter, REG_SYS_FUNC_EN + 1, val8 | (BIT(2)));
+ }
  
- int rtl8188e_firmware_download(struct adapter *padapter)
+-static s32 fw_free_to_go(struct adapter *padapter)
++static int fw_free_to_go(struct adapter *padapter)
  {
--	int rtStatus = _SUCCESS;
-+	int ret = _SUCCESS;
+ 	u32	counter = 0;
+ 	u32	value32;
+@@ -539,9 +539,9 @@ static int load_firmware(struct rt_firmware *rtfw, struct device *device)
+ 	return ret;
+ }
+ 
+-s32 rtl8188e_firmware_download(struct adapter *padapter)
++int rtl8188e_firmware_download(struct adapter *padapter)
+ {
+-	s32	rtStatus = _SUCCESS;
++	int rtStatus = _SUCCESS;
  	u8 writeFW_retry = 0;
  	u32 fwdl_start_time;
  	struct dvobj_priv *dvobj = adapter_to_dvobj(padapter);
-@@ -553,8 +553,8 @@ int rtl8188e_firmware_download(struct adapter *padapter)
- 	static int log_version;
+diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
+index 11d79606e120..4b67e11024a1 100644
+--- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
++++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
+@@ -250,7 +250,7 @@ struct hal_data_8188e {
+ };
  
- 	if (!dvobj->firmware.data)
--		rtStatus = load_firmware(&dvobj->firmware, device);
--	if (rtStatus == _FAIL) {
-+		ret = load_firmware(&dvobj->firmware, device);
-+	if (ret == _FAIL) {
- 		dvobj->firmware.data = NULL;
- 		goto exit;
- 	}
-@@ -591,9 +591,9 @@ int rtl8188e_firmware_download(struct adapter *padapter)
- 		/* reset the FWDL chksum */
- 		rtw_write8(padapter, REG_MCUFWDL, rtw_read8(padapter, REG_MCUFWDL) | FWDL_ChkSum_rpt);
+ /*  rtl8188e_hal_init.c */
+-s32 rtl8188e_firmware_download(struct adapter *padapter);
++int rtl8188e_firmware_download(struct adapter *padapter);
+ void rtw_reset_8051(struct adapter *padapter);
  
--		rtStatus = write_fw(padapter, pFirmwareBuf, FirmwareLen);
-+		ret = write_fw(padapter, pFirmwareBuf, FirmwareLen);
- 
--		if (rtStatus == _SUCCESS ||
-+		if (ret == _SUCCESS ||
- 		    (rtw_get_passing_time_ms(fwdl_start_time) > 500 && writeFW_retry++ >= 3))
- 			break;
- 
-@@ -602,19 +602,19 @@ int rtl8188e_firmware_download(struct adapter *padapter)
- 		);
- 	}
- 	fw_download_enable(padapter, false);
--	if (_SUCCESS != rtStatus) {
-+	if (ret != _SUCCESS) {
- 		DBG_88E("DL Firmware failed!\n");
- 		goto exit;
- 	}
- 
--	rtStatus = fw_free_to_go(padapter);
--	if (_SUCCESS != rtStatus) {
-+	ret = fw_free_to_go(padapter);
-+	if (ret != _SUCCESS) {
- 		DBG_88E("DL Firmware failed!\n");
- 		goto exit;
- 	}
- 
- exit:
--	return rtStatus;
-+	return ret;
- }
- 
- /*  */
+ s32 InitLLTTable(struct adapter *padapter, u8 txpktbuf_bndy);
 -- 
 2.34.1
 
