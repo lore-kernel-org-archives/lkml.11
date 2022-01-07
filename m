@@ -2,77 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A40C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:51:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1641AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 23:52:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiAGXvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 18:51:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        id S231809AbiAGXwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 18:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231708AbiAGXvP (ORCPT
+        with ESMTP id S231708AbiAGXwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 18:51:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53FF8C061574;
-        Fri,  7 Jan 2022 15:51:15 -0800 (PST)
-Received: from mail.kernel.org (unknown [198.145.29.99])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC92862051;
-        Fri,  7 Jan 2022 23:51:14 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3389660F3A;
-        Fri,  7 Jan 2022 23:51:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-        s=korg; t=1641599474;
-        bh=yOsOeSv/wlGNjga0fJsyxc4HfwJ06Uk8e97pXTHHLz0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Bskey3cL0BDMSe/u+YyciKNQaeNVEqTwnc05Ydqm4s81X2vhOIGTUi9IUPn4mXtVD
-         4dK7N05SG+Wa1JhTinJAMQXRi7mInMoKte1SlYmESBpX9QQrQFrM8O0M6XEuzbTo4f
-         ALyyUi/IoTrlARIFT/c1863ZDORJLeO/etb2NuW0=
-Date:   Fri, 7 Jan 2022 15:51:12 -0800
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        linux-parisc@vger.kernel.org
-Subject: Re: [PATCH] usercopy: Do not fail on memory from former init
- sections
-Message-Id: <20220107155112.30671fe4bb53ea71029f5a6d@linux-foundation.org>
-In-Reply-To: <YdeHDDAP+TY5wNeT@ls3530>
-References: <YdeHDDAP+TY5wNeT@ls3530>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 7 Jan 2022 18:52:07 -0500
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DCF7C061574;
+        Fri,  7 Jan 2022 15:52:07 -0800 (PST)
+Received: by mail-qt1-x829.google.com with SMTP id q14so7107799qtx.10;
+        Fri, 07 Jan 2022 15:52:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=aU8/5mVKlEMT/Qttq5O3DrV9RFJs3vfNMkN1OVYl94g=;
+        b=T4+XCh3ftAIzbtt6LmDGuXNGec6C43LntQC5i7/C8HYKmZwGU4u7r24REaDJeSEtA/
+         zR3ebKwPeraqdH4kX28aYgydtUbXPLe4W+7F7I1+KX5EhGyLX1WOt5c6HDgaRNzEXQZ3
+         B5BOx+wOgekab4gN5/tQrRjVKUfRA3mk4SDwbuPpSFBr17DfkCivQfbIuCehRQD3uPfs
+         mldbt//G5L6ADXvSYeDQfCMjnmFoTLzcHVL69TVir+Uw1LNlW38+51udxrZ+nB3kA0Ae
+         xduGQX5iqtsLr4/y5XrblwVQw1psd0C/oextHRYqE0k7bS0GhK2WV5eqiasQZlHSoG1q
+         El1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=aU8/5mVKlEMT/Qttq5O3DrV9RFJs3vfNMkN1OVYl94g=;
+        b=XGx6aQRQPBDG7Hde2iuguFipXz8X5hzA9Te23QgdDT+P7hkN6FsBZuSZIgWgm+n1uN
+         l3FFUiNHwNxE4lY+lREfuXfSDsE+rC1JKH+8epYe6InsG23aj5hGSZlpgd8/2j1ddrWR
+         DUjaosJcCZgIev8bIF+JXm35UqX+4vU1qdyMACp46Ij6D7yxgQJc937CR1hgua3fuV/l
+         n8tfwBIXbuUf2IX6NjD6NLxQZnrdmGyXsiHY2NeIk7mzVrO42gE6JCe5NMb+TVshCbej
+         9S26Y6iESpmgKoqhmJAkhnVMBo7TWj8cDjlVvXAUypohdJNjchlkKMvMVtBJi1Jgstx6
+         EpGw==
+X-Gm-Message-State: AOAM533zktX+u48kvWbHOumaZxWBqleWeYWQ3VnnhtNLDbwFabXhmBut
+        ROPgQeb6zS+aO66YytDDiaM=
+X-Google-Smtp-Source: ABdhPJzVrNtO+yZnVgnRKPZ02xfBJ44/6rIzZC/wm4x6y67anqWEKcF9mt4dRk2NK9iOVHJEVPvm+Q==
+X-Received: by 2002:ac8:5942:: with SMTP id 2mr55955504qtz.239.1641599526268;
+        Fri, 07 Jan 2022 15:52:06 -0800 (PST)
+Received: from errol.ini.cmu.edu (pool-108-39-235-221.pitbpa.fios.verizon.net. [108.39.235.221])
+        by smtp.gmail.com with ESMTPSA id m20sm93186qkp.112.2022.01.07.15.52.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 07 Jan 2022 15:52:05 -0800 (PST)
+Date:   Fri, 7 Jan 2022 18:52:03 -0500
+From:   "Gabriel L. Somlo" <gsomlo@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-mmc <linux-mmc@vger.kernel.org>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Kamil Rakoczy <krakoczy@antmicro.com>,
+        "mdudek@internships.antmicro.com" <mdudek@internships.antmicro.com>,
+        Paul Mackerras <paulus@ozlabs.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Stafford Horne <shorne@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "david.abdurachmanov@sifive.com" <david.abdurachmanov@sifive.com>,
+        Florent Kermarrec <florent@enjoy-digital.fr>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 3/3] mmc: Add driver for LiteX's LiteSDCard interface
+Message-ID: <YdjSI1R9qdnYHFNB@errol.ini.cmu.edu>
+References: <20220107170616.2041589-1-gsomlo@gmail.com>
+ <20220107170616.2041589-4-gsomlo@gmail.com>
+ <YdhzmE8eBsvkRCBn@errol.ini.cmu.edu>
+ <CAHp75Ve5T-yNV-BJww_kN+6y8P9FyHodKfZ4nfi2POynp6BPVg@mail.gmail.com>
+ <YdivZYknD2IQ1Wzy@errol.ini.cmu.edu>
+ <CAHp75VfMJyeF4dpz63TqZv9UCMBWmQu0U622SOV7wLmn7Qm0mQ@mail.gmail.com>
+ <CAHp75Vfo=uJ3eY0GtjdjTk32KkaQfOFYw6kF5oZqQLb38AnhbA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75Vfo=uJ3eY0GtjdjTk32KkaQfOFYw6kF5oZqQLb38AnhbA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 7 Jan 2022 01:19:24 +0100 Helge Deller <deller@gmx.de> wrote:
-
-> On some platforms the memory area between the _stext and the _etext
-> symbols includes the init sections (parisc and csky). If the init
-> sections are freed after bootup, the kernel may reuse this memory.
+On Sat, Jan 08, 2022 at 01:40:06AM +0200, Andy Shevchenko wrote:
 > 
-> In one test the usercopy checks if the given address is inside the .text
-> section (from _stext to _etext), and it wrongly fails on the mentioned
-> platforms if the memory is from the former init section.
 > 
-> Fix this failure by first checking against the init sections before
-> checking against the _stext/_etext section.
+> On Saturday, January 8, 2022, Andy Shevchenko <andy.shevchenko@gmail.com>
+> wrote:
 > 
-> Signed-off-by: Helge Deller <deller@gmx.de>
-> Fixes: 98400ad75e95 ("parisc: Fix backtrace to always include init funtion names")
+> 
+> 
+>     On Friday, January 7, 2022, Gabriel L. Somlo <gsomlo@gmail.com> wrote:
+> 
+>         On Fri, Jan 07, 2022 at 10:50:02PM +0200, Andy Shevchenko wrote:
+>         > > > +             .of_match_table = of_match_ptr(litex_match),
+>         > >
+>         > > You said "Wrong usage of of_match_ptr()" here, and all I have to go
+>         by
+>         > > is a bunch of other `drivers/mmc/host/*.c` files that use it in a
+>         > > similar way, so can you please clarify and/or provide an example of
+>         how
+>         > > to do it properly?
+>         >
+>         > First of all, you have a dependency to OF, try to remove it and
+>         > compile with OF=n and you will immediately see the issue. You may
+>         also
+>         > go for  `git log --no-merges --grep of_match_ptr` and analyze the
+>         > result.
+> 
+>         Ah, grepping for "of_match_ptr" was *never* going to show me the
+>         "right way of using of_match_ptr()" :)
+> 
+> 
+> 
+>     Hmm... this is strange. The above command is grepping in the commit
+>     messages, and not in the code.
+>      
+> 
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?qt=
+> grep&q=of_match_ptr
+> 
+> Shows a lot of the commits that I referred to.
+> 
 
-Wait.  98400ad75e95 is actually called
+Right. I was originally looking at *code* for current usage examples.
 
-	Revert "parisc: Fix backtrace to always include init funtion names"
+I get that you were referring to grepping through *commits*, which
+seems to be the new way of figuring out what's canonical (as a lot of
+the existing code seems to be in need of update :)
 
-and it reverts 279917e27edc2.  This isn't making a lot of sense.
-
-
-And neither 98400ad75e95 nor 279917e27edc2 touch csky.
-
-And I really wouldn't want to jam a patch into mm/usercopy.c at this
-point in the life of 5.16 anyway.
-
-I'll drop this patch.  Please revisit and clarify all these things.  A lot!
+Thanks,
+--Gabriel
+  
+> 
+> 
+>         OTOH, grepping for "of_match_table" (and of course the commits
+>         returned by your command line) suggests that I simply should *not*
+>         use it at all, and assign its argument directly to .of_match_table.
+> 
+>         Got it, fixed it, thanks!
+> 
+>         Now, on to the probe ordering issue... :)
+> 
+>         Thanks,
+>         --G
+> 
+> 
+> 
+>     --
+>     With Best Regards,
+>     Andy Shevchenko
+> 
+> 
+> 
+> 
+> 
+> --
+> With Best Regards,
+> Andy Shevchenko
+> 
+> 
