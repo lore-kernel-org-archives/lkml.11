@@ -2,66 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1335FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:59:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7690CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345277AbiAGB71 (ORCPT
+        id S1345289AbiAGB7o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 20:59:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344533AbiAGB70 (ORCPT
+        Thu, 6 Jan 2022 20:59:44 -0500
+Received: from mout.kundenserver.de ([217.72.192.75]:41501 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344533AbiAGB7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:59:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E29C061201;
-        Thu,  6 Jan 2022 17:59:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4134DB82350;
-        Fri,  7 Jan 2022 01:59:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB4E8C36AE0;
-        Fri,  7 Jan 2022 01:59:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641520763;
-        bh=0x4HzWhrl/GPA9f9GJo5oiTM/fxY75mmm4HIWLZ2+Rw=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=G4ZWrNnegOXvUQNdbngXaZIvKAnMp0Xn+LNXsJHnaA6kcMQJxxJ16WDgFr6TK/4gO
-         VNtGi8jpA0iBGiBEwNYeGlX9LR+/hH1pYuKSB0D5MeVriJ1WTxdxEwkKDFgqm3oSNl
-         o3cqOGz3Hcva8zn97oSKNVzKbVT9cxnf3/vU60yedvb9Cg4E4xlWIkM5e6nBSmCesL
-         B13qrQnXgWmDKb72kGA4b3TDPLIUv9Qo4JQshVMX9E394hCmfWzdu4UszcxdZnHKEs
-         4rti1QoWx8HLUaPET/AORnLz5cTISW7EDNCsSF5hh/L0pxRKLJB6MbKKJ6Bfnd0wDc
-         WrZr1WGEAVqRg==
-Content-Type: text/plain; charset="utf-8"
+        Thu, 6 Jan 2022 20:59:39 -0500
+Received: from mail-ed1-f43.google.com ([209.85.208.43]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MOiLp-1mjy1m0Wit-00QFQI; Fri, 07 Jan 2022 02:59:37 +0100
+Received: by mail-ed1-f43.google.com with SMTP id j6so16310142edw.12;
+        Thu, 06 Jan 2022 17:59:37 -0800 (PST)
+X-Gm-Message-State: AOAM533wA5LJufOXRwkZBzeRLhNbm2eD7rqzc+Xz3rnBJi+P9t2VYdKM
+        1mDn2kVfXPO2OXbzUjTurxxQodFCK6VUrcAhm+0=
+X-Google-Smtp-Source: ABdhPJwNPusolPWQ0Dfm+FkLfh1W+9s6XBF4mIXZxjKoC1VGJSGdyFfgj8EhVdC8IWm5RZdDWKdfuddYhSIOwhhZCO4=
+X-Received: by 2002:a05:6000:16c7:: with SMTP id h7mr5177836wrf.317.1641517284064;
+ Thu, 06 Jan 2022 17:01:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20211212180527.1641362-6-AjitKumar.Pandey@amd.com>
-References: <20211212180527.1641362-1-AjitKumar.Pandey@amd.com> <20211212180527.1641362-6-AjitKumar.Pandey@amd.com>
-Subject: Re: [PATCH v5 5/5] clk: x86: Fix clk_gate_flags for RV_CLK_GATE
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Vijendar.Mukunda@amd.com, Alexander.Deucher@amd.com,
-        Basavaraj.Hiregoudar@amd.com, Sunil-kumar.Dommati@amd.com,
-        Mario.Limonciello@amd.com,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        open list <linux-kernel@vger.kernel.org>
-To:     Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        linux-clk@vger.kernel.org
-Date:   Thu, 06 Jan 2022 17:59:21 -0800
-User-Agent: alot/0.9.1
-Message-Id: <20220107015922.DB4E8C36AE0@smtp.kernel.org>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr> <4c35f397720fccb6c9166fa85fa25475b0659a6a.1641500561.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <4c35f397720fccb6c9166fa85fa25475b0659a6a.1641500561.git.christophe.jaillet@wanadoo.fr>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 6 Jan 2022 20:01:21 -0500
+X-Gmail-Original-Message-ID: <CAK8P3a1sESb9CYs+N=rYs3=6Sq_CZHsKB0jXgT1n9XC7O9x_gA@mail.gmail.com>
+Message-ID: <CAK8P3a1sESb9CYs+N=rYs3=6Sq_CZHsKB0jXgT1n9XC7O9x_gA@mail.gmail.com>
+Subject: Re: [PATCH 09/16] media: v4l2-pci-skeleton: Remove usage of the
+ deprecated "pci-dma-compat.h" API
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-janitors <kernel-janitors@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:8oDH2q8ZcRAZYzpoxlwrzszTCFuRww0c7gPSMUEWwZ7ZseQZpY+
+ Bd54+PKN4HMm01RUjpSFgt22EY7EkvcEAZIsHvjpqCDvEfKXJ+QksZZ4iPZb9cwobXwjJl0
+ atlqcCTZrIXdy/ftSYpduzwbE/QVG/uNgABuC1WnhOuAV5fG1QGOfmvduqMMt+mm1O3i3MX
+ 8PmTXBNyQClB7J1/cYlsw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:L/dDlk68fws=:Yz0m+Bpi8dsgdSUM57PaXv
+ A1zljUGqyfjnFfsSNtWSu84FaVEv2I3IToPQ8One9WT9n2wsUHjh4Y44nEXoHWp5OjdbIY5og
+ yoDXjc/4rTpfR7kxUhMr6vSc10Vy6OFAmYs/mCH+k4JiHTHNXkHPYoby1aD0JC1VlZCjRsvUM
+ dwojnHZ7V4iAArtYmL3fMApzS9kkOB4SF2o/x1JVzSVzMLB+pedzBAQfWDBIV8N13UpxQzhGd
+ IrcckBK/GSnbfRNJbCc/emWJ2iTqYarfkfn+SQ9ihYvXw58x5/dP8TYVE+dqCVd6SfeG52VA6
+ 4uHquQJwL4cyMGipsaTHOTN9Yd+HRWlvudHmyMap0FSJMNJGTnkVqD8L4X+DqoSxwJbndy4sZ
+ Y/UN4+gj8BLkEyYF2rW7DDTedaX3WCQsW9VIrDPfjQb3qnfUWR56aLQCGkoQDkmhQZRTOlgWe
+ deuH6GPFtupdbJg4KxGeMeP6E/x1dVAesRa/6+Ua8mJgm3cvMfVv5B4Yn+3159QAIBc8RMDLC
+ l/6Gs6nFtTYsMw1tJxhy716Zf0MxWoMmpCEzbrIOEHYHAJeivkEymkAjTem5il+xZ/+4Olwhm
+ 2p6HpP2mdErESUeyTuLo3uY83sJYMIaZhg1baSaLpQ7MLfEPTFF6b5/+v7YW9CqbTSbwYMwna
+ tAk2kyV9OwuNK0DgkfFG3exa+slSv56xrEyWhY86q7nuvvQvvD/uj/he0OesPJlduGXBYO66N
+ yuSIiIdUISsdXcGICaRMqzbWcFPXxlyI4u55tzHg/RTRM8xy+dPsoZEiCukDllPBoB9W0gEXO
+ cmrWwjwtL6+8GcTqW/pTeMh3en9MpRRcT1/imwD48AH2W4RVyw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Ajit Kumar Pandey (2021-12-12 10:05:27)
-> In newer SoC we have to clear bit for disabling 48MHz oscillator
-> clock gate. Remove CLK_GATE_SET_TO_DISABLE flag for proper enable
-> and disable of 48MHz clock.
->=20
-> Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-> Reviewed-by: Mario Limonciello <Mario.Limonciello@amd.com>
-> ---
+On Thu, Jan 6, 2022 at 4:53 PM Christophe JAILLET
+<christophe.jaillet@wanadoo.fr> wrote:
+>
+> In [1], Christoph Hellwig has proposed to remove the wrappers in
+> include/linux/pci-dma-compat.h.
+>
+> Some reasons why this API should be removed have been given by Julia
+> Lawall in [2].
+>
+> A coccinelle script has been used to perform the needed transformation.
+> It can be found in [3].
+>
+> [1]: https://lore.kernel.org/kernel-janitors/20200421081257.GA131897@infradead.org/
+> [2]: https://lore.kernel.org/kernel-janitors/alpine.DEB.2.22.394.2007120902170.2424@hadrien/
+> [3]: https://lore.kernel.org/kernel-janitors/20200716192821.321233-1-christophe.jaillet@wanadoo.fr/
+>
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Applied to clk-next
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
