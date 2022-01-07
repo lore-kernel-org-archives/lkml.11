@@ -2,117 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F39AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 22:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248D0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 22:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbiAGWzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 17:55:01 -0500
-Received: from mga18.intel.com ([134.134.136.126]:7113 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231310AbiAGWyt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 17:54:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641596089; x=1673132089;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=iRXggUCYvjzFUYA6NKKQDmdD9Wpx+PMAccMrHW3rXH4=;
-  b=jyEpHhMu8vVnxhODdUjel1gVBADUAhxLb/ZMVhN5sgOfUD40ocxsK83R
-   HwDNzxGYuv3vgOCfwlUNbXNqjLKG5FqNQIok4TYGvQcRa1/ET7Jbp2M7Q
-   JCPLshCiZ2m29TTsh343JPhErt7Bt/BWcM4wOWLa1nfRQ/MoTME1/yl0G
-   YLcRBW79AaHWB4jX01T2NrZgqSbjHrMcnLH/hxipIrzyhRQAzpjeM2uL1
-   Kgw150kKAwi9ukU75+jfbwEB3iTMTthFEphHNe4odoTdTOOC+/8hXDldq
-   42JfDm6CncBnKY7VRqYdHWgo8K/y5BnrI8U6bUrxvnUeu31HpuOAGtVHQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="229762185"
-X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
-   d="scan'208";a="229762185"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 14:54:48 -0800
-X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
-   d="scan'208";a="471452462"
-Received: from agluck-desk2.sc.intel.com ([10.3.52.146])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 14:54:48 -0800
-From:   Tony Luck <tony.luck@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Smita Koralahalli Channabasappa 
-        <smita.koralahallichannabasappa@amd.com>,
-        Wei Huang <wei.huang2@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        patches@lists.linux.dev, Tony Luck <tony.luck@intel.com>
-Subject: [PATCH 3/5] x86/ras: Read/save PPIN MSR during initialization
-Date:   Fri,  7 Jan 2022 14:54:40 -0800
-Message-Id: <20220107225442.1690165-4-tony.luck@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220107225442.1690165-1-tony.luck@intel.com>
-References: <20220107225442.1690165-1-tony.luck@intel.com>
+        id S231330AbiAGW6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 17:58:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35326 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229628AbiAGW6l (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 17:58:41 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 613EB60F8D;
+        Fri,  7 Jan 2022 22:58:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB52C36AE9;
+        Fri,  7 Jan 2022 22:58:40 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1n5yBz-001gzA-Vt;
+        Fri, 07 Jan 2022 17:58:39 -0500
+Message-ID: <20220107225839.823118570@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Fri, 07 Jan 2022 17:56:56 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH 1/2] tracing: Have syscall trace events use
+ trace_event_buffer_lock_reserve()
+References: <20220107225655.647376947@goodmis.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the PPIN (Protected Processor Inventory Number) MSR is read by
-every CPU that processes a machine check, CMCI, or just polls machine
-check banks from a periodic timer. This is not a "fast" MSR, so this
-adds to overhead of processing errors.
+From: Steven Rostedt <rostedt@goodmis.org>
 
-Add a new "ppin" field to the cpuinfo_x86 structure. Read and save the
-PPIN during initialization. Use this copy in mce_setup() instead of
-reading the MSR.
+Currently, the syscall trace events call trace_buffer_lock_reserve()
+directly, which means that it misses out on some of the filtering
+optimizations provided by the helper function
+trace_event_buffer_lock_reserve(). Have the syscall trace events call that
+instead, as it was missed when adding the update to use the temp buffer
+when filtering.
 
-Signed-off-by: Tony Luck <tony.luck@intel.com>
+Cc: stable@vger.kernel.org
+Fixes: 0fc1b09ff1ff4 ("tracing: Use temp buffer when filtering events")
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 ---
- arch/x86/include/asm/processor.h | 2 ++
- arch/x86/kernel/cpu/common.c     | 1 +
- arch/x86/kernel/cpu/mce/core.c   | 7 +------
- 3 files changed, 4 insertions(+), 6 deletions(-)
+ kernel/trace/trace_syscalls.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/include/asm/processor.h b/arch/x86/include/asm/processor.h
-index 355d38c0cf60..1db5bb3413ae 100644
---- a/arch/x86/include/asm/processor.h
-+++ b/arch/x86/include/asm/processor.h
-@@ -119,6 +119,8 @@ struct cpuinfo_x86 {
- 	int			x86_cache_mbm_width_offset;
- 	int			x86_power;
- 	unsigned long		loops_per_jiffy;
-+	/* protected processor identification number */
-+	u64			ppin;
- 	/* cpuid returned max cores value: */
- 	u16			x86_max_cores;
- 	u16			apicid;
-diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 3688f70ee0a2..9a90f96257d1 100644
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -155,6 +155,7 @@ static void ppin_init(struct cpuinfo_x86 *c)
+diff --git a/kernel/trace/trace_syscalls.c b/kernel/trace/trace_syscalls.c
+index 8bfcd3b09422..f755bde42fd0 100644
+--- a/kernel/trace/trace_syscalls.c
++++ b/kernel/trace/trace_syscalls.c
+@@ -323,8 +323,7 @@ static void ftrace_syscall_enter(void *data, struct pt_regs *regs, long id)
  
- 	/* Is the enable bit set? */
- 	if (val & 2UL) {
-+		c->ppin = __rdmsr(info->msr_ppin);
- 		set_cpu_cap(c, info->feature);
+ 	trace_ctx = tracing_gen_ctx();
+ 
+-	buffer = tr->array_buffer.buffer;
+-	event = trace_buffer_lock_reserve(buffer,
++	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
+ 			sys_data->enter_event->event.type, size, trace_ctx);
+ 	if (!event)
  		return;
- 	}
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 6ed365337a3b..ec38c0c6c235 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -139,12 +139,7 @@ noinstr void mce_setup(struct mce *m)
- 	m->socketid = cpu_data(m->extcpu).phys_proc_id;
- 	m->apicid = cpu_data(m->extcpu).initial_apicid;
- 	m->mcgcap = __rdmsr(MSR_IA32_MCG_CAP);
--
--	if (this_cpu_has(X86_FEATURE_INTEL_PPIN))
--		m->ppin = __rdmsr(MSR_PPIN);
--	else if (this_cpu_has(X86_FEATURE_AMD_PPIN))
--		m->ppin = __rdmsr(MSR_AMD_PPIN);
--
-+	m->ppin = cpu_data(m->extcpu).ppin;
- 	m->microcode = boot_cpu_data.microcode;
- }
+@@ -367,8 +366,7 @@ static void ftrace_syscall_exit(void *data, struct pt_regs *regs, long ret)
  
+ 	trace_ctx = tracing_gen_ctx();
+ 
+-	buffer = tr->array_buffer.buffer;
+-	event = trace_buffer_lock_reserve(buffer,
++	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
+ 			sys_data->exit_event->event.type, sizeof(*entry),
+ 			trace_ctx);
+ 	if (!event)
 -- 
-2.31.1
-
+2.33.0
