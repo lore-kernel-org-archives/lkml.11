@@ -2,282 +2,260 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 14:34:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 712B2C43217
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 14:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347877AbiAGOeP (ORCPT
+        id S1347908AbiAGOeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 09:34:25 -0500
+Received: from mga17.intel.com ([192.55.52.151]:59409 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347864AbiAGOeP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 09:34:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347880AbiAGOeH (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 09:34:07 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0635C06173E;
-        Fri,  7 Jan 2022 06:34:06 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E37361F45FD4
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1641566045;
-        bh=X9ST1U3jQknSUjIu6aMdDzRiKeTrHNPc1c8i2C8L4B4=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=h1Iz/82bo/LY7H2+i6dHhsELE94Wt8alNEPGB3XSJJDBJM3GNwmteXEbi12Jl2cte
-         RPd44n00nNQhfKxlGFJj3v1fgI8dbjG1FfCN3LN1pAKG64P8BV78OkXVRZemaCfjdz
-         xrsMzgfS48tM9cOKe1BlRMF3YwpB0R5J3rOj7npg8LauSCzupISzKSJxZf9BxOaeWs
-         iPddS6ICi6z9ozjDTZRkmVA49noJ+XBJ3w8JQRNl0/gwd4WPy6EDrs/93s46Z+hlVv
-         uVPDGA4TuhKrtRCob3QIHGNRuXSjj7NIFT3s+acb2X7OtHi8GI0KtgIVLuvi4/o7qr
-         vrdulJvqyrDBA==
-Subject: Re: [PATCH v21 4/8] soc: mediatek: SVS: add monitor mode
-To:     Roger Lu <roger.lu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Enric Balletbo Serra <eballetbo@gmail.com>,
-        Kevin Hilman <khilman@kernel.org>,
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641566055; x=1673102055;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=DXgdDcZzD0elNYWBm1IixW+PtrsX2vdFCxvYPLrWCGc=;
+  b=gZ+SC1r6USJ4Wru4gsVPIHJy57OAf3p3sinWiJnzb1lPs5eDcK8j7oQZ
+   RxITv7x3Wnh4L8lEueAbnJKb4yPLQhsfJwtxix1NHLOmsZFfEz9R5hi36
+   HzHrfqyukXIQlsTag0jzpY6vNjsxzs02HdqER4lzRwBasdtV1b9uAqcdu
+   l1QIGq2xiUTPPID0U+SqOMlyK10tpIvjAorj3+Ca6dhYxnx6kqhsx3vkB
+   Kpvsv84YqdHo2XjjBh1E53AnERF/VTEj2tzk9g+hci55QBlirYMTFDTMw
+   J5sjCVLAFe3J5EahM9ocLIwQDktV0JkVTaEx2jhccUjbFjbj1ZJKVhjhp
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10219"; a="223571537"
+X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
+   d="scan'208";a="223571537"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 06:34:14 -0800
+X-IronPort-AV: E=Sophos;i="5.88,270,1635231600"; 
+   d="scan'208";a="668784047"
+Received: from paasikivi.fi.intel.com ([10.237.72.42])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 06:34:11 -0800
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with ESMTP id 9160D202B9;
+        Fri,  7 Jan 2022 16:33:39 +0200 (EET)
+Date:   Fri, 7 Jan 2022 16:33:39 +0200
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Nicolas Boichat <drinkcat@google.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     Fan Chen <fan.chen@mediatek.com>,
-        HenryC Chen <HenryC.Chen@mediatek.com>,
-        YT Lee <yt.lee@mediatek.com>,
-        Xiaoqing Liu <Xiaoqing.Liu@mediatek.com>,
-        Charles Yang <Charles.Yang@mediatek.com>,
-        Angus Lin <Angus.Lin@mediatek.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Guenter Roeck <linux@roeck-us.net>
-References: <20220107095200.4389-1-roger.lu@mediatek.com>
- <20220107095200.4389-5-roger.lu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <e118df40-da6b-88f6-fbff-15befb3405d5@collabora.com>
-Date:   Fri, 7 Jan 2022 15:34:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH 3/8] device property: Helper to match multiple connections
+Message-ID: <YdhPQ0Wuz63JBKaR@paasikivi.fi.intel.com>
+References: <20211228052116.1748443-1-bjorn.andersson@linaro.org>
+ <20211228052116.1748443-4-bjorn.andersson@linaro.org>
+ <Yc17Ssug3neFFXKN@kuha.fi.intel.com>
+ <Yc7I3gZehc1lHn4Z@paasikivi.fi.intel.com>
+ <YdYC8DeF1i9a3RnP@ripper>
 MIME-Version: 1.0
-In-Reply-To: <20220107095200.4389-5-roger.lu@mediatek.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdYC8DeF1i9a3RnP@ripper>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 07/01/22 10:51, Roger Lu ha scritto:
-> SVS monitor mode is based on different thermal temperature
-> to provide suitable SVS bank voltages.
+On Wed, Jan 05, 2022 at 12:43:28PM -0800, Bjorn Andersson wrote:
+> On Fri 31 Dec 01:09 PST 2021, Sakari Ailus wrote:
 > 
-> Signed-off-by: Roger Lu <roger.lu@mediatek.com>
-> ---
->   drivers/soc/mediatek/mtk-svs.c | 253 ++++++++++++++++++++++++++++++++-
->   1 file changed, 247 insertions(+), 6 deletions(-)
+> > Hi Björn,
+> > 
+> > (And thanks to Heikki for cc'ing me!)
+> > 
+> > On Thu, Dec 30, 2021 at 11:26:34AM +0200, Heikki Krogerus wrote:
+> > > +Andy, Dan and Sakari
+> > > 
+> > > On Mon, Dec 27, 2021 at 09:21:11PM -0800, Bjorn Andersson wrote:
+> > > > In some cases multiple connections with the same connection id
+> > > > needs to be resolved from a fwnode graph.
+> > > > 
+> > > > One such example is when separate hardware is used for performing muxing and/or
+> > > > orientation switching of the SuperSpeed and SBU lines in a USB-C
+> > > > connector. In this case the connector needs to belong to a graph with
+> > > > multiple matching remote endpoints, and the TypeC controller needs to be
+> > > > able to resolve them both.
+> > > > 
+> > > > Add a new API that allows this kind of lookup.
+> > > > 
+> > > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > > > ---
+> > > >  drivers/base/property.c  | 94 ++++++++++++++++++++++++++++++++++++++++
+> > > >  include/linux/property.h |  5 +++
+> > > >  2 files changed, 99 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/base/property.c b/drivers/base/property.c
+> > > > index cbe4fa298413..0aa0296fd991 100644
+> > > > --- a/drivers/base/property.c
+> > > > +++ b/drivers/base/property.c
+> > > > @@ -1180,6 +1180,36 @@ fwnode_graph_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
+> > > >  	return NULL;
+> > > >  }
+> > > >  
+> > > > +static unsigned int fwnode_graph_devcon_matches(struct fwnode_handle *fwnode,
+> > > > +						const char *con_id, void *data,
+> > > > +						devcon_match_fn_t match,
+> > > > +						void **matches,
+> > > > +						unsigned int matches_len)
+> > > > +{
+> > > > +	struct fwnode_handle *node;
+> > > > +	struct fwnode_handle *ep;
+> > > > +	unsigned int count = 0;
+> > > > +	void *ret;
+> > > > +
+> > > > +	fwnode_graph_for_each_endpoint(fwnode, ep) {
+> > > > +		if (count >= matches_len) {
+> > > > +			fwnode_handle_put(ep);
+> > > > +			return count;
+> > > > +		}
+> > > > +
+> > > > +		node = fwnode_graph_get_remote_port_parent(ep);
+> > > > +		if (!fwnode_device_is_available(node))
+> > 
+> > The reference to node needs to be put here.
+> > 
 > 
-> diff --git a/drivers/soc/mediatek/mtk-svs.c b/drivers/soc/mediatek/mtk-svs.c
-> index fc7e2ee44a92..042c6e8e9069 100644
-> --- a/drivers/soc/mediatek/mtk-svs.c
-> +++ b/drivers/soc/mediatek/mtk-svs.c
-> @@ -25,6 +25,7 @@
->   #include <linux/regulator/consumer.h>
->   #include <linux/slab.h>
->   #include <linux/spinlock.h>
-> +#include <linux/thermal.h>
->   
->   /* svs bank 1-line sw id */
->   #define SVSB_CPU_LITTLE			BIT(0)
-> @@ -36,6 +37,7 @@
->   #define SVSB_MODE_ALL_DISABLE		0
->   #define SVSB_MODE_INIT01		BIT(1)
->   #define SVSB_MODE_INIT02		BIT(2)
-> +#define SVSB_MODE_MON			BIT(3)
->   
->   /* svs bank volt flags */
->   #define SVSB_INIT01_PD_REQ		BIT(0)
-> @@ -53,11 +55,16 @@
->   #define SVSB_EN_INIT01			0x1
->   #define SVSB_EN_INIT02			0x5
->   #define SVSB_EN_MASK			0x7
-> +#define SVSB_EN_MON			0x2
->   #define SVSB_EN_OFF			0x0
->   #define SVSB_INTEN_INIT0x		0x00005f01
-> +#define SVSB_INTEN_MONVOPEN		0x00ff0000
->   #define SVSB_INTSTS_CLEAN		0x00ffffff
->   #define SVSB_INTSTS_COMPLETE		0x1
-> +#define SVSB_INTSTS_MONVOP		0x00ff0000
->   #define SVSB_RUNCONFIG_DEFAULT		0x80000000
-> +#define SVSB_TEMP_LOWER_BOUND		0xb2
-> +#define SVSB_TEMP_UPPER_BOUND		0x64
->   
->   static DEFINE_SPINLOCK(svs_lock);
->   
-> @@ -66,6 +73,7 @@ static DEFINE_SPINLOCK(svs_lock);
->    * @SVSB_PHASE_ERROR: svs bank encounters unexpected condition
->    * @SVSB_PHASE_INIT01: svs bank basic init for data calibration
->    * @SVSB_PHASE_INIT02: svs bank can provide voltages to opp table
-> + * @SVSB_PHASE_MON: svs bank can provide voltages with thermal effect
->    * @SVSB_PHASE_MAX: total number of svs bank phase (debug purpose)
->    *
->    * Each svs bank has its own independent phase and we enable each svs bank by
-> @@ -73,12 +81,13 @@ static DEFINE_SPINLOCK(svs_lock);
->    * condition, it will fire an irq (PHASE_ERROR) to inform svs software.
->    *
->    * svs bank general phase-enabled order:
-> - * SVSB_PHASE_INIT01 -> SVSB_PHASE_INIT02
-> + * SVSB_PHASE_INIT01 -> SVSB_PHASE_INIT02 -> SVSB_PHASE_MON
->    */
->   enum svsb_phase {
->   	SVSB_PHASE_ERROR = 0,
->   	SVSB_PHASE_INIT01,
->   	SVSB_PHASE_INIT02,
-> +	SVSB_PHASE_MON,
->   	SVSB_PHASE_MAX,
->   };
->   
-> @@ -209,9 +218,11 @@ static const u32 svs_regs_v2[] = {
->    * @probe: svs platform probe function pointer
->    * @irqflags: svs platform irq settings flags
->    * @efuse_max: total number of svs efuse
-> + * @tefuse_max: total number of thermal efuse
->    * @regs: svs platform registers map
->    * @bank_max: total number of svs banks
->    * @efuse: svs efuse data received from NVMEM framework
-> + * @tefuse: thermal efuse data received from NVMEM framework
->    */
->   struct svs_platform {
->   	char *name;
-> @@ -224,9 +235,11 @@ struct svs_platform {
->   	int (*probe)(struct svs_platform *svsp);
->   	unsigned long irqflags;
->   	size_t efuse_max;
-> +	size_t tefuse_max;
->   	const u32 *regs;
->   	u32 bank_max;
->   	u32 *efuse;
-> +	u32 *tefuse;
->   };
->   
->   /**
-> @@ -241,6 +254,7 @@ struct svs_platform {
->    * @get_volts: function pointer to get bank voltages
->    * @name: bank name
->    * @buck_name: regulator name
-> + * @tzone_name: thermal zone name
->    * @suspended: suspend flag of this bank
->    * @phase: bank current phase
->    * @volt_od: bank voltage overdrive
-> @@ -270,6 +284,13 @@ struct svs_platform {
->    * @sw_id: bank software identification
->    * @cpu_id: cpu core id for SVS CPU bank use only
->    * @ctl0: TS-x selection
-> + * @temp: bank temperature
-> + * @tzone_htemp: thermal zone high temperature threshold
-> + * @tzone_htemp_voffset: thermal zone high temperature voltage offset
-> + * @tzone_ltemp: thermal zone low temperature threshold
-> + * @tzone_ltemp_voffset: thermal zone low temperature voltage offset
-> + * @bts: svs efuse data
-> + * @mts: svs efuse data
->    * @bdes: svs efuse data
->    * @mdes: svs efuse data
->    * @mtdes: svs efuse data
-> @@ -292,6 +313,7 @@ struct svs_bank {
->   	void (*get_volts)(struct svs_platform *svsp);
->   	char *name;
->   	char *buck_name;
-> +	char *tzone_name;
->   	bool suspended;
->   	enum svsb_phase phase;
->   	s32 volt_od;
-> @@ -321,6 +343,13 @@ struct svs_bank {
->   	u32 sw_id;
->   	u32 cpu_id;
->   	u32 ctl0;
-> +	u32 temp;
-> +	u32 tzone_htemp;
-> +	u32 tzone_htemp_voffset;
-> +	u32 tzone_ltemp;
-> +	u32 tzone_ltemp_voffset;
-> +	u32 bts;
-> +	u32 mts;
->   	u32 bdes;
->   	u32 mdes;
->   	u32 mtdes;
-> @@ -361,10 +390,21 @@ static u32 svs_bank_volt_to_opp_volt(u32 svsb_volt, u32 svsb_volt_step,
->   	return (svsb_volt * svsb_volt_step) + svsb_volt_base;
->   }
->   
+> You're right, thanks!
+> 
+> > > > +			continue;
+> > > > +
+> > > > +		ret = match(node, con_id, data);
+> > > > +		fwnode_handle_put(node);
+> > > > +
+> > > > +		if (ret)
+> > > > +			matches[count++] = ret;
+> > > > +	}
+> > > > +	return count;
+> > > > +}
+> > > > +
+> > > >  static void *
+> > > >  fwnode_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
+> > > >  		    void *data, devcon_match_fn_t match)
+> > > > @@ -1202,6 +1232,35 @@ fwnode_devcon_match(struct fwnode_handle *fwnode, const char *con_id,
+> > > >  	return NULL;
+> > > >  }
+> > > >  
+> > > > +static unsigned int fwnode_devcon_matches(struct fwnode_handle *fwnode,
+> > > > +					  const char *con_id, void *data,
+> > > > +					  devcon_match_fn_t match,
+> > > > +					  void **matches,
+> > > > +					  unsigned int matches_len)
+> > > > +{
+> > > > +	struct fwnode_handle *node;
+> > > > +	unsigned int count = 0;
+> > > > +	void *ret;
+> > > > +	int i;
+> > 
+> > unsigned int, please.
+> > 
+> 
+> Sounds good.
+> 
+> > > > +
+> > > > +	for (i = 0; ; i++) {
+> > > > +		if (count >= matches_len)
+> > > > +			return count;
+> > > > +
+> > > > +		node = fwnode_find_reference(fwnode, con_id, i);
+> > > > +		if (IS_ERR(node))
+> > > > +			break;
+> > > > +
+> > > > +		ret = match(node, NULL, data);
+> > > > +		fwnode_handle_put(node);
+> > > > +
+> > > > +		if (ret)
+> > > > +			matches[count++] = ret;
+> > > > +	}
+> > > > +
+> > > > +	return count;
+> > > > +}
+> > > > +
+> > > >  /**
+> > > >   * fwnode_connection_find_match - Find connection from a device node
+> > > >   * @fwnode: Device node with the connection
+> > > > @@ -1229,3 +1288,38 @@ void *fwnode_connection_find_match(struct fwnode_handle *fwnode,
+> > > >  	return fwnode_devcon_match(fwnode, con_id, data, match);
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(fwnode_connection_find_match);
+> > > > +
+> > > > +/**
+> > > > + * fwnode_connection_find_matches - Find connections from a device node
+> > > > + * @fwnode: Device node with the connection
+> > > > + * @con_id: Identifier for the connection
+> > > > + * @data: Data for the match function
+> > > > + * @match: Function to check and convert the connection description
+> > > > + * @matches: Array of pointers to fill with matches
+> > > > + * @matches_len: Length of @matches
+> > > > + *
+> > > > + * Find up to @matches_len connections with unique identifier @con_id between
+> > > > + * @fwnode and other device nodes. @match will be used to convert the
+> > > > + * connection description to data the caller is expecting to be returned
+> > > > + * through the @matches array.
+> > 
+> > If the caller allocates the matches array, how does it know how large it
+> > should be? Is there a need to provide a way to count the matches before
+> > writing them to an array? Most similar functions do that by just setting the
+> > array (matches) to NULL.
+> > 
+> 
+> This is a very relevant comment and I did look for ways to handle this
+> as I came up with the patch.
+> 
+> I think the typical mechanism would be to allow @matches to be NULL, in
+> which case we iterate over objects and return the number of matches, so
+> that the caller can allocate an appropriately sized array and call the
+> API again.
+> 
+> But the "match" function simply returns a pointer to something and
+> looking at the example of the typec_{mux,switch} this pointer points to
+> a member of an object which has a struct device which is refcounted.
+> 
+> As such, we can't simply discard the returned object. We have to pass it
+> back to the caller, whom knows what "match" did and is able to reverse
+> that.
+> 
+> I looked at changing the callback and I looked at using krealloc() to
+> grow an array dynamically.
 
-I'm sorry for the double review, but this went unnoticed in the previous one.
+krealloc() may also fail...
 
-> +static int svs_get_zone_temperature(const char *tzone_name, int *tzone_temp)
-> +{
-> +	struct thermal_zone_device *tzd;
-> +
-> +	tzd = thermal_zone_get_zone_by_name(tzone_name);
+> 
+> 
+> But looking at the use case in mind; finding entities that might need to
+> react to a USB Type-C event I have a need for 2 matches, and 3 seems
+> plausible. Beyond that the largest of_graph I have ever dealt with has 6
+> endpoints.
+> 
+> While it isn't relevant to use this API for my 6-endpoint case, it would
+> result in @matches having to be 48 bytes of pointers. And once the call
+> returns, the actual number of pointers needed is known and the long-term
+> storage can be re-allocated as necessary based on the return value.
+> 
+> As such, I dropped the idea of making something fancier and more
+> dynamic, for the sake of simplicity. Perhaps I'm missing some cool use
+> case where this is infeasible?
 
-This call is expensive, as it's iterating through the (possibly) entire
-thermal_tz_list (drivers/thermal/thermal_core.c) so, for performance purposes,
-noting that you're using this in svs_adjust_pm_opp_volts(), it's not a good idea
-to call it at every ISR.
+Another option would be to use a fixed-size array for the purpose. Assuming
+this will remain a small number, a single global macro could be used to set
+the maximum number that could be also easily increased if needed.
 
-I would instead propose to get a pointer to the thermal_zone at driver probe
-time and cache that in struct svs_bank: this function would also be removed
-as the only thing that you'd need to do then would be just one call...
+On the other hand, if this number remains specific to the caller as it
+would seem, then I guess a caller-set value (as implemented now) remains a
+fine option, too.
 
-[read forward...]
+-- 
+Kind regards,
 
-> +	if (IS_ERR(tzd))
-> +		return PTR_ERR(tzd);
-> +
-> +	return thermal_zone_get_temp(tzd, tzone_temp);
-> +}
-> +
->   static int svs_adjust_pm_opp_volts(struct svs_bank *svsb, bool force_update)
->   {
-> -	int ret = -EPERM;
-> -	u32 i, svsb_volt, opp_volt;
-> +	int ret = -EPERM, tzone_temp = 0;
-> +	u32 i, svsb_volt, opp_volt, temp_voffset = 0;
->   
->   	mutex_lock(&svsb->lock);
->   
-> @@ -378,6 +418,22 @@ static int svs_adjust_pm_opp_volts(struct svs_bank *svsb, bool force_update)
->   		goto unlock_mutex;
->   	}
->   
-> +	/* Get thermal effect */
-> +	if (svsb->phase == SVSB_PHASE_MON) {
-> +		ret = svs_get_zone_temperature(svsb->tzone_name, &tzone_temp);
-
-... so you can simply call ...
-
-
-	ret = thermal_zone_get_temp(svsb->tzd, tzone_temp);
-
-
-...without any need for any helper.
-
-> +		if (ret || (svsb->temp > SVSB_TEMP_UPPER_BOUND &&
-> +			    svsb->temp < SVSB_TEMP_LOWER_BOUND)) {
-> +			dev_err(svsb->dev, "%s: %d (0x%x), run default volts\n",
-> +				svsb->tzone_name, ret, svsb->temp);
-> +			svsb->phase = SVSB_PHASE_ERROR;
-> +		}
-> +
-> +		if (tzone_temp >= svsb->tzone_htemp)
-> +			temp_voffset += svsb->tzone_htemp_voffset;
-> +		else if (tzone_temp <= svsb->tzone_ltemp)
-> +			temp_voffset += svsb->tzone_ltemp_voffset;
-> +	}
-> +
->   	/* vmin <= svsb_volt (opp_volt) <= default opp voltage */
->   	for (i = 0; i < svsb->opp_count; i++) {
->   		switch (svsb->phase) {
-
-Apart from that, the commit looks good. Looking forward to review the new version!
-
-Regards,
-- Angelo
+Sakari Ailus
