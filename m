@@ -2,215 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E371BC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 07:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234901AbiAGHQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 02:16:16 -0500
-Received: from mta-p5.oit.umn.edu ([134.84.196.205]:44954 "EHLO
-        mta-p5.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234869AbiAGHQK (ORCPT
+        id S234804AbiAGHWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 02:22:30 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:27468 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231975AbiAGHW3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 02:16:10 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p5.oit.umn.edu (Postfix) with ESMTP id 4JVZJQ0lDQz9vBqf
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 07:16:06 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p5.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p5.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id enzsbKK0Fnge for <linux-kernel@vger.kernel.org>;
-        Fri,  7 Jan 2022 01:16:05 -0600 (CST)
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p5.oit.umn.edu (Postfix) with ESMTPS id 4JVZJP5hm0z9vBqS
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 01:16:05 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p5.oit.umn.edu 4JVZJP5hm0z9vBqS
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p5.oit.umn.edu 4JVZJP5hm0z9vBqS
-Received: by mail-pj1-f70.google.com with SMTP id u13-20020a17090a450d00b001b1e6726fccso6903849pjg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 06 Jan 2022 23:16:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ELnOV+pqN3Q849i1gjcMqbhQoOoZ3JshEPwLhOy8cck=;
-        b=mJxhOVfjZBehnoX6XE2Z/Tk9hdqEvKerQgy0/Y7QTIC1vfVSCTLGGLlMFPU10PzKWx
-         Z348s5Qt9exYQtMcHlHNMCkwCUuefjMCGs/RokePMcefE+Gmr7VlKPH1Gl/ppg3P/ZWh
-         Ys2I1e8qDg4m2XomsTw1cReGKqTM344DLmHpywnVtyL/jJqb0O6nZHYgcbd8UvFcjooN
-         lxBNl8NWRAQBQ9yW1+mA5wD7mlyp6Twg+3qjO2HBy7fSIx1lJaOwDpeeu5RKFJqfj3Tu
-         JRG1XTTg9Poo7y+gd0EvxSBNNzaOcGgMzoRHWtS+j6BoKV0oe9o8NF5QxD4wHr3QOqHc
-         Upbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ELnOV+pqN3Q849i1gjcMqbhQoOoZ3JshEPwLhOy8cck=;
-        b=d/+3pvh0oqEiTBrvSAbJ+kBpMIsb1IKZRElykAKWeJ7t6/LBSGdQnOr81G/05k64Mp
-         jD7WPQcV0iqfy77iejsSmMCXa4qp5W8ISseQMCYK+/Glor9u/pSkl827zxg9x7AvaSB1
-         hHQMn8wncl2qNZHWPAfyMbXZRRZdI/YNEySXx5Va7O+gsuYxzCdOGdbbf1hRhbsprTnR
-         vA21jQF7137DMKyNw+4q8C+YRrLiIsIuiV3b7oE3/WedbRraDVOfSOViaL+Cuz7HmQLJ
-         s0ks9EXFUVmjgrI963jU8Hv1HwXVXUQxrIl6emZpMctRh25ci+qKBAi0Cdon6RZctBeV
-         IpSg==
-X-Gm-Message-State: AOAM533bOIcKRbMqsB/HOpQ+zOueVOp7agWiKxgdZiPg7fa22ztzhHrD
-        0SDRiw1+fqBZ2BQIk2iHJayNh7k1OqjbN3wnaFF7qPA3LZliFnl5+6XH9NmZBVCNh1ajv4Ev0nK
-        vyUNPOdN/3z6zwOH0+xUEEHvDgDAD
-X-Received: by 2002:a17:902:9a8b:b0:149:be04:40ab with SMTP id w11-20020a1709029a8b00b00149be0440abmr20920531plp.159.1641539765008;
-        Thu, 06 Jan 2022 23:16:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz7gMdE/ph8tXBMDEFca35lW/JrFzxfmNdJW8h7RtU3TZ5eZ+Z2+2GbsLNhys+UQCEcL/AZ5w==
-X-Received: by 2002:a17:902:9a8b:b0:149:be04:40ab with SMTP id w11-20020a1709029a8b00b00149be0440abmr20920524plp.159.1641539764788;
-        Thu, 06 Jan 2022 23:16:04 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.60.247])
-        by smtp.gmail.com with ESMTPSA id t25sm3569658pgv.9.2022.01.06.23.16.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 23:16:04 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Akshu Agrawal <akshu.agrawal@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] clk: x86: Fix a wild pointer dereference in fch_clk_probe()
-Date:   Fri,  7 Jan 2022 15:15:58 +0800
-Message-Id: <20220107071559.65843-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220107015744.22C22C36AE3@smtp.kernel.org>
-References: <20220107015744.22C22C36AE3@smtp.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 7 Jan 2022 02:22:29 -0500
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20756Xbs011438;
+        Fri, 7 Jan 2022 07:21:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=vEkORE+Epga5s7ASjVd+4jgI0LEIOYrUZHM9uSEuFS4=;
+ b=AtY/muleo+xSFpG6X+/Qts7oPrSBNHVz6kRu78nlQUj/NKgkvchx1PfVctrHZYpzqA3r
+ LsneJD6mu3wXvlwkU0QRE1Cx6xg7cYU/38OYxEMzW6SEA3j8fm9BMT3ZymXeN9SyU+w2
+ G5oq+aQ6FPktL0MaHhd0eqpU/n/EqwVHZeduLLzjLuo3nnZI8kwkSCWrjxH92IutQtyg
+ jLoM9/AlHZnso8Pn2fxpikdkGOdL1SFHU1mYEx7GsvkKI0n8mganA9PNzO63QjRAiSs/
+ CJh3SXJjnHlpkmdph1jK2bVyyCr0MdvX13x2lV3G9vdc4rHpqz91HMI9XF64AxnRFuAs +g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4y7u30f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Jan 2022 07:21:47 +0000
+Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 2076qs9i009364;
+        Fri, 7 Jan 2022 07:21:47 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3de4y7u2yx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Jan 2022 07:21:46 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2077CAqg018540;
+        Fri, 7 Jan 2022 07:21:45 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3de5gfupb2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 07 Jan 2022 07:21:44 +0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2077LgvQ39125256
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 7 Jan 2022 07:21:42 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7CF7A4C05A;
+        Fri,  7 Jan 2022 07:21:42 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B09C4C04E;
+        Fri,  7 Jan 2022 07:21:41 +0000 (GMT)
+Received: from sig-9-145-3-155.uk.ibm.com (unknown [9.145.3.155])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri,  7 Jan 2022 07:21:41 +0000 (GMT)
+Message-ID: <64d4b0d66379affd59c5a24ddb71a8f208330362.camel@linux.ibm.com>
+Subject: Re: [RFC 00/32] Kconfig: Introduce HAS_IOPORT and LEGACY_PCI options
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     John Garry <john.garry@huawei.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-pci@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-csky@vger.kernel.org
+Date:   Fri, 07 Jan 2022 08:21:41 +0100
+In-Reply-To: <00c5a9e2-1876-e8d1-68f3-2be6d3bd38cb@huawei.com>
+References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
+         <00c5a9e2-1876-e8d1-68f3-2be6d3bd38cb@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: cynwMk4apZ0bHAkiwK6hO9RNLLeiN4I_
+X-Proofpoint-ORIG-GUID: jonzyFcjLIyJ-g8t0bSxk_jRV-DRUS3W
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-07_01,2022-01-06_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 adultscore=0 phishscore=0 suspectscore=0 mlxscore=0
+ bulkscore=0 impostorscore=0 malwarescore=0 clxscore=1015
+ priorityscore=1501 mlxlogscore=936 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201070051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In fch_clk_probe(), the return value of clk_hw_register_mux() is
-assigned to hws[ST_CLK_MUX] and there is a dereference of it in
-fch_clk_probe(), which could lead to a wild pointer dereference on
-failure of clk_hw_register_mux().
+On Thu, 2022-01-06 at 17:45 +0000, John Garry wrote:
+> Hi Niklas,
+> 
+> On 27/12/2021 16:42, Niklas Schnelle wrote:
+> > I performed the following testing:
+> > 
+> > - On s390 this series on top of v5.16-rc7 builds with allyesconfig i.e. the
+> >    HAS_IOPORT=n case.
+> 
+> Are you sure that allyesconfig gives HAS_IOPORT=n? Indeed I see no 
+> mechanism is always disallow HAS_IOPORT for s390 (which I think we would 
+> want).
+> 
+> > It also builds with defconfig and the resulting kernel
+> >    appears fully functional including tests with PCI devices.
+> 
+> Thanks,
+> Johnw
+> 
 
-Fix this bug by adding a check of hws[ST_CLK_MUX].
+I checked again by adding
 
-This bug was found by a static analyzer.
+config HAS_IOPORT
+       def_bool n
 
-Builds with CONFIG_X86_AMD_PLATFORM_DEVICE=y show no new warnings, and
-our static analyzer no longer warns about this code.
+in arch/s390/Kconfig and that doesn't seem to make a difference,
+allyesconfig builds all the same. Also checked for CONFIG_HAS_IOPORT in
+my .config and that isn't listed with or without the above addition.
 
-Fixes: 19fe87fd854a ("clk: x86: Support RV architecture")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
---- 
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths
-and confirms that the inconsistent operations are not recovered in 
-the current function or the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Changes in v2:
-  -  Add error check to every register function calls.
-  -  Add error handling logic to every error path.
-  -  Turn clk_hw_register_mux to devm_clk_hw_register_mux.
-  -  Add error check of clk_set_parent().
-
- drivers/clk/x86/clk-fch.c | 53 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 49 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/clk/x86/clk-fch.c b/drivers/clk/x86/clk-fch.c
-index 8f7c5142b0f0..47754761b19c 100644
---- a/drivers/clk/x86/clk-fch.c
-+++ b/drivers/clk/x86/clk-fch.c
-@@ -36,6 +36,7 @@ static struct clk_hw *hws[ST_MAX_CLKS];
- static int fch_clk_probe(struct platform_device *pdev)
- {
- 	struct fch_clk_data *fch_data;
-+	int ret;
- 
- 	fch_data = dev_get_platdata(&pdev->dev);
- 	if (!fch_data || !fch_data->base)
-@@ -44,35 +45,79 @@ static int fch_clk_probe(struct platform_device *pdev)
- 	if (!fch_data->is_rv) {
- 		hws[ST_CLK_48M] = clk_hw_register_fixed_rate(NULL, "clk48MHz",
- 			NULL, 0, 48000000);
-+		if (IS_ERR(hws[ST_CLK_48M]))
-+			return PTR_ERR(hws[ST_CLK_48M]);
-+
- 		hws[ST_CLK_25M] = clk_hw_register_fixed_rate(NULL, "clk25MHz",
- 			NULL, 0, 25000000);
-+		if (IS_ERR(hws[ST_CLK_25M])) {
-+			ret = PTR_ERR(hws[ST_CLK_25M]);
-+			goto err_st_clk_25m;
-+		}
- 
--		hws[ST_CLK_MUX] = clk_hw_register_mux(NULL, "oscout1_mux",
-+		hws[ST_CLK_MUX] = devm_clk_hw_register_mux(NULL, "oscout1_mux",
- 			clk_oscout1_parents, ARRAY_SIZE(clk_oscout1_parents),
- 			0, fch_data->base + CLKDRVSTR2, OSCOUT1CLK25MHZ, 3, 0,
- 			NULL);
-+		if (IS_ERR(hws[ST_CLK_MUX])) {
-+			ret = PTR_ERR(hws[ST_CLK_MUX]);
-+			goto err_st_clk_mux;
-+		}
- 
--		clk_set_parent(hws[ST_CLK_MUX]->clk, hws[ST_CLK_48M]->clk);
-+		ret = clk_set_parent(hws[ST_CLK_MUX]->clk, hws[ST_CLK_48M]->clk);
-+		if (ret)
-+			goto err_clk_set_parent;
- 
- 		hws[ST_CLK_GATE] = clk_hw_register_gate(NULL, "oscout1",
- 			"oscout1_mux", 0, fch_data->base + MISCCLKCNTL1,
- 			OSCCLKENB, CLK_GATE_SET_TO_DISABLE, NULL);
-+		if (IS_ERR(hws[ST_CLK_GATE])) {
-+			ret = PTR_ERR(hws[ST_CLK_GATE]);
-+			goto err_st_clk_gate;
-+		}
- 
--		devm_clk_hw_register_clkdev(&pdev->dev, hws[ST_CLK_GATE],
-+		ret = devm_clk_hw_register_clkdev(&pdev->dev, hws[ST_CLK_GATE],
- 			"oscout1", NULL);
-+		if (ret)
-+			goto err_register_st_clk_gate;
- 	} else {
- 		hws[RV_CLK_48M] = clk_hw_register_fixed_rate(NULL, "clk48MHz",
- 			NULL, 0, 48000000);
-+		if (IS_ERR(hws[RV_CLK_48M]))
-+			return PTR_ERR(hws[RV_CLK_48M]);
- 
- 		hws[RV_CLK_GATE] = clk_hw_register_gate(NULL, "oscout1",
- 			"clk48MHz", 0, fch_data->base + MISCCLKCNTL1,
- 			OSCCLKENB, CLK_GATE_SET_TO_DISABLE, NULL);
-+		if (IS_ERR(hws[RV_CLK_GATE])) {
-+			ret = PTR_ERR(hws[RV_CLK_GATE]);
-+			goto err_rv_clk_gate;
-+		}
- 
--		devm_clk_hw_register_clkdev(&pdev->dev, hws[RV_CLK_GATE],
-+		ret = devm_clk_hw_register_clkdev(&pdev->dev, hws[RV_CLK_GATE],
- 			"oscout1", NULL);
-+		if (ret)
-+			goto err_register_rv_clk_gate;
- 	}
- 
- 	return 0;
-+
-+err_register_st_clk_gate:
-+	clk_hw_unregister_gate(hws[ST_CLK_GATE]);
-+err_st_clk_gate:
-+err_clk_set_parent:
-+	clk_hw_unregister_mux(hws[ST_CLK_MUX]);
-+err_st_clk_mux:
-+	clk_hw_unregister_fixed_rate(hws[ST_CLK_25M]);
-+err_st_clk_25m:
-+	clk_hw_unregister_fixed_rate(hws[ST_CLK_48M]);
-+	return ret;
-+
-+err_register_rv_clk_gate:
-+	clk_hw_unregister_gate(hws[RV_CLK_GATE]);
-+err_rv_clk_gate:
-+	clk_hw_unregister_fixed_rate(hws[RV_CLK_48M]);
-+	return ret;
- }
- 
- static int fch_clk_remove(struct platform_device *pdev)
--- 
-2.25.1
+I think this is because without a help text there is no "config
+question" and thus nothing that allyesconfig would set to yes. I do
+agree though that it's better to be explicit and add the above to those
+Kconfigs that don't support HAS_IOPORT.
+Thanks,
+Niklas
 
