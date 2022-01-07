@@ -2,125 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1907CC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 01:23:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345169AbiAGBUU (ORCPT
+        id S1345174AbiAGBXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 6 Jan 2022 20:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345195AbiAGBUH (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 6 Jan 2022 20:20:07 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FAAC061245;
-        Thu,  6 Jan 2022 17:20:07 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id z30so599286pge.4;
-        Thu, 06 Jan 2022 17:20:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fw29SMG9zs2Lc8ckvr2Ud0WuhWRxk7FcTRUOfZLouWI=;
-        b=qgGfeHebJnI2mPy1fCaGOSyNojWYJJpUjAS0OdJPR9/+jXwplYkVxXzIGHtZ6yjcnG
-         gz45mlXRnSdJoGaVF1j0pyWogtD33YnYYOzHmW5h/TURflIeHl5AMN11OB9iZv3unziS
-         DGbkpZVP7B9FkiiTC8TsWUtrR7EsO1Y+7/9oKnvAedR9PvCMOYXD6S5vjsQeQ5i1xIvZ
-         2HHm+39YJ4RJIBITnFPxrBA5si/NmSWxqtXV2wHMCXrBO4lBTf6Z0X8kwnWkkScUwDYX
-         7BCTErqGz9du0G5EVIMzE/vZll79EfE+cSW8qIWfRgQrBJV0adwIjwk80kisTUQFiNsq
-         D4ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fw29SMG9zs2Lc8ckvr2Ud0WuhWRxk7FcTRUOfZLouWI=;
-        b=UP2CECRIv7hieF+dbLFvjANXRepaxn6HjtKaRn4IMIiK+2VFHlklYO/TOQSHXnDbWc
-         pNOCVAh83M/uCWrCWH0mHWfKolqjeoXG2GNRQRgtEnQsP3VDNxrGzOjq/GCdBnZf7jJE
-         arF+R1jgcOX2Zb5kMkhnoEU6k8q4nppZfIeJaqOWV6vey7pBo0SQ1ySyxWCX9E+l07z1
-         4jVbFzHOkx4D729yyBqiWg/GA5XW+J8vS1jW8C9Lxe992Fccv2ZyKwulDuFXhyH1Bg/D
-         rG3rxkIVYxzglrMxlgt4bIUmBB7jI3BlGOtQWWdcGHreHv7mN0narUurTADFdQ5N2fgq
-         Sw4A==
-X-Gm-Message-State: AOAM533SyZpCEz9u0GuKGZjLw4F0T1MhUu0boW/lsFuhh3J+pgO4YMpM
-        0hvbUzy6uEUC9xxveT1kSBfHFKvXfVLpBf2bULM=
-X-Google-Smtp-Source: ABdhPJx9kdiC9H7F8/0GppMF32c4y0gvMqPnzyIsGPRGZbsOfetEhWFolPNs9CBWNyQg47YnFWEC9mNf+MukmnZnS10=
-X-Received: by 2002:a63:8f06:: with SMTP id n6mr55290339pgd.95.1641518407032;
- Thu, 06 Jan 2022 17:20:07 -0800 (PST)
+        Thu, 6 Jan 2022 20:23:53 -0500
+Received: from mail-bn8nam08on2040.outbound.protection.outlook.com ([40.107.100.40]:1249
+        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1344075AbiAGBXv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 6 Jan 2022 20:23:51 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UypKQUoqjZLV87wg5ftBgEdguLMp2EycHZF7bfX6J7V1kCRMMfwqc4rQ+XlmaDx9aS/+9/5j98Omo3KyMqQkzOuFbX+yEFE+eAAjpuP76r9hDR5Dzkel28cUOyh/wEHRknZEEKOUCWmGxuGicw79p5dST62qefOw9EB8Qx7Q7M8vu7aUnj+SHtGwUurmiuuQzG01KUW2ycI2FscozLc/hVcEGEX3Osn5ukgmT+hA5rGWp4uNky3yHEDLLaC2VAOrGSulqHegVqYmn8lP41dxOaMg+V89KkzcZWZW2c9VUbJc4oDNw8PDLRVlBoIy4081zC8C9wjfbdYDgAMtgyh98w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KwUMq4rQo3+zzSt1Ib7f/zvzZoncMXEc57CZZVardbs=;
+ b=JWtTonYCyTJg/PX0AxIK1RljNC6KgH+7fCueKvElTh6h3q2sXgTbmjNCAjwJBl7kpDMBU5YQxouAxC2yg2j1xFqbQSJRH7qlafYoQq0W9kqgxzdduGygMcDemi1pvQ1cLEHkuct67nkplEIUNv0v1yB4Fcy/z9T1Of2gO8eUCGssJfIRdpeIzehH4zouvljxcInZG1CAqX1jcNubOcE2y0pXwz+fOdjrX/bEuIs6v3jq+XMKkXk5J+xwh0dYAn4ClVFlLEcyeJaRLvI00ELBqwZXneJEFlAQltAaeL9u10DzKv611dLIRKgLYwA9TuN9Jy/wy+FoUc0d7wEIv5PVRg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KwUMq4rQo3+zzSt1Ib7f/zvzZoncMXEc57CZZVardbs=;
+ b=CJzea/SuOxMVFMEPkVpe663CdqqWWsCBWouJushTL6xqSXBG8uWv709L/7GhuMDwoXyIf6bVmnqcoq36YCHSkTadmpRRhTa9BV3+tywsGRSU1P27xTn8JpMNXrtNM9OxQ+3+bec9s8dbxJnmXI76jrh1kY3G0WZMfa1n/4M6nfk=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM5PR12MB2504.namprd12.prod.outlook.com (2603:10b6:4:b5::19) by
+ DM5PR12MB1836.namprd12.prod.outlook.com (2603:10b6:3:114::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4867.9; Fri, 7 Jan 2022 01:23:49 +0000
+Received: from DM5PR12MB2504.namprd12.prod.outlook.com
+ ([fe80::f02e:2cba:7c63:e368]) by DM5PR12MB2504.namprd12.prod.outlook.com
+ ([fe80::f02e:2cba:7c63:e368%4]) with mapi id 15.20.4844.017; Fri, 7 Jan 2022
+ 01:23:49 +0000
+Date:   Fri, 7 Jan 2022 09:23:24 +0800
+From:   Huang Rui <ray.huang@amd.com>
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Yuan, Perry" <Perry.Yuan@amd.com>,
+        "Su, Jinzhou (Joe)" <Jinzhou.Su@amd.com>,
+        "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+        kernel test robot <lkp@intel.com>,
+        Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Stable <stable@vger.kernel.org>
+Subject: Re: [PATCH 2/2] x86, sched: Fix the undefined reference building
+ error of init_freq_invariance_cppc
+Message-ID: <YdeWDDCwBQAYnlKb@amd.com>
+References: <20220106074306.2712090-1-ray.huang@amd.com>
+ <20220106074306.2712090-2-ray.huang@amd.com>
+ <CAJZ5v0htW=twuLY88XJmLGnDtmmjoav=Z8WLZZcjG29-YKQMog@mail.gmail.com>
+ <CAJZ5v0iH=rAgC0YPcCv_zoMtNoA1hG=ZGgLRdrgKqWAjmsYqcw@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJZ5v0iH=rAgC0YPcCv_zoMtNoA1hG=ZGgLRdrgKqWAjmsYqcw@mail.gmail.com>
+X-ClientProxiedBy: HK2PR03CA0058.apcprd03.prod.outlook.com
+ (2603:1096:202:17::28) To DM5PR12MB2504.namprd12.prod.outlook.com
+ (2603:10b6:4:b5::19)
 MIME-Version: 1.0
-References: <20220106132022.3470772-1-imagedong@tencent.com>
-In-Reply-To: <20220106132022.3470772-1-imagedong@tencent.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 6 Jan 2022 17:19:55 -0800
-Message-ID: <CAADnVQJQxaxDc6VPVRvqVbUyp7160TzxVOED_ZQgu5nxJLxQhg@mail.gmail.com>
-Subject: Re: [PATCH v5 net-next 0/3] net: bpf: handle return value of
- post_bind{4,6} and add selftests for it
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 296c2028-11d3-4680-1d7e-08d9d17c5b61
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1836:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB183674A47A832B8FBFB527A5EC4D9@DM5PR12MB1836.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WStylXZmNmioSkyxykXPGRjYwh3pJkxPAVk+XikQ3d2yOmRzGRA2Di9N3G6fs7BMHIfdEP07MeiChXaDqWmvOcn0drCLwVwRIyCjJ718lhJeaesDHerOvG4MsItJNbSv8gy2zvuATELxF3XxTfOcEXBFWNcZUQhrlC1Z7PrW8SokG2UMiy8Mk+14q64DGLddSj98oRS//uXaAEv6944YSAxEtbeKVIuPW9rM5dfeDjOHX12dyTBuByASg/PtRetu5z5F1tMQmoUrrpSwKMs74V4G9RSH+/2pP5km0jWoVcLISCU4FXzpLvtuWortJWJAzGGWxUaJ2OEu5trpH/x/oRqIC3Pfwh+PkhOaswxmdo16tw1FxvMVuRFJ1XJqZvhAtaWydTNeeV+x1ZIKUUhJnUCly50X49AxkrL80+nVLWfW2WouxcQ0HYmthmiVfpdLG4aIZ9FNLipZvvCq2VprCdOznCnj29Fpu9Xj5QC0DgReF1Whq8Onfum0P/f+Y/VmzKYd89ksut0KXXNEeROBy3d0HPu57c9ZU41FKw4LfWn0zpqD2VdIE/7g0Yl0749AWeMvYtuyryIykHMcIxKXVfl8zIWQyc8nKVx9BwNd3zwNpUgaPK30awpDqjMSQkknuEqKQUDUm4vve3/vl/dgirOsbL5CLZP8yGjFSBNQsdebHfZM+FeUgR+BcWKCQx6zMimfZ0wUB7UydQx1ZKW56Qt8Q/NEzxW6FdBV/h+6cIc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB2504.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(6486002)(45080400002)(8936002)(83380400001)(6916009)(6506007)(53546011)(26005)(508600001)(54906003)(6512007)(4326008)(7416002)(6666004)(2906002)(66946007)(966005)(36756003)(8676002)(66476007)(66556008)(2616005)(186003)(5660300002)(38100700002)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8/d4TRCqLoakZfwl1+hJvOjKJRg1FpMR8Ud/Ssh7Sba3VHQieaJkkbj6UbsC?=
+ =?us-ascii?Q?euYxIJz402+qA6bjUdZsCLk6AH1I4CKtkUXJawQtC/oaZw0zjkgteTIHhi1U?=
+ =?us-ascii?Q?k73j3sfxM8dwBBPIZubzvmWNAazsBeu3y8R+iY+nmFA5ss++ZLcRjVoxWa+N?=
+ =?us-ascii?Q?KoHOHQG79uPrzebC6nnG19SfbJO2RKsldT0d3ivRpvHma0ovuoyB8q2XqTaK?=
+ =?us-ascii?Q?u+WXw5k/zfsvx+CxQpxApBDAPRzGikNGqY1vQaH9MhqEP80g9j7+zFNbQKiQ?=
+ =?us-ascii?Q?KEl8s7KYgAiTR9mXSkq8ERMEfCD4xebfEmQHJ/I6XyK6D4RKvLfmWVGczFhc?=
+ =?us-ascii?Q?PjZJaI2kqdUfJxoBIV6J5bNXrQOECHolP/qPXi/sDUE2Qj/oTN6wZVZ8hIxF?=
+ =?us-ascii?Q?PFdSieRLtkcR5ttjTY+WES6Zvsj/PgjQv88UxizwQDxETgOzxxj/FDfg1Kcj?=
+ =?us-ascii?Q?lv1Qp8/bbHWoSRXhQSnch548VIm7Lqyxd2aKcwEU44mnGucWd/M2LNrofV0O?=
+ =?us-ascii?Q?sbLCm7uaSPILExaFOsleFOL05+T8nndFNkJngaY+o7yjWRogivwuRh3A2hgY?=
+ =?us-ascii?Q?tfqpHxzpGzIfEEyfY9tVMnugQR2NzgcTcerTYap+H37aq6iHmktRwgTRth8P?=
+ =?us-ascii?Q?+UwhBL9tPhwNjwbhTG4OG9ofiiutGa9anwAK97CxzNQGptjQRfqP66hKnfZz?=
+ =?us-ascii?Q?XSw/hQcXPenE4Qqf0AMIsR+G9uQk+JesXLMrUQBxrWQn7ktHA8mr2R6KcoVN?=
+ =?us-ascii?Q?0CYkuGms/5P6c+yU4yWiULXKKqo+35k5iW/9sY2F3egbUiN1EyDngBomG/NN?=
+ =?us-ascii?Q?Bsuc+BU2boXFa4UB+RMsdH1JLi0N8swGSyLzzPQriIkgNNoktkPq669q4/YG?=
+ =?us-ascii?Q?EhxuaK8+JLEe+ZNikHCVtMxIUkZhqqKMU2XUkletFlJBPm1CFto31W9vKUdS?=
+ =?us-ascii?Q?7AAeYyQW5pl0sKs51/Qsb+xrSyoMnlnYwH5RFXFA191fsj3uXdt/FmhMXXld?=
+ =?us-ascii?Q?IzzHvyyvRgfuaACvfKg1g7qFG+uk1A8MQYAtSb2g+XbIQsChapMmRcApwgYe?=
+ =?us-ascii?Q?IMHIXV1cvFh63jdHwFU9lPGH/BbST1fijrOniEqoUK/q5lX53grcrBQoe2EH?=
+ =?us-ascii?Q?wf0XkeGnDOB8Atiy58e7866lsxq4T8NLkdgDdG4rNh1vRoXUzPJDOeaTsLJ9?=
+ =?us-ascii?Q?IVP+xbI5kBjpeMgJ2Dq3XIGMVOx7blBBx0N8bk9vru6AB1GYZSGtXBqsRZ6C?=
+ =?us-ascii?Q?cha2qAc6gX2vYgx9RH7QXaUxus89605lbrIKlh9HscuhITOF7Oe1yDWXDoGp?=
+ =?us-ascii?Q?vral/N0+YdNbfV2ETNYr6ae59a7NgYrxrsFGVgpTt3gqqgOUDXk/bomGa6IV?=
+ =?us-ascii?Q?aDzkBbchkyRDGSFa/YCox+bDujxeO2BpSTim5NZXGsQnS5isLVwey11OnHp/?=
+ =?us-ascii?Q?076ingsd/cuqoT4dizyLKMAhqWO37HvAasN4LA4+OFp/1mto+Czvd1HJ/5u8?=
+ =?us-ascii?Q?POq1TZE02c3Fg+wwXVANqoK+mijPi/EqVh9At503MG0Wt2PnMrU9IDnLFoQw?=
+ =?us-ascii?Q?frM6wW4GevfrymRikk0DAga96ATG9v7eOuZ83rzc9QxfdUszPSXyjJXQZ1c7?=
+ =?us-ascii?Q?g2Edg0Cp4347kZXK+T6VECA=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 296c2028-11d3-4680-1d7e-08d9d17c5b61
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB2504.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jan 2022 01:23:49.1533
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NteTZxYY3NqD04lFlhX8F8a35+QMK5rAlYqGr6cmL2yY6fNh0WRgNXu2/5E7OnfVde2xwevcjU9XHvmldtH2zg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1836
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 5:20 AM <menglong8.dong@gmail.com> wrote:
->
-> From: Menglong Dong <imagedong@tencent.com>
->
-> The return value of BPF_CGROUP_RUN_PROG_INET{4,6}_POST_BIND() in
-> __inet_bind() is not handled properly. While the return value
-> is non-zero, it will set inet_saddr and inet_rcv_saddr to 0 and
-> exit:
-> exit:
->
->         err = BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk);
->         if (err) {
->                 inet->inet_saddr = inet->inet_rcv_saddr = 0;
->                 goto out_release_sock;
->         }
->
-> Let's take UDP for example and see what will happen. For UDP
-> socket, it will be added to 'udp_prot.h.udp_table->hash' and
-> 'udp_prot.h.udp_table->hash2' after the sk->sk_prot->get_port()
-> called success. If 'inet->inet_rcv_saddr' is specified here,
-> then 'sk' will be in the 'hslot2' of 'hash2' that it don't belong
-> to (because inet_saddr is changed to 0), and UDP packet received
-> will not be passed to this sock. If 'inet->inet_rcv_saddr' is not
-> specified here, the sock will work fine, as it can receive packet
-> properly, which is wired, as the 'bind()' is already failed.
->
-> To undo the get_port() operation, introduce the 'put_port' field
-> for 'struct proto'. For TCP proto, it is inet_put_port(); For UDP
-> proto, it is udp_lib_unhash(); For icmp proto, it is
-> ping_unhash().
->
-> Therefore, after sys_bind() fail caused by
-> BPF_CGROUP_RUN_PROG_INET4_POST_BIND(), it will be unbinded, which
-> means that it can try to be binded to another port.
->
-> The second patch use C99 initializers in test_sock.c
->
-> The third patch is the selftests for this modification.
->
-> Changes since v4:
-> - use C99 initializers in test_sock.c before adding the test case
+On Fri, Jan 07, 2022 at 01:46:04AM +0800, Rafael J. Wysocki wrote:
+> On Thu, Jan 6, 2022 at 6:12 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> >
+> > On Thu, Jan 6, 2022 at 8:43 AM Huang Rui <ray.huang@amd.com> wrote:
+> > >
+> > > The init_freq_invariance_cppc function is implemented in smpboot and depends on
+> > > CONFIG_SMP.
+> > >
+> > >   MODPOST vmlinux.symvers
+> > >   MODINFO modules.builtin.modinfo
+> > >   GEN     modules.builtin
+> > >   LD      .tmp_vmlinux.kallsyms1
+> > > ld: drivers/acpi/cppc_acpi.o: in function `acpi_cppc_processor_probe':
+> > > /home/ray/brahma3/linux/drivers/acpi/cppc_acpi.c:819: undefined reference to `init_freq_invariance_cppc'
+> > > make: *** [Makefile:1161: vmlinux] Error 1
+> > >
+> > > See https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore.kernel.org%2Flkml%2F484af487-7511-647e-5c5b-33d4429acdec%40infradead.org%2F&amp;data=04%7C01%7Cray.huang%40amd.com%7Cde64292b38394cf2cac508d9d13c701c%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637770879795785268%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=BtO45nsVaYM%2BBytS%2B5GOPQuIadaiUEnzzaSmydsl0Jo%3D&amp;reserved=0.
+> > >
+> > > Fixes: 41ea667227ba ("x86, sched: Calculate frequency invariance for AMD systems")
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> > > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> > > Signed-off-by: Huang Rui <ray.huang@amd.com>
+> > > Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> > > Cc: Borislav Petkov <bp@alien8.de>
+> > > Cc: Ingo Molnar <mingo@kernel.org>
+> > > Cc: Peter Zijlstra <peterz@infradead.org>
+> > > Cc: x86@kernel.org
+> > > Cc: stable@vger.kernel.org
+> > > ---
+> > >  arch/x86/include/asm/topology.h | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
+> > > index cc164777e661..2f0b6be8eaab 100644
+> > > --- a/arch/x86/include/asm/topology.h
+> > > +++ b/arch/x86/include/asm/topology.h
+> > > @@ -221,7 +221,7 @@ static inline void arch_set_max_freq_ratio(bool turbo_disabled)
+> > >  }
+> > >  #endif
+> > >
+> > > -#ifdef CONFIG_ACPI_CPPC_LIB
+> > > +#if defined(CONFIG_ACPI_CPPC_LIB) && defined(CONFIG_SMP)
+> > >  void init_freq_invariance_cppc(void);
+> > >  #define init_freq_invariance_cppc init_freq_invariance_cppc
+> >
+> > Why don't you check CONFIG_SMP instead of this symbol in cppc_acpi.c?
+> > That file depends on CONFIG_ACPI_CPPC_LIB anyway.
+> 
+> Scratch that, it needs to compile on non-x86 too.
+> 
+> The $subject patch is cleaner than all of the alternatives I have
+> considered, so I'm going to apply it.
+> 
+> However, I'm not really happy with the dependencies between CPPC and
+> smpboot.c going both ways.
 
-Thanks for the fix. Applied.
+Thanks, for urgent fix for linux-next, I think we can use this patch at
+this moment.
+Let me think out a better way to handle the dependencies next step. :-)
 
-In the future please make sure to tag your patches with
-[PATCH bpf-next]
-so that BPF CI can properly test it right away.
+Thanks,
+Ray
