@@ -2,110 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F950C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8786FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 08:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346227AbiAGIzM (ORCPT
+        id S1346250AbiAGI5t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 03:55:12 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:57262 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346229AbiAGIzK (ORCPT
+        Fri, 7 Jan 2022 03:57:49 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:57341 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1346181AbiAGI5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 03:55:10 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 27E4321126;
-        Fri,  7 Jan 2022 08:55:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1641545709; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rsH9bvGYmcoVLtgyOeudSiXiKCPWiynwrsli+B3sPnQ=;
-        b=UP1E+5z3SkIzHd+AgFvtKhkj1igIXiPHVg/zKRG/6JCEPDtSsv/kAIQ8PFbHCkl0nCi/br
-        hjj1L7x0eW/vzawzbR1Q4qKP+0Qrv/i533npRsABif8OOsXzQmjRYZWVA6IXXt2+j1B7Zd
-        bSMWFbCfwgwfJ7VkTFpFlJvSnhKWG8E=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6642DA3B91;
-        Fri,  7 Jan 2022 08:55:08 +0000 (UTC)
-Date:   Fri, 7 Jan 2022 09:55:08 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Subject: Re: [PATCH v6 6/9] mm: multigenerational lru: aging
-Message-ID: <Ydf/7DDu94fMs0CG@dhcp22.suse.cz>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <20220104202227.2903605-7-yuzhao@google.com>
- <YdcU4P+XWkbDUUoO@dhcp22.suse.cz>
- <Yddh+APQGg8dKRgw@google.com>
+        Fri, 7 Jan 2022 03:57:46 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=tianjia.zhang@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0V1AKtGu_1641545860;
+Received: from 30.240.102.225(mailfrom:tianjia.zhang@linux.alibaba.com fp:SMTPD_---0V1AKtGu_1641545860)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 07 Jan 2022 16:57:42 +0800
+Message-ID: <c3ddb561-15b0-855f-b50c-c97ebd0f5976@linux.alibaba.com>
+Date:   Fri, 7 Jan 2022 16:57:39 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yddh+APQGg8dKRgw@google.com>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH v3 2/6] crypto: arm64/sm3-ce - make dependent on sm3
+ library
+Content-Language: en-US
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Vitaly Chikunov <vt@altlinux.org>,
+        Eric Biggers <ebiggers@google.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Gilad Ben-Yossef <gilad@benyossef.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jussi Kivilinna <jussi.kivilinna@iki.fi>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-crypto@vger.kernel.org,
+        x86@kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20211223043547.32297-1-tianjia.zhang@linux.alibaba.com>
+ <20211223043547.32297-3-tianjia.zhang@linux.alibaba.com>
+ <YdezdZQHZT2+iYV3@gondor.apana.org.au>
+From:   Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+In-Reply-To: <YdezdZQHZT2+iYV3@gondor.apana.org.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 06-01-22 14:41:12, Yu Zhao wrote:
-> On Thu, Jan 06, 2022 at 05:12:16PM +0100, Michal Hocko wrote:
-> > On Tue 04-01-22 13:22:25, Yu Zhao wrote:
-> > > +static struct lru_gen_mm_walk *alloc_mm_walk(void)
-> > > +{
-> > > +	if (!current->reclaim_state || !current->reclaim_state->mm_walk)
-> > > +		return kvzalloc(sizeof(struct lru_gen_mm_walk), GFP_KERNEL);
-> > > +
-> > > +	return current->reclaim_state->mm_walk;
-> > > +}
-> > > +
-> > > +static void free_mm_walk(struct lru_gen_mm_walk *walk)
-> > > +{
-> > > +	if (!current->reclaim_state || !current->reclaim_state->mm_walk)
-> > > +		kvfree(walk);
-> > > +}
-> > 
-> > Do I get it right that you are allocating from the reclaim context? What
-> > prevents this to completely deplete the memory as the reclaim context is
-> > PF_MEMALLOC?
+Hi Herbert,
+
+On 1/7/22 11:28 AM, Herbert Xu wrote:
+> On Thu, Dec 23, 2021 at 12:35:43PM +0800, Tianjia Zhang wrote:
+>> SM3 generic library is stand-alone implementation, sm3-ce can depend
+>> on the SM3 library instead of sm3-generic.
+>>
+>> Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+>> ---
+>>   arch/arm64/crypto/Kconfig       |  2 +-
+>>   arch/arm64/crypto/sm3-ce-glue.c | 20 ++++++++++++++------
+>>   2 files changed, 15 insertions(+), 7 deletions(-)
 > 
-> Yes, and in general the same reason zram/zswap/etc. allocate memory in
-> the reclaim context: to make more free memory.
+> This doesn't compile cleanly with C=1 W=1:
+> 
+>    CC [M]  arch/arm64/crypto/sm3-ce-glue.o
+>    AS [M]  arch/arm64/crypto/sm3-ce-core.o
+>    CC [M]  arch/arm64/crypto/sm4-ce-glue.o
+>    CHECK   ../arch/arm64/crypto/sha3-ce-glue.c
+> ../arch/arm64/crypto/sm3-ce-glue.c: In function ‘sm3_ce_update’:
+> ../arch/arm64/crypto/sm3-ce-glue.c:30:10: error: void value not ignored as it ought to be
+>     30 |   return sm3_update(shash_desc_ctx(desc), data, len);
+>        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> ../arch/arm64/crypto/sm3-ce-glue.c: In function ‘sm3_ce_final’:
+> ../arch/arm64/crypto/sm3-ce-glue.c:42:10: error: void value not ignored as it ought to be
+>     42 |   return sm3_final(shash_desc_ctx(desc), out);
+>        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> make[3]: *** [../scripts/Makefile.build:287: arch/arm64/crypto/sm3-ce-glue.o] Error 1
+> make[3]: *** Waiting for unfinished jobs....
+> 
+> Please make sure everything builds cleanly with C=1 W=1 *before*
+> you submit.
+> 
+> Thanks,
 
-I have to admit that I am not really familiar with zram/zswap but I find
-the concept of requiring memory to do the reclaim really problematic.
- 
-> In this case, lru_gen_mm_walk is small (160 bytes); it's per direct
-> reclaimer; and direct reclaimers rarely come here, i.e., only when
-> kswapd can't keep up in terms of the aging, which is similar to the
-> condition where the inactive list is empty for the active/inactive
-> lru.
+Thanks for pointing it out, will fix it in next patch. There will never 
+be such a low-level error in the future
 
-Well, this is not a strong argument to be honest. Kswapd being stuck
-and the majority of the reclaim being done in the direct reclaim
-context is a situation I have seen many many times. We used to have
-problems with direct reclaimers throttling to prevent an over eager OOM
-situations.
-
-Have you considered using a pool of preallocated objects instead?
--- 
-Michal Hocko
-SUSE Labs
+Kind Regards,
+Tianjia
