@@ -2,137 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5412DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 19:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232416AbiAGTF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 14:05:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50998 "EHLO
+        id S232343AbiAGTGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 14:06:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232026AbiAGTFX (ORCPT
+        with ESMTP id S233301AbiAGTEl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 14:05:23 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8792C061574
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:05:22 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id 196so5878449pfw.10
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 11:05:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+S72sOYOwXg9RPix1lZvjtLtkj3XFLsZ4gEDpSvt8vs=;
-        b=UNlRvA2ZuRZGr24qbY8d8HRyinc6EpOYSKt7DfYa7U+pylhqD10egaBHZVcWbFvg+d
-         HZZoCKimfsUYVZ6hLdx9fE8635nsrgDrj+L00L/QA/Cjac6/OItLx2Gm1LMQY7kdBjlm
-         gUl11sQ+hRSXhsijE3Lz0JsafCc/WMzMcjN+p2ZjS7WJkqTYR8lO8OzMXzBLllf3FZN8
-         6SuFHJFHb0+VTxIFi9KbZl/oUBDvS7ua7q/kqOUOmGT9RC+dhhVS1J2U1EpVpDJqJhew
-         Efg7LRldeNgMVDWyPjGhSj7BNZ5UuIesQ0y/zYKcFCgYdMO4ccJ3NrTfKraxrHj6N1TQ
-         QivQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+S72sOYOwXg9RPix1lZvjtLtkj3XFLsZ4gEDpSvt8vs=;
-        b=WxNsCOmSHemOFdN2BS4LpjP0wvNrkWDQm4XO7+rRC5req7pH8T2UF5sGWl0KP7mzNs
-         Q0TklaVmez354TZ8q4wP1oJEc0UEQN5DSxSo6ptLvyaeM4lRhcXYTr9JgwGJViL5wzad
-         qXDB6bqn+HyK02jC+zMWe/c6+cBOTRJc59cTarUCGn5Hrw0ojXUFWT81vzm7biSonqCL
-         bxplVt2g/Utxl4gBVS+FAwyj7PEeFFQ1zLglzhVbpeT0zwsHzFk9OikAHnlXf9+ehXh7
-         +Qey3wyJKY6oJY1mhcDGGd4dc2FUHhqRw9QBmRbaa0dv66gAxfeeJ83hp5u4wXP2WpgO
-         CJUA==
-X-Gm-Message-State: AOAM5334zJRY7UmIzzWUuDw6V175TFktjESWXwQd7rTjEJzl8CTcgUxs
-        bfQ3Icj4DT4vLAX/c4ihxIMN+a7TRhD0UUOkxsNCdA==
-X-Google-Smtp-Source: ABdhPJybEblBw8MdINxXy3+9JK7qlDbdUwo1shN48fzEsrE5iAHxprn/bdZ6bdR1DoPb8Rx12GSfNjxZRna6xpg2RNM=
-X-Received: by 2002:a05:6a00:1249:b0:4bb:4a31:1e0a with SMTP id
- u9-20020a056a00124900b004bb4a311e0amr65535466pfi.81.1641582321973; Fri, 07
- Jan 2022 11:05:21 -0800 (PST)
+        Fri, 7 Jan 2022 14:04:41 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C982BC061574
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 11:04:40 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B21291EC0464;
+        Fri,  7 Jan 2022 20:04:34 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1641582274;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=j2Ys9WzxqcLdk3uO6iVdMdmZ3zgyVkKQmNj4ZKYY9HQ=;
+        b=GTyM5CJpu4t/5K3tu4woRUVpkdIhXbI6habGouLj7VQQIkKjgwHiOIdRaToo61h2tSMS2m
+        qwsgqZ1vqZR1U1gu4emCOik1IzUEBkvKKIZO88ZtLgvVhUHL4DCLdphMGA9U/sFEC/Tt0O
+        1jdmVmq1LgKbCra7eRXk75PNru21jeg=
+Date:   Fri, 7 Jan 2022 20:04:36 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/26] x86/tdx: Handle in-kernel MMIO
+Message-ID: <YdiOxFaZCTBFQdQA@zn.tnic>
+References: <20211214150304.62613-1-kirill.shutemov@linux.intel.com>
+ <20211214150304.62613-9-kirill.shutemov@linux.intel.com>
+ <YdV1BpMiAUGrwASv@zn.tnic>
+ <20220105154311.bocij4mwbga4t2hb@box.shutemov.name>
+ <YdhEQTnm+XMxoDPW@zn.tnic>
+ <20220107174926.rh35qcyhu6u2tkzw@box.shutemov.name>
 MIME-Version: 1.0
-References: <20211222001127.3337471-1-rajatja@google.com> <20211222001127.3337471-2-rajatja@google.com>
- <Ydh7u1kuXSMzwmW0@google.com>
-In-Reply-To: <Ydh7u1kuXSMzwmW0@google.com>
-From:   Rajat Jain <rajatja@google.com>
-Date:   Fri, 7 Jan 2022 11:04:46 -0800
-Message-ID: <CACK8Z6HbKR5QktJjK1+QCKoLCJUHK8btQN5Xbij8A66VYzhcHw@mail.gmail.com>
-Subject: Re: [PATCH v4 2/3] platform/chrome: Add driver for ChromeOS privacy-screen
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Benson Leung <bleung@chromium.org>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        Mark Gross <markgross@kernel.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        ibm-acpi-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org, gwendal@google.com,
-        seanpaul@google.com, marcheu@google.com, rajatxjain@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220107174926.rh35qcyhu6u2tkzw@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Dmitry, Benson,
+On Fri, Jan 07, 2022 at 08:49:26PM +0300, Kirill A. Shutemov wrote:
+> To emulate an instruction the emulator needs two things:
+> 
+>   - R/W access to the register file to read/modify instruction arguments
+>     and see RIP of the faulted instruction.
+> 
+>   - Read access to memory where instruction is placed to see what to
+>     emualte. In this case it is guest kernel text.
+> 
+> Both of them are not available to VMM in TDX environment:
+> 
+>   - Register file is never exposed to VMM. When a TD exits to the module,
+>     it saves registers into the state-save area allocated for that TD.
+>     The module then scrubs these registers before returning execution
+>     control to the VMM, to help prevent leakage of TD state.
+> 
+>   - Memory is encrypted TD-private key. The CPU disallows software other
+>     than the TDX module and TDs from making memory accesses using the
+>     private key.
 
-On Fri, Jan 7, 2022 at 9:43 AM Dmitry Torokhov
-<dmitry.torokhov@gmail.com> wrote:
->
-> Hi Rajat,
->
-> On Tue, Dec 21, 2021 at 04:11:26PM -0800, Rajat Jain wrote:
-> > +static int chromeos_privacy_screen_remove(struct acpi_device *adev)
-> > +{
-> > +     struct drm_privacy_screen *drm_privacy_screen = acpi_driver_data(adev);
->
-> Please add an empty line here:
->
-> WARNING: Missing a blank line after declarations
-> #292: FILE: drivers/platform/chrome/chromeos_privacy_screen.c:129:
-> +       struct drm_privacy_screen *drm_privacy_screen = acpi_driver_data(adev);
-> +       drm_privacy_screen_unregister(drm_privacy_screen);
->
-> > +     drm_privacy_screen_unregister(drm_privacy_screen);
-> > +     return 0;
-> > +}
-> > +
-> > +static const struct acpi_device_id chromeos_privacy_screen_device_ids[] = {
-> > +     {"GOOG0010", 0}, /* Google's electronic privacy screen for eDP-1 */
-> > +     {}
-> > +};
-> > +MODULE_DEVICE_TABLE(acpi, chromeos_privacy_screen_device_ids);
-> > +
-> > +static struct acpi_driver chromeos_privacy_screen_driver = {
-> > +     .name = "chromeos_privacy_screen_drvr",
->
-> Could I buy 2 move vowels? ;)
->
-> > +     .class = "ChromeOS",
-> > +     .ids = chromeos_privacy_screen_device_ids,
-> > +     .ops = {
-> > +             .add = chromeos_privacy_screen_add,
-> > +             .remove = chromeos_privacy_screen_remove,
-> > +     },
-> > +};
-> > +
-> > +module_acpi_driver(chromeos_privacy_screen_driver);
-> > +MODULE_LICENSE("GPL v2");
-> > +MODULE_DESCRIPTION("ChromeOS ACPI Privacy Screen driver");
-> > +MODULE_AUTHOR("Rajat Jain <rajatja@google.com>");
->
-> Otherwise
->
-> Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Thanks, that's very helpful info. It would be nice to have it in the
+commit message.
 
-Thanks! I took care of your comments and posted a v5:
-https://patchwork.kernel.org/project/platform-driver-x86/patch/20220107190208.95479-2-rajatja@google.com/
+-- 
+Regards/Gruss,
+    Boris.
 
-Thanks & Best Regards,
-
-Rajat
-
-
->
-> Thanks.
->
-> --
-> Dmitry
+https://people.kernel.org/tglx/notes-about-netiquette
