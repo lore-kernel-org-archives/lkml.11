@@ -2,163 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5669BC43219
-	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 16:33:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F03C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri,  7 Jan 2022 16:35:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348279AbiAGQdn (ORCPT
+        id S1348286AbiAGQfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 11:33:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44218 "EHLO
+        Fri, 7 Jan 2022 11:35:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348268AbiAGQdm (ORCPT
+        with ESMTP id S240146AbiAGQfC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 11:33:42 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9A3C06173F
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 08:33:41 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id k21so17567198lfu.0
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 08:33:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UhF6StDpI+3ZSQ6faKXsbBjH2ED0Nvwq42ETEz4x9/g=;
-        b=GfA0cldfIieDD4gKWyksixy8aDD3yca5nIRpVxlKor5YXoZ73svrV5gQNQWU1QRS+T
-         lG/tO43LaEmQ8cXjrOMICRqHlsDQvFxWqBYVXfOuO5Z18T/XUTq2f+LpzN56W2B4v/Ya
-         MvKg+J3KHJQ1Ugg4I+zfX7lQoNo9OSM9/wODvvxXf5xs9BA5ss2+P4+qjCt4PVMtgbi0
-         cZKETLV9n482jRFAH+DpdfJVfH9y6GcJn7lgrEagqRIc7p1xYQvYu0D5YSJBsbteBUdR
-         Bqc361go5ui1A+xiijGtK+07cIP14v9UBveCyhspOCF7DAoG3KlTMkoXe3S8uaQr6wkk
-         qHxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UhF6StDpI+3ZSQ6faKXsbBjH2ED0Nvwq42ETEz4x9/g=;
-        b=wZdnbb6jQV6qXIehG+aZhgM1hhVjfPFGoxSsxHG2yEjWUoLhH5sCucAb0SeDE28All
-         rD8WEjGsRp/lp7mSieXkEh2wJqOT0tXML/pVpez/+bvYYt7rRFU4dMYuGsAJPnm1ySfe
-         7RrpQ5Hu/9hrBBqF6h5wfDGjvbmCyUYTHfxoKHkRNPruR7U+H9Hzp+3Uh2gWO30gXeK5
-         MBhad/pWyqJ4qmYAVaLZpEav2q1YOUgaQhE85wVq4Ht7RuXPbOcaGgFAFe+gNrrZkaS9
-         rT7KN3HdDD4j/cwgoDwQHronK0sWoSvMZhsXQDqabJyDS/qbp06R6iM5leI63iyBSZfL
-         tYxg==
-X-Gm-Message-State: AOAM53389j7zxYSe/b4PKYO9qQUIbF0dLeNyR+igQqGB/kBEbrz2GSrl
-        86RCDYStPFFDQWPh3vRVkZxKXhtnOBqHre4WDW3QMA==
-X-Google-Smtp-Source: ABdhPJzEuYs2SrCVpC4N16SjpYsCCsLOn5le1WCCeYZTgg3m4RBql877sG3Jf9246QuyNJuQuYqOyfGO06QpvouC8jI=
-X-Received: by 2002:a05:651c:1246:: with SMTP id h6mr39389480ljh.300.1641573220004;
- Fri, 07 Jan 2022 08:33:40 -0800 (PST)
+        Fri, 7 Jan 2022 11:35:02 -0500
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF6CFC061574;
+        Fri,  7 Jan 2022 08:35:02 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 596EE385;
+        Fri,  7 Jan 2022 16:35:02 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 596EE385
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1641573302; bh=YhgZI0FFIn0hZaq5zbXIpWpArNqcf+xaFaMH98W3O7s=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=gTjKnqYjVLLwUDWp64VbAkskquX2XUz9xQJ8vRD7IsI0mZm22pbQZdmvb0APZcq6M
+         OzTcRyrmK6awej83cn0KhEWaDSJJbXwzjrV0tyUQdftmMlfpotBRdZZycfLWxQRnwu
+         FkwVi15P5z6ilqv5JHYtCljs2ySVSVNJLajatC6uHownbh2OTNoZmSOnlD8EwVkxWF
+         XZ9+FaWk754mukv+S3FI+uQBA6iJnZJHVCEw1kKqq8hmdkQ6iL2mPnQuawHd8KsJ5e
+         /EsBJPX7zlvnLesLSCUjCAmueO9yMxKDHtOvD/uXkDRwbFFTrz450u2PMzgcg3cIeG
+         +gRLXcDp7pNrw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     James Clark <james.clark@arm.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: Fixes tag needs some work in the jc_docs tree
+In-Reply-To: <c13988e1-fd85-03e5-a05d-7bfee16d4c8d@arm.com>
+References: <20220107103649.53774b30@canb.auug.org.au>
+ <c13988e1-fd85-03e5-a05d-7bfee16d4c8d@arm.com>
+Date:   Fri, 07 Jan 2022 09:35:10 -0700
+Message-ID: <87lezro669.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <20220105182939.106885-1-paul@crapouillou.net> <20220105182939.106885-4-paul@crapouillou.net>
-In-Reply-To: <20220105182939.106885-4-paul@crapouillou.net>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 7 Jan 2022 17:33:04 +0100
-Message-ID: <CAPDyKFpUUPzqonNBrFq68h8QOVxardvf2q7AuEQVeUJ-S2726A@mail.gmail.com>
-Subject: Re: [PATCH v2 3/6] PM: core: Add EXPORT[_GPL]_SIMPLE_DEV_PM_OPS macros
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Len Brown <len.brown@intel.com>,
-        Pavel Machek <pavel@ucw.cz>, list@opendingux.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Jonathan Cameron <jonathan.cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 5 Jan 2022 at 19:30, Paul Cercueil <paul@crapouillou.net> wrote:
->
-> These macros are defined conditionally, according to CONFIG_PM:
-> - if CONFIG_PM is enabled, these macros resolve to
->   DEFINE_SIMPLE_DEV_PM_OPS(), and the dev_pm_ops symbol will be
->   exported.
->
-> - if CONFIG_PM is disabled, these macros will result in a dummy static
->   dev_pm_ops to be created with the __maybe_unused flag. The dev_pm_ops
->   will then be discarded by the compiler, along with the provided
->   callback functions if they are not used anywhere else.
->
-> In the second case, the symbol is not exported, which should be
-> perfectly fine - users of the symbol should all use the pm_ptr() or
-> pm_sleep_ptr() macro, so the dev_pm_ops marked as "extern" in the
-> client's code will never be accessed.
+James Clark <james.clark@arm.com> writes:
 
-How common is it to export the dev_pm_ops? Do we really need a macro for this?
+> On 06/01/2022 23:36, Stephen Rothwell wrote:
+>> Hi all,
+>> 
+>> In commit
+>> 
+>>   e94f43ea200a ("docs: automarkup.py: Fix invalid HTML link output and broken URI fragments")
+>> 
+>> Fixes tag
+>> 
+>>   Fixes: d18b01789ae5 ("docs: Add automatic cross-reference for
+>> 
+>> has these problem(s):
+>> 
+>>   - Subject has leading but no trailing parentheses
+>>   - Subject has leading but no trailing quotes
 
-The similar comment/question applies for patch5.
+[...]
 
->
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> @Jonathan, I'm happy to resubmit with the changes, but it might be
+> easier if you just make the fix in place.
 
-Kind regards
-Uffe
+I've fixed it, no worries.
 
-> ---
->
-> Notes:
->     v2: Remove useless empty line
->
->  include/linux/pm.h | 32 +++++++++++++++++++++++++++++---
->  1 file changed, 29 insertions(+), 3 deletions(-)
->
-> diff --git a/include/linux/pm.h b/include/linux/pm.h
-> index 389e600df233..b82f40e701ab 100644
-> --- a/include/linux/pm.h
-> +++ b/include/linux/pm.h
-> @@ -8,6 +8,7 @@
->  #ifndef _LINUX_PM_H
->  #define _LINUX_PM_H
->
-> +#include <linux/export.h>
->  #include <linux/list.h>
->  #include <linux/workqueue.h>
->  #include <linux/spinlock.h>
-> @@ -357,14 +358,39 @@ struct dev_pm_ops {
->  #define SET_RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn)
->  #endif
->
-> +#define _DEFINE_DEV_PM_OPS(name, \
-> +                          suspend_fn, resume_fn, \
-> +                          runtime_suspend_fn, runtime_resume_fn, idle_fn) \
-> +const struct dev_pm_ops name = { \
-> +       SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> +       RUNTIME_PM_OPS(runtime_suspend_fn, runtime_resume_fn, idle_fn) \
-> +}
-> +
->  /*
->   * Use this if you want to use the same suspend and resume callbacks for suspend
->   * to RAM and hibernation.
->   */
->  #define DEFINE_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> -const struct dev_pm_ops name = { \
-> -       SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> -}
-> +       _DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL)
-> +
-> +#ifdef CONFIG_PM
-> +#define _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
-> +                          runtime_resume_fn, idle_fn, sec) \
-> +       _DEFINE_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
-> +                          runtime_resume_fn, idle_fn); \
-> +       _EXPORT_SYMBOL(name, sec)
-> +#else
-> +#define _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, runtime_suspend_fn, \
-> +                          runtime_resume_fn, idle_fn, sec) \
-> +static __maybe_unused _DEFINE_DEV_PM_OPS(__static_##name, suspend_fn, \
-> +                                        resume_fn, runtime_suspend_fn, \
-> +                                        runtime_resume_fn, idle_fn)
-> +#endif
-> +
-> +#define EXPORT_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> +       _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "")
-> +#define EXPORT_GPL_SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> +       _EXPORT_DEV_PM_OPS(name, suspend_fn, resume_fn, NULL, NULL, NULL, "_gpl")
->
->  /* Deprecated. Use DEFINE_SIMPLE_DEV_PM_OPS() instead. */
->  #define SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> --
-> 2.34.1
->
+Thanks,
+
+jon
