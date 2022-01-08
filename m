@@ -2,104 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C5FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 08:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 08:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231455AbiAHIkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 03:40:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiAHIkT (ORCPT
+        id S233850AbiAHIlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 03:41:44 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:31803 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233254AbiAHIlm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 03:40:19 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E403AC061574;
-        Sat,  8 Jan 2022 00:40:18 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id lr15-20020a17090b4b8f00b001b19671cbebso9100396pjb.1;
-        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9zEwDmNMe5JERLrwlCRlU/+ORPGYL9TSSP35Lx3dN30=;
-        b=CuClFgSfhd2sHttE34W8oabBRGxMtRezBYjAnGdE1RsZ83TYi8ViK3Xmg1auClddbx
-         GwH8+CYdXARMc5nifS/9sklBitiGXcSlRdnrqDF2MuITggX4gShDw9xqSds5Vpz7jCdI
-         obMtp+Es1uBXHuSFLk6cpS/sZ6r/fkDEt9tU/Jefu5BOy6FA9Xpo/UoGwAe8GN9aT+jK
-         1ajH/DIXh2JtuFylbH9pgGuAyChKpvsSDU5ZJ/l+mvjagsxC1W4UekWKCzX8MoJQ7FJT
-         8KTmDJSHASgXEZU6rzCV9rFAKcCM0kdexhEdPXqjC5bBR6WVtnaOtp1Qbp+chGejhIkn
-         EijQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9zEwDmNMe5JERLrwlCRlU/+ORPGYL9TSSP35Lx3dN30=;
-        b=pG9tYXAsTSdT3aTmov757Z+rM75NpqEyN+m5LNXgJKDA/18KMOpgnMDVNtdEaqSLPG
-         6XYrWqWQDxDTl7FDZyDT590iELjSA5w0gYRtes2jo9BCyy7HqgWdDyBlH5rr7gQvxa/G
-         +a5ysUFDTFs30cgKvJ3O3qOWOBoYMWAt/u/Jytnvkgu2Fy8JDvgUrZPZHVLKSnNxPfoH
-         7ZhbLlIRbCq9wGGogcAVz94Od2mn3P4sOgcihb3WXQ4gLfkDpTwgCKk3ANRbJWavvcx2
-         H5TY8uKiv91chEqtwGwqz4XiAMo5D2qp6rYCX/RU531dmc99ppnfnsWzFvUnHVylTXpO
-         zXtw==
-X-Gm-Message-State: AOAM532mmWuZtz4BylICiWVfPfppiAdja/Y7cD7Hb59NxRIUUrC7uFPK
-        br/F7XuaQQF5DfAKS+n5mR0=
-X-Google-Smtp-Source: ABdhPJxgT+hITarZ5kOie4lgQKjGUCs4kcAxUmDsHXGRU8Ggif6Uqhy6zZ/xF3aIzhOlokShIaQfEQ==
-X-Received: by 2002:a17:902:a3c4:b0:149:6639:4b86 with SMTP id q4-20020a170902a3c400b0014966394b86mr62292275plb.60.1641631218474;
-        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
-Received: from localhost.localdomain ([111.199.185.103])
-        by smtp.gmail.com with ESMTPSA id mq12sm1333897pjb.48.2022.01.08.00.40.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
-From:   Wei Fu <fuweid89@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Wei Fu <fuweid89@gmail.com>
-Subject: [PATCH bpf] tools/bpf: only set obj->skeleton without err
-Date:   Sat,  8 Jan 2022 16:40:08 +0800
-Message-Id: <20220108084008.1053111-1-fuweid89@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 8 Jan 2022 03:41:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641631302;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=A9IAN3xR9Cay5DTUAfbThKuQWTtiMNDV7nchjhETfU8=;
+        b=Fek+KStXW0bRLozWJ77M1/8P+WqzUMQxNK321kdrJWMpnM0f7ZztLumhJNaK4JDvzw/T3C
+        WMZSXuTw26RnV128dQtLmQRBlVvyC6w5ToRGMq13uYczIWW2EremRn0Hr/goCgK79JALpw
+        N7eKmPFdgjsueAm4iV6Y7bKcdSJKQJ0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-582-N4TjadJYNBChUM06yBqS9g-1; Sat, 08 Jan 2022 03:41:39 -0500
+X-MC-Unique: N4TjadJYNBChUM06yBqS9g-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7036B18397A7;
+        Sat,  8 Jan 2022 08:41:35 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DA3CF5F92A;
+        Sat,  8 Jan 2022 08:41:27 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CAOQ4uxjEcvffv=rNXS-r+NLz+=6yk4abRuX_AMq9v-M4nf_PtA@mail.gmail.com>
+References: <CAOQ4uxjEcvffv=rNXS-r+NLz+=6yk4abRuX_AMq9v-M4nf_PtA@mail.gmail.com> <164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk> <164021541207.640689.564689725898537127.stgit@warthog.procyon.org.uk>
+To:     Amir Goldstein <amir73il@gmail.com>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <sfrench@samba.org>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Omar Sandoval <osandov@osandov.com>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        CIFS <linux-cifs@vger.kernel.org>,
+        ceph-devel <ceph-devel@vger.kernel.org>,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v4 38/68] vfs, cachefiles: Mark a backing file in use with an inode flag
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3492170.1641631286.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Sat, 08 Jan 2022 08:41:26 +0000
+Message-ID: <3492171.1641631286@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After `bpftool gen skeleton`, the ${bpf_app}.skel.h will provide that
-${bpf_app_name}__open helper to load bpf. If there is some error
-like ENOMEM, the ${bpf_app_name}__open will rollback(free) the allocated
-object, including `bpf_object_skeleton`.
+Amir Goldstein <amir73il@gmail.com> wrote:
 
-Since the ${bpf_app_name}__create_skeleton set the obj->skeleton first
-and not rollback it when error, it will cause double-free in
-${bpf_app_name}__destory at ${bpf_app_name}__open. Therefore, we should
-set the obj->skeleton before return 0;
+> > -       if (is_local_mountpoint(dentry))
+> > +       if (is_local_mountpoint(dentry) ||
+> > +           (dentry->d_inode->i_flags & S_KERNEL_FILE))
+> =
 
-Signed-off-by: Wei Fu <fuweid89@gmail.com>
----
- tools/bpf/bpftool/gen.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Better as this check to the many other checks in may_delete()
 
-diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-index 5c18351290f0..e61e08f524da 100644
---- a/tools/bpf/bpftool/gen.c
-+++ b/tools/bpf/bpftool/gen.c
-@@ -928,7 +928,6 @@ static int do_skeleton(int argc, char **argv)
- 			s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
- 			if (!s)						    \n\
- 				goto err;				    \n\
--			obj->skeleton = s;				    \n\
- 									    \n\
- 			s->sz = sizeof(*s);				    \n\
- 			s->name = \"%1$s\";				    \n\
-@@ -1001,6 +1000,8 @@ static int do_skeleton(int argc, char **argv)
- 									    \n\
- 			s->data = (void *)%2$s__elf_bytes(&s->data_sz);	    \n\
- 									    \n\
-+			obj->skeleton = s;				    \n\
-+									    \n\
- 			return 0;					    \n\
- 		err:							    \n\
- 			bpf_object__destroy_skeleton(s);		    \n\
--- 
-2.25.1
+Okay.  It will make things a bit more complicated, so I'll do it in a foll=
+ow
+up patch.  The problem is that it will prevent the cachefiles driver in th=
+e
+kernel from renaming directories and unlinking files as it's currently
+removing the mark *after* moving/deleting them.
+
+> > +#define S_KERNEL_FILE  (1 << 17) /* File is in use by the kernel (eg.=
+ fs/cachefiles) */
+> >
+> =
+
+> Trying to brand this flag as a generic "in use by kernel" is misleading.
+> Modules other than cachefiles cannot set/clear this flag, because then
+> cachefiles won't know that it is allowed to set/clear the flag.
+
+If the flag is set, then cachefiles thinks some other kernel driver is usi=
+ng
+the file and it shouldn't try to use it.  It doesn't matter who has it ope=
+n.
+
+It should never happen as other kernel drivers shouldn't be poking around
+inside cachefiles's cache, but possibly someone could misconfigure somethi=
+ng.
+
+David
 
