@@ -2,495 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97314C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 13:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB5EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 13:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiAHNUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 08:20:20 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:40738 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S234339AbiAHNUS (ORCPT
+        id S234364AbiAHNVI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 08:21:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232663AbiAHNVG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 08:20:18 -0500
-X-UUID: 5190ff4abc6746368de2e9f82a242350-20220108
-X-UUID: 5190ff4abc6746368de2e9f82a242350-20220108
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 899414800; Sat, 08 Jan 2022 21:20:14 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Sat, 8 Jan 2022 21:20:12 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 8 Jan 2022 21:20:12 +0800
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Enric Balletbo Serra <eballetbo@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        "Rob Herring" <robh+dt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Subject: [v1 2/2] soc: mediatek: pm-domains: Add support for mt8186
-Date:   Sat, 8 Jan 2022 21:19:53 +0800
-Message-ID: <20220108131953.16744-3-chun-jie.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220108131953.16744-1-chun-jie.chen@mediatek.com>
-References: <20220108131953.16744-1-chun-jie.chen@mediatek.com>
+        Sat, 8 Jan 2022 08:21:06 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9386C061574;
+        Sat,  8 Jan 2022 05:21:05 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id x6so26008720lfa.5;
+        Sat, 08 Jan 2022 05:21:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rEEQvk5Uck5nCpY81jxsRsod1zvCRX8Cy7vuSwuU20w=;
+        b=nvoIU95jfD0X5rzdTYqID+b+uRLzjpP8BoezE4XHaRZZ9Al1zMLBamHUotVxV6R33S
+         vxoqQqVnI156zdGsy4VZJeROx293CXzs2/3QvErcZvkzrBSSK4B/Iid/YiwjJ11FCOPu
+         Fh5B044qXfSQXdkHa0FnjvpBK10ga91QeM/GobLb5HPQ6ht3ql/8Si5E0cIhkXLEzME/
+         46nEWM65tOuKzWPnUbNlcMB/pqem/GjFg+cG8hZjtNKJ2jQol/+iG5K7pGhWjUaHAotG
+         zAASZAfIzBIrwwdndvDe0Pif80PysNDCiAAPUHd/GqWedryEvKuoGKy0K8QA+TdT9z5/
+         0p7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rEEQvk5Uck5nCpY81jxsRsod1zvCRX8Cy7vuSwuU20w=;
+        b=f/x4RwO390LZkXZIfYs4jLv5DwMCnl0VNhXxt2ASP5QydWUEKZJ3i33RXYdsCqdoeH
+         28Op2T5EOaLF3VVxSEQ7iCsSmrAaadurulqNJ+kkHgmRFt4RZMbUBB5lUVxMkL4zrf1L
+         siotCNJvDXGoMOVtYcd98xuegH2/e5h5/LW3uDbyANoZBOncjqu+xfdv8S8jjhvEsZQi
+         HpZv1cH4cXXkE1tehkxW3Zkx5J+bX4eEmW5exf+6O2A0hnr08Xl6M0I2q6+8ntVwtN3J
+         gXNV/D545/BC8o9fHFXq9i1uSPEvK8BO3Ab1P49MXBxyvKJpp3pryRkdMBLAJdFyxq3M
+         DTVw==
+X-Gm-Message-State: AOAM533t7IEvBmhVf0T9nxKOZoTnNrntBRaa2EtVxyWznsJM5VUfURXZ
+        ocZKah2mMQC7J1XdPHbVmxA=
+X-Google-Smtp-Source: ABdhPJxE1+p7uSaAQ1gOWG571UTgSZCt/5TZLMGoJLFBT8yu2EYsfO9aU8EnVDTlB+yU3tOsbc0q0w==
+X-Received: by 2002:a2e:9dcb:: with SMTP id x11mr49877694ljj.296.1641648064177;
+        Sat, 08 Jan 2022 05:21:04 -0800 (PST)
+Received: from [192.168.1.11] ([217.117.245.67])
+        by smtp.gmail.com with ESMTPSA id q5sm223025lji.57.2022.01.08.05.21.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 08 Jan 2022 05:21:03 -0800 (PST)
+Message-ID: <9f7b9736-e67e-19fb-0f7b-6ee6735d5d13@gmail.com>
+Date:   Sat, 8 Jan 2022 16:21:01 +0300
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH -next v2] ieee802154: atusb: move to new USB API
+Content-Language: en-US
+To:     alex.aring@gmail.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org--to=stefan@datenfreihafen.org>
+ <20220108131808.12225-1-paskripkin@gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <20220108131808.12225-1-paskripkin@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add power domain control data in mt8186.
+On 1/8/22 16:18, Pavel Skripkin wrote:
+> Old USB API is prone to uninit value bugs if error handling is not
+> correct. Let's move atusb to use new USB API to
+> 
+> 	1) Make code more simple, since new API does not require memory
+> 	   to be allocates via kmalloc()
+> 
+> 	2) Defend driver from usb-related uninit value bugs.
+> 
+> 	3) Make code more modern and simple
+> 
+> This patch removes atusb usb wrappers as Greg suggested [0], this will make
+> code more obvious and easier to understand over time, and replaces old
+> API calls with new ones.
+> 
+> Also this patch adds and updates usb related error handling to prevent
+> possible uninit value bugs in future
+> 
+> Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 
-Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
----
- drivers/soc/mediatek/mt8186-pm-domains.h | 344 +++++++++++++++++++++++
- drivers/soc/mediatek/mtk-pm-domains.c    |   5 +
- include/linux/soc/mediatek/infracfg.h    |  48 ++++
- 3 files changed, 397 insertions(+)
- create mode 100644 drivers/soc/mediatek/mt8186-pm-domains.h
+Please, ignore this one.
 
-diff --git a/drivers/soc/mediatek/mt8186-pm-domains.h b/drivers/soc/mediatek/mt8186-pm-domains.h
-new file mode 100644
-index 000000000000..bf2dd0cdc3a8
---- /dev/null
-+++ b/drivers/soc/mediatek/mt8186-pm-domains.h
-@@ -0,0 +1,344 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2022 MediaTek Inc.
-+ * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-+ */
-+
-+#ifndef __SOC_MEDIATEK_MT8186_PM_DOMAINS_H
-+#define __SOC_MEDIATEK_MT8186_PM_DOMAINS_H
-+
-+#include "mtk-pm-domains.h"
-+#include <dt-bindings/power/mt8186-power.h>
-+
-+/*
-+ * MT8186 power domain support
-+ */
-+
-+static const struct scpsys_domain_data scpsys_domain_data_mt8186[] = {
-+	[MT8186_POWER_DOMAIN_MFG0] = {
-+		.name = "mfg0",
-+		.sta_mask = BIT(2),
-+		.ctl_offs = 0x308,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF | MTK_SCPD_DOMAIN_SUPPLY,
-+	},
-+	[MT8186_POWER_DOMAIN_MFG1] = {
-+		.name = "mfg1",
-+		.sta_mask = BIT(3),
-+		.ctl_offs = 0x30c,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_MFG1_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_MFG1_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_SET,
-+				MT8186_TOP_AXI_PROT_EN_CLR,
-+				MT8186_TOP_AXI_PROT_EN_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_MFG1_STEP3,
-+				MT8186_TOP_AXI_PROT_EN_SET,
-+				MT8186_TOP_AXI_PROT_EN_CLR,
-+				MT8186_TOP_AXI_PROT_EN_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_MFG1_STEP4,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_MFG2] = {
-+		.name = "mfg2",
-+		.sta_mask = BIT(4),
-+		.ctl_offs = 0x310,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_MFG3] = {
-+		.name = "mfg3",
-+		.sta_mask = BIT(5),
-+		.ctl_offs = 0x314,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_SSUSB] = {
-+		.name = "ssusb",
-+		.sta_mask = BIT(20),
-+		.ctl_offs = 0x9F0,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+	[MT8186_POWER_DOMAIN_SSUSB_P1] = {
-+		.name = "ssusb_p1",
-+		.sta_mask = BIT(19),
-+		.ctl_offs = 0x9F4,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+	[MT8186_POWER_DOMAIN_DIS] = {
-+		.name = "dis",
-+		.sta_mask = BIT(21),
-+		.ctl_offs = 0x354,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_DIS_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_DIS_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_SET,
-+				MT8186_TOP_AXI_PROT_EN_CLR,
-+				MT8186_TOP_AXI_PROT_EN_STA),
-+		},
-+	},
-+	[MT8186_POWER_DOMAIN_IMG] = {
-+		.name = "img",
-+		.sta_mask = BIT(13),
-+		.ctl_offs = 0x334,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_IMG_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_IMG_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_IMG2] = {
-+		.name = "img2",
-+		.sta_mask = BIT(14),
-+		.ctl_offs = 0x338,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_IPE] = {
-+		.name = "ipe",
-+		.sta_mask = BIT(15),
-+		.ctl_offs = 0x33C,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_IPE_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_IPE_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_CAM] = {
-+		.name = "cam",
-+		.sta_mask = BIT(23),
-+		.ctl_offs = 0x35C,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_CAM_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_CAM_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_CAM_RAWA] = {
-+		.name = "cam_rawa",
-+		.sta_mask = BIT(24),
-+		.ctl_offs = 0x360,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_CAM_RAWB] = {
-+		.name = "cam_rawb",
-+		.sta_mask = BIT(25),
-+		.ctl_offs = 0x364,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_VENC] = {
-+		.name = "venc",
-+		.sta_mask = BIT(18),
-+		.ctl_offs = 0x348,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_VENC_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_VENC_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_VDEC] = {
-+		.name = "vdec",
-+		.sta_mask = BIT(16),
-+		.ctl_offs = 0x340,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_VDEC_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_VDEC_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_WPE] = {
-+		.name = "wpe",
-+		.sta_mask = BIT(0),
-+		.ctl_offs = 0x3F8,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_2_WPE_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_2_SET,
-+				MT8186_TOP_AXI_PROT_EN_2_CLR,
-+				MT8186_TOP_AXI_PROT_EN_2_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_2_WPE_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_2_SET,
-+				MT8186_TOP_AXI_PROT_EN_2_CLR,
-+				MT8186_TOP_AXI_PROT_EN_2_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_CONN_ON] = {
-+		.name = "conn_on",
-+		.sta_mask = BIT(1),
-+		.ctl_offs = 0x304,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_1_CONN_ON_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_1_SET,
-+				MT8186_TOP_AXI_PROT_EN_1_CLR,
-+				MT8186_TOP_AXI_PROT_EN_1_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_SET,
-+				MT8186_TOP_AXI_PROT_EN_CLR,
-+				MT8186_TOP_AXI_PROT_EN_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP3,
-+				MT8186_TOP_AXI_PROT_EN_SET,
-+				MT8186_TOP_AXI_PROT_EN_CLR,
-+				MT8186_TOP_AXI_PROT_EN_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP4,
-+				MT8186_TOP_AXI_PROT_EN_SET,
-+				MT8186_TOP_AXI_PROT_EN_CLR,
-+				MT8186_TOP_AXI_PROT_EN_STA),
-+		},
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF | MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+	[MT8186_POWER_DOMAIN_CSIRX_TOP] = {
-+		.name = "csirx_top",
-+		.sta_mask = BIT(6),
-+		.ctl_offs = 0x318,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_ADSP_AO] = {
-+		.name = "adsp_ao",
-+		.sta_mask = BIT(17),
-+		.ctl_offs = 0x9FC,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_ADSP_INFRA] = {
-+		.name = "adsp_infra",
-+		.sta_mask = BIT(10),
-+		.ctl_offs = 0x9F8,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.caps = MTK_SCPD_KEEP_DEFAULT_OFF,
-+	},
-+	[MT8186_POWER_DOMAIN_ADSP_TOP] = {
-+		.name = "adsp_top",
-+		.sta_mask = BIT(31),
-+		.ctl_offs = 0x3E4,
-+		.pwr_sta_offs = 0x16C,
-+		.pwr_sta2nd_offs = 0x170,
-+		.sram_pdn_bits = BIT(8),
-+		.sram_pdn_ack_bits = BIT(12),
-+		.bp_infracfg = {
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_3_ADSP_TOP_STEP1,
-+				MT8186_TOP_AXI_PROT_EN_3_SET,
-+				MT8186_TOP_AXI_PROT_EN_3_CLR,
-+				MT8186_TOP_AXI_PROT_EN_3_STA),
-+			BUS_PROT_WR_IGN(MT8186_TOP_AXI_PROT_EN_3_ADSP_TOP_STEP2,
-+				MT8186_TOP_AXI_PROT_EN_3_SET,
-+				MT8186_TOP_AXI_PROT_EN_3_CLR,
-+				MT8186_TOP_AXI_PROT_EN_3_STA),
-+		},
-+		.caps = MTK_SCPD_SRAM_ISO | MTK_SCPD_KEEP_DEFAULT_OFF | MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+};
-+
-+static const struct scpsys_soc_data mt8186_scpsys_data = {
-+	.domains_data = scpsys_domain_data_mt8186,
-+	.num_domains = ARRAY_SIZE(scpsys_domain_data_mt8186),
-+};
-+
-+#endif /* __SOC_MEDIATEK_MT8186_PM_DOMAINS_H */
-diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
-index 61973a306e97..5ced254b082b 100644
---- a/drivers/soc/mediatek/mtk-pm-domains.c
-+++ b/drivers/soc/mediatek/mtk-pm-domains.c
-@@ -19,6 +19,7 @@
- #include "mt8167-pm-domains.h"
- #include "mt8173-pm-domains.h"
- #include "mt8183-pm-domains.h"
-+#include "mt8186-pm-domains.h"
- #include "mt8192-pm-domains.h"
- #include "mt8195-pm-domains.h"
- 
-@@ -566,6 +567,10 @@ static const struct of_device_id scpsys_of_match[] = {
- 		.compatible = "mediatek,mt8183-power-controller",
- 		.data = &mt8183_scpsys_data,
- 	},
-+	{
-+		.compatible = "mediatek,mt8186-power-controller",
-+		.data = &mt8186_scpsys_data,
-+	},
- 	{
- 		.compatible = "mediatek,mt8192-power-controller",
- 		.data = &mt8192_scpsys_data,
-diff --git a/include/linux/soc/mediatek/infracfg.h b/include/linux/soc/mediatek/infracfg.h
-index d858e0bab7a2..8a1c2040a28e 100644
---- a/include/linux/soc/mediatek/infracfg.h
-+++ b/include/linux/soc/mediatek/infracfg.h
-@@ -140,6 +140,54 @@
- #define MT8192_TOP_AXI_PROT_EN_MM_2_MDP_2ND		BIT(13)
- #define MT8192_TOP_AXI_PROT_EN_VDNR_CAM			BIT(21)
- 
-+#define MT8186_TOP_AXI_PROT_EN_SET			(0x2A0)
-+#define MT8186_TOP_AXI_PROT_EN_CLR			(0x2A4)
-+#define MT8186_TOP_AXI_PROT_EN_STA			(0x228)
-+#define MT8186_TOP_AXI_PROT_EN_1_SET			(0x2A8)
-+#define MT8186_TOP_AXI_PROT_EN_1_CLR			(0x2AC)
-+#define MT8186_TOP_AXI_PROT_EN_1_STA			(0x258)
-+#define MT8186_TOP_AXI_PROT_EN_2_SET			(0x2B0)
-+#define MT8186_TOP_AXI_PROT_EN_2_CLR			(0x2B4)
-+#define MT8186_TOP_AXI_PROT_EN_2_STA			(0x26C)
-+#define MT8186_TOP_AXI_PROT_EN_3_SET			(0x2B8)
-+#define MT8186_TOP_AXI_PROT_EN_3_CLR			(0x2BC)
-+#define MT8186_TOP_AXI_PROT_EN_3_STA			(0x2C8)
-+
-+/* MFG1 */
-+#define MT8186_TOP_AXI_PROT_EN_1_MFG1_STEP1		(GENMASK(28, 27))
-+#define MT8186_TOP_AXI_PROT_EN_MFG1_STEP2		(GENMASK(22, 21))
-+#define MT8186_TOP_AXI_PROT_EN_MFG1_STEP3		(BIT(25))
-+#define MT8186_TOP_AXI_PROT_EN_1_MFG1_STEP4		(BIT(29))
-+/* DIS */
-+#define MT8186_TOP_AXI_PROT_EN_1_DIS_STEP1		(GENMASK(12, 11))
-+#define MT8186_TOP_AXI_PROT_EN_DIS_STEP2		(GENMASK(2, 1) | GENMASK(11, 10))
-+/* IMG */
-+#define MT8186_TOP_AXI_PROT_EN_1_IMG_STEP1		(BIT(23))
-+#define MT8186_TOP_AXI_PROT_EN_1_IMG_STEP2		(BIT(15))
-+/* IPE */
-+#define MT8186_TOP_AXI_PROT_EN_1_IPE_STEP1		(BIT(24))
-+#define MT8186_TOP_AXI_PROT_EN_1_IPE_STEP2		(BIT(16))
-+/* CAM */
-+#define MT8186_TOP_AXI_PROT_EN_1_CAM_STEP1		(GENMASK(22, 21))
-+#define MT8186_TOP_AXI_PROT_EN_1_CAM_STEP2		(GENMASK(14, 13))
-+/* VENC */
-+#define MT8186_TOP_AXI_PROT_EN_1_VENC_STEP1		(BIT(31))
-+#define MT8186_TOP_AXI_PROT_EN_1_VENC_STEP2		(BIT(19))
-+/* VDEC */
-+#define MT8186_TOP_AXI_PROT_EN_1_VDEC_STEP1		(BIT(30))
-+#define MT8186_TOP_AXI_PROT_EN_1_VDEC_STEP2		(BIT(17))
-+/* WPE */
-+#define MT8186_TOP_AXI_PROT_EN_2_WPE_STEP1		(BIT(17))
-+#define MT8186_TOP_AXI_PROT_EN_2_WPE_STEP2		(BIT(16))
-+/* CONN_ON */
-+#define MT8186_TOP_AXI_PROT_EN_1_CONN_ON_STEP1		(BIT(18))
-+#define MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP2		(BIT(14))
-+#define MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP3		(BIT(13))
-+#define MT8186_TOP_AXI_PROT_EN_CONN_ON_STEP4		(BIT(16))
-+/* ADSP_TOP */
-+#define MT8186_TOP_AXI_PROT_EN_3_ADSP_TOP_STEP1		(GENMASK(12, 11))
-+#define MT8186_TOP_AXI_PROT_EN_3_ADSP_TOP_STEP2		(GENMASK(1, 0))
-+
- #define MT8183_TOP_AXI_PROT_EN_STA1			0x228
- #define MT8183_TOP_AXI_PROT_EN_STA1_1			0x258
- #define MT8183_TOP_AXI_PROT_EN_SET			0x2a0
--- 
-2.18.0
+Typo in git send-email args caused this email to be send in wrong thread 
+and missed Stefan in CC list.
 
+
+
+With regards,
+Pavel Skripkin
