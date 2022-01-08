@@ -2,97 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46164C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C14BC433F5
 	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 10:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233841AbiAHKPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 05:15:18 -0500
-Received: from smtp.bonedaddy.net ([45.33.94.42]:40620 "EHLO
-        smtp.bonedaddy.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231232AbiAHKPR (ORCPT
+        id S233880AbiAHKcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 05:32:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231232AbiAHKci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 05:15:17 -0500
-X-Greylist: delayed 561 seconds by postgrey-1.27 at vger.kernel.org; Sat, 08 Jan 2022 05:15:17 EST
-Received: from localhost (n175-38-222-73.per2.wa.optusnet.com.au [175.38.222.73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pabs3@bonedaddy.net)
-        by smtp.bonedaddy.net (Postfix) with ESMTPSA id 0EA3618007A;
-        Sat,  8 Jan 2022 05:06:35 -0500 (EST)
-Authentication-Results: smtp.bonedaddy.net; dmarc=fail (p=none dis=none) header.from=bonedaddy.net
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bonedaddy.net;
-        s=mail; t=1641636398;
-        bh=sU8wHdA/eA0+RGEHn8+xBGwBO0Ds63zMwONdksN3I9E=;
-        h=Subject:From:To:Cc:In-Reply-To:References:Date;
-        b=HuRQ7TPxtF08ZgMu9hUVU3JpGavRY2/kA4d/obXcAWeL1p8EIwcb4rPkuKBveiskA
-         xfQxXQPKcQstVjwU+siZ1L4EAyKdF/6xWb4cHuL7GLcVe9jCoUgBhJG9RclcBjRnG+
-         0tQu4vbvWMN4nabxmvPciwJ7aV7eXxLzmSqsr6jMLTk3DXmRSGgs0et558ChbdbG85
-         Mdo0hj8MBxLDINnaFLJojVFIOlmnY3XRxDvudZWebnj5v1AyP6CLK5GKVkIIVwToBM
-         odD2MYlNntF84V3qloSgVZHVxc2elTp2gEA/cYYWsmo94SeGBUS8HBh4cfNTZ00B6Y
-         rFOBv6lNdh1IQ==
-Message-ID: <b6079be95091af6dfa3dcf02673bde8db841941e.camel@bonedaddy.net>
-Subject: Re: [PATCH] tools/lib/lockdep: drop liblockdep
-From:   Paul Wise <pabs3@bonedaddy.net>
-To:     Sasha Levin <sashal@kernel.org>, mingo@kernel.org
-Cc:     peterz@infradead.org, linux-kernel <linux-kernel@vger.kernel.org>
-In-Reply-To: <b82c6441832477653dfc4c2556b81b29bc1c75fa.camel@bonedaddy.net>
-References: <20211112151602.1378857-1-sashal@kernel.org>
-         <b82c6441832477653dfc4c2556b81b29bc1c75fa.camel@bonedaddy.net>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-jPS1CGmwKxPQaYGvflRO"
-Date:   Sat, 08 Jan 2022 18:05:39 +0800
+        Sat, 8 Jan 2022 05:32:38 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5D7C061574;
+        Sat,  8 Jan 2022 02:32:36 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id k18so15995246wrg.11;
+        Sat, 08 Jan 2022 02:32:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=Ncm4vmIPrAny4fGOw23lDSiniXeSKXz2SDH9h4DiGpQ=;
+        b=pQKGP4xhv2CT1d4x871Y4t7neNth9UmkrfMmE9N+lgS0o+4gh/xxpUG7B2xORbN9nN
+         8qisKFePxYHrlI8AhVdagU1jZfR8JvJ/fuLyESZqDm2dtv7pMktpp9dHjerRnoeKfVd/
+         EfbCgNnhHdlpBuu7qrsCNIR5qi5LiPr/QHQdCHME1EzEiQl9IzScw/jDPh2puf8qdp97
+         y0pnphQjBT+I3E0wqZMEG78B8+7vFjOUPqjK/PsgajLMIWR+opVUao+v4IheS0LFWbfg
+         5hXpL9PaUnqYwufkXHDyQjI00SoBDIZu5R1cZ1qvQMOMkcvGDSd7Qlmv06o+kyZx/hLc
+         OEbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=Ncm4vmIPrAny4fGOw23lDSiniXeSKXz2SDH9h4DiGpQ=;
+        b=ZQ+fnHyxdZ2TUmIXl4qjHDj/GDHZcVfmx4g7JArSSUz1XwFm29bYFRF5ZEx94gI0PM
+         h8pX/0reTFxJRUzRO/Jsee58VuqBwm0shGjZeeRR1pWtaxM47k5wnl7sfx8MS0tbRu2s
+         FFxXWaPalJaQYOkr6E5qVIF8xLDdwy/e8y8aSgILJWNLRlUpGbauFgK55MFo8iNR6WNf
+         Bz9jG9gCiAJgIENw7h7+iq99pTmILqBetwifS3a/OZ8Je7+7sBleyHomkX0iUQ2v5fCi
+         J6eFCIf1K9Vy/wOdxHROGVDA//JzVeFD727bb3tEMp11+HRHQn2VESHvvFhyuWKqvZ/L
+         LpbQ==
+X-Gm-Message-State: AOAM5326TT7P4HM0Knj6p7gpDTKNqlzrMwQn1nndtm3QQn+Lquk/tg14
+        80i3PuDXSshBxeexQq+xS/E=
+X-Google-Smtp-Source: ABdhPJxXWLbG3api22n+vh1gpH2oSN+reaVhu6VdmRxg5GCcIzVKg9VGsTEE8dzOa8JYR4B/M/c2nw==
+X-Received: by 2002:adf:ee50:: with SMTP id w16mr4510251wro.270.1641637954786;
+        Sat, 08 Jan 2022 02:32:34 -0800 (PST)
+Received: from gmail.com (84-236-113-171.pool.digikabel.hu. [84.236.113.171])
+        by smtp.gmail.com with ESMTPSA id l8sm1264937wrv.25.2022.01.08.02.32.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Jan 2022 02:32:34 -0800 (PST)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Sat, 8 Jan 2022 11:32:31 +0100
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Al Viro <viro@zeniv.linux.org.uk>, llvm@lists.linux.dev
+Subject: [PATCH] headers/deps: Add header dependencies to .c files:
+ <linux/ptrace_api.h>
+Message-ID: <YdloP5TfDSTURAh3@gmail.com>
+References: <YdIfz+LMewetSaEB@gmail.com>
+ <YdM4Z5a+SWV53yol@archlinux-ax161>
+ <YdQlwnDs2N9a5Reh@gmail.com>
+ <YdSI9LmZE+FZAi1K@archlinux-ax161>
+ <YdTpAJxgI+s9Wwgi@gmail.com>
+ <YdTvXkKFzA0pOjFf@gmail.com>
+ <YdYQu9YxNw0CxJRn@archlinux-ax161>
 MIME-Version: 1.0
-User-Agent: Evolution 3.42.2-1 
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdYQu9YxNw0CxJRn@archlinux-ax161>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---=-jPS1CGmwKxPQaYGvflRO
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+* Nathan Chancellor <nathan@kernel.org> wrote:
 
-On Thu, 2021-11-18 at 08:32 +0800, Paul Wise wrote:
+> 1. kernel/stackleak.c build failure:
+> 
+> $ make -skj"$(nproc)" ARCH=x86_64 allmodconfig kernel/stackleak.o
+> kernel/stackleak.c: In function ‘stackleak_erase’:
+> kernel/stackleak.c:92:13: error: implicit declaration of function ‘on_thread_stack’; did you mean ‘setup_thread_stack’? [-Werror=implicit-function-declaration]
 
+So it turns out that my build environment didn't have the stackleak code 
+enabled at all:
 
-> I read that liblockdep and the lockdep tool are moving out of the Linux
-> kernel tree, but couldn't find where they will be moving to. An LWN
-> commenter suggested I contact you to ask about this. Thoughts?
+  kepler:~/mingo.tip.git> make ARCH=x86_64 allmodconfig
+  #
+  # configuration written to .config
+  #
+  kepler:~/mingo.tip.git> grep -E 'STACKLEAK|GCC_PLUGIN' .config
+  CONFIG_HAVE_ARCH_STACKLEAK=y
+  CONFIG_HAVE_GCC_PLUGINS=y
 
-I got this response from Sasha elsewhere and permission to fwd here:
+... because it failed this condition:
 
-   I haven't really gotten to extracting it out of the kernel tree.
-   There's a bunch of annoying work needed there to extract whatever
-   headers and code we need out of the kernel tree and make it work,
-   and I just haven't had the time to do it yet. I'm hopeful I could
-   do it in the next few weeks - have been a bit busy.
+ menuconfig GCC_PLUGINS
+ ...
+        depends on $(success,test -e $(shell,$(CC) -print-file-name=plugin)/include/plugin-version.h)
 
---=20
-bye,
-pabs
+... because there were no plugin headers:
 
-https://bonedaddy.net/pabs3/
+  kepler:~/mingo.tip.git> gcc -print-file-name=plugin
+  /usr/lib/gcc/x86_64-linux-gnu/10/plugin
 
---=-jPS1CGmwKxPQaYGvflRO
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+  kepler:~/mingo.tip.git> ls $(gcc -print-file-name=plugin)/include/
+  ls: cannot access '/usr/lib/gcc/x86_64-linux-gnu/10/plugin/include/': No such file or directory
 
------BEGIN PGP SIGNATURE-----
+... because I needed to install the plugin-development packages for gcc-10.
 
-iQIzBAABCgAdFiEEYQsotVz8/kXqG1Y7MRa6Xp/6aaMFAmHZYfAACgkQMRa6Xp/6
-aaMPRQ//RR/ZiLXR04AhblrVl5Q8oLfUK8G5G8F13dADVSZoq5rWjArtX5P8deVx
-rQ2leVTXOToGqLwc9FqrX5TV4gH7cmB4w0OcOGLs0hMJjF7eEfYqxDs1Zp6UK4IK
-7q/jlHD0iSicD7ipFZcY4knyGKhbOrt5PCY8NumF9ht2NmixtQ/9TymwocYuJ2Un
-dIoBOiErNL4OU1j4nPiLkqs/6NYZIvFkAdDltJwbXpYsqr/DK4zA/04hizB9YcPQ
-VPQBfGNdEFyo8ePtsimVn8bSf2HuSzlAg8JBtM25clOG1Y6mqZSkLn70DoIX4JEE
-jMcXYvSBu6VSIbLypIqBRzFxb9byUYppA32m/msBRR1l3CNlGLVHbDOgvD1xFqDZ
-TYBbRAdrKVPp/nL0RW8T49z0zP/v3/XRzZyTXK4LdLvf3bM27TRltDEoG/Y+1zxI
-ri1B9E1GsRKWmPuyKHMFBOhb9BPa5tkV0AHLYjXqivsIpdtC1RCeZgerhbjUU4es
-Cg8xOwFe8BSc54+03CtnuhQz583ZWjBO7aM18FoogeWkN27aIY7nTTtrWYjWfuZ8
-V+tEihoEQpN5chT3P9xX6NUEv+tA+8r3DjVFN321cSLl++rWpdRzEqGq3ByXAAEs
-n2IxxyR9P3EmwIunsvCu/tqW/G47jfbjOEVAED6tkMArhQr+9P0=
-=CGrv
------END PGP SIGNATURE-----
+After installing those I have stackleak:
 
---=-jPS1CGmwKxPQaYGvflRO--
+  kepler:~/mingo.tip.git> grep STACKLEAK .config
+  CONFIG_HAVE_ARCH_STACKLEAK=y
+  CONFIG_GCC_PLUGIN_STACKLEAK=y
+  CONFIG_STACKLEAK_TRACK_MIN_SIZE=100
+  CONFIG_STACKLEAK_METRICS=y
+  CONFIG_STACKLEAK_RUNTIME_DISABLE=y
+
+and was able to reproduce your build failure. :-)
+
+> This is fixed with the following diff although I am unsure if that is as
+> minimal as it should be.
+> 
+> diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+> index ce161a8e8d97..d67c5475183b 100644
+> --- a/kernel/stackleak.c
+> +++ b/kernel/stackleak.c
+> @@ -10,8 +10,10 @@
+>   * reveal and blocks some uninitialized stack variable attacks.
+>   */
+>  
+> +#include <asm/processor_api.h>
+>  #include <linux/stackleak.h>
+>  #include <linux/kprobes.h>
+> +#include <linux/align.h>
+
+Yeah - I used a simpler & more generic header: <linux/ptrace_api.h> - see 
+the patch below.
+
+But your solution is functionally equivalent. This fix will be included in 
+-v2, hopefully released later today.
+
+Thanks,
+
+	Ingo
+
+===============>
+From: Ingo Molnar <mingo@kernel.org>
+Date: Sat, 8 Jan 2022 11:29:17 +0100
+Subject: [PATCH] headers/deps: Add header dependencies to .c files: <linux/ptrace_api.h>
+
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+---
+ kernel/stackleak.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/stackleak.c b/kernel/stackleak.c
+index ce161a8e8d97..fde49e2f209a 100644
+--- a/kernel/stackleak.c
++++ b/kernel/stackleak.c
+@@ -10,6 +10,7 @@
+  * reveal and blocks some uninitialized stack variable attacks.
+  */
+ 
++#include <linux/ptrace_api.h>
+ #include <linux/stackleak.h>
+ #include <linux/kprobes.h>
+ 
