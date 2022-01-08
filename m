@@ -2,150 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D48A5C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB84C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiAHA4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:56:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        id S232461AbiAHA4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232177AbiAHAz4 (ORCPT
+        with ESMTP id S232160AbiAHAz4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 19:55:56 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50E95C061747
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 16:55:56 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id c126-20020a1c9a84000000b00346f9ebee43so3736707wme.4
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 16:55:56 -0800 (PST)
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5044BC06173F;
+        Fri,  7 Jan 2022 16:55:55 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id o3so14084335wrh.10;
+        Fri, 07 Jan 2022 16:55:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Hx9acdXZrHH5WrEhXGyj7+f46x8W+jthxlPUPFgwmdA=;
-        b=NazZP+1WN4fOzaHsJ58tz0viTo/FlUhGS6Tc6z1HT6/H+FVuZJODIq/ieurYVxogP4
-         cF0wNmD4iEEgAagUgLy4e4ZnUEfAS9zX8upeFfoSiilLGWP1RW8pN0i8CeUM+DQrkRk7
-         nW2uZ5EjT2EifoBzykJ5xP7Qjah8QBC5fR4ZwDhA7E0dJ9hE9NcdLZcfptnQIbLwOnKC
-         HgS+UUg8dNnXneEm6n378kHKaIoHNKRLx2ME9MJ7ypHXFKlntSvJBmR4+Ct+8CG3bV0k
-         Bxmp0hSA1qwK5+gKR6iGKJskLupf0ETqhvLWk1k4T82/c0yB2EMcGYKdHdU+apAcAXfs
-         YK1g==
+        bh=vVOffY2SWc0pPnPvYF0rhrV08ycYCPvS3uYYaNs2rOM=;
+        b=GitN+raFMLZ4Tdmi1VuHtCn80hz9objvZOmgb1YHrHOqHvhCKm55gz8anKhN8+z7eW
+         l4C6mp9Syx5dGCBwIkbavPegNj9BC/XaUC3XUdgGhXz4EpwAJOnFHXRmHIrnl2fvhos1
+         daRija6oS9X4/AT7W796O/NVDKVxmEYlQ/60yN7i7GZtOS5v5WN7HOoeVrL7mK93wTVa
+         4RIgqzFkLgTh/9UEoWynxxrlaIs/9MHo8E8viEpjPoB0YN1q8bN4/awSHWAHPkvulGxy
+         JssL7lWJGDtOcjt8Wj/CK7KLKipAmHYtO1CabFhJxQ+cU6A7yFn5xSvJ1kExSxqXyEHj
+         4QvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Hx9acdXZrHH5WrEhXGyj7+f46x8W+jthxlPUPFgwmdA=;
-        b=hXn5BVzU+NUlpamifVufVW/X9o2s9nIfbHENFiqU59bvuz5dfNjV0QWOUX7P1wS2zM
-         fnIaQzhG3GpgfVgbvKzmG9JBRXPyEG9+jDUrke3nKwMEt7ltOWFFRJb6pBtSSIOD7LUC
-         6/m2xlSmjiNA778mYiPhe95EfH+r/fDyvTgvBV9Xp+7konen830MY2tP1K2bjEhlZm9g
-         KBEDm9XP0kSWAa2MXAjqAkbXbgZfUd7nDRLw+WK6XdB1Mh39VikYQo25AWfb42nHpkvO
-         /lSeN5Jjyxr5z+X/+33JlTBtctKM5QV5//n1c94hk/mjNnbYrMNHtcs134owbFaiQgeM
-         KxAg==
-X-Gm-Message-State: AOAM531fqrXW7ovLQrqgOkL36T/FaVm/GyfVv/oKYFFMCwrlRVGj+Mst
-        VzFOXv0jG645ROVZMg9lzEY5yA==
-X-Google-Smtp-Source: ABdhPJxuzbWpuwtH/naH3oZqYAsR/BlcwGg+trqccxjemAKPgZC/QM4bAZCM5uurIIOaiBZUWf0WEQ==
-X-Received: by 2002:a05:600c:600a:: with SMTP id az10mr12771504wmb.69.1641603354892;
-        Fri, 07 Jan 2022 16:55:54 -0800 (PST)
-Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
-        by smtp.gmail.com with ESMTPSA id c18sm238853wrn.81.2022.01.07.16.55.54
+        bh=vVOffY2SWc0pPnPvYF0rhrV08ycYCPvS3uYYaNs2rOM=;
+        b=FVojN9JqbhmiKjDmjBPT/YFLb104aUSFR2myljG+KegWXKWMHxpn1btm1WIbAhdsx/
+         s80pz5Kl1ANzGwX/nTrWL9jGtlfUuW2vXTUJM8ooRR4vbjhmD8eQX1k7vzN6NWHC4USq
+         TiGKCoD9Cf92uI0jDP+/29kevBSo/nQIpkr8F7j6F3RSohyJgapJ827s9f9297A6fWoV
+         mfmFuXGRYmox8kwRhm1xFTWa2kACdm+GHTxZuKeMJeVWLwDABBLLGE7L2JiTMw4CIGQ7
+         2q03Q2w/MYbqPMRJOnNBuNNurlQyAx4rTuj+7AFOhkGdBoz58bWOlXZJ3h3tQ2AKu+f0
+         1FAQ==
+X-Gm-Message-State: AOAM531onv6mt0dHKUi29+CaiSGnIMFdyWaezDoYrUnvibevdltSKoLG
+        UgW5bfAA+S+YfknWRErHXuUmEI6rTHo=
+X-Google-Smtp-Source: ABdhPJzbs1bm4DSUTkPc1jHV2LpaQTR6BjpN5BxzV12x4GUUZGrezHkPio70qi666StxdmeIwLbNyg==
+X-Received: by 2002:a5d:6943:: with SMTP id r3mr2966575wrw.364.1641603353802;
+        Fri, 07 Jan 2022 16:55:53 -0800 (PST)
+Received: from localhost.localdomain (dynamic-095-117-123-222.95.117.pool.telefonica.de. [95.117.123.222])
+        by smtp.googlemail.com with ESMTPSA id z6sm77357wmp.9.2022.01.07.16.55.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 16:55:54 -0800 (PST)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, straube.linux@gmail.com,
-        martin@kaiser.cx, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] staging: r8188eu: convert/remove DBG_88E calls in os_dep/usb_ops_linux.c
-Date:   Sat,  8 Jan 2022 00:55:50 +0000
-Message-Id: <20220108005550.26264-6-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220108005550.26264-1-phil@philpotter.co.uk>
-References: <20220108005550.26264-1-phil@philpotter.co.uk>
+        Fri, 07 Jan 2022 16:55:53 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
+        johannes@sipsolutions.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Pkshih <pkshih@realtek.com>, Ed Swierk <eswierk@gh.st>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 6/8] rtw88: Configure the registers from rtw_bf_assoc() outside the RCU lock
+Date:   Sat,  8 Jan 2022 01:55:31 +0100
+Message-Id: <20220108005533.947787-7-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert DBG_88E macro calls in os_dep/usb_ops_linux.c to use netdev_dbg
-when they may display useful information, and remove erroneous DBG_88E
-calls entirely.
+Upcoming SDIO support may sleep in the read/write handlers. Shrink the
+RCU critical section so it only cover the ieee80211_find_sta() call and
+finding the ic_vht_cap/vht_cap based on the found station. This moves
+the chip's BFEE configuration outside the rcu_read_lock section and thus
+prevent a "scheduling while atomic" issue when accessing the registers
+using an SDIO card.
 
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- .../staging/r8188eu/os_dep/usb_ops_linux.c    | 24 +++++++++----------
- 1 file changed, 11 insertions(+), 13 deletions(-)
+v2 -> v3:
+- no changes
 
-diff --git a/drivers/staging/r8188eu/os_dep/usb_ops_linux.c b/drivers/staging/r8188eu/os_dep/usb_ops_linux.c
-index d1cb33d3e6a7..3977a717d30a 100644
---- a/drivers/staging/r8188eu/os_dep/usb_ops_linux.c
-+++ b/drivers/staging/r8188eu/os_dep/usb_ops_linux.c
-@@ -32,8 +32,6 @@ void rtw_read_port_cancel(struct adapter *padapter)
- 	int i;
- 	struct recv_buf *precvbuf = (struct recv_buf *)padapter->recvpriv.precv_buf;
+v1 -> v2:
+- shrink the critical section as suggested by Ping-Ke
+
+ drivers/net/wireless/realtek/rtw88/bf.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/bf.c b/drivers/net/wireless/realtek/rtw88/bf.c
+index df750b3a35e9..792eb9930269 100644
+--- a/drivers/net/wireless/realtek/rtw88/bf.c
++++ b/drivers/net/wireless/realtek/rtw88/bf.c
+@@ -49,19 +49,23 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
  
--	DBG_88E("%s\n", __func__);
--
- 	padapter->bReadPortCancel = true;
- 
- 	for (i = 0; i < NR_RECVBUFF; i++) {
-@@ -72,30 +70,32 @@ static void usb_write_port_complete(struct urb *purb, struct pt_regs *regs)
- 
- 	if (padapter->bSurpriseRemoved || padapter->bDriverStopped ||
- 	    padapter->bWritePortCancel) {
--		DBG_88E("%s(): TX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d) bWritePortCancel(%d) pxmitbuf->ext_tag(%x)\n",
--			__func__, padapter->bDriverStopped,
--			padapter->bSurpriseRemoved, padapter->bReadPortCancel,
--			pxmitbuf->ext_tag);
-+		netdev_dbg(padapter->pnetdev,
-+			   "TX Warning! bDriverStopped(%d) OR bSurpriseRemoved(%d)\n",
-+			   padapter->bDriverStopped, padapter->bSurpriseRemoved);
-+		netdev_dbg(padapter->pnetdev,
-+			   "TX Warning! bWritePortCancel(%d) pxmitbuf->ext_tag(%x)\n",
-+			   padapter->bReadPortCancel, pxmitbuf->ext_tag);
- 
- 		goto check_completion;
+ 	sta = ieee80211_find_sta(vif, bssid);
+ 	if (!sta) {
++		rcu_read_unlock();
++
+ 		rtw_warn(rtwdev, "failed to find station entry for bss %pM\n",
+ 			 bssid);
+-		goto out_unlock;
++		return;
  	}
  
- 	if (purb->status) {
--		DBG_88E("###=> urb_write_port_complete status(%d)\n", purb->status);
-+		netdev_dbg(padapter->pnetdev, "status(%d)\n", purb->status);
- 		if (purb->status == -EINPROGRESS) {
- 			goto check_completion;
- 		} else if (purb->status == -ENOENT) {
--			DBG_88E("%s: -ENOENT\n", __func__);
-+			netdev_dbg(padapter->pnetdev, "-ENOENT\n");
- 			goto check_completion;
- 		} else if (purb->status == -ECONNRESET) {
--			DBG_88E("%s: -ECONNRESET\n", __func__);
-+			netdev_dbg(padapter->pnetdev, "-ECONNRESET\n");
- 			goto check_completion;
- 		} else if (purb->status == -ESHUTDOWN) {
- 			padapter->bDriverStopped = true;
- 			goto check_completion;
- 		} else if ((purb->status != -EPIPE) && (purb->status != -EPROTO)) {
- 			padapter->bSurpriseRemoved = true;
--			DBG_88E("bSurpriseRemoved = true\n");
-+			netdev_dbg(padapter->pnetdev, "bSurpriseRemoved = true\n");
+ 	ic_vht_cap = &hw->wiphy->bands[NL80211_BAND_5GHZ]->vht_cap;
+ 	vht_cap = &sta->vht_cap;
  
- 			goto check_completion;
++	rcu_read_unlock();
++
+ 	if ((ic_vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMEE_CAPABLE) &&
+ 	    (vht_cap->cap & IEEE80211_VHT_CAP_MU_BEAMFORMER_CAPABLE)) {
+ 		if (bfinfo->bfer_mu_cnt >= chip->bfer_mu_max_num) {
+ 			rtw_dbg(rtwdev, RTW_DBG_BF, "mu bfer number over limit\n");
+-			goto out_unlock;
++			return;
  		}
-@@ -174,7 +174,7 @@ u32 rtw_write_port(struct adapter *padapter, u32 addr, u32 cnt, u8 *wmem)
- 	status = usb_submit_urb(purb, GFP_ATOMIC);
- 	if (status) {
- 		rtw_sctx_done_err(&pxmitbuf->sctx, RTW_SCTX_DONE_WRITE_PORT_ERR);
--		DBG_88E("usb_write_port, status =%d\n", status);
-+		netdev_dbg(padapter->pnetdev, "usb_write_port, status = %d\n", status);
  
- 		switch (status) {
- 		case -ENODEV:
-@@ -202,8 +202,6 @@ void rtw_write_port_cancel(struct adapter *padapter)
- 	int i, j;
- 	struct xmit_buf *pxmitbuf = (struct xmit_buf *)padapter->xmitpriv.pxmitbuf;
+ 		ether_addr_copy(bfee->mac_addr, bssid);
+@@ -75,7 +79,7 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+ 		   (vht_cap->cap & IEEE80211_VHT_CAP_SU_BEAMFORMER_CAPABLE)) {
+ 		if (bfinfo->bfer_su_cnt >= chip->bfer_su_max_num) {
+ 			rtw_dbg(rtwdev, RTW_DBG_BF, "su bfer number over limit\n");
+-			goto out_unlock;
++			return;
+ 		}
  
--	DBG_88E("%s\n", __func__);
+ 		sound_dim = vht_cap->cap &
+@@ -98,9 +102,6 @@ void rtw_bf_assoc(struct rtw_dev *rtwdev, struct ieee80211_vif *vif,
+ 
+ 		rtw_chip_config_bfee(rtwdev, rtwvif, bfee, true);
+ 	}
 -
- 	padapter->bWritePortCancel = true;
+-out_unlock:
+-	rcu_read_unlock();
+ }
  
- 	for (i = 0; i < NR_XMITBUFF; i++) {
+ void rtw_bf_init_bfer_entry_mu(struct rtw_dev *rtwdev,
 -- 
-2.33.1
+2.34.1
 
