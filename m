@@ -2,102 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E001C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85540C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232014AbiAHAic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231980AbiAHAia (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 19:38:30 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C0DC061574;
-        Fri,  7 Jan 2022 16:38:29 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id w16so28165879edc.11;
-        Fri, 07 Jan 2022 16:38:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0tl3tl0Rjc2H0O+Ee2YyH8tQI/ckCB3TAtw6D3Jv5pM=;
-        b=adrk8Xw7lRyfAdM25xuBROnlbcbIFuOH92rt485pDgwwZdlOz2u5Yz1u2I8lc6MJQl
-         HDg2dxVdKKlLxzHauMj8/yUrURVEd7WRrZ3cqjaNIdwAn+ehUVzwpb0kg7CTLL/WlGin
-         lSNEJ/JsbcPp4ml4ICZs1p0pzbVLfRRe/6KTSpr5Gvo9Jgo0roCK4h23XAfRePsqnolr
-         LHVKibo5T+STaa19Id/Um9Gj1qNrSnBnJ2QCYkewrZPUJc2UYf0y7Zn+MGV4AoxYW/4q
-         arvSMjdA1/ihdOJyKUsw3H98k79N5gW2afa62fQSAMmSmCzjjhE19NiktT0izGYxf4Yc
-         2agQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0tl3tl0Rjc2H0O+Ee2YyH8tQI/ckCB3TAtw6D3Jv5pM=;
-        b=xN0o6bFD9cjkDJMha2R8Rx0E07NptErt0ThAequvY9N1KDhrNqT4Ti+vDkQON5u2Ds
-         QB+zWI9U5x6TwR9mjiw7VcDDC88lupVcY45NwHnheD1tX6SVLq6iVMEiUJDairy42sLW
-         IPhqCaA9iExp2yZcfZv4OrlUx9VSmufdNILmppJK79H3iXlNbsT4UTMur1VaUVf3lnCe
-         22ZoDRFKfQ2rr+4XRXNy/fmBrD2U2+xvB7QUf321hlhtAio9Ukb542dWm3ILDl4Cwz3T
-         EFnqDj0p7vtxvRNhxfkGctUqysf6QnFykgfDNMC5l26oq/y4H7MM6GYdLe+KZYEx5bT9
-         cZmg==
-X-Gm-Message-State: AOAM530f7Kwv4kNkT/NWueeYK5STImrbmQcXYQ3kGj+DIU5MtxeQiSaR
-        2uYPQ0A1lABehYnP3IcFUMUEdF+ubw4=
-X-Google-Smtp-Source: ABdhPJyg3pvFHTC+0G1Tb2kJjlfdwUQUr6iJtSIHeRpF9F2FApwLxyz3dQ1eN28PlX3LdLntjN+nGA==
-X-Received: by 2002:a17:907:7202:: with SMTP id dr2mr51490145ejc.442.1641602308578;
-        Fri, 07 Jan 2022 16:38:28 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id c9sm50507ejf.170.2022.01.07.16.38.28
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 07 Jan 2022 16:38:28 -0800 (PST)
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     tj@kernel.org, lizefan.x@bytedance.com, hannes@cmpxchg.org
-Cc:     cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wei Yang <richard.weiyang@gmail.com>
-Subject: [PATCH 2/2] cgroup: rstat: retrieve current bstat to delta directly
-Date:   Sat,  8 Jan 2022 00:38:17 +0000
-Message-Id: <20220108003817.6619-2-richard.weiyang@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220108003817.6619-1-richard.weiyang@gmail.com>
-References: <20220108003817.6619-1-richard.weiyang@gmail.com>
+        id S232022AbiAHAmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:42:31 -0500
+Received: from mga06.intel.com ([134.134.136.31]:32647 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230115AbiAHAm3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 19:42:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641602549; x=1673138549;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ZFQh7+Zx4QitKvWsY1aIw5HxwxUHS/THbLCQlNqrOZA=;
+  b=GPedpWzBjQjQfIXe+8PLF1msy14+mZ0vff37HCZZyYXRj66Pn22ud9LN
+   mg+2cfCOLHpP1fJJ4ZMn4GwxN8/CmCd3ABI6J9FflaK0H7tAJGJyQzlU6
+   rlW+B/xGNZH8Za6iB10MzJ3ka1cikUPhzxvi+F/3wh1z9eh1x8vuHGACs
+   N3YEQILv3ypnR7OTWRnGu6P4+OZhr8dOapaS6Eaq6zKmDkQgVosyCRo6E
+   nr0ZtlPZhmolQaBcyxbzcuzFM/doDvQi1dp3Cip1LciyHkVEczi9/HrYL
+   xAudEhRhZeqOq/T02M7yGihSNj6J7dTYMfBw/KmSwM5OfmdIubCKDBboR
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="303712161"
+X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
+   d="scan'208";a="303712161"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 16:42:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
+   d="scan'208";a="622109386"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 07 Jan 2022 16:42:28 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n5zoR-000079-RP; Sat, 08 Jan 2022 00:42:27 +0000
+Date:   Sat, 8 Jan 2022 08:41:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [paulmck-rcu:dev.2022.01.04a 55/55] kernel/time/timer.c:1776:6:
+ warning: no previous prototype for 'tick_setup_sched_timer_dump'
+Message-ID: <202201080834.rGuSv2SS-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of retrieve current bstat to cur and copy it to delta, let's use
-delta directly.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git dev.2022.01.04a
+head:   64595d0dff992756e8c6d53c0e9f1e3e50c451f7
+commit: 64595d0dff992756e8c6d53c0e9f1e3e50c451f7 [55/55] squash! EXP timers: Non-nohz_full last-resort jiffies update on IRQ entry
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220108/202201080834.rGuSv2SS-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git/commit/?id=64595d0dff992756e8c6d53c0e9f1e3e50c451f7
+        git remote add paulmck-rcu https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git
+        git fetch --no-tags paulmck-rcu dev.2022.01.04a
+        git checkout 64595d0dff992756e8c6d53c0e9f1e3e50c451f7
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash kernel/time/
 
-This saves one copy operation and has the same code convention as
-propagating delta to parent.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+All warnings (new ones prefixed by >>):
+
+   kernel/time/timer.c:254:5: warning: no previous prototype for 'timer_migration_handler' [-Wmissing-prototypes]
+     254 | int timer_migration_handler(struct ctl_table *table, int write,
+         |     ^~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/time/timer.c:1776:6: warning: no previous prototype for 'tick_setup_sched_timer_dump' [-Wmissing-prototypes]
+    1776 | void tick_setup_sched_timer_dump(void)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/tick_setup_sched_timer_dump +1776 kernel/time/timer.c
+
+  1775	
+> 1776	void tick_setup_sched_timer_dump(void)
+  1777	{
+  1778		int cpu;
+  1779		int j = jiffies;
+  1780	
+  1781		pr_alert("%s state", __func__);
+  1782		for_each_possible_cpu(cpu)
+  1783			pr_cont(" j/c %x/%d %c",
+  1784				(int)(j - per_cpu(tick_setup_sched_timer_jiffies, cpu)) & 0xfff,
+  1785				per_cpu(tick_setup_sched_timer_jiffies_count, cpu),
+  1786				".H"[per_cpu(tick_setup_sched_timer_help_needed, cpu)]);
+  1787		pr_cont("\n");
+  1788	}
+  1789	
+
 ---
- kernel/cgroup/rstat.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
-index c626d5a526c4..f66944c53613 100644
---- a/kernel/cgroup/rstat.c
-+++ b/kernel/cgroup/rstat.c
-@@ -314,7 +314,7 @@ static void cgroup_base_stat_flush(struct cgroup *cgrp, int cpu)
- {
- 	struct cgroup_rstat_cpu *rstatc = cgroup_rstat_cpu(cgrp, cpu);
- 	struct cgroup *parent = cgroup_parent(cgrp);
--	struct cgroup_base_stat cur, delta;
-+	struct cgroup_base_stat delta;
- 	unsigned seq;
- 
- 	/* Root-level stats are sourced from system-wide CPU stats */
-@@ -324,11 +324,10 @@ static void cgroup_base_stat_flush(struct cgroup *cgrp, int cpu)
- 	/* fetch the current per-cpu values */
- 	do {
- 		seq = __u64_stats_fetch_begin(&rstatc->bsync);
--		cur = rstatc->bstat;
-+		delta = rstatc->bstat;
- 	} while (__u64_stats_fetch_retry(&rstatc->bsync, seq));
- 
- 	/* propagate percpu delta to global */
--	delta = cur;
- 	cgroup_base_stat_sub(&delta, &rstatc->last_bstat);
- 	cgroup_base_stat_add(&cgrp->bstat, &delta);
- 	cgroup_base_stat_add(&rstatc->last_bstat, &delta);
--- 
-2.33.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
