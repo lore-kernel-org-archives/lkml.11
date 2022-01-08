@@ -2,84 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D42FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 23:19:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECE9C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 23:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233657AbiAHXTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 18:19:33 -0500
-Received: from mail.foescog.net ([5.56.56.234]:56416 "EHLO mail.foescog.net"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229761AbiAHXTc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 18:19:32 -0500
-X-Greylist: delayed 489 seconds by postgrey-1.27 at vger.kernel.org; Sat, 08 Jan 2022 18:19:32 EST
-Received: from 42.91-116-32.dynamic.clientes.euskaltel.es (unknown [91.116.32.42])
-        by mail.foescog.net (Postfix) with ESMTPSA id 764F62060B1
-        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 00:11:19 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gruposerys.net;
-        s=default; t=1641683480;
-        bh=xUrfVs0SwqMa4XF9Lpvuw2aBNh65XgM2+voF5q808Ko=; h=From:To:Subject;
-        b=JZ5Bgaa7yfJb16d+Bv2SNbAf9VZwjcoTCtdbtTUswUCs4XuQFpa3KeCmmAI7h+ATt
-         NkNasEcx/JAmZ7U+VLppqdbDOO2Q6lC/vjtcoSOD73ZQRetYQmCT6IhLPDLZMVc9hE
-         BJ3eaeeEGwgSyDuR/ZOas27RIwDeMasqnPmTLXx8=
+        id S234930AbiAHXZN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 18:25:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229761AbiAHXZL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 18:25:11 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3E2CC06173F
+        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 15:25:10 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1n6L59-0005ig-8E; Sun, 09 Jan 2022 00:25:07 +0100
+Received: from pengutronix.de (2a03-f580-87bc-d400-6624-65e0-1d16-9a67.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:6624:65e0:1d16:9a67])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id ADD7C6D3BA2;
+        Sat,  8 Jan 2022 23:25:04 +0000 (UTC)
+Date:   Sun, 9 Jan 2022 00:25:03 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Brian Silverman <bsilver16384@gmail.com>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:CAN NETWORK DRIVERS" <linux-can@vger.kernel.org>,
+        "open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>
+Subject: Re: [RFC PATCH] can: m_can: Add driver for M_CAN hardware in NVIDIA
+ devices
+Message-ID: <20220108232503.ecwf7f4uuo7s7eni@pengutronix.de>
+References: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
 MIME-Version: 1.0
-From:   "SERYS" <info2@gruposerys.net>
-Reply-To: info2@gruposerys.net
-To:     linux-kernel@vger.kernel.org
-Subject: Consulta SERYS
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Smart_Send_4_3_3
-Date:   Sun, 9 Jan 2022 00:11:17 +0100
-Message-ID: <9052468301968191234011@DESKTOP-E4PFAM0>
-X-Priority: 1
-X-MSMail-Priority: High
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="j2owows65r7zjzcq"
+Content-Disposition: inline
+In-Reply-To: <20220106002514.24589-1-brian.silverman@bluerivertech.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Buenos d=EDas
 
+--j2owows65r7zjzcq
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 05.01.2022 16:25:09, Brian Silverman wrote:
+> It's a M_TTCAN with some NVIDIA-specific glue logic and clocks. The
+> existing m_can driver works with it after handling the glue logic.
+>=20
+> The code is a combination of pieces from m_can_platform and NVIDIA's
+> driver [1].
+>=20
+> [1] https://github.com/hartkopp/nvidia-t18x-can/blob/master/r32.2.1/nvidi=
+a/drivers/net/can/mttcan/hal/m_ttcan.c
+>=20
+> Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
 
-Desde SERYS ENERGIA estamos informando a todas las empresas, particulares y=
- entidades p=FAblicas acerca del servicio de autoconsumo el=E9ctrico median=
-te la instalaci=F3n totalmente financidada de placas solares fotovoltaicas.
+Thanks for your patch.
 
+> ---
+> I ran into bugs with the error handling in NVIDIA's m_ttcan driver, so I
+> switched to m_can which has been much better. I'm looking for feedback
+> on whether I should ensure rebasing hasn't broken anything, write up DT
+> documentation, and submit this patch for real. The driver works great,
+> but I've got some questions about submitting it.
+>=20
+> question: This has liberal copying of GPL code from NVIDIA's
+> non-upstreamed m_ttcan driver. Is that OK?
 
-Por este motivo rogamos pod=E1is respondernos indicando una de la siguiente=
-s respuestas:
+The header in the driver says it's GPLv2:
 
+| https://github.com/hartkopp/nvidia-t18x-can/blob/master/r32.2.1/nvidia/dr=
+ivers/net/can/mttcan/hal/m_ttcan.c#L5
 
-1 - Precisamos recibir presupuesto personalizado y sin compromiso (Indicar =
-por favor nombre y tel=E9fono de contacto).
+So it's OK. You should copy the original copyright notice to your glue
+driver, though.
 
-2 - No precisamos recibir informaci=F3n, disponemos ya de una instalaci=F3n=
- fotovoltaica.
+> corollary: I don't know what any of this glue logic does. I do know the
+> device doesn't work without it. I can't find any documentation of what
+> these addresses do.
 
-3 - No precisamos recibir informaci=F3n, no nos interesa cambiar.
+hmmm ok
 
+> question: There is some duplication between this and m_can_platform. It
+> doesn't seem too bad to me, but is this the preferred way to do it or is
+> there another alternative?
 
-Gracias por vuestra colaboraci=F3n, quedamos a la espera de vuestra respues=
-ta.
+You might merge this driver to the generic platform driver.
 
+> question: Do new DT bindings need to be in the YAML format, or is the
+> .txt one OK?
 
-Saludos cordiales.
+YAML
 
+Please fix the checkpatch warning found by:
 
-Departamento de autoconsumo y renovables
-SERYS CONSULTING ESPA=D1A
-Tel. 604213428
-Email. info@serys-energia.com
+| ./scripts/checkpatch.pl --file drivers/net/can/m_can/m_can_tegra.c
 
-www.serys-energia.com
+regards,
+Marc
 
-Antes de imprimir este e-mail piense bien si es necesario hacerlo. De confo=
-rmidad con lo dispuesto en el Reglamento Europeo del 2016/679, del 27 de Ab=
-ril de 2016 le informamos que la informaci=F3n transmitida en este mensaje =
-est=E1 dirigida solamente a las personas o entidades que figuran en el enca=
-bezamiento y contiene informaci=F3n confidencial, por lo que, si usted lo r=
-ecibiera por error, por favor destr=FAyalo sin copiarlo, usarlo ni distribu=
-irlo, comunic=E1ndolo inmediatamente al emisor del mensaje.=20
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Puede solicitar BAJA en el env=EDo de correos electr=F3nicos "PULSANDO AQUI=
-" <mailto:bajas@serys.net=3FSubject=3DBAJA%20CORREOS> y "ENVIAR".
+--j2owows65r7zjzcq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHaHUwACgkQqclaivrt
+76lrtwf/TBE40m671Kec7lv1AErSTYn7yLjVZkgZy8sHRUkiBzDfOvpFkRXfn4Yl
+RFKlGuNl1bzSNH1FP2iEQu5G6HBzougiMCff1tjL/ou7fKoGfdPiR85QWGsXHUZZ
+US1UXyMBBPWeFZeK9Fm9XmgOfDUaEvI9RDrHyUrul9T5DyKw3A1j4x43QOR++9VE
+GzitPzB8oPWPnFyi/8iFwCfkg6+j8V7VX/UmwJyvkzZT8R99dWh4OUWuwKJjFkHa
+PsOr7ToXgoKJTAOu3IMNyLrxu0tJSBEDGWTPmJ07bBJfyTLoyL4mHOAr89J4xPGG
+O6UboqJB0B5WyE1+EMaoMLNhbzy+7g==
+=BWAy
+-----END PGP SIGNATURE-----
+
+--j2owows65r7zjzcq--
