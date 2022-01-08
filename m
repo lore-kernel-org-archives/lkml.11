@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 255F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 07:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93088C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 07:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233739AbiAHH3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 02:29:49 -0500
-Received: from mga06.intel.com ([134.134.136.31]:10241 "EHLO mga06.intel.com"
+        id S233742AbiAHHkq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 02:40:46 -0500
+Received: from mga12.intel.com ([192.55.52.136]:30331 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233661AbiAHH3o (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 02:29:44 -0500
+        id S232935AbiAHHkp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 02:40:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641626984; x=1673162984;
+  t=1641627645; x=1673163645;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WmRyuzIY+tPoFY4WEGVgh86n0NOzU8FUsaqCLrCaXzU=;
-  b=Hc5bE/RBDuEDZ2dqeMZDLzEZEVsLok43TO8bVOhBl/QueMOLxFMZzRUz
-   DWPn389pMxqkRd4rdhbE+Al3lA0do+cxCAvuX145hec290P116fbcfMTS
-   WSJcpzC6nOaehGlumPl1ret4CA1rlXvUN9bKk6tJHXJzaG+teyMinS9U3
-   tsX/FwSMA+HspiOfbVGGLLdha1L26dPbUtm5DmrRpJ/vxxeiubZpWZPI7
-   ofCCBIEukX/Jy7GnJ+Smwlx6XaJ6rFBAfZQ3/C1gWsDcQbPIQglrD2Rdo
-   KYah2o9Yxp1ThAX6CKXGqJBD17axlm3/OH/Qar+r/zwH+6zKdv5wDj/dK
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="303737556"
+  bh=RwBntXTdAi7/01ONVX+EzLb37fJpXmGV/6H3s4eQ3rk=;
+  b=d7/ImJWrfH6xaDr0+L909slTnRUygih1oEVdLp8gUqDNWFtvI4XrBEm2
+   g83XddR9cFc9qvcO0vWYYUlu+0CEDayDbsphhKmd9Zz7pIYL7KcDJsnrx
+   gPWFe/GwCYz0HwDQgpEtTLPeCoyXPUFn6bgo3o6Wf0TgmJwyPWKgSROPr
+   SXNVWmHqu0ohMzI1jHJjjjIlI1E50d7SIjdR2DwZ3caH1/YMe2Xvkk0Ob
+   07ObFHYDaf/VdlWGyV8lqQtkA95HRyiYwfuXUoGhPXYNYcDLRG3nGy+6q
+   CPe0FIUpShf1CoSq5lSAuQXXjkmXgP38Lfau15vyaXkwpvdeNDF9iPsii
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="222981632"
 X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
-   d="scan'208";a="303737556"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 23:29:44 -0800
+   d="scan'208";a="222981632"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 23:40:45 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
-   d="scan'208";a="690045002"
+   d="scan'208";a="489528222"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 07 Jan 2022 23:29:43 -0800
+  by orsmga002.jf.intel.com with ESMTP; 07 Jan 2022 23:40:43 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1n66AY-0000NC-UI; Sat, 08 Jan 2022 07:29:42 +0000
-Date:   Sat, 8 Jan 2022 15:29:40 +0800
+        id 1n66LD-0000Ne-7D; Sat, 08 Jan 2022 07:40:43 +0000
+Date:   Sat, 8 Jan 2022 15:39:56 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 1824/2372] lib/memcat_p.c:10:8: warning: no
- previous prototype for '__memcat_p'
-Message-ID: <202201081547.TX8B6yRX-lkp@intel.com>
+To:     Steve Muckle <smuckle@google.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android11-kiwi-5.4
+ 754/9999] drivers/rtc/hctosys.c:24:5: warning: no previous prototype for
+ function 'rtc_hctosys'
+Message-ID: <202201081509.7cqEIyBV-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -51,45 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   67f8f45b4d0cf00f8e53fc1c2b50c67608ede063
-commit: fdd4a8e803c246ee0751f572a078ffd97b73ba36 [1824/2372] headers/deps: smp: Optimize <linux/smp.h> dependencies, remove <linux/smp_api.h> inclusion
-config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220108/202201081547.TX8B6yRX-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+Hi Steve,
+
+FYI, the error/warning still remains.
+
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android11-kiwi-5.4
+head:   7d1d5848183bd1d9086d0572f9af431d3ded407f
+commit: 5f378fd56aa3988be21e859254a2d72628d044c6 [754/9999] ANDROID: rtc: class: support hctosys from modular RTC drivers
+config: x86_64-randconfig-a011-20220107 (https://download.01.org/0day-ci/archive/20220108/202201081509.7cqEIyBV-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f3a344d2125fa37e59bae1b0874442c650a19607)
 reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=fdd4a8e803c246ee0751f572a078ffd97b73ba36
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout fdd4a8e803c246ee0751f572a078ffd97b73ba36
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/5f378fd56aa3988be21e859254a2d72628d044c6
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android11-kiwi-5.4
+        git checkout 5f378fd56aa3988be21e859254a2d72628d044c6
         # save the config file to linux build tree
         mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/rtc/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> lib/memcat_p.c:10:8: warning: no previous prototype for '__memcat_p' [-Wmissing-prototypes]
-      10 | void **__memcat_p(void **a, void **b)
-         |        ^~~~~~~~~~
+>> drivers/rtc/hctosys.c:24:5: warning: no previous prototype for function 'rtc_hctosys' [-Wmissing-prototypes]
+   int rtc_hctosys(void)
+       ^
+   drivers/rtc/hctosys.c:24:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int rtc_hctosys(void)
+   ^
+   static 
+   1 warning generated.
 
 
-vim +/__memcat_p +10 lib/memcat_p.c
+vim +/rtc_hctosys +24 drivers/rtc/hctosys.c
 
-93048c0944150b Alexander Shishkin 2018-10-16   4  
-93048c0944150b Alexander Shishkin 2018-10-16   5  /*
-93048c0944150b Alexander Shishkin 2018-10-16   6   * Merge two NULL-terminated pointer arrays into a newly allocated
-93048c0944150b Alexander Shishkin 2018-10-16   7   * array, which is also NULL-terminated. Nomenclature is inspired by
-93048c0944150b Alexander Shishkin 2018-10-16   8   * memset_p() and memcat() found elsewhere in the kernel source tree.
-93048c0944150b Alexander Shishkin 2018-10-16   9   */
-93048c0944150b Alexander Shishkin 2018-10-16 @10  void **__memcat_p(void **a, void **b)
-
-:::::: The code at line 10 was first introduced by commit
-:::::: 93048c0944150b316a15f92c41a4d626c8df37fd lib: Fix ia64 bootloader linkage
-
-:::::: TO: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    12	
+    13	/* IMPORTANT: the RTC only stores whole seconds. It is arbitrary
+    14	 * whether it stores the most close value or the value with partial
+    15	 * seconds truncated. However, it is important that we use it to store
+    16	 * the truncated value. This is because otherwise it is necessary,
+    17	 * in an rtc sync function, to read both xtime.tv_sec and
+    18	 * xtime.tv_nsec. On some processors (i.e. ARM), an atomic read
+    19	 * of >32bits is not possible. So storing the most close value would
+    20	 * slow down the sync API. So here we have the truncated value and
+    21	 * the best guess is to add 0.5s.
+    22	 */
+    23	
+  > 24	int rtc_hctosys(void)
+    25	{
+    26		int err = -ENODEV;
+    27		struct rtc_time tm;
+    28		struct timespec64 tv64 = {
+    29			.tv_nsec = NSEC_PER_SEC >> 1,
+    30		};
+    31		struct rtc_device *rtc = rtc_class_open(CONFIG_RTC_HCTOSYS_DEVICE);
+    32	
+    33		if (!rtc) {
+    34			pr_info("unable to open rtc device (%s)\n",
+    35				CONFIG_RTC_HCTOSYS_DEVICE);
+    36			goto err_open;
+    37		}
+    38	
+    39		err = rtc_read_time(rtc, &tm);
+    40		if (err) {
+    41			dev_err(rtc->dev.parent,
+    42				"hctosys: unable to read the hardware clock\n");
+    43			goto err_read;
+    44		}
+    45	
+    46		tv64.tv_sec = rtc_tm_to_time64(&tm);
+    47	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
