@@ -2,144 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7512BC4332F
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14167C43217
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232154AbiAHAz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:55:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44652 "EHLO
+        id S232207AbiAHAz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbiAHAzx (ORCPT
+        with ESMTP id S232109AbiAHAzx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 19:55:53 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6516BC06173E;
-        Fri,  7 Jan 2022 16:55:52 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id e9so12619586wra.2;
-        Fri, 07 Jan 2022 16:55:52 -0800 (PST)
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CF8C06173F
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 16:55:52 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id h10so3959730wrb.1
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 16:55:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IGJ0LXsLLIKTbaK4tkiGLW7mPutZPDSZiPZw3eeKEBA=;
-        b=XhxtoMa9eoBNh2JbJROXS4VuNzgPE7niSRI7qx8GgInFKNT5OoEzkGseVuBJBv4Ozh
-         4X04jXh/ozTnZwjGESu1L3VxEySH0tn8tCRgErME2BfISuleBpyotF+LXOA3N2UmaPAf
-         JGg0JBhlMrqwo9vvon1o0QygqhB4K32VkXUKvpOQPGQvp7cAbk/fQiL7Nf9eKTufjaaV
-         2GL8z39NKmeqPM5mXhiKc/FDgQNBQFXTyoAPDbcwgIFcSjhYwN1gEVWl30Gny1lKxEat
-         kNGZaglXd2e/sdUAeVflQsmWe7VBZx0LMZEqzN5gOix3g5JFPEWFRrlZSXUq6KB8JPlP
-         CwFA==
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iZK2bzn+VEDYvJEehx01sEshek4cKVaA9ZGbUqbBEFw=;
+        b=yIVJvHoywJPDV6cBJz149GUftE+KZM3Q1atR5w5tggD2zxAIjjYJozDAFWJ/r9plPD
+         iK1nG2KWKPxzmQ26AKPYG4uRs6nlBMwIov8BbyFY2NgkCVwm048PYtEFD5JIumPvYvfa
+         l0V21FLpnrPYhXT0bezdTZ1ZDlLbzrsuxIxR9XqJ9rhRg8GyDGhY+7RgUugztdCKOnfl
+         gUlMLj4jPcBajw/NOGw0GrqpL0H7NuBcy2wvv3mGuZGScBe85bAjVBXzNkRmMzJHJFlm
+         OCRwaaUk3YVz75ASnnhxd8Hn4FyPjZhbP46A2/DsPY0YffNFq0EFJ16ITWAMOWzKFc96
+         rW/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IGJ0LXsLLIKTbaK4tkiGLW7mPutZPDSZiPZw3eeKEBA=;
-        b=bItS3vrULtFiRn15F6FaaT3oEw/jHlVthy1Y8GPhJTypDpu112kLOPgEtoIfjaeuvd
-         Ja+JkjZkzs+CXXBNsI8xAOAjIBqkVViczz1g8748mwnZrtI/ml2+RyCoAdWI4ItLlL3t
-         WM9KR548m1ad05gaiBfol7Q3iNsZm6SQVzaTYbgXNYPdR/pI+UT9kNWNZ0ttu0Sdc/nQ
-         yc5mnuOPN7K/HWpaSmli3cpTAbuRVUwAzMP5vOkPLqjMBF9umqk4jRnEyh3GezjfedLD
-         /KBhaJmiHmCsrO5pCokVF0Zxeb4BVA8BapbcDy8rfY3BIsppvDBFpy4ddkDY7aZmYvLO
-         2TwQ==
-X-Gm-Message-State: AOAM5306o0GCJLzmNJK86ZC1ULxJbj6GE2lWmPMbRUSfaJBoTNDarCK+
-        1WkN430yXgosggN7gBZj3Ls7BpAZW/E=
-X-Google-Smtp-Source: ABdhPJzsIN8WaB1582oTDhjA6IretFkFj1KAvY3dnbLbHJoWCMXAj7Gr08X8ccnlJwpEuWmPMUW/2w==
-X-Received: by 2002:a5d:5090:: with SMTP id a16mr9493872wrt.259.1641603350697;
-        Fri, 07 Jan 2022 16:55:50 -0800 (PST)
-Received: from localhost.localdomain (dynamic-095-117-123-222.95.117.pool.telefonica.de. [95.117.123.222])
-        by smtp.googlemail.com with ESMTPSA id z6sm77357wmp.9.2022.01.07.16.55.49
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=iZK2bzn+VEDYvJEehx01sEshek4cKVaA9ZGbUqbBEFw=;
+        b=r5GaE49TWPzh3E+MRqpXD/27smhulmOSAoLzIQC1mFUe/trsWw7OKvIq2sCbQDkgcD
+         fwcC6KTlrvlXanPxC/4xwXh4OyQ/aYu52HTYCEuGhml2E6pnlpWp41jrlFSUfD2TDeqS
+         OsVhvJsXvXYo5Kus+QUPuHn+Gpms6YepNXT7GvOk1jXZAwbubj07paYhgBhWnPfAdsTg
+         VjqM+rkab3ZV9m73KuHr2upQH5smQeuY2uTUE5/gLbMlUTuUDZX3QYB2PlY6P2v8WtrI
+         kGTogGZuHlUwIV/cKHfiGCj4C/IH6BKbCoY7GpRUqWgAwWavggol0+mAvkJTpiSypExG
+         v6Xw==
+X-Gm-Message-State: AOAM530S4ka2c1MkgnBJbYCFLnsWPqaIuktlShbaMsdrbrXcO4LtBB/e
+        2oZedN9O7lWOT2nTpVE4w1+8pw==
+X-Google-Smtp-Source: ABdhPJyPTOTFXwAeO3W22g2S4nkN99gz4XBTEooWa74uAVTrPNrs+faG/TTL55i+ucqSkU1KlOzD0w==
+X-Received: by 2002:a05:6000:124a:: with SMTP id j10mr55212148wrx.110.1641603351412;
+        Fri, 07 Jan 2022 16:55:51 -0800 (PST)
+Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
+        by smtp.gmail.com with ESMTPSA id c18sm238853wrn.81.2022.01.07.16.55.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 16:55:50 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
-        johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Pkshih <pkshih@realtek.com>, Ed Swierk <eswierk@gh.st>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 2/8] rtw88: Move rtw_update_sta_info() out of rtw_ra_mask_info_update_iter()
-Date:   Sat,  8 Jan 2022 01:55:27 +0100
-Message-Id: <20220108005533.947787-3-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+        Fri, 07 Jan 2022 16:55:51 -0800 (PST)
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, straube.linux@gmail.com,
+        martin@kaiser.cx, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] staging: r8188eu: more DBG_88E to netdev_dbg work
+Date:   Sat,  8 Jan 2022 00:55:45 +0000
+Message-Id: <20220108005550.26264-1-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtw_update_sta_info() internally access some registers while being
-called unter an atomic lock acquired by rtw_iterate_vifs_atomic(). Move
-rtw_update_sta_info() call out of (rtw_ra_mask_info_update_iter) in
-preparation for SDIO support where register access may sleep.
+Another small series of patches to convert more DBG_88E calls to
+netdev_dbg calls, or remove them as appropriate.
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
-v2 -> v3:
-- Move the mutex lock (to protect the dta inside br_data.si[i]) to
-  rtw_ops_set_bitrate_mask() for consistency with other functions in
-  the whole driver (and especially in the same file) as suggested by
-  Ping-Ke (thank you!)
+Phillip Potter (5):
+  staging: r8188eu: convert/remove DBG_88E calls in core/rtw_ap.c
+  staging: r8188eu: convert DBG_88E calls in os_dep/xmit_linux.c
+  staging: r8188eu: remove DBG_88E call from os_dep/osdep_service.c
+  staging: r8188eu: convert DBG_88E call in core/rtw_cmd.c
+  staging: r8188eu: convert/remove DBG_88E calls in
+    os_dep/usb_ops_linux.c
 
-v1 -> v2:
-- keep rtw_iterate_vifs_atomic() to prevent deadlocks as Johannes
-  suggested. Keep track of all relevant stations inside
-  rtw_ra_mask_info_update_iter() and the iter-data and then call
-  rtw_update_sta_info() while held under rtwdev->mutex instead
+ drivers/staging/r8188eu/core/rtw_ap.c         | 145 +++++++-----------
+ drivers/staging/r8188eu/core/rtw_cmd.c        |   4 +-
+ .../staging/r8188eu/os_dep/osdep_service.c    |   2 -
+ .../staging/r8188eu/os_dep/usb_ops_linux.c    |  24 ++-
+ drivers/staging/r8188eu/os_dep/xmit_linux.c   |   6 +-
+ 5 files changed, 73 insertions(+), 108 deletions(-)
 
- drivers/net/wireless/realtek/rtw88/mac80211.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/realtek/rtw88/mac80211.c b/drivers/net/wireless/realtek/rtw88/mac80211.c
-index ae7d97de5fdf..78e963fcc6e1 100644
---- a/drivers/net/wireless/realtek/rtw88/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw88/mac80211.c
-@@ -671,6 +671,8 @@ struct rtw_iter_bitrate_mask_data {
- 	struct rtw_dev *rtwdev;
- 	struct ieee80211_vif *vif;
- 	const struct cfg80211_bitrate_mask *mask;
-+	unsigned int num_si;
-+	struct rtw_sta_info *si[RTW_MAX_MAC_ID_NUM];
- };
- 
- static void rtw_ra_mask_info_update_iter(void *data, struct ieee80211_sta *sta)
-@@ -691,7 +693,8 @@ static void rtw_ra_mask_info_update_iter(void *data, struct ieee80211_sta *sta)
- 	}
- 
- 	si->use_cfg_mask = true;
--	rtw_update_sta_info(br_data->rtwdev, si);
-+
-+	br_data->si[br_data->num_si++] = si;
- }
- 
- static void rtw_ra_mask_info_update(struct rtw_dev *rtwdev,
-@@ -699,11 +702,16 @@ static void rtw_ra_mask_info_update(struct rtw_dev *rtwdev,
- 				    const struct cfg80211_bitrate_mask *mask)
- {
- 	struct rtw_iter_bitrate_mask_data br_data;
-+	unsigned int i;
- 
- 	br_data.rtwdev = rtwdev;
- 	br_data.vif = vif;
- 	br_data.mask = mask;
-+	br_data.num_si = 0;
- 	rtw_iterate_stas_atomic(rtwdev, rtw_ra_mask_info_update_iter, &br_data);
-+
-+	for (i = 0; i < br_data.num_si; i++)
-+		rtw_update_sta_info(rtwdev, br_data.si[i]);
- }
- 
- static int rtw_ops_set_bitrate_mask(struct ieee80211_hw *hw,
-@@ -712,7 +720,9 @@ static int rtw_ops_set_bitrate_mask(struct ieee80211_hw *hw,
- {
- 	struct rtw_dev *rtwdev = hw->priv;
- 
-+	mutex_lock(&rtwdev->mutex);
- 	rtw_ra_mask_info_update(rtwdev, vif, mask);
-+	mutex_unlock(&rtwdev->mutex);
- 
- 	return 0;
- }
 -- 
-2.34.1
+2.33.1
 
