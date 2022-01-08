@@ -2,143 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21187C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 20:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D928FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 21:00:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235085AbiAHUyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 15:54:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        id S229778AbiAHVAC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 16:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233163AbiAHUxy (ORCPT
+        with ESMTP id S229593AbiAHVAC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 15:53:54 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB21C06175B;
-        Sat,  8 Jan 2022 12:53:50 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id a1so9551484qtx.11;
-        Sat, 08 Jan 2022 12:53:50 -0800 (PST)
+        Sat, 8 Jan 2022 16:00:02 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA6AC06173F
+        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 13:00:01 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id n30-20020a17090a5aa100b001b2b6509685so11392815pji.3
+        for <linux-kernel@vger.kernel.org>; Sat, 08 Jan 2022 13:00:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/0ROVjBtOv58dYnTC1wxv7OiF3Nz5B0Zoen6sj7TfJ8=;
-        b=ZB3KqunNjaHpw0gvIBkdvu2xaxjBoSRBMEwhiNHLJSo41PtOWYdsXL4GXdoagab2Zu
-         8Np4CR6eku4Qgh8rhTAx1RwOo2l6xoa6jgChL9Q1hpOQyuzLoaHLpQnZcU1PwZkg0/4l
-         mhm1fUkSv5Wg3LHJrhYPo5owERIT3l/g66+1OHsA5THlgTZSlGaYHNKReoEGB/YqBiaR
-         AgPQMP0ce6/BJnl8zf/G6ENHLdOjkNz4usjZ5z7KGSW6gQWzg47vgUPqv8AWur1r2Iqq
-         MsUulPfTtYjNyDNMfY7/c2Kqn3sPe1XH5AaqgBK6g91qQArKZxUwynyNnO7Inq6pyFWL
-         5T0g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=p1VgySDUuTxujElNU6wOZ2jQO8XPQhp9HhAkv/iVERk=;
+        b=i+iv0X0I2cA4T9uM6PPCvPfcdwpNLXJW98EYdY6uuSkmTEqg7T/Ugg+hYKEbmLN0y4
+         X5fya9KPEWYzmEdr9lRqh0uz/nrUsab/2+Yk11slGxwFJDiciev2Powr9DA5odBfe+pl
+         9yP0WGrp6OlC3cAdrufgK1aFijAcKkhQsKCZnrbimQG3TrBqbsit3kkzbf0ITvc2ILHz
+         ld6qaxjdUqn7+flYDnfFCKKxtNU4RtXFcdLpulyAv8LO6vp8v2a9fz3x2hmdweHvmCgK
+         U4uoxnnrOss2BZYU+UBxkY5dshJReiK6BM85MzX2NjQ9u4oqF/jZD6lp4tmWpX7HWdQL
+         1ixQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/0ROVjBtOv58dYnTC1wxv7OiF3Nz5B0Zoen6sj7TfJ8=;
-        b=vLE81sY4qcnvjW/Z6G897Gzo/4p8ENaln9akr1M2Qn2v9qseDrOKyaFXwp25EzMgSB
-         SnxlQykY0JlOXhdePtaQ9ps0e70dlQ8C2FoQwmBWQOFTYKGQwTn9TrzVl3w+UOdssqjO
-         taKHxfydXUfpzpGplMJf7Bk5QxcgmJnE4cpekp/G/M/BVXkHV3If7A9e9B6Tp5/Izs7e
-         OOPq2wKrPl8nKC2sQn2pCmygYGG4SzIABly5km53DwGpyP9sn6h67r9uhOayKFaVJ7WX
-         kfMJ0ZWlsV3Mmw5clxf7Ve/S0QZJGZJututD6WY1j2PcUudYGWdaNQIcVMcjGeg6xZjY
-         SWnQ==
-X-Gm-Message-State: AOAM530rf8wfIMFMlI++0i3Y8JmojbrWY4E3xYxpz1R1i6txOTP8iEro
-        Xv/db/3GJd37oq3gSftycSg=
-X-Google-Smtp-Source: ABdhPJz21wLTntPP49TQIqloAjfdrmn2uQZw6sgUBe42HokKBeSeCER37yicB5j4+LV0hs9J01Ovxw==
-X-Received: by 2002:ac8:7d08:: with SMTP id g8mr59713780qtb.443.1641675229438;
-        Sat, 08 Jan 2022 12:53:49 -0800 (PST)
-Received: from shaak.. (69-165-204-82.cable.teksavvy.com. [69.165.204.82])
-        by smtp.gmail.com with ESMTPSA id p16sm1650377qtx.19.2022.01.08.12.53.47
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=p1VgySDUuTxujElNU6wOZ2jQO8XPQhp9HhAkv/iVERk=;
+        b=TYghIzwZDC57sYWBj1cp0jow/+mJi6NE7oCwK2bh6puT0EXSCIiOMIGsG5iiskdqHV
+         OXvmYJ5xtcL4lA6Yj+HbmF7DcS6TXlWKVb0Q/9DTYRkzQAn77p9avNaulvkHUI5IG8HG
+         P9rLwnflHT7vEnNzO6yOEEZLK/mxWQ7W8+JVsmsXiAPQDMIic6w5xzcl3q1g4O6sbtuG
+         c2OIazTNE+thGcltQeqze5MS+AIVvSd7W8MNsOwb3edGx/eZ+zDW5HRkygJCS1ZB+w1+
+         pyU4dexWU5Vn3xFwdA077F6xE6EYNosnPrkiPe9VXJMYK0YvLCiM+qu7wqHxqLfa+A6B
+         ni9Q==
+X-Gm-Message-State: AOAM531Oghp8MvpDqjidqoOjdQr8b5F+9mvrQTv8Anut0VYHIBUqv8X5
+        g+X2rfaDFil7dBoq+6UjfQY=
+X-Google-Smtp-Source: ABdhPJz4yClYng8Ow9atBD9PGhp/H5v2R1hwaAEq2t1TqkiHVRfhRLqSrJ8ZakRmdEApFfbAtxNmPg==
+X-Received: by 2002:a17:90b:3e8e:: with SMTP id rj14mr22268418pjb.195.1641675601274;
+        Sat, 08 Jan 2022 13:00:01 -0800 (PST)
+Received: from mail.google.com (122-58-164-114-fibre.sparkbb.co.nz. [122.58.164.114])
+        by smtp.gmail.com with ESMTPSA id i23sm2134065pgi.92.2022.01.08.12.59.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jan 2022 12:53:48 -0800 (PST)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
-        andy.shevchenko@gmail.com, lars@metafoo.de
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v12 14/16] iio: afe: rescale: add temperature transducers
-Date:   Sat,  8 Jan 2022 15:53:17 -0500
-Message-Id: <20220108205319.2046348-15-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.34.0
-In-Reply-To: <20220108205319.2046348-1-liambeguin@gmail.com>
-References: <20220108205319.2046348-1-liambeguin@gmail.com>
+        Sat, 08 Jan 2022 13:00:00 -0800 (PST)
+Date:   Sun, 9 Jan 2022 09:59:55 +1300
+From:   Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     gregkh@linuxfoundation.org, realwakka@gmail.com,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: pi433: move get version func to where all
+ other functions are
+Message-ID: <20220108205955.GA3660@mail.google.com>
+References: <20220106201430.GA3416@mail.google.com>
+ <20220106213325.GA10767@mail.google.com>
+ <20220107085343.GP7674@kadam>
+ <20220107192438.GB2693@mail.google.com>
+ <20220108111910.GA1978@kadam>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220108111910.GA1978@kadam>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A temperature transducer is a device that converts a thermal quantity
-into any other physical quantity. This patch adds support for
-temperature to voltage (like the LTC2997) and temperature to current
-(like the AD590) linear transducers.
-In both cases these are assumed to be connected to a voltage ADC.
+On Sat, Jan 08, 2022 at 02:19:10PM +0300, Dan Carpenter wrote:
+> > are you strongly set on the rf69_read_reg approach or would you
+> > be open to keep the original approach? (rf69_get_version)
+> 
+> I think my approach is best but I don't care.
 
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
----
- drivers/iio/afe/iio-rescale.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+Thanks for being so flexible. I'll keep your suggestion at the back of my
+head and if I come across more scenarios in which rf69_read_reg would
+be the easiest way, I will gladly send a different patch to make it
+reality.
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 12c5e8d0d25c..4d70b72f59a5 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -435,11 +435,37 @@ static int rescale_temp_sense_rtd_props(struct device *dev,
- 	return 0;
- }
- 
-+static int rescale_temp_transducer_props(struct device *dev,
-+					 struct rescale *rescale)
-+{
-+	s32 offset = 0;
-+	s32 sense = 1;
-+	s32 alpha;
-+	int ret;
-+
-+	device_property_read_u32(dev, "sense-offset-millicelsius", &offset);
-+	device_property_read_u32(dev, "sense-resistor-ohms", &sense);
-+	ret = device_property_read_u32(dev, "alpha-ppm-per-celsius", &alpha);
-+	if (ret) {
-+		dev_err(dev, "failed to read alpha-ppm-per-celsius: %d\n", ret);
-+		return ret;
-+	}
-+
-+	rescale->numerator = MEGA;
-+	rescale->denominator = alpha * sense;
-+
-+	rescale->offset = div_s64((s64)offset * rescale->denominator,
-+				  rescale->numerator);
-+
-+	return 0;
-+}
-+
- enum rescale_variant {
- 	CURRENT_SENSE_AMPLIFIER,
- 	CURRENT_SENSE_SHUNT,
- 	VOLTAGE_DIVIDER,
- 	TEMP_SENSE_RTD,
-+	TEMP_TRANSDUCER,
- };
- 
- static const struct rescale_cfg rescale_cfg[] = {
-@@ -459,6 +485,10 @@ static const struct rescale_cfg rescale_cfg[] = {
- 		.type = IIO_TEMP,
- 		.props = rescale_temp_sense_rtd_props,
- 	},
-+	[TEMP_TRANSDUCER] = {
-+		.type = IIO_TEMP,
-+		.props = rescale_temp_transducer_props,
-+	},
- };
- 
- static const struct of_device_id rescale_match[] = {
-@@ -470,6 +500,8 @@ static const struct of_device_id rescale_match[] = {
- 	  .data = &rescale_cfg[VOLTAGE_DIVIDER], },
- 	{ .compatible = "temperature-sense-rtd",
- 	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
-+	{ .compatible = "temperature-transducer",
-+	  .data = &rescale_cfg[TEMP_TRANSDUCER], },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, rescale_match);
--- 
-2.34.0
+> > I just want to double-check if this suggestion is taking into
+> > consideration what was mentioned here:
+> > https://lore.kernel.org/lkml/20220106210134.GB3416@mail.google.com/ 
+> > 
+> > If it is, I'm happy to add it back but I just wanted to confirm it
+> > first.
+> 
+> Yes.  Keep the error handling.  Your way makes the code more complicated
+> to read.
+>
 
+Agreed. I will add it back.
+
+thanks,
+
+Paulo A.
