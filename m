@@ -2,149 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 01:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B15CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 01:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbiAHBdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 20:33:37 -0500
-Received: from mail.efficios.com ([167.114.26.124]:55518 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232608AbiAHBde (ORCPT
+        id S232793AbiAHBfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 20:35:51 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:59440 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230520AbiAHBfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 20:33:34 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id E1C5937D26C;
-        Fri,  7 Jan 2022 20:33:33 -0500 (EST)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id CueKu7_PTaPK; Fri,  7 Jan 2022 20:33:33 -0500 (EST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 9E6C937D605;
-        Fri,  7 Jan 2022 20:33:33 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 9E6C937D605
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1641605613;
-        bh=zs3mrnBsLhYeroMuTKJk/TqjMUFWWyfhrso2Mz8iNoA=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=WovgtdjXG2SapFxa0fdwh+l8XMT/+8rzdYyjN3vv2uAarbqs2Vf69K6HoLwusZZ31
-         kVlp9glMrv1c1XtLR5P8pHdJEaTAedzQGFNrOxT3Da9tFzh13V4W87NpTboEpU85s0
-         1JcLVYmqoGoG7dNCKiXAy/Tq/FP1zwWW8/Yt1cCQ6fcx3cMlA+db9d5fUxcRJAVZqQ
-         AKe9kJDKXf5HpG+N8KcMlHu86B+QJod7pNrm40OsXlhi/maYdm9aT6PLEERLmpQP+J
-         MaySh/jEjqGRwjNeElmS234Y+iHtmNVWZ/Dqo355UaGWNbKghvoMwyeo/iIgY8qemL
-         Xox9vSZb/Hmwg==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 7o2BUmHlX3FV; Fri,  7 Jan 2022 20:33:33 -0500 (EST)
-Received: from mail03.efficios.com (mail03.efficios.com [167.114.26.124])
-        by mail.efficios.com (Postfix) with ESMTP id 8DF3237D604;
-        Fri,  7 Jan 2022 20:33:33 -0500 (EST)
-Date:   Fri, 7 Jan 2022 20:33:33 -0500 (EST)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Florian Weimer <fw@deneb.enyo.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        paulmck <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
-        linux-api <linux-api@vger.kernel.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        carlos <carlos@redhat.com>
-Message-ID: <1752185722.14562.1641605613561.JavaMail.zimbra@efficios.com>
-In-Reply-To: <333385690.14559.1641604090435.JavaMail.zimbra@efficios.com>
-References: <20220107170302.8325-1-mathieu.desnoyers@efficios.com> <87a6g7ny0j.fsf@mid.deneb.enyo.de> <1968088162.13310.1641584935813.JavaMail.zimbra@efficios.com> <1300078200.13848.1641590867024.JavaMail.zimbra@efficios.com> <701ff3888b3f42f4a6a1dded84b79078@AcuMS.aculab.com> <333385690.14559.1641604090435.JavaMail.zimbra@efficios.com>
-Subject: Re: [RFC PATCH] rseq: x86: implement abort-at-ip extension
+        Fri, 7 Jan 2022 20:35:50 -0500
+X-UUID: a68be2b4b47b48959ab3f3e003f4ba29-20220108
+X-UUID: a68be2b4b47b48959ab3f3e003f4ba29-20220108
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 213261639; Sat, 08 Jan 2022 09:35:48 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sat, 8 Jan 2022 09:35:46 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 8 Jan 2022 09:35:46 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <Mark-YW.Chen@mediatek.com>,
+        <sean.wang@mediatek.com>, <Soul.Huang@mediatek.com>,
+        <YN.Chen@mediatek.com>, <Leon.Yen@mediatek.com>,
+        <Eric-SY.Chang@mediatek.com>, <Deren.Wu@mediatek.com>,
+        <km.lin@mediatek.com>, <robin.chiu@mediatek.com>,
+        <Eddie.Chen@mediatek.com>, <ch.yeh@mediatek.com>,
+        <posh.sun@mediatek.com>, <ted.huang@mediatek.com>,
+        <Eric.Liang@mediatek.com>, <Stella.Chang@mediatek.com>,
+        <Tom.Chou@mediatek.com>, <steve.lee@mediatek.com>,
+        <jsiuda@google.com>, <frankgor@google.com>, <jemele@google.com>,
+        <abhishekpandit@google.com>, <michaelfsun@google.com>,
+        <mcchou@chromium.org>, <shawnku@google.com>,
+        <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: =?UTF-8?q?Re=3A=20Bluetooth=3A=20mt7921s=3A=20Enable=20SCO=20over=20I2S?=
+Date:   Sat, 8 Jan 2022 09:35:44 +0800
+Message-ID: <1641605744-14346-1-git-send-email-sean.wang@mediatek.com>
+X-Mailer: git-send-email 1.7.9.5
+In-Reply-To: <6DDA9D10-3001-4A57-B2F4-9712732868AC@holtmann.org--annotate>
+References: <6DDA9D10-3001-4A57-B2F4-9712732868AC@holtmann.org--annotate>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [167.114.26.124]
-X-Mailer: Zimbra 8.8.15_GA_4180 (ZimbraWebClient - FF95 (Linux)/8.8.15_GA_4177)
-Thread-Topic: rseq: x86: implement abort-at-ip extension
-Thread-Index: AdgEFboSAErst/O1Thaz4M9J8smUeRwcvnzKreT/0YI=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ On Jan 7, 2022, at 8:08 PM, Mathieu Desnoyers mathieu.desnoyers@efficios.com wrote:
+From: Sean Wang <sean.wang@mediatek.com>
 
-> ----- On Jan 7, 2022, at 5:27 PM, David Laight David.Laight@ACULAB.COM wrote:
-> 
->>> That being said, there might be an architecture agnostic alternative available.
->>> On abort of a RSEQ_CS_FLAG_ABORT_AT_IP critical section, we could let the kernel
->>> decrement/increment the stack pointer to make room for a pointer (depending if
->>> the
->>> stack grows down or up). It would then store the abort-at-ip value at the top of
->>> stack.
->> 
->> Stack redzone in a leaf function?
-> 
-> Good point!
-> 
-> For x86-64 for instance, which has a redzone of 128 bytes, there are a few
-> alternatives.
-> On abort:
-> 
-> Approach A) Move the stack pointer as little as possible
-> 
->   1. On abort in kernel:
->   1.1 Subtract 8 bytes from the stack pointer
->   1.2 Store the abort-at-ip value at stack pointer - 128
->   2. In abort handler (userspace)
->   2.1 user-space knows that it can find the abort-at-ip value at stack pointer -
->   128
->   2.2 after using that value, the abort handler needs to add 8 bytes to the stack
->   pointer
-> 
-> Approach B) Move the stack pointer to skip the entire redzone
-> 
->   1. On abort in kernel:
->   1.1 Subtract 128 bytes from the stack pointer
->   1.2 Store the abort-at-ip value at stack pointer - 8 (basically within a new red
->   zone)
->   2. In abort handler (userspace)
->   2.1 user-space knows that it can find the abort-at-ip value at stack pointer - 8
->   2.2 after using that value, the abort handler needs to add 128 bytes to the
->   stack pointer
+Hi, Marcel
 
-Or approach C)
+>
+>Hi Sean,
+>
+>> The driver has to issue the specific command to enable Bluetooth SCO
+>> over the I2S/PCM interface on mt7921s, that is supported since the
+>> firmware with version 20211222191101 was added, and the patch would
+>> not cause any harm even when the old firmware is applied.
+>>
+>> The SCO profile with the patch was tested by setting up a VOIP
+>> application, connected to HFP device, checked telephony function can work normally.
+>>
+>> Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+>> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+>> Signed-off-by: Mark Chen <mark-yw.chen@mediatek.com>
+>> ---
+>> v2: refine git message and fix typo
+>> v3:
+>>    1. free skb after calling  __hci_cmd_sync
+>>    2. make bt_awake as const struct btmtk_sco
+>> v4:
+>>    1. update git message
+>>    2. drop a few redundant error messages
+>> ---
+>> drivers/bluetooth/btmtk.h     | 20 +++++++++++
+>> drivers/bluetooth/btmtksdio.c | 68 +++++++++++++++++++++++++++++++++++
+>> 2 files changed, 88 insertions(+)
+>>
+>> diff --git a/drivers/bluetooth/btmtk.h b/drivers/bluetooth/btmtk.h
+>> index 2be1d2680ad8..fc57ef09d132 100644
+>> --- a/drivers/bluetooth/btmtk.h
+>> +++ b/drivers/bluetooth/btmtk.h
+>> @@ -7,8 +7,12 @@
+>>
+>> #define HCI_WMT_MAX_EVENT_SIZE		64
+>>
+>> +#define BTMTK_WMT_REG_WRITE 0x1
+>> #define BTMTK_WMT_REG_READ 0x2
+>>
+>> +#define MT7921_PINMUX_0 0x70005050
+>> +#define MT7921_PINMUX_1 0x70005054
+>> +
+>> enum {
+>>	BTMTK_WMT_PATCH_DWNLD = 0x1,
+>>	BTMTK_WMT_TEST = 0x2,
+>> @@ -76,6 +80,22 @@ struct btmtk_wakeon {
+>>	__le16 wakeup_delay;
+>> } __packed;
+>>
+>> +struct btmtk_sco {
+>> +	u8 clock_config;
+>> +	u8 transmit_format_config;
+>> +	u8 channel_format_config;
+>> +	u8 channel_select_config;
+>> +} __packed;
+>> +
+>> +struct reg_write_cmd {
+>> +	u8 type;
+>> +	u8 rsv;
+>> +	u8 num;
+>> +	__le32 addr;
+>> +	__le32 data;
+>> +	__le32 mask;
+>> +} __packed;
+>> +
+>> struct btmtk_hci_wmt_params {
+>>	u8 op;
+>>	u8 flag;
+>> diff --git a/drivers/bluetooth/btmtksdio.c
+>> b/drivers/bluetooth/btmtksdio.c index 89bd70651e9e..f6fb82b317de
+>> 100644
+>> --- a/drivers/bluetooth/btmtksdio.c
+>> +++ b/drivers/bluetooth/btmtksdio.c
+>> @@ -830,6 +830,66 @@ static int btsdio_mtk_reg_read(struct hci_dev *hdev, u32 reg, u32 *val)
+>>	return err;
+>> }
+>>
+>> +static int btsdio_mtk_reg_write(struct hci_dev *hdev, u32 reg, u32
+>> +val, u32 mask) {
+>> +	struct btmtk_hci_wmt_params wmt_params;
+>> +	struct reg_write_cmd reg_write = {
+>> +		.type = 1,
+>> +		.num = 1,
+>> +		.addr = cpu_to_le32(reg),
+>> +		.data = cpu_to_le32(val),
+>> +		.mask = cpu_to_le32(mask),
+>> +	};
+>
+>Maybe a good idea to make this const as well.
+>
 
-  1. On abort in kernel:
-  1.1 Subtract 136 bytes from the stack pointer
-  1.2 Store the abort-at-ip value at stack pointer
-  2. In abort handler (userspace)
-  2.1 user-space knows that it can find the abort-at-ip value at stack pointer, so
-      it can pop it from the stack
-  2.2 after popping that value, the abort handler needs to add 128 bytes to the stack pointer
+will do it next verion
 
-So far, approach C seems to be the most elegant IMHO.
+>> +	int err, status;
+>> +
+>> +	wmt_params.op = BTMTK_WMT_REGISTER;
+>> +	wmt_params.flag = BTMTK_WMT_REG_WRITE;
+>> +	wmt_params.dlen = sizeof(reg_write);
+>> +	wmt_params.data = &reg_write;
+>> +	wmt_params.status = &status;
+>> +
+>> +	err = mtk_hci_wmt_sync(hdev, &wmt_params);
+>> +	if (err < 0)
+>> +		bt_dev_err(hdev, "Failed to write reg(%d)", err);
+>
+>The please “..reg (%d)” as you have for the other error message.
+>
 
-Thanks,
+will do it next version
 
-Mathieu
+>> +
+>> +	return err;
+>> +}
+>> +
+>> +static int btsdio_mtk_sco_setting(struct hci_dev *hdev) {
+>> +	const struct btmtk_sco sco_setting = {
+>> +		.clock_config = 0x49,
+>> +		.channel_format_config = 0x80,
+>> +	};
+>> +	struct sk_buff *skb;
+>> +	u32 val;
+>> +	int err;
+>> +
+>> +	/* Enable SCO over I2S/PCM for MediaTek chipset */
+>> +	skb =  __hci_cmd_sync(hdev, 0xfc72, sizeof(sco_setting),
+>> +			      &sco_setting, HCI_CMD_TIMEOUT);
+>> +	if (IS_ERR(skb))
+>> +		return PTR_ERR(skb);
+>> +
+>> +	kfree_skb(skb);
+>> +
+>> +	err = btsdio_mtk_reg_read(hdev, MT7921_PINMUX_0, &val);
+>> +	if (err < 0)
+>> +		return err;
+>> +
+>> +	val |= 0x11000000;
+>> +	err = btsdio_mtk_reg_write(hdev, MT7921_PINMUX_0, val, ~0);
+>> +	if (err < 0)
+>> +		return err;
+>> +
+>> +	err = btsdio_mtk_reg_read(hdev, MT7921_PINMUX_1, &val);
+>> +	if (err < 0)
+>> +		return err;
+>> +
+>> +	val |= 0x00000101;
+>> +	return btsdio_mtk_reg_write(hdev, MT7921_PINMUX_1, val, ~0); }
+>> +
+>> static int btmtksdio_setup(struct hci_dev *hdev) {
+>>	struct btmtksdio_dev *bdev = hci_get_drvdata(hdev); @@ -862,6 +922,14
+>> @@ static int btmtksdio_setup(struct hci_dev *hdev)
+>>		err = mt79xx_setup(hdev, fwname);
+>>		if (err < 0)
+>>			return err;
+>> +
+>> +		/* Enable SCO over I2S/PCM */
+>> +		err = btsdio_mtk_sco_setting(hdev);
+>> +		if (err < 0) {
+>> +			bt_dev_err(hdev, "Failed to enable SCO setting (%d)", err);
+>> +			return err;
+>> +		}
+>> +
+>
+>Is this really a failure or could the chip continue to operate? It just means it falls back to SCO over HCI?
+>
 
+In fact, the firmware with the btmtksdio driver does not support SCO over HCI.
 
-> 
-> I suspect both approaches should work.
-> 
-> Any preference or other ideas ?
-> 
-> Thanks,
-> 
-> Mathieu
-> 
->> 
->> -
->> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT,
->> UK
->> Registration No: 1397386 (Wales)
-> 
-> --
-> Mathieu Desnoyers
-> EfficiOS Inc.
-> http://www.efficios.com
+If we fail there, the chip will not be able to continue running the SCO profile,
+So I prefer we should be aware of this problem and return an error code immediately.
 
--- 
-Mathieu Desnoyers
-EfficiOS Inc.
-http://www.efficios.com
+By the way, the reason why we do not support SCO over HCI is btmtksdio and wifi
+sdio driver would compete for the same SDIO bus to send and receive data. This
+will cause a lot of latency for SCO data, so we use a dedicated bus to minimize
+the latency to ensure audio quality in the actual product.
+
+>>		break;
+>>	case 0x7663:
+>>	case 0x7668:
+>
+>Regards
+>
+>Marcel
+>
