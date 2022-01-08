@@ -2,87 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D62C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 07:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 07:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233718AbiAHHZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 02:25:42 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:59781 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233484AbiAHHZl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 02:25:41 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        id S233728AbiAHH3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 02:29:46 -0500
+Received: from box.trvn.ru ([194.87.146.52]:33981 "EHLO box.trvn.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233484AbiAHH3o (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 02:29:44 -0500
+Received: from authenticated-user (box.trvn.ru [194.87.146.52])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JWBSz39k6z4xd4;
-        Sat,  8 Jan 2022 18:25:39 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1641626740;
-        bh=T/jZhA/L/dBQfp25qCLfio2/MXXlXg5j0WqIA2XSV8U=;
-        h=Date:From:To:Cc:Subject:From;
-        b=rx3o9dExyKX7LRxz2Yil+gTijoel8hV5faFiZV8GFqt4M2b8M7aW9BL/ru6C0Ydki
-         HfqWJZm1S02eNX4Dx8psrGdl1xZEapwgZf+nfy2H9cxKVa82FClmwHubFo8nPa7DRQ
-         XJQCL7m6GMRuyyJxKCuKc0uDYYY0NR6Bz5kFr/qcDufvsw94WlfQn7UyxOEeKuk+f0
-         7+jVnbWVGGSz/+L5KZyBfZr6opY/lf5Gcwld3odg+IH/O/cbysInLGvuBJkqwqiMdR
-         /xNXjWdx/pYp5u4UJ63eg2Z6DRNvgSIsQV8FxDDxO4kHAVaubMe9+6Zq2FKmSGNArd
-         JNk1IyfkYo/hQ==
-Date:   Sat, 8 Jan 2022 18:25:38 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Rob Herring <robherring2@gmail.com>
-Cc:     Baruch Siach <baruch@tkos.co.il>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the devicetree tree
-Message-ID: <20220108182538.362c8e29@canb.auug.org.au>
+        by box.trvn.ru (Postfix) with ESMTPSA id 70BE04038B;
+        Sat,  8 Jan 2022 12:29:42 +0500 (+05)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trvn.ru; s=mail;
+        t=1641626982; bh=BDOoNJU08j6Y2WEJp0zPmdWV3cy+R14uzOjvfVoYobE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AUOQ+gqvtUCYb1LjGXJSlpNtbrLaEZzscSnETqamvKwkD6s5NjDFWNlB7x1YTejYx
+         gl1wDsoOyTQ6L529MLDd0DLDiVY6LrRD5hev3Bh1lVQtWXiBtWOVbDVaoC3wibp/A5
+         +YIwa2htCHL+PMlzZtF4exfv2VPwK7YXqEfoFiPNFJJoQT/ucmbkyXGYpiULemyZhf
+         JKoEEXLNohpEgIFSBFNrDjdKN6OzRy/0XS6gcqCTeIxs5IBZ6KKdvc387oQrOMl1ZI
+         ovvHE3q5L8gQJm177nLVfvTch/nq8gGxZRZ5GeY4IkSXCXMOSqBgPyCA1tVBSXr1dK
+         nP0xnzJXdPTiQ==
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/XmTTLoeyiaSTdJ=sNqjs6TJ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Date:   Sat, 08 Jan 2022 12:29:42 +0500
+From:   Nikita Travkin <nikita@trvn.ru>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     linus.walleij@linaro.org, mturquette@baylibre.com,
+        bjorn.andersson@linaro.org, agross@kernel.org, tdas@codeaurora.org,
+        svarbanov@mm-sol.com, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH 2/4] clk: qcom: clk-rcg2: Make sure to not write d=0 to
+ the NMD register
+In-Reply-To: <20220108005604.05575C36AEB@smtp.kernel.org>
+References: <20211209163720.106185-1-nikita@trvn.ru>
+ <20211209163720.106185-3-nikita@trvn.ru>
+ <20220108005604.05575C36AEB@smtp.kernel.org>
+Message-ID: <b55dc8e9ec0e8549fe61e6439a02f912@trvn.ru>
+X-Sender: nikita@trvn.ru
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/XmTTLoeyiaSTdJ=sNqjs6TJ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hi all,
+Stephen Boyd писал(а) 08.01.2022 05:56:
+> Quoting Nikita Travkin (2021-12-09 08:37:18)
+>> Sometimes calculation of d value may result in 0 because of the
+>> rounding after integer division. This causes the following error:
+>>
+>> [  113.969689] camss_gp1_clk_src: rcg didn't update its configuration.
+>> [  113.969754] WARNING: CPU: 3 PID: 35 at drivers/clk/qcom/clk-rcg2.c:122 update_config+0xc8/0xdc
+>>
+>> Make sure that D value is never zero.
+>>
+>> Fixes: 7f891faf596e ("clk: qcom: clk-rcg2: Add support for duty-cycle for RCG")
+>> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+>> ---
+>>  drivers/clk/qcom/clk-rcg2.c | 4 ++++
+>>  1 file changed, 4 insertions(+)
+>>
+>> diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+>> index 6964cf914b60..fdfd43e2a01b 100644
+>> --- a/drivers/clk/qcom/clk-rcg2.c
+>> +++ b/drivers/clk/qcom/clk-rcg2.c
+>> @@ -424,6 +424,10 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw, struct clk_duty *duty)
+>>         if (d > mask)
+>>                 d = mask;
+>>
+>> +       /* Hardware can't handle d=0, make sure it's at least 1 */
+>> +       if (!d)
+>> +               d = 1;
+> 
+> Maybe clamp() would be better
+> 
+> 	/*
+>  	 * Check bit widths of 2d. If D is too big reduce duty cycle and
+> 	 * ensure it is non-zero.
+> 	 */
+> 	clamp(d, 1, mask);
+> 
 
-In commit
+Yes, this looks nicer, will use it in v2. Thanks for the suggestion!
 
-  86ce070ce00a ("of: base: Fix phandle argument length mismatch error messa=
-ge")
+Nikita
 
-Fixes tag
-
-  Fixes: af3be70a321 ("of: Improve of_phandle_iterator_next() error message=
-")
-
-has these problem(s):
-
-  - SHA1 should be at least 12 digits long
-    Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-    or later) just making sure it is not set (or set to "auto").
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/XmTTLoeyiaSTdJ=sNqjs6TJ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHZPHIACgkQAVBC80lX
-0Gx/aQf/eghOLjKTIVvNHNnRYh2WP+Q0W35fUwCi9/dQQqaebGkDApItJcfmys9d
-qG0NsxqzEUnyoCzZzdyB4JdqIXo6fkYnT5AcMrlhmr25Mppb9ZqW0JFKzDCgN88/
-iUrEnHKDvPc2j/ZUV27qkvB2mDn7AG3D0q0BQ/yypcXRyL6jJSTZjz0HP886ezFg
-nHroxBA85Vwu4gnZdGu1aLrNthPx6bEDH9dMphX1kk8XNY6vaiNU0LxhFKI3UyWY
-3tyPCmEpSXC+R8R/mgIXwGOpS4jJn9Gbr1Vp3IfdZN04TdTxk/TpXoFVCB/vKbO9
-ha1PmxccFgj7MQDy0jaVxbQCFb4/eA==
-=JDhE
------END PGP SIGNATURE-----
-
---Sig_/XmTTLoeyiaSTdJ=sNqjs6TJ--
+>> +
+>>         if ((d / 2) > (n - m))
+>>                 d = (n - m) * 2;
+>>         else if ((d / 2) < (m / 2))
