@@ -2,112 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F705C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CECECC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbiAHA4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:56:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
+        id S232736AbiAHA4f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:56:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232135AbiAHAzz (ORCPT
+        with ESMTP id S232324AbiAHA4G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 19:55:55 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F805C06173E;
-        Fri,  7 Jan 2022 16:55:54 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id w20so14097544wra.9;
-        Fri, 07 Jan 2022 16:55:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qYRAJooeejsLElKVR8lduV1KN6qXlfQTHsLzXUd3d6g=;
-        b=ouxrwHpNjIGM+LMQA2WDKhHbWEPuw92qkfHyFDK3qYXt2dB3mKCsqTwbt9l9nNNmtu
-         XCLZDlW0yzOYAapvXNBgS3d0fvZLLiPkEP2t+CvNv43PRrWFEePtraVKqOaA193YazrZ
-         JBiVwsADnRVi31c4aeBpmkW0XDRv346tN1g0tX8fzpXssrO3kmLDB2mkzO1VR7FeKUae
-         pxI/mRrLl7FjN1b9va9guxgMjMW/sUf5KlJlhffPFlI8B/bTD2rOM5dlerImS3/OD+P3
-         L+vg4a0PjBEF2MbanOPRzsrcYA6lnzPWI2IIEfjsSjX7d433SBQfxSc2kKZdI7N7WFic
-         gxtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qYRAJooeejsLElKVR8lduV1KN6qXlfQTHsLzXUd3d6g=;
-        b=pW6ucCA839am10YcJL7zgTVmKvfTfWdiJ45c7zwHA5VC0vK9Q3Eacbzcx7m2qhNo0y
-         8dB6WO3onbfJTs3oGu9UsQVkA049L1J3CPHbMMyDWAN8wZuy1ubvrrma5IPa0UEQt8Bl
-         tYkbC3DXJTWKuAve42599xIk2PUTelHEJUarMbKgZEV6geetV4bjbpcVKhLWRYkDEyaU
-         Vwam++S/rCJcF/ski59mJM48IHfDcui25noZ07nLgjH0iCHKQErwMcA+E05vn++DmXXr
-         qR0//iflozBsiwvq/eQ4wc3PesdYBr6Ona8dSW7SaDDtJ4CntgJcTCVqomE08hErYGsU
-         IRbw==
-X-Gm-Message-State: AOAM533MtsZYWUkOiBQKKhhzE2CzkQn8IWjef8EEfSz/iRE0LBwl24rV
-        5LbQzdkqoZlGFYy1T4sQiBdOnUhyZc4=
-X-Google-Smtp-Source: ABdhPJwJJ13t6pOnsUqETHnSbhHtqaSiPpIlTgAEf9at9sLUTTzkciB0CMZyZf5hOYHbRZMkwlFV4w==
-X-Received: by 2002:a5d:64a7:: with SMTP id m7mr55004041wrp.687.1641603353047;
-        Fri, 07 Jan 2022 16:55:53 -0800 (PST)
-Received: from localhost.localdomain (dynamic-095-117-123-222.95.117.pool.telefonica.de. [95.117.123.222])
-        by smtp.googlemail.com with ESMTPSA id z6sm77357wmp.9.2022.01.07.16.55.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 16:55:52 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
-        johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Pkshih <pkshih@realtek.com>, Ed Swierk <eswierk@gh.st>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 5/8] rtw88: Replace usage of rtw_iterate_keys_rcu() with rtw_iterate_keys()
-Date:   Sat,  8 Jan 2022 01:55:30 +0100
-Message-Id: <20220108005533.947787-6-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+        Fri, 7 Jan 2022 19:56:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7A1C061746;
+        Fri,  7 Jan 2022 16:56:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B402B827C3;
+        Sat,  8 Jan 2022 00:56:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05575C36AEB;
+        Sat,  8 Jan 2022 00:56:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641603364;
+        bh=st53BHQLvyLzo/b3A3D4UNXb37sg+UZodRPGTnSnFWY=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=Hpfsrk/In3BFFgMIQLxj0MO5/DK2K22Qwq6mtxs+4GXPHnLzAyeDZNyzTWQANwwym
+         WJgyirFL+ZS3jclL4WCvoi9G2O8JTMW4zvfqMGg23mCZ7ZfCuzzYd6fkZiTyOF9tak
+         FZE84sT8tK5nfJliA3OXnqI4cuuZ8z33DoeFwwHyQDSaI41mpFV46D1r2xTvPhseub
+         sYyCn/YCvpAXZeSCLWi1ohQA7Dj08JwS67ynz9+JV6j3/nz4akxzGnXY26fGx8nuVI
+         xuJlNNbRjMEwS3A7/P/3oeYLj1zoevo3iOUXKoxpPB2GyQapQWUBr0O4PskE0Cf1gf
+         Ks8K5M/MXYENA==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211209163720.106185-3-nikita@trvn.ru>
+References: <20211209163720.106185-1-nikita@trvn.ru> <20211209163720.106185-3-nikita@trvn.ru>
+Subject: Re: [PATCH 2/4] clk: qcom: clk-rcg2: Make sure to not write d=0 to the NMD register
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     bjorn.andersson@linaro.org, agross@kernel.org, tdas@codeaurora.org,
+        joonwoop@codeaurora.org, svarbanov@mm-sol.com,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Nikita Travkin <nikita@trvn.ru>
+To:     Nikita Travkin <nikita@trvn.ru>, linus.walleij@linaro.org,
+        mturquette@baylibre.com
+Date:   Fri, 07 Jan 2022 16:56:02 -0800
+User-Agent: alot/0.9.1
+Message-Id: <20220108005604.05575C36AEB@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Upcoming SDIO support may sleep in the read/write handlers. The only
-occurrence of rtw_iterate_keys_rcu() reads and writes registers from
-it's iterator function. Replace it with rtw_iterate_keys() (the non-RCU
-version). This will prevent an "scheduling while atomic" issue when
-using an SDIO device.
+Quoting Nikita Travkin (2021-12-09 08:37:18)
+> Sometimes calculation of d value may result in 0 because of the
+> rounding after integer division. This causes the following error:
+>=20
+> [  113.969689] camss_gp1_clk_src: rcg didn't update its configuration.
+> [  113.969754] WARNING: CPU: 3 PID: 35 at drivers/clk/qcom/clk-rcg2.c:122=
+ update_config+0xc8/0xdc
+>=20
+> Make sure that D value is never zero.
+>=20
+> Fixes: 7f891faf596e ("clk: qcom: clk-rcg2: Add support for duty-cycle for=
+ RCG")
+> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+> ---
+>  drivers/clk/qcom/clk-rcg2.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>=20
+> diff --git a/drivers/clk/qcom/clk-rcg2.c b/drivers/clk/qcom/clk-rcg2.c
+> index 6964cf914b60..fdfd43e2a01b 100644
+> --- a/drivers/clk/qcom/clk-rcg2.c
+> +++ b/drivers/clk/qcom/clk-rcg2.c
+> @@ -424,6 +424,10 @@ static int clk_rcg2_set_duty_cycle(struct clk_hw *hw=
+, struct clk_duty *duty)
+>         if (d > mask)
+>                 d =3D mask;
+> =20
+> +       /* Hardware can't handle d=3D0, make sure it's at least 1 */
+> +       if (!d)
+> +               d =3D 1;
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/wireless/realtek/rtw88/main.c | 4 +---
- drivers/net/wireless/realtek/rtw88/util.h | 2 --
- 2 files changed, 1 insertion(+), 5 deletions(-)
+Maybe clamp() would be better
 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index 4b28c81b3ca0..3d4257e0367a 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -581,9 +581,7 @@ static void __fw_recovery_work(struct rtw_dev *rtwdev)
- 
- 	WARN(1, "firmware crash, start reset and recover\n");
- 
--	rcu_read_lock();
--	rtw_iterate_keys_rcu(rtwdev, NULL, rtw_reset_key_iter, rtwdev);
--	rcu_read_unlock();
-+	rtw_iterate_keys(rtwdev, NULL, rtw_reset_key_iter, rtwdev);
- 	rtw_iterate_stas(rtwdev, rtw_reset_sta_iter, rtwdev);
- 	rtw_iterate_vifs(rtwdev, rtw_reset_vif_iter, rtwdev);
- 	rtw_enter_ips(rtwdev);
-diff --git a/drivers/net/wireless/realtek/rtw88/util.h b/drivers/net/wireless/realtek/rtw88/util.h
-index b0dfadf8b82a..06a5b4c4111c 100644
---- a/drivers/net/wireless/realtek/rtw88/util.h
-+++ b/drivers/net/wireless/realtek/rtw88/util.h
-@@ -19,8 +19,6 @@ struct rtw_dev;
- 	ieee80211_iterate_stations_atomic(rtwdev->hw, iterator, data)
- #define rtw_iterate_keys(rtwdev, vif, iterator, data)			       \
- 	ieee80211_iter_keys(rtwdev->hw, vif, iterator, data)
--#define rtw_iterate_keys_rcu(rtwdev, vif, iterator, data)		       \
--	ieee80211_iter_keys_rcu((rtwdev)->hw, vif, iterator, data)
- 
- static inline u8 *get_hdr_bssid(struct ieee80211_hdr *hdr)
- {
--- 
-2.34.1
+	/*
+ 	 * Check bit widths of 2d. If D is too big reduce duty cycle and
+	 * ensure it is non-zero.
+	 */
+	clamp(d, 1, mask);
 
+> +
+>         if ((d / 2) > (n - m))
+>                 d =3D (n - m) * 2;
+>         else if ((d / 2) < (m / 2))
