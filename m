@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C63C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E30C433EF
 	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 08:20:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbiAHINp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 03:13:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230106AbiAHINn (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 03:13:43 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E9C1C061574
-        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 00:13:43 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id k15so30968262edk.13
-        for <linux-kernel@vger.kernel.org>; Sat, 08 Jan 2022 00:13:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rDgQB2WQGWX9720sxuWCxT3SKKrWGiMNACS2WvpxMAU=;
-        b=DeAR8/+8l5pwv1J2VGumrnx2FieUuu/jkq9FDwEmJ+dgjZfGB/fxA4vsfMtZq91UJ2
-         GMxtfzeNc28rpvYQzaVfxfW4f252+KWi+9RPCxeYw6rmzNSS3jN80yH2eP/cqQtfDrtB
-         B84dEH6N9xMiXD/jl/E6juupsvvhKl/fhtrJNRYERwV2Wf5KO9+WBYZx8ywol4cFBGiv
-         kURSZ0d6SzdYarYE52tC/qU/7km2JWNeHpPqbNGLoU2A4CDLXWWNk0EyKFqwa4iHY8+b
-         KTByxR15/S3aIE/vJsZU1tGNab44bTR20eJbquGBCGGkyclyov7nLjoGWIOBUAehmM/a
-         nskg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rDgQB2WQGWX9720sxuWCxT3SKKrWGiMNACS2WvpxMAU=;
-        b=eKbjt7Lk7jfJJ6rHk9IhPCtrJbUelmYmVhU62M66pJ/X77xXCu/bem2lgPXxHY6r3s
-         uqLQeEb94SBh3Bevodc4q943kCbo0G1kQRa9rdvrVMVyuC1i7zqs/zKZc1279hsW+tuX
-         M5tPTvrlXMT1k2f5SgryiUW816ptFLQa4ybSsw4vdaVZ6V2YjW3rX4V+/1quovLuftgx
-         j2AnM1orrp7YREg8BDFcO4apxiN4bB9FxHKWrR/dOIuNxnaqESXBt33dwABjIj7t5Jg+
-         8coWlQW8/zzIyCc8Ijo4elbzQLHXXbr/gt0bNz+jpP1BfURXxSFhFmFwZn/+H4HWwkL2
-         OafA==
-X-Gm-Message-State: AOAM533BtxaTxgeN2ZLfmZDXLcnUbbi/ZrR5T0DVDArB5bfBRutYJ1iv
-        Sh5sX6Ck9oB2modbi2Sz9N0=
-X-Google-Smtp-Source: ABdhPJynWWoXXXQdPA4JeYcho7Gw4NaOApAXcfV+jQY4TT6fvwSe4FLshQZMR1rTuusyduUZpFK6IA==
-X-Received: by 2002:aa7:d547:: with SMTP id u7mr64870494edr.76.1641629621722;
-        Sat, 08 Jan 2022 00:13:41 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id 21sm305935ejz.24.2022.01.08.00.13.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 08 Jan 2022 00:13:41 -0800 (PST)
-Date:   Sat, 8 Jan 2022 08:13:40 +0000
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Wei Yang <richard.weiyang@gmail.com>, peterz@infradead.org,
-        vbabka@suse.cz, will@kernel.org, linyunsheng@huawei.com,
-        aarcange@redhat.com, feng.tang@intel.com, ebiederm@xmission.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mm: remove offset check on page->compound_head and
- folio->lru
-Message-ID: <20220108081340.3oi2z2rm3cbqozzt@master>
-Reply-To: Wei Yang <richard.weiyang@gmail.com>
-References: <20220106235254.19190-1-richard.weiyang@gmail.com>
- <Yde6hZ41agqa2zs3@casper.infradead.org>
- <20220107134059.flxr2hcd6ilb6vt7@master>
- <Ydi6iMbSZ/FewYPT@casper.infradead.org>
- <20220107160825.13c71fdd871d7d5611d116b9@linux-foundation.org>
- <YdjfsbAR0UlwyC6b@casper.infradead.org>
+        id S233254AbiAHIUs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 03:20:48 -0500
+Received: from mga04.intel.com ([192.55.52.120]:7726 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230106AbiAHIUq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 03:20:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641630046; x=1673166046;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=5HBCDTBD70B8hvWV8es++Kj5gDgmY+mHVNllC79NFgU=;
+  b=bQJyXx8LMWAl/t34lmpHOjc9jt4f7H01YTAhYfiy93jgnSB1q5bPE57D
+   Bts6xtyyORAYElKCDtadpC46ymTwI+W3EphemXmRj5CTMPRDRVikwQMPU
+   8VC3rQwKFrJY47iSuYaHAFkm9rcyAC002NcwM+4H7r/1FLkmGYV9vTKzg
+   AWqb3zb6tryJI8m7lB/xi5G7R0DGNxUT9meR9bCxWY5hLXZeOHwRRPUhc
+   gqtZMLJ6ISnWi8itMeAbqjzlDUBdEGnb3kegP1r+yFM2ar0zbhg6uo5hA
+   vVVEVxuMX0Zdhgq76p8yoBM2AO2XxsUTxTzG4g3lJXOr1ZRfLv0aHSQaG
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="241810925"
+X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
+   d="scan'208";a="241810925"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2022 00:20:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
+   d="scan'208";a="612407479"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 08 Jan 2022 00:20:45 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n66xw-0000PQ-0T; Sat, 08 Jan 2022 08:20:44 +0000
+Date:   Sat, 8 Jan 2022 16:20:34 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1880/2372]
+ arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for
+ 'sysenter_setup'
+Message-ID: <202201081616.RgCtvCvQ-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YdjfsbAR0UlwyC6b@casper.infradead.org>
-User-Agent: NeoMutt/20170113 (1.7.2)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 12:49:53AM +0000, Matthew Wilcox wrote:
->On Fri, Jan 07, 2022 at 04:08:25PM -0800, Andrew Morton wrote:
->> On Fri, 7 Jan 2022 22:11:20 +0000 Matthew Wilcox <willy@infradead.org> wrote:
->> 
->> > > Hi, Matthew
->> > > 
->> > > Would you mind sharing some insight on this check?
->> > 
->> > It's right there in the comments.
->> 
->> Well I can't figure out which comment you're referring to?
->
->         * WARNING: bit 0 of the first word is used for PageTail(). That
->         * means the other users of this union MUST NOT use the bit to
->         * avoid collision and false-positive PageTail().
->
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   67f8f45b4d0cf00f8e53fc1c2b50c67608ede063
+commit: f4fe8ddb47d3a44bc202157766c5c2ef631785a2 [1880/2372] headers/deps: x86/elf: Optimize <asm/elf.h> dependencies, split out <asm/elf_api.h>
+config: i386-tinyconfig (https://download.01.org/0day-ci/archive/20220108/202201081616.RgCtvCvQ-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=f4fe8ddb47d3a44bc202157766c5c2ef631785a2
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout f4fe8ddb47d3a44bc202157766c5c2ef631785a2
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash arch/x86/entry/vdso/ kernel/
 
-I know this requirement on bit 0 of first word. But I don't see the connection
-between this and the check of page->compound_head and folio->lru.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This is more like a internal requirement on struct page. There are 8 struct in
-this five words union. And this requirement apply to bit 0 of first word of
-all those five struct.
+All warnings (new ones prefixed by >>):
 
-To me, if folio has the same layout of page, folio meets this requirement. I
-still not catch the point why we need this check here.
+>> arch/x86/entry/vdso/vdso32-setup.c:55:12: warning: no previous prototype for 'sysenter_setup' [-Wmissing-prototypes]
+      55 | int __init sysenter_setup(void)
+         |            ^~~~~~~~~~~~~~
 
--- 
-Wei Yang
-Help you, Help me
+
+vim +/sysenter_setup +55 arch/x86/entry/vdso/vdso32-setup.c
+
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  54  
+a6c4e076ee4c1e arch/i386/kernel/sysenter.c        Jeremy Fitzhardinge 2007-05-02 @55  int __init sysenter_setup(void)
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  56  {
+0a6d1fa0d2b48f arch/x86/entry/vdso/vdso32-setup.c Andy Lutomirski     2015-10-05  57  	init_vdso_image(&vdso_image_32);
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  58  
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  59  	return 0;
+^1da177e4c3f41 arch/i386/kernel/sysenter.c        Linus Torvalds      2005-04-16  60  }
+e6e5494cb23d19 arch/i386/kernel/sysenter.c        Ingo Molnar         2006-06-27  61  
+
+:::::: The code at line 55 was first introduced by commit
+:::::: a6c4e076ee4c1ea670e4faa55814e63dd08e3f29 [PATCH] i386: clean up identify_cpu
+
+:::::: TO: Jeremy Fitzhardinge <jeremy@goop.org>
+:::::: CC: Andi Kleen <andi@basil.nowhere.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
