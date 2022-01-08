@@ -2,93 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6AE9C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1395C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230002AbiAHA4U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:56:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        id S232517AbiAHA4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:56:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232158AbiAHAz4 (ORCPT
+        with ESMTP id S232200AbiAHAz5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 19:55:56 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C7AAC061401
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 16:55:55 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id v6so14082985wra.8
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 16:55:55 -0800 (PST)
+        Fri, 7 Jan 2022 19:55:57 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D2BC061574;
+        Fri,  7 Jan 2022 16:55:52 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id q141-20020a1ca793000000b00347b48dfb53so1710421wme.0;
+        Fri, 07 Jan 2022 16:55:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7HAlFSP/txm9kID3HVIKgkV7x7wASPTmapxOHoe9+Co=;
-        b=fEk4d51O2nhhwquJacGaVq5A1HjhjBwKPQg0u893X027/cZwwzdGqPZvHSTvk8echw
-         +d1dywaLKaKE12zVXVfVdqa5QvLd5dRlh4AZeRSsNxYSe3r7pvKXuNlsoBCtdhOk+yLB
-         VACEnth4FZIVsAE4+DwDSCfkJ5OPSN0LPy99NIu71FiVp9tDqFzVsVoJF9jM1opzHO+z
-         /ayQ8ldnW00Ls6Z2M9e2wdsQoMOEXfWjGfnxhKz4w3DgHDSDjFH5IIH45Zu9mp9FgF56
-         rMamt2KGAok6SXgLU+/oCrfPYhYa3tZFbVrB8v6SBIcIsz23xtx2Bnp4lvbCiY9jhGwh
-         OamQ==
+        bh=2BBiJK+vS1/gHZOpEVh75sXuwr7uHfwhlz6gLC5Y4fk=;
+        b=ov+SeYoFKF7GwX1DMo3u9dM0K519aaRLK0MPLkLsOP6HC8qdyOT94GtSm9wvTLaxGi
+         RaEgNPDZ8zJ3HIzmSeN7cNu4JsqInONvLlBIpo2kcjYXBg1eX/4/MOhdHDPZgYw7fYSm
+         KfdzIqheiw7t2dqIABxaBgUbWZ9FC3SfVub0u/69jbTBvVWdz3rUvYHX1PBt5dGZRufP
+         BSy8cMOwHbRH8MzEQXd+wYn28v+CP5asL4Pfr1XdVzDuzPyDF2dWYmKOJwMTDoWBibhx
+         H1eTf9Pq8vRah6XcKvJCS/OV/uPvUiGIeezbTBKxsknxhic7wsg4x9GBDOy5f3ifwIZt
+         9U9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7HAlFSP/txm9kID3HVIKgkV7x7wASPTmapxOHoe9+Co=;
-        b=MP6uRsK6h+FInRYpiaQDyRPyWkeToOY9mDyeSqrjzgAVX26H+eFsm0HkZLZqhr9fhu
-         X/FoNrf1y2j9YZl64tJAwAuYETbIbDo2ZnxTPeX3joxCWBxFk55tj21aQcfaRtwHGhs6
-         Kj9mT69F60vvwG5qi0CZWvEIMCypJul/2ry4qox0jHKsabH6UykgP2zpRvfGXl7056w1
-         0R3y4+81uxiLiv6i0izsN9Qhwdv5IIqs+CbUhTHvzKrSMdOnuoUDwZe3hh5QRpTI2Rxx
-         QyeIxmo3Zay90dFiz64d1qa8S/lG3V0RkEqyOffB0NkZQLH6N5/5Dz9TmbNTzcmghP2Y
-         gFqA==
-X-Gm-Message-State: AOAM532J1OtV/g/KWz1RmJIScH8ZIBJWLksKqy3rRyd1wEK7lkFfttS2
-        Muj0Y0JPWkMPzd3QS+t/7/CvYg==
-X-Google-Smtp-Source: ABdhPJzsimLrDKBSblclUMJDP+v2NN9+1/uBSZdmzz7RD7rg1cmgh5lsCywW0m6GW/nc48Tx0s3MhA==
-X-Received: by 2002:a05:6000:18a:: with SMTP id p10mr6139139wrx.218.1641603354225;
-        Fri, 07 Jan 2022 16:55:54 -0800 (PST)
-Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
-        by smtp.gmail.com with ESMTPSA id c18sm238853wrn.81.2022.01.07.16.55.53
+        bh=2BBiJK+vS1/gHZOpEVh75sXuwr7uHfwhlz6gLC5Y4fk=;
+        b=u7RHQSYTApeXPNmkS9tBdgzKTxDklBHlKyDkzquDa9IuoGoMQaHiHXNC7hZHNQfsPE
+         yloAEs2fsly9R8CcCT8oUZnmM4oIRIZEjQ5XridKIHmDafF0G4zZhRt830wNy2jGMmfX
+         2qKVjHqkBt9ljlwuzCBvaxrlx8Ejk5Nwf2YULD1prIIehj5BHqYptEsUEMl6SNoZZzf3
+         I/DJfDKjCvWBKhB/KKna1XMe7T6NCezoyikGo/mXU9Ukk9Q3e62rT1VXtY5FLoa8j4Fj
+         y9QCQNVoUkMwj5HXij50E2TCbH5pt/NZKlWSbKERxEyVGKueBQR6yHh3Dp0n0/KvO9EQ
+         QvSA==
+X-Gm-Message-State: AOAM533KKVg66trcCWOkK3pwtD0JgBIUTMOt7+KzVQVI6mWtVBg1Xv3q
+        wsNQVESNFGUWzG0nIFJshuD1Ua5R8Ac=
+X-Google-Smtp-Source: ABdhPJwZIJbOvGYLDaw04cBW+JDKkDZP2mOlxOSAn94bntIYLled0zZxYhthLsGzzm6H0tq7syM8NQ==
+X-Received: by 2002:a7b:c101:: with SMTP id w1mr12550166wmi.149.1641603349939;
+        Fri, 07 Jan 2022 16:55:49 -0800 (PST)
+Received: from localhost.localdomain (dynamic-095-117-123-222.95.117.pool.telefonica.de. [95.117.123.222])
+        by smtp.googlemail.com with ESMTPSA id z6sm77357wmp.9.2022.01.07.16.55.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 16:55:53 -0800 (PST)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, straube.linux@gmail.com,
-        martin@kaiser.cx, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/5] staging: r8188eu: convert DBG_88E call in core/rtw_cmd.c
-Date:   Sat,  8 Jan 2022 00:55:49 +0000
-Message-Id: <20220108005550.26264-5-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220108005550.26264-1-phil@philpotter.co.uk>
-References: <20220108005550.26264-1-phil@philpotter.co.uk>
+        Fri, 07 Jan 2022 16:55:49 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
+        johannes@sipsolutions.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Pkshih <pkshih@realtek.com>, Ed Swierk <eswierk@gh.st>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 1/8] rtw88: Move rtw_chip_cfg_csi_rate() out of rtw_vif_watch_dog_iter()
+Date:   Sat,  8 Jan 2022 01:55:26 +0100
+Message-Id: <20220108005533.947787-2-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the DBG_88E macro call in core/rtw_cmd.c to use netdev_dbg
-as its information may be useful to observers, and this gets the
-driver closer to the point of being able to remove DBG_88E itself.
+rtw_bf_cfg_csi_rate() internally access some registers while being
+called unter an atomic lock acquired by rtw_iterate_vifs_atomic(). Move
+the rtw_bf_cfg_csi_rate() call out of rtw_vif_watch_dog_iter() in
+preparation for SDIO support where register access may sleep.
 
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/staging/r8188eu/core/rtw_cmd.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+v2 -> v3:
+- no changes
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 8bfb01c2ebb5..712fd6e536c4 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -952,7 +952,9 @@ static void rtl8188e_sreset_xmit_status_check(struct adapter *padapter)
+v1 -> v2:
+- keep rtw_iterate_vifs_atomic() to not undo the fix from commit
+  5b0efb4d670c8 ("rtw88: avoid circular locking between
+  local->iflist_mtx and rtwdev->mutex") and instead call
+  rtw_bf_cfg_csi_rate() from rtw_watch_dog_work() (outside the atomic
+  section) as suggested by Ping-Ke.
+
+ drivers/net/wireless/realtek/rtw88/main.c | 35 +++++++++++------------
+ 1 file changed, 16 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 38252113c4a8..fd02c0b0025a 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -144,26 +144,9 @@ static struct ieee80211_supported_band rtw_band_5ghz = {
+ struct rtw_watch_dog_iter_data {
+ 	struct rtw_dev *rtwdev;
+ 	struct rtw_vif *rtwvif;
++	bool cfg_csi_rate;
+ };
  
- 	txdma_status = rtw_read32(padapter, REG_TXDMA_STATUS);
- 	if (txdma_status != 0x00) {
--		DBG_88E("%s REG_TXDMA_STATUS:0x%08x\n", __func__, txdma_status);
-+		netdev_dbg(padapter->pnetdev,
-+			   "REG_TXDMA_STATUS: 0x%08x\n",
-+			   txdma_status);
- 		rtw_write32(padapter, REG_TXDMA_STATUS, txdma_status);
- 	}
- 	/* total xmit irp = 4 */
+-static void rtw_dynamic_csi_rate(struct rtw_dev *rtwdev, struct rtw_vif *rtwvif)
+-{
+-	struct rtw_bf_info *bf_info = &rtwdev->bf_info;
+-	u8 fix_rate_enable = 0;
+-	u8 new_csi_rate_idx;
+-
+-	if (rtwvif->bfee.role != RTW_BFEE_SU &&
+-	    rtwvif->bfee.role != RTW_BFEE_MU)
+-		return;
+-
+-	rtw_chip_cfg_csi_rate(rtwdev, rtwdev->dm_info.min_rssi,
+-			      bf_info->cur_csi_rpt_rate,
+-			      fix_rate_enable, &new_csi_rate_idx);
+-
+-	if (new_csi_rate_idx != bf_info->cur_csi_rpt_rate)
+-		bf_info->cur_csi_rpt_rate = new_csi_rate_idx;
+-}
+-
+ static void rtw_vif_watch_dog_iter(void *data, u8 *mac,
+ 				   struct ieee80211_vif *vif)
+ {
+@@ -174,7 +157,8 @@ static void rtw_vif_watch_dog_iter(void *data, u8 *mac,
+ 		if (vif->bss_conf.assoc)
+ 			iter_data->rtwvif = rtwvif;
+ 
+-	rtw_dynamic_csi_rate(iter_data->rtwdev, rtwvif);
++	iter_data->cfg_csi_rate = rtwvif->bfee.role == RTW_BFEE_SU ||
++				  rtwvif->bfee.role == RTW_BFEE_MU;
+ 
+ 	rtwvif->stats.tx_unicast = 0;
+ 	rtwvif->stats.rx_unicast = 0;
+@@ -241,6 +225,19 @@ static void rtw_watch_dog_work(struct work_struct *work)
+ 	/* use atomic version to avoid taking local->iflist_mtx mutex */
+ 	rtw_iterate_vifs_atomic(rtwdev, rtw_vif_watch_dog_iter, &data);
+ 
++	if (data.cfg_csi_rate) {
++		struct rtw_bf_info *bf_info = &rtwdev->bf_info;
++		u8 fix_rate_enable = 0;
++		u8 new_csi_rate_idx;
++
++		rtw_chip_cfg_csi_rate(rtwdev, rtwdev->dm_info.min_rssi,
++				      bf_info->cur_csi_rpt_rate,
++				      fix_rate_enable, &new_csi_rate_idx);
++
++		if (new_csi_rate_idx != bf_info->cur_csi_rpt_rate)
++			bf_info->cur_csi_rpt_rate = new_csi_rate_idx;
++	}
++
+ 	/* fw supports only one station associated to enter lps, if there are
+ 	 * more than two stations associated to the AP, then we can not enter
+ 	 * lps, because fw does not handle the overlapped beacon interval
 -- 
-2.33.1
+2.34.1
 
