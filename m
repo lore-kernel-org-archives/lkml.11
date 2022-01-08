@@ -2,145 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C49C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19614C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbiAHA4F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:56:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        id S232348AbiAHA4I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:56:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232114AbiAHAzy (ORCPT
+        with ESMTP id S232115AbiAHAzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 19:55:54 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE664C061747;
-        Fri,  7 Jan 2022 16:55:53 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id q8so14046332wra.12;
-        Fri, 07 Jan 2022 16:55:53 -0800 (PST)
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D277C061748
+        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 16:55:54 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id 2-20020a05600c02c200b003470f96e778so3628553wmn.5
+        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 16:55:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VjfR3K+5JgkYbWpldO+nZERSdwRbxL2f2Vl4DU5yMWU=;
-        b=neBFGG+X9YesGNyfLHBpb2KYn79YN6bSuanrNB4rumB3UROf7cYPXUURMwpmTAMYC5
-         ae/1WRuJDo0vNq5R5mSTF55AOJicQmNrUtFUzsHOba1aGlaOKmftPCCMEGJhScx4N+K9
-         EBY90qr+zD3AorGqPZmRec0RyXQ25SHa1xvrKbduWwu4FIUWvsCjhMZWjQNSJBeXoBgF
-         mz+Vmr85vX4Zul/yUW7hHQ+mP69Ac63nD92c4/xCOvVt/Pzg/GJ/NtUR/Ye2y0yyuTPq
-         s4RBfe24wwmtoPxvKIuwCd7i9bs7YCHPZBpkvKzy/mjSyRf/+/29rQ/5aAFC0AqIsJMN
-         zmgg==
+        bh=RZeUHUZWxDxeensObwbjkGV/GC1wuDs3S5FK89IMeJ4=;
+        b=6j3m67ME9247HChzfrdYL3VKRv/MROei8xh+98+nKPJTWHQAfqjaTW8EdeGMzb9gQR
+         lwm01PkOJxbDcod+0bMgwSFx+oSQEArWDA3TxPp2R6nilHOrO0HxF7EZJ9DS0mg+nf/b
+         Sh9wBmN6bF8x03pEouDlPtYcMArWoPmqt5OiQcq/dMJbzSsQ+4vlDaJqG9GWOFbmMzQ9
+         SxVDQmZ7zkzsozPZWWdNL72Zh90r0ql91DrCvSKS051BJlrJS8wxzVKXHT/BWayaUgES
+         v381m7kpYygeg8TmOt0hcHBzidWBwx8KQRzBi6QfbmrqBw7q9QpIUILxhYPb8PoVXMia
+         r/6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VjfR3K+5JgkYbWpldO+nZERSdwRbxL2f2Vl4DU5yMWU=;
-        b=IfOU0uJJbpy/XyZ64LdC7nejUdDA7BvlJYqEBF8x3ZQhsVAurhj+YRAQfA6ReHeqr2
-         rNcE0aiZVnMcfl2PNmY0z5o1hgqL6/4ZTatf6ev6kxG5bzNKh/qt8ZMA9kcrh6akbfLD
-         YrN+E2LJIR5m/nnwCG0LcTlftRqWdCFa6bwg2TwDaFd1XM2aQVJ3aZQlmvbyY4f2LQGL
-         KbjxjQs9F8gR5H/MyK3qvMfiB31vL30o99JZw6XQwfyv6r7XdchejQFSfk6ssSq75M33
-         OIR3Bi+6v+mzFB1B6kxRV0eteLuMDp3xoiX5zaCKz+YkHpqNds7E0/yYIVqNwLOYqyp8
-         +q+g==
-X-Gm-Message-State: AOAM532i0umXENkKqbK7jBYAdbsxkUKuZ6kOBqQ0CIYR92YlydYTUMhf
-        iYeVLB5DNo8+Zhbk2IZLnPPjZUhDo68=
-X-Google-Smtp-Source: ABdhPJyXQOnSc9UKWlhOKczv6rtXjetQ8Xtch38MBm8uGq1edT1IOdp56d9sCGloQlSB/wOeyiJ3vg==
-X-Received: by 2002:a5d:5909:: with SMTP id v9mr1647819wrd.680.1641603352255;
+        bh=RZeUHUZWxDxeensObwbjkGV/GC1wuDs3S5FK89IMeJ4=;
+        b=eKvr6wXxvh2yEiu4hkqry5R1DKo5SpMwO1rYgDpXTim1pHlRNUUK4q5BPkDztRcNox
+         frRSSVRalRwWeaSRMCYPnlHamAGIy0yHrRVdJayYdBUpPFzS7LBvefiWlQjqkAA9ibOs
+         /ckiYlm0nwmPbBF2v6h/BfpEYPyU4Aq580OVYrDe9NL1XwMJBKtJk3kARhryy/vAKHyf
+         5DVCSSICbsJamBh3xAjaxc7QMHf8eGc42cGe1MnBDBP+SQ2IqJxUxKgOXED0l4Ck+fTV
+         pFHq0cbE4xxIp1fjdxPgcfxQSgdQYWyK3sAK7WdQz6iLwo19Qub7VTC2ziOjtGxCfU4u
+         aABg==
+X-Gm-Message-State: AOAM530b1ffd9fpJVmD2x9Kt8ODVA294CqDfVGdSgMWzdzrhNgOBultK
+        qPlLTR9utJahtS2d0uIohZ4kW3jW+OxMRA==
+X-Google-Smtp-Source: ABdhPJwpLN+CzfcKC0RpG9YvyGuPfMfFYBc1t+jbBgzRtR+fyktl4S1MqY36VNJtzXR3RFHjHy5Xmw==
+X-Received: by 2002:a05:600c:2188:: with SMTP id e8mr12989668wme.55.1641603352779;
         Fri, 07 Jan 2022 16:55:52 -0800 (PST)
-Received: from localhost.localdomain (dynamic-095-117-123-222.95.117.pool.telefonica.de. [95.117.123.222])
-        by smtp.googlemail.com with ESMTPSA id z6sm77357wmp.9.2022.01.07.16.55.51
+Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
+        by smtp.gmail.com with ESMTPSA id c18sm238853wrn.81.2022.01.07.16.55.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Fri, 07 Jan 2022 16:55:52 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
-        johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Pkshih <pkshih@realtek.com>, Ed Swierk <eswierk@gh.st>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 4/8] rtw88: Use rtw_iterate_stas where the iterator reads or writes registers
-Date:   Sat,  8 Jan 2022 01:55:29 +0100
-Message-Id: <20220108005533.947787-5-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, straube.linux@gmail.com,
+        martin@kaiser.cx, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/5] staging: r8188eu: convert DBG_88E calls in os_dep/xmit_linux.c
+Date:   Sat,  8 Jan 2022 00:55:47 +0000
+Message-Id: <20220108005550.26264-3-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220108005550.26264-1-phil@philpotter.co.uk>
+References: <20220108005550.26264-1-phil@philpotter.co.uk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Upcoming SDIO support may sleep in the read/write handlers. Switch
-all users of rtw_iterate_stas_atomic() which are either reading or
-writing a register to rtw_iterate_stas().
+Convert three DBG_88E macro calls in core/rtw_ap.c to use netdev_dbg
+as their information may be useful to observers, and this gets the
+driver closer to the point of being able to remove DBG_88E itself.
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
 ---
- drivers/net/wireless/realtek/rtw88/main.c | 2 +-
- drivers/net/wireless/realtek/rtw88/phy.c  | 4 ++--
- drivers/net/wireless/realtek/rtw88/util.h | 2 ++
- drivers/net/wireless/realtek/rtw88/wow.c  | 2 +-
- 4 files changed, 6 insertions(+), 4 deletions(-)
+ drivers/staging/r8188eu/os_dep/xmit_linux.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index b0e2ca8ddbe9..4b28c81b3ca0 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -584,7 +584,7 @@ static void __fw_recovery_work(struct rtw_dev *rtwdev)
- 	rcu_read_lock();
- 	rtw_iterate_keys_rcu(rtwdev, NULL, rtw_reset_key_iter, rtwdev);
- 	rcu_read_unlock();
--	rtw_iterate_stas_atomic(rtwdev, rtw_reset_sta_iter, rtwdev);
-+	rtw_iterate_stas(rtwdev, rtw_reset_sta_iter, rtwdev);
- 	rtw_iterate_vifs(rtwdev, rtw_reset_vif_iter, rtwdev);
- 	rtw_enter_ips(rtwdev);
- }
-diff --git a/drivers/net/wireless/realtek/rtw88/phy.c b/drivers/net/wireless/realtek/rtw88/phy.c
-index e505d17f107e..d8442adc11b1 100644
---- a/drivers/net/wireless/realtek/rtw88/phy.c
-+++ b/drivers/net/wireless/realtek/rtw88/phy.c
-@@ -300,7 +300,7 @@ static void rtw_phy_stat_rssi(struct rtw_dev *rtwdev)
+diff --git a/drivers/staging/r8188eu/os_dep/xmit_linux.c b/drivers/staging/r8188eu/os_dep/xmit_linux.c
+index 088c294f2586..7287897b3f65 100644
+--- a/drivers/staging/r8188eu/os_dep/xmit_linux.c
++++ b/drivers/staging/r8188eu/os_dep/xmit_linux.c
+@@ -79,7 +79,7 @@ int rtw_os_xmit_resource_alloc(struct adapter *padapter, struct xmit_buf *pxmitb
+ 	for (i = 0; i < 8; i++) {
+ 		pxmitbuf->pxmit_urb[i] = usb_alloc_urb(0, GFP_KERNEL);
+ 		if (!pxmitbuf->pxmit_urb[i]) {
+-			DBG_88E("pxmitbuf->pxmit_urb[i]==NULL");
++			netdev_dbg(padapter->pnetdev, "pxmitbuf->pxmit_urb[i]==NULL");
+ 			return _FAIL;
+ 		}
+ 	}
+@@ -188,14 +188,14 @@ static int rtw_mlcst2unicst(struct adapter *padapter, struct sk_buff *skb)
+ 			memcpy(newskb->data, psta->hwaddr, 6);
+ 			res = rtw_xmit(padapter, &newskb);
+ 			if (res < 0) {
+-				DBG_88E("%s()-%d: rtw_xmit() return error!\n", __func__, __LINE__);
++				netdev_dbg(padapter->pnetdev, "rtw_xmit() return error!\n");
+ 				pxmitpriv->tx_drop++;
+ 				dev_kfree_skb_any(newskb);
+ 			} else {
+ 				pxmitpriv->tx_pkts++;
+ 			}
+ 		} else {
+-			DBG_88E("%s-%d: skb_copy() failed!\n", __func__, __LINE__);
++			netdev_dbg(padapter->pnetdev, "skb_copy() failed!\n");
+ 			pxmitpriv->tx_drop++;
  
- 	data.rtwdev = rtwdev;
- 	data.min_rssi = U8_MAX;
--	rtw_iterate_stas_atomic(rtwdev, rtw_phy_stat_rssi_iter, &data);
-+	rtw_iterate_stas(rtwdev, rtw_phy_stat_rssi_iter, &data);
- 
- 	dm_info->pre_min_rssi = dm_info->min_rssi;
- 	dm_info->min_rssi = data.min_rssi;
-@@ -544,7 +544,7 @@ static void rtw_phy_ra_info_update(struct rtw_dev *rtwdev)
- 	if (rtwdev->watch_dog_cnt & 0x3)
- 		return;
- 
--	rtw_iterate_stas_atomic(rtwdev, rtw_phy_ra_info_update_iter, rtwdev);
-+	rtw_iterate_stas(rtwdev, rtw_phy_ra_info_update_iter, rtwdev);
- }
- 
- static u32 rtw_phy_get_rrsr_mask(struct rtw_dev *rtwdev, u8 rate_idx)
-diff --git a/drivers/net/wireless/realtek/rtw88/util.h b/drivers/net/wireless/realtek/rtw88/util.h
-index 0c23b5069be0..b0dfadf8b82a 100644
---- a/drivers/net/wireless/realtek/rtw88/util.h
-+++ b/drivers/net/wireless/realtek/rtw88/util.h
-@@ -13,6 +13,8 @@ struct rtw_dev;
- #define rtw_iterate_vifs_atomic(rtwdev, iterator, data)                        \
- 	ieee80211_iterate_active_interfaces_atomic(rtwdev->hw,                 \
- 			IEEE80211_IFACE_ITER_NORMAL, iterator, data)
-+#define rtw_iterate_stas(rtwdev, iterator, data)                        \
-+	ieee80211_iterate_stations(rtwdev->hw, iterator, data)
- #define rtw_iterate_stas_atomic(rtwdev, iterator, data)                        \
- 	ieee80211_iterate_stations_atomic(rtwdev->hw, iterator, data)
- #define rtw_iterate_keys(rtwdev, vif, iterator, data)			       \
-diff --git a/drivers/net/wireless/realtek/rtw88/wow.c b/drivers/net/wireless/realtek/rtw88/wow.c
-index 89dc595094d5..7ec0731c0346 100644
---- a/drivers/net/wireless/realtek/rtw88/wow.c
-+++ b/drivers/net/wireless/realtek/rtw88/wow.c
-@@ -468,7 +468,7 @@ static void rtw_wow_fw_media_status(struct rtw_dev *rtwdev, bool connect)
- 	data.rtwdev = rtwdev;
- 	data.connect = connect;
- 
--	rtw_iterate_stas_atomic(rtwdev, rtw_wow_fw_media_status_iter, &data);
-+	rtw_iterate_stas(rtwdev, rtw_wow_fw_media_status_iter, &data);
- }
- 
- static int rtw_wow_config_wow_fw_rsvd_page(struct rtw_dev *rtwdev)
+ 			spin_unlock_bh(&pstapriv->asoc_list_lock);
 -- 
-2.34.1
+2.33.1
 
