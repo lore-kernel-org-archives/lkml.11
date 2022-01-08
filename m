@@ -2,122 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A85CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EB6FC433FE
 	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 06:05:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232453AbiAHF5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 00:57:44 -0500
-Received: from mga02.intel.com ([134.134.136.20]:60232 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230517AbiAHF5l (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 00:57:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641621461; x=1673157461;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lNvr8jIgepuRJoPzPtge/mB0j3ubsvTEUNrtNXk8cy4=;
-  b=MogwWcLGnae2xeY4wxumwjaL5JMt/eIdUY1QP7bPonNO14TlAnufHGb4
-   IksKUxIrpXUxxpZtMycadnkcsE9MkqUkGsm4Al1W224+FtXvOjKHcTVFp
-   l79P5G9k/zcEpJ99oHzvtSdPyPTgHqYHhn0UwG+xaTBUO0Ch+P26FoBp/
-   BW4aim/wLOTgNKrP8DBbgzqDUwjF7LmGAigAZ/pX8cv7GwB2BnD4YASQL
-   BcuzMBOAyh+fDkx7qJ0OwFmlOUq1qshYEHgYOcHJNO+pjMj4oQ8FasvC4
-   ooWVGkt4S6ZJbAveo+c++RZfzuZmfRx4C++wAruELzcvTdz98BFvGpvRX
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="230328763"
-X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
-   d="scan'208";a="230328763"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 21:57:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,272,1635231600"; 
-   d="scan'208";a="622155751"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 07 Jan 2022 21:57:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n64jS-0000J7-EO; Sat, 08 Jan 2022 05:57:38 +0000
-Date:   Sat, 8 Jan 2022 13:56:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kelly Rossmoyer <krossmo@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Alistair Delva <adelva@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android11-kiwi-5.4
- 2422/9999] kernel/power/wakeup_reason.c:199:6: warning: no previous
- prototype for function '__log_abort_or_abnormal_wake'
-Message-ID: <202201081335.QloPko7J-lkp@intel.com>
+        id S232797AbiAHGFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 01:05:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229913AbiAHGFc (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 01:05:32 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE25DC061574;
+        Fri,  7 Jan 2022 22:05:31 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id j6so30206922edw.12;
+        Fri, 07 Jan 2022 22:05:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qKy0Ld0t/rb55huiDujNkhyOqnsFdqUh2fOUZOkxN48=;
+        b=ElRDvdPLDhCghbXgOzk6lq0DvtAMSlweI65lMQ4TxnkMwgDT8qVmAz8Gz1ZcwPiXDZ
+         OgGx76dYF5k5etnZL964lEtp0RFYI+0bSL1U8JsSbJIUYJxofeYy0nmAFWSft836JsBs
+         EYZcEMpcjzeqSSS64G3L7mCdso3rRvofOOgCbUTCOxsjMUR8G4sEXSL9uOB26uqccwgP
+         8dShbjYVR8iMnvgsUFiDkyDltok/kMDA/wR/+txPjih1D1HcLpk0DIp3xSEAcCwkRLpl
+         xGZdAF8BF3HZ0eR2h6xUQCl5j3g60VsSVEu8WQRJ9DYffDDFAIANaGD8BkaOH9r7wXQ4
+         cfKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qKy0Ld0t/rb55huiDujNkhyOqnsFdqUh2fOUZOkxN48=;
+        b=XUit0u0q8Ml4Vaz5ETtCWJaiFvSHXh5ISlmJpNYcZcrqWX7FB1z0EuyNUqaeyvLg32
+         rKFW6MrPiR3G0LqR1jLJomk2kGFBroCcIvIQuPEk0V0KBysohGxTGpGnvbySSwgzyqrJ
+         +8d1kPrcytCKevNZ6/5S7q8ZCm/tdguGeEt0QKBeKH+K5PowmT8fWirYfNUt5pHb76M3
+         wnimifkUR7rqJimOFXouUXhV57TD+gDmOTBhDGo3nXk847fEat/3ICRjA17GTmomzlcL
+         eZeupIOxc+VeTK37m2iH1PC7x6GZSRCNj8Ga6aN3H3zR8B9iHYkZ/J74rGe9pY2X4kfG
+         6Pqw==
+X-Gm-Message-State: AOAM533xcqFEThay9o7EOSCNRLEYBi+yxQMzwoyCq2g4IPYdu8rDawZk
+        9p/wmAASH2iC10JW1Y03wWeRs19uaQhCa9s8tLw=
+X-Google-Smtp-Source: ABdhPJy2T/2xdEWvLdKJc3r4bh7gu318iPxRp81+gvESMiy7CEHxte4tHO54XPF/7TWqoNokTRo6zMZTBaLG4Jw2l60=
+X-Received: by 2002:a05:6402:4241:: with SMTP id g1mr65579080edb.11.1641621930273;
+ Fri, 07 Jan 2022 22:05:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220106024518.8161-1-yinxin.x@bytedance.com> <20220106024518.8161-2-yinxin.x@bytedance.com>
+ <CAD+ocbx2e06YoESJM7m5ra-6so0ijWsYyN1L1ZFTXqxedMMoNw@mail.gmail.com> <CAK896s4EgEPU4FyyXczW79uFhVDido-Cwc=X-6jJ3kz2LXwBqw@mail.gmail.com>
+In-Reply-To: <CAK896s4EgEPU4FyyXczW79uFhVDido-Cwc=X-6jJ3kz2LXwBqw@mail.gmail.com>
+From:   harshad shirwadkar <harshadshirwadkar@gmail.com>
+Date:   Fri, 7 Jan 2022 22:05:19 -0800
+Message-ID: <CAD+ocbzn4gopc_ohSe66WxiZ-yz4e=XKF+_tHTVQ6JWXd_T8kA@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH 1/2] ext4: prevent used blocks from being
+ allocated during fast commit replay
+To:     Xin Yin <yinxin.x@bytedance.com>
+Cc:     "Theodore Y. Ts'o" <tytso@mit.edu>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Ext4 Developers List <linux-ext4@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kelly,
+Ah, I see okay. Yeah, that makes sense. We do need to update
+fc_regions_valid for every addition during the replay phase. I think
+it may be helpful to add some comments describing this behavior in the
+code. But other than that, I think what you're doing is fine.
 
-FYI, the error/warning still remains.
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android11-kiwi-5.4
-head:   7d1d5848183bd1d9086d0572f9af431d3ded407f
-commit: 189ced91cd7b0e440b0be876406fd36313a11c3f [2422/9999] ANDROID: power: wakeup_reason: wake reason enhancements
-config: x86_64-randconfig-a014-20220107 (https://download.01.org/0day-ci/archive/20220108/202201081335.QloPko7J-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f3a344d2125fa37e59bae1b0874442c650a19607)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/189ced91cd7b0e440b0be876406fd36313a11c3f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android11-kiwi-5.4
-        git checkout 189ced91cd7b0e440b0be876406fd36313a11c3f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/power/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> kernel/power/wakeup_reason.c:199:6: warning: no previous prototype for function '__log_abort_or_abnormal_wake' [-Wmissing-prototypes]
-   void __log_abort_or_abnormal_wake(bool abort, const char *fmt, va_list args)
-        ^
-   kernel/power/wakeup_reason.c:199:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void __log_abort_or_abnormal_wake(bool abort, const char *fmt, va_list args)
-   ^
-   static 
-   kernel/power/wakeup_reason.c:378:12: warning: no previous prototype for function 'wakeup_reason_init' [-Wmissing-prototypes]
-   int __init wakeup_reason_init(void)
-              ^
-   kernel/power/wakeup_reason.c:378:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int __init wakeup_reason_init(void)
-   ^
-   static 
-   2 warnings generated.
-
-
-vim +/__log_abort_or_abnormal_wake +199 kernel/power/wakeup_reason.c
-
-   198	
- > 199	void __log_abort_or_abnormal_wake(bool abort, const char *fmt, va_list args)
-   200	{
-   201		unsigned long flags;
-   202	
-   203		spin_lock_irqsave(&wakeup_reason_lock, flags);
-   204	
-   205		/* Suspend abort or abnormal wake reason has already been logged. */
-   206		if (suspend_abort || abnormal_wake) {
-   207			spin_unlock_irqrestore(&wakeup_reason_lock, flags);
-   208			return;
-   209		}
-   210	
-   211		suspend_abort = abort;
-   212		abnormal_wake = !abort;
-   213		vsnprintf(non_irq_wake_reason, MAX_SUSPEND_ABORT_LEN, fmt, args);
-   214	
-   215		spin_unlock_irqrestore(&wakeup_reason_lock, flags);
-   216	}
-   217	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+On Fri, Jan 7, 2022 at 6:09 PM Xin Yin <yinxin.x@bytedance.com> wrote:
+>
+> On Sat, Jan 8, 2022 at 4:26 AM harshad shirwadkar
+> <harshadshirwadkar@gmail.com> wrote:
+> >
+> > On Wed, Jan 5, 2022 at 6:45 PM Xin Yin <yinxin.x@bytedance.com> wrote:
+> > >
+> > > during fast commit replay procedure, we clear inode blocks bitmap in
+> > > ext4_ext_clear_bb(), this may cause ext4_mb_new_blocks_simple() allocate
+> > > blocks still in use.
+> > >
+> > > make ext4_fc_record_regions() also record physical disk regions used by
+> > > inodes during replay procedure. Then ext4_mb_new_blocks_simple() can
+> > > excludes these blocks in use.
+> > >
+> > > Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+> > > ---
+> > >  fs/ext4/ext4.h        |  2 ++
+> > >  fs/ext4/extents.c     |  4 ++++
+> > >  fs/ext4/fast_commit.c | 11 ++++++++---
+> > >  3 files changed, 14 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/fs/ext4/ext4.h b/fs/ext4/ext4.h
+> > > index 82fa51d6f145..7b0686758691 100644
+> > > --- a/fs/ext4/ext4.h
+> > > +++ b/fs/ext4/ext4.h
+> > > @@ -2932,6 +2932,8 @@ bool ext4_fc_replay_check_excluded(struct super_block *sb, ext4_fsblk_t block);
+> > >  void ext4_fc_replay_cleanup(struct super_block *sb);
+> > >  int ext4_fc_commit(journal_t *journal, tid_t commit_tid);
+> > >  int __init ext4_fc_init_dentry_cache(void);
+> > > +int ext4_fc_record_regions(struct super_block *sb, int ino,
+> > > +                    ext4_lblk_t lblk, ext4_fsblk_t pblk, int len, int replay);
+> > >
+> > >  /* mballoc.c */
+> > >  extern const struct seq_operations ext4_mb_seq_groups_ops;
+> > > diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+> > > index c3e76a5de661..9b6c76629c93 100644
+> > > --- a/fs/ext4/extents.c
+> > > +++ b/fs/ext4/extents.c
+> > > @@ -6096,11 +6096,15 @@ int ext4_ext_clear_bb(struct inode *inode)
+> > >
+> > >                                         ext4_mb_mark_bb(inode->i_sb,
+> > >                                                         path[j].p_block, 1, 0);
+> > > +                                       ext4_fc_record_regions(inode->i_sb, inode->i_ino,
+> > > +                                                       0, path[j].p_block, 1, 1);
+> > >                                 }
+> > >                                 ext4_ext_drop_refs(path);
+> > >                                 kfree(path);
+> > >                         }
+> > >                         ext4_mb_mark_bb(inode->i_sb, map.m_pblk, map.m_len, 0);
+> > > +                       ext4_fc_record_regions(inode->i_sb, inode->i_ino,
+> > > +                                       map.m_lblk, map.m_pblk, map.m_len, 1);
+> > >                 }
+> > >                 cur = cur + map.m_len;
+> > >         }
+> > > diff --git a/fs/ext4/fast_commit.c b/fs/ext4/fast_commit.c
+> > > index 23d13983a281..f0cd20f5fe5e 100644
+> > > --- a/fs/ext4/fast_commit.c
+> > > +++ b/fs/ext4/fast_commit.c
+> > > @@ -1567,13 +1567,15 @@ static int ext4_fc_replay_create(struct super_block *sb, struct ext4_fc_tl *tl,
+> > >   * Record physical disk regions which are in use as per fast commit area. Our
+> > >   * simple replay phase allocator excludes these regions from allocation.
+> > >   */
+> > > -static int ext4_fc_record_regions(struct super_block *sb, int ino,
+> > > -               ext4_lblk_t lblk, ext4_fsblk_t pblk, int len)
+> > > +int ext4_fc_record_regions(struct super_block *sb, int ino,
+> > > +               ext4_lblk_t lblk, ext4_fsblk_t pblk, int len, int replay)
+> > Can you explain a bit why this replay parameter is needed here? This
+> > function simply reallocs the regions array if it doesn't have enough
+> > space. I am not sure why we need to change that behavior.
+>
+> ext4_fc_record_regions() originally only used during scan phase,  and
+> set fc_regions_valid = fc_regions_use when getting a TAIL tag. Now we
+> also use it during the replay phase,   and need to update
+> fc_regions_valid in this case, because ext4_fc_replay_check_excluded()
+> uses fc_regions_valid for regions checking.
+> Please correct me if I'm wrong.
+>
+> > >  {
+> > >         struct ext4_fc_replay_state *state;
+> > >         struct ext4_fc_alloc_region *region;
+> > >
+> > >         state = &EXT4_SB(sb)->s_fc_replay_state;
+> > > +       if (replay && state->fc_regions_used != state->fc_regions_valid)
+> > > +               state->fc_regions_used = state->fc_regions_valid;
+> > >         if (state->fc_regions_used == state->fc_regions_size) {
+> > >                 state->fc_regions_size +=
+> > >                         EXT4_FC_REPLAY_REALLOC_INCREMENT;
+> > > @@ -1591,6 +1593,9 @@ static int ext4_fc_record_regions(struct super_block *sb, int ino,
+> > >         region->pblk = pblk;
+> > >         region->len = len;
+> > >
+> > > +       if (replay)
+> > > +               state->fc_regions_valid++;
+> > > +
+> > >         return 0;
+> > >  }
+> > >
+> > > @@ -1938,7 +1943,7 @@ static int ext4_fc_replay_scan(journal_t *journal,
+> > >                         ret = ext4_fc_record_regions(sb,
+> > >                                 le32_to_cpu(ext.fc_ino),
+> > >                                 le32_to_cpu(ex->ee_block), ext4_ext_pblock(ex),
+> > > -                               ext4_ext_get_actual_len(ex));
+> > > +                               ext4_ext_get_actual_len(ex), 0);
+> > >                         if (ret < 0)
+> > >                                 break;
+> > >                         ret = JBD2_FC_REPLAY_CONTINUE;
+> > > --
+> > > 2.20.1
+> > >
