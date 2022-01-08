@@ -2,76 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB2DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 07:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66A93C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 07:24:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233686AbiAHHSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 02:18:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        id S233695AbiAHHY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 02:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiAHHSB (ORCPT
+        with ESMTP id S233484AbiAHHY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 02:18:01 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13E5C061574;
-        Fri,  7 Jan 2022 23:18:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=KSMh/bpBH4Uy4k4tKFX+8O00P4Uf43q6ePBN9GKywck=; b=WiPnWas5oTaP9guznINp2fF7Mn
-        xzeGATWy/kuuFgSPlHg0Z8p5TIkf0mgvMeVP/tuV5jx+0s7gV9k4Z6oSwJi3CV16ub/PpWYkJdZYX
-        q4MlD2+tI2XgKSLzq22nOThJEogSiORw9rPQJ+jkYM2tUxoHCrOJ2YGItwntGNPqhSv48p6l3l814
-        dsFW43m+yQ8TTq1QC27ZoJZ3Jna/BRJNtdsQCUlGXQvrqcSMm6K6JZz10DYCatuBjNOg0u5fY4VuN
-        Y5Pex2G5YuW3GH6T0rTtO9g6DtAvcx8KdFRcNJjZfO5NnnTZ3Wo34SXMHqK/Kc2zDv56IQgvzE3PB
-        LgjbtHfw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n65yn-000Uuc-Lb; Sat, 08 Jan 2022 07:17:33 +0000
-Date:   Sat, 8 Jan 2022 07:17:33 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
-        Trond Myklebust <trondmy@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Omar Sandoval <osandov@osandov.com>,
-        JeffleXu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        ceph-devel <ceph-devel@vger.kernel.org>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 38/68] vfs, cachefiles: Mark a backing file in use
- with an inode flag
-Message-ID: <Ydk6jWmFH6TZLPZq@casper.infradead.org>
-References: <164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk>
- <164021541207.640689.564689725898537127.stgit@warthog.procyon.org.uk>
- <CAOQ4uxjEcvffv=rNXS-r+NLz+=6yk4abRuX_AMq9v-M4nf_PtA@mail.gmail.com>
+        Sat, 8 Jan 2022 02:24:56 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C58C061574;
+        Fri,  7 Jan 2022 23:24:55 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JWBS5215fz4xZ1;
+        Sat,  8 Jan 2022 18:24:53 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641626693;
+        bh=4Oi6SAO0gtr5q+eZOeJdXgsENrla7hccxRm0YSld2UE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RDdXyReoAVbqXAQAqdrmpYWtn6428cRy+2aKdWJxGiPKVGBb4VQg0EZ91delI8M8u
+         0lBr+yLCGGeDBevQA9ErpD+PC3wPv/yiLyJKmzBNrd6aKKXrfvc37On86shNsuk+Nw
+         86O7dHPZ/zRkiW4xBxhjQSJlBV2gvRmYdCFUVFU01RZyvd5vkHdiTRv1XpMw3toY01
+         HsEwip3Fk76D32+RUIpG7gYOwC8HoS93BKAqKznPyLvX257XR3ZBlo4IovCJQpoOgI
+         2+Ygd8HtRN5MZMM0WpnZZiSPhNLGNkNKKQlYTYXx7hstRE0TsQLFayXS/ykKBCar6o
+         CIE2CIkWVQdag==
+Date:   Sat, 8 Jan 2022 18:24:52 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: Signed-off-by missing for commit in the kvm tree
+Message-ID: <20220108182452.6224558b@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAOQ4uxjEcvffv=rNXS-r+NLz+=6yk4abRuX_AMq9v-M4nf_PtA@mail.gmail.com>
+Content-Type: multipart/signed; boundary="Sig_/=crcFEtHqMUP+QU.FZRkf/R";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 09:08:57AM +0200, Amir Goldstein wrote:
-> > +#define S_KERNEL_FILE  (1 << 17) /* File is in use by the kernel (eg. fs/cachefiles) */
-> 
-> Trying to brand this flag as a generic "in use by kernel" is misleading.
-> Modules other than cachefiles cannot set/clear this flag, because then
-> cachefiles won't know that it is allowed to set/clear the flag.
+--Sig_/=crcFEtHqMUP+QU.FZRkf/R
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Huh?  If some other kernel module sets it, cachefiles will try to set it,
-see it's already set, and fail.  Presumably cachefiles does not go round
-randomly "unusing" files that it has not previously started using.
+Hi all,
 
-I mean, yes, obviously, it's a kernel module, it can set and clear
-whatever flags it likes on any inode in the system, but conceptually,
-it's an advisory whole-file lock.
+Commit
+
+  907d139318b5 ("KVM: VMX: Provide vmread version using asm-goto-with-outpu=
+ts")
+
+is missing a Signed-off-by from its author.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/=crcFEtHqMUP+QU.FZRkf/R
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHZPEQACgkQAVBC80lX
+0GyZ0wf+MVOGKFIz+SeNQXOC9gtIufu46FHTTcCGpGGRyubr607pQJjgWBeS197z
+3ylsxG7i8Rs0v1INPfVwPF4Y6t6iHnzAzvfTa7+hbvpVB2MK6qM54rLkAdpKLEac
+RJ/zAqpqGEX19COEhi3rZsP7OqmySH0S+0jQkUJLmnWxuo1wkbLtK2ITiNCRibBR
+CE7VGDI+MfJMbES2cFSDsR0al23YNuLsRxh33BPfCRiCQQMzJuu5B8fff7frKv6t
+6B6YlAULUM9n5wQqUpOGx77dwME8DRv8a9oJHb10V14YKj8I/cRyfAjCa/ZV/aEz
+eeukdVq2RG/CNnImt7rD7rY3LEtDGw==
+=/8mp
+-----END PGP SIGNATURE-----
+
+--Sig_/=crcFEtHqMUP+QU.FZRkf/R--
