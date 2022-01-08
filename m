@@ -2,103 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF1BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbiAHAmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:42:33 -0500
-Received: from mga12.intel.com ([192.55.52.136]:60453 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231947AbiAHAma (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 7 Jan 2022 19:42:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641602550; x=1673138550;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=UMPcSZi98T/kjWJzwXxsSJyp21VbWWkCxEBBArt8ZDU=;
-  b=S6Uv24D2AYhrVgS9QgFDEzDdIBB82hPOLso5BqY7r24RP3A9afBw1cbE
-   ZRy/cUpmxnzV6kZQ7Ef/TPIrLSccaVPLIs5c9KR54YVYKnN4dLuSEYEIT
-   ZzfLV4jwMK76XSsn6TRWgHHLZvLyrM3MRxphxDs54npXnRpAKp0VcomfT
-   VoBEAGc1ooacXVl1ak4uqs+OPsPzJIN0Ih5dlMrDSalYQlwlXF79PICfY
-   ek55dQeFjI+Tqrcnjjl8g4truVRwdz4QrF9JvstdHcV4Jz0z9mwuK8gYk
-   kYRfNBcYxe7W7pyh84vqeKSs8Ii8BQZcGBqciCVRYJhBoYDM6DUdn2mvv
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10220"; a="222956096"
-X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
-   d="scan'208";a="222956096"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2022 16:42:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,271,1635231600"; 
-   d="scan'208";a="489452989"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 07 Jan 2022 16:42:28 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n5zoR-000077-Qp; Sat, 08 Jan 2022 00:42:27 +0000
-Date:   Sat, 8 Jan 2022 08:41:29 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Prasad Sodagudi <psodagud@codeaurora.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Elliot Berman <eberman@codeaurora.org>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android12-5.10
- 142/9999] drivers/android/debug_symbols.c:11:10: fatal error:
- asm/stacktrace.h: No such file or directory
-Message-ID: <202201080759.2KcaQBpB-lkp@intel.com>
+        id S232055AbiAHAsM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:48:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34310 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229514AbiAHAsL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 7 Jan 2022 19:48:11 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCF1F62044;
+        Sat,  8 Jan 2022 00:48:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC10C36AEB;
+        Sat,  8 Jan 2022 00:48:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641602890;
+        bh=IM6DZCckcai0O2zZ0JKkNbO8kDDl9nphrbzpRK7mZkU=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=hRgf0+44YcCLZH6OJyklfqSBa7ERMz5knw7OMaZ6EPRhUU4JQ9HJX8CiucqRqRc3Q
+         TVzngM+/OeudjjWI9mvdt55lJg1r6yN4NYrqa3NFhhxZejXlACsLkoen9sPYXgLsnz
+         qe9SmcNVyOqZZuStRqsAWJb6PCFUGHoQ/4z40IQqoU1LIno7j/vFXscerQmA4RFUYj
+         FMn65FzRj/ZgOMouSodkatRVBI3cmFRQEi0bbsBU6etrL3SqxMzLd6irBmF6X7mjn8
+         bfBMqYTOuv0assn9wGzU+VArUSegZuRVPxX7EEpJQpMboH21s+2C8+VI1l7PsaEdF/
+         jg77iz+xTorXQ==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20211216141338.35144-5-claudiu.beznea@microchip.com>
+References: <20211216141338.35144-1-claudiu.beznea@microchip.com> <20211216141338.35144-5-claudiu.beznea@microchip.com>
+Subject: Re: [PATCH 4/8] ARM: at91: PM: add cpu idle support for sama7g5
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     Claudiu Beznea <claudiu.beznea@microchip.com>,
+        alexandre.belloni@bootlin.com, linux@armlinux.org.uk,
+        ludovic.desroches@microchip.com, mturquette@baylibre.com,
+        nicolas.ferre@microchip.com, robh+dt@kernel.org
+Date:   Fri, 07 Jan 2022 16:48:08 -0800
+User-Agent: alot/0.9.1
+Message-Id: <20220108004810.3DC10C36AEB@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Prasad,
+Quoting Claudiu Beznea (2021-12-16 06:13:34)
+> Add CPU idle support for SAMA7G5. Support will make use of PMC_CPU_RATIO
+> register to divide the CPU clock by 16 before switching it to idle and
+> use automatic self-refresh option of DDR controller.
+>=20
+> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+> ---
 
-FYI, the error/warning still remains.
-
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.10
-head:   05c23b7a503851e3be7e68453899e0ed922016f7
-commit: 3fcbb15c1a91a318fb9367bee24603af24648a2d [142/9999] ANDROID: android: Create debug_symbols driver
-config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220108/202201080759.2KcaQBpB-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/3fcbb15c1a91a318fb9367bee24603af24648a2d
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.10
-        git checkout 3fcbb15c1a91a318fb9367bee24603af24648a2d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/android/debug_symbols.c:11:10: fatal error: asm/stacktrace.h: No such file or directory
-      11 | #include <asm/stacktrace.h>
-         |          ^~~~~~~~~~~~~~~~~~
-   compilation terminated.
-
-
-vim +11 drivers/android/debug_symbols.c
-
-     2	
-     3	/*
-     4	 * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-     5	 */
-     6	
-     7	#include <linux/types.h>
-     8	#include <linux/kernel.h>
-     9	#include <linux/module.h>
-    10	#include <linux/android_debug_symbols.h>
-  > 11	#include <asm/stacktrace.h>
-    12	#include <asm/sections.h>
-    13	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Acked-by: Stephen Boyd <sboyd@kernel.org>
