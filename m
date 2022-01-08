@@ -2,91 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F8EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F705C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 00:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbiAHA4b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 7 Jan 2022 19:56:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44670 "EHLO
+        id S229979AbiAHA4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 7 Jan 2022 19:56:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232141AbiAHAzz (ORCPT
+        with ESMTP id S232135AbiAHAzz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 7 Jan 2022 19:55:55 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2DBDC061746
-        for <linux-kernel@vger.kernel.org>; Fri,  7 Jan 2022 16:55:54 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id l4so5010766wmq.3
-        for <linux-kernel@vger.kernel.org>; Fri, 07 Jan 2022 16:55:54 -0800 (PST)
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F805C06173E;
+        Fri,  7 Jan 2022 16:55:54 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id w20so14097544wra.9;
+        Fri, 07 Jan 2022 16:55:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mhdUIKOelQ4Vu/0/WwUEHpfJsqt6KgCAL5rNAB9ZbGs=;
-        b=TtU0vQwj0Aak7+xW4tdgZMK/Cmxp8CTX0PPrt/4LOQEaVjAHULIl5y/S6lsi9kLpxs
-         j9X2UC7HVysEzblufozOE3BNziHrAvFKUw3EuCRVpbK7uO67HFO3R+8DJkixLQQ5pE06
-         3GErffwIsHmBuaO9CFAbrGRhrgC0KL0zIViMRPXqWiWBxz+h9Q05MKCWTTj8hcMrGO8a
-         YQbSwbepEUYHzgAXjVvvaV7rQZPjP7R/mqz1BVXdo4Fx/1wSXRbHu5OFf+q9LWIIW1EL
-         dvzgmDFucSHnOxnZYDPtmGQJ8zHmdzutPZEIR3NKZ9iEErblTTZ7tBVvzDrBJIJp9m/a
-         B46A==
+        bh=qYRAJooeejsLElKVR8lduV1KN6qXlfQTHsLzXUd3d6g=;
+        b=ouxrwHpNjIGM+LMQA2WDKhHbWEPuw92qkfHyFDK3qYXt2dB3mKCsqTwbt9l9nNNmtu
+         XCLZDlW0yzOYAapvXNBgS3d0fvZLLiPkEP2t+CvNv43PRrWFEePtraVKqOaA193YazrZ
+         JBiVwsADnRVi31c4aeBpmkW0XDRv346tN1g0tX8fzpXssrO3kmLDB2mkzO1VR7FeKUae
+         pxI/mRrLl7FjN1b9va9guxgMjMW/sUf5KlJlhffPFlI8B/bTD2rOM5dlerImS3/OD+P3
+         L+vg4a0PjBEF2MbanOPRzsrcYA6lnzPWI2IIEfjsSjX7d433SBQfxSc2kKZdI7N7WFic
+         gxtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mhdUIKOelQ4Vu/0/WwUEHpfJsqt6KgCAL5rNAB9ZbGs=;
-        b=QfrrFqRTivyYAHXeNBVTCwByfY4b+JUfB4skoskOlAHW3y1cWMn4wYGAlYkUOBRKBT
-         5S8b4/Ep+GXQIVJe3LFcBRhd4rC73d4m06pz4iCK+NF4SApfZdEVA5L/bLAld9vxntGN
-         82AR1czIIhMVDVWpSWLrO8kOMeou/gLPIO7TqZRlAA9oPqGj7WKRS/PJPEY0/41rE1Cc
-         fxLGPis9K7e/guQJbuwgyVYA/TD7tJkwpTKXUXmLNO53xOcFpYfDZ2kSSt/NSx9mQ+0s
-         +buMAcYF0L/Kypy4ibZRk3irK7l3VuweQDUlccbd3bsWklVyyyP9lDdKoNyx5+yVjqOq
-         FINQ==
-X-Gm-Message-State: AOAM532DEM1a/9xxWh08wdJkKX5RAHhjdN/5Vid6HbHcamt2GReZnuMB
-        CBU0dGbxm2fhzhzBoNGW2QvxKw==
-X-Google-Smtp-Source: ABdhPJw2RJvXCLGS1zbuBReHGXSJ6r9IvYDDMdbpEfZZwDcAuBwkDj4ECkb0zrKe3Xqw7yxIB45VTg==
-X-Received: by 2002:a05:600c:3224:: with SMTP id r36mr1434270wmp.13.1641603353556;
+        bh=qYRAJooeejsLElKVR8lduV1KN6qXlfQTHsLzXUd3d6g=;
+        b=pW6ucCA839am10YcJL7zgTVmKvfTfWdiJ45c7zwHA5VC0vK9Q3Eacbzcx7m2qhNo0y
+         8dB6WO3onbfJTs3oGu9UsQVkA049L1J3CPHbMMyDWAN8wZuy1ubvrrma5IPa0UEQt8Bl
+         tYkbC3DXJTWKuAve42599xIk2PUTelHEJUarMbKgZEV6geetV4bjbpcVKhLWRYkDEyaU
+         Vwam++S/rCJcF/ski59mJM48IHfDcui25noZ07nLgjH0iCHKQErwMcA+E05vn++DmXXr
+         qR0//iflozBsiwvq/eQ4wc3PesdYBr6Ona8dSW7SaDDtJ4CntgJcTCVqomE08hErYGsU
+         IRbw==
+X-Gm-Message-State: AOAM533MtsZYWUkOiBQKKhhzE2CzkQn8IWjef8EEfSz/iRE0LBwl24rV
+        5LbQzdkqoZlGFYy1T4sQiBdOnUhyZc4=
+X-Google-Smtp-Source: ABdhPJwJJ13t6pOnsUqETHnSbhHtqaSiPpIlTgAEf9at9sLUTTzkciB0CMZyZf5hOYHbRZMkwlFV4w==
+X-Received: by 2002:a5d:64a7:: with SMTP id m7mr55004041wrp.687.1641603353047;
         Fri, 07 Jan 2022 16:55:53 -0800 (PST)
-Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
-        by smtp.gmail.com with ESMTPSA id c18sm238853wrn.81.2022.01.07.16.55.52
+Received: from localhost.localdomain (dynamic-095-117-123-222.95.117.pool.telefonica.de. [95.117.123.222])
+        by smtp.googlemail.com with ESMTPSA id z6sm77357wmp.9.2022.01.07.16.55.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 07 Jan 2022 16:55:53 -0800 (PST)
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     gregkh@linuxfoundation.org
-Cc:     Larry.Finger@lwfinger.net, straube.linux@gmail.com,
-        martin@kaiser.cx, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] staging: r8188eu: remove DBG_88E call from os_dep/osdep_service.c
-Date:   Sat,  8 Jan 2022 00:55:48 +0000
-Message-Id: <20220108005550.26264-4-phil@philpotter.co.uk>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220108005550.26264-1-phil@philpotter.co.uk>
-References: <20220108005550.26264-1-phil@philpotter.co.uk>
+        Fri, 07 Jan 2022 16:55:52 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-wireless@vger.kernel.org
+Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
+        johannes@sipsolutions.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Pkshih <pkshih@realtek.com>, Ed Swierk <eswierk@gh.st>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH v3 5/8] rtw88: Replace usage of rtw_iterate_keys_rcu() with rtw_iterate_keys()
+Date:   Sat,  8 Jan 2022 01:55:30 +0100
+Message-Id: <20220108005533.947787-6-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
+References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the single DBG_88E macro call from os_dep/osdep_service.c, as it
-is unreachable anyway. This gets the driver closer to the eventual
-removal of DBG_88E itself.
+Upcoming SDIO support may sleep in the read/write handlers. The only
+occurrence of rtw_iterate_keys_rcu() reads and writes registers from
+it's iterator function. Replace it with rtw_iterate_keys() (the non-RCU
+version). This will prevent an "scheduling while atomic" issue when
+using an SDIO device.
 
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/staging/r8188eu/os_dep/osdep_service.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/realtek/rtw88/main.c | 4 +---
+ drivers/net/wireless/realtek/rtw88/util.h | 2 --
+ 2 files changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/os_dep/osdep_service.c b/drivers/staging/r8188eu/os_dep/osdep_service.c
-index 59bdd0abea7e..7a6fcc96081a 100644
---- a/drivers/staging/r8188eu/os_dep/osdep_service.c
-+++ b/drivers/staging/r8188eu/os_dep/osdep_service.c
-@@ -236,8 +236,6 @@ void *rtw_cbuf_pop(struct rtw_cbuf *cbuf)
- 	if (rtw_cbuf_empty(cbuf))
- 		return NULL;
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 4b28c81b3ca0..3d4257e0367a 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -581,9 +581,7 @@ static void __fw_recovery_work(struct rtw_dev *rtwdev)
  
--	if (0)
--		DBG_88E("%s on %u\n", __func__, cbuf->read);
- 	buf = cbuf->bufs[cbuf->read];
- 	cbuf->read = (cbuf->read + 1) % cbuf->size;
+ 	WARN(1, "firmware crash, start reset and recover\n");
  
+-	rcu_read_lock();
+-	rtw_iterate_keys_rcu(rtwdev, NULL, rtw_reset_key_iter, rtwdev);
+-	rcu_read_unlock();
++	rtw_iterate_keys(rtwdev, NULL, rtw_reset_key_iter, rtwdev);
+ 	rtw_iterate_stas(rtwdev, rtw_reset_sta_iter, rtwdev);
+ 	rtw_iterate_vifs(rtwdev, rtw_reset_vif_iter, rtwdev);
+ 	rtw_enter_ips(rtwdev);
+diff --git a/drivers/net/wireless/realtek/rtw88/util.h b/drivers/net/wireless/realtek/rtw88/util.h
+index b0dfadf8b82a..06a5b4c4111c 100644
+--- a/drivers/net/wireless/realtek/rtw88/util.h
++++ b/drivers/net/wireless/realtek/rtw88/util.h
+@@ -19,8 +19,6 @@ struct rtw_dev;
+ 	ieee80211_iterate_stations_atomic(rtwdev->hw, iterator, data)
+ #define rtw_iterate_keys(rtwdev, vif, iterator, data)			       \
+ 	ieee80211_iter_keys(rtwdev->hw, vif, iterator, data)
+-#define rtw_iterate_keys_rcu(rtwdev, vif, iterator, data)		       \
+-	ieee80211_iter_keys_rcu((rtwdev)->hw, vif, iterator, data)
+ 
+ static inline u8 *get_hdr_bssid(struct ieee80211_hdr *hdr)
+ {
 -- 
-2.33.1
+2.34.1
 
