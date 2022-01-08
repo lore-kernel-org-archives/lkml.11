@@ -2,86 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C782DC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 18:21:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0854FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 18:24:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232382AbiAHSVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 13:21:04 -0500
-Received: from out03.mta.xmission.com ([166.70.13.233]:54758 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230037AbiAHSVC (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 13:21:02 -0500
-Received: from in01.mta.xmission.com ([166.70.13.51]:46732)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n6GKr-006iKN-PK; Sat, 08 Jan 2022 11:21:01 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:34300 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n6GKq-000x5y-LD; Sat, 08 Jan 2022 11:21:01 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Martin Schwidefsky <schwidefsky@de.ibm.com>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <20211208202532.16409-9-ebiederm@xmission.com>
-        <Yde6sQqp9Rx0Zm5I@zeniv-ca.linux.org.uk>
-Date:   Sat, 08 Jan 2022 12:20:53 -0600
-In-Reply-To: <Yde6sQqp9Rx0Zm5I@zeniv-ca.linux.org.uk> (Al Viro's message of
-        "Fri, 7 Jan 2022 03:59:45 +0000")
-Message-ID: <87lezqytq2.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S234876AbiAHSYH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 13:24:07 -0500
+Received: from mga07.intel.com ([134.134.136.100]:38919 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230026AbiAHSYF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 13:24:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641666245; x=1673202245;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=y55tsKI/LIdDDF1AGMKGPcuVM86HFS14br6dNdIZZWY=;
+  b=OjYJUdO4A8NOicGn1CSgQDlTMRAqECNdVN5aT0G/iRq7RrT7TReXMQAl
+   z0nDNMTyNjdi3wy6J2nCl6rhdY7EmbohnMRwtK98et8J/dJ/08m5gGA+K
+   0Hc0GMPkBBK4knD5isP1AVZexg/AI+4eXXVo2EEx41abdmaprgu53syx+
+   h7GKvzNWYd1H5b71/hwBNRJ15R4MR22N8hBtQ8cJJCCYvDt/zn6/+KzDn
+   WtwcTLe1LnprZIexrmpz7mkQRJiTa7rFZ7hqM4iTFc149TVBS23alcXSY
+   5p0jZ1JQIrY8mbfdDp6CLcYrTRBTWfzppcGPTvlhnDOO5uXibnQFy3eyL
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10221"; a="306391836"
+X-IronPort-AV: E=Sophos;i="5.88,273,1635231600"; 
+   d="scan'208";a="306391836"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2022 10:24:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,273,1635231600"; 
+   d="scan'208";a="514205540"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 08 Jan 2022 10:24:04 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n6GNn-0000u9-7H; Sat, 08 Jan 2022 18:24:03 +0000
+Date:   Sun, 9 Jan 2022 02:23:29 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Evan Quan <evan.quan@amd.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>
+Subject: [agd5f:drm-next 20/53]
+ drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:29:6: warning: no
+ previous prototype for 'amdgpu_dpm_get_active_displays'
+Message-ID: <202201090201.ed6mhBaD-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1n6GKq-000x5y-LD;;;mid=<87lezqytq2.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX181W88GJJh8ztDxyWUuySS1bDqpA7vYpcY=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 09/10] kthread: Ensure struct kthread is present for all
- kthreads
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Al Viro <viro@zeniv.linux.org.uk> writes:
+tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
+head:   ec1289d5cf9f8b8872ed8b9e57130d27938faccf
+commit: 855b49a8859f07dc29076c3a301888b39550c362 [20/53] drm/amd/pm: optimize the amdgpu_pm_compute_clocks() implementations
+config: arm64-randconfig-r016-20220108 (https://download.01.org/0day-ci/archive/20220109/202201090201.ed6mhBaD-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
+        git fetch --no-tags agd5f drm-next
+        git checkout 855b49a8859f07dc29076c3a301888b39550c362
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/
 
-> On Wed, Dec 08, 2021 at 02:25:31PM -0600, Eric W. Biederman wrote:
->> Today the rules are a bit iffy and arbitrary about which kernel
->> threads have struct kthread present.  Both idle threads and thread
->> started with create_kthread want struct kthread present so that is
->> effectively all kernel threads.  Make the rule that if PF_KTHREAD
->> and the task is running then struct kthread is present.
->> 
->> This will allow the kernel thread code to using tsk->exit_code
->> with different semantics from ordinary processes.
->
-> Getting rid of ->exit_code abuse is independent from this.
-> I'm not saying that this change is a bad idea, but it's an
-> independent thing.  Simply turn these two failure exits
-> into do_exit(0) in 06/10 and that's it.  Then this one
-> would get rid of if (!self) and the second of those two
-> calls, but it won't be nailed to that point of queue.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-That is a good point.
+All warnings (new ones prefixed by >>):
 
-As this code has been in linux-next for a while, I am going to leave
-the dependency in place in the interests of sending Linus tested code.
+>> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:29:6: warning: no previous prototype for 'amdgpu_dpm_get_active_displays' [-Wmissing-prototypes]
+      29 | void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c:76:5: warning: no previous prototype for 'amdgpu_dpm_get_vrefresh' [-Wmissing-prototypes]
+      76 | u32 amdgpu_dpm_get_vrefresh(struct amdgpu_device *adev)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~
 
-This change with the bit about which field points to struct kthread
-seems like a good idea on it's own merits.
 
-Eric
+vim +/amdgpu_dpm_get_active_displays +29 drivers/gpu/drm/amd/amdgpu/../pm/amdgpu_dpm_internal.c
 
+    28	
+  > 29	void amdgpu_dpm_get_active_displays(struct amdgpu_device *adev)
+    30	{
+    31		struct drm_device *ddev = adev_to_drm(adev);
+    32		struct drm_crtc *crtc;
+    33		struct amdgpu_crtc *amdgpu_crtc;
+    34	
+    35		adev->pm.dpm.new_active_crtcs = 0;
+    36		adev->pm.dpm.new_active_crtc_count = 0;
+    37		if (adev->mode_info.num_crtc && adev->mode_info.mode_config_initialized) {
+    38			list_for_each_entry(crtc,
+    39					    &ddev->mode_config.crtc_list, head) {
+    40				amdgpu_crtc = to_amdgpu_crtc(crtc);
+    41				if (amdgpu_crtc->enabled) {
+    42					adev->pm.dpm.new_active_crtcs |= (1 << amdgpu_crtc->crtc_id);
+    43					adev->pm.dpm.new_active_crtc_count++;
+    44				}
+    45			}
+    46		}
+    47	}
+    48	
+    49	u32 amdgpu_dpm_get_vblank_time(struct amdgpu_device *adev)
+    50	{
+    51		struct drm_device *dev = adev_to_drm(adev);
+    52		struct drm_crtc *crtc;
+    53		struct amdgpu_crtc *amdgpu_crtc;
+    54		u32 vblank_in_pixels;
+    55		u32 vblank_time_us = 0xffffffff; /* if the displays are off, vblank time is max */
+    56	
+    57		if (adev->mode_info.num_crtc && adev->mode_info.mode_config_initialized) {
+    58			list_for_each_entry(crtc, &dev->mode_config.crtc_list, head) {
+    59				amdgpu_crtc = to_amdgpu_crtc(crtc);
+    60				if (crtc->enabled && amdgpu_crtc->enabled && amdgpu_crtc->hw_mode.clock) {
+    61					vblank_in_pixels =
+    62						amdgpu_crtc->hw_mode.crtc_htotal *
+    63						(amdgpu_crtc->hw_mode.crtc_vblank_end -
+    64						amdgpu_crtc->hw_mode.crtc_vdisplay +
+    65						(amdgpu_crtc->v_border * 2));
+    66	
+    67					vblank_time_us = vblank_in_pixels * 1000 / amdgpu_crtc->hw_mode.clock;
+    68					break;
+    69				}
+    70			}
+    71		}
+    72	
+    73		return vblank_time_us;
+    74	}
+    75	
+  > 76	u32 amdgpu_dpm_get_vrefresh(struct amdgpu_device *adev)
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
