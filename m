@@ -2,115 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 280AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 23:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D42FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 23:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233555AbiAHXR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 18:17:28 -0500
-Received: from perceval.ideasonboard.com ([213.167.242.64]:58476 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiAHXR1 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 18:17:27 -0500
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id AC352A1B;
-        Sun,  9 Jan 2022 00:17:25 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1641683845;
-        bh=+beRkjOj8CLbVI7wLsj7Ibj+p/hURCH6exnOF8hVnbc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Cx/Nd57XLymu9eXJPMwszq9UpDsNzan2ux0lpOq+2onbYNyOIfIRDfVfMHrGDvJ1W
-         FvlE634RPJ/SrK7hGhEC5fmiKCCP/D9+cpoTHVwRQHjFwjnw4vs40l+lwfxfacF5dl
-         1DOhAiVn4PckbIKKN7eWYfMfEmAXRSDDNx86JknA=
-Date:   Sun, 9 Jan 2022 01:17:17 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Patrick Rudolph <patrick.rudolph@9elements.com>
-Cc:     Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] dt-bindings: i2c: Add regulator to pca954x and
- max735x
-Message-ID: <YdobffwaGYmLwRjW@pendragon.ideasonboard.com>
-References: <20220108185759.2086347-1-patrick.rudolph@9elements.com>
- <20220108185759.2086347-4-patrick.rudolph@9elements.com>
+        id S233657AbiAHXTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 18:19:33 -0500
+Received: from mail.foescog.net ([5.56.56.234]:56416 "EHLO mail.foescog.net"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229761AbiAHXTc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 8 Jan 2022 18:19:32 -0500
+X-Greylist: delayed 489 seconds by postgrey-1.27 at vger.kernel.org; Sat, 08 Jan 2022 18:19:32 EST
+Received: from 42.91-116-32.dynamic.clientes.euskaltel.es (unknown [91.116.32.42])
+        by mail.foescog.net (Postfix) with ESMTPSA id 764F62060B1
+        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 00:11:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gruposerys.net;
+        s=default; t=1641683480;
+        bh=xUrfVs0SwqMa4XF9Lpvuw2aBNh65XgM2+voF5q808Ko=; h=From:To:Subject;
+        b=JZ5Bgaa7yfJb16d+Bv2SNbAf9VZwjcoTCtdbtTUswUCs4XuQFpa3KeCmmAI7h+ATt
+         NkNasEcx/JAmZ7U+VLppqdbDOO2Q6lC/vjtcoSOD73ZQRetYQmCT6IhLPDLZMVc9hE
+         BJ3eaeeEGwgSyDuR/ZOas27RIwDeMasqnPmTLXx8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220108185759.2086347-4-patrick.rudolph@9elements.com>
+From:   "SERYS" <info2@gruposerys.net>
+Reply-To: info2@gruposerys.net
+To:     linux-kernel@vger.kernel.org
+Subject: Consulta SERYS
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Smart_Send_4_3_3
+Date:   Sun, 9 Jan 2022 00:11:17 +0100
+Message-ID: <9052468301968191234011@DESKTOP-E4PFAM0>
+X-Priority: 1
+X-MSMail-Priority: High
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Patrick,
+Buenos d=EDas
 
-Thank you for the patch.
 
-On Sat, Jan 08, 2022 at 07:57:57PM +0100, Patrick Rudolph wrote:
-> Add a regulator called vdd also present in datasheets of PCA954x
-> and MAX735x and update the examples.
-> 
-> Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
-> ---
->  Documentation/devicetree/bindings/i2c/i2c-mux-max735x.yaml | 5 +++++
->  Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml | 5 +++++
->  2 files changed, 10 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-max735x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-max735x.yaml
-> index dc924ec934ca..93eda07718e8 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c-mux-max735x.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/i2c-mux-max735x.yaml
-> @@ -57,6 +57,9 @@ properties:
->      description: if present, overrides i2c-mux-idle-disconnect
->      $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
->  
-> +  vdd-supply:
-> +    description: A voltage regulator supplying power to the chip.
-> +
->  required:
->    - compatible
->    - reg
-> @@ -75,6 +78,8 @@ examples:
->              #size-cells = <0>;
->              reg = <0x74>;
->  
-> +            vdd-supply = <&p3v3>;
-> +
->              i2c@1 {
->                  #address-cells = <1>;
->                  #size-cells = <0>;
 
-This should be part of patch 1/4 (or better in my opinion, the two
-binding files should be merged into a single one).
+Desde SERYS ENERGIA estamos informando a todas las empresas, particulares y=
+ entidades p=FAblicas acerca del servicio de autoconsumo el=E9ctrico median=
+te la instalaci=F3n totalmente financidada de placas solares fotovoltaicas.
 
-> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-> index 9f1726d0356b..b28d05dc956d 100644
-> --- a/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/i2c-mux-pca954x.yaml
-> @@ -59,6 +59,9 @@ properties:
->      description: if present, overrides i2c-mux-idle-disconnect
->      $ref: /schemas/mux/mux-controller.yaml#/properties/idle-state
->  
-> +  vdd-supply:
-> +    description: A voltage regulator supplying power to the chip.
-> +
->  required:
->    - compatible
->    - reg
-> @@ -79,6 +82,8 @@ examples:
->              #size-cells = <0>;
->              reg = <0x74>;
->  
-> +            vdd-supply = <&p3v3>;
-> +
->              interrupt-parent = <&ipic>;
->              interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
->              interrupt-controller;
 
-For this part,
+Por este motivo rogamos pod=E1is respondernos indicando una de la siguiente=
+s respuestas:
 
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
--- 
-Regards,
+1 - Precisamos recibir presupuesto personalizado y sin compromiso (Indicar =
+por favor nombre y tel=E9fono de contacto).
 
-Laurent Pinchart
+2 - No precisamos recibir informaci=F3n, disponemos ya de una instalaci=F3n=
+ fotovoltaica.
+
+3 - No precisamos recibir informaci=F3n, no nos interesa cambiar.
+
+
+Gracias por vuestra colaboraci=F3n, quedamos a la espera de vuestra respues=
+ta.
+
+
+Saludos cordiales.
+
+
+Departamento de autoconsumo y renovables
+SERYS CONSULTING ESPA=D1A
+Tel. 604213428
+Email. info@serys-energia.com
+
+www.serys-energia.com
+
+Antes de imprimir este e-mail piense bien si es necesario hacerlo. De confo=
+rmidad con lo dispuesto en el Reglamento Europeo del 2016/679, del 27 de Ab=
+ril de 2016 le informamos que la informaci=F3n transmitida en este mensaje =
+est=E1 dirigida solamente a las personas o entidades que figuran en el enca=
+bezamiento y contiene informaci=F3n confidencial, por lo que, si usted lo r=
+ecibiera por error, por favor destr=FAyalo sin copiarlo, usarlo ni distribu=
+irlo, comunic=E1ndolo inmediatamente al emisor del mensaje.=20
+
+Puede solicitar BAJA en el env=EDo de correos electr=F3nicos "PULSANDO AQUI=
+" <mailto:bajas@serys.net=3FSubject=3DBAJA%20CORREOS> y "ENVIAR".
