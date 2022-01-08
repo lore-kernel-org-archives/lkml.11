@@ -2,99 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92E06C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 21:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDD1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 21:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233171AbiAHV5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 16:57:34 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:34912 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233141AbiAHV5c (ORCPT
+        id S233223AbiAHV6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 16:58:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233141AbiAHV6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 16:57:32 -0500
-Date:   Sat, 08 Jan 2022 21:57:29 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1641679050;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=967Qju2NwbyM0qVAZp6YVDsi5d6NviMZ1NadlgJJnmE=;
-        b=YLjrttD1zZdaPKjMTqhnhZbfu4Q0ZrJY2HcPE1yqfqnPTva/KBNAZSUrpQObdsFKXjFklw
-        3AngByy3/xyLIfnX5QuMBHvDUft2DEvvPetjgKYJg7KdFhk9DSTDz3WdpUreS190LtZh3H
-        P7mmrmyG1JbAQkIV9lKakJQJsWNDzgZf7z2ZKrE8Jpvamaigd8P2V0MjjD/r9FwCpFIMGC
-        YsMpktpKnsG/PHOHC3sXFqnc0O4orKK0Vhp3TnWHEZPz6WMrqjfKft8OMrSNu5OpxH/UqJ
-        Uit0V5CdN+dS2Wp3U3J9PZlZqIF1SEAig+FPWMy0RdWE7B83fC6TMnZ7pjYUCw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1641679050;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=967Qju2NwbyM0qVAZp6YVDsi5d6NviMZ1NadlgJJnmE=;
-        b=TbLGib7L3rbLwwRV7JEYCW21Cr47I7f1NBE86x7flhdhujpTC41fTp8/EwDb+ATK7dx7tb
-        86nQ+HfNIcZhftDQ==
-From:   "tip-bot2 for Ingo Molnar" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/build] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
-Cc:     Ingo Molnar <mingo@kernel.org>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <YdTn7gssoMVDMgMw@gmail.com>
-References: <YdTn7gssoMVDMgMw@gmail.com>
+        Sat, 8 Jan 2022 16:58:47 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C553FC06173F
+        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 13:58:47 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id n16so8799879plc.2
+        for <linux-kernel@vger.kernel.org>; Sat, 08 Jan 2022 13:58:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lixom-net.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ewMb6x8qSgRhiQLnj41jmD5Jf2Gw2+saUAqctPrcO2c=;
+        b=w9/7KlPbT9FQyV+9mSQdPl9F78lvYzYDszYA2ivdbja+c4oJE5crdNClxmu/GffdUA
+         /TSjYcOlabCO7psTxdZJvCm1egr3Gp31fR/asnrlJSZFHZdPCPHWaiEfySl7BcQm1y9I
+         GonrvTbMoJOFAwAvSK7FffJn49ehieE7WBF6fk+zEZLOr3MjqFlHP1zwiucbCJj/o133
+         z1DTkurh+zVTV2zzGYiiMyeZStpw6CdqPW7t7K4t7aaSf09LgvtiWLapirj46h6o4iZz
+         6oL23Ttl2mjYK+fmOgXEX5Eps4VCbAG8MEbn/WwQ/SjvqMITgM5r9qO5jQvG05kUuqTw
+         HrjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ewMb6x8qSgRhiQLnj41jmD5Jf2Gw2+saUAqctPrcO2c=;
+        b=Bpa5HFtZS6v1G6Q8uBg0aXhn1bqwDuqNv3J8ALuhhBgJFXwSQtBEfOzwm5Hs7/vlsk
+         oWeuEIl31mrlIDcsBNhB1hcxAuxEdHBtX70C+KNDff8qfhQsrrlxQ9Bjw7aTBE9fLYPC
+         qEKPcSINuWpgDGtWAR9AWZgw5qWxLStDe/FnmW670kWPcysRmI9MmsrR75EN9jGtWBQg
+         yRkWCeM+pkUdx6fz3Xf6+XtPqRgKXF8GaQhWRjyHWlnFALIYgErwz9vKadZfRK7ldp/V
+         ry3nFOW4wPZpK2oS98degH3mPkQE9LcbbZC7XbzuuHTeKfeAgCi91VpEBtkb1ufGudXf
+         S97A==
+X-Gm-Message-State: AOAM533Nf0OeQBvq5lfDW9XcrNqvy4A+Qx7UQ6AdsgZ/QuXt6gGYmzpN
+        yncJX+votEP+eIsqirIHUaJ0Gp9IDzCauQ==
+X-Google-Smtp-Source: ABdhPJwxLq2cEmd460c6VV/QK+DLhkjh2M1rDHCU9wbX7c4uGX+Td1WeqSvq3fdLkFCxPAEho1fNKg==
+X-Received: by 2002:a63:6b07:: with SMTP id g7mr62621216pgc.234.1641679127302;
+        Sat, 08 Jan 2022 13:58:47 -0800 (PST)
+Received: from localhost (99-152-116-91.lightspeed.sntcca.sbcglobal.net. [99.152.116.91])
+        by smtp.gmail.com with ESMTPSA id s8sm2862623pfu.58.2022.01.08.13.58.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Jan 2022 13:58:46 -0800 (PST)
+Date:   Sat, 8 Jan 2022 13:58:40 -0800
+From:   Olof Johansson <olof@lixom.net>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [GIT PULL] Apple SoC MAINTAINERS updates for 5.17
+Message-ID: <YdoJEMjEr5jKwLf7@lx2k>
+References: <24ae6871-3e67-5c7f-2060-28048db439a2@marcan.st>
 MIME-Version: 1.0
-Message-ID: <164167904946.16921.8215342846945528313.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <24ae6871-3e67-5c7f-2060-28048db439a2@marcan.st>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/build branch of tip:
+On Sat, Jan 08, 2022 at 02:13:49PM +0900, Hector Martin wrote:
+> Hi SoC folks,
+> 
+> Please merge this trivial MAINTAINERS change for 5.17.
+> 
+> This commit was waiting on the watchdog driver to be merged, but I only
+> just now realized that it silently did. Sorry for the last-minute pull.
+> If this can't make it into the 5.17 merge window, it can be added as a
+> fix later instead.
+> 
+> The branch is based on asahi-soc-dt-5.17-v2 to avoid a merge conflict
+> with other changes that happened there.
 
-Commit-ID:     b6aa86cff44cf099299d3a5e66348cb709cd7964
-Gitweb:        https://git.kernel.org/tip/b6aa86cff44cf099299d3a5e66348cb709cd7964
-Author:        Ingo Molnar <mingo@kernel.org>
-AuthorDate:    Wed, 05 Jan 2022 01:35:58 +01:00
-Committer:     Ingo Molnar <mingo@kernel.org>
-CommitterDate: Sat, 08 Jan 2022 22:55:29 +01:00
+Hi,
 
-x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
+I've merged a bunch of outstanding pull requests into an arm/late branch, but
+I'm holding on to this one for a bit, we'll merge it once the main branches
+have gone in, since it contains a bunch of that contents. Since it's just
+a MAINTAINERS update it's fine to merge late, no need to soak in -next.
 
-Most distro kernels have this option enabled, to improve debug output.
 
-Lockdep also selects it.
-
-Enable this in the defconfig kernel as well, to make it more
-representative of what people are using on x86.
-
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
----
- arch/x86/configs/i386_defconfig   | 1 +
- arch/x86/configs/x86_64_defconfig | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
-index 5d97a2d..71124cf 100644
---- a/arch/x86/configs/i386_defconfig
-+++ b/arch/x86/configs/i386_defconfig
-@@ -261,3 +261,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index 30ab3e5..92b1169 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -257,3 +257,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
+-Olof
