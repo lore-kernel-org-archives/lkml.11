@@ -2,69 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B961C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 08:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34C5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 08:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231139AbiAHIbi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 03:31:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59194 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiAHIbg (ORCPT
+        id S231455AbiAHIkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 03:40:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229613AbiAHIkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 03:31:36 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9639E610D5;
-        Sat,  8 Jan 2022 08:31:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585A6C36AE0;
-        Sat,  8 Jan 2022 08:31:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641630695;
-        bh=OKZU2HqdH4HGn5G8tY7pi/i61f+rEqXNsgCKGVe3iME=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=q7rgSwP+1clBZ+SIDRdGariYFSjZb/F8pq4kS7EOClOX9cHpiJAgIOGEqtsSQcBhL
-         SCdsDsmikeLVfe7WCfrVinbYXEGtYGDZDqMPSN2fgFebfPt+4yDTOm8VMJp2vdk2ak
-         +J75+fucuaGXzdAg1hXVMJkbjGbF3udmL134rEKk=
-Date:   Sat, 8 Jan 2022 09:31:29 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Coly Li <colyli@suse.de>
-Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
-        linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bcache: use default_groups in kobj_type
-Message-ID: <YdlL4YAScYp9XxkI@kroah.com>
-References: <20220106100004.3277439-1-gregkh@linuxfoundation.org>
- <7cbca83d-bcac-464e-d2e4-c54b2d53eead@suse.de>
+        Sat, 8 Jan 2022 03:40:19 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E403AC061574;
+        Sat,  8 Jan 2022 00:40:18 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id lr15-20020a17090b4b8f00b001b19671cbebso9100396pjb.1;
+        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9zEwDmNMe5JERLrwlCRlU/+ORPGYL9TSSP35Lx3dN30=;
+        b=CuClFgSfhd2sHttE34W8oabBRGxMtRezBYjAnGdE1RsZ83TYi8ViK3Xmg1auClddbx
+         GwH8+CYdXARMc5nifS/9sklBitiGXcSlRdnrqDF2MuITggX4gShDw9xqSds5Vpz7jCdI
+         obMtp+Es1uBXHuSFLk6cpS/sZ6r/fkDEt9tU/Jefu5BOy6FA9Xpo/UoGwAe8GN9aT+jK
+         1ajH/DIXh2JtuFylbH9pgGuAyChKpvsSDU5ZJ/l+mvjagsxC1W4UekWKCzX8MoJQ7FJT
+         8KTmDJSHASgXEZU6rzCV9rFAKcCM0kdexhEdPXqjC5bBR6WVtnaOtp1Qbp+chGejhIkn
+         EijQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9zEwDmNMe5JERLrwlCRlU/+ORPGYL9TSSP35Lx3dN30=;
+        b=pG9tYXAsTSdT3aTmov757Z+rM75NpqEyN+m5LNXgJKDA/18KMOpgnMDVNtdEaqSLPG
+         6XYrWqWQDxDTl7FDZyDT590iELjSA5w0gYRtes2jo9BCyy7HqgWdDyBlH5rr7gQvxa/G
+         +a5ysUFDTFs30cgKvJ3O3qOWOBoYMWAt/u/Jytnvkgu2Fy8JDvgUrZPZHVLKSnNxPfoH
+         7ZhbLlIRbCq9wGGogcAVz94Od2mn3P4sOgcihb3WXQ4gLfkDpTwgCKk3ANRbJWavvcx2
+         H5TY8uKiv91chEqtwGwqz4XiAMo5D2qp6rYCX/RU531dmc99ppnfnsWzFvUnHVylTXpO
+         zXtw==
+X-Gm-Message-State: AOAM532mmWuZtz4BylICiWVfPfppiAdja/Y7cD7Hb59NxRIUUrC7uFPK
+        br/F7XuaQQF5DfAKS+n5mR0=
+X-Google-Smtp-Source: ABdhPJxgT+hITarZ5kOie4lgQKjGUCs4kcAxUmDsHXGRU8Ggif6Uqhy6zZ/xF3aIzhOlokShIaQfEQ==
+X-Received: by 2002:a17:902:a3c4:b0:149:6639:4b86 with SMTP id q4-20020a170902a3c400b0014966394b86mr62292275plb.60.1641631218474;
+        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
+Received: from localhost.localdomain ([111.199.185.103])
+        by smtp.gmail.com with ESMTPSA id mq12sm1333897pjb.48.2022.01.08.00.40.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 08 Jan 2022 00:40:18 -0800 (PST)
+From:   Wei Fu <fuweid89@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wei Fu <fuweid89@gmail.com>
+Subject: [PATCH bpf] tools/bpf: only set obj->skeleton without err
+Date:   Sat,  8 Jan 2022 16:40:08 +0800
+Message-Id: <20220108084008.1053111-1-fuweid89@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7cbca83d-bcac-464e-d2e4-c54b2d53eead@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 02:16:28PM +0800, Coly Li wrote:
-> On 1/6/22 6:00 PM, Greg Kroah-Hartman wrote:
-> > There are currently 2 ways to create a set of sysfs files for a
-> > kobj_type, through the default_attrs field, and the default_groups
-> > field.  Move the bcache sysfs code to use default_groups field which has
-> > been the preferred way since aa30f47cf666 ("kobject: Add support for
-> > default attribute groups to kobj_type") so that we can soon get rid of
-> > the obsolete default_attrs field.
-> > 
-> > Cc: Coly Li <colyli@suse.de>
-> > Cc: Kent Overstreet <kent.overstreet@gmail.com>
-> > Cc: linux-bcache@vger.kernel.org
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> It looks good to me.
-> 
-> Acked-by: Coly Li <colyli@suse.de>
-> 
-> I assume you may take this patch directly in your maintenance path, but if
-> you want me to take this, just let me know. Thanks.
+After `bpftool gen skeleton`, the ${bpf_app}.skel.h will provide that
+${bpf_app_name}__open helper to load bpf. If there is some error
+like ENOMEM, the ${bpf_app_name}__open will rollback(free) the allocated
+object, including `bpf_object_skeleton`.
 
-I can take it myself, or you can, which ever is easiest for you, just
-let me know which you prefer.  Thanks for the review!
+Since the ${bpf_app_name}__create_skeleton set the obj->skeleton first
+and not rollback it when error, it will cause double-free in
+${bpf_app_name}__destory at ${bpf_app_name}__open. Therefore, we should
+set the obj->skeleton before return 0;
 
-greg k-h
+Signed-off-by: Wei Fu <fuweid89@gmail.com>
+---
+ tools/bpf/bpftool/gen.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+index 5c18351290f0..e61e08f524da 100644
+--- a/tools/bpf/bpftool/gen.c
++++ b/tools/bpf/bpftool/gen.c
+@@ -928,7 +928,6 @@ static int do_skeleton(int argc, char **argv)
+ 			s = (struct bpf_object_skeleton *)calloc(1, sizeof(*s));\n\
+ 			if (!s)						    \n\
+ 				goto err;				    \n\
+-			obj->skeleton = s;				    \n\
+ 									    \n\
+ 			s->sz = sizeof(*s);				    \n\
+ 			s->name = \"%1$s\";				    \n\
+@@ -1001,6 +1000,8 @@ static int do_skeleton(int argc, char **argv)
+ 									    \n\
+ 			s->data = (void *)%2$s__elf_bytes(&s->data_sz);	    \n\
+ 									    \n\
++			obj->skeleton = s;				    \n\
++									    \n\
+ 			return 0;					    \n\
+ 		err:							    \n\
+ 			bpf_object__destroy_skeleton(s);		    \n\
+-- 
+2.25.1
+
