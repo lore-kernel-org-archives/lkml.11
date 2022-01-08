@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E077EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F5DC433FE
 	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 12:50:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234232AbiAHMuh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 07:50:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58652 "EHLO
+        id S234432AbiAHMuj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 07:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234244AbiAHMuX (ORCPT
+        with ESMTP id S234265AbiAHMuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 07:50:23 -0500
+        Sat, 8 Jan 2022 07:50:25 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18181C06173E
-        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 04:50:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07BF4C061574
+        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 04:50:24 -0800 (PST)
 Received: from dslb-188-097-214-229.188.097.pools.vodafone-ip.de ([188.97.214.229] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1n6BAo-0005EJ-JG; Sat, 08 Jan 2022 13:50:18 +0100
+        id 1n6BAr-0005EJ-3S; Sat, 08 Jan 2022 13:50:21 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 08/12] staging: r8188eu: CurrentOfdm24GTxPwrIdx is set but not used
-Date:   Sat,  8 Jan 2022 13:49:55 +0100
-Message-Id: <20220108124959.313215-9-martin@kaiser.cx>
+Subject: [PATCH 11/12] staging: r8188eu: remove HAL_*_ENABLE defines
+Date:   Sat,  8 Jan 2022 13:49:58 +0100
+Message-Id: <20220108124959.313215-12-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220108124959.313215-1-martin@kaiser.cx>
 References: <20220108124959.313215-1-martin@kaiser.cx>
@@ -39,39 +39,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CurrentOfdm24GTxPwrIdx in struct hal_data_8188e is set but not used.
-It can be removed.
+HAL_(MAC|BB|RF)_ENABLE are always set. Remove the defines and the
+checks where they are used.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c  | 1 -
- drivers/staging/r8188eu/include/rtl8188e_hal.h | 1 -
- 2 files changed, 2 deletions(-)
+ drivers/staging/r8188eu/hal/usb_halinit.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-index 24b5604afbc9..a80f40fccf09 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-@@ -587,7 +587,6 @@ static void phy_PowerIndexCheck88E(struct adapter *Adapter, u8 channel, u8 *cckP
- 	struct hal_data_8188e *pHalData = &Adapter->haldata;
+diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+index 21cb505036b7..cc8f8c7d0734 100644
+--- a/drivers/staging/r8188eu/hal/usb_halinit.c
++++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+@@ -13,10 +13,6 @@
+ #include "../include/usb_osintf.h"
+ #include "../include/Hal8188EPwrSeq.h"
  
- 	pHalData->CurrentCckTxPwrIdx = cckPowerLevel[0];
--	pHalData->CurrentOfdm24GTxPwrIdx = ofdmPowerLevel[0];
- }
+-#define		HAL_MAC_ENABLE	1
+-#define		HAL_BB_ENABLE		1
+-#define		HAL_RF_ENABLE		1
+-
+ static void _ConfigNormalChipOutEP_8188E(struct adapter *adapt, u8 NumOutPipe)
+ {
+ 	struct hal_data_8188e *haldata = &adapt->haldata;
+@@ -640,32 +636,26 @@ u32 rtl8188eu_hal_init(struct adapter *Adapter)
+ 	Adapter->pwrctrlpriv.bFwCurrentInPSMode = false;
+ 	haldata->LastHMEBoxNum = 0;
  
- /*-----------------------------------------------------------------------------
-diff --git a/drivers/staging/r8188eu/include/rtl8188e_hal.h b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-index 0c7f5e078bed..fd2ee1739f88 100644
---- a/drivers/staging/r8188eu/include/rtl8188e_hal.h
-+++ b/drivers/staging/r8188eu/include/rtl8188e_hal.h
-@@ -178,7 +178,6 @@ struct hal_data_8188e {
+-#if (HAL_MAC_ENABLE == 1)
+ 	status = PHY_MACConfig8188E(Adapter);
+ 	if (status == _FAIL) {
+ 		DBG_88E(" ### Failed to init MAC ......\n ");
+ 		goto exit;
+ 	}
+-#endif
  
- 	/*  The current Tx Power Level */
- 	u8	CurrentCckTxPwrIdx;
--	u8	CurrentOfdm24GTxPwrIdx;
+ 	/*  */
+ 	/* d. Initialize BB related configurations. */
+ 	/*  */
+-#if (HAL_BB_ENABLE == 1)
+ 	status = PHY_BBConfig8188E(Adapter);
+ 	if (status == _FAIL) {
+ 		DBG_88E(" ### Failed to init BB ......\n ");
+ 		goto exit;
+ 	}
+-#endif
  
- 	/*  Read/write are allow for following hardware information variables */
- 	u8	pwrGroupCnt;
+-#if (HAL_RF_ENABLE == 1)
+ 	status = PHY_RFConfig8188E(Adapter);
+ 	if (status == _FAIL) {
+ 		DBG_88E(" ### Failed to init RF ......\n ");
+ 		goto exit;
+ 	}
+-#endif
+ 
+ 	status = rtl8188e_iol_efuse_patch(Adapter);
+ 	if (status == _FAIL) {
 -- 
 2.30.2
 
