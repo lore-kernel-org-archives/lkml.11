@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 12:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat,  8 Jan 2022 12:50:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234467AbiAHMul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 8 Jan 2022 07:50:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S234413AbiAHMuu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 8 Jan 2022 07:50:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234259AbiAHMuY (ORCPT
+        with ESMTP id S231812AbiAHMu1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 8 Jan 2022 07:50:24 -0500
+        Sat, 8 Jan 2022 07:50:27 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EB06C061574
-        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 04:50:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1834FC061574
+        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 04:50:27 -0800 (PST)
 Received: from dslb-188-097-214-229.188.097.pools.vodafone-ip.de ([188.97.214.229] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1n6BAq-0005EJ-7c; Sat, 08 Jan 2022 13:50:20 +0100
+        id 1n6BAs-0005EJ-F3; Sat, 08 Jan 2022 13:50:22 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 10/12] staging: r8188eu: HW_VAR_MEDIA_STATUS1 is never set
-Date:   Sat,  8 Jan 2022 13:49:57 +0100
-Message-Id: <20220108124959.313215-11-martin@kaiser.cx>
+Subject: [PATCH 12/12] staging: r8188eu: we always enqueue in rtw_set_chplan_cmd
+Date:   Sat,  8 Jan 2022 13:49:59 +0100
+Message-Id: <20220108124959.313215-13-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220108124959.313215-1-martin@kaiser.cx>
 References: <20220108124959.313215-1-martin@kaiser.cx>
@@ -39,47 +39,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The HW_VAR_MEDIA_STATUS1 hal variable is never set. Remove its define
-and the code to set it.
+The only caller of rtw_set_chplan_cmd requests that the message be
+enqueued and not sent directly.
+
+Remove the enqueue parameter and the code for direct sending.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/hal/usb_halinit.c  | 9 ---------
- drivers/staging/r8188eu/include/hal_intf.h | 1 -
- 2 files changed, 10 deletions(-)
+ drivers/staging/r8188eu/core/rtw_cmd.c       | 26 +++++++-------------
+ drivers/staging/r8188eu/include/rtw_cmd.h    |  2 +-
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c |  2 +-
+ 3 files changed, 11 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-index 38b88e6b7bdb..21cb505036b7 100644
---- a/drivers/staging/r8188eu/hal/usb_halinit.c
-+++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-@@ -1087,15 +1087,6 @@ void SetHwReg8188EU(struct adapter *Adapter, u8 variable, u8 *val)
- 			rtw_write8(Adapter, MSR, val8);
- 		}
- 		break;
--	case HW_VAR_MEDIA_STATUS1:
--		{
--			u8 val8;
--
--			val8 = rtw_read8(Adapter, MSR) & 0x03;
--			val8 |= *((u8 *)val) << 2;
--			rtw_write8(Adapter, MSR, val8);
--		}
--		break;
- 	case HW_VAR_SET_OPMODE:
- 		hw_var_set_opmode(Adapter, variable, val);
- 		break;
-diff --git a/drivers/staging/r8188eu/include/hal_intf.h b/drivers/staging/r8188eu/include/hal_intf.h
-index 120b32994e1f..6728cb506303 100644
---- a/drivers/staging/r8188eu/include/hal_intf.h
-+++ b/drivers/staging/r8188eu/include/hal_intf.h
-@@ -10,7 +10,6 @@
+diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
+index 712fd6e536c4..3d22a8888ea7 100644
+--- a/drivers/staging/r8188eu/core/rtw_cmd.c
++++ b/drivers/staging/r8188eu/core/rtw_cmd.c
+@@ -836,7 +836,7 @@ u8 rtw_dynamic_chk_wk_cmd(struct adapter *padapter)
+ 	return res;
+ }
  
- enum hw_variables {
- 	HW_VAR_MEDIA_STATUS,
--	HW_VAR_MEDIA_STATUS1,
- 	HW_VAR_SET_OPMODE,
- 	HW_VAR_MAC_ADDR,
- 	HW_VAR_BSSID,
+-u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan, u8 enqueue)
++u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan)
+ {
+ 	struct	cmd_obj *pcmdobj;
+ 	struct	SetChannelPlan_param *setChannelPlan_param;
+@@ -859,25 +859,17 @@ u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan, u8 enqueue)
+ 	}
+ 	setChannelPlan_param->channel_plan = chplan;
+ 
+-	if (enqueue) {
+-		/* need enqueue, prepare cmd_obj and enqueue */
+-		pcmdobj = kzalloc(sizeof(struct	cmd_obj), GFP_KERNEL);
+-		if (!pcmdobj) {
+-			kfree(setChannelPlan_param);
+-			res = _FAIL;
+-			goto exit;
+-		}
+-
+-		init_h2fwcmd_w_parm_no_rsp(pcmdobj, setChannelPlan_param, GEN_CMD_CODE(_SetChannelPlan));
+-		res = rtw_enqueue_cmd(pcmdpriv, pcmdobj);
+-	} else {
+-		/* no need to enqueue, do the cmd hdl directly and free cmd parameter */
+-		if (H2C_SUCCESS != set_chplan_hdl(padapter, (unsigned char *)setChannelPlan_param))
+-			res = _FAIL;
+-
++	/* need enqueue, prepare cmd_obj and enqueue */
++	pcmdobj = kzalloc(sizeof(struct	cmd_obj), GFP_KERNEL);
++	if (!pcmdobj) {
+ 		kfree(setChannelPlan_param);
++		res = _FAIL;
++		goto exit;
+ 	}
+ 
++	init_h2fwcmd_w_parm_no_rsp(pcmdobj, setChannelPlan_param, GEN_CMD_CODE(_SetChannelPlan));
++	res = rtw_enqueue_cmd(pcmdpriv, pcmdobj);
++
+ 	/* do something based on res... */
+ 	if (res == _SUCCESS)
+ 		padapter->mlmepriv.ChannelPlan = chplan;
+diff --git a/drivers/staging/r8188eu/include/rtw_cmd.h b/drivers/staging/r8188eu/include/rtw_cmd.h
+index cf0945ae11c1..60cecdd4ee0e 100644
+--- a/drivers/staging/r8188eu/include/rtw_cmd.h
++++ b/drivers/staging/r8188eu/include/rtw_cmd.h
+@@ -772,7 +772,7 @@ u8 rtw_ps_cmd(struct adapter*padapter);
+ 
+ u8 rtw_chk_hi_queue_cmd(struct adapter*padapter);
+ 
+-u8 rtw_set_chplan_cmd(struct adapter*padapter, u8 chplan, u8 enqueue);
++u8 rtw_set_chplan_cmd(struct adapter *padapter, u8 chplan);
+ 
+ u8 rtw_c2h_wk_cmd(struct adapter *padapter, u8 *c2h_evt);
+ 
+diff --git a/drivers/staging/r8188eu/os_dep/ioctl_linux.c b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+index 41b457838a5b..b9f9698d70cf 100644
+--- a/drivers/staging/r8188eu/os_dep/ioctl_linux.c
++++ b/drivers/staging/r8188eu/os_dep/ioctl_linux.c
+@@ -2098,7 +2098,7 @@ static int rtw_wx_set_channel_plan(struct net_device *dev,
+ 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
+ 	u8 channel_plan_req = (u8)(*((int *)wrqu));
+ 
+-	if (_SUCCESS == rtw_set_chplan_cmd(padapter, channel_plan_req, 1))
++	if (_SUCCESS == rtw_set_chplan_cmd(padapter, channel_plan_req))
+ 		DBG_88E("%s set channel_plan = 0x%02X\n", __func__, pmlmepriv->ChannelPlan);
+ 	else
+ 		return -EPERM;
 -- 
 2.30.2
 
