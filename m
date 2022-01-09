@@ -2,145 +2,351 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC737C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 16:51:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C83AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 16:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235468AbiAIQvQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 11:51:16 -0500
-Received: from fanzine2.igalia.com ([213.97.179.56]:45868 "EHLO
-        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230389AbiAIQvP (ORCPT
+        id S236049AbiAIQwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 11:52:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230389AbiAIQwA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 11:51:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=NB1Z0yHZKMGhriiPRaa97kHhXMlItl6eBPtBlgTrSL0=; b=aZhFpLgl0bi+fFeiXi/mu+RQU3
-        xNNoOifq3UEPAQ4Jeg+bfAmiGix/Ps4fqYX2FEXZkmnIeYb4Ly+T/xYUwAy3VE/sPtKd3GCbKLD5N
-        OL8IqpQoT8VCdXEmP3qHppmjl8i6bPyK927dOMGCjbGEVIPBVotUUKx4NRqxIZkoL30HN4jW6NVI6
-        PIleImsRQrbp4i0BnqMgym6+mTiMZ/Fg4dUZaXQFz/ckPPMrpvhuwSlCjy1RSXYuACGUKpZhJXcMi
-        PTNJQnI1ygT3OEd8doSDfBPtFzQP+81QdF0pbqP/yogUDUJ9pJ3fj9ZFsQfx7ZLgcHNoS4rnAJTxK
-        cPL5o/Tg==;
-Received: from [165.90.113.117] (helo=mail.igalia.com)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1n6bPS-000C0e-I9; Sun, 09 Jan 2022 17:51:10 +0100
-Date:   Sun, 9 Jan 2022 15:50:44 -0100
-From:   Melissa Wen <mwen@igalia.com>
-To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
-Cc:     melissa.srw@gmail.com, hamohammed.sa@gmail.com,
-        rodrigosiqueiramelo@gmail.com, airlied@linux.ie,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH RESEND v2 1/3] drm/vkms: refactor overlay plane creation
-Message-ID: <20220109165044.vuq5cmxlejclkcsw@mail.igalia.com>
-References: <20220107182809.141003-1-jose.exposito89@gmail.com>
+        Sun, 9 Jan 2022 11:52:00 -0500
+Received: from balrog.mythic-beasts.com (balrog.mythic-beasts.com [IPv6:2a00:1098:0:82:1000:0:2:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDE3C06173F;
+        Sun,  9 Jan 2022 08:52:00 -0800 (PST)
+Received: from [81.101.6.87] (port=35378 helo=jic23-huawei)
+        by balrog.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <jic23@jic23.retrosnub.co.uk>)
+        id 1n6bQ7-00032G-BP; Sun, 09 Jan 2022 16:51:55 +0000
+Date:   Sun, 9 Jan 2022 16:57:43 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Caleb Connolly <caleb.connolly@linaro.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, sumit.semwal@linaro.org,
+        amit.pundir@linaro.org, john.stultz@linaro.org
+Subject: Re: [PATCH v3 1/7] mfd: qcom-spmi-pmic: expose the PMIC revid
+ information to clients
+Message-ID: <20220109165743.7e01e226@jic23-huawei>
+In-Reply-To: <20220106173131.3279580-2-caleb.connolly@linaro.org>
+References: <20220106173131.3279580-1-caleb.connolly@linaro.org>
+        <20220106173131.3279580-2-caleb.connolly@linaro.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="wqwwygx25tnfipje"
-Content-Disposition: inline
-In-Reply-To: <20220107182809.141003-1-jose.exposito89@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-BlackCat-Spam-Score: 19
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu,  6 Jan 2022 17:31:25 +0000
+Caleb Connolly <caleb.connolly@linaro.org> wrote:
 
---wqwwygx25tnfipje
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Some PMIC functions such as the RRADC need to be aware of the PMIC
+> chip revision information to implement errata or otherwise adjust
+> behaviour, export the PMIC information to enable this.
+> 
+> This is specifically required to enable the RRADC to adjust
+> coefficients based on which chip fab the PMIC was produced in,
+> this can vary per unique device and therefore has to be read at
+> runtime.
+> 
+> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+Hi Caleb,
 
-On 01/07, Jos=E9 Exp=F3sito wrote:
-> Move the logic to create an overlay plane to its own function.
-> Refactor, no functional changes.
->=20
-> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+Some comments inline.
+
+Thanks,
+
+Jonathan
+
 > ---
->  drivers/gpu/drm/vkms/vkms_output.c | 26 +++++++++++++++++++-------
->  1 file changed, 19 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/vkms/vkms_output.c b/drivers/gpu/drm/vkms/vk=
-ms_output.c
-> index 04406bd3ff02..2e805b2d36ae 100644
-> --- a/drivers/gpu/drm/vkms/vkms_output.c
-> +++ b/drivers/gpu/drm/vkms/vkms_output.c
-> @@ -32,6 +32,21 @@ static const struct drm_connector_helper_funcs vkms_co=
-nn_helper_funcs =3D {
->  	.get_modes    =3D vkms_conn_get_modes,
+>  drivers/mfd/qcom-spmi-pmic.c | 108 +++++++++++++++++------------------
+>  include/soc/qcom/qcom-pmic.h |  63 ++++++++++++++++++++
+>  2 files changed, 114 insertions(+), 57 deletions(-)
+>  create mode 100644 include/soc/qcom/qcom-pmic.h
+> 
+> diff --git a/drivers/mfd/qcom-spmi-pmic.c b/drivers/mfd/qcom-spmi-pmic.c
+> index 1cacc00aa6c9..6b75c2f52b74 100644
+> --- a/drivers/mfd/qcom-spmi-pmic.c
+> +++ b/drivers/mfd/qcom-spmi-pmic.c
+> @@ -3,51 +3,24 @@
+>   * Copyright (c) 2014, The Linux Foundation. All rights reserved.
+>   */
+>  
+> +#include <linux/device.h>
+> +#include <linux/gfp.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> +#include <linux/slab.h>
+>  #include <linux/spmi.h>
+>  #include <linux/regmap.h>
+>  #include <linux/of_platform.h>
+> +#include <soc/qcom/qcom-pmic.h>
+>  
+>  #define PMIC_REV2		0x101
+>  #define PMIC_REV3		0x102
+>  #define PMIC_REV4		0x103
+>  #define PMIC_TYPE		0x104
+>  #define PMIC_SUBTYPE		0x105
+> -
+> +#define PMIC_FAB_ID		0x1f2
+>  #define PMIC_TYPE_VALUE		0x51
+>  
+> -#define COMMON_SUBTYPE		0x00
+> -#define PM8941_SUBTYPE		0x01
+> -#define PM8841_SUBTYPE		0x02
+> -#define PM8019_SUBTYPE		0x03
+> -#define PM8226_SUBTYPE		0x04
+> -#define PM8110_SUBTYPE		0x05
+> -#define PMA8084_SUBTYPE		0x06
+> -#define PMI8962_SUBTYPE		0x07
+> -#define PMD9635_SUBTYPE		0x08
+> -#define PM8994_SUBTYPE		0x09
+> -#define PMI8994_SUBTYPE		0x0a
+> -#define PM8916_SUBTYPE		0x0b
+> -#define PM8004_SUBTYPE		0x0c
+> -#define PM8909_SUBTYPE		0x0d
+> -#define PM8028_SUBTYPE		0x0e
+> -#define PM8901_SUBTYPE		0x0f
+> -#define PM8950_SUBTYPE		0x10
+> -#define PMI8950_SUBTYPE		0x11
+> -#define PM8998_SUBTYPE		0x14
+> -#define PMI8998_SUBTYPE		0x15
+> -#define PM8005_SUBTYPE		0x18
+> -#define PM660L_SUBTYPE		0x1A
+> -#define PM660_SUBTYPE		0x1B
+> -#define PM8150_SUBTYPE		0x1E
+> -#define PM8150L_SUBTYPE		0x1f
+> -#define PM8150B_SUBTYPE		0x20
+> -#define PMK8002_SUBTYPE		0x21
+> -#define PM8009_SUBTYPE		0x24
+> -#define PM8150C_SUBTYPE		0x26
+> -#define SMB2351_SUBTYPE		0x29
+> -
+>  static const struct of_device_id pmic_spmi_id_table[] = {
+>  	{ .compatible = "qcom,pm660",     .data = (void *)PM660_SUBTYPE },
+>  	{ .compatible = "qcom,pm660l",    .data = (void *)PM660L_SUBTYPE },
+> @@ -81,42 +54,47 @@ static const struct of_device_id pmic_spmi_id_table[] = {
+>  	{ }
 >  };
-> =20
-> +static int vkms_add_overlay_plane(struct vkms_device *vkmsdev, int index,
-> +				  struct drm_crtc *crtc)
-> +{
-> +	struct vkms_plane *overlay;
+>  
+> -static void pmic_spmi_show_revid(struct regmap *map, struct device *dev)
+> +static int pmic_spmi_load_revid(struct regmap *map, struct device *dev,
+> +				 struct qcom_spmi_pmic *pmic)
+>  {
+> -	unsigned int rev2, minor, major, type, subtype;
+> -	const char *name = "unknown";
+>  	int ret, i;
+>  
+> -	ret = regmap_read(map, PMIC_TYPE, &type);
+> +	ret = regmap_read(map, PMIC_TYPE, &pmic->type);
+>  	if (ret < 0)
+> -		return;
+> +		return ret;
+>  
+> -	if (type != PMIC_TYPE_VALUE)
+> -		return;
+> +	if (pmic->type != PMIC_TYPE_VALUE)
+> +		return ret;
+>  
+> -	ret = regmap_read(map, PMIC_SUBTYPE, &subtype);
+> +	ret = regmap_read(map, PMIC_SUBTYPE, &pmic->subtype);
+>  	if (ret < 0)
+> -		return;
+> +		return ret;
+>  
+>  	for (i = 0; i < ARRAY_SIZE(pmic_spmi_id_table); i++) {
+> -		if (subtype == (unsigned long)pmic_spmi_id_table[i].data)
+> +		if (pmic->subtype == (unsigned long)pmic_spmi_id_table[i].data)
+>  			break;
+>  	}
+>  
+>  	if (i != ARRAY_SIZE(pmic_spmi_id_table))
+> -		name = pmic_spmi_id_table[i].compatible;
+> +		pmic->name = devm_kstrdup_const(dev, pmic_spmi_id_table[i].compatible, GFP_KERNEL);
+
+Managed allocation that you call kfree on in remove().
+
+>  
+> -	ret = regmap_read(map, PMIC_REV2, &rev2);
+> +	ret = regmap_read(map, PMIC_REV2, &pmic->rev2);
+>  	if (ret < 0)
+> -		return;
+> +		return ret;
+>  
+> -	ret = regmap_read(map, PMIC_REV3, &minor);
+> +	ret = regmap_read(map, PMIC_REV3, &pmic->minor);
+>  	if (ret < 0)
+> -		return;
+> +		return ret;
+>  
+> -	ret = regmap_read(map, PMIC_REV4, &major);
+> +	ret = regmap_read(map, PMIC_REV4, &pmic->major);
+>  	if (ret < 0)
+> -		return;
+> +		return ret;
 > +
-> +	overlay =3D vkms_plane_init(vkmsdev, DRM_PLANE_TYPE_OVERLAY, index);
-> +	if (IS_ERR(overlay))
-> +		return PTR_ERR(overlay);
-> +
-> +	if (!overlay->base.possible_crtcs)
-> +		overlay->base.possible_crtcs =3D drm_crtc_mask(crtc);
-> +
+> +	if (pmic->subtype == PMI8998_SUBTYPE || pmic->subtype == PM660_SUBTYPE) {
+> +		ret = regmap_read(map, PMIC_FAB_ID, &pmic->fab_id);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+>  
+>  	/*
+>  	 * In early versions of PM8941 and PM8226, the major revision number
+> @@ -124,14 +102,14 @@ static void pmic_spmi_show_revid(struct regmap *map, struct device *dev)
+>  	 * Increment the major revision number here if the chip is an early
+>  	 * version of PM8941 or PM8226.
+>  	 */
+> -	if ((subtype == PM8941_SUBTYPE || subtype == PM8226_SUBTYPE) &&
+> -	    major < 0x02)
+> -		major++;
+> +	if ((pmic->subtype == PM8941_SUBTYPE || pmic->subtype == PM8226_SUBTYPE) &&
+> +	    pmic->major < 0x02)
+> +		pmic->major++;
+>  
+> -	if (subtype == PM8110_SUBTYPE)
+> -		minor = rev2;
+> +	if (pmic->subtype == PM8110_SUBTYPE)
+> +		pmic->minor = pmic->rev2;
+>  
+> -	dev_dbg(dev, "%x: %s v%d.%d\n", subtype, name, major, minor);
 > +	return 0;
+>  }
+>  
+>  static const struct regmap_config spmi_regmap_config = {
+> @@ -144,22 +122,38 @@ static const struct regmap_config spmi_regmap_config = {
+>  static int pmic_spmi_probe(struct spmi_device *sdev)
+>  {
+>  	struct regmap *regmap;
+> +	struct qcom_spmi_pmic *pmic;
+>  
+>  	regmap = devm_regmap_init_spmi_ext(sdev, &spmi_regmap_config);
+>  	if (IS_ERR(regmap))
+>  		return PTR_ERR(regmap);
+>  
+> +	pmic = devm_kzalloc(&sdev->dev, sizeof(*pmic), GFP_KERNEL);
+> +	if (!pmic)
+> +		return -ENOMEM;
+
+Within the code visible here, why can't this just be on the stack?
+
+> +
+>  	/* Only the first slave id for a PMIC contains this information */
+> -	if (sdev->usid % 2 == 0)
+> -		pmic_spmi_show_revid(regmap, &sdev->dev);
+> +	if (sdev->usid % 2 == 0) {
+> +		pmic_spmi_load_revid(regmap, &sdev->dev, pmic);
+> +		spmi_device_set_drvdata(sdev, pmic);
+> +		qcom_pmic_print_info(&sdev->dev, pmic);
+> +	}
+>  
+>  	return devm_of_platform_populate(&sdev->dev);
+>  }
+>  
+> +static void pmic_spmi_remove(struct spmi_device *sdev)
+> +{
+> +	struct qcom_spmi_pmic *pmic = spmi_device_get_drvdata(sdev);
+> +
+> +	kfree(pmic->name);
+
+Looks like this is cleaning up a managed allocation unless I'm missing something
+which means you'll get a double free on remove.
+
 > +}
 > +
->  int vkms_output_init(struct vkms_device *vkmsdev, int index)
->  {
->  	struct vkms_output *output =3D &vkmsdev->output;
-> @@ -39,7 +54,7 @@ int vkms_output_init(struct vkms_device *vkmsdev, int i=
-ndex)
->  	struct drm_connector *connector =3D &output->connector;
->  	struct drm_encoder *encoder =3D &output->encoder;
->  	struct drm_crtc *crtc =3D &output->crtc;
-> -	struct vkms_plane *primary, *cursor =3D NULL, *overlay =3D NULL;
-> +	struct vkms_plane *primary, *cursor =3D NULL;
->  	int ret;
->  	int writeback;
-> =20
-> @@ -48,12 +63,9 @@ int vkms_output_init(struct vkms_device *vkmsdev, int =
-index)
->  		return PTR_ERR(primary);
-> =20
->  	if (vkmsdev->config->overlay) {
-> -		overlay =3D vkms_plane_init(vkmsdev, DRM_PLANE_TYPE_OVERLAY, index);
-> -		if (IS_ERR(overlay))
-> -			return PTR_ERR(overlay);
-> -
-> -		if (!overlay->base.possible_crtcs)
-> -			overlay->base.possible_crtcs =3D drm_crtc_mask(crtc);
-> +		ret =3D vkms_add_overlay_plane(vkmsdev, index, crtc);
-> +		if (ret)
-> +			return ret;
-lgtm, thanks!
+>  MODULE_DEVICE_TABLE(of, pmic_spmi_id_table);
+>  
+>  static struct spmi_driver pmic_spmi_driver = {
+>  	.probe = pmic_spmi_probe,
+> +	.remove = pmic_spmi_remove,
+>  	.driver = {
+>  		.name = "pmic-spmi",
+>  		.of_match_table = pmic_spmi_id_table,
+> diff --git a/include/soc/qcom/qcom-pmic.h b/include/soc/qcom/qcom-pmic.h
+> new file mode 100644
+> index 000000000000..59114988582d
+> --- /dev/null
+> +++ b/include/soc/qcom/qcom-pmic.h
+> @@ -0,0 +1,63 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/* Copyright (c) 2021 Linaro. All rights reserved.
+> + * Copyright (c) 2021 Caleb Connolly <caleb.connolly@linaro.org>
+> + */
+> +
+> +#ifndef __QCOM_PMIC_H__
+> +#define __QCOM_PMIC_H__
+> +
+> +#define COMMON_SUBTYPE		0x00
+> +#define PM8941_SUBTYPE		0x01
+> +#define PM8841_SUBTYPE		0x02
+> +#define PM8019_SUBTYPE		0x03
+> +#define PM8226_SUBTYPE		0x04
+> +#define PM8110_SUBTYPE		0x05
+> +#define PMA8084_SUBTYPE		0x06
+> +#define PMI8962_SUBTYPE		0x07
+> +#define PMD9635_SUBTYPE		0x08
+> +#define PM8994_SUBTYPE		0x09
+> +#define PMI8994_SUBTYPE		0x0a
+> +#define PM8916_SUBTYPE		0x0b
+> +#define PM8004_SUBTYPE		0x0c
+> +#define PM8909_SUBTYPE		0x0d
+> +#define PM8028_SUBTYPE		0x0e
+> +#define PM8901_SUBTYPE		0x0f
+> +#define PM8950_SUBTYPE		0x10
+> +#define PMI8950_SUBTYPE		0x11
+> +#define PM8998_SUBTYPE		0x14
+> +#define PMI8998_SUBTYPE		0x15
+> +#define PM8005_SUBTYPE		0x18
+> +#define PM660L_SUBTYPE		0x1A
+> +#define PM660_SUBTYPE		0x1B
+> +#define PM8150_SUBTYPE		0x1E
+> +#define PM8150L_SUBTYPE		0x1f
+> +#define PM8150B_SUBTYPE		0x20
+> +#define PMK8002_SUBTYPE		0x21
+> +#define PM8009_SUBTYPE		0x24
+> +#define PM8150C_SUBTYPE		0x26
+> +#define SMB2351_SUBTYPE		0x29
+> +
+> +#define PMI8998_FAB_ID_SMIC	0x11
+> +#define PMI8998_FAB_ID_GF	0x30
+> +
+> +#define PM660_FAB_ID_GF		0x0
+> +#define PM660_FAB_ID_TSMC	0x2
+> +#define PM660_FAB_ID_MX		0x3
+> +
+> +struct qcom_spmi_pmic {
+> +	unsigned int type;
+> +	unsigned int subtype;
+> +	unsigned int major;
+> +	unsigned int minor;
+> +	unsigned int rev2;
+> +	unsigned int fab_id;
+> +	const char *name;
+> +};
+> +
+struct device;
 
-Reviewed-by: Melissa Wen <mwen@igalia.com>
->  	}
-> =20
->  	if (vkmsdev->config->cursor) {
-> --=20
-> 2.25.1
->=20
+> +static inline void qcom_pmic_print_info(struct device *dev, struct qcom_spmi_pmic *pmic)
+> +{
 
---wqwwygx25tnfipje
-Content-Type: application/pgp-signature; name="signature.asc"
+Need an include to get you access to dev_info() and possibly so
 
------BEGIN PGP SIGNATURE-----
+Headers should stand and build on their own including any inline functions they
+contain.
 
-iQIzBAABCgAdFiEEd8WOo/JViG+Tu+XIwqF3j0dLehwFAmHbEmAACgkQwqF3j0dL
-ehyaCg/+M1C59HICGAnfCqll4ijKGb4oBkbJzRZoz9Tj563Wm8AfnaU72zqCwMKG
-2qth0O4blMQJUIZjVy65XJKYsPvXLcpHflH5wv18dUlDEXS+xVU2yRS95pdbe4mZ
-ziBwhdy5MOc9j7lBVkpmtPX9l+u2GCnJ27uH+G7r/5sH2WKXBUjNTSq4YnQwwrJd
-yVmCdSAlQ+MsAIWQLOKAgZrG4xTYuH6qiYjPGKeE4dIBQmKJJn6KtZTVRt2zOpwU
-xisgfWSJTFbR+nhg6wtg0Cf+x5l5XhiF4oe2bg2wQj1mXAOdICMRPVGOxROMfqeM
-wsw9XYppHroN6cYFOcDdPGXYwZxM5VlhjYO86Kl9SwOs5LuSlWWzm3MEfq6ZoCRp
-oVZPSqm4d/AaLPoRpYI5A5ExRrJslrxv3rXlKffmaW1W3uN057DCL5b6R2yoMekO
-lKr+8jG+sUuiE26W+w61TITWO7u2n4AkwsOk//RjIz5kln3NdHZv5H2AWG66bt5x
-EcyXo0VtpNV04GGuTq+KvQDmeCM+c3/1vfxMr9ozio+e+5d6yq7pjLk1KjFWHWqx
-ge4rAnTryYlQxB9FRU6jm8aDxD6RUrjK/VKt4ZNVS/k0lhmf6Ky9EjNbRzcZ/0Rx
-OLMkVIOPY3fL84wW4ObE8V0qC6yiE1WAu7t5hoGN2dwqyf3kCJc=
-=Yf6Q
------END PGP SIGNATURE-----
 
---wqwwygx25tnfipje--
+> +	dev_info(dev, "%x: %s v%d.%d\n",
+> +		pmic->subtype, pmic->name, pmic->major, pmic->minor);
+> +}
+> +
+> +#endif /* __QCOM_PMIC_H__ */
+
