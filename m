@@ -2,121 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A90C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 18:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 18:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236375AbiAISLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 13:11:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234535AbiAISLu (ORCPT
+        id S236388AbiAISQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 13:16:10 -0500
+Received: from conuserg-09.nifty.com ([210.131.2.76]:31187 "EHLO
+        conuserg-09.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234535AbiAISQJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 13:11:50 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF76FC06173F;
-        Sun,  9 Jan 2022 10:11:49 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id pf13so2922817pjb.0;
-        Sun, 09 Jan 2022 10:11:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:mime-version:reply-to
-         :organization:content-transfer-encoding;
-        bh=tNvI+a7A8PS5Wd2PToIgDMYPiKE2u7O11qPaKJfdtO8=;
-        b=hFx4PqOcNZK5MuhbcALaswLAWpYR63pmyKMyh3S1r4Dkx2YT9LsxaoSfGDgGTqktAB
-         izsb8drDwggw5idyFf8BE9Yx6Z/c8yjegszok9iAO31xvjdvQgHKJPMkB+bmVambspHc
-         edGrF9kxxltrQOgWkEx4t/iW9GCDaq7dIKgswpbPRWCAnZ3e+wq4b9erEaNphdtClGFP
-         uZZSLB2zsU2s67S2/TBCfDocJUGkJLfaSbNvoI0sbpD1OTkK8103AhbEPjYs4TdsIkw/
-         lzzlNlbbb09ddQ87s3T0ZlaaIxY6wZreQrPPhkVmmMJNYgUWceNQJA0ElerW1/m3Inwe
-         q+PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:reply-to:organization:content-transfer-encoding;
-        bh=tNvI+a7A8PS5Wd2PToIgDMYPiKE2u7O11qPaKJfdtO8=;
-        b=4Pjgb3CPlWtVXA4QwXi1vZnFqUH3BgRvt+Fq9p7YnCVs+qiTeX4DEPZpaOKXO2OUeo
-         r/6psmJP6KsB+qtowYLXwGo8mGaFKQAc+z+huW0o3jtH7xLUAJMPMvKYkpaJOOdcOUuL
-         mJUfIEyCy8rRLxFMR4ThCJoZQGojTOvjgvmiELIHlXt27Vdo3lo2AsPTJHekajP5jRui
-         5TpOrH9mIMKRrtEqEUYcED1IqAnsNvxDqMbnT4ih8Zxq1r6m0LEHaAH5+FOcgrjlPTAQ
-         2LXbUD4RHgYrtR07UyVIH7STwLW04YOO13+GDR8Jh15o7K5wH6PT0F0BHyyJuYBeN1sp
-         cmFg==
-X-Gm-Message-State: AOAM532XbhxYf1awFYQ4UVXWe1u3BOiUgLWZ6Jq3L9Km89PNG2PVmcBb
-        SKt5oIYsyqXMPVPL1sBBLi6D7O0jOgRijg==
-X-Google-Smtp-Source: ABdhPJyh8djCs5KBhtHmWvs+w17xnphZd7/tx119erntsFX9510Pj8MdMJrgE3jzC2Hewn4vcst2iQ==
-X-Received: by 2002:a17:90b:4c11:: with SMTP id na17mr27193063pjb.84.1641751909234;
-        Sun, 09 Jan 2022 10:11:49 -0800 (PST)
-Received: from localhost.localdomain (h69-131-29-103.cntcnh.broadband.dynamic.tds.net. [69.131.29.103])
-        by smtp.gmail.com with ESMTPSA id j4sm4372827pfj.34.2022.01.09.10.11.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 10:11:48 -0800 (PST)
-Sender: Len Brown <lenb417@gmail.com>
-From:   Len Brown <lenb@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Len Brown <len.brown@intel.com>,
-        Guchun Chen <guchun.chen@amd.com>,
-        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        stable@vger.kernel.org
-Subject: [PATCH REGRESSION] Revert "drm/amdgpu: stop scheduler when calling hw_fini (v2)"
-Date:   Sun,  9 Jan 2022 13:11:37 -0500
-Message-Id: <8ab406c8bb2e58969668a806a529d5988b447530.1641750730.git.len.brown@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 9 Jan 2022 13:16:09 -0500
+Received: from grover.. (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
+        by conuserg-09.nifty.com with ESMTP id 209IFWa0030890;
+        Mon, 10 Jan 2022 03:15:33 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-09.nifty.com 209IFWa0030890
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1641752133;
+        bh=BZ3qIKu57D8pRZHuFfM9UpnlJfsK2QYlIGz0shtBiGg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Xvo2l/iruGPUnO+b/eNRSKmS8gWyftSAayhOmNIl2DhQbXO4j6+vx6smmvO/joSBE
+         kM0KMFNJMrrxFvzQ0gEIzYytsu+W4QlnkoXv5wOJleARRAfv0h2og7OuMUCPQY39Pq
+         jkIuyfmJBcrKmr+o+n5ywlXQyFc+K2jzCxb+92zhhFcgGRP47Oh07A3uJ2GXgahAGk
+         eVdwNGUOPqOci4TeQby9yl0AWlxUa0upHxl2yzXq3Lvl72k5y0BJFHZ1Nn5aSaQ6CT
+         gZiGvOSlJxfaLactaFaj1CljEsN73DiRq4VT8QbfEHaP+GdXnbyDPaXljSankmZmYD
+         g3+xFKvwQfvVA==
+X-Nifty-SrcIP: [133.32.232.101]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH 2/5] kbuild: drop $(size_append) from cmd_zstd
+Date:   Mon, 10 Jan 2022 03:15:26 +0900
+Message-Id: <20220109181529.351420-2-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220109181529.351420-1-masahiroy@kernel.org>
+References: <20220109181529.351420-1-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Reply-To: Len Brown <lenb@kernel.org>
-Organization: Intel Open Source Technology Center
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Len Brown <len.brown@intel.com>
+The appended file size is only used by the decompressors, which some
+architectures support.
 
-This reverts commit f7d6779df642720e22bffd449e683bb8690bd3bf.
+As the comment "zstd22 is used for kernel compression" says, cmd_zstd22
+is used in arch/{mips,s390,x86}/boot/compressed/Makefile.
 
-This bisected regression has impacted suspend-resume stability
-since 5.15-rc1. It regressed -stable via 5.14.10.
+On the other hand, there is no good reason to append the file size to
+cmd_zstd since it is used for other purposes.
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215315
+Actually cmd_zstd is only used in usr/Makefile, where the appended file
+size is rather harmful.
 
-Fixes: f7d6779df64 ("drm/amdgpu: stop scheduler when calling hw_fini (v2)")
-Cc: Guchun Chen <guchun.chen@amd.com>
-Cc: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
-Cc: Christian Koenig <christian.koenig@amd.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: <stable@vger.kernel.org> # 5.14+
-Signed-off-by: Len Brown <len.brown@intel.com>
+The initramfs with its file size appended is considered as corrupted
+data, so commit 65e00e04e5ae ("initramfs: refactor the initramfs build
+rules") added 'override size_append := :' to make it no-op.
+
+As a conclusion, this $(size_append) should not exist here.
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c | 8 --------
- 1 file changed, 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
-index 9afd11ca2709..45977a72b5dd 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
-@@ -547,9 +547,6 @@ void amdgpu_fence_driver_hw_fini(struct amdgpu_device *adev)
- 		if (!ring || !ring->fence_drv.initialized)
- 			continue;
+ scripts/Makefile.lib | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index d1f865b8c0cb..5366466ea0e4 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -473,7 +473,7 @@ quiet_cmd_xzmisc = XZMISC  $@
+ # be used because it would require zstd to allocate a 128 MB buffer.
  
--		if (!ring->no_scheduler)
--			drm_sched_stop(&ring->sched, NULL);
--
- 		/* You can't wait for HW to signal if it's gone */
- 		if (!drm_dev_is_unplugged(adev_to_drm(adev)))
- 			r = amdgpu_fence_wait_empty(ring);
-@@ -609,11 +606,6 @@ void amdgpu_fence_driver_hw_init(struct amdgpu_device *adev)
- 		if (!ring || !ring->fence_drv.initialized)
- 			continue;
+ quiet_cmd_zstd = ZSTD    $@
+-      cmd_zstd = { cat $(real-prereqs) | $(ZSTD) -19; $(size_append); } > $@
++      cmd_zstd = cat $(real-prereqs) | $(ZSTD) -19 > $@
  
--		if (!ring->no_scheduler) {
--			drm_sched_resubmit_jobs(&ring->sched);
--			drm_sched_start(&ring->sched, true);
--		}
--
- 		/* enable the interrupt */
- 		if (ring->fence_drv.irq_src)
- 			amdgpu_irq_get(adev, ring->fence_drv.irq_src,
+ quiet_cmd_zstd22 = ZSTD22  $@
+       cmd_zstd22 = { cat $(real-prereqs) | $(ZSTD) -22 --ultra; $(size_append); } > $@
 -- 
-2.25.1
+2.32.0
 
