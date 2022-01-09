@@ -2,101 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 308EDC4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9953C43219
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234435AbiAIRdH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 12:33:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234371AbiAIRdF (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 12:33:05 -0500
-Received: from haggis.mythic-beasts.com (haggis.mythic-beasts.com [IPv6:2a00:1098:0:86:1000:0:2:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8961EC06173F;
-        Sun,  9 Jan 2022 09:33:05 -0800 (PST)
-Received: from [81.101.6.87] (port=47180 helo=jic23-huawei)
-        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <jic23@jic23.retrosnub.co.uk>)
-        id 1n6c3x-0006sT-IU; Sun, 09 Jan 2022 17:33:01 +0000
-Date:   Sun, 9 Jan 2022 17:38:53 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] Documentation:ABI:testing:admv1014: add ABI docs
-Message-ID: <20220109173853.3f9192ec@jic23-huawei>
-In-Reply-To: <20220103092201.21576-4-antoniu.miclaus@analog.com>
-References: <20220103092201.21576-1-antoniu.miclaus@analog.com>
-        <20220103092201.21576-4-antoniu.miclaus@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        id S236260AbiAIReX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 12:34:23 -0500
+Received: from mout.gmx.net ([212.227.15.19]:57781 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234494AbiAIReU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 9 Jan 2022 12:34:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1641749652;
+        bh=MOFjIoYuYz3a6U9sFm3D7hME9fb4DnPcgdo1gj/6qb0=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=UgEsTqhvRH8KvmhcckXGkPp+rDYVJhD9QGrA+7g/pdq+9/RbWuvrfMudOHe7YoOuw
+         Bb+4MDCqfPXX+XIBwpENi1GuQQKjRRYQPwTmiFAuxhFgEn+knXd/UGwo0LVZogXznr
+         C0PpxxvOdSbvFwtTXRw6ht3UMv1vs3WYnJHSWG5Y=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from longitude ([89.0.222.244]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MN5iZ-1mpuAz17LR-00J23M; Sun, 09
+ Jan 2022 18:34:12 +0100
+From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
+To:     linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Joel Stanley <joel@jms.id.au>, linux-kernel@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v4 1/9] dt-bindings: arm/npcm: Add binding for global control registers (GCR)
+Date:   Sun,  9 Jan 2022 18:29:52 +0100
+Message-Id: <20220109173000.1242703-2-j.neuschaefer@gmx.net>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220109173000.1242703-1-j.neuschaefer@gmx.net>
+References: <20220109173000.1242703-1-j.neuschaefer@gmx.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-BlackCat-Spam-Score: 19
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:ztSF5v5bx0P0Xz5y9nkAdqjiP/XUgvvz2+IaEIneM08rrCGzSmE
+ qEHgmW7GXgERLlOWZgW4M1KUjg0li5txo9Sw2Uc3RmxTAa9WCyX7prTDY0FvPFBJgQHhz1G
+ BgyXVoYP57YQGB3lvXtjL4Gjo8m5X6bf4NIJ2imK/J+glygqtYITW0ja+QqywukTdgFwk2+
+ y/6FVv3p90ajkeG8dJCBA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:WJv/i/bnJqQ=:fOkmB1Ab5nLabHDOrcF4kM
+ h4VIpJqxa0sA1HAcefZlM9AphF8ODY4SbmOINH4dOQFmjv0ikv52gbPllg8J7P+Vbr3hcGgqm
+ QPe5xd/6pQlNPrRBGSEYMxGLvOHmUWIzadcmRM2TN/AIuDhe5Jm9+KLdjuOIKgjP5bz2jDSXu
+ YtHZCay5R1lubfNJQZx6bpVdcFmZeV9N6/6Nx9+2cONYuniaTH2093bwA7ORSzGr2w1WjK+DY
+ dOxciFRhkqMy2VyF6h0NgSlwY/bEGjBPZ3dGJJT0uQ3ZHmEC0Z7ik15NaGcp9MsERnMBwnrYk
+ K+vddVEPz5/cNy3GrZFjqsbHRZ/XrBha7suD3XgDDyTthIljxJ9hm0+dQB0mSh0I5u/720ED1
+ qCi5NMiImddW7tEMMwZHfOHizJ7QEFbuISF4z1q3PVaSGqc0NgAX7tqDqWI3doQiFX4Kbee8Y
+ kqBO8jiLuUVX486F6Z8Z/uBmz5UNxs8kzC657aeblFuWVkKyuCAzH3nZ5PIEiQo9gFXgVKRQy
+ DkowIzsVODrvLx+KzPPOWZqWIrpDMjnfwfN360HNXNFZPqN5GYK4nkDXoxcTMSV9FNSMZ9La0
+ x/zTjPUkhg8vweYlqypMYS4QBInFMY7RTFR/HwZ3evZUublet8UDUM717Z66FyYIo3wHA8GmS
+ hUbFu2O4rACk/GrNUFLps9XcVrkNsxJ5PS2ZBqGxBwfCh8fX6SqkwgZMwxRK8UUp3PuTAVMUb
+ iLVGQmyA3IgNL0lDpa1HZADpXl8pkyqAmfCiTGEMvBO6Bjysa9h5j9Wj87U2PQaN1vzt1bi3Y
+ iB+0ww4D/3DjvBVcy92PqgBo0SqYr5PRMR4dYRAw8X8+BD0c18uAZlt/3rC0v8NorvF8llokc
+ Lj3wczI6UQGhbqcEQ53VWo/Kb145OZtD4jo/OiJDuP6RF2zfFHsrIQfZ/pl67oMC0IhOLTTGy
+ ACiu+uEiWt2ZwtEUtwWfYgR4E9MGgv1zTqjJNp/7fHZx2p0JwjISzoHoBr0LC17syp3ZIOkpX
+ May/4719MhIJ5tFjyLOWnMjDgOJCoQCz1cqgsmO2Bna5KPVKKGrLHBcSpSCAXTjEweywXsjyN
+ 9IYJug3vro0iYc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 3 Jan 2022 11:22:01 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+A nuvoton,*-gcr node is present in nuvoton-common-npcm7xx.dtsi and will
+be added to nuvoton-wpcm450.dtsi. It is necessary for the NPCM7xx and
+WPCM450 pinctrl drivers, and may later be used to retrieve SoC model and
+version information.
 
-> Add documentation for the use of the Digital Attenuator gain.
-> 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
->  .../testing/sysfs-bus-iio-frequency-admv1014  | 23 +++++++++++++++++++
->  1 file changed, 23 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-> new file mode 100644
-> index 000000000000..385bf5b4b399
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-> @@ -0,0 +1,23 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_gain_coarse
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_gain_coarse
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_gain_fine
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Read/write value for the digital attenuator gain (IF_I) with fine steps.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_gain_fine
-> +KernelVersion:
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
+This patch adds a binding to describe this node.
 
-I guess it's horribly optimistic to wonder if these can be expressed as a single gain?
+Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-I'm going to guess no as they are basically 'twiddle' functions with frequency dependent
-gain characteristics. 
+=2D--
+v4:
+- Add Rob's R-b
 
-My gut feeling is these are meant for for calibration tweaking so is calibbscale
-as currently defined applicable?
-"
-		Hardware applied calibration scale factor (assumed to fix
-		production inaccuracies).  If shared across all channels,
-		<type>_calibscale is used.
-"
-you'd still need the fine and coarse postfix unfortunately.
+v3:
+- Make a few changes suggested by Rob Herring
+- Change name of mux-controller node to appease the linter
 
-A nice thing about calibscale is it's defined unit free as it's normally a tweak
-on an input amplifier or similar.
+v2:
+- https://lore.kernel.org/lkml/20211207210823.1975632-2-j.neuschaefer@gmx.=
+net/
+- Rename node in example to syscon@800000
+- Add subnode to example
 
-Jonathan
+v1:
+- https://lore.kernel.org/lkml/20210602120329.2444672-2-j.neuschaefer@gmx.=
+net/
+=2D--
+ .../bindings/arm/npcm/nuvoton,gcr.yaml        | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr=
+.yaml
 
+diff --git a/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml b=
+/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+new file mode 100644
+index 0000000000000..fcb211add7d37
+=2D-- /dev/null
++++ b/Documentation/devicetree/bindings/arm/npcm/nuvoton,gcr.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/arm/npcm/nuvoton,gcr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Global Control Registers block in Nuvoton SoCs
++
++maintainers:
++  - Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
++
++description:
++  The Global Control Registers (GCR) are a block of registers in Nuvoton =
+SoCs
++  that expose misc functionality such as chip model and version informati=
+on or
++  pinmux settings.
++
++properties:
++  compatible:
++    items:
++      - enum:
++          - nuvoton,wpcm450-gcr
++          - nuvoton,npcm750-gcr
++      - const: syscon
++      - const: simple-mfd
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties:
++  type: object
++
++examples:
++  - |
++    gcr: syscon@800000 {
++      compatible =3D "nuvoton,npcm750-gcr", "syscon", "simple-mfd";
++      reg =3D <0x800000 0x1000>;
++
++      mux-controller {
++        compatible =3D "mmio-mux";
++        #mux-control-cells =3D <1>;
++        mux-reg-masks =3D <0x38 0x07>;
++        idle-states =3D <2>;
++      };
++    };
+=2D-
+2.30.2
 
