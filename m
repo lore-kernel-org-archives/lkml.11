@@ -2,91 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD27C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27A90C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 18:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236358AbiAIR7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 12:59:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41308 "EHLO
+        id S236375AbiAISLv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 13:11:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiAIR7o (ORCPT
+        with ESMTP id S234535AbiAISLu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 12:59:44 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95FAC06173F
-        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 09:59:43 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id v6so22444898wra.8
-        for <linux-kernel@vger.kernel.org>; Sun, 09 Jan 2022 09:59:43 -0800 (PST)
+        Sun, 9 Jan 2022 13:11:50 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF76FC06173F;
+        Sun,  9 Jan 2022 10:11:49 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id pf13so2922817pjb.0;
+        Sun, 09 Jan 2022 10:11:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=+7rBCXzd17ZVgtiviUmOjQDT7b/TTvfvus0D8MSi41Q=;
-        b=jyORGvlDSBym/qGogERMi5dS0YBWj5RmlkJWcEIQBB+vI4iUkadk0f0K2Gwvrj9ae7
-         QZ0XteuuT6XypaP0z0DYf60or7smVrSsuboRXYP8LW7D/5cUaiuJTnfhkVEy2pUAasGF
-         vX0EC3sP3qd0glzYL5+BpcJWUmOsvDN7wjMn5T17no9r68FVGRYC3kWEeEbghK/oMFdw
-         4MJHsoeqPcSiyR2n5uSN1wMq+um2Dh2POzdQ0FQk3CysbxL7uC5ZQebHoTLSW/E3vM/L
-         wdlNSw1pEUou+NEwM6Et886pRxyj7BreKAbZswfMjiUdP/u17ILbYfVHOuCaF3SwoMIz
-         cfRg==
+        h=sender:from:to:cc:subject:date:message-id:mime-version:reply-to
+         :organization:content-transfer-encoding;
+        bh=tNvI+a7A8PS5Wd2PToIgDMYPiKE2u7O11qPaKJfdtO8=;
+        b=hFx4PqOcNZK5MuhbcALaswLAWpYR63pmyKMyh3S1r4Dkx2YT9LsxaoSfGDgGTqktAB
+         izsb8drDwggw5idyFf8BE9Yx6Z/c8yjegszok9iAO31xvjdvQgHKJPMkB+bmVambspHc
+         edGrF9kxxltrQOgWkEx4t/iW9GCDaq7dIKgswpbPRWCAnZ3e+wq4b9erEaNphdtClGFP
+         uZZSLB2zsU2s67S2/TBCfDocJUGkJLfaSbNvoI0sbpD1OTkK8103AhbEPjYs4TdsIkw/
+         lzzlNlbbb09ddQ87s3T0ZlaaIxY6wZreQrPPhkVmmMJNYgUWceNQJA0ElerW1/m3Inwe
+         q+PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=+7rBCXzd17ZVgtiviUmOjQDT7b/TTvfvus0D8MSi41Q=;
-        b=mqQmnpa/Bp/lyFtyo+OBg+dEx/Eih8VKPrbD/JhsTOMEB6g3Fca2wfdr0rxD08ZNWZ
-         5Y1FevXtdqSFyC4lMimvdFuVMKTGZepwjWXH/aGaUh5eQxbZXCwOwnS1wVpAkF3udevZ
-         wthZOjViel3kRapNqRribRBoVReEqnPTTFaMgjuWWePuY+AGaPkuNssk1bPoNBANdTrq
-         gRryKu22oYWcYdsfaXYnS/+TwWFhRd8dWbF/SGBsoddXMg6aUPM51qme3t6GDeLdZ0ja
-         XrmK0tyq/p9cBbwqMxEl9/6qrF0olmE0bHziNpB0qILkk7Q5gGjZj+ySdRrQ9BsML5Sc
-         k81g==
-X-Gm-Message-State: AOAM532ehqJOiMfsPibo5eq+LunsRFwS+R5DvDeB5PvGLDIdpaVVfUhB
-        HcxdNyjIElycoQUa+M3rl08=
-X-Google-Smtp-Source: ABdhPJxmlC5Y8dmmx1TuM5H5dp5Ep30gmqIb9P1pEhZ0iV18nQetZ8PObFG+bW9Ugu0jSaWl+0E0TQ==
-X-Received: by 2002:adf:eb41:: with SMTP id u1mr31774653wrn.201.1641751182155;
-        Sun, 09 Jan 2022 09:59:42 -0800 (PST)
-Received: from elementary ([217.113.240.86])
-        by smtp.gmail.com with ESMTPSA id g9sm4932377wmq.22.2022.01.09.09.59.36
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:reply-to:organization:content-transfer-encoding;
+        bh=tNvI+a7A8PS5Wd2PToIgDMYPiKE2u7O11qPaKJfdtO8=;
+        b=4Pjgb3CPlWtVXA4QwXi1vZnFqUH3BgRvt+Fq9p7YnCVs+qiTeX4DEPZpaOKXO2OUeo
+         r/6psmJP6KsB+qtowYLXwGo8mGaFKQAc+z+huW0o3jtH7xLUAJMPMvKYkpaJOOdcOUuL
+         mJUfIEyCy8rRLxFMR4ThCJoZQGojTOvjgvmiELIHlXt27Vdo3lo2AsPTJHekajP5jRui
+         5TpOrH9mIMKRrtEqEUYcED1IqAnsNvxDqMbnT4ih8Zxq1r6m0LEHaAH5+FOcgrjlPTAQ
+         2LXbUD4RHgYrtR07UyVIH7STwLW04YOO13+GDR8Jh15o7K5wH6PT0F0BHyyJuYBeN1sp
+         cmFg==
+X-Gm-Message-State: AOAM532XbhxYf1awFYQ4UVXWe1u3BOiUgLWZ6Jq3L9Km89PNG2PVmcBb
+        SKt5oIYsyqXMPVPL1sBBLi6D7O0jOgRijg==
+X-Google-Smtp-Source: ABdhPJyh8djCs5KBhtHmWvs+w17xnphZd7/tx119erntsFX9510Pj8MdMJrgE3jzC2Hewn4vcst2iQ==
+X-Received: by 2002:a17:90b:4c11:: with SMTP id na17mr27193063pjb.84.1641751909234;
+        Sun, 09 Jan 2022 10:11:49 -0800 (PST)
+Received: from localhost.localdomain (h69-131-29-103.cntcnh.broadband.dynamic.tds.net. [69.131.29.103])
+        by smtp.gmail.com with ESMTPSA id j4sm4372827pfj.34.2022.01.09.10.11.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 09:59:41 -0800 (PST)
-Date:   Sun, 9 Jan 2022 18:59:31 +0100
-From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-To:     Melissa Wen <mwen@igalia.com>
-Cc:     melissa.srw@gmail.com, rodrigosiqueiramelo@gmail.com,
-        hamohammed.sa@gmail.com, daniel@ffwll.ch, airlied@linux.ie,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v2 2/3] drm/vkms: add support for multiple overlay
- planes
-Message-ID: <20220109175931.GA11065@elementary>
-References: <20220107182809.141003-1-jose.exposito89@gmail.com>
- <20220107182809.141003-2-jose.exposito89@gmail.com>
- <20220109165933.sa6kpgrzdzj5r3ho@mail.igalia.com>
+        Sun, 09 Jan 2022 10:11:48 -0800 (PST)
+Sender: Len Brown <lenb417@gmail.com>
+From:   Len Brown <lenb@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Len Brown <len.brown@intel.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org
+Subject: [PATCH REGRESSION] Revert "drm/amdgpu: stop scheduler when calling hw_fini (v2)"
+Date:   Sun,  9 Jan 2022 13:11:37 -0500
+Message-Id: <8ab406c8bb2e58969668a806a529d5988b447530.1641750730.git.len.brown@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Reply-To: Len Brown <lenb@kernel.org>
+Organization: Intel Open Source Technology Center
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220109165933.sa6kpgrzdzj5r3ho@mail.igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Melissa,
+From: Len Brown <len.brown@intel.com>
 
-Thanks for reviewing and applying the series :)
+This reverts commit f7d6779df642720e22bffd449e683bb8690bd3bf.
 
-Now [1] should apply cleanly on drm-misc-next. Do you want me to resend
-it with the appropriate prefix?
+This bisected regression has impacted suspend-resume stability
+since 5.15-rc1. It regressed -stable via 5.14.10.
 
-On Sun, Jan 09, 2022 at 03:59:55PM -0100, Melissa Wen wrote:
-> I checked that several testcases from kms_cursor_crc are failing after
-> recent changes in the test. However, this regression is not caused by
-> these changes and need futher investigation for fixing.
+https://bugzilla.kernel.org/show_bug.cgi?id=215315
 
-I didn't include the results for kms_cursor_crc because some of the
-tests cause issues on my PC. However, if you want to share the list of
-regressions, I'll have a look into the test as well.
+Fixes: f7d6779df64 ("drm/amdgpu: stop scheduler when calling hw_fini (v2)")
+Cc: Guchun Chen <guchun.chen@amd.com>
+Cc: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+Cc: Christian Koenig <christian.koenig@amd.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: <stable@vger.kernel.org> # 5.14+
+Signed-off-by: Len Brown <len.brown@intel.com>
+---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-Thanks again,
-José Expósito
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
+index 9afd11ca2709..45977a72b5dd 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
+@@ -547,9 +547,6 @@ void amdgpu_fence_driver_hw_fini(struct amdgpu_device *adev)
+ 		if (!ring || !ring->fence_drv.initialized)
+ 			continue;
+ 
+-		if (!ring->no_scheduler)
+-			drm_sched_stop(&ring->sched, NULL);
+-
+ 		/* You can't wait for HW to signal if it's gone */
+ 		if (!drm_dev_is_unplugged(adev_to_drm(adev)))
+ 			r = amdgpu_fence_wait_empty(ring);
+@@ -609,11 +606,6 @@ void amdgpu_fence_driver_hw_init(struct amdgpu_device *adev)
+ 		if (!ring || !ring->fence_drv.initialized)
+ 			continue;
+ 
+-		if (!ring->no_scheduler) {
+-			drm_sched_resubmit_jobs(&ring->sched);
+-			drm_sched_start(&ring->sched, true);
+-		}
+-
+ 		/* enable the interrupt */
+ 		if (ring->fence_drv.irq_src)
+ 			amdgpu_irq_get(adev, ring->fence_drv.irq_src,
+-- 
+2.25.1
 
-[1] https://lore.kernel.org/all/20211226111219.27616-2-jose.exposito89@gmail.com/
