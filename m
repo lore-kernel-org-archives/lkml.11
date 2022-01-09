@@ -2,120 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA6BC43219
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 21:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B617AC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 21:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237191AbiAIVnb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 16:43:31 -0500
-Received: from mout.gmx.net ([212.227.15.19]:53371 "EHLO mout.gmx.net"
+        id S237183AbiAIVpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 16:45:34 -0500
+Received: from elvis.franken.de ([193.175.24.41]:38466 "EHLO elvis.franken.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237166AbiAIVn1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 16:43:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641764576;
-        bh=ya9Bsaklh3s8y+uei3uvaHAV5bFUoBRNM50qZnB/OTI=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Mz830yC5K5Z5HU2V7AxizqnF2jXjojFiauwJep5ABpJRnRDEyscbUoaAWoaCJrqHO
-         MSolwbERN8iA5B24GrlUZFfwoGZ4f2/QCLhEY7egkcec02dcgewPLHQIbfGBqiAmcJ
-         7siuvJ8BQdd/Y7//RqirEYvly/dR2V/NS+qeg+cc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from esprimo-mx.fritz.box ([91.137.126.34]) by mail.gmx.net
- (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1N9dsV-1mLBZt2W6H-015bgf; Sun, 09 Jan 2022 22:42:56 +0100
-From:   Armin Wolf <W_Armin@gmx.de>
-To:     pali@kernel.org
-Cc:     jdelvare@suse.com, linux@roeck-us.net, corbet@lwn.net,
-        rdunlap@infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/3] Documentation: admin-guide: Update i8k driver name
-Date:   Sun,  9 Jan 2022 22:42:46 +0100
-Message-Id: <20220109214248.61759-2-W_Armin@gmx.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220109214248.61759-1-W_Armin@gmx.de>
-References: <20220109214248.61759-1-W_Armin@gmx.de>
+        id S232093AbiAIVpd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 9 Jan 2022 16:45:33 -0500
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1n6g0I-0006cw-00; Sun, 09 Jan 2022 22:45:30 +0100
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 7C771C0E31; Sun,  9 Jan 2022 22:43:08 +0100 (CET)
+Date:   Sun, 9 Jan 2022 22:43:08 +0100
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     linux-mips@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
+        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 0/5] MIPS: BCM47XX: Board updates from OpenWrt
+Message-ID: <20220109214308.GA2174@alpha.franken.de>
+References: <20220107035141.2325384-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:HkGcuEhonPWgkx/Bdh5ku/XiW0odT7eYwVlzJd1IFE2UutpCtsh
- 9+fimn+CJrRIcYgH3yuOsgzXKU7mDc1Oz+xPS3LPVYsWi4if7n2QCsybxonjMByMATOMZMY
- 9Rkct3scclOEw0tcumSZhbAzNT6sJV5S8/TpHpYdgjtDbaitPcJdBWRwecCfVaAur0mrvxn
- 04l29arh5dzonS+mUSKow==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:E8ADvt6FE70=:qvgPE3EtQyZwhdWlZNf62g
- 9mTgNdSxtF135Nw7zlb9jVWCBTSOfdw1epgUceyXeqa9UkCvAsOiikpDFpqmR0rkOFtHDkSfH
- 9kBX74SIfaxGQAgVHjTggdcG2l/CZLHobQPY0vEgbY04ACcbkXiiPjkdGSs12lnq7kwQVt5eK
- k21bJ51tyW+0IzaEibsSd3c4y0sDdrPvqqVtvATTqoKfY7i8GiuhWzYttQ2KGlv+FW+yIAjG/
- 3xFdyTPw5H45icHdRFidBeAcufKS0b9XtdI/GhEGL9vd5fUp3K+7ssB5h+DZfbF7elDd3GRcd
- GeUKk1+EbFp3lZOVkr8ri7SYJNd4ZVHAuXsE6Ofaa6/9UIq9gJdBqM+VAS3Qd8/0oXRSXoqgz
- GkD1AuUj7Ge4PqWlxiOtCdPmMFXIsHWZS8JYdUpew/R7Vor9YWzm+REs7e02QC+2zSAuOk9zR
- WBRAzQUcaa7XARQxGnyKFtiVUh0CtgmtXhQn6iGgXiSsVSW/SHserHRTMrQee7ssa4XOOJwAX
- xeJNYqDVsTLcXtL5Mem3j+6CfWaS8es7SaQhjIaRP+rCak8p3+FDoir0/UCVbeKtX/dysUDjC
- JuJ59PMZ9DdwsrSNY3IC059mpS/uGklZP6O88pHtVCYsB+Pi/itkoJjPXZCVASsf3xQdV412F
- sg9fw7MpOZinUMiKDaNhGFQs69tfot+2DdM6DYaFgUsXgvflO8CRRlqkBnePI8svJ14Jlehe8
- J8nQTL75xgs/ukyiWFvYSZiYdE3231AG8LUViaZpZpsKJIgjWsRvs5x4Cow++8x56EPCeGkkO
- QcMrypoUhAskwtQNHW0IOz/N80S3vQl8m+njmBg30v38G2V9Co11gCc3/vAsmalhR9i6wdAKa
- RJxJhHzIBoXilDAJ6izcUYCXrygriwGoiBzJITv5CRswGWhKXhiZpwsCiBIT93J0IogPaQC0o
- /Pc65cCq3qJ7AgrqUUk4WCDu00vntjL8p+knmxaftrFUljSdzYUjSMniFwYSJmwGTCk3JWRv4
- b/ULhlibAuBwbk3QQcb0++3ByAVcsui1JPfWkiZX7W4xJwo31jz0O5KJWCzMI4DxQI/6oW9ot
- 6MQTOkQ5DWhyNo=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107035141.2325384-1-f.fainelli@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver should be called dell_smm_hwmon, i8k is only
-an alias now.
+On Thu, Jan 06, 2022 at 07:51:36PM -0800, Florian Fainelli wrote:
+> Hi all,
+> 
+> This patch is breaking up the larger patch that OpenWrt carries at:
+> 
+> https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/bcm47xx/patches-5.10/320-MIPS-BCM47XX-Devices-database-update-for-4.x.patch;h=bde811c1956578a33cc230b80c3a2b4a20cd9aa5;hb=HEAD
+> 
+> into a series of patches that add support for each board individually.
+> 
+> Florian Fainelli (5):
+>   MIPS: BCM47XX: Define Linksys WRT310N V2 buttons
+>   MIPS: BCM47XX: Add board entry for Linksys WRT320N v1
+>   MIPS: BCM47XX: Add LEDs and buttons for Asus RTN-10U
+>   MIPS: BCM47XX: Add support for Netgear R6300 v1
+>   MIPS: BCM47XX: Add support for Netgear WN2500RP v1 & v2
+> 
+>  arch/mips/bcm47xx/board.c                     |  4 ++
+>  arch/mips/bcm47xx/buttons.c                   | 44 +++++++++++++++++++
+>  arch/mips/bcm47xx/leds.c                      | 21 +++++++++
+>  .../include/asm/mach-bcm47xx/bcm47xx_board.h  |  4 ++
+>  4 files changed, 73 insertions(+)
 
-Signed-off-by: Armin Wolf <W_Armin@gmx.de>
-=2D--
- .../admin-guide/kernel-parameters.txt         | 29 ++++++++++++-------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+series applied to mips-next.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentati=
-on/admin-guide/kernel-parameters.txt
-index 2fba82431efb..52de7cd06858 100644
-=2D-- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -935,6 +935,24 @@
- 			dump out devices still on the deferred probe list after
- 			retrying.
+Thomas.
 
-+	dell_smm_hwmon.ignore_dmi=3D
-+			[HW] Continue probing hardware even if DMI data
-+			indicates that the driver is running on unsupported
-+			hardware.
-+
-+	dell_smm_hwmon.force=3D
-+			[HW] Activate driver even if SMM BIOS signature does
-+			not match list of supported models and enable otherwise
-+			blacklisted features.
-+
-+	dell_smm_hwmon.power_status=3D
-+			[HW] Report power status in /proc/i8k
-+			(disabled by default).
-+
-+	dell_smm_hwmon.restricted=3D
-+			[HW] Allow controlling fans only if SYS_ADMIN
-+			capability is set.
-+
- 	dfltcc=3D		[HW,S390]
- 			Format: { on | off | def_only | inf_only | always }
- 			on:       s390 zlib hardware support for compression on
-@@ -1694,17 +1712,6 @@
-
- 	i810=3D		[HW,DRM]
-
--	i8k.ignore_dmi	[HW] Continue probing hardware even if DMI data
--			indicates that the driver is running on unsupported
--			hardware.
--	i8k.force	[HW] Activate i8k driver even if SMM BIOS signature
--			does not match list of supported models.
--	i8k.power_status
--			[HW] Report power status in /proc/i8k
--			(disabled by default)
--	i8k.restricted	[HW] Allow controlling fans only if SYS_ADMIN
--			capability is set.
--
- 	i915.invert_brightness=3D
- 			[DRM] Invert the sense of the variable that is used to
- 			set the brightness of the panel backlight. Normally a
-=2D-
-2.30.2
-
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
