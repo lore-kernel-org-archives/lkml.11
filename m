@@ -2,84 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12BEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 05:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6BAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 06:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbiAIF4l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 00:56:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54362 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229960AbiAIF4k (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 00:56:40 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C43BC06173F
-        for <linux-kernel@vger.kernel.org>; Sat,  8 Jan 2022 21:56:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=hfHrbUWm53dg29/Yt/DorGtbkOF3vLQS4YQI309TBF8=; b=dCiq4W+I7kpVX5gUrWPbvtZPNt
-        KNILE6QUj75niBGjjHP4cATCifniKUqcpkEfUaOkB0TGA8lUjr63COe5ypjSYgeBUDR4p3U6A7SUU
-        Ck9dKXJoTNvSz0xqSCXwSrZdoABfZCCm5JJYy4nVWjCMeHIEDi1Yf9KVUzOlBckNpfukXIJC7Yuph
-        cuUGxDBDEl9n86hYLvuIvBWa+4m68Ht2DryC6Y5+Nb4z5rVRSbgWerN73SENS5Tl4LdMEg/i9vrE3
-        SLUss9mgRLwHt44i6Wx2aEplwcnNvt/e0x9i5k1DW8wDEBxYumhl+zpalK4TeykrJuDgJG4ukGliY
-        zG+LgGHQ==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6RC1-007Of2-8G; Sun, 09 Jan 2022 05:56:37 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        "Guilherme G . Piccoli" <gpiccoli@igalia.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org
-Subject: [PATCH] sysctl: documentation: fix table format warning
-Date:   Sat,  8 Jan 2022 21:56:35 -0800
-Message-Id: <20220109055635.6999-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        id S235197AbiAIGFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 01:05:40 -0500
+Received: from mga12.intel.com ([192.55.52.136]:7587 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229960AbiAIGFj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 9 Jan 2022 01:05:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641708339; x=1673244339;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=PcEkNSTfdx04O272Wzze1eduouNaT4rvO4OOP/8Sqyk=;
+  b=nBr0dC5cMNb32oeg65R9vJtDMA6fOFzDzQ4Y4WSZxcbNXD7JZ+60uf2M
+   RAX14Pg3O+Fm0QA+123F10zMNclmUrVURwhVsWCZjop8fWXFrdhdH3yPL
+   PJ8i1iDT0zD/TO/4iq+rm4lwzlMomFH6XIahcfrBFyEcib1HpcJFkHoeX
+   c8P4EkXg0bVgdTraYc5h1mFzPrfc54OFKWnJAGoyv9TfGH3qyIv6OcTrn
+   KQ8ETKnOxMm72KwZNlHGBELL2fvaYPkFHLIlpDMhpD20p4tm0bp2lI3x8
+   NMPzcpqTmoAYqAQsEkzL+Lsg2Ba5LBNsDao8VDMENz3bxDcXEZLP/DScK
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10221"; a="223048671"
+X-IronPort-AV: E=Sophos;i="5.88,273,1635231600"; 
+   d="scan'208";a="223048671"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2022 22:05:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,273,1635231600"; 
+   d="scan'208";a="471727718"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga003.jf.intel.com with ESMTP; 08 Jan 2022 22:05:38 -0800
+Received: from lcsmsx602.ger.corp.intel.com (10.109.210.11) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Sat, 8 Jan 2022 22:05:37 -0800
+Received: from lcsmsx602.ger.corp.intel.com (10.109.210.11) by
+ LCSMSX602.ger.corp.intel.com (10.109.210.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Sun, 9 Jan 2022 08:05:35 +0200
+Received: from lcsmsx602.ger.corp.intel.com ([10.109.210.11]) by
+ LCSMSX602.ger.corp.intel.com ([10.109.210.11]) with mapi id 15.01.2308.020;
+ Sun, 9 Jan 2022 08:05:35 +0200
+From:   "Winkler, Tomas" <tomas.winkler@intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "Usyskin, Alexander" <alexander.usyskin@intel.com>
+Subject: RE: [PATCH] mei: me: Use dma_set_mask_and_coherent() and simplify
+ code
+Thread-Topic: [PATCH] mei: me: Use dma_set_mask_and_coherent() and simplify
+ code
+Thread-Index: AQHYBFwhZZz1KUNKp068RyPxOX5Wq6xaNL3g
+Date:   Sun, 9 Jan 2022 06:05:35 +0000
+Message-ID: <210864289c574c65b1c7e5ad5b913b9c@intel.com>
+References: <67ddcec656194153830684e6ff4513114e8859d6.1641624544.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <67ddcec656194153830684e6ff4513114e8859d6.1641624544.git.christophe.jaillet@wanadoo.fr>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.200.16
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix malformed table warning in sysctl documentation:
-(don't use ':'s)
 
-Documentation/admin-guide/sysctl/kernel.rst:798: WARNING: Malformed table.
-Text in column margin in table line 7.
+>=20
+> Use dma_set_mask_and_coherent() instead of unrolling it with some
+> dma_set_mask()+dma_set_coherent_mask().
+>=20
+> Moreover, as stated in [1], dma_set_mask() with a 64-bit mask will never =
+fail
+> if dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+>=20
+> Simplify code and remove some dead code accordingly.
+>=20
+>=20
+> While at it, include directly <linux/dma-mapping.h> instead on relying on
+> indirect inclusion.
+>=20
+> [1]: https://lkml.org/lkml/2021/6/7/398
+>=20
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Tomas Winkler <tomas.winkler@intel.com>
+> ---
+>  drivers/misc/mei/pci-me.c | 10 ++--------
+>  1 file changed, 2 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c index
+> 3a45aaf002ac..a05cdb25d0c4 100644
+> --- a/drivers/misc/mei/pci-me.c
+> +++ b/drivers/misc/mei/pci-me.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/errno.h>
+>  #include <linux/types.h>
+>  #include <linux/pci.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/sched.h>
+>  #include <linux/interrupt.h>
+>=20
+> @@ -192,14 +193,7 @@ static int mei_me_probe(struct pci_dev *pdev,
+> const struct pci_device_id *ent)
+>  		goto end;
+>  	}
+>=20
+> -	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(64)) ||
+> -	    dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+> -
+> -		err =3D dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+> -		if (err)
+> -			err =3D dma_set_coherent_mask(&pdev->dev,
+> -						    DMA_BIT_MASK(32));
+> -	}
+> +	err =3D dma_set_mask_and_coherent(&pdev->dev,
+> DMA_BIT_MASK(64));
+>  	if (err) {
+>  		dev_err(&pdev->dev, "No usable DMA configuration,
+> aborting\n");
+>  		goto end;
+> --
+> 2.32.0
 
-=====  ============================================
-bit 0  print all tasks info
-bit 1  print system memory info
-bit 2  print timer info
-bit 3  print locks info if ``CONFIG_LOCKDEP`` is on
-bit 4  print ftrace buffer
-bit 5: print all printk messages in buffer
-bit 6: print all CPUs backtrace (if available in the arch)
-
-Fixes: 934d51cad60c ("docs: sysctl/kernel: add missing bit to panic_print")
-Fixes: addc64999934 ("panic: add option to dump all CPUs backtraces in panic_print")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Cc: Guilherme G. Piccoli <gpiccoli@igalia.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mm@kvack.org
----
- Documentation/admin-guide/sysctl/kernel.rst |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- linux-next-20220107.orig/Documentation/admin-guide/sysctl/kernel.rst
-+++ linux-next-20220107/Documentation/admin-guide/sysctl/kernel.rst
-@@ -795,8 +795,8 @@ bit 1  print system memory info
- bit 2  print timer info
- bit 3  print locks info if ``CONFIG_LOCKDEP`` is on
- bit 4  print ftrace buffer
--bit 5: print all printk messages in buffer
--bit 6: print all CPUs backtrace (if available in the arch)
-+bit 5  print all printk messages in buffer
-+bit 6  print all CPUs backtrace (if available in the arch)
- =====  ============================================
- 
- So for example to print tasks and memory info on panic, user can::
