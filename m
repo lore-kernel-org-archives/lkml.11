@@ -2,135 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 174C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 13:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21964C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 13:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235610AbiAINNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 08:13:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:58112 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230321AbiAINNP (ORCPT
+        id S235621AbiAINPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 08:15:18 -0500
+Received: from pv50p00im-hyfv10011601.me.com ([17.58.6.43]:53226 "EHLO
+        pv50p00im-hyfv10011601.me.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230321AbiAINPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 08:13:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641733994;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uT7cy64aDIsHt4e4i1Tq/qdXkCDa411a5WZTTwRDOSM=;
-        b=G+5+MRVIwvBT3Nu4jqedZqkeDvnzYi1uRL+n2NJtvfxYG7Cah/2qTEYz0CF+1hiX76uxO/
-        +tL0So0xCKTaheSF9HNl8GHj3UgJ9K5XplpmfAiQuyY0UX0ccAAXIncjlJz3l/VdopdSh1
-        88EDDZgLr/Je9IvFLbUWDjeXDk+060w=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-427-MRnG9wKKMj6-47ck9oQwBw-1; Sun, 09 Jan 2022 08:13:13 -0500
-X-MC-Unique: MRnG9wKKMj6-47ck9oQwBw-1
-Received: by mail-wm1-f72.google.com with SMTP id b9-20020a7bc249000000b00347c5699809so3047043wmj.1
-        for <linux-kernel@vger.kernel.org>; Sun, 09 Jan 2022 05:13:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uT7cy64aDIsHt4e4i1Tq/qdXkCDa411a5WZTTwRDOSM=;
-        b=UgmqGsTOaYPs9DKH+XlKQDLfjE+n2dBQfu5asGw9ea9jcEtEVr6WOOU1srbob4oy/P
-         8AGEuWKWMHR/rkVDZ949o7hn9qxpDm2mpHH2AF0GrtYqQ4z8IizDdz0+ypHHq8EzQpLL
-         x5uM8tMs8tjyinbZYkBQ96H8DBrqJn6I//9LtkOlClJKg9/5WtO5j4lmkSDMAgIjBpTW
-         Z67aHkfbAF3/MjRi0RojAK7kiCYjeddpL3v5t+dpRtiS5NWF2Xbjr8F9XwaocYU7i3ts
-         f7WSgwGgjmx7mCNOOfBRU3VmUu3EnvXXRyy4TzAAGCWqS7LVnwO15TrQgVSGtMDOJyaG
-         WvQA==
-X-Gm-Message-State: AOAM5331eR6R/zGTAd3JqNoE1FqWhIZYazxykcqICGvHnC6HrYHbcLQQ
-        HAICuJtFSVf5wj+7AXNCBUCfTI90oDHBxTcCmu0VpmbVzindWHVFvfQzuN5clJZlhiKm5syuoNL
-        AMt2hRcim2cuBard7CWEagGvx
-X-Received: by 2002:a05:6000:1c05:: with SMTP id ba5mr12496668wrb.298.1641733991954;
-        Sun, 09 Jan 2022 05:13:11 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxoP2envJRbVrD9D80dEN5ERud2buziDFACuAgsR5G8+LrxxePNhYWW7/2hkTgk9aFdwn1nyA==
-X-Received: by 2002:a05:6000:1c05:: with SMTP id ba5mr12496653wrb.298.1641733991717;
-        Sun, 09 Jan 2022 05:13:11 -0800 (PST)
-Received: from krava ([83.240.63.12])
-        by smtp.gmail.com with ESMTPSA id b13sm4189181wrh.32.2022.01.09.05.13.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 05:13:11 -0800 (PST)
-Date:   Sun, 9 Jan 2022 14:13:09 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Namhyung Kim <namhyung@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>
-Subject: Re: [PATCHSET 0/6] perf lock: Random updates for the locking
- analysis (v1)
-Message-ID: <YdrfZViFXdGF+3vc@krava>
-References: <20220104182054.25009-1-namhyung@kernel.org>
+        Sun, 9 Jan 2022 08:15:17 -0500
+X-Greylist: delayed 579 seconds by postgrey-1.27 at vger.kernel.org; Sun, 09 Jan 2022 08:15:17 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
+        t=1641733538; bh=Pa3d1sSuEEMcS6MIUinhQIpzwlyMz3dkhDvMnS4GXFQ=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=nRtTdQOYVfyDUjIThebLuxCHdZIcoVH1/lBWyly41egO75IBXQHd2WQ1BGuvtpdZF
+         OcyIoD2jV8E+7mWwvbQa7JZzJFMLvq5tB10GuEv8MBBvrosKFzGXDdYv2Oa9h9T2MY
+         fmhnm2H2wsExB/j4MnhWJuEzCAGKTkK5RLMcaE9kh14xGHrnCWobmnKZVP6wwgmAz/
+         1vsFw/XdZeYx6F4Jb2xRUEU6BIOMekA1FaL21J2trQ/NJFlcBD7NOv9hKnHPgmPsKt
+         5IjBEdym8NMLB6kKgXyDvDyCOYAWvQelq0yRX/570fJxpnNCtPnP/ASit/MgxGOQ00
+         WXOKGqYl5yfIg==
+Received: from xiongwei.. (unknown [120.245.2.119])
+        by pv50p00im-hyfv10011601.me.com (Postfix) with ESMTPSA id D21CD96016F;
+        Sun,  9 Jan 2022 13:05:33 +0000 (UTC)
+From:   sxwjean@me.com
+To:     akpm@linux-foundation.org, david@redhat.com, mhocko@suse.com,
+        dan.j.williams@intel.com, osalvador@suse.de,
+        naoya.horiguchi@nec.com, thunder.leizhen@huawei.com
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>
+Subject: [PATCH 0/2] Add support for getting page info of ZONE_DEVICE by /proc/kpage*
+Date:   Sun,  9 Jan 2022 21:05:13 +0800
+Message-Id: <20220109130515.140092-1-sxwjean@me.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220104182054.25009-1-namhyung@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.790
+ definitions=2022-01-09_04:2022-01-06,2022-01-09 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 clxscore=1011 mlxscore=0
+ mlxlogscore=417 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-2009150000 definitions=main-2201090096
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 10:20:48AM -0800, Namhyung Kim wrote:
+From: Xiongwei Song <sxwjean@gmail.com>
 
-SNIP
+Patch 1 is adding pfn_to_devmap_page() function to get page of ZONE_DEVICE
+by pfn. It checks the sections that is offline but valid or is online but
+parts of pfns is offline. Then checks if dev_pagemap is valid, if yes,
+return page pointer.
 
-> With -c option, the hrtimer_bases.lock would be combined into a single
-> entry.  Also note that the lock names are correctly displayed now.
-> 
->   # perf lock report -c
->                   Name   acquired  contended   avg wait (ns) total wait (ns)   max wait (ns)   min wait (ns) 
->   
->          rcu_read_lock     251225          0               0               0               0               0 
->     hrtimer_bases.lock      39449          0               0               0               0               0 
->    &sb->s_type->i_l...      10301          1             662             662             662             662 
->       ptlock_ptr(page)      10173          2             701            1402             760             642 
->    &(ei->i_block_re...       8732          0               0               0               0               0 
->            &base->lock       6705          0               0               0               0               0 
->            &p->pi_lock       5549          0               0               0               0               0 
->    &dentry->d_lockr...       5010          4            1274            5097            1844             789 
->              &ep->lock       2750          0               0               0               0               0 
->    &(__futex_data.q...       2331          0               0               0               0               0 
->                 (null)       1878          0               0               0               0               0 
->       cpu_hotplug_lock       1350          0               0               0               0               0 
->       &____s->seqcount       1349          0               0               0               0               0 
->       &newf->file_lock       1001         15            1025           15388            2279             618 
->   ...
-> 
-> Maybe we can make it default later (with a config and --no-combine-locks).
-> 
-> You can get it from 'perf/lock-combine-v1' branch at
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/namhyung/linux-perf.git
-> 
-> Thanks,
-> Namhyung
-> 
-> 
-> Namhyung Kim (6):
->   perf lock: Convert lockhash_table to use hlist
->   perf lock: Change type of lock_stat->addr to u64
->   perf lock: Sort map info based on class name
->   perf lock: Fix lock name length check for printing
->   perf lock: Add -c/--combine-locks option
->   perf lock: Carefully combine lock stats for discarded entries
-> 
->  tools/perf/Documentation/perf-lock.txt |   4 +
->  tools/perf/builtin-lock.c              | 155 +++++++++++++++++++------
->  2 files changed, 124 insertions(+), 35 deletions(-)
+Patch 2 is finishing supporting /proc/kpage* in exposing pages info of
+ZONE_DEVICE to userspace.
 
-LGTM
+The unit test has been done by "page-types -r", which ran in qemu with the
+below arguments:
+    -object memory-backend-file,id=mem2,share,mem-path=./virtio_pmem.img,size=2G
+    -device virtio-pmem-pci,memdev=mem2,id=nv1
+, which is used to emulate pmem device with 2G memory space.
 
-Acked-by: Jiri Olsa <jolsa@redhat.com>
+As we know, the pages in ZONE_DEVICE are only set PG_reserved flag. So
+before the serires,
+	run "page-types -r", the result is:
+	             flags      page-count       MB  symbolic-flags                     long-symbolic-flags
+	0x0000000100000000           24377       95  ___________________________r________________       reserved
+	, which means the only PG_reserved set of pages in system wide have 24377.
+	
+	run "cat /proc/zoneinfo" to get the ZONE_DEVICE info:
+	Node 1, zone   Device
+	    pages free     0
+	    boost    0
+	    min      0
+	    low      0
+	    high     0
+	    spanned  0
+	    present  0
+	    managed  0
+	    cma      0
+	    protection: (0, 0, 0, 0, 0)
 
-thanks,
-jirka
+After this series,
+	run "page-types -r", the result is:
+	             flags      page-count       MB  symbolic-flags                     long-symbolic-flags
+	0x0000000100000000          548665     2143  ___________________________r________________       reserved
+	, which means the only PG_reserved set of pages in system wide have 548665.
+	
+	Run "cat /proc/zoneinfo" to get the ZONE_DEVICE info:
+	Node 1, zone   Device
+	pages free     0
+	    boost    0
+	    min      0
+	    low      0
+	    high     0
+	    spanned  524288
+	    present  0
+	    managed  0
+	    cma      0
+	    protection: (0, 0, 0, 0, 0)
 
-> 
-> 
-> base-commit: b9f6fbb3b2c29736970ae9fcc0e82b0bd459442b
-> -- 
-> 2.34.1.448.ga2b2bfdf31-goog
-> 
+, these added pages number is 524288 in ZONE_DEVICE as spanned field
+showed. Meanwhile, we can do 548665 - 24377 = 524288 that is increment
+of the reserved pages, it equals to the spanned field of ZONE_DEVICE.
+Hence it looks like the patchset works well.
+
+Xiongwei Song (2):
+  mm/memremap.c: Add pfn_to_devmap_page() to get page in ZONE_DEVICE
+  proc: Add getting pages info of ZONE_DEVICE support
+
+ fs/proc/page.c           | 35 ++++++++++++++++++++-------------
+ include/linux/memremap.h |  8 ++++++++
+ mm/memremap.c            | 42 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 72 insertions(+), 13 deletions(-)
+
+-- 
+2.30.2
 
