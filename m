@@ -2,107 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 19:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 19:26:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236781AbiAITYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 14:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236723AbiAITYo (ORCPT
+        id S236727AbiAIT0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 14:26:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54422 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234587AbiAITZ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 14:24:44 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C955C061751;
-        Sun,  9 Jan 2022 11:24:43 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id c66so7416328wma.5;
-        Sun, 09 Jan 2022 11:24:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/7KLjfPHsWfXinvdT9x6SwzVroZgq92QvU7YFU5ZeWM=;
-        b=eJ2muUDWeSDar4I1sLFaTGZhcHvqAdSpGMogP4fuj4m5J2xdYuZQPEszkuQHAbE08C
-         fy20TVvX4eSaHLy986Oe8RMqcP62rOxSFOpaAvq+SGNKos5U2QTn73e8xJXEUK5TugXp
-         BPztQRIxS3ET5kmCq2F8hSY/4zEwfidL2fwngro2M2GsXgGYLa8R10h4tC67IALi9dcJ
-         rmvEvIoTD879fADNyXMYKP7xX6rO92qnN5sCdzgfjWVswCg5pOHTbCeuufsZKAoTqrut
-         CSQp8CU2czG+ZiucpIEDGWIbeFiWI1xFyhUJvfD9ILlY+6e3Za2UTPxwutRpLTZFFw8y
-         ly3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/7KLjfPHsWfXinvdT9x6SwzVroZgq92QvU7YFU5ZeWM=;
-        b=Eebsqlv88jU2wGM6EAQBkvnUnmqAJDmmFKCmZTgaNsR0md5oI+bLELQyKJfpQFWLRk
-         gTLSmgh4eiyhI8aSnCXzfv45i+5HPAW163j2+Nshzc37tUp6MUazYNlb8y7DMzOBgInP
-         663lyFwCq+NywplEGQvHqPWP6bNltD5b5N807jWdhSSI+1Ex1o6ieNPVVkpHSoKwwDG9
-         Wd/f7M61aPNt2BKBKmuZo+ctMDdEd1kPkXPh8ZMGnwDlHmKvElc1/o+YnBYEeylQIzGt
-         CiG9cKR2LDW9tmPWWFtpSYMQVxYSPIR4lKauXn7h+BncIWlCMOfq2lXLi25VkraopBGB
-         bsSg==
-X-Gm-Message-State: AOAM532BSf7M33dZkw/e53MNw9EelcKeUOM40wC9kc6dRek70JrRiOwe
-        v5fLmW2mVW59kIToz4fcaJU=
-X-Google-Smtp-Source: ABdhPJxob2kx7PZCoFwkFA0s/AKSHeLZcHwTJ8YZObT7NHoX+c9068fofT99Quzq/1i0wvnVcFJNFQ==
-X-Received: by 2002:a7b:c0cf:: with SMTP id s15mr1712753wmh.95.1641756281658;
-        Sun, 09 Jan 2022 11:24:41 -0800 (PST)
-Received: from localhost.localdomain ([217.113.240.86])
-        by smtp.gmail.com with ESMTPSA id w17sm5403831wmc.14.2022.01.09.11.24.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 11:24:41 -0800 (PST)
-From:   =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-To:     kalyan_t@codeaurora.org
-Cc:     robdclark@gmail.com, sean@poorly.run, airlied@linux.ie,
-        daniel@ffwll.ch, dmitry.baryshkov@linaro.org,
-        abhinavk@codeaurora.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>
-Subject: [PATCH] drm/msm/dpu: invalid parameter check in dpu_setup_dspp_pcc
-Date:   Sun,  9 Jan 2022 20:24:31 +0100
-Message-Id: <20220109192431.135949-1-jose.exposito89@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Sun, 9 Jan 2022 14:25:58 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F117460FAA
+        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 19:25:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 61FF9C36AE5;
+        Sun,  9 Jan 2022 19:25:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641756357;
+        bh=MfRJBjoCGkquPhZbi0CsS96szeVClXTb8YROv3HRTVU=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=e4igV/q8TdTM/SdktEwtpT3Hr/SMtJCPXUBTz62QZBewuS1d5ENQugAj5X1Z9EB2J
+         dfFk+ylA/O22H+mPL4PAtNhBZdPr4nDz4hGjjLh6i7yFrFQFS5g5E/Q1IPc5c/vGxK
+         WXe/pB6HubsG/YtyJK/40BGJqEz9svXhDWM9VMuUGuGtEgmLjHgdHQHG20cClxqG5B
+         xObawikktMQWGWuJCJZ1b7pAjoKkiwBYDKRhfhOMGrhc5+y+N0JDAWvlLXyQoBUu16
+         kxqyaxELUO8y2o26GDCx4sMHakbIuDqsCowo7nydLXr8jgSrYLbmVNcbee4FsHdw/o
+         kzeIjZ675HT/w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 51799F79408;
+        Sun,  9 Jan 2022 19:25:57 +0000 (UTC)
+Subject: Re: [GIT PULL] SoC: One more fix for 5.16
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YdqN9GxRTQYVA/f4@lx2k>
+References: <YdqN9GxRTQYVA/f4@lx2k>
+X-PR-Tracked-List-Id: <linux-arm-kernel.lists.infradead.org>
+X-PR-Tracked-Message-Id: <YdqN9GxRTQYVA/f4@lx2k>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git tags/soc-fixes-5.16-5
+X-PR-Tracked-Commit-Id: c8013355ead68dce152cf426686f8a5f80d88b40
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 95350123bb5568a7d95e3789225144bd1a154274
+Message-Id: <164175635732.32020.17846257667340116617.pr-tracker-bot@kernel.org>
+Date:   Sun, 09 Jan 2022 19:25:57 +0000
+To:     Olof Johansson <olof@lixom.net>
+Cc:     torvalds@linux-foundation.org, olof@lixom.net, soc@lixom.net,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function performs a check on the "ctx" input parameter, however, it
-is used before the check.
+The pull request you sent on Sat, 8 Jan 2022 23:25:40 -0800:
 
-Initialize the "base" variable after the sanity check to avoid a
-possible NULL pointer dereference.
+> git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git tags/soc-fixes-5.16-5
 
-Fixes: 4259ff7ae509e ("drm/msm/dpu: add support for pcc color block in dpu driver")
-Addresses-Coverity-ID: 1493866 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/95350123bb5568a7d95e3789225144bd1a154274
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-index a98e964c3b6f..355894a3b48c 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_dspp.c
-@@ -26,9 +26,16 @@ static void dpu_setup_dspp_pcc(struct dpu_hw_dspp *ctx,
- 		struct dpu_hw_pcc_cfg *cfg)
- {
- 
--	u32 base = ctx->cap->sblk->pcc.base;
-+	u32 base;
- 
--	if (!ctx || !base) {
-+	if (!ctx) {
-+		DRM_ERROR("invalid ctx %pK\n", ctx);
-+		return;
-+	}
-+
-+	base = ctx->cap->sblk->pcc.base;
-+
-+	if (!base) {
- 		DRM_ERROR("invalid ctx %pK pcc base 0x%x\n", ctx, base);
- 		return;
- 	}
+Thank you!
+
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
