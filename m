@@ -2,145 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32EA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 13:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87250C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 13:21:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235630AbiAINPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 08:15:20 -0500
-Received: from pv50p00im-hyfv10011601.me.com ([17.58.6.43]:53282 "EHLO
-        pv50p00im-hyfv10011601.me.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232086AbiAINPR (ORCPT
+        id S235655AbiAINVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 08:21:49 -0500
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:54338 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232086AbiAINVs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 08:15:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
-        t=1641733546; bh=g6L+kqSc5f6G0SvO3Njd2vpwSi2vmrKCjGly4UmhZ9c=;
-        h=From:To:Subject:Date:Message-Id:MIME-Version;
-        b=RMyeKdCSTClAxoIfpApVBBCKB9wmAQbdhhR0xOTC5ADL/bXfYg4JWD5U8l9f0k0Z4
-         gBSzZUgxRr0RIfL/QOQHWG9wrA8sD5As9lbzONjP/gDwjM7CmHkV5IXYFyb1Tjjxj3
-         hFvg1hNQ8U+3MwUk1i6HxZF1grjzFCWkGDmuM8h7wC2Xtz/Zb6AecWSojTBwD3ph3h
-         OuFBRlPm4H5WYQdX6HgFgm+brakks0vby/hS3EtwuFxN2rqRrWjWB3Q0m0MbrS3jQI
-         gzOxg0eodmL5rl+gZ9PEvagHab4LlWkQudY3bh0cbi5LodwcwMQA2QcmEM8S4obwB3
-         WYBH4fznkhbeg==
-Received: from xiongwei.. (unknown [120.245.2.119])
-        by pv50p00im-hyfv10011601.me.com (Postfix) with ESMTPSA id B282896022F;
-        Sun,  9 Jan 2022 13:05:41 +0000 (UTC)
-From:   sxwjean@me.com
-To:     akpm@linux-foundation.org, david@redhat.com, mhocko@suse.com,
-        dan.j.williams@intel.com, osalvador@suse.de,
-        naoya.horiguchi@nec.com, thunder.leizhen@huawei.com
-Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>
-Subject: [PATCH 1/2] mm/memremap.c: Add pfn_to_devmap_page() to get page in ZONE_DEVICE
-Date:   Sun,  9 Jan 2022 21:05:14 +0800
-Message-Id: <20220109130515.140092-2-sxwjean@me.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220109130515.140092-1-sxwjean@me.com>
-References: <20220109130515.140092-1-sxwjean@me.com>
+        Sun, 9 Jan 2022 08:21:48 -0500
+Received: from pop-os.home ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 6Y8inCULaUujj6Y8inIUhA; Sun, 09 Jan 2022 14:21:46 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 09 Jan 2022 14:21:46 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Jeremy Kerr <jk@ozlabs.org>, Joel Stanley <joel@jms.id.au>,
+        Alistar Popple <alistair@popple.id.au>,
+        Eddie James <eajames@linux.ibm.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Guenter Roeck <linux@roeck-us.net>, linux-fsi@lists.ozlabs.org,
+        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
+Subject: [PATCH v2] fsi: Aspeed: Fix a potential double free
+Date:   Sun,  9 Jan 2022 14:20:35 +0100
+Message-Id: <3b5c9b693749a956b525c54bed0eeac9f958b8e8.1641734402.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.425,18.0.790
- definitions=2022-01-09_04:2022-01-06,2022-01-09 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 clxscore=1015 mlxscore=0
- mlxlogscore=785 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-2009150000 definitions=main-2201090096
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+A struct device can never be devm_alloc()'ed.
+Here, it is embedded in "struct fsi_master", and "struct fsi_master" is
+embedded in "struct fsi_master_aspeed".
 
-when requesting page information by /proc/kpage*, the pages in ZONE_DEVICE
-were missed. We need a function to help on this.
+Since "struct device" is embedded, the data structure embedding it must be
+released with the release function, as is already done here.
 
-The pfn_to_devmap_page() function like pfn_to_online_page(), but only
-concerns the pages in ZONE_DEVICE.
+So use kzalloc() instead of devm_kzalloc() when allocating "aspeed".
+This prevent a potential double free().
 
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Fixes: 606397d67f41 ("fsi: Add ast2600 master driver")
+Suggested-by: Greg KH <gregkh@linuxfoundation.org>
+Suggested-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- include/linux/memremap.h |  8 ++++++++
- mm/memremap.c            | 42 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 50 insertions(+)
+v2: Keep the release function which is correct
+    s/devm_kzalloc()/kzalloc()/ instead
+---
+ drivers/fsi/fsi-master-aspeed.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/memremap.h b/include/linux/memremap.h
-index c0e9d35889e8..621723e9c4a5 100644
---- a/include/linux/memremap.h
-+++ b/include/linux/memremap.h
-@@ -137,6 +137,8 @@ void *devm_memremap_pages(struct device *dev, struct dev_pagemap *pgmap);
- void devm_memunmap_pages(struct device *dev, struct dev_pagemap *pgmap);
- struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
- 		struct dev_pagemap *pgmap);
-+struct page *pfn_to_devmap_page(unsigned long pfn,
-+		struct dev_pagemap **pgmap);
- bool pgmap_pfn_valid(struct dev_pagemap *pgmap, unsigned long pfn);
+diff --git a/drivers/fsi/fsi-master-aspeed.c b/drivers/fsi/fsi-master-aspeed.c
+index 8606e55c1721..ae6319818b14 100644
+--- a/drivers/fsi/fsi-master-aspeed.c
++++ b/drivers/fsi/fsi-master-aspeed.c
+@@ -542,7 +542,7 @@ static int fsi_master_aspeed_probe(struct platform_device *pdev)
+ 		return rc;
+ 	}
  
- unsigned long vmem_altmap_offset(struct vmem_altmap *altmap);
-@@ -166,6 +168,12 @@ static inline struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
- 	return NULL;
- }
+-	aspeed = devm_kzalloc(&pdev->dev, sizeof(*aspeed), GFP_KERNEL);
++	aspeed = kzalloc(sizeof(*aspeed), GFP_KERNEL);
+ 	if (!aspeed)
+ 		return -ENOMEM;
  
-+static inline struct page *pfn_to_devmap_page(unsigned long pfn,
-+		struct dev_pagemap **pgmap)
-+{
-+	return NULL;
-+}
-+
- static inline bool pgmap_pfn_valid(struct dev_pagemap *pgmap, unsigned long pfn)
- {
- 	return false;
-diff --git a/mm/memremap.c b/mm/memremap.c
-index 5a66a71ab591..072dbe6ab81c 100644
---- a/mm/memremap.c
-+++ b/mm/memremap.c
-@@ -494,6 +494,48 @@ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
- }
- EXPORT_SYMBOL_GPL(get_dev_pagemap);
- 
-+/**
-+ * pfn_to_devmap_page - get page pointer which belongs to dev_pagemap by @pfn
-+ * @pfn: page frame number to lookup page_map
-+ * @pgmap: to save pgmap address which is for putting reference
-+ *
-+ * If @pgmap is non-NULL, then pfn is on ZONE_DEVICE and return page pointer.
-+ */
-+struct page *pfn_to_devmap_page(unsigned long pfn, struct dev_pagemap **pgmap)
-+{
-+	unsigned long nr = pfn_to_section_nr(pfn);
-+	struct mem_section *ms;
-+	struct page *page = NULL;
-+
-+	if (nr >= NR_MEM_SECTIONS)
-+		return NULL;
-+
-+	if (IS_ENABLED(CONFIG_HAVE_ARCH_PFN_VALID) && !pfn_valid(pfn))
-+		return NULL;
-+
-+	ms = __nr_to_section(nr);
-+	if (!valid_section(ms))
-+		return NULL;
-+	if (!pfn_section_valid(ms, pfn))
-+		return NULL;
-+
-+	/*
-+	 * Two types of sections may include valid pfns:
-+	 * - The pfns of section belong to ZONE_DEVICE and ZONE_{NORMAL,MOVABLE}
-+	 *   at the same time.
-+	 * - All pfns in one section are offline but valid.
-+	 */
-+	if (!online_device_section(ms) && online_section(ms))
-+		return NULL;
-+
-+	*pgmap = get_dev_pagemap(pfn, NULL);
-+	if (*pgmap)
-+		page = pfn_to_page(pfn);
-+
-+	return page;
-+}
-+EXPORT_SYMBOL_GPL(pfn_to_devmap_page);
-+
- #ifdef CONFIG_DEV_PAGEMAP_OPS
- void free_devmap_managed_page(struct page *page)
- {
 -- 
-2.30.2
+2.32.0
 
