@@ -2,76 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4390C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 09:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C994C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 10:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234008AbiAIJgr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 04:36:47 -0500
-Received: from mail.parknet.co.jp ([210.171.160.6]:57434 "EHLO
-        mail.parknet.co.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiAIJgq (ORCPT
+        id S235249AbiAIKB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 05:01:57 -0500
+Received: from mail-pj1-f52.google.com ([209.85.216.52]:43532 "EHLO
+        mail-pj1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229473AbiAIKB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 04:36:46 -0500
-Received: from ibmpc.myhome.or.jp (server.parknet.ne.jp [210.171.168.39])
-        by mail.parknet.co.jp (Postfix) with ESMTPSA id A33DE15F93A;
-        Sun,  9 Jan 2022 18:36:45 +0900 (JST)
-Received: from devron.myhome.or.jp (foobar@devron.myhome.or.jp [192.168.0.3])
-        by ibmpc.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 2099ahk9096048
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sun, 9 Jan 2022 18:36:44 +0900
-Received: from devron.myhome.or.jp (foobar@localhost [127.0.0.1])
-        by devron.myhome.or.jp (8.16.1/8.16.1/Debian-2) with ESMTPS id 2099ahfd817108
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Sun, 9 Jan 2022 18:36:43 +0900
-Received: (from hirofumi@localhost)
-        by devron.myhome.or.jp (8.16.1/8.16.1/Submit) id 2099ah09817107;
-        Sun, 9 Jan 2022 18:36:43 +0900
-From:   OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
-To:     linux-block@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>, glider@google.com,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        syzbot <syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com>
-Subject: [PATCH] block: Fix wrong offset in bio_truncate()
-References: <000000000000880fca05d4fc73b0@google.com>
-Date:   Sun, 09 Jan 2022 18:36:43 +0900
-In-Reply-To: <000000000000880fca05d4fc73b0@google.com> (syzbot's message of
-        "Fri, 07 Jan 2022 03:40:18 -0800")
-Message-ID: <875yqt1c9g.fsf@mail.parknet.co.jp>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/29.0.50 (gnu/linux)
+        Sun, 9 Jan 2022 05:01:56 -0500
+Received: by mail-pj1-f52.google.com with SMTP id ie23-20020a17090b401700b001b38a5318easo3915831pjb.2;
+        Sun, 09 Jan 2022 02:01:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qVWt1AOHq8FaZK5a1Obn95ziGdwNeIdN+dxQ37ARsjk=;
+        b=paHBr5bKG2rQheXCmwJ4dS4H1fR4dM2sVTmiQc4NjgLn+mEQzwb9bouxwCTTbNMZJC
+         2nJZ7mQ+05I6vzTBjRx725+ln+fA+pg4h1uFtvrxsY7yByZqC5W29D1Ze37ooQMhAfDc
+         JO9GCfJ/YTitm33Of0RwuI8eB+5wq/8Q3dMDaNWe+tbJHQGcrLDOpIEAoxmbW2JIMzVi
+         n52N7y9D6ezx2XPPBbAmj3OtYqI1QFs67vPO6JNzWxItqPcbQUI6vr1pvri8rkjVEcgO
+         6fYnYasf89+xDNrrxk5HJFizNN5wbSt7QJeCptXT/JwA3ZLTJrmxr9sNQukrKHA9wxGn
+         Vw1w==
+X-Gm-Message-State: AOAM5302CCymzWrCTwjjg6BMHNcaubHc5svULCHOZcsG9cZhKPTR325u
+        zdhBIkjRpAuhJuRCuAdWQk+MmdcWBKG91g==
+X-Google-Smtp-Source: ABdhPJxCDVKm/loC0NBZH667A2F59JO4QcPTUVleIWxENLM/W4d5qDnzA+Qiu3h0O9MYPNX0kCv1Cw==
+X-Received: by 2002:a05:6102:3746:: with SMTP id u6mr23168225vst.60.1641722505077;
+        Sun, 09 Jan 2022 02:01:45 -0800 (PST)
+Received: from mail-ua1-f45.google.com (mail-ua1-f45.google.com. [209.85.222.45])
+        by smtp.gmail.com with ESMTPSA id c15sm2190459uaj.13.2022.01.09.02.01.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Jan 2022 02:01:44 -0800 (PST)
+Received: by mail-ua1-f45.google.com with SMTP id m15so4136949uap.6;
+        Sun, 09 Jan 2022 02:01:44 -0800 (PST)
+X-Received: by 2002:ab0:2118:: with SMTP id d24mr23782568ual.78.1641722504022;
+ Sun, 09 Jan 2022 02:01:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220107110723.323276-1-javierm@redhat.com> <20220107110723.323276-3-javierm@redhat.com>
+In-Reply-To: <20220107110723.323276-3-javierm@redhat.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Sun, 9 Jan 2022 11:01:32 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWvFL9GYM-dMdZeyZrQjr13Sgt-XXN19bc6jA3emn2Dcw@mail.gmail.com>
+Message-ID: <CAMuHMdWvFL9GYM-dMdZeyZrQjr13Sgt-XXN19bc6jA3emn2Dcw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] video: vga16fb: Only probe for EGA and VGA 16 color
+ graphic cards
+To:     Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kris Karas <bugs-a21@moonlit-rail.com>,
+        stable <stable@vger.kernel.org>, Borislav Petkov <bp@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bio_truncate() clears the buffer outside of last block of bdev, however
-current bio_truncate() is using the wrong offset of page. So it can
-return the uninitialized data.
+Hi Javier,
 
-This happened when both of truncated/corrupted FS and userspace (via
-bdev) are trying to read the last of bdev.
+On Fri, Jan 7, 2022 at 9:00 PM Javier Martinez Canillas
+<javierm@redhat.com> wrote:
+> The vga16fb framebuffer driver only supports Enhanced Graphics Adapter
+> (EGA) and Video Graphics Array (VGA) 16 color graphic cards.
+>
+> But it doesn't check if the adapter is one of those or if a VGA16 mode
+> is used. This means that the driver will be probed even if a VESA BIOS
+> Extensions (VBE) or Graphics Output Protocol (GOP) interface is used.
+>
+> This issue has been present for a long time but it was only exposed by
+> commit d391c5827107 ("drivers/firmware: move x86 Generic System
+> Framebuffers support") since the platform device registration to match
+> the {vesa,efi}fb drivers is done later as a consequence of that change.
+>
+> Link: https://bugzilla.kernel.org/show_bug.cgi?id=215001
+> Fixes: d391c5827107 ("drivers/firmware: move x86 Generic System Framebuffers support")
+> Reported-by: Kris Karas <bugs-a21@moonlit-rail.com>
+> Cc: <stable@vger.kernel.org> # 5.15.x
+> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+> Tested-by: Kris Karas <bugs-a21@moonlit-rail.com>
 
-Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
-Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
----
- block/bio.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Thanks for your patch!
 
-diff --git a/block/bio.c b/block/bio.c
-index a6fb6a0..25f1ed2 100644
---- a/block/bio.c	2021-11-01 09:19:05.999472589 +0900
-+++ b/block/bio.c	2022-01-09 17:40:09.010438012 +0900
-@@ -567,7 +567,8 @@ void bio_truncate(struct bio *bio, unsig
- 				offset = new_size - done;
- 			else
- 				offset = 0;
--			zero_user(bv.bv_page, offset, bv.bv_len - offset);
-+			zero_user(bv.bv_page, bv.bv_offset + offset,
-+				  bv.bv_len - offset);
- 			truncated = true;
- 		}
- 		done += bv.bv_len;
-_
+> --- a/drivers/video/fbdev/vga16fb.c
+> +++ b/drivers/video/fbdev/vga16fb.c
+> @@ -1422,6 +1422,18 @@ static int __init vga16fb_init(void)
+>
+>         vga16fb_setup(option);
+>  #endif
+> +
+> +       /* only EGA and VGA in 16 color graphic mode are supported */
+> +       if (screen_info.orig_video_isVGA != VIDEO_TYPE_EGAC &&
+> +           screen_info.orig_video_isVGA != VIDEO_TYPE_VGAC)
+> +               return -ENODEV;
 
--- 
-OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Probably these checks should be wrapped inside a check for CONFIG_X86?
+
+All non-x86 architectures (except for 2 MIPS platforms) treat
+orig_video_isVGA as a boolean flag, and just assign 1 to it.
+
+> +
+> +       if (screen_info.orig_video_mode != 0x0D &&      /* 320x200/4 (EGA) */
+> +           screen_info.orig_video_mode != 0x0E &&      /* 640x200/4 (EGA) */
+> +           screen_info.orig_video_mode != 0x10 &&      /* 640x350/4 (EGA) */
+> +           screen_info.orig_video_mode != 0x12)        /* 640x480/4 (VGA) */
+> +               return -ENODEV;
+> +
+
+Likewise.
+
+A long time ago, I used vga16fb on a PPC box to use a standard PC
+graphics card (initialized using an emulator for the card's BIOS ROM),
+as a second display. The above changes would break such a use case.
+
+>         ret = platform_driver_register(&vga16fb_driver);
+>
+>         if (!ret) {
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
