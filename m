@@ -2,85 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E432C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 15:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE693C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 15:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234143AbiAIPVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 10:21:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
+        id S234169AbiAIP1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 10:27:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiAIPVS (ORCPT
+        with ESMTP id S229675AbiAIP1a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 10:21:18 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400C3C06173F;
-        Sun,  9 Jan 2022 07:21:18 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id p18so404833wmg.4;
-        Sun, 09 Jan 2022 07:21:18 -0800 (PST)
+        Sun, 9 Jan 2022 10:27:30 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A3EC06173F;
+        Sun,  9 Jan 2022 07:27:30 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id q25so34913001edb.2;
+        Sun, 09 Jan 2022 07:27:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=r/pE1ECBkfSNzadNoNYykzwMon5LhyL0GG0vfMrJjtg=;
-        b=Wsb+nMKWd2enNkyyKrUbL4DfRLHth/3QbZpJ/KFqka0EygV7ypMOU5GocL6Ls/2ydq
-         Z7LT7ReqWrJlPfTRWr6ednzK5QVQX3hPhnNkodooWBpitZklel+ofKjg2AEBvWPMOuvE
-         7J3WsJiKCVq18mOVUqQFMFwBYVhFsmPox/OU+GE5fojZykWkpBkgmfleVPo/XGRXyhOz
-         gReNLxFY65+d1TplRqZBgaJYy03UNX5CozaRAlnaL9ffgFL12kzKgEBEt9pnQnt97ngW
-         pW/dPZjzqMDF2G7Z3hxB8CGVS+R6LFuGq/HQp6/6tO+YClFNlxKbrKmdv2IYvkrTh7nA
-         x3Og==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=FvGKVkbPoLk160s03cYFMqXeMrS4eC4Yo28LpR7wSZw=;
+        b=LMRe01B2fNbEumBBtKwIIorsxK7i16MNKkIRaXNwdQN5piJeFnHt5MLsVCxOqK5Dmu
+         ZYhBMMPXITQZzIyx4qhqpg5KKyZl63kE9tdj1nJRtuKwJu08DsIujwJGqdESIKDGXZoI
+         0UCW+SbSuEtYq34Lr3/cVOUQhJ+n8xrqWOXHv38WMkMhLj5Wua59DypjHftzy/h5YF5i
+         KXX5oLHiewt2v/r5+aiZ4w0paGjylcxXRztouKbCe0POHWiwltUe2kZydJs5KfXnd4mK
+         34eWLUYDZ3jexU4Zms2d3T6iiicTZuCJxEWTre22KavqEWBbS7Q0GaQ9X/e/v6QEJ+O5
+         ZRww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=r/pE1ECBkfSNzadNoNYykzwMon5LhyL0GG0vfMrJjtg=;
-        b=kUI9iQdpgp68d4Mo2C2DLrXQxsk5fqisuIxyJXCGJ94LcHAqHVoozlOWHW8BqfUoNe
-         UP+d8kORxvxuEhOE9LJJ+sKJsA9rVgQ9kK92NfAC6ZlG8PzhOIW1kP1/CzVnlgqbImT6
-         iBb112eOUxTVNc5xD5QJzfPpuXYyWVgb9c2ErCC9ytc2OPearquyjdyiBOGMc3W9/aNz
-         IHZ0O6Kmrv3aNv1dU355wvmsB4fcFNElmf4qdJrGS30pBQkQC1CuBUNHl5cdEBWyvDnn
-         BtxVBHarfNRXNJrDRj8KXy5LI3yr0BI7ZmF9+1F9rBzlEBrKfNLFzVqDZY1/+iJKRLAv
-         Sayw==
-X-Gm-Message-State: AOAM53115Jk88uyinxD/RAOu52OKbDeLSUdXIBan9vJAX9x5l4ro8dcm
-        g+yVFJsSjRUoytNSEkOwH6bxJPf0Mek=
-X-Google-Smtp-Source: ABdhPJwdRSy4DpT/59DeBlaG0s/t9MI7vCHvyE7MRtojJWgI/BV2PgKNeofkpXxhMbNnktf6Rz7ffQ==
-X-Received: by 2002:a7b:c747:: with SMTP id w7mr1209955wmk.89.1641741676947;
-        Sun, 09 Jan 2022 07:21:16 -0800 (PST)
-Received: from standask-GA-A55M-S2HP ([188.123.115.255])
-        by smtp.gmail.com with ESMTPSA id g5sm4601786wrd.100.2022.01.09.07.21.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 07:21:16 -0800 (PST)
-Date:   Sun, 9 Jan 2022 16:21:15 +0100
-From:   Stanislav Jakubek <stano.jakubek@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] dt-bindings: vendor-prefixes: add F(x)tec
-Message-ID: <20220109152115.GA9102@standask-GA-A55M-S2HP>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=FvGKVkbPoLk160s03cYFMqXeMrS4eC4Yo28LpR7wSZw=;
+        b=AKLSeWgR0rs2jS/bwClUqGkW0+YyOG3jBNxu2pOnfBTI1EbpmSy8sBAvBwRkH8fwr1
+         8xtz7r5X9/rAWd0C8WkvqVrfE8wYBntzsDDyE8HLgNHxpWW+G+hh2a4+MKjuc2+Ws+x1
+         nWa385fsaoLVu4XoK9nwBh5nXejrXlTN/65hbhk5SgwWbn/vNUtEnTVcvnRhFxRCihlP
+         ldeF6BZyfCrorSzCDHMm286weHfR1J+7LRkfoHPE2X973SNM2IlXR2ecbiUz41hTXc+g
+         FXRpV3UIeRwrLnxmNO3PFZLtuHtrhr8Nmmg7B8+un558HpUhEQ/0HzlrG0UKRe0TP4Dw
+         PtQQ==
+X-Gm-Message-State: AOAM530UcSJWTs4vcRixEi+q0tQls/5ML0nPmh1K7B9cG/uO2qaKiEY7
+        jEWTW4/GcSWZVNXVMrzLg0U=
+X-Google-Smtp-Source: ABdhPJyzMm6ymM4prYuEf17YUomBN2JF7P4yBD4KFNg9QzadE1JGig2uY81GmWpJlxMLir2uCu/rYA==
+X-Received: by 2002:a17:906:344d:: with SMTP id d13mr11133627ejb.375.1641742048935;
+        Sun, 09 Jan 2022 07:27:28 -0800 (PST)
+Received: from [172.16.20.20] ([87.200.95.144])
+        by smtp.gmail.com with ESMTPSA id m12sm2157191edd.86.2022.01.09.07.27.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 09 Jan 2022 07:27:28 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.7\))
+Subject: Re: [PATCH 1/4] dt-bindings: interrupt-controller: New binding for
+ Meson-S4 SoCs
+From:   Christian Hewitt <christianshewitt@gmail.com>
+In-Reply-To: <20220108084218.31877-2-qianggui.song@amlogic.com>
+Date:   Sun, 9 Jan 2022 19:27:25 +0400
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A4441A27-7B49-4A9A-83FD-05144A63E705@gmail.com>
+References: <20220108084218.31877-1-qianggui.song@amlogic.com>
+ <20220108084218.31877-2-qianggui.song@amlogic.com>
+To:     Qianggui Song <qianggui.song@amlogic.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.7)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add vendor prefix for F(x)tec (https://www.fxtec.com/)
 
-Signed-off-by: Stanislav Jakubek <stano.jakubek@gmail.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+> On 8 Jan 2022, at 12:42 pm, Qianggui Song <qianggui.song@amlogic.com> =
+wrote:
+>=20
+> Update dt-binding document for GPIO interrupt controller of Meson-S4 =
+SoCs
+>=20
+> Signed-off-by: Qianggui Song <qianggui.song@amlogic.com>
+> ---
+> .../bindings/interrupt-controller/amlogic,meson-gpio-intc.txt    | 1 +
+> 1 file changed, 1 insertion(+)
+>=20
+> diff --git =
+a/Documentation/devicetree/bindings/interrupt-controller/amlogic,meson-gpi=
+o-intc.txt =
+b/Documentation/devicetree/bindings/interrupt-controller/amlogic,meson-gpi=
+o-intc.txt
+> index 23b18b92c558..9300736bf1ed 100644
+> --- =
+a/Documentation/devicetree/bindings/interrupt-controller/amlogic,meson-gpi=
+o-intc.txt
+> +++ =
+b/Documentation/devicetree/bindings/interrupt-controller/amlogic,meson-gpi=
+o-intc.txt
+> @@ -18,6 +18,7 @@ Required properties:
+>     "amlogic,meson-g12a-gpio-intc" for G12A SoCs (S905D2, S905X2, =
+S905Y2)
+>     "amlogic,meson-sm1-gpio-intc" for SM1 SoCs (S905D3, S905X3, =
+S905Y3)
+>     "amlogic,meson-a1-gpio-intc" for A1 SoCs (A113L)
+> +    "amlogic,meson-a1-gpio-intc" for S4 SoCs (S802X2, S905Y4, =
+S805X2G, S905W2)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index a13d6a19c2b4..0a6821f2d1e1 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -441,6 +441,8 @@ patternProperties:
-     description: Freescale Semiconductor
-   "^fujitsu,.*":
-     description: Fujitsu Ltd.
-+  "^fxtec,.*":
-+    description: FX Technology Ltd.
-   "^gardena,.*":
-     description: GARDENA GmbH
-   "^gateworks,.*":
--- 
-2.25.1
+^ should be "amlogic,meson-s4-gpio-intc=E2=80=9D ?
+
+Christian
+
+> - reg : Specifies base physical address and size of the registers.
+> - interrupt-controller : Identifies the node as an interrupt =
+controller.
+> - #interrupt-cells : Specifies the number of cells needed to encode an
+> --=20
+> 2.34.1
+>=20
+>=20
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>=20
 
