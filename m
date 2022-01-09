@@ -2,71 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE0EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 15:59:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 16:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235959AbiAIP66 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 10:58:58 -0500
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:62698 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235949AbiAIP65 (ORCPT
+        id S235967AbiAIQAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 11:00:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230112AbiAIQAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 10:58:57 -0500
-Received: from pop-os.home ([90.11.185.88])
-        by smtp.orange.fr with ESMTPA
-        id 6aatnj4tcIEdl6aatnRPiu; Sun, 09 Jan 2022 16:58:55 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 09 Jan 2022 16:58:55 +0100
-X-ME-IP: 90.11.185.88
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        netdev@vger.kernel.org
-Subject: [PATCH] hinic: Remove useless DMA-32 fallback configuration
-Date:   Sun,  9 Jan 2022 16:57:50 +0100
-Message-Id: <23541c28df8d0dcd3663b5dbe0f76af71e70e9cc.1641743855.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Sun, 9 Jan 2022 11:00:34 -0500
+Received: from haggis.mythic-beasts.com (haggis.mythic-beasts.com [IPv6:2a00:1098:0:86:1000:0:2:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF26C06173F;
+        Sun,  9 Jan 2022 08:00:33 -0800 (PST)
+Received: from [81.101.6.87] (port=47170 helo=jic23-huawei)
+        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <jic23@jic23.retrosnub.co.uk>)
+        id 1n6acF-00086N-Ss; Sun, 09 Jan 2022 16:00:20 +0000
+Date:   Sun, 9 Jan 2022 16:06:07 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Baolin Wang <baolin.wang7@gmail.com>
+Cc:     Cixi Geng <gengcixi@gmail.com>, Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>, yuming.zhu1@unisoc.com,
+        linux-iio@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/7] iio: adc: sc27xx: fix read big scale voltage not
+ right
+Message-ID: <20220109160532.5977aa08@jic23-huawei>
+In-Reply-To: <CADBw62pCDOu41G6t42dupuYF8F0mdhidNYg9=G7D+ns3AkyE_w@mail.gmail.com>
+References: <20220106125947.139523-1-gengcixi@gmail.com>
+        <20220106125947.139523-3-gengcixi@gmail.com>
+        <CADBw62pCDOu41G6t42dupuYF8F0mdhidNYg9=G7D+ns3AkyE_w@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-BlackCat-Spam-Score: 19
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-dev->dma_mask is non-NULL.
-So, if it fails, the 32 bits case will also fail for the same reason.
+On Fri, 7 Jan 2022 14:55:15 +0800
+Baolin Wang <baolin.wang7@gmail.com> wrote:
 
-Simplify code and remove some dead code accordingly.
+> On Thu, Jan 6, 2022 at 9:00 PM Cixi Geng <gengcixi@gmail.com> wrote:
+> >
+> > From: Cixi Geng <cixi.geng1@unisoc.com>
+> >
+> > Fix wrong configuration value of SC27XX_ADC_SCALE_MASK and
+> > SC27XX_ADC_SCALE_SHIFT by spec documetation.
+> >
+> > Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>  
+> 
+> Reviewed-by: Baolin Wang <baolin.wang7@gmail.com>
 
-[1]: https://lkml.org/lkml/2021/6/7/398
+Fixes: tag for backports?
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/net/ethernet/huawei/hinic/hinic_main.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+or is this having no visible result today?
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_main.c b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-index 1e1b1be86174..05329292d940 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_main.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_main.c
-@@ -1392,12 +1392,8 @@ static int hinic_probe(struct pci_dev *pdev,
- 
- 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
--		dev_warn(&pdev->dev, "Couldn't set 64-bit DMA mask\n");
--		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev, "Failed to set DMA mask\n");
--			goto err_dma_mask;
--		}
-+		dev_err(&pdev->dev, "Failed to set DMA mask\n");
-+		goto err_dma_mask;
- 	}
- 
- 	err = nic_dev_init(pdev);
--- 
-2.32.0
+Jonathan
+
+> 
+> > ---
+> >  drivers/iio/adc/sc27xx_adc.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+> > index 00098caf6d9e..aee076c8e2b1 100644
+> > --- a/drivers/iio/adc/sc27xx_adc.c
+> > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > @@ -36,8 +36,8 @@
+> >
+> >  /* Bits and mask definition for SC27XX_ADC_CH_CFG register */
+> >  #define SC27XX_ADC_CHN_ID_MASK         GENMASK(4, 0)
+> > -#define SC27XX_ADC_SCALE_MASK          GENMASK(10, 8)
+> > -#define SC27XX_ADC_SCALE_SHIFT         8
+> > +#define SC27XX_ADC_SCALE_MASK          GENMASK(10, 9)
+> > +#define SC27XX_ADC_SCALE_SHIFT         9
+> >
+> >  /* Bits definitions for SC27XX_ADC_INT_EN registers */
+> >  #define SC27XX_ADC_IRQ_EN              BIT(0)
+> > --
+> > 2.25.1
+> >  
+> 
+> 
 
