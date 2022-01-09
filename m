@@ -2,126 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B70C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:02:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2789BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236097AbiAIRCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 12:02:40 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55173 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234264AbiAIRCi (ORCPT
+        id S236104AbiAIREH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 12:04:07 -0500
+Received: from fanzine2.igalia.com ([213.97.179.56]:36278 "EHLO
+        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234264AbiAIREF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 12:02:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641747757;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=xwlVvjpkCfCZyjeB70jf85ClGNNPpOVEysVuCxvxjrs=;
-        b=CIixVG/xDBeHErCQT5jMrPLwT6r878RcwjwQN7jJBZnucjbQEtf3XXQm87z66Gm1P26f25
-        Vi2E4WzcL7IsP4/Am94M2A4Sng+k+WHlD0GrCHZpK0bIZHBiB/+0V9ZKyOeYpicQozuftq
-        nZDllHyhGkD1V3SqF8+deTa9Ew0n49o=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-6-YzF9hxKwNau_K-rAPmJF5Q-1; Sun, 09 Jan 2022 12:02:36 -0500
-X-MC-Unique: YzF9hxKwNau_K-rAPmJF5Q-1
-Received: by mail-ot1-f69.google.com with SMTP id i3-20020a05683033e300b0057a02219a82so2127812otu.9
-        for <linux-kernel@vger.kernel.org>; Sun, 09 Jan 2022 09:02:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=xwlVvjpkCfCZyjeB70jf85ClGNNPpOVEysVuCxvxjrs=;
-        b=LnS3rTDuifT/odW+DZyymTUDzj+XwcsFHt0y4hvDBT+B0OP57K3vzPY89qUj54K8iM
-         dEGPJIEMMcPbJWUUrntOjKalsgKNnqXB5OH16Xy7N1xgJg6VYfcOxwm7ik3oAZDqNGno
-         S43224+ieU+A9MFeK98ul9MrNrTS6HpugH6wfWNJ7cRUST5qu73uTwIxjA4/aAIbbCyj
-         I1fdfyU9jZ283XAJuD5nTFP5dUFQ+L+adWhJNKRQuje7HWlfajU/QCofqKGexiKBONJj
-         Panj+dt75dr/G5s3nDNJuWnssoS/0dabrHt33P3na05orWwT8uoBTZe7Bxf5Ggt2VSUD
-         Yc0Q==
-X-Gm-Message-State: AOAM531gJFxFdy40x9lx8u4CI7TPzAL/mUc5zgjzsRoQkro7qhndXtl5
-        TvdV2XBy+7rAI9QMGYGvqmWMD6pMamcasx89XNZjopCH6gR1RZSJmRhXU1a+G+klHMJ16n56rbR
-        1yA1MMBGbXUOdETOmZuETf23/dFlZzBHl+z8j/ajyJLLirhkKW/vqEgtXttv/1XF3qpxZsIo=
-X-Received: by 2002:aca:ac04:: with SMTP id v4mr16677145oie.18.1641747755272;
-        Sun, 09 Jan 2022 09:02:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwYS7quo4u6yvWAJ/zoKA+4SvFRy2RcRYxIqGGm4jUm/S7mnSVWbuGpXJaqwfm4m0mhkGUP9w==
-X-Received: by 2002:aca:ac04:: with SMTP id v4mr16677113oie.18.1641747754912;
-        Sun, 09 Jan 2022 09:02:34 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id x26sm981729ote.78.2022.01.09.09.02.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 09 Jan 2022 09:02:34 -0800 (PST)
-Subject: Re: [PATCH] vdpa/mlx5: simplfy error handler in mlx5_vdpa_dev_add()
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, parav@nvidia.com,
-        si-wei.liu@oracle.com, xieyongji@bytedance.com,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-References: <20220109132422.4047425-1-trix@redhat.com>
- <20220109141207.GC70879@mtl-vdi-166.wap.labs.mlnx>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <26ef040d-8b18-aa65-85ab-6e223c97c39d@redhat.com>
-Date:   Sun, 9 Jan 2022 09:02:32 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Sun, 9 Jan 2022 12:04:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=VQx/8dWKgJHdIyM+DgjejvGRmovrauYKZw3XJ+tiTOg=; b=U3ZxykRseMSCBYqqXn7wEm1yxA
+        3XBBhPtPKFErdB7k0/kpk4uZDMcJvEUch2moxO5fUvIOCo9G+zWv9YpdiP0NAzlNzrOup5OVwIQZK
+        +EH5AWTiXf8tdDa8BCAb1tNWno8UYhrlLGE9t6pa6PAN5hJodT/wu6W94kaknwFnVl8nwU8tZbsX4
+        b02cf7aaLXDWkajWX99xpIGtk3oaDpmJkmJDzOsjiS6x/PZUXzx87WNVJ7Gi87Xoy3FNRlXk2W0kj
+        DMaEJ7EQyDMlDnjkJ+USTdQ6qoLWWPa4s21x5+CiyWY5vw/f6wzTvQJQdyus3k9CPIElbPR4RnJFH
+        voMTsARg==;
+Received: from [165.90.113.117] (helo=mail.igalia.com)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1n6bbu-000CTg-O6; Sun, 09 Jan 2022 18:04:02 +0100
+Date:   Sun, 9 Jan 2022 16:03:51 -0100
+From:   Melissa Wen <mwen@igalia.com>
+To:     =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     melissa.srw@gmail.com, rodrigosiqueiramelo@gmail.com,
+        hamohammed.sa@gmail.com, daniel@ffwll.ch, airlied@linux.ie,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v2 3/3] drm/vkms: drop "Multiple overlay planes"
+ TODO
+Message-ID: <20220109170333.pne3c3fbker6qoij@mail.igalia.com>
+References: <20220107182809.141003-1-jose.exposito89@gmail.com>
+ <20220107182809.141003-3-jose.exposito89@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220109141207.GC70879@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dgz2pd3efn6obs5k"
+Content-Disposition: inline
+In-Reply-To: <20220107182809.141003-3-jose.exposito89@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 1/9/22 6:12 AM, Eli Cohen wrote:
-> On Sun, Jan 09, 2022 at 05:24:22AM -0800, trix@redhat.com wrote:
->> From: Tom Rix <trix@redhat.com>
->>
->> The use of pfmdev is protected by two calls to is_zero_ether_add().
->> The second call in the error handler can be replaced by
->> checking if pfmdev was set as part of the earlier call.
->>
->> Signed-off-by: Tom Rix <trix@redhat.com>
->> ---
-> It's not fixing anything, right?
-Correct, or I would have added a Fixes: tag
-> Maybe add justification for this change
-> by e.g. showing the code size had decreased or so?
+--dgz2pd3efn6obs5k
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Sorry, I thought I had done that.  Generally removing any function call 
-is a win and the worst case is a tie.
+On 01/07, Jos=E9 Exp=F3sito wrote:
+> Remove the task from the TODO list.
+>=20
+> Signed-off-by: Jos=E9 Exp=F3sito <jose.exposito89@gmail.com>
+> ---
+>  Documentation/gpu/vkms.rst | 2 --
+>  1 file changed, 2 deletions(-)
+>=20
+> diff --git a/Documentation/gpu/vkms.rst b/Documentation/gpu/vkms.rst
+> index 941f0e7e5eef..9c873c3912cc 100644
+> --- a/Documentation/gpu/vkms.rst
+> +++ b/Documentation/gpu/vkms.rst
+> @@ -124,8 +124,6 @@ Add Plane Features
+> =20
+>  There's lots of plane features we could add support for:
+> =20
+> -- Multiple overlay planes. [Good to get started]
+> -
+Hi Jos=E9,
 
-Tom
+Thanks for your patches.
+I'll apply to drm-misc-next.
 
->>   drivers/vdpa/mlx5/net/mlx5_vnet.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->> index 37220f6db7ad7..2d38b8fe9305e 100644
->> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
->> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
->> @@ -2530,7 +2530,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
->>   {
->>   	struct mlx5_vdpa_mgmtdev *mgtdev = container_of(v_mdev, struct mlx5_vdpa_mgmtdev, mgtdev);
->>   	struct virtio_net_config *config;
->> -	struct mlx5_core_dev *pfmdev;
->> +	struct mlx5_core_dev *pfmdev = NULL;
->>   	struct mlx5_vdpa_dev *mvdev;
->>   	struct mlx5_vdpa_net *ndev;
->>   	struct mlx5_core_dev *mdev;
->> @@ -2654,7 +2654,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name,
->>   err_res:
->>   	mlx5_vdpa_free_resources(&ndev->mvdev);
->>   err_mpfs:
->> -	if (!is_zero_ether_addr(config->mac))
->> +	if (pfmdev)
->>   		mlx5_mpfs_del_mac(pfmdev, config->mac);
->>   err_mtu:
->>   	mutex_destroy(&ndev->reslock);
->> -- 
->> 2.26.3
->>
+Reviewed-by: Melissa Wen <mwen@igalia.com>
 
+>  - Clearing primary plane: clear primary plane before plane composition (=
+at the
+>    start) for correctness of pixel blend ops. It also guarantees alpha ch=
+annel
+>    is cleared in the target buffer for stable crc. [Good to get started]
+> --=20
+> 2.25.1
+>=20
+
+--dgz2pd3efn6obs5k
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEd8WOo/JViG+Tu+XIwqF3j0dLehwFAmHbFXcACgkQwqF3j0dL
+ehz21Q/+J6ze3jt3GPGdHF9g8N902t9ONcivJdye/u9Or6r6IGkO9ZBMXY7+tv0q
+eadf/DH6mWhq0bYHlWu3g0VwByJa092Izjrr/7lBYFcxrSm936VRmT8wQHL/t0Ds
+1v3Dam/f29XhQ1/WIylWiSzqKMQa+r3HW47HN48j/VVW6i7kEstYvH7h/xsYMQZB
+zXcNQxpX+MusRLmMLB8BLYPpSYyVdo1vvx9wsM+SPlNTEsxXvlH36E6822xdhdFo
+VssQaAmpqoVX+4JmKBY5ZFyKHcayro0rBlTaSyNoWtQIajAIdY7rs/iYYnHojy8e
+toHZerLL71jum3CkbZ+oB8uYSrI8rUrcxcxU+wKQpn04+xsflB+eC6gc/9c9Tmvm
+AgnZH9rv034ZBOcLEHZ00F+UqJtlzviY6COFMC8lzp698yQ2NPpHjkofqs3BM5Ph
+cIvANCZImNfmR0Kvu2sGX8Bexr8bVA/zg3I2ur400ncdsEObh4qhIm/MVT5R1i15
+fYRS+p0qxnUnogNbx8rm9FqOVaze6sn1DTgwj/Fm6IcvBI9ob7z+Rd8+7P4DUOwN
+whAuEDPMAbiDj7FaE27nHKm/O1X5oQlDi9ghfZlWUQzDRY6F9zPalvJxWZsAQx+M
+pnFxJQZYAV4lypF4vtXuKjOImYn7f2yBCR9wxP5edBhNivEo8KQ=
+=dx9a
+-----END PGP SIGNATURE-----
+
+--dgz2pd3efn6obs5k--
