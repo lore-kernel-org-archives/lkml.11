@@ -2,178 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C892C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 15:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C8BC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 15:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234202AbiAIP1e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 10:27:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234160AbiAIP1b (ORCPT
+        id S234466AbiAIPbD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 10:31:03 -0500
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:53587 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234160AbiAIPbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 10:27:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64ED9C06173F;
-        Sun,  9 Jan 2022 07:27:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C4A0B80C72;
-        Sun,  9 Jan 2022 15:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EEB8C36AED;
-        Sun,  9 Jan 2022 15:27:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641742048;
-        bh=3b6/4NoAXJJWUq2gsg5iKUmGqebtBOvDSo33LeKf8cI=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=a1hj3BUPWWcC7naVx2AqX6O5K4Bl3I+t2LBa9cQpCeBaYAyBwaQn/PS+HGCeidy8q
-         V59tCbLL4SVGkupihAebTzDinf84wfBOUo5fKOH7h3X5A0HUfBNkBat2GC2klEJeJY
-         z+IrlZGIg9r8ZNjuzIUxUmJMEv6GlWlOIoflShkFfNhrr3x3ss7+217Fc1LcujWwRm
-         7pL1r7FXe40v8cxvGgS62Sd7KvDKkZkLRU+AyfWhS4/bR++UNpoDXsTk0iczsBxVVz
-         WuIg7JKBR2T5fTONlCI3jYhT3vWzHFWf9ioixoaAQwvW7eDBJGFhPbJuSq/hJfW7C+
-         gd+Ip0LdKRERQ==
-Message-ID: <6e44856a8711bf1eb95c16de9efdb1bb108cf25c.camel@kernel.org>
-Subject: Re: [PATCH v4 63/68] cifs: Support fscache indexing rewrite
- (untested)
-From:   Jeff Layton <jlayton@kernel.org>
-To:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
-        Steve French <sfrench@samba.org>
-Cc:     Shyam Prasad N <nspmangalore@gmail.com>,
-        linux-cifs@vger.kernel.org,
-        Trond Myklebust <trondmy@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Omar Sandoval <osandov@osandov.com>,
-        JeffleXu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        ceph-devel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sun, 09 Jan 2022 10:27:25 -0500
-In-Reply-To: <3419813.1641592362@warthog.procyon.org.uk>
-References: <164021579335.640689.2681324337038770579.stgit@warthog.procyon.org.uk>
-         <164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk>
-         <3419813.1641592362@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        Sun, 9 Jan 2022 10:31:02 -0500
+Received: from localhost.localdomain ([124.33.176.97])
+        by smtp.orange.fr with ESMTPA
+        id 6a9inm5uWE8xT6a9pnoRe2; Sun, 09 Jan 2022 16:31:01 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: MDU0YmViZGZmMDIzYiBlMiM2NTczNTRjNWZkZTMwOGRiOGQ4ODf3NWI1ZTMyMzdiODlhOQ==
+X-ME-Date: Sun, 09 Jan 2022 16:31:01 +0100
+X-ME-IP: 124.33.176.97
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-can@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Subject: [PATCH iproute2-next v4] iplink_can: add ctrlmode_{supported,_static} to the "--details --json" output
+Date:   Mon, 10 Jan 2022 00:30:40 +0900
+Message-Id: <20220109153040.521632-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-01-07 at 21:52 +0000, David Howells wrote:
-> This patch isn't quite right and needs a fix.  The attached patch fixes it.
-> I'll fold that in and post a v5 of this patch.
-> 
-> David
-> ---
-> cifs: Fix the fscache cookie management
-> 
-> Fix the fscache cookie management in cifs in the following ways:
-> 
->  (1) The cookie should be released in cifs_evict_inode() after it has been
->      unused from being pinned by cifs_set_page_dirty().
-> 
->  (2) The cookie shouldn't be released in cifsFileInfo_put_final().  That's
->      dealing with closing a file, not getting rid of an inode.  The cookie
->      needs to persist beyond the last file close because writepages may
->      happen after closure.
-> 
->  (3) The cookie needs to be used in cifs_atomic_open() to match
->      cifs_open().  As yet unknown files being opened for writing seem to go
->      by the former route rather than the latter.
-> 
-> This can be triggered by something like:
-> 
->         # systemctl start cachefilesd
->         # mount //carina/test /xfstest.test -o user=shares,pass=xxxx.fsc
->         # bash 5</xfstest.test/bar
->         # echo hello >/xfstest.test/bar
-> 
-> The key is to open the file R/O and then open it R/W and write to it whilst
-> it's still open for R/O.  A cookie isn't acquired if it's just opened R/W
-> as it goes through the atomic_open method rather than the open method.
-> 
-> Signed-off-by: David Howells <dhowells@redhat.com>
-> ---
->  fs/cifs/cifsfs.c |    8 ++++++++
->  fs/cifs/dir.c    |    4 ++++
->  fs/cifs/file.c   |    2 --
->  3 files changed, 12 insertions(+), 2 deletions(-)
-> 
-> diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-> index d3f3acf340f1..26cf2193c9a2 100644
-> --- a/fs/cifs/cifsfs.c
-> +++ b/fs/cifs/cifsfs.c
-> @@ -398,6 +398,7 @@ cifs_evict_inode(struct inode *inode)
->  	truncate_inode_pages_final(&inode->i_data);
->  	if (inode->i_state & I_PINNING_FSCACHE_WB)
->  		cifs_fscache_unuse_inode_cookie(inode, true);
-> +	cifs_fscache_release_inode_cookie(inode);
->  	clear_inode(inode);
->  }
->  
-> @@ -722,6 +723,12 @@ static int cifs_show_stats(struct seq_file *s, struct dentry *root)
->  }
->  #endif
->  
-> +static int cifs_write_inode(struct inode *inode, struct writeback_control *wbc)
-> +{
-> +	fscache_unpin_writeback(wbc, cifs_inode_cookie(inode));
-> +	return 0;
-> +}
-> +
->  static int cifs_drop_inode(struct inode *inode)
->  {
->  	struct cifs_sb_info *cifs_sb = CIFS_SB(inode->i_sb);
-> @@ -734,6 +741,7 @@ static int cifs_drop_inode(struct inode *inode)
->  static const struct super_operations cifs_super_ops = {
->  	.statfs = cifs_statfs,
->  	.alloc_inode = cifs_alloc_inode,
-> +	.write_inode	= cifs_write_inode,
->  	.free_inode = cifs_free_inode,
->  	.drop_inode	= cifs_drop_inode,
->  	.evict_inode	= cifs_evict_inode,
-> diff --git a/fs/cifs/dir.c b/fs/cifs/dir.c
-> index 6e8e7cc26ae2..6186824b366e 100644
-> --- a/fs/cifs/dir.c
-> +++ b/fs/cifs/dir.c
-> @@ -22,6 +22,7 @@
->  #include "cifs_unicode.h"
->  #include "fs_context.h"
->  #include "cifs_ioctl.h"
-> +#include "fscache.h"
->  
->  static void
->  renew_parental_timestamps(struct dentry *direntry)
-> @@ -509,6 +510,9 @@ cifs_atomic_open(struct inode *inode, struct dentry *direntry,
->  		rc = -ENOMEM;
->  	}
->  
-> +	fscache_use_cookie(cifs_inode_cookie(file_inode(file)),
-> +			   file->f_mode & FMODE_WRITE);
-> +
->  out:
->  	cifs_put_tlink(tlink);
->  out_free_xid:
-> diff --git a/fs/cifs/file.c b/fs/cifs/file.c
-> index d872f6fe8e7d..44da7646f789 100644
-> --- a/fs/cifs/file.c
-> +++ b/fs/cifs/file.c
-> @@ -376,8 +376,6 @@ static void cifsFileInfo_put_final(struct cifsFileInfo *cifs_file)
->  	struct cifsLockInfo *li, *tmp;
->  	struct super_block *sb = inode->i_sb;
->  
-> -	cifs_fscache_release_inode_cookie(inode);
-> -
->  	/*
->  	 * Delete any outstanding lock records. We'll lose them when the file
->  	 * is closed anyway.
-> 
+This patch is the userland counterpart of [1]. Indeed, [1] enables the
+can netlink interface to report the CAN controller capabilities.
 
-Looks good.
+Previously, only the options which were switched on were reported
+(i.e. can_priv::ctrlmode). Here, we add two additional pieces of
+information to the json report:
 
-Acked-by: Jeff Layton <jlayton@kernel.org>
+  - ctrlmode_supported: the options that can be modified by netlink
+
+  - ctrlmode_static: option which are statically enabled by the driver
+    (i.e. can not be turned off)
+
+For your information, we borrowed the naming convention from struct
+can_priv [2].
+
+Contrary to the ctrlmode, the ctrlmode_{supported,_static} are only
+reported in the json context. The reason is that this newly added
+information can quickly become very verbose and we do not want to
+overload the default output. You can think of the "ip --details link
+show canX" output as the verbose mode and the "ip --details --json
+link show canX" output as the *very* verbose mode.
+
+
+*Example:*
+
+This is how the output would look like for a dummy driver which would
+have:
+
+  - CAN_CTRLMODE_LOOPBACK, CAN_CTRLMODE_LISTENONLY,
+    CAN_CTRLMODE_3_SAMPLES, CAN_CTRLMODE_FD, CAN_CTRLMODE_CC_LEN8_DLC
+    and TDC-AUTO supported by the driver
+
+  - CAN_CTRLMODE_CC_LEN8_DLC turned on by the user
+
+  - CAN_CTRLMODE_FD_NON_ISO statically enabled by the driver
+
+| $ ip link set can0 type can cc-len8-dlc on
+| $ ip --details --json --pretty link show can0
+| [ {
+|         "ifindex": 1,
+|         "ifname": "can0",
+|         "flags": [ "NOARP","ECHO" ],
+|         "mtu": 16,
+|         "qdisc": "noop",
+|         "operstate": "DOWN",
+|         "linkmode": "DEFAULT",
+|         "group": "default",
+|         "txqlen": 10,
+|         "link_type": "can",
+|         "promiscuity": 0,
+|         "min_mtu": 0,
+|         "max_mtu": 0,
+|         "linkinfo": {
+|             "info_kind": "can",
+|             "info_data": {
+|                 "ctrlmode": [ "FD-NON-ISO","CC-LEN8-DLC" ],
+|                 "ctrlmode_supported": [ "LOOPBACK","LISTEN-ONLY","TRIPLE-SAMPLING","FD","CC-LEN8-DLC","TDC-AUTO" ],
+|                 "ctrlmode_static": [ "FD-NON-ISO" ],
+|                 "state": "STOPPED",
+|                 "restart_ms": 0,
+|                 "bittiming_const": {
+|                     "name": "DUMMY_CAN_DEV",
+|                     "tseg1": {
+|                         "min": 2,
+|                         "max": 256
+|                     },
+|                     "tseg2": {
+|                         "min": 2,
+|                         "max": 128
+|                     },
+|                     "sjw": {
+|                         "min": 1,
+|                         "max": 128
+|                     },
+|                     "brp": {
+|                         "min": 1,
+|                         "max": 512
+|                     },
+|                     "brp_inc": 1
+|                 },
+|                 "data_bittiming_const": {
+|                     "name": "DUMMY_CAN_DEV",
+|                     "tseg1": {
+|                         "min": 2,
+|                         "max": 32
+|                     },
+|                     "tseg2": {
+|                         "min": 1,
+|                         "max": 16
+|                     },
+|                     "sjw": {
+|                         "min": 1,
+|                         "max": 8
+|                     },
+|                     "brp": {
+|                         "min": 1,
+|                         "max": 32
+|                     },
+|                     "brp_inc": 1,
+|                     "tdc": {
+|                         "tdco": {
+|                             "min": 0,
+|                             "max": 127
+|                         },
+|                         "tdcf": {
+|                             "min": 0,
+|                             "max": 127
+|                         }
+|                     }
+|                 },
+|                 "clock": 80000000
+|             }
+|         },
+|         "num_tx_queues": 1,
+|         "num_rx_queues": 1,
+|         "gso_max_size": 65536,
+|         "gso_max_segs": 65535,
+|         "parentbus": "usb",
+|         "parentdev": "1-10:1.1"
+|     } ]
+
+As mentioned above, the default output remains unchanged:
+
+| $ ip --details link show can0
+| 1: can0: <NOARP,ECHO> mtu 16 qdisc noop state DOWN mode DEFAULT group default qlen 10
+|     link/can  promiscuity 0 minmtu 0 maxmtu 0
+|     can <FD-NON-ISO,CC-LEN8-DLC> state STOPPED restart-ms 0
+| 	  DUMMY_CAN_DEV: tseg1 2..256 tseg2 2..128 sjw 1..128 brp 1..512 brp_inc 1
+| 	  DUMMY_CAN_DEV: dtseg1 2..32 dtseg2 1..16 dsjw 1..8 dbrp 1..32 dbrp_inc 1
+| 	  tdco 0..127 tdcf 0..127
+| 	  clock 80000000 numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535 parentbus usb parentdev 1-10:1.1
+
+
+[1] commit 383f0993fc77 ("can: netlink: report the CAN controller mode
+    supported flags")
+    https://lore.kernel.org/linux-can/20220105144402.1174191-16-mkl@pengutronix.de/T/#u
+
+[2] https://elixir.bootlin.com/linux/v5.14/source/include/linux/can/dev.h#61
+
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+
+* Changelog *
+
+v3 -> v4
+
+  - Drop the RFC tag after receiving no comments on v3:
+  https://lore.kernel.org/linux-can/CAMZ6Rq+hrAu=mDPHw1yXhw9UKhQiSe3E9p6agudOzqbgo9sDtA@mail.gmail.com/T/#t
+
+v2 -> v3
+
+  - Rebased on the latest version of iproute2-next.
+  - Minor changes in the commit description.
+
+v1 -> v2
+
+  - The kernel uapi was modified to use a new NLA_NESTED entry instead
+    of reusing struct can_ctrlmode. The second and third patch of the
+    series were updated accordingly.
+
+---
+ ip/iplink_can.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+diff --git a/ip/iplink_can.c b/ip/iplink_can.c
+index f4b37528..854ccc31 100644
+--- a/ip/iplink_can.c
++++ b/ip/iplink_can.c
+@@ -396,6 +396,20 @@ static void can_print_tdc_const_opt(FILE *f, struct rtattr *tdc_attr)
+ 	close_json_object();
+ }
+ 
++static void can_print_ctrlmode_ext(FILE *f, struct rtattr *ctrlmode_ext_attr,
++				   __u32 cm_flags)
++{
++	struct rtattr *tb[IFLA_CAN_CTRLMODE_MAX + 1];
++
++	parse_rtattr_nested(tb, IFLA_CAN_CTRLMODE_MAX, ctrlmode_ext_attr);
++	if (tb[IFLA_CAN_CTRLMODE_SUPPORTED]) {
++		__u32 *supported = RTA_DATA(tb[IFLA_CAN_CTRLMODE_SUPPORTED]);
++
++		print_ctrlmode(PRINT_JSON, *supported, "ctrlmode_supported");
++		print_ctrlmode(PRINT_JSON, cm_flags & ~*supported, "ctrlmode_static");
++	}
++}
++
+ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ {
+ 	if (!tb)
+@@ -405,6 +419,9 @@ static void can_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
+ 		struct can_ctrlmode *cm = RTA_DATA(tb[IFLA_CAN_CTRLMODE]);
+ 
+ 		print_ctrlmode(PRINT_ANY, cm->flags, "ctrlmode");
++		if (tb[IFLA_CAN_CTRLMODE_EXT])
++			can_print_ctrlmode_ext(f, tb[IFLA_CAN_CTRLMODE_EXT],
++					       cm->flags);
+ 	}
+ 
+ 	if (tb[IFLA_CAN_STATE]) {
+-- 
+2.34.1
+
