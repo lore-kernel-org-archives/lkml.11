@@ -2,121 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE83AC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 19:44:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 671ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 19:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236784AbiAIToe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 14:44:34 -0500
-Received: from mout.gmx.net ([212.227.15.18]:38963 "EHLO mout.gmx.net"
+        id S236823AbiAITop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 14:44:45 -0500
+Received: from mout.gmx.net ([212.227.15.18]:55783 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236772AbiAITod (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 14:44:33 -0500
+        id S236776AbiAITof (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 9 Jan 2022 14:44:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641757450;
-        bh=c91afZdekR7n/9J8hO61bQWbB88jCJyRcF24lRYg36g=;
+        s=badeba3b8450; t=1641757453;
+        bh=kPS5EfnGgwXkGrSWtnVSZACxfMp0WTeu7Ps3qWfybCs=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=KUQpPcOfe95vD9e5Oh9cITT7GP/xIJ/Bz5IwG+5/cK1dGA5uJjMH+sBwPRRQb42o1
-         QTC13dpJ1QTC5W3aGHC8w73qcHdc3U8iM/9u74NYRa1iSU7jxnRJgIyZpaQytU9lDe
-         ADp0CHLgizrOA7ugEbf657hmZDB8YEUu4NpXqLns=
+        b=em2vBcBd/6+LdZfGI8RjVBiU+MNgz1y7QCdWrt73kokzm0+MlAVtQtB6UWkFBip0S
+         uNxe2LS3qflqIUHl9rIkVYBUJHuW99jh2b7IJUqlVPe5g7bnPndOzaMcxfqhusjbRV
+         Lgbk7zqPZyzSGORlNXqtdC7xBrzAw5KEABOGRpQU=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from esprimo-mx.fritz.box ([91.137.126.34]) by mail.gmx.net
  (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MAfYw-1nDCcs2jV2-00B0mY; Sun, 09 Jan 2022 20:44:10 +0100
+ 1MwwZd-1m8bRO15Fj-00yUjA; Sun, 09 Jan 2022 20:44:13 +0100
 From:   Armin Wolf <W_Armin@gmx.de>
 To:     pali@kernel.org
 Cc:     jdelvare@suse.com, linux@roeck-us.net, corbet@lwn.net,
         linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND v2 1/3] Documentation: admin-guide: Update i8k driver name
-Date:   Sun,  9 Jan 2022 20:43:58 +0100
-Message-Id: <20220109194400.58725-2-W_Armin@gmx.de>
+Subject: [PATCH RESEND v2 3/3] Documentation: ABI: Add ABI file for legacy /proc/i8k interface
+Date:   Sun,  9 Jan 2022 20:44:00 +0100
+Message-Id: <20220109194400.58725-4-W_Armin@gmx.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220109194400.58725-1-W_Armin@gmx.de>
 References: <20220109194400.58725-1-W_Armin@gmx.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:rQPbT50102gs63WTVlswzbMmxrTOjkOUFqhKWRlMrZr0QTK8pql
- W/d3VyYMcpiSdyVVphij3BDBBanhm969bDzBvPjZ8yilhdbPCVUNatWGmtgVq2JHSf3T/tI
- MZ3yNpPckSNAIBphe+Qj6egJ+9XM4brP1k6U193J5U9ZONPLnwzBRxUoOLEUuTFYM+Xhac/
- CqXF+mTkQaNLCbam2GxTQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:avxYAcVIP3E=:CSlPKdPz5PPRKGugCW/men
- WpDjND9qW+B71FbioSmT6vgnYr5N751B1bZD63ycAQfQuXn7thBWRAVr68z2au2r1MJEETO16
- b5NQOD/W0zpc+MYrqeD0dLJqhg1UE+ZnywyR2Xu5Ae/YRREbp0oWBY0tllfmwuYwUv2KpjpjU
- INFAb+JHIJgrHksyCOPjNl8DcRaSmxLIziOoFeU/7riei0drJqLzjIJm5U6XNJl4RY2RvFuDH
- o9QyZlZsHyO0FD6u5i8HEVR9mc4xEm00XBqjrsrLgP5DrHQ58Cw/E1O+g+wtoCg/BLV0BSO5s
- jHg27wu/HJfii2KKYu8XPoBxnCRAZTlZCjaIK7g6H7ooYwtsV+ze1oFvppzIykuNFy+x/TbeG
- Et0RjyKWok911rajOubc+lmGcN3Yjv/tMJcu1v+d0a0wG+5PO5+8jBdtXEqB16yUutreqR7nH
- MgFUBCRtHma02/1GoBJVJMYT2S7qADQsgBOqvFze5eRoAl+EnCRM3T3mj4Ax53CP1dVL2F6oU
- ZOu3JoCa4n5ZmA+jADBRZuUiiR7qIz7ErBm1wDyuTQrLI7SckB5ienVISfvlfhz+/vsnI1AQr
- PneG2ayYtmEIw3eMxsmWyH71Tzd+KS00C+V4gHO5oSTBGisPDIk6KAJRAufraizS9RS4wfQVr
- /cLktDp54o18Q5BeAyboDgF85vrfJSEdkPFCLX+0KFjA9jTkgEZWSNVWmhH8J6+zrzTeU9nfJ
- NGzwynx3+mBUm1lpT8ySH9esxPvZgxy5G9JyDUwjqb3vg4qk6iBOgshjIDTr/B+31bCLQcHj/
- 4ZBP5gfegIMtOF7twUaPmcYFkFhzKwR7PZfruAZkNcQYLq21d/wfLG1lT3tf5YmbzV5hf+k4l
- VXTZd1PJ6zfhqZ6P+hJjcGYWikxzQwMqA0GjbQHr2TuL9W/XenYeGl03lau4ipO8gXj0XmKCv
- iHnPeqTkoYxyblJ6byacfIzs+H2dVO/p4GFy3ZCNN/8j5pJx58COqL1xrmO1m5MyNlBESE8Uc
- 6b9aTulbr1OkdEcX4kx3F8RHgI+H0O/qY6SDhRJZiQUb8F1zvpk3/rmep+QuU6D1VogDOCQ5B
- pmR9E0LQJa44ms=
+X-Provags-ID: V03:K1:JEQ52nxrMFsfxy1JnoEUzH10MJYD6S3NCw0kV1Jcn6dkFBs9qbZ
+ VUMEOoWysfScbF8A15MJ/F8OGFZptA2fci77hD+Mh9GeSSIs07ONOB49m+bagYl5VPT1nzL
+ wbW6A/wYi3KprFg+7TqiDp6FhBl8IoKQWi9wJUTiCZCV6LOWyLIuk5rHfcdKZ0n7RlMYH5Q
+ Cp5cUosXb8zserQFIlQWA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:o4+CAvDT8Xg=:IqteRKnyxpmEFMjx52xLLZ
+ mPjMR4sJ6JEuhqezL/uzCP3G8d/GSWpF6ncQCjNEDIYyFvpPMHHAVk34Lz4m2TPXDhahkumwB
+ WRiZKKeFuIRncm+KqVmszY8JUMcV+vGeKxeOrdqJ4+UxkV8CzhtKm5Rwh6O9oAHhIhJhddrmy
+ A8rJME3UQWRNSyDydFoqD+c4xumIR9izZnG6HJYJgj+rVH+G2Ari83EJkZG9ifFa78YUvgImE
+ 8IcsPqPlfTA7sUgCTNDdUxCcgXMPVMVmzFEWAfTLX/GkMnyDtC5H8ZxXkaiLLbYLbgx5ThUVr
+ sGdZXBz9dYkS6Qh64/saKAJyGJE8FDmZ82NEWzR6srV5udpniw17FpblY0xgeHb2pfaUdGCVH
+ ZXglCkdS3iqiZ6Zv1hMKUp7/zgyNOf3Ayig1TWU3+6B/KojDJDhYi4IWi9x05czqGRBb5iyMa
+ oV6uUTQFb3FsmaGry189bMLEBAYpsqyxfhgfEQUXecl0cfxHeiPpqiETyrcpFXd6NhTZK4eHd
+ NXFOSyM6bx0/8p7NcnbPL/uwZaGKXxwV1eFCgxiriO5I5WU2N9qhtsxPBsbRFHiRfN36CRkUz
+ d+pBMGEbW8A9WsAYDOVjueITfMFg7/nJJpcyhLbxVXxEonjH5PTvNgr1010ZsSRSvPbxcKE4G
+ J1DF0T7sPISjFVvi5eX//VkNKb2ZHiQOey8WcJ7gkezeKQXoqJwfWBpR6h3SU48EcyZGugKOr
+ hPpy5D4E9NA51IyJ7wtqMeCApWuj/XNggS/aq+v/i6Da8ZDZ8d5X803+D4hUKq0EeiNBV9wDI
+ om9716/2pJhXpIadf8edBxDzLgb3va4YgcAl/O0jL8wAwlIn3HBumjKz/5IrIj3raUd9paaEL
+ tICvgCMyusQK4H4t3mygxnSSpG08p2aoEHNE50ARIPSGFYKH0XsgEHNPfkNp7jwnMB5MAv64H
+ H/bgVi434Ss2343P3eIQXV61ws5VJ2uktOZXLyqXxPW1aoo2uTfyJTlNnB08KHC4GCyn0PFEz
+ yRjF6qRZTP2QhuL1HLvIydbSrqjbFj+8RUj6HbP5vKhTo2IaBSncBUzRaUOdSiWUE025vtK80
+ hxu/e5E5uWDZFI=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver should be called dell_smm_hwmon, i8k is only
-an alias now.
+Add ABI file for informing remaining users of the
+deprecation of the legacy /proc/i8k interface.
 
 Signed-off-by: Armin Wolf <W_Armin@gmx.de>
 =2D--
- .../admin-guide/kernel-parameters.txt         | 29 ++++++++++++-------
- 1 file changed, 18 insertions(+), 11 deletions(-)
+ Documentation/ABI/obsolete/procfs-i8k | 10 ++++++++++
+ MAINTAINERS                           |  1 +
+ 2 files changed, 11 insertions(+)
+ create mode 100644 Documentation/ABI/obsolete/procfs-i8k
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentati=
-on/admin-guide/kernel-parameters.txt
-index 2fba82431efb..cb1331f85444 100644
-=2D-- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -935,6 +935,24 @@
- 			dump out devices still on the deferred probe list after
- 			retrying.
+diff --git a/Documentation/ABI/obsolete/procfs-i8k b/Documentation/ABI/obs=
+olete/procfs-i8k
+new file mode 100644
+index 000000000000..32df4d5bdd15
+=2D-- /dev/null
++++ b/Documentation/ABI/obsolete/procfs-i8k
+@@ -0,0 +1,10 @@
++What:		/proc/i8k
++Date:		November 2001
++KernelVersion:	2.4.14
++Contact:	Pali Roh=C3=A1r <pali@kernel.org>
++Description:	Legacy interface for getting/setting sensor information like
++		fan speed, temperature, serial number, hotkey status etc
++		on Dell Laptops.
++		Since the driver is now using the standard hwmon sysfs interface,
++		the procfs interface is deprecated.
++Users:		https://github.com/vitorafsr/i8kutils
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e7e40563498f..468ee16ee778 100644
+=2D-- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -5365,6 +5365,7 @@ F:	drivers/platform/x86/dell/dell-rbtn.*
+ DELL LAPTOP SMM DRIVER
+ M:	Pali Roh=C3=A1r <pali@kernel.org>
+ S:	Maintained
++F:	Documentation/ABI/obsolete/procfs-i8k
+ F:	drivers/hwmon/dell-smm-hwmon.c
+ F:	include/uapi/linux/i8k.h
 
-+	dell_smm_hwmon.ignore_dmi=3D
-+			[HW] Continue probing hardware even if DMI data
-+                        indicates that the driver is running on unsupport=
-ed
-+                        hardware.
-+
-+        dell_smm_hwmon.force=3D
-+			[HW] Activate driver even if SMM BIOS signature does
-+			not match list of supported models and enable otherwise
-+			blacklisted features.
-+
-+        dell_smm_hwmon.power_status=3D
-+                        [HW] Report power status in /proc/i8k
-+                        (disabled by default).
-+
-+        dell_smm_hwmon.restricted=3D
-+			[HW] Allow controlling fans only if SYS_ADMIN
-+                        capability is set.
-+
- 	dfltcc=3D		[HW,S390]
- 			Format: { on | off | def_only | inf_only | always }
- 			on:       s390 zlib hardware support for compression on
-@@ -1694,17 +1712,6 @@
-
- 	i810=3D		[HW,DRM]
-
--	i8k.ignore_dmi	[HW] Continue probing hardware even if DMI data
--			indicates that the driver is running on unsupported
--			hardware.
--	i8k.force	[HW] Activate i8k driver even if SMM BIOS signature
--			does not match list of supported models.
--	i8k.power_status
--			[HW] Report power status in /proc/i8k
--			(disabled by default)
--	i8k.restricted	[HW] Allow controlling fans only if SYS_ADMIN
--			capability is set.
--
- 	i915.invert_brightness=3D
- 			[DRM] Invert the sense of the variable that is used to
- 			set the brightness of the panel backlight. Normally a
 =2D-
 2.30.2
 
