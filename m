@@ -2,78 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7787C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbiAIR34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 12:29:56 -0500
-Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:63052 "EHLO
+        id S234351AbiAIRbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 12:31:00 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:49502 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiAIR3y (ORCPT
+        with ESMTP id S229572AbiAIRa6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 12:29:54 -0500
-Received: from pop-os.home ([90.11.185.88])
+        Sun, 9 Jan 2022 12:30:58 -0500
+Received: from [192.168.1.18] ([90.11.185.88])
         by smtp.orange.fr with ESMTPA
-        id 6c0unvbZtsoWh6c0vnvxx7; Sun, 09 Jan 2022 18:29:53 +0100
-X-ME-Helo: pop-os.home
+        id 6c1vnvbuksoWh6c1wnvy3b; Sun, 09 Jan 2022 18:30:56 +0100
+X-ME-Helo: [192.168.1.18]
 X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 09 Jan 2022 18:29:53 +0100
+X-ME-Date: Sun, 09 Jan 2022 18:30:56 +0100
 X-ME-IP: 90.11.185.88
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <29f3c7d1-f3ca-4a13-a9fb-7425e0941c37@wanadoo.fr>
+Date:   Sun, 9 Jan 2022 18:30:55 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH] i40e: Remove useless DMA-32 fallback configuration
+Content-Language: fr
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Christoph Hellwig <hch@lst.de>,
         Alexander Lobakin <alexandr.lobakin@intel.com>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH] i40e: Remove useless DMA-32 fallback configuration
-Date:   Sun,  9 Jan 2022 18:29:51 +0100
-Message-Id: <869bbf806431086683c64ad32594ff96e85b6aa2.1641749374.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
+References: <5549ec8837b3a6fab83e92c5206cc100ffd23d85.1641748468.git.christophe.jaillet@wanadoo.fr>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+In-Reply-To: <5549ec8837b3a6fab83e92c5206cc100ffd23d85.1641748468.git.christophe.jaillet@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-dev->dma_mask is non-NULL.
-So, if it fails, the 32 bits case will also fail for the same reason.
+Le 09/01/2022 à 18:14, Christophe JAILLET a écrit :
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+> 
+> So, if dma_set_mask_and_coherent() succeeds, 'pci_using_dac' is known to be
+> 1.
+> 
+> Simplify code and remove some dead code accordingly.
+> 
+> [1]: https://lkml.org/lkml/2021/6/7/398
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+>   drivers/net/ethernet/intel/e1000e/netdev.c | 22 +++++++---------------
+>   1 file changed, 7 insertions(+), 15 deletions(-)
 
-Simplify code and remove some dead code accordingly.
+NAK, wrong subject
 
-[1]: https://lkml.org/lkml/2021/6/7/398
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 2a3d8aef7f4e..0f11d3f5c98a 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -15324,12 +15324,9 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	/* set up for high or low dma */
- 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
- 	if (err) {
--		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
--		if (err) {
--			dev_err(&pdev->dev,
--				"DMA configuration failed: 0x%x\n", err);
--			goto err_dma;
--		}
-+		dev_err(&pdev->dev,
-+			"DMA configuration failed: 0x%x\n", err);
-+		goto err_dma;
- 	}
- 
- 	/* set up pci connections */
--- 
-2.32.0
-
+CJ
