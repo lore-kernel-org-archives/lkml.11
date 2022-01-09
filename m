@@ -2,79 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E319C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 13:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 13:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235663AbiAIN0w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 08:26:52 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:42931 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231201AbiAIN0v (ORCPT
+        id S235688AbiAINog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 08:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231659AbiAINof (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 08:26:51 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R901e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guoheyi@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V1Il5dP_1641734775;
-Received: from fdadf40dcbca.tbsite.net(mailfrom:guoheyi@linux.alibaba.com fp:SMTPD_---0V1Il5dP_1641734775)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 09 Jan 2022 21:26:48 +0800
-From:   Heyi Guo <guoheyi@linux.alibaba.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Heyi Guo <guoheyi@linux.alibaba.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH] drivers/i2c-aspeed: avoid invalid memory reference after timeout
-Date:   Sun,  9 Jan 2022 21:26:13 +0800
-Message-Id: <20220109132613.122912-1-guoheyi@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
+        Sun, 9 Jan 2022 08:44:35 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5B6C06173F;
+        Sun,  9 Jan 2022 05:44:34 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id t28so14894199wrb.4;
+        Sun, 09 Jan 2022 05:44:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=52m3cAr5ho39+A90qDDeWRtETep813HqexFom0iwyIA=;
+        b=e3bBdvOXVqf6a9VJuxaIv3LLsrqXm7ts4Wfks+Ox112hGzp6vR0WibHBZjFiXZbHxY
+         feYgMQLSCrHd+IQT4q4pAajXt2hEq0MzNEKJHL13ScBNmuHLcQFE92eAccQlCPyhF5qs
+         Q1U1VmoqcciOsmPrqNPaeKoF6RWypcz70PK0B1YhzkndJ20L/XC0zNzVRJ2q+bRXpS9m
+         YpmADOLrniM15wqEGmjf1E9FKzuKtQPAPpkk0siAKwadESFwLNeU4L0Y06NBPFy6l63Q
+         t7jzzV9zVnOx0V3qO3bo2g9GRTQ/MEQp5D6T1sW6y57OoIcUKzyonbwoDBscqzjqswUy
+         z7Vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=52m3cAr5ho39+A90qDDeWRtETep813HqexFom0iwyIA=;
+        b=Bhw3mIbZlqeLMg3kbWIUgs1c1xdvyjKM/4/cPNAvYfp4hWWRKNfp46DUvgjdZK4Szz
+         nlDJKJIs9S+YV+7aTnmbQUgFDelqpV4WflOgjRcPmv2w3OrU7rjAt3EHHk41RmWw+1qK
+         WraUdWQPxUri7EyUcUp3MUX7M7f08xAVBfIQEFHPvQVNft0LhXsSggBlbqglr5xM8oFV
+         wGWiPFhb2ic2+v8S2hho0Nm/CulxBzW1YPBN30f6Mc5kT17QTnz+Cz9Ksg/34CpOoPre
+         qZYCH0MjjZq51z6w4IlFt95+sEfhfHRAB635A9aFWGz41TkWyAIc1EHK4H2CbrrL0GZd
+         WG2A==
+X-Gm-Message-State: AOAM533eopso4aMJLqabPhgIhyPjRLqHLDth2GHU3c5kG982JBL0f5sJ
+        OjBm9emawOvKbq9szO2ow5s=
+X-Google-Smtp-Source: ABdhPJzqZvaI9Qr4opMxhBAw97xiC6bNnhQWCjPKZ19wN1BZ1YSkI1YbinnogShpjfQ82Jfbk+jR3w==
+X-Received: by 2002:a05:6000:2cc:: with SMTP id o12mr63321517wry.285.1641735873458;
+        Sun, 09 Jan 2022 05:44:33 -0800 (PST)
+Received: from standask-GA-A55M-S2HP ([188.123.115.255])
+        by smtp.gmail.com with ESMTPSA id k10sm4210912wrz.113.2022.01.09.05.44.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 09 Jan 2022 05:44:33 -0800 (PST)
+Date:   Sun, 9 Jan 2022 14:44:31 +0100
+From:   Stanislav Jakubek <stano.jakubek@gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] dt-bindings: vendor-prefixes: add 8devices
+Message-ID: <20220109134431.GA4560@standask-GA-A55M-S2HP>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The memory will be freed by the caller if transfer timeout occurs,
-then it would trigger kernel panic if the peer device responds with
-something after timeout and triggers the interrupt handler of aspeed
-i2c driver.
+Add vendor prefix for 8devices (https://www.8devices.com/)
 
-Set the msgs pointer to NULL to avoid invalid memory reference after
-timeout to fix this potential kernel panic.
-
-Signed-off-by: Heyi Guo <guoheyi@linux.alibaba.com>
-
--------
-
-Cc: Brendan Higgins <brendanhiggins@google.com>
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Joel Stanley <joel@jms.id.au>
-Cc: Andrew Jeffery <andrew@aj.id.au>
-Cc: Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-i2c@vger.kernel.org
-Cc: openbmc@lists.ozlabs.org
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-aspeed@lists.ozlabs.org
+Signed-off-by: Stanislav Jakubek <stano.jakubek@gmail.com>
 ---
- drivers/i2c/busses/i2c-aspeed.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-aspeed.c b/drivers/i2c/busses/i2c-aspeed.c
-index 67e8b97c0c950..3ab0396168680 100644
---- a/drivers/i2c/busses/i2c-aspeed.c
-+++ b/drivers/i2c/busses/i2c-aspeed.c
-@@ -708,6 +708,11 @@ static int aspeed_i2c_master_xfer(struct i2c_adapter *adap,
- 		spin_lock_irqsave(&bus->lock, flags);
- 		if (bus->master_state == ASPEED_I2C_MASTER_PENDING)
- 			bus->master_state = ASPEED_I2C_MASTER_INACTIVE;
-+		/*
-+		 * All the buffers may be freed after returning to caller, so
-+		 * set msgs to NULL to avoid memory reference after freeing.
-+		 */
-+		bus->msgs = NULL;
- 		spin_unlock_irqrestore(&bus->lock, flags);
- 
- 		return -ETIMEDOUT;
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index a13d6a19c2b4..d9a0c29971a6 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -25,6 +25,8 @@ patternProperties:
+   # Keep list in alphabetical order.
+   "^70mai,.*":
+     description: 70mai Co., Ltd.
++  "^8dev,.*":
++    description: 8devices, UAB
+   "^abb,.*":
+     description: ABB
+   "^abilis,.*":
 -- 
-2.17.1
+2.25.1
 
