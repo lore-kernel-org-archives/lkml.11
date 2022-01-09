@@ -2,77 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49B41C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 20:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35722C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 20:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236945AbiAIUif (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 15:38:35 -0500
-Received: from hua.moonlit-rail.com ([45.79.167.250]:41422 "EHLO
-        hua.moonlit-rail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiAIUie (ORCPT
+        id S236956AbiAIUiy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 15:38:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229579AbiAIUix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 15:38:34 -0500
-X-Greylist: delayed 1105 seconds by postgrey-1.27 at vger.kernel.org; Sun, 09 Jan 2022 15:38:34 EST
-Received: from 209-6-248-230.s2276.c3-0.wrx-ubr1.sbo-wrx.ma.cable.rcncustomer.com ([209.6.248.230] helo=boston.moonlit-rail.com)
-        by hua.moonlit-rail.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <bugs-a21@moonlit-rail.com>)
-        id 1n6efg-0005L8-6P;
-        Sun, 09 Jan 2022 15:20:08 -0500
-Received: from springdale.mc.moonlit-rail.com ([192.168.71.36])
-        by boston.moonlit-rail.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.95)
-        (envelope-from <bugs-a21@moonlit-rail.com>)
-        id 1n6eff-0008P0-GV;
-        Sun, 09 Jan 2022 15:20:07 -0500
-Message-ID: <4fac9803-50d2-0c83-8b49-a1b2058d7da0@moonlit-rail.com>
-Date:   Sun, 9 Jan 2022 15:20:07 -0500
+        Sun, 9 Jan 2022 15:38:53 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF23DC06173F;
+        Sun,  9 Jan 2022 12:38:52 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id w22so4439053iov.3;
+        Sun, 09 Jan 2022 12:38:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aUgjMWnA1IN7R+ANpNtaHO4QvxMEdQHiPYa1/JTQhjM=;
+        b=IwV3q9ht1h2hBcaQmOAGKqpqBhTcCCXyIV9yGk7wcXIyMKiPUDzbFTsloct6a608iR
+         JwEhWGPWQyYIvz3dcbJO7AIE114EUL61a23I058gP2Tm5lO3NWTtHx6biP+puIUIStpi
+         6Zy5qMHlhbr3FipO4iGWS4diSOY71GJI5BzISFYPjulmk25JXaiaLRUyr0e6nR4Wp0Th
+         wzztMQpVLgn9Tcmpp4r5hjg09IxGH/z43e1h7+236Gb5T+n2a3bNftxge/SvUXeqe0ui
+         BcoeLCqdn1hGI4Xv1YFBW3R8GG5y/v/abRkRj2wCTAVz0aKW2bJFkbseWwEQPaRTkiYA
+         6X7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aUgjMWnA1IN7R+ANpNtaHO4QvxMEdQHiPYa1/JTQhjM=;
+        b=uQXuz58OvV6r7tCm4E4FH4nNv7XFd38vhhLphQclP3ik8ndVdXxxG3lmCGxlJCb7Qh
+         MjvpGIe8ksqQV0LFiLjtP9pkmFaJlLbuug00rcLMrjpJD8jSGuElaiF2D4QFj/32uVXO
+         sVDaA2xIK8kc+Kho7UkFijSVktuLwEKY4p3B+3UhE1EPjBYSTYX4hMatKcIfEVEAPPba
+         fzeYKlvpWE9omzy7VpmAdLxxXLtlXjMWqgUo/ZG3OgVLXtZEO7XyW6JhzU3PC0EOhW2T
+         CaBW3Jp6HQR5PEft7hBgYtKeejrezHLgV/wQ5r7P5jfs4dG2VYJMC7Ow+eyZYC8K/+F5
+         m2QQ==
+X-Gm-Message-State: AOAM53085FFVEKUHdCP1uNnqnm2iHwH+ucQC5XhAABeC9xuJAQlWc3TW
+        o3jSu14cmUz2PrYgp6qXTQi8qgVYFoEw7bK2QuQ=
+X-Google-Smtp-Source: ABdhPJwXGNlIUiI8Ot7yHO5wT2K+zq/wsRQ/6JpZQUWK1OY7zqxDusKkMDHQL6lbCyw5EPAOXo18XwDRxpq+43oh7dc=
+X-Received: by 2002:a5d:9ec2:: with SMTP id a2mr35621393ioe.44.1641760732400;
+ Sun, 09 Jan 2022 12:38:52 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 1/2] video: vga16fb: Fix logic that checks for the display
- standard
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>
-References: <20220107110723.323276-1-javierm@redhat.com>
- <20220107110723.323276-2-javierm@redhat.com>
- <CAMuHMdXG3xOUrzOoRQVgpb4MmuQKJ1y3yPXv=p4AiNEohrzZug@mail.gmail.com>
-From:   "Kris Karas (Bug reporting)" <bugs-a21@moonlit-rail.com>
-In-Reply-To: <CAMuHMdXG3xOUrzOoRQVgpb4MmuQKJ1y3yPXv=p4AiNEohrzZug@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220106123357.16220-1-sj@kernel.org>
+In-Reply-To: <20220106123357.16220-1-sj@kernel.org>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Sun, 9 Jan 2022 21:38:40 +0100
+Message-ID: <CANiq72muzMPVUNJQU7Vcx0uCSEZc7Y_67LuX7PB=xNkCJ+NX7A@mail.gmail.com>
+Subject: Re: [PATCH] init/Kconfig: Specify the interpreter for rust-version.sh
+To:     SeongJae Park <sj@kernel.org>
+Cc:     Miguel Ojeda <ojeda@kernel.org>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Groetje, Geert,
-
-Geert Uytterhoeven wrote:
+On Thu, Jan 6, 2022 at 1:34 PM SeongJae Park <sj@kernel.org> wrote:
 >
->> -       par->isVGA = screen_info.orig_video_isVGA;
->> +       par->isVGA = screen_info.orig_video_isVGA == VIDEO_TYPE_VGAC;
-> All non-x86 architectures (except for 2 MIPS platforms) treat
-> orig_video_isVGA as a boolean flag, and just assign 1 to it.
-> Hence this change would break them.
+> Some common tools like 'diff' don't support permissions of the files.
+> Due to that, 'rust-version.sh' in some trees including '-mm' result in
+> having no execution permission, and therefore build fails like below:
 
-I see a bit of a conflict with using orig_video_isVGA as a boolean. All 
-the modern architecture-agnostic driver code, such as sysfb, 
-sysfb_simplefb, and efifb, all use and expect orig_video_isVGA to be an 
-integer.  On the other hand, the VGA driver for XEN first sets 
-orig_video_isVGA  = 1 (boolean), and then VIDEO_TYPE_VLFB or 
-VIDEO_TYPE_EFI (integer).  Overloading the definition for 
-orig_video_isVGA to be both boolean and integer - within the same file - 
-seems like a recipe for bugs to me.
+Do you mean the Quilt workflow? From a quick look:
 
-That said, I think that wrapping the par->isVGA code, above, within a 
-check for CONFIG_X86 seems safe and expedient.  But I would be much 
-happier if the non-x86 architectures would set it to a proper integer 
-value (even if fake) that coincidentally satisfies boolean "true", say 
-VIDEO_TYPE_VGAC; that way, there would be no confusion as to data type 
-in all the more recent architecture-agnostic framebuffer code.
+https://lists.nongnu.org/archive/html/quilt-dev/2008-01/msg00000.html
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=749069
 
-Kris
+Is that the issue? I am surprised it loses that information...
+
+> It's not a big deal, but not so fun.  This commit fixes the issue by
+> specifying the interpreter for 'rust-version.sh' in the Kconfig file.
+
+Other script calls do not do that, so I would prefer to avoid it. But
+I can take it temporarily to help you (until we are in mainline, if I
+understand correctly the issue), but I would prefer to have a comment
+nearby it justifying the workaround and explaining when we can remove
+it.
+
+Cheers,
+Miguel
