@@ -2,202 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7787C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun,  9 Jan 2022 17:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236329AbiAIR0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 12:26:42 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:43026 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234292AbiAIR0S (ORCPT
+        id S233878AbiAIR34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 12:29:56 -0500
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:63052 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229572AbiAIR3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 12:26:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1641749178; x=1673285178;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=NFcYIx9++qhumrrl4CNqWQ3EU5+nnEC/KIO7YgYlBHg=;
-  b=N4IOPPa0JuiLzOWFYS6WciD/muU1urKeB7er/AHexOYHzMh/H+7KrO1o
-   o5Hmr6Miki1cPC/ewrTHMZN5FAhgFyOEjTuu+O+zbYjxXKjeRW5XBv6hW
-   8sYoDkhASUg5EOpy56ueoKXSbZ8/1VLMgUhRkDv3VTP3uOsAQ3mJtdrOb
-   Q=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 09 Jan 2022 09:26:03 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2022 09:26:03 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sun, 9 Jan 2022 09:25:42 -0800
-Received: from mkshah-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sun, 9 Jan 2022 09:25:39 -0800
-From:   Maulik Shah <quic_mkshah@quicinc.com>
-To:     <bjorn.andersson@linaro.org>, <ulf.hansson@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <rafael@kernel.org>,
-        <daniel.lezcano@linaro.org>, <quic_lsrao@quicinc.com>,
-        <quic_rjendra@quicinc.com>, Lina Iyer <ilina@codeaurora.org>,
-        Maulik Shah <quic_mkshah@quicinc.com>
-Subject: [PATCH 06/10] soc: qcom: rpmh-rsc: Attach RSC to cluster PM domain
-Date:   Sun, 9 Jan 2022 22:55:03 +0530
-Message-ID: <1641749107-31979-7-git-send-email-quic_mkshah@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1641749107-31979-1-git-send-email-quic_mkshah@quicinc.com>
-References: <1641749107-31979-1-git-send-email-quic_mkshah@quicinc.com>
+        Sun, 9 Jan 2022 12:29:54 -0500
+Received: from pop-os.home ([90.11.185.88])
+        by smtp.orange.fr with ESMTPA
+        id 6c0unvbZtsoWh6c0vnvxx7; Sun, 09 Jan 2022 18:29:53 +0100
+X-ME-Helo: pop-os.home
+X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
+X-ME-Date: Sun, 09 Jan 2022 18:29:53 +0100
+X-ME-IP: 90.11.185.88
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Christoph Hellwig <hch@lst.de>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Subject: [PATCH] i40e: Remove useless DMA-32 fallback configuration
+Date:   Sun,  9 Jan 2022 18:29:51 +0100
+Message-Id: <869bbf806431086683c64ad32594ff96e85b6aa2.1641749374.git.christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lina Iyer <ilina@codeaurora.org>
+As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+dev->dma_mask is non-NULL.
+So, if it fails, the 32 bits case will also fail for the same reason.
 
-RSC is part the CPU subsystem and powers off the CPU domains when all
-the CPUs and no RPMH transactions are pending from any of the drivers.
-The RSC needs to flush the 'sleep' and 'wake' votes that are critical
-for saving power when all the CPUs are in idle.
+Simplify code and remove some dead code accordingly.
 
-Let's make RSC part of the CPU PM domains, by attaching it to the
-cluster power domain. Registering for PM domain notifications, RSC
-driver can be notified that the last CPU is powering down. When the last
-CPU is powering down the domain, let's flush the 'sleep' and 'wake'
-votes that are stored in the data buffers into the hardware and also
-write next wakeup in CONTROL_TCS.
+[1]: https://lkml.org/lkml/2021/6/7/398
 
-Signed-off-by: Lina Iyer <ilina@codeaurora.org>
-Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
 ---
- drivers/soc/qcom/rpmh-internal.h |  6 +++-
- drivers/soc/qcom/rpmh-rsc.c      | 60 ++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 62 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/soc/qcom/rpmh-internal.h b/drivers/soc/qcom/rpmh-internal.h
-index 344ba68..32ac117 100644
---- a/drivers/soc/qcom/rpmh-internal.h
-+++ b/drivers/soc/qcom/rpmh-internal.h
-@@ -97,7 +97,9 @@ struct rpmh_ctrlr {
-  * @rsc_pm:             CPU PM notifier for controller.
-  *                      Used when solver mode is not present.
-  * @cpus_in_pm:         Number of CPUs not in idle power collapse.
-- *                      Used when solver mode is not present.
-+ *                      Used when solver mode and "power-domains" is not present.
-+ * @genpd_nb:           PM Domain notifier for cluster genpd notifications.
-+ * @genpdb:             PM Domain for cluster genpd.
-  * @tcs:                TCS groups.
-  * @tcs_in_use:         S/W state of the TCS; only set for ACTIVE_ONLY
-  *                      transfers, but might show a sleep/wake TCS in use if
-@@ -117,6 +119,8 @@ struct rsc_drv {
- 	int id;
- 	int num_tcs;
- 	struct notifier_block rsc_pm;
-+	struct notifier_block genpd_nb;
-+	struct generic_pm_domain *genpd;
- 	atomic_t cpus_in_pm;
- 	struct tcs_group tcs[TCS_TYPE_NR];
- 	DECLARE_BITMAP(tcs_in_use, MAX_TCS_NR);
-diff --git a/drivers/soc/qcom/rpmh-rsc.c b/drivers/soc/qcom/rpmh-rsc.c
-index 01c2f50c..5875ad5 100644
---- a/drivers/soc/qcom/rpmh-rsc.c
-+++ b/drivers/soc/qcom/rpmh-rsc.c
-@@ -14,10 +14,13 @@
- #include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/module.h>
-+#include <linux/notifier.h>
- #include <linux/of.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/pm_domain.h>
-+#include <linux/pm_runtime.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <linux/wait.h>
-@@ -834,6 +837,51 @@ static int rpmh_rsc_cpu_pm_callback(struct notifier_block *nfb,
- 	return ret;
- }
- 
-+/**
-+ * rpmh_rsc_pd_callback() - Check if any of the AMCs are busy.
-+ * @nfb:    Pointer to the genpd notifier block in struct rsc_drv.
-+ * @action: GENPD_NOTIFY_PRE_OFF, GENPD_NOTIFY_OFF, GENPD_NOTIFY_PRE_ON or GENPD_NOTIFY_ON.
-+ * @v:      Unused
-+ *
-+ * This function is given to dev_pm_genpd_add_notifier() so we can be informed
-+ * about when cluster-pd is going down. When cluster go down we know no more active
-+ * transfers will be started so we write sleep/wake sets. This function gets
-+ * called from cpuidle code paths and also at system suspend time.
-+ *
-+ * If AMCs are not busy then writes cached sleep and wake messages to TCSes.
-+ * The firmware then takes care of triggering them when entering deepest low power modes.
-+ *
-+ * Return:
-+ * * NOTIFY_OK          - success
-+ * * NOTIFY_BAD         - failure
-+ */
-+static int rpmh_rsc_pd_callback(struct notifier_block *nfb,
-+				unsigned long action, void *v)
-+{
-+	struct rsc_drv *drv = container_of(nfb, struct rsc_drv, genpd_nb);
-+
-+	/* We don't need to lock as domin on/off are serialized */
-+	if ((action == GENPD_NOTIFY_PRE_OFF) &&
-+	    (rpmh_rsc_ctrlr_is_busy(drv) || rpmh_flush(&drv->client)))
-+		return NOTIFY_BAD;
-+
-+	return NOTIFY_OK;
-+}
-+
-+static int rpmh_rsc_pd_attach(struct rsc_drv *drv, struct device *dev)
-+{
-+	int ret;
-+
-+	pm_runtime_enable(dev);
-+	ret = dev_pm_domain_attach(dev, false);
-+	if (ret)
-+		return ret;
-+
-+	drv->genpd = pd_to_genpd(dev->pm_domain);
-+	drv->genpd_nb.notifier_call = rpmh_rsc_pd_callback;
-+	return dev_pm_genpd_add_notifier(dev, &drv->genpd_nb);
-+}
-+
- static int rpmh_probe_tcs_config(struct platform_device *pdev,
- 				 struct rsc_drv *drv, void __iomem *base)
- {
-@@ -963,7 +1011,7 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	/*
--	 * CPU PM notification are not required for controllers that support
-+	 * CPU PM/genpd notification are not required for controllers that support
- 	 * 'HW solver' mode where they can be in autonomous mode executing low
- 	 * power mode to power down.
- 	 */
-@@ -971,8 +1019,14 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
- 	solver_config &= DRV_HW_SOLVER_MASK << DRV_HW_SOLVER_SHIFT;
- 	solver_config = solver_config >> DRV_HW_SOLVER_SHIFT;
- 	if (!solver_config) {
--		drv->rsc_pm.notifier_call = rpmh_rsc_cpu_pm_callback;
--		cpu_pm_register_notifier(&drv->rsc_pm);
-+		if (of_find_property(dn, "power-domains", NULL)) {
-+			ret = rpmh_rsc_pd_attach(drv, &pdev->dev);
-+			if (ret)
-+				return ret;
-+		} else {
-+			drv->rsc_pm.notifier_call = rpmh_rsc_cpu_pm_callback;
-+			cpu_pm_register_notifier(&drv->rsc_pm);
-+		}
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 2a3d8aef7f4e..0f11d3f5c98a 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -15324,12 +15324,9 @@ static int i40e_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	/* set up for high or low dma */
+ 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+ 	if (err) {
+-		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+-		if (err) {
+-			dev_err(&pdev->dev,
+-				"DMA configuration failed: 0x%x\n", err);
+-			goto err_dma;
+-		}
++		dev_err(&pdev->dev,
++			"DMA configuration failed: 0x%x\n", err);
++		goto err_dma;
  	}
  
- 	/* Enable the active TCS to send requests immediately */
+ 	/* set up pci connections */
 -- 
-2.7.4
+2.32.0
 
