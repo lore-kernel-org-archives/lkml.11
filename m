@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD64C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E666C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239864AbiAJHbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:31:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240038AbiAJH2O (ORCPT
+        id S240223AbiAJHb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:31:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37832 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240032AbiAJH2N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8699C028C15;
-        Sun,  9 Jan 2022 23:26:02 -0800 (PST)
+        Mon, 10 Jan 2022 02:28:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F003B811F5;
-        Mon, 10 Jan 2022 07:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2481C36AED;
-        Mon, 10 Jan 2022 07:25:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 84D0D611CE;
+        Mon, 10 Jan 2022 07:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C91C36AE9;
+        Mon, 10 Jan 2022 07:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799560;
-        bh=CBugiHPHZg6lZpps82R7WUuao6slXg+9R6CaYlQp5g8=;
+        s=korg; t=1641799692;
+        bh=zYOViBaeQac9uI/6TZQx4gCOlnBtp2iyHYxWdNRXJF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WYz0XAQ9mSpDC/IiaRQv4H3HMSHBpOXtkq5vb00029VRN8IJdmtrVUloI1o8fEsd6
-         G79aFlh46UtQofgisRhRTyRxcrkpbbH9PldNgkaVBWegMUUv8mlphR4LXljyOB259b
-         VxNpGpF2jzs3q+YaKyDzQcFjeuPUomG/menhh2IQ=
+        b=jpkb2pk68BXBVP1vHffQAP7RZE3iHFLF+aaxcF0FC6G+jcBts2HLoVj9fxPRnsW7k
+         tiE9R/c5Kc3mhiKTLrxgjIjdH1eFS/epoBRk8hUXnVzUDde0lhCqXzrr9sA2j7MguM
+         znPYbEzpkoEHXn+nBpXX6SjLtHiTPsldGxE5bsxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 4.14 14/22] power: reset: ltc2952: Fix use of floating point literals
-Date:   Mon, 10 Jan 2022 08:23:07 +0100
-Message-Id: <20220110071814.738855790@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.4 04/34] tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
+Date:   Mon, 10 Jan 2022 08:22:59 +0100
+Message-Id: <20220110071815.802408688@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
-References: <20220110071814.261471354@linuxfoundation.org>
+In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
+References: <20220110071815.647309738@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,58 +46,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
+commit 823e670f7ed616d0ce993075c8afe0217885f79d upstream.
 
-A new commit in LLVM causes an error on the use of 'long double' when
-'-mno-x87' is used, which the kernel does through an alias,
-'-mno-80387' (see the LLVM commit below for more details around why it
-does this).
+With the new osnoise tracer, we are seeing the below splat:
+    Kernel attempted to read user page (c7d880000) - exploit attempt? (uid: 0)
+    BUG: Unable to handle kernel data access on read at 0xc7d880000
+    Faulting instruction address: 0xc0000000002ffa10
+    Oops: Kernel access of bad area, sig: 11 [#1]
+    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
+    ...
+    NIP [c0000000002ffa10] __trace_array_vprintk.part.0+0x70/0x2f0
+    LR [c0000000002ff9fc] __trace_array_vprintk.part.0+0x5c/0x2f0
+    Call Trace:
+    [c0000008bdd73b80] [c0000000001c49cc] put_prev_task_fair+0x3c/0x60 (unreliable)
+    [c0000008bdd73be0] [c000000000301430] trace_array_printk_buf+0x70/0x90
+    [c0000008bdd73c00] [c0000000003178b0] trace_sched_switch_callback+0x250/0x290
+    [c0000008bdd73c90] [c000000000e70d60] __schedule+0x410/0x710
+    [c0000008bdd73d40] [c000000000e710c0] schedule+0x60/0x130
+    [c0000008bdd73d70] [c000000000030614] interrupt_exit_user_prepare_main+0x264/0x270
+    [c0000008bdd73de0] [c000000000030a70] syscall_exit_prepare+0x150/0x180
+    [c0000008bdd73e10] [c00000000000c174] system_call_vectored_common+0xf4/0x278
 
-drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                                  ^
-drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                           ^
-drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->trigger_delay = ktime_set(2, 500L*1E6L);
-                                               ^
-3 errors generated.
+osnoise tracer on ppc64le is triggering osnoise_taint() for negative
+duration in get_int_safe_duration() called from
+trace_sched_switch_callback()->thread_exit().
 
-This happens due to the use of a 'long double' literal. The 'E6' part of
-'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
-it to 'long double'.
+The problem though is that the check for a valid trace_percpu_buffer is
+incorrect in get_trace_buf(). The check is being done after calculating
+the pointer for the current cpu, rather than on the main percpu pointer.
+Fix the check to be against trace_percpu_buffer.
 
-There is no visible reason for floating point values in this driver, as
-the values are only assigned to integer types. Use NSEC_PER_MSEC, which
-is the same integer value as '1E6L', to avoid changing functionality but
-fix the error.
+Link: https://lkml.kernel.org/r/a920e4272e0b0635cf20c444707cbce1b2c8973d.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
 
-Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1497
-Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc: stable@vger.kernel.org
+Fixes: e2ace001176dc9 ("tracing: Choose static tp_printk buffer by explicit nesting count")
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/ltc2952-poweroff.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/trace/trace.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/power/reset/ltc2952-poweroff.c
-+++ b/drivers/power/reset/ltc2952-poweroff.c
-@@ -169,8 +169,8 @@ static void ltc2952_poweroff_kill(void)
- 
- static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3017,7 +3017,7 @@ static char *get_trace_buf(void)
  {
--	data->wde_interval = 300L * 1E6L;
--	data->trigger_delay = ktime_set(2, 500L*1E6L);
-+	data->wde_interval = 300L * NSEC_PER_MSEC;
-+	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
+ 	struct trace_buffer_struct *buffer = this_cpu_ptr(trace_percpu_buffer);
  
- 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
+-	if (!buffer || buffer->nesting >= 4)
++	if (!trace_percpu_buffer || buffer->nesting >= 4)
+ 		return NULL;
+ 
+ 	buffer->nesting++;
 
 
