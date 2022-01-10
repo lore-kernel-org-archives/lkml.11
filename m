@@ -2,174 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 171CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C93C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239804AbiAJH3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:29:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239634AbiAJH01 (ORCPT
+        id S239450AbiAJH3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:29:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36500 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239406AbiAJH03 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F196FC061748;
-        Sun,  9 Jan 2022 23:25:35 -0800 (PST)
+        Mon, 10 Jan 2022 02:26:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A109611C9;
-        Mon, 10 Jan 2022 07:25:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA3AC36AED;
-        Mon, 10 Jan 2022 07:25:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA957611B7;
+        Mon, 10 Jan 2022 07:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD51FC36AE9;
+        Mon, 10 Jan 2022 07:26:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799535;
-        bh=/Sy/pGzKSRxY03GFQvlHvQ1eIeu/MTUcXDtQ+i7n7Tk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=B9FXLPeO0xN6PZdwfqG+BRaf+MhB5ntyhUl6W4tkuXQS3lGRzhl/abhce+61Q6XUl
-         BCg8NKoJScSpPI+gX1aFtCe1Djgufrf3g1FXwoevO00Ld4m4G3pIshGFOZbcvBN6BN
-         iYlvi4MWBp1985qOvJWCdM7vb/Yagd4OoV6eePdk=
+        s=korg; t=1641799588;
+        bh=mHH+XNkD+3G/e3NHKbEc90kLnPAfFdQ5w4ollboxixw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mZxKUszjT3YK1RaBMMZkGEPFJO+KnEK5qscowId2X2vo6+TcSkw/TVm6qgfENTKLG
+         i2hHAV/LfzxDFs7BOUjLgt2BejeVI7yiml5hP8BVFEzDutxmARbL2MhHofWWOv75KL
+         AxjY9Yd9ejaThhB74FfSpOiHkyMnKsJR8rg3o71w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-Subject: [PATCH 4.9 00/21] 4.9.297-rc1 review
-Date:   Mon, 10 Jan 2022 08:22:47 +0100
-Message-Id: <20220110071812.806606886@linuxfoundation.org>
+        stable@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Yang Wei <yang.wei@linux.alibaba.com>
+Subject: [PATCH 4.14 04/22] virtio_pci: Support surprise removal of virtio pci device
+Date:   Mon, 10 Jan 2022 08:22:57 +0100
+Message-Id: <20220110071814.411993808@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
+References: <20220110071814.261471354@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.297-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.9.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.9.297-rc1
-X-KernelTest-Deadline: 2022-01-12T07:18+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.9.297 release.
-There are 21 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Parav Pandit <parav@nvidia.com>
 
-Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
-Anything received after that time might be too late.
+commit 43bb40c5b92659966bdf4bfe584fde0a3575a049 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.297-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-and the diffstat can be found below.
+When a virtio pci device undergo surprise removal (aka async removal in
+PCIe spec), mark the device as broken so that any upper layer drivers can
+abort any outstanding operation.
 
-thanks,
+When a virtio net pci device undergo surprise removal which is used by a
+NetworkManager, a below call trace was observed.
 
-greg k-h
+kernel:watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [kworker/1:1:27059]
+watchdog: BUG: soft lockup - CPU#1 stuck for 52s! [kworker/1:1:27059]
+CPU: 1 PID: 27059 Comm: kworker/1:1 Tainted: G S      W I  L    5.13.0-hotplug+ #8
+Hardware name: Dell Inc. PowerEdge R640/0H28RR, BIOS 2.9.4 11/06/2020
+Workqueue: events linkwatch_event
+RIP: 0010:virtnet_send_command+0xfc/0x150 [virtio_net]
+Call Trace:
+ virtnet_set_rx_mode+0xcf/0x2a7 [virtio_net]
+ ? __hw_addr_create_ex+0x85/0xc0
+ __dev_mc_add+0x72/0x80
+ igmp6_group_added+0xa7/0xd0
+ ipv6_mc_up+0x3c/0x60
+ ipv6_find_idev+0x36/0x80
+ addrconf_add_dev+0x1e/0xa0
+ addrconf_dev_config+0x71/0x130
+ addrconf_notify+0x1f5/0xb40
+ ? rtnl_is_locked+0x11/0x20
+ ? __switch_to_asm+0x42/0x70
+ ? finish_task_switch+0xaf/0x2c0
+ ? raw_notifier_call_chain+0x3e/0x50
+ raw_notifier_call_chain+0x3e/0x50
+ netdev_state_change+0x67/0x90
+ linkwatch_do_dev+0x3c/0x50
+ __linkwatch_run_queue+0xd2/0x220
+ linkwatch_event+0x21/0x30
+ process_one_work+0x1c8/0x370
+ worker_thread+0x30/0x380
+ ? process_one_work+0x370/0x370
+ kthread+0x118/0x140
+ ? set_kthread_struct+0x40/0x40
+ ret_from_fork+0x1f/0x30
 
--------------
-Pseudo-Shortlog of commits:
+Hence, add the ability to abort the command on surprise removal
+which prevents infinite loop and system lockup.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.9.297-rc1
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Link: https://lore.kernel.org/r/20210721142648.1525924-5-parav@nvidia.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Yang Wei <yang.wei@linux.alibaba.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/virtio/virtio_pci_common.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Nathan Chancellor <nathan@kernel.org>
-    power: reset: ltc2952: Fix use of floating point literals
-
-wolfgang huang <huangjinhui@kylinos.cn>
-    mISDN: change function names to avoid conflicts
-
-yangxingwu <xingwu.yang@gmail.com>
-    net: udp: fix alignment problem in udp4_seq_show()
-
-William Zhao <wizhao@redhat.com>
-    ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
-
-Lixiaokeng <lixiaokeng@huawei.com>
-    scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
-
-Hangyu Hua <hbh25y@gmail.com>
-    phonet: refcount leak in pep_sock_accep
-
-James Morse <james.morse@arm.com>
-    arm64: sysreg: Move to use definitions for all the SCTLR bits
-
-Mark Rutland <mark.rutland@arm.com>
-    arm64: move !VHE work to end of el2_setup
-
-Mark Rutland <mark.rutland@arm.com>
-    arm64: reduce el2_setup branching
-
-Stefan Traby <stefan@hello-penguin.com>
-    arm64: Remove a redundancy in sysreg.h
-
-Ian Abbott <abbotti@mev.co.uk>
-    bug: split BUILD_BUG stuff out into <linux/build_bug.h>
-
-Thomas Toye <thomas@toye.io>
-    rndis_host: support Hytera digital radios
-
-Darrick J. Wong <djwong@kernel.org>
-    xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
-
-Eric Dumazet <edumazet@google.com>
-    sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
-
-Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-    i40e: Fix incorrect netdev's real number of RX/TX queues
-
-Tom Rix <trix@redhat.com>
-    mac80211: initialize variable have_higher_than_11mbit
-
-Pavel Skripkin <paskripkin@gmail.com>
-    ieee802154: atusb: fix uninit value in atusb_set_extended_addr
-
-Parav Pandit <parav@nvidia.com>
-    virtio_pci: Support surprise removal of virtio pci device
-
-Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-    tracing: Tag trace_percpu_buffer as a percpu pointer
-
-Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-    tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
-
-Takashi Iwai <tiwai@suse.de>
-    Bluetooth: btusb: Apply QCA Rome patches for some ATH3012 models
-
-
--------------
-
-Diffstat:
-
- Makefile                                    |  4 +-
- arch/arm64/include/asm/sysreg.h             | 69 ++++++++++++++++++++++--
- arch/arm64/kernel/head.S                    | 49 +++++++----------
- arch/arm64/mm/proc.S                        | 24 +--------
- drivers/bluetooth/btusb.c                   | 32 ++++++++---
- drivers/isdn/mISDN/core.c                   |  6 +--
- drivers/isdn/mISDN/core.h                   |  4 +-
- drivers/isdn/mISDN/layer1.c                 |  4 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c | 32 ++++++++---
- drivers/net/ieee802154/atusb.c              | 10 ++--
- drivers/net/usb/rndis_host.c                |  5 ++
- drivers/power/reset/ltc2952-poweroff.c      |  4 +-
- drivers/scsi/libiscsi.c                     |  6 ++-
- drivers/virtio/virtio_pci_common.c          |  7 +++
- fs/xfs/xfs_ioctl.c                          |  3 +-
- include/linux/bug.h                         | 72 +------------------------
- include/linux/build_bug.h                   | 84 +++++++++++++++++++++++++++++
- kernel/trace/trace.c                        |  6 +--
- net/ipv4/udp.c                              |  2 +-
- net/ipv6/ip6_vti.c                          |  2 +
- net/mac80211/mlme.c                         |  2 +-
- net/phonet/pep.c                            |  1 +
- net/sched/sch_qfq.c                         |  6 +--
- 23 files changed, 265 insertions(+), 169 deletions(-)
+--- a/drivers/virtio/virtio_pci_common.c
++++ b/drivers/virtio/virtio_pci_common.c
+@@ -575,6 +575,13 @@ static void virtio_pci_remove(struct pci
+ 	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
+ 	struct device *dev = get_device(&vp_dev->vdev.dev);
+ 
++	/*
++	 * Device is marked broken on surprise removal so that virtio upper
++	 * layers can abort any ongoing operation.
++	 */
++	if (!pci_device_is_present(pci_dev))
++		virtio_break_device(&vp_dev->vdev);
++
+ 	unregister_virtio_device(&vp_dev->vdev);
+ 
+ 	if (vp_dev->ioaddr)
 
 
