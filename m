@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D067AC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 145B9C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242278AbiAJHkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240757AbiAJHca (ORCPT
+        id S242332AbiAJHki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:40:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59994 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239591AbiAJHdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84236C029818;
-        Sun,  9 Jan 2022 23:28:50 -0800 (PST)
+        Mon, 10 Jan 2022 02:33:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2603D611BC;
-        Mon, 10 Jan 2022 07:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11199C36AE9;
-        Mon, 10 Jan 2022 07:28:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A701EB811F9;
+        Mon, 10 Jan 2022 07:33:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF2EAC36AED;
+        Mon, 10 Jan 2022 07:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799729;
-        bh=Nh+ZX6DpgLsEZsAZkNl4PXQbvAL4hXHFEs5ivU3Zt/U=;
+        s=korg; t=1641800003;
+        bh=+IgOhsZw0AUTYG+Ut03DuxUF55vMspBPcisC+jUTaIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M7NFG2ZdbpVKaQJc9aUHLVI1VSLnvoABK3Zel7OUHJQpf7jII1p38twIVG25gYNt1
-         dF9NAhZ59Og5QSI9UJfb/RHs0en6nIItwPQXXN79Ta0b5p5m3eAGd3IUT7x31JKw/9
-         poTL45CeeLXmDrbjK+UNvP7AJYUcg8JwDpCvhjdQ=
+        b=CRGS0kjh2xaEuaaC4sYARBFtC4KyYi8zT7VeYL3flSgIqDEiwhZqmJFaQ1SifbpYh
+         s55ygUo1TF2PMK/asr6HvKbgZFhWoRqoMn7z6sOXsKBKXoJ7m+KIZKYXZCVrs313d4
+         aD8z/6w+Ie26wld+nMLL36hxCXybi5zDS7eO1RaE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 29/34] usb: mtu3: fix interval value for intr and isoc
-Date:   Mon, 10 Jan 2022 08:23:24 +0100
-Message-Id: <20220110071816.656375417@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+cdbd40e0c3ca02cae3b7@syzkaller.appspotmail.com,
+        Haimin Zhang <tcs_kernel@tencent.com>,
+        Jon Maloy <jmaloy@redhat.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 46/72] net ticp:fix a kernel-infoleak in __tipc_sendmsg()
+Date:   Mon, 10 Jan 2022 08:23:23 +0100
+Message-Id: <20220110071823.111741880@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +47,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunfeng Yun <chunfeng.yun@mediatek.com>
+From: Haimin Zhang <tcs_kernel@tencent.com>
 
-[ Upstream commit e3d4621c22f90c33321ae6a6baab60cdb8e5a77c ]
+commit d6d86830705f173fca6087a3e67ceaf68db80523 upstream.
 
-Use the Interval value from isoc/intr endpoint descriptor, no need
-minus one. The original code doesn't cause transfer error for
-normal cases, but it may have side effect with respond time of ERDY
-or tPingTimeout.
+struct tipc_socket_addr.ref has a 4-byte hole,and __tipc_getname() currently
+copying it to user space,causing kernel-infoleak.
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Link: https://lore.kernel.org/r/20211218095749.6250-1-chunfeng.yun@mediatek.com
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline] lib/usercopy.c:33
+BUG: KMSAN: kernel-infoleak in _copy_to_user+0x1c9/0x270 lib/usercopy.c:33 lib/usercopy.c:33
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline] lib/usercopy.c:33
+ _copy_to_user+0x1c9/0x270 lib/usercopy.c:33 lib/usercopy.c:33
+ copy_to_user include/linux/uaccess.h:209 [inline]
+ copy_to_user include/linux/uaccess.h:209 [inline] net/socket.c:287
+ move_addr_to_user+0x3f6/0x600 net/socket.c:287 net/socket.c:287
+ __sys_getpeername+0x470/0x6b0 net/socket.c:1987 net/socket.c:1987
+ __do_sys_getpeername net/socket.c:1997 [inline]
+ __se_sys_getpeername net/socket.c:1994 [inline]
+ __do_sys_getpeername net/socket.c:1997 [inline] net/socket.c:1994
+ __se_sys_getpeername net/socket.c:1994 [inline] net/socket.c:1994
+ __x64_sys_getpeername+0xda/0x120 net/socket.c:1994 net/socket.c:1994
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline] arch/x86/entry/common.c:82
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was stored to memory at:
+ tipc_getname+0x575/0x5e0 net/tipc/socket.c:757 net/tipc/socket.c:757
+ __sys_getpeername+0x3b3/0x6b0 net/socket.c:1984 net/socket.c:1984
+ __do_sys_getpeername net/socket.c:1997 [inline]
+ __se_sys_getpeername net/socket.c:1994 [inline]
+ __do_sys_getpeername net/socket.c:1997 [inline] net/socket.c:1994
+ __se_sys_getpeername net/socket.c:1994 [inline] net/socket.c:1994
+ __x64_sys_getpeername+0xda/0x120 net/socket.c:1994 net/socket.c:1994
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline] arch/x86/entry/common.c:82
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was stored to memory at:
+ msg_set_word net/tipc/msg.h:212 [inline]
+ msg_set_destport net/tipc/msg.h:619 [inline]
+ msg_set_word net/tipc/msg.h:212 [inline] net/tipc/socket.c:1486
+ msg_set_destport net/tipc/msg.h:619 [inline] net/tipc/socket.c:1486
+ __tipc_sendmsg+0x44fa/0x5890 net/tipc/socket.c:1486 net/tipc/socket.c:1486
+ tipc_sendmsg+0xeb/0x140 net/tipc/socket.c:1402 net/tipc/socket.c:1402
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ sock_sendmsg_nosec net/socket.c:704 [inline] net/socket.c:2409
+ sock_sendmsg net/socket.c:724 [inline] net/socket.c:2409
+ ____sys_sendmsg+0xe11/0x12c0 net/socket.c:2409 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ ___sys_sendmsg net/socket.c:2463 [inline] net/socket.c:2492
+ __sys_sendmsg+0x704/0x840 net/socket.c:2492 net/socket.c:2492
+ __do_sys_sendmsg net/socket.c:2501 [inline]
+ __se_sys_sendmsg net/socket.c:2499 [inline]
+ __do_sys_sendmsg net/socket.c:2501 [inline] net/socket.c:2499
+ __se_sys_sendmsg net/socket.c:2499 [inline] net/socket.c:2499
+ __x64_sys_sendmsg+0xe2/0x120 net/socket.c:2499 net/socket.c:2499
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline] arch/x86/entry/common.c:82
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Local variable skaddr created at:
+ __tipc_sendmsg+0x2d0/0x5890 net/tipc/socket.c:1419 net/tipc/socket.c:1419
+ tipc_sendmsg+0xeb/0x140 net/tipc/socket.c:1402 net/tipc/socket.c:1402
+
+Bytes 4-7 of 16 are uninitialized
+Memory access of size 16 starts at ffff888113753e00
+Data copied to user address 0000000020000280
+
+Reported-by: syzbot+cdbd40e0c3ca02cae3b7@syzkaller.appspotmail.com
+Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+Link: https://lore.kernel.org/r/1640918123-14547-1-git-send-email-tcs.kernel@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/mtu3/mtu3_gadget.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/tipc/socket.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
-index 253c8b71d3c49..061da9b82b967 100644
---- a/drivers/usb/mtu3/mtu3_gadget.c
-+++ b/drivers/usb/mtu3/mtu3_gadget.c
-@@ -85,7 +85,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
- 		if (usb_endpoint_xfer_int(desc) ||
- 				usb_endpoint_xfer_isoc(desc)) {
- 			interval = desc->bInterval;
--			interval = clamp_val(interval, 1, 16) - 1;
-+			interval = clamp_val(interval, 1, 16);
- 			if (usb_endpoint_xfer_isoc(desc) && comp_desc)
- 				mult = comp_desc->bmAttributes;
- 		}
-@@ -97,7 +97,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
- 		if (usb_endpoint_xfer_isoc(desc) ||
- 				usb_endpoint_xfer_int(desc)) {
- 			interval = desc->bInterval;
--			interval = clamp_val(interval, 1, 16) - 1;
-+			interval = clamp_val(interval, 1, 16);
- 			mult = usb_endpoint_maxp_mult(desc) - 1;
- 		}
- 		break;
--- 
-2.34.1
-
+--- a/net/tipc/socket.c
++++ b/net/tipc/socket.c
+@@ -1461,6 +1461,8 @@ static int __tipc_sendmsg(struct socket
+ 		msg_set_syn(hdr, 1);
+ 	}
+ 
++	memset(&skaddr, 0, sizeof(skaddr));
++
+ 	/* Determine destination */
+ 	if (atype == TIPC_SERVICE_RANGE) {
+ 		return tipc_sendmcast(sock, ua, m, dlen, timeout);
 
 
