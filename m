@@ -2,101 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EBF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:16:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73998C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343496AbiAJUQg (ORCPT
+        id S1343510AbiAJURc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 15:16:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59062 "EHLO
+        Mon, 10 Jan 2022 15:17:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245729AbiAJUQf (ORCPT
+        with ESMTP id S1343495AbiAJURa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 15:16:35 -0500
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55216C06173F;
-        Mon, 10 Jan 2022 12:16:35 -0800 (PST)
-Received: by mail-yb1-xb2f.google.com with SMTP id d7so8306971ybo.5;
-        Mon, 10 Jan 2022 12:16:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T0xQEeMfYAZWWLfQ25O7XnIoPfBpVaJVmwR4FfAbgLk=;
-        b=PTLk8Dmkr/y6prAl62pFcK4STJOH3jrgkxpECkEj2HXVob0FHdLQ5JOBkL12TSk1oM
-         tH2L5pIY+yhSGwwUg7WkgvlEgoTJkrs6ZFG+RVyeXoWNVPk1sufy+eMrhX/T3EPbBMqW
-         4VZ0xujB/NY+2glfLjzV7W7iigh3P62QaL0Zzll06XqCfMZYAp8Iq4xgHT8tg0SzbG69
-         MN4AIO5+tmaTqLz44tCrGYskywsLteutyI572lVGnPPZ+qZb5nzjmdBcLwAVj3w+P+GK
-         bs1hpoXXpR9vA+A5j9GEOYUM0P9+Mx/W3A+I8FpgAmx0ZEFeblf6jP0Y4nTDBRvXfQRD
-         EzxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T0xQEeMfYAZWWLfQ25O7XnIoPfBpVaJVmwR4FfAbgLk=;
-        b=sAiJ2SsqK+7Yx5boqjBRYKO0YGqfX0R/Wxf6qeQzIKhndo411oVxyULNkT6Zhf5Wxk
-         /IpaDdxFi96URvfk+uwEgqosIDWi+nZ9jCgxnNvWyKi7AfynwBhEKX9nuM1i6YPeDT64
-         UUBE76j2yJZFScIo0sbvlRWD2F+X7kyLHBs/Ly26hQiVVYXUb4C1DkobuXdUjDjpTX0H
-         7f6bf0uP4qYS8BryUU++9k0CkiekpYgBeghVo9cpjnkVMvAnIPN4SCj6GWMkVKuv3+gT
-         gPq9iJHYRFih2o92qHnDnUcNBvFKP5sAhbIrnkFpT4+Ju9PtZcs/+tBmOLXPIQnAr5N4
-         DL4A==
-X-Gm-Message-State: AOAM5301v91qD3fDIrImJv+zmC5p7fOTzHhlWPw7vuGUyjkMcP1OfFej
-        P4sE2ZCt6ls7Bnc2G3rVxttjTBuNCGZCsLNHo8NVm5rOatc=
-X-Google-Smtp-Source: ABdhPJy5SZlMpv1Hol2xQ3klc0XaWlDB9uAoLFo2kw5RT28K2/HIw3OnQtl5+wJXnX8uTL6DGxNY2Mlh7fJ+wMLnC1g=
-X-Received: by 2002:a05:6902:4e9:: with SMTP id w9mr784708ybs.186.1641845794594;
- Mon, 10 Jan 2022 12:16:34 -0800 (PST)
+        Mon, 10 Jan 2022 15:17:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8297FC06173F;
+        Mon, 10 Jan 2022 12:17:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24CF2B817DF;
+        Mon, 10 Jan 2022 20:17:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89667C36AE3;
+        Mon, 10 Jan 2022 20:17:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641845847;
+        bh=haEY0C1SN2sxYLnvN4gWAdwA9uqWggl6S7CaFqcIWFQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VlhwpIkNWseAn6Wy80qEd1vQTL8VMytbrdkQ5dLzRkI2p9QspnUgncvdr0mUI0HLY
+         RbMi+cK5rHm7U3Ui3jb3DvxFSz98sxQNqXL+/x+W3ocXg/OBPe6lsXDq5+MtmG6Lxq
+         Wrp1d2ZYTQ1sr7SVbAA97RKnJxwjKe9/ANzpPb2WOS7OFHEtVCX6i1IDKAF8BtJSJ5
+         g+JDqewpi41rsv9E40evlH895LtuMJAiYS1G4cx55l0W1tq78R21qsvGFs4MEP7D0o
+         AnhUmbO4gakIzehySI0I0Xdx/FkWvG1OjiZjAaVW8glq71c0tfwYTehcjB2nyVg08t
+         FiJRby06bqkNA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 7B0D140714; Mon, 10 Jan 2022 17:17:25 -0300 (-03)
+Date:   Mon, 10 Jan 2022 17:17:25 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vineet Singh <vineet.singh@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
+        eranian@google.com
+Subject: Re: [PATCH v4 00/48] Refactor perf cpumap
+Message-ID: <YdyUVSHs/OLZ9Ntm@kernel.org>
+References: <20220105061351.120843-1-irogers@google.com>
 MIME-Version: 1.0
-References: <20220110094711.8574-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220110094711.8574-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <2f338a37-f2ca-33e4-284e-5d263f7b93da@intel.com> <CA+V-a8vz25B=cw_C4YMBRdDxeq7mi8Zc+noqpdHqfMP8eNHYFg@mail.gmail.com>
- <f69a0650-174f-1b0d-ba29-7fe04c7cf211@intel.com>
-In-Reply-To: <f69a0650-174f-1b0d-ba29-7fe04c7cf211@intel.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Mon, 10 Jan 2022 20:16:08 +0000
-Message-ID: <CA+V-a8vJzSPxpy0Te1XUiT_zkt4wd=NvFJGvwGkgwcNnibjbhQ@mail.gmail.com>
-Subject: Re: [PATCH 1/5] ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv() recursively
-To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Pavel Machek <pavel@denx.de>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        alsa-devel <alsa-devel@alsa-project.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220105061351.120843-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 5:48 PM Cezary Rojewski
-<cezary.rojewski@intel.com> wrote:
->
-> On 2022-01-10 5:03 PM, Lad, Prabhakar wrote:
-> > Hi Cezary,
-> >
-> > Thank you for the review.
-> >
->
-> ...
->
-> >> Recursion and loops are means for doing something repeatedly. Could you
-> >> specify _why_ such change was made i.e. the conversion from one method
-> >> into the other? I bet the code is not being changed for the sake of
-> >> changing it, the reason is simply missing in the commit message.
-> >>
-> > I had feedback from Pavel "recursion is unwelcome in kernel due to
-> > limited stack use." which I did agree with as a result I have come up
-> > with this patch. Also to add this driver will later be used on Renesas
-> > RZ/A2 SoC's which runs with limited memory.
->
-> Adding that reasoning to the commits message will prevent questions
-> (such as mine) in the future. Thank you for a quick reply and a
-> transparent answer.
->
-My bad! I'll update the commit message.
+Em Tue, Jan 04, 2022 at 10:13:03PM -0800, Ian Rogers escreveu:
+> Perf cpu map has various functions where a cpumap and index are passed
+> in order to load the cpu. A problem with this is that the wrong index
+> may be passed for the cpumap, causing problems like aggregation on the
+> wrong CPU:
+> https://lore.kernel.org/lkml/20211204023409.969668-1-irogers@google.com/
+> 
+> This patch set refactors the cpu map API, reducing it and explicitly
+> passing the cpu (rather than the pair) to functions that need
+> it. Comments are added at the same time. Changes modify the same
+> file/function more than once as refactoring and fixes are broken apart
+> for the sake of bisection.
+> 
+> v2. Incorproates fixes suggested Jiri Olsa, rewrites the evlist CPU
+>     iterator in part in a way suggested by Riccardo Mancini. The new
+>     fixes start at patch 23. The final change was suggested by John
+>     Garry to make the CPUs have their own struct wrapper.
+> 
+> v3. Incorporates fixes suggested by Namhyung Kim.
+> 
+> v4. Rebases and incorporates fixes suggested by Jiri Olsa.
 
-CHeers,
-Prabhakar
+Did fixes in places where BUILD_BPF_SKEL=1 was failing, now, at the end
+of the series:
+
+⬢[acme@toolbox perf]$ git log --oneline -1 ; time make -C tools/perf build-test
+462aafa8fcbdc78f (HEAD -> perf/core) perf cpumap: Give CPUs their own type
+make: Entering directory '/var/home/acme/git/perf/tools/perf'
+- tarpkg: ./tests/perf-targz-src-pkg .
+                 make_static: cd . && make LDFLAGS=-static NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 NO_JVMTI=1 -j32  DESTDIR=/tmp/tmp.lFrqVcqiRY
+              make_with_gtk2: cd . && make GTK2=1 -j32  DESTDIR=/tmp/tmp.KvHmTqUGmD
+- /var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP: cd . && make FEATURE_DUMP_COPY=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP  feature-dump
+cd . && make FEATURE_DUMP_COPY=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP feature-dump
+            make_no_libelf_O: cd . && make NO_LIBELF=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.xz3LYy7WpA DESTDIR=/tmp/tmp.zVjIMpvQMM
+      make_no_libbpf_DEBUG_O: cd . && make NO_LIBBPF=1 DEBUG=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.0gxAOSjb1j DESTDIR=/tmp/tmp.kYTk1WjWWz
+          make_no_libaudit_O: cd . && make NO_LIBAUDIT=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.6hArTG9Dth DESTDIR=/tmp/tmp.hCNdYeDRCr
+         make_no_backtrace_O: cd . && make NO_BACKTRACE=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.VtoPI58z3t DESTDIR=/tmp/tmp.SYyBBMSHSL
+         make_no_libcrypto_O: cd . && make NO_LIBCRYPTO=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.SO1qtxJwvE DESTDIR=/tmp/tmp.AqrPw1oZfx
+       make_with_clangllvm_O: cd . && make LIBCLANGLLVM=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.G9KVEaDv2B DESTDIR=/tmp/tmp.6CSqj0wPqJ
+       make_with_coresight_O: cd . && make CORESIGHT=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.PnVTJNHy1E DESTDIR=/tmp/tmp.k7Arerg778
+         make_no_libpython_O: cd . && make NO_LIBPYTHON=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.cKjvFagVL3 DESTDIR=/tmp/tmp.aCaD0hbP3O
+               make_no_sdt_O: cd . && make NO_SDT=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.EKoWnoZtl4 DESTDIR=/tmp/tmp.1gGYetcptB
+       make_libbpf_dynamic_O: cd . && make LIBBPF_DYNAMIC=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.Nked5O10EK DESTDIR=/tmp/tmp.eo6YAEOfZO
+              make_minimal_O: cd . && make NO_LIBPERL=1 NO_LIBPYTHON=1 NO_NEWT=1 NO_GTK2=1 NO_DEMANGLE=1 NO_LIBELF=1 NO_LIBUNWIND=1 NO_BACKTRACE=1 NO_LIBNUMA=1 NO_LIBAUDIT=1 NO_LIBBIONIC=1 NO_LIBDW_DWARF_UNWIND=1 NO_AUXTRACE=1 NO_LIBBPF=1 NO_LIBCRYPTO=1 NO_SDT=1 NO_JVMTI=1 NO_LIBZSTD=1 NO_LIBCAP=1 NO_SYSCALL_TABLE=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.Z6dSqYBXfU DESTDIR=/tmp/tmp.Y4iRu634of
+ make_install_prefix_slash_O: cd . && make install prefix=/tmp/krava/ FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.BgipDyNu70 DESTDIR=/tmp/tmp.pOwrdDYBqf
+     make_util_pmu_bison_o_O: cd . && make util/pmu-bison.o FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.XeO82Ajmv6 DESTDIR=/tmp/tmp.dxQKNNBM6W
+              make_install_O: cd . && make install FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.KuCyqzLwnA DESTDIR=/tmp/tmp.KYvqoiOKzW
+       make_install_prefix_O: cd . && make install prefix=/tmp/krava FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.rJNNPELdri DESTDIR=/tmp/tmp.g52i9CcmnU
+          make_install_bin_O: cd . && make install-bin FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.i118vbQuo0 DESTDIR=/tmp/tmp.90tKcjOWD8
+               make_perf_o_O: cd . && make perf.o FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.kEZMTvh3wf DESTDIR=/tmp/tmp.JYvQLdkPsp
+             make_no_slang_O: cd . && make NO_SLANG=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.WDNGH0DpdW DESTDIR=/tmp/tmp.Zfa804wClJ
+                make_no_ui_O: cd . && make NO_NEWT=1 NO_SLANG=1 NO_GTK2=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.P4nTBNqkP4 DESTDIR=/tmp/tmp.iCLqOyrh4o
+              make_no_newt_O: cd . && make NO_NEWT=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.EdjjHoqODV DESTDIR=/tmp/tmp.jKfYRizWtm
+         make_with_libpfm4_O: cd . && make LIBPFM4=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.r3hPAOgfId DESTDIR=/tmp/tmp.GvMmEZUc2B
+          make_no_demangle_O: cd . && make NO_DEMANGLE=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.wG9f40LzG3 DESTDIR=/tmp/tmp.i76sPjSg1m
+         make_no_libunwind_O: cd . && make NO_LIBUNWIND=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.SmFfmmB9KQ DESTDIR=/tmp/tmp.9tjMdCWMxG
+            make_no_libbpf_O: cd . && make NO_LIBBPF=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.7jH21oP9n7 DESTDIR=/tmp/tmp.taUqTgY37S
+       make_no_syscall_tbl_O: cd . && make NO_SYSCALL_TABLE=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.L2v7vi1AQl DESTDIR=/tmp/tmp.wHEA4jEpw9
+           make_no_libnuma_O: cd . && make NO_LIBNUMA=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.9N5pQYuRbO DESTDIR=/tmp/tmp.B0Yptb7xP6
+           make_util_map_o_O: cd . && make util/map.o FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.B8oe4jnWwB DESTDIR=/tmp/tmp.m0APlsli14
+      make_with_babeltrace_O: cd . && make LIBBABELTRACE=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.3G1kLTJLJx DESTDIR=/tmp/tmp.ahuDENSMsz
+                make_debug_O: cd . && make DEBUG=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.KpsvOj0KHD DESTDIR=/tmp/tmp.f2Yv9Lrorg
+           make_no_libperl_O: cd . && make NO_LIBPERL=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.7tIufwAi4O DESTDIR=/tmp/tmp.vcBv7UYjuw
+         make_no_libbionic_O: cd . && make NO_LIBBIONIC=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.HCJA7xCDxq DESTDIR=/tmp/tmp.us5CDSPqyO
+                 make_pure_O: cd . && make FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.eg2wCpydvg DESTDIR=/tmp/tmp.MmD1xESO2A
+                  make_doc_O: cd . && make doc FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.TqkyGrzRut DESTDIR=/tmp/tmp.ap34IVxoM9
+           make_no_scripts_O: cd . && make NO_LIBPYTHON=1 NO_LIBPERL=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.pRWHKzpPhv DESTDIR=/tmp/tmp.dUNhAp2rLt
+            make_clean_all_O: cd . && make clean all FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.YnzNLLk9ID DESTDIR=/tmp/tmp.7kXr5obkmA
+make_no_libdw_dwarf_unwind_O: cd . && make NO_LIBDW_DWARF_UNWIND=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.GzZCxuYLwR DESTDIR=/tmp/tmp.n3YS9a9DcU
+                 make_help_O: cd . && make help FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.t7QwWVHsod DESTDIR=/tmp/tmp.NG5uSWCZzi
+          make_no_auxtrace_O: cd . && make NO_AUXTRACE=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.wiDZkJzs8R DESTDIR=/tmp/tmp.ITtPlX0usX
+              make_no_gtk2_O: cd . && make NO_GTK2=1 FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.xd1x5QIckJ DESTDIR=/tmp/tmp.f6KzsHHkZH
+                 make_tags_O: cd . && make tags FEATURES_DUMP=/var/home/acme/git/perf/tools/perf/BUILD_TEST_FEATURE_DUMP -j32 O=/tmp/tmp.e8oSaBuFUb DESTDIR=/tmp/tmp.4czd6ovlSB
+OK
+make: Leaving directory '/var/home/acme/git/perf/tools/perf'
+
+real	4m29.388s
+user	59m6.060s
+sys	12m19.581s
+⬢[acme@toolbox perf]$
+
+alias m='perf stat -e cycles:u,instructions:u make -k BUILD_BPF_SKEL=1 CORESIGHT=1 PYTHON=python3 O=/tmp/build/perf -C tools/perf install-bin && git status && perf test python'
+
+So 'perf test python' is done after every build, no problems with that
+as well.
+
+I'm now making it go thru the container builds.
+
+- Arnaldo
+
+
