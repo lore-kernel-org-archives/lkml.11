@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8977C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B93C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240702AbiAJHc0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:32:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58194 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240141AbiAJH2f (ORCPT
+        id S240002AbiAJHca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:32:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38236 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239692AbiAJH2o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:35 -0500
+        Mon, 10 Jan 2022 02:28:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 013D5B81214;
-        Mon, 10 Jan 2022 07:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EBDFC36AED;
-        Mon, 10 Jan 2022 07:28:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C5D8611D9;
+        Mon, 10 Jan 2022 07:28:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B740C36B05;
+        Mon, 10 Jan 2022 07:28:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799712;
-        bh=Upww557qoDpoa1jzOBEP+FMpq/E5h48yyjle5fofuYs=;
+        s=korg; t=1641799724;
+        bh=jkEXWI9Pmo/l/YUG1s/FNZV4BToj0sgLXf6XuL/YJzs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xXgHW9poB70qiaybR/zjxni6gR+Zl6CDGV2gP8wnvqn1AWzloRmecRDkCwxh0q79W
-         NTc67OOQ+hKlwtbbHgo9UR+ebhnKv9HkSltZqD8432PfX7sur3s/mO8F1onp2F9j4h
-         Jhr252W4y2M57RiWHnDEAR++UzTrPf4A+fwsHD/M=
+        b=I72a7uVeI/odY3hEp451dQ5mnTlfWt3yoVIfx+Y0JBgX+3If2+zIEYKHujBN4uRZx
+         guLmcAGzBytLbS4mASqqIM2b8zcBgX63Oz9MXpdvg9Je0Qe5CAiN7sm2U4FTsTV5w3
+         AFdpk6yBTPF9bc/vccqvE2UjDxEu+Qb6PH/uhD4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 15/34] ipv4: Check attribute length for RTA_FLOW in multipath route
-Date:   Mon, 10 Jan 2022 08:23:10 +0100
-Message-Id: <20220110071816.163016491@linuxfoundation.org>
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 27/34] ipv6: Continue processing multipath route even if gateway attribute is invalid
+Date:   Mon, 10 Jan 2022 08:23:22 +0100
+Message-Id: <20220110071816.582688860@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
 References: <20220110071815.647309738@linuxfoundation.org>
@@ -47,51 +49,49 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Ahern <dsahern@kernel.org>
 
-commit 664b9c4b7392ce723b013201843264bf95481ce5 upstream.
+[ Upstream commit e30a845b0376eb51c9c94f56bbd53b2e08ba822f ]
 
-Make sure RTA_FLOW is at least 4B before using.
+ip6_route_multipath_del loop continues processing the multipath
+attribute even if delete of a nexthop path fails. For consistency,
+do the same if the gateway attribute is invalid.
 
-Fixes: 4e902c57417c ("[IPv4]: FIB configuration using struct fib_config")
+Fixes: 1ff15a710a86 ("ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route")
 Signed-off-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Link: https://lore.kernel.org/r/20220103171911.94739-1-dsahern@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/fib_semantics.c |   17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ net/ipv6/route.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -723,8 +723,13 @@ static int fib_get_nhs(struct fib_info *
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 53861f9c8ce0a..56f0783df5896 100644
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5313,8 +5313,10 @@ static int ip6_route_multipath_del(struct fib6_config *cfg,
+ 			if (nla) {
+ 				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
+ 							extack);
+-				if (err)
+-					return err;
++				if (err) {
++					last_err = err;
++					goto next_rtnh;
++				}
+ 
+ 				r_cfg.fc_flags |= RTF_GATEWAY;
  			}
+@@ -5323,6 +5325,7 @@ static int ip6_route_multipath_del(struct fib6_config *cfg,
+ 		if (err)
+ 			last_err = err;
  
- 			nla = nla_find(attrs, attrlen, RTA_FLOW);
--			if (nla)
-+			if (nla) {
-+				if (nla_len(nla) < sizeof(u32)) {
-+					NL_SET_ERR_MSG(extack, "Invalid RTA_FLOW");
-+					return -EINVAL;
-+				}
- 				fib_cfg.fc_flow = nla_get_u32(nla);
-+			}
++next_rtnh:
+ 		rtnh = rtnh_next(rtnh, &remaining);
+ 	}
  
- 			fib_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
- 			nla = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
-@@ -955,8 +960,14 @@ int fib_nh_match(struct fib_config *cfg,
- 
- #ifdef CONFIG_IP_ROUTE_CLASSID
- 			nla = nla_find(attrs, attrlen, RTA_FLOW);
--			if (nla && nla_get_u32(nla) != nh->nh_tclassid)
--				return 1;
-+			if (nla) {
-+				if (nla_len(nla) < sizeof(u32)) {
-+					NL_SET_ERR_MSG(extack, "Invalid RTA_FLOW");
-+					return -EINVAL;
-+				}
-+				if (nla_get_u32(nla) != nh->nh_tclassid)
-+					return 1;
-+			}
- #endif
- 		}
- 
+-- 
+2.34.1
+
 
 
