@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BA9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 617DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241657AbiAJInR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:43:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241677AbiAJIlU (ORCPT
+        id S241788AbiAJInY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:43:24 -0500
+Received: from mail-ed1-f54.google.com ([209.85.208.54]:38554 "EHLO
+        mail-ed1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241730AbiAJIl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:41:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71866C034004;
-        Mon, 10 Jan 2022 00:41:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F95060E05;
-        Mon, 10 Jan 2022 08:41:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC7FBC36AED;
-        Mon, 10 Jan 2022 08:41:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641804079;
-        bh=KNimAm6MuVbpyyW31wUY2PPlfx4RNo0nOMAvzobEKR8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:From;
-        b=AjFan6HrUNrgJ6cAd9JQ7884OID1R1qA4QTtR7K7MMghvS0dj9OH5Htr68xchYkCB
-         emmPc/5mU39acJFbsDLMSTShKov5GhTsRi7rvRBv2YdqNWSGiYcDaf/ekncxMwG+Ir
-         pVOJI1ZKlO36kfYqMzxwlXWcnZjJn8PVlyarfwvvuHquGQiNOSBBqnNOBk+LRWOulU
-         CAEVAieF2vworRw48+tssj5Gpr+X4fx8rEz9nT0sEQ7XtAsrFDneMSbtco51JRXcnB
-         J6DqQF0mEg/as0ok9q+oDS5vFS0wjXyzRXArhdkYdLP83+gcS2wAZtfPpTyMEwj4jG
-         RVdCcN5WBEKNA==
-From:   SeongJae Park <sj@kernel.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     SeongJae Park <sj@kernel.org>, Miguel Ojeda <ojeda@kernel.org>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        rust-for-linux <rust-for-linux@vger.kernel.org>
-Subject: Re: [PATCH] init/Kconfig: Specify the interpreter for rust-version.sh
-Date:   Mon, 10 Jan 2022 08:41:16 +0000
-Message-Id: <20220110084116.4589-1-sj@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <CANiq72muzMPVUNJQU7Vcx0uCSEZc7Y_67LuX7PB=xNkCJ+NX7A@mail.gmail.com>
+        Mon, 10 Jan 2022 03:41:28 -0500
+Received: by mail-ed1-f54.google.com with SMTP id u21so27909844edd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:41:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=octVJ0pssmy99DE7X4+pfHU8MHVH/s7bmvq4/iF5viY=;
+        b=eq0Rwc1t6CLFL1jkHvHPfUG9ZvKm4H0c2OiLBfXJO4agAwnfAF0PddoF340G6ZIMD0
+         64ntfIQGQr7mtBEtphLcU/qmhLntSDXUYMHVhul1h50FQp6nWY+qRupFp7R9cBFeyg6t
+         23itI+WAvXYSCCaAVIk2jtaG9le/2VtIsva3ELo48UefY0ZwhUQDOiqNv8iOIi12plRR
+         aNmlm5jVA2YOL26gND1/qORhfTysfCV4LwaPmyJgGSP32n/2k2WonRo0ftEBkqmi3SSg
+         7rTMWq62oB89fVSa55x3sRlLLO60sZFqvYFcZJf07CdwJKvSJ/K312w7DD3HENxl4u9Q
+         gcQg==
+X-Gm-Message-State: AOAM530VD1uaZAOVQtyb1IAFB4CQEkxxV98jbxYgimWYaG6MEV+NdxqC
+        jBNJC6ApB+hyswgAz9gBhXs=
+X-Google-Smtp-Source: ABdhPJxzIcQI6Y42frVfr5VdpEkr62hLsmfmvRrDIJ6HRBdgvwLMFmI9R33cdBfHz8rnYuF+UMYgpA==
+X-Received: by 2002:a17:906:3acc:: with SMTP id z12mr56442861ejd.10.1641804087132;
+        Mon, 10 Jan 2022 00:41:27 -0800 (PST)
+Received: from [192.168.1.126] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.googlemail.com with ESMTPSA id g16sm2144561ejt.202.2022.01.10.00.41.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 00:41:26 -0800 (PST)
+Message-ID: <e6575bd5-ba9f-546f-ce82-162f19c14cad@kernel.org>
+Date:   Mon, 10 Jan 2022 09:41:25 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v1 08/14] arm64: defconfig: build lm75 temperature sensor
+ driver as a module
+Content-Language: en-US
+To:     Marcel Ziswiler <marcel@ziswiler.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        =?UTF-8?Q?Guido_G=c3=bcnther?= <agx@sigxcpu.org>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org
+References: <20220107180314.1816515-1-marcel@ziswiler.com>
+ <20220107180314.1816515-9-marcel@ziswiler.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220107180314.1816515-9-marcel@ziswiler.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 9 Jan 2022 21:38:40 +0100 Miguel Ojeda <miguel.ojeda.sandonis@gmail.com> wrote:
-
-> On Thu, Jan 6, 2022 at 1:34 PM SeongJae Park <sj@kernel.org> wrote:
-> >
-> > Some common tools like 'diff' don't support permissions of the files.
-> > Due to that, 'rust-version.sh' in some trees including '-mm' result in
-> > having no execution permission, and therefore build fails like below:
+On 07/01/2022 19:03, Marcel Ziswiler wrote:
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 > 
-> Do you mean the Quilt workflow? From a quick look:
-> 
-> https://lists.nongnu.org/archive/html/quilt-dev/2008-01/msg00000.html
-> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=749069
-> 
-> Is that the issue? I am surprised it loses that information...
+> Build Maxim Integrated LM75 temperature sensor driver as a module.
 
-Right.  I once encountered similar issue with DAMON kselftest[1], and as a
-result we made kselftest deals with such case[2].
-
-[1] https://lore.kernel.org/mm-commits/YRJisBs9AunccCD4@kroah.com/
-[2] https://lore.kernel.org/linux-kselftest/20210810164534.25902-1-sj38.park@gmail.com/
+Why?
 
 > 
-> > It's not a big deal, but not so fun.  This commit fixes the issue by
-> > specifying the interpreter for 'rust-version.sh' in the Kconfig file.
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> ---
 > 
-> Other script calls do not do that, so I would prefer to avoid it. But
-> I can take it temporarily to help you (until we are in mainline, if I
-> understand correctly the issue), but I would prefer to have a comment
-> nearby it justifying the workaround and explaining when we can remove
-> it.
-
-Fully agreed.  I will send v2 with the comment.
-
-
-Thanks,
-SJ
-
+>  arch/arm64/configs/defconfig | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Cheers,
-> Miguel
-> 
+
+
+Best regards,
+Krzysztof
