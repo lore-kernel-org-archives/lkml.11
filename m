@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A911C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241277AbiAJHni (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:43:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59278 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239995AbiAJHa2 (ORCPT
+        id S241529AbiAJHnu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:43:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42364 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239531AbiAJHeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:30:28 -0500
+        Mon, 10 Jan 2022 02:34:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2208B811FE;
-        Mon, 10 Jan 2022 07:30:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 098FEC36AED;
-        Mon, 10 Jan 2022 07:30:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B032360B6E;
+        Mon, 10 Jan 2022 07:34:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98DBFC36AED;
+        Mon, 10 Jan 2022 07:34:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799822;
-        bh=tEkYWwadlxmsxg6ZaSbG9c94MNse80UX241m1dtluq8=;
+        s=korg; t=1641800046;
+        bh=rQWPm9cXJfuksOaoRvd/2G82SysMisSSSu3E4i638IY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h3Sn8FFes0+W6MPllJ6i+nlmi9fFzIDWtn+HWBwzWpi7y3lEtD4yvvdu4Bn0lAvNf
-         vOfrgEyaxTqB43twV7rDO0ma9HPCx9xfjR7IRu9M8NALiVlKf3FEhjvKbDC/weX0oG
-         Ir/feLaThYGjA97VnS8xrpbjMZuH6FbNGpIzjxOg=
+        b=RTz4RxcrEA4JhD/nTe5ZoJ7fJxHgYUz5AMesEY//68H3lOxUZGPb3oXtBx5YcOc0z
+         e8PWKLZFFjl7HXuJtXIsNnwPspCkuQa4+8dYDXsbR5q0+6QUfTgYyAZs2NIAw1yx7I
+         ATicgg3njNKriwBW10otqMBfDxIlrRVUUqscgw4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 5.10 27/43] power: supply: core: Break capacity loop
-Date:   Mon, 10 Jan 2022 08:23:24 +0100
-Message-Id: <20220110071818.259990777@linuxfoundation.org>
+        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 60/72] atlantic: Fix buff_ring OOB in aq_ring_rx_clean
+Date:   Mon, 10 Jan 2022 08:23:37 +0100
+Message-Id: <20220110071823.591566466@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-References: <20220110071817.337619922@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,37 +46,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-commit 51c7b6a0398f54b9120795796a4cff4fc9634f7d upstream.
+[ Upstream commit 5f50153288452e10b6edd69ec9112c49442b054a ]
 
-We should not go on looking for more capacity tables after
-we realize we have looked at the last one in
-power_supply_find_ocv2cap_table().
+The function obtain the next buffer without boundary check.
+We should return with I/O error code.
 
-Fixes: 3afb50d7125b ("power: supply: core: Add some helpers to use the battery OCV capacity table")
-Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The bug is found by fuzzing and the crash report is attached.
+It is an OOB bug although reported as use-after-free.
+
+[    4.804724] BUG: KASAN: use-after-free in aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.805661] Read of size 4 at addr ffff888034fe93a8 by task ksoftirqd/0/9
+[    4.806505]
+[    4.806703] CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G        W         5.6.0 #34
+[    4.809030] Call Trace:
+[    4.809343]  dump_stack+0x76/0xa0
+[    4.809755]  print_address_description.constprop.0+0x16/0x200
+[    4.810455]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.811234]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.813183]  __kasan_report.cold+0x37/0x7c
+[    4.813715]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.814393]  kasan_report+0xe/0x20
+[    4.814837]  aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
+[    4.815499]  ? hw_atl_b0_hw_ring_rx_receive+0x9a5/0xb90 [atlantic]
+[    4.816290]  aq_vec_poll+0x179/0x5d0 [atlantic]
+[    4.816870]  ? _GLOBAL__sub_I_65535_1_aq_pci_func_init+0x20/0x20 [atlantic]
+[    4.817746]  ? __next_timer_interrupt+0xba/0xf0
+[    4.818322]  net_rx_action+0x363/0xbd0
+[    4.818803]  ? call_timer_fn+0x240/0x240
+[    4.819302]  ? __switch_to_asm+0x40/0x70
+[    4.819809]  ? napi_busy_loop+0x520/0x520
+[    4.820324]  __do_softirq+0x18c/0x634
+[    4.820797]  ? takeover_tasklets+0x5f0/0x5f0
+[    4.821343]  run_ksoftirqd+0x15/0x20
+[    4.821804]  smpboot_thread_fn+0x2f1/0x6b0
+[    4.822331]  ? smpboot_unregister_percpu_thread+0x160/0x160
+[    4.823041]  ? __kthread_parkme+0x80/0x100
+[    4.823571]  ? smpboot_unregister_percpu_thread+0x160/0x160
+[    4.824301]  kthread+0x2b5/0x3b0
+[    4.824723]  ? kthread_create_on_node+0xd0/0xd0
+[    4.825304]  ret_from_fork+0x35/0x40
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/power_supply_core.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/drivers/power/supply/power_supply_core.c
-+++ b/drivers/power/supply/power_supply_core.c
-@@ -834,6 +834,10 @@ power_supply_find_ocv2cap_table(struct p
- 		return NULL;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 24122ccda614c..72f8751784c31 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -365,6 +365,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		if (!buff->is_eop) {
+ 			buff_ = buff;
+ 			do {
++				if (buff_->next >= self->size) {
++					err = -EIO;
++					goto err_exit;
++				}
+ 				next_ = buff_->next,
+ 				buff_ = &self->buff_ring[next_];
+ 				is_rsc_completed =
+@@ -388,6 +392,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 			    (buff->is_lro && buff->is_cso_err)) {
+ 				buff_ = buff;
+ 				do {
++					if (buff_->next >= self->size) {
++						err = -EIO;
++						goto err_exit;
++					}
+ 					next_ = buff_->next,
+ 					buff_ = &self->buff_ring[next_];
  
- 	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
-+		/* Out of capacity tables */
-+		if (!info->ocv_table[i])
-+			break;
-+
- 		temp_diff = abs(info->ocv_temp[i] - temp);
- 
- 		if (temp_diff < best_temp_diff) {
+-- 
+2.34.1
+
 
 
