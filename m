@@ -2,221 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF579C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C26C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:45:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245625AbiAJMlZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 07:41:25 -0500
-Received: from xmbgsz7.mail.foxmail.com ([61.241.55.243]:44885 "EHLO
-        xmbgsz7.mail.foxmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245599AbiAJMlX (ORCPT
+        id S245651AbiAJMpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 07:45:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245632AbiAJMpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:41:23 -0500
-X-Greylist: delayed 98139 seconds by postgrey-1.27 at vger.kernel.org; Mon, 10 Jan 2022 07:41:22 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1641818478;
-        bh=g317dTPTpgSCEdP8ZINM18u9N7xoe3pAeREzosvRh0o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Uksghk2XXq/IobLR2p+oIM8TMmpMkoA0Ttf29TEd643sh69satFwUbaw2uxvW2mE+
-         YMUvGgdFBlAsKGkTCewB6xvkHst+DD75DLPQKVWKxJElv58wuBGr1JQkgRtShj1BT+
-         tmMkXVn6Z/iEyXcSatPgnbSyRxUmXkA135umrEj8=
-Received: from fedora.. ([119.32.47.91])
-        by newxmesmtplogicsvrsza7.qq.com (NewEsmtp) with SMTP
-        id 8F2BB215; Mon, 10 Jan 2022 19:35:50 +0800
-X-QQ-mid: xmsmtpt1641814550tadfo0vjb
-Message-ID: <tencent_AEEE0573A5455BBE4D5C05226C6C1E3AEF08@qq.com>
-X-QQ-XMAILINFO: Nw6Y/HeEb1MZpHgDiS7/LJhp8IFwyZJ3C+va4g8+G8duTO4HNq19H40VxVRsmZ
-         hK4yG/pKkgw6U4ntv2yxX2xIZs+nhAsRN9iaxZBzjIoVeN/TTs+rbUATOmObZIjRkZwNCY0Hqi3J
-         uz57tU6NVoURjeAxSQQSMxCyD8xo+eVla/YN3OdawDbOBDp9y0OFCA2AJ+adkuucqLGnDG90w09z
-         xwP7UsZmBX80hOK9FFEHhGRJsvXxVGvYPLWJNZdwjDhXxXHZEziODe1OQmb+aXwcsxDIvtD1pRFU
-         knn5SEFNbi3LgkAHDSjDzb2GDwP9gB5+zkcHWa9KZQX5419LWq6ic+9qenRFa+zTvNr3AhDeLcoS
-         UAYDYgk+eQVBAlfBLU0qOWgEKCnOM8vQlQvn9mPCk6t73aYuXa3CXd3DqPUL/iDySwPZB28RP86s
-         shTtjwrRh/PJWN1gIgMV19JBii9MJZwiIyGOuX+q1UOvZ5vIN/1YE3aHfSScILZ1fKl9Dpbh7sTt
-         SWfSNUbAhwbdtKNb8WhBpW4i84k6Hrdg/psmFI9yUz6hbItyBLmY0yJmwU+23CwM5tj/0rzyA2C5
-         GAFFB2OOLmVd81lQ7XkW0fznTeS3IdZIliQFRg6CSKKMzcdaSApka9FOvOflTDaL4r01zXrbKI3e
-         OnxBV5ll3rUylf6uwgsR3ZfiG2T3RM0Wv2TspUY7WUogV/2cBg72y3HeiqjAkiOlLagk2s3RxvRk
-         xFUBuaQefiMhwy8cA1ifPSKM/GNMuxFjBkqHvIv5KXi/veSt3Z9ttJzjEWuXVd3RGq1wiXlMVgRT
-         9ZXdFtRuMIB36gMzSTMx9l601k/qabR3NI0LLY1OAzlstIT7jCKvNHXZjFQq2yfQaAUPKLxOO+fy
-         aRZT5yEyr+tjoVuD01wwk1C9hFP6X3DkDwHlEr6kDGY4pCWzR0h7k23QQUo6/1EA==
-From:   Conley Lee <conleylee@foxmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
-        wens@csie.org, clabbe.montjoie@gmail.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
-Subject: [PATCH v2] net: ethernet: sun4i-emac: replace magic number with macro
-Date:   Mon, 10 Jan 2022 19:35:49 +0800
-X-OQ-MSGID: <20220110113549.2297850-1-conleylee@foxmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
-References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+        Mon, 10 Jan 2022 07:45:04 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFCEC061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 04:45:03 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id e198so14927701ybf.7
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 04:45:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1P551vXMJtNOZg3UvulkEAqSICcinl0woD2ztefNS7o=;
+        b=J8HT5LkxET+0mA/gLuJ/3I8tJ0L1dk9wNhAOo5DNNY42Isd7GnY4vVgeym1jIAII2B
+         bvQt1mrEEzlsg5P4duvDpbkgIZRSJzSTr3LCqsRK2HjFvfLSwEYkMX0Z4EkSQkLeEmsS
+         SMH1+FtPy+xbvVMMKNaUum/LkvsBs7FV0YOpMH0yap7J8BOTb2Xg3g8RGwxPhmEWnoYz
+         tJfU3dJM2REGP9rRTf1HrXs19n529ELk+fOGcWZO3sNhJUi8k2Unc1m1lFXG6Mp9yPyz
+         kNoKClvpJ8IAb2ZAOAKFZ80zAsEslE/hUTtJbsWl0wLarmgu4uW/Iw9Wc3Ik+LQ2rSFX
+         GEiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1P551vXMJtNOZg3UvulkEAqSICcinl0woD2ztefNS7o=;
+        b=Jga1lWVUBKnlSS0hY855tgSOXowIa4zp0vl3wuDvsLQQBIW8wPQRlvHi/cxObW3uox
+         H3rMgrkBvmlu9U0dT2tOF4s4GWqVXL0sdWITf0dcyPbHHVUuMNNS2fn1HiyBH33ZNIbr
+         DOFBVkmRisUX/3TuFggJBTkuK0oqpEQemXpc8C/QsIJH6gy8l3jH0KtmWsxuPTyEFGYs
+         nEKO7QY8YRlSvxlTkgaQ6uvfI2dEML6493y1tUjtODO2Ae+yQ/4R8xchp84gYQr96HPS
+         T8AuxOFWRfuNGgEV6zml+ElebnyGCk6Rmvij5YU/CnaI5h8+mJNgNG8QwL2XkQd+GAl9
+         bqsA==
+X-Gm-Message-State: AOAM531A7zoTs5qZYslzngyGYnwO5K+fhtD2xMn7XGoNCXk5/mGcDuhV
+        BOhUXfvDQY6rxEycxfeL97Wyr4Djvi0koxvjla0kpA==
+X-Google-Smtp-Source: ABdhPJycy2dWcyvhhb6q58G9qtGURkXbwLiSXEN+llTRHtfSBr0UI1jHi2mIcsMkEMzGfGjYnibJ42BIPjr7DUTTC8g=
+X-Received: by 2002:a05:6902:1106:: with SMTP id o6mr67371292ybu.89.1641818702890;
+ Mon, 10 Jan 2022 04:45:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210402055745.3690281-1-varmam@google.com> <CAMyCerJ2wjdXeEP3iRaKOgXOm94rdqVkzAf5iy2cwpjMWVj0hA@mail.gmail.com>
+In-Reply-To: <CAMyCerJ2wjdXeEP3iRaKOgXOm94rdqVkzAf5iy2cwpjMWVj0hA@mail.gmail.com>
+From:   Manish Varma <varmam@google.com>
+Date:   Mon, 10 Jan 2022 18:14:51 +0530
+Message-ID: <CAMyCerLCsP=oHLkLZhfQmU8ZTxQWkOBboo_V1KY8LCk7BtmYxg@mail.gmail.com>
+Subject: Re: [PATCH v3] fs: Improve eventpoll logging to stop indicting timerfd
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@android.com, kernel test robot <lkp@intel.com>,
+        Kelly Rossmoyer <krossmo@google.com>,
+        Vijay Nayak <nayakvij@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch remove magic numbers in sun4i-emac.c and replace with macros
-defined in sun4i-emac.h
+Hello Alexander and Thomas,
 
-Change since v1
----------------
-- reformat
-- merge commits
-- add commit message
+Friendly ping if you could share feedback (if any) to get this patch
+merged.
 
-Signed-off-by: Conley Lee <conleylee@foxmail.com>
----
- drivers/net/ethernet/allwinner/sun4i-emac.c | 30 ++++++++++++---------
- drivers/net/ethernet/allwinner/sun4i-emac.h | 18 +++++++++++++
- 2 files changed, 35 insertions(+), 13 deletions(-)
+Thanks,
+Manish
 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.c b/drivers/net/ethernet/allwinner/sun4i-emac.c
-index 849de4564709..98fd98feb439 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.c
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.c
-@@ -106,9 +106,9 @@ static void emac_update_speed(struct net_device *dev)
- 
- 	/* set EMAC SPEED, depend on PHY  */
- 	reg_val = readl(db->membase + EMAC_MAC_SUPP_REG);
--	reg_val &= ~(0x1 << 8);
-+	reg_val &= ~EMAC_MAC_SUPP_100M;
- 	if (db->speed == SPEED_100)
--		reg_val |= 1 << 8;
-+		reg_val |= EMAC_MAC_SUPP_100M;
- 	writel(reg_val, db->membase + EMAC_MAC_SUPP_REG);
- }
- 
-@@ -264,7 +264,7 @@ static void emac_dma_done_callback(void *arg)
- 
- 	/* re enable interrupt */
- 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--	reg_val |= (0x01 << 8);
-+	reg_val |= EMAC_INT_CTL_RX_EN;
- 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 	db->emacrx_completed_flag = 1;
-@@ -429,7 +429,7 @@ static unsigned int emac_powerup(struct net_device *ndev)
- 	/* initial EMAC */
- 	/* flush RX FIFO */
- 	reg_val = readl(db->membase + EMAC_RX_CTL_REG);
--	reg_val |= 0x8;
-+	reg_val |= EMAC_RX_CTL_FLUSH_FIFO;
- 	writel(reg_val, db->membase + EMAC_RX_CTL_REG);
- 	udelay(1);
- 
-@@ -441,8 +441,8 @@ static unsigned int emac_powerup(struct net_device *ndev)
- 
- 	/* set MII clock */
- 	reg_val = readl(db->membase + EMAC_MAC_MCFG_REG);
--	reg_val &= (~(0xf << 2));
--	reg_val |= (0xD << 2);
-+	reg_val &= ~EMAC_MAC_MCFG_MII_CLKD_MASK;
-+	reg_val |= EMAC_MAC_MCFG_MII_CLKD_72;
- 	writel(reg_val, db->membase + EMAC_MAC_MCFG_REG);
- 
- 	/* clear RX counter */
-@@ -506,7 +506,7 @@ static void emac_init_device(struct net_device *dev)
- 
- 	/* enable RX/TX0/RX Hlevel interrup */
- 	reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--	reg_val |= (0xf << 0) | (0x01 << 8);
-+	reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
- 	writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 	spin_unlock_irqrestore(&db->lock, flags);
-@@ -637,7 +637,9 @@ static void emac_rx(struct net_device *dev)
- 		if (!rxcount) {
- 			db->emacrx_completed_flag = 1;
- 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--			reg_val |= (0xf << 0) | (0x01 << 8);
-+			reg_val |=
-+				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
-+				 EMAC_INT_CTL_RX_EN);
- 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 			/* had one stuck? */
-@@ -669,7 +671,9 @@ static void emac_rx(struct net_device *dev)
- 			writel(reg_val | EMAC_CTL_RX_EN,
- 			       db->membase + EMAC_CTL_REG);
- 			reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--			reg_val |= (0xf << 0) | (0x01 << 8);
-+			reg_val |=
-+				(EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN |
-+				 EMAC_INT_CTL_RX_EN);
- 			writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 
- 			db->emacrx_completed_flag = 1;
-@@ -783,20 +787,20 @@ static irqreturn_t emac_interrupt(int irq, void *dev_id)
- 	}
- 
- 	/* Transmit Interrupt check */
--	if (int_status & (0x01 | 0x02))
-+	if (int_status & EMAC_INT_STA_TX_COMPLETE)
- 		emac_tx_done(dev, db, int_status);
- 
--	if (int_status & (0x04 | 0x08))
-+	if (int_status & EMAC_INT_STA_TX_ABRT)
- 		netdev_info(dev, " ab : %x\n", int_status);
- 
- 	/* Re-enable interrupt mask */
- 	if (db->emacrx_completed_flag == 1) {
- 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--		reg_val |= (0xf << 0) | (0x01 << 8);
-+		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN | EMAC_INT_CTL_RX_EN);
- 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 	} else {
- 		reg_val = readl(db->membase + EMAC_INT_CTL_REG);
--		reg_val |= (0xf << 0);
-+		reg_val |= (EMAC_INT_CTL_TX_EN | EMAC_INT_CTL_TX_ABRT_EN);
- 		writel(reg_val, db->membase + EMAC_INT_CTL_REG);
- 	}
- 
-diff --git a/drivers/net/ethernet/allwinner/sun4i-emac.h b/drivers/net/ethernet/allwinner/sun4i-emac.h
-index 38c72d9ec600..90bd9ad77607 100644
---- a/drivers/net/ethernet/allwinner/sun4i-emac.h
-+++ b/drivers/net/ethernet/allwinner/sun4i-emac.h
-@@ -38,6 +38,7 @@
- #define EMAC_RX_CTL_REG		(0x3c)
- #define EMAC_RX_CTL_AUTO_DRQ_EN		(1 << 1)
- #define EMAC_RX_CTL_DMA_EN		(1 << 2)
-+#define EMAC_RX_CTL_FLUSH_FIFO		(1 << 3)
- #define EMAC_RX_CTL_PASS_ALL_EN		(1 << 4)
- #define EMAC_RX_CTL_PASS_CTL_EN		(1 << 5)
- #define EMAC_RX_CTL_PASS_CRC_ERR_EN	(1 << 6)
-@@ -61,7 +62,21 @@
- #define EMAC_RX_IO_DATA_STATUS_OK	(1 << 7)
- #define EMAC_RX_FBC_REG		(0x50)
- #define EMAC_INT_CTL_REG	(0x54)
-+#define EMAC_INT_CTL_RX_EN	(1 << 8)
-+#define EMAC_INT_CTL_TX0_EN	(1)
-+#define EMAC_INT_CTL_TX1_EN	(1 << 1)
-+#define EMAC_INT_CTL_TX_EN	(EMAC_INT_CTL_TX0_EN | EMAC_INT_CTL_TX1_EN)
-+#define EMAC_INT_CTL_TX0_ABRT_EN	(0x1 << 2)
-+#define EMAC_INT_CTL_TX1_ABRT_EN	(0x1 << 3)
-+#define EMAC_INT_CTL_TX_ABRT_EN	(EMAC_INT_CTL_TX0_ABRT_EN | EMAC_INT_CTL_TX1_ABRT_EN)
- #define EMAC_INT_STA_REG	(0x58)
-+#define EMAC_INT_STA_TX0_COMPLETE	(0x1)
-+#define EMAC_INT_STA_TX1_COMPLETE	(0x1 << 1)
-+#define EMAC_INT_STA_TX_COMPLETE	(EMAC_INT_STA_TX0_COMPLETE | EMAC_INT_STA_TX1_COMPLETE)
-+#define EMAC_INT_STA_TX0_ABRT	(0x1 << 2)
-+#define EMAC_INT_STA_TX1_ABRT	(0x1 << 3)
-+#define EMAC_INT_STA_TX_ABRT	(EMAC_INT_STA_TX0_ABRT | EMAC_INT_STA_TX1_ABRT)
-+#define EMAC_INT_STA_RX_COMPLETE	(0x1 << 8)
- #define EMAC_MAC_CTL0_REG	(0x5c)
- #define EMAC_MAC_CTL0_RX_FLOW_CTL_EN	(1 << 2)
- #define EMAC_MAC_CTL0_TX_FLOW_CTL_EN	(1 << 3)
-@@ -87,8 +102,11 @@
- #define EMAC_MAC_CLRT_RM		(0x0f)
- #define EMAC_MAC_MAXF_REG	(0x70)
- #define EMAC_MAC_SUPP_REG	(0x74)
-+#define EMAC_MAC_SUPP_100M	(0x1 << 8)
- #define EMAC_MAC_TEST_REG	(0x78)
- #define EMAC_MAC_MCFG_REG	(0x7c)
-+#define EMAC_MAC_MCFG_MII_CLKD_MASK	(0xff << 2)
-+#define EMAC_MAC_MCFG_MII_CLKD_72	(0x0d << 2)
- #define EMAC_MAC_A0_REG		(0x98)
- #define EMAC_MAC_A1_REG		(0x9c)
- #define EMAC_MAC_A2_REG		(0xa0)
--- 
-2.31.1
 
+On Tue, Jun 22, 2021 at 3:36 AM Manish Varma <varmam@google.com> wrote:
+>
+> Hello Alexander and Thomas,
+>
+> Please share if you have any further feedback on this patch, or if
+> there's any other action required from my end to before this gets
+> merged.
+>
+> Thanks,
+> Manish
+>
+> On Thu, Apr 1, 2021 at 10:57 PM Manish Varma <varmam@google.com> wrote:
+> >
+> > timerfd doesn't create any wakelocks, but eventpoll can.  When it does,
+> > it names them after the underlying file descriptor, and since all
+> > timerfd file descriptors are named "[timerfd]" (which saves memory on
+> > systems like desktops with potentially many timerfd instances), all
+> > wakesources created as a result of using the eventpoll-on-timerfd idiom
+> > are called... "[timerfd]".
+> >
+> > However, it becomes impossible to tell which "[timerfd]" wakesource is
+> > affliated with which process and hence troubleshooting is difficult.
+> >
+> > This change addresses this problem by changing the way eventpoll
+> > wakesources are named:
+> >
+> > 1) the top-level per-process eventpoll wakesource is now named "epoll:P"
+> > (instead of just "eventpoll"), where P, is the PID of the creating
+> > process.
+> > 2) individual per-underlying-filedescriptor eventpoll wakesources are
+> > now named "epollitemN:P.F", where N is a unique ID token and P is PID
+> > of the creating process and F is the name of the underlying file
+> > descriptor.
+> >
+> > All together that should be splitted up into a change to eventpoll and
+> > timerfd (or other file descriptors).
+> >
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Co-developed-by: Kelly Rossmoyer <krossmo@google.com>
+> > Signed-off-by: Kelly Rossmoyer <krossmo@google.com>
+> > Signed-off-by: Manish Varma <varmam@google.com>
+> > ---
+> >  drivers/base/power/wakeup.c | 10 ++++++++--
+> >  fs/eventpoll.c              | 10 ++++++++--
+> >  include/linux/pm_wakeup.h   |  4 ++--
+> >  3 files changed, 18 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
+> > index 01057f640233..3628536c67a5 100644
+> > --- a/drivers/base/power/wakeup.c
+> > +++ b/drivers/base/power/wakeup.c
+> > @@ -216,13 +216,19 @@ EXPORT_SYMBOL_GPL(wakeup_source_remove);
+> >  /**
+> >   * wakeup_source_register - Create wakeup source and add it to the list.
+> >   * @dev: Device this wakeup source is associated with (or NULL if virtual).
+> > - * @name: Name of the wakeup source to register.
+> > + * @fmt: format string for the wakeup source name
+> >   */
+> >  struct wakeup_source *wakeup_source_register(struct device *dev,
+> > -                                            const char *name)
+> > +                                            const char *fmt, ...)
+> >  {
+> >         struct wakeup_source *ws;
+> >         int ret;
+> > +       char name[128];
+> > +       va_list args;
+> > +
+> > +       va_start(args, fmt);
+> > +       vsnprintf(name, sizeof(name), fmt, args);
+> > +       va_end(args);
+> >
+> >         ws = wakeup_source_create(name);
+> >         if (ws) {
+> > diff --git a/fs/eventpoll.c b/fs/eventpoll.c
+> > index 7df8c0fa462b..7c35987a8887 100644
+> > --- a/fs/eventpoll.c
+> > +++ b/fs/eventpoll.c
+> > @@ -312,6 +312,7 @@ struct ctl_table epoll_table[] = {
+> >  };
+> >  #endif /* CONFIG_SYSCTL */
+> >
+> > +static atomic_t wakesource_create_id  = ATOMIC_INIT(0);
+> >  static const struct file_operations eventpoll_fops;
+> >
+> >  static inline int is_file_epoll(struct file *f)
+> > @@ -1451,15 +1452,20 @@ static int ep_create_wakeup_source(struct epitem *epi)
+> >  {
+> >         struct name_snapshot n;
+> >         struct wakeup_source *ws;
+> > +       pid_t task_pid;
+> > +       int id;
+> > +
+> > +       task_pid = task_pid_nr(current);
+> >
+> >         if (!epi->ep->ws) {
+> > -               epi->ep->ws = wakeup_source_register(NULL, "eventpoll");
+> > +               epi->ep->ws = wakeup_source_register(NULL, "epoll:%d", task_pid);
+> >                 if (!epi->ep->ws)
+> >                         return -ENOMEM;
+> >         }
+> >
+> > +       id = atomic_inc_return(&wakesource_create_id);
+> >         take_dentry_name_snapshot(&n, epi->ffd.file->f_path.dentry);
+> > -       ws = wakeup_source_register(NULL, n.name.name);
+> > +       ws = wakeup_source_register(NULL, "epollitem%d:%d.%s", id, task_pid, n.name.name);
+> >         release_dentry_name_snapshot(&n);
+> >
+> >         if (!ws)
+> > diff --git a/include/linux/pm_wakeup.h b/include/linux/pm_wakeup.h
+> > index aa3da6611533..cb91c84f6f08 100644
+> > --- a/include/linux/pm_wakeup.h
+> > +++ b/include/linux/pm_wakeup.h
+> > @@ -95,7 +95,7 @@ extern void wakeup_source_destroy(struct wakeup_source *ws);
+> >  extern void wakeup_source_add(struct wakeup_source *ws);
+> >  extern void wakeup_source_remove(struct wakeup_source *ws);
+> >  extern struct wakeup_source *wakeup_source_register(struct device *dev,
+> > -                                                   const char *name);
+> > +                                                   const char *fmt, ...);
+> >  extern void wakeup_source_unregister(struct wakeup_source *ws);
+> >  extern int wakeup_sources_read_lock(void);
+> >  extern void wakeup_sources_read_unlock(int idx);
+> > @@ -137,7 +137,7 @@ static inline void wakeup_source_add(struct wakeup_source *ws) {}
+> >  static inline void wakeup_source_remove(struct wakeup_source *ws) {}
+> >
+> >  static inline struct wakeup_source *wakeup_source_register(struct device *dev,
+> > -                                                          const char *name)
+> > +                                                          const char *fmt, ...)
+> >  {
+> >         return NULL;
+> >  }
+> > --
+> > 2.31.0.208.g409f899ff0-goog
+> >
+>
+>
+> --
+> Manish Varma | Software Engineer | varmam@google.com | 650-686-0858
