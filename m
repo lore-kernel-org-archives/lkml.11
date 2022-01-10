@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD18BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A30C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239826AbiAJHbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:31:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38028 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240081AbiAJH22 (ORCPT
+        id S240661AbiAJHcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239614AbiAJH21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:28 -0500
+        Mon, 10 Jan 2022 02:28:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 866E5C028C39;
+        Sun,  9 Jan 2022 23:26:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B23C8611C9;
-        Mon, 10 Jan 2022 07:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97EF9C36AE9;
-        Mon, 10 Jan 2022 07:28:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AE27B811F5;
+        Mon, 10 Jan 2022 07:26:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD0CC36AE9;
+        Mon, 10 Jan 2022 07:26:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799707;
-        bh=WLcjkDH0MA5Ws7HBfmZfW8Pr+NSz5/fPbxZShZIadus=;
+        s=korg; t=1641799565;
+        bh=h+RDHigZyBNMfYVop5KsSMfjlhHiJUgj+VK3fo/isNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y6ylJ21a726y9kFRVTpyhQHT6A7NfAzw/eGdxuhF4gWpe2zyNYmWA7TeGnN/ydd1/
-         YyE2ptOchsJjT5QXiffXY7HKJEt7hUFByFD5DMIsftr375MrtKOHpxniDrT71zc3BB
-         0Kh+Wv0rSAxqLN0j9ZvtwLO9TcJww5ueGlsxGJpg=
+        b=lssHXyOCBIsoSFRNt/8y7u/fn0nLB6wQSJbRmeF9oKZtjsVq/iQROpChThCCUXB2J
+         jyGza1W7onfT8L6fdnLIrKZWgtqiyBF7TpuIPgJa8wV0c4Z4BNjFW9zOsjAxe8QYHt
+         up6Y0xDciNqGJJa+ArloZQGasH15onVHUuc51dEY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.4 09/34] RDMA/uverbs: Check for null return of kmalloc_array
-Date:   Mon, 10 Jan 2022 08:23:04 +0100
-Message-Id: <20220110071815.967327967@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Aayush Agarwal <aayush.a.agarwal@oracle.com>
+Subject: [PATCH 4.14 16/22] phonet: refcount leak in pep_sock_accep
+Date:   Mon, 10 Jan 2022 08:23:09 +0100
+Message-Id: <20220110071814.802902429@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
+References: <20220110071814.261471354@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,35 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 7694a7de22c53a312ea98960fcafc6ec62046531 upstream.
+commit bcd0f93353326954817a4f9fa55ec57fb38acbb0 upstream.
 
-Because of the possible failure of the allocation, data might be NULL
-pointer and will cause the dereference of the NULL pointer later.
-Therefore, it might be better to check it and return -ENOMEM.
+sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
+invoked in subsequent failure branches(pep_accept_conn() != 0).
 
-Fixes: 6884c6c4bd09 ("RDMA/verbs: Store the write/write_ex uapi entry points in the uverbs_api")
-Link: https://lore.kernel.org/r/20211231093315.1917667-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/core/uverbs_uapi.c |    3 +++
- 1 file changed, 3 insertions(+)
+ net/phonet/pep.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/infiniband/core/uverbs_uapi.c
-+++ b/drivers/infiniband/core/uverbs_uapi.c
-@@ -450,6 +450,9 @@ static int uapi_finalize(struct uverbs_a
- 	uapi->num_write_ex = max_write_ex + 1;
- 	data = kmalloc_array(uapi->num_write + uapi->num_write_ex,
- 			     sizeof(*uapi->write_methods), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
- 	for (i = 0; i != uapi->num_write + uapi->num_write_ex; i++)
- 		data[i] = &uapi->notsupp_method;
- 	uapi->write_methods = data;
+--- a/net/phonet/pep.c
++++ b/net/phonet/pep.c
+@@ -881,6 +881,7 @@ static struct sock *pep_sock_accept(stru
+ 
+ 	err = pep_accept_conn(newsk, skb);
+ 	if (err) {
++		__sock_put(sk);
+ 		sock_put(newsk);
+ 		newsk = NULL;
+ 		goto drop;
 
 
