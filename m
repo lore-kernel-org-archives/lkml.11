@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20635C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F95BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240523AbiAJHdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:33:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240120AbiAJH2b (ORCPT
+        id S240166AbiAJHdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:33:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58326 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239720AbiAJH2t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF07C028BE8;
-        Sun,  9 Jan 2022 23:26:47 -0800 (PST)
+        Mon, 10 Jan 2022 02:28:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3BE6B8120C;
-        Mon, 10 Jan 2022 07:26:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E648DC36AED;
-        Mon, 10 Jan 2022 07:26:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0EA22B811E3;
+        Mon, 10 Jan 2022 07:28:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C0B7C36AE9;
+        Mon, 10 Jan 2022 07:28:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799605;
-        bh=8djHihGT1fBxPDb4dfGke7sE406ckoNNOuXvoUFQ+UI=;
+        s=korg; t=1641799726;
+        bh=D7vs6k8iFGyAvByHR8PckHt7Y5wDwH3cOCh2tIDChCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iTGP3jSwR64GwtN2CXWXo6LLuEG+r/RY58nOIpWCNvxmaxXuqMllX4TA9z1wrUkwt
-         8zus5+1NHtpZGO6zsoZ4DmXj2s/V/GyYfRvDslRa3m+N+85i2Th1Xu+otGRmhc3oLV
-         Anuz3hTj/oAga80FfTzhkdBNCFDstnUvuDhciudk=
+        b=ZiAND1SKZSequMeqBHfPzTuH22tMKHlPda0ZK4kR3y+rCHlfqTDHCUiXiFvGvKYk2
+         S/KCXXI5Tsq1NaKKBb3QuRRa9tIRRb7amT4iP3K6zW+ckf3WZzBhWyos+A1d4Raqru
+         N3TnStG74Ug9iwL96AW4PpsSzQB776xEoSLkPAfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 10/22] ipv6: Check attribute length for RTA_GATEWAY in multipath route
-Date:   Mon, 10 Jan 2022 08:23:03 +0100
-Message-Id: <20220110071814.607679301@linuxfoundation.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 28/34] ipv6: Do cleanup if attribute validation fails in multipath route
+Date:   Mon, 10 Jan 2022 08:23:23 +0100
+Message-Id: <20220110071816.617673606@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
-References: <20220110071814.261471354@linuxfoundation.org>
+In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
+References: <20220110071815.647309738@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +49,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Ahern <dsahern@kernel.org>
 
-commit 4619bcf91399f00a40885100fb61d594d8454033 upstream.
+[ Upstream commit 95bdba23b5b4aa75fe3e6c84335e638641c707bb ]
 
-Commit referenced in the Fixes tag used nla_memcpy for RTA_GATEWAY as
-does the current nla_get_in6_addr. nla_memcpy protects against accessing
-memory greater than what is in the attribute, but there is no check
-requiring the attribute to have an IPv6 address. Add it.
+As Nicolas noted, if gateway validation fails walking the multipath
+attribute the code should jump to the cleanup to free previously
+allocated memory.
 
-Fixes: 51ebd3181572 ("ipv6: add support of equal cost multipath (ECMP)")
+Fixes: 1ff15a710a86 ("ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route")
 Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Link: https://lore.kernel.org/r/20220103170555.94638-1-dsahern@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/route.c |   21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ net/ipv6/route.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
+diff --git a/net/ipv6/route.c b/net/ipv6/route.c
+index 56f0783df5896..5ef6e27e026e9 100644
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -3183,6 +3183,19 @@ static void ip6_route_mpath_notify(struc
- 		inet6_rt_notify(RTM_NEWROUTE, rt, info, nlflags);
- }
- 
-+static int fib6_gw_from_attr(struct in6_addr *gw, struct nlattr *nla,
-+			     struct netlink_ext_ack *extack)
-+{
-+	if (nla_len(nla) < sizeof(*gw)) {
-+		NL_SET_ERR_MSG(extack, "Invalid IPv6 address in RTA_GATEWAY");
-+		return -EINVAL;
-+	}
-+
-+	*gw = nla_get_in6_addr(nla);
-+
-+	return 0;
-+}
-+
- static int ip6_route_multipath_add(struct fib6_config *cfg,
- 				   struct netlink_ext_ack *extack)
- {
-@@ -3223,7 +3236,13 @@ static int ip6_route_multipath_add(struc
+@@ -5146,12 +5146,10 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
  
  			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
  			if (nla) {
--				r_cfg.fc_gateway = nla_get_in6_addr(nla);
-+				int ret;
-+
-+				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
-+							extack);
-+				if (ret)
-+					return ret;
-+
+-				int ret;
+-
+-				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
++				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
+ 							extack);
+-				if (ret)
+-					return ret;
++				if (err)
++					goto cleanup;
+ 
  				r_cfg.fc_flags |= RTF_GATEWAY;
  			}
- 			r_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
+-- 
+2.34.1
+
 
 
