@@ -2,114 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21ED0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3613EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245085AbiAJL4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:56:22 -0500
-Received: from mail-wr1-f49.google.com ([209.85.221.49]:43546 "EHLO
-        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239786AbiAJL4L (ORCPT
+        id S245095AbiAJL6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:58:31 -0500
+Received: from mail-ed1-f53.google.com ([209.85.208.53]:46844 "EHLO
+        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230296AbiAJL6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:56:11 -0500
-Received: by mail-wr1-f49.google.com with SMTP id o3so26250437wrh.10;
-        Mon, 10 Jan 2022 03:56:10 -0800 (PST)
+        Mon, 10 Jan 2022 06:58:22 -0500
+Received: by mail-ed1-f53.google.com with SMTP id k15so52377413edk.13;
+        Mon, 10 Jan 2022 03:58:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5JGHooFXj2iz4QcgazfHEbKsX6GW7+vX5suOZ5p/SDM=;
-        b=B5auyrNEqwfRdl75fjeIdWOx2w9nxkmZf4CQcNfYir5X0gmUHUOv6jeGh7AYkmKEyn
-         oB83vsX7g+7J3fXCFCVyozb9ZnJ3alrjuOsIErhjparEPhGDCfXwSV855vSaquEtMNLg
-         mb9k1P858V8IG8Bf5uQ644STdsSkYoQszKiuVh5nKnyeYL6JfkWV0zKJ+r0ix7zwAvl8
-         FWC4Qu8Jh5mv9ehA6BsO5ju5bClVUwBsD3hc90H5LHM8e1fHfGTqUjn9VjE+Fcn0UaTC
-         JjGKz4+A7FMLc/fBGLPxKyitei5Hldk3gGQ9mPRPX9U/wSwPAjWLBrbac+y+f9fV+E+f
-         OctA==
-X-Gm-Message-State: AOAM531+hO+HvqfU71aFVgiTTDC18OoW2RnRdMGntVYpOs6lD6m8h49s
-        nzOhtzXvqnGFByxJm5w9iCw=
-X-Google-Smtp-Source: ABdhPJxZBnLQMX3PWtG+rxuni0SASXbD4BM0W6Jr8VzSIuO8sHUMTwXE4vb7scyOzRBBUjBISGyLpA==
-X-Received: by 2002:a5d:5847:: with SMTP id i7mr50225249wrf.450.1641815770104;
-        Mon, 10 Jan 2022 03:56:10 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id x21sm6307469wmc.24.2022.01.10.03.56.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 03:56:09 -0800 (PST)
-Date:   Mon, 10 Jan 2022 11:56:08 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Juan Vazquez <juvazq@linux.microsoft.com>
-Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, mikelley@microsoft.com,
-        jejb@linux.ibm.com, martin.petersen@oracle.com,
-        linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, tianyu.lan@microsoft.com,
-        longli@microsoft.com
-Subject: Re: [PATCH] scsi: storvsc: Fix storvsc_queuecommand() memory leak
-Message-ID: <20220110115608.sdsbnof5gtc6gu74@liuwe-devbox-debian-v2>
-References: <20220109001758.6401-1-juvazq@linux.microsoft.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KEFVGpTwnkjkTyLurQERHyZuoZQJijyZqzd+Dp5wm7s=;
+        b=DROv0xfaoVNkXh+61tV7xzT+Aogftmabs7u6cGjKxoVWdavkDL6GIWu58LozKeblGU
+         kPzpZB+Lkzf31vkMFs7dnTj4TaB1fdh8F26wcTqBsaYy0heZSNt2LRi/46ksdFJ5kjU4
+         g/34do66mdn6VQNWOe9YVO45UYc82cAoPPeiEqBJsJrvZzkfjaqFLNecCf3GnOqwMZs0
+         NDF1XuHP/W7SMZwoL+h363z2RAX7uKXIgEA0OSmDJFEcXETs0O8E0e5k2inGHaHIDhgU
+         qy6/upfwX5rxORLmsAoSA8jOUMIXLn+lHSzGUZzhZ8P9vUV33c8kx9BuDPq5stHQdOhn
+         9M/A==
+X-Gm-Message-State: AOAM530CqoZ7Zps7mUw1iUnzxKc672KS3RH0Wx3syhn6Zcv4DZIvGXRj
+        P62fVBkpDZltjsIHo938RFI=
+X-Google-Smtp-Source: ABdhPJxPQN6eEpI/Cx0t8t3HmA+D5/UumywGmwuBUCnHq3Kyy0xcAtzWOMjXt3wqLkF9xhVd+an9Xg==
+X-Received: by 2002:a17:907:1b06:: with SMTP id mp6mr60694868ejc.275.1641815900997;
+        Mon, 10 Jan 2022 03:58:20 -0800 (PST)
+Received: from [192.168.1.49] (185-219-167-24-static.vivo.cz. [185.219.167.24])
+        by smtp.gmail.com with ESMTPSA id b2sm2353271ejh.199.2022.01.10.03.58.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 03:58:20 -0800 (PST)
+Message-ID: <01066e66-5d97-ab40-b4a6-99e962b47073@kernel.org>
+Date:   Mon, 10 Jan 2022 12:58:19 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220109001758.6401-1-juvazq@linux.microsoft.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V5 2/5] tty: serial: meson: Move request the register
+ region.
+Content-Language: en-US
+To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220110104214.25321-1-yu.tu@amlogic.com>
+ <20220110104214.25321-3-yu.tu@amlogic.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220110104214.25321-3-yu.tu@amlogic.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 04:17:58PM -0800, Juan Vazquez wrote:
-> Fix possible memory leak in error path of storvsc_queuecommand() when
-> DMA mapping fails.
-> 
-> Fixes: 743b237c3a7b ("scsi: storvsc: Add Isolation VM support for storvsc driver")
-> Signed-off-by: Juan Vazquez <juvazq@linux.microsoft.com>
+Hi,
 
-Martin, I can pick this up since the offending commit is not yet in
-Linus' tree.
+On 10. 01. 22, 11:42, Yu Tu wrote:
+> This simplifies resetting the UART controller during probe
+> and will make it easier to integrate the common clock code
+> which will require the registers at probe time as well.
 
-Tianyu, Long and Michael, the change makes sense to me but can you give
-an ack or review here?
+And you are *also* switching devm_request_mem_region+devm_ioremap into 
+devm_ioremap_resource without even noting it here. It should've been 
+done in a separate patch.
 
+And no, do not resend a new version in the next few days. Having v5 in 
+20 days is a bit too much. Give maintainers and reviewers some more 
+space to express themselves.
+> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
 > ---
->  drivers/scsi/storvsc_drv.c | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
+>   drivers/tty/serial/meson_uart.c | 24 ++++++------------------
+>   1 file changed, 6 insertions(+), 18 deletions(-)
 > 
-> diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-> index 2273b843d9d2..9a0bba5a51a7 100644
-> --- a/drivers/scsi/storvsc_drv.c
-> +++ b/drivers/scsi/storvsc_drv.c
-> @@ -1850,8 +1850,10 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
->  		payload->range.offset = offset_in_hvpg;
->  
->  		sg_count = scsi_dma_map(scmnd);
-> -		if (sg_count < 0)
-> -			return SCSI_MLQUEUE_DEVICE_BUSY;
-> +		if (sg_count < 0) {
-> +			ret = SCSI_MLQUEUE_DEVICE_BUSY;
-> +			goto err_free_payload;
-> +		}
->  
->  		for_each_sg(sgl, sg, sg_count, j) {
->  			/*
-> @@ -1886,13 +1888,18 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
->  	put_cpu();
->  
->  	if (ret == -EAGAIN) {
-> -		if (payload_sz > sizeof(cmd_request->mpb))
-> -			kfree(payload);
->  		/* no more space */
-> -		return SCSI_MLQUEUE_DEVICE_BUSY;
-> +		ret = SCSI_MLQUEUE_DEVICE_BUSY;
-> +		goto err_free_payload;
->  	}
->  
->  	return 0;
+> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+> index 45e00d928253..7570958d010c 100644
+> --- a/drivers/tty/serial/meson_uart.c
+> +++ b/drivers/tty/serial/meson_uart.c
+> @@ -395,24 +395,11 @@ static int meson_uart_verify_port(struct uart_port *port,
+>   
+>   static void meson_uart_release_port(struct uart_port *port)
+>   {
+> -	devm_iounmap(port->dev, port->membase);
+> -	port->membase = NULL;
+> -	devm_release_mem_region(port->dev, port->mapbase, port->mapsize);
+> +	/* nothing to do */
+>   }
+>   
+>   static int meson_uart_request_port(struct uart_port *port)
+>   {
+> -	if (!devm_request_mem_region(port->dev, port->mapbase, port->mapsize,
+> -				     dev_name(port->dev))) {
+> -		dev_err(port->dev, "Memory region busy\n");
+> -		return -EBUSY;
+> -	}
+> -
+> -	port->membase = devm_ioremap(port->dev, port->mapbase,
+> -					     port->mapsize);
+> -	if (!port->membase)
+> -		return -ENOMEM;
+> -
+>   	return 0;
+>   }
+>   
+> @@ -733,6 +720,10 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	if (!port)
+>   		return -ENOMEM;
+>   
+> +	port->membase = devm_ioremap_resource(&pdev->dev, res_mem);
+> +	if (IS_ERR(port->membase))
+> +		return PTR_ERR(port->membase);
 > +
-> +err_free_payload:
-> +	if (payload_sz > sizeof(cmd_request->mpb))
-> +		kfree(payload);
-> +
-> +	return ret;
->  }
->  
->  static struct scsi_host_template scsi_driver = {
-> -- 
-> 2.32.0
-> 
+>   	ret = meson_uart_probe_clocks(pdev, port);
+>   	if (ret)
+>   		return ret;
+> @@ -754,10 +745,7 @@ static int meson_uart_probe(struct platform_device *pdev)
+>   	platform_set_drvdata(pdev, port);
+>   
+>   	/* reset port before registering (and possibly registering console) */
+> -	if (meson_uart_request_port(port) >= 0) {
+> -		meson_uart_reset(port);
+> -		meson_uart_release_port(port);
+> -	}
+> +	meson_uart_reset(port);
+>   
+>   	ret = uart_add_one_port(&meson_uart_driver, port);
+>   	if (ret)
+
+thanks,
+-- 
+js
+suse labs
