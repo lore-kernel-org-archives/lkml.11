@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4744C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC53FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240352AbiAJH3z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:29:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57246 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239761AbiAJH0q (ORCPT
+        id S240451AbiAJHai (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:30:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35846 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239452AbiAJH1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:46 -0500
+        Mon, 10 Jan 2022 02:27:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAD3AB8121F;
-        Mon, 10 Jan 2022 07:26:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F612C36AED;
-        Mon, 10 Jan 2022 07:26:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0312611BB;
+        Mon, 10 Jan 2022 07:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C4BC36AED;
+        Mon, 10 Jan 2022 07:27:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799602;
-        bh=Wldz8UjcKZnAtHovDBU/1qsaosdEB3xAIvPbnIahNks=;
+        s=korg; t=1641799633;
+        bh=3/dwJjTOfy7aBth/bsOx6Zpwo8PENZBu+h2VbuE/B4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNiDRLcP+npnyiVjczWXf7RAJnYUUcOThu19Nj7rQNZ9me7FWWw0wpWzTgoqy1dwS
-         yIvW0KWx7GoIkHzFcwc2YXSgQ0wXboeDW2rz+LWzV7CcvFEMwHAjH2p5zD3+vMmQIa
-         MvoN3cLiuqNchJkiMAdH2BB6fPs76p+LDD52I0JI=
+        b=s8SwMlrsnkZ5f444YPYPNlBc/tUgpE7gOM4HDSg0910c+0OscQ8t2QBb9+k72mT+X
+         FGrBdMxMj53pGgC4FqaWUha+Z+4F5ik7mz58lAD44js2+yO9ZNpBe4xpIa7miJrz1O
+         +jWanKYa0GsrSnZvhAJA9pvYuMduU3kVjoFwntwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lukasz Cieplicki <lukaszx.cieplicki@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 4.14 09/22] i40e: Fix incorrect netdevs real number of RX/TX queues
-Date:   Mon, 10 Jan 2022 08:23:02 +0100
-Message-Id: <20220110071814.574227520@linuxfoundation.org>
+        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 17/21] usb: mtu3: fix interval value for intr and isoc
+Date:   Mon, 10 Jan 2022 08:23:18 +0100
+Message-Id: <20220110071814.517246143@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
-References: <20220110071814.261471354@linuxfoundation.org>
+In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
+References: <20220110071813.967414697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,86 +45,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-commit e738451d78b2f8a9635d66c6a87f304b4d965f7a upstream.
+[ Upstream commit e3d4621c22f90c33321ae6a6baab60cdb8e5a77c ]
 
-There was a wrong queues representation in sysfs during
-driver's reinitialization in case of online cpus number is
-less than combined queues. It was caused by stopped
-NetworkManager, which is responsible for calling vsi_open
-function during driver's initialization.
-In specific situation (ex. 12 cpus online) there were 16 queues
-in /sys/class/net/<iface>/queues. In case of modifying queues with
-value higher, than number of online cpus, then it caused write
-errors and other errors.
-Add updating of sysfs's queues representation during driver
-initialization.
+Use the Interval value from isoc/intr endpoint descriptor, no need
+minus one. The original code doesn't cause transfer error for
+normal cases, but it may have side effect with respond time of ERDY
+or tPingTimeout.
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Lukasz Cieplicki <lukaszx.cieplicki@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Link: https://lore.kernel.org/r/20211218095749.6250-1-chunfeng.yun@mediatek.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   32 +++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
+ drivers/usb/mtu3/mtu3_gadget.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -5730,6 +5730,27 @@ int i40e_open(struct net_device *netdev)
- }
- 
- /**
-+ * i40e_netif_set_realnum_tx_rx_queues - Update number of tx/rx queues
-+ * @vsi: vsi structure
-+ *
-+ * This updates netdev's number of tx/rx queues
-+ *
-+ * Returns status of setting tx/rx queues
-+ **/
-+static int i40e_netif_set_realnum_tx_rx_queues(struct i40e_vsi *vsi)
-+{
-+	int ret;
-+
-+	ret = netif_set_real_num_rx_queues(vsi->netdev,
-+					   vsi->num_queue_pairs);
-+	if (ret)
-+		return ret;
-+
-+	return netif_set_real_num_tx_queues(vsi->netdev,
-+					    vsi->num_queue_pairs);
-+}
-+
-+/**
-  * i40e_vsi_open -
-  * @vsi: the VSI to open
-  *
-@@ -5765,13 +5786,7 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
- 			goto err_setup_rx;
- 
- 		/* Notify the stack of the actual queue counts. */
--		err = netif_set_real_num_tx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
--		if (err)
--			goto err_set_queues;
--
--		err = netif_set_real_num_rx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
-+		err = i40e_netif_set_realnum_tx_rx_queues(vsi);
- 		if (err)
- 			goto err_set_queues;
- 
-@@ -10455,6 +10470,9 @@ struct i40e_vsi *i40e_vsi_setup(struct i
- 		ret = i40e_config_netdev(vsi);
- 		if (ret)
- 			goto err_netdev;
-+		ret = i40e_netif_set_realnum_tx_rx_queues(vsi);
-+		if (ret)
-+			goto err_netdev;
- 		ret = register_netdev(vsi->netdev);
- 		if (ret)
- 			goto err_netdev;
+diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
+index 07a6ee8db6123..9f0c949820bf7 100644
+--- a/drivers/usb/mtu3/mtu3_gadget.c
++++ b/drivers/usb/mtu3/mtu3_gadget.c
+@@ -82,7 +82,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
+ 		if (usb_endpoint_xfer_int(desc) ||
+ 				usb_endpoint_xfer_isoc(desc)) {
+ 			interval = desc->bInterval;
+-			interval = clamp_val(interval, 1, 16) - 1;
++			interval = clamp_val(interval, 1, 16);
+ 			if (usb_endpoint_xfer_isoc(desc) && comp_desc)
+ 				mult = comp_desc->bmAttributes;
+ 		}
+@@ -94,7 +94,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
+ 		if (usb_endpoint_xfer_isoc(desc) ||
+ 				usb_endpoint_xfer_int(desc)) {
+ 			interval = desc->bInterval;
+-			interval = clamp_val(interval, 1, 16) - 1;
++			interval = clamp_val(interval, 1, 16);
+ 			mult = usb_endpoint_maxp_mult(desc) - 1;
+ 		}
+ 		break;
+-- 
+2.34.1
+
 
 
