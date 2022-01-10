@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC72C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239931AbiAJHaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:30:12 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56994 "EHLO
+        id S240000AbiAJHa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:30:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56136 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234856AbiAJH0Z (ORCPT
+        with ESMTP id S239580AbiAJH0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:25 -0500
+        Mon, 10 Jan 2022 02:26:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0E94B811F5;
-        Mon, 10 Jan 2022 07:26:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34F9DC36AED;
-        Mon, 10 Jan 2022 07:26:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58A80B81221;
+        Mon, 10 Jan 2022 07:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE54C36AF2;
+        Mon, 10 Jan 2022 07:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799582;
-        bh=Y0CvrALrxPzMoSA3rAD+UGw88j6y6CGKYX7vtSYvKFs=;
+        s=korg; t=1641799574;
+        bh=T5mVZxCsINiWAaVvpGFhIa51X5dboMG8f6te8Ga/uWw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RcggOw6hNZSipE6Xr/7q4VSSDFrS3EvLXHSlipGca/jlDcbIUUM2fMaetCleM/az0
-         e9uUVG9a0kiU35uLX/ULuMECiTCu2lFnrrf5W+qo2BIN8BlRDIflDqK48ThghVfxBl
-         U4LVC9FiNPS5GQaIAJHL7ED7vdn68CgurVSNkicY=
+        b=Kwz2HNgjTKJiWM475SPBSVRQXC1/vHYRj5WqBZ0r7+FIwVntgI/rIBA4w4W2rGeUT
+         TlbI91P35ZAW14GzdxnQml42pZWh9gp6VCstZnJmSAXyObJCBfVFd6VszSdic6Yku4
+         eucc4AUItcZdRHowmXQExJDiRg3AusUbBV0/oCag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, yangxingwu <xingwu.yang@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Lu Tixiong <lutianxiong@huawei.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Lixiaokeng <lixiaokeng@huawei.com>,
+        Linfeilong <linfeilong@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 21/22] net: udp: fix alignment problem in udp4_seq_show()
-Date:   Mon, 10 Jan 2022 08:23:14 +0100
-Message-Id: <20220110071814.966163572@linuxfoundation.org>
+Subject: [PATCH 4.14 19/22] scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+Date:   Mon, 10 Jan 2022 08:23:12 +0100
+Message-Id: <20220110071814.901323190@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
 References: <20220110071814.261471354@linuxfoundation.org>
@@ -46,46 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: yangxingwu <xingwu.yang@gmail.com>
+From: Lixiaokeng <lixiaokeng@huawei.com>
 
-[ Upstream commit 6c25449e1a32c594d743df8e8258e8ef870b6a77 ]
+[ Upstream commit 1b8d0300a3e9f216ae4901bab886db7299899ec6 ]
 
-$ cat /pro/net/udp
+|- iscsi_if_destroy_conn            |-dev_attr_show
+ |-iscsi_conn_teardown
+  |-spin_lock_bh                     |-iscsi_sw_tcp_conn_get_param
 
-before:
+  |-kfree(conn->persistent_address)   |-iscsi_conn_get_param
+  |-kfree(conn->local_ipaddr)
+                                       ==>|-read persistent_address
+                                       ==>|-read local_ipaddr
+  |-spin_unlock_bh
 
-  sl  local_address rem_address   st tx_queue rx_queue tr tm->when
-26050: 0100007F:0035 00000000:0000 07 00000000:00000000 00:00000000
-26320: 0100007F:0143 00000000:0000 07 00000000:00000000 00:00000000
-27135: 00000000:8472 00000000:0000 07 00000000:00000000 00:00000000
+When iscsi_conn_teardown() and iscsi_conn_get_param() happen in parallel, a
+UAF may be triggered.
 
-after:
-
-   sl  local_address rem_address   st tx_queue rx_queue tr tm->when
-26050: 0100007F:0035 00000000:0000 07 00000000:00000000 00:00000000
-26320: 0100007F:0143 00000000:0000 07 00000000:00000000 00:00000000
-27135: 00000000:8472 00000000:0000 07 00000000:00000000 00:00000000
-
-Signed-off-by: yangxingwu <xingwu.yang@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/046ec8a0-ce95-d3fc-3235-666a7c65b224@huawei.com
+Reported-by: Lu Tixiong <lutianxiong@huawei.com>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Lixiaokeng <lixiaokeng@huawei.com>
+Signed-off-by: Linfeilong <linfeilong@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/udp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/libiscsi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 4faeb698c33c9..fee1cdcc224e6 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2777,7 +2777,7 @@ int udp4_seq_show(struct seq_file *seq, void *v)
+diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
+index f3dfec02abecc..ebf3a277d8bba 100644
+--- a/drivers/scsi/libiscsi.c
++++ b/drivers/scsi/libiscsi.c
+@@ -2991,6 +2991,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
  {
- 	seq_setwidth(seq, 127);
- 	if (v == SEQ_START_TOKEN)
--		seq_puts(seq, "  sl  local_address rem_address   st tx_queue "
-+		seq_puts(seq, "   sl  local_address rem_address   st tx_queue "
- 			   "rx_queue tr tm->when retrnsmt   uid  timeout "
- 			   "inode ref pointer drops");
- 	else {
+ 	struct iscsi_conn *conn = cls_conn->dd_data;
+ 	struct iscsi_session *session = conn->session;
++	char *tmp_persistent_address = conn->persistent_address;
++	char *tmp_local_ipaddr = conn->local_ipaddr;
+ 
+ 	del_timer_sync(&conn->transport_timer);
+ 
+@@ -3012,8 +3014,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	spin_lock_bh(&session->frwd_lock);
+ 	free_pages((unsigned long) conn->data,
+ 		   get_order(ISCSI_DEF_MAX_RECV_SEG_LEN));
+-	kfree(conn->persistent_address);
+-	kfree(conn->local_ipaddr);
+ 	/* regular RX path uses back_lock */
+ 	spin_lock_bh(&session->back_lock);
+ 	kfifo_in(&session->cmdpool.queue, (void*)&conn->login_task,
+@@ -3025,6 +3025,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	mutex_unlock(&session->eh_mutex);
+ 
+ 	iscsi_destroy_conn(cls_conn);
++	kfree(tmp_persistent_address);
++	kfree(tmp_local_ipaddr);
+ }
+ EXPORT_SYMBOL_GPL(iscsi_conn_teardown);
+ 
 -- 
 2.34.1
 
