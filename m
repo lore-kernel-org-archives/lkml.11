@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED58C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B36F4C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241545AbiAJHqr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:46:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51380 "EHLO
+        id S241154AbiAJHql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242213AbiAJHkd (ORCPT
+        with ESMTP id S242199AbiAJHkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:40:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF820C0225B2;
-        Sun,  9 Jan 2022 23:34:21 -0800 (PST)
+        Mon, 10 Jan 2022 02:40:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D17C0225AD;
+        Sun,  9 Jan 2022 23:34:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 643C3611BC;
-        Mon, 10 Jan 2022 07:34:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D187C36AEF;
-        Mon, 10 Jan 2022 07:34:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A970B81212;
+        Mon, 10 Jan 2022 07:34:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 760A1C36AE9;
+        Mon, 10 Jan 2022 07:34:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800060;
-        bh=/gdLnShWLpQP/o/mRaKeBqi4pXaE52yQZMGAJPcUVUY=;
+        s=korg; t=1641800058;
+        bh=ibkJuuo+6RsBx6kxBDga/mXyaKtd8xHoan+9CR99NQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tGDNl200n7dH1BBR/h+QN2kkjw7ci6I3ZB9TY65RFfNrxDYonCFdCyAWmgTVxRioD
-         GdS0plDj50Q1iWUSnR3MywJfKQ8X7dHs+Bd1ePSe1t+1Swup+wprV3DTL0iFNVec7q
-         VH0qHZhyzKMatpi1fQkd3bgv2WO9miAqc5JyjVZE=
+        b=aU7lFUtPAToustICwXCQyYz/xYTFXj56XcvNe0QZ4ALP3TRGqKGdlCInyl5n0mRAI
+         aw/Khqz2gw4yP27Xmjdcrq77xpLpugIAlFMWz0T42PY48inP7ixyoHVkacN/s/IzZc
+         9k6wAB8K9BSWGTTlKoUiQEjcn272asVXrdM8cwbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, wolfgang huang <huangjinhui@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Evan Quan <evan.quan@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Guchun Chen <guchun.chen@amd.com>,
+        Lijo Lazar <lijo.lazar@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 64/72] mISDN: change function names to avoid conflicts
-Date:   Mon, 10 Jan 2022 08:23:41 +0100
-Message-Id: <20220110071823.733820379@linuxfoundation.org>
+Subject: [PATCH 5.15 63/72] drm/amdgpu: put SMU into proper state on runpm suspending for BOCO capable platform
+Date:   Mon, 10 Jan 2022 08:23:40 +0100
+Message-Id: <20220110071823.695439426@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -50,98 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wolfgang huang <huangjinhui@kylinos.cn>
+From: Evan Quan <evan.quan@amd.com>
 
-[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
+[ Upstream commit 7be3be2b027c12e84833b3dc9597d3bb7e4c5464 ]
 
-As we build for mips, we meet following error. l1_init error with
-multiple definition. Some architecture devices usually marked with
-l1, l2, lxx as the start-up phase. so we change the mISDN function
-names, align with Isdnl2_xxx.
+By setting mp1_state as PP_MP1_STATE_UNLOAD, MP1 will do some proper cleanups and
+put itself into a state ready for PNP. That can workaround some random resuming
+failure observed on BOCO capable platforms.
 
-mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
-(.text+0x890): multiple definition of `l1_init'; \
-arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
-make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
-
-Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Evan Quan <evan.quan@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Guchun Chen <guchun.chen@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/mISDN/core.c   | 6 +++---
- drivers/isdn/mISDN/core.h   | 4 ++--
- drivers/isdn/mISDN/layer1.c | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-index 55891e4204460..a41b4b2645941 100644
---- a/drivers/isdn/mISDN/core.c
-+++ b/drivers/isdn/mISDN/core.c
-@@ -381,7 +381,7 @@ mISDNInit(void)
- 	err = mISDN_inittimer(&debug);
- 	if (err)
- 		goto error2;
--	err = l1_init(&debug);
-+	err = Isdnl1_Init(&debug);
- 	if (err)
- 		goto error3;
- 	err = Isdnl2_Init(&debug);
-@@ -395,7 +395,7 @@ mISDNInit(void)
- error5:
- 	Isdnl2_cleanup();
- error4:
--	l1_cleanup();
-+	Isdnl1_cleanup();
- error3:
- 	mISDN_timer_cleanup();
- error2:
-@@ -408,7 +408,7 @@ static void mISDN_cleanup(void)
- {
- 	misdn_sock_cleanup();
- 	Isdnl2_cleanup();
--	l1_cleanup();
-+	Isdnl1_cleanup();
- 	mISDN_timer_cleanup();
- 	class_unregister(&mISDN_class);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index 9dfd9d70812cb..41677f99c67b1 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -1606,12 +1606,27 @@ static int amdgpu_pmops_runtime_suspend(struct device *dev)
+ 	if (amdgpu_device_supports_px(drm_dev))
+ 		drm_dev->switch_power_state = DRM_SWITCH_POWER_CHANGING;
  
-diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
-index 23b44d3033279..42599f49c189d 100644
---- a/drivers/isdn/mISDN/core.h
-+++ b/drivers/isdn/mISDN/core.h
-@@ -60,8 +60,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
- extern int	mISDN_inittimer(u_int *);
- extern void	mISDN_timer_cleanup(void);
++	/*
++	 * By setting mp1_state as PP_MP1_STATE_UNLOAD, MP1 will do some
++	 * proper cleanups and put itself into a state ready for PNP. That
++	 * can address some random resuming failure observed on BOCO capable
++	 * platforms.
++	 * TODO: this may be also needed for PX capable platform.
++	 */
++	if (amdgpu_device_supports_boco(drm_dev))
++		adev->mp1_state = PP_MP1_STATE_UNLOAD;
++
+ 	ret = amdgpu_device_suspend(drm_dev, false);
+ 	if (ret) {
+ 		adev->in_runpm = false;
++		if (amdgpu_device_supports_boco(drm_dev))
++			adev->mp1_state = PP_MP1_STATE_NONE;
+ 		return ret;
+ 	}
  
--extern int	l1_init(u_int *);
--extern void	l1_cleanup(void);
-+extern int	Isdnl1_Init(u_int *);
-+extern void	Isdnl1_cleanup(void);
- extern int	Isdnl2_Init(u_int *);
- extern void	Isdnl2_cleanup(void);
- 
-diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
-index 98a3bc6c17009..7b31c25a550e3 100644
---- a/drivers/isdn/mISDN/layer1.c
-+++ b/drivers/isdn/mISDN/layer1.c
-@@ -398,7 +398,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
- EXPORT_SYMBOL(create_l1);
- 
- int
--l1_init(u_int *deb)
-+Isdnl1_Init(u_int *deb)
- {
- 	debug = deb;
- 	l1fsm_s.state_count = L1S_STATE_COUNT;
-@@ -409,7 +409,7 @@ l1_init(u_int *deb)
- }
- 
- void
--l1_cleanup(void)
-+Isdnl1_cleanup(void)
- {
- 	mISDN_FsmFree(&l1fsm_s);
- }
++	if (amdgpu_device_supports_boco(drm_dev))
++		adev->mp1_state = PP_MP1_STATE_NONE;
++
+ 	if (amdgpu_device_supports_px(drm_dev)) {
+ 		/* Only need to handle PCI state in the driver for ATPX
+ 		 * PCI core handles it for _PR3.
 -- 
 2.34.1
 
