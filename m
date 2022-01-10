@@ -2,138 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:06:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A349C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:06:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243146AbiAJTGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:06:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59850 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243115AbiAJTGa (ORCPT
+        id S243186AbiAJTGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:06:43 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:33430 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243153AbiAJTGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 14:06:30 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69C5BB81780;
-        Mon, 10 Jan 2022 19:06:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14156C36AE9;
-        Mon, 10 Jan 2022 19:06:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641841588;
-        bh=4zzAcLgdq9DkpcnpCCY22+jkfUyytnRZHAHbnXa/7L0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UJbXyE2Qm090IHaFqPRtqentqzgBE24zpL9ahTLxr2FNAP/no1lr94LvQG8bQGR1h
-         SocASsttLSKxiJIenogdRnMr/SQVD6lOhqIJRmoZdkybtE87zf5fwYTQkssJG2qd0Y
-         XIVcdOnPPlNU5A2u0tWU6qUkH1drELbPJGNMM+NCtGDHIm04HQqFnu4OyGQIKOLW5V
-         X5HCdcpvAtyizvFktrDvDBtDgWK2yk0m/EWSB1Q1qGDfA13UCh8Kf8IE0EFBZzVVBg
-         fHr1JGHm+0eotqJqqIXZm+7JuxYosarGxzd1n494UFi3GYuSbzs3VpVzFFJyz64qxY
-         EHL0el0s8sK1A==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 6CF3540B92; Mon, 10 Jan 2022 16:06:26 -0300 (-03)
-Date:   Mon, 10 Jan 2022 16:06:26 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vineet Singh <vineet.singh@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
-        eranian@google.com
-Subject: Re: [PATCH v4 17/48] perf cpumap: Remove cpu_map__cpu, use libperf
- function.
-Message-ID: <YdyDsm6fzC+E2C0b@kernel.org>
-References: <20220105061351.120843-1-irogers@google.com>
- <20220105061351.120843-18-irogers@google.com>
- <YdyC2VdqizF6prb4@kernel.org>
- <YdyDKAZY+m0rRW2H@kernel.org>
+        Mon, 10 Jan 2022 14:06:42 -0500
+Received: by mail-oi1-f171.google.com with SMTP id v124so12724165oie.0;
+        Mon, 10 Jan 2022 11:06:42 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Wwk6x/ZR37nweD32vHsQk5bV8DeKWS9G1MuQnQEcbQM=;
+        b=RID7hQsGjXfnY+jTqoMDjNXaEjOJ6j2cCZz3CEqJN3aGzIJdy6+evg9D6AKIK+U4NZ
+         3nkhdHXiK8i7VtLUi4dxMatdmDZvheVGwsmnoHRItNqQdRbdELBw3/ljOH25SgKFyhw3
+         e5rEQFLfEzcp/GPjGkWUsZ0FnQJh5lpxK4Z7m0HXzduk+InrGQAcet9uPsmR3FqQigaL
+         eLqFhar52sO1Cvh7ucex24CCgdTPtq6DmrL8M5CBB+Zv3o10BZTz47MHlgkmxwfHoC07
+         tdoKCIFqSY8rPlKqaCWW79pS1zP74crIlshD23LwhWGt8jwk/j8PNTYgcr0Ph9pJYTP1
+         Xvww==
+X-Gm-Message-State: AOAM532rfj+LO6AZpE5wcvInYIL+8hZT7erq38kZYc+Sw8Nad+gy4pjz
+        7OIfnyFgZJ3SdxV05xy24MU/Iznd8w==
+X-Google-Smtp-Source: ABdhPJx5ZBjyXM4U8hax5nPjSCYA9zsja6YzyYe4DefjUE4k0aeTDsQSOoG5Ymd24O+VmO0kjBJV3w==
+X-Received: by 2002:a05:6808:1a1e:: with SMTP id bk30mr663998oib.26.1641841601494;
+        Mon, 10 Jan 2022 11:06:41 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id q189sm656483oib.8.2022.01.10.11.06.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 11:06:40 -0800 (PST)
+Received: (nullmailer pid 1302633 invoked by uid 1000);
+        Mon, 10 Jan 2022 19:06:39 -0000
+Date:   Mon, 10 Jan 2022 13:06:39 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 1/8] of: base: add of_parse_phandle_with_optional_args()
+Message-ID: <YdyDv1/WbNi3CMbu@robh.at.kernel.org>
+References: <20211228142549.1275412-1-michael@walle.cc>
+ <20211228142549.1275412-2-michael@walle.cc>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdyDKAZY+m0rRW2H@kernel.org>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <20211228142549.1275412-2-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Mon, Jan 10, 2022 at 04:04:08PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Mon, Jan 10, 2022 at 04:02:49PM -0300, Arnaldo Carvalho de Melo escreveu:
-> > Em Tue, Jan 04, 2022 at 10:13:20PM -0800, Ian Rogers escreveu:
-> > > Switch the remaining few users of cpu_map__cpu to perf_cpu_map__cpu and
-> > > remove the function.
-> > > 
-> > > Reviewed-by: James Clark <james.clark@arm.com>
-> > > Signed-off-by: Ian Rogers <irogers@google.com>
-> > 
-> > util/bpf_ftrace.c: In function ‘perf_ftrace__latency_prepare_bpf’:
-> > util/bpf_ftrace.c:66:31: error: implicit declaration of function ‘cpu_map__cpu’; did you mean ‘cpu_map__has’? [-Werror=implicit-function-declaration]
-> >    66 |                         cpu = cpu_map__cpu(ftrace->evlist->core.cpus, i);
-> >       |                               ^~~~~~~~~~~~
-> >       |                               cpu_map__has
-> > cc1: all warnings being treated as errors
-> > make[4]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:96: /tmp/build/perf/util/bpf_ftrace.o] Error 1
-> > make[4]: *** Waiting for unfinished jobs....
-> >   LD      /tmp/build/perf/ui/browsers/perf-in.o
-> >   LD      /tmp/build/perf/ui/perf-in.o
-> >   LD      /tmp/build/perf/util/scripting-engines/perf-in.o
-> > make[3]: *** [/var/home/acme/git/perf/tools/build/Makefile.build:139: util] Error 2
-> > make[2]: *** [Makefile.perf:665: /tmp/build/perf/perf-in.o] Error 2
-> > make[2]: *** Waiting for unfinished jobs....
-> > make[1]: *** [Makefile.perf:240: sub-make] Error 2
-> > make: *** [Makefile:113: install-bin] Error 2
-> > make: Leaving directory '/var/home/acme/git/perf/tools/perf'
-> > 
-> >  Performance counter stats for 'make -k BUILD_BPF_SKEL=1 CORESIGHT=1 PYTHON=python3 O=/tmp/build/perf -C tools/perf install-bin':
-> > 
-> >    163,635,422,196      cycles:u                                                    
-> >    213,602,262,800      instructions:u            #    1.31  insn per cycle         
-> > 
-> >        3.804738555 seconds time elapsed
-> > 
-> >       40.622581000 seconds user
-> >        6.589980000 seconds sys
-> > 
-> > 
-> > ⬢[acme@toolbox perf]$ git log --oneline -1
-> > dfe103e757aeff79 (HEAD) perf cpumap: Remove cpu_map__cpu, use libperf function.
-> > 
-> > This is the first breakage, trying to fix now.
+On Tue, Dec 28, 2021 at 03:25:42PM +0100, Michael Walle wrote:
+> Add a new variant of the of_parse_phandle_with_args() which treats the
+> cells name as optional. If it's missing, it is assumed that the phandle
+> has no arguments.
 > 
-> ⬢[acme@toolbox perf]$ find tools/perf/ -name "*.c" | xargs grep -w cpu_map__cpu
-> tools/perf/util/bpf_ftrace.c:			cpu = cpu_map__cpu(ftrace->evlist->core.cpus, i);
-> ⬢[acme@toolbox perf]$
+> Up until now, a nvmem node didn't have any arguments, so all the device
+> trees haven't any '#*-cells' property. But there is a need for an
+> additional argument for the phandle, for which we need a '#*-cells'
+> property. Therefore, we need to support nvmem nodes with and without
+> this property.
 > 
-> Only this one remaining, so just moving to perf_cpu_map__cpu() like done
-> elsewhere in this patch.
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  drivers/of/base.c  | 23 +++++++++++++++++++++++
+>  include/linux/of.h | 12 ++++++++++++
+>  2 files changed, 35 insertions(+)
 > 
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index 5b907600f5b0..fb28bb26276e 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -1543,6 +1543,29 @@ int of_parse_phandle_with_args(const struct device_node *np, const char *list_na
+>  }
+>  EXPORT_SYMBOL(of_parse_phandle_with_args);
+>  
+> +/**
+> + * of_parse_phandle_with_optional_args() - Find a node pointed by phandle in a list
+> + *
+> + * Same as of_parse_phandle_args() except that if the cells_name property is
+> + * not found, cell_count of 0 is assumed.
+> + *
+> + * This is used to useful, if you have a phandle which didn't have arguments
+> + * before and thus doesn't have a '#*-cells' property but is now migrated to
+> + * having arguments while retaining backwards compatibility.
+> + */
+> +int of_parse_phandle_with_optional_args(const struct device_node *np,
+> +					const char *list_name,
+> +					const char *cells_name, int index,
+> +					struct of_phandle_args *out_args)
+> +{
+> +	if (index < 0)
+> +		return -EINVAL;
 
-⬢[acme@toolbox perf]$ git diff
-diff --git a/tools/perf/util/bpf_ftrace.c b/tools/perf/util/bpf_ftrace.c
-index f00a2de6778ccb97..28dc4c60c7884818 100644
---- a/tools/perf/util/bpf_ftrace.c
-+++ b/tools/perf/util/bpf_ftrace.c
-@@ -63,7 +63,7 @@ int perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace)
-                fd = bpf_map__fd(skel->maps.cpu_filter);
+I'm not sure why we didn't do this from the start, but just make index 
+unsigned and then this check is not needed.
 
-                for (i = 0; i < ncpus; i++) {
--                       cpu = cpu_map__cpu(ftrace->evlist->core.cpus, i);
-+                       cpu = perf_cpu_map__cpu(ftrace->evlist->core.cpus, i);
-                        bpf_map_update_elem(fd, &cpu, &val, BPF_ANY);
-                }
-        }
-⬢[acme@toolbox perf]$
+> +
+> +	return __of_parse_phandle_with_args(np, list_name, cells_name,
+> +					    0, index, out_args);
+> +}
+> +EXPORT_SYMBOL(of_parse_phandle_with_optional_args);
+
+
+With the above, just make this static inline. Bonus points if you want 
+to do the same changes on the other variants.
+
+Rob
