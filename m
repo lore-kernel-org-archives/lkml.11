@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5382C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:01:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A52AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:01:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229731AbiAJNBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 08:01:39 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:42794 "EHLO
+        id S233342AbiAJNBl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:01:41 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:42766 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232828AbiAJM75 (ORCPT
+        with ESMTP id S229503AbiAJM7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:59:57 -0500
-Date:   Mon, 10 Jan 2022 12:59:54 -0000
+        Mon, 10 Jan 2022 07:59:55 -0500
+Date:   Mon, 10 Jan 2022 12:59:51 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1641819595;
+        s=2020; t=1641819592;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2tn2jfcG6fdJ+mRwxp+0+JGUeCb7d8ZmjfMHhih999U=;
-        b=hMAQBh7lpozElL3vR/iYK4GVxgI1Lih+btss1d7YzD4U39rx9Z/MEH+iSig5VDlaI97zhm
-        eAFvC3cmyKdfQb5qd2xpKamNCfNDjnBq+23d2ioUFvv3uVNkTX5BKIzkf+8tW5mMTcnHXm
-        K67vdvYHuVXdwtHfH16FYfjmcC39Dxu6OOAAxCMuckykQUv9DCPrlXS3DdjE8LINAhYnno
-        Eq4wQMn30V++Ik2wwgXVpIFwFP9aEB+xs3+6Le6GVdMWiRvJjAEbM5mP8NEn3voj8YKexA
-        3Cmur3knMUte6k9UAjoXD/kznqdnzgZCwP5dn1yHdcNE5up922gNSD6rr1JsKg==
+        bh=dcwCfiu/fiSGKnBT2ZOYS66fD907lvVbHbp9ziG1DMA=;
+        b=Y/mPzwyhiulO8cbGfyJNNMkSXDDQOUuhqDCOWc6nUNoZFpHKSELHcwkSLtJg2elivJZDP4
+        ZzW8+BNFo+K7ZrP8DQPRWvF1okxEOXvoiAUNLPvvqBh1J2Q+tAXrisC6R9Z5x7fNLo0qT/
+        vnQbzexXkk7oP//D/mktfnumLr3HHL2/jFoqH4jAfD3iXAPr0pM2wV05JfwwHFCrC+rSKO
+        bPBdrXucluhfWFSIxJSV9hBp0Hz2RFSo5RD1sPf/IXEdeFJE8TryBiYYSAQQRpIV7JeDWJ
+        Da5sHaf1nmLNT4b3xKbC8rSqPixABXa7oYAiVSA0KaHEOOJJ48AVai9iMKOJpw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1641819595;
+        s=2020e; t=1641819592;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2tn2jfcG6fdJ+mRwxp+0+JGUeCb7d8ZmjfMHhih999U=;
-        b=UOrU6afmVGNANr6Aa+jAPeK9VfyaicaisRMuRrKP+ua9NXbCM9k8pjhvt9lHo3c+FWmbvv
-        vMDTbcL+mUht5fCA==
-From:   "tip-bot2 for Peng Fan" <tip-bot2@linutronix.de>
+        bh=dcwCfiu/fiSGKnBT2ZOYS66fD907lvVbHbp9ziG1DMA=;
+        b=iBwIgCHZ1ZDxV80u0uZBeZvwOUUnYcjgFVpTSBelgSYjLUW6lQyTWq/4+FBqkxTFldS/V7
+        du+yVJhFt8KHv1Cw==
+From:   "tip-bot2 for Romain Perier" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/timer-imx-sysctr: Set cpumask
- to cpu_possible_mask
-Cc:     Peng Fan <peng.fan@nxp.com>,
+Subject: [tip: timers/core] clocksource/drivers/msc313e: Add support for
+ ssd20xd-based platforms
+Cc:     Romain Perier <romain.perier@gmail.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20211201125030.2307746-2-peng.fan@oss.nxp.com>
-References: <20211201125030.2307746-2-peng.fan@oss.nxp.com>
+In-Reply-To: <20211217195727.8955-3-romain.perier@gmail.com>
+References: <20211217195727.8955-3-romain.perier@gmail.com>
 MIME-Version: 1.0
-Message-ID: <164181959418.16921.2526564999400774440.tip-bot2@tip-bot2>
+Message-ID: <164181959194.16921.8949016580691527548.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -59,43 +59,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     0ed9e4ebcebcb36bd1186e68cf2f72b3e0bfbac6
-Gitweb:        https://git.kernel.org/tip/0ed9e4ebcebcb36bd1186e68cf2f72b3e0bfbac6
-Author:        Peng Fan <peng.fan@nxp.com>
-AuthorDate:    Wed, 01 Dec 2021 20:50:30 +08:00
+Commit-ID:     e64da64f410cf4f9697e25ab76cdfc679f4fb6db
+Gitweb:        https://git.kernel.org/tip/e64da64f410cf4f9697e25ab76cdfc679f4fb6db
+Author:        Romain Perier <romain.perier@gmail.com>
+AuthorDate:    Fri, 17 Dec 2021 20:57:23 +01:00
 Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Tue, 14 Dec 2021 10:17:27 +01:00
+CommitterDate: Mon, 20 Dec 2021 13:28:39 +01:00
 
-clocksource/drivers/timer-imx-sysctr: Set cpumask to cpu_possible_mask
+clocksource/drivers/msc313e: Add support for ssd20xd-based platforms
 
-The syctr interrupt could set the affinity to any cores in the
-SoC. However, the default affinity is set to cpu 0.
+On SSD20X family SoCs the timers are connected to a 432MHz clock instead
+of 12MHz that all the previous chips used. There is no way to reduce or
+divide these clocks in the clktree yet as we do not know exactly where
+the 432MHz clock comes from but it is enabled at boot.
 
-This timer will be used as broadcast timer on all the i.MX
-SoCs. Because DYNIRQ flag is set, the core time framework will runtime
-set the interrupt affinity to the cores that needs to wake up and the
-cpumask will runtime set to the core that will be wake up. So even the
-sysctr initialization use cpumask 0, there is no issue, the current
-patch is just use cpu_possible_mask to show the fact that the timer
-supports routed to all the cpu cores and nothing else.
+The SSD20X timers have an input clock divider within the timer itself
+to configure the frequency. timer0 is preconfigured at power up to run
+at 12MHz so it is backwards compatible and doesn't need special handling
+right now. timer1 and timer2 run at 432Mhz at power up so are not
+backward compatible.
 
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/20211201125030.2307746-2-peng.fan@oss.nxp.com
+This commit adds support for the input clock divider register and sets
+timer1 and timer2 to run at 48Mhz for clockevents.
+
+Signed-off-by: Romain Perier <romain.perier@gmail.com>
+Link: https://lore.kernel.org/r/20211217195727.8955-3-romain.perier@gmail.com
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/clocksource/timer-imx-sysctr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/clocksource/timer-msc313e.c |  9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/clocksource/timer-imx-sysctr.c b/drivers/clocksource/timer-imx-sysctr.c
-index 2b309af..55a8e19 100644
---- a/drivers/clocksource/timer-imx-sysctr.c
-+++ b/drivers/clocksource/timer-imx-sysctr.c
-@@ -119,7 +119,7 @@ static struct timer_of to_sysctr = {
+diff --git a/drivers/clocksource/timer-msc313e.c b/drivers/clocksource/timer-msc313e.c
+index 154e734..54c54ca 100644
+--- a/drivers/clocksource/timer-msc313e.c
++++ b/drivers/clocksource/timer-msc313e.c
+@@ -33,7 +33,9 @@
+ #define MSC313E_REG_TIMER_MAX_HIGH	0x0c
+ #define MSC313E_REG_COUNTER_LOW		0x10
+ #define MSC313E_REG_COUNTER_HIGH	0x14
++#define MSC313E_REG_TIMER_DIVIDE	0x18
  
- static void __init sysctr_clockevent_init(void)
- {
--	to_sysctr.clkevt.cpumask = cpumask_of(0);
-+	to_sysctr.clkevt.cpumask = cpu_possible_mask;
++#define MSC313E_CLK_DIVIDER		9
+ #define TIMER_SYNC_TICKS		3
  
- 	clockevents_config_and_register(&to_sysctr.clkevt,
- 					timer_of_rate(&to_sysctr),
+ #ifdef CONFIG_ARM
+@@ -179,6 +181,12 @@ static int __init msc313e_clkevt_init(struct device_node *np)
+ 	if (ret)
+ 		return ret;
+ 
++	if (of_device_is_compatible(np, "sstar,ssd20xd-timer")) {
++		to->of_clk.rate = clk_get_rate(to->of_clk.clk) / MSC313E_CLK_DIVIDER;
++		to->of_clk.period = DIV_ROUND_UP(to->of_clk.rate, HZ);
++		writew(MSC313E_CLK_DIVIDER - 1, timer_of_base(to) + MSC313E_REG_TIMER_DIVIDE);
++	}
++
+ 	msc313e_clkevt.cpumask = cpu_possible_mask;
+ 	msc313e_clkevt.irq = to->of_irq.irq;
+ 	to->clkevt = msc313e_clkevt;
+@@ -242,3 +250,4 @@ static int __init msc313e_timer_init(struct device_node *np)
+ }
+ 
+ TIMER_OF_DECLARE(msc313, "mstar,msc313e-timer", msc313e_timer_init);
++TIMER_OF_DECLARE(ssd20xd, "sstar,ssd20xd-timer", msc313e_timer_init);
