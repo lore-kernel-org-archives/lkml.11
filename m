@@ -2,70 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE24C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABE9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244584AbiAJLUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:20:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:25159 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244579AbiAJLTc (ORCPT
+        id S244599AbiAJLUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:20:19 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:49480 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244617AbiAJLT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:19:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641813571;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=FV5WIRsqm0pwBXS3k6O6n4ImctAVE3Kzf+EYc9TxZLA=;
-        b=J2zdhr2DCHHpCBQpEouOuRx+hK35kr8KIproFMEkuI8NFEdraDf0v21Q6WZGg5BaqY+mLa
-        Evq4zdPp+5reH7X/Eqb6qwz+CAOvm3VYiK33kZYk2qn/dZXHr+rtm8+ciyuR3Z6ytVI5RB
-        Vu9WlrI4PWVf5rH9vEa4wIr6GthNUfY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-6NiW1TebPkG2o6uBcI2SJA-1; Mon, 10 Jan 2022 06:19:28 -0500
-X-MC-Unique: 6NiW1TebPkG2o6uBcI2SJA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 10 Jan 2022 06:19:59 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A1A4B1015DA0;
-        Mon, 10 Jan 2022 11:19:26 +0000 (UTC)
-Received: from raketa (unknown [10.40.192.203])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9B9AB7B6C5;
-        Mon, 10 Jan 2022 11:19:24 +0000 (UTC)
-Date:   Mon, 10 Jan 2022 12:19:21 +0100
-From:   Maurizio Lombardi <mlombard@redhat.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-scsi@vger.kernel.org, hch@lst.de, james.smart@broadcom.com,
-        martin.petersen@oracle.com
-Subject: Re: [PATCH -next] scsi: efct: don't use GFP_KERNEL under spin lock
-Message-ID: <20220110111921.GA91632@raketa>
-References: <20220110111838.965480-1-yangyingliang@huawei.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 31607210F8;
+        Mon, 10 Jan 2022 11:19:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1641813597; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=GRbX85PkaWdijkdNXZXuaLkD9bKKSzcrXv8mpwNzSHA=;
+        b=ww/P3QBZR95J8sF4vK7yfLOOgGzwgKxTAssGXVwddI8sAaVPzt+YCXs/0i82WHstqTumYH
+        09PfI/REP3jHs86pseHryW3dJNqXuyR86bd2TYdfp1pny1NnH9vV6fmNHD9wKOH80fHvLx
+        /7oNnXBHsx2VzP7EoZlwjACrlnamgb0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1641813597;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=GRbX85PkaWdijkdNXZXuaLkD9bKKSzcrXv8mpwNzSHA=;
+        b=i/m07hGf6r1Hn2egk16bn2ilR3WuaQM3afZhxmr6zW6PPVQSxyuRw93/ftN+hq9iU2uIdT
+        euz/Wc+vbtqw9TDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1A23E13D2A;
+        Mon, 10 Jan 2022 11:19:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id D8I9BV0W3GE+bQAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 10 Jan 2022 11:19:57 +0000
+Date:   Mon, 10 Jan 2022 12:20:05 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/build for v5.17
+Message-ID: <YdwWZeajNhOasI3U@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220110111838.965480-1-yangyingliang@huawei.com>
-User-Agent: Mutt/1.14.7 (f34d0909) (2020-08-29)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 07:18:38PM +0800, Yang Yingliang wrote:
-> +	spin_lock_irqsave(&node->els_ios_lock, flags);
-> +
->  	if (els) {
->  		/* initialize fields */
->  		els->els_retries_remaining = EFC_FC_ELS_DEFAULT_RETRIES;
+Hi Linus,
 
-If the els pointer is NULL you will lock the spinlock and disable the interrupts
-for no reason, maybe you can just protect the list_add_tail()?
+please pull a single x86/build update for 5.17.
 
-+spin_lock_irqsave(&node->els_ios_lock, flags);
- list_add_tail(&els->list_entry, &node->els_ios_list);
-+spin_unlock_irqrestore(&node->els_ios_lock, flags);
+Thx.
 
-Maurizio
+---
 
+The following changes since commit a7904a538933c525096ca2ccde1e60d0ee62c08e:
+
+  Linux 5.16-rc6 (2021-12-19 14:14:33 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_build_for_v5.17_rc1
+
+for you to fetch changes up to 5fe392ff9d1f7254a1fbb3f72d9893088e4d23eb:
+
+  x86/boot/compressed: Move CLANG_FLAGS to beginning of KBUILD_CFLAGS (2021-12-23 11:03:28 +0100)
+
+----------------------------------------------------------------
+- A fix for cross-compiling the compressed stub on arm64 with clang
+
+----------------------------------------------------------------
+Nathan Chancellor (1):
+      x86/boot/compressed: Move CLANG_FLAGS to beginning of KBUILD_CFLAGS
+
+ arch/x86/boot/compressed/Makefile | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+-- 
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
