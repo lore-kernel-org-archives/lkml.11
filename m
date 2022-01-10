@@ -2,101 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 423ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025D9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244551AbiAJLQh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:16:37 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:41688 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244532AbiAJLQf (ORCPT
+        id S244575AbiAJLSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:18:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40066 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244565AbiAJLSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:16:35 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 10 Jan 2022 06:18:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641813529;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=a1mKixw3piLB47kAb+NgNKbQU1uo3Pje5s8quzB5jk0=;
+        b=EqaXD6pdaCfOOSB1dggh+mcmja7mdQvKdJG+AR+bsGJRVUX4MhZkt5KJVBiged528n88uk
+        xFdZQxTmqvXymi6sZQS4GctDtGTbuycR2l6DKsCa9wLtiUXblbWveDVEBAS59xfHtZxHXz
+        PLpMCtOYUN1KNQ6+ZksvVSiYrwjmYzc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-367-wSmpKZGjN6GuPbqk0EwnZQ-1; Mon, 10 Jan 2022 06:18:46 -0500
+X-MC-Unique: wSmpKZGjN6GuPbqk0EwnZQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 60D151F395;
-        Mon, 10 Jan 2022 11:16:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1641813391; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PkG0S8Obfn4LZ8Nij0a2iJKd0/TlcnmRiNdvI8v+zc8=;
-        b=vbXNAmy2SjVCR43y0X6sodkroBAv8DRiex4zBa1P5JtQvTrKK8tJwQE8licsRscwjtCLX0
-        BiLRZq/EvQ4u9ntNhchd5sdRxsV4ucM79zb/1ZV+tNufSn5oPbLIO19SuWjz/C4Z29T5QA
-        2U8K0Y0QsvXrErGTKygn1FAqZnpO5/o=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1641813391;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=PkG0S8Obfn4LZ8Nij0a2iJKd0/TlcnmRiNdvI8v+zc8=;
-        b=LrY0qiNx0li7nfrJ9AOSuE8oIfqaeoNzcJQWjjEJkLMKzjCoDVln4sSE3hmv2P3SV9W3M5
-        2GK+5OZjI3kzKUBA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4AEE313D2A;
-        Mon, 10 Jan 2022 11:16:31 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id HAysEI8V3GFSawAAMHmgww
-        (envelope-from <bp@suse.de>); Mon, 10 Jan 2022 11:16:31 +0000
-Date:   Mon, 10 Jan 2022 12:16:39 +0100
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] x86/cpu for v5.17
-Message-ID: <YdwVl0H54fmUIux0@zn.tnic>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C87ED1017965;
+        Mon, 10 Jan 2022 11:18:44 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 742B77D4D0;
+        Mon, 10 Jan 2022 11:18:43 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220110111444.926753-1-asmadeus@codewreck.org>
+References: <20220110111444.926753-1-asmadeus@codewreck.org>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     dhowells@redhat.com, v9fs-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, lucho@ionkov.net, ericvh@gmail.com,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] 9p: fix enodata when reading growing file
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3730530.1641813522.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Mon, 10 Jan 2022 11:18:42 +0000
+Message-ID: <3730531.1641813522@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Dominique Martinet <asmadeus@codewreck.org> wrote:
 
-please pull two x86/cpu updates for 5.17.
+> Reading from a file that was just extended by a write, but the write had
+> not yet reached the server would return ENODATA as illustrated by this
+> command:
+> $ xfs_io -c 'open -ft test' -c 'w 4096 1000' -c 'r 0 1000'
+> wrote 1000/1000 bytes at offset 4096
+> 1000.000000 bytes, 1 ops; 0.0001 sec (5.610 MiB/sec and 5882.3529 ops/se=
+c)
+> pread: No data available
+> =
 
-Thx.
+> Fix this case by having netfs assume zeroes when reads from server come
+> short like AFS and CEPH do
+> =
 
----
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> Co-authored-by: David Howells <dhowells@redhat.com>
+> Cc: stable@vger.kernel.org
 
-The following changes since commit 136057256686de39cc3a07c2e39ef6bc43003ff6:
+I think you want this also:
 
-  Linux 5.16-rc2 (2021-11-21 13:47:39 -0800)
+Fixes: eb497943fa21 ("9p: Convert to using the netfs helper lib to do read=
+s and caching")
 
-are available in the Git repository at:
+Reviewed-by: David Howells <dhowells@redhat.com>
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cpu_for_v5.17_rc1
-
-for you to fetch changes up to 244122b4d2e5221e6abd6e21d6a58170104db781:
-
-  x86/lib: Add fast-short-rep-movs check to copy_user_enhanced_fast_string() (2021-12-29 13:46:02 +0100)
-
-----------------------------------------------------------------
-- Enable the short string copies for CPUs which support them, in
-copy_user_enhanced_fast_string()
-
-- Avoid writing MSR_CSTAR on Intel due to TDX guests raising a #VE trap
-
-----------------------------------------------------------------
-Andi Kleen (1):
-      x86/cpu: Don't write CSTAR MSR on Intel CPUs
-
-Tony Luck (1):
-      x86/lib: Add fast-short-rep-movs check to copy_user_enhanced_fast_string()
-
- arch/x86/kernel/cpu/common.c | 15 +++++++++++++--
- arch/x86/lib/copy_user_64.S  |  4 ++--
- 2 files changed, 15 insertions(+), 4 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
