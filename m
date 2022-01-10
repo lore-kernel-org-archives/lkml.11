@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59976C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241809AbiAJIAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:00:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241519AbiAJH7O (ORCPT
+        id S241041AbiAJICj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:02:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:30471 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242080AbiAJIAr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:59:14 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A01C025481;
-        Sun,  9 Jan 2022 23:53:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ck+GCTXTq6vx0+UGObJZ+hDxsPyCcfaXptvnTMJa0B0=; b=2fXREzZXspdztwjUGN/nEr1V70
-        ULFZg+uWcgCbVkT9RJ99GqDgBw03zzhprDIvLyzvZ7qRVO9+vpG3FpKNTtBLHUdI9wLAcco3KVtxU
-        FmAawMv8GbYeU0N7j7B/Biz03mtuJx5DEGglJ9/5CKfI7DrqrZ/czk6IuLzylhKySlqk0Z8M9x2B9
-        CL1qFxrETDgCNuBKXP/FrfvkiFauss03mL7R/dx00Aq6l+KQYF/bcCTcc/XaFeXO9wNYnLfNlrQgC
-        YYkQXrYpcLMG3JuaGDp0ZnslXqFynsyaAfJUGtIboPtq2WUvjyLVSa5+1X7l7Sna31kLM21NjUxyO
-        AHqQxnZQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6pUW-009jUS-SL; Mon, 10 Jan 2022 07:53:20 +0000
-Date:   Sun, 9 Jan 2022 23:53:20 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Amir Goldstein <amir73il@gmail.com>,
-        David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com,
-        Trond Myklebust <trondmy@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <sfrench@samba.org>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Jeff Layton <jlayton@kernel.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Omar Sandoval <osandov@osandov.com>,
-        JeffleXu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>,
-        ceph-devel <ceph-devel@vger.kernel.org>,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 38/68] vfs, cachefiles: Mark a backing file in use
- with an inode flag
-Message-ID: <Ydvl8Dk8z0mF0KFl@infradead.org>
-References: <164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk>
- <164021541207.640689.564689725898537127.stgit@warthog.procyon.org.uk>
- <CAOQ4uxjEcvffv=rNXS-r+NLz+=6yk4abRuX_AMq9v-M4nf_PtA@mail.gmail.com>
- <Ydk6jWmFH6TZLPZq@casper.infradead.org>
+        Mon, 10 Jan 2022 03:00:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641801646;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=a8uXDg0+yQDdSb7ulPXiELnZGHaVMyBnuD++p+AMB1M=;
+        b=EDCFDcyKymGhdjXVMe0VKvz8N4MGdnswG6Gw5PmH2d89UlAflWEJwskjPh3aYOXdQWoXkF
+        Jz5C1pRZvYHaR7pXUG/8dOtUZ0BTFGbr2xg2EFR8Bwp9f6f7lCDmOX+nhKAgDDqBHMOK5x
+        2ZnrVwOvIN4bcO5oScgLelVSSozKtmk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-671-xrlnaNm0PIyI_mpyPYD6fQ-1; Mon, 10 Jan 2022 03:00:42 -0500
+X-MC-Unique: xrlnaNm0PIyI_mpyPYD6fQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C92498042F6;
+        Mon, 10 Jan 2022 08:00:39 +0000 (UTC)
+Received: from T590 (ovpn-8-24.pek2.redhat.com [10.72.8.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3484C5F939;
+        Mon, 10 Jan 2022 08:00:06 +0000 (UTC)
+Date:   Mon, 10 Jan 2022 16:00:00 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Cc:     linux-block@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        glider@google.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com,
+        syzbot <syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com>
+Subject: Re: [PATCH] block: Fix wrong offset in bio_truncate()
+Message-ID: <YdvngICmbNXOFIIj@T590>
+References: <000000000000880fca05d4fc73b0@google.com>
+ <875yqt1c9g.fsf@mail.parknet.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ydk6jWmFH6TZLPZq@casper.infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <875yqt1c9g.fsf@mail.parknet.co.jp>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 07:17:33AM +0000, Matthew Wilcox wrote:
-> On Sat, Jan 08, 2022 at 09:08:57AM +0200, Amir Goldstein wrote:
-> > > +#define S_KERNEL_FILE  (1 << 17) /* File is in use by the kernel (eg. fs/cachefiles) */
-> > 
-> > Trying to brand this flag as a generic "in use by kernel" is misleading.
-> > Modules other than cachefiles cannot set/clear this flag, because then
-> > cachefiles won't know that it is allowed to set/clear the flag.
+On Sun, Jan 09, 2022 at 06:36:43PM +0900, OGAWA Hirofumi wrote:
+> bio_truncate() clears the buffer outside of last block of bdev, however
+> current bio_truncate() is using the wrong offset of page. So it can
+> return the uninitialized data.
 > 
-> Huh?  If some other kernel module sets it, cachefiles will try to set it,
-> see it's already set, and fail.  Presumably cachefiles does not go round
-> randomly "unusing" files that it has not previously started using.
+> This happened when both of truncated/corrupted FS and userspace (via
+> bdev) are trying to read the last of bdev.
 > 
-> I mean, yes, obviously, it's a kernel module, it can set and clear
-> whatever flags it likes on any inode in the system, but conceptually,
-> it's an advisory whole-file lock.
+> Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
+> Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+> ---
+>  block/bio.c |    3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/block/bio.c b/block/bio.c
+> index a6fb6a0..25f1ed2 100644
+> --- a/block/bio.c	2021-11-01 09:19:05.999472589 +0900
+> +++ b/block/bio.c	2022-01-09 17:40:09.010438012 +0900
+> @@ -567,7 +567,8 @@ void bio_truncate(struct bio *bio, unsig
+>  				offset = new_size - done;
+>  			else
+>  				offset = 0;
+> -			zero_user(bv.bv_page, offset, bv.bv_len - offset);
+> +			zero_user(bv.bv_page, bv.bv_offset + offset,
+> +				  bv.bv_len - offset);
 
-So let's name it that way.  We have plenty of files in kernel use using
-filp_open and this flag very obviously means something else.
+Looks correct:
+
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+
+-- 
+Ming
+
