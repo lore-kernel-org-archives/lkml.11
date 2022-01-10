@@ -2,116 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0414C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:24:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B4BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239130AbiAJSYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:24:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239088AbiAJSYL (ORCPT
+        id S241560AbiAJS14 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 13:27:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43638 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240141AbiAJS1z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:24:11 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A986C06173F;
-        Mon, 10 Jan 2022 10:24:11 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id c71so45572041edf.6;
-        Mon, 10 Jan 2022 10:24:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+OBKlMrGeRwIefZjUnO53bTZIl+uI828EXtV9Nyw2sk=;
-        b=etturC84fe4kezIFLvLDguzVmw3WtSl1PjQhSslQESVDw15acoPKNOEyn2KDaMzbh0
-         eKVXnyMxtUxw1lzjA6bH0ZFmr8JW+CHBmoK3HetA3iYGVhshyWHK1X4vbyZ6dCdMwDs4
-         fiDKOcj6jt3eO2eBqSxltrQ8J/Hs6VgiVnPCGN2CQqQp2F7zh+ziQgT2xDv06bbguSOI
-         Z6/M29xIJGy4MpKMx+MYSlOKZiaPQ1FPOSOs3VDiJP0jxVhRaQhvbhnoO3mWB73d/Oi9
-         UAoJImpUxyeqtPwm93dKmyJOvI6RP6YQcSRkBLRWu8Npbbsx54fh2FyZ91IJXDkFYrTa
-         ds0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+OBKlMrGeRwIefZjUnO53bTZIl+uI828EXtV9Nyw2sk=;
-        b=OGNWmvWbkCLtcT17igyqNv3nRlvaD7FDVUV9hhEBb9z2U8lDjxZuGjgMPcZ54jKPx+
-         ffByXdiYlYLgKvOsNySKXkTfIQgravmQcVpPGBN2/oPKGBXUf/eX5tcZMrh9ACW63dRy
-         hBMwK35OU5foFcyORMU+I5lsWxPM90BBS5uyZn2qW63teln3WsBC4UKr5zZnN2XZRWSo
-         OORek1eMC46sVCurFo0Us8wMe7YbaT8GUvliBSKnRn4qUhMmup2TaHWPBDtC4hCDJCTD
-         fro+Enj2sxGOt5w1ISThG0QU8LJzoWXTdm+hnXpBhxgMWesfCPUD1ttrDhp8+txLkrwk
-         FkSg==
-X-Gm-Message-State: AOAM5332FUBftCa3dRSbp6qrzVucrD3kmUWtTd1Vzbnyvu7zm5Qx5UdQ
-        /hY3s/vFoyecMeD67fmjMQiYLDRnrFM46LPgpz2uZANtq2w=
-X-Google-Smtp-Source: ABdhPJxDtUnFS0ICcjJjaUcy6GqZkIiQUUUJ1CXLBLx6+TORFdiGKNjZrq2NLGQCVYpdw4GkjRi2LHxnXMFlvgV1yyo=
-X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr639572ejc.497.1641839049368;
- Mon, 10 Jan 2022 10:24:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20220106062255.3208817-1-cosmin.tanislav@analog.com>
- <20220106062255.3208817-3-cosmin.tanislav@analog.com> <CAHp75Vcq76iaHHp2oXFsaE4d_+EGH87DxQRYu7Ys-adN_4mmUw@mail.gmail.com>
- <953f1539-a4fc-ab8e-bcf9-287ac91ba42b@gmail.com>
-In-Reply-To: <953f1539-a4fc-ab8e-bcf9-287ac91ba42b@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 10 Jan 2022 20:22:20 +0200
-Message-ID: <CAHp75Vc=+378EzDsibOaHRHCUoR8jBLO8ZZgf-G1i6N6Jm-AOg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: addac: ad74413r: correct comparator gpio getters
- mask usage
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 10 Jan 2022 13:27:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 789B7B80CA5
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 18:27:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 24160C36AE9;
+        Mon, 10 Jan 2022 18:27:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641839273;
+        bh=sreBQKD5pUMhM2K3c/C/oNdpS1h8qXHVoF0eERG0ODQ=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=BXlkjCXNh9bN+ZlB3vgK5XOTILR4czjU/l43XDbaEMPI2u5GzCFILSa6wkq9BTLuz
+         mhbSdQdBpv3oh+u/C4G16WKO0I1o4/TD1x94XA283x8Jb+VVNUt9ouJGy/N3nCxzp1
+         DnCsV7P5bvKSr7Vn2+nLvZivwqVoHvR9ByjYjqw5DaISg4wWvZ4Hg6YXgQpclfP61L
+         Ihzw4gONfZHrdegPJb2Iwf8AypH3gp+rgxXyMCxe5l4/mCFhdNhlvHM/SsBb5ywt1W
+         QJk16ALgjdNKPksbPk12GnYEYinipVOET8f4nnSJdqvoZ9oSiVyLKZw+d39wNwj9JW
+         1yWvnSjW60YuQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0F827F6078C;
+        Mon, 10 Jan 2022 18:27:53 +0000 (UTC)
+Subject: Re: [GIT PULL] m68k updates for v5.17
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220110092303.1921532-1-geert@linux-m68k.org>
+References: <20220110092303.1921532-1-geert@linux-m68k.org>
+X-PR-Tracked-List-Id: <linux-m68k.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220110092303.1921532-1-geert@linux-m68k.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git tags/m68k-for-v5.17-tag1
+X-PR-Tracked-Commit-Id: 1a0ae068bf6b6f4233b1f31bf48bcbc47b111ef2
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8cc1e20765f03a29442484a9acbc97e31578af92
+Message-Id: <164183927305.9673.627079502563652905.pr-tracker-bot@kernel.org>
+Date:   Mon, 10 Jan 2022 18:27:53 +0000
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 6:55 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
-> On 1/9/22 14:13, Andy Shevchenko wrote:
-> > On Fri, Jan 7, 2022 at 7:34 AM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+The pull request you sent on Mon, 10 Jan 2022 10:23:03 +0100:
 
-...
+> git://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git tags/m68k-for-v5.17-tag1
 
-> >> -       status &= AD74413R_DIN_COMP_OUT_SHIFT_X(real_offset);
-> >> +       status &= BIT(real_offset);
-> >
-> > But this is completely different.
->
-> What do you mean by this is completely different?
->
-> It was broken before, it is fixed now. Indeed, I'm missing
-> the Fixes tag, if that's what you meant.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8cc1e20765f03a29442484a9acbc97e31578af92
 
-Yeah, I explained myself below. I think you got the idea.
-
-...
-
-> >> +       bitmap_zero(bits, chip->ngpio);
-> >> +
-> >>          for_each_set_bit(offset, mask, chip->ngpio) {
-> >>                  unsigned int real_offset = st->comp_gpio_offsets[offset];
-> >>
-> >>                  if (val & BIT(real_offset))
-> >> -                       *bits |= offset;
-> >> +                       *bits |= BIT(offset);
-> >
-> > So, how was it working before? If it fixes, it should go with the
-> > Fixes tag and before patch 2.
-> >
-> > On top of that, you may try to see if one of bitmap_*() APIs can be
-> > suitable here to perform the above in a more optimal way.
-> > (At least this conditional can be replaced with __asign_bit() call,
-> > but I think refactoring the entire loop may reveal a better approach)
->
-> I can replace the if and bitmap_zero with __assign_bit, as you
-> suggested. I'm not familiar with bitmap APIs, do you have a suggestion?
-
-For now I'm lacking any new suggestions. If you don't see any better
-approaches, let's go with __assign_bit().
+Thank you!
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
