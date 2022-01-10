@@ -2,70 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B1AC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:49:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C2A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:49:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237706AbiAJQtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 11:49:02 -0500
-Received: from mail-oi1-f180.google.com ([209.85.167.180]:37655 "EHLO
-        mail-oi1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229864AbiAJQtB (ORCPT
+        id S237722AbiAJQtE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 11:49:04 -0500
+Received: from mail-oo1-f54.google.com ([209.85.161.54]:43992 "EHLO
+        mail-oo1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237707AbiAJQtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 11:49:01 -0500
-Received: by mail-oi1-f180.google.com with SMTP id i9so19497836oih.4;
-        Mon, 10 Jan 2022 08:49:01 -0800 (PST)
+        Mon, 10 Jan 2022 11:49:03 -0500
+Received: by mail-oo1-f54.google.com with SMTP id z20-20020a4a3054000000b002dbfaf0b568so3698992ooz.10;
+        Mon, 10 Jan 2022 08:49:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=PcweNAAyqTtCgPxQQaHXUvqxCWk/Vwq0k3RGXJnNlJo=;
-        b=c+D1SPgv8VE+7ixpSITfmmHeVLUQLgaLdpNLlR01gH0I4RjQWIe/9Z+WKFhSfddq9b
-         uju12dslFksw/fhIfM6q18FZEtC4JnlFA1MQ3LkRTwilv4sBWpnwpMvee+ZIsO1P4GnC
-         ZDkI/DBqniUjerjUBoeOc7affBzYOcYSNnldJQHdlcqpYzE5PQSx8ytwJa+KIWHrBQxt
-         Bm+kfncjyoMTU2j1vnVtz0aQc74HVXeQ+hRuZ2riDAuiL99nZQljbLuBG8OBcW8jDGU5
-         /aBxhZQ5NNdg5mJKGhiG2QTyC8rDMdPLIrmRMCvdaliu8t4ncTotW1ykanV/e55upiiO
-         Xamg==
-X-Gm-Message-State: AOAM531KOaMGOpJ6l3DBd2w4Eeuy5eWkAiC8katRtAagaiLTv6QqvK1A
-        DiBnCX2SAdcJr0QmSIpQyg==
-X-Google-Smtp-Source: ABdhPJzmfBgp0bKgpoqASyCFdgI+r5ioWFa75FF5Ozek+i/mv86mQuy/p6hZZ6ozGyUSF/tQwF6kdg==
-X-Received: by 2002:aca:1811:: with SMTP id h17mr17991649oih.178.1641833341058;
-        Mon, 10 Jan 2022 08:49:01 -0800 (PST)
+        bh=UE8yD5Ct/F6dHlrHLAV9VNma1gP2lMc+7CQcqBSce8s=;
+        b=3Dy13qjlJ345E0CJorSgZChrd79+LrcrEHqQFt67/ViERIDxm7zggJJ9CGlp6+9J5M
+         LKWTJfKsJmUIiWMM8ruMgx1xh9D23qFHF+MRYpkXtT1GyL70dRjIsvPjkrQku16mCqfx
+         ie85B2P8c4ezv5w8Vi0j7eBduefTWdStI++OuKdsz5IfkHNY75kkzOECpw5Hk1GWwOyz
+         uDgCQTyV/wP7wPp0kzxUvQXYZHeucG3R56UHDWwGgQH3Zonjy4laIJWaqsxvG0xxZHk5
+         6v0XpGBUmShGpHhp0JU2hNfAlsc5QkAYikVD9zmXLygDTrfZbAwBx2s5mLwhX15TLFHo
+         nhgA==
+X-Gm-Message-State: AOAM533tlSUFNf/W8GFras+GA2wowePA0832bgJekYV8cj5lJw3w707Q
+        az+I9XCR/pAE1ReKZirfaA==
+X-Google-Smtp-Source: ABdhPJyAQKG9qcTs+ZJVuMZ/jvEd8orfRKAYQTVMvMNX+7d4dfJqitUbb9xMHJqKbaljkyvpyqBEgQ==
+X-Received: by 2002:a4a:51c5:: with SMTP id s188mr441999ooa.44.1641833342522;
+        Mon, 10 Jan 2022 08:49:02 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id c6sm1538169oto.19.2022.01.10.08.49.00
+        by smtp.gmail.com with ESMTPSA id v23sm1585676otn.42.2022.01.10.08.49.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 08:49:00 -0800 (PST)
-Received: (nullmailer pid 1067451 invoked by uid 1000);
+        Mon, 10 Jan 2022 08:49:01 -0800 (PST)
+Received: (nullmailer pid 1067454 invoked by uid 1000);
         Mon, 10 Jan 2022 16:48:59 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Hari Nagalla <hnagalla@ti.com>
-Cc:     linux-kernel@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, bjorn.andersson@linaro.org,
-        mathieu.poirier@linaro.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-In-Reply-To: <20220110040650.18186-2-hnagalla@ti.com>
-References: <20220110040650.18186-1-hnagalla@ti.com> <20220110040650.18186-2-hnagalla@ti.com>
-Subject: Re: [PATCH 1/2] dt-bindings: remoteproc: k3-m4f: Add bindings for K3 AM64x SoCs
+To:     Leilk Liu <leilk.liu@mediatek.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-mediatek@lists.infradead.org
+In-Reply-To: <20220110053744.30323-1-leilk.liu@mediatek.com>
+References: <20220110053744.30323-1-leilk.liu@mediatek.com>
+Subject: Re: [PATCH 1/2] dt-bindings: spi: Convert spi-mt65xx & spi-slave-mt27xx to json-schema
 Date:   Mon, 10 Jan 2022 10:48:59 -0600
-Message-Id: <1641833339.676351.1067450.nullmailer@robh.at.kernel.org>
+Message-Id: <1641833339.690847.1067453.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 09 Jan 2022 22:06:49 -0600, Hari Nagalla wrote:
-> K3 AM64x SoC has a Cortex M4F subsystem in the MCU volatge domain.
-> The remote processor's life cycle management and IPC mechanisms are
-> similar across the R5F and M4F cores from remote processor driver
-> point of view. However, there are subtle differences in image loading
-> and starting the M4F subsystems.
+On Mon, 10 Jan 2022 13:37:43 +0800, Leilk Liu wrote:
+> Convert Mediatek ARM SOC's SPI Master & Slave controller binding
+> to json-schema format.
 > 
-> The YAML binding document provides the various node properties to be
-> configured by the consumers of the M4F subsystem.
-> 
-> Signed-off-by: Hari Nagalla <hnagalla@ti.com>
+> Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
 > ---
->  .../bindings/remoteproc/ti,k3-m4f-rproc.yaml  | 121 ++++++++++++++++++
->  1 file changed, 121 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/remoteproc/ti,k3-m4f-rproc.yaml
+>  .../bindings/spi/mediatek,spi-mt65xx.yaml     | 96 +++++++++++++++++++
+>  .../spi/mediatek,spi-slave-mt27xx.yaml        | 69 +++++++++++++
+>  .../devicetree/bindings/spi/spi-mt65xx.txt    | 68 -------------
+>  .../bindings/spi/spi-slave-mt27xx.txt         | 33 -------
+>  4 files changed, 165 insertions(+), 101 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+>  create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/spi/spi-mt65xx.txt
+>  delete mode 100644 Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -74,30 +76,15 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/remoteproc/ti,k3-m4f-rproc.yaml: properties:memory-region: 'anyOf' conditional failed, one must be fixed:
-	'minItems' is not one of ['maxItems', 'description', 'deprecated']
-		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
-	'additionalItems' is not one of ['maxItems', 'description', 'deprecated']
-		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
-	'unevaluatedProperties' is not one of ['maxItems', 'description', 'deprecated']
-		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
-	Additional properties are not allowed ('unevaluatedProperties' was unexpected)
-		hint: Arrays must be described with a combination of minItems/maxItems/items
-	'minItems' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref']
-	'maxItems' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref']
-	'additionalItems' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref']
-	'unevaluatedProperties' is not one of ['description', 'deprecated', 'const', 'enum', 'minimum', 'maximum', 'multipleOf', 'default', '$ref']
-	1 was expected
-		hint: Only "maxItems" is required for a single entry if there are no constraints defined for the values.
-	hint: cell array properties must define how many entries and what the entries are when there is more than one entry.
-	from schema $id: http://devicetree.org/meta-schemas/core.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/remoteproc/ti,k3-m4f-rproc.yaml: ignoring, error in schema: properties: memory-region
-Documentation/devicetree/bindings/remoteproc/ti,k3-m4f-rproc.example.dts:19.31-36.11: Warning (unit_address_vs_reg): /example-0/bus@f4000: node has a unit name, but no reg or ranges property
-Documentation/devicetree/bindings/remoteproc/ti,k3-m4f-rproc.example.dt.yaml:0:0: /example-0/bus@f4000/m4fss@5000000: failed to match any schema with compatible: ['ti,am64-m4fss']
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml: properties:compatible:oneOf: [{'const': 'mediatek,mt2712-spi-slave'}, {'const': 'mediatek,mt8195-spi-slave'}] should not be valid under {'items': {'propertyNames': {'const': 'const'}, 'required': ['const']}}
+	hint: Use 'enum' rather than 'oneOf' + 'const' entries
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml: ignoring, error in schema: properties: compatible: oneOf
+Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.example.dt.yaml:0:0: /example-0/spi@10013000: failed to match any schema with compatible: ['mediatek,mt2712-spi-slave']
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1577759
+See https://patchwork.ozlabs.org/patch/1577767
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
