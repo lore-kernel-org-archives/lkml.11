@@ -2,73 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9167BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0596BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242127AbiAJIuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:50:44 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:46506 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S241539AbiAJIsz (ORCPT
+        id S242007AbiAJIvZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:51:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241971AbiAJItY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:48:55 -0500
-X-UUID: 80c9cf384c1745c9bed726b7e2eda8c3-20220110
-X-UUID: 80c9cf384c1745c9bed726b7e2eda8c3-20220110
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <guodong.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1112372910; Mon, 10 Jan 2022 16:48:45 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 10 Jan 2022 16:48:44 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 10 Jan 2022 16:48:43 +0800
-From:   Guodong Liu <guodong.liu@mediatek.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>
-CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Guodong Liu <guodong.liu@mediatek.com>
-Subject: [PATCH v1 1/2] dt-bindings: iio: adc: Add compatible for Mediatek MT8186
-Date:   Mon, 10 Jan 2022 16:48:40 +0800
-Message-ID: <20220110084841.575-1-guodong.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 10 Jan 2022 03:49:24 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550BBC02982B;
+        Mon, 10 Jan 2022 00:47:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=pvGDZ6Y2iGUmxUZesU0A2mxuYD
+        smclxTqAvW1W9ejKljHogHTtQ5Q8J41WHaGs7YyCprTP2Pbz3HvPjRXUmovEg4+/w/dnw75hEIdTI
+        Izq6CqeEhDduKZLH66FuaNeI9Q0+fZIW3HFpyoLwuqnxfPaWjz/fstViohSinJJQBV3YIdpAS1wFV
+        Rk614Yf1Qt0q14DCvfdyKmKkkYo9AgBHWSgQaOij9mo8jhSA/GezWvd2oLNX3QDD/gfkDKC5OlLZO
+        Oar9fMFOkLBIepGBKd1xiVI2+Qv0+x/ZmIXbHSZTCl2VD5x3Jba/8/eE558DBG+7J8mYBmhAy1DxF
+        tnaP/b3A==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n6qKu-00A1H7-1N; Mon, 10 Jan 2022 08:47:28 +0000
+Date:   Mon, 10 Jan 2022 00:47:27 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org,
+        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
+        suganath-prabu.subramani@broadcom.com,
+        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH 11/16] scsi: mptbase: Use dma_alloc_coherent() in
+ 'mpt_alloc_fw_memory()'
+Message-ID: <Ydvyn3/dvUSy/2EI@infradead.org>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <db3db9db219005b75659561d08117d312d0cfb13.1641500561.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db3db9db219005b75659561d08117d312d0cfb13.1641500561.git.christophe.jaillet@wanadoo.fr>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This commit adds dt-binding documentation of auxadc for Mediatek MT8186 SoC
-Platform.
+Looks good,
 
-Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
----
- .../devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml      | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-index b939f9652e3a..65581ad4b816 100644
---- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-@@ -34,6 +34,7 @@ properties:
-       - items:
-           - enum:
-               - mediatek,mt8183-auxadc
-+              - mediatek,mt8186-auxadc
-               - mediatek,mt8195-auxadc
-               - mediatek,mt8516-auxadc
-           - const: mediatek,mt8173-auxadc
--- 
-2.25.1
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
