@@ -2,124 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E60CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:05:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 254BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245211AbiAJME6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 07:04:58 -0500
-Received: from foss.arm.com ([217.140.110.172]:33544 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245237AbiAJMEN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:04:13 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B34D42B;
-        Mon, 10 Jan 2022 04:04:12 -0800 (PST)
-Received: from [10.57.85.117] (unknown [10.57.85.117])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D38C83F5A1;
-        Mon, 10 Jan 2022 04:04:09 -0800 (PST)
-Message-ID: <db01e88d-1f5c-92fb-d32e-aafe48bd41e7@arm.com>
-Date:   Mon, 10 Jan 2022 12:04:07 +0000
+        id S245247AbiAJMKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 07:10:48 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:16699 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235772AbiAJMKp (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 07:10:45 -0500
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JXXcr4wndzZf4c;
+        Mon, 10 Jan 2022 20:07:08 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 20:10:42 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpeml500017.china.huawei.com (7.185.36.243) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 20:10:42 +0800
+Subject: Re: [PATCH -next] scsi: efct: don't use GFP_KERNEL under spin lock
+To:     Maurizio Lombardi <mlombard@redhat.com>
+CC:     <linux-kernel@vger.kernel.org>, <target-devel@vger.kernel.org>,
+        <linux-scsi@vger.kernel.org>, <hch@lst.de>,
+        <james.smart@broadcom.com>, <martin.petersen@oracle.com>
+References: <20220110111838.965480-1-yangyingliang@huawei.com>
+ <20220110111921.GA91632@raketa>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <ee058886-5bf0-db3e-7d78-8bc34bfd2440@huawei.com>
+Date:   Mon, 10 Jan 2022 20:10:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH V2 7/7] coresight: trbe: Work around the trace data
- corruption
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        coresight@lists.linaro.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1641517808-5735-1-git-send-email-anshuman.khandual@arm.com>
- <1641517808-5735-8-git-send-email-anshuman.khandual@arm.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <1641517808-5735-8-git-send-email-anshuman.khandual@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <20220110111921.GA91632@raketa>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/01/2022 01:10, Anshuman Khandual wrote:
-> TRBE implementations affected by Arm erratum #1902691 might corrupt trace
-> data or deadlock, when it's being written into the memory. Workaround this
-> problem in the driver, by preventing TRBE initialization on affected cpus.
-> The firmware must have disabled the access to TRBE for the kernel on such
-> implementations. This will cover the kernel for any firmware that doesn't
-> do this already. This just updates the TRBE driver as required.
-> 
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Suzuki Poulose <suzuki.poulose@arm.com>
-> Cc: coresight@lists.linaro.org
-> Cc: linux-doc@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
-> ---
->   arch/arm64/Kconfig                           |  2 +-
->   drivers/hwtracing/coresight/coresight-trbe.c | 12 ++++++++++++
->   2 files changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-> index 209e481acf0d..8a2245c3e857 100644
-> --- a/arch/arm64/Kconfig
-> +++ b/arch/arm64/Kconfig
-> @@ -821,7 +821,7 @@ config ARM64_ERRATUM_2038923
->   
->   config ARM64_ERRATUM_1902691
->   	bool "Cortex-A510: 1902691: workaround TRBE trace corruption"
-> -	depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
-> +	depends on CORESIGHT_TRBE
->   	default y
->   	help
->   	  This option adds the workaround for ARM Cortex-A510 erratum 1902691.
-> diff --git a/drivers/hwtracing/coresight/coresight-trbe.c b/drivers/hwtracing/coresight/coresight-trbe.c
-> index c4cc529749f8..d2f1c68e589c 100644
-> --- a/drivers/hwtracing/coresight/coresight-trbe.c
-> +++ b/drivers/hwtracing/coresight/coresight-trbe.c
-> @@ -93,12 +93,14 @@ struct trbe_buf {
->   #define TRBE_WORKAROUND_WRITE_OUT_OF_RANGE	1
->   #define TRBE_NEEDS_DRAIN_AFTER_DISABLE		2
->   #define TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE	3
-> +#define TRBE_IS_BROKEN				4
->   
->   static int trbe_errata_cpucaps[] = {
->   	[TRBE_WORKAROUND_OVERWRITE_FILL_MODE] = ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE,
->   	[TRBE_WORKAROUND_WRITE_OUT_OF_RANGE] = ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE,
->   	[TRBE_NEEDS_DRAIN_AFTER_DISABLE] = ARM64_WORKAROUND_2064142,
->   	[TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE] = ARM64_WORKAROUND_2038923,
-> +	[TRBE_IS_BROKEN] = ARM64_WORKAROUND_1902691,
->   	-1,		/* Sentinel, must be the last entry */
->   };
->   
-> @@ -181,6 +183,11 @@ static inline bool trbe_needs_ctxt_sync_after_enable(struct trbe_cpudata *cpudat
->   	return trbe_has_erratum(cpudata, TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE);
->   }
->   
-> +static inline bool trbe_is_broken(struct trbe_cpudata *cpudata)
-> +{
-> +	return trbe_has_erratum(cpudata, TRBE_IS_BROKEN);
-> +}
-> +
->   static int trbe_alloc_node(struct perf_event *event)
->   {
->   	if (event->cpu == -1)
-> @@ -1288,6 +1295,11 @@ static void arm_trbe_probe_cpu(void *info)
->   	 */
->   	trbe_check_errata(cpudata);
->   
-> +	if (trbe_is_broken(cpudata)) {
-> +		pr_err("Disabling TRBE on cpu%d due to erratum\n", cpu);
-> +		goto cpu_clear;
-> +	}
-> +
->   	/*
->   	 * If the TRBE is affected by erratum TRBE_WORKAROUND_OVERWRITE_FILL_MODE,
->   	 * we must always program the TBRPTR_EL1, 256bytes from a page
+Hi,
 
+On 2022/1/10 19:19, Maurizio Lombardi wrote:
+> On Mon, Jan 10, 2022 at 07:18:38PM +0800, Yang Yingliang wrote:
+>> +	spin_lock_irqsave(&node->els_ios_lock, flags);
+>> +
+>>   	if (els) {
+>>   		/* initialize fields */
+>>   		els->els_retries_remaining = EFC_FC_ELS_DEFAULT_RETRIES;
+> If the els pointer is NULL you will lock the spinlock and disable the interrupts
+> for no reason, maybe you can just protect the list_add_tail()?
+>
+> +spin_lock_irqsave(&node->els_ios_lock, flags);
+>   list_add_tail(&els->list_entry, &node->els_ios_list);
+> +spin_unlock_irqrestore(&node->els_ios_lock, flags);
+Yes, it's better, I will send a v2 later.
 
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-
+Thanks,
+Yang
+>
+> Maurizio
+>
+> .
