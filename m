@@ -2,135 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D97C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1E05C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242449AbiAJSuV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242379AbiAJSuJ (ORCPT
+        id S242379AbiAJSvO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 13:51:14 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:33384 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240219AbiAJSvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:50:09 -0500
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DF8C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 10:50:08 -0800 (PST)
-Received: by mail-pj1-x1035.google.com with SMTP id pf13so6082724pjb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 10:50:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JPHyMSD0Hht+l6xGbfoQXW2mPjKndXPFFsASkcOJqDE=;
-        b=fym04tJGsUWhlyvnXG+ODJIBt4l3YTTIY5vplWKORvFwUS2mBRmbwMf1oavotirIwy
-         a1EgN9CS3DnDpCTqXMzK1TNojevcXuGBmHwXVt/5aHpJgFqld5Aj73ipV3DTaND4UF9I
-         eDqtcLy9E7Y2zdPK3P4sYzN0FzsRIvQrjO4tlVAVSh/Cb13nVrD8ZVZtPPfDj7TlLSUW
-         MkyTRAhTfGo3dQgBuz0J1gsoBOeB3dlRRtfpjxCXsDCI5XuJe2I9vBaHrJhSdlsJTqBO
-         3ndEey8gTKCEJ5SWFD7O2be66F17xuGNg0x9bqjk1djDe24FaFL64amnfiCPtNUvrwGU
-         XDOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JPHyMSD0Hht+l6xGbfoQXW2mPjKndXPFFsASkcOJqDE=;
-        b=l4ivGraVMafE4kFvbMgz3e4vXTG9o1inMXhRXFA43s1zbxKS/Swh1Gew9xZpaILPwQ
-         v8M7Yx1iPMpv5oZ/ow5kXbyVO7VkVJ1OX36VVcdELCrRajwtDE/mwUZ1JM2lJVahvIJ7
-         P+tKNZTxX8l0TLTztycAqSZuAGykOHuHZYSabywwsBh7ksm/cqpp84Rrg3rLgWLD1W4W
-         aOC5ou/Le3z1rPKXVromziVLVFKQ5bbIrlUaDXsEcWS/ruLWv34WFXq9uw6kHb4Hp78r
-         6mPr7ydv5qaxvblRZwIr5EA/rOXhiZ6v94zfeyA79DRDyVntRps9vfa+QRK7bSDoMmxX
-         X9aA==
-X-Gm-Message-State: AOAM5308iyizgRXVV6WZX+dvFp9sbStUuv86D+2cf7n1nA+uPRcxRtCW
-        xahlr9VJ4ssAtNbKxk5If2vasg==
-X-Google-Smtp-Source: ABdhPJz9g5NFlzk/aqJ4LkDssTD+y6Hb+i2qg5eiqe1RGdzWYdRbqxVkbV2SsRHuBtU9LrtnPxuCjA==
-X-Received: by 2002:a17:90a:c917:: with SMTP id v23mr8207612pjt.49.1641840608234;
-        Mon, 10 Jan 2022 10:50:08 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id w6sm6026449pga.25.2022.01.10.10.50.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 10:50:07 -0800 (PST)
-Date:   Mon, 10 Jan 2022 18:50:03 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Kechen Lu <kechenl@nvidia.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, wanpengli@tencent.com,
-        vkuznets@redhat.com, mst@redhat.com, somduttar@nvidia.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v2 1/3] KVM: x86: only allow exits disable before
- vCPUs created
-Message-ID: <Ydx/21chyOGW8hoZ@google.com>
-References: <20211221090449.15337-1-kechenl@nvidia.com>
- <20211221090449.15337-2-kechenl@nvidia.com>
+        Mon, 10 Jan 2022 13:51:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 75246CE16C6;
+        Mon, 10 Jan 2022 18:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 983E7C36AE9;
+        Mon, 10 Jan 2022 18:51:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641840669;
+        bh=iIkBlpSGrQmkNbx82dDCHemXgp467jTsEVwDl7ubF0w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iVQajCjD9adK9/KXoA48SUYzuX6sI9x5MfXOkr9pA3+ZLqeXDgEhB9iVNv5kd4nku
+         rFxW7SQGwtKGbARlVJ8ctMWvKWTBlTdbQmYDr9+iuxZA5l9OM8tbGG3yTVSof7vzGc
+         DggIWg/mJtT+4ypMwH3Do4lePTOyJAZUskrrR1ZnarlqFGfZZs6YlkLHv/t89XeyT2
+         9+bmw33A2BCrfA1q2OFizbk04NazNaFo/+k0xBef4zS56VRiNa+SWJ87LK+eWGkNA4
+         2vW1pJk+9IxGDvawir+pGojIDi+eaih7dh2HoDvLREgKZrMH2Uz8FYhZJNPnWp2W1s
+         FIWpj0FNzmhzw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id BC54540B92; Mon, 10 Jan 2022 15:51:07 -0300 (-03)
+Date:   Mon, 10 Jan 2022 15:51:07 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Dario Petrillo <dario.pk1@gmail.com>
+Cc:     linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: Re: [PATCH] perf tui: avoid crash when annotating recursive functions
+Message-ID: <YdyAG9G6uPWvTJ9g@kernel.org>
+References: <20220109234441.325106-1-dario.pk1@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211221090449.15337-2-kechenl@nvidia.com>
+In-Reply-To: <20220109234441.325106-1-dario.pk1@gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 21, 2021, Kechen Lu wrote:
-> Since VMX and SVM both would never update the control bits if exits
-> are disable after vCPUs are created, only allow setting exits
-> disable flag before vCPU creation.
+Em Mon, Jan 10, 2022 at 12:44:41AM +0100, Dario Petrillo escreveu:
+> In perf report, entering a recursive function from inside of itself
+> (either directly of indirectly through some other function) results in
+> calling symbol__annotate2 multiple times, and freeing the whole disassembly
+> when exiting from the innermost instance. The first issue causes the
+> function's disassembly to be duplicated, and the latter a heap
+> use-after-free (and crash) when trying to access the disassembly again.
 > 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> I reproduced the bug on perf 5.11.22 (Ubuntu 20.04.3 LTS) and 5.16.rc8
+> with the following testcase (compile with gcc recursive.c -o recursive).
+> To reproduce:
+> - perf record ./recursive
+> - perf report
+> - enter fibonacci and annotate it
+> - move the cursor on one of the "callq fibonacci" instructions and press enter
+>   - at this point there will be two copies of the function in the disassembly
+> - go back by pressing q, and perf will crash
+> 
+> #include <stdio.h>
+> 
+> int fibonacci(int n)
+> {
+>     if(n <= 2) return 1;
+>     return fibonacci(n-1) + fibonacci(n-2);
+> }
+> 
+> int main()
+> {
+>     printf("%d\n", fibonacci(40));
+> }
+> 
+> This patch addresses the issue by annotating a function and freeing the
+> associated memory on exit only if no annotation is already present,
+> so that a recursive function is only annotated on entry.
 
-For this to carry my SOB, I should be attributed as the author, or add a
-Co-developed-by: for me.  I'm also totally ok with a Suggested-by: or Reported-by:
+Problem reproduced, patch applied, problem fixed.
 
-And we should at least have
+Thanks, applied.
 
-  Fixes: 4d5422cea3b6 ("KVM: X86: Provide a capability to disable MWAIT intercepts")
-
-andy maybe Cc: stable@vger.kernel.org, though I'm not entirely sure this is stable
-material as it could in theory do more harm than good if there's a busted userspace
-out there.
-
-If this doesn't carry my SOB...
-
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-
-> Signed-off-by: Kechen Lu <kechenl@nvidia.com>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+ 
+> Signed-off-by: Dario Petrillo <dario.pk1@gmail.com>
+> 
 > ---
->  Documentation/virt/kvm/api.rst | 1 +
->  arch/x86/kvm/x86.c             | 6 ++++++
->  2 files changed, 7 insertions(+)
+>  tools/perf/ui/browsers/annotate.c | 23 ++++++++++++++---------
+>  1 file changed, 14 insertions(+), 9 deletions(-)
 > 
-> diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-> index aeeb071c7688..d1c50b95bbc1 100644
-> --- a/Documentation/virt/kvm/api.rst
-> +++ b/Documentation/virt/kvm/api.rst
-> @@ -6581,6 +6581,7 @@ branch to guests' 0x200 interrupt vector.
->  :Architectures: x86
->  :Parameters: args[0] defines which exits are disabled
->  :Returns: 0 on success, -EINVAL when args[0] contains invalid exits
-> +          or if any vCPU has already been created
+> diff --git a/tools/perf/ui/browsers/annotate.c b/tools/perf/ui/browsers/annotate.c
+> index e81c2493efdf..44ba900828f6 100644
+> --- a/tools/perf/ui/browsers/annotate.c
+> +++ b/tools/perf/ui/browsers/annotate.c
+> @@ -966,6 +966,7 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
+>  		.opts = opts,
+>  	};
+>  	int ret = -1, err;
+> +	int not_annotated = list_empty(&notes->src->source);
 >  
->  Valid bits in args[0] are::
+>  	if (sym == NULL)
+>  		return -1;
+> @@ -973,13 +974,15 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
+>  	if (ms->map->dso->annotate_warned)
+>  		return -1;
 >  
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 0cf1082455df..37529c0c279d 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -5764,6 +5764,10 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
->  		if (cap->args[0] & ~KVM_X86_DISABLE_VALID_EXITS)
->  			break;
+> -	err = symbol__annotate2(ms, evsel, opts, &browser.arch);
+> -	if (err) {
+> -		char msg[BUFSIZ];
+> -		ms->map->dso->annotate_warned = true;
+> -		symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
+> -		ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
+> -		goto out_free_offsets;
+> +	if (not_annotated) {
+> +		err = symbol__annotate2(ms, evsel, opts, &browser.arch);
+> +		if (err) {
+> +			char msg[BUFSIZ];
+> +			ms->map->dso->annotate_warned = true;
+> +			symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
+> +			ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
+> +			goto out_free_offsets;
+> +		}
+>  	}
 >  
-> +		mutex_lock(&kvm->lock);
-> +		if (kvm->created_vcpus)
-> +			goto disable_exits_unlock;
-> +
->  		if ((cap->args[0] & KVM_X86_DISABLE_EXITS_MWAIT) &&
->  			kvm_can_mwait_in_guest())
->  			kvm->arch.mwait_in_guest = true;
-> @@ -5774,6 +5778,8 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm,
->  		if (cap->args[0] & KVM_X86_DISABLE_EXITS_CSTATE)
->  			kvm->arch.cstate_in_guest = true;
->  		r = 0;
-> +disable_exits_unlock:
-> +		mutex_unlock(&kvm->lock);
->  		break;
->  	case KVM_CAP_MSR_PLATFORM_INFO:
->  		kvm->arch.guest_can_read_msr_platform_info = cap->args[0];
+>  	ui_helpline__push("Press ESC to exit");
+> @@ -994,9 +997,11 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
+>  
+>  	ret = annotate_browser__run(&browser, evsel, hbt);
+>  
+> -	annotated_source__purge(notes->src);
+> +	if(not_annotated)
+> +		annotated_source__purge(notes->src);
+>  
+>  out_free_offsets:
+> -	zfree(&notes->offsets);
+> +	if(not_annotated)
+> +		zfree(&notes->offsets);
+>  	return ret;
+>  }
 > -- 
-> 2.30.2
-> 
+> 2.25.1
+
+-- 
+
+- Arnaldo
