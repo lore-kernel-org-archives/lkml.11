@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD625C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241839AbiAJHjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:39:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239401AbiAJHc2 (ORCPT
+        id S241852AbiAJHju (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:39:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41404 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240848AbiAJHcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D86EC03325A;
-        Sun,  9 Jan 2022 23:28:36 -0800 (PST)
+        Mon, 10 Jan 2022 02:32:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FF0A611B7;
-        Mon, 10 Jan 2022 07:28:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E948BC36AE9;
-        Mon, 10 Jan 2022 07:28:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C204B611B6;
+        Mon, 10 Jan 2022 07:32:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6AE1C36AEF;
+        Mon, 10 Jan 2022 07:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799715;
-        bh=lqWkFxXzeHiiWiphwCk/OALmbWCz2eduk0uhpTPGqAY=;
+        s=korg; t=1641799966;
+        bh=Lu4XgzqD4Y66Q0usyFzBvUsYXS/nROphKLCsJuhY/Us=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UHhf3Q1OIhlFYXFVFL8O2/j8cAmOXb8aVVakr/63it7CAscLS6BlMln8DVeNXRNwM
-         vLg7WbD6oBPdaKUjdz6PpauvNIUDJDccuClYWXwXunhSD6jX8gkKvnXcAetVjSZxZx
-         q2qf5GMEzK6m5TykWmsnrbLrhhMXwVYBuqU/Pm10=
+        b=n4xt85kW5uLbzGpb9ajCodtMSNYFavvtmYp3kuo5ii3kHiq78v5yTehluZNSkwC2G
+         9spIkLcsE2WqKXFQiPl4AtDChJJQgP7Px1e8YpbDXnmZcr1mpglfz67noe4g9X4RHW
+         5UfRUJhBFlR5Kcv77xVE9o28wOT2HMl/DdYUY7PQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 5.4 24/34] power: reset: ltc2952: Fix use of floating point literals
-Date:   Mon, 10 Jan 2022 08:23:19 +0100
-Message-Id: <20220110071816.473962166@linuxfoundation.org>
+        stable@vger.kernel.org, Shay Agroskin <shayagr@amazon.com>,
+        Arthur Kiyanovski <akiyano@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 31/72] net: ena: Fix error handling when calculating max IO queues number
+Date:   Mon, 10 Jan 2022 08:23:08 +0100
+Message-Id: <20220110071822.610624488@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,58 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Arthur Kiyanovski <akiyano@amazon.com>
 
-commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
+commit 5055dc0348b8b7c168e3296044bccd724e1ae6cd upstream.
 
-A new commit in LLVM causes an error on the use of 'long double' when
-'-mno-x87' is used, which the kernel does through an alias,
-'-mno-80387' (see the LLVM commit below for more details around why it
-does this).
+The role of ena_calc_max_io_queue_num() is to return the number
+of queues supported by the device, which means the return value
+should be >=0.
 
-drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                                  ^
-drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                           ^
-drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->trigger_delay = ktime_set(2, 500L*1E6L);
-                                               ^
-3 errors generated.
+The function that calls ena_calc_max_io_queue_num(), checks
+the return value. If it is 0, it means the device reported
+it supports 0 IO queues. This case is considered an error
+and is handled by the calling function accordingly.
 
-This happens due to the use of a 'long double' literal. The 'E6' part of
-'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
-it to 'long double'.
+However the current implementation of ena_calc_max_io_queue_num()
+is wrong, since when it detects the device supports 0 IO queues,
+it returns -EFAULT.
 
-There is no visible reason for floating point values in this driver, as
-the values are only assigned to integer types. Use NSEC_PER_MSEC, which
-is the same integer value as '1E6L', to avoid changing functionality but
-fix the error.
+In such a case the calling function doesn't detect the error,
+and therefore doesn't handle it.
 
-Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1497
-Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+This commit changes ena_calc_max_io_queue_num() to return 0
+in case the device reported it supports 0 queues, allowing the
+calling function to properly handle the error case.
+
+Fixes: 736ce3f414cc ("net: ena: make ethtool -l show correct max number of queues")
+Signed-off-by: Shay Agroskin <shayagr@amazon.com>
+Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/ltc2952-poweroff.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c |    4 ----
+ 1 file changed, 4 deletions(-)
 
---- a/drivers/power/reset/ltc2952-poweroff.c
-+++ b/drivers/power/reset/ltc2952-poweroff.c
-@@ -160,8 +160,8 @@ static void ltc2952_poweroff_kill(void)
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4026,10 +4026,6 @@ static u32 ena_calc_max_io_queue_num(str
+ 	max_num_io_queues = min_t(u32, max_num_io_queues, io_tx_cq_num);
+ 	/* 1 IRQ for mgmnt and 1 IRQs for each IO direction */
+ 	max_num_io_queues = min_t(u32, max_num_io_queues, pci_msix_vec_count(pdev) - 1);
+-	if (unlikely(!max_num_io_queues)) {
+-		dev_err(&pdev->dev, "The device doesn't have io queues\n");
+-		return -EFAULT;
+-	}
  
- static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
- {
--	data->wde_interval = 300L * 1E6L;
--	data->trigger_delay = ktime_set(2, 500L*1E6L);
-+	data->wde_interval = 300L * NSEC_PER_MSEC;
-+	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
- 
- 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
+ 	return max_num_io_queues;
+ }
 
 
