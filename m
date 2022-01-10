@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F7FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3A98C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239734AbiAJH2m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:28:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56374 "EHLO
+        id S239689AbiAJH2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:28:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56732 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239355AbiAJHZl (ORCPT
+        with ESMTP id S239511AbiAJH0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:25:41 -0500
+        Mon, 10 Jan 2022 02:26:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F03EFB811FE;
-        Mon, 10 Jan 2022 07:25:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461FBC36AED;
-        Mon, 10 Jan 2022 07:25:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 999DEB8120F;
+        Mon, 10 Jan 2022 07:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E06D3C36AE9;
+        Mon, 10 Jan 2022 07:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799537;
-        bh=zmfqkjRv2inCV6030DusFTVgg7tQKcUyuxImduqerds=;
+        s=korg; t=1641799557;
+        bh=wQ1WCzMal2S1hciuudYxmTYIjbmHf5KuRMCyHTnif3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aujijaAizNuML6IhOXHXBre3glRIQ+xQrndy56ZRpVDy+xcacU1vqsFj1RA6RVT/l
-         Jj42V7AaQKugkeiYJRaF4ICBOzL+y5pPS29zaGVtCxt0mC3VwZifvkfo+Ap23QMAWN
-         3c1sLSTLl2czvJGYLvZw+ftsKD352pow9iyeFmr0=
+        b=NcNGnm7uADAlj0gjpymSU7Fc2ycLgoZEAS9COPTwC+/P7KTMqjRDCG4s8OlpKmP+U
+         8EgvWcM2ItOo+FThCPLwT8eZw2NYIjRfdaMwuD+89ZbXeEcnZ/Kui6V0Cf9BwYEirW
+         P6ZjiAmcynkG+l2bHMls6+ln9PuGSvP0BkXufqD0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, wolfgang huang <huangjinhui@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 20/21] mISDN: change function names to avoid conflicts
-Date:   Mon, 10 Jan 2022 08:23:07 +0100
-Message-Id: <20220110071813.484662589@linuxfoundation.org>
+        stable@vger.kernel.org, Kirill Tkhai <ktkhai@virtuozzo.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        Dave Chinner <dchinner@redhat.com>,
+        Eric Sandeen <sandeen@redhat.com>
+Subject: [PATCH 4.14 13/22] xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
+Date:   Mon, 10 Jan 2022 08:23:06 +0100
+Message-Id: <20220110071814.707995874@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071812.806606886@linuxfoundation.org>
-References: <20220110071812.806606886@linuxfoundation.org>
+In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
+References: <20220110071814.261471354@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,100 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wolfgang huang <huangjinhui@kylinos.cn>
+From: Darrick J. Wong <djwong@kernel.org>
 
-[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
+commit 983d8e60f50806f90534cc5373d0ce867e5aaf79 upstream.
 
-As we build for mips, we meet following error. l1_init error with
-multiple definition. Some architecture devices usually marked with
-l1, l2, lxx as the start-up phase. so we change the mISDN function
-names, align with Isdnl2_xxx.
+The old ALLOCSP/FREESP ioctls in XFS can be used to preallocate space at
+the end of files, just like fallocate and RESVSP.  Make the behavior
+consistent with the other ioctls.
 
-mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
-(.text+0x890): multiple definition of `l1_init'; \
-arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
-make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
-
-Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Kirill Tkhai <ktkhai@virtuozzo.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Eric Sandeen <sandeen@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/isdn/mISDN/core.c   | 6 +++---
- drivers/isdn/mISDN/core.h   | 4 ++--
- drivers/isdn/mISDN/layer1.c | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ fs/xfs/xfs_ioctl.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-index faf505462a4f5..f5a06a6fb297f 100644
---- a/drivers/isdn/mISDN/core.c
-+++ b/drivers/isdn/mISDN/core.c
-@@ -390,7 +390,7 @@ mISDNInit(void)
- 	err = mISDN_inittimer(&debug);
- 	if (err)
- 		goto error2;
--	err = l1_init(&debug);
-+	err = Isdnl1_Init(&debug);
- 	if (err)
- 		goto error3;
- 	err = Isdnl2_Init(&debug);
-@@ -404,7 +404,7 @@ mISDNInit(void)
- error5:
- 	Isdnl2_cleanup();
- error4:
--	l1_cleanup();
-+	Isdnl1_cleanup();
- error3:
- 	mISDN_timer_cleanup();
- error2:
-@@ -417,7 +417,7 @@ static void mISDN_cleanup(void)
- {
- 	misdn_sock_cleanup();
- 	Isdnl2_cleanup();
--	l1_cleanup();
-+	Isdnl1_cleanup();
- 	mISDN_timer_cleanup();
- 	class_unregister(&mISDN_class);
- 
-diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
-index 52695bb81ee7a..3c039b6ade2e1 100644
---- a/drivers/isdn/mISDN/core.h
-+++ b/drivers/isdn/mISDN/core.h
-@@ -69,8 +69,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
- extern int	mISDN_inittimer(u_int *);
- extern void	mISDN_timer_cleanup(void);
- 
--extern int	l1_init(u_int *);
--extern void	l1_cleanup(void);
-+extern int	Isdnl1_Init(u_int *);
-+extern void	Isdnl1_cleanup(void);
- extern int	Isdnl2_Init(u_int *);
- extern void	Isdnl2_cleanup(void);
- 
-diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
-index bebc57b72138e..94d7cc58da648 100644
---- a/drivers/isdn/mISDN/layer1.c
-+++ b/drivers/isdn/mISDN/layer1.c
-@@ -407,7 +407,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
- EXPORT_SYMBOL(create_l1);
- 
- int
--l1_init(u_int *deb)
-+Isdnl1_Init(u_int *deb)
- {
- 	debug = deb;
- 	l1fsm_s.state_count = L1S_STATE_COUNT;
-@@ -419,7 +419,7 @@ l1_init(u_int *deb)
- }
- 
- void
--l1_cleanup(void)
-+Isdnl1_cleanup(void)
- {
- 	mISDN_FsmFree(&l1fsm_s);
- }
--- 
-2.34.1
-
+--- a/fs/xfs/xfs_ioctl.c
++++ b/fs/xfs/xfs_ioctl.c
+@@ -715,7 +715,8 @@ xfs_ioc_space(
+ 		flags |= XFS_PREALLOC_CLEAR;
+ 		if (bf->l_start > XFS_ISIZE(ip)) {
+ 			error = xfs_alloc_file_space(ip, XFS_ISIZE(ip),
+-					bf->l_start - XFS_ISIZE(ip), 0);
++					bf->l_start - XFS_ISIZE(ip),
++					XFS_BMAPI_PREALLOC);
+ 			if (error)
+ 				goto out_unlock;
+ 		}
 
 
