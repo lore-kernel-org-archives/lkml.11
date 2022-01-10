@@ -2,155 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E58BC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:19:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DEBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343892AbiAJVTs (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 16:19:48 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:59428 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240732AbiAJVTp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 16:19:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=+shfBCYZr6PmwOhnVqXddxKoDSg/lEauRmaiul2UEhM=; b=4o
-        l3yOrRGYQHgE2pE132qpWBfvjQ+NzSSqod8/ALQpxBEieSiLNaEM0aDNpQGFsKUXcM4AN+KtkY7I0
-        Dog50nem4yqnGbL4CLeiEkDbtBsos2cEho6n48/B+0syf6ABim7DNKVR/T8K8+S9x47c49e3Fsnc3
-        0c7YhiasNFUCF4w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n723S-0011UU-6G; Mon, 10 Jan 2022 22:18:14 +0100
-Date:   Mon, 10 Jan 2022 22:18:14 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        Robert Richter <rric@kernel.org>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <YdyilpjC6rtz6toJ@lunn.ch>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
+        id S241064AbiAJVVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 16:21:53 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45887 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240270AbiAJVVw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 16:21:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641849712;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=gHA8meZUmBSNpJu5bEvfBdiKNFm5MvkjuwdU2BAWhY8=;
+        b=FFqmhPnnIwG2jNEr1yAwV8vbcFMd8v8iseCo8WmdHXGIphzMOWhxjIgFJDCNF28kgugXSx
+        yL3LgaOP+77wErms6aKQcQnn4Mb/3ekkHG8sEitH+Xj4QUrFBrFsd2wFDW9pHh3D8REKN0
+        wq7qyjlG/Tfto6pTfhjFFOGwoddVfKw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-460-WE9ci8-4PqOOge6Sld6WUA-1; Mon, 10 Jan 2022 16:21:48 -0500
+X-MC-Unique: WE9ci8-4PqOOge6Sld6WUA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0D643835E22;
+        Mon, 10 Jan 2022 21:21:48 +0000 (UTC)
+Received: from redhat.com (unknown [10.15.80.136])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B672F5BE36;
+        Mon, 10 Jan 2022 21:21:47 +0000 (UTC)
+Date:   Mon, 10 Jan 2022 15:21:45 -0600
+From:   David Teigland <teigland@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [GIT PULL] dlm updates for 5.17
+Message-ID: <20220110212145.GA19682@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
+User-Agent: Mutt/1.8.3 (2017-05-23)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 09:10:14PM +0100, Uwe Kleine-König wrote:
-> Hello,
-> 
-> On Mon, Jan 10, 2022 at 10:54:48PM +0300, Sergey Shtylyov wrote:
-> > This patch is based on the former Andy Shevchenko's patch:
-> > 
-> > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
-> > 
-> > Currently platform_get_irq_optional() returns an error code even if IRQ
-> > resource simply has not been found. It prevents the callers from being
-> > error code agnostic in their error handling:
-> > 
-> > 	ret = platform_get_irq_optional(...);
-> > 	if (ret < 0 && ret != -ENXIO)
-> > 		return ret; // respect deferred probe
-> > 	if (ret > 0)
-> > 		...we get an IRQ...
-> > 
-> > All other *_optional() APIs seem to return 0 or NULL in case an optional
-> > resource is not available. Let's follow this good example, so that the
-> > callers would look like:
-> > 
-> > 	ret = platform_get_irq_optional(...);
-> > 	if (ret < 0)
-> > 		return ret;
-> > 	if (ret > 0)
-> > 		...we get an IRQ...
-> 
-> The difference to gpiod_get_optional (and most other *_optional) is that
-> you can use the NULL value as if it were a valid GPIO.
-> 
-> As this isn't given with for irqs, I don't think changing the return
-> value has much sense.
+Hi Linus,
 
-We actually want platform_get_irq_optional() to look different to all
-the other _optional() methods because it is not equivalent. If it
-looks the same, developers will assume it is the same, and get
-themselves into trouble.
+Please pull dlm updates from tag:
 
-> My suggestion would be to keep the return value of
-> platform_get_irq_optional() as is, but rename it to
-> platform_get_irq_silent() to get rid of the expectation invoked by
-> the naming similarity that motivated you to change
-> platform_get_irq_optional().
+git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git dlm-5.17
 
-This is a good idea.
+This set includes the normal collection of minor fixes and
+cleanups, new kmem caches for network messaging structs,
+a start on some basic tracepoints, and some new debugfs
+files for inserting test messages.
 
-     Andrew
+(I just noticed that I failed to rebase this after skipping the
+last merge window, but it appears to merge fine.)
+
+Thanks,
+Dave
+
+
+Alexander Aring (31):
+      fs: dlm: remove obsolete INBUF define
+      fs: dlm: fix small lockspace typo
+      fs: dlm: debug improvements print nodeid
+      fs: dlm: remove check SCTP is loaded message
+      fs: dlm: move version conversion to compile time
+      fs: dlm: use dlm_recovery_stopped instead of test_bit
+      fs: dlm: use dlm_recovery_stopped in condition
+      fs: dlm: make dlm_callback_resume quite
+      fs: dlm: initial support for tracepoints
+      fs: dlm: trace socket handling
+      fs: dlm: requestqueue busy wait to event based wait
+      fs: dlm: ls_count busy wait to event based wait
+      fs: dlm: let handle callback data as void
+      fs: dlm: add debugfs rawmsg send functionality
+      fs: dlm: allow create lkb with specific id range
+      fs: dlm: add lkb debugfs functionality
+      fs: dlm: add lkb waiters debugfs functionality
+      fs: dlm: filter user dlm messages for kernel locks
+      fs: dlm: remove double list_first_entry call
+      fs: dlm: fix potential buffer overflow
+      fs: dlm: don't call kernel_getpeername() in error_report()
+      fs: dlm: replace use of socket sk_callback_lock with sock_lock
+      fs: dlm: fix build with CONFIG_IPV6 disabled
+      fs: dlm: use list_empty() to check last iteration
+      fs: dlm: check for pending users filling buffers
+      fs: dlm: use event based wait for pending remove
+      fs: dlm: remove wq_alloc mutex
+      fs: dlm: memory cache for midcomms hotpath
+      fs: dlm: memory cache for writequeue_entry
+      fs: dlm: memory cache for lowcomms hotpath
+      fs: dlm: print cluster addr if non-cluster node connects
+
+Zhang Mingyu (1):
+      fs: dlm:Remove unneeded semicolon
+
+
+ fs/dlm/ast.c               |  16 ++-
+ fs/dlm/debug_fs.c          |  96 ++++++++++++++++-
+ fs/dlm/dir.c               |   3 +-
+ fs/dlm/dlm_internal.h      |  12 +--
+ fs/dlm/lock.c              | 109 +++++++++++++++++--
+ fs/dlm/lock.h              |   4 +
+ fs/dlm/lockspace.c         |  38 ++++---
+ fs/dlm/lowcomms.c          | 209 +++++++++++++++++++-----------------
+ fs/dlm/lowcomms.h          |   6 +-
+ fs/dlm/main.c              |   3 +
+ fs/dlm/member.c            |   3 +-
+ fs/dlm/memory.c            |  68 +++++++++++-
+ fs/dlm/memory.h            |   6 ++
+ fs/dlm/midcomms.c          |  85 ++++++++++++---
+ fs/dlm/midcomms.h          |   3 +
+ fs/dlm/rcom.c              |   2 +-
+ fs/dlm/recoverd.c          |   3 +-
+ fs/dlm/requestqueue.c      |  17 ++-
+ include/trace/events/dlm.h | 260 +++++++++++++++++++++++++++++++++++++++++++++
+ 19 files changed, 770 insertions(+), 173 deletions(-)
+ create mode 100644 include/trace/events/dlm.h
+
