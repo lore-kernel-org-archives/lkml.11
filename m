@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56ABCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BEAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239914AbiAJHgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:36:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39458 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239582AbiAJHa2 (ORCPT
+        id S240514AbiAJHhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:37:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240053AbiAJHaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:30:28 -0500
+        Mon, 10 Jan 2022 02:30:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BA35C028BB1;
+        Sun,  9 Jan 2022 23:27:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB723611DA;
-        Mon, 10 Jan 2022 07:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CED47C36AE9;
-        Mon, 10 Jan 2022 07:30:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 130B8B81208;
+        Mon, 10 Jan 2022 07:27:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3883DC36AED;
+        Mon, 10 Jan 2022 07:27:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799825;
-        bh=AWkoo0UJSVGidasizP+wqQC4M68bJulON4pKMzqYRps=;
+        s=korg; t=1641799661;
+        bh=h+RDHigZyBNMfYVop5KsSMfjlhHiJUgj+VK3fo/isNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1z/4HvDNAzar3qn2zazSWwPdlBWifx7Lcs7gzBEG1AdeJt1Yr5Zsru6BR61PFJdin
-         pr414xUjfByy8gqCuwPvbb0vQLVyJyKeIlGX57EMcX8kgUOcMqwFm/3aK5sYugUbSJ
-         e6yq124WZb1Zgn6lgtN3o0/rIn4PU78s+9RCbhWw=
+        b=kxMjcEawDjEL0oaRtz4zrp8ayTIYrRaXZ194iiVO7ubhTuezDv9B3qkQflw3D0OyO
+         TqI6BKtQYRQO6XBwtPjhOjhsN5km9rc9auzpfFpHB9959HWs1NFQV6CgPnxmtuLGK9
+         18VQW5GmchpDgq4pt05xhTZb/EG9wae9ZKBXygSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 5.10 28/43] power: reset: ltc2952: Fix use of floating point literals
-Date:   Mon, 10 Jan 2022 08:23:25 +0100
-Message-Id: <20220110071818.293128380@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Aayush Agarwal <aayush.a.agarwal@oracle.com>
+Subject: [PATCH 4.19 14/21] phonet: refcount leak in pep_sock_accep
+Date:   Mon, 10 Jan 2022 08:23:15 +0100
+Message-Id: <20220110071814.418213848@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-References: <20220110071817.337619922@linuxfoundation.org>
+In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
+References: <20220110071813.967414697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,58 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
+commit bcd0f93353326954817a4f9fa55ec57fb38acbb0 upstream.
 
-A new commit in LLVM causes an error on the use of 'long double' when
-'-mno-x87' is used, which the kernel does through an alias,
-'-mno-80387' (see the LLVM commit below for more details around why it
-does this).
+sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
+invoked in subsequent failure branches(pep_accept_conn() != 0).
 
-drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                                  ^
-drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                           ^
-drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->trigger_delay = ktime_set(2, 500L*1E6L);
-                                               ^
-3 errors generated.
-
-This happens due to the use of a 'long double' literal. The 'E6' part of
-'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
-it to 'long double'.
-
-There is no visible reason for floating point values in this driver, as
-the values are only assigned to integer types. Use NSEC_PER_MSEC, which
-is the same integer value as '1E6L', to avoid changing functionality but
-fix the error.
-
-Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1497
-Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/ltc2952-poweroff.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/phonet/pep.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/power/reset/ltc2952-poweroff.c
-+++ b/drivers/power/reset/ltc2952-poweroff.c
-@@ -159,8 +159,8 @@ static void ltc2952_poweroff_kill(void)
+--- a/net/phonet/pep.c
++++ b/net/phonet/pep.c
+@@ -881,6 +881,7 @@ static struct sock *pep_sock_accept(stru
  
- static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
- {
--	data->wde_interval = 300L * 1E6L;
--	data->trigger_delay = ktime_set(2, 500L*1E6L);
-+	data->wde_interval = 300L * NSEC_PER_MSEC;
-+	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
- 
- 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
+ 	err = pep_accept_conn(newsk, skb);
+ 	if (err) {
++		__sock_put(sk);
+ 		sock_put(newsk);
+ 		newsk = NULL;
+ 		goto drop;
 
 
