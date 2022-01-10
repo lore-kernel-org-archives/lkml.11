@@ -2,215 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D58EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237209AbiAJQQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 11:16:30 -0500
-Received: from mail-dm6nam10on2080.outbound.protection.outlook.com ([40.107.93.80]:5312
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237194AbiAJQQ2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 11:16:28 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c8l6amIKoqyI3lzaABLiriBcwCEJ9nuJGz0xCEUWxp7BNZQy9gIIhTBrwJusNu7V9Y5FhmGg8O48RgfVdRDwLfwEiTdcF+T2FcWtleLl/gp1a7SynEUX4uUmxvE50ZjoL2WxA7IcjX1F6svFViJalMw+x29qOSdHzKTUMkZZeSdRH7caAB4iBTKkR/iIzMrun6ElPE6rs4vOgzf8XDxO4FwB+kkm+loR6uOphGbt5jkkScSaQmlF5l+ID3ECgaLnGLzKmCL4EnR+XLRgZSCrf5Hi0iZ/gH/Krksi6kefyymJ/7Q/bXwSMvT6esLMeY9tOR0rrj8cYZUPyPZD70bHpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=baMf/8ZCBam30sms6HF5SoErgC9TJgkWoueiToInqBI=;
- b=GsCaQIoltTkREdjXfZawu25Gjo8KWsz5SmDVp9WRhvLxBzVNNS8bb9djz/wURprr2D9Q8y6TvZ9F1kySF0asJ1IwjM0tDJcqquaJwS1u0PpzJS0KZOHYPUnirFnRxQ0kJTmFuThiYt2qIVzFVYidKUfFB6Tisfhb89hABJFNs/byc9aZYSs+URl2BGCiJ+6etqceWMhx/c2ERq6osqQEI7+mDBzk9APr0Q4HPRdz+/YcQNe8tiRBSaE1HGWYtvl4iX50pnh16eS29CI8OSIvZJaPe5Y5H2lEY1C8ZOGZI6z2KBq3BOr5+1xtDBguftDDDon7Qskin9U5gzqWR0iSmg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=baMf/8ZCBam30sms6HF5SoErgC9TJgkWoueiToInqBI=;
- b=LPTk1wYUL2m1K91SWBGr7qwNva8AC/rLq5TpS0eCI1K9jfWA/5e//YHyTIiZuzmilxfo++Xjf1ETGgv2B888/UnMlzbcdlMaL6pP0ffwUn3eGc9D46Wu5sJQ/CLqUIXdxTrEMO/2drxkv43lBypjnK9l83HLROV52FCBH8FnjSg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MWHPR1201MB0192.namprd12.prod.outlook.com
- (2603:10b6:301:5a::14) by MW3PR12MB4474.namprd12.prod.outlook.com
- (2603:10b6:303:2e::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Mon, 10 Jan
- 2022 16:16:24 +0000
-Received: from MWHPR1201MB0192.namprd12.prod.outlook.com
- ([fe80::b4d6:f148:3798:6246]) by MWHPR1201MB0192.namprd12.prod.outlook.com
- ([fe80::b4d6:f148:3798:6246%7]) with mapi id 15.20.4867.012; Mon, 10 Jan 2022
- 16:16:24 +0000
-Subject: Re: [PATCH REGRESSION] Revert "drm/amdgpu: stop scheduler when
- calling hw_fini (v2)"
-To:     "Deucher, Alexander" <Alexander.Deucher@amd.com>,
-        Len Brown <lenb@kernel.org>,
-        "torvalds@linux-foundation.org" <torvalds@linux-foundation.org>,
-        "Chen, Guchun" <Guchun.Chen@amd.com>,
-        "Grodzovsky, Andrey" <Andrey.Grodzovsky@amd.com>
-Cc:     "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <8ab406c8bb2e58969668a806a529d5988b447530.1641750730.git.len.brown@intel.com>
- <BL1PR12MB514403767AC6BC6CD617674DF7509@BL1PR12MB5144.namprd12.prod.outlook.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-Message-ID: <2e3fbfe8-e7a1-2483-dbbd-ebb3824fc886@amd.com>
-Date:   Mon, 10 Jan 2022 17:16:16 +0100
+        id S237221AbiAJQRK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 11:17:10 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:40077 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237212AbiAJQRC (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 11:17:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641831422;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+YjTLY75U3Rr/IBjHhdFVsX4vnS2z8mb10E/ypAsx9o=;
+        b=NKvrG1Ff/BReEbNZCSIxAwyvB4pMuBxFjEPcWornGzwdPqjkZbt0RQpICANewlujbWtkKf
+        8c5wpr5AHOpznYuZnXhUiaf/J/X7noNp2zHSUxDf6rNVER/zQkJnbUxKNuVjuzWrtCfOJ5
+        zqkL8D/k3OQswA5rh8rpc9zD5SRYF+Q=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-125-_va0i5i4OT6THJv7bWwAcQ-1; Mon, 10 Jan 2022 11:17:00 -0500
+X-MC-Unique: _va0i5i4OT6THJv7bWwAcQ-1
+Received: by mail-qt1-f199.google.com with SMTP id 4-20020ac85744000000b002b2f329efc2so11137623qtx.12
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 08:17:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+YjTLY75U3Rr/IBjHhdFVsX4vnS2z8mb10E/ypAsx9o=;
+        b=ADbLsvEMEJtQ+NI8o4aQoM//u93UF2MgW2/fu+6m2c9/9Pxaqe/798y1E6PDrXS+OZ
+         XqFI3tbZJNzu2YrMgSgtALrOulLl5PgXcjmStJH4PpuYcQz1BU7t/S6rHGCfYzmPo6yy
+         KKsmjjZf02dd3u8Azk/x41N9SaRRzAL+uT860hkjcQ1DVVpQd7vtIE+1Hc1pwaW4fVWM
+         1xs2ms/Rar7nPNJTmYH5swZ3v0hJLCnirYqiNicXdts8synUuFMSCJhG9rx+8rCB8M2A
+         Spg8Gs4rlqYJ4sxl+RsX6P9avYf1YExkH0b+ScalqnAozpbw/F1ijAa34EIv9O1lame3
+         yYmQ==
+X-Gm-Message-State: AOAM531TbyotcdzfA/piHPEqWddpRr6zncZ6gRDNdYEfuX11Bj5xNUUD
+        C2n4HEcUyXBdZ2+uqebHier9ZzKRW5XO66RkqlMXw5OcbINu62u0zJg8G9Z7w2B6K4Fum/eXv93
+        rompmtIxsrBB/yZMy5DB2loD2
+X-Received: by 2002:ac8:5f4e:: with SMTP id y14mr377042qta.620.1641831420240;
+        Mon, 10 Jan 2022 08:17:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyAUtzH3EEX9Ff3ydZLCMZTFVjkkVjbUCwm51dfml+s1g3fpFnx//1UUzWe5M/akiYa/jS9DA==
+X-Received: by 2002:ac8:5f4e:: with SMTP id y14mr377024qta.620.1641831420013;
+        Mon, 10 Jan 2022 08:17:00 -0800 (PST)
+Received: from [192.168.1.9] (pool-68-163-101-245.bstnma.fios.verizon.net. [68.163.101.245])
+        by smtp.gmail.com with ESMTPSA id v13sm3080842qtk.93.2022.01.10.08.16.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 08:16:59 -0800 (PST)
+Subject: Re: [PATCH] livepatch: Avoid CPU hogging with cond_resched
+To:     Song Liu <song@kernel.org>
+Cc:     David Vernet <void@manifault.com>, live-patching@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>, jpoimboe@redhat.com,
+        pmladek@suse.com, jikos@kernel.org, mbenes@suse.cz
+References: <20211229215646.830451-1-void@manifault.com>
+ <1f1b9b01-cfab-8a84-f35f-c21172e5d64d@redhat.com>
+ <CAPhsuW4Ua2hDs5WMtF0s_CQki-ZdYMvkU2s+Nc7Rvs=-D6WL=Q@mail.gmail.com>
+From:   Joe Lawrence <joe.lawrence@redhat.com>
+Message-ID: <4df1f9a0-3b26-903b-fe63-af5e75ed98d4@redhat.com>
+Date:   Mon, 10 Jan 2022 11:16:58 -0500
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-In-Reply-To: <BL1PR12MB514403767AC6BC6CD617674DF7509@BL1PR12MB5144.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-ClientProxiedBy: AM6PR08CA0048.eurprd08.prod.outlook.com
- (2603:10a6:20b:c0::36) To MWHPR1201MB0192.namprd12.prod.outlook.com
- (2603:10b6:301:5a::14)
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fcbe571b-175d-460d-533f-08d9d4548bd7
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4474:EE_
-X-Microsoft-Antispam-PRVS: <MW3PR12MB4474D0713ED66E0A477DD1F583509@MW3PR12MB4474.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:785;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QXBZT1IAUhMrrGLwED+Md2CHeQ8dofPxES0akWay/L3zdxwbTeyFksW+AcWEXtIIXjK5oniITasUDC42EQu6UwT8qMuxYzTWImIY31OuJCGQZvAqXPNWEg5AspP9D5qMbMGpV67/kSocteRGzBzOvMojGtLAvqP42H3bFUBiVoJ/UZ77C8cDe+9T4rxguEJ7jbiGWKUg7Al/b6MOFs1Tj5DbuKhdX/Ibp9y3Exm4Ypmapx0oIGrYwXpqgL2n82EFxfIbDQ6XrdIFfJ7tc5dZ1oGo4VkA9c3MGJdOgVWujA8034yp5aNcYuiQjs0GD2g8kizze+IT2EWw1TSAaXQGcuqIw5lteZfk7ZMhd7mnFO5xE6f2o9DTC+L9B+JxivvwdYLVuqHEw66e3zf1Ype53Po1Pq1yqi9HkKX4AMdPFv6aYNp4tNVis2ZPsqmE8GKhUNLDd9gpIa3qTdbR9MaSP4nUoYCX5ebd7Cb9q3canTGLa37OXP8BmIM61DcYm7epPtXL3HVCsUGjUxlbvc/yCwll3E3ywsHNTelndgYaWw6Oe4slm+mmT1JBEG+TIyp6wZttrrGg3w4toGRJ+TjzWDEApUsrjWnbRB/mOAkRQVxzlt7/xHU58QW+WfbdsdSxW23d+Mh6j7oWcMEWfaLxs25q4WbplgG4neZZZ+IwAkW+zwAHW65iCK0Dd4rsqCZRcQDxpMYXILrXBnFWaxjiXGLt1eZ94y1Fh6pk/N//ao5PgkgZjJuQAbUC0QfGWOqouNQx5Tc3OkwNlxP/VHAw5Vac6HLru9k88EeZBXuvuoxhct4wlm88TUovggqHJub/
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1201MB0192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(2616005)(53546011)(186003)(86362001)(8676002)(966005)(83380400001)(8936002)(6636002)(45080400002)(66556008)(31686004)(66946007)(5660300002)(6512007)(2906002)(508600001)(316002)(6506007)(6666004)(38100700002)(6486002)(36756003)(54906003)(31696002)(110136005)(4326008)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZmlNRzVDSWgweXZJeXIreGlGS2VmVnczU0RkVWZ1d1VVU3RjaVZpb0Y3SVZn?=
- =?utf-8?B?ai9TM1F6QzdCT1pGc3hFMEFPc3FOc3FpOXlsMmdzcFVaazR0KzRISCtNS3A5?=
- =?utf-8?B?bldFNmR6NXViY2pXdnVCeDVYbjVhbjJNaytLcTNtNHZER05QSGlvRUJFZHNV?=
- =?utf-8?B?TjRlZWV0NDFnVmJzd3IveXVGMGNYcUo2anVGamdUYlVKYU42RjN1N3ByYlIx?=
- =?utf-8?B?YkVBWEdmOTY0NlZBcnZDM2lINlFGNnVjN1JiNDQ5UlFodkFGb0I4TlVudTZ4?=
- =?utf-8?B?ckFhZ2JaQWhURFFUQk8wOXV6NFFBRjZvQW8rbFZvQlpENTV0eVJRTmtHU09Y?=
- =?utf-8?B?ZUwvcUFlcjQzWnYrUFlmdTRwT0RBa05qQkhjaTZUYUozdHJYVVdTUS9id0ZV?=
- =?utf-8?B?Szl3bkJRcEFqWWljdDRuTEswQjRoZ25BMXZuZE0wT0FtV2NOSDdMajRuU0U2?=
- =?utf-8?B?emVNbml5dzhnV243eEdkMzlMcmJVaTRteFQzaGtNdHFueWJ2QXBFL0xDWXdy?=
- =?utf-8?B?TGYvMjVHSzM2QkN0Q1FZMHBpQUJwMUovbmpFME1ydFovMjNScXo1dS8weENR?=
- =?utf-8?B?Ung5djFxV2tlMThFSUowd1RwNXYxeGllcHBWVlZvMXJKdFpucTRmK0c4dDkz?=
- =?utf-8?B?dGZNYkFhWkJOMmlQNGJVQWZSelA0bzdOa1poQ3NKNStXbWlFb3hBL0ZwV0sz?=
- =?utf-8?B?OVBSMWpLL0ZTckZqTGZxWFhWbm5hUEN4VVVhck5ROUdmNE1sdGFLNnVnQ01S?=
- =?utf-8?B?dXpEZndWQ01MdFd4M1ZxOEN5aS91QnI3aWRjVkhXZTZSdGVSbXd4cnVjUVFP?=
- =?utf-8?B?OXh6Z3FFV054bEgvRjF2UVZ6dlFWN2ViQjM2dTVKQTNZWlhaV0FpdklFZTZI?=
- =?utf-8?B?a01HNUg2UzVMSUFlUnpJQW1ORjlJMm4wZXE2dklPNDRwM3Vrdmo4WjdjaEhw?=
- =?utf-8?B?V0hEdmdIbFFTRkRvUml6TUhaZHMxOW9VQkZCblRqaUlSUU1aa05icHpWa0w4?=
- =?utf-8?B?V1ZDSUdyN2VpV0JrQURtai91SzBNU1RoMVZFZDVYeHh3Z3pLS1d3VS91WXMz?=
- =?utf-8?B?b0twYlBuUUZwRGNoZml5S29qcisveEJQL25jbldpV2swQ2pCaWxTSXkzTS9X?=
- =?utf-8?B?Q2krakNrcUVqSzQwVDdvTUhMWW1oeWh2ODZrU1NTYmVpSGNUUjE4aEk5ajVu?=
- =?utf-8?B?THREZzEvNXprQlE3RE83VlAvMndKcm0yL0NoZjFEQkhnTWlEK3N3VE11Yldv?=
- =?utf-8?B?eVRPVVJnQ0x6QW1ST3lrck1SWUlnU1ROUi9nTVUzdkJXQ0prU0VKTzdKZGRp?=
- =?utf-8?B?am5pejRJVUEzdXpBK21JRjdBSHlqcUU3ZXZIQ3pjUmdEV3hzQUEybVRUdWJt?=
- =?utf-8?B?aTBzVWsrL0poeEFOYkwrcmZMVGQ5eEtHS0QvYXNEcXcwRTJGVG5QZU04Q3Rw?=
- =?utf-8?B?Uk9LVUtLZXNIUzFyc1hmMEJSeFlydytSWGVWKzdVc2g1QnZxa05Kckt3OFNl?=
- =?utf-8?B?M3dLbFpWSFBnSngrblNlZjFGMDFhU25mNVpGV2Q4M3VtckRUb3ljWExDVTAr?=
- =?utf-8?B?NE95ZDdlakpYNGRKNWxXcWpyMFZzUnNVQlFjUXVYcFpPeU95V0VNcXVzNWNT?=
- =?utf-8?B?dytzZVBTWlVIc2NmakJGakt2TWFFOEtISzVwTUsyMThtUEZkYWpKOWUveXRM?=
- =?utf-8?B?Wko5Ums1THdySzRTYldLZW5VcGJDSWZkYTFBUnhTRE5TRmI3ZmV0eU9LRVZY?=
- =?utf-8?B?K0FKQUNQRDg3TzZ2OUZtSm1ySDlMNGR1RExFMTV3bzc2aVlUMFlPYndjOVFI?=
- =?utf-8?B?RVJ0ZDEzcG5VQ0h5byttN2Mwd0ZNaS9lYVd0dnpQZGM1QlJHUVNuREwwOGhv?=
- =?utf-8?B?TEVtNlR0VmVnZ2VrMGg2NXREeVMzOFFESXFkcTNQL2p4bmQvNitiYUpqM0RK?=
- =?utf-8?B?OUk3WTZjWUNMcmRLNyt6N0tUcWhZSy9KcVBLU1BJazhKY05XbENMNUUzNXpa?=
- =?utf-8?B?amNFMDFhZy8yTHJiSjNkMjVwTVlYbjVJS2hDZ3RxTWEyQmdMRmJIQjZHQzUz?=
- =?utf-8?B?WW5LT2lHOEMydWJrQVpaYTQ3QXRrMG5oeUgwQlk2bGhjQk5vd21XVkowaDR0?=
- =?utf-8?B?STZieWIzcFA4WXNhbnFsQXFqNnJmcTI5ejJjUmRxNGxJdnpQYmVOTVFHRTVs?=
- =?utf-8?Q?SeXuJCGi4j93O6i2Q+HZJww=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fcbe571b-175d-460d-533f-08d9d4548bd7
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1201MB0192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2022 16:16:24.0465
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Llu2K+HeYkQQXkJ67C37fed4/enWeVrX4LCUdEPnuNIkSWQ6MQqSZwRM1wlnf3vv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4474
+In-Reply-To: <CAPhsuW4Ua2hDs5WMtF0s_CQki-ZdYMvkU2s+Nc7Rvs=-D6WL=Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 10.01.22 um 17:08 schrieb Deucher, Alexander:
-> [Public]
->
->> -----Original Message-----
->> From: Len Brown <lenb417@gmail.com> On Behalf Of Len Brown
->> Sent: Sunday, January 9, 2022 1:12 PM
->> To: torvalds@linux-foundation.org
->> Cc: linux-pm@vger.kernel.org; linux-kernel@vger.kernel.org; Len Brown
->> <len.brown@intel.com>; Chen, Guchun <Guchun.Chen@amd.com>;
->> Grodzovsky, Andrey <Andrey.Grodzovsky@amd.com>; Koenig, Christian
->> <Christian.Koenig@amd.com>; Deucher, Alexander
->> <Alexander.Deucher@amd.com>; stable@vger.kernel.org
->> Subject: [PATCH REGRESSION] Revert "drm/amdgpu: stop scheduler when
->> calling hw_fini (v2)"
+On 1/7/22 11:46 AM, Song Liu wrote:
+> On Fri, Jan 7, 2022 at 6:13 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
 >>
->> From: Len Brown <len.brown@intel.com>
+>> On 12/29/21 4:56 PM, David Vernet wrote:
+>>> For example, under certain workloads, enabling a KLP patch with
+>>> many objects or functions may cause ksoftirqd to be starved, and thus for
+>>> interrupts to be backlogged and delayed.
 >>
->> This reverts commit f7d6779df642720e22bffd449e683bb8690bd3bf.
->>
->> This bisected regression has impacted suspend-resume stability since 5.15-
->> rc1. It regressed -stable via 5.14.10.
->>
->> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fbugz
->> illa.kernel.org%2Fshow_bug.cgi%3Fid%3D215315&amp;data=04%7C01%7Cal
->> exander.deucher%40amd.com%7Ccf790be4827f4df9f2d808d9d39b81af%7C3
->> dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637773487569442716%7C
->> Unknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJB
->> TiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=AX0TXkyoMhy%2BZqE
->> VgRSWMkKd5nPa4WOv%2B1FZHLSErSw%3D&amp;reserved=0
->>
->> Fixes: f7d6779df64 ("drm/amdgpu: stop scheduler when calling hw_fini (v2)")
->> Cc: Guchun Chen <guchun.chen@amd.com>
->> Cc: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
->> Cc: Christian Koenig <christian.koenig@amd.com>
->> Cc: Alex Deucher <alexander.deucher@amd.com>
->> Cc: <stable@vger.kernel.org> # 5.14+
->> Signed-off-by: Len Brown <len.brown@intel.com>
-> @Chen, Guchun, @Grodzovsky, Andrey, @Koenig, Christian
->
-> Any ideas?  What's the consequence of reverting this patch?  Didn't this patch fix another suspend/resume issue?
+>> Just curious, approximately how many objects/functions does it take to
+>> hit this condition?  While the livepatching kselftests are more about
+>> API and kernel correctness, this sounds like an interesting test case
+>> for some of the other (out of tree) test suites.
+> 
+> Not many patched functions. We only do small fixes at the moment. In the recent
+> example, we hit the issue with ~10 patched functions. Another version
+> with 2 to 3
+> patched function seems fine.
+> 
+> Yes, I think this is an important test case.
+> 
 
-I think Guchun was just trying to adapt that we removed the scheduler 
-stop from the fence driver hw fini path.
+Thanks, Song.  If you can share any test setup details, I'll pass those
+along to our internal QE group.  And once merged, we'll be adding this
+one to the list of backports for our distro.
 
-Not sure if that actually fixed something or was just a precaution.
-
-Regards,
-Christian.
-
->
-> Alex
->
->> ---
->>   drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c | 8 --------
->>   1 file changed, 8 deletions(-)
->>
->> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
->> b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
->> index 9afd11ca2709..45977a72b5dd 100644
->> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
->> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_fence.c
->> @@ -547,9 +547,6 @@ void amdgpu_fence_driver_hw_fini(struct
->> amdgpu_device *adev)
->>   		if (!ring || !ring->fence_drv.initialized)
->>   			continue;
->>
->> -		if (!ring->no_scheduler)
->> -			drm_sched_stop(&ring->sched, NULL);
->> -
->>   		/* You can't wait for HW to signal if it's gone */
->>   		if (!drm_dev_is_unplugged(adev_to_drm(adev)))
->>   			r = amdgpu_fence_wait_empty(ring);
->> @@ -609,11 +606,6 @@ void amdgpu_fence_driver_hw_init(struct
->> amdgpu_device *adev)
->>   		if (!ring || !ring->fence_drv.initialized)
->>   			continue;
->>
->> -		if (!ring->no_scheduler) {
->> -			drm_sched_resubmit_jobs(&ring->sched);
->> -			drm_sched_start(&ring->sched, true);
->> -		}
->> -
->>   		/* enable the interrupt */
->>   		if (ring->fence_drv.irq_src)
->>   			amdgpu_irq_get(adev, ring->fence_drv.irq_src,
->> --
->> 2.25.1
+-- 
+Joe
 
