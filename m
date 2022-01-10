@@ -2,122 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B69E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 667E7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:59:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244336AbiAJK6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:58:07 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:46800 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244301AbiAJK6D (ORCPT
+        id S244342AbiAJK7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:59:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244347AbiAJK7f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:58:03 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id D15F621127;
-        Mon, 10 Jan 2022 10:58:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1641812282; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nBHGZKrvzpx27LUU5EbRQT8a0DqomXiI3hKsTWEbZ5Y=;
-        b=jD+SUF7CH8cX8gSrmXD+d0chcnVdNr0stZHr/LXSHokDm6xQE87epsb1f9biDxBP3b6s27
-        XjXMnBiPw0a42+etsAiUo/nW1mStRCTjIqHdpzU1UQvY9WJ5Of1IBRYTP3bxPKOEW07Kry
-        Pg8NQZwjFUafbMr/XwlnwXZrpPmwWAo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1641812282;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nBHGZKrvzpx27LUU5EbRQT8a0DqomXiI3hKsTWEbZ5Y=;
-        b=mIV0lo/NlwmbfOap/8Mp0qHVBXwui0xETxwGVQ0Ivyo8NdJWQRuBSLHJuhFxUfURwWtEka
-        8wSAlRfJzxkrI4BQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BA1CD13A98;
-        Mon, 10 Jan 2022 10:58:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Q+EzLDoR3GGlXwAAMHmgww
-        (envelope-from <bp@suse.de>); Mon, 10 Jan 2022 10:58:02 +0000
-Date:   Mon, 10 Jan 2022 11:58:10 +0100
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] x86/mm for v5.17
-Message-ID: <YdwRQtklg28Rlwnf@zn.tnic>
+        Mon, 10 Jan 2022 05:59:35 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF389C06173F;
+        Mon, 10 Jan 2022 02:59:34 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id h11so703100uar.5;
+        Mon, 10 Jan 2022 02:59:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Pyr2Zb4j02PsgvvNoNyOvWlod9U9+4JSnC74+5rak8Q=;
+        b=YyQ506hwqXXe8clqnSFa983M9zu/XTmA4qYrFQNJpM+4qoeJFvFIvdzPLl4VJVyctv
+         QqAXW2hrYyksTQGMFAXkpU91IH/VLZihHw79TpCMMAMgMJco1v9puEJXk7+lhemAKas1
+         V+NeVQ0iZyy7rRoR/Zu8CKDxjLP64FPfc8jbDNYsSqLD9XsXEEPtkOjoSyuGM9fkiS6u
+         Cy0LEZSSUmzaABRV0HfjrGMB30xYKwUSiksibyHJ29eQpavDM7+do/jySLVE5MIjOkDf
+         FowiZnoXk6zgwYHZvit5AxB0G83ZXFa3rmK5VmxrpfBGz+QK5Ol9Q7XUHMcfIl4kHSgH
+         jKIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Pyr2Zb4j02PsgvvNoNyOvWlod9U9+4JSnC74+5rak8Q=;
+        b=1wlWjF0H7I9wTaE9qgc0JuNvTAC9bGumZCibpWEwPRmsmJ0/rMt7PHoupSVVME/HHf
+         /h8FRcMsJR1gCyRpEF657aFsC+if9ujL71bTffGD/89V7I91jfANptHUxuQCZD55ieep
+         O87TE0U/WC5B8lJJKdFUhskU6h0F0vkumbro/JFb5xP7YWKsTm2QdbaiWMxibOje4nqw
+         DaAj6AwgBIScdN5RlHYCMngfRVKYontS3uO+lrkc8DCc2JUrOdAfPcI+4TiPlJ9RG7PH
+         5j1F+KhyQFL2EXhkS0wce9YMsW37uOreJOi6SHtGMJRoH+KZKpr1vbbFW0tuXA9WKKTg
+         RcDg==
+X-Gm-Message-State: AOAM530sGryHtKbI0yUHMA92b+oNKqfsG6K0L6pK+w3sXOoRt/dCetlg
+        T1xUQ/9BWxq7nWQSZU1yZoEy/F9iJqfo19R521U=
+X-Google-Smtp-Source: ABdhPJzNC5Xto+6tTHLSaWjQV0UE4a2ufJIsEM38VWdwK4FT0ZrmU5mE9sbtMvpdllGygej3DVycShZmNO0+zFIeetc=
+X-Received: by 2002:a05:6102:dc9:: with SMTP id e9mr24288454vst.17.1641812374133;
+ Mon, 10 Jan 2022 02:59:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20220110083910.1351020-1-sergio.paracuellos@gmail.com>
+ <20220110083910.1351020-4-sergio.paracuellos@gmail.com> <5368e89c391e1329ed2be6496655f1bb50acfd19.camel@pengutronix.de>
+ <CAMhs-H_gjW_6p6yBWf+k2PBym4N+k+rBEXR9S8c13NU-UWD4VQ@mail.gmail.com> <12b7e367e8323f6da7bb548dbbae0d342608e52b.camel@pengutronix.de>
+In-Reply-To: <12b7e367e8323f6da7bb548dbbae0d342608e52b.camel@pengutronix.de>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Mon, 10 Jan 2022 11:59:22 +0100
+Message-ID: <CAMhs-H_cCFsMs5VTrrNROBpfnwsXNLGGCFHSu2sJ8N-cxYV8aA@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] clk: ralink: make system controller node a reset provider
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        Greg KH <gregkh@linuxfoundation.org>,
+        NeilBrown <neil@brown.name>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Mon, Jan 10, 2022 at 11:23 AM Philipp Zabel <p.zabel@pengutronix.de> wrote:
+>
+> On Mon, 2022-01-10 at 10:39 +0100, Sergio Paracuellos wrote:
+> [...]
+> > > Is this known to work for all possible users, without delay between
+> > > assert and deassert?
+> >
+> > It seems it is. This is based on the original reset implementation for
+> > ralink. See:
+> >
+> > https://elixir.bootlin.com/linux/v5.16/source/arch/mips/ralink/reset.c#L55
+> >
+> > > Are there any users of the reset_control_reset() API at all? This API
+> > > was added for self-clearing reset bits, so if there are no users that
+> > > need to pretend this is a reset pulse at the hardware level (there may
+> > > be), I'd prefer if this was just left out.
+> >
+> > I am not following you here. What do you mean?
+>
+> Looking at drivers/staging/mt7621-dts/mt7621.dtsi, it appears the
+> current reset users are:
+>   mediatek,mt7621-i2c
+>   ralink,mt7621-spi
+>   ralink,rt3883-gdma
+>   mediatek,mt7621-hsdma
+>   mediatek,mt7621-eth
+>   mediatek,mt7621
+>   mediatek,mt7621-pci
+>
+> Many of the corresponding drivers use device_reset(), which is a
+> shorthand for requesting a reset control and calling
+> reset_control_reset() on it. That will call mt7621_reset_device, so it
+> is indeed used.
+>
 
-please pull the set of x86/mm changes for 5.17.
+Ok, pretty clear now, thanks for clarification :).
 
-Thx.
+> regards
+> Philipp
 
----
-
-The following changes since commit d58071a8a76d779eedab38033ae4c821c30295a5:
-
-  Linux 5.16-rc3 (2021-11-28 14:09:19 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_mm_for_v5.17_rc1
-
-for you to fetch changes up to b64dfcde1ca9cb82e38e573753f0c0db8fb841c2:
-
-  x86/mm: Prevent early boot triple-faults with instrumentation (2021-12-22 11:51:20 +0100)
-
-----------------------------------------------------------------
-- Flush *all* mappings from the TLB after switching to the trampoline
-pagetable to prevent any stale entries' presence
-
-- Flush global mappings from the TLB, in addition to the CR3-write,
-after switching off of the trampoline_pgd during boot to clear the
-identity mappings
-
-- Prevent instrumentation issues resulting from the above changes
-
-----------------------------------------------------------------
-Borislav Petkov (1):
-      x86/mm: Prevent early boot triple-faults with instrumentation
-
-Ingo Molnar (1):
-      x86/mm: Add missing <asm/cpufeatures.h> dependency to <asm/page_64.h>
-
-Joerg Roedel (3):
-      x86/realmode: Add comment for Global bit usage in trampoline_pgd
-      x86/mm/64: Flush global TLB on boot and AP bringup
-      x86/mm: Flush global TLB when switching to trampoline page-table
-
-Sebastian Andrzej Siewior (1):
-      x86/mm: Include spinlock_t definition in pgtable.
-
- arch/x86/include/asm/page_64.h  |  1 +
- arch/x86/include/asm/pgtable.h  |  1 +
- arch/x86/include/asm/realmode.h |  1 +
- arch/x86/include/asm/tlbflush.h |  5 +++++
- arch/x86/kernel/cpu/common.c    |  2 +-
- arch/x86/kernel/head64.c        | 14 ++++++++++++++
- arch/x86/kernel/head_64.S       | 19 ++++++++++++++++++-
- arch/x86/kernel/reboot.c        | 12 ++----------
- arch/x86/mm/init.c              |  5 +++++
- arch/x86/mm/tlb.c               |  8 ++------
- arch/x86/realmode/init.c        | 26 ++++++++++++++++++++++++++
- 11 files changed, 76 insertions(+), 18 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
+Best regards,
+    Sergio Paracuellos
