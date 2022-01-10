@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8862C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:26:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238498AbiAJE0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36656 "EHLO
+        id S238589AbiAJE0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:26:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238551AbiAJEYr (ORCPT
+        with ESMTP id S238658AbiAJEYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 23:24:47 -0500
+        Sun, 9 Jan 2022 23:24:54 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3654C061201
-        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33239C06173F
+        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=/mKomX3uXiZG7krGrOYnz6hJemX5OW1n+xjyCfpBJys=; b=a+pmaVeLJi8SRHS5L7Dmup8EfI
-        2Nsn3zM4iQfxtuZc0F+2ox0aylv0ROJxj6j+/0/YRSBk8bdqF/Js/jkheepU4xFCwlCqSafOo1kBC
-        CmnDDcwxdecjjSCy5j4PCjipzr8m+UYAtqmsXVrU7MeC8Y2k5a8hOGFfDTSW0y1QshGRHnLBAynJ3
-        R/EcAV18PSYHlf7fr3+xRy51kcSev0z3bPVPQlqluI3IlARSIoqqlbaXvePozuIKaCyFsuN39gR1y
-        8t672VdTzDDI9o7KCcm08Si2loC7UJ4T3XmiHaept+7O6n4Dwkb8SCamVEAvgMjnYtMrbrPIiJdar
-        lE1BtiUA==;
+        bh=8C3hUhjCGJ2Sdk9gK8xC03PTtTrcCZ/ERUofNnCUuq0=; b=bcS4FwNQbPo7ETR9B5dTcak8o1
+        MF2eSv6wiCnWc63DybJky7QZlDMkktmdQuJDgJcBCVo+tlYbuzp4WhHd1o9huxTeqgfkcCugweGYP
+        gqTHByJSSStlrJazHskBOCGem9kIh1fzgaOvfDyCl9xN7pUCFyE5JowreUCy+8ESnLI40DXcyKRIX
+        PFosyUxUrqzjI8XE4dsZU+x894HS9y3PwzR7QIMWUepl8eIIEhiJbJkAH29JfE6k94S4GTS1mQg6F
+        mdIsdT/h+YjPWErGXlAFdxrKlkxuiREifCZtqAVSC/2Y0xG/mxTUSwrGWKB0nNmlq0XOi4Qmxh3tP
+        Yp3tCFHw==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6mE8-0025wc-B3; Mon, 10 Jan 2022 04:24:12 +0000
+        id 1n6mE8-0025wU-1G; Mon, 10 Jan 2022 04:24:12 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 06/28] gup: Fix some contiguous memmap assumptions
-Date:   Mon, 10 Jan 2022 04:23:44 +0000
-Message-Id: <20220110042406.499429-7-willy@infradead.org>
+Subject: [PATCH v2 02/28] gup: Remove for_each_compound_head()
+Date:   Mon, 10 Jan 2022 04:23:40 +0000
+Message-Id: <20220110042406.499429-3-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
@@ -46,76 +46,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Several functions in gup.c assume that a compound page has virtually
-contiguous page structs.  This isn't true for SPARSEMEM configs unless
-SPARSEMEM_VMEMMAP is also set.  Fix them by using nth_page() instead of
-plain pointer arithmetic.
+This macro doesn't simplify the users; it's easier to just call
+compound_next() inside a standard loop.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/gup.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ mm/gup.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
 diff --git a/mm/gup.c b/mm/gup.c
-index 8a0ea220ced1..9c0a702a4e03 100644
+index 7a07e0c00bf5..86f8d843de72 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -235,7 +235,7 @@ static inline struct page *compound_range_next(unsigned long i,
- 	struct page *next, *page;
- 	unsigned int nr = 1;
+@@ -253,9 +253,6 @@ static inline void compound_next(unsigned long i, unsigned long npages,
+ 	struct page *page;
+ 	unsigned int nr;
  
--	next = start + i;
-+	next = nth_page(start, i);
- 	page = compound_head(next);
- 	if (PageHead(page))
- 		nr = min_t(unsigned int,
-@@ -2430,8 +2430,8 @@ static int record_subpages(struct page *page, unsigned long addr,
- {
- 	int nr;
- 
--	for (nr = 0; addr != end; addr += PAGE_SIZE)
--		pages[nr++] = page++;
-+	for (nr = 0; addr != end; nr++, addr += PAGE_SIZE)
-+		pages[nr] = nth_page(page, nr);
- 
- 	return nr;
+-	if (i >= npages)
+-		return;
+-
+ 	page = compound_head(list[i]);
+ 	for (nr = i + 1; nr < npages; nr++) {
+ 		if (compound_head(list[nr]) != page)
+@@ -266,12 +263,6 @@ static inline void compound_next(unsigned long i, unsigned long npages,
+ 	*ntails = nr - i;
  }
-@@ -2466,7 +2466,7 @@ static int gup_hugepte(pte_t *ptep, unsigned long sz, unsigned long addr,
- 	VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
  
- 	head = pte_page(pte);
--	page = head + ((addr & (sz-1)) >> PAGE_SHIFT);
-+	page = nth_page(head, (addr & (sz-1)) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
- 
- 	head = try_grab_compound_head(head, refs, flags);
-@@ -2526,7 +2526,7 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
- 					     pages, nr);
+-#define for_each_compound_head(__i, __list, __npages, __head, __ntails) \
+-	for (__i = 0, \
+-	     compound_next(__i, __npages, __list, &(__head), &(__ntails)); \
+-	     __i < __npages; __i += __ntails, \
+-	     compound_next(__i, __npages, __list, &(__head), &(__ntails)))
+-
+ /**
+  * unpin_user_pages_dirty_lock() - release and optionally dirty gup-pinned pages
+  * @pages:  array of pages to be maybe marked dirty, and definitely released.
+@@ -306,7 +297,8 @@ void unpin_user_pages_dirty_lock(struct page **pages, unsigned long npages,
+ 		return;
  	}
  
--	page = pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
-+	page = nth_page(pmd_page(orig), (addr & ~PMD_MASK) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
+-	for_each_compound_head(index, pages, npages, head, ntails) {
++	for (index = 0; index < npages; index += ntails) {
++		compound_next(index, npages, pages, &head, &ntails);
+ 		/*
+ 		 * Checking PageDirty at this point may race with
+ 		 * clear_page_dirty_for_io(), but that's OK. Two key
+@@ -394,8 +386,10 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
+ 	if (WARN_ON(IS_ERR_VALUE(npages)))
+ 		return;
  
- 	head = try_grab_compound_head(pmd_page(orig), refs, flags);
-@@ -2560,7 +2560,7 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
- 					     pages, nr);
- 	}
+-	for_each_compound_head(index, pages, npages, head, ntails)
++	for (index = 0; index < npages; index += ntails) {
++		compound_next(index, npages, pages, &head, &ntails);
+ 		put_compound_head(head, ntails, FOLL_PIN);
++	}
+ }
+ EXPORT_SYMBOL(unpin_user_pages);
  
--	page = pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
-+	page = nth_page(pud_page(orig), (addr & ~PUD_MASK) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
- 
- 	head = try_grab_compound_head(pud_page(orig), refs, flags);
-@@ -2589,7 +2589,7 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
- 
- 	BUILD_BUG_ON(pgd_devmap(orig));
- 
--	page = pgd_page(orig) + ((addr & ~PGDIR_MASK) >> PAGE_SHIFT);
-+	page = nth_page(pgd_page(orig), (addr & ~PGDIR_MASK) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
- 
- 	head = try_grab_compound_head(pgd_page(orig), refs, flags);
 -- 
 2.33.0
 
