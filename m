@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 142DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A514FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240474AbiAJHmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:42:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241488AbiAJHfw (ORCPT
+        id S240094AbiAJHmN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:42:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41718 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239828AbiAJHdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:35:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CF57C028BE8;
-        Sun,  9 Jan 2022 23:30:57 -0800 (PST)
+        Mon, 10 Jan 2022 02:33:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3EEA60B03;
-        Mon, 10 Jan 2022 07:30:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDA80C36AE9;
-        Mon, 10 Jan 2022 07:30:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF692611C0;
+        Mon, 10 Jan 2022 07:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97598C36AED;
+        Mon, 10 Jan 2022 07:33:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799856;
-        bh=rQWPm9cXJfuksOaoRvd/2G82SysMisSSSu3E4i638IY=;
+        s=korg; t=1641799992;
+        bh=twezZ0T1oF934WqErVlqXAgbsR0+9X2fsgYIG7ynZOo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvBvtDJ0/dw2rINOlz+3YiPoeIuDIRWaQ7axTU8HqSZLFTZYTUcNonKFBXaIflljv
-         LgxQIqqlGzJtfpQRbwAnfSzm7e7oEkt9YmILAKC3AVgnSXDWYK4M6jnoCXK8M+rQfi
-         wjiDG43EQM7OYPc/lS7LuYQHkr58rnWen36JIOBA=
+        b=AzhUsT1myRIkUkcDr/S3b+o6IA0JSh91OpzPLA8hFG9GPtb3/UT7b8ol6iUoDRP7n
+         ipE8eNXV6Z4mYh4i7GuReOJX2lBGnNjlOV81tfaIZ7nKIoEm2aZOJjduVX+E7x7dxl
+         G/mlOMgACXWu4zUtwK8NYJI/OxRjkOjCjHF7BVhM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 38/43] atlantic: Fix buff_ring OOB in aq_ring_rx_clean
-Date:   Mon, 10 Jan 2022 08:23:35 +0100
-Message-Id: <20220110071818.634747403@linuxfoundation.org>
+        stable@vger.kernel.org, Vasant Hegde <vasant.hegde@amd.com>,
+        Nikunj A Dadhania <nikunj@amd.com>,
+        Peter Xu <peterx@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.15 34/72] KVM: x86: Check for rmaps allocation
+Date:   Mon, 10 Jan 2022 08:23:11 +0100
+Message-Id: <20220110071822.706749841@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-References: <20220110071817.337619922@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,83 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Nikunj A Dadhania <nikunj@amd.com>
 
-[ Upstream commit 5f50153288452e10b6edd69ec9112c49442b054a ]
+commit fffb5323780786c81ba005f8b8603d4a558aad28 upstream.
 
-The function obtain the next buffer without boundary check.
-We should return with I/O error code.
+With TDP MMU being the default now, access to mmu_rmaps_stat debugfs
+file causes following oops:
 
-The bug is found by fuzzing and the crash report is attached.
-It is an OOB bug although reported as use-after-free.
+BUG: kernel NULL pointer dereference, address: 0000000000000000
+PGD 0 P4D 0
+Oops: 0000 [#1] PREEMPT SMP NOPTI
+CPU: 7 PID: 3185 Comm: cat Not tainted 5.16.0-rc4+ #204
+RIP: 0010:pte_list_count+0x6/0x40
+ Call Trace:
+  <TASK>
+  ? kvm_mmu_rmaps_stat_show+0x15e/0x320
+  seq_read_iter+0x126/0x4b0
+  ? aa_file_perm+0x124/0x490
+  seq_read+0xf5/0x140
+  full_proxy_read+0x5c/0x80
+  vfs_read+0x9f/0x1a0
+  ksys_read+0x67/0xe0
+  __x64_sys_read+0x19/0x20
+  do_syscall_64+0x3b/0xc0
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+ RIP: 0033:0x7fca6fc13912
 
-[    4.804724] BUG: KASAN: use-after-free in aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.805661] Read of size 4 at addr ffff888034fe93a8 by task ksoftirqd/0/9
-[    4.806505]
-[    4.806703] CPU: 0 PID: 9 Comm: ksoftirqd/0 Tainted: G        W         5.6.0 #34
-[    4.809030] Call Trace:
-[    4.809343]  dump_stack+0x76/0xa0
-[    4.809755]  print_address_description.constprop.0+0x16/0x200
-[    4.810455]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.811234]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.813183]  __kasan_report.cold+0x37/0x7c
-[    4.813715]  ? aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.814393]  kasan_report+0xe/0x20
-[    4.814837]  aq_ring_rx_clean+0x1e88/0x2730 [atlantic]
-[    4.815499]  ? hw_atl_b0_hw_ring_rx_receive+0x9a5/0xb90 [atlantic]
-[    4.816290]  aq_vec_poll+0x179/0x5d0 [atlantic]
-[    4.816870]  ? _GLOBAL__sub_I_65535_1_aq_pci_func_init+0x20/0x20 [atlantic]
-[    4.817746]  ? __next_timer_interrupt+0xba/0xf0
-[    4.818322]  net_rx_action+0x363/0xbd0
-[    4.818803]  ? call_timer_fn+0x240/0x240
-[    4.819302]  ? __switch_to_asm+0x40/0x70
-[    4.819809]  ? napi_busy_loop+0x520/0x520
-[    4.820324]  __do_softirq+0x18c/0x634
-[    4.820797]  ? takeover_tasklets+0x5f0/0x5f0
-[    4.821343]  run_ksoftirqd+0x15/0x20
-[    4.821804]  smpboot_thread_fn+0x2f1/0x6b0
-[    4.822331]  ? smpboot_unregister_percpu_thread+0x160/0x160
-[    4.823041]  ? __kthread_parkme+0x80/0x100
-[    4.823571]  ? smpboot_unregister_percpu_thread+0x160/0x160
-[    4.824301]  kthread+0x2b5/0x3b0
-[    4.824723]  ? kthread_create_on_node+0xd0/0xd0
-[    4.825304]  ret_from_fork+0x35/0x40
+Return early when rmaps are not present.
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Vasant Hegde <vasant.hegde@amd.com>
+Tested-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
+Reviewed-by: Peter Xu <peterx@redhat.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220105040337.4234-1-nikunj@amd.com>
+Cc: stable@vger.kernel.org
+Fixes: 3bcd0662d66f ("KVM: X86: Introduce mmu_rmaps_stat per-vm debugfs file")
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/x86/kvm/debugfs.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 24122ccda614c..72f8751784c31 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -365,6 +365,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		if (!buff->is_eop) {
- 			buff_ = buff;
- 			do {
-+				if (buff_->next >= self->size) {
-+					err = -EIO;
-+					goto err_exit;
-+				}
- 				next_ = buff_->next,
- 				buff_ = &self->buff_ring[next_];
- 				is_rsc_completed =
-@@ -388,6 +392,10 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 			    (buff->is_lro && buff->is_cso_err)) {
- 				buff_ = buff;
- 				do {
-+					if (buff_->next >= self->size) {
-+						err = -EIO;
-+						goto err_exit;
-+					}
- 					next_ = buff_->next,
- 					buff_ = &self->buff_ring[next_];
+--- a/arch/x86/kvm/debugfs.c
++++ b/arch/x86/kvm/debugfs.c
+@@ -95,6 +95,9 @@ static int kvm_mmu_rmaps_stat_show(struc
+ 	unsigned int *log[KVM_NR_PAGE_SIZES], *cur;
+ 	int i, j, k, l, ret;
  
--- 
-2.34.1
-
++	if (!kvm_memslots_have_rmaps(kvm))
++		return 0;
++
+ 	ret = -ENOMEM;
+ 	memset(log, 0, sizeof(log));
+ 	for (i = 0; i < KVM_NR_PAGE_SIZES; i++) {
 
 
