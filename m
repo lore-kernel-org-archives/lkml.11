@@ -2,90 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C12C0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:43:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED77C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244974AbiAJLnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:43:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244923AbiAJLlp (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S244998AbiAJLnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:43:23 -0500
+Received: from mga07.intel.com ([134.134.136.100]:47836 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S244977AbiAJLlp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 06:41:45 -0500
-Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26C6C061748;
-        Mon, 10 Jan 2022 03:41:40 -0800 (PST)
-Received: by mail-vk1-xa31.google.com with SMTP id l68so7933157vkh.4;
-        Mon, 10 Jan 2022 03:41:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o514X0rKQeZG8KSvRY+nluj6/Uqn5RzfGG2pNIWGbz4=;
-        b=RpCR4VRmypfzEIS8sdD+1MhtREHywwBRPMt1/4Vdazr0+FzTXAt38nFlsbttcS8Wvi
-         TRYpoJG0BrtM7IohqSEz2/6nlqsWxxyQ9MliDTfrU3U3bdc3GkSnFtP2xqF/anNxLXx1
-         h0XwTGzjpWFiPHTkLDRA5dZcApaQicti+hCmqjoLaA8UgAQBm+Q+Td/nICeoAMLQ6pdy
-         v1x8txQ7cL3puqHqS9fVtaFUsuTYATEjkOzWmtKIbKvksqHXcrx8LOF9FVTVxbf7cAVv
-         /4DShyncvzHu0mzERufmEgc5EB0z9saOD56LzfCy4StafwXbSug3q/3mR1CkZLjPGVH6
-         MKTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o514X0rKQeZG8KSvRY+nluj6/Uqn5RzfGG2pNIWGbz4=;
-        b=XmLy2yZJeVGc+RkBEmximTRYsHJ70f96uTrYHpPUmIw55BgrBhaKEH+dj82SGENHL/
-         9Ik6peIlrT2kzLjxp5YEoBpZp4f3QgTPIcxmscGBYBGba0aiCXywaK4CvPBnyCcW9sPm
-         ezhKN3eyZ6SKEcA2LrsB3oYwPyYgE6C/6sXAoZ8FE35ObQ24wsJkWqzhfGjFMO+ZKPFF
-         uqWkFP4HpN46xGDc2QPH/cLACN5UKkDgxbY4ew0LeOBYF81PbVrSLafUeiHHYyqiNkpb
-         EjHw4V2yqVHyrvwPHYoUbICQtx9s/qVwVIqJ+O470ecHISS9aZcDVgWzkqiL7gFyuvaL
-         PToQ==
-X-Gm-Message-State: AOAM530222oUalvcpgdPMaUknLqzebwVbDQlo9ctBJJ44QcbhTW85HUn
-        +/bUMGSWEwWH05jLKkA9W4or892ABmpt+DizMbc=
-X-Google-Smtp-Source: ABdhPJwGvgloBmQRKWa/zPp77xHXFYqA0ZwE902jyWdNhXjMW3gmdy6XXREboy+aLz0EFPk6dJtdPde83fOIupvAaj0=
-X-Received: by 2002:a05:6122:513:: with SMTP id x19mr15038756vko.19.1641814900003;
- Mon, 10 Jan 2022 03:41:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641814905; x=1673350905;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FmoJ3y7OcdqB18NHcTkTeuKKIfdDfKWzmCti7xacieg=;
+  b=J5YOlX5FoBGlk2f4q6FOhwHstLln+woYgH+hSjE1HgpEl2zfjRZW2oSr
+   gfwMgQNvCdZDsS2XvZMNBzbEBsU84GePZb2QZR+ej2sjlu/lGOQamGy+R
+   NtUcC5SStWdRbaI/BKu5iI+CM2jGRm3O+PTY5X+Y/kj01bFlOYArbcuBL
+   OvrTZGoqT7el2Jvy4OoDIYZZruN41qkLHYRTbOuDxj+pGqLuBtNrJEw1d
+   xVBFTp3cvrnRzw8KxsywXkGnn3fF8+LqlnWSv0t6JUJyibWL63dq28/ed
+   wNxF5PAWBcMtab1Y0HNN9WWOJ4fZncPUsp/N+KuMlBVOLvmBHRrBYUsN/
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="306563048"
+X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
+   d="scan'208";a="306563048"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 03:41:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
+   d="scan'208";a="690549113"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 10 Jan 2022 03:41:40 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n6t3T-00038Q-LQ; Mon, 10 Jan 2022 11:41:39 +0000
+Date:   Mon, 10 Jan 2022 19:40:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Li-hao Kuo <lhjeff911@gmail.com>, p.zabel@pengutronix.de,
+        broonie@kernel.org, andyshevchenko@gmail.com, robh+dt@kernel.org,
+        linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, wells.lu@sunplus.com, lh.kuo@sunplus.com,
+        Li-hao Kuo <lhjeff911@gmail.com>
+Subject: Re: [PATCH v5 1/2] SPI: Add SPI driver for Sunplus SP7021
+Message-ID: <202201101911.hSqY5DkA-lkp@intel.com>
+References: <761604f7aa4d4df16637103ba10d34674faf3d9b.1641797029.git.lhjeff911@gmail.com>
 MIME-Version: 1.0
-References: <20220110111036.1380288-1-sergio.paracuellos@gmail.com>
- <20220110111036.1380288-4-sergio.paracuellos@gmail.com> <c88e81067826f04e2301b52eddb84ec84bbd1c9d.camel@pengutronix.de>
-In-Reply-To: <c88e81067826f04e2301b52eddb84ec84bbd1c9d.camel@pengutronix.de>
-From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Date:   Mon, 10 Jan 2022 12:41:28 +0100
-Message-ID: <CAMhs-H9q=hP2GMU5QEU5791HfcCchrek6m9L4UdKzMyLg4nZBw@mail.gmail.com>
-Subject: Re: [PATCH v7 3/4] clk: ralink: make system controller node a reset provider
-To:     Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
-        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
-        Greg KH <gregkh@linuxfoundation.org>,
-        NeilBrown <neil@brown.name>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <761604f7aa4d4df16637103ba10d34674faf3d9b.1641797029.git.lhjeff911@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 12:37 PM Philipp Zabel <p.zabel@pengutronix.de> wrote:
->
-> On Mon, 2022-01-10 at 12:10 +0100, Sergio Paracuellos wrote:
-> [...]
-> > +static int mt7621_rst_xlate(struct reset_controller_dev *rcdev,
-> > +                         const struct of_phandle_args *reset_spec)
-> > +{
-> > +     unsigned long id = reset_spec->args[0];
-> > +
-> > +     if (id == MT7621_RST_SYS)
->
->         if (id == MT7621_RST_SYS || id >= rcdev->nr_resets)
->
-> I forgot to mention that with .of_xlate set, the driver needs to check
-> whether id < nr_resets on its own.
+Hi Li-hao,
 
-Oh, ok. I checked 'drivers/reset/reset-k210.c' as example and there
-was only a similar check that I sent. Let me add this also and send
-v8.
+I love your patch! Yet something to improve:
 
-Best regards,
-    Sergio Paracuellos
->
-> regards
-> Philipp
+[auto build test ERROR on broonie-spi/for-next]
+[also build test ERROR on pza/reset/next robh/for-next linus/master v5.16]
+[cannot apply to next-20220110]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Li-hao-Kuo/Add-SPI-control-driver-for-Sunplus-SP7021-SoC/20220110-144745
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220110/202201101911.hSqY5DkA-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/53da1eda2d6e7a04e09dcb37a029ec3b384b7afb
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Li-hao-Kuo/Add-SPI-control-driver-for-Sunplus-SP7021-SoC/20220110-144745
+        git checkout 53da1eda2d6e7a04e09dcb37a029ec3b384b7afb
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> make[3]: *** No rule to make target 'drivers/spi/spi-sunplus-sp7021.o', needed by 'drivers/spi/built-in.a'.
+   make[3]: Target '__build' not remade because of errors.
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
