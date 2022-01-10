@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51514C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 719AAC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243417AbiAJHpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:45:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50758 "EHLO
+        id S243469AbiAJHp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240776AbiAJHgg (ORCPT
+        with ESMTP id S240330AbiAJHgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:36:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F74C0251A3;
-        Sun,  9 Jan 2022 23:32:05 -0800 (PST)
+        Mon, 10 Jan 2022 02:36:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8EB4C02519B;
+        Sun,  9 Jan 2022 23:31:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 750FFB81202;
-        Mon, 10 Jan 2022 07:32:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDDF1C36AED;
-        Mon, 10 Jan 2022 07:32:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F58E60B64;
+        Mon, 10 Jan 2022 07:31:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C3FC36AEF;
+        Mon, 10 Jan 2022 07:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799923;
-        bh=IgaNca044pcUxKWG04sEz3nqiptzZciBf1nFhrSMZsc=;
+        s=korg; t=1641799914;
+        bh=ozMljWCXRk0xRH33Ws1uj19s4rejF6ZOu7s6mtdRefk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g/a9D3nCo8nAV+wwdZnydYUTFnMurYHP30FB0ngAtveLIuppaosjTuGuVUkWzgdZh
-         I/pNid6wxVNVMDQ9gvG6kHe87hV9EPsQDKNOmklukOvE/RiuYmRJcFx8jlPo6x1mg5
-         38QBbpDPqTf0B6pfs2dRblpUtBKZPTXAdBVv8Elg=
+        b=P//3iS7FWIkKYEM3bgLJ5zqW3M/vSjQnHj0H+Pz8peYenOEi7Be7uTxCVl4zOECg2
+         yJM7NsMAW3CQk4buaMaMYWhAv/Z+C9UXK6/CFMkahCFlwgkVr1QXCJaTHRLm7U5k6c
+         0F8fywyP1s00f93MSDNiMOVCn4hxEB05P3oQro4c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lukasz Cieplicki <lukaszx.cieplicki@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.15 18/72] i40e: Fix incorrect netdevs real number of RX/TX queues
-Date:   Mon, 10 Jan 2022 08:22:55 +0100
-Message-Id: <20220110071822.191025618@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Habets <habetsm.xilinx@gmail.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 15/72] sfc: The RX page_ring is optional
+Date:   Mon, 10 Jan 2022 08:22:52 +0100
+Message-Id: <20220110071822.069210729@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -51,86 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Martin Habets <habetsm.xilinx@gmail.com>
 
-commit e738451d78b2f8a9635d66c6a87f304b4d965f7a upstream.
+commit 1d5a474240407c38ca8c7484a656ee39f585399c upstream.
 
-There was a wrong queues representation in sysfs during
-driver's reinitialization in case of online cpus number is
-less than combined queues. It was caused by stopped
-NetworkManager, which is responsible for calling vsi_open
-function during driver's initialization.
-In specific situation (ex. 12 cpus online) there were 16 queues
-in /sys/class/net/<iface>/queues. In case of modifying queues with
-value higher, than number of online cpus, then it caused write
-errors and other errors.
-Add updating of sysfs's queues representation during driver
-initialization.
+The RX page_ring is an optional feature that improves
+performance. When allocation fails the driver can still
+function, but possibly with a lower bandwidth.
+Guard against dereferencing a NULL page_ring.
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Lukasz Cieplicki <lukaszx.cieplicki@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 2768935a4660 ("sfc: reuse pages to avoid DMA mapping/unmapping costs")
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+Reported-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/164111288276.5798.10330502993729113868.stgit@palantir17.mph.net
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   32 +++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/sfc/falcon/rx.c |    5 +++++
+ drivers/net/ethernet/sfc/rx_common.c |    5 +++++
+ 2 files changed, 10 insertions(+)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -8741,6 +8741,27 @@ int i40e_open(struct net_device *netdev)
- }
+--- a/drivers/net/ethernet/sfc/falcon/rx.c
++++ b/drivers/net/ethernet/sfc/falcon/rx.c
+@@ -110,6 +110,8 @@ static struct page *ef4_reuse_page(struc
+ 	struct ef4_rx_page_state *state;
+ 	unsigned index;
  
- /**
-+ * i40e_netif_set_realnum_tx_rx_queues - Update number of tx/rx queues
-+ * @vsi: vsi structure
-+ *
-+ * This updates netdev's number of tx/rx queues
-+ *
-+ * Returns status of setting tx/rx queues
-+ **/
-+static int i40e_netif_set_realnum_tx_rx_queues(struct i40e_vsi *vsi)
-+{
-+	int ret;
-+
-+	ret = netif_set_real_num_rx_queues(vsi->netdev,
-+					   vsi->num_queue_pairs);
-+	if (ret)
-+		return ret;
-+
-+	return netif_set_real_num_tx_queues(vsi->netdev,
-+					    vsi->num_queue_pairs);
-+}
-+
-+/**
-  * i40e_vsi_open -
-  * @vsi: the VSI to open
-  *
-@@ -8776,13 +8797,7 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
- 			goto err_setup_rx;
++	if (unlikely(!rx_queue->page_ring))
++		return NULL;
+ 	index = rx_queue->page_remove & rx_queue->page_ptr_mask;
+ 	page = rx_queue->page_ring[index];
+ 	if (page == NULL)
+@@ -293,6 +295,9 @@ static void ef4_recycle_rx_pages(struct
+ {
+ 	struct ef4_rx_queue *rx_queue = ef4_channel_get_rx_queue(channel);
  
- 		/* Notify the stack of the actual queue counts. */
--		err = netif_set_real_num_tx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
--		if (err)
--			goto err_set_queues;
--
--		err = netif_set_real_num_rx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
-+		err = i40e_netif_set_realnum_tx_rx_queues(vsi);
- 		if (err)
- 			goto err_set_queues;
++	if (unlikely(!rx_queue->page_ring))
++		return;
++
+ 	do {
+ 		ef4_recycle_rx_page(channel, rx_buf);
+ 		rx_buf = ef4_rx_buf_next(rx_queue, rx_buf);
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -45,6 +45,8 @@ static struct page *efx_reuse_page(struc
+ 	unsigned int index;
+ 	struct page *page;
  
-@@ -14175,6 +14190,9 @@ struct i40e_vsi *i40e_vsi_setup(struct i
- 		ret = i40e_config_netdev(vsi);
- 		if (ret)
- 			goto err_netdev;
-+		ret = i40e_netif_set_realnum_tx_rx_queues(vsi);
-+		if (ret)
-+			goto err_netdev;
- 		ret = register_netdev(vsi->netdev);
- 		if (ret)
- 			goto err_netdev;
++	if (unlikely(!rx_queue->page_ring))
++		return NULL;
+ 	index = rx_queue->page_remove & rx_queue->page_ptr_mask;
+ 	page = rx_queue->page_ring[index];
+ 	if (page == NULL)
+@@ -114,6 +116,9 @@ void efx_recycle_rx_pages(struct efx_cha
+ {
+ 	struct efx_rx_queue *rx_queue = efx_channel_get_rx_queue(channel);
+ 
++	if (unlikely(!rx_queue->page_ring))
++		return;
++
+ 	do {
+ 		efx_recycle_rx_page(channel, rx_buf);
+ 		rx_buf = efx_rx_buf_next(rx_queue, rx_buf);
 
 
