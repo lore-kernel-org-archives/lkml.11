@@ -2,384 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 786A2C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E634FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:58:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245016AbiAJTzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:55:07 -0500
-Received: from mxout01.lancloud.ru ([45.84.86.81]:56060 "EHLO
-        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243733AbiAJTzA (ORCPT
+        id S243444AbiAJT6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:58:15 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:14860 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239531AbiAJT6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 14:55:00 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 40192209A558
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Qiang Yu <yuq825@gmail.com>, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "Wolfgang Grandegger" <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        "Gustavo Pimentel" <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Mark Brown <broonie@kernel.org>,
-        Peter Chen <peter.chen@kernel.org>,
-        Pawel Laszczak <pawell@cadence.com>,
-        Roger Quadros <rogerq@kernel.org>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <dri-devel@lists.freedesktop.org>, <lima@lists.freedesktop.org>,
-        <linux-tegra@vger.kernel.org>, <linux-can@vger.kernel.org>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-pci@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH 2/2] platform: make platform_get_irq_byname_optional() optional
-Date:   Mon, 10 Jan 2022 22:54:49 +0300
-Message-ID: <20220110195449.12448-3-s.shtylyov@omp.ru>
-X-Mailer: git-send-email 2.26.3
-In-Reply-To: <20220110195449.12448-1-s.shtylyov@omp.ru>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
+        Mon, 10 Jan 2022 14:58:14 -0500
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AJm5i5026301;
+        Mon, 10 Jan 2022 19:57:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references :
+ content-transfer-encoding : content-type : mime-version;
+ s=corp-2021-07-09; bh=QpEhT3A33mbY79TXAXq1BUODIaBKsdOSAujrt93UEo0=;
+ b=fz91YTFSrMcHyWS6ATJqpQqZJ2zs5twmRYFo6iU+kT7n/iXPuN0Mpy/FfNfYPmrJRXsl
+ lq0JFJmf8phq3Ag5f0t5ZL6S4QIND4OPooAzmtfws7zkDtzChfi/nHuBAb7yifoqgdu6
+ T8jGHuUTSfwD7N6/xQGP7xmSecj3WdBc5FAVFGROG+CFa63zePDVlJaQ2hyqmDARGOSE
+ 8uxDgsIC38HeP6q9DTUOzuNKS6QBjnX781TwSdBhC3+OJt3xXgzANDbFCAqdjnREmPy5
+ 8U7XdK/sFddWk418dzRC9pjFfJu12xW9ew35Bdr5j4v5ejH2wc1rofScuNORj1DBj6TP lg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dgp7nh0ry-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jan 2022 19:57:53 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20AJtvVh110383;
+        Mon, 10 Jan 2022 19:57:52 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2177.outbound.protection.outlook.com [104.47.58.177])
+        by aserp3020.oracle.com with ESMTP id 3df2e3ray4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jan 2022 19:57:52 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kiVLZ67b427s2mMumuLRVEHhdMONKOZf+00zFHSie66TLS1NQAiUNzZ8mtzJOY+gL1CtKutkwKK6cHSaxotUNSi7sEcsDwLGRULJp3UfWJMRwKwINk+ZRWdMYAP0lGqFAT1s71W3qYu7J5jt2ZU8jOxwkTqpexfO+fsIziWNyoRQpaCEVHdmzhbXlOtd4nMJNoWlqgHBnJLfyVV+v72tdj4bNcmE4z3y7mHwFTcFdVOsMFk7aRpiRXbK9/D6iFDnDzv/yVNybUjOVEZVParKaOrcl6nvqJz6+dOndlMaBYtBs/PwU39KF7JwVuQzCmhQYkl245lijDdO4dod7b6qLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QpEhT3A33mbY79TXAXq1BUODIaBKsdOSAujrt93UEo0=;
+ b=aHBroT0z2kPWfow64oE218Y+BjQZ8jhEUR19pz5QmwfNCx4VO9btc/06XS17kz2blKCFjM5lTICFg2MsScAElfWa9OYa18cnya9Mdcs0Fyad6wEgvrcGLiOI4ilqCzkcZefPlynuzpl6M4Lngn++KNGbZS24GU4qzoN5CMvi9Q0Mllk9doPuIwXfWdxUgSVngHxi5Yv2UR4ek+c9PiSSB1ikuyHOFu/SNldSPOTquI5XMmt/Yk8U3ahH9xjFbZue+9nDfr0yMBb4jCJ4je46lsvv/Sa2ZqyPq3VaNNBQbMKDYVBbpc30Gz+gvJOoUAoNC/FEOzs/20slXGYcmgo8sA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QpEhT3A33mbY79TXAXq1BUODIaBKsdOSAujrt93UEo0=;
+ b=aW8NPOh4Pc/XkGQVqyqwJwb57N8uLatXXdeENTvywMMJTHFw7bk1TX5GqZcC2u8rOO3AmkRrYoRSs49hVRR9PKzRxqXut5Gw36/16k0dEoWoYFuR63ct2pLqHQXa364IdbmCURoFohdxi/MxtS4fkfviMV3R0Cm6ssSMdoOsQik=
+Received: from CO1PR10MB4531.namprd10.prod.outlook.com (2603:10b6:303:6c::22)
+ by MW4PR10MB5701.namprd10.prod.outlook.com (2603:10b6:303:18b::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.10; Mon, 10 Jan
+ 2022 19:57:49 +0000
+Received: from CO1PR10MB4531.namprd10.prod.outlook.com
+ ([fe80::d573:6cc0:c616:6f2c]) by CO1PR10MB4531.namprd10.prod.outlook.com
+ ([fe80::d573:6cc0:c616:6f2c%6]) with mapi id 15.20.4867.012; Mon, 10 Jan 2022
+ 19:57:49 +0000
+From:   Eric DeVolder <eric.devolder@oracle.com>
+To:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        kexec@lists.infradead.org, ebiederm@xmission.com,
+        dyoung@redhat.com, bhe@redhat.com, vgoyal@redhat.com
+Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com,
+        nramas@linux.microsoft.com, thomas.lendacky@amd.com,
+        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
+        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+        eric.devolder@oracle.com
+Subject: [PATCH v3 2/6] crash hp: Introduce CRASH_HOTPLUG configuration options
+Date:   Mon, 10 Jan 2022 14:57:23 -0500
+Message-Id: <20220110195727.1682-3-eric.devolder@oracle.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220110195727.1682-1-eric.devolder@oracle.com>
+References: <20220110195727.1682-1-eric.devolder@oracle.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SA0PR11CA0149.namprd11.prod.outlook.com
+ (2603:10b6:806:131::34) To CO1PR10MB4531.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 503232e5-3f4a-49b0-1cb6-08d9d4737a97
+X-MS-TrafficTypeDiagnostic: MW4PR10MB5701:EE_
+X-Microsoft-Antispam-PRVS: <MW4PR10MB570170B19D502175A07BFE7B97509@MW4PR10MB5701.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YQ435mDqH+IoyT/EUUiaUB/BA4ivcRLKBPAWZwL47QvwdeyL1NzTYS5esz7sUWifA9jSjM2guKT5ET1aZmog4ZGdCGO1zWyTzkh970WPoFAKzp+RyLYy4itS99Z6sZtgGLGeilmKve3/tHw/Ni53wcwVhxAjF2h7bmDutgxMz8t9KVeSXXo2zRIfgZenHcvnewMDNuXIjMkTHyl3p/9UgVi/4eiwXtZ4M4B22WRLQ4AwcffK1ZSgDb+BxoU9LY0Af117eF92fxfvQMGConlc+tFXtlNPNnSxS/ioGBXvY//9i/9Sfp/7szSyqfHki9gjInqEMxf5j3rh5QKHIg9ZvzfUHl+xnsjzvap934ltNQ5eoWsfxKHqUM/9jd/SbeZQFr07lNjevIaUcwDkh1J900RC4JHJaDDBmoorSvTtmECUJM6Q5V7lhoyixQo5q1Fu9xjHII1wn9HgVMdjUO7QhtluAfbXJapIHn/sXzVErhRl8CvDJ4en4Jg67jk8e4RyB7KX4ch0xg1uDKFu6y/r3rqZ871YLHICaa3cAM+r9FJf8EmKCSusFXqKu8myT07cAGqdjuNyZgMJ49bP9jQj8Arx3u960Q/Q3oqfIo1ZXDTLInc23g8i3BPLPcGEOEr4u1aXdvaE8EYXg1kQ306Y9nWZxckas3e41ua//wBD0BS+x3CAkybYkoAoxHhoTpHtT6iOUPgBLkE/KAZtCNh+Lw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4531.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(86362001)(66946007)(66476007)(5660300002)(36756003)(2906002)(8676002)(6512007)(52116002)(8936002)(6506007)(4326008)(26005)(508600001)(1076003)(66556008)(6486002)(38100700002)(107886003)(38350700002)(186003)(316002)(7416002)(6666004)(83380400001)(2616005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?eEqkmUskNSU/p4hPpJrsPwvC2X4Z1k0Z0xCf4lQx7pH/cBvAIPJqIRILyNQr?=
+ =?us-ascii?Q?vl51XKV7P1C73RvjWvr0HP5gXx6zpNhZmFlU1/B4UBLMkW6v8pNlBhTw/fzL?=
+ =?us-ascii?Q?bvNFrL5tIJTXaKe43Y5pTG2ZOI2Hbsn/knP7J6hqxUCc0r6SkziMoByn76Lo?=
+ =?us-ascii?Q?MZE87jMOc+hux2keu5Y/SooEw7hKz3qt8hZEbVNy9kHi5wk2/gLrGe89H4Iu?=
+ =?us-ascii?Q?Chr6qCYf+qYVga28gHEc1Wf/U0h5olXqBA8UKKGEPDM9WCe22AMqymozClg3?=
+ =?us-ascii?Q?ER4OhluoO8DsGnWUjTIqJd0NRzivKar8+1gb35NBXYgeaNhDwadpJfNDYcFc?=
+ =?us-ascii?Q?piYW0AVl8bX6qq47jPv+MlfkcYpcCMsZ67vfsTMClN6yVTmLz/LDqzmwH2Ld?=
+ =?us-ascii?Q?jHIcQgU2hCOrV1+ao3btraxSuScmlghiaaGXSUkwOSWF/7ZYTyTdf/RE8SgP?=
+ =?us-ascii?Q?aKDWUz/RQwa2CiYH8sToZczlR6x9M5tZsqoIyfXBQU4xw4VwZvZel0zAwNGE?=
+ =?us-ascii?Q?6mHtAvNov4HP8yM1hepIzm8ECgdoahtfen86SNpFxtAIvWu99EOYLHUnzQKp?=
+ =?us-ascii?Q?97JQzy8rqR6WBkjVKrGs32hGzg7uZFhkj93HwiN1taVLvhSexuNP8fy3pSHy?=
+ =?us-ascii?Q?wkkhMts262wfVf3Uu2reHrYMBNxqqk/9d//wJykn2sKzgNNusxhE7SBut96G?=
+ =?us-ascii?Q?VqKbjgGytWgXJMrN4SJXn9SbuAWYKAy9T/0TSwpkA1Q2146Wxl6lEI742lls?=
+ =?us-ascii?Q?E0fKrJatfMKcPlWZKzdq3y/OlW4WU33FDqUgACvUVe5tj42P14CuMZDd1fK1?=
+ =?us-ascii?Q?7wuUchwZTX5fEdPQNdA70VAgvr89NqWGUYsCPAS5iJKwR1NJCj5Ojp4InLlk?=
+ =?us-ascii?Q?UVDl6BsoblHlITsuUmzadx4FilDZctBBKzzKpNOp+x2D+K4OMJF0noZ02f5y?=
+ =?us-ascii?Q?4aVZLVGoHlrcw1qOe4mu1ujJaRZbyIMH/yuDrPYZwxNaeAQgoOa8zC5AIHpN?=
+ =?us-ascii?Q?MKJwzvbPTvfDxTRVklppRiwVXmFEiET/33l5m2XHm2KOj5FgjlPqAV4o5u1i?=
+ =?us-ascii?Q?2kIAk6z/1UirQvc1Hn+Ge72odguSyu//2ys8aEE5f/miMOWznEIgTt2FVL46?=
+ =?us-ascii?Q?hUEUgWS0WiPBa9G/ZryyOr5vEPHBFSav7A6WeIgj3XNDEixpayNRvyaUrpMN?=
+ =?us-ascii?Q?GN1bg54rL7CsJlInjq9Gtr4QuyBnCd3KoEixJz2VSqG2Gwqon1Qcw9JFcUdX?=
+ =?us-ascii?Q?Q2GWsac8OaSYreqxjFjKSnLYkuif7VmWzvpIDggNh7TVSC2D1h5tp4J8C2N0?=
+ =?us-ascii?Q?3Zy4i5pQxpnj7ASSRfgs3odPMvcYmp43lMNyUi4b+G/8Pc8iLLgoUfaA6lbE?=
+ =?us-ascii?Q?rkfKUI5BGi/er8udqPfUKqHb3KNBLZKPwnEywHRJdy9q7MW35JUUWuf6+/gQ?=
+ =?us-ascii?Q?VkVNeuW3x0UrdXKmcXtm22p5791EUblH7246QLpuuBj+EkhATOmMdM9Lhg6W?=
+ =?us-ascii?Q?EDpWxAN5K+N3f3QOu4w41d+6f8J/LOKMRkixGzBG4r+cmJY+Fv7/Y4cs6Lq7?=
+ =?us-ascii?Q?ftkS/ziubkFvE0q52tSgLccH+JgWi+Y23B/wh+lfAEks6i4YgIraA1fmVybo?=
+ =?us-ascii?Q?hlX5ptzpFdkZ32WkYKgkg+zZCiTYG020q6xl8QwuNToNjqU2g3zCLehZ6+cV?=
+ =?us-ascii?Q?bThN8A=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 503232e5-3f4a-49b0-1cb6-08d9d4737a97
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4531.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2022 19:57:49.5030
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aOOlgSaNdmiex7l8v0WeZb3Pcy1NnB/8/4nW1MKWluscUe4ApqIgYizPnT/1RLCxD9HzhdDDg6RMnBdZZ5x/ce7mTh40eOQR2gE9ZWDysTo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB5701
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10223 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=999 bulkscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201100136
+X-Proofpoint-GUID: V4t6ZCQpI4kmx5E8JOBPoMO_8GTzFpDc
+X-Proofpoint-ORIG-GUID: V4t6ZCQpI4kmx5E8JOBPoMO_8GTzFpDc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently platform_get_irq_byname_optional() returns an error code even
-if IRQ resource simply has not been found. It prevents the callers from
-being error code agnostic in their error handling:
+Support for CPU and memory hotplug for crash is controlled by the
+CRASH_HOTPLUG configuration option, introduced by this patch.
 
-	ret = platform_get_irq_byname_optional(...);
-	if (ret < 0 && ret != -ENXIO)
-		return ret; // respect deferred probe
-	if (ret > 0)
-		...we get an IRQ...
+The CRASH_HOTPLUG_ELFCOREHDR_SZ related configuration option is
+also introduced with this patch.
 
-All other *_optional() APIs seem to return 0 or NULL in case an optional
-resource is not available. Let's follow this good example, so that the
-callers would look like:
-
-	ret = platform_get_irq_byname_optional(...);
-	if (ret < 0)
-		return ret;
-	if (ret > 0)
-		...we get an IRQ...
-
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
 ---
- drivers/base/platform.c                             | 13 ++++++++++---
- drivers/gpu/drm/lima/lima_device.c                  |  2 +-
- drivers/mailbox/tegra-hsp.c                         |  4 ++--
- drivers/net/can/rcar/rcar_canfd.c                   |  4 ++--
- drivers/net/dsa/b53/b53_srab.c                      |  2 +-
- drivers/net/ethernet/freescale/fec_main.c           |  2 +-
- drivers/net/ethernet/freescale/fec_ptp.c            |  2 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c   |  4 ++--
- .../net/ethernet/stmicro/stmmac/stmmac_platform.c   |  4 ++--
- drivers/pci/controller/dwc/pcie-designware-host.c   |  2 +-
- drivers/spi/spi-bcm-qspi.c                          |  2 +-
- drivers/spi/spi-rspi.c                              |  8 ++++----
- drivers/usb/cdns3/cdns3-plat.c                      |  5 +----
- drivers/usb/host/xhci-mtk.c                         |  2 +-
- drivers/usb/mtu3/mtu3_core.c                        |  2 +-
- 15 files changed, 31 insertions(+), 27 deletions(-)
+ arch/x86/Kconfig | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-index 7c7b3638f02d..1d0ea635922b 100644
---- a/drivers/base/platform.c
-+++ b/drivers/base/platform.c
-@@ -495,14 +495,21 @@ EXPORT_SYMBOL_GPL(platform_get_irq_byname);
-  * @name: IRQ name
-  *
-  * Get an optional IRQ by name like platform_get_irq_byname(). Except that it
-- * does not print an error message if an IRQ can not be obtained.
-+ * does not print an error message if an IRQ can not be obtained and returns
-+ * 0 when IRQ resource has not been found.
-  *
-- * Return: non-zero IRQ number on success, negative error number on failure.
-+ * Return: non-zero IRQ number on success, 0 if IRQ wasn't found, negative error
-+ * number on failure.
-  */
- int platform_get_irq_byname_optional(struct platform_device *dev,
- 				     const char *name)
- {
--	return __platform_get_irq_byname(dev, name);
-+	int ret;
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 5c2ccb85f2ef..fcaae76fcfe9 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2047,6 +2047,32 @@ config CRASH_DUMP
+ 	  (CONFIG_RELOCATABLE=y).
+ 	  For more details see Documentation/admin-guide/kdump/kdump.rst
+ 
++config CRASH_HOTPLUG
++	bool "kernel updates of crash elfcorehdr"
++	depends on CRASH_DUMP && (HOTPLUG_CPU || MEMORY_HOTPLUG) && KEXEC_FILE
++	help
++	  Enable the kernel to update the crash elfcorehdr (which contains
++	  the list of CPUs and memory regions) directly when hot plug/unplug
++	  of CPUs or memory. Otherwise userspace must monitor these hot
++	  plug/unplug change notifications via udev in order to
++	  unload-then-reload the crash kernel so that the list of CPUs and
++	  memory regions is kept up-to-date. Note that the udev CPU and
++	  memory change notifications still occur (however, userspace is not
++	  required to monitor for crash dump purposes).
 +
-+	ret = __platform_get_irq_byname(dev, name);
-+	if (ret == -ENXIO)
-+		return 0;
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(platform_get_irq_byname_optional);
- 
-diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
-index 65fdca366e41..e3659aa687c2 100644
---- a/drivers/gpu/drm/lima/lima_device.c
-+++ b/drivers/gpu/drm/lima/lima_device.c
-@@ -223,7 +223,7 @@ static int lima_init_ip(struct lima_device *dev, int index)
- 	if (irq_name) {
- 		err = must ? platform_get_irq_byname(pdev, irq_name) :
- 			     platform_get_irq_byname_optional(pdev, irq_name);
--		if (err < 0)
-+		if (err <= 0)
- 			goto out;
- 		ip->irq = err;
- 	}
-diff --git a/drivers/mailbox/tegra-hsp.c b/drivers/mailbox/tegra-hsp.c
-index acd0675da681..17aa88e31445 100644
---- a/drivers/mailbox/tegra-hsp.c
-+++ b/drivers/mailbox/tegra-hsp.c
-@@ -667,7 +667,7 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 	hsp->num_si = (value >> HSP_nSI_SHIFT) & HSP_nINT_MASK;
- 
- 	err = platform_get_irq_byname_optional(pdev, "doorbell");
--	if (err >= 0)
-+	if (err > 0)
- 		hsp->doorbell_irq = err;
- 
- 	if (hsp->num_si > 0) {
-@@ -687,7 +687,7 @@ static int tegra_hsp_probe(struct platform_device *pdev)
- 				return -ENOMEM;
- 
- 			err = platform_get_irq_byname_optional(pdev, name);
--			if (err >= 0) {
-+			if (err > 0) {
- 				hsp->shared_irqs[i] = err;
- 				count++;
- 			}
-diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
-index ff9d0f5ae0dd..1d4794493c6a 100644
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1778,7 +1778,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 
- 	if (chip_id == RENESAS_RCAR_GEN3) {
- 		ch_irq = platform_get_irq_byname_optional(pdev, "ch_int");
--		if (ch_irq < 0) {
-+		if (ch_irq <= 0) {
- 			/* For backward compatibility get irq by index */
- 			ch_irq = platform_get_irq(pdev, 0);
- 			if (ch_irq < 0)
-@@ -1786,7 +1786,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
- 		}
- 
- 		g_irq = platform_get_irq_byname_optional(pdev, "g_int");
--		if (g_irq < 0) {
-+		if (g_irq <= 0) {
- 			/* For backward compatibility get irq by index */
- 			g_irq = platform_get_irq(pdev, 1);
- 			if (g_irq < 0)
-diff --git a/drivers/net/dsa/b53/b53_srab.c b/drivers/net/dsa/b53/b53_srab.c
-index 4591bb1c05d2..80b7c8f053ad 100644
---- a/drivers/net/dsa/b53/b53_srab.c
-+++ b/drivers/net/dsa/b53/b53_srab.c
-@@ -420,7 +420,7 @@ static int b53_srab_irq_enable(struct b53_device *dev, int port)
- 	/* Interrupt is optional and was not specified, do not make
- 	 * this fatal
- 	 */
--	if (p->irq == -ENXIO)
-+	if (!p->irq)
- 		return ret;
- 
- 	ret = request_threaded_irq(p->irq, b53_srab_port_isr,
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index bc418b910999..fba36d09a6e0 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -3933,7 +3933,7 @@ fec_probe(struct platform_device *pdev)
- 	for (i = 0; i < irq_cnt; i++) {
- 		snprintf(irq_name, sizeof(irq_name), "int%d", i);
- 		irq = platform_get_irq_byname_optional(pdev, irq_name);
--		if (irq < 0)
-+		if (irq <= 0)
- 			irq = platform_get_irq(pdev, i);
- 		if (irq < 0) {
- 			ret = irq;
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index 158676eda48d..251863c2d5a4 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -615,7 +615,7 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
- 	INIT_DELAYED_WORK(&fep->time_keep, fec_time_keep);
- 
- 	irq = platform_get_irq_byname_optional(pdev, "pps");
--	if (irq < 0)
-+	if (irq <= 0)
- 		irq = platform_get_irq_optional(pdev, irq_idx);
- 	/* Failure to get an irq is not fatal,
- 	 * only the PTP_CLOCK_PPS clock events should stop
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-index 2b38a499a404..5519b5b35365 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-@@ -342,7 +342,7 @@ static int stm32mp1_parse_data(struct stm32_dwmac *dwmac,
- 	if (dwmac->irq_pwr_wakeup == -EPROBE_DEFER)
- 		return -EPROBE_DEFER;
- 
--	if (!dwmac->clk_eth_ck && dwmac->irq_pwr_wakeup >= 0) {
-+	if (!dwmac->clk_eth_ck && dwmac->irq_pwr_wakeup > 0) {
- 		err = device_init_wakeup(&pdev->dev, true);
- 		if (err) {
- 			dev_err(&pdev->dev, "Failed to init wake up irq\n");
-@@ -426,7 +426,7 @@ static int stm32_dwmac_remove(struct platform_device *pdev)
- 
- 	stm32_dwmac_clk_disable(priv->plat->bsp_priv);
- 
--	if (dwmac->irq_pwr_wakeup >= 0) {
-+	if (dwmac->irq_pwr_wakeup > 0) {
- 		dev_pm_clear_wake_irq(&pdev->dev);
- 		device_init_wakeup(&pdev->dev, false);
- 	}
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 232ac98943cd..dcfc04f7bfd4 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -679,7 +679,7 @@ int stmmac_get_platform_resources(struct platform_device *pdev,
- 	 */
- 	stmmac_res->wol_irq =
- 		platform_get_irq_byname_optional(pdev, "eth_wake_irq");
--	if (stmmac_res->wol_irq < 0) {
-+	if (stmmac_res->wol_irq <= 0) {
- 		if (stmmac_res->wol_irq == -EPROBE_DEFER)
- 			return -EPROBE_DEFER;
- 		dev_info(&pdev->dev, "IRQ eth_wake_irq not found\n");
-@@ -688,7 +688,7 @@ int stmmac_get_platform_resources(struct platform_device *pdev,
- 
- 	stmmac_res->lpi_irq =
- 		platform_get_irq_byname_optional(pdev, "eth_lpi");
--	if (stmmac_res->lpi_irq < 0) {
-+	if (stmmac_res->lpi_irq <= 0) {
- 		if (stmmac_res->lpi_irq == -EPROBE_DEFER)
- 			return -EPROBE_DEFER;
- 		dev_info(&pdev->dev, "IRQ eth_lpi not found\n");
-diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-index f4755f3a03be..00e1a33fd06d 100644
---- a/drivers/pci/controller/dwc/pcie-designware-host.c
-+++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-@@ -364,7 +364,7 @@ int dw_pcie_host_init(struct pcie_port *pp)
- 		} else if (pp->has_msi_ctrl) {
- 			if (!pp->msi_irq) {
- 				pp->msi_irq = platform_get_irq_byname_optional(pdev, "msi");
--				if (pp->msi_irq < 0) {
-+				if (pp->msi_irq <= 0) {
- 					pp->msi_irq = platform_get_irq(pdev, 0);
- 					if (pp->msi_irq < 0)
- 						return pp->msi_irq;
-diff --git a/drivers/spi/spi-bcm-qspi.c b/drivers/spi/spi-bcm-qspi.c
-index f3de3305d0f5..40ca101e9875 100644
---- a/drivers/spi/spi-bcm-qspi.c
-+++ b/drivers/spi/spi-bcm-qspi.c
-@@ -1595,7 +1595,7 @@ int bcm_qspi_probe(struct platform_device *pdev,
- 			irq = platform_get_irq(pdev, 0);
- 		}
- 
--		if (irq  >= 0) {
-+		if (irq > 0) {
- 			ret = devm_request_irq(&pdev->dev, irq,
- 					       qspi_irq_tab[val].irq_handler, 0,
- 					       name,
-diff --git a/drivers/spi/spi-rspi.c b/drivers/spi/spi-rspi.c
-index 41761f0d892a..b736b57f5ff2 100644
---- a/drivers/spi/spi-rspi.c
-+++ b/drivers/spi/spi-rspi.c
-@@ -1330,16 +1330,16 @@ static int rspi_probe(struct platform_device *pdev)
- 	ctlr->max_native_cs = rspi->ops->num_hw_ss;
- 
- 	ret = platform_get_irq_byname_optional(pdev, "rx");
--	if (ret < 0) {
-+	if (ret <= 0) {
- 		ret = platform_get_irq_byname_optional(pdev, "mux");
--		if (ret < 0)
-+		if (ret <= 0)
- 			ret = platform_get_irq(pdev, 0);
--		if (ret >= 0)
-+		if (ret > 0)
- 			rspi->rx_irq = rspi->tx_irq = ret;
- 	} else {
- 		rspi->rx_irq = ret;
- 		ret = platform_get_irq_byname(pdev, "tx");
--		if (ret >= 0)
-+		if (ret > 0)
- 			rspi->tx_irq = ret;
- 	}
- 
-diff --git a/drivers/usb/cdns3/cdns3-plat.c b/drivers/usb/cdns3/cdns3-plat.c
-index 4d0f027e5bd3..7379b6026f9f 100644
---- a/drivers/usb/cdns3/cdns3-plat.c
-+++ b/drivers/usb/cdns3/cdns3-plat.c
-@@ -108,10 +108,7 @@ static int cdns3_plat_probe(struct platform_device *pdev)
- 	cdns->wakeup_irq = platform_get_irq_byname_optional(pdev, "wakeup");
- 	if (cdns->wakeup_irq == -EPROBE_DEFER)
- 		return cdns->wakeup_irq;
--	else if (cdns->wakeup_irq == 0)
--		return -EINVAL;
--
--	if (cdns->wakeup_irq < 0) {
-+	if (cdns->wakeup_irq <= 0) {
- 		dev_dbg(dev, "couldn't get wakeup irq\n");
- 		cdns->wakeup_irq = 0x0;
- 	}
-diff --git a/drivers/usb/host/xhci-mtk.c b/drivers/usb/host/xhci-mtk.c
-index 58a0eae4f41b..e3071e7cb165 100644
---- a/drivers/usb/host/xhci-mtk.c
-+++ b/drivers/usb/host/xhci-mtk.c
-@@ -495,7 +495,7 @@ static int xhci_mtk_probe(struct platform_device *pdev)
- 		return ret;
- 
- 	irq = platform_get_irq_byname_optional(pdev, "host");
--	if (irq < 0) {
-+	if (irq <= 0) {
- 		if (irq == -EPROBE_DEFER)
- 			return irq;
- 
-diff --git a/drivers/usb/mtu3/mtu3_core.c b/drivers/usb/mtu3/mtu3_core.c
-index c4a2c37abf62..08173c05a1d6 100644
---- a/drivers/usb/mtu3/mtu3_core.c
-+++ b/drivers/usb/mtu3/mtu3_core.c
-@@ -925,7 +925,7 @@ int ssusb_gadget_init(struct ssusb_mtk *ssusb)
- 		return -ENOMEM;
- 
- 	mtu->irq = platform_get_irq_byname_optional(pdev, "device");
--	if (mtu->irq < 0) {
-+	if (mtu->irq <= 0) {
- 		if (mtu->irq == -EPROBE_DEFER)
- 			return mtu->irq;
- 
++config CRASH_HOTPLUG_ELFCOREHDR_SZ
++	depends on CRASH_HOTPLUG
++	int
++	default 131072
++	help
++	  Specify the maximum size of the elfcorehdr buffer/segment.
++	  The 128KiB default is sized so that it can accommodate 2048
++	  Elf64_Phdr, where each Phdr represents either a CPU or a
++	  region of memory.
++	  For example, this size can accommodate hotplugging a machine
++	  with up to 1024 CPUs and up to 1024 memory regions (e.g. 1TiB
++	  with 1024 1GiB memory DIMMs).
++
+ config KEXEC_JUMP
+ 	bool "kexec jump"
+ 	depends on KEXEC && HIBERNATION
 -- 
-2.26.3
+2.27.0
 
