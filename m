@@ -2,96 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7667C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:02:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1562EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:02:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242458AbiAJJCC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:02:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
+        id S242554AbiAJJCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:02:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242568AbiAJJAY (ORCPT
+        with ESMTP id S242572AbiAJJAZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:00:24 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138FFC061201
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:00:24 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id l25so14476160wrb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:00:24 -0800 (PST)
+        Mon, 10 Jan 2022 04:00:25 -0500
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8601AC0611FF
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:00:25 -0800 (PST)
+Received: by mail-wr1-x435.google.com with SMTP id q8so25256897wra.12
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:00:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2aJrQvaucM3vbI19RzhFuKD4Vi8PiNlReESprnBZDTQ=;
-        b=LXT7PgxzvRrrSXLL23VkVRAbW45cusxk08YzR0/zC6bJS86LjyjNliiyoUbLG3whyy
-         JimGJmKuDCgandbtTmgQG6pj2KW8m6MZb5KBWkfnxQtpciIU9SeQZ7i6a+F9Two4xtFV
-         SXNNEFiHvxQrIi0s410UF6mZ+3AyM1nPp3ZBE4MXR3UHUiODZ38FyIi2IABZoThs9WRh
-         GWfMFJmf9JCK18UG/bAGi/myDduEYyehr8yvQW9hGT+CGWUrcKqJ3lwhBIcjJ+E4QVY4
-         +wWdsl9eNT50zPZOsvDoMOO7+Sft4Uc/EvyA1hDuCaThYBO8itRBuWPqe+kvqaNtl9Z7
-         lLdg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Z/xQgPdF4pLZ7rSZV7wFE+mDlaQQE7y+ojmrtCNp2S0=;
+        b=vPX2VV68MOY1eCHU1t60DVAlc5eimiyLlz36nNeJCKTQZW88FB74k9JudWskJqwcks
+         r92jEngjqVp+Ulc0PXtwXu4fTRT8F3FNyIN2My2BLwoRdloOWQLkZMuvZcYSW2ui3lQs
+         cINHok0lXhgRzzqQ4zi6bOfgsCn7+U/lHvPj3oHyeo2zNfKGAJXSh4gYwmtrG+sFV7Hz
+         zmDEOH1G//V0fAkxLXH1tnGBPxXGZIoaRqEzL6BMi1R71nOwJFwEQsTygYmfHqLjBou3
+         JvSWUmOnacK78oVyjmquJ/0gM7xIEO3IR2KGZ4GKM5MWSxpvkVAGeyVjB3n4p0/c5Pam
+         9Gqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2aJrQvaucM3vbI19RzhFuKD4Vi8PiNlReESprnBZDTQ=;
-        b=3Od3k63WVqoYoXC03R6AJPVPfTlvnlAq/2qgllXKiYGYRLYQXk8tMiPSB83eeg4GZu
-         DZq3M8lslPfwiZTaXvKgcIjNgQRbnKcDEiwEIuWVicjcb1oDrl7fuB3dmBIOS2DyLUEi
-         eln38iX657bVoY/5PBlyfzDqTOtfDG650eYud/lduVJNHTbAv7kziNu/KdOSwk0NaBo/
-         x975zE2Ruqk3msLBKxwjsVDKnI7O+gXonG34b21O3twLyDMmXClghPczqIfmF11L509Y
-         EdKqUZdx5RagE9YqXrgQkPWaAeEivLZoEcektsbhjHVFmVhtqMRLI1FG+Esmbe5TqNlL
-         lMMw==
-X-Gm-Message-State: AOAM532SqQ/8Nscxby6Hxw1VoqHRIVS7Hw7+CRqE6HZcb4LEXHfTKiLv
-        qI8T2D98uke9ygMJ3UTh35EcN9zsEV5qdg==
-X-Google-Smtp-Source: ABdhPJwGsVHOmhzBXFQNEmaZ9h8U0eqe18R3RwplYZjEYvonz6BCx0ppia6Dy8wj0k5EAQSqS9PCpg==
-X-Received: by 2002:adf:f9cb:: with SMTP id w11mr6844461wrr.106.1641805222149;
-        Mon, 10 Jan 2022 01:00:22 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Z/xQgPdF4pLZ7rSZV7wFE+mDlaQQE7y+ojmrtCNp2S0=;
+        b=CJgYTAAXovcRXW3EdzkPJRVGt1opsZyoW9Fy51aT203xeVnjrMeq5cImsi9ntnahid
+         5q7Bx8G/GxXXsk1N9cMcD0r2T38CteK/lZovVdFcS4499pEJRZS10SMU9pgMAbrvqKf4
+         ycmuuK+2G0ExYjaxA0f1R2TLUpbJWEewMkxwYk7btszcwPcG/kJee+aBuWzq27uS97Uu
+         qCCycuBYX5mEmI/96Q7JrkxIeRiq1SruvjiMJQ9f5xENfKNSSn19fUpCTJg16LBHYL2X
+         hsPfAWzW3v7N0rSTS2PrNZviGXSJPXb7+ALbdbEr0XjHLf61QMX/rBrqXnKZpgyxJo54
+         GFjQ==
+X-Gm-Message-State: AOAM531zvp6xHmXGNl4YfhKiDw8ihx1FeE/mQXQei2uyzvp2XTxJM+9A
+        37/TNmFo9PYrcj0hNBG6fvDCgw==
+X-Google-Smtp-Source: ABdhPJy8hTmBIq37DVE3XIEhQd+zHXS4LX9DeWilqOHMHy12jJf4seF9jFUkXJ4ahVE73ZVEeLUXLw==
+X-Received: by 2002:adf:dc12:: with SMTP id t18mr65858842wri.566.1641805224160;
+        Mon, 10 Jan 2022 01:00:24 -0800 (PST)
 Received: from localhost.localdomain (3.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.6.1.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:df16::3])
-        by smtp.gmail.com with ESMTPSA id m15sm6263287wmq.6.2022.01.10.01.00.21
+        by smtp.gmail.com with ESMTPSA id m15sm6263287wmq.6.2022.01.10.01.00.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 01:00:21 -0800 (PST)
+        Mon, 10 Jan 2022 01:00:23 -0800 (PST)
 From:   Phillip Potter <phil@philpotter.co.uk>
 To:     gregkh@linuxfoundation.org
 Cc:     Larry.Finger@lwfinger.net, straube.linux@gmail.com,
         martin@kaiser.cx, linux-staging@lists.linux.dev,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/7] staging: r8188eu: further per-file DBG_88E cleanups
-Date:   Mon, 10 Jan 2022 09:00:13 +0000
-Message-Id: <20220110090020.6800-1-phil@philpotter.co.uk>
+Subject: [PATCH v2 3/7] staging: r8188eu: convert DBG_88E calls in core/rtw_iol.c
+Date:   Mon, 10 Jan 2022 09:00:16 +0000
+Message-Id: <20220110090020.6800-4-phil@philpotter.co.uk>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220110090020.6800-1-phil@philpotter.co.uk>
+References: <20220110090020.6800-1-phil@philpotter.co.uk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series has more conversions/deletions of DBG_88E macro calls,
-per-file, as I've continued to chip away at them. This converts almost
-200 calls to standard kernel macros/functions such as netdev_dbg and
-pr_debug as appropriate. It also deletes several calls which simply
-aren't necessary.
+Convert the DBG_88E macro calls in core/rtw_iol.c to use pr_debug
+or netdev_dbg appropriately, as their information may be useful to
+observers, and this gets the driver closer to the point of being
+able to remove DBG_88E itself.
 
-Revisions of this patch set:
-V1: Initial set.
-V2: Corrects rtw_mlme_ext.c patch to remove empty goto label. All other
-    patches are the same as V1.
+Some calls are at points in the call chain where use of dev_dbg or
+netdev_dbg isn't possible due to lack of device pointer, so plain
+pr_debug is appropriate here.
 
-Phillip Potter (7):
-  staging: r8188eu: convert DBG_88E calls in core/rtw_ieee80211.c
-  staging: r8188eu: convert DBG_88E calls in core/rtw_xmit.c
-  staging: r8188eu: convert DBG_88E calls in core/rtw_iol.c
-  staging: r8188eu: convert DBG_88E calls in core/rtw_mlme.c
-  staging: r8188eu: convert DBG_88E calls in core/rtw_ioctl_set.c
-  staging: r8188eu: convert DBG_88E calls in core/rtw_mlme_ext.c
-  staging: r8188eu: convert DBG_88E calls in core/rtw_sta_mgt.c
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+---
+ drivers/staging/r8188eu/core/rtw_iol.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
- drivers/staging/r8188eu/core/rtw_ieee80211.c |  36 +-
- drivers/staging/r8188eu/core/rtw_ioctl_set.c |  10 +-
- drivers/staging/r8188eu/core/rtw_iol.c       |  10 +-
- drivers/staging/r8188eu/core/rtw_mlme.c      |  95 ++--
- drivers/staging/r8188eu/core/rtw_mlme_ext.c  | 431 +++++++++++--------
- drivers/staging/r8188eu/core/rtw_sta_mgt.c   |   4 +-
- drivers/staging/r8188eu/core/rtw_xmit.c      |  30 +-
- 7 files changed, 345 insertions(+), 271 deletions(-)
-
+diff --git a/drivers/staging/r8188eu/core/rtw_iol.c b/drivers/staging/r8188eu/core/rtw_iol.c
+index 7e78b47c1284..923da2a9f6ae 100644
+--- a/drivers/staging/r8188eu/core/rtw_iol.c
++++ b/drivers/staging/r8188eu/core/rtw_iol.c
+@@ -12,13 +12,15 @@ struct xmit_frame	*rtw_IOL_accquire_xmit_frame(struct adapter  *adapter)
+ 
+ 	xmit_frame = rtw_alloc_xmitframe(pxmitpriv);
+ 	if (!xmit_frame) {
+-		DBG_88E("%s rtw_alloc_xmitframe return null\n", __func__);
++		netdev_dbg(adapter->pnetdev,
++			   "rtw_alloc_xmitframe return null\n");
+ 		return NULL;
+ 	}
+ 
+ 	xmitbuf = rtw_alloc_xmitbuf(pxmitpriv);
+ 	if (!xmitbuf) {
+-		DBG_88E("%s rtw_alloc_xmitbuf return null\n", __func__);
++		netdev_dbg(adapter->pnetdev,
++			   "rtw_alloc_xmitbuf return null\n");
+ 		rtw_free_xmitframe(pxmitpriv, xmit_frame);
+ 		return NULL;
+ 	}
+@@ -49,8 +51,8 @@ int rtw_IOL_append_cmds(struct xmit_frame *xmit_frame, u8 *IOL_cmds, u32 cmd_len
+ 
+ 	/* check if the io_buf can accommodate new cmds */
+ 	if (ori_len + cmd_len + 8 > MAX_XMITBUF_SZ) {
+-		DBG_88E("%s %u is large than MAX_XMITBUF_SZ:%u, can't accommodate new cmds\n",
+-			__func__, ori_len + cmd_len + 8, MAX_XMITBUF_SZ);
++		pr_debug("%u is larger than MAX_XMITBUF_SZ:%u, can't accommodate new cmds\n",
++			 ori_len + cmd_len + 8, MAX_XMITBUF_SZ);
+ 		return _FAIL;
+ 	}
+ 
 -- 
 2.33.1
 
