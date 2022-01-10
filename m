@@ -2,53 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95B40C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30F1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241676AbiAJIub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:50:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241909AbiAJIsy (ORCPT
+        id S241881AbiAJIue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:50:34 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:46282 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S241894AbiAJIsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:48:54 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0553C029818;
-        Mon, 10 Jan 2022 00:47:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=JThY5n2aZqqSAJY3Gi4ldy3lih
-        jPofFJR0LS1z5fCv8YUr1kzrNeA3wqeX8yt+7Bv6em2oEnt9p8qumhe0fcQdxK0qQyHKkAcdNBw+L
-        8pJAxJwKd6Fls9uQiJestGOIkGLofNdoGihISpyGHQs3eJ8F8ItbUpd4jLXYMZNsxYfUbM0RP1as5
-        D2RSktOH+40ms3mnMCA7keInrO/+h427z5grS7Tc3O6BkSQg4Ud+JJih/lBryENXdw3CljfUu+h6d
-        X/tdONRkGuyYVa2Oa9rqK+3y+QeY6jN8Jpeyd9oayAVvUtXyULYTUV5Tv3LrJzuSJv3WR/5+mQiQX
-        tFrQ76gA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6qKZ-00A16q-TU; Mon, 10 Jan 2022 08:47:07 +0000
-Date:   Mon, 10 Jan 2022 00:47:07 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org,
-        sathya.prakash@broadcom.com, sreekanth.reddy@broadcom.com,
-        suganath-prabu.subramani@broadcom.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 10/16] scsi: message: fusion: Remove usage of the
- deprecated "pci-dma-compat.h" API
-Message-ID: <Ydvyix40L8Q6sObF@infradead.org>
-References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
- <e38e897fbd3314718315b0e357c824e3f01775d6.1641500561.git.christophe.jaillet@wanadoo.fr>
+        Mon, 10 Jan 2022 03:48:55 -0500
+X-UUID: bcbef3abeacb4e5dbf3380a906d351b4-20220110
+X-UUID: bcbef3abeacb4e5dbf3380a906d351b4-20220110
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <guodong.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 133015203; Mon, 10 Jan 2022 16:48:47 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Mon, 10 Jan 2022 16:48:45 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 10 Jan 2022 16:48:45 +0800
+From:   Guodong Liu <guodong.liu@mediatek.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Guodong Liu <guodong.liu@mediatek.com>
+Subject: [PATCH v1 2/2] iio: adc: mt8186: Add compatible node for mt8186
+Date:   Mon, 10 Jan 2022 16:48:41 +0800
+Message-ID: <20220110084841.575-2-guodong.liu@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220110084841.575-1-guodong.liu@mediatek.com>
+References: <20220110084841.575-1-guodong.liu@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e38e897fbd3314718315b0e357c824e3f01775d6.1641500561.git.christophe.jaillet@wanadoo.fr>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good,
+This commit adds mt8186 compatible node.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
+---
+ drivers/iio/adc/mt6577_auxadc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
+index d4fccd52ef08..fb08d761589a 100644
+--- a/drivers/iio/adc/mt6577_auxadc.c
++++ b/drivers/iio/adc/mt6577_auxadc.c
+@@ -46,6 +46,11 @@ struct mt6577_auxadc_device {
+ 	const struct mtk_auxadc_compatible *dev_comp;
+ };
+ 
++static const struct mtk_auxadc_compatible mt8186_compat = {
++	.sample_data_cali = false,
++	.check_global_idle = false,
++};
++
+ static const struct mtk_auxadc_compatible mt8173_compat = {
+ 	.sample_data_cali = false,
+ 	.check_global_idle = true,
+@@ -334,6 +339,7 @@ static const struct of_device_id mt6577_auxadc_of_match[] = {
+ 	{ .compatible = "mediatek,mt2712-auxadc", .data = &mt8173_compat},
+ 	{ .compatible = "mediatek,mt7622-auxadc", .data = &mt8173_compat},
+ 	{ .compatible = "mediatek,mt8173-auxadc", .data = &mt8173_compat},
++	{ .compatible = "mediatek,mt8186-auxadc", .data = &mt8186_compat},
+ 	{ .compatible = "mediatek,mt6765-auxadc", .data = &mt6765_compat},
+ 	{ }
+ };
+-- 
+2.25.1
+
