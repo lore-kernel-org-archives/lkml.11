@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239633AbiAJHmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:42:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240738AbiAJHca (ORCPT
+        id S241149AbiAJHm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:42:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36500 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240341AbiAJHac (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AACCC033275;
-        Sun,  9 Jan 2022 23:28:42 -0800 (PST)
+        Mon, 10 Jan 2022 02:30:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1679611B8;
-        Mon, 10 Jan 2022 07:28:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91F20C36AED;
-        Mon, 10 Jan 2022 07:28:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94639611EC;
+        Mon, 10 Jan 2022 07:30:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78928C36AFF;
+        Mon, 10 Jan 2022 07:30:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799721;
+        s=korg; t=1641799831;
         bh=3Ickka+6v+gJYj2pcGsavEYdwSot3ss+0+8d/9R7JoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fZ2OXnXM+gPms8P9c0PO1r79obdNvOqBuXlRPGHwJNPu31Lkpzabh3fvIPJs3aH8X
-         KgXMEqB4QICsMyDCsjx9/sw5/cs5qW8JnpOCBTxmVZOJ2MAg4cZCAieIQUApbRqJv+
-         5n8oPwSzjj53ctyi3xKlS0OONEBAmdjCCE8LzhRE=
+        b=nFTfKCCSgg9k2MbP38pnfsdq047G6yLJe5enh3IGBOt9YA/ngVbv3q0YkvL3R1ms+
+         UHcPa8Io2LnaX1oMSTEgJK+T0v0vL6ek0piw/b/L+jI/ZDL7erlO5yHbMk/aDdGOH+
+         0ah7L2n9b2DEhlfJTVsvjo1uHGEhSi8/gdLpKL6o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Aayush Agarwal <aayush.a.agarwal@oracle.com>
-Subject: [PATCH 5.4 26/34] phonet: refcount leak in pep_sock_accep
-Date:   Mon, 10 Jan 2022 08:23:21 +0100
-Message-Id: <20220110071816.552824354@linuxfoundation.org>
+Subject: [PATCH 5.10 30/43] phonet: refcount leak in pep_sock_accep
+Date:   Mon, 10 Jan 2022 08:23:27 +0100
+Message-Id: <20220110071818.355783033@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
+References: <20220110071817.337619922@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
