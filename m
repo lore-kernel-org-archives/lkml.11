@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A75C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239621AbiAJHbC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:31:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57688 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiAJH1g (ORCPT
+        id S240493AbiAJHbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:31:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37100 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239858AbiAJH1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:27:36 -0500
+        Mon, 10 Jan 2022 02:27:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87868B8120C;
-        Mon, 10 Jan 2022 07:27:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAA01C36AE9;
-        Mon, 10 Jan 2022 07:27:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80410611E8;
+        Mon, 10 Jan 2022 07:27:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6101FC36AE9;
+        Mon, 10 Jan 2022 07:27:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799653;
-        bh=/275k3NQs3rCN7zLFL6qyXr2y6x2wVhE8XDWgRNAVbg=;
+        s=korg; t=1641799635;
+        bh=t/vg6+0MCYCqR0tDpocT+m087pz0IO+yyRzP8Wf4DPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G+j90eIaq4+DmYIqSxn1c+njhSIyyBws7DuWi7SxbotgVelp6GwXMc+aK/VuG6mIG
-         V4a4NDgfmBMhgw7j0t2u8drXj8RioHmRSjDZ5f7INWGlbQ0Ux/qgG9tJrtBEER/3Jd
-         DNjb/lshUjT0dyQTLQmcZPFhRgXsT7rLYaH38d4o=
+        b=GFLMHLgcLlvHBz9ochAVzwsJpi4EI1WyaBDF0EbYZfzDIR6P1T8/337S0z6TbF0BW
+         b+VYFgf5lkLj7U7kFOhRrUoux0KZLF5cPvHeSMKAIPSDqUUYsQsfAChRiQYTvIJzgZ
+         dKDCY1LdBwMwfYiNumOdwIxOEmuHqg22967REClA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kirill Tkhai <ktkhai@virtuozzo.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        Dave Chinner <dchinner@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>
-Subject: [PATCH 4.19 11/21] xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
-Date:   Mon, 10 Jan 2022 08:23:12 +0100
-Message-Id: <20220110071814.327260155@linuxfoundation.org>
+        stable@vger.kernel.org, Lu Tixiong <lutianxiong@huawei.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Lixiaokeng <lixiaokeng@huawei.com>,
+        Linfeilong <linfeilong@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 18/21] scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+Date:   Mon, 10 Jan 2022 08:23:19 +0100
+Message-Id: <20220110071814.547553024@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
 References: <20220110071813.967414697@linuxfoundation.org>
@@ -48,35 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Lixiaokeng <lixiaokeng@huawei.com>
 
-commit 983d8e60f50806f90534cc5373d0ce867e5aaf79 upstream.
+[ Upstream commit 1b8d0300a3e9f216ae4901bab886db7299899ec6 ]
 
-The old ALLOCSP/FREESP ioctls in XFS can be used to preallocate space at
-the end of files, just like fallocate and RESVSP.  Make the behavior
-consistent with the other ioctls.
+|- iscsi_if_destroy_conn            |-dev_attr_show
+ |-iscsi_conn_teardown
+  |-spin_lock_bh                     |-iscsi_sw_tcp_conn_get_param
 
-Reported-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Eric Sandeen <sandeen@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  |-kfree(conn->persistent_address)   |-iscsi_conn_get_param
+  |-kfree(conn->local_ipaddr)
+                                       ==>|-read persistent_address
+                                       ==>|-read local_ipaddr
+  |-spin_unlock_bh
+
+When iscsi_conn_teardown() and iscsi_conn_get_param() happen in parallel, a
+UAF may be triggered.
+
+Link: https://lore.kernel.org/r/046ec8a0-ce95-d3fc-3235-666a7c65b224@huawei.com
+Reported-by: Lu Tixiong <lutianxiong@huawei.com>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Lixiaokeng <lixiaokeng@huawei.com>
+Signed-off-by: Linfeilong <linfeilong@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/xfs/xfs_ioctl.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/libiscsi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/xfs/xfs_ioctl.c
-+++ b/fs/xfs/xfs_ioctl.c
-@@ -701,7 +701,8 @@ xfs_ioc_space(
- 		flags |= XFS_PREALLOC_CLEAR;
- 		if (bf->l_start > XFS_ISIZE(ip)) {
- 			error = xfs_alloc_file_space(ip, XFS_ISIZE(ip),
--					bf->l_start - XFS_ISIZE(ip), 0);
-+					bf->l_start - XFS_ISIZE(ip),
-+					XFS_BMAPI_PREALLOC);
- 			if (error)
- 				goto out_unlock;
- 		}
+diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
+index 5607fe8541c3a..cb314e3a0fc7a 100644
+--- a/drivers/scsi/libiscsi.c
++++ b/drivers/scsi/libiscsi.c
+@@ -2986,6 +2986,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ {
+ 	struct iscsi_conn *conn = cls_conn->dd_data;
+ 	struct iscsi_session *session = conn->session;
++	char *tmp_persistent_address = conn->persistent_address;
++	char *tmp_local_ipaddr = conn->local_ipaddr;
+ 
+ 	del_timer_sync(&conn->transport_timer);
+ 
+@@ -3007,8 +3009,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	spin_lock_bh(&session->frwd_lock);
+ 	free_pages((unsigned long) conn->data,
+ 		   get_order(ISCSI_DEF_MAX_RECV_SEG_LEN));
+-	kfree(conn->persistent_address);
+-	kfree(conn->local_ipaddr);
+ 	/* regular RX path uses back_lock */
+ 	spin_lock_bh(&session->back_lock);
+ 	kfifo_in(&session->cmdpool.queue, (void*)&conn->login_task,
+@@ -3020,6 +3020,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	mutex_unlock(&session->eh_mutex);
+ 
+ 	iscsi_destroy_conn(cls_conn);
++	kfree(tmp_persistent_address);
++	kfree(tmp_local_ipaddr);
+ }
+ EXPORT_SYMBOL_GPL(iscsi_conn_teardown);
+ 
+-- 
+2.34.1
+
 
 
