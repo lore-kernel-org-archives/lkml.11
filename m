@@ -2,145 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14AD2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 171CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239588AbiAJH24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:28:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57010 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239639AbiAJH02 (ORCPT
+        id S239804AbiAJH3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:29:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239634AbiAJH01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:28 -0500
+        Mon, 10 Jan 2022 02:26:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F196FC061748;
+        Sun,  9 Jan 2022 23:25:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADFADB811F9;
-        Mon, 10 Jan 2022 07:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01713C36AE9;
-        Mon, 10 Jan 2022 07:26:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A109611C9;
+        Mon, 10 Jan 2022 07:25:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA3AC36AED;
+        Mon, 10 Jan 2022 07:25:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799585;
-        bh=Ryn0r3NAKNZ9E1Jqj6JP6t4Ph3g8R6NUFHrMJ/x8N4I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=09/BL/TvDcCfcQHndnFM5AloGj0QVxWXNzKeRpEtby9D6Wv9j96qQafB0hdb7/SLM
-         j6RO+z5a9gexwIacuddyjmA8PVPUNkfvHg7L3owE+VGIn0YhdcHuhCcZ3jGoBbUMAz
-         0VYDhA/0SlWYOcb3DAG/8CrB+GLPvvYqz2EpWqJY=
+        s=korg; t=1641799535;
+        bh=/Sy/pGzKSRxY03GFQvlHvQ1eIeu/MTUcXDtQ+i7n7Tk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=B9FXLPeO0xN6PZdwfqG+BRaf+MhB5ntyhUl6W4tkuXQS3lGRzhl/abhce+61Q6XUl
+         BCg8NKoJScSpPI+gX1aFtCe1Djgufrf3g1FXwoevO00Ld4m4G3pIshGFOZbcvBN6BN
+         iYlvi4MWBp1985qOvJWCdM7vb/Yagd4OoV6eePdk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, wolfgang huang <huangjinhui@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 22/22] mISDN: change function names to avoid conflicts
-Date:   Mon, 10 Jan 2022 08:23:15 +0100
-Message-Id: <20220110071814.999521774@linuxfoundation.org>
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+Subject: [PATCH 4.9 00/21] 4.9.297-rc1 review
+Date:   Mon, 10 Jan 2022 08:22:47 +0100
+Message-Id: <20220110071812.806606886@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
-References: <20220110071814.261471354@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.297-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.297-rc1
+X-KernelTest-Deadline: 2022-01-12T07:18+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wolfgang huang <huangjinhui@kylinos.cn>
+This is the start of the stable review cycle for the 4.9.297 release.
+There are 21 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
+Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
+Anything received after that time might be too late.
 
-As we build for mips, we meet following error. l1_init error with
-multiple definition. Some architecture devices usually marked with
-l1, l2, lxx as the start-up phase. so we change the mISDN function
-names, align with Isdnl2_xxx.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.297-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
 
-mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
-(.text+0x890): multiple definition of `l1_init'; \
-arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
-make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
+thanks,
 
-Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/isdn/mISDN/core.c   | 6 +++---
- drivers/isdn/mISDN/core.h   | 4 ++--
- drivers/isdn/mISDN/layer1.c | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+greg k-h
 
-diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-index faf505462a4f5..f5a06a6fb297f 100644
---- a/drivers/isdn/mISDN/core.c
-+++ b/drivers/isdn/mISDN/core.c
-@@ -390,7 +390,7 @@ mISDNInit(void)
- 	err = mISDN_inittimer(&debug);
- 	if (err)
- 		goto error2;
--	err = l1_init(&debug);
-+	err = Isdnl1_Init(&debug);
- 	if (err)
- 		goto error3;
- 	err = Isdnl2_Init(&debug);
-@@ -404,7 +404,7 @@ mISDNInit(void)
- error5:
- 	Isdnl2_cleanup();
- error4:
--	l1_cleanup();
-+	Isdnl1_cleanup();
- error3:
- 	mISDN_timer_cleanup();
- error2:
-@@ -417,7 +417,7 @@ static void mISDN_cleanup(void)
- {
- 	misdn_sock_cleanup();
- 	Isdnl2_cleanup();
--	l1_cleanup();
-+	Isdnl1_cleanup();
- 	mISDN_timer_cleanup();
- 	class_unregister(&mISDN_class);
- 
-diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
-index 52695bb81ee7a..3c039b6ade2e1 100644
---- a/drivers/isdn/mISDN/core.h
-+++ b/drivers/isdn/mISDN/core.h
-@@ -69,8 +69,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
- extern int	mISDN_inittimer(u_int *);
- extern void	mISDN_timer_cleanup(void);
- 
--extern int	l1_init(u_int *);
--extern void	l1_cleanup(void);
-+extern int	Isdnl1_Init(u_int *);
-+extern void	Isdnl1_cleanup(void);
- extern int	Isdnl2_Init(u_int *);
- extern void	Isdnl2_cleanup(void);
- 
-diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
-index 3192b0eb39445..284d3a9c7df7d 100644
---- a/drivers/isdn/mISDN/layer1.c
-+++ b/drivers/isdn/mISDN/layer1.c
-@@ -407,7 +407,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
- EXPORT_SYMBOL(create_l1);
- 
- int
--l1_init(u_int *deb)
-+Isdnl1_Init(u_int *deb)
- {
- 	debug = deb;
- 	l1fsm_s.state_count = L1S_STATE_COUNT;
-@@ -418,7 +418,7 @@ l1_init(u_int *deb)
- }
- 
- void
--l1_cleanup(void)
-+Isdnl1_cleanup(void)
- {
- 	mISDN_FsmFree(&l1fsm_s);
- }
--- 
-2.34.1
+-------------
+Pseudo-Shortlog of commits:
 
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.297-rc1
+
+Nathan Chancellor <nathan@kernel.org>
+    power: reset: ltc2952: Fix use of floating point literals
+
+wolfgang huang <huangjinhui@kylinos.cn>
+    mISDN: change function names to avoid conflicts
+
+yangxingwu <xingwu.yang@gmail.com>
+    net: udp: fix alignment problem in udp4_seq_show()
+
+William Zhao <wizhao@redhat.com>
+    ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+
+Lixiaokeng <lixiaokeng@huawei.com>
+    scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+
+Hangyu Hua <hbh25y@gmail.com>
+    phonet: refcount leak in pep_sock_accep
+
+James Morse <james.morse@arm.com>
+    arm64: sysreg: Move to use definitions for all the SCTLR bits
+
+Mark Rutland <mark.rutland@arm.com>
+    arm64: move !VHE work to end of el2_setup
+
+Mark Rutland <mark.rutland@arm.com>
+    arm64: reduce el2_setup branching
+
+Stefan Traby <stefan@hello-penguin.com>
+    arm64: Remove a redundancy in sysreg.h
+
+Ian Abbott <abbotti@mev.co.uk>
+    bug: split BUILD_BUG stuff out into <linux/build_bug.h>
+
+Thomas Toye <thomas@toye.io>
+    rndis_host: support Hytera digital radios
+
+Darrick J. Wong <djwong@kernel.org>
+    xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
+
+Eric Dumazet <edumazet@google.com>
+    sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+
+Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+    i40e: Fix incorrect netdev's real number of RX/TX queues
+
+Tom Rix <trix@redhat.com>
+    mac80211: initialize variable have_higher_than_11mbit
+
+Pavel Skripkin <paskripkin@gmail.com>
+    ieee802154: atusb: fix uninit value in atusb_set_extended_addr
+
+Parav Pandit <parav@nvidia.com>
+    virtio_pci: Support surprise removal of virtio pci device
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    tracing: Tag trace_percpu_buffer as a percpu pointer
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
+
+Takashi Iwai <tiwai@suse.de>
+    Bluetooth: btusb: Apply QCA Rome patches for some ATH3012 models
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                    |  4 +-
+ arch/arm64/include/asm/sysreg.h             | 69 ++++++++++++++++++++++--
+ arch/arm64/kernel/head.S                    | 49 +++++++----------
+ arch/arm64/mm/proc.S                        | 24 +--------
+ drivers/bluetooth/btusb.c                   | 32 ++++++++---
+ drivers/isdn/mISDN/core.c                   |  6 +--
+ drivers/isdn/mISDN/core.h                   |  4 +-
+ drivers/isdn/mISDN/layer1.c                 |  4 +-
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 32 ++++++++---
+ drivers/net/ieee802154/atusb.c              | 10 ++--
+ drivers/net/usb/rndis_host.c                |  5 ++
+ drivers/power/reset/ltc2952-poweroff.c      |  4 +-
+ drivers/scsi/libiscsi.c                     |  6 ++-
+ drivers/virtio/virtio_pci_common.c          |  7 +++
+ fs/xfs/xfs_ioctl.c                          |  3 +-
+ include/linux/bug.h                         | 72 +------------------------
+ include/linux/build_bug.h                   | 84 +++++++++++++++++++++++++++++
+ kernel/trace/trace.c                        |  6 +--
+ net/ipv4/udp.c                              |  2 +-
+ net/ipv6/ip6_vti.c                          |  2 +
+ net/mac80211/mlme.c                         |  2 +-
+ net/phonet/pep.c                            |  1 +
+ net/sched/sch_qfq.c                         |  6 +--
+ 23 files changed, 265 insertions(+), 169 deletions(-)
 
 
