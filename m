@@ -2,100 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A51C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57414C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:32:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243916AbiAJTbM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:31:12 -0500
-Received: from mga14.intel.com ([192.55.52.115]:64406 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243524AbiAJTbC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 14:31:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641843062; x=1673379062;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IEVag8NNshRnKOir0g6sRMeP3zm3yNszHfDbOqk5TRc=;
-  b=eJkqwUVlKDdizoRomwT3l562edW0nP5XHIfN1zxuYwHnPqoYPTcOlL6k
-   tqx0qcaM6IID1++kRAMhXt/OBe8gaQ/v43SvL6MNGnfxUbJB0fKEUlY15
-   JfADzsnfbxfE9dn8kZrGHySvcTzeeI24hhdi6ANaOD6Ma32XYXVOpDBgE
-   vDOCGuNR2Xb4oVQAKVNupWGFyBEQPbwOrS9iDpJkXXBKz5b8CqQ3p7bL+
-   4YUVyJbjY+j1LCFMM0z/wyrr6xKnegF7bAks6EFb4Bb5wQn5/PY8eBf6K
-   vHZK9WdpcOBg2VHvbEcPbaLn0Vkis/d3KXCdz2rYPsANsvosMax9hgAGS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="243504192"
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="243504192"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 11:31:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="558090102"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 10 Jan 2022 11:30:58 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2631AD2; Mon, 10 Jan 2022 21:31:09 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH v2 2/5] iio: adc: rn5t618: Re-use generic struct u16_fract
-Date:   Mon, 10 Jan 2022 21:31:01 +0200
-Message-Id: <20220110193104.75225-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
-References: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
+        id S239754AbiAJTcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:32:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231986AbiAJTcq (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 14:32:46 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A3C3C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 11:32:46 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id u21so35286167edd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 11:32:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oy9tjlQ/BLaocnyNi1zxTSuYn4RmLGrxcg8evYZSOA8=;
+        b=TRxbF/w/MdpXNE2ymtpXjd6hlkB9A8U3pgXRUx/tz50zmXH23stt63qlOIU3yT89Ud
+         shFyW5NFjTLz01KQEHekGyCUs+AB4shVV/TMgJpHGznB10AH9dlbCE3h3CuzSqKR/REd
+         Oqgvc8POhfkJ8L9uctZfXqgbyV69kBbfPTFVY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oy9tjlQ/BLaocnyNi1zxTSuYn4RmLGrxcg8evYZSOA8=;
+        b=xxyOneP+CUtAj+LVt4GUElM2eyp7rtUjt7+bNRgwHNsxT38g95Hg3ieN2BY7VL2ReX
+         cdMjmGEhRozY53U3T4OS2zGMB5ehz4op7n/JJErBlbMpj+to27GuK0VouYvvWH9JMBkg
+         oh/3m3ur+t3WADCKWb14CryBSGmDaDBhatCVP44k/E8lPUuiu3/WjY5FrcNZqR5NPbs7
+         pwh2jPBdeHwazXebbMTmYQUy3C13gOlk02nqUps3VwSpn8LlFOGBL8zZI0b7C0Ag2RLs
+         2vf7H0gP5dpTvCHnMPphwLxgtCWIo01QMGqgL8oMLuQUB7rkQyVr7u9E3R2M3UfXnPXK
+         n+Vw==
+X-Gm-Message-State: AOAM532ZqqWtcPDfAT4+mRar5kKkmzRuesjUEyLvea79Bhv5fNXIBeEV
+        6iUh0BA5hMSp4VK4/eZ6k0uKJI0Luftx0Qy+owo=
+X-Google-Smtp-Source: ABdhPJyuDB0pcqlNJkbtaTR/L82uSdDZwo9XBb1rLyy8zFFKzP/EA9DaVc9/fAW2Vd55yLbb8kj9xw==
+X-Received: by 2002:a17:906:140e:: with SMTP id p14mr927781ejc.440.1641843164731;
+        Mon, 10 Jan 2022 11:32:44 -0800 (PST)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id 6sm2753895ejw.0.2022.01.10.11.32.44
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 11:32:44 -0800 (PST)
+Received: by mail-wr1-f45.google.com with SMTP id q8so28669379wra.12
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 11:32:43 -0800 (PST)
+X-Received: by 2002:adf:c74e:: with SMTP id b14mr911498wrh.97.1641843162805;
+ Mon, 10 Jan 2022 11:32:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YdwVl0H54fmUIux0@zn.tnic> <CAHk-=wh+UbGrgH4CzKSoTYGPidyv5isiLMxJKAqnV3NFTiRdaQ@mail.gmail.com>
+ <Ydx8fUCotPI++UEW@zn.tnic>
+In-Reply-To: <Ydx8fUCotPI++UEW@zn.tnic>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 10 Jan 2022 11:32:26 -0800
+X-Gmail-Original-Message-ID: <CAHk-=who9Rebh4dU0NXWxroMshuf8nCX3vqhr-kk0Cen=ypOLA@mail.gmail.com>
+Message-ID: <CAHk-=who9Rebh4dU0NXWxroMshuf8nCX3vqhr-kk0Cen=ypOLA@mail.gmail.com>
+Subject: Re: [GIT PULL] x86/cpu for v5.17
+To:     Borislav Petkov <bp@suse.de>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of custom data type re-use generic struct u16_fract.
-No changes intended.
+On Mon, Jan 10, 2022 at 10:35 AM Borislav Petkov <bp@suse.de> wrote:
+>
+> Right, the only point for doing the vendor check I see here is, well,
+> because it is Intel who doesn't have CSTAR, let's check for Intel. But
+> yeah, we do avoid the vendor checks if it can be helped.
+>
+> We can do a synthetic X86_FEATURE flag but that would be a waste. So the
+> _safe thing and keep the comment sounds optimal to me.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+I agree that a new feature flag for just this would seem a bit
+wasteful, and just using wrmsrl_safe() would seem to be the natural
+thing to do.
 
-v2: no changes
+Particularly since that's literally what the wrmsrl's around that
+thing do (ie MSR_IA32_SYSENTER_CS and friends). So that vendor check
+really stands out as being the odd man out.
 
- drivers/iio/adc/rn5t618-adc.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
-
-diff --git a/drivers/iio/adc/rn5t618-adc.c b/drivers/iio/adc/rn5t618-adc.c
-index 7d891b4ea461..6bf32907f01d 100644
---- a/drivers/iio/adc/rn5t618-adc.c
-+++ b/drivers/iio/adc/rn5t618-adc.c
-@@ -42,11 +42,6 @@ struct rn5t618_adc_data {
- 	int irq;
- };
- 
--struct rn5t618_channel_ratios {
--	u16 numerator;
--	u16 denominator;
--};
--
- enum rn5t618_channels {
- 	LIMMON = 0,
- 	VBAT,
-@@ -58,7 +53,7 @@ enum rn5t618_channels {
- 	AIN0
- };
- 
--static const struct rn5t618_channel_ratios rn5t618_ratios[8] = {
-+static const struct u16_fract rn5t618_ratios[8] = {
- 	[LIMMON] = {50, 32}, /* measured across 20mOhm, amplified by 32 */
- 	[VBAT] = {2, 1},
- 	[VADP] = {3, 1},
--- 
-2.34.1
-
+               Linus
