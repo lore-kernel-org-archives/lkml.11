@@ -2,96 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DEBDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E023EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:59:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237838AbiAJQ5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 11:57:44 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:55510 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237327AbiAJQ5m (ORCPT
+        id S237853AbiAJQ7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 11:59:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237327AbiAJQ7n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 11:57:42 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id CFA021F383;
-        Mon, 10 Jan 2022 16:57:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1641833860; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Q3VneSzRzr1tMKys6OuzhnqfTODjqh+I/QGvIA7t4c=;
-        b=sjrJdQfK5ogRfjLj7zf+oKJm3J8qz0ZUW3JBjqps4bf+8+lgdxW0cNaMnBuIk7OaEZdt2d
-        vDuPgoJosJ++R+M8b9H236s8QmjpGCeQRBSj/MeNWcOLNOeAYIDIu0KKpJ2iJnGPn1ba8b
-        LQVCeMQWyiwofj/Lp3jt7kKerFGu0tM=
-Received: from suse.cz (unknown [10.100.201.86])
+        Mon, 10 Jan 2022 11:59:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58270C06173F;
+        Mon, 10 Jan 2022 08:59:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id F0CD9A3B8F;
-        Mon, 10 Jan 2022 16:57:39 +0000 (UTC)
-Date:   Mon, 10 Jan 2022 17:57:39 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Subject: Re: [PATCH v6 6/9] mm: multigenerational lru: aging
-Message-ID: <Ydxlg5rI4ZvODQvF@dhcp22.suse.cz>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <20220104202227.2903605-7-yuzhao@google.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 457F461341;
+        Mon, 10 Jan 2022 16:59:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D50C36AE3;
+        Mon, 10 Jan 2022 16:59:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641833980;
+        bh=dL5sJz14KH/MnFm5LiWq3OK9TibKvIP5py+qchPUekA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RDraMqr7XGnCR4woIVwGa1WdQQQwyYNS1cCiaqmGtWhWfe4/HCgvzb6GDiHK1vUuQ
+         GoRLtJGFjk+a2DOwby5nTgvxOjLVGlSTI3N6TyP1Su6A6kg7+ZDEKbvLSzy+FYXX2A
+         +kjSm2N/OomoHMcSLUyhPk1aiknBe8g5eSzKgX0VodiAJVhGsk/jnY5ku1G3OuOwxd
+         Re5mTP75shNx1VpiEqTgyI0YtLcDK+iaK/6q4IDkBxIsyTpTdNJxrB/1OgTc0su7Rx
+         aiXcQh2I2n+hCUetVHfe10aNDFXaZDyKgi1GfkKJ218OgVTbLbkrjlbFBW94WPGf1O
+         etzmbZQfVquIw==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Tong Tiangen <tongtiangen@huawei.com>
+Subject: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
+Date:   Tue, 11 Jan 2022 00:52:08 +0800
+Message-Id: <20220110165208.1826-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220104202227.2903605-7-yuzhao@google.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 04-01-22 13:22:25, Yu Zhao wrote:
-[...]
-> +static void walk_mm(struct lruvec *lruvec, struct mm_struct *mm, struct lru_gen_mm_walk *walk)
-> +{
-> +	static const struct mm_walk_ops mm_walk_ops = {
-> +		.test_walk = should_skip_vma,
-> +		.p4d_entry = walk_pud_range,
-> +	};
-> +
-> +	int err;
-> +#ifdef CONFIG_MEMCG
-> +	struct mem_cgroup *memcg = lruvec_memcg(lruvec);
-> +#endif
-> +
-> +	walk->next_addr = FIRST_USER_ADDRESS;
-> +
-> +	do {
-> +		unsigned long start = walk->next_addr;
-> +		unsigned long end = mm->highest_vm_end;
-> +
-> +		err = -EBUSY;
-> +
-> +		rcu_read_lock();
-> +#ifdef CONFIG_MEMCG
-> +		if (memcg && atomic_read(&memcg->moving_account))
-> +			goto contended;
-> +#endif
+eBPF's exception tables needs to be modified to relative synchronously.
 
-Why do you need to check for moving_account?
+Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+---
+ arch/riscv/net/bpf_jit_comp64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
+index 69bab7e28f91..44c97535bc15 100644
+--- a/arch/riscv/net/bpf_jit_comp64.c
++++ b/arch/riscv/net/bpf_jit_comp64.c
+@@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
+ 	offset = pc - (long)&ex->insn;
+ 	if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
+ 		return -ERANGE;
+-	ex->insn = pc;
++	ex->insn = offset;
+ 
+ 	/*
+ 	 * Since the extable follows the program, the fixup offset is always
 -- 
-Michal Hocko
-SUSE Labs
+2.34.1
+
