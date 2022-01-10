@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61CA1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9206EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241236AbiAJHiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:38:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38784 "EHLO
+        id S240547AbiAJHiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:38:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38798 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiAJHbc (ORCPT
+        with ESMTP id S240604AbiAJHbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:31:32 -0500
+        Mon, 10 Jan 2022 02:31:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D423C60B03;
-        Mon, 10 Jan 2022 07:31:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCC33C36AED;
-        Mon, 10 Jan 2022 07:31:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB0BB60B63;
+        Mon, 10 Jan 2022 07:31:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92A7BC36AED;
+        Mon, 10 Jan 2022 07:31:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799891;
-        bh=PICXan5aO9ZTZWSwAepK2dzuaViXH9cshhkWx5vPSQc=;
+        s=korg; t=1641799894;
+        bh=P1oPJQi72S+id//DCwOvy9Y0UmJY2fU1Yn/2BHi5B4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lERKGCgv33AcerL3to3Wb9ubvpDjPdh2vrQhnnxnUWuEyXuB0UMmTxaNjRAF0/3td
-         SpQChz2FbdDDMmvRqifsu5F6bmmzAEtLYMNawG1Zlo8GLoX/m5IpSKgPnnBDgw7NvV
-         d9etUXWW9+AplJvyWVjoL+9irkflPF0wFhSt+Lfs=
+        b=uAQdIChRukaHRjsL+b0KhmYWfIvFZxz+iXJnynyhtOxAtEo7JwviNL7eXmhbace2A
+         D7lxhcWl5NKFR8ssOKWKQPyaFfb9QWuhDbQKywx7dw/rO2GrQebhc0H0EUqXeWFchu
+         FO9WaeZeCPBGk0FhV2Vzo5h0kqtl39DKYxwcvKTo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 24/43] net: ena: Fix undefined state when tx request id is out of bounds
-Date:   Mon, 10 Jan 2022 08:23:21 +0100
-Message-Id: <20220110071818.164367439@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Lukasz Cieplicki <lukaszx.cieplicki@intel.com>,
+        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.10 15/43] i40e: Fix incorrect netdevs real number of RX/TX queues
+Date:   Mon, 10 Jan 2022 08:23:12 +0100
+Message-Id: <20220110071817.865559537@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -46,103 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
 
-commit c255a34e02efb1393d23ffb205ba1a11320aeffb upstream.
+commit e738451d78b2f8a9635d66c6a87f304b4d965f7a upstream.
 
-ena_com_tx_comp_req_id_get() checks the req_id of a received completion,
-and if it is out of bounds returns -EINVAL. This is a sign that
-something is wrong with the device and it needs to be reset.
+There was a wrong queues representation in sysfs during
+driver's reinitialization in case of online cpus number is
+less than combined queues. It was caused by stopped
+NetworkManager, which is responsible for calling vsi_open
+function during driver's initialization.
+In specific situation (ex. 12 cpus online) there were 16 queues
+in /sys/class/net/<iface>/queues. In case of modifying queues with
+value higher, than number of online cpus, then it caused write
+errors and other errors.
+Add updating of sysfs's queues representation during driver
+initialization.
 
-The current code does not reset the device in this case, which leaves
-the driver in an undefined state, where this completion is not properly
-handled.
-
-This commit adds a call to handle_invalid_req_id() in ena_clean_tx_irq()
-and ena_clean_xdp_irq() which resets the device to fix the issue.
-
-This commit also removes unnecessary request id checks from
-validate_tx_req_id() and validate_xdp_req_id(). This check is unneeded
-because it was already performed in ena_com_tx_comp_req_id_get(), which
-is called right before these functions.
-
-Fixes: 548c4940b9f1 ("net: ena: Implement XDP_TX action")
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 41c445ff0f48 ("i40e: main driver core")
+Signed-off-by: Lukasz Cieplicki <lukaszx.cieplicki@intel.com>
+Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c |   34 +++++++++++++++------------
- 1 file changed, 20 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c |   32 +++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -1199,26 +1199,22 @@ static int handle_invalid_req_id(struct
- 
- static int validate_tx_req_id(struct ena_ring *tx_ring, u16 req_id)
- {
--	struct ena_tx_buffer *tx_info = NULL;
-+	struct ena_tx_buffer *tx_info;
- 
--	if (likely(req_id < tx_ring->ring_size)) {
--		tx_info = &tx_ring->tx_buffer_info[req_id];
--		if (likely(tx_info->skb))
--			return 0;
--	}
-+	tx_info = &tx_ring->tx_buffer_info[req_id];
-+	if (likely(tx_info->skb))
-+		return 0;
- 
- 	return handle_invalid_req_id(tx_ring, req_id, tx_info, false);
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -8382,6 +8382,27 @@ int i40e_open(struct net_device *netdev)
  }
  
- static int validate_xdp_req_id(struct ena_ring *xdp_ring, u16 req_id)
- {
--	struct ena_tx_buffer *tx_info = NULL;
-+	struct ena_tx_buffer *tx_info;
+ /**
++ * i40e_netif_set_realnum_tx_rx_queues - Update number of tx/rx queues
++ * @vsi: vsi structure
++ *
++ * This updates netdev's number of tx/rx queues
++ *
++ * Returns status of setting tx/rx queues
++ **/
++static int i40e_netif_set_realnum_tx_rx_queues(struct i40e_vsi *vsi)
++{
++	int ret;
++
++	ret = netif_set_real_num_rx_queues(vsi->netdev,
++					   vsi->num_queue_pairs);
++	if (ret)
++		return ret;
++
++	return netif_set_real_num_tx_queues(vsi->netdev,
++					    vsi->num_queue_pairs);
++}
++
++/**
+  * i40e_vsi_open -
+  * @vsi: the VSI to open
+  *
+@@ -8417,13 +8438,7 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
+ 			goto err_setup_rx;
  
--	if (likely(req_id < xdp_ring->ring_size)) {
--		tx_info = &xdp_ring->tx_buffer_info[req_id];
--		if (likely(tx_info->xdpf))
--			return 0;
--	}
-+	tx_info = &xdp_ring->tx_buffer_info[req_id];
-+	if (likely(tx_info->xdpf))
-+		return 0;
+ 		/* Notify the stack of the actual queue counts. */
+-		err = netif_set_real_num_tx_queues(vsi->netdev,
+-						   vsi->num_queue_pairs);
+-		if (err)
+-			goto err_set_queues;
+-
+-		err = netif_set_real_num_rx_queues(vsi->netdev,
+-						   vsi->num_queue_pairs);
++		err = i40e_netif_set_realnum_tx_rx_queues(vsi);
+ 		if (err)
+ 			goto err_set_queues;
  
- 	return handle_invalid_req_id(xdp_ring, req_id, tx_info, true);
- }
-@@ -1243,9 +1239,14 @@ static int ena_clean_tx_irq(struct ena_r
- 
- 		rc = ena_com_tx_comp_req_id_get(tx_ring->ena_com_io_cq,
- 						&req_id);
--		if (rc)
-+		if (rc) {
-+			if (unlikely(rc == -EINVAL))
-+				handle_invalid_req_id(tx_ring, req_id, NULL,
-+						      false);
- 			break;
-+		}
- 
-+		/* validate that the request id points to a valid skb */
- 		rc = validate_tx_req_id(tx_ring, req_id);
- 		if (rc)
- 			break;
-@@ -1801,9 +1802,14 @@ static int ena_clean_xdp_irq(struct ena_
- 
- 		rc = ena_com_tx_comp_req_id_get(xdp_ring->ena_com_io_cq,
- 						&req_id);
--		if (rc)
-+		if (rc) {
-+			if (unlikely(rc == -EINVAL))
-+				handle_invalid_req_id(xdp_ring, req_id, NULL,
-+						      true);
- 			break;
-+		}
- 
-+		/* validate that the request id points to a valid xdp_frame */
- 		rc = validate_xdp_req_id(xdp_ring, req_id);
- 		if (rc)
- 			break;
+@@ -13712,6 +13727,9 @@ struct i40e_vsi *i40e_vsi_setup(struct i
+ 		ret = i40e_config_netdev(vsi);
+ 		if (ret)
+ 			goto err_netdev;
++		ret = i40e_netif_set_realnum_tx_rx_queues(vsi);
++		if (ret)
++			goto err_netdev;
+ 		ret = register_netdev(vsi->netdev);
+ 		if (ret)
+ 			goto err_netdev;
 
 
