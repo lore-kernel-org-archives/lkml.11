@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A668C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B59BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239321AbiAJH3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:29:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
+        id S240249AbiAJH3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:29:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239427AbiAJH0e (ORCPT
+        with ESMTP id S239370AbiAJH0g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:34 -0500
+        Mon, 10 Jan 2022 02:26:36 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865E0C02982D;
-        Sun,  9 Jan 2022 23:25:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BFFC029830;
+        Sun,  9 Jan 2022 23:25:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AC5DB81216;
-        Mon, 10 Jan 2022 07:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CDDBC36AED;
-        Mon, 10 Jan 2022 07:25:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00C60B81205;
+        Mon, 10 Jan 2022 07:25:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31425C36AE9;
+        Mon, 10 Jan 2022 07:25:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799548;
-        bh=ZK44A1gY48TEv126Zen5tXB46e9kSXs7YxZx5++EcT8=;
+        s=korg; t=1641799551;
+        bh=TkZ85wTMGS/gP/1XImUn9MD23NSXxpERlZhhbiKTp24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UshnnMonHUSFkFCkGiO2radO3/xNe9ADArolvgT3gcPk/oxuJ+IQylj4/nh4Gw4I3
-         J/uur1ABHat0NfBwMyoQevFZuM/eILp20bFle4tTiLyHnnSCbVwrf7D8yaXNDExQ2s
-         i9IpsGlkBG8lND9BshSK/SttAvX5PjlIDeDInurg=
+        b=SKCJ/YoVpc/g7D/5pTYCIbXZoI3+q1ECU1jJPSv+4rUUUxMDpXVH38ujmKNQaWovN
+         JxeA9yy2LQtR8Agd8VencYNB73hA+cu7k9Isc3K3GTDEsJY0SD6hkXW7tNo/MVp150
+         jzYw+QhElmJ982G8ECGiKkEu/kdszJbQIQ3sDdx8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 4.14 02/22] tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
-Date:   Mon, 10 Jan 2022 08:22:55 +0100
-Message-Id: <20220110071814.345627921@linuxfoundation.org>
+        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 11/22] ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
+Date:   Mon, 10 Jan 2022 08:23:04 +0100
+Message-Id: <20220110071814.639438308@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
 References: <20220110071814.261471354@linuxfoundation.org>
@@ -49,59 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: David Ahern <dsahern@kernel.org>
 
-commit 823e670f7ed616d0ce993075c8afe0217885f79d upstream.
+commit 1ff15a710a862db1101b97810af14aedc835a86a upstream.
 
-With the new osnoise tracer, we are seeing the below splat:
-    Kernel attempted to read user page (c7d880000) - exploit attempt? (uid: 0)
-    BUG: Unable to handle kernel data access on read at 0xc7d880000
-    Faulting instruction address: 0xc0000000002ffa10
-    Oops: Kernel access of bad area, sig: 11 [#1]
-    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
-    ...
-    NIP [c0000000002ffa10] __trace_array_vprintk.part.0+0x70/0x2f0
-    LR [c0000000002ff9fc] __trace_array_vprintk.part.0+0x5c/0x2f0
-    Call Trace:
-    [c0000008bdd73b80] [c0000000001c49cc] put_prev_task_fair+0x3c/0x60 (unreliable)
-    [c0000008bdd73be0] [c000000000301430] trace_array_printk_buf+0x70/0x90
-    [c0000008bdd73c00] [c0000000003178b0] trace_sched_switch_callback+0x250/0x290
-    [c0000008bdd73c90] [c000000000e70d60] __schedule+0x410/0x710
-    [c0000008bdd73d40] [c000000000e710c0] schedule+0x60/0x130
-    [c0000008bdd73d70] [c000000000030614] interrupt_exit_user_prepare_main+0x264/0x270
-    [c0000008bdd73de0] [c000000000030a70] syscall_exit_prepare+0x150/0x180
-    [c0000008bdd73e10] [c00000000000c174] system_call_vectored_common+0xf4/0x278
+Make sure RTA_GATEWAY for IPv6 multipath route has enough bytes to hold
+an IPv6 address.
 
-osnoise tracer on ppc64le is triggering osnoise_taint() for negative
-duration in get_int_safe_duration() called from
-trace_sched_switch_callback()->thread_exit().
-
-The problem though is that the check for a valid trace_percpu_buffer is
-incorrect in get_trace_buf(). The check is being done after calculating
-the pointer for the current cpu, rather than on the main percpu pointer.
-Fix the check to be against trace_percpu_buffer.
-
-Link: https://lkml.kernel.org/r/a920e4272e0b0635cf20c444707cbce1b2c8973d.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
-
-Cc: stable@vger.kernel.org
-Fixes: e2ace001176dc9 ("tracing: Choose static tp_printk buffer by explicit nesting count")
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Fixes: 6b9ea5a64ed5 ("ipv6: fix multipath route replace error recovery")
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv6/route.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -2820,7 +2820,7 @@ static char *get_trace_buf(void)
- {
- 	struct trace_buffer_struct *buffer = this_cpu_ptr(trace_percpu_buffer);
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -3365,7 +3365,11 @@ static int ip6_route_multipath_del(struc
  
--	if (!buffer || buffer->nesting >= 4)
-+	if (!trace_percpu_buffer || buffer->nesting >= 4)
- 		return NULL;
- 
- 	buffer->nesting++;
+ 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
+ 			if (nla) {
+-				nla_memcpy(&r_cfg.fc_gateway, nla, 16);
++				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
++							extack);
++				if (err)
++					return err;
++
+ 				r_cfg.fc_flags |= RTF_GATEWAY;
+ 			}
+ 		}
 
 
