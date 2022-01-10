@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B65BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:44:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241421AbiAJHoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:44:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
+        id S240566AbiAJHoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:44:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240959AbiAJHeb (ORCPT
+        with ESMTP id S240961AbiAJHeb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:34:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1983C025398;
-        Sun,  9 Jan 2022 23:30:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6944FC0253A0;
+        Sun,  9 Jan 2022 23:30:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E162B81161;
-        Mon, 10 Jan 2022 07:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85905C36AED;
-        Mon, 10 Jan 2022 07:29:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11792B811F5;
+        Mon, 10 Jan 2022 07:30:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E531C36AED;
+        Mon, 10 Jan 2022 07:30:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799800;
-        bh=0FUZhdHdVFKJrJzvgVA+DV9XJpaKZoIrD4J9MFjxH2A=;
+        s=korg; t=1641799802;
+        bh=uBdHps0ZrJgucE7hAVqdKjWVMwERvWHx5aEmtElClyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EburqUk/+dGbOzU2gEbZgsmhLvcW3taC/xXafQ10eJNoLyHZdJiE+/o295OAzTl2O
-         DgQkJJtm8P0KtW4bZzBgMxSYtuDFSyiILVus91uGTV4NsckQD+p/AIlcCBYEYdkTnA
-         dXtKoIyLlt3U4aP0zv4FU8ci9MNGdclinGojGWvA=
+        b=OmkyspVHy+3Dk1yCNH8cykrVUcSy+/06YEG7ae1AbFTypKxTgbe5DenZ7f7/Jjy7K
+         zgfPVga054VWgYGHNiKheqIcwC/B44ZvmVGnfJKWYBIJHYkiPOtWYhO0RNYVo2eA9w
+         fvlBS3KiN6vF4ihX/1Hvl2/CP4qgjJMrinC0Q1H4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
-        Mateusz Palczewski <mateusz.palczewski@intel.com>,
-        Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Tony Brelinski <tony.brelinski@intel.com>,
+        Ashwin Vijayavel <ashwin.vijayavel@intel.com>,
+        Karen Sornek <karen.sornek@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 06/43] i40e: Fix to not show opcode msg on unsuccessful VF MAC change
-Date:   Mon, 10 Jan 2022 08:23:03 +0100
-Message-Id: <20220110071817.559412877@linuxfoundation.org>
+Subject: [PATCH 5.10 07/43] iavf: Fix limit of total number of queues to active queues of VF
+Date:   Mon, 10 Jan 2022 08:23:04 +0100
+Message-Id: <20220110071817.599617504@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -53,150 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Palczewski <mateusz.palczewski@intel.com>
+From: Karen Sornek <karen.sornek@intel.com>
 
-commit 01cbf50877e602e2376af89e4a51c30bc574c618 upstream.
+commit b712941c8085e638bb92456e866ed3de4404e3d5 upstream.
 
-Hide i40e opcode information sent during response to VF in case when
-untrusted VF tried to change MAC on the VF interface.
+In the absence of this validation, if the user requests to
+configure queues more than the enabled queues, it results in
+sending the requested number of queues to the kernel stack
+(due to the asynchronous nature of VF response), in which
+case the stack might pick a queue to transmit that is not
+enabled and result in Tx hang. Fix this bug by
+limiting the total number of queues allocated for VF to
+active queues of VF.
 
-This is implemented by adding an additional parameter 'hide' to the
-response sent to VF function that hides the display of error
-information, but forwards the error code to VF.
-
-Previously it was not possible to send response with some error code
-to VF without displaying opcode information.
-
-Fixes: 5c3c48ac6bf5 ("i40e: implement virtual device interface")
-Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
-Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
-Reviewed-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
-Reviewed-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
+Signed-off-by: Ashwin Vijayavel <ashwin.vijayavel@intel.com>
+Signed-off-by: Karen Sornek <karen.sornek@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |   40 ++++++++++++++++-----
- 1 file changed, 32 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_main.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -1824,17 +1824,19 @@ sriov_configure_out:
- /***********************virtual channel routines******************/
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -2598,8 +2598,11 @@ static int iavf_validate_ch_config(struc
+ 		total_max_rate += tx_rate;
+ 		num_qps += mqprio_qopt->qopt.count[i];
+ 	}
+-	if (num_qps > IAVF_MAX_REQ_QUEUES)
++	if (num_qps > adapter->num_active_queues) {
++		dev_err(&adapter->pdev->dev,
++			"Cannot support requested number of queues\n");
+ 		return -EINVAL;
++	}
  
- /**
-- * i40e_vc_send_msg_to_vf
-+ * i40e_vc_send_msg_to_vf_ex
-  * @vf: pointer to the VF info
-  * @v_opcode: virtual channel opcode
-  * @v_retval: virtual channel return value
-  * @msg: pointer to the msg buffer
-  * @msglen: msg length
-+ * @is_quiet: true for not printing unsuccessful return values, false otherwise
-  *
-  * send msg to VF
-  **/
--static int i40e_vc_send_msg_to_vf(struct i40e_vf *vf, u32 v_opcode,
--				  u32 v_retval, u8 *msg, u16 msglen)
-+static int i40e_vc_send_msg_to_vf_ex(struct i40e_vf *vf, u32 v_opcode,
-+				     u32 v_retval, u8 *msg, u16 msglen,
-+				     bool is_quiet)
- {
- 	struct i40e_pf *pf;
- 	struct i40e_hw *hw;
-@@ -1850,7 +1852,7 @@ static int i40e_vc_send_msg_to_vf(struct
- 	abs_vf_id = vf->vf_id + hw->func_caps.vf_base_id;
- 
- 	/* single place to detect unsuccessful return values */
--	if (v_retval) {
-+	if (v_retval && !is_quiet) {
- 		vf->num_invalid_msgs++;
- 		dev_info(&pf->pdev->dev, "VF %d failed opcode %d, retval: %d\n",
- 			 vf->vf_id, v_opcode, v_retval);
-@@ -1881,6 +1883,23 @@ static int i40e_vc_send_msg_to_vf(struct
- }
- 
- /**
-+ * i40e_vc_send_msg_to_vf
-+ * @vf: pointer to the VF info
-+ * @v_opcode: virtual channel opcode
-+ * @v_retval: virtual channel return value
-+ * @msg: pointer to the msg buffer
-+ * @msglen: msg length
-+ *
-+ * send msg to VF
-+ **/
-+static int i40e_vc_send_msg_to_vf(struct i40e_vf *vf, u32 v_opcode,
-+				  u32 v_retval, u8 *msg, u16 msglen)
-+{
-+	return i40e_vc_send_msg_to_vf_ex(vf, v_opcode, v_retval,
-+					 msg, msglen, false);
-+}
-+
-+/**
-  * i40e_vc_send_resp_to_vf
-  * @vf: pointer to the VF info
-  * @opcode: operation code
-@@ -2641,6 +2660,7 @@ error_param:
-  * i40e_check_vf_permission
-  * @vf: pointer to the VF info
-  * @al: MAC address list from virtchnl
-+ * @is_quiet: set true for printing msg without opcode info, false otherwise
-  *
-  * Check that the given list of MAC addresses is allowed. Will return -EPERM
-  * if any address in the list is not valid. Checks the following conditions:
-@@ -2655,13 +2675,15 @@ error_param:
-  * addresses might not be accurate.
-  **/
- static inline int i40e_check_vf_permission(struct i40e_vf *vf,
--					   struct virtchnl_ether_addr_list *al)
-+					   struct virtchnl_ether_addr_list *al,
-+					   bool *is_quiet)
- {
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_vsi *vsi = pf->vsi[vf->lan_vsi_idx];
- 	int mac2add_cnt = 0;
- 	int i;
- 
-+	*is_quiet = false;
- 	for (i = 0; i < al->num_elements; i++) {
- 		struct i40e_mac_filter *f;
- 		u8 *addr = al->list[i].addr;
-@@ -2685,6 +2707,7 @@ static inline int i40e_check_vf_permissi
- 		    !ether_addr_equal(addr, vf->default_lan_addr.addr)) {
- 			dev_err(&pf->pdev->dev,
- 				"VF attempting to override administratively set MAC address, bring down and up the VF interface to resume normal operation\n");
-+			*is_quiet = true;
- 			return -EPERM;
- 		}
- 
-@@ -2721,6 +2744,7 @@ static int i40e_vc_add_mac_addr_msg(stru
- 	    (struct virtchnl_ether_addr_list *)msg;
- 	struct i40e_pf *pf = vf->pf;
- 	struct i40e_vsi *vsi = NULL;
-+	bool is_quiet = false;
- 	i40e_status ret = 0;
- 	int i;
- 
-@@ -2737,7 +2761,7 @@ static int i40e_vc_add_mac_addr_msg(stru
- 	 */
- 	spin_lock_bh(&vsi->mac_filter_hash_lock);
- 
--	ret = i40e_check_vf_permission(vf, al);
-+	ret = i40e_check_vf_permission(vf, al, &is_quiet);
- 	if (ret) {
- 		spin_unlock_bh(&vsi->mac_filter_hash_lock);
- 		goto error_param;
-@@ -2775,8 +2799,8 @@ static int i40e_vc_add_mac_addr_msg(stru
- 
- error_param:
- 	/* send the response to the VF */
--	return i40e_vc_send_resp_to_vf(vf, VIRTCHNL_OP_ADD_ETH_ADDR,
--				       ret);
-+	return i40e_vc_send_msg_to_vf_ex(vf, VIRTCHNL_OP_ADD_ETH_ADDR,
-+				       ret, NULL, 0, is_quiet);
- }
- 
- /**
+ 	ret = iavf_validate_tx_bandwidth(adapter, total_max_rate);
+ 	return ret;
 
 
