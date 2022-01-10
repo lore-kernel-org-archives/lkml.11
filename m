@@ -2,194 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57222C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ED5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239114AbiAJHBn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:01:43 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:16697 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235119AbiAJHBh (ORCPT
+        id S239129AbiAJHDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:03:03 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:41282 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235119AbiAJHDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:01:37 -0500
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JXPm92XPfzZf56;
-        Mon, 10 Jan 2022 14:58:01 +0800 (CST)
-Received: from localhost.localdomain (10.175.127.227) by
- dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Mon, 10 Jan 2022 15:01:34 +0800
-From:   Zhang Wensheng <zhangwensheng5@huawei.com>
-To:     <paolo.valente@linaro.org>, <axboe@kernel.dk>,
-        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next v4] bfq: fix use-after-free in bfq_dispatch_request
-Date:   Mon, 10 Jan 2022 15:12:31 +0800
-Message-ID: <20220110071231.1819009-1-zhangwensheng5@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 10 Jan 2022 02:03:00 -0500
+Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20A1QAtA006855;
+        Mon, 10 Jan 2022 07:02:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
+ bh=BwUzYQ4FsM2Zo9egPqGkGRYmZPq7as8B9Hckp1lD4Gk=;
+ b=dxHCdHTLNXZ91QWGbfCDV4Guk4xy6a+GteD8qRAKjvYsMKIdaaC7wo/WfKqtfSp52L4a
+ 9Es3BPKZiEvP+uZ5eWAtSVZqU1yJIwm054pU4VdZxC0XY+uzQKyfprRyAtgplRvIFyYE
+ c8YkwbCvq7Zaj6sSPJ5x+R2wqaje9IVDCowCDAyD6hlCQQ4vKttYlrffvBa2tTGlXz5O
+ iWWr1HCUgOWdi57dvoocTTs7+8C8dd5LpMdFDo9oFl5fAisb4fAPtzMXAdc/dqhCo0QP
+ yWOP9G/mv3ljhwBsqNsJyPMegacuPQ7MVChz7yGcwjKC9lcR6P0CK7QJHGHBM5zM4AkN mQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3df35u29m4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jan 2022 07:02:20 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20A70P3e128109;
+        Mon, 10 Jan 2022 07:02:19 GMT
+Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam07lp2041.outbound.protection.outlook.com [104.47.56.41])
+        by aserp3030.oracle.com with ESMTP id 3df0nc6qe8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 10 Jan 2022 07:02:19 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jKFFSjGAkAuL5YHAoZdFv8f1YA1fNylYThL/srMtBynaqLBMak9UnWbpJypcAMB44JboAvcMrmoue+xo5MKwj37c/G09aXDKYNFLCtFp44KRvjYXGVTcOOq4aVhqDN7kdPT3shEJ9viYtKeJId7GvlSRbJ2MS1zRa/xepqiqPM/ezSQ5Xt1+CzNNeoSmExjSrZlLjYTjER3WhW05hpM4fofHFEELlJMPaO+8Qon6heEeQ0vJGt3K6SuhIoU19EO6ZVAa2RUraC0YwZe7drXJJoibnUrcrsGvrDxAmJT3ZJtGG+3MXO4OKskB6I2nj6mmVdqkXfQAisnGyZZlfCKI/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BwUzYQ4FsM2Zo9egPqGkGRYmZPq7as8B9Hckp1lD4Gk=;
+ b=ndMzudBZtFUNUmcBVlVhXVgQLoYKG07U33PKjVuKX67XXJKtwiCRWi8IHoCmYcNOH/hn4L6DbQMSGG2UHrr8me+EbzmK5bxDhbJdMyTOiODZ1VXi13vqDixjDIedQ6oaeEh+tQGDAxA9Xt4EfNwgP5ZfgIOAs6XJuhaZi9pUtGs1uXkr/SYjrcwxTrdNGGNhGlzntuNcijsDupFyVGyTrI6FIoLta+V0i2AAJI6ztCHQlSvRpFmvMymKg/qlf0IuPY+npQsyFslHxM4zM15MyReUqn06CCk8fYX2yNfLPaxP8jVS5OkMN4rImmHnZsGUxfVV+inDV99sTH25fIkBaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BwUzYQ4FsM2Zo9egPqGkGRYmZPq7as8B9Hckp1lD4Gk=;
+ b=wSBi0J2aUt0WqAS8W6vpAJgERXTNUHr72GWZsMri9bHhmL4AkMsC/DkssPClxI3kkC75C+AdoyWv3+s892Sw7HfjglZyAW+tmh2pppcTguMZx+M5MYclCO9bbmQrng8FZdecvLjojFm5/9oGKIDFqOsy7r+L4aDwT1dYxX2Az6s=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR10MB1294.namprd10.prod.outlook.com
+ (2603:10b6:300:20::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Mon, 10 Jan
+ 2022 07:02:16 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b889:5c86:23c0:82b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::b889:5c86:23c0:82b8%4]) with mapi id 15.20.4867.012; Mon, 10 Jan 2022
+ 07:02:16 +0000
+Date:   Mon, 10 Jan 2022 10:01:57 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Christoph Hellwig <hch@lst.de>
+Cc:     lkp@intel.com, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        James Smart <jsmart2021@gmail.com>
+Subject: [mkp-scsi:for-next 67/132] drivers/scsi/elx/libefc/efc_els.c:73
+ efc_els_io_alloc_size() warn: sleeping in atomic context
+Message-ID: <202201082354.iAG3UuiL-lkp@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0041.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::29)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggeme756-chm.china.huawei.com (10.3.19.102)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a33ec916-7ea0-44f7-ba2a-08d9d40722ad
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1294:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR10MB12944919F3D526271D0C47668E509@MWHPR10MB1294.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:175;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: nYM0kEfk7uqFkKS/CEIH9nO6vK5fLieM5BTuqhj+JOatKpgqruodD0Rs7zAWi0CY+wBeU8uyDgxuao2xPmoj+q53EWXq4XODUANxCOc9mXSExGELb+oj0q/hKdRynDgr9BPEPfd+YrMHHCZvLWUZfut3qH04Ve9dODfeE/G53lkesJ0BrjpHamcEf3Gh5Awh2ynGjHacdV/VlCKcBgAGIrz7EnCtsPf1OzjdJ9pdbAw91wlhfXNCsGRVDrojemGvP3G5Q6yRFYqmPyiRJOhaxpRwrdNUhTXOFHC1pzFG6eHDDjflWMMVXs6vozicB1fhCkrnpRAXlcXnWkBrG/wIz5jJ3SvbqzUQxqaeDHAPQB5XvD8mFjyjzZ/GfgSmFydv7C2CmkPadiDXX+NUU8R1H5YMo9JaW6qa3iBM/rIzbJKFLlosfLqi5MIo8EiDz5b24NDdN7TznuYC2GTgZ/3usxtkt+vKEoYklcvE0rxRAVwk4bs3+RdUyem8ZwQFs82taW6cI3IEVY0lHXgm2qIy3XQF7gJfDEgVACdRlAvum7g593LbFss6uX8IbriCIQFShTz1XGxfhk/wdptGlZJ/8FY74nW0Ak4dgOuXyUTCmYed0Ffv6R9qs2epghYEMZdaj9IsLXOG+GVIV6hdEsV+vTVMjjnLrYR+bKtXZfsxqpt/6SAj8zaWT5SwHkSdDI9ktyWYlfmy5i4fE/e4TS9Arg6jyUr//m/69IL7+vXCemCOWFynrP04ggjVM7XUbi+KKTQOAmuSoxbINe/qi3KR8ZTQ7nXE0jN6rSoIVINMSxBjo/5pPc4uwLglzx37HAzBFJ49aQ3xO+m4IyIlSydkvA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(316002)(83380400001)(36756003)(54906003)(66476007)(6916009)(508600001)(66946007)(6506007)(44832011)(6666004)(1076003)(6512007)(8936002)(26005)(2906002)(8676002)(5660300002)(4001150100001)(4326008)(9686003)(86362001)(66556008)(6486002)(38350700002)(38100700002)(52116002)(966005)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+Ko5iXK/EOJs1VaxGWxlqtB5TiCjbQF6t+Iteh54kGOZ2+nRrR2kTSK6y3pF?=
+ =?us-ascii?Q?9VGLlrVZLg3UxEI6Zwwb4bKKYsB1ohddHKdRzBSVF0+DkRsoDoO9i1Da/JDa?=
+ =?us-ascii?Q?d9hkSLDpdpSomTrkdDZBv5d0U7xjNrfSFwqI7EAVcxVwW5nF+kI1uXs4OU6w?=
+ =?us-ascii?Q?mhMyQLEbuh+Q4E0cnjawgfjELQxNxSnJt4Kwb8GBSrDBV1DAJnIPgOLVgWYB?=
+ =?us-ascii?Q?B+s6f5osutOQNf2rJ4qR+RyoDHpHJUsWVwSBo7eORd6bfrtvPh8KU6R7HNRI?=
+ =?us-ascii?Q?NhI0JIdAe4unPh9RF9xMm+z77XLreZOf2y5OGZynGLKlum4rjEc7RwbaGgAX?=
+ =?us-ascii?Q?0aqw8j6FRL87BYD8jrcvCSJtwwBAL2JEBqYhvdN3E5J6uh7FC7ET4VhpACId?=
+ =?us-ascii?Q?nJhCNKaRBMBuebr1y+ta3yngGLgZAKWze/X+RZxRZJeXN5tf+9D87EleoV+S?=
+ =?us-ascii?Q?65o0Reo/o+HdG4HgffKDTqUk+KyGz0rTXNGVIIjKjKHu3Wnx99SbuK1w7XsK?=
+ =?us-ascii?Q?tK+LHG7zdxLGchqkvHD3oSWtNtbNlhn3PoBYDxw9LQ5+t0/6WSAABlNiGzyV?=
+ =?us-ascii?Q?OM4KMDIXTD6r9dFbzIYKpdJYGclmCEUuyz3K92mJSusWf3ri2z9nTncor8eV?=
+ =?us-ascii?Q?C91xf5mWk/j45wOIaW0nbMsAotczMxeZV+M6WDbkVnHhAL36U1KTlGyzKU2/?=
+ =?us-ascii?Q?AX5L3it5oLURFXYFnIRHpKaTGYDmBk/A3jauomsL5n9CFrjUuUxmIK1jhbIJ?=
+ =?us-ascii?Q?K4v68YzRQbg30qM0bz0uZAtrfQYKltQYbLf8yOCzZf4iIJzXxJuia8YYfIaP?=
+ =?us-ascii?Q?S+ed+4Iy19wbC96yA6HWlW+UrXHIYJZrVPM7jrPbrJ7teK27PMuMLoO9EbIn?=
+ =?us-ascii?Q?61kDYfTtszugH4x7I4/vZhYx9p/Hz7Bx7LkljpVhg1S9S41x03guNCIw8gLQ?=
+ =?us-ascii?Q?aJWQ6yp16/gwegFrVQ448kzr92zit/H4aYzqEA+3e6p1vPnJD19gor9D9L/+?=
+ =?us-ascii?Q?NAjl/qExNPVKwfdVHrmaufv+7ZuTPNAwTbsLfa25r0V5+vWwmIO/rc+JfWH1?=
+ =?us-ascii?Q?a06InuJAuaoOZfAGG6BiDo47zAKwwmRr2Ss1KYylwo7F+eGpZHbcR3R5mzlm?=
+ =?us-ascii?Q?toc6SBMQ5FtQWJRYeMy05EqXrWE3+EoBm7puBRVHf7IimmKG04uAZrrfVzaF?=
+ =?us-ascii?Q?xF9iNjm9F33TyE1O8rIZ5S5e5hFdTR3fKqHpkUyBCrjOeFiQlhpuIxPmjeph?=
+ =?us-ascii?Q?djZxNSL2HzrvEkM7dtiZqnlMU0+xAHtvfxYcoTrE8dFqLUvGAc/16YgDSgpz?=
+ =?us-ascii?Q?SezSQQnu3OyC3U8OsTWOIjbgApnvDT7M/96hRvyyQ1t67V3ryBld46P1B+gy?=
+ =?us-ascii?Q?4k/eaxsqT4ZcM7QkKKCPKZnJSNjUcR10pCJeAG0oMb8U4H5v7OSRSt8aJ56v?=
+ =?us-ascii?Q?iJ2Qg9iQ9upY6d+AqPWYrnRUInQHSjOxtRp6ckvx3E400/8NIhGgv8suGg6Y?=
+ =?us-ascii?Q?5cQSeougtIh2UZgv1ykqoI+vFH1QAYni0FDUw24AKfmM6jp9BQWFws7Fq1h0?=
+ =?us-ascii?Q?ikIT1ZWCRT92dELJb8kNtKAUpHXSxhO8Mxjm+Q+81C9cUh9LIk7YfXY2mnqx?=
+ =?us-ascii?Q?LVV5P0kEQ+cUC0T9cF9nkO1FbNkBNNu9zsGOixkxIHoopI3osweBidj4ry6K?=
+ =?us-ascii?Q?4sKKEiJrlT7wo20mD0Nkagvco3k=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a33ec916-7ea0-44f7-ba2a-08d9d40722ad
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2022 07:02:16.3024
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: cHEdMXNQ7K/6rcL1ZbO2V6sYg7xIPB4wUo5CfqwCkAhE00pYq4+n7c+CXtv4mm7Oh/zSZ3doVFDr1aUdnH/7Hfgxpz4omutb9e01y4922Gk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1294
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10222 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0 spamscore=0
+ phishscore=0 adultscore=0 suspectscore=0 mlxscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201100048
+X-Proofpoint-ORIG-GUID: cvxmtgYW_rUlMFV9blVU09QZGDx6bmf6
+X-Proofpoint-GUID: cvxmtgYW_rUlMFV9blVU09QZGDx6bmf6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KASAN reports a use-after-free report when doing normal scsi-mq test
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mkp/scsi.git for-next
+head:   315d049ad1951cef02d9337a2469cac51cca6932
+commit: efac162a4e4dc4cebcc658e02676821ca834b56c [67/132] scsi: efct: Don't pass GFP_DMA to dma_alloc_coherent()
+config: x86_64-randconfig-m031-20220107 (https://download.01.org/0day-ci/archive/20220108/202201082354.iAG3UuiL-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
 
-[69832.239032] ==================================================================
-[69832.241810] BUG: KASAN: use-after-free in bfq_dispatch_request+0x1045/0x44b0
-[69832.243267] Read of size 8 at addr ffff88802622ba88 by task kworker/3:1H/155
-[69832.244656]
-[69832.245007] CPU: 3 PID: 155 Comm: kworker/3:1H Not tainted 5.10.0-10295-g576c6382529e #8
-[69832.246626] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g155821a1990b-prebuilt.qemu.org 04/01/2014
-[69832.249069] Workqueue: kblockd blk_mq_run_work_fn
-[69832.250022] Call Trace:
-[69832.250541]  dump_stack+0x9b/0xce
-[69832.251232]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.252243]  print_address_description.constprop.6+0x3e/0x60
-[69832.253381]  ? __cpuidle_text_end+0x5/0x5
-[69832.254211]  ? vprintk_func+0x6b/0x120
-[69832.254994]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.255952]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.256914]  kasan_report.cold.9+0x22/0x3a
-[69832.257753]  ? bfq_dispatch_request+0x1045/0x44b0
-[69832.258755]  check_memory_region+0x1c1/0x1e0
-[69832.260248]  bfq_dispatch_request+0x1045/0x44b0
-[69832.261181]  ? bfq_bfqq_expire+0x2440/0x2440
-[69832.262032]  ? blk_mq_delay_run_hw_queues+0xf9/0x170
-[69832.263022]  __blk_mq_do_dispatch_sched+0x52f/0x830
-[69832.264011]  ? blk_mq_sched_request_inserted+0x100/0x100
-[69832.265101]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
-[69832.266206]  ? blk_mq_do_dispatch_ctx+0x570/0x570
-[69832.267147]  ? __switch_to+0x5f4/0xee0
-[69832.267898]  blk_mq_sched_dispatch_requests+0xdf/0x140
-[69832.268946]  __blk_mq_run_hw_queue+0xc0/0x270
-[69832.269840]  blk_mq_run_work_fn+0x51/0x60
-[69832.278170]  process_one_work+0x6d4/0xfe0
-[69832.278984]  worker_thread+0x91/0xc80
-[69832.279726]  ? __kthread_parkme+0xb0/0x110
-[69832.280554]  ? process_one_work+0xfe0/0xfe0
-[69832.281414]  kthread+0x32d/0x3f0
-[69832.282082]  ? kthread_park+0x170/0x170
-[69832.282849]  ret_from_fork+0x1f/0x30
-[69832.283573]
-[69832.283886] Allocated by task 7725:
-[69832.284599]  kasan_save_stack+0x19/0x40
-[69832.285385]  __kasan_kmalloc.constprop.2+0xc1/0xd0
-[69832.286350]  kmem_cache_alloc_node+0x13f/0x460
-[69832.287237]  bfq_get_queue+0x3d4/0x1140
-[69832.287993]  bfq_get_bfqq_handle_split+0x103/0x510
-[69832.289015]  bfq_init_rq+0x337/0x2d50
-[69832.289749]  bfq_insert_requests+0x304/0x4e10
-[69832.290634]  blk_mq_sched_insert_requests+0x13e/0x390
-[69832.291629]  blk_mq_flush_plug_list+0x4b4/0x760
-[69832.292538]  blk_flush_plug_list+0x2c5/0x480
-[69832.293392]  io_schedule_prepare+0xb2/0xd0
-[69832.294209]  io_schedule_timeout+0x13/0x80
-[69832.295014]  wait_for_common_io.constprop.1+0x13c/0x270
-[69832.296137]  submit_bio_wait+0x103/0x1a0
-[69832.296932]  blkdev_issue_discard+0xe6/0x160
-[69832.297794]  blk_ioctl_discard+0x219/0x290
-[69832.298614]  blkdev_common_ioctl+0x50a/0x1750
-[69832.304715]  blkdev_ioctl+0x470/0x600
-[69832.305474]  block_ioctl+0xde/0x120
-[69832.306232]  vfs_ioctl+0x6c/0xc0
-[69832.306877]  __se_sys_ioctl+0x90/0xa0
-[69832.307629]  do_syscall_64+0x2d/0x40
-[69832.308362]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[69832.309382]
-[69832.309701] Freed by task 155:
-[69832.310328]  kasan_save_stack+0x19/0x40
-[69832.311121]  kasan_set_track+0x1c/0x30
-[69832.311868]  kasan_set_free_info+0x1b/0x30
-[69832.312699]  __kasan_slab_free+0x111/0x160
-[69832.313524]  kmem_cache_free+0x94/0x460
-[69832.314367]  bfq_put_queue+0x582/0x940
-[69832.315112]  __bfq_bfqd_reset_in_service+0x166/0x1d0
-[69832.317275]  bfq_bfqq_expire+0xb27/0x2440
-[69832.318084]  bfq_dispatch_request+0x697/0x44b0
-[69832.318991]  __blk_mq_do_dispatch_sched+0x52f/0x830
-[69832.319984]  __blk_mq_sched_dispatch_requests+0x398/0x4f0
-[69832.321087]  blk_mq_sched_dispatch_requests+0xdf/0x140
-[69832.322225]  __blk_mq_run_hw_queue+0xc0/0x270
-[69832.323114]  blk_mq_run_work_fn+0x51/0x60
-[69832.323942]  process_one_work+0x6d4/0xfe0
-[69832.324772]  worker_thread+0x91/0xc80
-[69832.325518]  kthread+0x32d/0x3f0
-[69832.326205]  ret_from_fork+0x1f/0x30
-[69832.326932]
-[69832.338297] The buggy address belongs to the object at ffff88802622b968
-[69832.338297]  which belongs to the cache bfq_queue of size 512
-[69832.340766] The buggy address is located 288 bytes inside of
-[69832.340766]  512-byte region [ffff88802622b968, ffff88802622bb68)
-[69832.343091] The buggy address belongs to the page:
-[69832.344097] page:ffffea0000988a00 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88802622a528 pfn:0x26228
-[69832.346214] head:ffffea0000988a00 order:2 compound_mapcount:0 compound_pincount:0
-[69832.347719] flags: 0x1fffff80010200(slab|head)
-[69832.348625] raw: 001fffff80010200 ffffea0000dbac08 ffff888017a57650 ffff8880179fe840
-[69832.354972] raw: ffff88802622a528 0000000000120008 00000001ffffffff 0000000000000000
-[69832.356547] page dumped because: kasan: bad access detected
-[69832.357652]
-[69832.357970] Memory state around the buggy address:
-[69832.358926]  ffff88802622b980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[69832.360358]  ffff88802622ba00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[69832.361810] >ffff88802622ba80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[69832.363273]                       ^
-[69832.363975]  ffff88802622bb00: fb fb fb fb fb fb fb fb fb fb fb fb fb fc fc fc
-[69832.375960]  ffff88802622bb80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[69832.377405] ==================================================================
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-In bfq_dispatch_requestfunction, it may have function call:
+smatch warnings:
+drivers/scsi/elx/libefc/efc_els.c:73 efc_els_io_alloc_size() warn: sleeping in atomic context
 
-bfq_dispatch_request
-	__bfq_dispatch_request
-		bfq_select_queue
-			bfq_bfqq_expire
-				__bfq_bfqd_reset_in_service
-					bfq_put_queue
-						kmem_cache_free
-In this function call, in_serv_queue has beed expired and meet
-the conditions to free. In the function bfq_dispatch_request,
-the address of in_serv_queue pointing to has been released. For
-getting the value of idle_timer_disabled, it will get flags
-value from the address which in_serv_queue pointing to, then
-the problem of use-after-free happens;
+vim +73 drivers/scsi/elx/libefc/efc_els.c
 
-Fix the problem by adding ref of the in_serv_queue, and at the end
-of function(bfq_dispatch_request), resuming it by put it.
+8f406ef728597d James Smart       2021-06-01   40  struct efc_els_io_req *
+8f406ef728597d James Smart       2021-06-01   41  efc_els_io_alloc_size(struct efc_node *node, u32 reqlen, u32 rsplen)
+8f406ef728597d James Smart       2021-06-01   42  {
+8f406ef728597d James Smart       2021-06-01   43  	struct efc *efc;
+8f406ef728597d James Smart       2021-06-01   44  	struct efc_els_io_req *els;
+8f406ef728597d James Smart       2021-06-01   45  	unsigned long flags = 0;
+8f406ef728597d James Smart       2021-06-01   46  
+8f406ef728597d James Smart       2021-06-01   47  	efc = node->efc;
+8f406ef728597d James Smart       2021-06-01   48  
+8f406ef728597d James Smart       2021-06-01   49  	spin_lock_irqsave(&node->els_ios_lock, flags);
+                                                        ^^^^^^^^^^^^^^^^^
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+8f406ef728597d James Smart       2021-06-01   50  
+8f406ef728597d James Smart       2021-06-01   51  	if (!node->els_io_enabled) {
+8f406ef728597d James Smart       2021-06-01   52  		efc_log_err(efc, "els io alloc disabled\n");
+8f406ef728597d James Smart       2021-06-01   53  		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+8f406ef728597d James Smart       2021-06-01   54  		return NULL;
+8f406ef728597d James Smart       2021-06-01   55  	}
+8f406ef728597d James Smart       2021-06-01   56  
+8f406ef728597d James Smart       2021-06-01   57  	els = mempool_alloc(efc->els_io_pool, GFP_ATOMIC);
+8f406ef728597d James Smart       2021-06-01   58  	if (!els) {
+8f406ef728597d James Smart       2021-06-01   59  		atomic_add_return(1, &efc->els_io_alloc_failed_count);
+8f406ef728597d James Smart       2021-06-01   60  		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+8f406ef728597d James Smart       2021-06-01   61  		return NULL;
+8f406ef728597d James Smart       2021-06-01   62  	}
+8f406ef728597d James Smart       2021-06-01   63  
+8f406ef728597d James Smart       2021-06-01   64  	/* initialize refcount */
+8f406ef728597d James Smart       2021-06-01   65  	kref_init(&els->ref);
+8f406ef728597d James Smart       2021-06-01   66  	els->release = _efc_els_io_free;
+8f406ef728597d James Smart       2021-06-01   67  
+8f406ef728597d James Smart       2021-06-01   68  	/* populate generic io fields */
+8f406ef728597d James Smart       2021-06-01   69  	els->node = node;
+8f406ef728597d James Smart       2021-06-01   70  
+8f406ef728597d James Smart       2021-06-01   71  	/* now allocate DMA for request and response */
+8f406ef728597d James Smart       2021-06-01   72  	els->io.req.size = reqlen;
+8f406ef728597d James Smart       2021-06-01  @73  	els->io.req.virt = dma_alloc_coherent(&efc->pci->dev, els->io.req.size,
+efac162a4e4dc4 Christoph Hellwig 2021-12-14   74  					      &els->io.req.phys, GFP_KERNEL);
+                                                                                                                 ^^^^^^^^^^
+Sleeping in spin lock
+
+8f406ef728597d James Smart       2021-06-01   75  	if (!els->io.req.virt) {
+8f406ef728597d James Smart       2021-06-01   76  		mempool_free(els, efc->els_io_pool);
+8f406ef728597d James Smart       2021-06-01   77  		spin_unlock_irqrestore(&node->els_ios_lock, flags);
+8f406ef728597d James Smart       2021-06-01   78  		return NULL;
+8f406ef728597d James Smart       2021-06-01   79  	}
+8f406ef728597d James Smart       2021-06-01   80  
+8f406ef728597d James Smart       2021-06-01   81  	els->io.rsp.size = rsplen;
+8f406ef728597d James Smart       2021-06-01   82  	els->io.rsp.virt = dma_alloc_coherent(&efc->pci->dev, els->io.rsp.size,
+efac162a4e4dc4 Christoph Hellwig 2021-12-14   83  					      &els->io.rsp.phys, GFP_KERNEL);
+                                                                                                                 ^^^^^^^^^^
+Same
+
+8f406ef728597d James Smart       2021-06-01   84  	if (!els->io.rsp.virt) {
+8f406ef728597d James Smart       2021-06-01   85  		dma_free_coherent(&efc->pci->dev, els->io.req.size,
+8f406ef728597d James Smart       2021-06-01   86  				  els->io.req.virt, els->io.req.phys);
+8f406ef728597d James Smart       2021-06-01   87  		mempool_free(els, efc->els_io_pool);
+8f406ef728597d James Smart       2021-06-01   88  		els = NULL;
+8f406ef728597d James Smart       2021-06-01   89  	}
+8f406ef728597d James Smart       2021-06-01   90  
+8f406ef728597d James Smart       2021-06-01   91  	if (els) {
+8f406ef728597d James Smart       2021-06-01   92  		/* initialize fields */
+8f406ef728597d James Smart       2021-06-01   93  		els->els_retries_remaining = EFC_FC_ELS_DEFAULT_RETRIES;
+8f406ef728597d James Smart       2021-06-01   94  
+8f406ef728597d James Smart       2021-06-01   95  		/* add els structure to ELS IO list */
+8f406ef728597d James Smart       2021-06-01   96  		INIT_LIST_HEAD(&els->list_entry);
+8f406ef728597d James Smart       2021-06-01   97  		list_add_tail(&els->list_entry, &node->els_ios_list);
+8f406ef728597d James Smart       2021-06-01   98  	}
+8f406ef728597d James Smart       2021-06-01   99  
+8f406ef728597d James Smart       2021-06-01  100  	spin_unlock_irqrestore(&node->els_ios_lock, flags);
+8f406ef728597d James Smart       2021-06-01  101  	return els;
+8f406ef728597d James Smart       2021-06-01  102  }
+
 ---
- block/bfq-iosched.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index fec18118dc30..70bd280170f9 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5066,6 +5066,7 @@ static struct request *bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 	spin_lock_irq(&bfqd->lock);
- 
- 	in_serv_queue = bfqd->in_service_queue;
-+	in_serv_queue->ref++; /* aviod in_serv_queue release */
- 	waiting_rq = in_serv_queue && bfq_bfqq_wait_request(in_serv_queue);
- 
- 	rq = __bfq_dispatch_request(hctx);
-@@ -5077,6 +5078,10 @@ static struct request *bfq_dispatch_request(struct blk_mq_hw_ctx *hctx)
- 
- 	bfq_update_dispatch_stats(hctx->queue, rq, in_serv_queue,
- 				  idle_timer_disabled);
-+	/* resume in_serv_queue */
-+	spin_lock_irq(&bfqd->lock);
-+	bfq_put_queue(in_serv_queue);
-+	spin_unlock_irq(&bfqd->lock);
- 
- 	return rq;
- }
--- 
-2.31.1
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
