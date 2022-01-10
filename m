@@ -2,77 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04955C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244169AbiAJKnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:43:17 -0500
-Received: from mail-vk1-f180.google.com ([209.85.221.180]:41576 "EHLO
-        mail-vk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244131AbiAJKmz (ORCPT
+        id S244156AbiAJKnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:43:33 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:41675 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244122AbiAJKnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:42:55 -0500
-Received: by mail-vk1-f180.google.com with SMTP id i37so2931414vkr.8;
-        Mon, 10 Jan 2022 02:42:54 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7DkOf/RezHhAoR1wNR7F50d5rM5is1Qk6AorSgY7zgE=;
-        b=CZP8YROFyYlGtX6xxWnCTStciwq8pBKuNFqkJmrUH7++0T3OKu092oYu4P/krCTl3g
-         EaiBxIb8t2j66ilRVkWtiP78yaKwH3IYR+e0WSV8z7N/xEF4SLRCIW2hrcafDJyH1l22
-         BFLzxH3yXswNbnjC9S00b1BwKPtyXViVZRAeiWwHtrsHDZ/T9hU0gdcl8B05L3M1+Z6y
-         ZV0bl1/9Epp/WXwfFLpvIjiL1eYYCGJyaUneYBT3p2eA04cZaSzjLCO34WLAyVF3t+uj
-         WqgxuXrt1MoKqWcQcEmW+w025fr2wcfTnLRh5R9Zatbg7Ozxl8Q5kKYE1wDotYua7qVZ
-         25RQ==
-X-Gm-Message-State: AOAM5314eVD4ZaMcSmzAEwVY7sGgkDz5SQgFC+wNRNI1xM6VonFvvVZ/
-        6hOTND8JZLPy7YgAm3NGIgQK435gBxiifA==
-X-Google-Smtp-Source: ABdhPJxF3rHs/4gnq3n2ikfev5UvXpgfTBV6ZfFie5dNfCBmHvAfFe4WbaGu5cc/2o5k3xWW66j/5w==
-X-Received: by 2002:a05:6122:c9e:: with SMTP id ba30mr1677223vkb.17.1641811374377;
-        Mon, 10 Jan 2022 02:42:54 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id d198sm1418063vke.44.2022.01.10.02.42.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 02:42:53 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id r15so22609135uao.3;
-        Mon, 10 Jan 2022 02:42:53 -0800 (PST)
-X-Received: by 2002:ab0:2118:: with SMTP id d24mr25154304ual.78.1641811373530;
- Mon, 10 Jan 2022 02:42:53 -0800 (PST)
+        Mon, 10 Jan 2022 05:43:05 -0500
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Mon, 10 Jan 2022
+ 18:42:51 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH V5 4/5] tty: serial: meson: Make some bit of the REG5 register writable.
+Date:   Mon, 10 Jan 2022 18:42:13 +0800
+Message-ID: <20220110104214.25321-5-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220110104214.25321-1-yu.tu@amlogic.com>
+References: <20220110104214.25321-1-yu.tu@amlogic.com>
 MIME-Version: 1.0
-References: <20220108054109.119750-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220108054109.119750-1-yang.lee@linux.alibaba.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 10 Jan 2022 11:42:42 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXLPbrjG0LWPEhMrXvcj017EKPt9Wr9HsmkSczRnadbDg@mail.gmail.com>
-Message-ID: <CAMuHMdXLPbrjG0LWPEhMrXvcj017EKPt9Wr9HsmkSczRnadbDg@mail.gmail.com>
-Subject: Re: [PATCH -next] i2c: sh_mobile: remove unneeded semicolon
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 8, 2022 at 9:55 PM Yang Li <yang.lee@linux.alibaba.com> wrote:
-> Eliminate the following coccicheck warning:
-> ./drivers/i2c/busses/i2c-sh_mobile.c:849:3-4: Unneeded semicolon
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+The UART_REG5 register defaults to 0. The console port is set in
+ROMCODE. But other UART ports default to 0, so make bit24 and
+bit[26,27] writable so that the UART can choose a more
+appropriate clock.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+---
+ drivers/tty/serial/meson_uart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Gr{oetje,eeting}s,
+diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
+index 1004fd0b0c9e..fd128878e91a 100644
+--- a/drivers/tty/serial/meson_uart.c
++++ b/drivers/tty/serial/meson_uart.c
+@@ -693,7 +693,7 @@ static int meson_uart_probe_clocks(struct uart_port *port)
+ 							CLK_SET_RATE_NO_REPARENT,
+ 							port->membase + AML_UART_REG5,
+ 							26, 2,
+-							CLK_DIVIDER_READ_ONLY,
++							CLK_DIVIDER_ROUND_CLOSEST,
+ 							xtal_div_table, NULL);
+ 		if (IS_ERR(hw))
+ 			return PTR_ERR(hw);
+@@ -719,7 +719,7 @@ static int meson_uart_probe_clocks(struct uart_port *port)
+ 					CLK_SET_RATE_PARENT,
+ 					port->membase + AML_UART_REG5,
+ 					24, 0x1,
+-					CLK_MUX_READ_ONLY,
++					CLK_MUX_ROUND_CLOSEST,
+ 					NULL, NULL);
+ 	if (IS_ERR(hw))
+ 		return PTR_ERR(hw);
+-- 
+2.33.1
 
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
