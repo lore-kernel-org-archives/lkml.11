@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E69E1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03734C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243438AbiAJHp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:45:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        id S243545AbiAJHpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240801AbiAJHgg (ORCPT
+        with ESMTP id S240572AbiAJHiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:36:36 -0500
+        Mon, 10 Jan 2022 02:38:18 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B9AC0251A7;
-        Sun,  9 Jan 2022 23:32:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA80C028BA8;
+        Sun,  9 Jan 2022 23:32:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5AA2AB81212;
-        Mon, 10 Jan 2022 07:32:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B9FBC36AF2;
-        Mon, 10 Jan 2022 07:32:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AADCFB81204;
+        Mon, 10 Jan 2022 07:32:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE43C36AED;
+        Mon, 10 Jan 2022 07:32:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799926;
-        bh=1RZ0kPZl9KxI1zgPVbZnXcBRIz2Lcdn7bViV5huftKM=;
+        s=korg; t=1641799954;
+        bh=ITblwZ2ADn0VPZZJdOsjLdDtAN52vSlPSF1hbAWXnMk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0uVAu2PKZzayeQe30RXBr7nKW0JhyRaZY8R/ZXb6kDraKVDQEoK9jJUNkPqPt5zvv
-         gy2iOPSfUNTfwudbvJ5YbzoeusQTsGQvq3qe8Vw2pBqSHnLNish9fXQ1ODtd+NBIOa
-         7i2ATuXfZm7BTIk3J9NZKsogKlKoV0/ev4bC4J6I=
+        b=iqRWYAzBAKM9yXlU7Nr0IWj/UDayTi6QdZMybUw+yvgAx/IzpZ7Fk8qbFzMueJzEf
+         gi0j+NUArSlsisTkEJKairACp1Iqkx6eVKG+4kMZjIKa0FGyKlMROlM+ICdjTNwBe8
+         p31rpc74oIKB/K5fNleqRdEZj0z8UuMARKNsYuAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 5.15 19/72] ftrace/samples: Add missing prototypes direct functions
-Date:   Mon, 10 Jan 2022 08:22:56 +0100
-Message-Id: <20220110071822.221527797@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 28/72] sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+Date:   Mon, 10 Jan 2022 08:23:05 +0100
+Message-Id: <20220110071822.517882112@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -49,76 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 0daf5cb217a9ca8ae91b8f966ddae322699fb71d upstream.
+commit 7d18a07897d07495ee140dd319b0e9265c0f68ba upstream.
 
-There's another compilation fail (first here [1]) reported by kernel
-test robot for W=1 clang build:
+tx_queue_len can be set to ~0U, we need to be more
+careful about overflows.
 
-  >> samples/ftrace/ftrace-direct-multi-modify.c:7:6: warning: no previous
-  prototype for function 'my_direct_func1' [-Wmissing-prototypes]
-     void my_direct_func1(unsigned long ip)
+__fls(0) is undefined, as this report shows:
 
-Direct functions in ftrace direct sample modules need to have prototypes
-defined. They are already global in order to be visible for the inline
-assembly, so there's no problem.
+UBSAN: shift-out-of-bounds in net/sched/sch_qfq.c:1430:24
+shift exponent 51770272 is too large for 32-bit type 'int'
+CPU: 0 PID: 25574 Comm: syz-executor.0 Not tainted 5.16.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x201/0x2d8 lib/dump_stack.c:106
+ ubsan_epilogue lib/ubsan.c:151 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x494/0x530 lib/ubsan.c:330
+ qfq_init_qdisc+0x43f/0x450 net/sched/sch_qfq.c:1430
+ qdisc_create+0x895/0x1430 net/sched/sch_api.c:1253
+ tc_modify_qdisc+0x9d9/0x1e20 net/sched/sch_api.c:1660
+ rtnetlink_rcv_msg+0x934/0xe60 net/core/rtnetlink.c:5571
+ netlink_rcv_skb+0x200/0x470 net/netlink/af_netlink.c:2496
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x814/0x9f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0xaea/0xe60 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x5b9/0x910 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmsg+0x280/0x370 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-The kernel test robot reported just error for ftrace-direct-multi-modify,
-but I got same errors also for the rest of the modules touched by this patch.
-
-[1] 67d4f6e3bf5d ftrace/samples: Add missing prototype for my_direct_func
-
-Link: https://lkml.kernel.org/r/20211219135317.212430-1-jolsa@kernel.org
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: e1067a07cfbc ("ftrace/samples: Add module to test multi direct modify interface")
-Fixes: ae0cc3b7e7f5 ("ftrace/samples: Add a sample module that implements modify_ftrace_direct()")
-Fixes: 156473a0ff4f ("ftrace: Add another example of register_ftrace_direct() use case")
-Fixes: b06457c83af6 ("ftrace: Add sample module that uses register_ftrace_direct()")
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Fixes: 462dbc9101ac ("pkt_sched: QFQ Plus: fair-queueing service at DRR cost")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/ftrace/ftrace-direct-modify.c |    3 +++
- samples/ftrace/ftrace-direct-too.c    |    3 +++
- samples/ftrace/ftrace-direct.c        |    2 ++
- 3 files changed, 8 insertions(+)
+ net/sched/sch_qfq.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/samples/ftrace/ftrace-direct-modify.c
-+++ b/samples/ftrace/ftrace-direct-modify.c
-@@ -3,6 +3,9 @@
- #include <linux/kthread.h>
- #include <linux/ftrace.h>
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -1422,10 +1422,8 @@ static int qfq_init_qdisc(struct Qdisc *
+ 	if (err < 0)
+ 		return err;
  
-+extern void my_direct_func1(void);
-+extern void my_direct_func2(void);
-+
- void my_direct_func1(void)
- {
- 	trace_printk("my direct func1\n");
---- a/samples/ftrace/ftrace-direct-too.c
-+++ b/samples/ftrace/ftrace-direct-too.c
-@@ -4,6 +4,9 @@
- #include <linux/mm.h> /* for handle_mm_fault() */
- #include <linux/ftrace.h>
- 
-+extern void my_direct_func(struct vm_area_struct *vma,
-+			   unsigned long address, unsigned int flags);
-+
- void my_direct_func(struct vm_area_struct *vma,
- 			unsigned long address, unsigned int flags)
- {
---- a/samples/ftrace/ftrace-direct.c
-+++ b/samples/ftrace/ftrace-direct.c
-@@ -4,6 +4,8 @@
- #include <linux/sched.h> /* for wake_up_process() */
- #include <linux/ftrace.h>
- 
-+extern void my_direct_func(struct task_struct *p);
-+
- void my_direct_func(struct task_struct *p)
- {
- 	trace_printk("waking up %s-%d\n", p->comm, p->pid);
+-	if (qdisc_dev(sch)->tx_queue_len + 1 > QFQ_MAX_AGG_CLASSES)
+-		max_classes = QFQ_MAX_AGG_CLASSES;
+-	else
+-		max_classes = qdisc_dev(sch)->tx_queue_len + 1;
++	max_classes = min_t(u64, (u64)qdisc_dev(sch)->tx_queue_len + 1,
++			    QFQ_MAX_AGG_CLASSES);
+ 	/* max_cl_shift = floor(log_2(max_classes)) */
+ 	max_cl_shift = __fls(max_classes);
+ 	q->max_agg_classes = 1<<max_cl_shift;
 
 
