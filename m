@@ -2,103 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F94C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235558AbiAJObQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 09:31:16 -0500
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:46439 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235500AbiAJObO (ORCPT
+        id S235562AbiAJOd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 09:33:56 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:39154 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230469AbiAJOdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 09:31:14 -0500
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20AET4vh001081
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 09:29:06 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id A1D5115C00C8; Mon, 10 Jan 2022 09:29:04 -0500 (EST)
-Date:   Mon, 10 Jan 2022 09:29:04 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
-        Simo Sorce <simo@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Walton <noloader@gmail.com>,
-        Stephan Mueller <smueller@chronox.de>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Alexander E. Patrakov" <patrakov@gmail.com>,
-        "Ahmed S. Darwish" <darwish.07@gmail.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Vito Caputo <vcaputo@pengaru.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
-        William Jon McCann <mccann@jhu.edu>,
-        zhangjs <zachary@baishancloud.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Florian Weimer <fweimer@redhat.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Peter Matthias <matthias.peter@bsi.bund.de>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Neil Horman <nhorman@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Petr Tesarik <ptesarik@suse.cz>,
-        John Haxby <john.haxby@oracle.com>,
-        Alexander Lobakin <alobakin@mailbox.org>,
-        Jirka Hladky <jhladky@redhat.com>
-Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
-Message-ID: <YdxCsI3atPILABYe@mit.edu>
-References: <YaYvYdnSaAvS8MAk@kroah.com>
- <ac123d96b31f4a51b167b4e85a205f31a6c97876.camel@redhat.com>
- <YaZHKHjomEivul6U@kroah.com>
- <YaZqVxI1C8RByq+w@gmail.com>
- <CAHmME9p60Ve5XJTVcmGvSpUkg_hRp_i0rGG0R9VhuwLs0o_nXQ@mail.gmail.com>
- <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
- <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
- <20211210014337.xmin2lu5rhhe3b3t@valinor>
- <20220110132349.siplwka7yhe2tmwc@valinor>
- <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
+        Mon, 10 Jan 2022 09:33:55 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 6EC9B1F393;
+        Mon, 10 Jan 2022 14:33:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641825234; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=nIdYnUKKHSYPz1SXjOAJXSBQBLUMF5SXe7Kpd5udxW4=;
+        b=A1FspWCAyGfwjMoY6lOS4wE0nn98w7K6PRnOFYkm1O72I0HvanG3Yj3ZKWAIBpHE+C2ugY
+        Crnaf1f03/mqL1TDUjTlPhJfZO9EldBCSNaSO+oUYdN9braD1axgNEf5wlYTkXigpgclf+
+        d3/DhiiSzDnxVieVvYGLZiH41jMzBzA=
+Received: from suse.cz (unknown [10.100.216.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id F40EAA3B84;
+        Mon, 10 Jan 2022 14:33:53 +0000 (UTC)
+Date:   Mon, 10 Jan 2022 15:33:50 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] printk for 5.17
+Message-ID: <YdxDzgijikydIwOP@alley>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 03:11:46PM +0100, Jason A. Donenfeld wrote:
-> On Mon, Jan 10, 2022 at 2:24 PM Marcelo Henrique Cerri
-> <marcelo.cerri@canonical.com> wrote:
-> > Hoping that might help with the discussion and to explain why I do
-> > consider those solutions a "hack", that's the patch we've been using
-> > so far to achieve SP 800-90B compliance:
-> >
-> > https://kernel.ubuntu.com/~mhcerri/0001-UBUNTU-SAUCE-random-Use-Crypto-API-DRBG-for-urandom-.patch
-> 
-> Thanks for sending this in response to my request for it in our private thread.
-> 
-> Just to confirm, this little patch here gives you FIPS certification?
+Hi Linus,
 
-There might be some FIPS certification labs that might be willing to
-be taken in by the jitterentropy story, but when I've had private
-communications from people who are familiar with the Intel
-microarchitecture saying that jitterentropy is mostly "security by
-obscurity", I'd be strongly opposed to replacing the current scheme
-with something which is purely jitteretropy.
+please pull the latest printk changes from
 
-Perhaps an build-time option where one of the seeds into the CRNG is
-"jitterentropy", but we keep everything else.  That way, jitterentropy
-can still be TSA-style "security theatre", but we're not utterly
-dependant on the "the CPU microarchitecture is SOOOOOOO complicated,
-it *must* be unpredictable".
+  git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.17
 
-						- Ted
+============================================
+
+- Remove some twists in the console registration code. It does not change
+  the existing behavior except for one corner case. The proper default
+  console (with tty binding) will be registered again even when it has
+  been removed in the meantime. It is actually a bug fix. Anyway, this
+  modified behavior requires some manual interaction.
+
+- Optimize gdb extension for huge ring buffers.
+
+- Do not use atomic operations for a local bitmap variable.
+
+- Update git links in MAINTAINERS.
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      vsprintf: Use non-atomic bitmap API when applicable
+
+John Ogness (1):
+      scripts/gdb: lx-dmesg: read records individually
+
+Petr Mladek (8):
+      printk/console: Split out code that enables default console
+      printk/console: Rename has_preferred_console to need_default_console
+      printk/console: Remove unnecessary need_default_console manipulation
+      printk/console: Remove need_default_console variable
+      printk/console: Clean up boot console handling in register_console()
+      MAINTAINERS/vsprintf: Update link to printk git tree
+      MAINTAIERS/printk: Add link to printk git
+      Merge branch 'console-registration-cleanup' into for-linus
+
+ MAINTAINERS                |   3 +-
+ kernel/printk/printk.c     | 104 +++++++++++++++++++++++++--------------------
+ lib/vsprintf.c             |   4 +-
+ scripts/gdb/linux/dmesg.py |  35 +++++++--------
+ 4 files changed, 80 insertions(+), 66 deletions(-)
