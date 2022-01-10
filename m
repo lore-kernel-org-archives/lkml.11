@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 656A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E952CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243292AbiAJHpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
+        id S243347AbiAJHpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241545AbiAJHf4 (ORCPT
+        with ESMTP id S241680AbiAJHgD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:35:56 -0500
+        Mon, 10 Jan 2022 02:36:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2837FC025267;
-        Sun,  9 Jan 2022 23:31:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC94C02526E;
+        Sun,  9 Jan 2022 23:31:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCEBB60B63;
-        Mon, 10 Jan 2022 07:31:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A04F9C36AE9;
-        Mon, 10 Jan 2022 07:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FFA960B03;
+        Mon, 10 Jan 2022 07:31:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 761B7C36AE9;
+        Mon, 10 Jan 2022 07:31:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799876;
-        bh=ig92hey2Onqg/E9ZxomRHc1ckmA+ocL+WBV8lkyX5DM=;
+        s=korg; t=1641799879;
+        bh=t7Z2+dfN4OfS200aJliZHc8nz+GbnPFmXESIXqKvsrk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qHgQdm2vKx2og2ca04u8dcQlvsSCqcdZ8hHyQ1jRniwQ1NL8LQUDe2Gb8IXc67+OO
-         KFD+ghd/RFoh5uz6Ia5b7l81q7898zepkoA2D3qUPgYLHMkUBR4iOEfRaYK+dK9VX2
-         F/JfBp36CNXv6doXYOvGpSyPaQ+tokbfGVzcmzVg=
+        b=zNszAUl/+TyHXBVn4UiIYvq2cVCA8yvoQUU5fEfr7Y8VBiGSgd3SaQQSzHwmBswF9
+         XBxBQ3wgnee8kk2NKxy6Hhk1mE4y3WY6EJOQ40w9dXVt6r03AUtvZgodR1t2OOHIHI
+         zAZ6tnhGo1YaQV1/Km1FIUouUbvDE/qSZO7WjF4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 19/43] ipv6: Check attribute length for RTA_GATEWAY in multipath route
-Date:   Mon, 10 Jan 2022 08:23:16 +0100
-Message-Id: <20220110071817.997363901@linuxfoundation.org>
+Subject: [PATCH 5.10 20/43] ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
+Date:   Mon, 10 Jan 2022 08:23:17 +0100
+Message-Id: <20220110071818.027417725@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -51,58 +51,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Ahern <dsahern@kernel.org>
 
-commit 4619bcf91399f00a40885100fb61d594d8454033 upstream.
+commit 1ff15a710a862db1101b97810af14aedc835a86a upstream.
 
-Commit referenced in the Fixes tag used nla_memcpy for RTA_GATEWAY as
-does the current nla_get_in6_addr. nla_memcpy protects against accessing
-memory greater than what is in the attribute, but there is no check
-requiring the attribute to have an IPv6 address. Add it.
+Make sure RTA_GATEWAY for IPv6 multipath route has enough bytes to hold
+an IPv6 address.
 
-Fixes: 51ebd3181572 ("ipv6: add support of equal cost multipath (ECMP)")
+Fixes: 6b9ea5a64ed5 ("ipv6: fix multipath route replace error recovery")
 Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc: Roopa Prabhu <roopa@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c |   21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ net/ipv6/route.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -5113,6 +5113,19 @@ out:
- 	return should_notify;
- }
- 
-+static int fib6_gw_from_attr(struct in6_addr *gw, struct nlattr *nla,
-+			     struct netlink_ext_ack *extack)
-+{
-+	if (nla_len(nla) < sizeof(*gw)) {
-+		NL_SET_ERR_MSG(extack, "Invalid IPv6 address in RTA_GATEWAY");
-+		return -EINVAL;
-+	}
-+
-+	*gw = nla_get_in6_addr(nla);
-+
-+	return 0;
-+}
-+
- static int ip6_route_multipath_add(struct fib6_config *cfg,
- 				   struct netlink_ext_ack *extack)
- {
-@@ -5153,7 +5166,13 @@ static int ip6_route_multipath_add(struc
+@@ -5342,7 +5342,11 @@ static int ip6_route_multipath_del(struc
  
  			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
  			if (nla) {
--				r_cfg.fc_gateway = nla_get_in6_addr(nla);
-+				int ret;
-+
-+				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
+-				nla_memcpy(&r_cfg.fc_gateway, nla, 16);
++				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
 +							extack);
-+				if (ret)
-+					return ret;
++				if (err)
++					return err;
 +
  				r_cfg.fc_flags |= RTF_GATEWAY;
  			}
- 			r_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
+ 		}
 
 
