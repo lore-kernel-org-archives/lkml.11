@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:26:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:26:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234874AbiAJE0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:26:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
+        id S233420AbiAJE0m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:26:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233329AbiAJEYi (ORCPT
+        with ESMTP id S238605AbiAJEYn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 23:24:38 -0500
+        Sun, 9 Jan 2022 23:24:43 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FF4EC061748
-        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B3FC06175B
+        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=cNkGRRqE4MZ2IOY+aRtZ6O11ENnM+VUoRZ1VxqjqE3o=; b=XOj3bE4s2SziUPl4NNs9v1GOQC
-        HevnwI8lrxL7DmnEAPUYAWy34kzK5npISqem7T56xj61z6L1q/Ddv/LabQ3++ka6+lsIEVo41JWsX
-        8rtSy+opZf39sTkTo8cAEMnv/XkqN6anRr/PyfCxHDwlLFFWajLlzFxx8mA+fso+lCsl+OSsqnfJa
-        6MJvBhMubiCav7PUMH1D4cVum7gqyi9YjODfwdYR0krwMxJO4ODeZhPC8iY0HPWKXqS5m8d63HWV4
-        CFSi3NBDsz+n8zSkyDHuxQ1sJpNTOR1oMnGth7hL9Z1Ux+EPuZAqRCG7JaoW4hwP7AQx5bDnFoUVp
-        urm0Tg0g==;
+        bh=/DPJvh8nZY8O3CzKnWIX/byaa2jenc4w/Fleth+y20E=; b=gHzU4niHDL73CDvZ4y9ZrGch48
+        bMd5a3+9Z3TkUFgqpFk1IFK3Yu6nb+K2xMlltYCDn/3nNwCt58gKoG/cLHjhUoUH0s6MH/PH5GsOt
+        8xM+W9e6+2bFcXR9YEJMzKaqI5d6E2wpTwXYlSlGgf/PYNXXGRUYIxs9iLRgwoR3Jd5QhKxrkvT4B
+        n7YcK3RyLBwZNGitu7ZYNkzKAeCx6UNIvZ5FikJ+1t9s6FxkfNsmyD6tV2wkKOyW7UaFwyLWhDK3V
+        KyVFyPhmfKXNObz8PJkzqer7lRnp7CJiUO6sO4BFlN869hlAxZAwSfE4NJHkcKdjm6ePwcZ0UAebu
+        s/Fm3+JQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6mE8-0025wi-IQ; Mon, 10 Jan 2022 04:24:12 +0000
+        id 1n6mE8-0025we-Dp; Mon, 10 Jan 2022 04:24:12 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 09/28] gup: Turn hpage_pincount_add() into page_pincount_add()
-Date:   Mon, 10 Jan 2022 04:23:47 +0000
-Message-Id: <20220110042406.499429-10-willy@infradead.org>
+Subject: [PATCH v2 07/28] gup: Remove an assumption of a contiguous memmap
+Date:   Mon, 10 Jan 2022 04:23:45 +0000
+Message-Id: <20220110042406.499429-8-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
@@ -46,69 +46,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify try_grab_compound_head() and remove an unnecessary
-VM_BUG_ON by handling pages both with and without a pincount field in
-page_pincount_add().
+This assumption needs the inverse of nth_page(), which I've temporarily
+named page_nth() until someone comes up with a better name.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/gup.c | 33 +++++++++++++++------------------
- 1 file changed, 15 insertions(+), 18 deletions(-)
+ include/linux/mm.h | 2 ++
+ mm/gup.c           | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index d8b7d7ed14dd..f2f3400665a4 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -216,8 +216,10 @@ int overcommit_policy_handler(struct ctl_table *, int, void *, size_t *,
+ 
+ #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
+ #define nth_page(page,n) pfn_to_page(page_to_pfn((page)) + (n))
++#define page_nth(head, tail)	(page_to_pfn(tail) - page_to_pfn(head))
+ #else
+ #define nth_page(page,n) ((page) + (n))
++#define page_nth(head, tail)	((tail) - (head))
+ #endif
+ 
+ /* to align the pointer to the (next) page boundary */
 diff --git a/mm/gup.c b/mm/gup.c
-index dbb1b54d0def..3ed9907f3c8d 100644
+index 9c0a702a4e03..afb638a30e44 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -29,12 +29,23 @@ struct follow_page_context {
- 	unsigned int page_mask;
- };
+@@ -238,8 +238,8 @@ static inline struct page *compound_range_next(unsigned long i,
+ 	next = nth_page(start, i);
+ 	page = compound_head(next);
+ 	if (PageHead(page))
+-		nr = min_t(unsigned int,
+-			   page + compound_nr(page) - next, npages - i);
++		nr = min_t(unsigned int, npages - i,
++			   compound_nr(page) - page_nth(page, next));
  
--static void hpage_pincount_add(struct page *page, int refs)
-+/*
-+ * When pinning a compound page of order > 1 (which is what
-+ * hpage_pincount_available() checks for), use an exact count to track
-+ * it, via page_pincount_add/_sub().
-+ *
-+ * However, be sure to *also* increment the normal page refcount field
-+ * at least once, so that the page really is pinned.  That's why the
-+ * refcount from the earlier try_get_compound_head() is left intact.
-+ */
-+static void page_pincount_add(struct page *page, int refs)
- {
--	VM_BUG_ON_PAGE(!hpage_pincount_available(page), page);
- 	VM_BUG_ON_PAGE(page != compound_head(page), page);
- 
--	atomic_add(refs, compound_pincount_ptr(page));
-+	if (hpage_pincount_available(page))
-+		atomic_add(refs, compound_pincount_ptr(page));
-+	else
-+		page_ref_add(page, refs * (GUP_PIN_COUNTING_BIAS - 1));
- }
- 
- static void hpage_pincount_sub(struct page *page, int refs)
-@@ -150,21 +161,7 @@ struct page *try_grab_compound_head(struct page *page,
- 		if (!page)
- 			return NULL;
- 
--		/*
--		 * When pinning a compound page of order > 1 (which is what
--		 * hpage_pincount_available() checks for), use an exact count to
--		 * track it, via hpage_pincount_add/_sub().
--		 *
--		 * However, be sure to *also* increment the normal page refcount
--		 * field at least once, so that the page really is pinned.
--		 * That's why the refcount from the earlier
--		 * try_get_compound_head() is left intact.
--		 */
--		if (hpage_pincount_available(page))
--			hpage_pincount_add(page, refs);
--		else
--			page_ref_add(page, refs * (GUP_PIN_COUNTING_BIAS - 1));
--
-+		page_pincount_add(page, refs);
- 		mod_node_page_state(page_pgdat(page), NR_FOLL_PIN_ACQUIRED,
- 				    refs);
- 
+ 	*ntails = nr;
+ 	return page;
 -- 
 2.33.0
 
