@@ -2,78 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61721C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FB8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245463AbiAJM1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 07:27:03 -0500
-Received: from mga04.intel.com ([192.55.52.120]:46136 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245449AbiAJM0j (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:26:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641817599; x=1673353599;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=A8B0E3h5mL4njMB7e9ZJWWy8Me+SECuCSc9ip73ybvA=;
-  b=VIudun+CsrvgyXYLCwpxHDUFsU1+BUcGKYftKvGVXKO94uTbm1V8CkvN
-   v6KsNAYy2L6NF2EoDu7JhEVXIrrQzyjxoq5VqKsALhJnvaecboA2/Z/bV
-   OG93hCZPXF8Y2Lvk+P90ocVQWvwQK4ud5eO55WCqs7P7osBCBOOQsA9eA
-   Xq6gAJqj26SH79zfhXXItbyaTHIHW/TSZf0y3GQ9e58dvHRevzwyWFw09
-   Msma/vVIxvl+/04KgNq17jaNzRyEXLBuss/YE8NWEPU24FQulQKKuqhKB
-   YLhgrY/o7nIAXrbZJpy2b3jkKKSKpFlXL5wpHayBGlPkG9c0Dov9LlGK9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="242025593"
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="242025593"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 04:26:39 -0800
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="575803454"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 04:26:37 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n6tjn-008ftV-2k;
-        Mon, 10 Jan 2022 14:25:23 +0200
-Date:   Mon, 10 Jan 2022 14:25:22 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Cai Huoqing <caihuoqing@baidu.com>, linux-iio@vger.kernel.org,
+        id S245477AbiAJM3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 07:29:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34494 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245488AbiAJM3e (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 07:29:34 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46A8BC06173F;
+        Mon, 10 Jan 2022 04:29:34 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id i8-20020a17090a138800b001b3936fb375so6838673pja.1;
+        Mon, 10 Jan 2022 04:29:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rBfRzRO7n13YTizN2EeFImg/FwnKSMH4zlIbjLIB3Iw=;
+        b=edRxPRwRwzOSpdTmZxLrLLZyT2oPGeI/wY2NAnbPvNEDSwEJwp2e8WoQKfQy9oZeT2
+         f9TfFmwT+8Vj8hDyRLnCTa6HfpyGXg1Jb3/8fUl37nhSEDHetHIycGqyRhqFudzyT986
+         /oiQjg1QR1Op5R7hi8tQ2sHdOnjpHoAR/ONXpnb3jPe3gAglNGT4giHy9yRi3DRsZ24t
+         55t2Ti4XH4zxeHbgITVHtgX0TcJC0aoflX9giyA4L8bpqR4/BS55RdxG3GtC7DCDU41n
+         ImQsyzzi+vFETZK/UP6/Q1PZQbqKen8ynucqb7Na3XxN9GrVbzGeHPSuuuGmjTETdH6Z
+         dBWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rBfRzRO7n13YTizN2EeFImg/FwnKSMH4zlIbjLIB3Iw=;
+        b=fiSzPJxWu6A4wt6mL6S1nDDTW0a2JdPky2w5ofml4cgt9MW6ecFcnhUKVLOYZ4A1tu
+         kuHUyytcOhOV+8Fg8+ynrev/yCwbUL9c4mFGRMK5Elf1nQx3ezZ3HZfW2V68fv3Fctba
+         b3U4Tg2KIPQCSlqcQO4SkJnju1TCULhmMHkXPc7LKU9q6r7kLwtr69gEchQm7QVnAzj8
+         QHerqayLghGgz+yj9FlOlksv1olt/gdlLsOqIbiwVmDjZR2aDMUicVm6RI110XEoWc7D
+         cX5BMWmMgdtf7sAPsxiBnYwQaXyBb+nzcmZ2DEqdYoQSb5XpmG3mn4TsAcg3Qj7Tow/n
+         RsDQ==
+X-Gm-Message-State: AOAM532eJdUnLHVPEKGJmHwli+FrYSXkC0bxTmfk0j00dUexSNb3N8A/
+        gbtYm0MdtD4gvhdwdZYgClk=
+X-Google-Smtp-Source: ABdhPJw2X6GVrl8WgOo8PMcCuQqkff+R4SkYON+2Ndpxxs0vtLuF1KG8qbrCdchruPrZNb2CtfYAhA==
+X-Received: by 2002:a17:90b:4f82:: with SMTP id qe2mr29843162pjb.128.1641817773951;
+        Mon, 10 Jan 2022 04:29:33 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id f10sm7426565pfj.145.2022.01.10.04.29.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 04:29:33 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.xin16@zte.com.cn
+To:     alexs@kernel.org
+Cc:     xu.xin16@zte.com.cn, corbet@lwn.net, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: stm: don't always auto-enable I2C and SPI
- interface drivers
-Message-ID: <Ydwlsr8WjdsSWvoZ@smile.fi.intel.com>
-References: <20220109124326.3696775-1-nikita.yoush@cogentembedded.com>
+Subject: [PATCH 0/4] Add four translated documents for KSM
+Date:   Mon, 10 Jan 2022 12:29:29 +0000
+Message-Id: <20220110122929.647573-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220109124326.3696775-1-nikita.yoush@cogentembedded.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 09, 2022 at 03:43:26PM +0300, Nikita Yushchenko wrote:
-> This patch makes I2C and SPI interface drivers for STMicroelectronics
-> sensor chips individually selectable via Kconfig.
-> 
-> The default is kept unchanged - I2C and SPI interface drivers are still
-> selected by default if the corresponding bus support is available.
-> 
-> However, the patch makes it is possible to explicitly disable drivers
-> that are not needed for particular target.
+From: xu xin <xu.xin16@zte.com.cn>
 
-Just noticed, what stm supposed to mean? `git log` against those drivers
-suggests something else.
+Add four Chinese translation documents about KSM. They are
+1. admin-guide/mm/ksm.rst
+2. admin-guide/mm/index.rst
+3. vm/index.rst
+4. vm/ksm.rst
+
+xu xin (4):
+  Add zh_CN/admin-guide/mm/ksm.rst
+  Add zh_CN/admin-guide/mm/index.rst
+  Add zh_CN/vm/index.rst
+  Add zh_CN/vm/ksm.rst
+
+ .../translations/zh_CN/admin-guide/mm/index.rst    |  47 +++++++
+ .../translations/zh_CN/admin-guide/mm/ksm.rst      | 156 +++++++++++++++++++++
+ Documentation/translations/zh_CN/vm/index.rst      |  49 +++++++
+ Documentation/translations/zh_CN/vm/ksm.rst        |  77 ++++++++++
+ 4 files changed, 329 insertions(+)
+ create mode 100644 Documentation/translations/zh_CN/admin-guide/mm/index.rst
+ create mode 100644 Documentation/translations/zh_CN/admin-guide/mm/ksm.rst
+ create mode 100644 Documentation/translations/zh_CN/vm/index.rst
+ create mode 100644 Documentation/translations/zh_CN/vm/ksm.rst
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+2.15.2
