@@ -2,192 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 598D8C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343510AbiAJUqi (ORCPT
+        id S1343594AbiAJUq5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 15:46:38 -0500
-Received: from mail-bn8nam12on2053.outbound.protection.outlook.com ([40.107.237.53]:37569
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242206AbiAJUqg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 15:46:36 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cpiVwW5E862HJHrVYJ/Iz/7TK19VkQria/qW8yT0HjzN9eBeBaKDhEPppv04BXiAmZS9EtAdDyy2jmeuiH+UvPBSuKRwKyicwgZWZWNbMxtFCBU1SrpGhbYaf6VAl89KlvMCXclpWJc322CdXs+j9hvQhWKgkfx/VkW/uTi2ZKgvqb92F6xEB7d2wxihtm3LM5IMbLG/1TOWtxyeR8qFMmq4L4IPZIMmVSmUdRXRhNU6lW9z7MGNfqIUSkZWupvS/3nu0rYNZt88wnJ5glNProy67GrCh+GCSTipQWsygSCSwfNSUozOOz7YjYAZQWxM84jn5L3zihxdCA63Yw4EWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v3wSmiZy6UrSJdUTRIpQJhZlBT0LMLY2TXMV7P7SYdM=;
- b=Vnm6sKlPT+Wei8eO80VGEGI35p+cpWLHmD3gWIDK6/0DeZp/hVxj8mH8NWToiWigkP5Wko41m8q36ycrOestmyx4HjB7764sCPnOMjDVqVYoC1IJvoz1JsVsyOMRmvYyFPtFxAo1LnjSeKcbmHLGmtdk/33KSkcZvi3f8gIAm+WeoEEj5RbSuA79+jGZrrQz0SMvKXHHP90t15dzBQjkxGEk/QOI/5w5/4gD0Ed2daz2Txx3nr0Bh05oyj63Et63aU3qLCUk2pTnE6UVdA9KMNH7y0dZgANagkSnCwANFegqYbCFx+gpFhbOrpOFxhvOx+/YzmbhCdTmvmQX67ZCqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v3wSmiZy6UrSJdUTRIpQJhZlBT0LMLY2TXMV7P7SYdM=;
- b=RSjXRpuwsr8tDlyygVqLIERMt56sPiY6c+Yb3r8a9tc+HE/Fdl90HU5lz9zV+5rU7ZyOkrc5siHl7DWBUYgDqTvCdk728C+3Lyy10p7L/88KTu8ILwxM7yvQI/SEGHM4xRPR1061skj4u1NuLVMui4cbnoe1qCCWJbc60fyo7l0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SN6PR12MB2718.namprd12.prod.outlook.com (2603:10b6:805:6f::22)
- by SN1PR12MB2510.namprd12.prod.outlook.com (2603:10b6:802:28::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Mon, 10 Jan
- 2022 20:46:33 +0000
-Received: from SN6PR12MB2718.namprd12.prod.outlook.com
- ([fe80::35:281:b7f8:ed4c]) by SN6PR12MB2718.namprd12.prod.outlook.com
- ([fe80::35:281:b7f8:ed4c%6]) with mapi id 15.20.4867.012; Mon, 10 Jan 2022
- 20:46:33 +0000
-Cc:     brijesh.singh@amd.com, Borislav Petkov <bp@alien8.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Mon, 10 Jan 2022 15:46:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56122 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239437AbiAJUqz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 15:46:55 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 017D16142A;
+        Mon, 10 Jan 2022 20:46:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EBE0C36AE9;
+        Mon, 10 Jan 2022 20:46:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641847614;
+        bh=Dtflepn+hs76RtWPokXd1DOmPXiHaN6eq1lXsTLyWmg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qrNxssoBeMjoafavVz145FCWK9CtI5coeuqFnX+LojAFvZm7MMJ0+B4boc0WzmItp
+         6jNRlwyk/6uvPcrWS1RMldYmzAAXrgEqJyCHuTBfFpvK+5ELxUdqnH+kDhAjpINfax
+         3fBh6UXm5AtgBVruuZeMGTn5ukldPsledxcV+QyFsC/OMKFRKP3rkHlUiKNIiYUoUJ
+         DOw/5SKVdgRoc9uc1r7zj9KgQASSbxkHknvfZBwCTTD5uTzrxMhNZQKkAhm7fwVKSp
+         6YDiIWzV2eIHvRO05UerdTb42AWmW0xOugp9M9eG7b3e84h1bx7LyguAVsWtA6Klgg
+         dj7Dww7n1dGuA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 2742D40714; Mon, 10 Jan 2022 17:46:52 -0300 (-03)
+Date:   Mon, 10 Jan 2022 17:46:52 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v8 01/40] x86/compressed/64: detect/setup SEV/SME features
- earlier in boot
-To:     Venu Busireddy <venu.busireddy@oracle.com>,
-        Michael Roth <michael.roth@amd.com>
-References: <YbjYZtXlbRdUznUO@dt> <YbjsGHSUUwomjbpc@zn.tnic>
- <YbkzaiC31/DzO5Da@dt> <b18655e3-3922-2b5d-0c35-1dcfef568e4d@amd.com>
- <20211215174934.tgn3c7c4s3toelbq@amd.com> <YboxSPFGF0Cqo5Fh@dt>
- <Ybo1C6kpcPJBzMGq@zn.tnic> <20211215201734.glq5gsle6crj25sf@amd.com>
- <YbpSX4/WGsXpX6n0@zn.tnic> <20211215212257.r4xisg2tyiwdeleh@amd.com>
- <YdNKIOg+9LAaDDF6@dt> <5913c603-2505-7865-4f8e-2cbceba8bd12@amd.com>
-From:   Brijesh Singh <brijesh.singh@amd.com>
-Message-ID: <1148bed5-29dc-04b2-591b-c7ef2d2664c7@amd.com>
-Date:   Mon, 10 Jan 2022 14:46:27 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-In-Reply-To: <5913c603-2505-7865-4f8e-2cbceba8bd12@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0380.namprd13.prod.outlook.com
- (2603:10b6:208:2c0::25) To SN6PR12MB2718.namprd12.prod.outlook.com
- (2603:10b6:805:6f::22)
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vineet Singh <vineet.singh@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
+        eranian@google.com
+Subject: Re: [PATCH v3 06/48] perf cpumap: Switch cpu_map__build_map to cpu
+ function
+Message-ID: <YdybPJKjqx6zb28/@kernel.org>
+References: <20211230072030.302559-1-irogers@google.com>
+ <20211230072030.302559-8-irogers@google.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 59b7a56d-6e20-4fa4-830a-08d9d47a4985
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2510:EE_
-X-Microsoft-Antispam-PRVS: <SN1PR12MB25109DBAA503DD0EDE68CC5FE5509@SN1PR12MB2510.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OtyWPiWZhyQyhhvFSyOsgAstFPynDQi+rJ5qoWgm43kTMvF9EJUmEVBZYBbjhHqAIIoaQCoTScy54QcqSiW7uU8dqp+b3nqbSlF8HxlpjdHkXJ0xDmbi3o5yr/mspAPHsKF5mOpbhdItMAIY2JcG9yH4oE3DlOcNuGPI5I7TThKkYzbuht9wsTaouCKBjtVrOKQLcTi3iCTKQAQ9PI+2ZgjuclYSct4NAIiQWKQmGhLQH08y9iw9W5A4ESElaAp31rGBcSu92FQ4T3GGcGffNsRKyuTWDbPDlA4WAcXcQwyY7anB6MRN6BE5G/34+uZqENzK0VoH1zNoYBDqvEvPz8x2wMUi0hOxD4Bim2RnEyOSPPzvlIw+HAOSXAL/5q/TtEhw0a5zn6kcOnx7pYu23qbv38ElnqEROFQOd53NNwIWRzRGoTkIbQTAeBVpldqRdPjTgRljlc70aKyjulgV+1VJhomkxEfbGOsxU6P51xXgiHrWsqAIm5vZrRENI3UooJHLKjt3goqbOAwhvPqUNfvlJn097xFQ2GxIpYAaXNtqB19kxH6nc+3ii1QhiNm4jl+mIi0hpNGBl+G6MRUEvvVSDYKIkzxCxZJk/TzZCvtIkPZm5BcH4yzzHP8Mwe7xpRzzOpu9+jR2SUvGc8+cm/3woQza9ABegx4OEExCZ6QgG+FX0EJRjVVdst07NQ2M19MHmg3IFpXc1bsai7umSs17VCl+jNW+WXxOQRCdixQR9LsLQZ+JJd63ApnKOdXz
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR12MB2718.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(36756003)(2906002)(7406005)(66556008)(66946007)(66476007)(31686004)(6636002)(6666004)(6506007)(4001150100001)(7416002)(5660300002)(186003)(53546011)(38100700002)(54906003)(110136005)(316002)(6512007)(26005)(4326008)(86362001)(508600001)(44832011)(8936002)(31696002)(83380400001)(2616005)(8676002)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QlpvZkZacVdaMkdyZGV5VlBmTlhCVVFqMTJwbUJETVF6WlNMZWRIcG1sbDNQ?=
- =?utf-8?B?ZGpybU1Tai80Tk1TNEJDWmJXTW5ORStZMkxodmZFZGdaNktQUUhLOHlOMGJE?=
- =?utf-8?B?RHp0NHk5bXVXbVNQNXNQbjhqV3BjYTVGMzVmZ0dNNFBHZXZqTzdYdFVzaTdz?=
- =?utf-8?B?S3BHSHRzWkxaNEpHbHprTUxLdWs2UDJIWkNsN2pBRGE3b1lVZE1LRzFUY2tF?=
- =?utf-8?B?REY3cGxuTWRpSDNxOGZWcHhlNkJ4T05zQ0pQUVF5SFhUdlZWQkkxZnZlZm5T?=
- =?utf-8?B?UmUzbkhnbEJGZmwyc3B0ZDJ4UlYwUGlYeVdpMVdJUVBIT3MzWkJSQldXbjFn?=
- =?utf-8?B?RWdUd2NzK2ROUWlaUHRtc0JTNWdabUlCcndhQUlZbGREWHdJZTR3K2JEZVRM?=
- =?utf-8?B?NmdTaG5tU1pzM1lYa1ZsMWNSbjU4WFVQbEtKSzRiTjlzV0c0SnhBd0k0ZGxZ?=
- =?utf-8?B?bk9RbG9qUlBXR3VSSzltc0VDdzlDaVpxRjNaVnkrNkhHZkFydVgrN3dFZmEw?=
- =?utf-8?B?ejRYVVlWSGc1bmt3NEhWTU9kZ1dKYTZNWUo5bm1QeW9rci93cG02aisvL0Rl?=
- =?utf-8?B?WDM1MmJwMXM0L25BWStlOVRrRVp0bVFuMGREN21YVVg2UUV2eXRkZ0FMemYx?=
- =?utf-8?B?V2dWVzU4ZG5LaUNjQ0FmT3FUR1hyL2ZxS0lNOEl1TnEvZEk5ZFpQL3lFSFpO?=
- =?utf-8?B?T0VwV1RZdU96elc4aUxhN2Y3OCtjRmN6TGhxMHRxWEtxSUx2VHRCSXJOWHRz?=
- =?utf-8?B?cVRWaWdZSEc2NXJ6VjVnVThqYnhmQ3R3RzZ3SWFsbzA0cW80ZklYd1ZzQ1NH?=
- =?utf-8?B?dXRCekFWcGZJcU4rZmtBWFpoS09nMUxPOE41VXJYd3luQTZoTFE5U3E0QUU1?=
- =?utf-8?B?Kyt5djhzYStmS1FMZUJyVGRPUFBNckRRRmgyV01NaEZRSEtrWnVpTSs3bUFv?=
- =?utf-8?B?V0JnSVlpMElzRWpKclcvK0lhcDZsWUVoTUhGenNURngwQnl4T3NocVc4cUNy?=
- =?utf-8?B?UlkzdU9lNFl3V1QydFArdXZVK1RKUFlHemZnbTBuMTR5dHZsemtrR2JzYmRa?=
- =?utf-8?B?OGkwLzRudzB2VSt1RVlVOFJqUWdRS1I0TFZZM08vQm5kTUp4cVRsSVJjUzkv?=
- =?utf-8?B?T3VVdHBGVHpEdnBQN2NLYm15TGFGUVExcU1sUHVHaFU2QTJCbHhBS2E1SGMy?=
- =?utf-8?B?N1p6TEwxbWRLelMwdHlJVDZ1eXNMcythRHkzMXlOUEF2T0F2Rm5Vb3UyWi9E?=
- =?utf-8?B?Y2E0WDlXdHhOVG1rWmFiazdCcWRCYnVPZkdlaVhoMTZUVXhjSEljcDAvbDZk?=
- =?utf-8?B?SjMrNld1bEcwbWVncUwzZkVWMmhqOVY3blVtcGxtSjNQSDJzWitldkNIc3Qz?=
- =?utf-8?B?SmxXOXBNaXI0TFJmN2lJVjk4TnJWWTh4WENtTmM1UlMvaUdsTTNRaGxLNjIz?=
- =?utf-8?B?cVVnbXR4aThwdnVwV0lBeUg1ZGR6ZGpEbUZkZDFuV0xHNy91WkVjRGd4dW5H?=
- =?utf-8?B?bTE2UGY4NlV4czQySWZjNnNrVVdsZS9ROWhmWVVYSk1Fc01XZG12QTc3VGV0?=
- =?utf-8?B?OGl2b2dkOHp6WmVBUGJpWEpmenhUQUNQQUtSdm53eURrS0RTYzhHQ3hWN3Z2?=
- =?utf-8?B?cVJzOXNkWXZySFNoYjZZWW15Umt1dGxzSC8zU1VZMnlDdWtDVDVEdzUwSlZD?=
- =?utf-8?B?Z29wTkRxemhvOE5sNmg5N0Q1eFo5cDJUSlpSTlFpdTh0Sm9pdHRJeFZMYXVQ?=
- =?utf-8?B?Q3RWZUNKTjYyUzF1QlBUS2FJc0V5dWs3dWxiT0sreFo1cFM4aFA0QXhCa0Nz?=
- =?utf-8?B?Z1ExT21BVWFTR0UvbG9JaHZQcGxEdTNyWk5FeHpSUFJOTG0zT0I3OFBOUlVl?=
- =?utf-8?B?M0p4VGkrcHdBbzF6ZjlYVlNFanZ1LzQvd0FXYWtrMkZZWXZQbzdmSU9DcFFN?=
- =?utf-8?B?SGR5dnZRWUhZNFdnS1RPL285eUxPMU1OMHllNXdlM1lEeXFzOGtnbUExanJD?=
- =?utf-8?B?anFkeEhuaFFSNXlWbFFMRDZKVVJUL0ZkWUtzRktIdWIvZ2UyK2lGMXlTYXQ1?=
- =?utf-8?B?MStmTnkvbGpES3RVd2RtVFFEb3hCanp6SjBiaGdhaEpyanMwVXJ5RFhzL2dD?=
- =?utf-8?B?a1F1RFdFVWdUOFMrcVpKZ3AvcVI2RGpoVFBiZUN4aENzb3M5cHp6K3hpT3k3?=
- =?utf-8?Q?b022HXUKdNzzPfd1pucPToQ=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59b7a56d-6e20-4fa4-830a-08d9d47a4985
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR12MB2718.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2022 20:46:33.7809
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QkaCiTq6NgxLgB+YUDiCwtf9FPPMl3R0X3ksIlsmGIJh7AOc5sbc/2+YzocoWOnRkxVJ4l8e72oemOZpzIX0hQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2510
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20211230072030.302559-8-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Venu,
+Em Wed, Dec 29, 2021 at 11:19:48PM -0800, Ian Rogers escreveu:
+> Avoid error prone cpu_map + idx variant. Remove now unused functions.
 
-On 1/5/22 1:34 PM, Brijesh Singh wrote:
-> 
-> 
-> On 1/3/22 1:10 PM, Venu Busireddy wrote:
->> On 2021-12-15 15:22:57 -0600, Michael Roth wrote:
->>> On Wed, Dec 15, 2021 at 09:38:55PM +0100, Borislav Petkov wrote:
->>>>
->>>> But it is hard to discuss anything without patches so we can continue
->>>> the topic with concrete patches. But this unification is not
->>>> super-pressing so it can go ontop of the SNP pile.
->>>
->>> Yah, it's all theoretical at this point. Didn't mean to derail things
->>> though. I mainly brought it up to suggest that Venu's original 
->>> approach of
->>> returning the encryption bit via a pointer argument might make it 
->>> easier to
->>> expand it for other purposes in the future, and that naming it for that
->>> future purpose might encourage future developers to focus their efforts
->>> there instead of potentially re-introducing duplicate code.
->>>
->>> But either way it's simple enough to rework things when we actually
->>> cross that bridge. So totally fine with saving all of this as a future
->>> follow-up, or picking up either of Venu's patches for now if you'd still
->>> prefer.
->>
->> So, what is the consensus? Do you want me to submit a patch after the
->> SNP changes go upstream? Or, do you want to roll in one of the patches
->> that I posted earlier?
->>
-> 
-> Will incorporate your changes in v9. And will see what others say about it.
-> 
+At this point we need to remove the now unused perf_env__get_cpu(), and
+then deal with the fallout in the following patches that needlessly
+modify this unused function.
 
-Now that I am incorporating the feedback in my wip branch, at this time 
-I am dropping your cleanup mainly because some of recommendation may 
-require more rework down the line; you can submit your recommendation as 
-cleanup after the patches are in. I hope this is okay with you.
+Doing that now.
 
-thanks
+- Arnaldo
+
+⬢[acme@toolbox perf]$ git diff
+diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+index 6b985abaa2d22c58..40cb3518f27e2309 100644
+--- a/tools/perf/builtin-stat.c
++++ b/tools/perf/builtin-stat.c
+@@ -1477,22 +1477,6 @@ static void perf_stat__exit_aggr_mode(void)
+        stat_config.cpus_aggr_map = NULL;
+ }
+
+-static inline int perf_env__get_cpu(void *data, struct perf_cpu_map *map, int idx)
+-{
+-       struct perf_env *env = data;
+-       int cpu;
+-
+-       if (idx > map->nr)
+-               return -1;
+-
+-       cpu = map->map[idx];
+-
+-       if (cpu >= env->nr_cpus_avail)
+-               return -1;
+-
+-       return cpu;
+-}
+-
+ static struct aggr_cpu_id perf_env__get_socket_aggr_by_cpu(int cpu, void *data)
+ {
+        struct perf_env *env = data;
+ 
+> Reviewed-by: James Clark <james.clark@arm.com>
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
+>  tools/perf/builtin-stat.c | 28 ++++------------------------
+>  tools/perf/util/cpumap.c  | 12 ++++++------
+>  tools/perf/util/cpumap.h  |  2 +-
+>  3 files changed, 11 insertions(+), 31 deletions(-)
+> 
+> diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
+> index 9791ae9b1a53..6b985abaa2d2 100644
+> --- a/tools/perf/builtin-stat.c
+> +++ b/tools/perf/builtin-stat.c
+> @@ -1504,11 +1504,6 @@ static struct aggr_cpu_id perf_env__get_socket_aggr_by_cpu(int cpu, void *data)
+>  	return id;
+>  }
+>  
+> -static struct aggr_cpu_id perf_env__get_socket(struct perf_cpu_map *map, int idx, void *data)
+> -{
+> -	return perf_env__get_socket_aggr_by_cpu(perf_env__get_cpu(data, map, idx), data);
+> -}
+> -
+>  static struct aggr_cpu_id perf_env__get_die_aggr_by_cpu(int cpu, void *data)
+>  {
+>  	struct perf_env *env = data;
+> @@ -1527,11 +1522,6 @@ static struct aggr_cpu_id perf_env__get_die_aggr_by_cpu(int cpu, void *data)
+>  	return id;
+>  }
+>  
+> -static struct aggr_cpu_id perf_env__get_die(struct perf_cpu_map *map, int idx, void *data)
+> -{
+> -	return perf_env__get_die_aggr_by_cpu(perf_env__get_cpu(data, map, idx), data);
+> -}
+> -
+>  static struct aggr_cpu_id perf_env__get_core_aggr_by_cpu(int cpu, void *data)
+>  {
+>  	struct perf_env *env = data;
+> @@ -1551,11 +1541,6 @@ static struct aggr_cpu_id perf_env__get_core_aggr_by_cpu(int cpu, void *data)
+>  	return id;
+>  }
+>  
+> -static struct aggr_cpu_id perf_env__get_core(struct perf_cpu_map *map, int idx, void *data)
+> -{
+> -	return perf_env__get_core_aggr_by_cpu(perf_env__get_cpu(data, map, idx), data);
+> -}
+> -
+>  static struct aggr_cpu_id perf_env__get_node_aggr_by_cpu(int cpu, void *data)
+>  {
+>  	struct aggr_cpu_id id = cpu_map__empty_aggr_cpu_id();
+> @@ -1564,33 +1549,28 @@ static struct aggr_cpu_id perf_env__get_node_aggr_by_cpu(int cpu, void *data)
+>  	return id;
+>  }
+>  
+> -static struct aggr_cpu_id perf_env__get_node(struct perf_cpu_map *map, int idx, void *data)
+> -{
+> -	return perf_env__get_node_aggr_by_cpu(perf_env__get_cpu(data, map, idx), data);
+> -}
+> -
+>  static int perf_env__build_socket_map(struct perf_env *env, struct perf_cpu_map *cpus,
+>  				      struct cpu_aggr_map **sockp)
+>  {
+> -	return cpu_map__build_map(cpus, sockp, perf_env__get_socket, env);
+> +	return cpu_map__build_map(cpus, sockp, perf_env__get_socket_aggr_by_cpu, env);
+>  }
+>  
+>  static int perf_env__build_die_map(struct perf_env *env, struct perf_cpu_map *cpus,
+>  				   struct cpu_aggr_map **diep)
+>  {
+> -	return cpu_map__build_map(cpus, diep, perf_env__get_die, env);
+> +	return cpu_map__build_map(cpus, diep, perf_env__get_die_aggr_by_cpu, env);
+>  }
+>  
+>  static int perf_env__build_core_map(struct perf_env *env, struct perf_cpu_map *cpus,
+>  				    struct cpu_aggr_map **corep)
+>  {
+> -	return cpu_map__build_map(cpus, corep, perf_env__get_core, env);
+> +	return cpu_map__build_map(cpus, corep, perf_env__get_core_aggr_by_cpu, env);
+>  }
+>  
+>  static int perf_env__build_node_map(struct perf_env *env, struct perf_cpu_map *cpus,
+>  				    struct cpu_aggr_map **nodep)
+>  {
+> -	return cpu_map__build_map(cpus, nodep, perf_env__get_node, env);
+> +	return cpu_map__build_map(cpus, nodep, perf_env__get_node_aggr_by_cpu, env);
+>  }
+>  
+>  static struct aggr_cpu_id perf_stat__get_socket_file(struct perf_stat_config *config __maybe_unused,
+> diff --git a/tools/perf/util/cpumap.c b/tools/perf/util/cpumap.c
+> index 49fba2c53822..feaf34b25efc 100644
+> --- a/tools/perf/util/cpumap.c
+> +++ b/tools/perf/util/cpumap.c
+> @@ -163,7 +163,7 @@ static int cmp_aggr_cpu_id(const void *a_pointer, const void *b_pointer)
+>  }
+>  
+>  int cpu_map__build_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **res,
+> -		       struct aggr_cpu_id (*f)(struct perf_cpu_map *map, int cpu, void *data),
+> +		       struct aggr_cpu_id (*f)(int cpu, void *data),
+>  		       void *data)
+>  {
+>  	int nr = cpus->nr;
+> @@ -178,7 +178,7 @@ int cpu_map__build_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **res,
+>  	c->nr = 0;
+>  
+>  	for (cpu = 0; cpu < nr; cpu++) {
+> -		s1 = f(cpus, cpu, data);
+> +		s1 = f(cpu, data);
+>  		for (s2 = 0; s2 < c->nr; s2++) {
+>  			if (cpu_map__compare_aggr_cpu_id(s1, c->map[s2]))
+>  				break;
+> @@ -290,22 +290,22 @@ struct aggr_cpu_id cpu_map__get_node(struct perf_cpu_map *map, int idx, void *da
+>  
+>  int cpu_map__build_socket_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **sockp)
+>  {
+> -	return cpu_map__build_map(cpus, sockp, cpu_map__get_socket, NULL);
+> +	return cpu_map__build_map(cpus, sockp, cpu_map__get_socket_aggr_by_cpu, NULL);
+>  }
+>  
+>  int cpu_map__build_die_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **diep)
+>  {
+> -	return cpu_map__build_map(cpus, diep, cpu_map__get_die, NULL);
+> +	return cpu_map__build_map(cpus, diep, cpu_map__get_die_aggr_by_cpu, NULL);
+>  }
+>  
+>  int cpu_map__build_core_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **corep)
+>  {
+> -	return cpu_map__build_map(cpus, corep, cpu_map__get_core, NULL);
+> +	return cpu_map__build_map(cpus, corep, cpu_map__get_core_aggr_by_cpu, NULL);
+>  }
+>  
+>  int cpu_map__build_node_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **numap)
+>  {
+> -	return cpu_map__build_map(cpus, numap, cpu_map__get_node, NULL);
+> +	return cpu_map__build_map(cpus, numap, cpu_map__get_node_aggr_by_cpu, NULL);
+>  }
+>  
+>  /* setup simple routines to easily access node numbers given a cpu number */
+> diff --git a/tools/perf/util/cpumap.h b/tools/perf/util/cpumap.h
+> index c62d67704425..9648816c4255 100644
+> --- a/tools/perf/util/cpumap.h
+> +++ b/tools/perf/util/cpumap.h
+> @@ -63,7 +63,7 @@ int cpu__max_present_cpu(void);
+>  int cpu__get_node(int cpu);
+>  
+>  int cpu_map__build_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **res,
+> -		       struct aggr_cpu_id (*f)(struct perf_cpu_map *map, int cpu, void *data),
+> +		       struct aggr_cpu_id (*f)(int cpu, void *data),
+>  		       void *data);
+>  
+>  int cpu_map__cpu(struct perf_cpu_map *cpus, int idx);
+> -- 
+> 2.34.1.448.ga2b2bfdf31-goog
+
+-- 
+
+- Arnaldo
