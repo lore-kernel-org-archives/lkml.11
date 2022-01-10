@@ -2,118 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3182C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238497AbiAJJ2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:28:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242933AbiAJJ2A (ORCPT
+        id S242919AbiAJJaB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:30:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44044 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242953AbiAJJ3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:28:00 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C26FC061757
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:27:59 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id k30so7896269wrd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:27:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3JIe/AziNkL7QWWwzr2FGj9H5QSbDRRWwjLKOVDugLY=;
-        b=4e/NgOncPGsI6zL82IKBGE3RBzWcjd1sdmMoSfIeMMq+biJ+zFQ12dPnmoHrSyF1xK
-         2BkUZwWICKVO4SteHjvVLKvJB9ATXfg51nfZSwlQq77s9g/hwyC0nnsO+bgfBdq3Akoi
-         9e9nLREII4Uc+KUJYMZIIrhyna9Auemz9XbYnL3XGgstSUhh8UVLVs7YFxTMgZ8G5kg7
-         +wnIIgQQWV9Pgr6kXgJ1ZobbydhZ4DCcxn60Xesojt8EiL71Ks0IfMv5sJdgP4QmAfqC
-         MZIoS2QQfVrwjuXnj/U8qkecb5Pt5ggMsicb56e2GCFt+t1i648g0w0JUmIQ/nARiuNg
-         kYaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=3JIe/AziNkL7QWWwzr2FGj9H5QSbDRRWwjLKOVDugLY=;
-        b=CUAOPH+aFRlaG1gstj1a8z4sa2nuGjEdM15jxzJ2Pw7kYHFEoOksWxGRjLj+8FiYRc
-         GbKaiNM/SdkO60h7FmffyJivtGNNIb5+IfQNgfQP1ynkyf/uTJfDTLRVUqPfgo/74xut
-         GLnWmYVHkcO4woVSrcNcQE9Ww8PLglddeSSSL+uqVw1JMyusp7KSvpFFnVkBT5sPTenm
-         oOSTxpD/JA+9rVho4qBmTy0ZCXLrAfzG9h2ApfFlaME2NZY3OillBUWM58TXoS+O/kNQ
-         BRSRC1teut6KAO0kUqUIMQRIzAIt2X6HDR/op8s2Dc8UDf604pSHQkP02Ntg6hRoSrzX
-         LMeg==
-X-Gm-Message-State: AOAM531K9u8jV64Qov7cVoik4Xz7LAvOhJCdZECIOvon7YrjhJ9WaMKW
-        E1o6ou507beHAp4tf3b+731/IQ==
-X-Google-Smtp-Source: ABdhPJxif1cXTO0qc4AtrxnBYKdw1S+IGnZNRgcQM96lZpohEhKLaAGAuc9lRusoIkLi0vPyC0k68A==
-X-Received: by 2002:a05:6000:1569:: with SMTP id 9mr63539563wrz.127.1641806878077;
-        Mon, 10 Jan 2022 01:27:58 -0800 (PST)
-Received: from ?IPv6:2001:861:44c0:66c0:94e5:2e36:6bcc:a9f1? ([2001:861:44c0:66c0:94e5:2e36:6bcc:a9f1])
-        by smtp.gmail.com with ESMTPSA id m6sm7068700wrx.36.2022.01.10.01.27.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 01:27:57 -0800 (PST)
-Subject: Re: [PATCH V4 0/5] the UART driver compatible with
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220110085604.18042-1-yu.tu@amlogic.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-Message-ID: <1f4b9288-c7ff-c895-425c-187d058642b9@baylibre.com>
-Date:   Mon, 10 Jan 2022 10:27:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 10 Jan 2022 04:29:46 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53EEA60EC9
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:29:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04F1EC36AEF;
+        Mon, 10 Jan 2022 09:29:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641806985;
+        bh=OOABhVBm69G8uwBX6CL0JtulGTer5o3/3Kx3hwxHPyw=;
+        h=Date:From:To:cc:Subject:From;
+        b=DwFZAaovin89aNPlf3CmbwFskpgC0ijg/CzQ0iZudUsjdVAuvfGLyPlGfI2/jaaS1
+         96XhJKZ7Rz4EjT0wf64NmVEkJwzp5sJvmfrP99IO6G685pyAoTYJ0s5QkmJznbZSWY
+         ID/yIi0asjQfp9iSOYPZV+zGs1ORPOy6LhpalqZfhnRipGL62X/0FdS0EImCMPXxRv
+         k/tEt9elrMzXafoTlGnUGb9SwImHOm+AgGorX5nc0BoAOzCvh6CzAiYfDuFj1ZZh4q
+         W7Jx8dJtPTU5+1E3vD12j5FH2PzS5E1gcBzBflF6D2SvCSQQVMqgsD4bsoAlupXUSx
+         5t4Pl/1Fw0jEg==
+Date:   Mon, 10 Jan 2022 10:29:42 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+cc:     linux-kernel@vger.kernel.org
+Subject: [GIT PULL] removal of trivial.git
+Message-ID: <nycvar.YFH.7.76.2201101025190.28059@cbobk.fhfr.pm>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <20220110085604.18042-1-yu.tu@amlogic.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Linus,
 
-On 10/01/2022 09:55, Yu Tu wrote:
-> Using the common Clock code to describe the UART baud rate
-> clock makes it easier for the UART driver to be compatible
-> with the baud rate requirements of the UART IP on different
-> meson chips. Add Meson S4 SoC compatible.
-> 
-> Yu Tu (5):
->   dt-bindings: serial: meson: Drop compatible = amlogic,meson-gx-uart.
->   tty: serial: meson: Request the register region in meson_uart_probe()
->   tty: serial: meson: The UART baud rate calculation is described using
->     the common clock code.
->   tty: serial: meson: Make the bit24 and bit [26,27] of the UART_REG5
->     register writable
->   tty: serial: meson: Added S4 SOC compatibility.
+please pull from
 
-Weird, the subjects are fine in the cover letter but are all truncated in the email thread:
-[PATCH V4 0/5] the UART driver compatible with
-[PATCH V4 1/5] dt-bindings: serial: meson: Drop
-[PATCH V4 2/5] tty: serial: meson: Request the register
-...
-Only the last one is OK.
+  git://git.kernel.org/pub/scm/linux/kernel/git/jikos/trivial.git for-linus
 
+to remove any mentions of trivial tree from the documentation and 
+MAINTAINERS. This has been discussed on ksummit-discuss@ some time ago 
+(link is provided in the commit message, together with the reasoning). 
+It's a general agreement that reason for such a tree to exist is currently 
+pretty much non-existent.
 
-> 
-> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
-> discussed in the email
-> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
-> the DTS before it can be deleted
-> V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
-> in the email.
-> 
-> Link:https://lore.kernel.org/linux-amlogic/20211230102110.3861-4-yu.tu@amlogic.com/
-> 
->  .../bindings/serial/amlogic,meson-uart.yaml   |  10 +-
->  drivers/tty/serial/meson_uart.c               | 244 ++++++++++++------
->  2 files changed, 177 insertions(+), 77 deletions(-)
-> 
+Thanks.
+
+----------------------------------------------------------------
+Jiri Kosina (1):
+      Documentation: remove trivial tree
+
+ Documentation/process/submitting-patches.rst       | 20 ------------------
+ .../it_IT/process/submitting-patches.rst           | 19 -----------------
+ Documentation/translations/ja_JP/SubmittingPatches | 15 --------------
+ .../zh_CN/process/submitting-patches.rst           | 23 ---------------------
+ .../zh_TW/process/submitting-patches.rst           | 24 ----------------------
+ MAINTAINERS                                        |  6 ------
+ 6 files changed, 107 deletions(-)
+
+-- 
+Jiri Kosina
+SUSE Labs
 
