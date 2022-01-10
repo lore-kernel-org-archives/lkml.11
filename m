@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B59BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72659C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240249AbiAJH3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:29:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239370AbiAJH0g (ORCPT
+        id S240282AbiAJH3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:29:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57198 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239737AbiAJH0j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45BFFC029830;
-        Sun,  9 Jan 2022 23:25:54 -0800 (PST)
+        Mon, 10 Jan 2022 02:26:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00C60B81205;
-        Mon, 10 Jan 2022 07:25:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31425C36AE9;
-        Mon, 10 Jan 2022 07:25:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39F46B81204;
+        Mon, 10 Jan 2022 07:26:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E82CC36AED;
+        Mon, 10 Jan 2022 07:26:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799551;
-        bh=TkZ85wTMGS/gP/1XImUn9MD23NSXxpERlZhhbiKTp24=;
+        s=korg; t=1641799596;
+        bh=bj/NDmeVO0AXpsSp1ao1GxNohak9ggaCwQhdSZUvDvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SKCJ/YoVpc/g7D/5pTYCIbXZoI3+q1ECU1jJPSv+4rUUUxMDpXVH38ujmKNQaWovN
-         JxeA9yy2LQtR8Agd8VencYNB73hA+cu7k9Isc3K3GTDEsJY0SD6hkXW7tNo/MVp150
-         jzYw+QhElmJ982G8ECGiKkEu/kdszJbQIQ3sDdx8=
+        b=ye05X2LxLPiyGc0+Sh0vvADVXMm4EGC69NXnBE/E4DvgVkJRzvMewCPu05K2/bTlC
+         ZaLVHkgO9oF1YFqTu2mY2+Ynw0V/rjL0g5K/8AlIAtjaN9CsKgyu7zUu/ukit9ErFu
+         yKb1levBqxvfQRfwW3QJVd2aUAHBR+H5iJ5WWFoI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 11/22] ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
-Date:   Mon, 10 Jan 2022 08:23:04 +0100
-Message-Id: <20220110071814.639438308@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 4.14 07/22] mac80211: initialize variable have_higher_than_11mbit
+Date:   Mon, 10 Jan 2022 08:23:00 +0100
+Message-Id: <20220110071814.509909543@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
 References: <20220110071814.261471354@linuxfoundation.org>
@@ -49,36 +46,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Tom Rix <trix@redhat.com>
 
-commit 1ff15a710a862db1101b97810af14aedc835a86a upstream.
+commit 68a18ad71378a56858141c4449e02a30c829763e upstream.
 
-Make sure RTA_GATEWAY for IPv6 multipath route has enough bytes to hold
-an IPv6 address.
+Clang static analysis reports this warnings
 
-Fixes: 6b9ea5a64ed5 ("ipv6: fix multipath route replace error recovery")
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Roopa Prabhu <roopa@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+mlme.c:5332:7: warning: Branch condition evaluates to a
+  garbage value
+    have_higher_than_11mbit)
+    ^~~~~~~~~~~~~~~~~~~~~~~
+
+have_higher_than_11mbit is only set to true some of the time in
+ieee80211_get_rates() but is checked all of the time.  So
+have_higher_than_11mbit needs to be initialized to false.
+
+Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Link: https://lore.kernel.org/r/20211223162848.3243702-1-trix@redhat.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/mac80211/mlme.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3365,7 +3365,11 @@ static int ip6_route_multipath_del(struc
- 
- 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
- 			if (nla) {
--				nla_memcpy(&r_cfg.fc_gateway, nla, 16);
-+				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
-+							extack);
-+				if (err)
-+					return err;
-+
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
- 		}
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -4501,7 +4501,7 @@ static int ieee80211_prep_connection(str
+ 	 */
+ 	if (new_sta) {
+ 		u32 rates = 0, basic_rates = 0;
+-		bool have_higher_than_11mbit;
++		bool have_higher_than_11mbit = false;
+ 		int min_rate = INT_MAX, min_rate_index = -1;
+ 		const struct cfg80211_bss_ies *ies;
+ 		int shift = ieee80211_vif_get_shift(&sdata->vif);
 
 
