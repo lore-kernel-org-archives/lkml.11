@@ -2,119 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D097C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A839C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:38:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238440AbiAJRhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 12:37:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49396 "EHLO
+        id S238456AbiAJRic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 12:38:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238197AbiAJRhD (ORCPT
+        with ESMTP id S238197AbiAJRib (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 12:37:03 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07B5BC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:37:03 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id q5so18515412ioj.7
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:37:03 -0800 (PST)
+        Mon, 10 Jan 2022 12:38:31 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED86C06173F;
+        Mon, 10 Jan 2022 09:38:31 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id m6so29713805ybc.9;
+        Mon, 10 Jan 2022 09:38:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VImuVeKyRKEKIzJHdDEJK8/BDOKoujNaHyjbgkuipso=;
-        b=CdE7JZ2/5Ere61vOTLWnM5csvBvNZpoVLTe/f18kLT9JxyZ/oaWs+EGM3QoPDPdsot
-         neGrENj/ANDKvii0964XyLQ52HMiUTIdQ71LhGsDyd2lg2KzZwTsVnXwHFvF9/eNKAsq
-         23h/mr4FUUsi9uPO98CzTQ4JX27e7r66gk2FKlk8tG66paNmk+oqyEKcaFffO17tC7bj
-         llHmFHiC4wiS19wmXXcY4Y1sxMZO9iFvJQu2XfUYgVCcw2TSDR6Ilbe6sS1AqXpigTJe
-         ruIHEKACS7JiYEkpb1cre5TLkN4YPVKG6LrPNkompNKHASaXot+OaORd8sJhRIYD7a4R
-         owBA==
+        bh=4Pn6vNul4e8iM8CW/s9gLrUxSfmYfz22osJ3AQncpgc=;
+        b=dYKHIkrcNLqV7aZ5YS2d0PD7VjHHEGH8HDRv9QyfT5dn+VCNyEcsW2FxN6Vmk0NMTf
+         bcXskwMcgp7C8CIj99r8+LrXobvEIY19i80LN6AuCDpX89pf2S2gvaHXtRlwdJvzLoYC
+         /ye74Evk/XKaQiHWGGykaQkyiEzGDQT55tc2NaFeqj5pFGnMrp3n2N6qW2oG9SjsiSSY
+         aJRNYFTa7EBx3DZwxw1/waiUF74t9ATkYpmwHD5IgAKFRoZ7BAch8tO9/yTBh2ljMOSN
+         1PyIrijWdjE4LtCR4zaWhrwO+Kk5ZMIkEHWvPLznZSDVHBnBkxBfqwETQ8Q7YtN0TDdz
+         uI4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VImuVeKyRKEKIzJHdDEJK8/BDOKoujNaHyjbgkuipso=;
-        b=ccvWRCibMQUIY8pyALjpTDvLgLoI71X2USxTEsx4BjZDTz0sBnVVY6OmfxHQCEKjKm
-         T+a6CdUvYD8tH1vdzb66uRt1/QSRfb3+f8v9/pJrdmE+L2Umoi4KQctXQbe9tV5P6OBt
-         Oxvfufgyyk5upbesbhAwnEnYHzyrku0z1I6XUvSgN3BjAei91q+JrR17rt8bJ3bksfh9
-         6vywUivXzTITOay4tgZZGbpl/EpqJDrHTIbAk3hKqytQEZ8p4g+9/7zTogxCatafhHND
-         JkHmmS2iGnBreSS7OdawTeas6ECz/Bp74KER/xlkJLqoyu/17lygwUOiV2GKVR8swp9d
-         poUw==
-X-Gm-Message-State: AOAM532DaB3vd0KvkRkA6w96FxczD+VkfiCvBYUiBy8X0PU6vnlaDqTg
-        2EvYyEHMrxYAdr5IaG2jvveJiiY+wnMWOfoMsGevcA==
-X-Google-Smtp-Source: ABdhPJxg2hEa5KXe+r8QHR6UBQw+N6eJmP9azYBsNVCf8V7WsDYkQiX+5fZwdfHJ4PLbBwybl/oBmmZCFYqYFiYYopQ=
-X-Received: by 2002:a05:6602:2b8b:: with SMTP id r11mr325003iov.97.1641836222188;
- Mon, 10 Jan 2022 09:37:02 -0800 (PST)
+        bh=4Pn6vNul4e8iM8CW/s9gLrUxSfmYfz22osJ3AQncpgc=;
+        b=AXNO4hvR8ruoB972sDib7gbmdwJh23EPMsOCUZzM8HkrvG+7vxZcjbP8bCn7c03wZI
+         tfaWe/W3X8e9MPXNfAiWx9TgF9885YkyTTxfbD4gHTYqwvk0AtN/tFJMSB3zSTF7FHp3
+         wxKPV0Kw2DQ42j8rsltdSMofDS1SZ54eDYpqfF0PJBg/DksuPAG+5BZh7r8BB/KfS9Nk
+         nsGPIWp1cQZRZP53d97zSW9/YG41Vxzh4wD7Cm7Bi4nb9n2T1QLR93caqs+pcjm9gjr5
+         EIfHp4JJCb/Wl7TSuCDuJfGwh0d/5fxTH6Dyexv2Q5F91KJj0q8Dvm1AIb04ZL1oXmoW
+         8O7g==
+X-Gm-Message-State: AOAM533YbtcqCwXqY1OOcRjPa3LiyxN15IbWgiYufWByMi7idD5juMsZ
+        2oYPMO1CZFW0EOTEmdBsJ3IZxCBErj/pA/In/W4=
+X-Google-Smtp-Source: ABdhPJwcUSh0xH7r+hddfZUIZH6eKPebjm73mmFFYO2yTdvDNeKVFMfghW3SvqjRYFJPTH8P/2ccW96yDptlmUnXVLo=
+X-Received: by 2002:a25:4153:: with SMTP id o80mr834176yba.147.1641836310214;
+ Mon, 10 Jan 2022 09:38:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20220105061351.120843-1-irogers@google.com> <20220105061351.120843-3-irogers@google.com>
- <57ab982e-ecc1-3f49-c580-0a251e29698b@huawei.com>
-In-Reply-To: <57ab982e-ecc1-3f49-c580-0a251e29698b@huawei.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Mon, 10 Jan 2022 09:36:49 -0800
-Message-ID: <CAP-5=fWT_19OfZTTjvLUcChV4nDwqc5Zq4VE93Gak6OO4NORsA@mail.gmail.com>
-Subject: Re: [PATCH v4 02/48] perf stat: Add aggr creators that are passed a cpu.
-To:     John Garry <john.garry@huawei.com>
-Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vineet Singh <vineet.singh@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
-        eranian@google.com
+References: <20220107184614.2670254-1-f.fainelli@gmail.com>
+In-Reply-To: <20220107184614.2670254-1-f.fainelli@gmail.com>
+From:   Kamal Dasu <kdasu.kdev@gmail.com>
+Date:   Mon, 10 Jan 2022 12:38:19 -0500
+Message-ID: <CAC=U0a3V8973MqyCU2M=hG0bkhcNZN3kSySZGaZmFHnEZeqYRA@mail.gmail.com>
+Subject: Re: [PATCH v3 0/9] BCMA support for brcmnand
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     MTD Maling List <linux-mtd@lists.infradead.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Colin Ian King <colin.king@intel.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM SPECIFIC AMBA DRIVER (BCMA)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:BROADCOM STB NAND FLASH DRIVER" 
+        <bcm-kernel-feedback-list@broadcom.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 9:10 AM John Garry <john.garry@huawei.com> wrote:
->
-> On 05/01/2022 06:13, Ian Rogers wrote:
-> >
-> > +struct aggr_cpu_id cpu_map__get_socket(struct perf_cpu_map *map, int idx,
-> > +                                    void *data)
-> > +{
-> > +     if (idx < 0 || idx > map->nr)
-> > +             return cpu_map__empty_aggr_cpu_id();
-> > +
-> > +     return cpu_map__get_socket_aggr_by_cpu(map->map[idx], data);
-> > +}
-> > +
->
->
-> This is later deleted in the series. Can the series be reworked so that
-> we don't add stuff and then later delete it? One reason for that
-> approach is that we don't spend time reviewing something which will be
-> deleted, especially in such a big series...
+Florian,
 
-Hi John,
-
-I think you are asking to squash:
-https://lore.kernel.org/lkml/20220105061351.120843-8-irogers@google.com/
-into this change. There are other  similar related changes that may
-also be squashed. The changes are trying to introduce a new API and
-then add changes to switch over to using it. This is with a view to
-making bisection easier, have each change only do 1 thing and so on. I
-believe the format of the patches is house style, but it is fine to
-squash changes together too. Having sent patches to Arnaldo and having
-had them split I'm reluctant to do a v5 with them squashed without him
-expressing a preference.
-
-Thanks,
-Ian
-
-> If it really makes sense to do it this way then fine.
+On Fri, Jan 7, 2022 at 1:46 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
 >
-> Thanks,
-> John
+> Hi all,
+>
+> This patch series adds support for the BRCMNAND controller revision 3.4
+> embedded in MIPS-based SoCs such as 5357, typically found in the Netgear
+> WNR3500L v2 and other kinds of Wi-Fi routers. The upstream platform that
+> uses this controller is under arch/mips/bcm47xx/ and does not use Device
+> Tree (and probably never will by now). BCMA (Broadcom AMBA) is a special
+> kind of discoverable memory mapped interface which requires the use of
+> special accessors to read from/write to the hardware block.
+>
+> The integration of brcmnand into that SoC is a bit quirky in that every
+> register offering byte level data about the flash (OOB, device ID, etc.)
+> requires byte swapping. The command shift should also have been 24, but
+> is in fact 0, took me a while to understand why no reads were actually
+> working because of that.
+>
+> This has been tested with Linux 5.10.82 and Linus' master with OpenWrt
+> and confirmed that the squashfs + jffs2 overlay that OpenWrt creates is
+> entirely functional and that written data is made persistent.
+>
+> Changes in v3:
+>
+> - fixed a few typo/grammar errors in the commit messages, mention when
+>   changes are non functional changes
+> - removed the stray hunk in 2 to enable the static key
+>
+> Changes in v2:
+>
+> - re-ordered the patch such that the soc variable is initialized as
+>   early as possible
+> - corrected bug in the conversion of brcmnand_init_cs() which
+>   incorrectly used the wrong device_node variable (parent instead of
+>   child)
+> - took Andy's feedback to make the test for a valid interrupt to be > 0
+>   while calling platform_get_irq_optional()
+> - utilized static branch (disabled by default) and conditional
+>   compilation and confirm with disassembly that the generated code is
+>   as efficient as before if not enabling the BCMA shim and as efficient
+>   as possible if enabling BCMA shim
+> - updated BCMA shim driver descriptor, author and added helper function
+>   to encapsulate the container_of usage
+> - added comment to explain why a slightly different platform device name
+>   is used for the 5357-style NAND controller
+>
+> Florian Fainelli (9):
+>   mtd: rawnand: brcmnand: Assign soc as early as possible
+>   mtd: rawnand: brcmnand: Allow SoC to provide I/O operations
+>   mtd: rawnand: brcmnand: Avoid pdev in brcmnand_init_cs()
+>   mtd: rawnand: brcmnand: Move OF operations out of brcmnand_init_cs()
+>   mtd: rawnand: brcmnand: Allow working without interrupts
+>   mtd: rawnand: brcmnand: Add platform data structure for BCMA
+>   mtd: rawnand: brcmnand: Allow platform data instantation
+>   mtd: rawnand: brcmnand: BCMA controller uses command shift of 0
+>   mtd: rawnand: brcmnand: Add BCMA shim
+>
+>  MAINTAINERS                                 |   1 +
+>  drivers/bcma/driver_chipcommon_nflash.c     |  20 ++-
+>  drivers/mtd/nand/raw/Kconfig                |  13 ++
+>  drivers/mtd/nand/raw/brcmnand/Makefile      |   2 +
+>  drivers/mtd/nand/raw/brcmnand/bcma_nand.c   | 132 ++++++++++++++++
+>  drivers/mtd/nand/raw/brcmnand/brcmnand.c    | 160 +++++++++++++-------
+>  drivers/mtd/nand/raw/brcmnand/brcmnand.h    |  29 ++++
+>  include/linux/bcma/bcma_driver_chipcommon.h |   5 +
+>  include/linux/platform_data/brcmnand.h      |  12 ++
+>  9 files changed, 321 insertions(+), 53 deletions(-)
+>  create mode 100644 drivers/mtd/nand/raw/brcmnand/bcma_nand.c
+>  create mode 100644 include/linux/platform_data/brcmnand.h
+>
+> --
+> 2.25.1
+>
+
+The patch series as in v3  LGTM
+
+Kamal
