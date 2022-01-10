@@ -2,65 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E5CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:31:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243978AbiAJKbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:31:15 -0500
-Received: from muru.com ([72.249.23.125]:48204 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243947AbiAJKa6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:30:58 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 274C5805F;
-        Mon, 10 Jan 2022 10:31:43 +0000 (UTC)
-Date:   Mon, 10 Jan 2022 12:30:54 +0200
-From:   Tony Lindgren <tony@atomide.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        devicetree@vger.kernel.org,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Tero Kristo <kristo@kernel.org>
-Subject: Re: [PATCH] dt-bindings: clock: Add binding for TI clksel
-Message-ID: <YdwK3haVDCxyIioo@atomide.com>
-References: <20211217113640.59840-1-tony@atomide.com>
- <YcIZNfTn37uNbj0F@robh.at.kernel.org>
- <YcLElm04V47kP0Z9@atomide.com>
- <CAL_JsqLek5SOypZhTxpLK13x2HEYbLbYYotLGOfM-JTb=QE-Eg@mail.gmail.com>
+        id S243992AbiAJKby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:31:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35452 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243967AbiAJKbW (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 05:31:22 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58AB6C061751;
+        Mon, 10 Jan 2022 02:31:21 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id z22so6529276edd.12;
+        Mon, 10 Jan 2022 02:31:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=SGJVFwbtcacUQay73yW9oHCDfqGazDMwGqllKcglAwM=;
+        b=YfzjfiayfKRHqWbMdh+LjQ6JzzlIHaYVGKUXcvqA2xTHKnGJx0fxILIJZ6pTsfyrUb
+         9Tthl4FrSIiUeu1hdobFfLESfSCfkEHl0VkK+Svri0JBF4ZeFh9/qvz57uCho7BX4i85
+         UjkFo1v6gsgRW7h/02b4Vvfn8NmDKLnUaizMTFZhwAPwhL5zHS1cXQ8WRDtgrqVRdd+N
+         l2WFTC2YRwayCge6CUrv75NBpOTMqMWnPo0H3KJTbNDlXBcP7eGfQGU0/qrdUq9sfJtI
+         v8BPOngvuITbIx8+TppkOc3ijXT/QLE7h9BvCas0hO5ObrOKORW3biohsfIdlqS79unU
+         kfdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=SGJVFwbtcacUQay73yW9oHCDfqGazDMwGqllKcglAwM=;
+        b=0m2Z8IpqH2YnkBwVnnqINCwnhVhdpku9ZYY6cDmP8L+xyXJudNfZwWqNZ/IxJNMcrl
+         An/QzJiOyr8ykk8KatjSWef1fzWqYNXNCd3VjG0+f0jLac/U3+sfXW1AsZ5PkVgbAg+T
+         AnqsRlwxZIQgRuJapbfgCtkQAnjc7l5uw6tj6QbPDcxy7oyUv8KCP1VqteJu/a3m8pa2
+         uZDEsh3zWP/5EnBw4R+dNT1u2DUUWCzjpGa/+CkTN9SmRkMWs4CIyFuIEsXAzUJ1AMEV
+         kBbFeGi27L1Umcd8WfsbUfM2PL4cvALo5wSO+852qXGYaX1sRNQwOHUDjj0/YCPTTY0z
+         SxcA==
+X-Gm-Message-State: AOAM533ZqIKYDnpigXz41ynNh3TnYRNveIC2pCZ5kJW5y9c8jW/kyjdl
+        HAEvRC7aXVQSdppfjsUkLjK5F1JniKdC96TXevI=
+X-Google-Smtp-Source: ABdhPJxPcliPurdz/fhXogPo8OwgELGvNjZ+jctPk48uYdAWg/6N1n5HYVegEJnc9suEGJrLnytPpNCfCNdmuBEpF0E=
+X-Received: by 2002:a05:6402:4c5:: with SMTP id n5mr8102608edw.122.1641810679971;
+ Mon, 10 Jan 2022 02:31:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqLek5SOypZhTxpLK13x2HEYbLbYYotLGOfM-JTb=QE-Eg@mail.gmail.com>
+References: <20210715221828.244536-1-Terry.Bowman@amd.com> <20210907183720.6e0be6b6@endymion>
+ <20211105170550.746443b9@endymion> <33a0cd08-a336-34b3-d36c-f827b8054e9e@amd.com>
+ <c28ab909-99b4-b43c-e330-b07e35afb981@amd.com> <ebee1239-4ed4-8c68-54e0-f684cea71e93@roeck-us.net>
+ <YdoG+en5Z/MaS/wu@ninjato>
+In-Reply-To: <YdoG+en5Z/MaS/wu@ninjato>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 10 Jan 2022 12:29:32 +0200
+Message-ID: <CAHp75VfC2XsF2j=obXu7RLNZkKSsZ20eOH2-UMA9AoMAemKa9Q@mail.gmail.com>
+Subject: Re: [PATCH] i2c: piix4: Replace piix4_smbus driver's cd6h/cd7h port
+ io accesses with mmio accesses
+To:     Wolfram Sang <wsa@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
+        Terry.Bowman@amd.com, Jean Delvare <jdelvare@suse.de>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Rob Herring <robh@kernel.org> [220104 22:06]:
-> On Wed, Dec 22, 2021 at 12:24 AM Tony Lindgren <tony@atomide.com> wrote:
-> >
-> > Hi,
-> >
-> > * Rob Herring <robh@kernel.org> [211221 18:13]:
-> > > On Fri, Dec 17, 2021 at 01:36:40PM +0200, Tony Lindgren wrote:
-> > > > +additionalProperties: true
-> > >
-> > > Like what properties?
-> > >
-> > > true is only used for common, incomplete schemas referenced by device
-> > > schemas.
-> >
-> > There is a collection of the current component clock child nodes for each
-> > clksel instance. I got warnings with "additionalProperties: false", but
-> > maybe the child clock nodes need to be somehow specified in the binding?
-> 
-> If everything else is a child node, then you can do:
-> 
-> additionalProperties:
->   type: object
+On Mon, Jan 10, 2022 at 6:25 AM Wolfram Sang <wsa@kernel.org> wrote:
+>
+> > I think you'll need approval from someone with authority to accept the
+> > suggested change in include/linux/ioport.h. No idea who that would be.
+>
+> ioport.h has no dedicated maintainer. I would modify it via my tree if
+> we have enough review. I'd think Guenter, me, and maybe Andy
+> (Shevchenko), and Rafael should be a good crowd. So, I suggest to do
+> your v2 and add all these people to CC. It is usually easier to talk
+> about existing code.
 
-OK thanks will do, the additional properties are always child nodes.
+I have briefly read the discussion by the link you provided above in
+this thread. I'm not sure I understand the issue and if Intel hardware
+is affected. Is there any summary of the problem?
 
-Regards,
-
-Tony
+-- 
+With Best Regards,
+Andy Shevchenko
