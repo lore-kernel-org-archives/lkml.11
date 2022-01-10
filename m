@@ -2,161 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C55AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:59:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244343AbiAJK7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:59:51 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:55386 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S244353AbiAJK7r (ORCPT
+        id S244366AbiAJLBH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244344AbiAJLAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:59:47 -0500
-X-UUID: 395cc667b0e14575be2c58eb00d5c3b4-20220110
-X-UUID: 395cc667b0e14575be2c58eb00d5c3b4-20220110
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <yong.wu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1957887219; Mon, 10 Jan 2022 18:59:44 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 10 Jan 2022 18:59:43 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 10 Jan 2022 18:59:42 +0800
-Message-ID: <83400d36640fc6256972041c882d080ce9aa5fdd.camel@mediatek.com>
-Subject: Re: [PATCH v3 09/33] iommu/mediatek: Remove for_each_m4u in
- tlb_sync_all
-From:   Yong Wu <yong.wu@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-CC:     Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux-foundation.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>, <youlin.pei@mediatek.com>,
-        <anan.sun@mediatek.com>, <yen-chang.chen@mediatek.com>
-Date:   Mon, 10 Jan 2022 18:59:42 +0800
-In-Reply-To: <85987e9a-dfb0-c241-1dde-43c050a78b51@collabora.com>
-References: <20210923115840.17813-1-yong.wu@mediatek.com>
-         <20210923115840.17813-10-yong.wu@mediatek.com>
-         <bfa33e94-c2e5-5dab-c9af-b674e1669daa@collabora.com>
-         <22faee018a36a49e4a507b69d087432c8cd689ec.camel@mediatek.com>
-         <85987e9a-dfb0-c241-1dde-43c050a78b51@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 10 Jan 2022 06:00:54 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189E6C06173F;
+        Mon, 10 Jan 2022 03:00:54 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id 30so50306925edv.3;
+        Mon, 10 Jan 2022 03:00:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=whE4KmnTtpH1LRN01z65fDsnjDV+xp8M0wHQj1JxF6k=;
+        b=Pt+V7HqzQeecUPMk4kRTh4zz+Gg4lC8R/dh27MRTlzULKpWIYjwnL4Bn8sJvi2BO3e
+         utmMjC84zYRzzaACJZ3F/jlTYQfniQnMnYIohuCkypRzBMKg6c2TAxt0U+qakj/JH6Iw
+         iXCGdN45gAUY/sSBk6+i0rStLY19qVvsKQYSm4oHqWOD4pWGUyRV4uSJMX5hILmGhDpw
+         1bj+5b6kfN41GnwymwZ1m4/qoDQaez8+9a69Xd0VnVjftr7PEe04YPd2LwFHqjmBJMIe
+         h8u9+d2KAV4P50WGv7HFBeko+9c7TDrtr6TCk1WNkZ+KRQpIbAcc9kbwcLlwKT2UvBJo
+         taeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=whE4KmnTtpH1LRN01z65fDsnjDV+xp8M0wHQj1JxF6k=;
+        b=z0qf9ic3Ekxb/EWt58hMkghGFliI2dULUTxEoidL1iM4RIudfwjeW017ZYtAkgx5fG
+         0QJFWw9E/5HTb1akaOFJLqoslzb+Ad/vURfei/Lrkk0DikDlxDFH8BaWeChHIZ1EkbWp
+         g44FEveHJDXF1BTfSk2Mu8lepAx651y085n+Ctie2SEyQ64t3OleHs3xZgSKYkH4mbf4
+         jdvmpc5VYOuQ9y1Tjptx+kBmWHP6FT59Gu0FYa7aqrnCSeZ7cfYmP6bKdyCVsmx7uLFM
+         V7feXyjGGNaX5V9CoohUazzRUjO279LACZAG/qNmY5MnYnNKl7TxqAM45Cz/y1VmdH3X
+         TG7g==
+X-Gm-Message-State: AOAM531f6JiUHHjF2NFolp1RIJh2YSZIVka+Ag8bTClUGMzSsE/IC2u9
+        ebLbhBLwyMmot5M4TIPH6tKi+jxTVn28MK3TkN/RvU63E2sYOw==
+X-Google-Smtp-Source: ABdhPJzuwB3FGbGu10/VJm9BYMQTIgGWTCzQTw1Yt3trPKn7q0NZoUs6mHu2rRb7qt2QmE7N/cfe/nszD1coBHK6rwA=
+X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr57745851ejc.497.1641812444067;
+ Mon, 10 Jan 2022 03:00:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+References: <cover.1641797029.git.lhjeff911@gmail.com> <761604f7aa4d4df16637103ba10d34674faf3d9b.1641797029.git.lhjeff911@gmail.com>
+In-Reply-To: <761604f7aa4d4df16637103ba10d34674faf3d9b.1641797029.git.lhjeff911@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 10 Jan 2022 12:58:56 +0200
+Message-ID: <CAHp75VecMe_KxgV1adr5Z7_EDz0s9MWB_RNeS4nY0m6e_eZ9Yw@mail.gmail.com>
+Subject: Re: [PATCH v5 1/2] SPI: Add SPI driver for Sunplus SP7021
+To:     Li-hao Kuo <lhjeff911@gmail.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>,
+        "LH.Kuo" <lh.kuo@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-01-10 at 10:16 +0100, AngeloGioacchino Del Regno wrote:
-> Il 09/01/22 03:48, Yong Wu ha scritto:
-> > On Tue, 2022-01-04 at 16:55 +0100, AngeloGioacchino Del Regno
-> > wrote:
-> > > Il 23/09/21 13:58, Yong Wu ha scritto:
-> > > > The tlb_sync_all is called from these three functions:
-> > > > a) flush_iotlb_all: it will be called for each a iommu HW.
-> > > > b) tlb_flush_range_sync: it already has for_each_m4u.
-> > > > c) in irq: When IOMMU HW translation fault, Only need flush
-> > > > itself.
-> > > > 
-> > > > Thus, No need for_each_m4u in this tlb_sync_all. Remove it.
-> > > > 
-> > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > > ---
-> > > >    drivers/iommu/mtk_iommu.c | 18 +++++++-----------
-> > > >    1 file changed, 7 insertions(+), 11 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/mtk_iommu.c
-> > > > b/drivers/iommu/mtk_iommu.c
-> > > > index 6f4f6624e3ac..0b4c30baa864 100644
-> > > > --- a/drivers/iommu/mtk_iommu.c
-> > > > +++ b/drivers/iommu/mtk_iommu.c
-> > > > @@ -206,19 +206,15 @@ static struct mtk_iommu_domain
-> > > > *to_mtk_domain(struct iommu_domain *dom)
-> > > >    
-> > > >    static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data
-> > > > *data)
-> > > >    {
-> > > > -	struct list_head *head = data->hw_list;
-> > > > -
-> > > > -	for_each_m4u(data, head) {
-> > > > -		if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> > > > -			continue;
-> > > > +	if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> > > > +		return;
-> > > >    
-> > > > -		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
-> > > > -			       data->base + data->plat_data-
-> > > > > inv_sel_reg);
-> > > > 
-> > > > -		writel_relaxed(F_ALL_INVLD, data->base +
-> > > > REG_MMU_INVALIDATE);
-> > > > -		wmb(); /* Make sure the tlb flush all done */
-> > > > +	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
-> > > > +		       data->base + data->plat_data-
-> > > > >inv_sel_reg);
-> > > > +	writel_relaxed(F_ALL_INVLD, data->base +
-> > > > REG_MMU_INVALIDATE);
-> > > > +	wmb(); /* Make sure the tlb flush all done */
-> > > 
-> > > There aren't a lot of writes here - not anymore, since you are no
-> > > longer doing
-> > > this for_each_m4u()...
-> > > ...so, please change writel_relaxed() to writel() calls, allowing
-> > > you
-> > > to also
-> > > remove the write barrier at the end (since in the non relaxed
-> > > version, order is already ensured).
-> > 
-> > In the "writel", the "__iowmb()" runs before "write_relaxed". Then
-> > how
-> > to guarantee the last register was wrote into the HW. Here the
-> > flush
-> > all don't have sync(waiting it complete)
-> > 
-> 
-> That's right, I'm sorry for the invalid proposal.
-> 
-> Though, there's something else to mention here... if writing
-> (F_INVLD_EN1 | F_INVLD_EN0) to inv_sel_reg is *required* to happen
-> before
-> writing F_ALL_INVLD to REG_MMU_INVALIDATE (which I think is exactly
-> the
-> case here), then, in order to ensure write ordering, you should still
-> use
-> writel() instead of the relaxed accessor; after which, since (as you
-> mentioned)
-> there is no sync readback loop, you can keep that wmb() at the end.
+On Mon, Jan 10, 2022 at 8:47 AM Li-hao Kuo <lhjeff911@gmail.com> wrote:
+>
+> Add SPI driver for Sunplus SP7021.
 
-The writel_relaxed also makes sure the order. I did try this:
+In the subject line use small letters in the prefix. Check with `git
+log -- drivers/spi` how people do.
 
+Common comment: Consider to use spi_controller_*() APIs over
+spi_master_*() ones. Also your SLA/MAS (and sla/mas) are a bit
+confusing: spell them in full and master --> controller or ctrl, slave
+--> peripheral or alike.
 
-https://patchwork.kernel.org/project/linux-mediatek/patch/1570627143-29441-3-git-send-email-yong.wu@mediatek.com/
+> Signed-off-by: Li-hao Kuo <lhjeff911@gmail.com>
+> ---
+> Changes in v5:
+>  - Addressed comments from Mr. Mark Brown
+>  - Addressed comments from Mr. Andy Shevchenko
 
-> 
-> > > 
-> > > >    
-> > > > -		pm_runtime_put(data->dev);
-> > > > -	}
-> > > > +	pm_runtime_put(data->dev);
-> > > >    }
-> > > >    
-> > > >    static void mtk_iommu_tlb_flush_range_sync(unsigned long
-> > > > iova,
-> > > > size_t size,
-> > > > 
-> 
-> 
+You need to elaborate what exactly you addressed.
 
+...
+
+> +               writel(readl(pspim->m_base + SP7021_INT_BUSY_REG)
+> +                       | SP7021_CLR_MAS_INT, pspim->m_base + SP7021_INT_BUSY_REG);
+
+It's better to read with temporary variable being used:
+
+             value = readl(pspim->m_base + SP7021_INT_BUSY_REG);
+             value |= SP7021_CLR_MAS_INT;
+             writel(value, pspim->m_base + SP7021_INT_BUSY_REG);
+
+...
+
+> +       writel(readl(pspim->m_base + SP7021_SPI_STATUS_REG) | SP7021_FD_SW_RST,
+> +              pspim->m_base + SP7021_SPI_STATUS_REG);
+
+Ditto. And for all other similar cases.
+
+...
+
+> +       pspim->xfer_conf |= ((clk_sel & 0xffff) << 16);
+
+Is xfer_conf bigger than 32-bit? If not, why do you need the ' & 0xffff' part?
+
+...
+
+> +               ret = 0;
+
+Is it necessary to do this under the lock?
+
+> +               if (pspim->xfer_conf & SP7021_CPOL_FD)
+> +                       writel(pspim->xfer_conf, pspim->m_base + SP7021_SPI_CONFIG_REG);
+> +
+> +               mutex_unlock(&pspim->buf_lock);
+
+...
+
+> +       if (spi_controller_is_slave(ctlr)) {
+
+Factor out this body to a function, it will increase readability.
+
+> +       }
+> +
+> +       spi_finalize_current_transfer(ctlr);
+> +       return ret;
+
+...
+
+> +       mode = SP7021_MASTER_MODE;
+
+This...
+
+> +       pdev->id = of_alias_get_id(pdev->dev.of_node, "sp_spi");
+
+> +       if (of_property_read_bool(pdev->dev.of_node, "spi-slave"))
+> +               mode = SP7021_SLAVE_MODE;
+
+...belongs to this condition, so do not interleave them.
+
+On top of that you may use device property API:
+
+    if (device_property_read_bool(&pdev->dev, "spi-slave"))
+        mode = SP7021_SLAVE_MODE;
+    else
+        mode = SP7021_MASTER_MODE;
+
+...
+
+> +       pm_runtime_enable(dev);
+> +       ret = spi_register_controller(ctlr);
+> +       if (ret) {
+> +               pm_runtime_disable(dev);
+> +               return dev_err_probe(dev, ret, "spi_register_master fail\n");
+> +       }
+> +
+> +       return ret;
+
+return 0;
+
+...
+
+> +MODULE_LICENSE("GPL v2");
+
+"GPL", the one you used is legacy.
+
+-- 
+With Best Regards,
+Andy Shevchenko
