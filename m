@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76402C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A71A4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:01:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234920AbiAJBB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 20:01:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50608 "EHLO
+        id S238117AbiAJBBa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 20:01:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237698AbiAJBAR (ORCPT
+        with ESMTP id S237693AbiAJBAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 9 Jan 2022 20:00:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED730B8107D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6A7CB80E8A;
         Mon, 10 Jan 2022 01:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A3E8FC36AF3;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E247C36AE3;
         Mon, 10 Jan 2022 01:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641776413;
-        bh=QjGfbGdur4r8H/e7u5tmEEU3X5gKREK3p8NVS1iJxrs=;
+        bh=pw18cUmaIpB1F/HWpZvXzHGi6pXH8AITFVZkviRrEpg=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=u8ZVFREC6z3u1Z5G3sUXFdU5/9iQK0T6qq4tPnxXsVFgcaVIytjB6apnutQs4lmdZ
-         IUinsgSXmyyP8ZSXJu5q+/+3q1AybKwh/bdSDdh0lDT5n6yaKrXa0TZBygo6sRsZM0
-         +JUcRnSxzwKzLEL7ylcZz9qF49wvcWckd4IPRX1x3sMBB/oJiT9BOebrj3czW0HEJa
-         wdAG13a3TbV3zgmhAGw5E5pEbqoyzPN49y2ZzRlUhCabV5HGHzm9Ijb7LxHLn5jcZf
-         rsQJI8xOJTarcXpsc6YhDBx+HrwiD6tC2X+1kxnpT/cv3lNCeog6hb2Ieqh5R9q69I
-         51tFbJttPVgLQ==
+        b=s7kn/gbu29dfh7/gUU/GZIrYPi+KCTtr07OmMrm+794zBzoLSe8oiT0vIqV9g7T1a
+         +sWJk8cyQP9eDJeAwYTOavTcASaRwbP3MO6CKbWXzfa+BChXnqsOoNTs2bpIw2rlWq
+         pieiADo4ggY6bhyPgTYgdMEXDyh5PG5p6BPpi1bRrygvXu/BJLaPJxLHbGQ56BL4Ql
+         f4huBtQwI7qtFY0X7v181poRRhm12UDPzbqTAK0YKwXxTULke4pUeKy2rZK10W8zAt
+         wGn8Fn6Z6K9C/XyaFrwD4Z7pUls6WRmI8E1XCM5WiKhYzSjqYyAtbVMwC+JUitKKyb
+         B7aACpt9bfRiw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 924B9F60791;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7C95CF6078E;
         Mon, 10 Jan 2022 01:00:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bna: Simplify DMA setting
+Subject: Re: [PATCH] myri10ge: Simplify DMA setting
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164177641359.18208.11290961412456226547.git-patchwork-notify@kernel.org>
+Message-Id: <164177641350.18208.1416757090967576315.git-patchwork-notify@kernel.org>
 Date:   Mon, 10 Jan 2022 01:00:13 +0000
-References: <1d5a7b3f4fa735f1233c3eb3fa07e71df95fad75.1641658516.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <1d5a7b3f4fa735f1233c3eb3fa07e71df95fad75.1641658516.git.christophe.jaillet@wanadoo.fr>
+References: <e92b0c3a3c1574a97a4e6fd0c30225f10fa59d18.1641651693.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <e92b0c3a3c1574a97a4e6fd0c30225f10fa59d18.1641651693.git.christophe.jaillet@wanadoo.fr>
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     rmody@marvell.com, skalluru@marvell.com,
-        GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org,
+Cc:     christopher.lee@cspi.com, davem@davemloft.net, kuba@kernel.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-janitors@vger.kernel.org
 Precedence: bulk
@@ -55,19 +54,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sat,  8 Jan 2022 17:16:16 +0100 you wrote:
+On Sat,  8 Jan 2022 15:22:13 +0100 you wrote:
 > As stated in [1], dma_set_mask() with a 64-bit mask will never fail if
 > dev->dma_mask is non-NULL.
 > So, if it fails, the 32 bits case will also fail for the same reason.
 > 
-> So, if dma_set_mask_and_coherent() succeeds, 'using_dac' is known to be
-> 'true'. This variable can be removed.
+> If dma_set_mask_and_coherent() succeeds, 'dac_enabled' is known to be 1.
+> 
+> Simplify code and remove some dead code accordingly.
 > 
 > [...]
 
 Here is the summary with links:
-  - bna: Simplify DMA setting
-    https://git.kernel.org/netdev/net-next/c/9aaa82d2e8d5
+  - myri10ge: Simplify DMA setting
+    https://git.kernel.org/netdev/net-next/c/21ef11eaf3f7
 
 You are awesome, thank you!
 -- 
