@@ -2,115 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1641DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3968C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:25:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237298AbiAJQVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 11:21:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38174 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237275AbiAJQVH (ORCPT
+        id S237327AbiAJQZT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 11:25:19 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:52850 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237311AbiAJQZS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 11:21:07 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 10 Jan 2022 11:25:18 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C262C1F393;
+        Mon, 10 Jan 2022 16:25:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641831916; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y7C3iBFO6mPZG0zqznbI9unOua16tjFDplhQ2oT/yec=;
+        b=DQBwKbxwJZEyQg10FCROT+HMkMX/2RAAibSv0z8ACXSJtgY9OdtKzOSdJIOVMoHvfJqI9X
+        /RlcxZJdjiCsps9h11Hji2qnDEXcFPStpt9VuWTgk2zXTUvh8rh6hZ33fEfBJ5kBXTPzBo
+        377kRe33OmnPdldc821hy8euxse9hpM=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E59A612AF;
-        Mon, 10 Jan 2022 16:21:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 792B5C36AE5;
-        Mon, 10 Jan 2022 16:21:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641831665;
-        bh=o9o0izpIfMYmc5M5r8xsUyttPDtVbrk5AEgPIjm4Cz4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UdNmWB3Q8lTXIk4NH18aWuogd1Ao8SEvloE0Ti9ODrM2vhwl4ynXGzfksP1Y6y3Fx
-         VTXk4VCZ7girEegwkuz4O1X4ckWh5BfYyCcUVetlz80ZQIamV4U9o7feYHZ8KNvf4K
-         PD+PXPvCW2p3JDzNRWwShLy8KfwHGTqu4UxJTp95C1GHkw5xXnkQyOKfm3gTg922ik
-         j4MBscKALpewawk886HaxHc2kSoCt66C5cOAKBR/t93MOyGN+T6sO9MnL3b/PeY7kv
-         WsSJjgiiGtnydCjO6uQXHmaOurfnMuDpu4mlwYzsvNHA9yeHmx+ZnW/UPP5034FQJC
-         RYehOzlVn26/A==
-Date:   Mon, 10 Jan 2022 08:21:04 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Rao Shoaib <rao.shoaib@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
-        regressions@lists.linux.dev
-Subject: Re: Observation of a memory leak with commit 314001f0bf92
- ("af_unix: Add OOB support")
-Message-ID: <20220110082104.2292d7ad@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <a754b7d0-8a20-9730-c439-1660994005d0@leemhuis.info>
-References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
-        <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <a754b7d0-8a20-9730-c439-1660994005d0@leemhuis.info>
+        by relay2.suse.de (Postfix) with ESMTPS id EDB44A3B88;
+        Mon, 10 Jan 2022 16:25:15 +0000 (UTC)
+Date:   Mon, 10 Jan 2022 17:25:15 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     Yu Zhao <yuzhao@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Rik van Riel <riel@surriel.com>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Subject: Re: [PATCH v6 6/9] mm: multigenerational lru: aging
+Message-ID: <Ydxd6zHs2uR5mNnn@dhcp22.suse.cz>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <20220104202227.2903605-7-yuzhao@google.com>
+ <YdcU4P+XWkbDUUoO@dhcp22.suse.cz>
+ <YdxKORU9OWCv114O@dhcp22.suse.cz>
+ <8edfd643-888b-fbe6-97c0-21f900767c27@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8edfd643-888b-fbe6-97c0-21f900767c27@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 15:02:23 +0100 Thorsten Leemhuis wrote:
-> On 09.01.22 22:20, Jakub Kicinski wrote:
-> > On Fri, 7 Jan 2022 07:48:46 +0100 Lukas Bulwahn wrote:  
-> >> Dear Rao and David,
-> >>
-> >>
-> >> In our syzkaller instance running on linux-next,
-> >> https://elisa-builder-00.iol.unh.edu/syzkaller-next/, we have been
-> >> observing a memory leak in prepare_creds,
-> >> https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3,
-> >> for quite some time.
-> >>
-> >> It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
-> >> So, it is in mainline, was released and has not been fixed in
-> >> linux-next yet.
-> >>
-> >> As syzkaller also provides a reproducer, we bisected this memory leak
-> >> to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
-> >> support").
-> >>
-> >> We also tested that reverting this commit on torvalds' current tree
-> >> made the memory leak with the reproducer go away.
-> >>
-> >> Could you please have a look how your commit introduces this memory
-> >> leak? We will gladly support testing your fix in case help is needed.  
+On Mon 10-01-22 17:01:07, Vlastimil Babka wrote:
+> On 1/10/22 16:01, Michal Hocko wrote:
+> > On Thu 06-01-22 17:12:18, Michal Hocko wrote:
+> >> On Tue 04-01-22 13:22:25, Yu Zhao wrote:
+> >> > +static struct lru_gen_mm_walk *alloc_mm_walk(void)
+> >> > +{
+> >> > +	if (!current->reclaim_state || !current->reclaim_state->mm_walk)
+> >> > +		return kvzalloc(sizeof(struct lru_gen_mm_walk), GFP_KERNEL);
 > > 
-> > Let's test the regression/bug report tracking bot :)
+> > One thing I have overlooked completely. You cannot really use GFP_KERNEL
+> > allocation here because the reclaim context can be constrained (e.g.
+> > GFP_NOFS). This allocation will not do any reclaim as it is PF_MEMALLOC
+> > but I suspect that the lockdep will complain anyway.
 > > 
-> > #regzbot introduced: 314001f0bf92  
+> > Also kvmalloc is not really great here. a) vmalloc path is never
+> > executed for small objects and b) we do not really want to make a
+> > dependency between vmalloc and the reclaim (by vmalloc -> reclaim ->
+> > vmalloc).
+> > 
+> > Even if we rule out vmalloc and look at kmalloc alone. Is this really
+> > safe? I do not see any recursion prevention in the SL.B code. Maybe this
+> > just happens to work but the dependency should be really documented so
+> > that future SL.B changes won't break the whole scheme. 
 > 
-> Great, thx for trying, you only did a small mistake: it lacked a caret
-> (^) before the "introduced", which would have told regzbot that the
-> parent mail (the one you quoted) is the one containing the report (which
-> later is linked in patch descriptions of fixes and allows rezgbot to
-> connect things). That's why regzbot now thinks you reported the issue
-> and looks out for patches and commits that link to your mail. :-/
-> 
-> Don't worry, I just added it properly and now mark this as duplicate:
-> 
-> #regzbot dup-of:
-> https://lore.kernel.org/lkml/CAKXUXMzZkQvHJ35nwVhcJe%2BDrtEXGw%2BeKGVD04=xRJkVUC2sPA@mail.gmail.com/
-> 
-> Thx again for trying.
+> Slab implementations drop all locks before calling into page allocator (thus
+> possibly reclaim) so slab itself should be fine and I don't expect it to
+> change. But we could eventually reach the page allocator recursively again,
+> that's true and not great.
 
-Ah, thanks for the fix up, I copy/pasted the example with the hash and
-forgot about the caret.
+Thanks for double checking. If recursion is really intended and
+something SL.B allocators should support then this is definitely worth
+documenting so that a subtle change won't break in the future. 
 
-> I wonder if this mistake could be avoided. I came up with one idea while
-> walking the dog:
-> 
->  * if there is *no* parent mail, then "regzbot introduce" could consider
-> the current mail as the report
-> 
->  * if there *is* a parent mail, then "regzbot introduce" could consider
-> the parent as the report
-> 
-> Then regzbot would have done the right thing in this case. But there is
-> a "but": I wonder if such an approach would be too much black magic that
-> confuses more than it helps. What do you think?
-
-IMHO heuristics may do more harm than good. At least for maintainers.
+-- 
+Michal Hocko
+SUSE Labs
