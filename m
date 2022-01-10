@@ -2,179 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA2DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 00:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A409C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:00:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237675AbiAJA7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 19:59:53 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:41348 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S237665AbiAJA7b (ORCPT
+        id S237697AbiAJBAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 20:00:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234855AbiAJBAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 19:59:31 -0500
-X-UUID: 0eace77e04f34a8a9c97eb8f3321413c-20220110
-X-UUID: 0eace77e04f34a8a9c97eb8f3321413c-20220110
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 266559539; Mon, 10 Jan 2022 08:59:28 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 10 Jan 2022 08:59:26 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 10 Jan 2022 08:59:26 +0800
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Subject: [v2 3/3] clk: mediatek: Integrate vppsys with mtk-mmsys in MT8195
-Date:   Mon, 10 Jan 2022 08:59:02 +0800
-Message-ID: <20220110005902.27148-4-chun-jie.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220110005902.27148-1-chun-jie.chen@mediatek.com>
-References: <20220110005902.27148-1-chun-jie.chen@mediatek.com>
+        Sun, 9 Jan 2022 20:00:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526D0C06173F;
+        Sun,  9 Jan 2022 17:00:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E073061042;
+        Mon, 10 Jan 2022 01:00:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 20AFDC36AE3;
+        Mon, 10 Jan 2022 01:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641776409;
+        bh=iOIfAqVkgml1lX6oMXE7USc/dEvwwudMzPWrQjP7u3k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WNlMM9BctELe2LwCTPc67v2ZTWgT3XasjeaAZktTnzYqfL9hSI+zF16yVh+vYIgo8
+         FXiYUjW49GMYIZU6sF2PEDNb2DGDYyrIgIC0sOzNh4EZCztAueAkG81U5N6oUNCLPC
+         d5GSuF+E9F7z3Bi5fzWMdBGjnbOSoa9ro7QG5KTu22fJyibED06BRpU5FOQKLcz/7+
+         R6WAi/JuFrKjuUWMAab5GV7PTavFvZkU67kRIQoEqn0XIqxH3mvk2HN7Ug6T/LagQ9
+         vmGtSwWogsOkVRoiaS25MG3kvDieY+WKM00IY5khlEKWP8tgDFSVrPJxIy6ceUtyqn
+         6ce6Mq8+Gt/Vw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 07981F6078F;
+        Mon, 10 Jan 2022 01:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: mcs7830: handle usb read errors properly
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164177640902.18208.15482694955918570197.git-patchwork-notify@kernel.org>
+Date:   Mon, 10 Jan 2022 01:00:09 +0000
+References: <20220106225716.7425-1-paskripkin@gmail.com>
+In-Reply-To: <20220106225716.7425-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, tanghui20@huawei.com,
+        andrew@lunn.ch, oneukum@suse.com, arnd@arndb.de,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Integrate vpp0 and vpp1 with mtk-mmsys driver which
-will populate device by platform_device_register_data
-to start vppsys clock driver.
+Hello:
 
-Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
----
- drivers/clk/mediatek/clk-mt8195-vpp0.c | 42 +++++++++++++++++---------
- drivers/clk/mediatek/clk-mt8195-vpp1.c | 42 +++++++++++++++++---------
- 2 files changed, 56 insertions(+), 28 deletions(-)
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-diff --git a/drivers/clk/mediatek/clk-mt8195-vpp0.c b/drivers/clk/mediatek/clk-mt8195-vpp0.c
-index c3241466a8d0..68c375bfce8b 100644
---- a/drivers/clk/mediatek/clk-mt8195-vpp0.c
-+++ b/drivers/clk/mediatek/clk-mt8195-vpp0.c
-@@ -86,25 +86,39 @@ static const struct mtk_gate vpp0_clks[] = {
- 	GATE_VPP0_2(CLK_VPP0_WARP1_MDP_DL_ASYNC, "vpp0_warp1_mdp_dl_async", "top_wpe_vpp", 3),
- };
- 
--static const struct mtk_clk_desc vpp0_desc = {
--	.clks = vpp0_clks,
--	.num_clks = ARRAY_SIZE(vpp0_clks),
--};
-+static int clk_mt8195_vpp0_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = dev->parent->of_node;
-+	struct clk_onecell_data *clk_data;
-+	int r;
- 
--static const struct of_device_id of_match_clk_mt8195_vpp0[] = {
--	{
--		.compatible = "mediatek,mt8195-vppsys0",
--		.data = &vpp0_desc,
--	}, {
--		/* sentinel */
--	}
--};
-+	clk_data = mtk_alloc_clk_data(CLK_VPP0_NR_CLK);
-+	if (!clk_data)
-+		return -ENOMEM;
-+
-+	r = mtk_clk_register_gates(node, vpp0_clks, ARRAY_SIZE(vpp0_clks), clk_data);
-+	if (r)
-+		goto free_vpp0_data;
-+
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	if (r)
-+		goto unregister_clk;
-+
-+	return r;
-+
-+unregister_clk:
-+	mtk_clk_unregister(clk_data);
-+
-+free_vpp0_data:
-+	mtk_free_clk_data(clk_data);
-+	return r;
-+}
- 
- static struct platform_driver clk_mt8195_vpp0_drv = {
--	.probe = mtk_clk_simple_probe,
-+	.probe = clk_mt8195_vpp0_probe,
- 	.driver = {
- 		.name = "clk-mt8195-vpp0",
--		.of_match_table = of_match_clk_mt8195_vpp0,
- 	},
- };
- builtin_platform_driver(clk_mt8195_vpp0_drv);
-diff --git a/drivers/clk/mediatek/clk-mt8195-vpp1.c b/drivers/clk/mediatek/clk-mt8195-vpp1.c
-index ce0b9a40a179..237077c60f54 100644
---- a/drivers/clk/mediatek/clk-mt8195-vpp1.c
-+++ b/drivers/clk/mediatek/clk-mt8195-vpp1.c
-@@ -84,25 +84,39 @@ static const struct mtk_gate vpp1_clks[] = {
- 	GATE_VPP1_1(CLK_VPP1_VPP_SPLIT_26M, "vpp1_vpp_split_26m", "clk26m", 26),
- };
- 
--static const struct mtk_clk_desc vpp1_desc = {
--	.clks = vpp1_clks,
--	.num_clks = ARRAY_SIZE(vpp1_clks),
--};
-+static int clk_mt8195_vpp1_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = dev->parent->of_node;
-+	struct clk_onecell_data *clk_data;
-+	int r;
- 
--static const struct of_device_id of_match_clk_mt8195_vpp1[] = {
--	{
--		.compatible = "mediatek,mt8195-vppsys1",
--		.data = &vpp1_desc,
--	}, {
--		/* sentinel */
--	}
--};
-+	clk_data = mtk_alloc_clk_data(CLK_VPP1_NR_CLK);
-+	if (!clk_data)
-+		return -ENOMEM;
-+
-+	r = mtk_clk_register_gates(node, vpp1_clks, ARRAY_SIZE(vpp1_clks), clk_data);
-+	if (r)
-+		goto free_vpp1_data;
-+
-+	r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-+	if (r)
-+		goto unregister_clk;
-+
-+	return r;
-+
-+unregister_clk:
-+	mtk_clk_unregister(clk_data);
-+
-+free_vpp1_data:
-+	mtk_free_clk_data(clk_data);
-+	return r;
-+}
- 
- static struct platform_driver clk_mt8195_vpp1_drv = {
--	.probe = mtk_clk_simple_probe,
-+	.probe = clk_mt8195_vpp1_probe,
- 	.driver = {
- 		.name = "clk-mt8195-vpp1",
--		.of_match_table = of_match_clk_mt8195_vpp1,
- 	},
- };
- builtin_platform_driver(clk_mt8195_vpp1_drv);
+On Fri,  7 Jan 2022 01:57:16 +0300 you wrote:
+> Syzbot reported uninit value in mcs7830_bind(). The problem was in
+> missing validation check for bytes read via usbnet_read_cmd().
+> 
+> usbnet_read_cmd() internally calls usb_control_msg(), that returns
+> number of bytes read. Code should validate that requested number of bytes
+> was actually read.
+> 
+> [...]
+
+Here is the summary with links:
+  - net: mcs7830: handle usb read errors properly
+    https://git.kernel.org/netdev/net/c/d668769eb9c5
+
+You are awesome, thank you!
 -- 
-2.18.0
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
