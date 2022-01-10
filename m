@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC19C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF73AC2BA80
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243737AbiAJHpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:45:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
+        id S243639AbiAJHpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241087AbiAJHjI (ORCPT
+        with ESMTP id S239977AbiAJHio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:39:08 -0500
+        Mon, 10 Jan 2022 02:38:44 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DFBC061763;
-        Sun,  9 Jan 2022 23:33:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B350C0258D2;
+        Sun,  9 Jan 2022 23:33:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1960F60B62;
-        Mon, 10 Jan 2022 07:33:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 015DEC36AE9;
-        Mon, 10 Jan 2022 07:33:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D05B60BA2;
+        Mon, 10 Jan 2022 07:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23443C36AE9;
+        Mon, 10 Jan 2022 07:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800020;
-        bh=dZLDfgXpMHsQktAQ1CcOfPtuyA+EHT7IeIuECDDH3lo=;
+        s=korg; t=1641800000;
+        bh=+jzjg/PzAo7Yfk7QGyIdftfXX9dnjhS3pvZKkENn7Xc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qML+ZvnHcc7qPZnvYeq1MCTLUkacUb7kTOCpCThDW5cB3b72nWp9GWMveK52oXkSq
-         odFcVEHsKG7c4EF7KTzp9q9g8mb+1niyIHJTNoHPzbZM6So1kNjF0d4tYIXghIyE6K
-         Pnw5Al5DtwechVU/D5ozl8W5wlK3gy7m0dLtxW9c=
+        b=ssewCUj1vLt8xr58l7KE3sGie/50pIZFCSwvbYf8sZuHETvRb6EDRj7qjeAQ0Fa3d
+         systYTqfGF5Npu0dv9n5R3XHi1QeZ4RpQafdYMkjJD9iTs7d2E0EdOe+kx0eH/S+Io
+         4KyZ46EFb1lifXG9J1aPaFK4RDRP4fDU+IRgz4EU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 52/72] ipv6: Do cleanup if attribute validation fails in multipath route
-Date:   Mon, 10 Jan 2022 08:23:29 +0100
-Message-Id: <20220110071823.305562333@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Lee <steven_lee@aspeedtech.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.15 45/72] gpio: gpio-aspeed-sgpio: Fix wrong hwirq base in irq handler
+Date:   Mon, 10 Jan 2022 08:23:22 +0100
+Message-Id: <20220110071823.079201751@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -50,46 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Steven Lee <steven_lee@aspeedtech.com>
 
-[ Upstream commit 95bdba23b5b4aa75fe3e6c84335e638641c707bb ]
+commit e5a7431f5a2d6dcff7d516ee9d178a3254b17b87 upstream.
 
-As Nicolas noted, if gateway validation fails walking the multipath
-attribute the code should jump to the cleanup to free previously
-allocated memory.
+Each aspeed sgpio bank has 64 gpio pins(32 input pins and 32 output pins).
+The hwirq base for each sgpio bank should be multiples of 64 rather than
+multiples of 32.
 
-Fixes: 1ff15a710a86 ("ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route")
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Link: https://lore.kernel.org/r/20220103170555.94638-1-dsahern@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Steven Lee <steven_lee@aspeedtech.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/gpio/gpio-aspeed-sgpio.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 0eceb0e88976b..0632382a5427b 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5277,12 +5277,10 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
+--- a/drivers/gpio/gpio-aspeed-sgpio.c
++++ b/drivers/gpio/gpio-aspeed-sgpio.c
+@@ -395,7 +395,7 @@ static void aspeed_sgpio_irq_handler(str
+ 		reg = ioread32(bank_reg(data, bank, reg_irq_status));
  
- 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
- 			if (nla) {
--				int ret;
--
--				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
-+				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
- 							extack);
--				if (ret)
--					return ret;
-+				if (err)
-+					goto cleanup;
+ 		for_each_set_bit(p, &reg, 32)
+-			generic_handle_domain_irq(gc->irq.domain, i * 32 + p * 2);
++			generic_handle_domain_irq(gc->irq.domain, (i * 32 + p) * 2);
+ 	}
  
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
--- 
-2.34.1
-
+ 	chained_irq_exit(ic, desc);
 
 
