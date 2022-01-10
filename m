@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 454EEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239933AbiAJHcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:32:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240133AbiAJH2c (ORCPT
+        id S239392AbiAJHcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:32:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57920 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239998AbiAJH2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCF21C028BEE;
-        Sun,  9 Jan 2022 23:26:54 -0800 (PST)
+        Mon, 10 Jan 2022 02:28:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D8B3611B9;
-        Mon, 10 Jan 2022 07:26:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6097FC36AE9;
-        Mon, 10 Jan 2022 07:26:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFF62B81205;
+        Mon, 10 Jan 2022 07:28:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F9B2C36AE9;
+        Mon, 10 Jan 2022 07:28:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799613;
-        bh=S9W/8WK5YYTdkSikU45bTJwgwBshs9fphhTu09tAU8w=;
+        s=korg; t=1641799681;
+        bh=/UEPMbtShXn5pcYLecF9tRLU9B6bfwJpFLPXCUE1fes=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mIAozLQChIpb2hVYO6J/skzJiIaPvwzi9AqnHdBrZFdopHwvabYMcrTdEmOFfxWpY
-         TPTxN+O5il8Hl89t+Mm01ijP9X6ys8wIzEzx765PgMZjHJegSH+bkRYVTSgxHS8DbH
-         vmF7rJboq/rlIjENeCKelmdvQZN0ELag0RQ6ZUCg=
+        b=Mwbw8H3r/3Fl69O57dAvj88O3VBkzVXykrJx0t3ibsh9i+dLMeVpKHkmALVAlHSbk
+         K+D1EXN2lqclATNksjmCfuujlzFJuIZp9+ExnYWrazq8XQIaxw1IFkV4HXCDFJKNYV
+         h0cAt4XsTbC1rmD6kkid0vFp2CnOUraO84mhiNto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 4.19 02/21] tracing: Tag trace_percpu_buffer as a percpu pointer
-Date:   Mon, 10 Jan 2022 08:23:03 +0100
-Message-Id: <20220110071814.047265306@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Gurucharan G <gurucharanx.g@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.4 12/34] i40e: Fix for displaying message regarding NVM version
+Date:   Mon, 10 Jan 2022 08:23:07 +0100
+Message-Id: <20220110071816.059667607@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
-References: <20220110071813.967414697@linuxfoundation.org>
+In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
+References: <20220110071815.647309738@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,50 +47,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-commit f28439db470cca8b6b082239314e9fd10bd39034 upstream.
+commit 40feded8a247f95957a0de9abd100085fb320a2f upstream.
 
-Tag trace_percpu_buffer as a percpu pointer to resolve warnings
-reported by sparse:
-  /linux/kernel/trace/trace.c:3218:46: warning: incorrect type in initializer (different address spaces)
-  /linux/kernel/trace/trace.c:3218:46:    expected void const [noderef] __percpu *__vpp_verify
-  /linux/kernel/trace/trace.c:3218:46:    got struct trace_buffer_struct *
-  /linux/kernel/trace/trace.c:3234:9: warning: incorrect type in initializer (different address spaces)
-  /linux/kernel/trace/trace.c:3234:9:    expected void const [noderef] __percpu *__vpp_verify
-  /linux/kernel/trace/trace.c:3234:9:    got int *
+When loading the i40e driver, it prints a message like: 'The driver for the
+device detected a newer version of the NVM image v1.x than expected v1.y.
+Please install the most recent version of the network driver.' This is
+misleading as the driver is working as expected.
 
-Link: https://lkml.kernel.org/r/ebabd3f23101d89cb75671b68b6f819f5edc830b.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
+Fix that by removing the second part of message and changing it from
+dev_info to dev_dbg.
 
-Cc: stable@vger.kernel.org
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 07d777fe8c398 ("tracing: Add percpu buffers for trace_printk()")
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Fixes: 4fb29bddb57f ("i40e: The driver now prints the API version in error message")
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Gurucharan G <gurucharanx.g@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c |    4 ++--
+ drivers/net/ethernet/intel/i40e/i40e_main.c |    4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -2812,7 +2812,7 @@ struct trace_buffer_struct {
- 	char buffer[4][TRACE_BUF_SIZE];
- };
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -15036,8 +15036,8 @@ static int i40e_probe(struct pci_dev *pd
  
--static struct trace_buffer_struct *trace_percpu_buffer;
-+static struct trace_buffer_struct __percpu *trace_percpu_buffer;
- 
- /*
-  * Thise allows for lockless recording.  If we're nested too deeply, then
-@@ -2841,7 +2841,7 @@ static void put_trace_buf(void)
- 
- static int alloc_percpu_trace_buffer(void)
- {
--	struct trace_buffer_struct *buffers;
-+	struct trace_buffer_struct __percpu *buffers;
- 
- 	buffers = alloc_percpu(struct trace_buffer_struct);
- 	if (WARN(!buffers, "Could not allocate percpu trace_printk buffer"))
+ 	if (hw->aq.api_maj_ver == I40E_FW_API_VERSION_MAJOR &&
+ 	    hw->aq.api_min_ver > I40E_FW_MINOR_VERSION(hw))
+-		dev_info(&pdev->dev,
+-			 "The driver for the device detected a newer version of the NVM image v%u.%u than expected v%u.%u. Please install the most recent version of the network driver.\n",
++		dev_dbg(&pdev->dev,
++			"The driver for the device detected a newer version of the NVM image v%u.%u than v%u.%u.\n",
+ 			 hw->aq.api_maj_ver,
+ 			 hw->aq.api_min_ver,
+ 			 I40E_FW_API_VERSION_MAJOR,
 
 
