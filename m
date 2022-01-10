@@ -2,77 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9350C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A10C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbiAJNhm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 08:37:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232952AbiAJNhX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 08:37:23 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85EDBC061759
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 05:37:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=4wR6hrOJgs+X6kKk9+UhCE6lJrlz1SxlJAZof4WK/t0=; b=P7j/zTCAD0FbAREoR6HCZlOov3
-        5nLtOzCxOa7TeZ0E4/VTBu9clkGt3hSpYfm0ETOgd1Adt2KU3yfaYre8E6LLUwHrIkrSTYscLDBVN
-        0h0N96DW6dwC9svxZZEVt3j4pFhZZABuMYbQ4QdcgrMrPE3XFdViUUIFCeZIcLcuGdVE6MuyOXuLl
-        utNXfONFU9EwP8ltAzVkPygTkSwzKioqMocEXABoJxqs4glfgPyFwcTYxHfcYNwygtaaXLOu/Gqv1
-        Q8FiID8B4eDmbI70J5k397RQ1JnSPweGlxkQzm7kgOjRsZNuWTweiW8vwGk2NQR28wGzacmyDvN+e
-        dexLbQ4g==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6urJ-002SWS-PY; Mon, 10 Jan 2022 13:37:13 +0000
-Date:   Mon, 10 Jan 2022 13:37:13 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>,
-        Mike Kravetz <mike.kravetz@oracle.com>
-Subject: Re: [PATCH v2 06/28] gup: Fix some contiguous memmap assumptions
-Message-ID: <Ydw2iQR8fT+qGkz6@casper.infradead.org>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-7-willy@infradead.org>
- <YdvuhjweiC1SjVF4@infradead.org>
+        id S232834AbiAJNik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:38:40 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:58842 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232695AbiAJNij (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 08:38:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FmTR09Oqz1bW5Lxwav5e3Ryx2EwoQsLw1Q/s1FDqmR4=; b=Lc8LL1YzPGnL1TWVsscyZPvo8I
+        fuX+teKvbB8XVobFbenMg/zjLdjv1xlwE8Gd+8M44uCaFWRqRGls88qlj+Mbihf8i8mNeoRMkkMg8
+        KBT2ZaXn6emicmbkOKOXajAOG2flIQ4XOwitiUye7CR95IJIfWl0ZhGPZS14/vvfkSPk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1n6usd-000zU7-Uy; Mon, 10 Jan 2022 14:38:35 +0100
+Date:   Mon, 10 Jan 2022 14:38:35 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: at803x: make array offsets static
+Message-ID: <Ydw228SaeS8Ro8He@lunn.ch>
+References: <20220109231716.59012-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YdvuhjweiC1SjVF4@infradead.org>
+In-Reply-To: <20220109231716.59012-1-colin.i.king@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 12:29:58AM -0800, Christoph Hellwig wrote:
-> On Mon, Jan 10, 2022 at 04:23:44AM +0000, Matthew Wilcox (Oracle) wrote:
-> > Several functions in gup.c assume that a compound page has virtually
-> > contiguous page structs.  This isn't true for SPARSEMEM configs unless
-> > SPARSEMEM_VMEMMAP is also set.  Fix them by using nth_page() instead of
-> > plain pointer arithmetic.
+On Sun, Jan 09, 2022 at 11:17:16PM +0000, Colin Ian King wrote:
+> Don't populate the read-only const array offsets on the stack
+> but instead make it static. Also makes the object code a little smaller.
 > 
-> So is this an actualy bug that need a Fixes tag, or do all architectures
-> that support THP and sparsemem use SPARSEMEM_VMEMMAP?
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-As far as I can tell (and I am by no means an expert in this area),
-this problem only affects pages of order MAX_ORDER or higher.  That is,
-somebody using regular 2MB hugepages on x86 won't see a problem, whether
-they're using VMEMMAP or not.  It only starts to become a problem for
-1GB hugepages.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Since THPs are (currently) only allocated from the page allocator, it's
-never a problem for THPs, only hugetlbfs.  Correcting the places which
-can't see a 1GB page is just defense against copy-and-paste programming.
-
-So I'll defer to Mike -- does this ever affect real systems and thus
-warrant a backport?  I know this doesn't affect UEK because we enable
-SPARSEMEM_VMEMMAP.
-
-> > +	page = nth_page(head, (addr & (sz-1)) >> PAGE_SHIFT);
-> 
-> Would be nice to fix the indeation for sz - 1 while you're at it.
-
-Done.
+    Andrew
