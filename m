@@ -2,92 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 924E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 277D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243213AbiAJJqV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243074AbiAJJqT (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:46:19 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F0F4C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:46:19 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id t28so18812875wrb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:46:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+abZjbadrthkxAndrqLQ/y+060FFMnMwVyalc3ssY1Y=;
-        b=sO2E/PaXEhSg08nvq/BCgxO8/eqxz7kYQykOe29ZAMGqlz4RjZiVUTmKtkK4J+qI6B
-         FHSGBoGhMWSscRNeJOBxhZXeQhcZ6InnvUpjexCThxUsMuG2bYJfqoh84D0VfH+pxv0F
-         TQsxMrKdSyMTSok4d+LNJ2ki7L6oJ4cCQcdb9ZnNqa3m0g4plEsiLJkHZB+uXtOX2/ep
-         0b0X/KT4oa9N/SstNfh5gD8g7Da74iLwCk2nxP3+RdIK3cQRbMJTjiiZNthu6yIT7VCM
-         qoZ23WmUA6bTE75sPMRidBuaPMUS8NEMoasXzRkI+vktnP0TwK8SyKZjKJALt2slE8Y9
-         yovQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=+abZjbadrthkxAndrqLQ/y+060FFMnMwVyalc3ssY1Y=;
-        b=Ds5IkqVTQ09MxBPthUzuzhTqWdTbNXZNnlBiE5I9rTLM3oTMwEN7LiaLD1KbLBajzE
-         Xmr5DuVCqk1HeE0IaWkyiMD7qP1lhBGaZsVmj1olFAnqoRB/dpZCO2EK1+1RFOWUA89g
-         o5IBfLDTQpeD8iR2Wtrs+y/lSSpVOxLIbMHob5vcyKbKuWIXQMa0Qf/ayHNde5f5CDtg
-         vG6XHvHKB3ErknaOLH+oaD6/ccC51pCPLAtg7XeTjnd9JyZzVHiFvbG8rmzCwkdmko84
-         rFGEOyVfRvFBxXxGjB0mm0AGqNoktxAInFl/E5oQ+D9Y5QNMl+Eicf2xbVaDCUBxqr/E
-         6bgg==
-X-Gm-Message-State: AOAM532INv8VwKjsyfb0YbCyg7b+P8+VP8qMrbR4aLCPsbw1pXojqJ6K
-        dcN5hToLJupNFcW+p6kbX0QB+sLm2F9byQ==
-X-Google-Smtp-Source: ABdhPJz1VFZkwqr2BXYdj3OFdBaCpkLg0P2ezfDFiTjGjOlfKUP0TggZS0l0V/6zvUk0jNJegfFt3A==
-X-Received: by 2002:adf:fc0f:: with SMTP id i15mr5742743wrr.467.1641807977299;
-        Mon, 10 Jan 2022 01:46:17 -0800 (PST)
-Received: from ?IPv6:2001:861:44c0:66c0:94e5:2e36:6bcc:a9f1? ([2001:861:44c0:66c0:94e5:2e36:6bcc:a9f1])
-        by smtp.gmail.com with ESMTPSA id u14sm6078840wrf.39.2022.01.10.01.46.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 01:46:16 -0800 (PST)
-Subject: Re: [PATCH 5/6] drm/meson: add DSI encoder
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220107145515.613009-1-narmstrong@baylibre.com>
- <20220107145515.613009-6-narmstrong@baylibre.com>
- <CAFBinCCR4zftkvJWgX4T068BRsjVp9YhRbzgdBOR+tuMcGSZ3w@mail.gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-Message-ID: <b0200846-0346-a65b-ed98-c0c778040cd9@baylibre.com>
-Date:   Mon, 10 Jan 2022 10:46:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <CAFBinCCR4zftkvJWgX4T068BRsjVp9YhRbzgdBOR+tuMcGSZ3w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        id S243269AbiAJJr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:47:58 -0500
+Received: from mga06.intel.com ([134.134.136.31]:42737 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243218AbiAJJrv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 04:47:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641808071; x=1673344071;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ONZDw5gYw73mKdgskr68gF6wpQr+EK3UtbyW5HaEvl8=;
+  b=lJAeD566ulTv3n8/cZ9TJczqrmyDyTnDI346Al32RLgI0VK90J5T6T4B
+   NNYGcmOKveNiqQi9qKcdfmm0xp/QOi6qGr6Qv0eGRjxfwe2BjPF10kFce
+   dAJf3gQ+8QLRILhV46N0mX0ClwWtefpfPR6VCRp5mTQjaqc3wh2qr96pz
+   ftuBHmPOdGZPBNhDBR3w4UztgKLIwl1PhnL+QJDLwzsjGDic6HViG2uH2
+   QVH3JtEAnb9Ik5b0P4FkwoiyWioGWiIHR9qSoDR8z+C7GvO9vMhhMYMWT
+   mjafUs9Fik9f7/YYqR97uzKt6SXECPp7MqwxE6RU8KM1CmIJzzzLcyVQc
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="303933516"
+X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
+   d="scan'208";a="303933516"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 01:47:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
+   d="scan'208";a="472020085"
+Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
+  by orsmga003.jf.intel.com with ESMTP; 10 Jan 2022 01:47:49 -0800
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 01:47:48 -0800
+Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 01:47:48 -0800
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Mon, 10 Jan 2022 01:47:48 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Mon, 10 Jan 2022 01:47:48 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RZtZT7ll2xt7G7jI+7TS6tB7wvffbPqjV3YZDfZvqAwBgCMTnyGeT9LdGrCAD/AagrMtFQLVf1VA3G2aeArloLyBWiLxgPsCLK1DEuah+LlKWHm1Ca9dzyjBTyRUGm7cMaypNjNJp44V+p7JCl49qhDXD4NHvUq2vLybFpdlBXWW+KFOAYk/ETAcFZcHwfKoqvVUnw4EKXgmbIJocevV2yxnB8yIP8SX8v/DgUnHVyfv6zZ7ivWSExPcCp/GVt5h8oq8VO+VcHd05kCOHywsUDVFa23lItUSpIE737XnRetsNvgxAtJg1Z+YFYgykTcqX+GA0S3bglf5Ut56xbIfkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ONZDw5gYw73mKdgskr68gF6wpQr+EK3UtbyW5HaEvl8=;
+ b=FU7skT8URRY1UrO0cITCvkhKqs29VwB6Lxy2I/BkawqoKuIpfY4SK6SOst+o42Z7KxHSSwnfBJkL8vBHBf3PGGYlhWjdCR0LB7SWug3RKTDAFTSIj68UOH2BNHsu7ow1hlQTady8vXUe1Yi2Wqo9JMcOT9fYm/8byE+ggrqgPM9nFgaAXLLd5BEPcJJvU9bsPIs9r/UxVsZnSe7KqUUaflJ4KSZbhMhEKF4X9ol3sjqKogUZDzP37Ki6rPQRHk6bHxfXP3OldNA1QOnFDJ6tF4X9RFJyoNVMkh79Af++kMbcZsWPI2eaT3J86YrymxBSfcGhxI5yQeaXOfLB17kh2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com (2603:10b6:303:9f::9)
+ by MWHPR11MB1680.namprd11.prod.outlook.com (2603:10b6:301:d::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Mon, 10 Jan
+ 2022 09:47:47 +0000
+Received: from CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::116:4172:f06e:e2b]) by CO1PR11MB4771.namprd11.prod.outlook.com
+ ([fe80::116:4172:f06e:e2b%9]) with mapi id 15.20.4867.012; Mon, 10 Jan 2022
+ 09:47:47 +0000
+From:   "Ismail, Mohammad Athari" <mohammad.athari.ismail@intel.com>
+To:     Russell King <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH net 0/1] net: phy: marvell: add Marvell specific PHY
+ loopback
+Thread-Topic: [PATCH net 0/1] net: phy: marvell: add Marvell specific PHY
+ loopback
+Thread-Index: AQHYBepll68QReUIcU6ohDS5xpc8kqxb/vyAgAACWGA=
+Date:   Mon, 10 Jan 2022 09:47:46 +0000
+Message-ID: <CO1PR11MB47717AA3A28FE34B32264048D5509@CO1PR11MB4771.namprd11.prod.outlook.com>
+References: <20220110062117.17540-1-mohammad.athari.ismail@intel.com>
+ <Ydv94whrTNPiqX4p@shell.armlinux.org.uk>
+In-Reply-To: <Ydv94whrTNPiqX4p@shell.armlinux.org.uk>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: efa10c19-a91c-455c-5fe4-08d9d41e41fb
+x-ms-traffictypediagnostic: MWHPR11MB1680:EE_
+x-microsoft-antispam-prvs: <MWHPR11MB168039A01B0C7DF9795ABE41D5509@MWHPR11MB1680.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2089;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ca1p/f+/Fp3rsq3Ztnpks9KUrULN8ZdefIGAUE9pVC8b1q6bBeexXdP/n0EtSFRlwAfXuTh/H8s3VGGLynYUe5mipAgQmhpcVP+zozwFzZM88noj3wTn69eZ+CD3YU2VZ+DfsWcku0rwfoBS5VhOMcVnKZ0SV3GCoes347f8M9lOdMG/sfUhEeePF0ZTl/S2g62f3zfW6i7x1KTepF0WgL00JmaNmtvp2Ti+6f3rqt5Iny4TCOAdjPL1NAZ0k41phHt8otu8lbFgnZiSp7NAdGMCUWTFhGpKbvO9wfDWS52CmK8zi3XOkKQ5nAQafhjxWvRh9eha7T73cJq3tjxrsfBg5qu/s+MS6r95N0kQrjtdqXVHwrcQdluCgzle3j+fNaBwo3fUvAqLSdwRsjiSPuif18IYmmcZeRiCmgevG/cH/ScqxCy5+foGw+yRBUT08+fDLlOf7WCOeSt/lt/q4s09QNjHkgQ5oH2XEEQcofQA70UtR5NjiQ+MzXgdE4N1C/qaTZ3DFptR64Mikm0YqPPlevZnfM8Zx+FH3JuXIXJd+wkuSDORVdV1MNDkZY1mmvme0Xkk/MCfnit+rOzYxql5Jn2sPJ7WM6GCVErt00ptC60iN2/SGh/uTqw8o/Z1PYN12Zk5WW7fDfO78k5R1M2f/uwpAOFqyCgQWFgrqD8X+hRwkIUTImtHRiUSjeHTiHs72Q1/ADOvow9cBJYHOjIXWKImTSxvqk4QALJwYb9jsESv24EUa7fhkW6lLDAnFO4VYTiZV9EZreds10YGU9cAk3uYv4frIVUEKxq0A4g=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB4771.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(53546011)(6506007)(8936002)(55236004)(7696005)(83380400001)(26005)(8676002)(966005)(54906003)(4326008)(38100700002)(122000001)(38070700005)(508600001)(9686003)(2906002)(5660300002)(55016003)(71200400001)(33656002)(82960400001)(76116006)(64756008)(66446008)(86362001)(66556008)(6916009)(66946007)(66476007)(316002)(52536014)(186003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1bk2T5zpepMIuF9/p5b5huvkC1WM6aF9dnlV0uz7RRNXaLWqEfyXhuiOj0gz?=
+ =?us-ascii?Q?dcs0wyrutbBOTCyb2n63QyYDJ7lJy5MeuCrTjOKpvnfhXQ48lfV7ECHyr0tm?=
+ =?us-ascii?Q?ubh61+ocWEx33Yg1F4uQQ1Y5AsDhwJNBYVzAcPxqfvQxbLf7KXBL8Y5yPgAb?=
+ =?us-ascii?Q?BGibks/yZDkICt99hckygCTYr+bZ4BbsZlq9eLzV3n24tkHz9siPR+6fRN0Z?=
+ =?us-ascii?Q?IY8GM9vyLdmyfC4wxW1pM/iPLgmTX7z1r7SysDanAqXIBybkgebiPei1gfK0?=
+ =?us-ascii?Q?VMkYYp5MAtelP4Q1chlugD+wWBCwM4SbbCk++vyvdjpXq118OaMuahdYK4X7?=
+ =?us-ascii?Q?tvA2dQOXLcVsFJGw4bVRvXDM0wb1ghoVLV+EZIpaW3KeSr4859V6vyAOsBA6?=
+ =?us-ascii?Q?rNwwcx0auHwRNoBWFkwI/iVZrW2iL25hc93ikjpq0fvQdjIR/IglhMW1rKK0?=
+ =?us-ascii?Q?UPVPTyOXp7pezeiMCyUSmHgUHULsAx32ZI/ozyrSuV3fzbdB2aM4ZJE+xqlZ?=
+ =?us-ascii?Q?RIqud24J90130m1Jkn7+vRfkh0h87zTTdvrbhmf2Y4+QQR3FNeM07l9VbydP?=
+ =?us-ascii?Q?HfxlLtU6vZdZCSTXvwHk/7mb9QA9+UHK1mfN1Mx4T7Heo9JFZM/1XSL2w0l+?=
+ =?us-ascii?Q?xmbheNXduBmOSby9folZsXH/eVqjFNwOVBabJCmlWSq8uQl/HUaWKj8EybXk?=
+ =?us-ascii?Q?uJ2Yu/7xoEif/MxKR0WBqNXh8eDJlQwjj/CrpZBVoPwXiflOxKeFTZ6ItmfV?=
+ =?us-ascii?Q?6kTYUHt4MfjYpg+zyFPdx0Wn3tq96pUQYf+zV/b8CIXAFiqpiJV90l8mwy0D?=
+ =?us-ascii?Q?bjbdOv+SLC5ZJ28KQw/6OLn2t0oReHg8oSxNTaKDrxjgaOcn2QVMNWPLwjxk?=
+ =?us-ascii?Q?VVLlbKp6k7xpDiRgDdSyX5lxb0G2b8eErivS0tSdg+ZQC/QgzNosGZvGrHFT?=
+ =?us-ascii?Q?hnoQWkAFqoGDZn2cG3PokC5vkzRCvCo4I7b3+sUh6/K7Gd7Xmu5HvNFk1Hz3?=
+ =?us-ascii?Q?TBfl8XhP3HZBmBAyYODJYC1Uila7lbINO3JeM8oIG+Q1vfhzL9IivesgUKXj?=
+ =?us-ascii?Q?O1oPvaif3EFBK87GT4s1CLsYc8Yttg8hvoOlhqKG8vP7kdgu/AMARgy9MWHU?=
+ =?us-ascii?Q?5w09q3uT+gevSz2cD61MiYsWPu61031xzzvebTXhmYUr4aPUvyQiJBbnAxYB?=
+ =?us-ascii?Q?eHzyk/zRF+7gzFkWV8WmkN7BY0WOru2tgIqjoV35nKQtS4YOqftBzA5vFP2x?=
+ =?us-ascii?Q?7v/Ah/j59K0rNnYSslEKEtIrjPFyj1FPHiznJrmnXdU7cJY8ySKBwqNk+glA?=
+ =?us-ascii?Q?97soNob/8qvzOHvwNFdzHCVeJ7o3EIHwKem5zt7M/vU0pP78eFUVyIXnvI4V?=
+ =?us-ascii?Q?Gki250yVc5ZDOSCKKAqngeNaz3OY35HdHolAUhZZae8T307Y7IXmbnpeNOB0?=
+ =?us-ascii?Q?MegwnqJsO3I3IP/qL33dNdLHYRqR0/VBozmqoFCkGcFMhDPPkxtCbF+pTAr+?=
+ =?us-ascii?Q?XmZ17aItrrHSaRhfLwp8oPiINQ3iRtog5s058HnxMIRZi7Q3H9rjNqBoAWVV?=
+ =?us-ascii?Q?Goqj4K1VzgSa0s1o9G9or9qZ/UhhUKXZoyWyGyagN43uhO5WKl+aVoM1yp/B?=
+ =?us-ascii?Q?tsV0VSTzOERSWO/yLpQAc7/GseBVgP9AA9vyLDlHQ14p+H7XuBkMNCyYka8f?=
+ =?us-ascii?Q?FGL0euSq/DLFLShPJxofhIhtYLYMpQ6+m40rZ0KFh1tSUixEaHa0ztaFCPCb?=
+ =?us-ascii?Q?Fsj7HJUVDQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB4771.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: efa10c19-a91c-455c-5fe4-08d9d41e41fb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jan 2022 09:47:46.9332
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EUi7v4kWBPEA3DDa4fRGe+M5+ezktij/KxsqXaf6vbqeP+HslGiRtiVRlsOGvxZooosZEdGbyZWHCL/4jXIq/0GWOlkGpnLCb5kDjwsV6hTBHK13F0fQg0enCejwrMZ7
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1680
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/01/2022 23:35, Martin Blumenstingl wrote:
-> Hi Neil,
-> 
-> On Fri, Jan 7, 2022 at 3:57 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
-> 
-> [...]
->> +       writel_bits_relaxed(BIT(3), BIT(3), priv->io_base + _REG(ENCL_VIDEO_MODE_ADV));
-> see my comment on patch #3 from this series for BIT(3)
-> 
 
-Yep, thanks,
 
-Neil
+> -----Original Message-----
+> From: Russell King <linux@armlinux.org.uk>
+> Sent: Monday, January 10, 2022 5:36 PM
+> To: Ismail, Mohammad Athari <mohammad.athari.ismail@intel.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>; David S . Miller
+> <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Oleksij
+> Rempel <linux@rempel-privat.de>; Heiner Kallweit
+> <hkallweit1@gmail.com>; netdev@vger.kernel.org; linux-
+> kernel@vger.kernel.org; stable@vger.kernel.org
+> Subject: Re: [PATCH net 0/1] net: phy: marvell: add Marvell specific PHY
+> loopback
+>=20
+> On Mon, Jan 10, 2022 at 02:21:16PM +0800, Mohammad Athari Bin Ismail
+> wrote:
+> > This patch to implement Marvell PHY specific loopback callback function=
+.
+> > Verified working on Marvell 88E1510 at 1Gbps speed only. For 100Mbps
+> > and 10Mbps, found that the PHY loopback not able to function properly.
+> > Possible due to limitation in Marvell 88E1510 PHY.
+>=20
+> This is valuable information that should be in the commit message for the
+> patch.
 
-> 
-> Best regards,
-> Martin
-> 
+Sure. I will add this information in commit message for next version patch.
 
+-Athari-
+
+>=20
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
