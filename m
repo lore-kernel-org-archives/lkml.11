@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 592AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3AADC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238027AbiAJBvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 20:51:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238023AbiAJBvd (ORCPT
+        id S238055AbiAJBvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 20:51:43 -0500
+Received: from gandalf.ozlabs.org ([150.107.74.76]:59303 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238015AbiAJBvd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 9 Jan 2022 20:51:33 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFAEC06173F;
-        Sun,  9 Jan 2022 17:51:33 -0800 (PST)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JXGyW3mS5z4xtf;
-        Mon, 10 Jan 2022 12:51:31 +1100 (AEDT)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JXGyX2TD9z4y4Z;
+        Mon, 10 Jan 2022 12:51:32 +1100 (AEDT)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     benh@kernel.crashing.org, paulus@samba.org, mpe@ellerman.id.au,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kernel-janitors@vger.kernel.org
-In-Reply-To: <9e24eedeab44cbb840598bb188561a48811de845.1641119338.git.christophe.jaillet@wanadoo.fr>
-References: <9e24eedeab44cbb840598bb188561a48811de845.1641119338.git.christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] floppy: Remove usage of the deprecated "pci-dma-compat.h" API
-Message-Id: <164177945707.1604045.13531607758042426524.b4-ty@ellerman.id.au>
-Date:   Mon, 10 Jan 2022 12:50:57 +1100
+To:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        Parth Shah <parth@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <20220104155450.1291277-1-gregkh@linuxfoundation.org>
+References: <20220104155450.1291277-1-gregkh@linuxfoundation.org>
+Subject: Re: [PATCH] powerpc/cacheinfo: use default_groups in kobj_type
+Message-Id: <164177945934.1604045.10148112415139692856.b4-ty@ellerman.id.au>
+Date:   Mon, 10 Jan 2022 12:50:59 +1100
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -38,21 +38,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 2 Jan 2022 11:29:54 +0100, Christophe JAILLET wrote:
-> In [1], Christoph Hellwig has proposed to remove the wrappers in
-> include/linux/pci-dma-compat.h.
-> 
-> Some reasons why this API should be removed have been given by Julia
-> Lawall in [2].
-> 
-> A coccinelle script has been used to perform the needed transformation
-> Only relevant parts are given below.
+On Tue, 4 Jan 2022 16:54:50 +0100, Greg Kroah-Hartman wrote:
+> There are currently 2 ways to create a set of sysfs files for a
+> kobj_type, through the default_attrs field, and the default_groups
+> field.  Move the powerpc cacheinfo sysfs code to use default_groups
+> field which has been the preferred way since aa30f47cf666 ("kobject: Add
+> support for default attribute groups to kobj_type") so that we can soon
+> get rid of the obsolete default_attrs field.
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/1] floppy: Remove usage of the deprecated "pci-dma-compat.h" API
-      https://git.kernel.org/powerpc/c/e57c2fd6cdf8db581ac93b909b2664751e7cf30c
+[1/1] powerpc/cacheinfo: use default_groups in kobj_type
+      https://git.kernel.org/powerpc/c/2bdf3f9e9df0a4ce7709fc916b9997ca2dc30d25
 
 cheers
