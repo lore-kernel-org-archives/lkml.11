@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98880C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B76FC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240788AbiAJHqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:46:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50722 "EHLO
+        id S240863AbiAJHqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:46:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242045AbiAJHkM (ORCPT
+        with ESMTP id S241786AbiAJHjd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:40:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92796C022593;
-        Sun,  9 Jan 2022 23:33:58 -0800 (PST)
+        Mon, 10 Jan 2022 02:39:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E107BC061201;
+        Sun,  9 Jan 2022 23:33:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 325A660B63;
-        Mon, 10 Jan 2022 07:33:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166D2C36AE9;
-        Mon, 10 Jan 2022 07:33:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E3D0B81161;
+        Mon, 10 Jan 2022 07:33:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA1D4C36AE9;
+        Mon, 10 Jan 2022 07:33:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800037;
-        bh=rZiBSD5jjfvjzm16SGoi+rwrP4CW+3Dqtg3dV9jQBCM=;
+        s=korg; t=1641800023;
+        bh=twpC+smUf9jAn5TvcaZ2WC7cZyABAVOJx4Bm3/TbeUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TI1hyMSYZPw8SChEgNmTo5mzD7bhHvlE8HzbmEP4d1i8Bgt/hiLg0K7eQJTC/BNne
-         40DDWamNRKTPd2kDqBSBX8I9Rg2yk/vQbUMfNStSW0K0OLeBgtYr4QKoSNvirbISup
-         ReSNa6/aJWxbnl6Sn3rSwbesylaS2RrMdRoe1kV8=
+        b=QF4i7sCygA67blGkeZuDRu9Zg7+RBX/ZTN2kQquo12waxivjnUU1OPXnPx0ku4THO
+         p29SpmFJBzncAAdRhI6IEuuG0nzpsTL52i3cOT0luzGFuZK2XkWiUcU7NaJQvnXSOl
+         yXP3AT3p6IdEbgcEvsvrjQtNUyPOtaFdgimRasdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lu Tixiong <lutianxiong@huawei.com>,
-        Mike Christie <michael.christie@oracle.com>,
-        Lee Duncan <lduncan@suse.com>,
-        Lixiaokeng <lixiaokeng@huawei.com>,
-        Linfeilong <linfeilong@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 57/72] scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
-Date:   Mon, 10 Jan 2022 08:23:34 +0100
-Message-Id: <20220110071823.489587869@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Linus Torvalds <torvalds@linuxfoundation.org>,
+        =?UTF-8?q?Michal=20Koutn=C3=BD?= <mkoutny@suse.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.15 35/72] cgroup: Use open-time credentials for process migraton perm checks
+Date:   Mon, 10 Jan 2022 08:23:12 +0100
+Message-Id: <20220110071822.746965588@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -53,68 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lixiaokeng <lixiaokeng@huawei.com>
+From: Tejun Heo <tj@kernel.org>
 
-[ Upstream commit 1b8d0300a3e9f216ae4901bab886db7299899ec6 ]
+commit 1756d7994ad85c2479af6ae5a9750b92324685af upstream.
 
-|- iscsi_if_destroy_conn            |-dev_attr_show
- |-iscsi_conn_teardown
-  |-spin_lock_bh                     |-iscsi_sw_tcp_conn_get_param
+cgroup process migration permission checks are performed at write time as
+whether a given operation is allowed or not is dependent on the content of
+the write - the PID. This currently uses current's credentials which is a
+potential security weakness as it may allow scenarios where a less
+privileged process tricks a more privileged one into writing into a fd that
+it created.
 
-  |-kfree(conn->persistent_address)   |-iscsi_conn_get_param
-  |-kfree(conn->local_ipaddr)
-                                       ==>|-read persistent_address
-                                       ==>|-read local_ipaddr
-  |-spin_unlock_bh
+This patch makes both cgroup2 and cgroup1 process migration interfaces to
+use the credentials saved at the time of open (file->f_cred) instead of
+current's.
 
-When iscsi_conn_teardown() and iscsi_conn_get_param() happen in parallel, a
-UAF may be triggered.
-
-Link: https://lore.kernel.org/r/046ec8a0-ce95-d3fc-3235-666a7c65b224@huawei.com
-Reported-by: Lu Tixiong <lutianxiong@huawei.com>
-Reviewed-by: Mike Christie <michael.christie@oracle.com>
-Reviewed-by: Lee Duncan <lduncan@suse.com>
-Signed-off-by: Lixiaokeng <lixiaokeng@huawei.com>
-Signed-off-by: Linfeilong <linfeilong@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Suggested-by: Linus Torvalds <torvalds@linuxfoundation.org>
+Fixes: 187fe84067bd ("cgroup: require write perm on common ancestor when moving processes on the default hierarchy")
+Reviewed-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/libiscsi.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ kernel/cgroup/cgroup-v1.c |    7 ++++---
+ kernel/cgroup/cgroup.c    |    9 ++++++++-
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
-index 5bc91d34df634..cbc263ec9d661 100644
---- a/drivers/scsi/libiscsi.c
-+++ b/drivers/scsi/libiscsi.c
-@@ -3101,6 +3101,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+--- a/kernel/cgroup/cgroup-v1.c
++++ b/kernel/cgroup/cgroup-v1.c
+@@ -507,10 +507,11 @@ static ssize_t __cgroup1_procs_write(str
+ 		goto out_unlock;
+ 
+ 	/*
+-	 * Even if we're attaching all tasks in the thread group, we only
+-	 * need to check permissions on one of them.
++	 * Even if we're attaching all tasks in the thread group, we only need
++	 * to check permissions on one of them. Check permissions using the
++	 * credentials from file open to protect against inherited fd attacks.
+ 	 */
+-	cred = current_cred();
++	cred = of->file->f_cred;
+ 	tcred = get_task_cred(task);
+ 	if (!uid_eq(cred->euid, GLOBAL_ROOT_UID) &&
+ 	    !uid_eq(cred->euid, tcred->uid) &&
+--- a/kernel/cgroup/cgroup.c
++++ b/kernel/cgroup/cgroup.c
+@@ -4892,6 +4892,7 @@ static ssize_t __cgroup_procs_write(stru
  {
- 	struct iscsi_conn *conn = cls_conn->dd_data;
- 	struct iscsi_session *session = conn->session;
-+	char *tmp_persistent_address = conn->persistent_address;
-+	char *tmp_local_ipaddr = conn->local_ipaddr;
+ 	struct cgroup *src_cgrp, *dst_cgrp;
+ 	struct task_struct *task;
++	const struct cred *saved_cred;
+ 	ssize_t ret;
+ 	bool locked;
  
- 	del_timer_sync(&conn->transport_timer);
+@@ -4909,9 +4910,15 @@ static ssize_t __cgroup_procs_write(stru
+ 	src_cgrp = task_cgroup_from_root(task, &cgrp_dfl_root);
+ 	spin_unlock_irq(&css_set_lock);
  
-@@ -3122,8 +3124,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
- 	spin_lock_bh(&session->frwd_lock);
- 	free_pages((unsigned long) conn->data,
- 		   get_order(ISCSI_DEF_MAX_RECV_SEG_LEN));
--	kfree(conn->persistent_address);
--	kfree(conn->local_ipaddr);
- 	/* regular RX path uses back_lock */
- 	spin_lock_bh(&session->back_lock);
- 	kfifo_in(&session->cmdpool.queue, (void*)&conn->login_task,
-@@ -3135,6 +3135,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
- 	mutex_unlock(&session->eh_mutex);
+-	/* process and thread migrations follow same delegation rule */
++	/*
++	 * Process and thread migrations follow same delegation rule. Check
++	 * permissions using the credentials from file open to protect against
++	 * inherited fd attacks.
++	 */
++	saved_cred = override_creds(of->file->f_cred);
+ 	ret = cgroup_attach_permissions(src_cgrp, dst_cgrp,
+ 					of->file->f_path.dentry->d_sb, threadgroup);
++	revert_creds(saved_cred);
+ 	if (ret)
+ 		goto out_finish;
  
- 	iscsi_destroy_conn(cls_conn);
-+	kfree(tmp_persistent_address);
-+	kfree(tmp_local_ipaddr);
- }
- EXPORT_SYMBOL_GPL(iscsi_conn_teardown);
- 
--- 
-2.34.1
-
 
 
