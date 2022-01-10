@@ -2,102 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F795C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45305C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244429AbiAJLHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:07:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244420AbiAJLHh (ORCPT
+        id S244444AbiAJLIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:08:05 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:41150 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244420AbiAJLHx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:07:37 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D28C061748;
-        Mon, 10 Jan 2022 03:07:36 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id q25so43391102edb.2;
-        Mon, 10 Jan 2022 03:07:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=he/R3Z0mxeByAmq12pzMewiN4Rzgf12JiYvzrsrEGrA=;
-        b=hS2shLvL+GHJaqJ0aanryf6/X8+QltBMpM9pKVb8wdYXa6jMlRy1F9iQx9G+9N14xx
-         j5xCMC7fFSnvGiwyIS6dtf4OdNUun8wDlOvadcUKWkG6fhKeFthdUNPFSUXACeKzpIJC
-         CGqhb+DRx2379mgb6EefwIHefVwC1KhYypCauq7rxxxKUaLk/nAqcGEeesIupK+B4zXT
-         S5KlGTqSvSzS8EWCARGEWbE1yuGN/t0MllZUs485ClS6U92hfmEbEjSIRvSeissXd7Ri
-         pknhuXSO2r/TlJY6tBEtwq9VEeuqm01fFo4JbucCci2HJjaX49HlY2En2ze0WRYz8dt5
-         +U3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=he/R3Z0mxeByAmq12pzMewiN4Rzgf12JiYvzrsrEGrA=;
-        b=PFiKcETsknDieggpVeUhWgrZqrSuKdPED5HA7e2a08G3lnzsbnQFrHNuEkdGz36GOi
-         iStR+7Jkvdozv0dGvKdq3uNfqSocT0MmSKP2bQvVbIdJWdYcO1ByU61EjddTSr/+XVMF
-         S7N+xJFC8xMmQtFbf8wDMZ7KR6JcHMGMEPHwKUY9RskOlSq238N7rd0ocj/3yLZYeAd/
-         8P7+20aSZ5Xc1bnfiDXNxFEL8G1pfh46TwkDbT9ydTJIXDGclhZiK9rlg1/I+4bQMWmn
-         yqmJqHGDBundw5KJFIwcIuM6vPHfDaJqNrbKJ0F+bRV6O6L/xK+8fpcXVKW3gkGmcn6W
-         lmfw==
-X-Gm-Message-State: AOAM531EAGrw/aAUZIICkyGjix356wq9n/fiT5Es1qlyz9KSYp2z0MVn
-        OCCdnWBDIr0YUJjGL8jQw9/vJ90PyEK5bH9HWbc=
-X-Google-Smtp-Source: ABdhPJwXdkbSUcWuHHd7MLqZaW6aVwLYP9a5QUocFvToL9VRPU2AMhJpYaJn7xWGlM1YSGkcNy6izCsZ8shqlYkuJl8=
-X-Received: by 2002:a05:6402:34cb:: with SMTP id w11mr52430edc.158.1641812855397;
- Mon, 10 Jan 2022 03:07:35 -0800 (PST)
+        Mon, 10 Jan 2022 06:07:53 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id C2C261F393;
+        Mon, 10 Jan 2022 11:07:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1641812872; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jZuELbu08OfY41gObPEz8xEE1M01ktEm+EkQwySqewM=;
+        b=WjaoSCWRUZdZH7YrHxPyTJmQ7a7t1y+2Ga00BF63QEiswAQOFB/g+jXXX+5ALBLbKg7JGk
+        glfXMpVFehGgiGljWfByV97JQLqwjQzJdYGYU2wSU/nZyQY5fLprV4MY2orx0C0NmMF6vv
+        vf2EQ/RsELmHZk10bAMOV3Zh1/ar9Bk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1641812872;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jZuELbu08OfY41gObPEz8xEE1M01ktEm+EkQwySqewM=;
+        b=PA+7rv9vPjWgGev4gseCNYKbsC40Y6zCoe6Exqz03t0Qd9HYFQNPQbhzpc3AGWjrIziwLc
+        n2XWHuLoKtqNDEAQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id ADB7513A98;
+        Mon, 10 Jan 2022 11:07:52 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id YuAcKYgT3GHdZQAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 10 Jan 2022 11:07:52 +0000
+Date:   Mon, 10 Jan 2022 12:08:00 +0100
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL] x86/cleanups for v5.17
+Message-ID: <YdwTkIqIyOtdWN/c@zn.tnic>
 MIME-Version: 1.0
-References: <20220109124326.3696775-1-nikita.yoush@cogentembedded.com>
-In-Reply-To: <20220109124326.3696775-1-nikita.yoush@cogentembedded.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 10 Jan 2022 13:05:47 +0200
-Message-ID: <CAHp75VcF2Xg4dz7Ea1L653wRqAgSJZvbwua1oWzw-Lsqttxvng@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: stm: don't always auto-enable I2C and SPI
- interface drivers
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 9:30 AM Nikita Yushchenko
-<nikita.yoush@cogentembedded.com> wrote:
->
-> This patch makes I2C and SPI interface drivers for STMicroelectronics
-> sensor chips individually selectable via Kconfig.
->
-> The default is kept unchanged - I2C and SPI interface drivers are still
-> selected by default if the corresponding bus support is available.
->
-> However, the patch makes it is possible to explicitly disable drivers
+Hi Linus,
 
-it possible
+please pull the garden variety of x86/cleanups for 5.17.
 
-> that are not needed for particular target.
+Thx.
 
-a particular
+---
 
-...
+The following changes since commit 0fcfb00b28c0b7884635dacf38e46d60bf3d4eb1:
 
->  config IIO_ST_LSM9DS0_I2C
+  Linux 5.16-rc4 (2021-12-05 14:08:22 -0800)
 
-> +       tristate "STMicroelectronics LSM9DS0 IMU I2C interface"
-> +       depends on I2C && IIO_ST_LSM9DS0
+are available in the Git repository at:
 
-> +       default I2C && IIO_ST_LSM9DS0
+  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/x86_cleanups_for_v5.17_rc1
 
-Have you tested this for the case
-I2C=y
-IIO_ST_LSM9DS0=m
+for you to fetch changes up to 0be4838f018c10d7f138a213c006d345db35ef5b:
 
-So, what is the result?
+  x86/events/amd/iommu: Remove redundant assignment to variable shift (2021-12-28 21:30:05 +0100)
+
+----------------------------------------------------------------
+- The mandatory set of random minor cleanups all over tip
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      x86/events/amd/iommu: Remove redundant assignment to variable shift
+
+Kees Cook (2):
+      x86/uaccess: Move variable into switch case statement
+      x86/boot/string: Add missing function prototypes
+
+Shaokun Zhang (1):
+      x86/fpu: Remove duplicate copy_fpstate_to_sigframe() prototype
+
+ arch/x86/boot/string.h            | 3 +++
+ arch/x86/events/amd/iommu.c       | 2 +-
+ arch/x86/include/asm/fpu/signal.h | 3 ---
+ arch/x86/include/asm/uaccess.h    | 5 +++--
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Regards/Gruss,
+    Boris.
+
+SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
