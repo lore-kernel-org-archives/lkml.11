@@ -2,210 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:46:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2358AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345058AbiAJVqh (ORCPT
+        id S1345077AbiAJVyZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 16:46:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52042 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345050AbiAJVqg (ORCPT
+        Mon, 10 Jan 2022 16:54:25 -0500
+Received: from mail-ot1-f51.google.com ([209.85.210.51]:37623 "EHLO
+        mail-ot1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244626AbiAJVyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 16:46:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DCD7C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 13:46:36 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n72TM-0001u6-SR; Mon, 10 Jan 2022 22:45:00 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n72TB-009atw-Vd; Mon, 10 Jan 2022 22:44:49 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n72TA-0003wz-UN; Mon, 10 Jan 2022 22:44:48 +0100
-Date:   Mon, 10 Jan 2022 22:44:48 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>, kvm@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>, linux-gpio@vger.kernel.org,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Jaroslav Kysela <perex@perex.cz>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220110214448.rp4pcjlaqbjlggvj@pengutronix.de>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <Ydyf93VD8FrV7GH+@smile.fi.intel.com>
+        Mon, 10 Jan 2022 16:54:23 -0500
+Received: by mail-ot1-f51.google.com with SMTP id 45-20020a9d0a30000000b0058f1a6df088so16595683otg.4;
+        Mon, 10 Jan 2022 13:54:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Nbuo4ro3nzdD0IScMxSgtEVRAPGYV0jGC/KSnm0R3QE=;
+        b=i+69Ut3WIQoXrpFhslzhYazV9DvOCNQgJ6tc9nPFMIkNgup77b926mUS+zRl9mIQNw
+         /R62Y4DNCo0eJ/NJGfqWeatKNTEXHz34Yho4Y0Ep6UgzkH9LO72AM5zUWEPU18z2z1nd
+         ok0dLTAPutYBIFon/9iRx4gQ7IfHmpDTPfKAAjPUpuBwdr/vKIkCXmxTiU51wuM8gwf5
+         ZFeZtluX5Oj5jVhWLdHFYHnhPWS4oBTWN1k6vjwqUL9HeGDreKA3QBXGo4ZDXMrv5tML
+         b6mtwL6ojI92ZykfUB/7ArTtC6t6gUmTljwU3y17zoY87kNxVsfqgNNnB/Z4XMA0Oeqk
+         doYA==
+X-Gm-Message-State: AOAM532w9yWCXT2oCl5Dw7lLF5RRtpvFpB6Kniy2v2PuJ7CgpdCn5cs4
+        LC/AZIqRzRO6rSJJnTLrr+cDM9Qn/g==
+X-Google-Smtp-Source: ABdhPJxL5pmGClVVTEktJZZ8xhwU086xb1sB6DaYPpS+F0RIUXPR6B4sF0m3hHh63RnijGv3hzlfBw==
+X-Received: by 2002:a9d:814:: with SMTP id 20mr1333098oty.253.1641851662790;
+        Mon, 10 Jan 2022 13:54:22 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id f12sm1669988ote.75.2022.01.10.13.54.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 13:54:21 -0800 (PST)
+Received: (nullmailer pid 1583061 invoked by uid 1000);
+        Mon, 10 Jan 2022 21:54:20 -0000
+Date:   Mon, 10 Jan 2022 15:54:20 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-samsung-soc@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-kernel@vger.kernel.org,
+        Tomasz Figa <tomasz.figa@gmail.com>
+Subject: Re: [PATCH 3/8] dt-bindings: clock: samsung: convert Exynos5433 to
+ dtschema
+Message-ID: <YdyrDKivO+Jj/Ae/@robh.at.kernel.org>
+References: <20220102115356.75796-1-krzysztof.kozlowski@canonical.com>
+ <20220102115356.75796-3-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="e2is76odjewy3gr2"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ydyf93VD8FrV7GH+@smile.fi.intel.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <20220102115356.75796-3-krzysztof.kozlowski@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sun, 02 Jan 2022 12:53:51 +0100, Krzysztof Kozlowski wrote:
+> Convert Samsung Exynos5433 SoC clock controller bindings to DT schema
+> format.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+>  .../bindings/clock/exynos5433-clock.txt       | 507 -----------------
+>  .../clock/samsung,exynos5433-clock.yaml       | 524 ++++++++++++++++++
+>  2 files changed, 524 insertions(+), 507 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/clock/exynos5433-clock.txt
+>  create mode 100644 Documentation/devicetree/bindings/clock/samsung,exynos5433-clock.yaml
+> 
 
---e2is76odjewy3gr2
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Jan 10, 2022 at 11:07:03PM +0200, Andy Shevchenko wrote:
-> On Mon, Jan 10, 2022 at 09:10:14PM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Mon, Jan 10, 2022 at 10:54:48PM +0300, Sergey Shtylyov wrote:
-> > > This patch is based on the former Andy Shevchenko's patch:
-> > >=20
-> > > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko=
-@linux.intel.com/
-> > >=20
-> > > Currently platform_get_irq_optional() returns an error code even if I=
-RQ
-> > > resource simply has not been found. It prevents the callers from being
-> > > error code agnostic in their error handling:
-> > >=20
-> > > 	ret =3D platform_get_irq_optional(...);
-> > > 	if (ret < 0 && ret !=3D -ENXIO)
-> > > 		return ret; // respect deferred probe
-> > > 	if (ret > 0)
-> > > 		...we get an IRQ...
-> > >=20
-> > > All other *_optional() APIs seem to return 0 or NULL in case an optio=
-nal
-> > > resource is not available. Let's follow this good example, so that the
-> > > callers would look like:
-> > >=20
-> > > 	ret =3D platform_get_irq_optional(...);
-> > > 	if (ret < 0)
-> > > 		return ret;
-> > > 	if (ret > 0)
-> > > 		...we get an IRQ...
-> >=20
-> > The difference to gpiod_get_optional (and most other *_optional) is that
-> > you can use the NULL value as if it were a valid GPIO.
->=20
-> The problem is not only there, but also in the platform_get_irq() and that
-> problem is called vIRQ0. Or as Linus put it "_cookie_" for IRQ, which nev=
-er
-> ever should be 0.
-
-IMHO it's best to avoid yielding zero for a value that should be
-interpreted as an (virtual) irq. Then callers don't even have to
-consider if it's a valid value or not.
-
-> > As this isn't given with for irqs, I don't think changing the return
-> > value has much sense. In my eyes the problem with platform_get_irq() and
-> > platform_get_irq_optional() is that someone considered it was a good
-> > idea that a global function emits an error message. The problem is,
-> > that's only true most of the time. (Sometimes the caller can handle an
-> > error (here: the absence of an irq) just fine, sometimes the generic
-> > error message just isn't as good as a message by the caller could be.
-> > (here: The caller could emit "TX irq not found" which is a much nicer
-> > message than "IRQ index 5 not found".)
-> >=20
-> > My suggestion would be to keep the return value of
-> > platform_get_irq_optional() as is, but rename it to
-> > platform_get_irq_silent() to get rid of the expectation invoked by the
-> > naming similarity that motivated you to change
-> > platform_get_irq_optional().
->=20
-> This won't fix the issue with vIRQ0.
-
-Is the patch about vIRQ0, or did you only start to consider it when I
-said that for gpio NULL is a dummy value? If the former, the commit log
-should better mention that.
-
-Anyhow, I still think renaming platform_get_irq_optional() to
-platform_get_irq_silent() is a good idea and the patches in this thread
-are not.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---e2is76odjewy3gr2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHcqM0ACgkQwfwUeK3K
-7Amxygf+NmX8BzaqLoc9m8fsv49CkQqQKbXt9a0l2gES1hAm8NL2nbgjydEJDcPs
-QJ5X1TL08pb9wPoYcUF7uSwjJx2Vp0f+FEiMtDk2kj5xI38T+86tnyuQw1tNg4Ss
-52foCYQJVIIgIAeMyIvWk14oUMsy4JV/SuT+GZImMq+aM/5+wIF02NZoGzXofThL
-mUNzp+vgTNNhZpF7c0D4orD7SDOCOn2fA/uu2UGk1Nh6m+lgW5qIw5Z0KFPTalKH
-kU/JuEOBD6kdEr84D9EM6SB2l+dOBVJ20F5DL1JItM4qkAK9thM+3ecLPF610K1e
-+N5e1XZXSLS6gpWGBjS9bxMbdZ6Qpg==
-=FQR4
------END PGP SIGNATURE-----
-
---e2is76odjewy3gr2--
+Applied, thanks!
