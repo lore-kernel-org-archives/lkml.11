@@ -2,87 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE59C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D88C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242450AbiAJSvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:51:45 -0500
-Received: from mga04.intel.com ([192.55.52.120]:18507 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241986AbiAJSvo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:51:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641840704; x=1673376704;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fWcyZfu0zV/E0m/O9x2TQoChBExtoI+yu9H4BVJDPSs=;
-  b=N1AG7oW/fb1f6NZnvghhQDx0aGJw8Xc3nP7nyKsLMYywYrjQsk/zzFop
-   t7hkN1KvLgnfmeFmFKL+fBbe3Y/wIHDNG2ByZb2ZhH+ILgyjc6Cddy6mx
-   Br5ukJL5UUBw6tb+NiGE2wjn0VKxw5TbJcm6D2YUirRpOxXLn+bQ4rTjQ
-   rPNob3LAVlqLE4867mc/RsL1y3zhmIPYf+sX0xezg/c4HDt33qKZ96a5U
-   R0JpiTyq3NnWmR7Mhz+oPqTRHUzG+mOVVUKRVhrUkNsfOsGWWw+6JUZ2V
-   IP13MMHYCXMQCjwjmftEoe8FMyOvAnat3vLssLs8NQuhRqa+RP7mdYGgj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="242111264"
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="242111264"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 10:51:44 -0800
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="575917216"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 10:51:41 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n6zkQ-008z5l-SX;
-        Mon, 10 Jan 2022 20:50:26 +0200
-Date:   Mon, 10 Jan 2022 20:50:26 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andreas Kemnade <andreas@kemnade.info>,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Rosin <peda@axentia.se>
-Subject: Re: [PATCH v1 4/5] iio: adc: qcom-vadc-common: Re-use generic struct
- u32_fract
-Message-ID: <Ydx/8vZj1jvkkkm0@smile.fi.intel.com>
-References: <20220110181711.65054-1-andriy.shevchenko@linux.intel.com>
- <20220110181711.65054-4-andriy.shevchenko@linux.intel.com>
+        id S242494AbiAJSv6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 13:51:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242108AbiAJSv5 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 13:51:57 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6061C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 10:51:56 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id e19so6623431plc.10
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 10:51:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=JxvQWY6Td55cpPe4ui6U3NsBOSwrIQe2vk8UadngD+0=;
+        b=QR7VKX11V4OLM6vq5xVfrvgvBJxUyrq2mC2myhxpancjaOBYKMx5YDudsAmuJXJqZS
+         fRNyNDfGLVm/0KQUuC2iOPw+xwWYh3OEbIRQBdnpJTbPOgGzuhw0RZpAA+oixXNYu/Xh
+         wODEWbW8SpZVkEHwrO+Rcq6wpqBYp8HyUspS8v1cxhSJntF2wpKAaYaE4KWVEhxnzOwk
+         sdh47aZOeykgqkvul/vpEYz0xRw+hv8/YRtC2taqgzE6mYkjNG5VvGkZ1xp0Tu/B0bxG
+         I4nsQeAYayd7pxj420Gn7KTUShBBXVjXs08ftnSCX0JqpMsJZs65QjDGNOR8owZIYsxa
+         gxBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :mime-version:content-disposition;
+        bh=JxvQWY6Td55cpPe4ui6U3NsBOSwrIQe2vk8UadngD+0=;
+        b=zTsKZuk1mX9H3/ThERGZwffBmrSXeGS65CUP1h0hYSmtNSoFFK/q/FpGS7pY4okuZ8
+         FCSu9KRTmAl+HL15gs52TifzK2+Ss8GjMpG/dONUdY/rB+7agSg4qlO8UVgL//xWUbvq
+         QBrT71FuDGCBI0JmmT5/qKYwgymck34X24dRQOgAY2YfkUca2KhikGPMCKcPMuGjfhA9
+         mBJa4spNpg/DVPtJ3GXaDPjcJmzCuGIQiCiPRgjYb8nM2nvUKGmVmMdmWKO/eLyokpSh
+         Z/RkCc9fPS3SAJlhIsJ/jWzbLOYDiyE8SeJLNAHWOqylWz+EUZNUrN05ObKI8F3crLhm
+         j6ag==
+X-Gm-Message-State: AOAM532jsdQTKB4zj0KEM6ssEBzsrrhKBOf6Y5D2RaNtWjedIRQqrJTx
+        MFKpt7rblZbquUBG8R+REQk=
+X-Google-Smtp-Source: ABdhPJzDn7q9VPu0SYHVrmmLHcibQjNXHWcJqnLK84u1eisJyj761gmmr/ofNyGneLyZR3bjz4FtSg==
+X-Received: by 2002:a63:2a82:: with SMTP id q124mr944544pgq.614.1641840716307;
+        Mon, 10 Jan 2022 10:51:56 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id x25sm7483185pfu.8.2022.01.10.10.51.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 10:51:55 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Mon, 10 Jan 2022 08:51:54 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org,
+        Lai Jiangshan <jiangshanlai@gmail.com>
+Subject: [GIT PULL] workqueue changes for v5.17-rc1
+Message-ID: <YdyASuKnqWo5TUdE@slm.duckdns.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220110181711.65054-4-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 08:17:10PM +0200, Andy Shevchenko wrote:
-> Instead of custom data type re-use generic struct u32_fract.
-> No changes intended.
+Hello, Linus.
 
-...
+* The code around workqueue scheduler hooks got reorganized early 2019 which
+  unfortuately introdued a couple subtle and rare race conditions where
+  preemption can mangle internal workqueue state triggering a WARN and
+  possibly causing a stall or at least delay in execution. Frederic fixed
+  both early December and the fixes were sitting in for-5.16-fixes which I
+  forgot to push. Merged into this pull request. I'll forward them to stable
+  after they land.
 
-> -/**
-> - * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-> - * @num: the inverse numerator of the gain applied to the input channel.
-> - * @den: the inverse denominator of the gain applied to the input channel.
-> - */
-> -struct vadc_prescale_ratio {
-> -	u32 num;
-> -	u32 den;
-> -};
+* The scheduler hook reorganization has more implicatoins for workqueue code
+  in that the hooks are now more strictly synchronized and thus the
+  interacting operations can become more straight-forward. Lai is in the
+  process of simplifying workqueue code and this pull request contains some
+  of the patches.
 
-Definitely forgot to compile this one.
+Thanks.
+
+The following changes since commit c741e49150dbb0c0aebe234389f4aa8b47958fa8:
+
+  Merge tag 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma (2021-12-09 13:20:59 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git for-5.17
+
+for you to fetch changes up to 2a8ab0fbd110dec25795a98aaa232ede36f6c855:
+
+  Merge branch 'workqueue/for-5.16-fixes' into workqueue/for-5.17 (2022-01-10 07:54:04 -1000)
+
+----------------------------------------------------------------
+Frederic Weisbecker (2):
+      workqueue: Fix unbind_workers() VS wq_worker_running() race
+      workqueue: Fix unbind_workers() VS wq_worker_sleeping() race
+
+Lai Jiangshan (6):
+      workqueue: Remove the outdated comment before wq_worker_sleeping()
+      workqueue: Remove the advanced kicking of the idle workers in rebind_workers()
+      workqueue: Remove outdated comment about exceptional workers in unbind_workers()
+      workqueue: Remove schedule() in unbind_workers()
+      workqueue: Move the code of waking a worker up in unbind_workers()
+      workqueue: Remove the cacheline_aligned for nr_running
+
+Paul E. McKenney (1):
+      workqueue: Upgrade queue_work_on() comment
+
+Tejun Heo (1):
+      Merge branch 'workqueue/for-5.16-fixes' into workqueue/for-5.17
+
+ kernel/workqueue.c | 101 ++++++++++++++++++++++++-----------------------------
+ 1 file changed, 45 insertions(+), 56 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+tejun
