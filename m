@@ -2,101 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1106BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:30:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235537AbiAJOav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 09:30:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235500AbiAJOau (ORCPT
+        id S235558AbiAJObQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 09:31:16 -0500
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:46439 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235500AbiAJObO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 09:30:50 -0500
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26074C061751
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 06:30:50 -0800 (PST)
-Received: by mail-pl1-x62d.google.com with SMTP id p14so12102475plf.3
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 06:30:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=CcamlWs1isX1h8/o0AFArdkvbA9sYBTbXJp+4ZP/YKk=;
-        b=HU6Qa9x23jaVK2yer703j2WbcS80H6hcYzWo9PAXkb4WJDHw0jTysnwJ1nLynGqOkm
-         QXSxe1m1x/5gx9XfPt+AUkgOlLuH17Hv+IJ6U8w0SCDs5OFSMa0LstKKDRf2YkpAFVWU
-         WHweJ5QeUytstmhZF8LW8UbppMj1SIlf1GZKGOH0zwIYEl9PXILIL/G6Ql1nnqg0pR8/
-         2vnj0H335TFXYeHvsVrQNDBrzPk62wZO3Qyw0xbkDPcUPIKNnq35WKyRPghyseojZAZu
-         ZxDZb85MLvp/iidMTdi9l+T3xG9t0AeikuLAAmnmtXau41S+iOAACHVEq6TLq7vYuQEh
-         q6ZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=CcamlWs1isX1h8/o0AFArdkvbA9sYBTbXJp+4ZP/YKk=;
-        b=tNIoPWa1CcMldZ4DLrDGMBOJKIEztqDctAQPMk10x5MxCWyFFkfBUIw/IrWAIvwbc2
-         08TScGoc6OchyXIVskrH0ETWFsF8LUttFvwDyJ6JJAE2m2QFGrcJ6oAAXSI0m1ZWxh13
-         lG5giVz6Qr0ffcFjkK+4vSBvm7N5eOLbJOY8Ka7NJtO3xL+YbGxBQhtX5Kr1LijoBhuh
-         4BNlTsa1JC0qz8OEQvXf5UGNKrn5eLKfLZ6Ymhbx+8PfizExRxyFJphKNKeJJ7FY85p2
-         V3XfsLqNRD8YPZMiZ44PLfu3MXU1dJYNz9GJYz/KIj2YEF7OIdEhk4xPeF7HnHWnvYtW
-         9zNA==
-X-Gm-Message-State: AOAM532jn/vp1cAl96jwz9X55gPX5P+AJIGBBwV1mehLLcVBrb0I4AEZ
-        wyCcddQCdlSzppJ7SCwekBWAcw==
-X-Google-Smtp-Source: ABdhPJxUWGGRpFCsoVOLozehyMAHKh4eLISheE8+skZ7k/WXqPvo+cH7yL3vZLm+kX7TToX+scRyaw==
-X-Received: by 2002:a17:902:cec2:b0:149:7fa3:3fe3 with SMTP id d2-20020a170902cec200b001497fa33fe3mr64346958plg.161.1641825049689;
-        Mon, 10 Jan 2022 06:30:49 -0800 (PST)
-Received: from [192.168.1.32] ([122.164.22.119])
-        by smtp.gmail.com with ESMTPSA id go19sm7245239pjb.25.2022.01.10.06.30.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 06:30:49 -0800 (PST)
-Message-ID: <98aac9ed39d2ca3e0a9163c584d9c361acd86584.camel@rajagiritech.edu.in>
-Subject: Re: [PATCH 5.15 00/72] 5.15.14-rc1 review
-From:   Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-Date:   Mon, 10 Jan 2022 20:00:43 +0530
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.1-1 
+        Mon, 10 Jan 2022 09:31:14 -0500
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20AET4vh001081
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Jan 2022 09:29:06 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id A1D5115C00C8; Mon, 10 Jan 2022 09:29:04 -0500 (EST)
+Date:   Mon, 10 Jan 2022 09:29:04 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
+        Simo Sorce <simo@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeffrey Walton <noloader@gmail.com>,
+        Stephan Mueller <smueller@chronox.de>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Alexander E. Patrakov" <patrakov@gmail.com>,
+        "Ahmed S. Darwish" <darwish.07@gmail.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Vito Caputo <vcaputo@pengaru.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
+        William Jon McCann <mccann@jhu.edu>,
+        zhangjs <zachary@baishancloud.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Florian Weimer <fweimer@redhat.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Peter Matthias <matthias.peter@bsi.bund.de>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Neil Horman <nhorman@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Petr Tesarik <ptesarik@suse.cz>,
+        John Haxby <john.haxby@oracle.com>,
+        Alexander Lobakin <alobakin@mailbox.org>,
+        Jirka Hladky <jhladky@redhat.com>
+Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
+Message-ID: <YdxCsI3atPILABYe@mit.edu>
+References: <YaYvYdnSaAvS8MAk@kroah.com>
+ <ac123d96b31f4a51b167b4e85a205f31a6c97876.camel@redhat.com>
+ <YaZHKHjomEivul6U@kroah.com>
+ <YaZqVxI1C8RByq+w@gmail.com>
+ <CAHmME9p60Ve5XJTVcmGvSpUkg_hRp_i0rGG0R9VhuwLs0o_nXQ@mail.gmail.com>
+ <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
+ <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
+ <20211210014337.xmin2lu5rhhe3b3t@valinor>
+ <20220110132349.siplwka7yhe2tmwc@valinor>
+ <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-01-10 at 08:22 +0100, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.14 release.
-> There are 72 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied,
-> please
-> let me know.
+On Mon, Jan 10, 2022 at 03:11:46PM +0100, Jason A. Donenfeld wrote:
+> On Mon, Jan 10, 2022 at 2:24 PM Marcelo Henrique Cerri
+> <marcelo.cerri@canonical.com> wrote:
+> > Hoping that might help with the discussion and to explain why I do
+> > consider those solutions a "hack", that's the patch we've been using
+> > so far to achieve SP 800-90B compliance:
+> >
+> > https://kernel.ubuntu.com/~mhcerri/0001-UBUNTU-SAUCE-random-Use-Crypto-API-DRBG-for-urandom-.patch
 > 
-> Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
-> Anything received after that time might be too late.
+> Thanks for sending this in response to my request for it in our private thread.
 > 
-> The whole patch series can be found in one patch at:
->         
-> https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.14-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-
-> stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-hello,
+> Just to confirm, this little patch here gives you FIPS certification?
 
-Compiled  and booted  5.15.14-rc1+ on VivoBook 15_ASUS Laptop X507UAR
-. 
-No Regression  from dmesg.
+There might be some FIPS certification labs that might be willing to
+be taken in by the jitterentropy story, but when I've had private
+communications from people who are familiar with the Intel
+microarchitecture saying that jitterentropy is mostly "security by
+obscurity", I'd be strongly opposed to replacing the current scheme
+with something which is purely jitteretropy.
 
-Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+Perhaps an build-time option where one of the seeds into the CRNG is
+"jitterentropy", but we keep everything else.  That way, jitterentropy
+can still be TSA-style "security theatre", but we're not utterly
+dependant on the "the CPU microarchitecture is SOOOOOOO complicated,
+it *must* be unpredictable".
 
--- 
-software engineer
-rajagiri school of engineering and technology - autonomous
+						- Ted
