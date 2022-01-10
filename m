@@ -2,156 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5992CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B63C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241226AbiAJItZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:49:25 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:54486 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S241157AbiAJIsv (ORCPT
+        id S242058AbiAJItc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39842 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241325AbiAJIsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:48:51 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20A6Qmr9008917;
-        Mon, 10 Jan 2022 09:48:41 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=6QC6fNL+mfmlwFssZDHcJVIPOyYB0T4GdiuhsjNBWmA=;
- b=ZCh2qWPk4JE8CU27jI7Nqsc5dhv2qODRrv/c7NFkHPAmm3p2vm0XcFtD19RojnTUUDFB
- QxmpRIPY2h69U0FybOjSPyyuA7HgERiSqtNBKwXR+hFhQQQoYG5JCWKDYQQzdTTPrjxC
- SaA0xHf7tBAXvD26JkpxkOcs4YNwroSiWPaKFPo7XGsSDXBpvBZFnkfOAIkD6dQa4TOw
- buChMBRXZuxVkTM3XXnFQEy0zMe88UT6KJz0RDgO4tCopm9obyV9WLTl49PxcQk7qFLX
- 9RfTVBX2pA5RQe4zA9mo5eLh0qfnwDZKul2FCP+eta1lphvHz/Xz6uUvwIAzMXeC8qcb cA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dgfhr0pmn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 09:48:41 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 75B4E10002A;
-        Mon, 10 Jan 2022 09:48:40 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5E2A0226D50;
-        Mon, 10 Jan 2022 09:48:40 +0100 (CET)
-Received: from lmecxl0889.lme.st.com (10.75.127.50) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 10 Jan
- 2022 09:48:39 +0100
-Subject: Re: [PATCH v8 00/13] Restructure the rpmsg_char driver and introduce
- rpmsg_ctrl driver
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>, <julien.massot@iot.bzh>
-References: <20211207080843.21222-1-arnaud.pouliquen@foss.st.com>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-Message-ID: <b5b3f474-f84d-d682-2987-a6f812da0710@foss.st.com>
-Date:   Mon, 10 Jan 2022 09:48:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 10 Jan 2022 03:48:53 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99739C03325A;
+        Mon, 10 Jan 2022 00:46:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=BEBBMZwf0UmxhTJNInFsXsac4+
+        RQQE9GuzWjhEpN9yfYfnppN1BjLY90RLCvFxzv8z8Z6vcAv4JnZQD2Vwuqcg76FYbPSo5djDdB3cf
+        ftPI2Z1GbBt8pFbN2Pz8/x2jckdPb4S+d+y2gYt/4DKzbOLutI9Ic1w0Y8Go+VLSRjuAQRg/kj4Rh
+        9xVndmfQW3RQClKKYNheEZkmCJ9/vgryp0EL//1ToE/oe3yuhfIo7W4Y4A7H0nGrWKTOhcKXybRbX
+        peVGTPo1PhVBnzqCtjmaieHMbK6JAwulYOBr3iMe9GTJwWl/1FznI1A6lQW369eCwBzjw3bL3GFZo
+        IbXTYJ8Q==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n6qK0-00A0mV-3i; Mon, 10 Jan 2022 08:46:32 +0000
+Date:   Mon, 10 Jan 2022 00:46:32 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     arnd@arndb.de, hch@infradead.org, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH 09/16] media: v4l2-pci-skeleton: Remove usage of the
+ deprecated "pci-dma-compat.h" API
+Message-ID: <YdvyaNKTIP6fKP9O@infradead.org>
+References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
+ <4c35f397720fccb6c9166fa85fa25475b0659a6a.1641500561.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-In-Reply-To: <20211207080843.21222-1-arnaud.pouliquen@foss.st.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-10_03,2022-01-07_01,2021-12-02_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4c35f397720fccb6c9166fa85fa25475b0659a6a.1641500561.git.christophe.jaillet@wanadoo.fr>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Bjorn,
+Looks good,
 
-
-On 12/7/21 9:08 AM, Arnaud Pouliquen wrote:
-> Update from V7 [1]:
-> - miscellaneous fixes based on Bjorn Andersson's comments
-> - add "arm64: defconfig: Config that had RPMSG_CHAR now gets RPMSG_CTRL"
->    for 5.16 compatibility
-
-Gentle reminder.
-Any new comment or concern on this patchset?
-
-Regards,
-Arnaud
-
-> 
-> Patchset description:
-> 
-> The current rpmsg_char module implements a /dev/rpmsg_ctrl interface that provides the ability to
-> instantiate char devices (/dev/rpmsgX) associated with an rpmsg endpoint for communication with the
-> remote processor.
-> This implementation fit with QCOM rpmsg backend but not with themagement by chanel implemented in
-> the generic rpmsg virtio backend.
-> This series restructures the rpmsg_char driver to decorrelate the control part from the data part
-> in order to improve its compatible with the rpmsg virtio backend.
-> 
-> Objective:
-> - Expose a /dev/rpmsg_ctrlX interface for the application that is no longer dedicated to the
->    rpmsg_char but generalized to all rpmsg services. This offers capability to create and destroy
->    rpmsg channels from a user's application initiative (using the new RPMSG_CREATE_DEV_IOCTL and
->    RPMSG_DESTROY_DEV_IOCTL controls).
->    An application will be able to create/establish an rpmsg communication channel to communicate
->    with the remote processor, and not only wait the remote processor initiative.
->    This is interesting for example to establish a temporary communication link for diagnosis,
->    calibration, debugging... or instantiate  new data flows on some user actions.
-> - Add capability to probe the rpmsg_char device at the initiative of the remote processor
->   (rpmsg service announcement mechanism).
->    This allows platforms based on the rpmsg virtio backend to create the /dev/rpmgX interface with
->    a rpmsg name service announcement.
-> 
-> Subsets:
->    - Extract the control part of the char dev and create the rpmsg_ctrl.c file (patches 1 to 6)
->    - Introduce the "rpmsg-raw" channel in rpmsg_char(patches 7 to 11)
->    - Introduce the RPMSG_CREATE_DEV_IOCTL IOCTL and RPMSG_DESTROY_DEV_IOCTL to instantiate RPMsg
->      devices (patch 12)
->      The application can then create or release a channel by specifying:
->         - the name service of the device to instantiate.
->         - the source address.
->         - the destination address.
->    - Send a ns announcement to the remote processor on default endpoint creation (patche 13)
-> 
-> This series has be applied and tested on for-next branch 'c4b39a582b9b)[2].
-> 
-> [1] https://lkml.org/lkml/2021/11/8/501
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git
-> 
-> Arnaud Pouliquen (10):
->    rpmsg: char: Export eptdev create an destroy functions
->    rpmsg: Create the rpmsg class in core instead of in rpmsg char
->    rpmsg: Move the rpmsg control device from rpmsg_char to rpmsg_ctrl
->    arm: configs: Configs that had RPMSG_CHAR now get RPMSG_CTRL
->    RISC-V: configs: Configs that had RPMSG_CHAR now get RPMSG_CTRL
->    arm64: defconfig: Config that had RPMSG_CHAR now gets RPMSG_CTRL
->    rpmsg: Update rpmsg_chrdev_register_device function
->    rpmsg: char: Refactor rpmsg_chrdev_eptdev_create function
->    rpmsg: Introduce rpmsg_create_default_ept function
->    rpmsg: char: Add possibility to use default endpoint of the rpmsg
->      device.
->    rpmsg: char: Introduce the "rpmsg-raw" channel
->    rpmsg: ctrl: Introduce new RPMSG_CREATE/RELEASE_DEV_IOCTL controls
->    rpmsg: core: Send a ns announcement when a default endpoint is created
-> 
->   arch/arm/configs/qcom_defconfig   |   1 +
->   arch/arm64/configs/defconfig      |   1 +
->   arch/riscv/configs/defconfig      |   1 +
->   arch/riscv/configs/rv32_defconfig |   1 +
->   drivers/rpmsg/Kconfig             |   8 +
->   drivers/rpmsg/Makefile            |   1 +
->   drivers/rpmsg/qcom_glink_native.c |   2 +-
->   drivers/rpmsg/qcom_smd.c          |   2 +-
->   drivers/rpmsg/rpmsg_char.c        | 246 +++++++++++------------------
->   drivers/rpmsg/rpmsg_char.h        |  46 ++++++
->   drivers/rpmsg/rpmsg_core.c        |  84 +++++++++-
->   drivers/rpmsg/rpmsg_ctrl.c        | 250 ++++++++++++++++++++++++++++++
->   drivers/rpmsg/rpmsg_internal.h    |  14 +-
->   drivers/rpmsg/virtio_rpmsg_bus.c  |   2 +-
->   include/uapi/linux/rpmsg.h        |  10 ++
->   15 files changed, 505 insertions(+), 164 deletions(-)
->   create mode 100644 drivers/rpmsg/rpmsg_char.h
->   create mode 100644 drivers/rpmsg/rpmsg_ctrl.c
-> 
+Reviewed-by: Christoph Hellwig <hch@lst.de>
