@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C93C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 588D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239450AbiAJH3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:29:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36500 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239406AbiAJH03 (ORCPT
+        id S231782AbiAJH3N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:29:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48508 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239666AbiAJH0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:29 -0500
+        Mon, 10 Jan 2022 02:26:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55AF7C033275;
+        Sun,  9 Jan 2022 23:25:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA957611B7;
-        Mon, 10 Jan 2022 07:26:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD51FC36AE9;
-        Mon, 10 Jan 2022 07:26:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED9DAB81205;
+        Mon, 10 Jan 2022 07:25:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20BBCC36AEF;
+        Mon, 10 Jan 2022 07:25:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799588;
-        bh=mHH+XNkD+3G/e3NHKbEc90kLnPAfFdQ5w4ollboxixw=;
+        s=korg; t=1641799540;
+        bh=dFWgtxdjNZ6HdV/b/Wms6eheXCudLzIFxWtVUkfVP1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mZxKUszjT3YK1RaBMMZkGEPFJO+KnEK5qscowId2X2vo6+TcSkw/TVm6qgfENTKLG
-         i2hHAV/LfzxDFs7BOUjLgt2BejeVI7yiml5hP8BVFEzDutxmARbL2MhHofWWOv75KL
-         AxjY9Yd9ejaThhB74FfSpOiHkyMnKsJR8rg3o71w=
+        b=OXHljvvQQGSHQYzqNNYuuHDzfAX58BZ8gGalle2QHOtS3L/47kHiHzaC14aX3Ddr0
+         GcOMPJ7ppqSvyOs+djEnYKYslLkWFD+GgpKn7nSdAyIc87CoFHu7hfu2d5o8uaF1hl
+         qUoHp8l+0yjCnADVCLIl8CSSa4EvZCYkHdAU0H/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Parav Pandit <parav@nvidia.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Yang Wei <yang.wei@linux.alibaba.com>
-Subject: [PATCH 4.14 04/22] virtio_pci: Support surprise removal of virtio pci device
-Date:   Mon, 10 Jan 2022 08:22:57 +0100
-Message-Id: <20220110071814.411993808@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH 4.9 21/21] power: reset: ltc2952: Fix use of floating point literals
+Date:   Mon, 10 Jan 2022 08:23:08 +0100
+Message-Id: <20220110071813.516622175@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
-References: <20220110071814.261471354@linuxfoundation.org>
+In-Reply-To: <20220110071812.806606886@linuxfoundation.org>
+References: <20220110071812.806606886@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,76 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 43bb40c5b92659966bdf4bfe584fde0a3575a049 upstream.
+commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
 
-When a virtio pci device undergo surprise removal (aka async removal in
-PCIe spec), mark the device as broken so that any upper layer drivers can
-abort any outstanding operation.
+A new commit in LLVM causes an error on the use of 'long double' when
+'-mno-x87' is used, which the kernel does through an alias,
+'-mno-80387' (see the LLVM commit below for more details around why it
+does this).
 
-When a virtio net pci device undergo surprise removal which is used by a
-NetworkManager, a below call trace was observed.
+drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
+        data->wde_interval = 300L * 1E6L;
+                                  ^
+drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
+        data->wde_interval = 300L * 1E6L;
+                           ^
+drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
+        data->trigger_delay = ktime_set(2, 500L*1E6L);
+                                               ^
+3 errors generated.
 
-kernel:watchdog: BUG: soft lockup - CPU#1 stuck for 26s! [kworker/1:1:27059]
-watchdog: BUG: soft lockup - CPU#1 stuck for 52s! [kworker/1:1:27059]
-CPU: 1 PID: 27059 Comm: kworker/1:1 Tainted: G S      W I  L    5.13.0-hotplug+ #8
-Hardware name: Dell Inc. PowerEdge R640/0H28RR, BIOS 2.9.4 11/06/2020
-Workqueue: events linkwatch_event
-RIP: 0010:virtnet_send_command+0xfc/0x150 [virtio_net]
-Call Trace:
- virtnet_set_rx_mode+0xcf/0x2a7 [virtio_net]
- ? __hw_addr_create_ex+0x85/0xc0
- __dev_mc_add+0x72/0x80
- igmp6_group_added+0xa7/0xd0
- ipv6_mc_up+0x3c/0x60
- ipv6_find_idev+0x36/0x80
- addrconf_add_dev+0x1e/0xa0
- addrconf_dev_config+0x71/0x130
- addrconf_notify+0x1f5/0xb40
- ? rtnl_is_locked+0x11/0x20
- ? __switch_to_asm+0x42/0x70
- ? finish_task_switch+0xaf/0x2c0
- ? raw_notifier_call_chain+0x3e/0x50
- raw_notifier_call_chain+0x3e/0x50
- netdev_state_change+0x67/0x90
- linkwatch_do_dev+0x3c/0x50
- __linkwatch_run_queue+0xd2/0x220
- linkwatch_event+0x21/0x30
- process_one_work+0x1c8/0x370
- worker_thread+0x30/0x380
- ? process_one_work+0x370/0x370
- kthread+0x118/0x140
- ? set_kthread_struct+0x40/0x40
- ret_from_fork+0x1f/0x30
+This happens due to the use of a 'long double' literal. The 'E6' part of
+'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
+it to 'long double'.
 
-Hence, add the ability to abort the command on surprise removal
-which prevents infinite loop and system lockup.
+There is no visible reason for floating point values in this driver, as
+the values are only assigned to integer types. Use NSEC_PER_MSEC, which
+is the same integer value as '1E6L', to avoid changing functionality but
+fix the error.
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Link: https://lore.kernel.org/r/20210721142648.1525924-5-parav@nvidia.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Yang Wei <yang.wei@linux.alibaba.com>
+Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1497
+Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+[nathan: Resolve conflict due to lack of 8b0e195314fab]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_pci_common.c |    7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/power/reset/ltc2952-poweroff.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/virtio/virtio_pci_common.c
-+++ b/drivers/virtio/virtio_pci_common.c
-@@ -575,6 +575,13 @@ static void virtio_pci_remove(struct pci
- 	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
- 	struct device *dev = get_device(&vp_dev->vdev.dev);
+--- a/drivers/power/reset/ltc2952-poweroff.c
++++ b/drivers/power/reset/ltc2952-poweroff.c
+@@ -169,8 +169,8 @@ static void ltc2952_poweroff_kill(void)
  
-+	/*
-+	 * Device is marked broken on surprise removal so that virtio upper
-+	 * layers can abort any ongoing operation.
-+	 */
-+	if (!pci_device_is_present(pci_dev))
-+		virtio_break_device(&vp_dev->vdev);
-+
- 	unregister_virtio_device(&vp_dev->vdev);
+ static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
+ {
+-	data->wde_interval = ktime_set(0, 300L*1E6L);
+-	data->trigger_delay = ktime_set(2, 500L*1E6L);
++	data->wde_interval = ktime_set(0, 300L * NSEC_PER_MSEC);
++	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
  
- 	if (vp_dev->ioaddr)
+ 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
 
 
