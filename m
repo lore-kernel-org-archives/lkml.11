@@ -2,96 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B504C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76196C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243326AbiAJTvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:51:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239531AbiAJTvE (ORCPT
+        id S243463AbiAJTvS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:51:18 -0500
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:49309 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S239531AbiAJTvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 14:51:04 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F16C06173F;
-        Mon, 10 Jan 2022 11:51:04 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id pj2so13631348pjb.2;
-        Mon, 10 Jan 2022 11:51:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7nQwFvWnXEWIg2fQ1lx9zAVox3M6SG5MqAj2k1cYbzc=;
-        b=SLIePsHkyQTI7kSGSYbXczT8SLyE+S3bFu6wUYPBktqGnCZNU4DikRQdvp1NrA4TSn
-         L/ooJ76caUKQ+bUQKhPuGOXlHB8Vo3GGiyY8wLQq2IMZtgBYu8349qKGD+64RHBWb6oV
-         PeVRi1HV+6M3q8BfE8ebN7HDTPCkWMX/SdkC2DX9nKGqRnaYLG1klSRFrDVgAE1H538G
-         NyDkxOwCvWorGhhkIIgnq4cKSvFlUL0QB22LWVGmg9ssWxitgM3OlD3D6Ay0ejcFNAn0
-         zxpaaajda4BWkDJ2fzxugKjjWTSN6OHajX/ThDhPw9df8HfobtWditKiWXiIOMPvap6E
-         2TZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7nQwFvWnXEWIg2fQ1lx9zAVox3M6SG5MqAj2k1cYbzc=;
-        b=mH0aYGGgEKjsjoYz2k/0/8F6D5he/wLwI/iFYrS3QgimcgWbSnsSLYIKf05gXDeHKP
-         WREu/oPeFoSrDGv3O9AFBV2ZwxuUcdcnMTAfWu4blw3qERrwMP7EQb6X3ugDpG1yw0+T
-         UrW6KRNIEQS7OoMdizlUaj2OFo+gJTHCRlmVP77n8pn02XGvSxdwxbqp6gRa88PdsFvE
-         INPwB+sdhcfEfPCN8eIQn4PQ+PoEV5ssLBpk0y8i3xeqPZ12iSiKLEIuORaLiFdqm7wE
-         x33ZH90U4LfUFMXFp9Zd/QzL3WUmmifcc5gBMw18pSWITCCsu0jTOu3W00bHbDUV67xR
-         CAuA==
-X-Gm-Message-State: AOAM532w1BWZxIi/qowJD7CpCaF77VLAoN6PAPYr2Q1XQ/Kjr2ByfxJX
-        tF2nvvRlfRuMOVHEEc7YzRj/o327oCU=
-X-Google-Smtp-Source: ABdhPJxqtke/V21bxwhHLPeKsTlgT2qlrJ7w8RcHGbgvl5OZ88CpuTFpajH3dimOKTwce2eCdw+Y8g==
-X-Received: by 2002:a17:90a:a105:: with SMTP id s5mr1359942pjp.170.1641844263258;
-        Mon, 10 Jan 2022 11:51:03 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g16sm7900493pfv.159.2022.01.10.11.51.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 11:51:02 -0800 (PST)
-Subject: Re: [PATCH 5.10 00/43] 5.10.91-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        stable@vger.kernel.org
-References: <20220110071817.337619922@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <23b2e45d-b642-a5df-2b68-f4f11cb1b4f9@gmail.com>
-Date:   Mon, 10 Jan 2022 11:50:59 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 10 Jan 2022 14:51:15 -0500
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20AJnORK019332
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Jan 2022 14:49:25 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id D0A2A15C00C8; Mon, 10 Jan 2022 14:49:24 -0500 (EST)
+Date:   Mon, 10 Jan 2022 14:49:24 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
+        Simo Sorce <simo@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeffrey Walton <noloader@gmail.com>,
+        Stephan Mueller <smueller@chronox.de>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Alexander E. Patrakov" <patrakov@gmail.com>,
+        "Ahmed S. Darwish" <darwish.07@gmail.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Vito Caputo <vcaputo@pengaru.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
+        William Jon McCann <mccann@jhu.edu>,
+        zhangjs <zachary@baishancloud.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Florian Weimer <fweimer@redhat.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Peter Matthias <matthias.peter@bsi.bund.de>,
+        Neil Horman <nhorman@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Petr Tesarik <ptesarik@suse.cz>,
+        John Haxby <john.haxby@oracle.com>,
+        Alexander Lobakin <alobakin@mailbox.org>,
+        Jirka Hladky <jhladky@redhat.com>,
+        Eric Biggers <ebiggers@kernel.org>
+Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
+Message-ID: <YdyNxJzdBmSSEtDC@mit.edu>
+References: <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
+ <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
+ <20211210014337.xmin2lu5rhhe3b3t@valinor>
+ <20220110132349.siplwka7yhe2tmwc@valinor>
+ <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
+ <YdxCsI3atPILABYe@mit.edu>
+ <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
+ <Ydxu+KS5UkQ6hU9R@mit.edu>
+ <Ydx7D3H0PS0Zs9/B@sol.localdomain>
+ <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/9/22 11:22 PM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.91 release.
-> There are 43 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Mon, Jan 10, 2022 at 07:44:23PM +0100, Jason A. Donenfeld wrote:
+> b) Userspace to use some other RNG.
 > 
-> Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.91-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+> (b) can be accomplished in userspace by just (i) disabling getrandom()
+> (making it return ENOSYS), and then (ii) replacing the /dev/urandom
+> path with a CUSE device or similar.
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+I don't think you even need to do this.  In general, you need FIPS
+certification for some specific use cases / application.  For example,
+if you're going for PCI compliance, then you might only need FIPS
+compliance for your OpenSSL library.  What the FIPS certification lab
+might consider acceptable for its entropy for its DRBG is an
+interesting question.  For some, simply having the OpenSSL library use
+RDSEED or RDRAND might be sufficient.  Or it could talk to an actual
+physical RNG device.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+So disabling getrandom() is probably not necessary, just so long as
+you can demonstrate that the FIPS cryptographic module --- i.e., the
+OpenSSL library --- is getting its entropy from an acceptable source.
+
+I suspect what's actually going on is that some enterprise customers
+have FIPS complaince on a check-off list, and they aren't actually
+getting a formal FIPS certification.  Or they only need something to
+wave under the noses of their PCI certification company, and so the
+question is what makes them happy.
+
+Going into the details of whether ChaCha20 is blessed by FIPS is
+probably more into technical weeds than most of the people who *say*
+they want FIPS certification actually will go.  After all, the
+in-kernel DRBG is using as its "entropy source" the timing
+instructions from a bunch of x86 assembly instructions which is
+**soooo** complicated that people are willing to drink from the snake
+oil and claim that it is secure.  Is it really?  Has FIPS said that
+it's OK?  Not any more than they've said anything about ChaCha20!
+
+And this is why some FIPS certification have gotten by just *fine*
+with a pure userspace OpenSSL library as their FIPS cryptographic
+module.  Where you draw the line between a "blessed" entropy source
+and one that's just hand-waving is really at the discretion of the
+certification lab.
+
+Personally, if I was doing something that I really, *really* wanted to
+be secure, I'd be mixing in several hardware RNG's.  Given that most
+server and client platforms have a TPM, or some other hardened
+security module, using that is probably the best bet of I was
+architecting some that *really* needed to be secure.  But of course,
+we're not talking about real security in this thread; we're talking
+about whatever security theater will make the FIPS certification labs,
+and the people who say they want FIPS on their check-off list, happy.  :-)
+
+    	       	       	    	      	       - Ted
