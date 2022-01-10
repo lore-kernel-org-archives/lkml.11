@@ -2,772 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD36C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:12:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242765AbiAJJMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:12:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45506 "EHLO
+        id S242832AbiAJJMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:12:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242653AbiAJJMO (ORCPT
+        with ESMTP id S242655AbiAJJMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 04:12:14 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055C9C061212;
-        Mon, 10 Jan 2022 01:12:08 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id t19so10070964pfg.9;
-        Mon, 10 Jan 2022 01:12:08 -0800 (PST)
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D453CC061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:12:08 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id k30so7815340wrd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:12:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=0AjmjFBGavsvtxiPwAj3xUkJ0oQuucx2gbTAmMmtGEI=;
-        b=qBB4XiRmOUg7Fhsgm27ytLlait1aSQJ55NYbveAGQ8KlfJ43zppL6+ZU10iiwoZtQN
-         rnOcN9ZJrl5qfh21UySN0zRBFka/magri+itMAODk4yi6TMZ8NybMM7nyKxlinAIZZk6
-         lAtDDaEX8q69XigGoD+W8gXOWpa6/qFxP+esDz+fpP33zTmWVJH2Iuba8k+FYHwE59ta
-         zi+XSul789Bx/DPrhC5N7+4CYbajAEsQihag4sVutDSWnQFMqbUScZk/hLB3R+FJX7/b
-         W3L72imBZYo3zbGkYTCxqCVB47Xyz9RvxUqZQ1bB6nJr7G8ejAdgIH77c4wC+v//kKHw
-         KTIg==
+        d=broadcom.com; s=google;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:in-reply-to;
+        bh=ptBUqKqYUor3+uJEeWktW1rjE7PNlwZQbPztX5rGNLY=;
+        b=Mn7cThCLpaSBcVo9wbe5Szihfa4qjUFVxRnLgyZhR86s2gs70+/hveyYl9+yCfvTWI
+         l1xYpj2vHRhjw+yrsH1hAXDzP0AckPOSGedV4v7gdK5DYbF+Y0eIVuPig8cwYas/N34E
+         5o26V3KmjDQyNIMnPlgUNnlUZOKW+Bl+TGu2w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=0AjmjFBGavsvtxiPwAj3xUkJ0oQuucx2gbTAmMmtGEI=;
-        b=s5GxH0z6nGQAKhniAgNICTi1hdve9VKSxqgeSaDXz6DXk1yCeOM0mpq8xlYACq8ZGG
-         6uTjNjcp+K68gIcNvn5zOr9aS1ZmdyFDQpsxkEWQUYDsKH2eqmOyV8PJ7JviF4qtu9kx
-         +TvtwVqVaF64IyDX/q+AwNvcvggaYST0Kze3xDe8MHntu/ZYQPWsUO30pxKiRp33h81t
-         WqAmLh7lyJMffE69O/wXsYa3RXDO4MjZkhpQvpK7EFWXyHlqyamXwJ226BNbQ5icvw/i
-         k8QdWNi6g+BvSRZ9uli5R25MnEUPNgwNfS+OX5TF6K/TqMYnLINfIJJ/6wgUHetuXN3t
-         Yqcw==
-X-Gm-Message-State: AOAM533tldmgN8meMO1kfvofACRJF0aLbw3KoQvLU4ucXw+PU3RMQih1
-        HvQU49wnpyKP+gzRJFYMM74=
-X-Google-Smtp-Source: ABdhPJzOD1APLre3OAuDoVPSCNs0ASHxcx0YcINNGcOHqWAZlwSn+cFQ4S7ZO/t2peezlzvk7yVJuA==
-X-Received: by 2002:a63:455f:: with SMTP id u31mr65643828pgk.537.1641805928378;
-        Mon, 10 Jan 2022 01:12:08 -0800 (PST)
-Received: from localhost.localdomain ([162.219.34.250])
-        by smtp.gmail.com with ESMTPSA id j22sm6293910pfj.29.2022.01.10.01.12.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 01:12:08 -0800 (PST)
-From:   Wang Jianchao <jianchao.wan9@gmail.com>
-To:     axboe@kernel.dk
-Cc:     jbacik@fb.com, tj@kernel.org, bvanassche@acm.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 01/13] blk: make blk-rq-qos support pluggable and modular policy
-Date:   Mon, 10 Jan 2022 17:10:34 +0800
-Message-Id: <20220110091046.17010-2-jianchao.wan9@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220110091046.17010-1-jianchao.wan9@gmail.com>
-References: <20220110091046.17010-1-jianchao.wan9@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:in-reply-to;
+        bh=ptBUqKqYUor3+uJEeWktW1rjE7PNlwZQbPztX5rGNLY=;
+        b=G/GJ4kJsMMOTEvjDj9NtJX4D0BsdB4QLUsr6rOIjjXzhXze41atnysh5nf3o/zpr3l
+         nEv8f21j3WuJE8N0BPlS3c+YEHg0rsYeCGXJaCsdo53XOOiYtqIgwHROWCFkRCJR8f1V
+         p0qXkPLLFdarsz+uLPBeoqOU5+mMx2qGN9QsPBUcwFBY5uzfZ4ipLjocoIYZtA+zWZ04
+         0w6yd45EwwF8O3425H3cfFLPTrtF/07ZxLNxYY4z4pRf2ScoBxJD7Kf4qHqMF029vuV6
+         b6xocU8kok6xiCLeAe6xQnJ+n7k0LnLxA/4iP60aYhOpEuMMvhm/UHst2ri8f2L7q2d5
+         1vHQ==
+X-Gm-Message-State: AOAM533GfpCbsx2ZCWtmEehsI2gF9E5VkAheFFBMNWhXGWYsEpywCJSH
+        MMfpJo7VapZtw90Wk4HiBvRH9g==
+X-Google-Smtp-Source: ABdhPJzyhagBCqErAah7InvdCzT466zzYtOBPwKqsv/Bar+WnzOfftC5NywfS1M8jbmJKO/8Y4NjZg==
+X-Received: by 2002:adf:ee8b:: with SMTP id b11mr11015456wro.88.1641805927430;
+        Mon, 10 Jan 2022 01:12:07 -0800 (PST)
+Received: from [10.230.32.81] ([192.19.148.250])
+        by smtp.gmail.com with ESMTPSA id n12sm6683187wrf.29.2022.01.10.01.12.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 01:12:06 -0800 (PST)
+Message-ID: <67630b95-2b1a-a922-bdf1-21a1accde60b@broadcom.com>
+Date:   Mon, 10 Jan 2022 10:12:04 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+From:   Arend van Spriel <arend.vanspriel@broadcom.com>
+Subject: Re: [PATCH v2 18/35] brcmfmac: pcie: Add IDs/properties for BCM4355
+To:     Hector Martin <marcan@marcan.st>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220104072658.69756-1-marcan@marcan.st>
+ <20220104072658.69756-19-marcan@marcan.st>
+In-Reply-To: <20220104072658.69756-19-marcan@marcan.st>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000001bb4e705d536bb98"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Jianchao <wangjianchao@kuaishou.com>
+--0000000000001bb4e705d536bb98
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-blk-rq-qos is a standalone framework out of io-sched and can be
-used to control or observe the IO progress in block-layer with
-hooks. blk-rq-qos is a great design but right now, it is totally
-fixed and built-in and shut out peoples who want to use it with
-external module.
+On 1/4/2022 8:26 AM, Hector Martin wrote:
+> This chip is present on at least these Apple T2 Macs:
+> 
+> * hawaii: MacBook Air 13" (Late 2018)
+> * hawaii: MacBook Air 13" (True Tone, 2019)
 
-This patch make blk-rq-qos policies pluggable and modular.
-(1) Add code to maintain the rq_qos_ops. A rq-qos module need to
-    register itself with rq_qos_register(). The original enum
-    rq_qos_id will be removed in following patch. They will use
-    a dynamic id maintained by rq_qos_ida.
-(2) Add .init callback into rq_qos_ops. We use it to initialize the
-    resource.
-(3) Add /sys/block/x/queue/qos
-    We can use '+name' or "-name" to open or close the blk-rq-qos
-    policy.
+Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> ---
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c   | 1 +
+>   drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 8 ++++++++
+>   .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 2 ++
+>   3 files changed, 11 insertions(+)
 
-Because the rq-qos list can be modified at anytime, rq_qos_id()
-which has been renamed to rq_qos_by_id() has to iterate the list
-under sysfs_lock or queue_lock. This patch adapts the code for this.
-More details, please refer to the comment above rq_qos_get(), And
-the rq_qos_exit() is moved to blk_cleanup_queue. Except for these
-modification, there is no other functional change here. Following
-patches will adpat the code of wbt, iolatency, iocost and ioprio
-to make them pluggable and modular one by one.
+[...]
 
-Signed-off-by: Wang Jianchao <wangjianchao@kuaishou.com>
----
- block/blk-core.c       |   2 +
- block/blk-iocost.c     |  20 ++-
- block/blk-mq-debugfs.c |   4 +-
- block/blk-rq-qos.c     | 312 ++++++++++++++++++++++++++++++++++++++++-
- block/blk-rq-qos.h     |  55 +++++++-
- block/blk-sysfs.c      |   2 +
- block/blk-wbt.c        |   6 +-
- block/elevator.c       |   3 +
- block/genhd.c          |   3 -
- include/linux/blkdev.h |   4 +
- 10 files changed, 394 insertions(+), 17 deletions(-)
+> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> index a8cccfbea20b..fdba2b5b46f0 100644
+> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+> @@ -49,6 +49,7 @@ enum brcmf_pcie_state {
+>   BRCMF_FW_DEF(43602, "brcmfmac43602-pcie");
+>   BRCMF_FW_DEF(4350, "brcmfmac4350-pcie");
+>   BRCMF_FW_DEF(4350C, "brcmfmac4350c2-pcie");
+> +BRCMF_FW_CLM_DEF(4355C1, "brcmfmac4355c1-pcie");
+>   BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
+>   BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
+>   BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
+> @@ -75,6 +76,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
+>   	BRCMF_FW_ENTRY(BRCM_CC_4350_CHIP_ID, 0x000000FF, 4350C),
+>   	BRCMF_FW_ENTRY(BRCM_CC_4350_CHIP_ID, 0xFFFFFF00, 4350),
+>   	BRCMF_FW_ENTRY(BRCM_CC_43525_CHIP_ID, 0xFFFFFFF0, 4365C),
+> +	BRCMF_FW_ENTRY(BRCM_CC_4355_CHIP_ID, 0xFFFFFFFF, 4355C1), /* 12 */
 
-diff --git a/block/blk-core.c b/block/blk-core.c
-index 1378d084c770..2847ab514c1f 100644
---- a/block/blk-core.c
-+++ b/block/blk-core.c
-@@ -51,6 +51,7 @@
- #include "blk-mq-sched.h"
- #include "blk-pm.h"
- #include "blk-throttle.h"
-+#include "blk-rq-qos.h"
- 
- struct dentry *blk_debugfs_root;
- 
-@@ -377,6 +378,7 @@ void blk_cleanup_queue(struct request_queue *q)
- 	 * it is safe to free requests now.
- 	 */
- 	mutex_lock(&q->sysfs_lock);
-+	rq_qos_exit(q);
- 	if (q->elevator)
- 		blk_mq_sched_free_rqs(q);
- 	mutex_unlock(&q->sysfs_lock);
-diff --git a/block/blk-iocost.c b/block/blk-iocost.c
-index 769b64394298..cfc0e305c32e 100644
---- a/block/blk-iocost.c
-+++ b/block/blk-iocost.c
-@@ -662,7 +662,7 @@ static struct ioc *rqos_to_ioc(struct rq_qos *rqos)
- 
- static struct ioc *q_to_ioc(struct request_queue *q)
- {
--	return rqos_to_ioc(rq_qos_id(q, RQ_QOS_COST));
-+	return rqos_to_ioc(rq_qos_by_id(q, RQ_QOS_COST));
- }
- 
- static const char *q_name(struct request_queue *q)
-@@ -3162,6 +3162,7 @@ static ssize_t ioc_qos_write(struct kernfs_open_file *of, char *input,
- 			     size_t nbytes, loff_t off)
- {
- 	struct block_device *bdev;
-+	struct rq_qos *rqos;
- 	struct ioc *ioc;
- 	u32 qos[NR_QOS_PARAMS];
- 	bool enable, user;
-@@ -3172,14 +3173,15 @@ static ssize_t ioc_qos_write(struct kernfs_open_file *of, char *input,
- 	if (IS_ERR(bdev))
- 		return PTR_ERR(bdev);
- 
--	ioc = q_to_ioc(bdev_get_queue(bdev));
--	if (!ioc) {
-+	rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
-+	if (!rqos) {
- 		ret = blk_iocost_init(bdev_get_queue(bdev));
- 		if (ret)
- 			goto err;
--		ioc = q_to_ioc(bdev_get_queue(bdev));
-+		rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
- 	}
- 
-+	ioc = rqos_to_ioc(rqos);
- 	spin_lock_irq(&ioc->lock);
- 	memcpy(qos, ioc->params.qos, sizeof(qos));
- 	enable = ioc->enabled;
-@@ -3272,10 +3274,12 @@ static ssize_t ioc_qos_write(struct kernfs_open_file *of, char *input,
- 	ioc_refresh_params(ioc, true);
- 	spin_unlock_irq(&ioc->lock);
- 
-+	rq_qos_put(rqos);
- 	blkdev_put_no_open(bdev);
- 	return nbytes;
- einval:
- 	ret = -EINVAL;
-+	rq_qos_put(rqos);
- err:
- 	blkdev_put_no_open(bdev);
- 	return ret;
-@@ -3329,6 +3333,7 @@ static ssize_t ioc_cost_model_write(struct kernfs_open_file *of, char *input,
- 				    size_t nbytes, loff_t off)
- {
- 	struct block_device *bdev;
-+	struct rq_qos *rqos;
- 	struct ioc *ioc;
- 	u64 u[NR_I_LCOEFS];
- 	bool user;
-@@ -3339,14 +3344,15 @@ static ssize_t ioc_cost_model_write(struct kernfs_open_file *of, char *input,
- 	if (IS_ERR(bdev))
- 		return PTR_ERR(bdev);
- 
--	ioc = q_to_ioc(bdev_get_queue(bdev));
-+	rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
- 	if (!ioc) {
- 		ret = blk_iocost_init(bdev_get_queue(bdev));
- 		if (ret)
- 			goto err;
--		ioc = q_to_ioc(bdev_get_queue(bdev));
-+		rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
- 	}
- 
-+	ioc = rqos_to_ioc(rqos);
- 	spin_lock_irq(&ioc->lock);
- 	memcpy(u, ioc->params.i_lcoefs, sizeof(u));
- 	user = ioc->user_cost_model;
-@@ -3397,11 +3403,13 @@ static ssize_t ioc_cost_model_write(struct kernfs_open_file *of, char *input,
- 	ioc_refresh_params(ioc, true);
- 	spin_unlock_irq(&ioc->lock);
- 
-+	rq_qos_put(rqos);
- 	blkdev_put_no_open(bdev);
- 	return nbytes;
- 
- einval:
- 	ret = -EINVAL;
-+	rq_qos_put(rqos);
- err:
- 	blkdev_put_no_open(bdev);
- 	return ret;
-diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
-index 4f2cf8399f3d..e3e8d54c836f 100644
---- a/block/blk-mq-debugfs.c
-+++ b/block/blk-mq-debugfs.c
-@@ -841,7 +841,9 @@ void blk_mq_debugfs_unregister_rqos(struct rq_qos *rqos)
- void blk_mq_debugfs_register_rqos(struct rq_qos *rqos)
- {
- 	struct request_queue *q = rqos->q;
--	const char *dir_name = rq_qos_id_to_name(rqos->id);
-+	const char *dir_name;
-+
-+	dir_name = rqos->ops->name ? rqos->ops->name : rq_qos_id_to_name(rqos->id);
- 
- 	if (rqos->debugfs_dir || !rqos->ops->debugfs_attrs)
- 		return;
-diff --git a/block/blk-rq-qos.c b/block/blk-rq-qos.c
-index e83af7bc7591..a94ff872722b 100644
---- a/block/blk-rq-qos.c
-+++ b/block/blk-rq-qos.c
-@@ -2,6 +2,11 @@
- 
- #include "blk-rq-qos.h"
- 
-+static DEFINE_IDA(rq_qos_ida);
-+static int nr_rqos_blkcg_pols;
-+static DEFINE_MUTEX(rq_qos_mutex);
-+static LIST_HEAD(rq_qos_list);
-+
- /*
-  * Increment 'v', if 'v' is below 'below'. Returns true if we succeeded,
-  * false if 'v' + 1 would be bigger than 'below'.
-@@ -294,11 +299,316 @@ void rq_qos_wait(struct rq_wait *rqw, void *private_data,
- 
- void rq_qos_exit(struct request_queue *q)
- {
--	blk_mq_debugfs_unregister_queue_rqos(q);
-+	WARN_ON(!mutex_is_locked(&q->sysfs_lock));
- 
- 	while (q->rq_qos) {
- 		struct rq_qos *rqos = q->rq_qos;
- 		q->rq_qos = rqos->next;
-+		if (rqos->ops->owner)
-+			module_put(rqos->ops->owner);
- 		rqos->ops->exit(rqos);
- 	}
-+	blk_mq_debugfs_unregister_queue_rqos(q);
-+}
-+
-+/*
-+ * After the pluggable blk-qos, rqos's life cycle become complicated,
-+ * qos switching path can add/delete rqos to/from request_queue
-+ * under sysfs_lock and queue_lock. There are following places
-+ * may access rqos through rq_qos_by_id() concurrently:
-+ * (1) normal IO path, under q_usage_counter,
-+ * (2) queue sysfs interfaces, under sysfs_lock,
-+ * (3) blkg_create, the .pd_init_fn() may access rqos, under queue_lock,
-+ * (4) cgroup file, such as ioc_cost_model_write,
-+ *
-+ * (1)(2)(3) are definitely safe. case (4) is tricky. rq_qos_get() is
-+ * for the case.
-+ */
-+struct rq_qos *rq_qos_get(struct request_queue *q, int id)
-+{
-+	struct rq_qos *rqos;
-+
-+	spin_lock_irq(&q->queue_lock);
-+	rqos = rq_qos_by_id(q, id);
-+	if (rqos && rqos->dying)
-+		rqos = NULL;
-+	if (rqos)
-+		refcount_inc(&rqos->ref);
-+	spin_unlock_irq(&q->queue_lock);
-+	return rqos;
-+}
-+EXPORT_SYMBOL_GPL(rq_qos_get);
-+
-+void rq_qos_put(struct rq_qos *rqos)
-+{
-+	struct request_queue *q = rqos->q;
-+
-+	spin_lock_irq(&q->queue_lock);
-+	refcount_dec(&rqos->ref);
-+	if (rqos->dying)
-+		wake_up(&rqos->waitq);
-+	spin_unlock_irq(&q->queue_lock);
-+}
-+EXPORT_SYMBOL_GPL(rq_qos_put);
-+
-+void rq_qos_activate(struct request_queue *q,
-+		struct rq_qos *rqos, const struct rq_qos_ops *ops)
-+{
-+	struct rq_qos *pos;
-+	bool rq_alloc_time = false;
-+
-+	WARN_ON(!mutex_is_locked(&q->sysfs_lock));
-+
-+	rqos->dying = false;
-+	refcount_set(&rqos->ref, 1);
-+	init_waitqueue_head(&rqos->waitq);
-+	rqos->id = ops->id;
-+	rqos->ops = ops;
-+	rqos->q = q;
-+	rqos->next = NULL;
-+
-+	spin_lock_irq(&q->queue_lock);
-+	pos = q->rq_qos;
-+	if (pos) {
-+		while (pos->next) {
-+			if (pos->ops->flags & RQOS_FLAG_RQ_ALLOC_TIME)
-+				rq_alloc_time = true;
-+			pos = pos->next;
-+		}
-+		pos->next = rqos;
-+	} else {
-+		q->rq_qos = rqos;
-+	}
-+	if (ops->flags & RQOS_FLAG_RQ_ALLOC_TIME &&
-+	    !rq_alloc_time)
-+		blk_queue_flag_set(QUEUE_FLAG_RQ_ALLOC_TIME, q);
-+
-+	spin_unlock_irq(&q->queue_lock);
-+
-+	if (rqos->ops->debugfs_attrs)
-+		blk_mq_debugfs_register_rqos(rqos);
-+}
-+EXPORT_SYMBOL_GPL(rq_qos_activate);
-+
-+void rq_qos_deactivate(struct rq_qos *rqos)
-+{
-+	struct request_queue *q = rqos->q;
-+	struct rq_qos **cur, *pos;
-+	bool rq_alloc_time = false;
-+
-+	WARN_ON(!mutex_is_locked(&q->sysfs_lock));
-+
-+	spin_lock_irq(&q->queue_lock);
-+	rqos->dying = true;
-+	/*
-+	 * Drain all of the usage of get/put_rqos()
-+	 */
-+	wait_event_lock_irq(rqos->waitq,
-+		refcount_read(&rqos->ref) == 1, q->queue_lock);
-+	for (cur = &q->rq_qos; *cur; cur = &(*cur)->next) {
-+		if (*cur == rqos) {
-+			*cur = rqos->next;
-+			break;
-+		}
-+	}
-+
-+	pos = q->rq_qos;
-+	while (pos && pos->next) {
-+		if (pos->ops->flags & RQOS_FLAG_RQ_ALLOC_TIME)
-+			rq_alloc_time = true;
-+		pos = pos->next;
-+	}
-+
-+	if (rqos->ops->flags & RQOS_FLAG_RQ_ALLOC_TIME &&
-+	    !rq_alloc_time)
-+		blk_queue_flag_clear(QUEUE_FLAG_RQ_ALLOC_TIME, q);
-+
-+	spin_unlock_irq(&q->queue_lock);
-+	blk_mq_debugfs_unregister_rqos(rqos);
-+}
-+EXPORT_SYMBOL_GPL(rq_qos_deactivate);
-+
-+static struct rq_qos_ops *rq_qos_find_by_name(const char *name)
-+{
-+	struct rq_qos_ops *pos;
-+
-+	list_for_each_entry(pos, &rq_qos_list, node) {
-+		if (!strncmp(pos->name, name, strlen(pos->name)))
-+			return pos;
-+	}
-+
-+	return NULL;
-+}
-+
-+int rq_qos_register(struct rq_qos_ops *ops)
-+{
-+	int ret, start;
-+
-+	mutex_lock(&rq_qos_mutex);
-+
-+	if (rq_qos_find_by_name(ops->name)) {
-+		ret = -EEXIST;
-+		goto out;
-+	}
-+
-+	if (ops->flags & RQOS_FLAG_CGRP_POL &&
-+	    nr_rqos_blkcg_pols >= (BLKCG_MAX_POLS - BLKCG_NON_RQOS_POLS)) {
-+		ret = -ENOSPC;
-+		goto out;
-+	}
-+
-+	start = RQ_QOS_IOPRIO + 1;
-+	ret = ida_simple_get(&rq_qos_ida, start, INT_MAX, GFP_KERNEL);
-+	if (ret < 0)
-+		goto out;
-+
-+	if (ops->flags & RQOS_FLAG_CGRP_POL)
-+		nr_rqos_blkcg_pols++;
-+
-+	ops->id = ret;
-+	ret = 0;
-+	INIT_LIST_HEAD(&ops->node);
-+	list_add_tail(&ops->node, &rq_qos_list);
-+out:
-+	mutex_unlock(&rq_qos_mutex);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(rq_qos_register);
-+
-+void rq_qos_unregister(struct rq_qos_ops *ops)
-+{
-+	mutex_lock(&rq_qos_mutex);
-+
-+	if (ops->flags & RQOS_FLAG_CGRP_POL)
-+		nr_rqos_blkcg_pols--;
-+	list_del_init(&ops->node);
-+	ida_simple_remove(&rq_qos_ida, ops->id);
-+	mutex_unlock(&rq_qos_mutex);
-+}
-+EXPORT_SYMBOL_GPL(rq_qos_unregister);
-+
-+ssize_t queue_qos_show(struct request_queue *q, char *buf)
-+{
-+	struct rq_qos_ops *ops;
-+	struct rq_qos *rqos;
-+	int ret = 0;
-+
-+	mutex_lock(&rq_qos_mutex);
-+	/*
-+	 * Show the policies in the order of being invoked
-+	 */
-+	for (rqos = q->rq_qos; rqos; rqos = rqos->next) {
-+		if (!rqos->ops->name)
-+			continue;
-+		ret += sprintf(buf + ret, "[%s] ", rqos->ops->name);
-+	}
-+	list_for_each_entry(ops, &rq_qos_list, node) {
-+		if (!rq_qos_by_name(q, ops->name))
-+			ret += sprintf(buf + ret, "%s ", ops->name);
-+	}
-+
-+	ret--; /* overwrite the last space */
-+	ret += sprintf(buf + ret, "\n");
-+	mutex_unlock(&rq_qos_mutex);
-+
-+	return ret;
-+}
-+
-+int rq_qos_switch(struct request_queue *q,
-+		const struct rq_qos_ops *ops,
-+		struct rq_qos *rqos)
-+{
-+	int ret;
-+
-+	WARN_ON(!mutex_is_locked(&q->sysfs_lock));
-+
-+	blk_mq_freeze_queue(q);
-+	if (!rqos) {
-+		ret = ops->init(q);
-+	} else {
-+		ops->exit(rqos);
-+		ret = 0;
-+	}
-+	blk_mq_unfreeze_queue(q);
-+
-+	return ret;
-+}
-+
-+ssize_t queue_qos_store(struct request_queue *q, const char *page,
-+			  size_t count)
-+{
-+	const struct rq_qos_ops *ops;
-+	struct rq_qos *rqos;
-+	const char *qosname;
-+	char *buf;
-+	bool add;
-+	int ret;
-+
-+	buf = kstrdup(page, GFP_KERNEL);
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	buf = strim(buf);
-+	if (buf[0] != '+' && buf[0] != '-') {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	add = buf[0] == '+';
-+	qosname = buf + 1;
-+
-+	rqos = rq_qos_by_name(q, qosname);
-+	if ((buf[0] == '+' && rqos)) {
-+		ret = -EEXIST;
-+		goto out;
-+	}
-+
-+	if ((buf[0] == '-' && !rqos)) {
-+		ret = -ENODEV;
-+		goto out;
-+	}
-+
-+	mutex_lock(&rq_qos_mutex);
-+	if (add) {
-+		ops = rq_qos_find_by_name(qosname);
-+		if (!ops) {
-+			/*
-+			 * module_init callback may request this mutex
-+			 */
-+			mutex_unlock(&rq_qos_mutex);
-+			request_module("%s", qosname);
-+			mutex_lock(&rq_qos_mutex);
-+			ops = rq_qos_find_by_name(qosname);
-+		}
-+	} else {
-+		ops = rqos->ops;
-+	}
-+
-+	if (!ops) {
-+		ret = -EINVAL;
-+	} else if (ops->owner && !try_module_get(ops->owner)) {
-+		ops = NULL;
-+		ret = -EAGAIN;
-+	}
-+	mutex_unlock(&rq_qos_mutex);
-+
-+	if (!ops)
-+		goto out;
-+
-+	if (add) {
-+		ret = rq_qos_switch(q, ops, NULL);
-+		if (!ret && ops->owner)
-+			__module_get(ops->owner);
-+	} else {
-+		rq_qos_switch(q, ops, rqos);
-+		ret = 0;
-+		if (ops->owner)
-+			module_put(ops->owner);
-+	}
-+
-+	if (ops->owner)
-+		module_put(ops->owner);
-+out:
-+	kfree(buf);
-+	return ret ? ret : count;
- }
-diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
-index 3cfbc8668cba..c2b9b41f8fd4 100644
---- a/block/blk-rq-qos.h
-+++ b/block/blk-rq-qos.h
-@@ -26,7 +26,10 @@ struct rq_wait {
- };
- 
- struct rq_qos {
--	struct rq_qos_ops *ops;
-+	refcount_t ref;
-+	wait_queue_head_t waitq;
-+	bool dying;
-+	const struct rq_qos_ops *ops;
- 	struct request_queue *q;
- 	enum rq_qos_id id;
- 	struct rq_qos *next;
-@@ -35,7 +38,17 @@ struct rq_qos {
- #endif
- };
- 
-+enum {
-+	RQOS_FLAG_CGRP_POL = 1 << 0,
-+	RQOS_FLAG_RQ_ALLOC_TIME = 1 << 1
-+};
-+
- struct rq_qos_ops {
-+	struct list_head node;
-+	struct module *owner;
-+	const char *name;
-+	int flags;
-+	int id;
- 	void (*throttle)(struct rq_qos *, struct bio *);
- 	void (*track)(struct rq_qos *, struct request *, struct bio *);
- 	void (*merge)(struct rq_qos *, struct request *, struct bio *);
-@@ -46,6 +59,7 @@ struct rq_qos_ops {
- 	void (*cleanup)(struct rq_qos *, struct bio *);
- 	void (*queue_depth_changed)(struct rq_qos *);
- 	void (*exit)(struct rq_qos *);
-+	int (*init)(struct request_queue *);
- 	const struct blk_mq_debugfs_attr *debugfs_attrs;
- };
- 
-@@ -59,10 +73,12 @@ struct rq_depth {
- 	unsigned int default_depth;
- };
- 
--static inline struct rq_qos *rq_qos_id(struct request_queue *q,
--				       enum rq_qos_id id)
-+static inline struct rq_qos *rq_qos_by_id(struct request_queue *q, int id)
- {
- 	struct rq_qos *rqos;
-+
-+	WARN_ON(!mutex_is_locked(&q->sysfs_lock) && !spin_is_locked(&q->queue_lock));
-+
- 	for (rqos = q->rq_qos; rqos; rqos = rqos->next) {
- 		if (rqos->id == id)
- 			break;
-@@ -72,12 +88,12 @@ static inline struct rq_qos *rq_qos_id(struct request_queue *q,
- 
- static inline struct rq_qos *wbt_rq_qos(struct request_queue *q)
- {
--	return rq_qos_id(q, RQ_QOS_WBT);
-+	return rq_qos_by_id(q, RQ_QOS_WBT);
- }
- 
- static inline struct rq_qos *blkcg_rq_qos(struct request_queue *q)
- {
--	return rq_qos_id(q, RQ_QOS_LATENCY);
-+	return rq_qos_by_id(q, RQ_QOS_LATENCY);
- }
- 
- static inline void rq_wait_init(struct rq_wait *rq_wait)
-@@ -132,6 +148,35 @@ static inline void rq_qos_del(struct request_queue *q, struct rq_qos *rqos)
- 	blk_mq_debugfs_unregister_rqos(rqos);
- }
- 
-+int rq_qos_register(struct rq_qos_ops *ops);
-+void rq_qos_unregister(struct rq_qos_ops *ops);
-+void rq_qos_activate(struct request_queue *q,
-+		struct rq_qos *rqos, const struct rq_qos_ops *ops);
-+void rq_qos_deactivate(struct rq_qos *rqos);
-+ssize_t queue_qos_show(struct request_queue *q, char *buf);
-+ssize_t queue_qos_store(struct request_queue *q, const char *page,
-+			  size_t count);
-+struct rq_qos *rq_qos_get(struct request_queue *q, int id);
-+void rq_qos_put(struct rq_qos *rqos);
-+
-+static inline struct rq_qos *rq_qos_by_name(struct request_queue *q,
-+		const char *name)
-+{
-+	struct rq_qos *rqos;
-+
-+	WARN_ON(!mutex_is_locked(&q->sysfs_lock));
-+
-+	for (rqos = q->rq_qos; rqos; rqos = rqos->next) {
-+		if (!rqos->ops->name)
-+			continue;
-+
-+		if (!strncmp(rqos->ops->name, name,
-+					strlen(rqos->ops->name)))
-+			return rqos;
-+	}
-+	return NULL;
-+}
-+
- typedef bool (acquire_inflight_cb_t)(struct rq_wait *rqw, void *private_data);
- typedef void (cleanup_cb_t)(struct rq_wait *rqw, void *private_data);
- 
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index cd75b0f73dc6..91f980985b1b 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -573,6 +573,7 @@ QUEUE_RO_ENTRY(queue_max_segments, "max_segments");
- QUEUE_RO_ENTRY(queue_max_integrity_segments, "max_integrity_segments");
- QUEUE_RO_ENTRY(queue_max_segment_size, "max_segment_size");
- QUEUE_RW_ENTRY(elv_iosched, "scheduler");
-+QUEUE_RW_ENTRY(queue_qos, "qos");
- 
- QUEUE_RO_ENTRY(queue_logical_block_size, "logical_block_size");
- QUEUE_RO_ENTRY(queue_physical_block_size, "physical_block_size");
-@@ -632,6 +633,7 @@ static struct attribute *queue_attrs[] = {
- 	&queue_max_integrity_segments_entry.attr,
- 	&queue_max_segment_size_entry.attr,
- 	&elv_iosched_entry.attr,
-+	&queue_qos_entry.attr,
- 	&queue_hw_sector_size_entry.attr,
- 	&queue_logical_block_size_entry.attr,
- 	&queue_physical_block_size_entry.attr,
-diff --git a/block/blk-wbt.c b/block/blk-wbt.c
-index 0c119be0e813..88265ae4fa41 100644
---- a/block/blk-wbt.c
-+++ b/block/blk-wbt.c
-@@ -628,9 +628,13 @@ static void wbt_requeue(struct rq_qos *rqos, struct request *rq)
- 
- void wbt_set_write_cache(struct request_queue *q, bool write_cache_on)
- {
--	struct rq_qos *rqos = wbt_rq_qos(q);
-+	struct rq_qos *rqos;
-+
-+	spin_lock_irq(&q->queue_lock);
-+	rqos = wbt_rq_qos(q);
- 	if (rqos)
- 		RQWB(rqos)->wc = write_cache_on;
-+	spin_unlock_irq(&q->queue_lock);
- }
- 
- /*
-diff --git a/block/elevator.c b/block/elevator.c
-index 19a78d5516ba..fe664674c14d 100644
---- a/block/elevator.c
-+++ b/block/elevator.c
-@@ -701,12 +701,15 @@ void elevator_init_mq(struct request_queue *q)
- 	 * requests, then no need to quiesce queue which may add long boot
- 	 * latency, especially when lots of disks are involved.
- 	 */
-+
-+	mutex_lock(&q->sysfs_lock);
- 	blk_mq_freeze_queue(q);
- 	blk_mq_cancel_work_sync(q);
- 
- 	err = blk_mq_init_sched(q, e);
- 
- 	blk_mq_unfreeze_queue(q);
-+	mutex_unlock(&q->sysfs_lock);
- 
- 	if (err) {
- 		pr_warn("\"%s\" elevator initialization failed, "
-diff --git a/block/genhd.c b/block/genhd.c
-index 30362aeacac4..af2e8ebce46e 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -27,7 +27,6 @@
- #include <linux/badblocks.h>
- 
- #include "blk.h"
--#include "blk-rq-qos.h"
- 
- static struct kobject *block_depr;
- 
-@@ -621,8 +620,6 @@ void del_gendisk(struct gendisk *disk)
- 	device_del(disk_to_dev(disk));
- 
- 	blk_mq_freeze_queue_wait(q);
--
--	rq_qos_exit(q);
- 	blk_sync_queue(q);
- 	blk_flush_integrity();
- 	/*
-diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index bd4370baccca..e7dce2232814 100644
---- a/include/linux/blkdev.h
-+++ b/include/linux/blkdev.h
-@@ -43,6 +43,10 @@ struct blk_crypto_profile;
-  * Defined here to simplify include dependency.
-  */
- #define BLKCG_MAX_POLS		6
-+/*
-+ * Non blk-rq-qos blkcg policies include blk-throttle and bfq
-+ */
-+#define BLKCG_NON_RQOS_POLS		2
- 
- static inline int blk_validate_block_size(unsigned int bsize)
- {
--- 
-2.17.1
+still intrigued what that trailing number means ;-)
 
+>   	BRCMF_FW_ENTRY(BRCM_CC_4356_CHIP_ID, 0xFFFFFFFF, 4356),
+>   	BRCMF_FW_ENTRY(BRCM_CC_43567_CHIP_ID, 0xFFFFFFFF, 43570),
+>   	BRCMF_FW_ENTRY(BRCM_CC_43569_CHIP_ID, 0xFFFFFFFF, 43570),
+
+--0000000000001bb4e705d536bb98
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
+yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
+HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
+Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
+KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
+Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
+dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
+OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
+MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
+BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
+0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
+NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
+FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
+aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
+OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
+UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
+YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
+h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCSdLPZut26JW5wCRyJ
+oK8kf3rEhnJ0QV2xOdkvysAOBTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
+BTEPFw0yMjAxMTAwOTEyMDdaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
+AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
+BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEASN3sbamDxsLdAuhq1ukaWR/A6GAwYt6rav9u
+TTdGdrQiDNW99l9w/fuDKMoUwk9C+oRA/GrDRiXDpGXq0cSE3E4MUu90cEmKI6aOLLLDrkoh2nVT
+zs4TD7m/X/tbJGZU89yDPhHx1VhhAmKG/LXHZ3PlQIgSEvOFC++msrOBsYL/pfzMevTZgjtI0r0W
+sKXFGmE9VRHi6/rOMLXXocC4rMigApjUf75xvwSF1pZTv2F6Lh9bW0aRSwLvuwuBDY54eBK55mTr
+hOJD8h5KxM1d+ay3d7XdoCC58jXx7+6LeV+EbVEegtNmWiGfmuqG1KhDSy7862xE8+6HC+oeXM8c
+aw==
+--0000000000001bb4e705d536bb98--
