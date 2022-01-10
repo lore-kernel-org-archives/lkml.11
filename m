@@ -2,185 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 063DCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 23:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E86C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 23:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245324AbiAJXX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 18:23:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46038 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241114AbiAJXX7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 18:23:59 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9E01C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 15:23:58 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id m6so32124628ybc.9
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 15:23:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2g1hbad4Ezo/DEI6dD8aLA+EdL+7wxXqyuFafbp6z7Q=;
-        b=oM55QpMEWMcvOqaoBxInuJtySCBl6PW7f7mAJVErZF/Edaw25Fs3NnxBEJGutKpThM
-         NaMCG+wYGHuROiIcWOSChJyZdCvgXhoIPl01LYbl3tcfPCyVLadaFRSVb3VoxGMW80D/
-         ZITS7pnXfImw/rEfW1PwvZMzxk43Vw9o6paseMqNBSYkkV0CrHC9eOmg8mdCrZ1ulUQm
-         hDge8Dig10AO1msI2UMUwgnnmnRU1I83ydBHfrFYy7asvInQuDd+xUhLhqYQg4u0W4Vm
-         rScD8sdocOnCM923CAOopu0+gVHJ2fr9/sFxjd/vmInLMWavXstJvLkA7DsctY0vjSxz
-         hKIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2g1hbad4Ezo/DEI6dD8aLA+EdL+7wxXqyuFafbp6z7Q=;
-        b=fDUWXCPduvJ+goYViD8vgbzLCT5ZlVOkDM1EBn7g3pNXiHZXW22owKTfI6fIebG5AK
-         XKnUbxZpBVgVL2AAmHy6cYMRrvt6AVSeHfGcV/zvA2MozN8pE4xay6+J/P13clEzqfQx
-         w492kJmpvIfpa8z41AEbdLmeRDKTp8OCfvaRFI7xgL1nxWwWVykWf9YitDH2dnTBiTw2
-         HwIUxAvv5oI/68douz0NfabmFqqVMXj/wch8Xr9fg2coiXb6UvQGJ6QJgxcvtkd7P/Xp
-         MwdimWyHYMucbImPPzO9ateNmPjofif5rTIjgQbBH2Z1eLMufjX7bNvkV38ulgvsYleA
-         +Bmg==
-X-Gm-Message-State: AOAM531nEGPilcnX9mW0AsgkzAyD9pxM/C8f6zIasDR24O2RQvYfKG+W
-        /pZbVA1tCPZ+xd2TzfthGtSuZt/+yg6FmnZ1g1kYAQ==
-X-Google-Smtp-Source: ABdhPJz5so6Chi1+nIiR5l3idPgrT/QBMsfnjZlAPbMETIEUAr95xu0h9jTnoe2QCZEdnEG9W/LLTv4gt3Ndz+8iVXU=
-X-Received: by 2002:a25:7e83:: with SMTP id z125mr2770391ybc.446.1641857037793;
- Mon, 10 Jan 2022 15:23:57 -0800 (PST)
+        id S1345585AbiAJXZN (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 18:25:13 -0500
+Received: from rere.qmqm.pl ([91.227.64.183]:17684 "EHLO rere.qmqm.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242568AbiAJXZK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 18:25:10 -0500
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JXqg83mb5zTV;
+        Tue, 11 Jan 2022 00:25:08 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1641857108; bh=MB6GYqMnIJqaSehj5vsXun7wNlpiLvI9viu/bUczrIk=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=b40T9LXyVE3lzFcQ/CfAQ9+fbYIYU7KL2fYOmtbj8UAdZ+61jpnsGtMGV2yJDjNwQ
+         vOMMp7UKrhqE+HoB4cVykuqthxCQZj2ujnvyyQpATyucdHVR9123MBSuqPmjwZvAyc
+         zayQ+Wx8OjUSWIgU1iyvUU17VqhDEnywigMP12kfkVHi7MBu2CQUEIypG/aWkVYe5O
+         9g7tIPwWzt1SOI+5VMcvdGqpvjqIviS0yjcI+UqIfzaVC9HySWvZcDUrwHPaBCy3hy
+         7rfhHvzY3dVotIRNhz7COYDPYELB1KjbSH6IzEdiM6SrgcYEAo5TgKikLj7p9GItBt
+         6t69HtOSSu9JQ==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.4 at mail
+Date:   Tue, 11 Jan 2022 00:25:08 +0100
+Message-Id: <21a208d4b72f04a75cc5f4a81e3402dd13fadad7.1641857023.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <87ddcac4c4e017a42e20dbbfcb8343468a0efc12.1641857023.git.mirq-linux@rere.qmqm.pl>
+References: <87ddcac4c4e017a42e20dbbfcb8343468a0efc12.1641857023.git.mirq-linux@rere.qmqm.pl>
+From:   =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
+Subject: [PATCH 2/2] dm integrity: mark workqueues with device they belong to
 MIME-Version: 1.0
-References: <20220104194918.373612-1-rananta@google.com> <20220104194918.373612-2-rananta@google.com>
- <Ydjje8qBOP3zDOZi@google.com>
-In-Reply-To: <Ydjje8qBOP3zDOZi@google.com>
-From:   Raghavendra Rao Ananta <rananta@google.com>
-Date:   Mon, 10 Jan 2022 15:23:46 -0800
-Message-ID: <CAJHc60ziKv6P4ZmpLXrv+s4DrrDtOwuQRAc4bKcrbR3aNAK5mQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 01/11] KVM: Capture VM start
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
-        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
-        linux-arm-kernel@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To:     Alasdair Kergon <agk@redhat.com>, Mike Snitzer <snitzer@redhat.com>
+Cc:     dm-devel@redhat.com, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 5:06 PM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Tue, Jan 04, 2022, Raghavendra Rao Ananta wrote:
-> > Capture the start of the KVM VM, which is basically the
->
-> Please wrap at ~75 chars.
->
-> > start of any vCPU run. This state of the VM is helpful
-> > in the upcoming patches to prevent user-space from
-> > configuring certain VM features after the VM has started
-> > running.
->
-> Please provide context of how the flag will be used.  I glanced at the future
-> patches, and knowing very little about arm, I was unable to glean useful info
-> about exactly who is being prevented from doing what.
->
-> >
-> > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-> > ---
-> >  include/linux/kvm_host.h | 3 +++
-> >  virt/kvm/kvm_main.c      | 9 +++++++++
-> >  2 files changed, 12 insertions(+)
-> >
-> > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> > index c310648cc8f1..d0bd8f7a026c 100644
-> > --- a/include/linux/kvm_host.h
-> > +++ b/include/linux/kvm_host.h
-> > @@ -623,6 +623,7 @@ struct kvm {
-> >       struct notifier_block pm_notifier;
-> >  #endif
-> >       char stats_id[KVM_STATS_NAME_SIZE];
-> > +     bool vm_started;
-> >  };
-> >
-> >  #define kvm_err(fmt, ...) \
-> > @@ -1666,6 +1667,8 @@ static inline bool kvm_check_request(int req, struct kvm_vcpu *vcpu)
-> >       }
-> >  }
-> >
-> > +#define kvm_vm_has_started(kvm) (kvm->vm_started)
->
-> Needs parantheses around (kvm), but why bother with a macro?  This is the same
-> header that defines struct kvm.
->
-No specific reason for creating a macro as such. I can remove it if it
-feels noisy.
-> > +
-> >  extern bool kvm_rebooting;
-> >
-> >  extern unsigned int halt_poll_ns;
-> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> > index 72c4e6b39389..962b91ac2064 100644
-> > --- a/virt/kvm/kvm_main.c
-> > +++ b/virt/kvm/kvm_main.c
-> > @@ -3686,6 +3686,7 @@ static long kvm_vcpu_ioctl(struct file *filp,
-> >       int r;
-> >       struct kvm_fpu *fpu = NULL;
-> >       struct kvm_sregs *kvm_sregs = NULL;
-> > +     struct kvm *kvm = vcpu->kvm;
->
-> If you're going to bother grabbing kvm, replace the instances below that also do
-> vcpu->kvm.
->
-> >
-> >       if (vcpu->kvm->mm != current->mm || vcpu->kvm->vm_dead)
-> >               return -EIO;
-> > @@ -3723,6 +3724,14 @@ static long kvm_vcpu_ioctl(struct file *filp,
-> >                       if (oldpid)
-> >                               synchronize_rcu();
-> >                       put_pid(oldpid);
-> > +
-> > +                     /*
-> > +                      * Since we land here even on the first vCPU run,
-> > +                      * we can mark that the VM has started running.
->
-> Please avoid "we", "us", etc..
->
-> "vm_started" is also ambiguous.  If we end up with a flag, then I would prefer a
-> much more literal name, a la created_vcpus, e.g. ran_vcpus or something.
->
-> > +                      */
-> > +                     mutex_lock(&kvm->lock);
->
-> This adds unnecessary lock contention when running vCPUs.  The naive solution
-> would be:
->                         if (!kvm->vm_started) {
->                                 ...
->                         }
->
-Not sure if I understood the solution..
+Add device name to workqueue names to help debugging CPU usage per
+device mapper target.
 
-> > +                     kvm->vm_started = true;
-> > +                     mutex_unlock(&kvm->lock);
->
-> Lastly, why is this in generic KVM?
->
-The v1 of the series originally had it in the arm specific code.
-However, I was suggested to move it to the generic code since the book
-keeping is not arch specific and could be helpful to others too [1].
+Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
+---
+ drivers/md/dm-integrity.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-Thanks for the review. I'll add your other comments as well.
+diff --git a/drivers/md/dm-integrity.c b/drivers/md/dm-integrity.c
+index 6dc9aebf8487..cd60488938ea 100644
+--- a/drivers/md/dm-integrity.c
++++ b/drivers/md/dm-integrity.c
+@@ -3958,6 +3958,7 @@ static int create_journal(struct dm_integrity_c *ic, char **error)
+  */
+ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ {
++	const char *devname = dm_table_device_name(ti->table);
+ 	struct dm_integrity_c *ic;
+ 	char dummy;
+ 	int r;
+@@ -4200,8 +4201,8 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 		goto bad;
+ 	}
+ 
+-	ic->metadata_wq = alloc_workqueue("dm-integrity-metadata",
+-					  WQ_MEM_RECLAIM, METADATA_WORKQUEUE_MAX_ACTIVE);
++	ic->metadata_wq = alloc_workqueue("dm-integrity-metadata/%s", WQ_MEM_RECLAIM,
++					  METADATA_WORKQUEUE_MAX_ACTIVE, devname);
+ 	if (!ic->metadata_wq) {
+ 		ti->error = "Cannot allocate workqueue";
+ 		r = -ENOMEM;
+@@ -4212,22 +4213,22 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 	 * If this workqueue were percpu, it would cause bio reordering
+ 	 * and reduced performance.
+ 	 */
+-	ic->wait_wq = alloc_ordered_workqueue("dm-integrity-wait", WQ_MEM_RECLAIM);
++	ic->wait_wq = alloc_ordered_workqueue("dm-integrity-wait/%s", WQ_MEM_RECLAIM, devname);
+ 	if (!ic->wait_wq) {
+ 		ti->error = "Cannot allocate workqueue";
+ 		r = -ENOMEM;
+ 		goto bad;
+ 	}
+ 
+-	ic->offload_wq = alloc_workqueue("dm-integrity-offload", WQ_MEM_RECLAIM,
+-					  METADATA_WORKQUEUE_MAX_ACTIVE);
++	ic->offload_wq = alloc_workqueue("dm-integrity-offload/%s", WQ_MEM_RECLAIM,
++					  METADATA_WORKQUEUE_MAX_ACTIVE, devname);
+ 	if (!ic->offload_wq) {
+ 		ti->error = "Cannot allocate workqueue";
+ 		r = -ENOMEM;
+ 		goto bad;
+ 	}
+ 
+-	ic->commit_wq = alloc_workqueue("dm-integrity-commit", WQ_MEM_RECLAIM, 1);
++	ic->commit_wq = alloc_workqueue("dm-integrity-commit/%s", WQ_MEM_RECLAIM, 1, devname);
+ 	if (!ic->commit_wq) {
+ 		ti->error = "Cannot allocate workqueue";
+ 		r = -ENOMEM;
+@@ -4236,7 +4237,7 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 	INIT_WORK(&ic->commit_work, integrity_commit);
+ 
+ 	if (ic->mode == 'J' || ic->mode == 'B') {
+-		ic->writer_wq = alloc_workqueue("dm-integrity-writer", WQ_MEM_RECLAIM, 1);
++		ic->writer_wq = alloc_workqueue("dm-integrity-writer/%s", WQ_MEM_RECLAIM, 1, devname);
+ 		if (!ic->writer_wq) {
+ 			ti->error = "Cannot allocate workqueue";
+ 			r = -ENOMEM;
+@@ -4395,7 +4396,7 @@ static int dm_integrity_ctr(struct dm_target *ti, unsigned argc, char **argv)
+ 	}
+ 
+ 	if (ic->internal_hash) {
+-		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc", WQ_MEM_RECLAIM, 1);
++		ic->recalc_wq = alloc_workqueue("dm-integrity-recalc/%s", WQ_MEM_RECLAIM, 1, devname);
+ 		if (!ic->recalc_wq ) {
+ 			ti->error = "Cannot allocate workqueue";
+ 			r = -ENOMEM;
+-- 
+2.30.2
 
-Regards,
-Raghavendra
-
-[1]: https://lore.kernel.org/kvmarm/YYMKphExkqttn2w0@google.com/
-
-> >               }
-> >               r = kvm_arch_vcpu_ioctl_run(vcpu);
-> >               trace_kvm_userspace_exit(vcpu->run->exit_reason, r);
-> > --
-> > 2.34.1.448.ga2b2bfdf31-goog
-> >
-> > _______________________________________________
-> > kvmarm mailing list
-> > kvmarm@lists.cs.columbia.edu
-> > https://lists.cs.columbia.edu/mailman/listinfo/kvmarm
