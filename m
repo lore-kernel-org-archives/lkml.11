@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7829C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2904FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:34:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240205AbiAJHeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:34:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37136 "EHLO
+        id S240644AbiAJHeR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:34:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38798 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239358AbiAJH3V (ORCPT
+        with ESMTP id S240238AbiAJH3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:29:21 -0500
+        Mon, 10 Jan 2022 02:29:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 13C73611BF;
-        Mon, 10 Jan 2022 07:29:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED01DC36AED;
-        Mon, 10 Jan 2022 07:29:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 607AA611B7;
+        Mon, 10 Jan 2022 07:29:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43978C36AE9;
+        Mon, 10 Jan 2022 07:29:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799760;
-        bh=GzX5Qx6BbH+zpfgKGRJuQDIGxJwTCJ11gUzBsPtfKNI=;
+        s=korg; t=1641799771;
+        bh=C3+AgHOGPU/JduDV9eThrDNKId/d6U1n4jEsZ2VuWJI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7+CPpbniCuMiBsa5L/+TDzzOrvyvJxTmkL1dQVOiQ064UCCB2WFKUa8SzgB9+dXX
-         FM7Za+7MHAGq4z7EJne/R/YDyRJUxozcdED3KrILLvqlTXFETrMWmhlfmrMai9C6Ha
-         Z5BU2xMvHWoRGUEjTLvky6hTQMos1FB/JzhNNY2o=
+        b=bCd6g9REulTuB5NyjytX/3iyEOzjBJK1bYspdDUam1PhNrrkehRyGZaq+R8pvRgfI
+         egkv6Bs/Kej4eEBKqiRzDjpZnYe3v8ZBalOBgp+FWOE9baN2ejI9IY+s3BK07e0giX
+         oybqnISVMClTVk6ICTxtkws63K3a4NEMk6Owhk/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Melki <christian.melki@t2data.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Wadim Egorov <w.egorov@phytec.de>
-Subject: [PATCH 5.4 21/34] net: phy: micrel: set soft_reset callback to genphy_soft_reset for KSZ8081
-Date:   Mon, 10 Jan 2022 08:23:16 +0100
-Message-Id: <20220110071816.360206462@linuxfoundation.org>
+        stable@vger.kernel.org, Yi Zhuang <zhuangyi1@huawei.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 01/43] f2fs: quota: fix potential deadlock
+Date:   Mon, 10 Jan 2022 08:22:58 +0100
+Message-Id: <20220110071817.386947432@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
+References: <20220110071817.337619922@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -47,43 +47,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Melki <christian.melki@t2data.com>
+From: Chao Yu <chao@kernel.org>
 
-commit 764d31cacfe48440745c4bbb55a62ac9471c9f19 upstream.
+commit a5c0042200b28fff3bde6fa128ddeaef97990f8d upstream.
 
-Following a similar reinstate for the KSZ9031.
+As Yi Zhuang reported in bugzilla:
 
-Older kernels would use the genphy_soft_reset if the PHY did not implement
-a .soft_reset.
+https://bugzilla.kernel.org/show_bug.cgi?id=214299
 
-Bluntly removing that default may expose a lot of situations where various
-PHYs/board implementations won't recover on various changes.
-Like with this implementation during a 4.9.x to 5.4.x LTS transition.
-I think it's a good thing to remove unwanted soft resets but wonder if it
-did open a can of worms?
+There is potential deadlock during quota data flush as below:
 
-Atleast this fixes one iMX6 FEC/RMII/8081 combo.
+Thread A:			Thread B:
+f2fs_dquot_acquire
+down_read(&sbi->quota_sem)
+				f2fs_write_checkpoint
+				block_operations
+				f2fs_look_all
+				down_write(&sbi->cp_rwsem)
+f2fs_quota_write
+f2fs_write_begin
+__do_map_lock
+f2fs_lock_op
+down_read(&sbi->cp_rwsem)
+				__need_flush_qutoa
+				down_write(&sbi->quota_sem)
 
-Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
-Signed-off-by: Christian Melki <christian.melki@t2data.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20210224205536.9349-1-christian.melki@t2data.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Wadim Egorov <w.egorov@phytec.de>
+This patch changes block_operations() to use trylock, if it fails,
+it means there is potential quota data updater, in this condition,
+let's flush quota data first and then trylock again to check dirty
+status of quota data.
+
+The side effect is: in heavy race condition (e.g. multi quota data
+upaters vs quota data flusher), it may decrease the probability of
+synchronizing quota data successfully in checkpoint() due to limited
+retry time of quota flush.
+
+Reported-by: Yi Zhuang <zhuangyi1@huawei.com>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/micrel.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/f2fs/checkpoint.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1096,6 +1096,7 @@ static struct phy_driver ksphy_driver[]
- 	.probe		= kszphy_probe,
- 	.config_init	= ksz8081_config_init,
- 	.ack_interrupt	= kszphy_ack_interrupt,
-+	.soft_reset	= genphy_soft_reset,
- 	.config_intr	= kszphy_config_intr,
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
+--- a/fs/f2fs/checkpoint.c
++++ b/fs/f2fs/checkpoint.c
+@@ -1147,7 +1147,8 @@ static bool __need_flush_quota(struct f2
+ 	if (!is_journalled_quota(sbi))
+ 		return false;
+ 
+-	down_write(&sbi->quota_sem);
++	if (!down_write_trylock(&sbi->quota_sem))
++		return true;
+ 	if (is_sbi_flag_set(sbi, SBI_QUOTA_SKIP_FLUSH)) {
+ 		ret = false;
+ 	} else if (is_sbi_flag_set(sbi, SBI_QUOTA_NEED_REPAIR)) {
 
 
