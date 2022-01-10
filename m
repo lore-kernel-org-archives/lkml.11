@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 473AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4269FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239825AbiAJHnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:43:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42278 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239877AbiAJHdz (ORCPT
+        id S241115AbiAJHn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:43:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239605AbiAJHa2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:33:55 -0500
+        Mon, 10 Jan 2022 02:30:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210C9C028BA0;
+        Sun,  9 Jan 2022 23:27:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 579EA60A7C;
-        Mon, 10 Jan 2022 07:33:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C718C36AED;
-        Mon, 10 Jan 2022 07:33:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA660B811E3;
+        Mon, 10 Jan 2022 07:27:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09599C36AED;
+        Mon, 10 Jan 2022 07:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800034;
-        bh=ks0iY5W/D2uOfI02lcMoJnGZiwHirz40hj0r2rGPzEg=;
+        s=korg; t=1641799647;
+        bh=uiMEUjdZimBbJEhSfJ/Lz/p9wha31d+FjQnysRrddXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F5a/Mt+iXgqlu3Lwz9kfuIdGcmTh2jUaRxM1y/6mc2DX9N1EevIPVvqnwXSOrf8Vo
-         4xmvqg3e+Ck4RWKIxBA44BTnBHKoRDa5y3LRinmKq8LvKpIDqEv7HQVVRhKWg0gAzc
-         m5q8aE/9BW21Y8zznu1mi4LSFxKYrEGntblaZvxQ=
+        b=feNq3h9EXfSyzSMCZXWjW/J8sh5Og0/EZYgQoj248Ms9Nj3CzU7CzsZwPrU/NKqrS
+         luaNtQTsXWBQbsD3R2gOa9KknCViJCkAgjxPgw/yCL+s+0+uzbyqHck/rjMjNC7r3f
+         MoY+N8KiSXu1RL6vrZRf+rlK4N3WvySycDk+2aKA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 56/72] usb: mtu3: fix interval value for intr and isoc
-Date:   Mon, 10 Jan 2022 08:23:33 +0100
-Message-Id: <20220110071823.458372636@linuxfoundation.org>
+        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 09/21] ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
+Date:   Mon, 10 Jan 2022 08:23:10 +0100
+Message-Id: <20220110071814.264105239@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
+In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
+References: <20220110071813.967414697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,47 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunfeng Yun <chunfeng.yun@mediatek.com>
+From: David Ahern <dsahern@kernel.org>
 
-[ Upstream commit e3d4621c22f90c33321ae6a6baab60cdb8e5a77c ]
+commit 1ff15a710a862db1101b97810af14aedc835a86a upstream.
 
-Use the Interval value from isoc/intr endpoint descriptor, no need
-minus one. The original code doesn't cause transfer error for
-normal cases, but it may have side effect with respond time of ERDY
-or tPingTimeout.
+Make sure RTA_GATEWAY for IPv6 multipath route has enough bytes to hold
+an IPv6 address.
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Link: https://lore.kernel.org/r/20211218095749.6250-1-chunfeng.yun@mediatek.com
+Fixes: 6b9ea5a64ed5 ("ipv6: fix multipath route replace error recovery")
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Roopa Prabhu <roopa@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/mtu3/mtu3_gadget.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/route.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
-index 0b21da4ee1836..9977600616d7e 100644
---- a/drivers/usb/mtu3/mtu3_gadget.c
-+++ b/drivers/usb/mtu3/mtu3_gadget.c
-@@ -77,7 +77,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
- 		if (usb_endpoint_xfer_int(desc) ||
- 				usb_endpoint_xfer_isoc(desc)) {
- 			interval = desc->bInterval;
--			interval = clamp_val(interval, 1, 16) - 1;
-+			interval = clamp_val(interval, 1, 16);
- 			if (usb_endpoint_xfer_isoc(desc) && comp_desc)
- 				mult = comp_desc->bmAttributes;
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -4606,7 +4606,11 @@ static int ip6_route_multipath_del(struc
+ 
+ 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
+ 			if (nla) {
+-				nla_memcpy(&r_cfg.fc_gateway, nla, 16);
++				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
++							extack);
++				if (err)
++					return err;
++
+ 				r_cfg.fc_flags |= RTF_GATEWAY;
+ 			}
  		}
-@@ -89,7 +89,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
- 		if (usb_endpoint_xfer_isoc(desc) ||
- 				usb_endpoint_xfer_int(desc)) {
- 			interval = desc->bInterval;
--			interval = clamp_val(interval, 1, 16) - 1;
-+			interval = clamp_val(interval, 1, 16);
- 			mult = usb_endpoint_maxp_mult(desc) - 1;
- 		}
- 		break;
--- 
-2.34.1
-
 
 
