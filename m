@@ -2,92 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB636C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8A7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235907AbiAJIGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:06:38 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:44877 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239639AbiAJIER (ORCPT
+        id S239394AbiAJIIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:08:17 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:53744 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230223AbiAJIIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:04:17 -0500
-Received: (Authenticated sender: alex@ghiti.fr)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 6A184240003;
-        Mon, 10 Jan 2022 08:03:50 +0000 (UTC)
-Message-ID: <44e6e00e-0b80-8329-bcc9-820940e02023@ghiti.fr>
-Date:   Mon, 10 Jan 2022 09:03:49 +0100
+        Mon, 10 Jan 2022 03:08:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0CECACE127D;
+        Mon, 10 Jan 2022 08:08:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7B72C36AED;
+        Mon, 10 Jan 2022 08:08:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641802091;
+        bh=PnoU2Zz1OK3gxh6Vjy12PzEUe4rZHQBJaKNe/vb3GSs=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=KdPFkR/3ZvDQlrr/md1l5hrX2u7l7pjgz0YHP4afAFrvdIW+zl/s0sHXHc39NQPEg
+         w+KE7IHSOiYA4uogkQaJxSDuk80k/ZVNdvfoGPQYVdCErJz5ngCTSHjH4LFQWBAnb+
+         afPxNm+y0plBZpHsmPMbOmXNRVVlvDrmiHc1JQEZXFN0owAGEDi++I5Hm2gLfJPMzo
+         8j8USbb9tqYBjKMy4CEQ9D+VCtkn0MhdClDysCMPgtppPnhIWveECDm2KT9DgT9yFc
+         X30pYzA7kxF3cDLgDSCrMrbEoAjR2gxRIqRKzaUk7F5O80mP1Hr389N2/L4deoX23t
+         XNV6vaUY5LjYQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     nathan@kernel.org, johannes.berg@intel.com,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        luciano.coelho@intel.com, netdev@vger.kernel.org
+Subject: Re: [PATCH] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
+References: <20211227191757.2354329-1-nathan@kernel.org>
+        <20220110003326.2745615-1-kuba@kernel.org>
+Date:   Mon, 10 Jan 2022 10:08:06 +0200
+In-Reply-To: <20220110003326.2745615-1-kuba@kernel.org> (Jakub Kicinski's
+        message of "Sun, 9 Jan 2022 16:33:26 -0800")
+Message-ID: <875yqsvwrd.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v3 12/13] riscv: Initialize thread pointer before calling
- C functions
-Content-Language: en-US
-To:     Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Zong Li <zong.li@sifive.com>, Anup Patel <anup@brainfault.org>,
-        Atish Patra <Atish.Patra@rivosinc.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>,
-        Guo Ren <guoren@linux.alibaba.com>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Mayuresh Chitale <mchitale@ventanamicro.com>,
-        panqinglin2020@iscas.ac.cn, linux-doc@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, linux-efi@vger.kernel.org,
-        linux-arch@vger.kernel.org
-References: <20211206104657.433304-1-alexandre.ghiti@canonical.com>
- <20211206104657.433304-13-alexandre.ghiti@canonical.com>
-From:   Alexandre ghiti <alex@ghiti.fr>
-In-Reply-To: <20211206104657.433304-13-alexandre.ghiti@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Palmer,
+Jakub Kicinski <kuba@kernel.org> writes:
 
-I fell onto this issue again today, do you think you could take this 
-patch in for-next? Because I assume it is too late now to take the sv48 
-patchset: if not, I can respin it today or tomorrow.
-
-Thanks,
-
-Alex
-
-On 12/6/21 11:46, Alexandre Ghiti wrote:
-> Because of the stack canary feature that reads from the current task
-> structure the stack canary value, the thread pointer register "tp" must
-> be set before calling any C function from head.S: by chance, setup_vm
-> and all the functions that it calls does not seem to be part of the
-> functions where the canary check is done, but in the following commits,
-> some functions will.
+>> When building ARCH=3Darm allmodconfig:
+>>=20
+>> drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function
+>> =E2=80=98iwl_mvm_ftm_rtt_smoothing=E2=80=99:
+>> ./include/asm-generic/div64.h:222:35: error: comparison of distinct
+>> pointer types lacks a cast [-Werror]
+>>   222 |         (void)(((typeof((n)) *)0) =3D=3D ((uint64_t *)0));  \
+>>       |                                   ^~
+>> drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note:
+>> in expansion of macro =E2=80=98do_div=E2=80=99
+>>  1070 |         do_div(rtt_avg, 100);
+>>       |         ^~~~~~
 >
-> Fixes: f2c9699f65557a31 ("riscv: Add STACKPROTECTOR supported")
-> Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-> ---
->   arch/riscv/kernel/head.S | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/arch/riscv/kernel/head.S b/arch/riscv/kernel/head.S
-> index c3c0ed559770..86f7ee3d210d 100644
-> --- a/arch/riscv/kernel/head.S
-> +++ b/arch/riscv/kernel/head.S
-> @@ -302,6 +302,7 @@ clear_bss_done:
->   	REG_S a0, (a2)
->   
->   	/* Initialize page tables and relocate to virtual addresses */
-> +	la tp, init_task
->   	la sp, init_thread_union + THREAD_SIZE
->   	XIP_FIXUP_OFFSET sp
->   #ifdef CONFIG_BUILTIN_DTB
+> Let me take this one directly to net-next, hope that's okay.
+
+Thanks, please do, I was offline for a longer period and just came back.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
