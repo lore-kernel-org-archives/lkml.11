@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0B6C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD72BC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242406AbiAJHkn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49502 "EHLO
+        id S241536AbiAJHlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:41:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240444AbiAJHai (ORCPT
+        with ESMTP id S240689AbiAJHe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:30:38 -0500
+        Mon, 10 Jan 2022 02:34:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C28C02548B;
-        Sun,  9 Jan 2022 23:28:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F649C0253F3;
+        Sun,  9 Jan 2022 23:29:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 329FF611E4;
-        Mon, 10 Jan 2022 07:28:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19E81C36AE9;
-        Mon, 10 Jan 2022 07:28:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1C19611B8;
+        Mon, 10 Jan 2022 07:29:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97BDDC36AE9;
+        Mon, 10 Jan 2022 07:29:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799698;
-        bh=W1D9UO82cgAo6aiHdohcnepskgBlIB9uzCRajtDZ34M=;
+        s=korg; t=1641799766;
+        bh=T4ILPO1fB42eaV/zg5w/6VGIqmncqSWYw9giVFpEtpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BgzfmhmnkXOsJk7XQx/E3hjh5SMLBuY/g3aNqaOpeE0a6x2sfaKTOZfG03wNURMg7
-         eMdjmM9XfNAMeeepUe8eg4LfGVNa0WDr2nBTOheXXhUlmGvU3wrq8WWSKGms7UwulE
-         IR+ntOCShAKpoHVuSO6KjWQzyp/O1V1FSP+cUN3M=
+        b=IzpW+4B3lfEAQpg6/Q0KXXuWjAvbt3sdqRrVjUcxPFGektBE7ZQsHZ7dBmVenxhD6
+         3z4ncF+AhLnDWV/vf57Z/TuMtN/Rut+nv9as0OH80Scy93XmaWW9ySZ7wNuoT08d+z
+         qQj39I8otaEAWrbPlex7qvuy/3C+Jw5JBtT/5J+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Potapenko <glider@google.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>
-Subject: [PATCH 5.4 06/34] ieee802154: atusb: fix uninit value in atusb_set_extended_addr
-Date:   Mon, 10 Jan 2022 08:23:01 +0100
-Message-Id: <20220110071815.866447868@linuxfoundation.org>
+        stable@vger.kernel.org, Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH 5.4 23/34] power: supply: core: Break capacity loop
+Date:   Mon, 10 Jan 2022 08:23:18 +0100
+Message-Id: <20220110071816.436348315@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
 References: <20220110071815.647309738@linuxfoundation.org>
@@ -50,65 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 754e4382354f7908923a1949d8dc8d05f82f09cb upstream.
+commit 51c7b6a0398f54b9120795796a4cff4fc9634f7d upstream.
 
-Alexander reported a use of uninitialized value in
-atusb_set_extended_addr(), that is caused by reading 0 bytes via
-usb_control_msg().
+We should not go on looking for more capacity tables after
+we realize we have looked at the last one in
+power_supply_find_ocv2cap_table().
 
-Fix it by validating if the number of bytes transferred is actually
-correct, since usb_control_msg() may read less bytes, than was requested
-by caller.
-
-Fail log:
-
-BUG: KASAN: uninit-cmp in ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
-BUG: KASAN: uninit-cmp in atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
-BUG: KASAN: uninit-cmp in atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
-Uninit value used in comparison: 311daa649a2003bd stack handle: 000000009a2003bd
- ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
- atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
- atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
- usb_probe_interface+0x314/0x7f0 drivers/usb/core/driver.c:396
-
-Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
-Reported-by: Alexander Potapenko <glider@google.com>
-Acked-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Link: https://lore.kernel.org/r/20220104182806.7188-1-paskripkin@gmail.com
-Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Fixes: 3afb50d7125b ("power: supply: core: Add some helpers to use the battery OCV capacity table")
+Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ieee802154/atusb.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/power/supply/power_supply_core.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/net/ieee802154/atusb.c
-+++ b/drivers/net/ieee802154/atusb.c
-@@ -93,7 +93,9 @@ static int atusb_control_msg(struct atus
+--- a/drivers/power/supply/power_supply_core.c
++++ b/drivers/power/supply/power_supply_core.c
+@@ -742,6 +742,10 @@ power_supply_find_ocv2cap_table(struct p
+ 		return NULL;
  
- 	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
- 			      value, index, data, size, timeout);
--	if (ret < 0) {
-+	if (ret < size) {
-+		ret = ret < 0 ? ret : -ENODATA;
+ 	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
++		/* Out of capacity tables */
++		if (!info->ocv_table[i])
++			break;
 +
- 		atusb->err = ret;
- 		dev_err(&usb_dev->dev,
- 			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
-@@ -861,9 +863,9 @@ static int atusb_get_and_show_build(stru
- 	if (!build)
- 		return -ENOMEM;
+ 		temp_diff = abs(info->ocv_temp[i] - temp);
  
--	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
--				ATUSB_BUILD, ATUSB_REQ_FROM_DEV, 0, 0,
--				build, ATUSB_BUILD_SIZE, 1000);
-+	/* We cannot call atusb_control_msg() here, since this request may read various length data */
-+	ret = usb_control_msg(atusb->usb_dev, usb_rcvctrlpipe(usb_dev, 0), ATUSB_BUILD,
-+			      ATUSB_REQ_FROM_DEV, 0, 0, build, ATUSB_BUILD_SIZE, 1000);
- 	if (ret >= 0) {
- 		build[ret] = 0;
- 		dev_info(&usb_dev->dev, "Firmware: build %s\n", build);
+ 		if (temp_diff < best_temp_diff) {
 
 
