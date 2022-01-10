@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C14AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59144C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240198AbiAJHhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:37:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240243AbiAJHaa (ORCPT
+        id S241118AbiAJHhR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:37:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39592 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240414AbiAJHae (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:30:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D383C0258C7;
-        Sun,  9 Jan 2022 23:27:58 -0800 (PST)
+        Mon, 10 Jan 2022 02:30:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48A53B81208;
-        Mon, 10 Jan 2022 07:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB73C36AED;
-        Mon, 10 Jan 2022 07:27:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61D3F611C4;
+        Mon, 10 Jan 2022 07:30:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49B24C36AE9;
+        Mon, 10 Jan 2022 07:30:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799676;
-        bh=4kDfAj20Zo9hGT42g+YkMgq6vh22o5XuKgrXlcf2I8M=;
+        s=korg; t=1641799833;
+        bh=o+k6N9U2JrIm38Mm1wYeA64g57JqPN9hKHTLzztN/EA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uP1iFwXoAlaF9yFE21jGXrP6llTbtFQWvJw3aFgtY3R1ONf5jm2G5eQdveozCBYp8
-         G37Spt0k/2uyQLLCH2/B7E1RnqijqgJX3rDkQHiIOmHT0wNyIGUaghqnuK5yhyi6YM
-         Z4AxbJU6sBU5a+ZIckwgqBIcDs7lt/SMxXxq0Fig=
+        b=tNKXHhi4NQDqP2OtrsbfAcGTOwg8O1E2f01iXN/HKL1hkhgQFT5dVm/RgSKovuCnI
+         rL2+RDoCC3TX+Hzpt8YDJ+1+/td9XTEG6vSLhCO+vYhPcE5l7j5xmpPdzWVO60Gn4x
+         1stmTd7UR3Hq3mOzvPbz2KHVnQU5+050Rm82PEGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.4 10/34] mac80211: initialize variable have_higher_than_11mbit
-Date:   Mon, 10 Jan 2022 08:23:05 +0100
-Message-Id: <20220110071815.998641859@linuxfoundation.org>
+        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH 5.10 31/43] power: bq25890: Enable continuous conversion for ADC at charging
+Date:   Mon, 10 Jan 2022 08:23:28 +0100
+Message-Id: <20220110071818.393356915@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
+References: <20220110071817.337619922@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +46,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Yauhen Kharuzhy <jekhor@gmail.com>
 
-commit 68a18ad71378a56858141c4449e02a30c829763e upstream.
+commit 80211be1b9dec04cc2805d3d81e2091ecac289a1 upstream.
 
-Clang static analysis reports this warnings
+Instead of one shot run of ADC at beginning of charging, run continuous
+conversion to ensure that all charging-related values are monitored
+properly (input voltage, input current, themperature etc.).
 
-mlme.c:5332:7: warning: Branch condition evaluates to a
-  garbage value
-    have_higher_than_11mbit)
-    ^~~~~~~~~~~~~~~~~~~~~~~
-
-have_higher_than_11mbit is only set to true some of the time in
-ieee80211_get_rates() but is checked all of the time.  So
-have_higher_than_11mbit needs to be initialized to false.
-
-Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20211223162848.3243702-1-trix@redhat.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Yauhen Kharuzhy <jekhor@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/mlme.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/power/supply/bq25890_charger.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -4953,7 +4953,7 @@ static int ieee80211_prep_connection(str
- 	 */
- 	if (new_sta) {
- 		u32 rates = 0, basic_rates = 0;
--		bool have_higher_than_11mbit;
-+		bool have_higher_than_11mbit = false;
- 		int min_rate = INT_MAX, min_rate_index = -1;
- 		const struct cfg80211_bss_ies *ies;
- 		int shift = ieee80211_vif_get_shift(&sdata->vif);
+--- a/drivers/power/supply/bq25890_charger.c
++++ b/drivers/power/supply/bq25890_charger.c
+@@ -581,12 +581,12 @@ static irqreturn_t __bq25890_handle_irq(
+ 
+ 	if (!new_state.online && bq->state.online) {	    /* power removed */
+ 		/* disable ADC */
+-		ret = bq25890_field_write(bq, F_CONV_START, 0);
++		ret = bq25890_field_write(bq, F_CONV_RATE, 0);
+ 		if (ret < 0)
+ 			goto error;
+ 	} else if (new_state.online && !bq->state.online) { /* power inserted */
+ 		/* enable ADC, to have control of charge current/voltage */
+-		ret = bq25890_field_write(bq, F_CONV_START, 1);
++		ret = bq25890_field_write(bq, F_CONV_RATE, 1);
+ 		if (ret < 0)
+ 			goto error;
+ 	}
 
 
