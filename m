@@ -2,92 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3407C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C74EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343852AbiAJVRi (ORCPT
+        id S1343821AbiAJVS0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 16:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240441AbiAJVRe (ORCPT
+        Mon, 10 Jan 2022 16:18:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:39531 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240782AbiAJVSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 16:17:34 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 798E8C06173F;
-        Mon, 10 Jan 2022 13:17:34 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id u8so19526389iol.5;
-        Mon, 10 Jan 2022 13:17:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=ddWPPw1otLBJON27NC68A271p9JwkTcpr/kcKwb5ceI=;
-        b=Pg9yrUyN0vOD6zAT86sKUKI+M6cSxQHTW6fF/3VHJXY2s3aWtxy/BegHyx2q0KERR7
-         a/wngwJlN/Q5G2E+ilO/wGJ1SuEviLXr40CmIOL1HROP4rMLqmtB+Pv2ce0j49i7DMCA
-         NnFOMclwwzr5kQkMz1zJFGxvOVdDQj9EKDPT5Nn/dfyALHAtf9sYjXUAEXrBcDfNRYR7
-         TrwwpPC4r7irSH2F2MW1NNWAGz82lNLl1W2G8MaDtl++dgReN5Z1Km1JRax8Ce4xCvw7
-         VzZOLoCYh/5LfHCYPSIUK7TfOdxvpMxTZNl5SGD0BSj7R+pKKVn1hQQj6XF0j/tgz6BL
-         TJTQ==
+        Mon, 10 Jan 2022 16:18:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641849504;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=J7MFVrWactFRO7z0/cZSEHpYBpO1gPnzHzw94L6Uy2o=;
+        b=ZGhQo9T1q4wvK/Yb/NcKpF5KBWkU5nWGtTCV6PDHvmnQiB7zVOBO3jIgZOADsak2Lev8Os
+        BBmp46rs9EMSIzb61X3idoIb2BO0TEDVk9ZeD9FCyNPoRnmBokP7bZKH1KfsW4iD5tXEST
+        VbHltvmn3V8VRZzBRs+05s0GtXprcd4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-600-_bL8xbEPORSUDej6fPru0w-1; Mon, 10 Jan 2022 16:18:22 -0500
+X-MC-Unique: _bL8xbEPORSUDej6fPru0w-1
+Received: by mail-wm1-f69.google.com with SMTP id v23-20020a05600c215700b0034566adb612so2668430wml.0
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 13:18:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:in-reply-to:subject:to:cc
-         :content-transfer-encoding;
-        bh=ddWPPw1otLBJON27NC68A271p9JwkTcpr/kcKwb5ceI=;
-        b=4c1FDdS+xgHVdHGzPQMX+tDBdsTVMBuJz0ZzRgHYmFBwyckUWg7mb9g1XJlgKnPpz1
-         uKhDKO9X7th+fmIRGNyHhgywacu6iwBD5gLYi2JAY0jGFT1GaM9A7N6kr6SS6lkkSDqs
-         Rm3RSAo8A5VQVq6+cRUVEyxQqo1A+JVBc7GTFBidBqmRUfexv5RYGRkpN2hT7Z8XZrsY
-         G1E0eFY39LPTGXosrukyd9QT7WjCtmD69m4I27lV8zXV2TBnMT9AGcRDDLnaYI6b7QZd
-         1u04qKgKLoR6mesIfcJ3VlhdISc4hSNK8D7jP4i2GCtWP6MjEs6vsNhi6z/X0OAXEEGT
-         A3zg==
-X-Gm-Message-State: AOAM533w3ZM1eOAosxL4gbEYjKCCTq6y96+dW8633uZpYI9G0GtKhQb8
-        qP8QWX2eWBfpOdU1jrfmsIREhY1BfTXTcAcPoVo=
-X-Google-Smtp-Source: ABdhPJwfj9E7i+Lifw/WgBUJoxMQpmeiPXqoliocW2fdRGaWxO8QITudA3TV7qw5zAHzr8QB4sk0yQ==
-X-Received: by 2002:a05:6638:72e:: with SMTP id j14mr919096jad.246.1641849453123;
-        Mon, 10 Jan 2022 13:17:33 -0800 (PST)
-Received: from cl-arch-kdev (cl-arch-kdev.xen.prgmr.com. [2605:2700:0:2:a800:ff:fed6:fc0d])
-        by smtp.gmail.com with ESMTPSA id q11sm4738022ilu.57.2022.01.10.13.17.31
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J7MFVrWactFRO7z0/cZSEHpYBpO1gPnzHzw94L6Uy2o=;
+        b=P6/Q22tzzB8ohevIIADpJuVwwBamAkk5pKo0h0vKBnA0NEIVdwoelGmi0QbZS4bfkI
+         ieb6raJrGyBwBtUL3tghjBpUmmy1dsVYknAgKAWv2M2So/yOueQ1UQNU8DCyb8sv+k7M
+         R7AsZw+XJQFuosc9dpc0Y475BttSqTU3RMP0I7l0gbWkVg6OG6qOTuMRjwYwCXI4pegg
+         HzL4t1c7zbqkamLmtU/DiBtDxKxpxss5HDAP/FYJRUmtxShwEJIWDKolqCzjHg4CkIDc
+         kuFeHa7KucFRC1zhXXMjPBA1fRFHA90L4xj3AS+C5mW/EJzQMPQyWZdnaWQuUteK59t/
+         9ZSQ==
+X-Gm-Message-State: AOAM531V1TaGCt9iubgzEmAf04ce7rdiDSNMY0sviedb322/Rt5oKzL6
+        +EUnPzVjoZbml0V9tqBNeRKPdNVF7jen2o4u9SyooxICnQfOd7p5cMmSUTgPIwCpcmPJ+ZIiu8K
+        JDEeJmB1Eyr2D9+REjkc2+NOR
+X-Received: by 2002:a7b:c317:: with SMTP id k23mr1142918wmj.20.1641849501735;
+        Mon, 10 Jan 2022 13:18:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx4+5EBjQikMR8M8iojk8l1dbfm807K8FOeByHDC7B5RVRGcumm5hzWJ1VCl1kaJhrRPxTf+g==
+X-Received: by 2002:a7b:c317:: with SMTP id k23mr1142908wmj.20.1641849501546;
+        Mon, 10 Jan 2022 13:18:21 -0800 (PST)
+Received: from redhat.com ([2.55.19.241])
+        by smtp.gmail.com with ESMTPSA id g84sm12999wme.7.2022.01.10.13.18.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 13:17:32 -0800 (PST)
-Message-ID: <61dca26c.1c69fb81.47d8f.4cfe@mx.google.com>
-Date:   Mon, 10 Jan 2022 13:17:32 -0800 (PST)
-X-Google-Original-Date: Mon, 10 Jan 2022 21:17:31 GMT
-From:   Fox Chen <foxhlchen@gmail.com>
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-Subject: RE: [PATCH 5.15 00/72] 5.15.14-rc1 review
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org,
-        Fox Chen <foxhlchen@gmail.com>
-Content-Transfer-Encoding: 7bit
+        Mon, 10 Jan 2022 13:18:21 -0800 (PST)
+Date:   Mon, 10 Jan 2022 16:18:17 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Kechen Lu <kechenl@nvidia.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, seanjc@google.com,
+        wanpengli@tencent.com, vkuznets@redhat.com, somduttar@nvidia.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 0/3] KVM: x86: add per-vCPU exits disable
+ capability
+Message-ID: <20220110161344-mutt-send-email-mst@kernel.org>
+References: <20211221090449.15337-1-kechenl@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211221090449.15337-1-kechenl@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 08:22:37 +0100, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> This is the start of the stable review cycle for the 5.15.14 release.
-> There are 72 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Tue, Dec 21, 2021 at 01:04:46AM -0800, Kechen Lu wrote:
+> Summary
+> ===========
+> Introduce support of vCPU-scoped ioctl with KVM_CAP_X86_DISABLE_EXITS
+> cap for disabling exits to enable finer-grained VM exits disabling
+> on per vCPU scales instead of whole guest. This patch series enabled
+> the vCPU-scoped exits control on HLT VM-exits.
 > 
-> Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
-> Anything received after that time might be too late.
+> Motivation
+> ============
+> In use cases like Windows guest running heavy CPU-bound
+> workloads, disabling HLT VM-exits could mitigate host sched ctx switch
+> overhead. Simply HLT disabling on all vCPUs could bring
+> performance benefits, but if no pCPUs reserved for host threads, could
+> happened to the forced preemption as host does not know the time to do
+> the schedule for other host threads want to run. With this patch, we
+> could only disable part of vCPUs HLT exits for one guest, this still
+> keeps performance benefits, and also shows resiliency to host stressing
+> workload running at the same time.
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.14-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
+> Performance and Testing
+> =========================
+> In the host stressing workload experiment with Windows guest heavy
+> CPU-bound workloads, it shows good resiliency and having the ~3%
+> performance improvement. E.g. Passmark running in a Windows guest
+> with this patch disabling HLT exits on only half of vCPUs still
+> showing 2.4% higher main score v/s baseline.
 > 
-> thanks,
+> Tested everything on AMD machines.
 > 
-> greg k-h
 > 
+> v1->v2 (Sean Christopherson) :
+> - Add explicit restriction for VM-scoped exits disabling to be called
+>   before vCPUs creation (patch 1)
+> - Use vCPU ioctl instead of 64bit vCPU bitmask (patch 3), and make exits
+>   disable flags check purely for vCPU instead of VM (patch 2)
 
-5.15.14-rc1 Successfully Compiled and booted on my Raspberry PI 4b (8g) (bcm2711)
-                
-Tested-by: Fox Chen <foxhlchen@gmail.com>
+This is still quite blunt and assumes a ton of configuration on the host
+exactly matching the workload within guest. Which seems a waste since
+guests actually have the smarts to know what's happening within them.
+
+If you are going to allow guest to halt a vCPU, how about
+working on exposing mwait to guest cleanly instead?
+The idea is to expose this in ACPI - linux guests
+ignore ACPI and go by CPUID but windows guests follow
+ACPI. Linux can be patched ;)
+
+What we would have is a mirror of host ACPI states,
+such that lower states invoke HLT and exit, higher
+power states invoke mwait and wait within guest.
+
+The nice thing with this approach is that it's already supported
+by the host kernel, so it's just a question of coding up ACPI.
+
+
+
+> 
+> Best Regards,
+> Kechen
+> 
+> Kechen Lu (3):
+>   KVM: x86: only allow exits disable before vCPUs created
+>   KVM: x86: move ()_in_guest checking to vCPU scope
+>   KVM: x86: add vCPU ioctl for HLT exits disable capability
+> 
+>  Documentation/virt/kvm/api.rst     |  4 +++-
+>  arch/x86/include/asm/kvm-x86-ops.h |  1 +
+>  arch/x86/include/asm/kvm_host.h    |  7 +++++++
+>  arch/x86/kvm/cpuid.c               |  2 +-
+>  arch/x86/kvm/lapic.c               |  2 +-
+>  arch/x86/kvm/svm/svm.c             | 20 +++++++++++++++-----
+>  arch/x86/kvm/vmx/vmx.c             | 26 ++++++++++++++++++--------
+>  arch/x86/kvm/x86.c                 | 24 +++++++++++++++++++++++-
+>  arch/x86/kvm/x86.h                 | 16 ++++++++--------
+>  9 files changed, 77 insertions(+), 25 deletions(-)
+> 
+> -- 
+> 2.30.2
 
