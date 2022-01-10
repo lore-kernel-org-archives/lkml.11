@@ -2,72 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C74C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D96C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244249AbiAJU6N convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 15:58:13 -0500
-Received: from lithops.sigma-star.at ([195.201.40.130]:35978 "EHLO
-        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239741AbiAJU6M (ORCPT
+        id S244179AbiAJU5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 15:57:15 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:54097 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239741AbiAJU4g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 15:58:12 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 5C65062DA5FB;
-        Mon, 10 Jan 2022 21:58:10 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id RAHJdIL0P3bg; Mon, 10 Jan 2022 21:58:10 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id E388762DA5E9;
-        Mon, 10 Jan 2022 21:58:09 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id jyuw6j3iyUF7; Mon, 10 Jan 2022 21:58:09 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 7B3FA60CEF32;
-        Mon, 10 Jan 2022 21:58:09 +0100 (CET)
-Date:   Mon, 10 Jan 2022 21:58:09 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     chengzhihao1 <chengzhihao1@huawei.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        mcoquelin stm32 <mcoquelin.stm32@gmail.com>,
-        kirill shutemov <kirill.shutemov@linux.intel.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <1600520564.248110.1641848289201.JavaMail.zimbra@nod.at>
-In-Reply-To: <1422943582.246718.1641809643674.JavaMail.zimbra@nod.at>
-References: <20211227032246.2886878-1-chengzhihao1@huawei.com> <20211227032246.2886878-6-chengzhihao1@huawei.com> <1985807262.244880.1641762859448.JavaMail.zimbra@nod.at> <0477fadd-dfb5-c581-ee6a-ed6df9a966a3@huawei.com> <1422943582.246718.1641809643674.JavaMail.zimbra@nod.at>
-Subject: Re: [PATCH v6 05/15] ubifs: Rename whiteout atomically
+        Mon, 10 Jan 2022 15:56:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641848196; x=1673384196;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=PNe/ZkXCyHn05bXZCvWif2yeT0UmYXKMtrW5K01oJ38=;
+  b=blx29ziDArJ4f+xWz0IpsE5pybAhJzYdknWO6U5CuiR8e++DQP+cKstF
+   I0JVq4+wSw0cKgymm1QbmtQwmbcxEQM937PP8YdnqxpAkCCcMtXfjGPn0
+   kesgHNbBYGjTSdzt0kPOi+BrxKLmesvHCVmPAdqdqSfVM68GhQC/M2ktR
+   U=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 Jan 2022 12:56:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 12:56:35 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 10 Jan 2022 12:56:35 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 10 Jan 2022 12:56:34 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <khsieh@codeaurora.org>, <quic_abhinavk@quicinc.com>,
+        <aravindh@codeaurora.org>, <quic_khsieh@quicinc.com>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v10 4/5] drm/msm/dp: add support of tps4 (training pattern 4) for HBR3
+Date:   Mon, 10 Jan 2022 12:55:43 -0800
+Message-ID: <1641848144-25147-5-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1641848144-25147-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1641848144-25147-1-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF95 (Linux)/8.8.12_GA_3809)
-Thread-Topic: ubifs: Rename whiteout atomically
-Thread-Index: Of79WMESjxJ46JfpBVi92+tw9bYfxnfO/hPX
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ Ursprüngliche Mail -----
->> The whiteout inode is clean after creation from create_whiteout(), and
->> it can't be marked dirty until ubifs_jnl_rename() finished. So, I think
->> there is no chance for whiteout being written on disk. Then,
->> 'ubifs_assert(c, !whiteout_ui->dirty)' never fails in ubifs_jnl_rename()
->> during my local stress tests. You may add some delay executions after
->> whiteout creation to make sure that whiteout won't be written back
->> before ubifs_jnl_rename().
-> 
-> From UBIFS point of view I fully agree with you. I'm just a little puzzled why
-> other filesystems use the tmpfile approach. My fear is that VFS can do things
-> to the inode we don't have in mind right now.
+From: Kuogee Hsieh <khsieh@codeaurora.org>
 
-After digging a bit into XFS I'm sure your approach is okay.
-So, UBIFS can do a whiteout without help of tmpfiles. :-)
+Some DP sinkers prefer to use tps4 instead of tps3 during training #2.
+This patch will use tps4 to perform link training #2 if sinker's DPCD
+supports it.
 
-Thanks,
-//richard
+Changes in V2:
+-- replace  dp_catalog_ctrl_set_pattern() with  dp_catalog_ctrl_set_pattern_state_bit()
+
+Changes in V3:
+-- change state_ctrl_bits type to u32 and pattern type to u8
+
+Changes in V4:
+-- align } else if { and } else {
+
+Changes in v10:
+--  group into one series
+
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/gpu/drm/msm/dp/dp_catalog.c | 12 ++++++------
+ drivers/gpu/drm/msm/dp/dp_catalog.h |  2 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 17 ++++++++++++-----
+ 3 files changed, 19 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+index 6ae9b29..64f0b26 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.c
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+@@ -456,19 +456,19 @@ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog,
+ 	dp_write_p0(catalog, MMSS_DP_DSC_DTO, 0x0);
+ }
+ 
+-int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog,
+-					u32 pattern)
++int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog,
++					u32 state_bit)
+ {
+ 	int bit, ret;
+ 	u32 data;
+ 	struct dp_catalog_private *catalog = container_of(dp_catalog,
+ 				struct dp_catalog_private, dp_catalog);
+ 
+-	bit = BIT(pattern - 1);
+-	DRM_DEBUG_DP("hw: bit=%d train=%d\n", bit, pattern);
++	bit = BIT(state_bit - 1);
++	DRM_DEBUG_DP("hw: bit=%d train=%d\n", bit, state_bit);
+ 	dp_catalog_ctrl_state_ctrl(dp_catalog, bit);
+ 
+-	bit = BIT(pattern - 1) << DP_MAINLINK_READY_LINK_TRAINING_SHIFT;
++	bit = BIT(state_bit - 1) << DP_MAINLINK_READY_LINK_TRAINING_SHIFT;
+ 
+ 	/* Poll for mainlink ready status */
+ 	ret = readx_poll_timeout(readl, catalog->io->dp_controller.link.base +
+@@ -476,7 +476,7 @@ int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog,
+ 					data, data & bit,
+ 					POLLING_SLEEP_US, POLLING_TIMEOUT_US);
+ 	if (ret < 0) {
+-		DRM_ERROR("set pattern for link_train=%d failed\n", pattern);
++		DRM_ERROR("set state_bit for link_train=%d failed\n", state_bit);
+ 		return ret;
+ 	}
+ 	return 0;
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.h b/drivers/gpu/drm/msm/dp/dp_catalog.h
+index 6965afa..7dea101 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.h
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.h
+@@ -94,7 +94,7 @@ void dp_catalog_ctrl_mainlink_ctrl(struct dp_catalog *dp_catalog, bool enable);
+ void dp_catalog_ctrl_config_misc(struct dp_catalog *dp_catalog, u32 cc, u32 tb);
+ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog, u32 rate,
+ 				u32 stream_rate_khz, bool fixed_nvid);
+-int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog, u32 pattern);
++int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog, u32 pattern);
+ void dp_catalog_ctrl_reset(struct dp_catalog *dp_catalog);
+ bool dp_catalog_ctrl_mainlink_ready(struct dp_catalog *dp_catalog);
+ void dp_catalog_ctrl_enable_irq(struct dp_catalog *dp_catalog, bool enable);
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 9c80b49..f98df93 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1083,7 +1083,7 @@ static int dp_ctrl_link_train_1(struct dp_ctrl_private *ctrl,
+ 
+ 	*training_step = DP_TRAINING_1;
+ 
+-	ret = dp_catalog_ctrl_set_pattern(ctrl->catalog, DP_TRAINING_PATTERN_1);
++	ret = dp_catalog_ctrl_set_pattern_state_bit(ctrl->catalog, 1);
+ 	if (ret)
+ 		return ret;
+ 	dp_ctrl_train_pattern_set(ctrl, DP_TRAINING_PATTERN_1 |
+@@ -1181,7 +1181,8 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
+ 			int *training_step)
+ {
+ 	int tries = 0, ret = 0;
+-	char pattern;
++	u8 pattern;
++	u32 state_ctrl_bit;
+ 	int const maximum_retries = 5;
+ 	u8 link_status[DP_LINK_STATUS_SIZE];
+ 
+@@ -1189,12 +1190,18 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
+ 
+ 	*training_step = DP_TRAINING_2;
+ 
+-	if (drm_dp_tps3_supported(ctrl->panel->dpcd))
++	if (drm_dp_tps4_supported(ctrl->panel->dpcd)) {
++		pattern = DP_TRAINING_PATTERN_4;
++		state_ctrl_bit = 4;
++	} else if (drm_dp_tps3_supported(ctrl->panel->dpcd)) {
+ 		pattern = DP_TRAINING_PATTERN_3;
+-	else
++		state_ctrl_bit = 3;
++	} else {
+ 		pattern = DP_TRAINING_PATTERN_2;
++		state_ctrl_bit = 2;
++	}
+ 
+-	ret = dp_catalog_ctrl_set_pattern(ctrl->catalog, pattern);
++	ret = dp_catalog_ctrl_set_pattern_state_bit(ctrl->catalog, state_ctrl_bit);
+ 	if (ret)
+ 		return ret;
+ 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
