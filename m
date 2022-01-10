@@ -2,70 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D89BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:36:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243023AbiAJJfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:35:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242952AbiAJJfp (ORCPT
+        id S243082AbiAJJgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:36:21 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:6280 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243047AbiAJJfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:35:45 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AF3C06173F;
-        Mon, 10 Jan 2022 01:35:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2CtmUxcCtEyOdOBPgTgblAoLGc/cFCShnekvqCa4NQU=; b=h0Yt1EimuRnubNI8A1wTQTX++N
-        xGXaflDpMJvBhdEn2E+LXRMQLD1VGYTouz4DPNPDuZY+d75ANTgbQM6l2q5ywCZMhfgWlIQgRcFdF
-        xaFe5+ohUT67Gn+ngKkson46QTR+m+I74+ZX6BK3os4LNSKWPFuOUtqCaXo1kVI7L3ca0qrdObzY3
-        p9YRSHzFbDsPRgKfsahIRbWtFRC3r12larvpUgaP6fSYAc3ynyU8Aoo4KyDXfCCt+qq7+NcZFwAuY
-        qiow/BLQbOcHNJfdbTJS+/agq159aq75uSdU3B31e+YauFYZ5RhG7oye0LN43gV3SxgKF6s1gE7vF
-        IBU6LmVg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56648)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1n6r5S-0003Zf-G9; Mon, 10 Jan 2022 09:35:34 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1n6r5P-0004pa-2d; Mon, 10 Jan 2022 09:35:31 +0000
-Date:   Mon, 10 Jan 2022 09:35:31 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH net 0/1] net: phy: marvell: add Marvell specific PHY
- loopback
-Message-ID: <Ydv94whrTNPiqX4p@shell.armlinux.org.uk>
-References: <20220110062117.17540-1-mohammad.athari.ismail@intel.com>
+        Mon, 10 Jan 2022 04:35:55 -0500
+Received: from [10.18.29.173] (10.18.29.173) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Mon, 10 Jan
+ 2022 17:35:51 +0800
+Message-ID: <a19771e6-d1d4-d1ef-9819-21e2147aad16@amlogic.com>
+Date:   Mon, 10 Jan 2022 17:35:51 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110062117.17540-1-mohammad.athari.ismail@intel.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V4 0/5] the UART driver compatible with
+Content-Language: en-US
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220110085604.18042-1-yu.tu@amlogic.com>
+ <1f4b9288-c7ff-c895-425c-187d058642b9@baylibre.com>
+From:   Yu Tu <yu.tu@amlogic.com>
+In-Reply-To: <1f4b9288-c7ff-c895-425c-187d058642b9@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.18.29.173]
+X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
+ (10.18.11.5)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 02:21:16PM +0800, Mohammad Athari Bin Ismail wrote:
-> This patch to implement Marvell PHY specific loopback callback function.
-> Verified working on Marvell 88E1510 at 1Gbps speed only. For 100Mbps and
-> 10Mbps, found that the PHY loopback not able to function properly.
-> Possible due to limitation in Marvell 88E1510 PHY.
+Hi Neil,
+	Thank you very much for your reply.
 
-This is valuable information that should be in the commit message for
-the patch.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+On 2022/1/10 17:27, Neil Armstrong wrote:
+> [ EXTERNAL EMAIL ]
+> 
+> Hi,
+> 
+> On 10/01/2022 09:55, Yu Tu wrote:
+>> Using the common Clock code to describe the UART baud rate
+>> clock makes it easier for the UART driver to be compatible
+>> with the baud rate requirements of the UART IP on different
+>> meson chips. Add Meson S4 SoC compatible.
+>>
+>> Yu Tu (5):
+>>    dt-bindings: serial: meson: Drop compatible = amlogic,meson-gx-uart.
+>>    tty: serial: meson: Request the register region in meson_uart_probe()
+>>    tty: serial: meson: The UART baud rate calculation is described using
+>>      the common clock code.
+>>    tty: serial: meson: Make the bit24 and bit [26,27] of the UART_REG5
+>>      register writable
+>>    tty: serial: meson: Added S4 SOC compatibility.
+> 
+> Weird, the subjects are fine in the cover letter but are all truncated in the email thread:
+> [PATCH V4 0/5] the UART driver compatible with
+> [PATCH V4 1/5] dt-bindings: serial: meson: Drop
+> [PATCH V4 2/5] tty: serial: meson: Request the register
+> ...
+> Only the last one is OK.
+> 
+I saw the subject was a little long, I changed it manually, do I need to 
+regenerate and send?
+> 
+>>
+>> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
+>> discussed in the email
+>> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
+>> the DTS before it can be deleted
+>> V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
+>> in the email.
+>>
+>> Link:https://lore.kernel.org/linux-amlogic/20211230102110.3861-4-yu.tu@amlogic.com/
+>>
+>>   .../bindings/serial/amlogic,meson-uart.yaml   |  10 +-
+>>   drivers/tty/serial/meson_uart.c               | 244 ++++++++++++------
+>>   2 files changed, 177 insertions(+), 77 deletions(-)
+>>
+> 
