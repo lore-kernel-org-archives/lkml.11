@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E666C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7375EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240223AbiAJHb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:31:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37832 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240032AbiAJH2N (ORCPT
+        id S239524AbiAJHbg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:31:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56806 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239546AbiAJH2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:13 -0500
+        Mon, 10 Jan 2022 02:28:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84D0D611CE;
-        Mon, 10 Jan 2022 07:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63C91C36AE9;
-        Mon, 10 Jan 2022 07:28:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71DE2B8120F;
+        Mon, 10 Jan 2022 07:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 905F1C36AE9;
+        Mon, 10 Jan 2022 07:28:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799692;
-        bh=zYOViBaeQac9uI/6TZQx4gCOlnBtp2iyHYxWdNRXJF0=;
+        s=korg; t=1641799690;
+        bh=9z4vPHpad6g3b7hVkTRWbqTSuWEc35ZyzvS9vo3vfAs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jpkb2pk68BXBVP1vHffQAP7RZE3iHFLF+aaxcF0FC6G+jcBts2HLoVj9fxPRnsW7k
-         tiE9R/c5Kc3mhiKTLrxgjIjdH1eFS/epoBRk8hUXnVzUDde0lhCqXzrr9sA2j7MguM
-         znPYbEzpkoEHXn+nBpXX6SjLtHiTPsldGxE5bsxY=
+        b=nqE01NNCQp1+Ku4vmOnvTvG/ryKLrMCd+aXHVcpK9xWhfOkb8w1Jnh1hyFBcKmk2M
+         PEAlZefE+0djqqmDod7PI3Hl/E7UQYnblxrX8Tbr87XjFg+uFJ1C1NtY8lpxnT1nJr
+         G/WG9R+CV/PNPZSEDGzaqPjeu8969dy31/UzDprw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 5.4 04/34] tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
-Date:   Mon, 10 Jan 2022 08:22:59 +0100
-Message-Id: <20220110071815.802408688@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Subject: [PATCH 5.4 03/34] selftests: x86: fix [-Wstringop-overread] warn in test_process_vm_readv()
+Date:   Mon, 10 Jan 2022 08:22:58 +0100
+Message-Id: <20220110071815.771538163@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
 References: <20220110071815.647309738@linuxfoundation.org>
@@ -46,59 +45,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-commit 823e670f7ed616d0ce993075c8afe0217885f79d upstream.
+commit dd40f44eabe1e122c6852fabb298aac05b083fce upstream.
 
-With the new osnoise tracer, we are seeing the below splat:
-    Kernel attempted to read user page (c7d880000) - exploit attempt? (uid: 0)
-    BUG: Unable to handle kernel data access on read at 0xc7d880000
-    Faulting instruction address: 0xc0000000002ffa10
-    Oops: Kernel access of bad area, sig: 11 [#1]
-    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
-    ...
-    NIP [c0000000002ffa10] __trace_array_vprintk.part.0+0x70/0x2f0
-    LR [c0000000002ff9fc] __trace_array_vprintk.part.0+0x5c/0x2f0
-    Call Trace:
-    [c0000008bdd73b80] [c0000000001c49cc] put_prev_task_fair+0x3c/0x60 (unreliable)
-    [c0000008bdd73be0] [c000000000301430] trace_array_printk_buf+0x70/0x90
-    [c0000008bdd73c00] [c0000000003178b0] trace_sched_switch_callback+0x250/0x290
-    [c0000008bdd73c90] [c000000000e70d60] __schedule+0x410/0x710
-    [c0000008bdd73d40] [c000000000e710c0] schedule+0x60/0x130
-    [c0000008bdd73d70] [c000000000030614] interrupt_exit_user_prepare_main+0x264/0x270
-    [c0000008bdd73de0] [c000000000030a70] syscall_exit_prepare+0x150/0x180
-    [c0000008bdd73e10] [c00000000000c174] system_call_vectored_common+0xf4/0x278
+Fix the following [-Wstringop-overread] by passing in the variable
+instead of the value.
 
-osnoise tracer on ppc64le is triggering osnoise_taint() for negative
-duration in get_int_safe_duration() called from
-trace_sched_switch_callback()->thread_exit().
+test_vsyscall.c: In function ‘test_process_vm_readv’:
+test_vsyscall.c:500:22: warning: ‘__builtin_memcmp_eq’ specified bound 4096 exceeds source size 0 [-Wstringop-overread]
+  500 |                 if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The problem though is that the check for a valid trace_percpu_buffer is
-incorrect in get_trace_buf(). The check is being done after calculating
-the pointer for the current cpu, rather than on the main percpu pointer.
-Fix the check to be against trace_percpu_buffer.
-
-Link: https://lkml.kernel.org/r/a920e4272e0b0635cf20c444707cbce1b2c8973d.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
-
-Cc: stable@vger.kernel.org
-Fixes: e2ace001176dc9 ("tracing: Choose static tp_printk buffer by explicit nesting count")
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c |    2 +-
+ tools/testing/selftests/x86/test_vsyscall.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -3017,7 +3017,7 @@ static char *get_trace_buf(void)
- {
- 	struct trace_buffer_struct *buffer = this_cpu_ptr(trace_percpu_buffer);
+--- a/tools/testing/selftests/x86/test_vsyscall.c
++++ b/tools/testing/selftests/x86/test_vsyscall.c
+@@ -480,7 +480,7 @@ static int test_process_vm_readv(void)
+ 	}
  
--	if (!buffer || buffer->nesting >= 4)
-+	if (!trace_percpu_buffer || buffer->nesting >= 4)
- 		return NULL;
- 
- 	buffer->nesting++;
+ 	if (vsyscall_map_r) {
+-		if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
++		if (!memcmp(buf, remote.iov_base, sizeof(buf))) {
+ 			printf("[OK]\tIt worked and read correct data\n");
+ 		} else {
+ 			printf("[FAIL]\tIt worked but returned incorrect data\n");
 
 
