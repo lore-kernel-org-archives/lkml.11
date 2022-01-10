@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61779C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:52:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EED8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241340AbiAJHwA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:52:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241344AbiAJHlp (ORCPT
+        id S243365AbiAJHwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:52:41 -0500
+Received: from out162-62-57-252.mail.qq.com ([162.62.57.252]:53329 "EHLO
+        out162-62-57-252.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243461AbiAJHub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:41:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFEC3C033278;
-        Sun,  9 Jan 2022 23:34:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D55EB81201;
-        Mon, 10 Jan 2022 07:34:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFD9EC36AED;
-        Mon, 10 Jan 2022 07:34:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800086;
-        bh=8wjOwa4D01rmIjZQtarB7Bx2PnNYdpk5SUwRRUGxoMU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QLuVgkGfI1mmczosuCrsnMBIomJ0vYhNhoMyObFEOHWaclMg532kkJW2aiVh6mkFF
-         WEA4aqzimIpEKqWBDHnIsBpNaROEHy8t2QSX6Y5GJt3DFXq6p8XgJu0dnZZhbnfTXf
-         dC4B7p9ABli9QCU6jPDlVOqYV3b+Z4pIBYSqCE2M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 5.15 42/72] power: reset: ltc2952: Fix use of floating point literals
-Date:   Mon, 10 Jan 2022 08:23:19 +0100
-Message-Id: <20220110071822.983678521@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 10 Jan 2022 02:50:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1641801027;
+        bh=4/D9bsQYTExfGj/Kw0XJPUykeRczvoxzNQdeTQGgfuU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=YtJ8CrACJqpV78bbfEXJsna9tuAQlgX/axMCKG2BPXwBRAvjAv9r1j5C4hg58eUdr
+         xM7TCBHXR4tLU5KckQPo3jGUDXx/0/yUyPi85f2ggHkv6kcdSMmDQQNXLvOjCFwFBJ
+         QtJvOkBUBI3kfzt5Sy4BVItbzyeKTNYdDE4BxH34=
+Received: from localhost ([119.32.47.91])
+        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
+        id BC28D21C; Mon, 10 Jan 2022 15:47:02 +0800
+X-QQ-mid: xmsmtpt1641800822tp8masu2j
+Message-ID: <tencent_15A7824636308FBA779482A8D296ADB0A607@qq.com>
+X-QQ-XMAILINFO: OfSYiviZO9YdmdcN850B6VCN5Oun1MpScidBKLKEp7n/KUBzvVWUy7r/3bu2W7
+         +6drgSgykPAuOjYqgg5zL+lFC9XKXiYNILxmjF6UYaFDITEVjM4RFT5CbZme/Ntb2O1+e/nLh5bS
+         OltW0hy1Q7GeBLvee725G75N6/AqIlWNXcP6H/WRcTpZRvcVukwJhBN+f96s/OvR2sAyOXPm5L3b
+         mXLpdbmUgIHNSMDluBc0RN4cSUrzj/YDlPW+GXBPChp5QUawTbA463xv/ltFXEKfWbpp8YAbihz9
+         YJnaAnwWmxPQFVCGvv1Ns8tcOEQIZIrX60OOg8g8w9xLTPg0nEXC6+im/vE1cYcZbU0/UdrYNK29
+         drzBGlNd+UwAsgaFOI34xhYNypwov/Kaw9Ri9OGkuERcIUypQV2mWmoX20mbmkuE7KVZgkoAkPP0
+         ku3I4v41RHbq44WEe8Fq+zdzi5sPaebxlayMqWk5JzfbUSChamgWc4IrOxqNiACWf1+FizIIu1nJ
+         48PxKoWzxjs4DjSsaNxo2gophzwmdhjy4G1Q9C4snwN8mNPqp/kBCd2/E8d0PDYAiX3qbqStwEDg
+         3cnPfZsYVWB2vZ/EK1QDOHrHQPyGqk5PatjgnZHxOw/0qgLq0FilBDCrL7hOKUTz0ZtFsffw/Gg7
+         m07cABaDstdZAz6wgieiGzrn9a2T2dePd9WiP2TxKW1P2sA/6MyWOJHp3N5u69okDU3RuX1GNmSQ
+         6EmoQHbU1H8CoykI4rraXuAE8Zbh9guwoQdYLDxqc1pRaGNpldgBfyT/U9bb9P+9HDfaR0yvMes8
+         lyiw4B98NOAm9NUDOhkVmuAnE1Mi8nGr3ONlNhi/3bSN6/pckAnihbmXueKCsD9N5PrCIyLH3baO
+         zzjXf6ATYN
+Date:   Mon, 10 Jan 2022 15:47:02 +0800
+From:   Conley Lee <conleylee@foxmail.com>
+To:     Corentin Labbe <clabbe.montjoie@gmail.com>
+Cc:     davem@davemloft.net, mripard@kernel.org, wens@csie.org,
+        jernej.skrabec@gmail.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] sun4i-emac.c: enable emac tx dma
+X-OQ-MSGID: <Ydvkdjh+uL0wALF5@fedora>
+References: <YdLhQjUTobcLq73j@Red>
+ <tencent_E4BA4D6105A46CCC1E8AEF48057EA5FE5B08@qq.com>
+ <YdtJTQJJ4aEUcp/D@Red>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <YdtJTQJJ4aEUcp/D@Red>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
-
-commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
-
-A new commit in LLVM causes an error on the use of 'long double' when
-'-mno-x87' is used, which the kernel does through an alias,
-'-mno-80387' (see the LLVM commit below for more details around why it
-does this).
-
-drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                                  ^
-drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                           ^
-drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->trigger_delay = ktime_set(2, 500L*1E6L);
-                                               ^
-3 errors generated.
-
-This happens due to the use of a 'long double' literal. The 'E6' part of
-'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
-it to 'long double'.
-
-There is no visible reason for floating point values in this driver, as
-the values are only assigned to integer types. Use NSEC_PER_MSEC, which
-is the same integer value as '1E6L', to avoid changing functionality but
-fix the error.
-
-Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1497
-Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/power/reset/ltc2952-poweroff.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/drivers/power/reset/ltc2952-poweroff.c
-+++ b/drivers/power/reset/ltc2952-poweroff.c
-@@ -161,8 +161,8 @@ static void ltc2952_poweroff_kill(void)
- 
- static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
- {
--	data->wde_interval = 300L * 1E6L;
--	data->trigger_delay = ktime_set(2, 500L*1E6L);
-+	data->wde_interval = 300L * NSEC_PER_MSEC;
-+	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
- 
- 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
-
-
+On 01/09/22 at 09:45下午, Corentin Labbe wrote:
+> Date: Sun, 9 Jan 2022 21:45:01 +0100
+> From: Corentin Labbe <clabbe.montjoie@gmail.com>
+> To: conleylee@foxmail.com
+> Cc: davem@davemloft.net, mripard@kernel.org, wens@csie.org,
+>  jernej.skrabec@gmail.com, netdev@vger.kernel.org,
+>  linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+>  linux-kernel@vger.kernel.org
+> Subject: Re: [PATCH v1] sun4i-emac.c: enable emac tx dma
+> 
+> Le Sun, Jan 09, 2022 at 05:17:55PM +0800, conleylee@foxmail.com a écrit :
+> > From: conley <conleylee@foxmail.com>
+> > 
+> > Hello
+> > I am reading the R40 user manual and trying to create a new path to enable
+> > emac tx dma channel. According to the figure 8-21(TX Operation Diagram),
+> > I try to enable emac tx dma channel by the follow steps:
+> > 1. enable tx dma mode
+> > 2. set packet lengths
+> > 2. move data from skb to tx fifo by using dma in xmit function.
+> > 3. start transfer from tx fifo to phy in dma tx done callback
+> > 
+> > But it doesn't work. emac tx interrupt and dma finished interrupt are
+> > raised, but no packets are transmitted (I test it by tcpdump).
+> > Do you know how to configure the emac tx dma correctly? Thanks ~
+> > 
+> 
+> Hello
+> 
+> Here are my thoughts to help you:
+> - Your email is not a real patch, but an ask for help, so you should not use [ PATCH ] in the subject.
+> - If it was a patch, "v1" is not necessary
+> - Your patch below is doing too many unrelated different things, it is hard to see the DMA TX enable part
+> - I think you could first send a preliminary patch which adds all EMAC_INT_CTL_TX_xxx which are already used by the driver (to reduce the diff)
+> - Without the DTB change, it is hard to see the whole picture, did you correctly use the right dma number for an easy example.
+> - Knowing also the board (and so PHY, modes etc...) could help
+> - I think your priority should not to add TX, but to fix reported problems to your initial patch (build warnings/error https://marc.info/?l=linux-arm-kernel&m=164159846213585&w=2) since your work on TX will need to be applied after this.
+> - For the previous point, always build test with at least 2 different 32/64 arch. And if possible a total different arch (like x86_64).
+> 
+> Anyway, I will try to test your patch on my a10 board
+> 
+> Regards
+Thanks a lot for your help ~ I will submit an patch which add all
+register related. By the way, the build warnings problems have been fixed
+by Jakub Kicinski <kuba@kernel.org>.
