@@ -2,83 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B688C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 15:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A28C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 15:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236758AbiAJPy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 10:54:28 -0500
-Received: from mga01.intel.com ([192.55.52.88]:50108 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236627AbiAJPy0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 10:54:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641830066; x=1673366066;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=rX4Yeo72fBejr7EJ901BTYv9hMR6JNoo7ubEPirAX/4=;
-  b=jRLP6ZF4dTgCf8yn7Nzdo4BSEIOfY5KupehSp510JoqvpHHeSvuNIyZf
-   gWT2mjEe6H530kNN4DABAjhxPQpv56/twoe5qbq09+ZVl2nY/AbWX9CMs
-   7W8zBjYQw4JPL/lXxoL/yvxSEYBNcPWusK1aipLbeywU5j71S9iAkUlTo
-   ZNVpeFH2Mriy2PWx/UFIna5fI3yvshygZWELbfl2b3dhqm+kVWW0M0wzp
-   QuclCLnOJFLkOefGp4oDHbmGs+NBqtl2UqOCgzVuN/iQAG2Fw751cpAVa
-   +Vpk7+5vElQUU36zcobRPlqArLm4/6LOS/GJbC3LYZFh4jQ7RpZ2O2usV
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="267581623"
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="267581623"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 07:54:25 -0800
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="490034711"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 07:54:23 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n6wyr-008v0u-2w;
-        Mon, 10 Jan 2022 17:53:09 +0200
-Date:   Mon, 10 Jan 2022 17:53:08 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Cai Huoqing <caihuoqing@baidu.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: st_sensors: don't always auto-enable I2C and SPI
- interface drivers
-Message-ID: <YdxWZEz1GXXxQ+7h@smile.fi.intel.com>
-References: <20220110152432.3799227-1-nikita.yoush@cogentembedded.com>
+        id S236774AbiAJPzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 10:55:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43042 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236627AbiAJPzG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 10:55:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641830105;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XpYeQhiPDirU0G/PVNqCRwCNkTCrk6kfnonmEcbmwc0=;
+        b=E/yBzizbMv7rbMQZGRgL0VvkVvQzrvafPxs6f+N5xUvzlHgz3XqToId7Gh118y3bCmYsqa
+        Q/LotjiJESAzjb16kxaiPyn8p2WG88CM57exGTtVsqFX5r6As0WIdmkMc16lHpFwSyqQQV
+        kDDZVe/mtc+cillgpCzd3pZXk2/K3gM=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-634-8axmZRznMheJy1_FMJsaMw-1; Mon, 10 Jan 2022 10:55:04 -0500
+X-MC-Unique: 8axmZRznMheJy1_FMJsaMw-1
+Received: by mail-ed1-f70.google.com with SMTP id c8-20020a05640227c800b003fdc1684cdeso2476846ede.12
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 07:55:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=XpYeQhiPDirU0G/PVNqCRwCNkTCrk6kfnonmEcbmwc0=;
+        b=MpcAMxM1SIXu/VaSmcK0nH9GtOQ6L9ra1V3rQS7QOZ+JY8sajjADDvy5GlX8eimpxJ
+         R/71VXnSMDSR0hEVWT85ECPbFSbDeQLJXQdh0VaQ5mYmXHqjpbbuhOJkziUAIdRR0sVJ
+         6uhlUtKgDlkiJ4Ecs52/C3RSMluOOhp7+tdL8e1d13KwkSxjgOufm0tjFHKrkzl3VQF9
+         hX0G2+UnSj+bzuqibIIBR64pa4VWEcTBp05rqIi8hTNgWPgp4LnO81Mx+/q32lJmAgp/
+         0q1Fawr0aqot4HsbSC8j7jdY2OCSsqoXu7jC5JrrYfgOC/WueeV8WHl6a7sCn85LetSX
+         O8zg==
+X-Gm-Message-State: AOAM532pmgPUCR4bRvfYyqofsnyfozD+ht0VDioi19zvzQXC+8ZK3kXh
+        1SqW6gMjbdJRn4uKX90YWHiDbnam7TLnZUD/jCpvz1roX5QXGq1lQ6mgKYpA5lTXALRbnNPDfM1
+        lOI1fb3f3jlSMf++ERUgfH+81
+X-Received: by 2002:a17:906:2559:: with SMTP id j25mr309160ejb.416.1641830103369;
+        Mon, 10 Jan 2022 07:55:03 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw7T5q1x9hsc3bVzo1lfPD24rVEwbE8/18ZOdEUfUvWPhR6gTWcqSFxJrCNFXChTF5aB6OI2A==
+X-Received: by 2002:a17:906:2559:: with SMTP id j25mr309144ejb.416.1641830103124;
+        Mon, 10 Jan 2022 07:55:03 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id he35sm2582404ejc.135.2022.01.10.07.55.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 07:55:02 -0800 (PST)
+Message-ID: <7994877a-0c46-07a5-eab0-0a8dd6244e9a@redhat.com>
+Date:   Mon, 10 Jan 2022 16:55:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110152432.3799227-1-nikita.yoush@cogentembedded.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v6 05/21] x86/fpu: Make XFD initialization in
+ __fpstate_reset() a function argument
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "Zeng, Guang" <guang.zeng@intel.com>,
+        "Liu, Jing2" <jing2.liu@intel.com>,
+        "Christopherson,, Sean" <seanjc@google.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        "Wang, Wei W" <wei.w.wang@intel.com>,
+        "Zhong, Yang" <yang.zhong@intel.com>
+References: <20220107185512.25321-1-pbonzini@redhat.com>
+ <20220107185512.25321-6-pbonzini@redhat.com> <YdiX5y4KxQ7GY7xn@zn.tnic>
+ <BN9PR11MB527688406C0BDCF093C718858C509@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <Ydvz0g+Bdys5JyS9@zn.tnic> <761a554a-d13f-f1fb-4faf-ca7ed28d4d3a@redhat.com>
+ <YdxP0FVWEJa/vrPk@zn.tnic>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <YdxP0FVWEJa/vrPk@zn.tnic>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 06:24:32PM +0300, Nikita Yushchenko wrote:
-> This patch makes I2C and SPI interface drivers for STMicroelectronics
-> sensor chips individually selectable via Kconfig.
-> 
-> The default is kept unchanged - I2C and SPI interface drivers are still
-> selected by default if the corresponding bus support is available.
-> 
-> However, the patch makes it possible to explicitly disable drivers
-> that are not needed for a particular target.
+On 1/10/22 16:25, Borislav Petkov wrote:
+> "Standard sign-off procedure applies, i.e. the ordering of
+> Signed-off-by: tags should reflect the chronological history of
+> the patch insofar as possible, regardless of whether the author
+> is attributed via From: or Co-developed-by:. Notably, the last
+> Signed-off-by: must always be that of the developer submitting the
+> patch."
 
+So this means that "the author must be the first SoB" is not an absolute 
+rule.  In the case of this patch we had:
+
+From: Jing Liu <jing2.liu@intel.com>
 ...
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Jing Liu <jing2.liu@intel.com>
+Signed-off-by: Yang Zhong <yang.zhong@intel.com>
 
-The same question as per v2.
 
-> +	default I2C && IIO_ST_ACCEL_3AXIS
+and the possibilities could be:
 
-What will be the results when I2C=y and the second ones =m?
+1) have two SoB lines for Jing (before and after Thomas)
 
--- 
-With Best Regards,
-Andy Shevchenko
+2) add a Co-developed-by for Thomas as the first line
 
+3) do exactly what the gang did ("remain practical and do only an SOB 
+chain")
+
+Paolo
 
