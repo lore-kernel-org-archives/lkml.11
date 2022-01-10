@@ -2,187 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D96C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29433C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 21:00:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244179AbiAJU5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 15:57:15 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:54097 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239741AbiAJU4g (ORCPT
+        id S1343704AbiAJVAp (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 16:00:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239741AbiAJVAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 15:56:36 -0500
+        Mon, 10 Jan 2022 16:00:44 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0870C061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 13:00:43 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id d10-20020a17090a498a00b001b33bc40d01so459612pjh.1
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 13:00:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1641848196; x=1673384196;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=PNe/ZkXCyHn05bXZCvWif2yeT0UmYXKMtrW5K01oJ38=;
-  b=blx29ziDArJ4f+xWz0IpsE5pybAhJzYdknWO6U5CuiR8e++DQP+cKstF
-   I0JVq4+wSw0cKgymm1QbmtQwmbcxEQM937PP8YdnqxpAkCCcMtXfjGPn0
-   kesgHNbBYGjTSdzt0kPOi+BrxKLmesvHCVmPAdqdqSfVM68GhQC/M2ktR
-   U=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 10 Jan 2022 12:56:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 12:56:35 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 10 Jan 2022 12:56:35 -0800
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 10 Jan 2022 12:56:34 -0800
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <khsieh@codeaurora.org>, <quic_abhinavk@quicinc.com>,
-        <aravindh@codeaurora.org>, <quic_khsieh@quicinc.com>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v10 4/5] drm/msm/dp: add support of tps4 (training pattern 4) for HBR3
-Date:   Mon, 10 Jan 2022 12:55:43 -0800
-Message-ID: <1641848144-25147-5-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1641848144-25147-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1641848144-25147-1-git-send-email-quic_khsieh@quicinc.com>
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ER4r2cKmD0xhj/NEaU00zT7fJMtGU64Ufp2y1WR4O9s=;
+        b=FORaXwLiER5oOkHT7AjW5DKB8Vog6fugEGYuHb0MeCPus97Hznwb4kB+sBID4QctB3
+         oLbgTsR7El8dfX3XCAd49O+L0qWU3yZJmtaFFwIjGa1VApRXDxiuWn20kpqBnoEjkOIq
+         uruWBDvQFXuj1hm0fngTQabcVxwsl1q8NU/c+bLPMHdIh+jZUw0tiM3ragp3VyGy+OAJ
+         rfPtpVAvL/OA5I+VewsXA1iGTpkBZV8tpyAQnIjt+QLitdfE5NRSwwnxKSa0wQquBey6
+         O3Mjogr7ikPggJ3O8ap2OIbdWuDYkaJmzBlkGQG8VOWbDHDk99N8mV+bjsxGGBC/90bw
+         KmXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ER4r2cKmD0xhj/NEaU00zT7fJMtGU64Ufp2y1WR4O9s=;
+        b=SF6cwbuOq3AsJ9VrBX5MXqvJw/bl6sfLPMGF47heq3Ua1xfQpeLXWKeKlF5G6LBjyC
+         /pDvTKYpdcEpKaRZt79OC+uWlEro2oEz1K8pZD3ojdAsCqZfUcJfGWp+el2DM7+Q3DHi
+         iwOwscFhOKgkUiot0ZSQ6ldoiJ8NNn0y2xoWxaXV6RRgSOH7vQI865EGUJC/1V2yMOxD
+         wbRF1zULfPIPWFKOBI40ANTWt82nQGN+r24IwZKHhmC9e+nyzbuZPLUieCMRY/nTrHi0
+         +gir6Vg+GYhzN4o17jEIOs7Dv3M7U8+ZoBWBJ76SE9TNVzRKBXw702Ims2KrGL/rgxk6
+         ipbQ==
+X-Gm-Message-State: AOAM533AWnxF33+J2rN1H/q69L8M0+JaNqz0v1XmovfJEXR/iPBGCvaO
+        9LD9cMZZPHa8uEqDcG0a5hbPEQ==
+X-Google-Smtp-Source: ABdhPJwqhTe3rEmyL4vZWhmhJYAZ96b4VNGwkVOyHEYgL/yziDzPEbnXbrgVHOvmzr27s3O1hRc5jQ==
+X-Received: by 2002:a17:90b:3b92:: with SMTP id pc18mr32563665pjb.137.1641848442496;
+        Mon, 10 Jan 2022 13:00:42 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id mq12sm10847819pjb.48.2022.01.10.13.00.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 13:00:42 -0800 (PST)
+Date:   Mon, 10 Jan 2022 21:00:38 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Kechen Lu <kechenl@nvidia.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, wanpengli@tencent.com,
+        vkuznets@redhat.com, mst@redhat.com, somduttar@nvidia.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v2 3/3] KVM: x86: add vCPU ioctl for HLT exits
+ disable capability
+Message-ID: <YdyediQZQPB7h/kU@google.com>
+References: <20211221090449.15337-1-kechenl@nvidia.com>
+ <20211221090449.15337-4-kechenl@nvidia.com>
+ <Ydyda6K8FrFveZX7@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ydyda6K8FrFveZX7@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuogee Hsieh <khsieh@codeaurora.org>
+On Mon, Jan 10, 2022, Sean Christopherson wrote:
+> Does your use case require toggling intercepts?  Or is the configuration static?
+> If it's static, then the easiest thing would be to follow the per-VM behavior so
+> that there are no suprises.  If toggling is required, then I think the best thing
+> would be to add a prep patch to add an override flag to the per-VM ioctl, and then
+> share code between the per-VM and per-vCPU paths for modifying the flags (attached
+> as patch 0003).
 
-Some DP sinkers prefer to use tps4 instead of tps3 during training #2.
-This patch will use tps4 to perform link training #2 if sinker's DPCD
-supports it.
+...
+ 
+> If toggling is not required, then I still think it makes sense to add a macro to
+> handle propagating the capability args to the arch flags.
 
-Changes in V2:
--- replace  dp_catalog_ctrl_set_pattern() with  dp_catalog_ctrl_set_pattern_state_bit()
-
-Changes in V3:
--- change state_ctrl_bits type to u32 and pattern type to u8
-
-Changes in V4:
--- align } else if { and } else {
-
-Changes in v10:
---  group into one series
-
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/gpu/drm/msm/dp/dp_catalog.c | 12 ++++++------
- drivers/gpu/drm/msm/dp/dp_catalog.h |  2 +-
- drivers/gpu/drm/msm/dp/dp_ctrl.c    | 17 ++++++++++++-----
- 3 files changed, 19 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
-index 6ae9b29..64f0b26 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.c
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
-@@ -456,19 +456,19 @@ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog,
- 	dp_write_p0(catalog, MMSS_DP_DSC_DTO, 0x0);
- }
- 
--int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog,
--					u32 pattern)
-+int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog,
-+					u32 state_bit)
- {
- 	int bit, ret;
- 	u32 data;
- 	struct dp_catalog_private *catalog = container_of(dp_catalog,
- 				struct dp_catalog_private, dp_catalog);
- 
--	bit = BIT(pattern - 1);
--	DRM_DEBUG_DP("hw: bit=%d train=%d\n", bit, pattern);
-+	bit = BIT(state_bit - 1);
-+	DRM_DEBUG_DP("hw: bit=%d train=%d\n", bit, state_bit);
- 	dp_catalog_ctrl_state_ctrl(dp_catalog, bit);
- 
--	bit = BIT(pattern - 1) << DP_MAINLINK_READY_LINK_TRAINING_SHIFT;
-+	bit = BIT(state_bit - 1) << DP_MAINLINK_READY_LINK_TRAINING_SHIFT;
- 
- 	/* Poll for mainlink ready status */
- 	ret = readx_poll_timeout(readl, catalog->io->dp_controller.link.base +
-@@ -476,7 +476,7 @@ int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog,
- 					data, data & bit,
- 					POLLING_SLEEP_US, POLLING_TIMEOUT_US);
- 	if (ret < 0) {
--		DRM_ERROR("set pattern for link_train=%d failed\n", pattern);
-+		DRM_ERROR("set state_bit for link_train=%d failed\n", state_bit);
- 		return ret;
- 	}
- 	return 0;
-diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.h b/drivers/gpu/drm/msm/dp/dp_catalog.h
-index 6965afa..7dea101 100644
---- a/drivers/gpu/drm/msm/dp/dp_catalog.h
-+++ b/drivers/gpu/drm/msm/dp/dp_catalog.h
-@@ -94,7 +94,7 @@ void dp_catalog_ctrl_mainlink_ctrl(struct dp_catalog *dp_catalog, bool enable);
- void dp_catalog_ctrl_config_misc(struct dp_catalog *dp_catalog, u32 cc, u32 tb);
- void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog, u32 rate,
- 				u32 stream_rate_khz, bool fixed_nvid);
--int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog, u32 pattern);
-+int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog, u32 pattern);
- void dp_catalog_ctrl_reset(struct dp_catalog *dp_catalog);
- bool dp_catalog_ctrl_mainlink_ready(struct dp_catalog *dp_catalog);
- void dp_catalog_ctrl_enable_irq(struct dp_catalog *dp_catalog, bool enable);
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index 9c80b49..f98df93 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1083,7 +1083,7 @@ static int dp_ctrl_link_train_1(struct dp_ctrl_private *ctrl,
- 
- 	*training_step = DP_TRAINING_1;
- 
--	ret = dp_catalog_ctrl_set_pattern(ctrl->catalog, DP_TRAINING_PATTERN_1);
-+	ret = dp_catalog_ctrl_set_pattern_state_bit(ctrl->catalog, 1);
- 	if (ret)
- 		return ret;
- 	dp_ctrl_train_pattern_set(ctrl, DP_TRAINING_PATTERN_1 |
-@@ -1181,7 +1181,8 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
- 			int *training_step)
- {
- 	int tries = 0, ret = 0;
--	char pattern;
-+	u8 pattern;
-+	u32 state_ctrl_bit;
- 	int const maximum_retries = 5;
- 	u8 link_status[DP_LINK_STATUS_SIZE];
- 
-@@ -1189,12 +1190,18 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
- 
- 	*training_step = DP_TRAINING_2;
- 
--	if (drm_dp_tps3_supported(ctrl->panel->dpcd))
-+	if (drm_dp_tps4_supported(ctrl->panel->dpcd)) {
-+		pattern = DP_TRAINING_PATTERN_4;
-+		state_ctrl_bit = 4;
-+	} else if (drm_dp_tps3_supported(ctrl->panel->dpcd)) {
- 		pattern = DP_TRAINING_PATTERN_3;
--	else
-+		state_ctrl_bit = 3;
-+	} else {
- 		pattern = DP_TRAINING_PATTERN_2;
-+		state_ctrl_bit = 2;
-+	}
- 
--	ret = dp_catalog_ctrl_set_pattern(ctrl->catalog, pattern);
-+	ret = dp_catalog_ctrl_set_pattern_state_bit(ctrl->catalog, state_ctrl_bit);
- 	if (ret)
- 		return ret;
- 
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+Almost forgot.  Can you please add a selftests to verify whatever per-VM and
+per-vCPU behavior we end implementing?  Thanks!
