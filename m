@@ -2,99 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A1EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237905AbiAJRFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 12:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237655AbiAJRFU (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 12:05:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2ECDC06173F;
-        Mon, 10 Jan 2022 09:05:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 529AE6133E;
-        Mon, 10 Jan 2022 17:05:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C0EC36AE5;
-        Mon, 10 Jan 2022 17:05:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641834319;
-        bh=UdWl8wuXbg1UuKvjSdkNKobDow52EvDCA/OGcUygQ/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XJ/yRtAPWqZqjqWTSZ71bZIPdXqhZ8DKLpL9knwVx9Ug11TfhQsKEoUjAryftb85P
-         f1DXOl4Y8ESsSLSYUCCpIpL/TwliJNnl9+kPC8rTN9owRqd4KVyQlAZKCo34ekNNiQ
-         NymiGFChxwnQ8rc+PN1TzpZd3WH9nMq3JTgrCkxSztrtd8o+INWtNqzgTHmkMyWLg6
-         tdXPvorVIGwGQzSdACUW52BV0r97eXx+26IP5sFuIxalbNp1gJgh+gLklNcrNCKpFY
-         e2z1EVdEOjsjkXA5JMHXgbypDV+yh9NxR/cr1XYWVvQSFuBXt6abCGSrw3rLeD4Mfr
-         osfV4HyLqJHOg==
-Date:   Tue, 11 Jan 2022 00:57:50 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: Re: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
-Message-ID: <Ydxljv2Q4YNDYRTx@xhacker>
-References: <20220110165208.1826-1-jszhang@kernel.org>
+        id S237911AbiAJRII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 12:08:08 -0500
+Received: from mga04.intel.com ([192.55.52.120]:8331 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237655AbiAJRIH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 12:08:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641834487; x=1673370487;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+inpjhusQ191r/uaq3Nr5tdFQJRGkxrtus5P5NLh/H8=;
+  b=f1K2tfTUmGWqrNOh8fcw2ujqWXT4HoZuk09caKO/znicaSipe4UCCS1W
+   d0ykGnoA0d7rgTSL9+MkAs8c5x7jzhQh4opXA5wofsHKhbIXlWdqMiwYN
+   Qo/V5swOq+oUsVZJcUOaQNywKppuF5x2walNvackQRVMyPx4jpUAYc0ez
+   sVLPs/KMCtCwQiZ8PMUiF1VRYniICZ91vlbBlkpVEmZEUMQZdhg4wHDqi
+   oN8ToApAYSthyN9laobiJ/Ob8ZsL9svv2HCE9neoDcDqFl23pqhprLfrm
+   MXYP7aHmtvjLj2PFa2mHhsftWFMmG1q97X5su+ARG5UgvVatzPUeWxi2s
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="242083836"
+X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
+   d="scan'208";a="242083836"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 09:08:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
+   d="scan'208";a="690639374"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 10 Jan 2022 09:08:06 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n6y9N-0003lW-FY; Mon, 10 Jan 2022 17:08:05 +0000
+Date:   Tue, 11 Jan 2022 01:07:57 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Vijayanand Jitta <vjitta@codeaurora.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Yogesh Lal <quic_ylal@quicinc.com>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 1117/2545] (.rodata+0x0): multiple definition of `__crc_si_swapinfo';
+ arch/s390/appldata/appldata_base.o:(.rodata+0x0): first defined here
+Message-ID: <202201110124.G2WaFCMn-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220110165208.1826-1-jszhang@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 12:52:08AM +0800, Jisheng Zhang wrote:
-> eBPF's exception tables needs to be modified to relative synchronously.
-> 
-> Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
-> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> ---
->  arch/riscv/net/bpf_jit_comp64.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-> index 69bab7e28f91..44c97535bc15 100644
-> --- a/arch/riscv/net/bpf_jit_comp64.c
-> +++ b/arch/riscv/net/bpf_jit_comp64.c
-> @@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
->  	offset = pc - (long)&ex->insn;
->  	if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
->  		return -ERANGE;
-> -	ex->insn = pc;
-> +	ex->insn = offset;
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   23c5cc871466520099bda5e999e14b98dd8f44da
+commit: eb03ee118ab0680aebda709b5c3e32a3e3b4c99c [1117/2545] ANDROID: mm: Export si_swapinfo
+config: s390-defconfig (https://download.01.org/0day-ci/archive/20220111/202201110124.G2WaFCMn-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/eb03ee118ab0680aebda709b5c3e32a3e3b4c99c
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout eb03ee118ab0680aebda709b5c3e32a3e3b4c99c
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
 
-Hi Palmer,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Tong pointed out this issue but there was something wrong with my email
-forwarding address, so I didn't get his reply. Today, I searched on
-lore.kernel.org just found his reply, sorry for inconvenience.
+All errors (new ones prefixed by >>):
 
-Thanks
+   s390-linux-ld: mm/swapfile.o: in function `__crc_si_swapinfo':
+>> (.rodata+0x0): multiple definition of `__crc_si_swapinfo'; arch/s390/appldata/appldata_base.o:(.rodata+0x0): first defined here
 
->  
->  	/*
->  	 * Since the extable follows the program, the fixup offset is always
-> -- 
-> 2.34.1
-> 
-> 
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
