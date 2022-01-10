@@ -2,127 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B072C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C73FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343592AbiAJMr7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 07:47:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245705AbiAJMrC (ORCPT
+        id S235153AbiAJM6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 07:58:16 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:18076 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343536AbiAJM4J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:47:02 -0500
-Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37FEEC06175C
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 04:47:00 -0800 (PST)
-Received: from pd956d63d.dip0.t-ipconnect.de ([217.86.214.61] helo=martin-debian-2.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1n6u4d-0007Td-Ux; Mon, 10 Jan 2022 13:46:56 +0100
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 9/9] staging: r8188eu: merge ODM_ConfigBBWithHeaderFile with its callers
-Date:   Mon, 10 Jan 2022 13:46:38 +0100
-Message-Id: <20220110124638.6909-10-martin@kaiser.cx>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220110124638.6909-1-martin@kaiser.cx>
-References: <20220110124638.6909-1-martin@kaiser.cx>
+        Mon, 10 Jan 2022 07:56:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641819369; x=1673355369;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=851dCihNv0ZUDPuYNHdZbMaYmXs4Oons/vrRaL0TMEc=;
+  b=VxDc8AKjRe7gV7dDhQcdiL5H+5qjcyc78X8ZxFNqhUad1KCJbJW1a7Gc
+   Dz0U2sbSaP5n6Lq6q3svqmFbJ7KM41368RgXHLRAbQtPBe2OUm+rsPvIR
+   K/1LjkqTp+GkWB0orjxYw/6+UkYSLhO9nsBRPZVMeajfN5UI1V6NmO1Is
+   A=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 10 Jan 2022 04:56:08 -0800
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/AES256-SHA; 10 Jan 2022 04:56:06 -0800
+X-QCInternal: smtphost
+Received: from rajeevny-linux.qualcomm.com ([10.204.66.121])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 10 Jan 2022 18:25:46 +0530
+Received: by rajeevny-linux.qualcomm.com (Postfix, from userid 2363605)
+        id 34D79219EF; Mon, 10 Jan 2022 18:25:45 +0530 (IST)
+From:   Rajeev Nandan <quic_rajeevny@quicinc.com>
+To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        linux-kernel@vger.kernel.org, sean@poorly.run, robdclark@gmail.com,
+        robh+dt@kernel.org, robh@kernel.org, quic_abhinavk@quicinc.com,
+        quic_kalyant@quicinc.com, quic_mkrishn@quicinc.com,
+        jonathan@marek.ca, dmitry.baryshkov@linaro.org, airlied@linux.ie,
+        daniel@ffwll.ch, swboyd@chromium.org
+Subject: [v2 1/3] dt-bindings: msm/dsi: Add 10nm dsi phy tuning properties
+Date:   Mon, 10 Jan 2022 18:25:35 +0530
+Message-Id: <1641819337-17037-2-git-send-email-quic_rajeevny@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1641819337-17037-1-git-send-email-quic_rajeevny@quicinc.com>
+References: <1641819337-17037-1-git-send-email-quic_rajeevny@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ODM_ConfigBBWithHeaderFile is a "multiplexer" for ODM_ReadAndConfig_...
-functions. It's called only from phy_BB8188E_Config_ParaFile.
+In most cases, the default values of DSI PHY tuning registers should be
+sufficient as they are fully optimized. However, in some cases where
+extreme board parasitics cause the eye shape to degrade, the override
+bits can be used to improve the signal quality.
 
-We can remove ODM_ConfigBBWithHeaderFile and call the
-ODM_ReadAndConfig_... functions directly.
+The general guidelines for DSI PHY tuning include:
+- High and moderate data rates may benefit from the drive strength and
+  drive level tuning.
+- Drive strength tuning will affect the output impedance and may be used
+  for matching optimization.
+- Drive level tuning will affect the output levels without affecting the
+  impedance.
 
-ODM_ReadAndConfig_PHY_REG_PG_8188E does not return an error status,
-there's no need for a check.
+The clock and data lanes have a calibration circuitry feature. The drive
+strength tuning can be done by adjusting rescode offset for hstop/hsbot,
+and the drive level tuning can be done by adjusting the LDO output level
+for the HSTX drive.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Signed-off-by: Rajeev Nandan <quic_rajeevny@quicinc.com>
 ---
- drivers/staging/r8188eu/hal/odm_HWConfig.c     | 15 ---------------
- drivers/staging/r8188eu/hal/rtl8188e_phycfg.c  |  8 +++-----
- drivers/staging/r8188eu/include/odm_HWConfig.h |  3 ---
- 3 files changed, 3 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/hal/odm_HWConfig.c b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-index 1c3074fc6be4..dcc38b036280 100644
---- a/drivers/staging/r8188eu/hal/odm_HWConfig.c
-+++ b/drivers/staging/r8188eu/hal/odm_HWConfig.c
-@@ -362,18 +362,3 @@ enum HAL_STATUS ODM_ConfigRFWithHeaderFile(struct odm_dm_struct *dm_odm)
- {
- 	return ODM_ReadAndConfig_RadioA_1T_8188E(dm_odm);
- }
--
--enum HAL_STATUS ODM_ConfigBBWithHeaderFile(struct odm_dm_struct *dm_odm,
--					   enum odm_bb_config_type config_tp)
--{
--	if (config_tp == CONFIG_BB_PHY_REG) {
--		return ODM_ReadAndConfig_PHY_REG_1T_8188E(dm_odm);
--	} else if (config_tp == CONFIG_BB_AGC_TAB) {
--		return ODM_ReadAndConfig_AGC_TAB_1T_8188E(dm_odm);
--	} else if (config_tp == CONFIG_BB_PHY_REG_PG) {
--		ODM_ReadAndConfig_PHY_REG_PG_8188E(dm_odm);
--		return HAL_STATUS_SUCCESS;
--	}
--
--	return HAL_STATUS_FAILURE;
--}
-diff --git a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-index 15370b674e53..0b0690dfb947 100644
---- a/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-+++ b/drivers/staging/r8188eu/hal/rtl8188e_phycfg.c
-@@ -493,7 +493,7 @@ static	int phy_BB8188E_Config_ParaFile(struct adapter *Adapter)
- 	/*  1. Read PHY_REG.TXT BB INIT!! */
- 	/*  We will separate as 88C / 92C according to chip version */
- 	/*  */
--	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG))
-+	if (HAL_STATUS_FAILURE == ODM_ReadAndConfig_PHY_REG_1T_8188E(&pHalData->odmpriv))
- 		rtStatus = _FAIL;
- 	if (rtStatus != _SUCCESS)
- 		goto phy_BB8190_Config_ParaFile_Fail;
-@@ -501,16 +501,14 @@ static	int phy_BB8188E_Config_ParaFile(struct adapter *Adapter)
- 	/*  2. If EEPROM or EFUSE autoload OK, We must config by PHY_REG_PG.txt */
- 	if (!pEEPROM->bautoload_fail_flag) {
- 		pHalData->pwrGroupCnt = 0;
--
--		if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv, CONFIG_BB_PHY_REG_PG))
--			rtStatus = _FAIL;
-+		ODM_ReadAndConfig_PHY_REG_PG_8188E(&pHalData->odmpriv);
- 	}
+Changes in v2:
+ - More details in the commit text (Stephen Boyd)
+ - Use human understandable values (Stephen Boyd, Dmitry Baryshkov)
+ - Do not take values that are going to be unused (Dmitry Baryshkov)
+
+ .../bindings/display/msm/dsi-phy-10nm.yaml         | 33 ++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml b/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
+index 4399715..d0eb8f6 100644
+--- a/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
++++ b/Documentation/devicetree/bindings/display/msm/dsi-phy-10nm.yaml
+@@ -35,6 +35,35 @@ properties:
+       Connected to DSI0_MIPI_DSI_PLL_VDDA0P9 pin for sc7180 target and
+       connected to VDDA_MIPI_DSI_0_PLL_0P9 pin for sdm845 target
  
- 	if (rtStatus != _SUCCESS)
- 		goto phy_BB8190_Config_ParaFile_Fail;
- 
- 	/*  3. BB AGC table Initialization */
--	if (HAL_STATUS_FAILURE == ODM_ConfigBBWithHeaderFile(&pHalData->odmpriv,  CONFIG_BB_AGC_TAB))
-+	if (HAL_STATUS_FAILURE == ODM_ReadAndConfig_AGC_TAB_1T_8188E(&pHalData->odmpriv))
- 		rtStatus = _FAIL;
- 
- 	if (rtStatus != _SUCCESS)
-diff --git a/drivers/staging/r8188eu/include/odm_HWConfig.h b/drivers/staging/r8188eu/include/odm_HWConfig.h
-index 1bd6f254bf53..b37962edb2ed 100644
---- a/drivers/staging/r8188eu/include/odm_HWConfig.h
-+++ b/drivers/staging/r8188eu/include/odm_HWConfig.h
-@@ -67,7 +67,4 @@ void ODM_PhyStatusQuery(struct odm_dm_struct *pDM_Odm,
- 			struct adapter *adapt);
- 
- enum HAL_STATUS ODM_ConfigRFWithHeaderFile(struct odm_dm_struct *pDM_Odm);
--
--enum HAL_STATUS ODM_ConfigBBWithHeaderFile(struct odm_dm_struct *pDM_Odm,
--					   enum odm_bb_config_type ConfigType);
- #endif
++  phy-rescode-offset-top:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 5
++    maxItems: 5
++    description:
++      Integer array of offset for pull-up legs rescode for all five lanes.
++      To offset the drive strength from the calibrated value in an increasing
++      or decreasing manner, use 6 bit two’s complement values.
++
++  phy-rescode-offset-bot:
++    $ref: /schemas/types.yaml#/definitions/uint8-array
++    minItems: 5
++    maxItems: 5
++    description:
++      Integer array of offset for pull-down legs rescode for all five lanes.
++      To offset the drive strength from the calibrated value in an increasing
++      or decreasing manner, use 6 bit two’s complement values.
++
++  phy-drive-ldo-level:
++    $ref: /schemas/types.yaml#/definitions/uint8
++    minimum: 0
++    maximum: 7
++    description:
++      The PHY LDO has an amplitude tuning feature to adjust the LDO output
++      for the HSTX drive. To offset the drive level from the default value,
++      supported levels are with the following mapping:
++      0 = 375mV, 1 = 400mV, 2 = 425mV, 3 = 450mV, 4 = 475mV, 5 = 500mV,
++      6 = 500mV, 7 = 500mV
++
+ required:
+   - compatible
+   - reg
+@@ -64,5 +93,9 @@ examples:
+          clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
+                   <&rpmhcc RPMH_CXO_CLK>;
+          clock-names = "iface", "ref";
++
++         phy-resocde-offset-top = /bits/ 8 <0x0 0x0 0x0 0x0 0x0>;
++         phy-rescode-offset-bot = /bits/ 8 <0x0 0x0 0x0 0x0 0x0>;
++         phy-drive-ldo-level = /bits/ 8 <1>;
+      };
+ ...
 -- 
-2.30.2
+2.7.4
 
