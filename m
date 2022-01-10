@@ -2,78 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6873C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 22:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 261B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 22:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345393AbiAJWWQ (ORCPT
+        id S1345367AbiAJWWt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 17:22:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60260 "EHLO
+        Mon, 10 Jan 2022 17:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345367AbiAJWWK (ORCPT
+        with ESMTP id S241157AbiAJWWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 17:22:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE29C061751;
-        Mon, 10 Jan 2022 14:22:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01D77B8180E;
-        Mon, 10 Jan 2022 22:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 956F2C36AEF;
-        Mon, 10 Jan 2022 22:22:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641853327;
-        bh=nZkaYKHFOdV7Q8Fp1n6WNBX4Yk9/H6nzbskM4qlf/e0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=NY7FymS14WUzj4avmFazuFYRl/oGGUdTlb8lyrAZnnR0NTHtakr7wULLh4+mu1rRc
-         E/Hxc5PfXx6YYMfO86+C9Y999/jjRQ1bBzDZSX2cZDkPaHe0zC2NlYce28rNldBEnM
-         HUjg6DXge6gYWK6A7o8aNRXUsi5cDyVB9ovT0uG/iLMGOHHEoEMtH3fcR/x5gBlkAE
-         3mVJsRxRMMXnEcrEesZkW5IagVomgfwZwbGuUmU89cV0m2XX7OsStiCM7kAeH/fjUV
-         U1SI2VwytyjVvR+wjz3c1XHo48sScyfi2sTPHx/7OCcIPDj627MxDsvOS0rUG4Xupw
-         Rbi2NRk7S4lSg==
-Received: by mail-yb1-f173.google.com with SMTP id d1so42100186ybh.6;
-        Mon, 10 Jan 2022 14:22:07 -0800 (PST)
-X-Gm-Message-State: AOAM532xPMX9mSXg4VuLCRml4STKeNzcyMWskuKkxysvdY/EkLG5Zpp8
-        gwSoCovumv6DTA2NQanftJLnE5PYQGg+wVcq5rM=
-X-Google-Smtp-Source: ABdhPJwZH/DyO8E3u0XvP1BAo0vaLRN2AtOZrD/fa3LqP03NFGEPKRurGXJDM2jxiq3cLt7HnKX4H6nKCFqomMgn5wU=
-X-Received: by 2002:a25:8b85:: with SMTP id j5mr2297231ybl.558.1641853326749;
- Mon, 10 Jan 2022 14:22:06 -0800 (PST)
+        Mon, 10 Jan 2022 17:22:48 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D09BDC06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 14:22:47 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id j1so9852313iob.1
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 14:22:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GECtgr52QV1EPTta/2B2UmimcgBEplWvMNOTcq1vS+M=;
+        b=kgBQtrZHWwIJdlu/GkbHgK1ITF4NgJgumTL1y0OAA50GernivyX0Y8EwcW4XnAr4zE
+         93KmJk3auGzU+hGxD3/n96RpUJd1YpdXahQfojM6x9eiGh08s+LWGKC5RnKBb6i3weHq
+         XxGBBzKmIOs6VNQpTFXJzb8Uhpfh7ZXi1CB1G7tZUZmAYuh3VXyaTiSC3nAjgLDRaSZN
+         lLfw7s7gpjfHLNcdAe+P8/Y1jES6fXACoHZC36+Y5dBptSc7BxfST5xy6nMBhl59Wzvp
+         QeyDDXvXgsgnotzda2gTd36lv28MWf1kyitrQOQPlrao+EhLSGYbmkG9tYsgcoXwQtNV
+         Rb8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GECtgr52QV1EPTta/2B2UmimcgBEplWvMNOTcq1vS+M=;
+        b=RtMT8bDMjtEJGCYKsXBRQsa6sNuvF52nVktlgOWu75OlaEgaYIQgSAj+ygJxaQefTa
+         LabAixawNE6wnrH59NyCddGllf+HKLSQ4oeBvesUvAick+ftexIbjojeomiOnWGUOyBp
+         1GeEYQu9PjSFb+ZArL8GJdV/MrOzcv0mMbOUI7ZlEjpGG6kbjrxMtKcjpX3W7qbw4Ptz
+         MXCFPVP+8T/3vwd1iy7bUK6Vn+0SXKu2FA+piSigg5p8bMns3NSKwdl8owNIVxfbfo7Q
+         bg2jFprAAcGwwfRHz7Iv0HmTx85Lu+f3AwRXNldUROEY9CA09uhD/amntpsWBY/xX+01
+         nxZg==
+X-Gm-Message-State: AOAM533CaeQsjPa/PQVsXH26CVNhYtZmQnWo7A1J6WhG5IjDjtB/UQ2N
+        KQefIkerjGxi1wAAGsFQAQIKIShBaEgDuamf34blyQ==
+X-Google-Smtp-Source: ABdhPJyISpavZ8R66rZeWCAR7t9VhZ6UHzPHo8uijxDXyTrjndiRPXu1rvhqDAUd/s9WRwwU9PbbkBJWrszWNNvd70w=
+X-Received: by 2002:a02:294b:: with SMTP id p72mr927296jap.263.1641853367120;
+ Mon, 10 Jan 2022 14:22:47 -0800 (PST)
 MIME-Version: 1.0
-References: <20220108051121.28632-1-yichun@openresty.com>
-In-Reply-To: <20220108051121.28632-1-yichun@openresty.com>
-From:   Song Liu <song@kernel.org>
-Date:   Mon, 10 Jan 2022 14:21:55 -0800
-X-Gmail-Original-Message-ID: <CAPhsuW5+zCh2ZE6zUq2T=83Z6Ce93z_ojxrqGN9iYN9Qvyq_YQ@mail.gmail.com>
-Message-ID: <CAPhsuW5+zCh2ZE6zUq2T=83Z6Ce93z_ojxrqGN9iYN9Qvyq_YQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: core: Fix the call ins's offset s32 -> s16 truncation
-To:     "Yichun Zhang (agentzh)" <yichun@openresty.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+References: <20220105061351.120843-1-irogers@google.com> <20220105061351.120843-5-irogers@google.com>
+ <0e26524c-9f4c-b351-2498-0a56bc86b4ee@huawei.com>
+In-Reply-To: <0e26524c-9f4c-b351-2498-0a56bc86b4ee@huawei.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 10 Jan 2022 14:22:34 -0800
+Message-ID: <CAP-5=fWU+JBpqpE0ujGfs5TmnY9mv5CWNdMc=X_zKe79GTvPfw@mail.gmail.com>
+Subject: Re: [PATCH v4 04/48] perf stat: Switch aggregation to use for_each loop
+To:     John Garry <john.garry@huawei.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vineet Singh <vineet.singh@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
+        eranian@google.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 9:11 PM Yichun Zhang (agentzh)
-<yichun@openresty.com> wrote:
+On Mon, Jan 10, 2022 at 10:51 AM John Garry <john.garry@huawei.com> wrote:
 >
-> The BPF interpreter always truncates the BPF CALL instruction's 32-bit
-> jump offset to 16-bit. Large BPF programs run by the interpreter often
-> hit this issue and result in weird behaviors when jumping to the wrong
-> destination instructions.
+> On 05/01/2022 06:13, Ian Rogers wrote:
+> > +     cpus = evsel__cpus(evsel);
+> > +     perf_cpu_map__for_each_cpu(cpu, idx, cpus) {
 >
-> The BPF JIT compiler does not have this bug.
->
-> Fixes: 1ea47e01ad6ea ("bpf: add support for bpf_call to interpreter")
-> Signed-off-by: Yichun Zhang (agentzh) <yichun@openresty.com>
+> It seems a common pattern to evaluate cpus and use in
+> perf_cpu_map__for_each_cpu() - is it possible to make a macro to accept
+> evsel and create cpus, like perf_evsel__for_each_cpu()?
 
-Acked-by: Song Liu <songliubraving@fb.com>
+It's possible, I'm not sure it is saving much and it is common to also
+want to iterate the cpumap of the evlist.
+
+Thanks,
+Ian
+
+> > +             if (cpu_map__compare_aggr_cpu_id(config->aggr_get_id(config, cpus, idx),
+> > +                                              id))
+> > +                     return cpu;
+> >       }
+> >       return 0;
+>
