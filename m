@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF3BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230055AbiAJHlV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:41:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
+        id S240678AbiAJHl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:41:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240991AbiAJHeb (ORCPT
+        with ESMTP id S241022AbiAJHec (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:34:31 -0500
+        Mon, 10 Jan 2022 02:34:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF190C0253BA;
-        Sun,  9 Jan 2022 23:30:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA54DC025246;
+        Sun,  9 Jan 2022 23:30:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DB86611CE;
-        Mon, 10 Jan 2022 07:30:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D2FC36AED;
-        Mon, 10 Jan 2022 07:30:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B25B611E2;
+        Mon, 10 Jan 2022 07:30:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30349C36AE9;
+        Mon, 10 Jan 2022 07:30:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799816;
-        bh=3dspLntcUy2ueE+BT3e4HrJZXKrmVmN8PqhoofAlJkA=;
+        s=korg; t=1641799819;
+        bh=2KlE26ZJLolX3C57NOq5F8IXmQohsH+1VYKtkYusRfk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ML+EJA95DcR8kTwla1pN1ahKJt7hWTZRtZmplNvlHs2S0brN/1gXxlsNHWOjVOiAn
-         /bMiUuSgHTAHJSJ6mKmyFNg/kTkDomxxnndq2eZOJsLzJw+Izkm+1RsFQ26S4kN87X
-         goBzTfSZU0VEvOtGoM8RF3Nn6gBYHO18iuu7vXqs=
+        b=2W+qcuduYfIf14j9Hr9Lyl1r/w45Fzo/OrpuufpetDbNnQjna8WmeB11kkx/CzFO1
+         2Wnop2iryJ4IRIPjkdrPqjDDx37UMR0ErP+3VgEqKqDhFzWbBd25FKh8+WUJHFRlc+
+         6R4djoDlLvFcTNFkMUkLTpl2x2eimGgSlB0imyp4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shay Agroskin <shayagr@amazon.com>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 25/43] net: ena: Fix error handling when calculating max IO queues number
-Date:   Mon, 10 Jan 2022 08:23:22 +0100
-Message-Id: <20220110071818.195583561@linuxfoundation.org>
+        stable@vger.kernel.org, Kirill Tkhai <ktkhai@virtuozzo.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        Dave Chinner <dchinner@redhat.com>,
+        Eric Sandeen <sandeen@redhat.com>
+Subject: [PATCH 5.10 26/43] xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
+Date:   Mon, 10 Jan 2022 08:23:23 +0100
+Message-Id: <20220110071818.227285059@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -49,51 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arthur Kiyanovski <akiyano@amazon.com>
+From: Darrick J. Wong <djwong@kernel.org>
 
-commit 5055dc0348b8b7c168e3296044bccd724e1ae6cd upstream.
+commit 983d8e60f50806f90534cc5373d0ce867e5aaf79 upstream.
 
-The role of ena_calc_max_io_queue_num() is to return the number
-of queues supported by the device, which means the return value
-should be >=0.
+The old ALLOCSP/FREESP ioctls in XFS can be used to preallocate space at
+the end of files, just like fallocate and RESVSP.  Make the behavior
+consistent with the other ioctls.
 
-The function that calls ena_calc_max_io_queue_num(), checks
-the return value. If it is 0, it means the device reported
-it supports 0 IO queues. This case is considered an error
-and is handled by the calling function accordingly.
-
-However the current implementation of ena_calc_max_io_queue_num()
-is wrong, since when it detects the device supports 0 IO queues,
-it returns -EFAULT.
-
-In such a case the calling function doesn't detect the error,
-and therefore doesn't handle it.
-
-This commit changes ena_calc_max_io_queue_num() to return 0
-in case the device reported it supports 0 queues, allowing the
-calling function to properly handle the error case.
-
-Fixes: 736ce3f414cc ("net: ena: make ethtool -l show correct max number of queues")
-Signed-off-by: Shay Agroskin <shayagr@amazon.com>
-Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Kirill Tkhai <ktkhai@virtuozzo.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Eric Sandeen <sandeen@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/amazon/ena/ena_netdev.c |    4 ----
- 1 file changed, 4 deletions(-)
+ fs/xfs/xfs_ioctl.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@ -3927,10 +3927,6 @@ static u32 ena_calc_max_io_queue_num(str
- 	max_num_io_queues = min_t(u32, max_num_io_queues, io_tx_cq_num);
- 	/* 1 IRQ for for mgmnt and 1 IRQs for each IO direction */
- 	max_num_io_queues = min_t(u32, max_num_io_queues, pci_msix_vec_count(pdev) - 1);
--	if (unlikely(!max_num_io_queues)) {
--		dev_err(&pdev->dev, "The device doesn't have io queues\n");
--		return -EFAULT;
--	}
+--- a/fs/xfs/xfs_ioctl.c
++++ b/fs/xfs/xfs_ioctl.c
+@@ -686,7 +686,8 @@ xfs_ioc_space(
  
- 	return max_num_io_queues;
- }
+ 	if (bf->l_start > XFS_ISIZE(ip)) {
+ 		error = xfs_alloc_file_space(ip, XFS_ISIZE(ip),
+-				bf->l_start - XFS_ISIZE(ip), 0);
++				bf->l_start - XFS_ISIZE(ip),
++				XFS_BMAPI_PREALLOC);
+ 		if (error)
+ 			goto out_unlock;
+ 	}
 
 
