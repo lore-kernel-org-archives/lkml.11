@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241186AbiAJHoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:44:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34520 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240986AbiAJHeb (ORCPT
+        id S243164AbiAJHos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:44:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42676 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241051AbiAJHei (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:34:31 -0500
+        Mon, 10 Jan 2022 02:34:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7407EB81208;
-        Mon, 10 Jan 2022 07:34:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77FAC36AF2;
-        Mon, 10 Jan 2022 07:34:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EC1C60C07;
+        Mon, 10 Jan 2022 07:34:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61561C36AED;
+        Mon, 10 Jan 2022 07:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800069;
-        bh=Y0J8XBrSx5+EYNohAi7G2j5UtwGyHqbFfjrqlSDfVyk=;
+        s=korg; t=1641800074;
+        bh=MCsFaAiWm6my6sUnZa4K4kkGh4YU1t59pdeAwZ6QeJY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WitVbdO8MSa8tH2lMMpl6L48QdIvg63KHAHyc6n+lOsegcOZgvzmJpWx3xkhBUUqu
-         Zzp1xjOQSgIw4n4s9eOIKnqP0VTlLZDzTRUwyMQ5catBsuMYwNJF/k+v31OPrn76bw
-         pwuqIncxJy8lf8bP+1xpwd1WY9/nGFPZyiqxrtpg=
+        b=E0s75Qs2/v/hVUtW3oWfUSTWNpTcAPBKbWNEPcP2uPVPOeikv/BMZ3/4JttY+p0JI
+         4TIz72/4RMIponQ0X1qonkAlVzY7wDsOO3ycUuqRYbsq1ByqQmdNTn5g7YI+9W5vMv
+         y/qQ55ILmE7hQ3Y8WqbRGPsRyKk6eENJVieL307U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tamir Duberstein <tamird@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 67/72] ipv6: raw: check passed optlen before reading
-Date:   Mon, 10 Jan 2022 08:23:44 +0100
-Message-Id: <20220110071823.836097125@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
+        Konstantin Kharlamov <hi-angel@yandex.ru>,
+        Wolfram Sang <wsa@kernel.org>
+Subject: [PATCH 5.15 38/72] Revert "i2c: core: support bus regulator controlling in adapter"
+Date:   Mon, 10 Jan 2022 08:23:15 +0100
+Message-Id: <20220110071822.844018002@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -47,44 +47,177 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tamir Duberstein <tamird@gmail.com>
+From: Wolfram Sang <wsa@kernel.org>
 
-[ Upstream commit fb7bc9204095090731430c8921f9e629740c110a ]
+commit a19f75de73c220b4496d2aefb7a605dd032f7c01 upstream.
 
-Add a check that the user-provided option is at least as long as the
-number of bytes we intend to read. Before this patch we would blindly
-read sizeof(int) bytes even in cases where the user passed
-optlen<sizeof(int), which would potentially read garbage or fault.
+This largely reverts commit 5a7b95fb993ec399c8a685552aa6a8fc995c40bd. It
+breaks suspend with AMD GPUs, and we couldn't incrementally fix it. So,
+let's remove the code and go back to the drawing board. We keep the
+header extension to not break drivers already populating the regulator.
+We expect to re-add the code handling it soon.
 
-Discovered by new tests in https://github.com/google/gvisor/pull/6957 .
-
-The original get_user call predates history in the git repo.
-
-Signed-off-by: Tamir Duberstein <tamird@gmail.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
-Link: https://lore.kernel.org/r/20211229200947.2862255-1-willemdebruijn.kernel@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5a7b95fb993e ("i2c: core: support bus regulator controlling in adapter")
+Reported-by: "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
+Link: https://lore.kernel.org/r/1295184560.182511.1639075777725@mail.yahoo.com
+Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
+Link: https://lore.kernel.org/r/7143a7147978f4104171072d9f5225d2ce355ec1.camel@yandex.ru
+BugLink: https://gitlab.freedesktop.org/drm/amd/-/issues/1850
+Tested-by: "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
+Tested-by: Konstantin Kharlamov <hi-angel@yandex.ru>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Cc: <stable@vger.kernel.org> # 5.14+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/raw.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/i2c/i2c-core-base.c |   95 --------------------------------------------
+ 1 file changed, 95 deletions(-)
 
-diff --git a/net/ipv6/raw.c b/net/ipv6/raw.c
-index 60f1e4f5be5aa..c51d5ce3711c2 100644
---- a/net/ipv6/raw.c
-+++ b/net/ipv6/raw.c
-@@ -1020,6 +1020,9 @@ static int do_rawv6_setsockopt(struct sock *sk, int level, int optname,
- 	struct raw6_sock *rp = raw6_sk(sk);
- 	int val;
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -466,14 +466,12 @@ static int i2c_smbus_host_notify_to_irq(
+ static int i2c_device_probe(struct device *dev)
+ {
+ 	struct i2c_client	*client = i2c_verify_client(dev);
+-	struct i2c_adapter	*adap;
+ 	struct i2c_driver	*driver;
+ 	int status;
  
-+	if (optlen < sizeof(val))
-+		return -EINVAL;
-+
- 	if (copy_from_sockptr(&val, optval, sizeof(val)))
- 		return -EFAULT;
+ 	if (!client)
+ 		return 0;
  
--- 
-2.34.1
-
+-	adap = client->adapter;
+ 	client->irq = client->init_irq;
+ 
+ 	if (!client->irq) {
+@@ -539,14 +537,6 @@ static int i2c_device_probe(struct devic
+ 
+ 	dev_dbg(dev, "probe\n");
+ 
+-	if (adap->bus_regulator) {
+-		status = regulator_enable(adap->bus_regulator);
+-		if (status < 0) {
+-			dev_err(&adap->dev, "Failed to enable bus regulator\n");
+-			goto err_clear_wakeup_irq;
+-		}
+-	}
+-
+ 	status = of_clk_set_defaults(dev->of_node, false);
+ 	if (status < 0)
+ 		goto err_clear_wakeup_irq;
+@@ -604,10 +594,8 @@ put_sync_adapter:
+ static void i2c_device_remove(struct device *dev)
+ {
+ 	struct i2c_client	*client = to_i2c_client(dev);
+-	struct i2c_adapter      *adap;
+ 	struct i2c_driver	*driver;
+ 
+-	adap = client->adapter;
+ 	driver = to_i2c_driver(dev->driver);
+ 	if (driver->remove) {
+ 		int status;
+@@ -622,8 +610,6 @@ static void i2c_device_remove(struct dev
+ 	devres_release_group(&client->dev, client->devres_group_id);
+ 
+ 	dev_pm_domain_detach(&client->dev, true);
+-	if (!pm_runtime_status_suspended(&client->dev) && adap->bus_regulator)
+-		regulator_disable(adap->bus_regulator);
+ 
+ 	dev_pm_clear_wake_irq(&client->dev);
+ 	device_init_wakeup(&client->dev, false);
+@@ -633,86 +619,6 @@ static void i2c_device_remove(struct dev
+ 		pm_runtime_put(&client->adapter->dev);
+ }
+ 
+-#ifdef CONFIG_PM_SLEEP
+-static int i2c_resume_early(struct device *dev)
+-{
+-	struct i2c_client *client = i2c_verify_client(dev);
+-	int err;
+-
+-	if (!client)
+-		return 0;
+-
+-	if (pm_runtime_status_suspended(&client->dev) &&
+-		client->adapter->bus_regulator) {
+-		err = regulator_enable(client->adapter->bus_regulator);
+-		if (err)
+-			return err;
+-	}
+-
+-	return pm_generic_resume_early(&client->dev);
+-}
+-
+-static int i2c_suspend_late(struct device *dev)
+-{
+-	struct i2c_client *client = i2c_verify_client(dev);
+-	int err;
+-
+-	if (!client)
+-		return 0;
+-
+-	err = pm_generic_suspend_late(&client->dev);
+-	if (err)
+-		return err;
+-
+-	if (!pm_runtime_status_suspended(&client->dev) &&
+-		client->adapter->bus_regulator)
+-		return regulator_disable(client->adapter->bus_regulator);
+-
+-	return 0;
+-}
+-#endif
+-
+-#ifdef CONFIG_PM
+-static int i2c_runtime_resume(struct device *dev)
+-{
+-	struct i2c_client *client = i2c_verify_client(dev);
+-	int err;
+-
+-	if (!client)
+-		return 0;
+-
+-	if (client->adapter->bus_regulator) {
+-		err = regulator_enable(client->adapter->bus_regulator);
+-		if (err)
+-			return err;
+-	}
+-
+-	return pm_generic_runtime_resume(&client->dev);
+-}
+-
+-static int i2c_runtime_suspend(struct device *dev)
+-{
+-	struct i2c_client *client = i2c_verify_client(dev);
+-	int err;
+-
+-	if (!client)
+-		return 0;
+-
+-	err = pm_generic_runtime_suspend(&client->dev);
+-	if (err)
+-		return err;
+-
+-	if (client->adapter->bus_regulator)
+-		return regulator_disable(client->adapter->bus_regulator);
+-	return 0;
+-}
+-#endif
+-
+-static const struct dev_pm_ops i2c_device_pm = {
+-	SET_LATE_SYSTEM_SLEEP_PM_OPS(i2c_suspend_late, i2c_resume_early)
+-	SET_RUNTIME_PM_OPS(i2c_runtime_suspend, i2c_runtime_resume, NULL)
+-};
+-
+ static void i2c_device_shutdown(struct device *dev)
+ {
+ 	struct i2c_client *client = i2c_verify_client(dev);
+@@ -772,7 +678,6 @@ struct bus_type i2c_bus_type = {
+ 	.probe		= i2c_device_probe,
+ 	.remove		= i2c_device_remove,
+ 	.shutdown	= i2c_device_shutdown,
+-	.pm		= &i2c_device_pm,
+ };
+ EXPORT_SYMBOL_GPL(i2c_bus_type);
+ 
 
 
