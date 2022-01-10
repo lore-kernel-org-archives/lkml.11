@@ -2,147 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA245C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15FF6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239251AbiAJHYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:24:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        id S239266AbiAJHYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:24:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239227AbiAJHYF (ORCPT
+        with ESMTP id S239244AbiAJHYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:24:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67F81C06173F;
-        Sun,  9 Jan 2022 23:24:05 -0800 (PST)
+        Mon, 10 Jan 2022 02:24:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA227C061748;
+        Sun,  9 Jan 2022 23:24:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 077CC6112C;
-        Mon, 10 Jan 2022 07:24:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B199DC36AED;
-        Mon, 10 Jan 2022 07:24:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FEB0B81203;
+        Mon, 10 Jan 2022 07:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7BF6C36AED;
+        Mon, 10 Jan 2022 07:24:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799444;
-        bh=Dj22NY8+/uoBLrN/3qCVXl3cEEJtqFHJF6pZmeYNYBs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rg/SU6MnY5uV3qYAZ8giUM86D/RIAo3O0V4YvcwxIQi/L16DJsRnYikEViFI7zqrd
-         kSD7ax4X+9ZNpmdvbRB4bvQb17Y+yKBrUgGCP/V12VV1a4cfRO0ZOetnNI3/+qlHXl
-         jNDcO9iGdFRT6FOCSlT1mu61ELkrmJHcOngbatso=
+        s=korg; t=1641799447;
+        bh=RBTUXFqEnQBlxgNUXJFmTdTEQYpRg5T5bUaiz8qWXZU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dZl4M3cUgaiAgwqMdesOuKLiReP9/8dmN1vwJsb/YtoH+ijn5OTbG+w6XrEj/3R2u
+         9gVWZCHmenAlP1MalQ5udrZQhNwP7zQp8z1vE4FhOhTLgz0QhX+qLH7VPMCIl3suhO
+         cmPLZXKUBXvbJe+7UP/0z2ryd8qqmREQKIaToP2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-Subject: [PATCH 4.4 00/14] 4.4.299-rc1 review
-Date:   Mon, 10 Jan 2022 08:22:39 +0100
-Message-Id: <20220110071811.779189823@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Potapenko <glider@google.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 4.4 03/14] ieee802154: atusb: fix uninit value in atusb_set_extended_addr
+Date:   Mon, 10 Jan 2022 08:22:42 +0100
+Message-Id: <20220110071811.890826187@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+In-Reply-To: <20220110071811.779189823@linuxfoundation.org>
+References: <20220110071811.779189823@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.4.299-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.4.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.4.299-rc1
-X-KernelTest-Deadline: 2022-01-12T07:18+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.4.299 release.
-There are 14 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
-Anything received after that time might be too late.
+commit 754e4382354f7908923a1949d8dc8d05f82f09cb upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.4.299-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.4.y
-and the diffstat can be found below.
+Alexander reported a use of uninitialized value in
+atusb_set_extended_addr(), that is caused by reading 0 bytes via
+usb_control_msg().
 
-thanks,
+Fix it by validating if the number of bytes transferred is actually
+correct, since usb_control_msg() may read less bytes, than was requested
+by caller.
 
-greg k-h
+Fail log:
 
--------------
-Pseudo-Shortlog of commits:
+BUG: KASAN: uninit-cmp in ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
+BUG: KASAN: uninit-cmp in atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
+BUG: KASAN: uninit-cmp in atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
+Uninit value used in comparison: 311daa649a2003bd stack handle: 000000009a2003bd
+ ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
+ atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
+ atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
+ usb_probe_interface+0x314/0x7f0 drivers/usb/core/driver.c:396
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.4.299-rc1
+Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
+Reported-by: Alexander Potapenko <glider@google.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: https://lore.kernel.org/r/20220104182806.7188-1-paskripkin@gmail.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ieee802154/atusb.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Nathan Chancellor <nathan@kernel.org>
-    power: reset: ltc2952: Fix use of floating point literals
-
-wolfgang huang <huangjinhui@kylinos.cn>
-    mISDN: change function names to avoid conflicts
-
-yangxingwu <xingwu.yang@gmail.com>
-    net: udp: fix alignment problem in udp4_seq_show()
-
-William Zhao <wizhao@redhat.com>
-    ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
-
-Lixiaokeng <lixiaokeng@huawei.com>
-    scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
-
-Hangyu Hua <hbh25y@gmail.com>
-    phonet: refcount leak in pep_sock_accep
-
-Thomas Toye <thomas@toye.io>
-    rndis_host: support Hytera digital radios
-
-Darrick J. Wong <djwong@kernel.org>
-    xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
-
-Eric Dumazet <edumazet@google.com>
-    sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
-
-Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-    i40e: Fix incorrect netdev's real number of RX/TX queues
-
-Tom Rix <trix@redhat.com>
-    mac80211: initialize variable have_higher_than_11mbit
-
-Pavel Skripkin <paskripkin@gmail.com>
-    ieee802154: atusb: fix uninit value in atusb_set_extended_addr
-
-Takashi Iwai <tiwai@suse.de>
-    Bluetooth: btusb: Apply QCA Rome patches for some ATH3012 models
-
-Daniel Borkmann <daniel@iogearbox.net>
-    bpf, test: fix ld_abs + vlan push/pop stress test
-
-
--------------
-
-Diffstat:
-
- Makefile                                    |  4 ++--
- drivers/bluetooth/btusb.c                   | 32 ++++++++++++++++++++++-------
- drivers/isdn/mISDN/core.c                   |  6 +++---
- drivers/isdn/mISDN/core.h                   |  4 ++--
- drivers/isdn/mISDN/layer1.c                 |  4 ++--
- drivers/net/ethernet/intel/i40e/i40e_main.c | 32 ++++++++++++++++++++++-------
- drivers/net/ieee802154/atusb.c              | 10 +++++----
- drivers/net/usb/rndis_host.c                |  5 +++++
- drivers/power/reset/ltc2952-poweroff.c      |  4 ++--
- drivers/scsi/libiscsi.c                     |  6 ++++--
- fs/xfs/xfs_ioctl.c                          |  3 ++-
- lib/test_bpf.c                              |  2 +-
- net/ipv4/udp.c                              |  2 +-
- net/ipv6/ip6_vti.c                          |  2 ++
- net/mac80211/mlme.c                         |  2 +-
- net/phonet/pep.c                            |  1 +
- net/sched/sch_qfq.c                         |  6 ++----
- 17 files changed, 86 insertions(+), 39 deletions(-)
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -77,7 +77,9 @@ static int atusb_control_msg(struct atus
+ 
+ 	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
+ 			      value, index, data, size, timeout);
+-	if (ret < 0) {
++	if (ret < size) {
++		ret = ret < 0 ? ret : -ENODATA;
++
+ 		atusb->err = ret;
+ 		dev_err(&usb_dev->dev,
+ 			"atusb_control_msg: req 0x%02x val 0x%x idx 0x%x, error %d\n",
+@@ -567,9 +569,9 @@ static int atusb_get_and_show_build(stru
+ 	if (!build)
+ 		return -ENOMEM;
+ 
+-	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
+-				ATUSB_BUILD, ATUSB_REQ_FROM_DEV, 0, 0,
+-				build, ATUSB_BUILD_SIZE, 1000);
++	/* We cannot call atusb_control_msg() here, since this request may read various length data */
++	ret = usb_control_msg(atusb->usb_dev, usb_rcvctrlpipe(usb_dev, 0), ATUSB_BUILD,
++			      ATUSB_REQ_FROM_DEV, 0, 0, build, ATUSB_BUILD_SIZE, 1000);
+ 	if (ret >= 0) {
+ 		build[ret] = 0;
+ 		dev_info(&usb_dev->dev, "Firmware: build %s\n", build);
 
 
