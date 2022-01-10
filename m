@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03734C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4243AC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243545AbiAJHpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50404 "EHLO
+        id S243573AbiAJHpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240572AbiAJHiS (ORCPT
+        with ESMTP id S240277AbiAJHiU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:38:18 -0500
+        Mon, 10 Jan 2022 02:38:20 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA80C028BA8;
-        Sun,  9 Jan 2022 23:32:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9BE9C09B058;
+        Sun,  9 Jan 2022 23:33:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AADCFB81204;
-        Mon, 10 Jan 2022 07:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE43C36AED;
-        Mon, 10 Jan 2022 07:32:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95FDAB811E3;
+        Mon, 10 Jan 2022 07:33:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF6C3C36AED;
+        Mon, 10 Jan 2022 07:32:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799954;
-        bh=ITblwZ2ADn0VPZZJdOsjLdDtAN52vSlPSF1hbAWXnMk=;
+        s=korg; t=1641799980;
+        bh=lDfrkpNjtoMRFV8osMw3gxZTOWP/QrK56n6S9WjjuXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqRWYAzBAKM9yXlU7Nr0IWj/UDayTi6QdZMybUw+yvgAx/IzpZ7Fk8qbFzMueJzEf
-         gi0j+NUArSlsisTkEJKairACp1Iqkx6eVKG+4kMZjIKa0FGyKlMROlM+ICdjTNwBe8
-         p31rpc74oIKB/K5fNleqRdEZj0z8UuMARKNsYuAM=
+        b=KOEpGawdBmLLzyjjoQVAfPQCkfGOy3qdSnLnQzKE3w8RmuglDRfiTMZEw++ubTtC7
+         joGFXpebYpv7iR/bfZjL/IdWsLTU/5u8p5oKGkS3O+UhIKV4D89+H9eneK2EqcHEzP
+         ypzgysbN1hvKbhN9I/55IY1YdsoMm2CO+HOdUIhE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 28/72] sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
-Date:   Mon, 10 Jan 2022 08:23:05 +0100
-Message-Id: <20220110071822.517882112@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Grzegorz Szczurek <grzegorzx.szczurek@intel.com>,
+        Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        Tony Brelinski <tony.brelinski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Subject: [PATCH 5.15 07/72] i40e: Fix to not show opcode msg on unsuccessful VF MAC change
+Date:   Mon, 10 Jan 2022 08:22:44 +0100
+Message-Id: <20220110071821.758970107@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -49,65 +53,150 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-commit 7d18a07897d07495ee140dd319b0e9265c0f68ba upstream.
+commit 01cbf50877e602e2376af89e4a51c30bc574c618 upstream.
 
-tx_queue_len can be set to ~0U, we need to be more
-careful about overflows.
+Hide i40e opcode information sent during response to VF in case when
+untrusted VF tried to change MAC on the VF interface.
 
-__fls(0) is undefined, as this report shows:
+This is implemented by adding an additional parameter 'hide' to the
+response sent to VF function that hides the display of error
+information, but forwards the error code to VF.
 
-UBSAN: shift-out-of-bounds in net/sched/sch_qfq.c:1430:24
-shift exponent 51770272 is too large for 32-bit type 'int'
-CPU: 0 PID: 25574 Comm: syz-executor.0 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x201/0x2d8 lib/dump_stack.c:106
- ubsan_epilogue lib/ubsan.c:151 [inline]
- __ubsan_handle_shift_out_of_bounds+0x494/0x530 lib/ubsan.c:330
- qfq_init_qdisc+0x43f/0x450 net/sched/sch_qfq.c:1430
- qdisc_create+0x895/0x1430 net/sched/sch_api.c:1253
- tc_modify_qdisc+0x9d9/0x1e20 net/sched/sch_api.c:1660
- rtnetlink_rcv_msg+0x934/0xe60 net/core/rtnetlink.c:5571
- netlink_rcv_skb+0x200/0x470 net/netlink/af_netlink.c:2496
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x814/0x9f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0xaea/0xe60 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x5b9/0x910 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmsg+0x280/0x370 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Previously it was not possible to send response with some error code
+to VF without displaying opcode information.
 
-Fixes: 462dbc9101ac ("pkt_sched: QFQ Plus: fair-queueing service at DRR cost")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 5c3c48ac6bf5 ("i40e: implement virtual device interface")
+Signed-off-by: Grzegorz Szczurek <grzegorzx.szczurek@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Reviewed-by: Paul M Stillwell Jr <paul.m.stillwell.jr@intel.com>
+Reviewed-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Tested-by: Tony Brelinski <tony.brelinski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/sch_qfq.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c |   40 ++++++++++++++++-----
+ 1 file changed, 32 insertions(+), 8 deletions(-)
 
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -1422,10 +1422,8 @@ static int qfq_init_qdisc(struct Qdisc *
- 	if (err < 0)
- 		return err;
+--- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+@@ -1877,17 +1877,19 @@ sriov_configure_out:
+ /***********************virtual channel routines******************/
  
--	if (qdisc_dev(sch)->tx_queue_len + 1 > QFQ_MAX_AGG_CLASSES)
--		max_classes = QFQ_MAX_AGG_CLASSES;
--	else
--		max_classes = qdisc_dev(sch)->tx_queue_len + 1;
-+	max_classes = min_t(u64, (u64)qdisc_dev(sch)->tx_queue_len + 1,
-+			    QFQ_MAX_AGG_CLASSES);
- 	/* max_cl_shift = floor(log_2(max_classes)) */
- 	max_cl_shift = __fls(max_classes);
- 	q->max_agg_classes = 1<<max_cl_shift;
+ /**
+- * i40e_vc_send_msg_to_vf
++ * i40e_vc_send_msg_to_vf_ex
+  * @vf: pointer to the VF info
+  * @v_opcode: virtual channel opcode
+  * @v_retval: virtual channel return value
+  * @msg: pointer to the msg buffer
+  * @msglen: msg length
++ * @is_quiet: true for not printing unsuccessful return values, false otherwise
+  *
+  * send msg to VF
+  **/
+-static int i40e_vc_send_msg_to_vf(struct i40e_vf *vf, u32 v_opcode,
+-				  u32 v_retval, u8 *msg, u16 msglen)
++static int i40e_vc_send_msg_to_vf_ex(struct i40e_vf *vf, u32 v_opcode,
++				     u32 v_retval, u8 *msg, u16 msglen,
++				     bool is_quiet)
+ {
+ 	struct i40e_pf *pf;
+ 	struct i40e_hw *hw;
+@@ -1903,7 +1905,7 @@ static int i40e_vc_send_msg_to_vf(struct
+ 	abs_vf_id = vf->vf_id + hw->func_caps.vf_base_id;
+ 
+ 	/* single place to detect unsuccessful return values */
+-	if (v_retval) {
++	if (v_retval && !is_quiet) {
+ 		vf->num_invalid_msgs++;
+ 		dev_info(&pf->pdev->dev, "VF %d failed opcode %d, retval: %d\n",
+ 			 vf->vf_id, v_opcode, v_retval);
+@@ -1934,6 +1936,23 @@ static int i40e_vc_send_msg_to_vf(struct
+ }
+ 
+ /**
++ * i40e_vc_send_msg_to_vf
++ * @vf: pointer to the VF info
++ * @v_opcode: virtual channel opcode
++ * @v_retval: virtual channel return value
++ * @msg: pointer to the msg buffer
++ * @msglen: msg length
++ *
++ * send msg to VF
++ **/
++static int i40e_vc_send_msg_to_vf(struct i40e_vf *vf, u32 v_opcode,
++				  u32 v_retval, u8 *msg, u16 msglen)
++{
++	return i40e_vc_send_msg_to_vf_ex(vf, v_opcode, v_retval,
++					 msg, msglen, false);
++}
++
++/**
+  * i40e_vc_send_resp_to_vf
+  * @vf: pointer to the VF info
+  * @opcode: operation code
+@@ -2695,6 +2714,7 @@ error_param:
+  * i40e_check_vf_permission
+  * @vf: pointer to the VF info
+  * @al: MAC address list from virtchnl
++ * @is_quiet: set true for printing msg without opcode info, false otherwise
+  *
+  * Check that the given list of MAC addresses is allowed. Will return -EPERM
+  * if any address in the list is not valid. Checks the following conditions:
+@@ -2709,13 +2729,15 @@ error_param:
+  * addresses might not be accurate.
+  **/
+ static inline int i40e_check_vf_permission(struct i40e_vf *vf,
+-					   struct virtchnl_ether_addr_list *al)
++					   struct virtchnl_ether_addr_list *al,
++					   bool *is_quiet)
+ {
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = pf->vsi[vf->lan_vsi_idx];
+ 	int mac2add_cnt = 0;
+ 	int i;
+ 
++	*is_quiet = false;
+ 	for (i = 0; i < al->num_elements; i++) {
+ 		struct i40e_mac_filter *f;
+ 		u8 *addr = al->list[i].addr;
+@@ -2739,6 +2761,7 @@ static inline int i40e_check_vf_permissi
+ 		    !ether_addr_equal(addr, vf->default_lan_addr.addr)) {
+ 			dev_err(&pf->pdev->dev,
+ 				"VF attempting to override administratively set MAC address, bring down and up the VF interface to resume normal operation\n");
++			*is_quiet = true;
+ 			return -EPERM;
+ 		}
+ 
+@@ -2775,6 +2798,7 @@ static int i40e_vc_add_mac_addr_msg(stru
+ 	    (struct virtchnl_ether_addr_list *)msg;
+ 	struct i40e_pf *pf = vf->pf;
+ 	struct i40e_vsi *vsi = NULL;
++	bool is_quiet = false;
+ 	i40e_status ret = 0;
+ 	int i;
+ 
+@@ -2791,7 +2815,7 @@ static int i40e_vc_add_mac_addr_msg(stru
+ 	 */
+ 	spin_lock_bh(&vsi->mac_filter_hash_lock);
+ 
+-	ret = i40e_check_vf_permission(vf, al);
++	ret = i40e_check_vf_permission(vf, al, &is_quiet);
+ 	if (ret) {
+ 		spin_unlock_bh(&vsi->mac_filter_hash_lock);
+ 		goto error_param;
+@@ -2829,8 +2853,8 @@ static int i40e_vc_add_mac_addr_msg(stru
+ 
+ error_param:
+ 	/* send the response to the VF */
+-	return i40e_vc_send_resp_to_vf(vf, VIRTCHNL_OP_ADD_ETH_ADDR,
+-				       ret);
++	return i40e_vc_send_msg_to_vf_ex(vf, VIRTCHNL_OP_ADD_ETH_ADDR,
++				       ret, NULL, 0, is_quiet);
+ }
+ 
+ /**
 
 
