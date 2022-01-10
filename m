@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B93C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802D0C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:32:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240002AbiAJHca (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:32:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38236 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239692AbiAJH2o (ORCPT
+        id S240814AbiAJHcd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:32:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48092 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240138AbiAJH2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:44 -0500
+        Mon, 10 Jan 2022 02:28:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 284C3C028BF0;
+        Sun,  9 Jan 2022 23:26:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C5D8611D9;
-        Mon, 10 Jan 2022 07:28:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B740C36B05;
-        Mon, 10 Jan 2022 07:28:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD32EB81217;
+        Mon, 10 Jan 2022 07:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C7CC36AED;
+        Mon, 10 Jan 2022 07:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799724;
-        bh=jkEXWI9Pmo/l/YUG1s/FNZV4BToj0sgLXf6XuL/YJzs=;
+        s=korg; t=1641799616;
+        bh=/2XA2yRPFvZVFujVFXUxQ5ZTUit5MDCy/tTJQ6XuUTI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I72a7uVeI/odY3hEp451dQ5mnTlfWt3yoVIfx+Y0JBgX+3If2+zIEYKHujBN4uRZx
-         guLmcAGzBytLbS4mASqqIM2b8zcBgX63Oz9MXpdvg9Je0Qe5CAiN7sm2U4FTsTV5w3
-         AFdpk6yBTPF9bc/vccqvE2UjDxEu+Qb6PH/uhD4U=
+        b=QFJkTge8Tx0IWiUmQONMhHEGQ8R2ZtSyw0013tu/pOw4w9punbNEXWJzFq3zLudai
+         p3MbkUUVWZbFAySMDnOLshpO3/xniRRNSXVJzJPVUiO9OLBCcG4x/rixD/t67hb9f/
+         nzBG9KzF9EMRJqsEG2DaHFQe5t/oUZyp/WJV3Nzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 27/34] ipv6: Continue processing multipath route even if gateway attribute is invalid
-Date:   Mon, 10 Jan 2022 08:23:22 +0100
-Message-Id: <20220110071816.582688860@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Potapenko <glider@google.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: [PATCH 4.19 03/21] ieee802154: atusb: fix uninit value in atusb_set_extended_addr
+Date:   Mon, 10 Jan 2022 08:23:04 +0100
+Message-Id: <20220110071814.075884924@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
+References: <20220110071813.967414697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,51 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit e30a845b0376eb51c9c94f56bbd53b2e08ba822f ]
+commit 754e4382354f7908923a1949d8dc8d05f82f09cb upstream.
 
-ip6_route_multipath_del loop continues processing the multipath
-attribute even if delete of a nexthop path fails. For consistency,
-do the same if the gateway attribute is invalid.
+Alexander reported a use of uninitialized value in
+atusb_set_extended_addr(), that is caused by reading 0 bytes via
+usb_control_msg().
 
-Fixes: 1ff15a710a86 ("ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route")
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Link: https://lore.kernel.org/r/20220103171911.94739-1-dsahern@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix it by validating if the number of bytes transferred is actually
+correct, since usb_control_msg() may read less bytes, than was requested
+by caller.
+
+Fail log:
+
+BUG: KASAN: uninit-cmp in ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
+BUG: KASAN: uninit-cmp in atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
+BUG: KASAN: uninit-cmp in atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
+Uninit value used in comparison: 311daa649a2003bd stack handle: 000000009a2003bd
+ ieee802154_is_valid_extended_unicast_addr include/linux/ieee802154.h:310 [inline]
+ atusb_set_extended_addr drivers/net/ieee802154/atusb.c:1000 [inline]
+ atusb_probe.cold+0x29f/0x14db drivers/net/ieee802154/atusb.c:1056
+ usb_probe_interface+0x314/0x7f0 drivers/usb/core/driver.c:396
+
+Fixes: 7490b008d123 ("ieee802154: add support for atusb transceiver")
+Reported-by: Alexander Potapenko <glider@google.com>
+Acked-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Link: https://lore.kernel.org/r/20220104182806.7188-1-paskripkin@gmail.com
+Signed-off-by: Stefan Schmidt <stefan@datenfreihafen.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ieee802154/atusb.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 53861f9c8ce0a..56f0783df5896 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5313,8 +5313,10 @@ static int ip6_route_multipath_del(struct fib6_config *cfg,
- 			if (nla) {
- 				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
- 							extack);
--				if (err)
--					return err;
-+				if (err) {
-+					last_err = err;
-+					goto next_rtnh;
-+				}
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -96,7 +96,9 @@ static int atusb_control_msg(struct atus
  
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
-@@ -5323,6 +5325,7 @@ static int ip6_route_multipath_del(struct fib6_config *cfg,
- 		if (err)
- 			last_err = err;
+ 	ret = usb_control_msg(usb_dev, pipe, request, requesttype,
+ 			      value, index, data, size, timeout);
+-	if (ret < 0) {
++	if (ret < size) {
++		ret = ret < 0 ? ret : -ENODATA;
++
+ 		atusb->err = ret;
+ 		dev_err(&usb_dev->dev,
+ 			"%s: req 0x%02x val 0x%x idx 0x%x, error %d\n",
+@@ -864,9 +866,9 @@ static int atusb_get_and_show_build(stru
+ 	if (!build)
+ 		return -ENOMEM;
  
-+next_rtnh:
- 		rtnh = rtnh_next(rtnh, &remaining);
- 	}
- 
--- 
-2.34.1
-
+-	ret = atusb_control_msg(atusb, usb_rcvctrlpipe(usb_dev, 0),
+-				ATUSB_BUILD, ATUSB_REQ_FROM_DEV, 0, 0,
+-				build, ATUSB_BUILD_SIZE, 1000);
++	/* We cannot call atusb_control_msg() here, since this request may read various length data */
++	ret = usb_control_msg(atusb->usb_dev, usb_rcvctrlpipe(usb_dev, 0), ATUSB_BUILD,
++			      ATUSB_REQ_FROM_DEV, 0, 0, build, ATUSB_BUILD_SIZE, 1000);
+ 	if (ret >= 0) {
+ 		build[ret] = 0;
+ 		dev_info(&usb_dev->dev, "Firmware: build %s\n", build);
 
 
