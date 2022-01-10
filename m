@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA635C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 683ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:25:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238594AbiAJEYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:24:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
+        id S238683AbiAJEZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:25:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238494AbiAJEYZ (ORCPT
+        with ESMTP id S238493AbiAJEYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 9 Jan 2022 23:24:25 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE28BC06175B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E97C061759
         for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=FrPzWZ09xs9aa5csC+CTNKkHIKuSwjgWq1vjKtgzbWE=; b=PDZZlizvSkKJQNj2x7tsRWpb1N
-        hdVKt7y+Xxh4qzyI+mWWsfjz8avSgFEZji3flVPQAM8N9XJFoZnAIjvu0gfC6AYOJS5I9+g7jBzhf
-        +EcIZ/DFNZhcIBP6lqxrI9kuL1XbW49yqz7xGkLy4Jwwu4b+cLJym2/ff8s4QJMm00XgLqQGrsFy2
-        a6OeonVlXtwEvdKeN3+UTDGgJk8ikxpgZEHOHj8fC1C8EdX/yQ/+VNxk4EQnHstSUcksjT1ScuMjs
-        N0aPifks38xolz+Si80N3UlHe2ElKqal3R/CjOy2CilLpPvco/iPkHGviOgvnv8LZopjAAEoVjon3
-        8DosvRHA==;
+        bh=gfxLedy5iy4I1tA8ZKlC8DvCnDAEDbxXKKrSeENY8cY=; b=JYCKGH1t+KQP7QX9HjamnWk5W2
+        mF/7x01TlcS93WH/d+/4Muv2r6t8WSpkVek6GeJL4C4uinGkDtDqksIAv98QraviByTXyG1hUmFcC
+        o9Ah5t5TYuDzWB0c7fPsRId9euRKMDY6m29n97X+/Kfxm8Ubq1iYjHPa4LvvPx2ezmlzSKWhe2tfF
+        wSdnBxdJqdbIBrJhavYNKpwOkVpafajUtsBR68f9Q7FE8GIGJgvjSrSSfFte8Nx/OOGDb1ZuuyAIv
+        YqudSeZxTK7Z0UjRKtKUnhH0/BNlPrA0Kndwv0mV85kAjM4UkjSa3al2haF7Z15986OEdpXKtGmXA
+        mMZp5low==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6mE9-0025xC-MQ; Mon, 10 Jan 2022 04:24:13 +0000
+        id 1n6mE9-0025x0-8q; Mon, 10 Jan 2022 04:24:13 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 24/28] gup: Convert gup_huge_pgd() to use a folio
-Date:   Mon, 10 Jan 2022 04:24:02 +0000
-Message-Id: <20220110042406.499429-25-willy@infradead.org>
+Subject: [PATCH v2 18/28] hugetlb: Use try_grab_folio() instead of try_grab_compound_head()
+Date:   Mon, 10 Jan 2022 04:23:56 +0000
+Message-Id: <20220110042406.499429-19-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
@@ -46,63 +46,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new folio-based APIs.  This was the last user of
-try_grab_compound_head(), so remove it.
+follow_hugetlb_page() only cares about success or failure, so it doesn't
+need to know the type of the returned pointer, only whether it's NULL
+or not.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/gup.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ include/linux/mm.h | 3 ---
+ mm/gup.c           | 2 +-
+ mm/hugetlb.c       | 7 +++----
+ 3 files changed, 4 insertions(+), 8 deletions(-)
 
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index b249156f7cf1..c103c6401ecd 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -1195,9 +1195,6 @@ static inline void get_page(struct page *page)
+ }
+ 
+ bool __must_check try_grab_page(struct page *page, unsigned int flags);
+-struct page *try_grab_compound_head(struct page *page, int refs,
+-				    unsigned int flags);
+-
+ 
+ static inline __must_check bool try_get_page(struct page *page)
+ {
 diff --git a/mm/gup.c b/mm/gup.c
-index 7b7bf8361558..b5786e83c418 100644
+index 719252fa0402..20703de2f107 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -146,12 +146,6 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+@@ -146,7 +146,7 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
  	return NULL;
  }
  
--static inline struct page *try_grab_compound_head(struct page *page,
--		int refs, unsigned int flags)
--{
--	return &try_grab_folio(page, refs, flags)->page;
--}
--
- static void gup_put_folio(struct folio *folio, int refs, unsigned int flags)
+-struct page *try_grab_compound_head(struct page *page,
++static inline struct page *try_grab_compound_head(struct page *page,
+ 		int refs, unsigned int flags)
  {
- 	if (flags & FOLL_PIN) {
-@@ -2563,7 +2557,8 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
- 			struct page **pages, int *nr)
- {
- 	int refs;
--	struct page *head, *page;
-+	struct page *page;
-+	struct folio *folio;
+ 	return &try_grab_folio(page, refs, flags)->page;
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index abcd1785c629..ab67b13c4a71 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -6072,7 +6072,7 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
  
- 	if (!pgd_access_permitted(orig, flags & FOLL_WRITE))
- 		return 0;
-@@ -2573,17 +2568,17 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
- 	page = nth_page(pgd_page(orig), (addr & ~PGDIR_MASK) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
- 
--	head = try_grab_compound_head(pgd_page(orig), refs, flags);
--	if (!head)
-+	folio = try_grab_folio(page, refs, flags);
-+	if (!folio)
- 		return 0;
- 
- 	if (unlikely(pgd_val(orig) != pgd_val(*pgdp))) {
--		put_compound_head(head, refs, flags);
-+		gup_put_folio(folio, refs, flags);
- 		return 0;
- 	}
- 
- 	*nr += refs;
--	SetPageReferenced(head);
-+	folio_set_referenced(folio);
- 	return 1;
- }
- 
+ 		if (pages) {
+ 			/*
+-			 * try_grab_compound_head() should always succeed here,
++			 * try_grab_folio() should always succeed here,
+ 			 * because: a) we hold the ptl lock, and b) we've just
+ 			 * checked that the huge page is present in the page
+ 			 * tables. If the huge page is present, then the tail
+@@ -6081,9 +6081,8 @@ long follow_hugetlb_page(struct mm_struct *mm, struct vm_area_struct *vma,
+ 			 * any way. So this page must be available at this
+ 			 * point, unless the page refcount overflowed:
+ 			 */
+-			if (WARN_ON_ONCE(!try_grab_compound_head(pages[i],
+-								 refs,
+-								 flags))) {
++			if (WARN_ON_ONCE(!try_grab_folio(pages[i], refs,
++							 flags))) {
+ 				spin_unlock(ptl);
+ 				remainder = 0;
+ 				err = -ENOMEM;
 -- 
 2.33.0
 
