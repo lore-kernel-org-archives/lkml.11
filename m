@@ -2,128 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA841C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:01:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A487FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236876AbiAJQBN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 11:01:13 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3923 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236654AbiAJQBM (ORCPT
+        id S236889AbiAJQC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 11:02:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236654AbiAJQC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 11:01:12 -0500
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AEU778022359;
-        Mon, 10 Jan 2022 16:01:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=wNtqeE/PXUjAJMTDduMaJZsw/+oW1OiDBs4bew5Ic3I=;
- b=gNuaLqwcDmRs9Kzca0ZqlmeGq4lSewDBH0nGvPO7Z2AlX1VfQ84MZn32AOub8RHLNQzE
- ORkmXGjL6AkBa+wac3Tkn6KGpwmQPWdCzWMJt/ikBbSV31XTMWwACOFKFp6CEBZNPj84
- ZuPh/E7y6RTVYeM4O58CnFqRly5znKcTkOJjZ96mBvDCfbFxphwRdYmEjXK9MMbN8yle
- Zg0YXnHom0wEUuMaUXEixzw/eWCyfUzNYqowWq1WsziQXGmaFbzl20bknOYwSlv5XqMm
- /RL7DTcNegYz6BFChvoV6GDI3s1+crHykQ+M4JirfIRfP/Bph+sLXwuXch5yUAsN3Ffe kQ== 
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dfm8jnupx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 16:01:04 +0000
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20AFvhQQ031823;
-        Mon, 10 Jan 2022 16:01:03 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma02dal.us.ibm.com with ESMTP id 3df289qsbe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 16:01:03 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20AG12Qh22151546
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 16:01:02 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 141FB28073;
-        Mon, 10 Jan 2022 16:01:02 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DD9E328065;
-        Mon, 10 Jan 2022 16:01:00 +0000 (GMT)
-Received: from [9.211.155.103] (unknown [9.211.155.103])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 10 Jan 2022 16:01:00 +0000 (GMT)
-Message-ID: <29dec8e0-a551-8aa0-4dd4-ae4d7efc37ca@linux.ibm.com>
-Date:   Mon, 10 Jan 2022 10:00:59 -0600
+        Mon, 10 Jan 2022 11:02:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E3DDC06173F;
+        Mon, 10 Jan 2022 08:02:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C19ABB8168C;
+        Mon, 10 Jan 2022 16:02:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97757C36AE5;
+        Mon, 10 Jan 2022 16:02:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641830544;
+        bh=6wB5YbnNRiBGiEWLPxOB+jJGVHeGCX8UkaFmOHwDOxU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=lRXBcIuWvWfI9qlywBoZnODVQkmeaNdoLBwuRk+EMwqd+xtPtq27acCf3K/+AS+uZ
+         uOpzu/e5CzsYdAWWC6WJIFPe/1H9/C0v0RoXekn34u2SfH2H2dJwAld5G1lYbU/73j
+         BYq9zFp9F2gzj0S13ZGZ5VbfsbIlsUvGS3oWbxfBidwAx/Ps96N/jahk+zsau65KIS
+         J2pPJ/FTpDEbWXy9jEkEY5uKEr5ftR6xsUH6dPceJHC+FGsvTgYWfPdnJjnS/mIsDc
+         SaCOTmLoKvuur8+U4P9g4M36szVNoQ78rrNnKZv9XkJuw1uMzlgtjEjuNRnFlfTbiy
+         uVBLeCu9ToiBw==
+Received: by mail-wm1-f52.google.com with SMTP id p18so2316838wmg.4;
+        Mon, 10 Jan 2022 08:02:24 -0800 (PST)
+X-Gm-Message-State: AOAM532bSyseITriZ15mSyHlDvkGmo2zgS+5yqg0qkX1RuRSq9CtUJJ1
+        skT8x/VCMtSk0v2UR/lsk+54HwWvcXn8a5hNmu4=
+X-Google-Smtp-Source: ABdhPJzMtlF7nhYWHxOpOE2s57xJ1kklQVe2pgO1HMHseMIyyqHhWmIL+FtcWJHKHECYmbsIhi9gUXoLFejHMeHps64=
+X-Received: by 2002:a7b:c34b:: with SMTP id l11mr137167wmj.56.1641830542822;
+ Mon, 10 Jan 2022 08:02:22 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH] fsi: occ: Fetch OCC response header again to avoid
- checksum failure
-Content-Language: en-US
-To:     linux-fsi@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org, joel@jms.id.au, jk@ozlabs.org,
-        alistair@popple.id.au
-References: <20220105202313.27510-1-eajames@linux.ibm.com>
-From:   Eddie James <eajames@linux.ibm.com>
-In-Reply-To: <20220105202313.27510-1-eajames@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6-znbWdXSbF6bredeywG8TV_ZAi0ozNu
-X-Proofpoint-GUID: 6-znbWdXSbF6bredeywG8TV_ZAi0ozNu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-10_06,2022-01-10_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- mlxscore=0 clxscore=1015 bulkscore=0 mlxlogscore=999 lowpriorityscore=0
- suspectscore=0 spamscore=0 priorityscore=1501 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201100112
+References: <6D757C75-65B1-468B-842D-10410081A8E4@live.com>
+In-Reply-To: <6D757C75-65B1-468B-842D-10410081A8E4@live.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Mon, 10 Jan 2022 17:02:10 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXETPO9iJoFm26v5gof2xpakHkvz3YV4ahet7BLjX5m5FQ@mail.gmail.com>
+Message-ID: <CAMj1kXETPO9iJoFm26v5gof2xpakHkvz3YV4ahet7BLjX5m5FQ@mail.gmail.com>
+Subject: Re: [BUG][SEVERE] Enabling EFI runtime services causes panics in the
+ T2 security chip on Macs equipped with it.
+To:     Aditya Garg <gargaditya08@live.com>
+Cc:     "matthew.garrett@nebula.com" <matthew.garrett@nebula.com>,
+        "jk@ozlabs.org" <jk@ozlabs.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Aun-Ali Zaidi <admin@kodeit.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 1/5/22 14:23, Eddie James wrote:
-> In the event that the driver state is reset, and the previous OCC
-> operation had a sequence number of 1, there is the possibility that
-> the SRAM buffer is updated in between fetching the OCC response header
-> and the rest of the data (since the sequence number match is really a
-> false positive). This results in a checksum failure. To avoid this
-> condition, simply fetch the whole response rather than skipping the
-> header when fetching the rest of the response.
-
-
-This can be abandoned in favor of the latest patch, "Improve response 
-status checking"
-
-Thanks,
-
-Eddie
-
-
+On Mon, 10 Jan 2022 at 16:37, Aditya Garg <gargaditya08@live.com> wrote:
 >
-> Signed-off-by: Eddie James <eajames@linux.ibm.com>
-> ---
->   drivers/fsi/fsi-occ.c | 11 ++++++++---
->   1 file changed, 8 insertions(+), 3 deletions(-)
+> On 10th of December, I had reported this bug but still haven't got any response from the maintainers. As a result I am sending it again. Consider the fact that is is a severe bug as it causes kernels to not boot at all and results in panics on T2 Macs.
 >
-> diff --git a/drivers/fsi/fsi-occ.c b/drivers/fsi/fsi-occ.c
-> index 7eaab1be0aa4..660c3fc43be5 100644
-> --- a/drivers/fsi/fsi-occ.c
-> +++ b/drivers/fsi/fsi-occ.c
-> @@ -546,10 +546,15 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
->   	dev_dbg(dev, "resp_status=%02x resp_data_len=%d\n",
->   		resp->return_status, resp_data_length);
->   
-> -	/* Grab the rest */
-> +	/*
-> +	 * Grab the rest, including the occ response header again, just in case
-> +	 * it changed in between our two getsram operations (this can happen
-> +	 * despite the sequence number check if the driver state is reset). The
-> +	 * data length shouldn't change at OCC runtime, and the response
-> +	 * status, which may have changed, has to be checked by users anyway.
-> +	 */
->   	if (resp_data_length > 1) {
-> -		/* already got 3 bytes resp, also need 2 bytes checksum */
-> -		rc = occ_getsram(occ, 8, &resp->data[3], resp_data_length - 1);
-> +		rc = occ_getsram(occ, 0, resp, resp_data_length + 7);
->   		if (rc)
->   			goto done;
->   	}
+> On enabling EFI runtime services on Macs with the T2 security chip, kernel fails to boot due panics in the T2 security chip.
+
+I don't see how panics in the T2 security chip could be blamed on the
+EFI runtime services layer in Linux.
+
+As far as I can tell, what we need here is a DMI quirk that just
+disables EFI runtime support on these platforms.
+
+> Using efi=noruntine (or noefi) as a kernel parameter seems to fix the issue. Also, making NVRAM read-only makes kernels boot. A fix for that would be appreciated.
+>
+> Link :- https://bugzilla.kernel.org/show_bug.cgi?id=215277
+>
+> We believe kernel only fails to boot if something is set up to write to nvram at boot, it can boot fine on a MacBookPro16,1 as long as I don't have anything writing to nvram (deleting and reading variables is fine).
+>
+> The t2 security chip handles nvram and loading bootloaders on these
+> macs. Its bridgeOS had an update that was bundled with macOS Catalina
+> (this can't be downgraded, and some computers shipped with macOS
+> Catalina), that made writing to nvram from Linux cause an invalid
+> opcode error and a frozen system:
+>
+> invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> CPU: 9 PID: 135 Comm: kworker/u24:2 Tainted: G S   U   C        5.16.0-rc4-00054-g6c3ecb47bb75-dirty #72
+> Hardware name: Apple Inc. MacBookPro16,1/Mac-E1008331FDC96864, BIOS 1715.40.15.0.0 (iBridge: 19.16.10548.0.0,0) 10/03/2021
+> Workqueue: efi_rts_wq efi_call_rts
+> RIP: 0010:0xfffffffeefc46877
+> Code: 8b 58 18 0f b6 0d e1 09 00 00 48 c1 e1 04 e8 30 03 00 00 48 89 05 d9 09 00 00 80 3d a2 09 00 00 01 75 09 48 c7 07 00 10 00 00 <0f> 0b 48 8b 05 a8 07 00 00 8b 40 08 48 83 c0 f0 48 89 07 48 c7 06
+> RSP: 0018:ffff998d40513dd0 EFLAGS: 00010246
+> RAX: ffff998d40513eb0 RBX: ffff998d43f17dd8 RCX: 0000000000000007
+> RDX: ffff998d43f17dc8 RSI: ffff998d43f17dd8 RDI: ffff998d43f17dc8
+> RBP: ffff998d40513e00 R08: ffff998d43f17dd0 R09: ffff998d43f17dd8
+> R10: ffff998d40513c80 R11: ffffffff9b4cabe8 R12: ffff998d43f17dc8
+> R13: ffff998d43f17dd0 R14: 0000000000000246 R15: 0000000000000048
+> FS:  0000000000000000(0000) GS:ffff8cf8bec40000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f9133594374 CR3: 0000000100200005 CR4: 00000000003706e0
+> Call Trace:
+> <TASK>
+> ? _printk+0x58/0x6f
+> __efi_call+0x28/0x30
+> efi_call_rts.cold+0x83/0x104
+> process_one_work+0x219/0x3f0
+> worker_thread+0x4d/0x3d0
+> ? rescuer_thread+0x390/0x390
+> kthread+0x15c/0x180
+> ? set_kthread_struct+0x40/0x40
+> ret_from_fork+0x22/0x30
+> </TASK>
+> Modules linked in: xt_CHECKSUM xt_MASQUERADE xt_conntrack ipt_REJECT nf_reject_ipv4 xt_tcpudp nft_compat amdgpu nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 nft_counter nf_tables n
+> sysimgblt fb_sys_fops cec crc16 intel_pch_thermal sbs ecdh_generic ecc rfkill apple_bl video acpi_tad mac_hid sbshc pkcs8_key_parser drm fuse crypto_user bpf_preload ip_tables x_tables crct10dif_pcl
+> ---[ end trace 22f8aad91761cc4a ]---
+> RIP: 0010:0xfffffffeefc46877
+> Code: 8b 58 18 0f b6 0d e1 09 00 00 48 c1 e1 04 e8 30 03 00 00 48 89 05 d9 09 00 00 80 3d a2 09 00 00 01 75 09 48 c7 07 00 10 00 00 <0f> 0b 48 8b 05 a8 07 00 00 8b 40 08 48 83 c0 f0 48 89 07 48 c7 06
+> RSP: 0018:ffff998d40513dd0 EFLAGS: 00010246
+> RAX: ffff998d40513eb0 RBX: ffff998d43f17dd8 RCX: 0000000000000007
+> RDX: ffff998d43f17dc8 RSI: ffff998d43f17dd8 RDI: ffff998d43f17dc8
+> RBP: ffff998d40513e00 R08: ffff998d43f17dd0 R09: ffff998d43f17dd8
+> R10: ffff998d40513c80 R11: ffffffff9b4cabe8 R12: ffff998d43f17dc8
+> R13: ffff998d43f17dd0 R14: 0000000000000246 R15: 0000000000000048
+> FS:  0000000000000000(0000) GS:ffff8cf8bec40000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007f9133594374 CR3: 0000000100200005 CR4: 00000000003706e0
+> BUG: kernel NULL pointer dereference, address: 0000000000000008
+> #PF: supervisor write access in kernel mode
+> #PF: error_code(0x0002) - not-present page
+>
+> This seems to be triggered by EFI_QUERY_VARIABLE_INFO here
+>
+
+This is interesting. QueryVariableInfo() was introduced in EFI 2.00,
+and for a very long time, Intel MACs would claim to implement EFI 1.10
+only. This means Linux would never attempt to use QueryVariableInfo()
+on such platforms.
+
+Can you please check your boot log which revision it claims to implement now?
+
+Mine says
+
+efi: EFI v1.10 by Apple
+
+near the start of the kernel log.
+
+
+ https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/firmware/efi/runtime-wrappers.c#n220
+> and within that section, the invalid opcode seems to be occurring in
+> this bit of assembly:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/x86/platform/efi/efi_stub_64.S
+>
+
+Ehm no. __efi_call() is just a trampoline to call into the firmware,
+and the opcodes in question are firmware code not Linux code.
