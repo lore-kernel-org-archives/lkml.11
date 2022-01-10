@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9206EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78600C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240547AbiAJHiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:38:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38798 "EHLO
+        id S240369AbiAJHiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:38:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40590 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240604AbiAJHbf (ORCPT
+        with ESMTP id S233849AbiAJHbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:31:35 -0500
+        Mon, 10 Jan 2022 02:31:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB0BB60B63;
-        Mon, 10 Jan 2022 07:31:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92A7BC36AED;
-        Mon, 10 Jan 2022 07:31:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 267E360B9F;
+        Mon, 10 Jan 2022 07:31:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0956DC36AEF;
+        Mon, 10 Jan 2022 07:31:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799894;
-        bh=P1oPJQi72S+id//DCwOvy9Y0UmJY2fU1Yn/2BHi5B4g=;
+        s=korg; t=1641799902;
+        bh=lcHfSChScLvyGOU8GsHzTVoEVeZZVhOFXm8cepE1HTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAQdIChRukaHRjsL+b0KhmYWfIvFZxz+iXJnynyhtOxAtEo7JwviNL7eXmhbace2A
-         D7lxhcWl5NKFR8ssOKWKQPyaFfb9QWuhDbQKywx7dw/rO2GrQebhc0H0EUqXeWFchu
-         FO9WaeZeCPBGk0FhV2Vzo5h0kqtl39DKYxwcvKTo=
+        b=BM0rmaF/mdPSM3kmb9dnLnogb1jsxnnsHkxCrE1WD9ec6hLm9V2Ja1+SZ+pmBzW6C
+         tbfZ5Wbs7NhwVQk7oOGUqJPB7zMqG2n1XleTD3iA6+jPvkGvfjsNw2zsMvn+fXKUvn
+         rKSr2uiswp9acKkJJR7hE0Az54HjefQM2xhCnRIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lukasz Cieplicki <lukaszx.cieplicki@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 15/43] i40e: Fix incorrect netdevs real number of RX/TX queues
-Date:   Mon, 10 Jan 2022 08:23:12 +0100
-Message-Id: <20220110071817.865559537@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 11/72] netrom: fix copying in user data in nr_setsockopt
+Date:   Mon, 10 Jan 2022 08:22:48 +0100
+Message-Id: <20220110071821.925775387@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-References: <20220110071817.337619922@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,86 +46,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit e738451d78b2f8a9635d66c6a87f304b4d965f7a upstream.
+commit 3087a6f36ee028ec095c04a8531d7d33899b7fed upstream.
 
-There was a wrong queues representation in sysfs during
-driver's reinitialization in case of online cpus number is
-less than combined queues. It was caused by stopped
-NetworkManager, which is responsible for calling vsi_open
-function during driver's initialization.
-In specific situation (ex. 12 cpus online) there were 16 queues
-in /sys/class/net/<iface>/queues. In case of modifying queues with
-value higher, than number of online cpus, then it caused write
-errors and other errors.
-Add updating of sysfs's queues representation during driver
-initialization.
+This code used to copy in an unsigned long worth of data before
+the sockptr_t conversion, so restore that.
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Lukasz Cieplicki <lukaszx.cieplicki@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   32 +++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
+ net/netrom/af_netrom.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -8382,6 +8382,27 @@ int i40e_open(struct net_device *netdev)
- }
+--- a/net/netrom/af_netrom.c
++++ b/net/netrom/af_netrom.c
+@@ -306,7 +306,7 @@ static int nr_setsockopt(struct socket *
+ 	if (optlen < sizeof(unsigned int))
+ 		return -EINVAL;
  
- /**
-+ * i40e_netif_set_realnum_tx_rx_queues - Update number of tx/rx queues
-+ * @vsi: vsi structure
-+ *
-+ * This updates netdev's number of tx/rx queues
-+ *
-+ * Returns status of setting tx/rx queues
-+ **/
-+static int i40e_netif_set_realnum_tx_rx_queues(struct i40e_vsi *vsi)
-+{
-+	int ret;
-+
-+	ret = netif_set_real_num_rx_queues(vsi->netdev,
-+					   vsi->num_queue_pairs);
-+	if (ret)
-+		return ret;
-+
-+	return netif_set_real_num_tx_queues(vsi->netdev,
-+					    vsi->num_queue_pairs);
-+}
-+
-+/**
-  * i40e_vsi_open -
-  * @vsi: the VSI to open
-  *
-@@ -8417,13 +8438,7 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
- 			goto err_setup_rx;
+-	if (copy_from_sockptr(&opt, optval, sizeof(unsigned int)))
++	if (copy_from_sockptr(&opt, optval, sizeof(unsigned long)))
+ 		return -EFAULT;
  
- 		/* Notify the stack of the actual queue counts. */
--		err = netif_set_real_num_tx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
--		if (err)
--			goto err_set_queues;
--
--		err = netif_set_real_num_rx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
-+		err = i40e_netif_set_realnum_tx_rx_queues(vsi);
- 		if (err)
- 			goto err_set_queues;
- 
-@@ -13712,6 +13727,9 @@ struct i40e_vsi *i40e_vsi_setup(struct i
- 		ret = i40e_config_netdev(vsi);
- 		if (ret)
- 			goto err_netdev;
-+		ret = i40e_netif_set_realnum_tx_rx_queues(vsi);
-+		if (ret)
-+			goto err_netdev;
- 		ret = register_netdev(vsi->netdev);
- 		if (ret)
- 			goto err_netdev;
+ 	switch (optname) {
 
 
