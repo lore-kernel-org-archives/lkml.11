@@ -2,92 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F2C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 22:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1687C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 22:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345529AbiAJWas (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 17:30:48 -0500
-Received: from mout.gmx.net ([212.227.17.21]:37767 "EHLO mout.gmx.net"
+        id S241717AbiAJWcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 17:32:02 -0500
+Received: from mga06.intel.com ([134.134.136.31]:34627 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1345434AbiAJWae (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 17:30:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1641853825;
-        bh=+BEMjZgHov6GI+pbRQ/61AK7GFOe1ZiB6QyOW7gVx9Y=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Dm92lJlco/v679Qp3Y0gIY74qDzvxTY+8cXYrHfhVSDesK22DxlOKyKLSFE+mWX2P
-         vuSAGUQ+rPqFQa1wtETISXV0J9Md7IinaZWCTKl4OI1hWhSh6TOvTvbb4FoChov96z
-         ThLerCFKzh0qvPkxMUm082quuIzguGu4bfD7oXsk=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from localhost.fritz.box ([62.216.209.151]) by mail.gmx.net
- (mrgmx104 [212.227.17.168]) with ESMTPSA (Nemesis) id
- 1MkYXm-1mdjzD04hq-00m3yc; Mon, 10 Jan 2022 23:30:25 +0100
-From:   Peter Seiderer <ps.report@gmx.net>
-To:     linux-wireless@vger.kernel.org
-Cc:     Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 4/5] ath5k: remove unused ah_txq_isr_txurn member from struct ath5k_hw
-Date:   Mon, 10 Jan 2022 23:30:20 +0100
-Message-Id: <20220110223021.17655-4-ps.report@gmx.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110223021.17655-1-ps.report@gmx.net>
-References: <20220110223021.17655-1-ps.report@gmx.net>
+        id S238635AbiAJWcA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 17:32:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641853920; x=1673389920;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6euwceMmdMz5mhSCD5eQOfqFem+JFeSm6tECMTbt/aM=;
+  b=ay6Gbbiav6hrJbTRyTcDpW7GL2xqsX4WFJ7yxw3b0NLAYc4DuV7gamGx
+   TitNyqWW5cPUJLoboLWKNR6vbt9mYt+j0jDVIYiQy2d8M1cZ0Vio4/BRL
+   oddGyNDv2MR8jQGdg4ubUOsiNA9Hkdypbf6bDJF3gcMzp3FwiH0ZHAV7+
+   APJvL4nSOXQOVKYVAaQHdmMHUVH8D+v9/MFNZ7G5BvJOCqBP5ZH9XaDHb
+   YqBHvPcWAwqMunALo8fiiKmGX6JhSNxirvMsI39/b79MgqHb4EiSFd8hW
+   862FBzukXFO+jQryVU/Q/AEhBAlrcypo2Fg2vG8mNyR/1vEU10vCUagtI
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304084379"
+X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
+   d="scan'208";a="304084379"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 14:31:58 -0800
+X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
+   d="scan'208";a="558142856"
+Received: from paasikivi.fi.intel.com ([10.237.72.42])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 14:31:54 -0800
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+        by paasikivi.fi.intel.com (Postfix) with SMTP id 9C75D2043C;
+        Tue, 11 Jan 2022 00:31:52 +0200 (EET)
+Date:   Tue, 11 Jan 2022 00:31:52 +0200
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     Rajat Jain <rajatja@google.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Bingbu Cao <bingbu.cao@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>,
+        Hyungwoo Yang <hyungwoo.yang@intel.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Robert Moore <robert.moore@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
+        devel@acpica.org, rajatxjain@gmail.com
+Subject: Re: ACPI: scan: Obtain device's desired enumeration power state
+Message-ID: <Ydyz2HSbLLbVc9ql@paasikivi.fi.intel.com>
+References: <20210210230800.30291-2-sakari.ailus@linux.intel.com>
+ <20211007022527.2448652-1-rajatja@google.com>
+ <YW3XwDxwBsJdFslA@paasikivi.fi.intel.com>
+ <CACK8Z6FcBusdMMsu2vKZT8vx6yvcWS7Gh7bDyYqdB1ikspEHDA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:KQ19AMCrNOiO4RXxL9JHJN9emp9Al1pNhGS32fQHrDEywqhyOoR
- fB6QC0cnLpZxVzku75NnBIf2Y5fs5ZOv7ljHmUaIAuDwJbm0HsTZD28IsztP3rmOQdzOgi5
- WfzamsdgUwCqR0EDRepXgyzUYNs2CGcgA0Yj5sa88xAH09FrYuR+fhrZOmxKy86ILYaYroQ
- 93h+mXhgd4kYV8PmsiGiw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Yf91gQZTrgQ=:rIznZJItYOCDika25WmZ5Z
- mWZnh/LZdI9EvRfSwUiQsCrH/BxDJ4Dh8q+pBEBD90+fKwfMJvA4c9wUefslqhly49Nw78p9x
- 5sMSym1Hr3ToHrDTlX/WN/FiDiD0ORsNsAHnDTG6GsvzYrQp/qUuiKSfr0U/86sip1jyEJWHC
- 4zbbrA+r09zzd1QQ/IrPAV0c7HtuIi6KWFujbDZ1u9iijA90Nz8fHPJ9cx3nfQ1vlE5t6NS8X
- lw20SfMDRhHDaO+Tf1Gfnycmi21Gy+zvFA1j3nXFNSTVZN0PHmSp6pSRh028WikKiatAi1U9c
- EjmsU/TyYgtN0K8DRSnDSIxb70mbVS2OG+oZn13vm9s4EJqPjiJ9CX0TGVqBp0Ho1rKAvizxe
- jRy0Zzbkn21bWTts/2cmSviAI5hJ7lLZt7Q2CPVPZm7lFkhz5Nj7LYeXNKUw2XKRc25EaTGJb
- /yo5IjyT3Zwgy3KLbyNnHnbegayzBHKZRHB4qEJMdDoC4JsTz/1blYZ5cAI/vnFzGkLDWqlPC
- pd2aS+utiji5/kbFpUcT8yBggFbOV/dJgjhNbOJhk/lGLfuon++V6wN5MyWXnlLdgrNENeX6p
- 8P31xXmQvMuA1o1dBNJc7z5vqZSaVlLlX1lFp2FivcG3SQbdJktGdnFmYCIcIsZRsw7Kh4EaK
- zXVkGH6wqiOULU+LweL8005iHY+Ge2g/NDKnR50CwMffPcUP679RVcl1f1yLByqWK8h7sJkxw
- UurENvKckkiaAoCg2pC8p5/HmdFFhm5rNsOvk16M3C05N1MA9PTM6lFPIWLtENjGQ0lj1ouE4
- iFduqPfUqVWJ8KhkgEcQMIiMhAv3LgwB/bvBy0UZkYgySpLBX0hrYznHSnOud3A1z05E33/c9
- Y9VRY1TiMBC9tPS7GEccSVKHH/g3Gl6VRRWw3X3/XQsI43r/6pkHsgq0wjCuDyP07LvZzGu3l
- OIFpXlbMJGzOqR+CD5B1GHxvo49bcQ9fngKguF2I+CpNladss/z+xwCJC1/f+JbKxm3J6UNIZ
- 3T8yKqtrYp1eUoxaGhWDADlfsCblx2A4N3hHFuxv/8q/XH+rpMF71LsH05rD7nZYMnIAnHWes
- dibVg9vg49qzMo=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACK8Z6FcBusdMMsu2vKZT8vx6yvcWS7Gh7bDyYqdB1ikspEHDA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UmVtb3ZlIHVudXNlZCBhaF90eHFfaXNyX3R4dXJuIG1lbWJlciBmcm9tIHN0cnVjdCBhdGg1a19o
-dyAoc2V0IGluCmF0aDVrX2h3X2dldF9pc3IoKSBidXQgbmV2ZXIgdXNlZCBhbnl3aGVyZSkuCgpT
-aWduZWQtb2ZmLWJ5OiBQZXRlciBTZWlkZXJlciA8cHMucmVwb3J0QGdteC5uZXQ+Ci0tLQogZHJp
-dmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVrL2F0aDVrLmggfCAxIC0KIGRyaXZlcnMvbmV0L3dp
-cmVsZXNzL2F0aC9hdGg1ay9kbWEuYyAgIHwgNyAtLS0tLS0tCiAyIGZpbGVzIGNoYW5nZWQsIDgg
-ZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVr
-L2F0aDVrLmggYi9kcml2ZXJzL25ldC93aXJlbGVzcy9hdGgvYXRoNWsvYXRoNWsuaAppbmRleCBh
-YzMyMTFiMWViMGMuLmY1OTUyMDRmNDkzZCAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxl
-c3MvYXRoL2F0aDVrL2F0aDVrLmgKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVr
-L2F0aDVrLmgKQEAgLTEzOTUsNyArMTM5NSw2IEBAIHN0cnVjdCBhdGg1a19odyB7CiAJdTMyCQkJ
-YWhfdHhxX2ltcl9ub2ZybTsKIAogCXUzMgkJCWFoX3R4cV9pc3JfdHhva19hbGw7Ci0JdTMyCQkJ
-YWhfdHhxX2lzcl90eHVybjsKIAogCXUzMgkJCSphaF9yZl9iYW5rczsKIAlzaXplX3QJCQlhaF9y
-Zl9iYW5rc19zaXplOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVr
-L2RtYS5jIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVrL2RtYS5jCmluZGV4IDBlZTQ2
-ZjgxMThiYi4uMmIxMzVhNjI4NGEwIDEwMDY0NAotLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9h
-dGgvYXRoNWsvZG1hLmMKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvYXRoL2F0aDVrL2RtYS5j
-CkBAIC02NzAsMTMgKzY3MCw2IEBAIGF0aDVrX2h3X2dldF9pc3Ioc3RydWN0IGF0aDVrX2h3ICph
-aCwgZW51bSBhdGg1a19pbnQgKmludGVycnVwdF9tYXNrKQogCQkJYWgtPmFoX3R4cV9pc3JfdHhv
-a19hbGwgfD0gQVI1S19SRUdfTVMoc2lzcjEsCiAJCQkJCQlBUjVLX1NJU1IxX1FDVV9UWEVPTCk7
-CiAKLQkJLyogQ3VycmVudGx5IHRoaXMgaXMgbm90IG11Y2ggdXNlZnVsIHNpbmNlIHdlIHRyZWF0
-Ci0JCSAqIGFsbCBxdWV1ZXMgdGhlIHNhbWUgd2F5IGlmIHdlIGdldCBhIFRYVVJOICh1cGRhdGUK
-LQkJICogdHggdHJpZ2dlciBsZXZlbCkgYnV0IHdlIG1pZ2h0IG5lZWQgaXQgbGF0ZXIgb24qLwot
-CQlpZiAocGlzciAmIEFSNUtfSVNSX1RYVVJOKQotCQkJYWgtPmFoX3R4cV9pc3JfdHh1cm4gfD0g
-QVI1S19SRUdfTVMoc2lzcjIsCi0JCQkJCQlBUjVLX1NJU1IyX1FDVV9UWFVSTik7Ci0KIAkJLyog
-TWlzYyBCZWFjb24gcmVsYXRlZCBpbnRlcnJ1cHRzICovCiAKIAkJLyogRm9yIEFSNTIxMSAqLwot
-LSAKMi4zNC4xCgo=
+Hi Rajat,
+
+On Mon, Jan 10, 2022 at 10:55:58AM -0800, Rajat Jain wrote:
+> > > https://lore.kernel.org/linux-acpi/CAJZ5v0gwDEjC9T7wfCqDr7R0q_ptz2nVU52_8i8noXHPEign1g@mail.gmail.com/T/
+> > >
+> > > I was wondering what is happening with the corresponding kernel patchset:
+> > > https://lore.kernel.org/linux-acpi/20210210230800.30291-1-sakari.ailus@linux.intel.com/T/#m24e9f51119cbe6eb39f31c097ea3941d00a0baeb
+> > >
+> > > I didn't see any pending comments, so is there a reason it did not land?
+> >
+> > Thanks for the ping.
+> >
+> > I've rebased the set and switched to _DSC so I believe it is ready to be
+> > merged now:
+> >
+> >         <URL:https://lore.kernel.org/linux-media/20211018121729.6357-1-sakari.ailus@linux.intel.com/T/#t>
+> >
+> > I dropped the ov5670 patch from the set to avoid a conflict, I'll get this
+> > merged through the media tree when the rest have landed there.
+> 
+> 
+> Thanks, I see that your patches series has been merged. Can you please
+> also line up this follow up series by Bingbu for inclusion into the
+> mainline kernel?
+> 
+> https://patchwork.kernel.org/project/linux-media/list/?series=595925
+
+These patches are in media tree master:
+
+<URL:https://git.linuxtv.org/media_tree.git/log/>
+
+I'd expect to see these in Linux 5.17.
+
+-- 
+Kind regards,
+
+Sakari Ailus
