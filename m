@@ -2,87 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 230DCC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0869C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242155AbiAJSot (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:44:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239534AbiAJSoo (ORCPT
+        id S242215AbiAJSow (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 13:44:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50426 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242072AbiAJSoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:44:44 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C79C06173F;
-        Mon, 10 Jan 2022 10:44:44 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id w16so57282920edc.11;
-        Mon, 10 Jan 2022 10:44:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jtE0Rv+bum5sJgWKzx4ASlY9bVyREWYzZIOQJxZM5iY=;
-        b=AhI2Gg6YdCwaIhrAu5mqDabtZ/GZlXpoGpgT6vvCGNXFP2dgdqap32qKD9Xpo7OMHJ
-         ylabTTmEvwqrb02HRKgXvdPXIDJqbaWiU1alJt0308qvtPfi2joy8NGpeu2ACyLBHKxh
-         5HYNCzZZq+aFByZLSgWJLAWUWMspRUOGVUS3b5eSqs6Lm0IR66CoDfjRfqMDuKH6VRZ+
-         kfaQuXNJYxDNZ3MDsLL7ARZTt1sFDOd+7nwmhm2fAgal0/I1hAUAAB15EoZkYyd8xogk
-         3xcCMAOElWqYC2+r7vzdYvQu7U4mDy9hfw424pYx1sqU+wzWrBIJ3VjRHVySYKsSt/4I
-         b4tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jtE0Rv+bum5sJgWKzx4ASlY9bVyREWYzZIOQJxZM5iY=;
-        b=xfdHxF3dPSMUjgMwjK/AXmU/ARv5hlnRoBCShieRohE3zeAEu5nTe1yL7SrAdkvIFc
-         /LMZSqUa5hwNosQHh1yAAwsW7Bzg4ak/Z4GqfhAX4Z4udL2yHX7mYWiUvO9It9IMr6qN
-         IU17PKsnrPlmFWH8uLQZWAaBPcsd1sQJHXn0RyQPL+vUcjQohrV+q/D/xe4Sm8ttFSZv
-         sLuhCTs0fIkyIJ+/Xr2vDEgw4Vy2V+tQWMltgJCod2VcZJHb62OEiLZpTfkVAqjsxHVS
-         clI+af+SIVrFQAqRBM4Mr9x9XeRJHx2ervmSwL60Bs10FxJ+WkYcoozc88r/AWvIwLXL
-         X5jQ==
-X-Gm-Message-State: AOAM531FvrCGcePNHFjlQXgOLSTaVHxFLzx1uYIQGfdGg68uJEl1Ntt9
-        aNEHeBGtHXRRtSaBPVEyMw/vBLqLiNnvKMilfMk=
-X-Google-Smtp-Source: ABdhPJxmqyqaucGkcSzCFWyIp16vMFyJRkqtG9MqY7GjEaenhNbAZR5xixkY+sqGnW5/IK5vzwD4oPXNR2rXXVToc7s=
-X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr773695ejc.639.1641840282660;
- Mon, 10 Jan 2022 10:44:42 -0800 (PST)
+        Mon, 10 Jan 2022 13:44:46 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAC95B8175A;
+        Mon, 10 Jan 2022 18:44:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72630C36AE9;
+        Mon, 10 Jan 2022 18:44:43 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Av1IVnPG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1641840278;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GyWLj5/EaUv61VIhefKCE8M8yK1R8B4gDJ2B3ClXFkc=;
+        b=Av1IVnPG3akYv8tFAXc/F6rGdEPch6+SuubzrsRRCv/A24k31PwUvFh95VdBBCdy8pzfrL
+        tsXt6OzbH0nNOrdnMrS5KKjAI7kWCA2EOg0o8z/jBMjAZHiF4ogWTAbWwCNikzL87IdXSY
+        +X2U8qHWBk10hTleUO1qz4DvJMxKM3E=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 47a1a059 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Mon, 10 Jan 2022 18:44:38 +0000 (UTC)
+Received: by mail-yb1-f176.google.com with SMTP id v186so31201449ybg.1;
+        Mon, 10 Jan 2022 10:44:35 -0800 (PST)
+X-Gm-Message-State: AOAM531LyxvH++SNQbZEc07jG8bmW9Rk4FZ+mfDXuExFEuxkY7QYsXC/
+        1YHdm7QCFMT6ygA4Psb8N+7ufKmf4HNHTxhSUIA=
+X-Google-Smtp-Source: ABdhPJyxOBZvO7ufgXkscYSaL7Xx/j61FicVu+7hLVAxoUXwoLdLSI9k8N3yEn0BKHp6CwQ0etFo0dwakC+SMONxixs=
+X-Received: by 2002:a25:8c4:: with SMTP id 187mr1208892ybi.245.1641840274572;
+ Mon, 10 Jan 2022 10:44:34 -0800 (PST)
 MIME-Version: 1.0
-References: <1640331779-18277-1-git-send-email-wellslutw@gmail.com>
- <1640331779-18277-3-git-send-email-wellslutw@gmail.com> <CAHp75Vd3iMM+NteJXP_mMAyw5momk3xzp1Y2GX-YJZfFSAwo9A@mail.gmail.com>
- <0f6a382cd66d4d5d84201da0a29145a3@sphcmbx02.sunplus.com.tw>
-In-Reply-To: <0f6a382cd66d4d5d84201da0a29145a3@sphcmbx02.sunplus.com.tw>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 10 Jan 2022 20:42:55 +0200
-Message-ID: <CAHp75VftFc8DNnrKp0dGsPvyzTrp+1z0_JP79Dzv5i0HMtsoUA@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] pinctrl: Add driver for Sunplus SP7021
-To:     =?UTF-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Cc:     Wells Lu <wellslutw@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "dvorkin@tibbo.com" <dvorkin@tibbo.com>
+References: <YaZqVxI1C8RByq+w@gmail.com> <CAHmME9p60Ve5XJTVcmGvSpUkg_hRp_i0rGG0R9VhuwLs0o_nXQ@mail.gmail.com>
+ <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
+ <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
+ <20211210014337.xmin2lu5rhhe3b3t@valinor> <20220110132349.siplwka7yhe2tmwc@valinor>
+ <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
+ <YdxCsI3atPILABYe@mit.edu> <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
+ <Ydxu+KS5UkQ6hU9R@mit.edu> <Ydx7D3H0PS0Zs9/B@sol.localdomain>
+In-Reply-To: <Ydx7D3H0PS0Zs9/B@sol.localdomain>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 10 Jan 2022 19:44:23 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
+Message-ID: <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
+Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
+To:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
+        Simo Sorce <simo@redhat.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeffrey Walton <noloader@gmail.com>,
+        Stephan Mueller <smueller@chronox.de>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Alexander E. Patrakov" <patrakov@gmail.com>,
+        "Ahmed S. Darwish" <darwish.07@gmail.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Vito Caputo <vcaputo@pengaru.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
+        William Jon McCann <mccann@jhu.edu>,
+        zhangjs <zachary@baishancloud.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Florian Weimer <fweimer@redhat.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Peter Matthias <matthias.peter@bsi.bund.de>,
+        Neil Horman <nhorman@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Petr Tesarik <ptesarik@suse.cz>,
+        John Haxby <john.haxby@oracle.com>,
+        Alexander Lobakin <alobakin@mailbox.org>,
+        Jirka Hladky <jhladky@redhat.com>,
+        Eric Biggers <ebiggers@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 8:16 PM Wells Lu =E5=91=82=E8=8A=B3=E9=A8=B0 <wells=
-.lu@sunplus.com> wrote:
->
-> Hi Andy,
->
-> Could you please answer my questions in previous mail?
-> I need your answers to proceed submission.
->
-> Sorry, I am not sure if my previous mail is lost or you are busy.
+On Mon, Jan 10, 2022 at 4:08 PM Marcelo Henrique Cerri
+<marcelo.cerri@canonical.com> wrote:
+> > Just to confirm, this little patch here gives you FIPS certification?
+> It does
 
-Please, do not top-post! Also remove unrelated context, make your
-message small enough and neat.
+On Mon, Jan 10, 2022 at 7:29 PM Eric Biggers <ebiggers@kernel.org> wrote:
+> Now, the idea of certifying the whole kernel as a FIPS cryptographic module is
+> stupid
 
-I have answered your questions.
+Alright, so if that's the case, then what you ostensibly want is:
+a) Some cryptoapi users to use crypto_rng_get_bytes, as they already
+do now. (In a private thread with Simo, I pointed out a missing place
+and encouraged him to send a patch for that but none has arrived.)
+b) Userspace to use some other RNG.
 
---=20
-With Best Regards,
-Andy Shevchenko
+(a) is basically already done.
+
+(b) can be accomplished in userspace by just (i) disabling getrandom()
+(making it return ENOSYS), and then (ii) replacing the /dev/urandom
+path with a CUSE device or similar.
+
+I suppose (b.i) might be able to be done with some bpf seccomp cgroup
+situation. Or, if that's problematic, somebody could propose a
+"disable getrandom(2)" cmdline option. That doesn't seem very hard.
+And (b.ii) could use combined inputs from /dev/urandom and whatever
+FIPSy userspace jitter entropy daemon you have.
+
+In order to prevent the actual security from regressing on this, all
+you have to do is ensure that you're always using at least 32 bytes
+from the kernel's real /dev/urandom, and then whatever you add on top
+of that becomes just for the certification aspect. As your various
+green compliance checkboxes change over time and per region, you can
+just swap out the extra-paper-pushing-bytes-on-top with whatever the
+particular requirements of a certification body are. And you get to do
+this all in userspace.
+
+Marcelo/Simo - could you tell me what you find deficient about that
+plan? It strikes me that this would give you maximum flexibility and
+pretty much accomplish the goals?
+
+Thanks,
+Jason
