@@ -2,66 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 475EAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 15:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8948C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 15:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236737AbiAJPwg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 10:52:36 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:38638 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236445AbiAJPwe (ORCPT
+        id S236745AbiAJPxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 10:53:18 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:50124 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236509AbiAJPxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 10:52:34 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id A31E21F43333
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1641829953;
-        bh=FD4OrOm4vEUu599uP6rN4wBZHxBx3syC9RwGD2S/KAk=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=LNSUbKQhjYkrgyJWNjXxgjJWH6iEnodHeDN3Lgsa8vZ9AoZ6DcjQ8MwS9BwF7BwxT
-         fs7SRDq6wKfK2f7H/kEziA2X8NZqkqH5tYQWo6JaZUD7ap1/kpwQKK/NY1UKtJo7cN
-         2pvMq5P17FhCEBdjeO0jB0X8K3hN8bnUD7WZEvUERrpGgQ/SyrVcL61H/Fat+YbUpa
-         nmJbtqx+G4wkQS8RDulTUecqPUVW03OsNqhMSBnfsv9l68pYSmIj4r21Ri6ox/nxK7
-         wAQrVweoifjJV6YDJe67TaEpANuAObJmiFrt5WPBJvjx5RRv9shrTS2tELyYfDIYkh
-         WVnvc4GPkASQw==
-Subject: Re: [v1 02/16] clk: mediatek: Add dt-bindings of MT8186 clocks
-To:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, srv_heupstream@mediatek.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220110134416.5191-1-chun-jie.chen@mediatek.com>
- <20220110134416.5191-3-chun-jie.chen@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <1254b48a-8aca-b791-a352-3aad9135d0b0@collabora.com>
-Date:   Mon, 10 Jan 2022 16:52:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Mon, 10 Jan 2022 10:53:16 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D76FD1F393;
+        Mon, 10 Jan 2022 15:53:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1641829994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FRM4BcmD9hfO5nbXPqn+DFkr64sSUqkyCYTzumTkKhk=;
+        b=HxSwhujHM56DgA0t1Mwoxptc4JAuP4ieSwDdElwSgSCdMLHrANAYh+Xq2Mz89veNpEywRh
+        xLKRVnKxWvT/r2wGY67JhgHwgZj5V/Ln80UK8nl4ZCmswxU5dczof6z6yjZB1q9FK5ouje
+        SH9vAhHd6H5gSmaX0MJBAV+TPWYj6Fc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1641829994;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FRM4BcmD9hfO5nbXPqn+DFkr64sSUqkyCYTzumTkKhk=;
+        b=C8T0d+w3VB+duw4c77N2MUtc/ZZeUErPQL5VoR4JCQ+vDD7zefO7e7wtelRDxU1+MjVEoK
+        mipfN5KN4heFkVDA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5629513D88;
+        Mon, 10 Jan 2022 15:53:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id Y+eyAmlW3GEWDgAAMHmgww
+        (envelope-from <colyli@suse.de>); Mon, 10 Jan 2022 15:53:13 +0000
+Message-ID: <97e5c59a-ac8e-ffee-b5d5-55883932b8df@suse.de>
+Date:   Mon, 10 Jan 2022 23:53:10 +0800
 MIME-Version: 1.0
-In-Reply-To: <20220110134416.5191-3-chun-jie.chen@mediatek.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH] bcache: use default_groups in kobj_type
 Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Kent Overstreet <kent.overstreet@gmail.com>,
+        linux-bcache@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220106100004.3277439-1-gregkh@linuxfoundation.org>
+ <7cbca83d-bcac-464e-d2e4-c54b2d53eead@suse.de> <YdlL4YAScYp9XxkI@kroah.com>
+From:   Coly Li <colyli@suse.de>
+In-Reply-To: <YdlL4YAScYp9XxkI@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 10/01/22 14:44, Chun-Jie Chen ha scritto:
-> Add MT8186 clock dt-bindings, includes topckgen, apmixedsys,
-> infracfg_ao, mcusys and subsystem clocks.
-> 
-> Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+On 1/8/22 4:31 PM, Greg Kroah-Hartman wrote:
+> On Sat, Jan 08, 2022 at 02:16:28PM +0800, Coly Li wrote:
+>> On 1/6/22 6:00 PM, Greg Kroah-Hartman wrote:
+>>> There are currently 2 ways to create a set of sysfs files for a
+>>> kobj_type, through the default_attrs field, and the default_groups
+>>> field.  Move the bcache sysfs code to use default_groups field which has
+>>> been the preferred way since aa30f47cf666 ("kobject: Add support for
+>>> default attribute groups to kobj_type") so that we can soon get rid of
+>>> the obsolete default_attrs field.
+>>>
+>>> Cc: Coly Li <colyli@suse.de>
+>>> Cc: Kent Overstreet <kent.overstreet@gmail.com>
+>>> Cc: linux-bcache@vger.kernel.org
+>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>> It looks good to me.
+>>
+>> Acked-by: Coly Li <colyli@suse.de>
+>>
+>> I assume you may take this patch directly in your maintenance path, but if
+>> you want me to take this, just let me know. Thanks.
+> I can take it myself, or you can, which ever is easiest for you, just
+> let me know which you prefer.  Thanks for the review!
 
-Hello Chun-Jie,
+It will be faster for this patch goes into mainline in your path, I am 
+on vacation now and will have a latency...
 
-I think that this patch should be squashed with patch 01/16, as this
-is dt-bindings as much as the yaml that you're introducing.
+Thank you.
 
-Regards,
-- Angelo
+Coly Li
