@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B263C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241024AbiAJHmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:42:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33970 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240186AbiAJHdd (ORCPT
+        id S241123AbiAJHmg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:42:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240536AbiAJHdm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:33:33 -0500
+        Mon, 10 Jan 2022 02:33:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE1EC02547B;
+        Sun,  9 Jan 2022 23:29:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B172B8120C;
-        Mon, 10 Jan 2022 07:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD818C36AED;
-        Mon, 10 Jan 2022 07:33:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D2077B81216;
+        Mon, 10 Jan 2022 07:29:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 232ADC36AF2;
+        Mon, 10 Jan 2022 07:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800009;
-        bh=nV4sVNXe+91kbTnlCc0Bt4RlIYFySXGdtdmIaZEf19Q=;
+        s=korg; t=1641799757;
+        bh=hL96LzpfoO4m5GZoFJEaCllaxcBAZKgk4otdKobchbs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tn3pmHAqkXKOEtfVHjoKHNz8Ck8J5Cfulpf56ohXbFDLctU2TjJ6yCOkJu0WTSo/Z
-         BsJZo8UKhifKGvE2U6kLV6HjJl4U0SgdacVc91tqlVp6Wp4YbwbAiWQHRbuygNTYsY
-         x6Ustfp6RWiE1/QCGWVVF2qw7KcjFoJWt90upUBQ=
+        b=PvZtZsIoqle3mPMaWn6F5ogYmErUtSt20h0tsh5jCxuOfDIVCuzWVAfHxhnfydOk/
+         u8zlaN7PaJPhHkOKpWxPq3Y9FZiHMf0edLYtIJpWvcl6HKnAnYg5tbKXdincPwR6cP
+         rb35X4/B58a4lN+kfyRTatrX18eOZpnOmA2yf4aY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 48/72] fbdev: fbmem: add a helper to determine if an aperture is used by a fw fb
-Date:   Mon, 10 Jan 2022 08:23:25 +0100
-Message-Id: <20220110071823.172955307@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 20/34] sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+Date:   Mon, 10 Jan 2022 08:23:15 +0100
+Message-Id: <20220110071816.328717861@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
+In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
+References: <20220110071815.647309738@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -44,88 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 9a45ac2320d0a6ae01880a30d4b86025fce4061b upstream.
+commit 7d18a07897d07495ee140dd319b0e9265c0f68ba upstream.
 
-Add a function for drivers to check if the a firmware initialized
-fb is corresponds to their aperture.  This allows drivers to check if the
-device corresponds to what the firmware set up as the display device.
+tx_queue_len can be set to ~0U, we need to be more
+careful about overflows.
 
-Bug: https://bugzilla.kernel.org/show_bug.cgi?id=215203
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1840
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+__fls(0) is undefined, as this report shows:
+
+UBSAN: shift-out-of-bounds in net/sched/sch_qfq.c:1430:24
+shift exponent 51770272 is too large for 32-bit type 'int'
+CPU: 0 PID: 25574 Comm: syz-executor.0 Not tainted 5.16.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x201/0x2d8 lib/dump_stack.c:106
+ ubsan_epilogue lib/ubsan.c:151 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x494/0x530 lib/ubsan.c:330
+ qfq_init_qdisc+0x43f/0x450 net/sched/sch_qfq.c:1430
+ qdisc_create+0x895/0x1430 net/sched/sch_api.c:1253
+ tc_modify_qdisc+0x9d9/0x1e20 net/sched/sch_api.c:1660
+ rtnetlink_rcv_msg+0x934/0xe60 net/core/rtnetlink.c:5571
+ netlink_rcv_skb+0x200/0x470 net/netlink/af_netlink.c:2496
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x814/0x9f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0xaea/0xe60 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x5b9/0x910 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmsg+0x280/0x370 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 462dbc9101ac ("pkt_sched: QFQ Plus: fair-queueing service at DRR cost")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbmem.c |   47 +++++++++++++++++++++++++++++++++++++++
- include/linux/fb.h               |    1 
- 2 files changed, 48 insertions(+)
+ net/sched/sch_qfq.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/drivers/video/fbdev/core/fbmem.c
-+++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1760,6 +1760,53 @@ int remove_conflicting_framebuffers(stru
- EXPORT_SYMBOL(remove_conflicting_framebuffers);
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -1421,10 +1421,8 @@ static int qfq_init_qdisc(struct Qdisc *
+ 	if (err < 0)
+ 		return err;
  
- /**
-+ * is_firmware_framebuffer - detect if firmware-configured framebuffer matches
-+ * @a: memory range, users of which are to be checked
-+ *
-+ * This function checks framebuffer devices (initialized by firmware/bootloader)
-+ * which use memory range described by @a. If @a matchesm the function returns
-+ * true, otherwise false.
-+ */
-+bool is_firmware_framebuffer(struct apertures_struct *a)
-+{
-+	bool do_free = false;
-+	bool found = false;
-+	int i;
-+
-+	if (!a) {
-+		a = alloc_apertures(1);
-+		if (!a)
-+			return false;
-+
-+		a->ranges[0].base = 0;
-+		a->ranges[0].size = ~0;
-+		do_free = true;
-+	}
-+
-+	mutex_lock(&registration_lock);
-+	/* check all firmware fbs and kick off if the base addr overlaps */
-+	for_each_registered_fb(i) {
-+		struct apertures_struct *gen_aper;
-+
-+		if (!(registered_fb[i]->flags & FBINFO_MISC_FIRMWARE))
-+			continue;
-+
-+		gen_aper = registered_fb[i]->apertures;
-+		if (fb_do_apertures_overlap(gen_aper, a)) {
-+			found = true;
-+			break;
-+		}
-+	}
-+	mutex_unlock(&registration_lock);
-+
-+	if (do_free)
-+		kfree(a);
-+
-+	return found;
-+}
-+EXPORT_SYMBOL(is_firmware_framebuffer);
-+
-+/**
-  * remove_conflicting_pci_framebuffers - remove firmware-configured framebuffers for PCI devices
-  * @pdev: PCI device
-  * @name: requesting driver name
---- a/include/linux/fb.h
-+++ b/include/linux/fb.h
-@@ -610,6 +610,7 @@ extern int remove_conflicting_pci_frameb
- 					       const char *name);
- extern int remove_conflicting_framebuffers(struct apertures_struct *a,
- 					   const char *name, bool primary);
-+extern bool is_firmware_framebuffer(struct apertures_struct *a);
- extern int fb_prepare_logo(struct fb_info *fb_info, int rotate);
- extern int fb_show_logo(struct fb_info *fb_info, int rotate);
- extern char* fb_get_buffer_offset(struct fb_info *info, struct fb_pixmap *buf, u32 size);
+-	if (qdisc_dev(sch)->tx_queue_len + 1 > QFQ_MAX_AGG_CLASSES)
+-		max_classes = QFQ_MAX_AGG_CLASSES;
+-	else
+-		max_classes = qdisc_dev(sch)->tx_queue_len + 1;
++	max_classes = min_t(u64, (u64)qdisc_dev(sch)->tx_queue_len + 1,
++			    QFQ_MAX_AGG_CLASSES);
+ 	/* max_cl_shift = floor(log_2(max_classes)) */
+ 	max_cl_shift = __fls(max_classes);
+ 	q->max_agg_classes = 1<<max_cl_shift;
 
 
