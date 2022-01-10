@@ -2,69 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A750C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 06:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BE92C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 06:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239057AbiAJGgr convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 01:36:47 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:48648 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235018AbiAJGgq (ORCPT
+        id S239064AbiAJGhq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 01:37:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231421AbiAJGhp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 01:36:46 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-499-sUP3oVoqMk-bZGQowZhJow-1; Mon, 10 Jan 2022 01:36:44 -0500
-X-MC-Unique: sUP3oVoqMk-bZGQowZhJow-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4230A344AF;
-        Mon, 10 Jan 2022 06:36:42 +0000 (UTC)
-Received: from bzdocha.local (unknown [10.43.2.81])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 23E6B7B031;
-        Mon, 10 Jan 2022 06:36:33 +0000 (UTC)
-From:   Lubomir Rintel <lkundrak@v3.sk>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lubomir Rintel <lkundrak@v3.sk>
-Subject: [PATCH] platform/x86: x86-android-tablets: Trivial typo fix for MODULE_AUTHOR
-Date:   Mon, 10 Jan 2022 07:36:29 +0100
-Message-Id: <20220110063629.273364-1-lkundrak@v3.sk>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=lkundrak@v3.sk
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: v3.sk
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+        Mon, 10 Jan 2022 01:37:45 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C869C06173F;
+        Sun,  9 Jan 2022 22:37:45 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id 78so1802115pfu.10;
+        Sun, 09 Jan 2022 22:37:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=n+Xt119nclbKTZTUCo0KmGod6sDqgTVDGGiBHOo0XFg=;
+        b=c0YhKUoXnxgtkAsaXd1prtJGhk6kjoFGHZGZwLw0bXrPvzZKe08lGOJpKwYFpn4kQ+
+         ZaOmwl5qj0GocDwccEVca83q23bX0YRRTJVuRZvvi1Em63feCuGcTvZpYtU0Imz7HMw2
+         undDiUGdwQzafIagok5KaBMsKRNSymmt1I1oF/m5HHltxeQMwWNglim5y3uQx/3SWU3Q
+         fZSlDD20eMucG3A4PqfYiJlBzOLoE3SjpOsvhl2DnwmsrCxn/mg0vLVfUqGPEhNO6U/c
+         nZKXlhLoWce9KSyeDJ2EOrzJGbt7MOZqeWEIv5A+Lb0E6k5uSp+0HE0EXwrdHNJ9fwMz
+         jP9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=n+Xt119nclbKTZTUCo0KmGod6sDqgTVDGGiBHOo0XFg=;
+        b=yq9W0zvl2Wj8wSRyIKVnKeiO0L9GAedm9EFAdvasGQprNqeILJUaB3NILzCkC7greQ
+         N+woRRuD3J8EbtEo22o0uRlAfKVliWucjRgwhfXETibKxRP8vJKwrH/PSPaFGHbY3YSN
+         PdgBZoOaCKCVDtd3HMe1fUSCTz20VXxhtFSNRYSKlkQKCzfotlK+etxhQfhh0kj+kgy3
+         lQNU8WJSWoLEy8auHUSAHHsDT3GHVTVSc6yCkQ4a+f/11Xm9uRtLzSopmW2usPBuNd7M
+         KhWMs7bU+1CMPHbmnmNgrYXb5t3OjDF5u4yi7/tWKpFYKQG+lV2Js0+0P6jglynTJ6yw
+         yruQ==
+X-Gm-Message-State: AOAM531X/67Eo9UzQAklynf5nglnhAkJXN0gNIS8wjb9o6qVxr1FFnU0
+        0iFdFMV2EN/Rw6oZK03Q2ks=
+X-Google-Smtp-Source: ABdhPJyeWXY0Pna+390rMULlU8igcYGwhUuiKAA8IlSA71Y5LjAioNgvvCTw+Sy3Mls90slzBGxK+Q==
+X-Received: by 2002:a63:b00c:: with SMTP id h12mr8827376pgf.80.1641796664878;
+        Sun, 09 Jan 2022 22:37:44 -0800 (PST)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id ne14sm1977081pjb.19.2022.01.09.22.37.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 09 Jan 2022 22:37:44 -0800 (PST)
+From:   Tony Huang <tonyhuang.sunplus@gmail.com>
+To:     robh+dt@kerenl.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, derek.kiernan@xilinx.com,
+        dragan.cvetic@xilinx.com, arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     wells.lu@sunplus.com, tony.huang@sunplus.com,
+        Tony Huang <tonyhuang.sunplus@gmail.com>
+Subject: [PATCH v7 0/2] Add iop driver for Sunplus SP7021
+Date:   Mon, 10 Jan 2022 14:37:52 +0800
+Message-Id: <cover.1641794532.git.tonyhuang.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Bring balance to the quoting of Hans' e-mail address.
+Add iop driver for Sunplus SP7021 SOC
 
-Signed-off-by: Lubomir Rintel <lkundrak@v3.sk>
----
- drivers/platform/x86/x86-android-tablets.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is a patch series for iop driver for Sunplus SP7021 SOC.
 
-diff --git a/drivers/platform/x86/x86-android-tablets.c b/drivers/platform/x86/x86-android-tablets.c
-index c5b1f25d849f..9333bbec33e9 100644
---- a/drivers/platform/x86/x86-android-tablets.c
-+++ b/drivers/platform/x86/x86-android-tablets.c
-@@ -1074,6 +1074,6 @@ static __init int x86_android_tablet_init(void)
- module_init(x86_android_tablet_init);
- module_exit(x86_android_tablet_cleanup);
- 
--MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com");
-+MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
- MODULE_DESCRIPTION("X86 Android tablets DSDT fixups driver");
- MODULE_LICENSE("GPL");
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
+
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
+
+Tony Huang (2):
+  dt-binding: misc: Add iop yaml file for Sunplus SP7021
+  misc: Add iop driver for Sunplus SP7021
+
+ Documentation/ABI/testing/sysfs-platform-soc@B     |  28 ++
+ .../devicetree/bindings/misc/sunplus-iop.yaml      |  76 ++++
+ MAINTAINERS                                        |   7 +
+ drivers/misc/sunplus_iop.c                         | 455 +++++++++++++++++++++
+ 4 files changed, 566 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-platform-soc@B
+ create mode 100644 Documentation/devicetree/bindings/misc/sunplus-iop.yaml
+ create mode 100644 drivers/misc/sunplus_iop.c
+
 -- 
-2.33.1
+2.7.4
 
