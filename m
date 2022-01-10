@@ -2,112 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19749C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77076C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243900AbiAJHqB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:46:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239953AbiAJHiX (ORCPT
+        id S243704AbiAJHpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:52 -0500
+Received: from mail-vk1-f170.google.com ([209.85.221.170]:40683 "EHLO
+        mail-vk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239924AbiAJHis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:38:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECA2C0258C7;
-        Sun,  9 Jan 2022 23:33:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A232B81211;
-        Mon, 10 Jan 2022 07:33:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7473AC36AED;
-        Mon, 10 Jan 2022 07:33:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799986;
-        bh=Z+zCmTEq1nUUaLCcSgs4oup25kLMn11yeAWlNCsjOKs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NfPYZO5eG7Tfk//1odlRR//PZKF+UJuTKQpgdFZ3jegq6Mz+j+IEQ5swXi7Ek9p39
-         vxMEMGW05r95pKW7wyK+tkCQxzQdHxTQENAuKasFHX+w0UZu0mshUecUM/Bl5aZ+/K
-         kd3LjLVKGyt96HllolBLOXkTlB1ydP4jNxDH7I9g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+6d532fa8f9463da290bc@syzkaller.appspotmail.com,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 09/72] RDMA/core: Dont infoleak GRH fields
-Date:   Mon, 10 Jan 2022 08:22:46 +0100
-Message-Id: <20220110071821.834606636@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 10 Jan 2022 02:38:48 -0500
+Received: by mail-vk1-f170.google.com with SMTP id 78so7560155vkz.7
+        for <linux-kernel@vger.kernel.org>; Sun, 09 Jan 2022 23:38:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AjI5/tOCXa4LhOlobTI7CWiqFNOTrhMglYVnreX/oyA=;
+        b=x2jQb0x8AvqVYF34XQw56olsnO+SUW9s/+Kf4ADLS2uSu+X48M1TQwTb6q6VhYuhE2
+         /NRdRog0XpsshrPW2GahxaxZrWYZ1PkIM2Y6EBI3AXIFyWlCt3eEKbxTbaB+VhCSxrSc
+         bn5uaAaNvz3/Nysna9D0AUsmASjotHQg4MF5ZtkUojH+PiguMc10uwLTNPNZIW2C0Wmj
+         6ijM1I87PWD9CnQpQbvly+dDc/kX8XOj41pKxVslR5yMgC399CecbGUFr2G7zauT34fz
+         Bqx8BsZ2Xgr2zPb+Rt6GzSwYX2hdVFuvSJLRjs7kpcFvkcJcRf1k4MShC89WG0iQ5q4S
+         Ir6A==
+X-Gm-Message-State: AOAM531ZF5jK9zQUOKaus5IS3b3XpNeNWuqN+qPGkWPF4tlYVHjJ1RTV
+        QRYcf2ywkTDtMCnoJ/HImxL9rCRsCED0VA==
+X-Google-Smtp-Source: ABdhPJxH77QJ/g46cz5SoRKZbIE4zfvoYgiegVhNB4VhhkN5YW6mr6zBxgMg6lXaQBqbWxn5hFOhbg==
+X-Received: by 2002:a05:6122:1348:: with SMTP id f8mr21846618vkp.32.1641800327574;
+        Sun, 09 Jan 2022 23:38:47 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id u33sm3607774uau.7.2022.01.09.23.38.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 09 Jan 2022 23:38:47 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id p37so21825322uae.8
+        for <linux-kernel@vger.kernel.org>; Sun, 09 Jan 2022 23:38:47 -0800 (PST)
+X-Received: by 2002:a67:c81c:: with SMTP id u28mr24272101vsk.38.1641800326823;
+ Sun, 09 Jan 2022 23:38:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CAPM=9twJOj8+cfEPArF7N_TZpVM8vN+S4s2mMM7phsS-ZOgmJA@mail.gmail.com>
+ <163789349650.12632.8523698126811716771.pr-tracker-bot@kernel.org>
+In-Reply-To: <163789349650.12632.8523698126811716771.pr-tracker-bot@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 10 Jan 2022 08:38:35 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXEKbc9ovGPqtO8v-xRCoSKF=KZ-53g+7vRKnDZMCmeGA@mail.gmail.com>
+Message-ID: <CAMuHMdXEKbc9ovGPqtO8v-xRCoSKF=KZ-53g+7vRKnDZMCmeGA@mail.gmail.com>
+Subject: Re: [git pull] drm fixes for 5.16-rc3
+To:     Dave Airlie <airlied@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        LKML <linux-kernel@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Sat, Nov 27, 2021 at 8:29 PM <pr-tracker-bot@kernel.org> wrote:
+> The pull request you sent on Fri, 26 Nov 2021 10:52:04 +1000:
+>
+> > git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2021-11-26
+>
+> has been merged into torvalds/linux.git:
+> https://git.kernel.org/torvalds/c/a4849f6000e29235a2707f22e39da6b897bb9543
 
-commit b35a0f4dd544eaa6162b6d2f13a2557a121ae5fd upstream.
+The commit that merged this branch made a seemingly innocent change to
+the top Makefile:
 
-If dst->is_global field is not set, the GRH fields are not cleared
-and the following infoleak is reported.
+--- a/Makefile
++++ b/Makefile
+@@ -3,7 +3,7 @@ VERSION = 5
+ PATCHLEVEL = 16
+ SUBLEVEL = 0
+ EXTRAVERSION = -rc2
+-NAME = Trick or Treat
++NAME = Gobble Gobble
 
-=====================================================
-BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
-BUG: KMSAN: kernel-infoleak in _copy_to_user+0x1c9/0x270 lib/usercopy.c:33
- instrument_copy_to_user include/linux/instrumented.h:121 [inline]
- _copy_to_user+0x1c9/0x270 lib/usercopy.c:33
- copy_to_user include/linux/uaccess.h:209 [inline]
- ucma_init_qp_attr+0x8c7/0xb10 drivers/infiniband/core/ucma.c:1242
- ucma_write+0x637/0x6c0 drivers/infiniband/core/ucma.c:1732
- vfs_write+0x8ce/0x2030 fs/read_write.c:588
- ksys_write+0x28b/0x510 fs/read_write.c:643
- __do_sys_write fs/read_write.c:655 [inline]
- __se_sys_write fs/read_write.c:652 [inline]
- __ia32_sys_write+0xdb/0x120 fs/read_write.c:652
- do_syscall_32_irqs_on arch/x86/entry/common.c:114 [inline]
- __do_fast_syscall_32+0x96/0xf0 arch/x86/entry/common.c:180
- do_fast_syscall_32+0x34/0x70 arch/x86/entry/common.c:205
- do_SYSENTER_32+0x1b/0x20 arch/x86/entry/common.c:248
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+ # *DOCUMENTATION*
+ # To see a list of typical targets execute "make help"
 
-Local variable resp created at:
- ucma_init_qp_attr+0xa4/0xb10 drivers/infiniband/core/ucma.c:1214
- ucma_write+0x637/0x6c0 drivers/infiniband/core/ucma.c:1732
+Gr{oetje,eeting}s,
 
-Bytes 40-59 of 144 are uninitialized
-Memory access of size 144 starts at ffff888167523b00
-Data copied to user address 0000000020000100
+                        Geert
 
-CPU: 1 PID: 25910 Comm: syz-executor.1 Not tainted 5.16.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-=====================================================
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Fixes: 4ba66093bdc6 ("IB/core: Check for global flag when using ah_attr")
-Link: https://lore.kernel.org/r/0e9dd51f93410b7b2f4f5562f52befc878b71afa.1641298868.git.leonro@nvidia.com
-Reported-by: syzbot+6d532fa8f9463da290bc@syzkaller.appspotmail.com
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/infiniband/core/uverbs_marshall.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/infiniband/core/uverbs_marshall.c
-+++ b/drivers/infiniband/core/uverbs_marshall.c
-@@ -66,7 +66,7 @@ void ib_copy_ah_attr_to_user(struct ib_d
- 	struct rdma_ah_attr *src = ah_attr;
- 	struct rdma_ah_attr conv_ah;
- 
--	memset(&dst->grh.reserved, 0, sizeof(dst->grh.reserved));
-+	memset(&dst->grh, 0, sizeof(dst->grh));
- 
- 	if ((ah_attr->type == RDMA_AH_ATTR_TYPE_OPA) &&
- 	    (rdma_ah_get_dlid(ah_attr) > be16_to_cpu(IB_LID_PERMISSIVE)) &&
-
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
