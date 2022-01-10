@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54541C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1E3C3525B
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242217AbiAJHkd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33814 "EHLO
+        id S242476AbiAJHks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:40:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34106 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239720AbiAJHdR (ORCPT
+        with ESMTP id S240195AbiAJHdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:33:17 -0500
+        Mon, 10 Jan 2022 02:33:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 247E3B81211;
-        Mon, 10 Jan 2022 07:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D028C36AEF;
-        Mon, 10 Jan 2022 07:33:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3320CB81217;
+        Mon, 10 Jan 2022 07:33:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A5FEC36AED;
+        Mon, 10 Jan 2022 07:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799995;
-        bh=ZTHZRmQnobjicwLrjjyL8/R91C9QzgP8gTl+50ubP0o=;
+        s=korg; t=1641800029;
+        bh=o5kFP8oQmTF+hd+jHzzz40Ex04sUdxCwM94ZL0yWrWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IUKdf59LhuyTMPx/xhRXPbuh9rOViQ2OgGC1gJNI7c8arNhvz5HcHP05Ff8YdSzQt
-         cquEwvo18myWYpnq1ijrbiVRp8GhJkym0piDaYu1DW7N+w0E1hqlLdUfLm62kBzJJd
-         XmMEFMVEirCyAsXJ/ajtKBPJm0TKjSvSH5fK4R8c=
+        b=p2MtzxQo5IewBVuBZhVHZQTWJhN9HGLt38Rh7trxgkJOPLyeZX46AJDvdYLTE8Kjd
+         vRSWkMSFDRo7HWSnvH/R69keXoFEQ4zUGnz55rulqfvNBaLJpqI2jsgGhX8G0SH5ay
+         cQyMBfAOKWEchFYbHaqKNxUE7ATMRNdcNhRm5ydw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH 5.15 43/72] reset: renesas: Fix Runtime PM usage
-Date:   Mon, 10 Jan 2022 08:23:20 +0100
-Message-Id: <20220110071823.015359869@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 54/72] drm/amdgpu: fix dropped backing store handling in amdgpu_dma_buf_move_notify
+Date:   Mon, 10 Jan 2022 08:23:31 +0100
+Message-Id: <20220110071823.381194092@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -46,40 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Christian König <ckoenig.leichtzumerken@gmail.com>
 
-commit 92c959bae2e54ba1e2540ba5f813f7752bd76be1 upstream.
+[ Upstream commit fc74881c28d314b10efac016ef49df4ff40b8b97 ]
 
-If pm_runtime_resume_and_get() fails then it returns w/o the RPM usage
-counter being incremented. In this case call pm_runtime_put() in
-remove() will result in a usage counter imbalance. Therefore check the
-return code of pm_runtime_resume_and_get() and bail out in case of error.
+bo->tbo.resource can now be NULL.
 
-Fixes: bee08559701f ("reset: renesas: Add RZ/G2L usbphy control driver")
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Link: https://lore.kernel.org/r/ec24e13f-0530-b091-7a08-864577b9b3be@gmail.com
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1811
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211210083927.1754-1-christian.koenig@amd.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/reset/reset-rzg2l-usbphy-ctrl.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/reset/reset-rzg2l-usbphy-ctrl.c
-+++ b/drivers/reset/reset-rzg2l-usbphy-ctrl.c
-@@ -137,7 +137,12 @@ static int rzg2l_usbphy_ctrl_probe(struc
- 	dev_set_drvdata(dev, priv);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c
+index ae6ab93c868b8..7444484a12bf8 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c
+@@ -384,7 +384,7 @@ amdgpu_dma_buf_move_notify(struct dma_buf_attachment *attach)
+ 	struct amdgpu_vm_bo_base *bo_base;
+ 	int r;
  
- 	pm_runtime_enable(&pdev->dev);
--	pm_runtime_resume_and_get(&pdev->dev);
-+	error = pm_runtime_resume_and_get(&pdev->dev);
-+	if (error < 0) {
-+		pm_runtime_disable(&pdev->dev);
-+		reset_control_assert(priv->rstc);
-+		return dev_err_probe(&pdev->dev, error, "pm_runtime_resume_and_get failed");
-+	}
+-	if (bo->tbo.resource->mem_type == TTM_PL_SYSTEM)
++	if (!bo->tbo.resource || bo->tbo.resource->mem_type == TTM_PL_SYSTEM)
+ 		return;
  
- 	/* put pll and phy into reset state */
- 	spin_lock_irqsave(&priv->lock, flags);
+ 	r = ttm_bo_validate(&bo->tbo, &placement, &ctx);
+-- 
+2.34.1
+
 
 
