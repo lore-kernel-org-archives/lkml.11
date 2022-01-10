@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6106C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B263C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239645AbiAJHlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:41:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240574AbiAJHea (ORCPT
+        id S241024AbiAJHmc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:42:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33970 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240186AbiAJHdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:34:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B0DC0253FE;
-        Sun,  9 Jan 2022 23:29:38 -0800 (PST)
+        Mon, 10 Jan 2022 02:33:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E39611B9;
-        Mon, 10 Jan 2022 07:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E87FEC36AE9;
-        Mon, 10 Jan 2022 07:29:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B172B8120C;
+        Mon, 10 Jan 2022 07:33:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD818C36AED;
+        Mon, 10 Jan 2022 07:33:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799777;
-        bh=JYszoI4w8EG/f+eoMv21Wl7Zb0swvHUpwQCPoozk21E=;
+        s=korg; t=1641800009;
+        bh=nV4sVNXe+91kbTnlCc0Bt4RlIYFySXGdtdmIaZEf19Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pXO+l76xOIk9fmPgQX5eQzvwB7Ez82CvvJBujGMyGY+QBk+aGgYFM5Ho11nQQQtoV
-         rp3R0YWVS+FXF+U7BCyurPRlQmDZLTWrPYwE2RfWCh+Mg3sjGCVdHfnFjMfvMbcShb
-         Jm8z8t00lm+ozhuvkgfPAzKAKKrIyDdcvpcxgjqI=
+        b=tn3pmHAqkXKOEtfVHjoKHNz8Ck8J5Cfulpf56ohXbFDLctU2TjJ6yCOkJu0WTSo/Z
+         BsJZo8UKhifKGvE2U6kLV6HjJl4U0SgdacVc91tqlVp6Wp4YbwbAiWQHRbuygNTYsY
+         x6Ustfp6RWiE1/QCGWVVF2qw7KcjFoJWt90upUBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.10 11/43] mac80211: initialize variable have_higher_than_11mbit
-Date:   Mon, 10 Jan 2022 08:23:08 +0100
-Message-Id: <20220110071817.734448998@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 48/72] fbdev: fbmem: add a helper to determine if an aperture is used by a fw fb
+Date:   Mon, 10 Jan 2022 08:23:25 +0100
+Message-Id: <20220110071823.172955307@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-References: <20220110071817.337619922@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +44,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-commit 68a18ad71378a56858141c4449e02a30c829763e upstream.
+commit 9a45ac2320d0a6ae01880a30d4b86025fce4061b upstream.
 
-Clang static analysis reports this warnings
+Add a function for drivers to check if the a firmware initialized
+fb is corresponds to their aperture.  This allows drivers to check if the
+device corresponds to what the firmware set up as the display device.
 
-mlme.c:5332:7: warning: Branch condition evaluates to a
-  garbage value
-    have_higher_than_11mbit)
-    ^~~~~~~~~~~~~~~~~~~~~~~
-
-have_higher_than_11mbit is only set to true some of the time in
-ieee80211_get_rates() but is checked all of the time.  So
-have_higher_than_11mbit needs to be initialized to false.
-
-Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20211223162848.3243702-1-trix@redhat.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Bug: https://bugzilla.kernel.org/show_bug.cgi?id=215203
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1840
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/mlme.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/video/fbdev/core/fbmem.c |   47 +++++++++++++++++++++++++++++++++++++++
+ include/linux/fb.h               |    1 
+ 2 files changed, 48 insertions(+)
 
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -5194,7 +5194,7 @@ static int ieee80211_prep_connection(str
- 	 */
- 	if (new_sta) {
- 		u32 rates = 0, basic_rates = 0;
--		bool have_higher_than_11mbit;
-+		bool have_higher_than_11mbit = false;
- 		int min_rate = INT_MAX, min_rate_index = -1;
- 		const struct cfg80211_bss_ies *ies;
- 		int shift = ieee80211_vif_get_shift(&sdata->vif);
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -1760,6 +1760,53 @@ int remove_conflicting_framebuffers(stru
+ EXPORT_SYMBOL(remove_conflicting_framebuffers);
+ 
+ /**
++ * is_firmware_framebuffer - detect if firmware-configured framebuffer matches
++ * @a: memory range, users of which are to be checked
++ *
++ * This function checks framebuffer devices (initialized by firmware/bootloader)
++ * which use memory range described by @a. If @a matchesm the function returns
++ * true, otherwise false.
++ */
++bool is_firmware_framebuffer(struct apertures_struct *a)
++{
++	bool do_free = false;
++	bool found = false;
++	int i;
++
++	if (!a) {
++		a = alloc_apertures(1);
++		if (!a)
++			return false;
++
++		a->ranges[0].base = 0;
++		a->ranges[0].size = ~0;
++		do_free = true;
++	}
++
++	mutex_lock(&registration_lock);
++	/* check all firmware fbs and kick off if the base addr overlaps */
++	for_each_registered_fb(i) {
++		struct apertures_struct *gen_aper;
++
++		if (!(registered_fb[i]->flags & FBINFO_MISC_FIRMWARE))
++			continue;
++
++		gen_aper = registered_fb[i]->apertures;
++		if (fb_do_apertures_overlap(gen_aper, a)) {
++			found = true;
++			break;
++		}
++	}
++	mutex_unlock(&registration_lock);
++
++	if (do_free)
++		kfree(a);
++
++	return found;
++}
++EXPORT_SYMBOL(is_firmware_framebuffer);
++
++/**
+  * remove_conflicting_pci_framebuffers - remove firmware-configured framebuffers for PCI devices
+  * @pdev: PCI device
+  * @name: requesting driver name
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -610,6 +610,7 @@ extern int remove_conflicting_pci_frameb
+ 					       const char *name);
+ extern int remove_conflicting_framebuffers(struct apertures_struct *a,
+ 					   const char *name, bool primary);
++extern bool is_firmware_framebuffer(struct apertures_struct *a);
+ extern int fb_prepare_logo(struct fb_info *fb_info, int rotate);
+ extern int fb_show_logo(struct fb_info *fb_info, int rotate);
+ extern char* fb_get_buffer_offset(struct fb_info *info, struct fb_pixmap *buf, u32 size);
 
 
