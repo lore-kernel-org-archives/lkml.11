@@ -2,99 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB9F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4AF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:50:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241338AbiAJTtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:49:36 -0500
-Received: from mail-lf1-f46.google.com ([209.85.167.46]:40801 "EHLO
-        mail-lf1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239916AbiAJTtf (ORCPT
+        id S243091AbiAJTux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:50:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50582 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239531AbiAJTut (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 14:49:35 -0500
-Received: by mail-lf1-f46.google.com with SMTP id s30so20480415lfo.7
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 11:49:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cBC7ur9q8uCn3+fYNxbDAjBWUMfYxRVgK+nrhQ/hAA0=;
-        b=oLeYvtjjBv6ObUdVJcT0IrOhgHPZfoXtrAgWSao5kQKPfd2SAmInef8+BdKxh/qC91
-         IBsCdN3v8LmJ0EOl2mv7zflhALRabZQdRcIYZreUBpnjMpW7l66VPD8aOqd3JmbdArIN
-         O1J8PpZKlY1uLds174E6kn8Li8+V1paEM6beePuTGTsCjHP1kJFgnCZoEAtAc5rwhu/h
-         0w9fdSWXEQAWIaXCCzPOl9Z8BiKxncCPNeYJQlxbNg+E9TtDrC0xrsOdtK7GM/yyICFn
-         xhW+QHzH8vHbiyJzHIiDtV2qIVL9eIh59LI9XGsYrMaZ5Sagv10EHo6vcbV9bXhExuy5
-         5Z0g==
-X-Gm-Message-State: AOAM531NTSFothk09KgTALRPc4Sg22WA4NEy5l7fvoSCS+2yY74WwbFc
-        3O+0wPV438QoXjXCLGHKvsFweAikKndiumpvNzQ=
-X-Google-Smtp-Source: ABdhPJxrDpHfZFk8hTVowuDtiIKYHMVkE7JTEc9K7AVKPZhX0SLk+inUNhxFf/N3uoIRWvsdOKesIEOkjbpjKig+pX8=
-X-Received: by 2002:a05:651c:a09:: with SMTP id k9mr689016ljq.180.1641844173631;
- Mon, 10 Jan 2022 11:49:33 -0800 (PST)
-MIME-Version: 1.0
-References: <20211213232224.2023465-1-namhyung@kernel.org> <CANpmjNPuDUwrLH9GKEs6BgeRiL6uZ_tqa5NX_6J83E121+CUqg@mail.gmail.com>
-In-Reply-To: <CANpmjNPuDUwrLH9GKEs6BgeRiL6uZ_tqa5NX_6J83E121+CUqg@mail.gmail.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Mon, 10 Jan 2022 11:49:22 -0800
-Message-ID: <CAM9d7ci-xAWYJEspm8VXRy257vG9r7HDVuQ0Uoej49OG4f5qKQ@mail.gmail.com>
-Subject: Re: [PATCH v3] perf/core: Fix cgroup event list management
-To:     Marco Elver <elver@google.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
+        Mon, 10 Jan 2022 14:50:49 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F746612C6;
+        Mon, 10 Jan 2022 19:50:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 639DDC36AE3;
+        Mon, 10 Jan 2022 19:50:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641844248;
+        bh=s7yyClaY5hOEwaxBzE0Enpf/zhXkDhA+9wtWbXWwSBc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B32/LtDMMB4TsYjJXTaUDffYjM5fnNucxEFfk5an03h5Lb4r6k7IclbB4QCiMhX6t
+         JpvtnjCIcxajH0BFNHwe4zrXdIVmY8ayEUOk5OhhuP3zmnJmhU5Ryd6j19hujYwU7b
+         AWUGOw8Xb1Si8HSlEljwXIj43GRrROmgxO9WgNAX6YAQBiUsulengi8p0jrZ/kvZ9S
+         VLfP2DB6azQADYZtSw3ionIjoqq4WgW5RXWd5ubLga3+urPhFeQhiSwIFp5059mrlF
+         aAXOe4s3ADSSwtYsNjRgi0Aqrfux4TdmSpMboe/ZI4oAB2SzHIAS7cgIhtOrd6YblG
+         z4ABlcK71piIQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 9648640714; Mon, 10 Jan 2022 16:50:45 -0300 (-03)
+Date:   Mon, 10 Jan 2022 16:50:45 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
         Mark Rutland <mark.rutland@arm.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Stephane Eranian <eranian@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vineet Singh <vineet.singh@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
+        eranian@google.com
+Subject: Re: [PATCH v4 48/48] perf cpumap: Give CPUs their own type.
+Message-ID: <YdyOFd8JJHbm1W+m@kernel.org>
+References: <20220105061351.120843-1-irogers@google.com>
+ <20220105061351.120843-49-irogers@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105061351.120843-49-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marco,
+Em Tue, Jan 04, 2022 at 10:13:51PM -0800, Ian Rogers escreveu:
+> A common problem is confusing CPU map indices with the CPU, by wrapping
+> the CPU with a struct then this is avoided. This approach is similar to
+> atomic_t.
 
-On Mon, Jan 10, 2022 at 12:58 AM Marco Elver <elver@google.com> wrote:
->
-> On Tue, 14 Dec 2021 at 00:22, Namhyung Kim <namhyung@kernel.org> wrote:
-> >
-> > The active cgroup events are managed in the per-cpu cgrp_cpuctx_list.
-> > This list is only accessed from current cpu and not protected by any
-> > locks.  But from the commit ef54c1a476ae ("perf: Rework
-> > perf_event_exit_event()"), it's possible to access (actually modify)
-> > the list from another cpu.
-> >
-> > In the perf_remove_from_context(), it can remove an event from the
-> > context without an IPI when the context is not active.  This is not
-> > safe with cgroup events which can have some active events in the
-> > context even if ctx->is_active is 0 at the moment.  The target cpu
-> > might be in the middle of list iteration at the same time.
-> >
-> > If the event is enabled when it's about to be closed, it might call
-> > perf_cgroup_event_disable() and list_del() with the cgrp_cpuctx_list
-> > on a different cpu.
-> >
-> > This resulted in a crash due to an invalid list pointer access during
-> > the cgroup list traversal on the cpu which the event belongs to.
-> >
-> > Let's fallback to IPI to access the cgrp_cpuctx_list from that cpu.
-> > Similarly, perf_install_in_context() should use IPI for the cgroup
-> > events too.
-> >
-> > Cc: Marco Elver <elver@google.com>
-> > Signed-off-by: Namhyung Kim <namhyung@kernel.org>
->
-> The final version needs:
->
-> Fixes: ef54c1a476ae ("perf: Rework perf_event_exit_event()")
->
-> so stable kernels will see it, unless this has already been picked up
-> in which case we need to email stable.
+This one needed this to build with BUILD_BPF_SKEL=1, please check, I'll
+soon push this to tmp.perf/perf_cpu so that you can take a look and test
+it.
 
-Right, it should go to the stable tree.
+- Arnaldo
 
-Peter, do you want me to resend a new version?
-
-Thanks,
-Namhyung
+diff --git a/tools/perf/util/bpf_counter.c b/tools/perf/util/bpf_counter.c
+index 80d1a3a31052fe55..328479df5e16a638 100644
+--- a/tools/perf/util/bpf_counter.c
++++ b/tools/perf/util/bpf_counter.c
+@@ -540,7 +540,7 @@ static int bperf__load(struct evsel *evsel, struct target *target)
+ 		    filter_type == BPERF_FILTER_TGID)
+ 			key = evsel->core.threads->map[i].pid;
+ 		else if (filter_type == BPERF_FILTER_CPU)
+-			key = evsel->core.cpus->map[i];
++			key = evsel->core.cpus->map[i].cpu;
+ 		else
+ 			break;
+ 
+@@ -584,7 +584,7 @@ static int bperf_sync_counters(struct evsel *evsel)
+ 
+ 	num_cpu = all_cpu_map->nr;
+ 	for (i = 0; i < num_cpu; i++) {
+-		cpu = all_cpu_map->map[i];
++		cpu = all_cpu_map->map[i].cpu;
+ 		bperf_trigger_reading(evsel->bperf_leader_prog_fd, cpu);
+ 	}
+ 	return 0;
+@@ -605,7 +605,7 @@ static int bperf__disable(struct evsel *evsel)
+ static int bperf__read(struct evsel *evsel)
+ {
+ 	struct bperf_follower_bpf *skel = evsel->follower_skel;
+-	__u32 num_cpu_bpf = cpu__max_cpu();
++	__u32 num_cpu_bpf = cpu__max_cpu().cpu;
+ 	struct bpf_perf_event_value values[num_cpu_bpf];
+ 	int reading_map_fd, err = 0;
+ 	__u32 i;
+@@ -615,6 +615,7 @@ static int bperf__read(struct evsel *evsel)
+ 	reading_map_fd = bpf_map__fd(skel->maps.accum_readings);
+ 
+ 	for (i = 0; i < bpf_map__max_entries(skel->maps.accum_readings); i++) {
++		struct perf_cpu entry;
+ 		__u32 cpu;
+ 
+ 		err = bpf_map_lookup_elem(reading_map_fd, &i, values);
+@@ -624,14 +625,15 @@ static int bperf__read(struct evsel *evsel)
+ 		case BPERF_FILTER_GLOBAL:
+ 			assert(i == 0);
+ 
+-			perf_cpu_map__for_each_cpu(cpu, j, all_cpu_map) {
++			perf_cpu_map__for_each_cpu(entry, j, all_cpu_map) {
++				cpu = entry.cpu;
+ 				perf_counts(evsel->counts, cpu, 0)->val = values[cpu].counter;
+ 				perf_counts(evsel->counts, cpu, 0)->ena = values[cpu].enabled;
+ 				perf_counts(evsel->counts, cpu, 0)->run = values[cpu].running;
+ 			}
+ 			break;
+ 		case BPERF_FILTER_CPU:
+-			cpu = evsel->core.cpus->map[i];
++			cpu = evsel->core.cpus->map[i].cpu;
+ 			perf_counts(evsel->counts, i, 0)->val = values[cpu].counter;
+ 			perf_counts(evsel->counts, i, 0)->ena = values[cpu].enabled;
+ 			perf_counts(evsel->counts, i, 0)->run = values[cpu].running;
+diff --git a/tools/perf/util/bpf_counter_cgroup.c b/tools/perf/util/bpf_counter_cgroup.c
+index cbc6c2bca488f6bf..631e34a0b66ff084 100644
+--- a/tools/perf/util/bpf_counter_cgroup.c
++++ b/tools/perf/util/bpf_counter_cgroup.c
+@@ -48,7 +48,7 @@ static int bperf_load_program(struct evlist *evlist)
+ 	struct cgroup *cgrp, *leader_cgrp;
+ 	__u32 i, cpu;
+ 	__u32 nr_cpus = evlist->core.all_cpus->nr;
+-	int total_cpus = cpu__max_cpu();
++	int total_cpus = cpu__max_cpu().cpu;
+ 	int map_size, map_fd;
+ 	int prog_fd, err;
+ 
+@@ -125,7 +125,7 @@ static int bperf_load_program(struct evlist *evlist)
+ 			for (cpu = 0; cpu < nr_cpus; cpu++) {
+ 				int fd = FD(evsel, cpu);
+ 				__u32 idx = evsel->core.idx * total_cpus +
+-					evlist->core.all_cpus->map[cpu];
++					evlist->core.all_cpus->map[cpu].cpu;
+ 
+ 				err = bpf_map_update_elem(map_fd, &idx, &fd,
+ 							  BPF_ANY);
+@@ -212,7 +212,7 @@ static int bperf_cgrp__sync_counters(struct evlist *evlist)
+ 	int prog_fd = bpf_program__fd(skel->progs.trigger_read);
+ 
+ 	for (i = 0; i < nr_cpus; i++) {
+-		cpu = evlist->core.all_cpus->map[i];
++		cpu = evlist->core.all_cpus->map[i].cpu;
+ 		bperf_trigger_reading(prog_fd, cpu);
+ 	}
+ 
+@@ -245,7 +245,7 @@ static int bperf_cgrp__read(struct evsel *evsel)
+ {
+ 	struct evlist *evlist = evsel->evlist;
+ 	int i, cpu, nr_cpus = evlist->core.all_cpus->nr;
+-	int total_cpus = cpu__max_cpu();
++	int total_cpus = cpu__max_cpu().cpu;
+ 	struct perf_counts_values *counts;
+ 	struct bpf_perf_event_value *values;
+ 	int reading_map_fd, err = 0;
+@@ -272,7 +272,7 @@ static int bperf_cgrp__read(struct evsel *evsel)
+ 		}
+ 
+ 		for (i = 0; i < nr_cpus; i++) {
+-			cpu = evlist->core.all_cpus->map[i];
++			cpu = evlist->core.all_cpus->map[i].cpu;
+ 
+ 			counts = perf_counts(evsel->counts, i, 0);
+ 			counts->val = values[cpu].counter;
+diff --git a/tools/perf/util/bpf_ftrace.c b/tools/perf/util/bpf_ftrace.c
+index 28dc4c60c7884818..d756cc66eef32ae8 100644
+--- a/tools/perf/util/bpf_ftrace.c
++++ b/tools/perf/util/bpf_ftrace.c
+@@ -63,7 +63,7 @@ int perf_ftrace__latency_prepare_bpf(struct perf_ftrace *ftrace)
+ 		fd = bpf_map__fd(skel->maps.cpu_filter);
+ 
+ 		for (i = 0; i < ncpus; i++) {
+-			cpu = perf_cpu_map__cpu(ftrace->evlist->core.cpus, i);
++			cpu = perf_cpu_map__cpu(ftrace->evlist->core.cpus, i).cpu;
+ 			bpf_map_update_elem(fd, &cpu, &val, BPF_ANY);
+ 		}
+ 	}
+@@ -122,7 +122,7 @@ int perf_ftrace__latency_read_bpf(struct perf_ftrace *ftrace __maybe_unused,
+ 	int i, fd, err;
+ 	u32 idx;
+ 	u64 *hist;
+-	int ncpus = cpu__max_cpu();
++	int ncpus = cpu__max_cpu().cpu;
+ 
+ 	fd = bpf_map__fd(skel->maps.latency);
+ 
