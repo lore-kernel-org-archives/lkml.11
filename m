@@ -2,164 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D600C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1106BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235526AbiAJOaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 09:30:35 -0500
-Received: from mout.kundenserver.de ([212.227.126.130]:40055 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235510AbiAJO27 (ORCPT
+        id S235537AbiAJOav (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 09:30:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235500AbiAJOau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 09:28:59 -0500
-Received: from mail-wr1-f54.google.com ([209.85.221.54]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MyK9U-1m8X1J1Mpo-00yhft; Mon, 10 Jan 2022 15:28:57 +0100
-Received: by mail-wr1-f54.google.com with SMTP id v6so27050965wra.8;
-        Mon, 10 Jan 2022 06:28:57 -0800 (PST)
-X-Gm-Message-State: AOAM532VBMarH7QeVUHGoz8+ZXjU/9qZZeVZVz90AB9wVWVF/f/m2yjD
-        M7TXr0hBOeDI3wSDD6t42Wu4QNex4i4JfLRdij8=
-X-Google-Smtp-Source: ABdhPJwP2dj7vwEXcQpaQSkksNl0ZEmP7KqS5c95/LhZe5KvkABgHfbU/HDC2zAjxcbRJXknKfqyiFGKdYDX7S/ttBs=
-X-Received: by 2002:a05:6000:16c7:: with SMTP id h7mr17539097wrf.317.1641824936821;
- Mon, 10 Jan 2022 06:28:56 -0800 (PST)
-MIME-Version: 1.0
-References: <20211228143958.3409187-1-guoren@kernel.org> <20211228143958.3409187-12-guoren@kernel.org>
-In-Reply-To: <20211228143958.3409187-12-guoren@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 10 Jan 2022 15:28:40 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0H2Nq=bFdzWGzzGuFWP85JA7=Td6_rb8GqOF3bYCRJBw@mail.gmail.com>
-Message-ID: <CAK8P3a0H2Nq=bFdzWGzzGuFWP85JA7=Td6_rb8GqOF3bYCRJBw@mail.gmail.com>
-Subject: Re: [PATCH V2 11/17] riscv: compat: Add elf.h implementation
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup.patel@wdc.com>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        inux-parisc@vger.kernel.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
+        Mon, 10 Jan 2022 09:30:50 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26074C061751
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 06:30:50 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id p14so12102475plf.3
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 06:30:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rajagiritech-edu-in.20210112.gappssmtp.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=CcamlWs1isX1h8/o0AFArdkvbA9sYBTbXJp+4ZP/YKk=;
+        b=HU6Qa9x23jaVK2yer703j2WbcS80H6hcYzWo9PAXkb4WJDHw0jTysnwJ1nLynGqOkm
+         QXSxe1m1x/5gx9XfPt+AUkgOlLuH17Hv+IJ6U8w0SCDs5OFSMa0LstKKDRf2YkpAFVWU
+         WHweJ5QeUytstmhZF8LW8UbppMj1SIlf1GZKGOH0zwIYEl9PXILIL/G6Ql1nnqg0pR8/
+         2vnj0H335TFXYeHvsVrQNDBrzPk62wZO3Qyw0xbkDPcUPIKNnq35WKyRPghyseojZAZu
+         ZxDZb85MLvp/iidMTdi9l+T3xG9t0AeikuLAAmnmtXau41S+iOAACHVEq6TLq7vYuQEh
+         q6ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=CcamlWs1isX1h8/o0AFArdkvbA9sYBTbXJp+4ZP/YKk=;
+        b=tNIoPWa1CcMldZ4DLrDGMBOJKIEztqDctAQPMk10x5MxCWyFFkfBUIw/IrWAIvwbc2
+         08TScGoc6OchyXIVskrH0ETWFsF8LUttFvwDyJ6JJAE2m2QFGrcJ6oAAXSI0m1ZWxh13
+         lG5giVz6Qr0ffcFjkK+4vSBvm7N5eOLbJOY8Ka7NJtO3xL+YbGxBQhtX5Kr1LijoBhuh
+         4BNlTsa1JC0qz8OEQvXf5UGNKrn5eLKfLZ6Ymhbx+8PfizExRxyFJphKNKeJJ7FY85p2
+         V3XfsLqNRD8YPZMiZ44PLfu3MXU1dJYNz9GJYz/KIj2YEF7OIdEhk4xPeF7HnHWnvYtW
+         9zNA==
+X-Gm-Message-State: AOAM532jn/vp1cAl96jwz9X55gPX5P+AJIGBBwV1mehLLcVBrb0I4AEZ
+        wyCcddQCdlSzppJ7SCwekBWAcw==
+X-Google-Smtp-Source: ABdhPJxUWGGRpFCsoVOLozehyMAHKh4eLISheE8+skZ7k/WXqPvo+cH7yL3vZLm+kX7TToX+scRyaw==
+X-Received: by 2002:a17:902:cec2:b0:149:7fa3:3fe3 with SMTP id d2-20020a170902cec200b001497fa33fe3mr64346958plg.161.1641825049689;
+        Mon, 10 Jan 2022 06:30:49 -0800 (PST)
+Received: from [192.168.1.32] ([122.164.22.119])
+        by smtp.gmail.com with ESMTPSA id go19sm7245239pjb.25.2022.01.10.06.30.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 06:30:49 -0800 (PST)
+Message-ID: <98aac9ed39d2ca3e0a9163c584d9c361acd86584.camel@rajagiritech.edu.in>
+Subject: Re: [PATCH 5.15 00/72] 5.15.14-rc1 review
+From:   Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+Date:   Mon, 10 Jan 2022 20:00:43 +0530
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:UXLcJaB2lA59YOxwVTQMBTB9Dxji9s7QCHe0L7WJKm/zT8kjwvJ
- LBjfwCCXJ/N9g7kU69rg+/0EvE2V8nB7GMF9P5FdaYUvOWUrZjBOg+gBanVkEGe4nGS+gU1
- 8Xf8k4fDqhQcn3LL+8hWphPJsrAxWcQ+EFPACTlxX+KeCmtT8e9jRJkmlC+eSDByMH3JQpC
- QwVuQNtUX5VMAzqJpf1qw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:HoS1Cfn33y0=:PConMlud95CuR/s+ENDO8j
- Ww8aJhs5Ekbl///6FhHqJvuP/JCTeh7mxyXPpzUN3+nHP50EYZO3IccdpdYDzS0i6rta7poqd
- 0+MHUB1dC5NHSXq7+K5fuC6JV6HEuW03p0s218WvrY1JS1WAeSg/U2oFd42Y0miGh+fbxeURe
- BEDN3EacpJJWsvZMIWaQB2c4E80LxGUcjLHVlTYy3cGvxXrWlewDSe9Q3YSHqX2OxHvFra9Y1
- iacjjPdOoSg28DTtAkE0lsgzWma34lAz8+2ZmqR5iqOsQ/UQMKc3lbKVjxyKb1h0dn7KDoKwQ
- 86zMwLCY6HwT2/4tH8Q2vo6dIABEbit3qXl+3+t2rlt0jaqJ1lRXy0WoV4yovKRXKgr9EQrLI
- vAHP/+Z/jGTTDOdxAs4Lz8jXaSA7n09S2iPz9muukRCtaV2vz7vSylhJFRyb176Yh+g73Sjwr
- /EV+kFNwU/5GaK5FtE894LoZPbfyYXtR80ccbWc4mzXcgiGSV4+kmmv5+HDKJuF/0Tvhmxb6V
- RaNcmGAeRt1uOrGShSUArpz48oCGx9sdsNJjLaO7/tjBntpjdEKo/b/z9GAWDb4MYFPox33vy
- JVhLLYUWb/hHQ3mn3KY7jcvAu8xogbG67nZWJe81LWlHUVBxnEi/mAbfz8f31bXlx3VR42/79
- zze8iRoiPpPNjzfW/V6GffCmJDtaTwbEcAcNtuJ2+3H5TsSbrGZgkdG7yvWiaaDGt0EXLFOb/
- PUCrDfBdyUw8e/nxfEaVOyb7qcc+UYeNif3GiE6TRCeqChpq4ET4SNU7YLpjmek18j2lkqmlq
- k1BGXt0oneRdhdFqllETd4UBBhB9R7DxyQOyTge6+EJPPGzwSA=
+User-Agent: Evolution 3.42.1-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 28, 2021 at 3:39 PM <guoren@kernel.org> wrote:
->
-> From: Guo Ren <guoren@linux.alibaba.com>
->
-> Implement necessary type and macro for compat elf. See the code
-> comment for detail.
->
-> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Cc: Arnd Bergmann <arnd@arndb.de>
+On Mon, 2022-01-10 at 08:22 +0100, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.14 release.
+> There are 72 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied,
+> please
+> let me know.
+> 
+> Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+>         
+> https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.14-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-
+> stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+hello,
 
-This looks mostly correct,
+Compiled  and booted  5.15.14-rc1+ on VivoBook 15_ASUS Laptop X507UAR
+. 
+No Regression  from dmesg.
 
-> +/*
-> + * FIXME: not sure SET_PERSONALITY for compat process is right!
-> + */
-> +#define SET_PERSONALITY(ex)                                               \
-> +do {    if ((ex).e_ident[EI_CLASS] == ELFCLASS32)                         \
-> +               set_thread_flag(TIF_32BIT);                                \
-> +       else                                                               \
-> +               clear_thread_flag(TIF_32BIT);                              \
-> +       set_personality(PER_LINUX | (current->personality & (~PER_MASK))); \
-> +} while (0)
+Tested-by: Jeffrin Jose T <jeffrin@rajagiritech.edu.in>
 
-This means the personality after exec is always set to PER_LINUX, not
-PER_LINUX32, which I think is wrong: you want the PER_LINUX32
-setting to stick, just like the upper bits do in the default implementation.
-
-What the other ones do is:
-
-| arch/parisc/include/asm/elf.h-
-set_personality((current->personality & ~PER_MASK) | PER_LINUX); \
-
-This looks like the same problem you introduce here: always forcing PER_LINUX
-instead of PER_LINUX32 makes it impossible to use PER_LINUX32.
-
-| arch/alpha/include/asm/elf.h:#define SET_PERSONALITY(EX)
-                           \
-| arch/alpha/include/asm/elf.h-   set_personality(((EX).e_flags &
-EF_ALPHA_32BIT)         \
-| arch/alpha/include/asm/elf.h-      ? PER_LINUX_32BIT : PER_LINUX)
-| arch/csky/include/asm/elf.h:#define SET_PERSONALITY(ex)
-set_personality(PER_LINUX)
-| arch/nds32/include/asm/elf.h:#define SET_PERSONALITY(ex)
-set_personality(PER_LINUX)
-
-These look even worse: instead of forcing the lower bits to
-PER_LINUX/PER_LINUX32 and
-leaving the upper bits untouched, these also clear the upper bits
-unconditionally.
-
-| arch/arm64/include/asm/elf.h:#define SET_PERSONALITY(ex)
-                                   \
-| arch/arm64/include/asm/elf.h-   current->personality &=
-~READ_IMPLIES_EXEC;                     \
-| arch/x86/um/asm/elf.h:#define SET_PERSONALITY(ex) do {} while(0)
-| arch/x86/include/asm/elf.h:#define set_personality_64bit()      do {
-} while (0)
-| arch/x86/kernel/process_64.c:static void __set_personality_ia32(void)
-|         current->personality |= force_personality32;
-
-Inconsistent: does not enforce PER_LINUX/PER_LINUX32 as the default
-implementation
-does, but just leaves the value untouched (other than (re)setting
-READ_IMPLIES_EXEC).
-I think this is harmless otherwise, as we generally ignore the lower
-bits, except for the
-bit of code that checks for PER_LINUX32 in override_architecture() to mangle the
-output of sys_newuname() or in /proc/cpuinfo.
-
-| arch/s390/include/asm/elf.h-    if
-(personality(current->personality) != PER_LINUX32)   \
-| arch/s390/include/asm/elf.h-            set_personality(PER_LINUX |
-                   \
-| arch/s390/include/asm/elf.h-
-(current->personality & ~PER_MASK));    \
-| arch/powerpc/include/asm/elf.h- if
-(personality(current->personality) != PER_LINUX32)   \
-| arch/powerpc/include/asm/elf.h-         set_personality(PER_LINUX |
-                   \
-| arch/powerpc/include/asm/elf.h-
-(current->personality & (~PER_MASK)));  \
-| arch/sparc/include/asm/elf_64.h-        if
-(personality(current->personality) != PER_LINUX32)   \
-| arch/sparc/include/asm/elf_64.h-
-set_personality(PER_LINUX |             \
-| arch/sparc/include/asm/elf_64.h-
-(current->personality & (~PER_MASK)));  \
-
-This is probably the behavior you want to copy.
-
-      Arnd
+-- 
+software engineer
+rajagiri school of engineering and technology - autonomous
