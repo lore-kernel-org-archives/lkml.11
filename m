@@ -2,102 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB174C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:10:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E17C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245505AbiAJUKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 15:10:16 -0500
-Received: from mga06.intel.com ([134.134.136.31]:21424 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243576AbiAJUKP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 15:10:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641845415; x=1673381415;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MddOv9rNWzwfEHFQm02jD0qYMPPpUJ+02HSYd6O59A8=;
-  b=FHEskh7Z1tasmZeS/g3J+0q3WIhqgFq+RXsYtV5bNzI3aMCbt3Axoldr
-   61NVunxVmJR3a68fqAyoudRU5pdk8ShgMxLnTSYpzC7Ri8hAblcbsfAYX
-   juQ4xEiDGdyImXoI2NLRAIpurSmpCJYxw8PDw4dPha4+wWNW1DyWujRK4
-   J0nIllKlxbfA8eJ8Et7catrpyODScrbztpYSTKrrkI63co0Z0zLd0yTin
-   S4c0r1GxPbz6sJ+OyJfL3eswgHAcON2GjFiiFL6auPC31Oxsh3GbT/Ukc
-   VRi7tBOfyqqzMT55pTBviohrGGuBcs1tD2N5Qa2bH4KyLTX59wB+rU9Zw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304050890"
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="304050890"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 12:10:14 -0800
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="474248797"
-Received: from sandiko-mobl1.amr.corp.intel.com (HELO [10.209.94.191]) ([10.209.94.191])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 12:10:14 -0800
-Message-ID: <265db742-0539-a66f-ff00-2b18cb2add88@intel.com>
-Date:   Mon, 10 Jan 2022 12:10:01 -0800
+        id S245674AbiAJULO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 15:11:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37054 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243576AbiAJULN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 15:11:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A38761360
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 20:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6513C36AE9;
+        Mon, 10 Jan 2022 20:11:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641845472;
+        bh=GZAW6ljpVJkW9tapkShgEyTKogVOxAa+JdKWJh/kdkY=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=agy857BBV6eut+qpzva9gOOWppwNnIQwzdCgTuKCCwr3YmKV8k2RSiZo6T2oZ32nZ
+         zRFBckXZE7uOsCAOM2D5kAbngpYXXomgYeqxyjLwyh6mloJRfzx9pK0Y08tqXt7SSS
+         kiWl36LQ2HuUXwix7ahN2wsbggOWbd5av4GjSFl0xYHZ2e2pLXGTvqh7DnyKPU0tlX
+         eKHT9nerJ5dSrYwVG09jMeY4bGCdj4tXP53PdnuFVZIUjsOPsY4vdecF4cmmQzRlPr
+         21XL6ZPlw/DJH4Ni/nptqB6zMulaLOqyQwsqau6IPl7XSQuDpMQlU79tFuLLPJyX+j
+         MCNo5Yy5HdPuA==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 3A4BC5C03AE; Mon, 10 Jan 2022 12:11:12 -0800 (PST)
+Date:   Mon, 10 Jan 2022 12:11:12 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        kernel-team@fb.com, mingo@kernel.org, elver@google.com,
+        andreyknvl@google.com, glider@google.com, dvyukov@google.com
+Subject: [GIT PULL] KCSAN changes for v5.17
+Message-ID: <20220110201112.GA1013244@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [GIT PULL] x86/cpu for v5.17
-Content-Language: en-US
-To:     Borislav Petkov <bp@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Shutemov, Kirill" <kirill.shutemov@intel.com>
-References: <YdwVl0H54fmUIux0@zn.tnic>
- <CAHk-=wh+UbGrgH4CzKSoTYGPidyv5isiLMxJKAqnV3NFTiRdaQ@mail.gmail.com>
- <Ydx8fUCotPI++UEW@zn.tnic>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <Ydx8fUCotPI++UEW@zn.tnic>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/10/22 10:35, Borislav Petkov wrote:
->>
->> Not a big deal, I just thought I'd mention it since I reacted to it.
->> And we don't seem to have those vendor checks in any of the other code
->> that uses MSR_CSTAR (just grepping for that and seeing it mentioned in
->> kvm code etc)
-> Right, the only point for doing the vendor check I see here is, well,
-> because it is Intel who doesn't have CSTAR, let's check for Intel. But
-> yeah, we do avoid the vendor checks if it can be helped.
-> 
-> We can do a synthetic X86_FEATURE flag but that would be a waste. So the
-> _safe thing and keep the comment sounds optimal to me.
-> 
-> I can whip up a patch ontop if people agree.
+Hello, Linus,
 
-There are four basic options here for TDX:
+Please pull the latest KCSAN git tree from:
 
-1. Paper over the #VE in the #VE handler itself
-2. Do a check for TDX at the wrmsr(MSR_CSTAR) site
-3. Do a check for X86_VENDOR_INTEL at the wrmsr(MSR_CSTAR) site
-4. Use wrmsr*_safe() and rely on #VE -> fixup_exception()
+  git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/kcsan.2022.01.09a
+  # HEAD: b473a3891c46393e9c4ccb4e3197d7fb259c7100: kcsan: Only test clear_bit_unlock_is_negative_byte if arch defines it
 
-TDX originally did #1, passed over #2 and settled on #3 because of a 
-comment:
+KCSAN changes for this cycle provide KCSAN fixes and also the ability to
+take memory barriers into account for weakly-ordered systems.  This last
+can increase the probability of detecting certain types of data races.
 
-	It's an obvious optimization (avoiding the WRMSR with a
-	conditional) without TDX because the write is pointless
-	independent of TDX." [1]
+----------------------------------------------------------------
+Alexander Potapenko (1):
+      compiler_attributes.h: Add __disable_sanitizer_instrumentation
 
-I think doing wrmsr*_safe() is OK.  But, on TDX systems, it will end up 
-taking a weird route:
+Marco Elver (28):
+      kcsan: Refactor reading of instrumented memory
+      kcsan: Remove redundant zero-initialization of globals
+      kcsan: Avoid checking scoped accesses from nested contexts
+      kcsan: Add core support for a subset of weak memory modeling
+      kcsan: Add core memory barrier instrumentation functions
+      kcsan, kbuild: Add option for barrier instrumentation only
+      kcsan: Call scoped accesses reordered in reports
+      kcsan: Show location access was reordered to
+      kcsan: Document modeling of weak memory
+      kcsan: test: Match reordered or normal accesses
+      kcsan: test: Add test cases for memory barrier instrumentation
+      kcsan: Ignore GCC 11+ warnings about TSan runtime support
+      kcsan: selftest: Add test case to check memory barrier instrumentation
+      locking/barriers, kcsan: Add instrumentation for barriers
+      locking/barriers, kcsan: Support generic instrumentation
+      locking/atomics, kcsan: Add instrumentation for barriers
+      asm-generic/bitops, kcsan: Add instrumentation for barriers
+      x86/barriers, kcsan: Use generic instrumentation for non-smp barriers
+      x86/qspinlock, kcsan: Instrument barrier of pv_queued_spin_unlock()
+      mm, kcsan: Enable barrier instrumentation
+      sched, kcsan: Enable memory barrier instrumentation
+      objtool, kcsan: Add memory barrier instrumentation to whitelist
+      objtool, kcsan: Remove memory barrier instrumentation from noinstr
+      kcsan: Support WEAK_MEMORY with Clang where no objtool support exists
+      kcsan: Make barrier tests compatible with lockdep
+      kcsan: Turn barrier instrumentation into macros
+      kcsan: Avoid nested contexts reading inconsistent reorder_access
+      kcsan: Only test clear_bit_unlock_is_negative_byte if arch defines it
 
-       WRMSR -> #VE -> hypercall -> ve_raise_fault() -> fixup_exception()
-
-instead of the "normal" _safe route which goes:
-
-       WRMSR -> #GP -> ... -> fixup_exception()
-
-So, we should probably make sure wrmsr*_safe() is fine on TDX before we 
-subject ourselves to any additional churn.  Kirill, can you test that out?
-
-1. https://lore.kernel.org/all/87sfvljf5q.ffs@tglx/
+ Documentation/dev-tools/kcsan.rst                |  76 +++-
+ arch/x86/include/asm/barrier.h                   |  10 +-
+ arch/x86/include/asm/qspinlock.h                 |   1 +
+ include/asm-generic/barrier.h                    |  54 ++-
+ include/asm-generic/bitops/instrumented-atomic.h |   3 +
+ include/asm-generic/bitops/instrumented-lock.h   |   3 +
+ include/linux/atomic/atomic-instrumented.h       | 135 ++++++-
+ include/linux/compiler_attributes.h              |  18 +
+ include/linux/compiler_types.h                   |  13 +-
+ include/linux/kcsan-checks.h                     |  83 ++++-
+ include/linux/kcsan.h                            |  11 +-
+ include/linux/sched.h                            |   3 +
+ include/linux/spinlock.h                         |   2 +-
+ init/init_task.c                                 |   5 -
+ kernel/kcsan/Makefile                            |   2 +
+ kernel/kcsan/core.c                              | 347 +++++++++++++++---
+ kernel/kcsan/kcsan_test.c                        | 426 +++++++++++++++++++++--
+ kernel/kcsan/report.c                            |  51 +--
+ kernel/kcsan/selftest.c                          | 143 ++++++++
+ kernel/sched/Makefile                            |   7 +-
+ lib/Kconfig.kcsan                                |  20 ++
+ mm/Makefile                                      |   2 +
+ scripts/Makefile.kcsan                           |  15 +-
+ scripts/Makefile.lib                             |   5 +
+ scripts/atomic/gen-atomic-instrumented.sh        |  41 ++-
+ tools/objtool/check.c                            |  41 ++-
+ tools/objtool/include/objtool/elf.h              |   2 +-
+ 27 files changed, 1347 insertions(+), 172 deletions(-)
