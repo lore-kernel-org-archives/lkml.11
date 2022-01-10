@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 970F4C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7161C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243217AbiAJHo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:44:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        id S243248AbiAJHpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241511AbiAJHfy (ORCPT
+        with ESMTP id S241510AbiAJHfy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:35:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEFBC028BF6;
-        Sun,  9 Jan 2022 23:31:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19356C028BF4;
+        Sun,  9 Jan 2022 23:31:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C9476B81161;
-        Mon, 10 Jan 2022 07:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 027FFC36AED;
-        Mon, 10 Jan 2022 07:31:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF6E1B81205;
+        Mon, 10 Jan 2022 07:31:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C78C36AED;
+        Mon, 10 Jan 2022 07:31:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799870;
-        bh=QGV9ybegpgxeb4XkMaOZjZs9eMIf49iusznKtxoQzC8=;
+        s=korg; t=1641799867;
+        bh=nbDOWtRTOobu4zr4WWANoM0fHIMn9fEz4m8CnbDXrd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tMSyJ16aGyQLKgeufj9I8QcRBwgOcMwd0yQqwP48qebYRCtau2wL8528CqwUJRagK
-         zrmfcputES+QOv3y42c2zAdZw2JxD0JYNQlbqYXeMphVsrBEnqSgeepzdNE3RpIy/5
-         vjRgJHwl4SOAMWl0Mh74rPFJrvD/LnvLxd2q/98I=
+        b=Bm3z1sMCYEyK1dg3ebfn2KbvWlEx2611EseJW+eyg627WF8m/rvZT/BxkN2VWFBnj
+         BX2/j7eJ08FZw8PAfXXgePnf25rHhxdukBw5hR0tjC1t5XB+mVOUn8j/ADuZ0Fnpjb
+         YMU9S0UHHSHVhTIULW9hO5hqRGJzhsvG4GgH1P8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Linus Walleij <linus.walleij@linaro.org>,
-        Nikita Travkin <nikita@trvn.ru>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH 5.10 43/43] Input: zinitix - make sure the IRQ is allocated before it gets enabled
-Date:   Mon, 10 Jan 2022 08:23:40 +0100
-Message-Id: <20220110071818.798892318@linuxfoundation.org>
+        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jan Kiszka <jan.kiszka@web.de>,
+        Phil Elwell <phil@raspberrypi.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Olof Johansson <olof@lixom.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 42/43] ARM: dts: gpio-ranges property is now required
+Date:   Mon, 10 Jan 2022 08:23:39 +0100
+Message-Id: <20220110071818.764625175@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -49,58 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nikita Travkin <nikita@trvn.ru>
+From: Phil Elwell <phil@raspberrypi.com>
 
-commit cf73ed894ee939d6706d65e0cd186e4a64e3af6d upstream.
+[ Upstream commit c8013355ead68dce152cf426686f8a5f80d88b40 ]
 
-Since irq request is the last thing in the driver probe, it happens
-later than the input device registration. This means that there is a
-small time window where if the open method is called the driver will
-attempt to enable not yet available irq.
+Since [1], added in 5.7, the absence of a gpio-ranges property has
+prevented GPIOs from being restored to inputs when released.
+Add those properties for BCM283x and BCM2711 devices.
 
-Fix that by moving the irq request before the input device registration.
+[1] commit 2ab73c6d8323 ("gpio: Support GPIO controllers without
+    pin-ranges")
 
+Link: https://lore.kernel.org/r/20220104170247.956760-1-linus.walleij@linaro.org
+Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
+Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
+Reported-by: Stefan Wahren <stefan.wahren@i2se.com>
+Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+Reported-by: Jan Kiszka <jan.kiszka@web.de>
+Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Fixes: 26822652c85e ("Input: add zinitix touchscreen driver")
-Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-Link: https://lore.kernel.org/r/20220106072840.36851-2-nikita@trvn.ru
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20211206092237.4105895-3-phil@raspberrypi.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Olof Johansson <olof@lixom.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/zinitix.c |   16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ arch/arm/boot/dts/bcm2711.dtsi | 2 ++
+ arch/arm/boot/dts/bcm283x.dtsi | 2 ++
+ 2 files changed, 4 insertions(+)
 
---- a/drivers/input/touchscreen/zinitix.c
-+++ b/drivers/input/touchscreen/zinitix.c
-@@ -488,6 +488,15 @@ static int zinitix_ts_probe(struct i2c_c
- 		return error;
- 	}
+diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
+index 4ade854bdcdaf..55ec83bde5a61 100644
+--- a/arch/arm/boot/dts/bcm2711.dtsi
++++ b/arch/arm/boot/dts/bcm2711.dtsi
+@@ -555,6 +555,8 @@
+ 		     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
+ 		     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
  
-+	error = devm_request_threaded_irq(&client->dev, client->irq,
-+					  NULL, zinitix_ts_irq_handler,
-+					  IRQF_ONESHOT,
-+					  client->name, bt541);
-+	if (error) {
-+		dev_err(&client->dev, "Failed to request IRQ: %d\n", error);
-+		return error;
-+	}
++	gpio-ranges = <&gpio 0 0 58>;
 +
- 	error = zinitix_init_input_dev(bt541);
- 	if (error) {
- 		dev_err(&client->dev,
-@@ -514,13 +523,6 @@ static int zinitix_ts_probe(struct i2c_c
- 	}
+ 	gpclk0_gpio49: gpclk0_gpio49 {
+ 		pin-gpclk {
+ 			pins = "gpio49";
+diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
+index 0f3be55201a5b..ffdf7c4fba465 100644
+--- a/arch/arm/boot/dts/bcm283x.dtsi
++++ b/arch/arm/boot/dts/bcm283x.dtsi
+@@ -126,6 +126,8 @@
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
  
- 	irq_set_status_flags(client->irq, IRQ_NOAUTOEN);
--	error = devm_request_threaded_irq(&client->dev, client->irq,
--					  NULL, zinitix_ts_irq_handler,
--					  IRQF_ONESHOT, client->name, bt541);
--	if (error) {
--		dev_err(&client->dev, "Failed to request IRQ: %d\n", error);
--		return error;
--	}
- 
- 	return 0;
- }
++			gpio-ranges = <&gpio 0 0 54>;
++
+ 			/* Defines common pin muxing groups
+ 			 *
+ 			 * While each pin can have its mux selected
+-- 
+2.34.1
+
 
 
