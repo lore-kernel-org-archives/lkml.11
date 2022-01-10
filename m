@@ -2,91 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB693C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:23:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243869AbiAJKXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:23:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
+        id S243887AbiAJKXv convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:23:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239415AbiAJKXB (ORCPT
+        with ESMTP id S243865AbiAJKXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:23:01 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84DFC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 02:23:00 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id z22so6444007edd.12
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 02:23:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M0nrXkjvT8Y2JTsBxE15ySAcNK2QPiRrQi7yxt+5z/k=;
-        b=bZfdedTaBlISxsnA+HjOnZ2STTnliWILpWqzvyQ6qQWMHBDbqJEEzOrRd7Z209N+wV
-         Pt7u7gf1aCvV8qAsRsq66SlB7ZDSM81mOI0eXQscqDfQv76/Retg+8ieV2cdXTVCUNjb
-         g4vH1O+eIUoj+skY/jI67sxujc+a9xhj6NpSqTtbfLNAVq+qdFEeEDKW3F6/f4alCMU8
-         8L29OhGE3C74CBXs0JFnCg3y8HxUbE/DzEziHguagP7ZjFEC8l2IaEP/MmuLunKjutas
-         4ep7CN06F9nNM9u7F+wgRgi2rt+tZT+31rYGvYIdT1lKg5Mp1aohyE5cQW58dtnP3Qos
-         qAUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M0nrXkjvT8Y2JTsBxE15ySAcNK2QPiRrQi7yxt+5z/k=;
-        b=6W1eZ0lIl/jkTrwGywYTzzYhwviU5fBt0zhFFdrPPt91ZuGhgCK2nsfHw4TRGTLu53
-         bebK/7Do5umTrhzbnDRhb6lp8s9OxaP4umhcOpLjL+TtjkXbyQoPrQ1x1qE8YFMHniCS
-         KgybA5k/VELcCDpQzDNHtaUajbQrQhRnyM/pdfkFOmcjTYRv0ZqTemu2QDatbYAYlFiu
-         W4NbZVbOucCArPJhuOSc4y22mEc798rPmFmadsjnLsWgHZ4fCWHLYHqrfxwK5tT+I2Yh
-         9eVkwwsakeLJcy1YAxUgznXmjfVIN1H4MXDqdTzqYb/gYS8/UNUYBls7xOV1qq4dM2CR
-         I6qg==
-X-Gm-Message-State: AOAM530MRuaXLw89FDMd+gMinP7yw3zP5BMKsfRoBB2PqQUurI1Ou3YZ
-        x7UV7SHwog9TocFspQPMr4kynidmSWqXl6e74OA=
-X-Google-Smtp-Source: ABdhPJwECqRHbXYE3+1gJLeWik7SnLbktBiu0AZzxvMVObvaegtHQCjFwf0DmV1UNgLl9J6yU9U5sFqr0U6pNjyMLGM=
-X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr57649438ejc.497.1641810179272;
- Mon, 10 Jan 2022 02:22:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20220108140756.3985487-1-trix@redhat.com> <CAHp75VfbSmgeyi=8q1_he7mpGrNxYAOewKYWD=h8BSuxz2XWOw@mail.gmail.com>
- <0c0926d9-9b72-1519-7e22-e90ffc229940@redhat.com>
-In-Reply-To: <0c0926d9-9b72-1519-7e22-e90ffc229940@redhat.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 10 Jan 2022 12:21:11 +0200
-Message-ID: <CAHp75VdJOzYR0HsZ2LWn-iAMwcM3s0NNDKQdXZZudcEB9RwE9A@mail.gmail.com>
-Subject: Re: [PATCH] ALSA: hda: cs35l41: fix double free in cs35l41_hda_probe()
-To:     Tom Rix <trix@redhat.com>
-Cc:     "james.schulman@cirrus.com" <james.schulman@cirrus.com>,
-        "david.rhodes@cirrus.com" <david.rhodes@cirrus.com>,
-        "tanureal@opensource.cirrus.com" <tanureal@opensource.cirrus.com>,
-        "perex@perex.cz" <perex@perex.cz>,
-        "tiwai@suse.com" <tiwai@suse.com>,
-        "nathan@kernel.org" <nathan@kernel.org>,
-        "ndesaulniers@google.com" <ndesaulniers@google.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "patches@opensource.cirrus.com" <patches@opensource.cirrus.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+        Mon, 10 Jan 2022 05:23:40 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4185FC061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 02:23:40 -0800 (PST)
+Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1n6rpu-0005kw-Eo; Mon, 10 Jan 2022 11:23:34 +0100
+Received: from pza by lupine with local (Exim 4.94.2)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1n6rpt-0007w9-86; Mon, 10 Jan 2022 11:23:33 +0100
+Message-ID: <12b7e367e8323f6da7bb548dbbae0d342608e52b.camel@pengutronix.de>
+Subject: Re: [PATCH v6 3/4] clk: ralink: make system controller node a reset
+ provider
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        Greg KH <gregkh@linuxfoundation.org>,
+        NeilBrown <neil@brown.name>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Date:   Mon, 10 Jan 2022 11:23:33 +0100
+In-Reply-To: <CAMhs-H_gjW_6p6yBWf+k2PBym4N+k+rBEXR9S8c13NU-UWD4VQ@mail.gmail.com>
+References: <20220110083910.1351020-1-sergio.paracuellos@gmail.com>
+         <20220110083910.1351020-4-sergio.paracuellos@gmail.com>
+         <5368e89c391e1329ed2be6496655f1bb50acfd19.camel@pengutronix.de>
+         <CAMhs-H_gjW_6p6yBWf+k2PBym4N+k+rBEXR9S8c13NU-UWD4VQ@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.38.3-1 
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 2:37 AM Tom Rix <trix@redhat.com> wrote:
-> On 1/9/22 2:33 PM, Andy Shevchenko wrote:
-> On Saturday, January 8, 2022, <trix@redhat.com> wrote:
-
-...
-
->> +       if (unlikely(ret)) {
+On Mon, 2022-01-10 at 10:39 +0100, Sergio Paracuellos wrote:
+[...]
+> > Is this known to work for all possible users, without delay between
+> > assert and deassert?
+> 
+> It seems it is. This is based on the original reset implementation for
+> ralink. See:
+> 
+> https://elixir.bootlin.com/linux/v5.16/source/arch/mips/ralink/reset.c#L55
 >
-> This is double weird. First of all, wtf unlikely is here? Second, I commented on the patch that does something with this driver and pointed out to the return 0 in some cases. This one seems a band aid.
->
-> Unlikely to have an error.
+> > Are there any users of the reset_control_reset() API at all? This API
+> > was added for self-clearing reset bits, so if there are no users that
+> > need to pretend this is a reset pulse at the hardware level (there may
+> > be), I'd prefer if this was just left out.
+> 
+> I am not following you here. What do you mean?
 
-We don't use likely() and unlikely() here and there, you need to
-provide a very good justification of its use.
+Looking at drivers/staging/mt7621-dts/mt7621.dtsi, it appears the
+current reset users are:
+  mediatek,mt7621-i2c
+  ralink,mt7621-spi
+  ralink,rt3883-gdma
+  mediatek,mt7621-hsdma
+  mediatek,mt7621-eth
+  mediatek,mt7621
+  mediatek,mt7621-pci
 
-For the record, I forwarded you my review against the code where you
-can find much more issues with it that are subject to fix / amend.
+Many of the corresponding drivers use device_reset(), which is a
+shorthand for requesting a reset control and calling
+reset_control_reset() on it. That will call mt7621_reset_device, so it
+is indeed used.
 
--- 
-With Best Regards,
-Andy Shevchenko
+regards
+Philipp
