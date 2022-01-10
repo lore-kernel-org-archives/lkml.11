@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE31C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DBABC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242085AbiAJHkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49470 "EHLO
+        id S242184AbiAJHka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:40:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239645AbiAJHcb (ORCPT
+        with ESMTP id S240780AbiAJHcb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:32:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E76C02545C;
-        Sun,  9 Jan 2022 23:29:08 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82968C0254B1;
+        Sun,  9 Jan 2022 23:29:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EB45B811F5;
-        Mon, 10 Jan 2022 07:29:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA7B0C36AE9;
-        Mon, 10 Jan 2022 07:29:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 213A9611A3;
+        Mon, 10 Jan 2022 07:29:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE40C36AE9;
+        Mon, 10 Jan 2022 07:29:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799746;
-        bh=/gdLnShWLpQP/o/mRaKeBqi4pXaE52yQZMGAJPcUVUY=;
+        s=korg; t=1641799743;
+        bh=AkrxHaMRo/TSJY2VFau0GMMQ6yV9ELrLc7kZ1D4eIFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TiGlZwBQmvyRGtsQUUG/nivBVHTBjJ2irwAw8I2gKDWiyGHsSdNGoR4QRq0RCL1hd
-         bZdnVyzC/8KiWo/iaYNuI2HW+93Ro3XYOMvmwHM082O+KqriIxDNFkkFLzztBtd9Y5
-         FHidQ0BMSkQAhngo+750bLy1Rha99NRQoYn1+9wc=
+        b=NI2XH2S1WWbIU194i/3P5JBCm9idh1+eS516eR+DLYkhQe85T3slsqn8r2316bgOR
+         hqFNac+lc+j3LLoa0Amwz2jZ9XSv4m/bEcCunG52GMVUcE1d78hzJeYI7hcrnbK+h2
+         ocxR1Iv9WP58sxdUamgy4hnGSf5DQzMZ7hPzFkxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, wolfgang huang <huangjinhui@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 34/34] mISDN: change function names to avoid conflicts
-Date:   Mon, 10 Jan 2022 08:23:29 +0100
-Message-Id: <20220110071816.831947133@linuxfoundation.org>
+        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 16/34] ipv6: Check attribute length for RTA_GATEWAY in multipath route
+Date:   Mon, 10 Jan 2022 08:23:11 +0100
+Message-Id: <20220110071816.202666833@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
 References: <20220110071815.647309738@linuxfoundation.org>
@@ -50,100 +49,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wolfgang huang <huangjinhui@kylinos.cn>
+From: David Ahern <dsahern@kernel.org>
 
-[ Upstream commit 8b5fdfc57cc2471179d1c51081424ded833c16c8 ]
+commit 4619bcf91399f00a40885100fb61d594d8454033 upstream.
 
-As we build for mips, we meet following error. l1_init error with
-multiple definition. Some architecture devices usually marked with
-l1, l2, lxx as the start-up phase. so we change the mISDN function
-names, align with Isdnl2_xxx.
+Commit referenced in the Fixes tag used nla_memcpy for RTA_GATEWAY as
+does the current nla_get_in6_addr. nla_memcpy protects against accessing
+memory greater than what is in the attribute, but there is no check
+requiring the attribute to have an IPv6 address. Add it.
 
-mips-linux-gnu-ld: drivers/isdn/mISDN/layer1.o: in function `l1_init':
-(.text+0x890): multiple definition of `l1_init'; \
-arch/mips/kernel/bmips_5xxx_init.o:(.text+0xf0): first defined here
-make[1]: *** [home/mips/kernel-build/linux/Makefile:1161: vmlinux] Error 1
-
-Signed-off-by: wolfgang huang <huangjinhui@kylinos.cn>
-Reported-by: k2ci <kernel-bot@kylinos.cn>
+Fixes: 51ebd3181572 ("ipv6: add support of equal cost multipath (ECMP)")
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/isdn/mISDN/core.c   | 6 +++---
- drivers/isdn/mISDN/core.h   | 4 ++--
- drivers/isdn/mISDN/layer1.c | 4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ net/ipv6/route.c |   21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/mISDN/core.c b/drivers/isdn/mISDN/core.c
-index 55891e4204460..a41b4b2645941 100644
---- a/drivers/isdn/mISDN/core.c
-+++ b/drivers/isdn/mISDN/core.c
-@@ -381,7 +381,7 @@ mISDNInit(void)
- 	err = mISDN_inittimer(&debug);
- 	if (err)
- 		goto error2;
--	err = l1_init(&debug);
-+	err = Isdnl1_Init(&debug);
- 	if (err)
- 		goto error3;
- 	err = Isdnl2_Init(&debug);
-@@ -395,7 +395,7 @@ mISDNInit(void)
- error5:
- 	Isdnl2_cleanup();
- error4:
--	l1_cleanup();
-+	Isdnl1_cleanup();
- error3:
- 	mISDN_timer_cleanup();
- error2:
-@@ -408,7 +408,7 @@ static void mISDN_cleanup(void)
- {
- 	misdn_sock_cleanup();
- 	Isdnl2_cleanup();
--	l1_cleanup();
-+	Isdnl1_cleanup();
- 	mISDN_timer_cleanup();
- 	class_unregister(&mISDN_class);
- 
-diff --git a/drivers/isdn/mISDN/core.h b/drivers/isdn/mISDN/core.h
-index 23b44d3033279..42599f49c189d 100644
---- a/drivers/isdn/mISDN/core.h
-+++ b/drivers/isdn/mISDN/core.h
-@@ -60,8 +60,8 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
- extern int	mISDN_inittimer(u_int *);
- extern void	mISDN_timer_cleanup(void);
- 
--extern int	l1_init(u_int *);
--extern void	l1_cleanup(void);
-+extern int	Isdnl1_Init(u_int *);
-+extern void	Isdnl1_cleanup(void);
- extern int	Isdnl2_Init(u_int *);
- extern void	Isdnl2_cleanup(void);
- 
-diff --git a/drivers/isdn/mISDN/layer1.c b/drivers/isdn/mISDN/layer1.c
-index 98a3bc6c17009..7b31c25a550e3 100644
---- a/drivers/isdn/mISDN/layer1.c
-+++ b/drivers/isdn/mISDN/layer1.c
-@@ -398,7 +398,7 @@ create_l1(struct dchannel *dch, dchannel_l1callback *dcb) {
- EXPORT_SYMBOL(create_l1);
- 
- int
--l1_init(u_int *deb)
-+Isdnl1_Init(u_int *deb)
- {
- 	debug = deb;
- 	l1fsm_s.state_count = L1S_STATE_COUNT;
-@@ -409,7 +409,7 @@ l1_init(u_int *deb)
+--- a/net/ipv6/route.c
++++ b/net/ipv6/route.c
+@@ -5092,6 +5092,19 @@ static void ip6_route_mpath_notify(struc
+ 		inet6_rt_notify(RTM_NEWROUTE, rt, info, nlflags);
  }
  
- void
--l1_cleanup(void)
-+Isdnl1_cleanup(void)
++static int fib6_gw_from_attr(struct in6_addr *gw, struct nlattr *nla,
++			     struct netlink_ext_ack *extack)
++{
++	if (nla_len(nla) < sizeof(*gw)) {
++		NL_SET_ERR_MSG(extack, "Invalid IPv6 address in RTA_GATEWAY");
++		return -EINVAL;
++	}
++
++	*gw = nla_get_in6_addr(nla);
++
++	return 0;
++}
++
+ static int ip6_route_multipath_add(struct fib6_config *cfg,
+ 				   struct netlink_ext_ack *extack)
  {
- 	mISDN_FsmFree(&l1fsm_s);
- }
--- 
-2.34.1
-
+@@ -5133,7 +5146,13 @@ static int ip6_route_multipath_add(struc
+ 
+ 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
+ 			if (nla) {
+-				r_cfg.fc_gateway = nla_get_in6_addr(nla);
++				int ret;
++
++				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
++							extack);
++				if (ret)
++					return ret;
++
+ 				r_cfg.fc_flags |= RTF_GATEWAY;
+ 			}
+ 			r_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
 
 
