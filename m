@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3661CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241624AbiAJHvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:51:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
+        id S241713AbiAJHvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:51:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241189AbiAJHlp (ORCPT
+        with ESMTP id S241375AbiAJHlp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:41:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32B9C03327C;
-        Sun,  9 Jan 2022 23:34:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12659C03327B;
+        Sun,  9 Jan 2022 23:34:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7389D61194;
-        Mon, 10 Jan 2022 07:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D799C36AE9;
-        Mon, 10 Jan 2022 07:34:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3E1760BA2;
+        Mon, 10 Jan 2022 07:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F548C36AED;
+        Mon, 10 Jan 2022 07:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800091;
-        bh=4QZgQWBFNNkUz/DGWe8QBfWP/rrGC3n4a03vOftxdZY=;
+        s=korg; t=1641800089;
+        bh=/fvrGJS9mrvvCg2b3RyZrTxkGZGBKhvnZLQiQQLaMqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wi7CcrpPsg5dxWWja17WajFkJ1w0hNyNCKdJMHRH3uf82749fkKKYn8+V8aqa3rFF
-         KnDHf40Djqp4yq0hVf81ha+s1adjcAJOdsEfKE+ZnteYn9PVjj90fjdmPyWb3rFukL
-         yCiyvq73jGAP8+11CJiLNa7Yi67roxmvH/06o+gc=
+        b=hrjZO+Ax1m+H+1yAEt3jWsRWVf3M4002vQwXf99WsaYPFDRYosl6UghIKLPDJbb96
+         tbYhauY8BkhbdlVJju9AXGA0FjSNeePR/fdJT9LJpmmoWD/MLGHNUM7Lc0TAXVzc5K
+         rKk4bc4s7rFBN4HoX/z2Wy6invJaNVlfG4sB8rlU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jan Kiszka <jan.kiszka@web.de>,
-        Phil Elwell <phil@raspberrypi.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Olof Johansson <olof@lixom.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 69/72] ARM: dts: gpio-ranges property is now required
-Date:   Mon, 10 Jan 2022 08:23:46 +0100
-Message-Id: <20220110071823.898925866@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Qiuxu Zhuo <qiuxu.zhuo@intel.com>,
+        Tony Luck <tony.luck@intel.com>
+Subject: [PATCH 5.15 33/72] EDAC/i10nm: Release mdev/mbase when failing to detect HBM
+Date:   Mon, 10 Jan 2022 08:23:10 +0100
+Message-Id: <20220110071822.674979135@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -53,64 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Phil Elwell <phil@raspberrypi.com>
+From: Qiuxu Zhuo <qiuxu.zhuo@intel.com>
 
-[ Upstream commit c8013355ead68dce152cf426686f8a5f80d88b40 ]
+commit c370baa328022cbd46c59c821d1b467a97f047be upstream.
 
-Since [1], added in 5.7, the absence of a gpio-ranges property has
-prevented GPIOs from being restored to inputs when released.
-Add those properties for BCM283x and BCM2711 devices.
+On systems without HBM (High Bandwidth Memory) mdev/mbase are not
+released/unmapped.
 
-[1] commit 2ab73c6d8323 ("gpio: Support GPIO controllers without
-    pin-ranges")
+Add the code to release mdev/mbase when failing to detect HBM.
 
-Link: https://lore.kernel.org/r/20220104170247.956760-1-linus.walleij@linaro.org
-Fixes: 2ab73c6d8323 ("gpio: Support GPIO controllers without pin-ranges")
-Fixes: 266423e60ea1 ("pinctrl: bcm2835: Change init order for gpio hogs")
-Reported-by: Stefan Wahren <stefan.wahren@i2se.com>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Reported-by: Jan Kiszka <jan.kiszka@web.de>
-Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20211206092237.4105895-3-phil@raspberrypi.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Olof Johansson <olof@lixom.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[Tony: re-word commit message]
+
+Cc: <stable@vger.kernel.org>
+Fixes: c945088384d0 ("EDAC/i10nm: Add support for high bandwidth memory")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Qiuxu Zhuo <qiuxu.zhuo@intel.com>
+Signed-off-by: Tony Luck <tony.luck@intel.com>
+Link: https://lore.kernel.org/r/20211224091126.1246-1-qiuxu.zhuo@intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/bcm2711.dtsi | 2 ++
- arch/arm/boot/dts/bcm283x.dtsi | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/edac/i10nm_base.c |    9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
-index 9e01dbca4a011..dff18fc9a9065 100644
---- a/arch/arm/boot/dts/bcm2711.dtsi
-+++ b/arch/arm/boot/dts/bcm2711.dtsi
-@@ -582,6 +582,8 @@
- 		     <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>,
- 		     <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
+--- a/drivers/edac/i10nm_base.c
++++ b/drivers/edac/i10nm_base.c
+@@ -358,6 +358,9 @@ static int i10nm_get_hbm_munits(void)
  
-+	gpio-ranges = <&gpio 0 0 58>;
+ 			mbase = ioremap(base + off, I10NM_HBM_IMC_MMIO_SIZE);
+ 			if (!mbase) {
++				pci_dev_put(d->imc[lmc].mdev);
++				d->imc[lmc].mdev = NULL;
 +
- 	gpclk0_gpio49: gpclk0_gpio49 {
- 		pin-gpclk {
- 			pins = "gpio49";
-diff --git a/arch/arm/boot/dts/bcm283x.dtsi b/arch/arm/boot/dts/bcm283x.dtsi
-index a3e06b6809476..c113661a6668f 100644
---- a/arch/arm/boot/dts/bcm283x.dtsi
-+++ b/arch/arm/boot/dts/bcm283x.dtsi
-@@ -126,6 +126,8 @@
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
+ 				i10nm_printk(KERN_ERR, "Failed to ioremap for hbm mc 0x%llx\n",
+ 					     base + off);
+ 				return -ENOMEM;
+@@ -368,6 +371,12 @@ static int i10nm_get_hbm_munits(void)
  
-+			gpio-ranges = <&gpio 0 0 54>;
+ 			mcmtr = I10NM_GET_MCMTR(&d->imc[lmc], 0);
+ 			if (!I10NM_IS_HBM_IMC(mcmtr)) {
++				iounmap(d->imc[lmc].mbase);
++				d->imc[lmc].mbase = NULL;
++				d->imc[lmc].hbm_mc = false;
++				pci_dev_put(d->imc[lmc].mdev);
++				d->imc[lmc].mdev = NULL;
 +
- 			/* Defines common pin muxing groups
- 			 *
- 			 * While each pin can have its mux selected
--- 
-2.34.1
-
+ 				i10nm_printk(KERN_ERR, "This isn't an hbm mc!\n");
+ 				return -ENODEV;
+ 			}
 
 
