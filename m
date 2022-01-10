@@ -2,79 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42944C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 22:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C14AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 22:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345297AbiAJWFl (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 17:05:41 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:30892 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241701AbiAJWFd (ORCPT
+        id S241665AbiAJWGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 17:06:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50110 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240960AbiAJWGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 17:05:33 -0500
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AJlXpW026179;
-        Mon, 10 Jan 2022 22:04:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=wGcp09mZhBF7/XPqabHSsScYVXwvFU4zogbZn4w8Jo0=;
- b=PNfrIQhmeMKNdwfaq2NsaMvc3xhsBkg0/e7HzhwUVUUB1UVsdQZsyYJ9WtwT8AQtttKM
- AWLDmE3MBPSg+jxO9CMOLlfatAH9EkxhhhECk9B5TonY0bg+nufI+1kco0OmDuqybW9C
- fpY35MtNVPS4QlswoHqHxoXuen55mKBCSx/UVJhBcn80lUfcXn154sUQgvWhbTFhnpmg
- 7r+ANABR0R0kVw52lzlTSnFfLelUNUnFxQ2UZWUDIl0vtGjA0EsQMLdCrGZq7T7GLIwv
- q5IPM3FrGckq6VOCs6veKNbHCmOIVb+Bwi2/WezWLnAIAal9Q2khT04+PZiZ78pYBiIi Dg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgjtg9svh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 22:04:51 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20ALtvuh139009;
-        Mon, 10 Jan 2022 22:04:51 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 3df2e3vqv5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 22:04:50 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 20AM4iC8174082;
-        Mon, 10 Jan 2022 22:04:50 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by aserp3020.oracle.com with ESMTP id 3df2e3vqp8-6;
-        Mon, 10 Jan 2022 22:04:50 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, jejb@linux.ibm.com,
-        skashyap@marvell.com, GR-QLogic-Storage-Upstream@marvell.com,
-        jhasan@marvell.com, linux@armlinux.org.uk
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] scsi: qedf: potential dereference of null pointer
-Date:   Mon, 10 Jan 2022 17:04:38 -0500
-Message-Id: <164182835583.13635.8893897852615126704.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211216101449.375953-1-jiasheng@iscas.ac.cn>
-References: <20211216101449.375953-1-jiasheng@iscas.ac.cn>
+        Mon, 10 Jan 2022 17:06:18 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E442B8180C;
+        Mon, 10 Jan 2022 22:06:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED69C36AE9;
+        Mon, 10 Jan 2022 22:06:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641852376;
+        bh=0EknUIecnauWxeDKBTherSAPBBzXTdCu/8DysfmHeQc=;
+        h=Date:From:To:Cc:Subject:From;
+        b=DsqDjduXjGcJL/m+4zf3/kFjC3DcMLMLNwFj0dWWsqNPDTYM7drDmVjN4x+gT+moN
+         OxaJCCJzAoWiIqK+n6olTqp5lbbyMliNYd4IO4FtiQIdVRCygo0t46BNRfZ1tib7jM
+         IZeqEamENLNSwPuO2GFN4odNOPoG9mct8MMdXQdpWil3qkQ5vpsHEeKaSvLqTjnSEu
+         XU2E3JtJEvsaHf+nVtDvxMN7CF1PZq9mP+8yg52hU5rSfnU/p78QFGPDErH4mfIKw7
+         55COssmfGNU3MHMtGo9BeZrbWmsGbIJn7xjooG7FL/mTNzj1mYpS351Cnw3HW48sTA
+         4s6hP982+u5+w==
+Date:   Mon, 10 Jan 2022 14:06:15 -0800
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        david@fromorbit.com, linux-kernel@vger.kernel.org,
+        sandeen@sandeen.net, hch@lst.de
+Subject: [GIT PULL] xfs: new code for 5.17
+Message-ID: <20220110220615.GA656707@magnolia>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: zmYrn3xPA90eC91y0V1gBAtVbL4Ywu8X
-X-Proofpoint-ORIG-GUID: zmYrn3xPA90eC91y0V1gBAtVbL4Ywu8X
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 16 Dec 2021 18:14:49 +0800, Jiasheng Jiang wrote:
+Hi Linus,
 
-> The return value of dma_alloc_coherent() needs to be checked.
-> To avoid use of null pointer in case of the failure of alloc.
-> 
-> 
+Please pull this new code for Linux 5.17.  The big new feature here is
+that the mount code now only bothers to try to free stale COW staging
+extents if the fs unmounted uncleanly.  This should reduce mount times,
+particularly on filesystems supporting reflink and containing a large
+number of allocation groups.
 
-Applied to 5.17/scsi-queue, thanks!
+Everything else this cycle are bugfixes, as the iomap folios conversion
+should be plenty enough excitement for anyone.  That and I ran out of
+brain bandwidth after Thanksgiving last year.
 
-[1/1] scsi: qedf: potential dereference of null pointer
-      https://git.kernel.org/mkp/scsi/c/aa7069d840da
+The branch merges cleanly against upstream as of a few minutes ago.
+Please let me know if anything else strange happens during the merge
+process.  There will definitely be a second pull request coming with
+at least one more bug fix and most probably a full withdrawal of the
+recently troublesome ALLOCSP ioctl family.
 
--- 
-Martin K. Petersen	Oracle Linux Engineering
+--D
+
+The following changes since commit 2585cf9dfaaddf00b069673f27bb3f8530e2039c:
+
+  Linux 5.16-rc5 (2021-12-12 14:53:01 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.17-merge-2
+
+for you to fetch changes up to 7e937bb3cbe1f6b9840a43f879aa6e3f1a5e6537:
+
+  xfs: warn about inodes with project id of -1 (2022-01-06 10:43:30 -0800)
+
+----------------------------------------------------------------
+New code for 5.17:
+ - Fix log recovery with da btree buffers when metauuid is in use.
+ - Fix type coercion problems in xattr buffer size validation.
+ - Fix a bug in online scrub dir leaf bestcount checking.
+ - Only run COW recovery when recovering the log.
+ - Fix symlink target buffer UAF problems and symlink locking problems
+   by not exposing xfs innards to the VFS.
+ - Fix incorrect quotaoff lock usage.
+ - Don't let transactions cancel cleanly if they have deferred work
+   items attached.
+ - Fix a UAF when we're deciding if we need to relog an intent item.
+ - Reduce kvmalloc overhead for log shadow buffers.
+ - Clean up sysfs attr group usage.
+ - Fix a bug where scrub's bmap/rmap checking could race with a quota
+   file block allocation due to insufficient locking.
+ - Teach scrub to complain about invalid project ids.
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      xfs: prevent a WARN_ONCE() in xfs_ioc_attr_list()
+
+Darrick J. Wong (8):
+      xfs: shut down filesystem if we xfs_trans_cancel with deferred work items
+      xfs: fix quotaoff mutex usage now that we don't support disabling it
+      xfs: don't expose internal symlink metadata buffers to the vfs
+      xfs: only run COW extent recovery when there are no live extents
+      xfs: fix a bug in the online fsck directory leaf1 bestcount check
+      xfs: prevent UAF in xfs_log_item_in_current_chkpt
+      xfs: hold quota inode ILOCK_EXCL until the end of dqalloc
+      xfs: warn about inodes with project id of -1
+
+Dave Chinner (2):
+      xfs: check sb_meta_uuid for dabuf buffer recovery
+      xfs: reduce kvmalloc overhead for CIL shadow buffers
+
+Greg Kroah-Hartman (1):
+      xfs: sysfs: use default_groups in kobj_type
+
+Jiapeng Chong (1):
+      xfs: Remove redundant assignment of mp
+
+Yang Xu (1):
+      xfs: Fix comments mentioning xfs_ialloc
+
+ fs/xfs/scrub/dir.c            | 15 +++++---
+ fs/xfs/scrub/inode.c          | 14 ++++++++
+ fs/xfs/scrub/quota.c          |  4 +--
+ fs/xfs/scrub/repair.c         |  3 ++
+ fs/xfs/scrub/scrub.c          |  4 ---
+ fs/xfs/scrub/scrub.h          |  1 -
+ fs/xfs/xfs_buf_item_recover.c |  2 +-
+ fs/xfs/xfs_dquot.c            | 79 +++++++++++++++----------------------------
+ fs/xfs/xfs_error.c            |  3 +-
+ fs/xfs/xfs_icache.c           |  3 +-
+ fs/xfs/xfs_ioctl.c            |  2 +-
+ fs/xfs/xfs_ioctl.h            |  5 +--
+ fs/xfs/xfs_iops.c             | 40 +++-------------------
+ fs/xfs/xfs_log_cil.c          | 52 ++++++++++++++++++++--------
+ fs/xfs/xfs_log_recover.c      | 26 ++++++++++++--
+ fs/xfs/xfs_mount.c            | 10 ------
+ fs/xfs/xfs_qm_syscalls.c      | 11 +-----
+ fs/xfs/xfs_reflink.c          |  5 ++-
+ fs/xfs/xfs_super.c            |  9 -----
+ fs/xfs/xfs_symlink.c          | 27 ++++++++++-----
+ fs/xfs/xfs_sysfs.c            | 16 +++++----
+ fs/xfs/xfs_trans.c            | 11 +++++-
+ 22 files changed, 175 insertions(+), 167 deletions(-)
