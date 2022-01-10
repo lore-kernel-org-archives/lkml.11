@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBB7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0573FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241149AbiAJHm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:42:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36500 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240341AbiAJHac (ORCPT
+        id S240417AbiAJHlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:41:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240945AbiAJHea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:30:32 -0500
+        Mon, 10 Jan 2022 02:34:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF34EC025393;
+        Sun,  9 Jan 2022 23:29:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94639611EC;
-        Mon, 10 Jan 2022 07:30:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78928C36AFF;
-        Mon, 10 Jan 2022 07:30:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D4E1611BB;
+        Mon, 10 Jan 2022 07:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E354C36AED;
+        Mon, 10 Jan 2022 07:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799831;
-        bh=3Ickka+6v+gJYj2pcGsavEYdwSot3ss+0+8d/9R7JoQ=;
+        s=korg; t=1641799788;
+        bh=amkLwSEaFB8ELixfHTAcmT95x8/YFpi2ur/98Fmnou8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nFTfKCCSgg9k2MbP38pnfsdq047G6yLJe5enh3IGBOt9YA/ngVbv3q0YkvL3R1ms+
-         UHcPa8Io2LnaX1oMSTEgJK+T0v0vL6ek0piw/b/L+jI/ZDL7erlO5yHbMk/aDdGOH+
-         0ah7L2n9b2DEhlfJTVsvjo1uHGEhSi8/gdLpKL6o=
+        b=UbtnyqRQws2EL4w7fjHK8pyzCAyTbvhCcIQOXSNPXSN2Y0zCMX9SyYCqfG1kgDKsg
+         dJg4OklPG4d/lrk6X3PDbFyvkqBPIFmJGCtOE41obp9f8S3EOZi7Zc3pXcNMNwxei9
+         rmWGPkXSWkue+8o4dxHurZOpmiIdKN3Nm9cku0C0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Aayush Agarwal <aayush.a.agarwal@oracle.com>
-Subject: [PATCH 5.10 30/43] phonet: refcount leak in pep_sock_accep
-Date:   Mon, 10 Jan 2022 08:23:27 +0100
-Message-Id: <20220110071818.355783033@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Subject: [PATCH 5.10 02/43] selftests: x86: fix [-Wstringop-overread] warn in test_process_vm_readv()
+Date:   Mon, 10 Jan 2022 08:22:59 +0100
+Message-Id: <20220110071817.417485930@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -46,31 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-commit bcd0f93353326954817a4f9fa55ec57fb38acbb0 upstream.
+commit dd40f44eabe1e122c6852fabb298aac05b083fce upstream.
 
-sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
-invoked in subsequent failure branches(pep_accept_conn() != 0).
+Fix the following [-Wstringop-overread] by passing in the variable
+instead of the value.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
+test_vsyscall.c: In function ‘test_process_vm_readv’:
+test_vsyscall.c:500:22: warning: ‘__builtin_memcmp_eq’ specified bound 4096 exceeds source size 0 [-Wstringop-overread]
+  500 |                 if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/phonet/pep.c |    1 +
- 1 file changed, 1 insertion(+)
+ tools/testing/selftests/x86/test_vsyscall.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/phonet/pep.c
-+++ b/net/phonet/pep.c
-@@ -868,6 +868,7 @@ static struct sock *pep_sock_accept(stru
+--- a/tools/testing/selftests/x86/test_vsyscall.c
++++ b/tools/testing/selftests/x86/test_vsyscall.c
+@@ -497,7 +497,7 @@ static int test_process_vm_readv(void)
+ 	}
  
- 	err = pep_accept_conn(newsk, skb);
- 	if (err) {
-+		__sock_put(sk);
- 		sock_put(newsk);
- 		newsk = NULL;
- 		goto drop;
+ 	if (vsyscall_map_r) {
+-		if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
++		if (!memcmp(buf, remote.iov_base, sizeof(buf))) {
+ 			printf("[OK]\tIt worked and read correct data\n");
+ 		} else {
+ 			printf("[FAIL]\tIt worked but returned incorrect data\n");
 
 
