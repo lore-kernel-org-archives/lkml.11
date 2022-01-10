@@ -2,103 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D14C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A39C4C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:25:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238197AbiAJRYl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 12:24:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46506 "EHLO
+        id S238229AbiAJRZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 12:25:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238139AbiAJRYk (ORCPT
+        with ESMTP id S238203AbiAJRZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 12:24:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E5EC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:24:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72496B811D9
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 17:24:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83F49C36AE9;
-        Mon, 10 Jan 2022 17:24:37 +0000 (UTC)
-Date:   Mon, 10 Jan 2022 12:24:36 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Pingfan Liu <kernelfans@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>
-Subject: Re: [PATCH v2] tracing: Add test for user space strings when
- filtering on  string pointers
-Message-ID: <20220110122436.5302128f@gandalf.local.home>
-In-Reply-To: <31c11a47a8bc4e34a1a64d54a54bb944@AcuMS.aculab.com>
-References: <20220110115532.536088fd@gandalf.local.home>
-        <31c11a47a8bc4e34a1a64d54a54bb944@AcuMS.aculab.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Mon, 10 Jan 2022 12:25:13 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 152E2C061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:25:13 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id h14so22535097ybe.12
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:25:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S49UlxL/fsiTamxTIgefeURrqnW3PFqiJDDCzTc/0cc=;
+        b=VCdeKW3sNP+kY6RTFC/xDpcb6BGp9EFzyrlM8ZMqgpZHIL4xCzt4ONzlz0iXBKAs6A
+         QIzGQBKrqqzWhUm+c0djm+bbedLM7nFmAKNNYybG752cXjGeMmIQVF+QhPbltPM/2VhG
+         f7r/J8vEF3BxJ69LvJ+7jpkKy1u2C5VYnMZwlqnjVB2y1UCcgMDABX0/5ZKBQ1rj2pMF
+         V8NwgXcMILRZCjB2iqkYE31Kfyx6mgaFxTg7QrTjO3QzrKHOxEH4eAUCbMQAFxJQEGKx
+         9pzy7hWJSTWJNfq2JHUcfnNXUBLNxrE1X4INdXGewmaVJH9E3UKqi5VzUvxFB7oATIfI
+         C7UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S49UlxL/fsiTamxTIgefeURrqnW3PFqiJDDCzTc/0cc=;
+        b=2qCJWWZ3zPXqN1t+phSZvbDwA6P658Er0lPPZYTNCsMMDZ3Ujins56ardtnKqMcd3u
+         IdKhQEVPsRqQTcCQmQnhrcQBnWkuX2TdcxZevgFeimH/BorwVjlBO+o2YLaLH2hkrMD8
+         AohkPOTnv0kGIxyWBwol0NgAVYqCkCxPytsCu9KC7OSU4EszO/nE/ZEIqasuNn5+VIgp
+         ShgK+qmNhcizUfy3J76JKp2oXd79AUr2/MKhEY0Y7gZnXTaaMD632X3FGsSlqtF5yA7k
+         fBM4Imag+mUQCh186iPQ4nlehvuPExFhJKC04A4VFLy4sjfOfPs6t8ujs58UMDPDjW4e
+         wL4w==
+X-Gm-Message-State: AOAM532nFAQvW7XWz1Q8SNTHpJAdD7nNzICuAMb4v0pj5uykiVWkmjHn
+        f5SEL1nWejtKCpcD6HreVhq0BwobMSuT9CSU/MTpRQ==
+X-Google-Smtp-Source: ABdhPJxGq+zYLLxC8sn7LZDUsLrH4GX6FkkADsYi2zUYF9m5j4rlWu6WSTZbP9nlpFwN9FhHCK4Gnu8L8/uSWMlf4HE=
+X-Received: by 2002:a05:6902:703:: with SMTP id k3mr758294ybt.225.1641835511962;
+ Mon, 10 Jan 2022 09:25:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <000000000000e8f8f505d0e479a5@google.com> <20211211015620.1793-1-hdanton@sina.com>
+ <YbQUSlq76Iv5L4cC@sol.localdomain> <YdW3WfHURBXRmn/6@sol.localdomain>
+ <CAHk-=wjqh_R9w4-=wfegut2C0Bg=sJaPrayk39JRCkZc=O+gsw@mail.gmail.com>
+ <CAHk-=wjddvNbZBuvh9m_2VYFC1W7HvbP33mAzkPGOCHuVi5fJg@mail.gmail.com>
+ <CAHk-=wjn5xkLWaF2_4pMVEkZrTA=LiOH=_pQK0g-_BMSE-8Jxg@mail.gmail.com> <Ydw4hWCRjAhGfCAv@cmpxchg.org>
+In-Reply-To: <Ydw4hWCRjAhGfCAv@cmpxchg.org>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Mon, 10 Jan 2022 09:25:00 -0800
+Message-ID: <CAJuCfpHg=SPzx7SGUL75DVpMy0BDEwVj4o-SM0UKGmEJrOSdvg@mail.gmail.com>
+Subject: Re: psi_trigger_poll() is completely broken
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Eric Biggers <ebiggers@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 17:11:52 +0000
-David Laight <David.Laight@ACULAB.COM> wrote:
+On Mon, Jan 10, 2022 at 5:45 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Wed, Jan 05, 2022 at 11:13:30AM -0800, Linus Torvalds wrote:
+> > On Wed, Jan 5, 2022 at 11:07 AM Linus Torvalds
+> > <torvalds@linux-foundation.org> wrote:
+> > >
+> > > Whoever came up with that stupid "replace existing trigger with a
+> > > write()" model should feel bad. It's garbage, and it's actively buggy
+> > > in multiple ways.
+> >
+> > What are the users? Can we make the rule for -EBUSY simply be that you
+> > can _install_ a trigger, but you can't replace an existing one (except
+> > with NULL, when you close it).
+>
+> Apologies for the delay, I'm traveling right now.
+>
+> The primary user of the poll interface is still Android userspace OOM
+> killing. I'm CCing Suren who is the most familiar with this usecase.
+>
+> Suren, the way the refcounting is written right now assumes that
+> poll_wait() is the actual blocking wait. That's not true, it just
+> queues the waiter and saves &t->event_wait, and the *caller* of
+> psi_trigger_poll() continues to interact with it afterwards.
 
-> From: Steven Rostedt
-> > Sent: 10 January 2022 16:56
-> > 
-> > From: Steven Rostedt <rostedt@goodmis.org>
-> > 
-> > Pingfan reported that the following causes a fault:
-> > 
-> >   echo "filename ~ \"cpu\"" > events/syscalls/sys_enter_openat/filter
-> >   echo 1 > events/syscalls/sys_enter_at/enable
-> > 
-> > The reason is that trace event filter treats the user space pointer
-> > defined by "filename" as a normal pointer to compare against the "cpu"
-> > string. If the string is not loaded into memory yet, it will trigger a
-> > fault in kernel space:  
-> 
-> If a userspace pointer can end up the kernel structure then presumably
-> a 'dodgy' user program can supply an arbitrary kernel address instead?
-> This may give the user the ability to read arbitrary kernel addresses
-> (including ones that are mapped to PCIe IO addresses).
-> Doesn't sound good at all.
+Thanks for adding me, Johannes. I see where I made a mistake.
+Terribly sorry for the trouble this caused. I do feel bad.
 
-Only root has access to the information read here. All tracing requires
-root or those explicitly given access to the tracing data, which pretty
-much allows all access to kernel internals (including all memory). So
-nothing to worry about here ;-)
+>
+> If at all possible, I would also prefer the simplicity of one trigger
+> setup per fd; if you need a new trigger, close the fd and open again.
+>
+> Can you please take a look if that is workable from the Android side?
 
-> 
-> ...
-> > +	if (likely((unsigned long)str >= TASK_SIZE)) {
-> > +		/* For safety, do not trust the string pointer */
-> > +		if (!strncpy_from_kernel_nofault(kstr, str, USTRING_BUF_SIZE))
-> > +			return NULL;
-> > +	} else {
-> > +		/* user space address? */
-> > +		ustr = (char __user *)str;
-> > +		if (!strncpy_from_user_nofault(kstr, ustr, USTRING_BUF_SIZE))
-> > +			return NULL;  
-> 
-> Is that check against TASK_SIZE even correct for all architectures?
-> copy_to/from_user() uses access_ok() - which is architecture dependant.
+Yes, one trigger per fd would work fine for Android. That's how we
+intended to use it.
+I'm still catching up on this email thread. Once I digest it, will try
+to fix this with one-trigger-per-fd approach.
 
-The problem with access_ok() (which I tried first) is that it can't be used
-from interrupt context, and this check can happen in interrupt context.
-Either way, if we pick the wrong one for the arch, the only thing bad that
-can happen is that it returns "fault" and the filter fails, just like if
-the pointer was to bad memory.
+About the issue of serializing concurrent writes for
+cgroup_pressure_write() similar to how psi_write() does. Doesn't
+of->mutex inside kernfs_fop_write_iter() serialize the writes to the
+same file: https://elixir.bootlin.com/linux/latest/source/fs/kernfs/file.c#L287
+?
 
-> 
-> I think you need to remember where the pointer came from.
-> 
+>
+> (I'm going to follow up on the static branch issue Linus pointed out,
+> later this week when I'm back home. I also think we should add Suren
+> as additional psi maintainer since the polling code is a good chunk of
+> the codebase and he shouldn't miss threads like these.)
 
-Why?
+That would help me not to miss these emails and respond promptly.
+Thanks,
+Suren.
 
--- Steve
+>
+> > That would fix the poll() lifetime issue, and would make the
+> > psi_trigger_replace() races fairly easy to fix - just use
+> >
+> >         if (cmpxchg(trigger_ptr, NULL, new) != NULL) {
+> >                 ... free 'new', return -EBUSY ..
+> >
+> > to install the new one, instead of
+> >
+> >         rcu_assign_pointer(*trigger_ptr, new);
+> >
+> > or something like that. No locking necessary.
+> >
+> > But I assume people actually end up re-writing triggers, because
+> > people are perverse and have taken advantage of this completely broken
+> > API.
+> >
+> >                Linus
