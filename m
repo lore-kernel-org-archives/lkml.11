@@ -2,113 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9275AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FA0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:39:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238481AbiAJRjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 12:39:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49976 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238491AbiAJRjb (ORCPT
+        id S238498AbiAJRjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 12:39:53 -0500
+Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:55187 "EHLO
+        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S238488AbiAJRjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 12:39:31 -0500
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82790C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:39:31 -0800 (PST)
-Received: by mail-wm1-x332.google.com with SMTP id p18so2530015wmg.4
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:39:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=O/zoD19T4vZt7Y0+pZu8hBQc8mpksUeLESRfmr/fYl8=;
-        b=kxcyvwBQlZoKMBhEA/ZQ6Ef87pYTzvn9qPt1PSdQ6YymCG+QM/76HVvy2qKx0KyL6W
-         qY4TgbJsl97tKRMFWbvFzx2o7MeLnvg3xkgJ1KZgFDkhf/DfsmatlDkv9J6N7iTeKTt9
-         8HtfCPjIYwuQ7mG0KLlC4CbsTohVuZpFdTtIqFRuRb9fUuULuPU9//xyke6oHZQAFvZ+
-         bSkrqsxSkzpUi97KiTraMZh0jWPxON3DwXHrVrLMxIaeHWt1xcbrFv/PzII4BEP3pw/T
-         /33ahRlorNm+XmIee5b5lU/+HfXyOE49K6JpoedEBhqi/VIZjsYI7nbsy7gp01M8rzzO
-         95iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=O/zoD19T4vZt7Y0+pZu8hBQc8mpksUeLESRfmr/fYl8=;
-        b=z9MVhv645LPxMkYrR8LgbjHHE2NS2qZc6nQtMgBM2VjbAlw/82YR/B3heLSdZvabeb
-         ewueK77cBTAMnTZiIMN5YzqsGKgKmGocdiSea+0W+LU/jL7oIPHb5f8L0hFultdl6zcj
-         TskBT6Zihm7WA7LVErdo/7q7BqnKFqhgI0Lg4O/NLev81VDNtLftarkQrbGbbK85oNgY
-         YTLbrdnDHuKkgPflbREhFqqiUXQmCU0+4QbYngvsT4xKDIDO8Z0lt8FrYcPuniRrF8eu
-         8uNTkooQGG4md8URZPfwPr+1NiOdf6npb4QmaESBhcQbKyopnwMFxnSMCohnKh4axGRW
-         FXKw==
-X-Gm-Message-State: AOAM530U8YRjzxnxYT2KWz3d/6UdXRytY0G7VjMF2Xri0M0VKHSkcynW
-        7FYn09DE9kpcOXm0sA/AIUC56g==
-X-Google-Smtp-Source: ABdhPJxAOfUS+J3fkRCF9R/dUzNftxZ05snI2tXwY0t21tqOT5DQmlPdw6F1kusyDaHuLXkDtfUNiQ==
-X-Received: by 2002:a7b:ce94:: with SMTP id q20mr451394wmj.5.1641836369827;
-        Mon, 10 Jan 2022 09:39:29 -0800 (PST)
-Received: from google.com ([2a00:79e0:d:210:927:9b4:58f8:3bfa])
-        by smtp.gmail.com with ESMTPSA id f10sm7674739wmg.43.2022.01.10.09.39.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 09:39:29 -0800 (PST)
-Date:   Mon, 10 Jan 2022 17:39:29 +0000
-From:   Matthias Maennich <maennich@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
-        Jessica Yu <jeyu@kernel.org>
-Subject: Re: [PATCH] module.h: allow #define strings to work with
- MODULE_IMPORT_NS
-Message-ID: <YdxvUYRejf2K6YJq@google.com>
-References: <20220108140657.3361237-1-gregkh@linuxfoundation.org>
+        Mon, 10 Jan 2022 12:39:52 -0500
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20AHc0dQ028470
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 10 Jan 2022 12:38:01 -0500
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 9E78715C00C8; Mon, 10 Jan 2022 12:38:00 -0500 (EST)
+Date:   Mon, 10 Jan 2022 12:38:00 -0500
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
+        Simo Sorce <simo@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeffrey Walton <noloader@gmail.com>,
+        Stephan Mueller <smueller@chronox.de>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "Alexander E. Patrakov" <patrakov@gmail.com>,
+        "Ahmed S. Darwish" <darwish.07@gmail.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Vito Caputo <vcaputo@pengaru.com>,
+        Andreas Dilger <adilger.kernel@dilger.ca>,
+        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
+        William Jon McCann <mccann@jhu.edu>,
+        zhangjs <zachary@baishancloud.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Florian Weimer <fweimer@redhat.com>,
+        Lennart Poettering <mzxreary@0pointer.de>,
+        Peter Matthias <matthias.peter@bsi.bund.de>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Neil Horman <nhorman@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Petr Tesarik <ptesarik@suse.cz>,
+        John Haxby <john.haxby@oracle.com>,
+        Alexander Lobakin <alobakin@mailbox.org>,
+        Jirka Hladky <jhladky@redhat.com>
+Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
+Message-ID: <Ydxu+KS5UkQ6hU9R@mit.edu>
+References: <YaZHKHjomEivul6U@kroah.com>
+ <YaZqVxI1C8RByq+w@gmail.com>
+ <CAHmME9p60Ve5XJTVcmGvSpUkg_hRp_i0rGG0R9VhuwLs0o_nXQ@mail.gmail.com>
+ <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
+ <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
+ <20211210014337.xmin2lu5rhhe3b3t@valinor>
+ <20220110132349.siplwka7yhe2tmwc@valinor>
+ <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
+ <YdxCsI3atPILABYe@mit.edu>
+ <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220108140657.3361237-1-gregkh@linuxfoundation.org>
+In-Reply-To: <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 08, 2022 at 03:06:57PM +0100, Greg Kroah-Hartman wrote:
->The MODULE_IMPORT_NS() macro does not allow defined strings to work
->properly with it, so add a layer of indirection to allow this to happen.
->
->Cc: Luis Chamberlain <mcgrof@kernel.org>
->Cc: Jessica Yu <jeyu@kernel.org>
->Cc: Matthias Maennich <maennich@google.com>
->Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+On Mon, Jan 10, 2022 at 03:38:08PM +0100, Jason A. Donenfeld wrote:
+> 
+> Yea, I'm not really compelled by it as something real that we'd
+> actually want to have for something serious. Keep in mind: this thread
+> isn't really about cryptography, but just about compliance nonsense.
+> BUT, if it turns out that the path to these people getting their green
+> compliance checkbox stamp isn't actually thousands of lines of new
+> code, but rather some glue bridging the /dev/urandom / getrandom(2)
+> API into the blah cryptoapi thing, that's... interesting news to me.
+> I'm not even saying, at this stage anyhow, that I want to do this, but
+> I do find it a very interesting data point.
 
-Reviewed-by: Matthias Maennich <maennich@google.com>
+The last time I had the displeasure of looking into the FIPS
+certification, which granted, was over a decade ago when I was in
+IBM's Linux Technology Center, what I learned was it all depends on
+the FIPS certification lab.  NIST writes the documentation, but what
+really matters is the FIPS certification lab that a hardware or
+software vendor pays $$$$ to in order to get the magic certificate
+which allows you to sell into *some* government contracts.  (When I
+had to go through the all of the nonsense to get a TS/SCI clearance to
+support the real-time kernel for all of the IBM servers for the
+DDG/1000 Zumwalt Class destroyer, they didn't care about getting FIPS
+certified.  I've also seen tighter security measures for computer
+rooms at NYC financial companies than at a Top Secret machine root at
+said defense contractor.  Go figure....)
+
+The other thing I learned for those customers who *did* care, was that
+the only thing that got certified was a specific binary image.  If you
+replace the kernel or OpenSSL library with, say, a bugfixed version
+that fixed an actively exploited zero day, *boom*, that would break
+the certification and the system would no longer be FIPS certified.
+
+Some FIPS labs would allow you to certify the "cryptographic core" of
+the OpenSSL library, which the OpenSSL library would then dlopen, and
+so as long as the bugfix was in, say, the ASN.1 parser, and you didn't
+need to change the "cryptographic core" it was OK --- and you just
+needed to hope that there weren't any bugs in the cryptographic core,
+since then you wouldn't be allowed to fix it --- since FIPS compliance
+was more important than, say, the *actual* security of the system in
+question.
+
+So yeah, as I said, it's all about TSA-style security theatre, and
+when I worked for IBM and there was millions of dollars on the line, I
+might have cared.  For upstream development, (and blessedly, this is
+not something that my current employer has needed to worry about) I
+care far less about it.
+
+If we want to add a CONFIG_RANDOM_SECURITY_THEATRE build option which
+diverts getrandom and /dev/urandom to use crypto/drbg, I'm going to
+think it's a waste of time, and there are some things about
+crypto/drbg that I'm not psyched about such as the fact that only
+reseed after 2**20 calls to drbg_generate(), and the drbg statemachine
+will initialize itself from get_random_bytes() in early boot, when the
+CRNG is least likely to be securely initialized.  So **I** wouldn't
+want to use it for my own personal security, but if it allows Ubuntu
+to sell into the US govnerment market, my only hope is that this
+wouldn't be inflicted on all of their customers, but only those US
+Government customers who care (and as near as I can tell, this is
+*not* all USG customers).
+
+> > Specifically, I think that if you change your perspective from, "how can we
+> > change the algorithms of the RNG to be FIPS" to "how can we bend FIPS within
+> > its limits so that having what customers want would minimally impact the
+> > quality of the RNG implementation or introduce undue maintenance burdens."
+> 
+> We're now starting to get some idea about how this FIPS stuff bends.
+
+Well, if we optionally (if jitterentropy_rng is compiled in), we would
+periodically pull from it as one additional entropy source into the
+input_pool, it won't do any harm --- other than the CPU overhead
+consumed by jitterentropy, of course.  Maybe that would make some
+people happy, including some FIPS Labs?
+
+I've also seen some FIPS certifications which didn't care about what
+the kernel did, but only cared about what was in the OpenSSL library.
+(Which is where the story about segregating out the cryptographic core
+so that you could actually patch most zero-days without having to go
+back to the FIPS certification lab, pay $$$, and wait months for the
+updated binary to be certified.)
+
+So I suspect that there will be a lot of anecdotal evidence, but the
+only thing we can probably say with any amount of certainity is Your
+Mileage May Vary.
 
 Cheers,
-Matthias
 
->---
->Note, there is no in-kernel user of this, I wrote this to help deal with
->some module namespace issues that Android kernels were having where we
->wanted to put the namespace name in a build #define to make things
->easier over time when combined with the change at:
->	https://lore.kernel.org/all/20220108140415.3360088-1-gregkh@linuxfoundation.org/
->
->I can also see this be used in ways to make namespace names up "on the
->fly at build time" when combined with the above-referenced change to
->create a different namespace for every time the kernel is built to do a
->poor-man's symbol mangling to make life harder for out-of-tree modules.
->Not that I would ever suggest such a thing :)
->
-> include/linux/module.h | 3 ++-
-> 1 file changed, 2 insertions(+), 1 deletion(-)
->
->diff --git a/include/linux/module.h b/include/linux/module.h
->index c9f1200b2312..f4338235ed2c 100644
->--- a/include/linux/module.h
->+++ b/include/linux/module.h
->@@ -290,7 +290,8 @@ extern typeof(name) __mod_##type##__##name##_device_table		\
->  * files require multiple MODULE_FIRMWARE() specifiers */
-> #define MODULE_FIRMWARE(_firmware) MODULE_INFO(firmware, _firmware)
->
->-#define MODULE_IMPORT_NS(ns) MODULE_INFO(import_ns, #ns)
->+#define _MODULE_IMPORT_NS(ns)	MODULE_INFO(import_ns, #ns)
->+#define MODULE_IMPORT_NS(ns)	_MODULE_IMPORT_NS(ns)
->
-> struct notifier_block;
->
->-- 
->2.34.1
->
+						- Ted
