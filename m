@@ -2,217 +2,274 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60BBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C89FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242832AbiAJJMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:12:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
+        id S242759AbiAJJNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:13:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242655AbiAJJMO (ORCPT
+        with ESMTP id S242630AbiAJJMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:12:14 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D453CC061748
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:12:08 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id k30so7815340wrd.9
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:12:08 -0800 (PST)
+        Mon, 10 Jan 2022 04:12:34 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F525C034003;
+        Mon, 10 Jan 2022 01:12:26 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id r16-20020a17090a0ad000b001b276aa3aabso21772344pje.0;
+        Mon, 10 Jan 2022 01:12:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:in-reply-to;
-        bh=ptBUqKqYUor3+uJEeWktW1rjE7PNlwZQbPztX5rGNLY=;
-        b=Mn7cThCLpaSBcVo9wbe5Szihfa4qjUFVxRnLgyZhR86s2gs70+/hveyYl9+yCfvTWI
-         l1xYpj2vHRhjw+yrsH1hAXDzP0AckPOSGedV4v7gdK5DYbF+Y0eIVuPig8cwYas/N34E
-         5o26V3KmjDQyNIMnPlgUNnlUZOKW+Bl+TGu2w=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=QjwJsbeo9uruskPn1+c6wYleKO50y4VIL3hXZvxsfXw=;
+        b=pDEp4cMPc15aOxBiVGfQ2kYpyXV6sApSCvQAi/bjfVt9RR3uLDYSYYlC/7oQAKXkPR
+         nJ/aXZXEtNncN/QuW9J1PG4g/BilOgBqAkfPNxKDKG+oYkpsUKrrka57SEjvKk9+h3PG
+         8oMG6CSirJW+sfC8a4V6OEeTcT04bKq6jm/9CoF77mqhtaZW+UqBzhYuTZ7rJ6xbvYjv
+         U7C8AnQmm//Qs41GGwjdpYARTkn7uWda7bFphipUQKedULWkrJOXyLCNapyQSbr3WAj6
+         XnvqACxcdjtQLrBNDBOPztnTjBS63qVWqSugAD7joAPTYZZBV4J8T8RJvQypIUkFf0bs
+         H3+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:in-reply-to;
-        bh=ptBUqKqYUor3+uJEeWktW1rjE7PNlwZQbPztX5rGNLY=;
-        b=G/GJ4kJsMMOTEvjDj9NtJX4D0BsdB4QLUsr6rOIjjXzhXze41atnysh5nf3o/zpr3l
-         nEv8f21j3WuJE8N0BPlS3c+YEHg0rsYeCGXJaCsdo53XOOiYtqIgwHROWCFkRCJR8f1V
-         p0qXkPLLFdarsz+uLPBeoqOU5+mMx2qGN9QsPBUcwFBY5uzfZ4ipLjocoIYZtA+zWZ04
-         0w6yd45EwwF8O3425H3cfFLPTrtF/07ZxLNxYY4z4pRf2ScoBxJD7Kf4qHqMF029vuV6
-         b6xocU8kok6xiCLeAe6xQnJ+n7k0LnLxA/4iP60aYhOpEuMMvhm/UHst2ri8f2L7q2d5
-         1vHQ==
-X-Gm-Message-State: AOAM533GfpCbsx2ZCWtmEehsI2gF9E5VkAheFFBMNWhXGWYsEpywCJSH
-        MMfpJo7VapZtw90Wk4HiBvRH9g==
-X-Google-Smtp-Source: ABdhPJzyhagBCqErAah7InvdCzT466zzYtOBPwKqsv/Bar+WnzOfftC5NywfS1M8jbmJKO/8Y4NjZg==
-X-Received: by 2002:adf:ee8b:: with SMTP id b11mr11015456wro.88.1641805927430;
-        Mon, 10 Jan 2022 01:12:07 -0800 (PST)
-Received: from [10.230.32.81] ([192.19.148.250])
-        by smtp.gmail.com with ESMTPSA id n12sm6683187wrf.29.2022.01.10.01.12.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 01:12:06 -0800 (PST)
-Message-ID: <67630b95-2b1a-a922-bdf1-21a1accde60b@broadcom.com>
-Date:   Mon, 10 Jan 2022 10:12:04 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-From:   Arend van Spriel <arend.vanspriel@broadcom.com>
-Subject: Re: [PATCH v2 18/35] brcmfmac: pcie: Add IDs/properties for BCM4355
-To:     Hector Martin <marcan@marcan.st>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>
-Cc:     Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com
-References: <20220104072658.69756-1-marcan@marcan.st>
- <20220104072658.69756-19-marcan@marcan.st>
-In-Reply-To: <20220104072658.69756-19-marcan@marcan.st>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000001bb4e705d536bb98"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=QjwJsbeo9uruskPn1+c6wYleKO50y4VIL3hXZvxsfXw=;
+        b=B4fM7kDiEKj7SCevx/M9oawwaHO5xdDbDoxFGbOh0ZOAFhl8QPmv5FL5r9Qg90PQB4
+         +6CDAtRe8q6uVd6e7NDiIGPHR60pWj9pJ8mdrQ8nRzqob9lvghE/mEL/q2sqegNh4Soo
+         2EaBqPaJo8fInbzKElSUzqe6I1OpswcGgCpELycXYwp2I2pLvtUO7ywj/Q1uLqRV6iVj
+         UEll+mZyyYKutOZNNvikEPvp4drhRe6S/lb079VCuh0Pdze5OXLshb56QXOo/mJRo2Mh
+         e4NQidrBxKnfAMqXUXoYVkLKOQFchCknIQCUqZa6HF+yol/5zZ1U3P5dQ5k324vo1dX/
+         KXlQ==
+X-Gm-Message-State: AOAM530jLzugSXn5viF96tsl9HlXiOpZsRO71/gT5dC7kHcBFej0humi
+        aNdNY0HAy5o2kjg4LyXpxcA=
+X-Google-Smtp-Source: ABdhPJzsX9cn3Gn+g4gyD5G4S35HOBCNDc3n08Ncy9yx+YyV808IIIbCHLq6OizQJbZ/8SJTD9K4Eg==
+X-Received: by 2002:a17:902:e74e:b0:149:7c20:c69b with SMTP id p14-20020a170902e74e00b001497c20c69bmr64501735plf.82.1641805946151;
+        Mon, 10 Jan 2022 01:12:26 -0800 (PST)
+Received: from localhost.localdomain ([162.219.34.250])
+        by smtp.gmail.com with ESMTPSA id j22sm6293910pfj.29.2022.01.10.01.12.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 01:12:25 -0800 (PST)
+From:   Wang Jianchao <jianchao.wan9@gmail.com>
+To:     axboe@kernel.dk
+Cc:     jbacik@fb.com, tj@kernel.org, bvanassche@acm.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 08/13] blk-iocost: make iocost pluggable and modular
+Date:   Mon, 10 Jan 2022 17:10:41 +0800
+Message-Id: <20220110091046.17010-9-jianchao.wan9@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220110091046.17010-1-jianchao.wan9@gmail.com>
+References: <20220110091046.17010-1-jianchao.wan9@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000001bb4e705d536bb98
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+From: Wang Jianchao <wangjianchao@kuaishou.com>
 
-On 1/4/2022 8:26 AM, Hector Martin wrote:
-> This chip is present on at least these Apple T2 Macs:
-> 
-> * hawaii: MacBook Air 13" (Late 2018)
-> * hawaii: MacBook Air 13" (True Tone, 2019)
+Make blk-iocost pluggable and modular. Then we can close or open
+it through /sys/block/xxx/queue/qos and rmmod the module if we don't
+need it which can release one blkcg policy slot.
 
-Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/chip.c   | 1 +
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c   | 8 ++++++++
->   .../net/wireless/broadcom/brcm80211/include/brcm_hw_ids.h | 2 ++
->   3 files changed, 11 insertions(+)
+Signed-off-by: Wang Jianchao <wangjianchao@kuaishou.com>
+---
+ block/Kconfig          |  2 +-
+ block/Makefile         |  4 ++--
+ block/blk-iocost.c     | 53 ++++++++++++++++++++++++++----------------
+ block/blk-mq-debugfs.c |  2 --
+ block/blk-rq-qos.h     |  1 -
+ 5 files changed, 36 insertions(+), 26 deletions(-)
 
-[...]
+diff --git a/block/Kconfig b/block/Kconfig
+index e1b1bff5c1e9..3e1a3487b55a 100644
+--- a/block/Kconfig
++++ b/block/Kconfig
+@@ -134,7 +134,7 @@ config BLK_CGROUP_FC_APPID
+ 	  application specific identification into the FC frame.
+ 
+ config BLK_CGROUP_IOCOST
+-	bool "Enable support for cost model based cgroup IO controller"
++	tristate "Enable support for cost model based cgroup IO controller"
+ 	depends on BLK_CGROUP
+ 	select BLK_RQ_ALLOC_TIME
+ 	select BLK_BIO_IOCOST
+diff --git a/block/Makefile b/block/Makefile
+index ccf61c57e1d4..8950913cbcc9 100644
+--- a/block/Makefile
++++ b/block/Makefile
+@@ -20,8 +20,8 @@ obj-$(CONFIG_BLK_DEV_THROTTLING)	+= blk-throttle.o
+ obj-$(CONFIG_BLK_CGROUP_IOPRIO)	+= blk-ioprio.o
+ iolat-y 				:= blk-iolatency.o
+ obj-$(CONFIG_BLK_CGROUP_IOLATENCY)	+= iolat.o
+-
+-obj-$(CONFIG_BLK_CGROUP_IOCOST)	+= blk-iocost.o
++iocost-y 			:= blk-iocost.o
++obj-$(CONFIG_BLK_CGROUP_IOCOST)	+= iocost.o
+ obj-$(CONFIG_MQ_IOSCHED_DEADLINE)	+= mq-deadline.o
+ obj-$(CONFIG_MQ_IOSCHED_KYBER)	+= kyber-iosched.o
+ bfq-y				:= bfq-iosched.o bfq-wf2q.o bfq-cgroup.o
+diff --git a/block/blk-iocost.c b/block/blk-iocost.c
+index cfc0e305c32e..afa52354d42b 100644
+--- a/block/blk-iocost.c
++++ b/block/blk-iocost.c
+@@ -660,9 +660,10 @@ static struct ioc *rqos_to_ioc(struct rq_qos *rqos)
+ 	return container_of(rqos, struct ioc, rqos);
+ }
+ 
++static struct rq_qos_ops ioc_rqos_ops;
+ static struct ioc *q_to_ioc(struct request_queue *q)
+ {
+-	return rqos_to_ioc(rq_qos_by_id(q, RQ_QOS_COST));
++	return rqos_to_ioc(rq_qos_by_id(q, ioc_rqos_ops.id));
+ }
+ 
+ static const char *q_name(struct request_queue *q)
+@@ -2810,6 +2811,7 @@ static void ioc_rqos_exit(struct rq_qos *rqos)
+ 	struct ioc *ioc = rqos_to_ioc(rqos);
+ 
+ 	blkcg_deactivate_policy(rqos->q, &blkcg_policy_iocost);
++	rq_qos_deactivate(rqos);
+ 
+ 	spin_lock_irq(&ioc->lock);
+ 	ioc->running = IOC_STOP;
+@@ -2820,13 +2822,20 @@ static void ioc_rqos_exit(struct rq_qos *rqos)
+ 	kfree(ioc);
+ }
+ 
++static int blk_iocost_init(struct request_queue *q);
+ static struct rq_qos_ops ioc_rqos_ops = {
++#if IS_MODULE(CONFIG_BLK_CGROUP_IOCOST)
++	.owner = THIS_MODULE,
++#endif
++	.name = "iocost",
++	.flags = RQOS_FLAG_CGRP_POL | RQOS_FLAG_RQ_ALLOC_TIME,
+ 	.throttle = ioc_rqos_throttle,
+ 	.merge = ioc_rqos_merge,
+ 	.done_bio = ioc_rqos_done_bio,
+ 	.done = ioc_rqos_done,
+ 	.queue_depth_changed = ioc_rqos_queue_depth_changed,
+ 	.exit = ioc_rqos_exit,
++	.init = blk_iocost_init,
+ };
+ 
+ static int blk_iocost_init(struct request_queue *q)
+@@ -2856,10 +2865,7 @@ static int blk_iocost_init(struct request_queue *q)
+ 	}
+ 
+ 	rqos = &ioc->rqos;
+-	rqos->id = RQ_QOS_COST;
+-	rqos->ops = &ioc_rqos_ops;
+-	rqos->q = q;
+-
++	rq_qos_activate(q, rqos, &ioc_rqos_ops);
+ 	spin_lock_init(&ioc->lock);
+ 	timer_setup(&ioc->timer, ioc_timer_fn, 0);
+ 	INIT_LIST_HEAD(&ioc->active_iocgs);
+@@ -2883,10 +2889,9 @@ static int blk_iocost_init(struct request_queue *q)
+ 	 * called before policy activation completion, can't assume that the
+ 	 * target bio has an iocg associated and need to test for NULL iocg.
+ 	 */
+-	rq_qos_add(q, rqos);
+ 	ret = blkcg_activate_policy(q, &blkcg_policy_iocost);
+ 	if (ret) {
+-		rq_qos_del(q, rqos);
++		rq_qos_deactivate(rqos);
+ 		free_percpu(ioc->pcpu_stat);
+ 		kfree(ioc);
+ 		return ret;
+@@ -3173,12 +3178,10 @@ static ssize_t ioc_qos_write(struct kernfs_open_file *of, char *input,
+ 	if (IS_ERR(bdev))
+ 		return PTR_ERR(bdev);
+ 
+-	rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
++	rqos = rq_qos_get(bdev_get_queue(bdev), ioc_rqos_ops.id);
+ 	if (!rqos) {
+-		ret = blk_iocost_init(bdev_get_queue(bdev));
+-		if (ret)
+-			goto err;
+-		rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
++		ret = -EOPNOTSUPP;
++		goto err;
+ 	}
+ 
+ 	ioc = rqos_to_ioc(rqos);
+@@ -3257,10 +3260,8 @@ static ssize_t ioc_qos_write(struct kernfs_open_file *of, char *input,
+ 
+ 	if (enable) {
+ 		blk_stat_enable_accounting(ioc->rqos.q);
+-		blk_queue_flag_set(QUEUE_FLAG_RQ_ALLOC_TIME, ioc->rqos.q);
+ 		ioc->enabled = true;
+ 	} else {
+-		blk_queue_flag_clear(QUEUE_FLAG_RQ_ALLOC_TIME, ioc->rqos.q);
+ 		ioc->enabled = false;
+ 	}
+ 
+@@ -3344,12 +3345,10 @@ static ssize_t ioc_cost_model_write(struct kernfs_open_file *of, char *input,
+ 	if (IS_ERR(bdev))
+ 		return PTR_ERR(bdev);
+ 
+-	rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
++	rqos = rq_qos_get(bdev_get_queue(bdev), ioc_rqos_ops.id);
+ 	if (!ioc) {
+-		ret = blk_iocost_init(bdev_get_queue(bdev));
+-		if (ret)
+-			goto err;
+-		rqos = rq_qos_get(bdev_get_queue(bdev), RQ_QOS_COST);
++		ret = -EOPNOTSUPP;
++		goto err;
+ 	}
+ 
+ 	ioc = rqos_to_ioc(rqos);
+@@ -3449,13 +3448,27 @@ static struct blkcg_policy blkcg_policy_iocost = {
+ 
+ static int __init ioc_init(void)
+ {
+-	return blkcg_policy_register(&blkcg_policy_iocost);
++	int ret;
++
++	ret = rq_qos_register(&ioc_rqos_ops);
++	if (ret)
++		return ret;
++
++	ret = blkcg_policy_register(&blkcg_policy_iocost);
++	if (ret)
++		rq_qos_unregister(&ioc_rqos_ops);
++
++	return ret;
+ }
+ 
+ static void __exit ioc_exit(void)
+ {
+ 	blkcg_policy_unregister(&blkcg_policy_iocost);
++	rq_qos_unregister(&ioc_rqos_ops);
+ }
+ 
+ module_init(ioc_init);
+ module_exit(ioc_exit);
++MODULE_AUTHOR("Tejun Heo");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Cost model based cgroup IO controller");
+diff --git a/block/blk-mq-debugfs.c b/block/blk-mq-debugfs.c
+index 57c33f4730f2..14fda9a5e552 100644
+--- a/block/blk-mq-debugfs.c
++++ b/block/blk-mq-debugfs.c
+@@ -820,8 +820,6 @@ void blk_mq_debugfs_unregister_sched(struct request_queue *q)
+ static const char *rq_qos_id_to_name(enum rq_qos_id id)
+ {
+ 	switch (id) {
+-	case RQ_QOS_COST:
+-		return "cost";
+ 	case RQ_QOS_IOPRIO:
+ 		return "ioprio";
+ 	}
+diff --git a/block/blk-rq-qos.h b/block/blk-rq-qos.h
+index 6ca46c69e325..4eef53f2c290 100644
+--- a/block/blk-rq-qos.h
++++ b/block/blk-rq-qos.h
+@@ -14,7 +14,6 @@
+ struct blk_mq_debugfs_attr;
+ 
+ enum rq_qos_id {
+-	RQ_QOS_COST,
+ 	RQ_QOS_IOPRIO,
+ };
+ 
+-- 
+2.17.1
 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> index a8cccfbea20b..fdba2b5b46f0 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> @@ -49,6 +49,7 @@ enum brcmf_pcie_state {
->   BRCMF_FW_DEF(43602, "brcmfmac43602-pcie");
->   BRCMF_FW_DEF(4350, "brcmfmac4350-pcie");
->   BRCMF_FW_DEF(4350C, "brcmfmac4350c2-pcie");
-> +BRCMF_FW_CLM_DEF(4355C1, "brcmfmac4355c1-pcie");
->   BRCMF_FW_CLM_DEF(4356, "brcmfmac4356-pcie");
->   BRCMF_FW_CLM_DEF(43570, "brcmfmac43570-pcie");
->   BRCMF_FW_DEF(4358, "brcmfmac4358-pcie");
-> @@ -75,6 +76,7 @@ static const struct brcmf_firmware_mapping brcmf_pcie_fwnames[] = {
->   	BRCMF_FW_ENTRY(BRCM_CC_4350_CHIP_ID, 0x000000FF, 4350C),
->   	BRCMF_FW_ENTRY(BRCM_CC_4350_CHIP_ID, 0xFFFFFF00, 4350),
->   	BRCMF_FW_ENTRY(BRCM_CC_43525_CHIP_ID, 0xFFFFFFF0, 4365C),
-> +	BRCMF_FW_ENTRY(BRCM_CC_4355_CHIP_ID, 0xFFFFFFFF, 4355C1), /* 12 */
-
-still intrigued what that trailing number means ;-)
-
->   	BRCMF_FW_ENTRY(BRCM_CC_4356_CHIP_ID, 0xFFFFFFFF, 4356),
->   	BRCMF_FW_ENTRY(BRCM_CC_43567_CHIP_ID, 0xFFFFFFFF, 43570),
->   	BRCMF_FW_ENTRY(BRCM_CC_43569_CHIP_ID, 0xFFFFFFFF, 43570),
-
---0000000000001bb4e705d536bb98
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-XSlOP9s1dqWlRRnnNxV7BVC87lkKKy0+1M2DOF6qRYQlnW4EfOyCToYLAG5zeV+AjepMoX6J9bUz
-yj4BlDtwH4HFjaRIlPPbdLshUA54/tV84x8woATuLGBq+hTZEpkZAgMBAAGjggHdMIIB2TAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCcGA1UdEQQgMB6BHGFyZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYIKwYB
-BQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKb+3b9pz8zo
-0QsCHGb/p0UrBlU+MA0GCSqGSIb3DQEBCwUAA4IBAQCHisuRNqP0NfYfG3U3XF+bocf//aGLOCGj
-NvbnSbaUDT/ZkRFb9dQfDRVnZUJ7eDZWHfC+kukEzFwiSK1irDPZQAG9diwy4p9dM0xw5RXSAC1w
-FzQ0ClJvhK8PsjXF2yzITFmZsEhYEToTn2owD613HvBNijAnDDLV8D0K5gtDnVqkVB9TUAGjHsmo
-aAwIDFKdqL0O19Kui0WI1qNsu1tE2wAZk0XE9FG0OKyY2a2oFwJ85c5IO0q53U7+YePIwv4/J5aP
-OGM6lFPJCVnfKc3H76g/FyPyaE4AL/hfdNP8ObvCB6N/BVCccjNdglRsL2ewttAG3GM06LkvrLhv
-UCvjMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1z
-YTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIMMSnY
-h9J/RI6gsHbuMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCCSdLPZut26JW5wCRyJ
-oK8kf3rEhnJ0QV2xOdkvysAOBTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJ
-BTEPFw0yMjAxMTAwOTEyMDdaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCGSAFl
-AwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEBBzAL
-BglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEASN3sbamDxsLdAuhq1ukaWR/A6GAwYt6rav9u
-TTdGdrQiDNW99l9w/fuDKMoUwk9C+oRA/GrDRiXDpGXq0cSE3E4MUu90cEmKI6aOLLLDrkoh2nVT
-zs4TD7m/X/tbJGZU89yDPhHx1VhhAmKG/LXHZ3PlQIgSEvOFC++msrOBsYL/pfzMevTZgjtI0r0W
-sKXFGmE9VRHi6/rOMLXXocC4rMigApjUf75xvwSF1pZTv2F6Lh9bW0aRSwLvuwuBDY54eBK55mTr
-hOJD8h5KxM1d+ay3d7XdoCC58jXx7+6LeV+EbVEegtNmWiGfmuqG1KhDSy7862xE8+6HC+oeXM8c
-aw==
---0000000000001bb4e705d536bb98--
