@@ -2,105 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23AE0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:35:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA9BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244893AbiAJLfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:35:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49890 "EHLO
+        id S244844AbiAJLh7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:37:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244768AbiAJLdn (ORCPT
+        with ESMTP id S244839AbiAJLgW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:33:43 -0500
-Received: from mail.avm.de (mail.avm.de [IPv6:2001:bf0:244:244::94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A9EC06173F;
-        Mon, 10 Jan 2022 03:33:43 -0800 (PST)
-Received: from mail-auth.avm.de (unknown [IPv6:2001:bf0:244:244::71])
-        by mail.avm.de (Postfix) with ESMTPS;
-        Mon, 10 Jan 2022 12:33:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=avm.de; s=mail;
-        t=1641814422; bh=XG9BZJmAJm/7NC3n+YXym4mKShOcMCyZvVKbkJznbIk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=NPCpmBo+XP5CP09wWHzdop+3U3TFZeaD4fIDt4PAXAKLcsyIflGoDboHs2kzenQqZ
-         p0tuL4+jPtAqUnfgIE53YZuw5qXDlukJj7ZMrKHuA1/murRQ0fIh6OZ6By8y/Vx7C9
-         yLHnDl/lubk0WYzKwOvbwyDQUhNH3WPVAFR32YBw=
-Received: from buildd.core.avm.de (buildd-sv-01.avm.de [172.16.0.225])
-        by mail-auth.avm.de (Postfix) with ESMTPSA id B22A680514;
-        Mon, 10 Jan 2022 12:33:41 +0100 (CET)
-Date:   Mon, 10 Jan 2022 12:33:40 +0100
-From:   Nicolas Schier <n.schier@avm.de>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org
-Subject: Re: [PATCH 5/5] kbuild: add cmd_file_size
-Message-ID: <YdwZlGx8+6BtkE22@buildd.core.avm.de>
-References: <20220109181529.351420-1-masahiroy@kernel.org>
- <20220109181529.351420-5-masahiroy@kernel.org>
+        Mon, 10 Jan 2022 06:36:22 -0500
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3865C061757;
+        Mon, 10 Jan 2022 03:36:21 -0800 (PST)
+Received: by mail-ua1-x92d.google.com with SMTP id c36so22682706uae.13;
+        Mon, 10 Jan 2022 03:36:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eOYKOMNdn7daGbU6jgLJi3oEFCH812Tr1mFTkATHWbM=;
+        b=dv9b9/vqTHZPdaEMYargHBS4A5dlQeWoYXCDzcpobdFebh23GRb+8bw4rxhay5OVzV
+         q4iOrsoS4Ma220UPt9kVVfLFDY7aaMwyQbvGvuzdP8gtm/9xP0RNgpBFRtTqDeEogJJ/
+         SVGrNAGMBWnBrNA2/t4+GtG3Lpkwf9SXTf2+SMKckYYuqb8CX33CH4cBnyLfcJw3sFmV
+         ym9FiSbQdE6tjguw7B08w1VNejUWXNg9jPz/uZi7EBD9ghjMczdSwJGfOKLUhLGP3Fp8
+         B4GS5WrvQJFi8XZx/YkevkMwgUxo0y6IwkTr49n2IyuGlqCwIYZrYItAsYFDjZXlKWBm
+         Ct4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eOYKOMNdn7daGbU6jgLJi3oEFCH812Tr1mFTkATHWbM=;
+        b=gUEU2c+DRiwzOFEh3YeXrW71xtmKsU9I7zzKXDKlkznUecCfXvNwdyEy/ls6V3SxiJ
+         0grTL0oSfDjhse9bW6v3FOMfsSugaLbD4KXge3CnLz0WARekm0bL6b9/oObox9cGtmr1
+         lQs0NtUYQknWfWfAQ0ttH+qvPi9R4Kjx9swXoIlJ6wowycppjxzENReJlri3afBSKqr9
+         42zy7wuK8bPV3BQnFFWj5XlszsLk0xbrasTQWdVfZfdhu7tipcn+7tHWUFUGz6e07UGn
+         v5rizan/1SxBzh+NZYdfrYnKxrWpiAsuaahFrxemoT1heiTSnpBlNk81JqpuJHkG0P2z
+         pF4Q==
+X-Gm-Message-State: AOAM532DnsmzqCKc0sCq+lkytqqqKH3gt9/NiJ4x34vzs9kjEzp/dhf5
+        vK5wbrCxh/JL72hXa5rQIRQZIHm7xwgzmuaTe5M=
+X-Google-Smtp-Source: ABdhPJzEk8+MsRvQw2gNjyoxD8tAuUiiVmNCo//Sj2gLzgGnTvbK9GC8gICCOiEg70gNF+dajIqVuSVB1vNGZ/vlMG4=
+X-Received: by 2002:a05:6102:dc9:: with SMTP id e9mr24344482vst.17.1641814580785;
+ Mon, 10 Jan 2022 03:36:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220109181529.351420-5-masahiroy@kernel.org>
-X-purgate-ID: 149429::1641814422-00001F4B-25A467EF/0/0
-X-purgate-type: clean
-X-purgate-size: 1589
-X-purgate-Ad: Categorized by eleven eXpurgate (R) http://www.eleven.de
-X-purgate: This mail is considered clean (visit http://www.eleven.de for further information)
-X-purgate: clean
+References: <20220110111036.1380288-1-sergio.paracuellos@gmail.com>
+ <20220110111036.1380288-5-sergio.paracuellos@gmail.com> <4b32313d0642a4043709ef98339497662dafb211.camel@pengutronix.de>
+In-Reply-To: <4b32313d0642a4043709ef98339497662dafb211.camel@pengutronix.de>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Mon, 10 Jan 2022 12:36:09 +0100
+Message-ID: <CAMhs-H9QC1MdiA7ShntQ7hOasRrZRbBok-zTqFMUPQjtdnwezQ@mail.gmail.com>
+Subject: Re: [PATCH v7 4/4] staging: mt7621-dts: align resets with binding documentation
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        Greg KH <gregkh@linuxfoundation.org>,
+        NeilBrown <neil@brown.name>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 03:15:29AM +0900, Masahiro Yamada wrote:
-> Some architectures support self-extracting kernel, which embeds the
-> compressed vmlinux.
-> 
-> It has 4 byte data at the end so the decompressor can know the vmlinux
-> size beforehand.
-> 
-> GZIP natively has it in the trailer, but for the other compression
-> algorithms, the hand-crafted trailer is added.
-> 
-> It is unneeded to generate such _corrupted_ compressed files because
-> it is possible to pass the size data separately.
-> 
-> For example, the assembly code:
-> 
->      .incbin "compressed-vmlinux-with-size-data-appended"
-> 
-> can be transformed to:
-> 
->      .incbin "compressed-vmlinux"
->      .incbin "size-data"
-> 
-> My hope is, after some reworks of the decompressors, the macros
-> cmd_{bzip2,lzma,lzo,lz4,xzkern,zstd22} will go away.
-> 
-> This new macro, cmd_file_size, will be useful to generate a separate
-> size-data file.
-> 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+Hi Philipp,
 
-Reviewed-by: Nicolas Schier <n.schier@avm.de>
+On Mon, Jan 10, 2022 at 12:28 PM Philipp Zabel <p.zabel@pengutronix.de> wrote:
+>
+> On Mon, 2022-01-10 at 12:10 +0100, Sergio Paracuellos wrote:
+> > Binding documentation for compatible 'mediatek,mt7621-sysc' has been updated
+> > to be used as a reset provider. Align reset related bits and system controller
+> > node with binding documentation along the dtsi file.
+> >
+> > Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+> > ---
+>
+> Is this patch is missing the gdma and hsdma resets?
+> I only looked at v5.16, there those reference &rstctrl as well
 
-> 
->  scripts/Makefile.lib | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-> index 4207a72d429f..05ca77706f6b 100644
-> --- a/scripts/Makefile.lib
-> +++ b/scripts/Makefile.lib
-> @@ -394,6 +394,9 @@ printf "%08x\n" $$dec_size |						\
->  	}								\
->  )
->  
-> +quiet_cmd_file_size = GEN     $@
-> +      cmd_file_size = $(size_append) > $@
-> +
->  quiet_cmd_bzip2 = BZIP2   $@
->        cmd_bzip2 = cat $(real-prereqs) | $(KBZIP2) -9 > $@
->  
-> -- 
-> 2.32.0
-> 
+Associated drivers are already removed in staging tree since are not
+used al all and no effort for mainline them has appeared in a while..
+See:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=53a2f33caaeacb820f554899f0780387b1b4381b
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=87dd67f496f71c3693431a236b2b542793d786ff
+https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git/commit/?h=staging-testing&id=5bfc10690c6c590a972be014ed8595e77e1e2dea
+
+Best regards,
+    Sergio Paracuellos
+
+
+>
+> regards
+> Philipp
