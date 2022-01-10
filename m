@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A924C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA635C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:24:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238587AbiAJEYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:24:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
+        id S238594AbiAJEYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:24:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238492AbiAJEYZ (ORCPT
+        with ESMTP id S238494AbiAJEYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 9 Jan 2022 23:24:25 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9353C06175A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE28BC06175B
         for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=Z2gQhd94zLvZOxg2P3olHAv1sEvF2BSvVZSPWfTVDGI=; b=SZFQzxmRdm+Os236gX9J2RY9g8
-        ckaQRRqi/4gGgNiUzDOpo+Mjlm1JMQ98qgXAULO+b56mRwhJWsQPtarcgcozdlMQtgJPjUrqev1ee
-        dkhmh9+NEytrAX2GgYwm34QOpOrOYIGR6IRK72602NpYlhbosHIwe3m5WeOXbQbjDr2DXAtZFsTv5
-        Wf1tYpEl641n2TRVis0AorZG7PFLpKfda9BjAiHgxleT6FYlwiSLRg7ZOMPlHmCv192Sre5GH6XTj
-        3QzhO5KG4nhoQc8iIjTzVKrlSItQNzoJQKIkOQU0vBw1vWD+e4ghX4G5GfqLC1r5M6sRjkwQbMhE6
-        qrVmW3Hw==;
+        bh=FrPzWZ09xs9aa5csC+CTNKkHIKuSwjgWq1vjKtgzbWE=; b=PDZZlizvSkKJQNj2x7tsRWpb1N
+        hdVKt7y+Xxh4qzyI+mWWsfjz8avSgFEZji3flVPQAM8N9XJFoZnAIjvu0gfC6AYOJS5I9+g7jBzhf
+        +EcIZ/DFNZhcIBP6lqxrI9kuL1XbW49yqz7xGkLy4Jwwu4b+cLJym2/ff8s4QJMm00XgLqQGrsFy2
+        a6OeonVlXtwEvdKeN3+UTDGgJk8ikxpgZEHOHj8fC1C8EdX/yQ/+VNxk4EQnHstSUcksjT1ScuMjs
+        N0aPifks38xolz+Si80N3UlHe2ElKqal3R/CjOy2CilLpPvco/iPkHGviOgvnv8LZopjAAEoVjon3
+        8DosvRHA==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6mE9-0025xG-S7; Mon, 10 Jan 2022 04:24:13 +0000
+        id 1n6mE9-0025xC-MQ; Mon, 10 Jan 2022 04:24:13 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 26/28] gup: Convert compound_range_next() to gup_folio_range_next()
-Date:   Mon, 10 Jan 2022 04:24:04 +0000
-Message-Id: <20220110042406.499429-27-willy@infradead.org>
+Subject: [PATCH v2 24/28] gup: Convert gup_huge_pgd() to use a folio
+Date:   Mon, 10 Jan 2022 04:24:02 +0000
+Message-Id: <20220110042406.499429-25-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
@@ -46,104 +46,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the only caller to work on folios instead of pages.
-This removes the last caller of put_compound_head(), so delete it.
+Use the new folio-based APIs.  This was the last user of
+try_grab_compound_head(), so remove it.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/mm.h |  4 ++--
- mm/gup.c           | 38 ++++++++++++++++++--------------------
- 2 files changed, 20 insertions(+), 22 deletions(-)
+ mm/gup.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c103c6401ecd..1ddb0a55b5ca 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -216,10 +216,10 @@ int overcommit_policy_handler(struct ctl_table *, int, void *, size_t *,
- 
- #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
- #define nth_page(page,n) pfn_to_page(page_to_pfn((page)) + (n))
--#define page_nth(head, tail)	(page_to_pfn(tail) - page_to_pfn(head))
-+#define folio_nth(folio, page)	(page_to_pfn(page) - folio_pfn(folio))
- #else
- #define nth_page(page,n) ((page) + (n))
--#define page_nth(head, tail)	((tail) - (head))
-+#define folio_nth(folio, tail)	((tail) - &(folio)->page)
- #endif
- 
- /* to align the pointer to the (next) page boundary */
 diff --git a/mm/gup.c b/mm/gup.c
-index 0cf2d5fd8d2d..1cdd5f2887a8 100644
+index 7b7bf8361558..b5786e83c418 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -156,12 +156,6 @@ static void gup_put_folio(struct folio *folio, int refs, unsigned int flags)
- 	folio_put_refs(folio, refs);
+@@ -146,12 +146,6 @@ struct folio *try_grab_folio(struct page *page, int refs, unsigned int flags)
+ 	return NULL;
  }
  
--static void put_compound_head(struct page *page, int refs, unsigned int flags)
+-static inline struct page *try_grab_compound_head(struct page *page,
+-		int refs, unsigned int flags)
 -{
--	VM_BUG_ON_PAGE(PageTail(page), page);
--	gup_put_folio((struct folio *)page, refs, flags);
+-	return &try_grab_folio(page, refs, flags)->page;
 -}
 -
- /**
-  * try_grab_page() - elevate a page's refcount by a flag-dependent amount
-  *
-@@ -204,20 +198,21 @@ void unpin_user_page(struct page *page)
- }
- EXPORT_SYMBOL(unpin_user_page);
- 
--static inline struct page *compound_range_next(unsigned long i,
-+static inline struct folio *gup_folio_range_next(unsigned long i,
- 		unsigned long npages, struct page *start, unsigned int *ntails)
+ static void gup_put_folio(struct folio *folio, int refs, unsigned int flags)
  {
--	struct page *next, *page;
-+	struct page *next;
-+	struct folio *folio;
- 	unsigned int nr = 1;
- 
- 	next = nth_page(start, i);
--	page = compound_head(next);
--	if (PageHead(page))
-+	folio = page_folio(next);
-+	if (folio_test_large(folio))
- 		nr = min_t(unsigned int, npages - i,
--			   compound_nr(page) - page_nth(page, next));
-+			   folio_nr_pages(folio) - folio_nth(folio, next));
- 
- 	*ntails = nr;
--	return page;
-+	return folio;
- }
- 
- static inline struct folio *gup_folio_next(unsigned long i,
-@@ -326,15 +321,18 @@ EXPORT_SYMBOL(unpin_user_pages_dirty_lock);
- void unpin_user_page_range_dirty_lock(struct page *page, unsigned long npages,
- 				      bool make_dirty)
+ 	if (flags & FOLL_PIN) {
+@@ -2563,7 +2557,8 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
+ 			struct page **pages, int *nr)
  {
--	unsigned long index;
--	struct page *head;
--	unsigned int ntails;
-+	unsigned long i;
+ 	int refs;
+-	struct page *head, *page;
++	struct page *page;
 +	struct folio *folio;
-+	unsigned int nr;
  
--	for (index = 0; index < npages; index += ntails) {
--		head = compound_range_next(index, npages, page, &ntails);
--		if (make_dirty && !PageDirty(head))
--			set_page_dirty_lock(head);
--		put_compound_head(head, ntails, FOLL_PIN);
-+	for (i = 0; i < npages; i += nr) {
-+		folio = gup_folio_range_next(i, npages, page, &nr);
-+		if (make_dirty && !folio_test_dirty(folio)) {
-+			folio_lock(folio);
-+			folio_mark_dirty(folio);
-+			folio_unlock(folio);
-+		}
-+		gup_put_folio(folio, nr, FOLL_PIN);
+ 	if (!pgd_access_permitted(orig, flags & FOLL_WRITE))
+ 		return 0;
+@@ -2573,17 +2568,17 @@ static int gup_huge_pgd(pgd_t orig, pgd_t *pgdp, unsigned long addr,
+ 	page = nth_page(pgd_page(orig), (addr & ~PGDIR_MASK) >> PAGE_SHIFT);
+ 	refs = record_subpages(page, addr, end, pages + *nr);
+ 
+-	head = try_grab_compound_head(pgd_page(orig), refs, flags);
+-	if (!head)
++	folio = try_grab_folio(page, refs, flags);
++	if (!folio)
+ 		return 0;
+ 
+ 	if (unlikely(pgd_val(orig) != pgd_val(*pgdp))) {
+-		put_compound_head(head, refs, flags);
++		gup_put_folio(folio, refs, flags);
+ 		return 0;
  	}
+ 
+ 	*nr += refs;
+-	SetPageReferenced(head);
++	folio_set_referenced(folio);
+ 	return 1;
  }
- EXPORT_SYMBOL(unpin_user_page_range_dirty_lock);
+ 
 -- 
 2.33.0
 
