@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D986C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91064C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240123AbiAJHat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:30:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57708 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239914AbiAJH1i (ORCPT
+        id S240113AbiAJHax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:30:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37416 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239916AbiAJH1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:27:38 -0500
+        Mon, 10 Jan 2022 02:27:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78EBFB81161;
-        Mon, 10 Jan 2022 07:27:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AB01C36AED;
-        Mon, 10 Jan 2022 07:27:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82B11611AD;
+        Mon, 10 Jan 2022 07:27:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D9BC36AE9;
+        Mon, 10 Jan 2022 07:27:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799656;
-        bh=a9p79g42KhbUvyCMpi2BJr/IlPBqIBQRHTMRjlExEGQ=;
+        s=korg; t=1641799658;
+        bh=Nuuso2AXaPE/UBn6/+PB07a/l0ILU5dmO7RdO8QyR9k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uXBMWomMOH7cnMp3aPOP9MYDJa2bsND++nbGBvt86RQcPrlx8XS4v1L9echlNEQ+8
-         9yBmYbzz5QxHZDX4JGCICe4xWioSTntsYraFSzXoHGkjc9DxLls+RW2DBa+Bv+3qD/
-         gYGNDsae30N/mfTOJro6Na7rHJZI/TF4rb7r48VY=
+        b=Pf22R8cDbNe6z7DjMqvt4OdiSdvdBs7+f3QFWjduik+rHAB7jVqaLIxBzo7xbnNUv
+         0+k77mzmpDw3g0GOA67wPx50BdwmmWVT6IlvJfJP32Nr+nIvPp4p0mp+dwCwA8Ne0v
+         9PGNqdWj4suAAWvIkVuBjMg4sH7qBPW/lmTyaXAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 4.19 12/21] power: reset: ltc2952: Fix use of floating point literals
-Date:   Mon, 10 Jan 2022 08:23:13 +0100
-Message-Id: <20220110071814.357374599@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Toye <thomas@toye.io>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 13/21] rndis_host: support Hytera digital radios
+Date:   Mon, 10 Jan 2022 08:23:14 +0100
+Message-Id: <20220110071814.388736120@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
 References: <20220110071813.967414697@linuxfoundation.org>
@@ -46,58 +45,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Thomas Toye <thomas@toye.io>
 
-commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
+commit 29262e1f773b4b6a43711120be564c57fca07cfb upstream.
 
-A new commit in LLVM causes an error on the use of 'long double' when
-'-mno-x87' is used, which the kernel does through an alias,
-'-mno-80387' (see the LLVM commit below for more details around why it
-does this).
+Hytera makes a range of digital (DMR) radios. These radios can be
+programmed to a allow a computer to control them over Ethernet over USB,
+either using NCM or RNDIS.
 
-drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                                  ^
-drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->wde_interval = 300L * 1E6L;
-                           ^
-drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
-        data->trigger_delay = ktime_set(2, 500L*1E6L);
-                                               ^
-3 errors generated.
+This commit adds support for RNDIS for Hytera radios. I tested with a
+Hytera PD785 and a Hytera MD785G. When these radios are programmed to
+set up a Radio to PC Network using RNDIS, an USB interface will be added
+with class 2 (Communications), subclass 2 (Abstract Modem Control) and
+an interface protocol of 255 ("vendor specific" - lsusb even hints "MSFT
+RNDIS?").
 
-This happens due to the use of a 'long double' literal. The 'E6' part of
-'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
-it to 'long double'.
+This patch is similar to the solution of this StackOverflow user, but
+that only works for the Hytera MD785:
+https://stackoverflow.com/a/53550858
 
-There is no visible reason for floating point values in this driver, as
-the values are only assigned to integer types. Use NSEC_PER_MSEC, which
-is the same integer value as '1E6L', to avoid changing functionality but
-fix the error.
+To use the "Radio to PC Network" functionality of Hytera DMR radios, the
+radios need to be programmed correctly in CPS (Hytera's Customer
+Programming Software). "Forward to PC" should be checked in "Network"
+(under "General Setting" in "Conventional") and the "USB Network
+Communication Protocol" should be set to RNDIS.
 
-Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
-Link: https://github.com/ClangBuiltLinux/linux/issues/1497
-Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Thomas Toye <thomas@toye.io>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/ltc2952-poweroff.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/rndis_host.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/power/reset/ltc2952-poweroff.c
-+++ b/drivers/power/reset/ltc2952-poweroff.c
-@@ -170,8 +170,8 @@ static void ltc2952_poweroff_kill(void)
- 
- static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
- {
--	data->wde_interval = 300L * 1E6L;
--	data->trigger_delay = ktime_set(2, 500L*1E6L);
-+	data->wde_interval = 300L * NSEC_PER_MSEC;
-+	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
- 
- 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
+--- a/drivers/net/usb/rndis_host.c
++++ b/drivers/net/usb/rndis_host.c
+@@ -621,6 +621,11 @@ static const struct usb_device_id	produc
+ 				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
+ 	.driver_info = (unsigned long) &rndis_poll_status_info,
+ }, {
++	/* Hytera Communications DMR radios' "Radio to PC Network" */
++	USB_VENDOR_AND_INTERFACE_INFO(0x238b,
++				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
++	.driver_info = (unsigned long)&rndis_info,
++}, {
+ 	/* RNDIS is MSFT's un-official variant of CDC ACM */
+ 	USB_INTERFACE_INFO(USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
+ 	.driver_info = (unsigned long) &rndis_info,
 
 
