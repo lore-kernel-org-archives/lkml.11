@@ -2,186 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238491AbiAJEWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:22:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
+        id S238508AbiAJEY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:24:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238483AbiAJEWm (ORCPT
+        with ESMTP id S233306AbiAJEYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 23:22:42 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C168C06173F
-        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:22:42 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id p14so10851888plf.3
-        for <linux-kernel@vger.kernel.org>; Sun, 09 Jan 2022 20:22:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=2tMVLcwqOwvdNbUwarTtkg+jpTBxZUsNlQmGjyUWQAI=;
-        b=ZVvL0Tl/4WjO5EibOz/XcczYAW/yC6ZMJs+NmD1bHvjoFkaZFO2+3muMMTrtV5kSyF
-         NCty9641O594k+RODiiyi+wDyTcnChyk9qEvABt/P2P6+KXqMAz1mRG7UOozvtrtCN5D
-         6JpE8dq8c/BjuOx3mBw6oLVC+hQsK5ncexd2k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=2tMVLcwqOwvdNbUwarTtkg+jpTBxZUsNlQmGjyUWQAI=;
-        b=GLZj9TZNrHDUu3wci4E3w10fJ3Nh97UrrCfGNv8BalNSvlD3+9xOwo/HVxjXiLy06J
-         bkPaBShv10xOy/a+KMK7nsjq/oS9Wo1wF5XOoMJzwTePnQtmpg43U366OEO0mv0zTRGd
-         7kKuK7oewXyFyUjTRY93RYSBrlPRAUGF68LB6QDhiA64yBX/orRjeHD5M9j8+ywyfuPO
-         Vl5DKVLXKTw6aGSJzfA3CBf60EpVxvO0Q76zJPTjqh7IT6JIDdTdn2oBLPcarkWfzCuB
-         93kKjjfSa2XPecCUHyMIUf/euEpYiavwEsM6mf0FUklrIYNzluAYD3O6sB1hRVOnAx1x
-         Z6vQ==
-X-Gm-Message-State: AOAM531aI960GHte1nja4TzY70fvtTK9FNT3mwZj7RILzOQ7Nzz2U9xn
-        B22toxBlCUBD2pJX8mUUaloydEwOxazMhIiZ5AeejMsK0MKFIBZOyobJcoAcDw48JiaO9DUUzHh
-        CIu94gmARrm/mgyzuodo75fgTNub98uOoVq9LEtRjsQKQyqpHIO+Laez67ZHBjde5tGY7m9+ujB
-        MUqv0gsQOSh5cCi7M=
-X-Google-Smtp-Source: ABdhPJxeqzT9Iy/JuXzwRDo+Xq+a8eoV8hGOrkyzdYDO3f1mjkqpfThIPtY1lKS9pZxQf1YPFeYFCg==
-X-Received: by 2002:a17:90a:cb8b:: with SMTP id a11mr3538448pju.75.1641788561126;
-        Sun, 09 Jan 2022 20:22:41 -0800 (PST)
-Received: from ldt-sj3-komrakov.dhcp.broadcom.net ([192.19.222.250])
-        by smtp.gmail.com with ESMTPSA id x2sm4024257pgo.2.2022.01.09.20.22.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Jan 2022 20:22:40 -0800 (PST)
-From:   Alexander Komrakov <alexander.komrakov@broadcom.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     giometti@enneenne.com,
-        alexander komrakov <alexander.komrakov@broadcom.com>
-Subject: [PATCH 1/1] Signed-off-by: alexander komrakov <alexander.komrakov@broadcom.com> Replacing ktime_get_ts64 by ktime_get_boottime_ts64 because elapsedRealtime includes time spent in sleep and pps should be also including sleep time.
-Date:   Sun,  9 Jan 2022 20:22:14 -0800
-Message-Id: <20220110042214.1289369-2-alexander.komrakov@broadcom.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220110042214.1289369-1-alexander.komrakov@broadcom.com>
-References: <20220110042214.1289369-1-alexander.komrakov@broadcom.com>
+        Sun, 9 Jan 2022 23:24:25 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FA7C061748
+        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=8lkIQ5pzUHptX+PQh07i+5GbGN5xDvd48mKak705GKI=; b=Lxrx0VGaelZR0XiQE/gKbFnugO
+        prDvQ//ra4faWoP9k9x+hSjkLVWobcO2IlV2gT8KfuDeRx6xvoGP2AljqzpW5E9vj7OhN4bgWIFP4
+        JB39/sj6YfIja85XpZXV2AKYX0aY7i7/uAjwftPYg48TULXlaI8K5hdPfxN1/2uYBeUKllI2lzo+1
+        z8em1rbCoqk4oZ0b7ZGaPpEfzO0OWqkEIUZEZQvILtyeMWKnKXaEwFcTa7Nsgx6NVtx95GFS4vVcF
+        I9QuY8oq4dgp/RLADuZ6z+wEXco9L1LLv5QmFvvAHvmcCeNhqYVXG/8ATpb6AvVgO5jnhedDHobxG
+        zXBSVyWw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n6mE8-0025ws-Uo; Mon, 10 Jan 2022 04:24:12 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     linux-mm@kvack.org
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        William Kucharski <william.kucharski@oracle.com>,
+        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [PATCH v2 14/28] mm: Convert page_maybe_dma_pinned() to use a folio
+Date:   Mon, 10 Jan 2022 04:23:52 +0000
+Message-Id: <20220110042406.499429-15-willy@infradead.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
+References: <20220110042406.499429-1-willy@infradead.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000033ae505d532b07d"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000033ae505d532b07d
-Content-Type: text/plain; charset="US-ASCII"
+Replace three calls to compound_head() with one.  This removes the last
+user of compound_pincount(), so remove that helper too.
 
-From: alexander komrakov <alexander.komrakov@broadcom.com>
-
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/pps/kapi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/mm.h | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/pps/kapi.c b/drivers/pps/kapi.c
-index 149c29e498fc..6d1fbe4a8c40 100644
---- a/drivers/pps/kapi.c
-+++ b/drivers/pps/kapi.c
-@@ -38,7 +38,7 @@ static __u64 clock_gettime(struct pps_ktime *kt)
- {
- 	struct timespec64 ts = { .tv_sec = 0, .tv_nsec = 0 };
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index bf9624ca61c3..d3769897c8ac 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -934,13 +934,6 @@ static inline int head_compound_pincount(struct page *head)
+ 	return atomic_read(compound_pincount_ptr(head));
+ }
  
--	ktime_get_ts64(&ts);
-+	ktime_get_boottime_ts64(&ts);
- 	kt->sec = ts.tv_sec;
- 	kt->nsec = ts.tv_nsec;
- 	return (__u64) ts.tv_sec * NANOSEC_PER_SEC + ts.tv_nsec;
+-static inline int compound_pincount(struct page *page)
+-{
+-	VM_BUG_ON_PAGE(!PageCompound(page), page);
+-	page = compound_head(page);
+-	return head_compound_pincount(page);
+-}
+-
+ static inline void set_compound_order(struct page *page, unsigned int order)
+ {
+ 	page[1].compound_order = order;
+@@ -1340,18 +1333,20 @@ void unpin_user_pages(struct page **pages, unsigned long npages);
+  */
+ static inline bool page_maybe_dma_pinned(struct page *page)
+ {
+-	if (PageCompound(page))
+-		return compound_pincount(page) > 0;
++	struct folio *folio = page_folio(page);
++
++	if (folio_test_large(folio))
++		return atomic_read(folio_pincount_ptr(folio)) > 0;
+ 
+ 	/*
+-	 * page_ref_count() is signed. If that refcount overflows, then
+-	 * page_ref_count() returns a negative value, and callers will avoid
++	 * folio_ref_count() is signed. If that refcount overflows, then
++	 * folio_ref_count() returns a negative value, and callers will avoid
+ 	 * further incrementing the refcount.
+ 	 *
+-	 * Here, for that overflow case, use the signed bit to count a little
++	 * Here, for that overflow case, use the sign bit to count a little
+ 	 * bit higher via unsigned math, and thus still get an accurate result.
+ 	 */
+-	return ((unsigned int)page_ref_count(compound_head(page))) >=
++	return ((unsigned int)folio_ref_count(folio)) >=
+ 		GUP_PIN_COUNTING_BIAS;
+ }
+ 
 -- 
-2.25.1
+2.33.0
 
-
--- 
-This electronic communication and the information and any files transmitted 
-with it, or attached to it, are confidential and are intended solely for 
-the use of the individual or entity to whom it is addressed and may contain 
-information that is confidential, legally privileged, protected by privacy 
-laws, or otherwise restricted from disclosure to anyone else. If you are 
-not the intended recipient or the person responsible for delivering the 
-e-mail to the intended recipient, you are hereby notified that any use, 
-copying, distributing, dissemination, forwarding, printing, or copying of 
-this e-mail is strictly prohibited. If you received this e-mail in error, 
-please return the e-mail to the sender, delete it from your computer, and 
-destroy any printed copy of it.
-
---000000000000033ae505d532b07d
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIQegYJKoZIhvcNAQcCoIIQazCCEGcCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-gg3RMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
-MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
-vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
-rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
-aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
-e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
-cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
-MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
-KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
-/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
-TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
-YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
-b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
-c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
-CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
-BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
-jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
-9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
-/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
-jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
-AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
-dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
-MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
-IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
-SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
-XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
-J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
-nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
-riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
-QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
-UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
-M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
-Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
-14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
-a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
-XzCCBVkwggRBoAMCAQICDHYIL0hy7FtCa0iawzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
-RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
-UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIwNDMzNTVaFw0yMjA5MDEwNzU5MzNaMIGV
-MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
-BgNVBAoTDUJyb2FkY29tIEluYy4xFjAUBgNVBAMTDUFsZXggS29tcmFrb3YxLjAsBgkqhkiG9w0B
-CQEWH2FsZXhhbmRlci5rb21yYWtvdkBicm9hZGNvbS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IB
-DwAwggEKAoIBAQC9plVHzugCEzdkg+8eZF4DLPZ5fqspSSVbjMcgMDJQcAR76/SGGJnSJiHOj/rn
-okK4r4HXW8cTMmw/ePqLs+eX7+h2TlrLFdwnPs6ThKSnKe7aNihCrk9rF+WyTTX/VrqyKPYICkp0
-/XhRuIlIO0cP979rZRsxD4LKmC6x1msVkkM7JxkWhkktTzQwowAemtij6uzfYeh5BzQd2+LaWp8g
-ZX2NhNnwh9gNMFxHdE5c6+G3LG7AHwFOPA6G1TuzZ35urQXh4HWGbGoCJPszKLgccfOBBHYaXyo6
-yiBn77ZVlo89La3IlKW/J8Bg1ZiYHcR6RtGGylxCCKgFDdESfV03AgMBAAGjggHgMIIB3DAOBgNV
-HQ8BAf8EBAMCBaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJl
-Lmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYI
-KwYBBQUHMAGGNWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24y
-Y2EyMDIwME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3
-dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqG
-OGh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3Js
-MCoGA1UdEQQjMCGBH2FsZXhhbmRlci5rb21yYWtvdkBicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYI
-KwYBBQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFElfe2CJ
-evQgM+vs7qmUiI/AGUBAMA0GCSqGSIb3DQEBCwUAA4IBAQCmTMsF9VHjT0L2ycGjBg8eb/+aTBhL
-U6r4e4vaGj/xmDd1cWfvz4brxodjpmuSnjfyWvU/odcNIepLv17Xc91OiZBWGYgr4jNViUqunvaH
-DCnJlLbrD88ITE1uo7OCdlN/SS+Sskp2dDvL/Xlyorb+PaS7/AaIwEmuGyJv2uv1wQ+UZzPXXo1B
-vOM4N+PxiEKCkmmYhfeSVye92Bta6vjf0b+oDE2JT82+D+9nAfiyJ9P/SRVTTvLlSzcO2fqX6GOc
-37xY9F5HGjunD+cc5mqKM/r5PXyM/LEzWjdU1lVUVuvLRerUn+GNFgAPzpksTVYDv2kuseIFwRrF
-845kQxaRMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBu
-di1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIM
-dggvSHLsW0JrSJrDMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCDnp0iM/gv1H82L
-u8mn8w+sdfmx01gtgsamWfo2N+mrOjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
-DQEJBTEPFw0yMjAxMTAwNDIyNDFaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCG
-SAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEB
-BzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAM0Lj+wFm/pAZH8cg7/Ce+kc35fBYVLrB
-LCItcrRO8QVtO53VJsdnDyF+/j/NzZlv75vqQOhS0furKeTTT+GBhehO6TI6U59nd6k7WwZLpD/C
-KIkEYAksrIAudS/bd7h+0cAkhM7XL7mWl1JKrPVBje/UasqT9HnfFm4KATe48AgMDrMd3MVEfP3R
-VxQRtiE8wpkfSWmp9eZ80U4XUadNUGSQWGrui95TI75H6Xmnulr3jA665NDODF87THi4IMLwWrdw
-quxrQRKiQ91AHwhG7KTkuIlMSckTA9jF/jO4WNrHDzeAjjNo+sRYFj62Y+MMsG86BzgONkl8F1gA
-8/o9Gw==
---000000000000033ae505d532b07d--
