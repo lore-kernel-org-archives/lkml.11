@@ -2,148 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC54AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B720BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245125AbiAJL6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:58:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245094AbiAJL6v (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:58:51 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D0CC061756
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 03:58:50 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id d3so17071691lfv.13
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 03:58:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vAXIYuNH/ABiPfxXuFwD6hgcp+PMFzZ1M3jPIGte8RQ=;
-        b=NJ/1KfGQ48zcYiEWUDeXEubmTWTNVNFMx+ELOnyY6J+LpNXaV8IC5nwRla3xErpV/s
-         TD3hTj+tjN5UDqdhhH1Fwv1KeGp+wSi9yu/hUyLr13SBtxex8FCmU0IkQcz4NZA3haNA
-         sskjdqxUaOqcgQl1CXZrfiNtUG4RvqEFEydULZ9huWWhkfyUcuOITbZ/wXmBEgjIMtEe
-         dkjXZE0Bn6DsBearqgyC3xlueG6vynTLnXe8Ymf+I3pkfAVZkNv0dnAWWg1Byc3UYwRA
-         3PefZz7HTTY6TmTTSy5bWJGzXf6+/dtgPJzNuuoh5iIm+mroxAgS/jfW4o1aLrqxU9hN
-         o0EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vAXIYuNH/ABiPfxXuFwD6hgcp+PMFzZ1M3jPIGte8RQ=;
-        b=TBfR54A9kCQUN1FkBTYlL3hBv2jiFA1zD6ZUA4OWkkoZGc40zEri6LkUgFvgUHsnt1
-         w+0AQt+evCn/Pmys2ZBtQY+YMoQBxfMlzMMJaNeMlUOGSoplrvaoH+vcGfyS27gRuKEO
-         OJsR4F8txfI8te6bjHJpPhnptDdnA10K5C3QH5hOTQETNzqxr3mv0F8Op3EpL+M6yvJP
-         5kPfIeWhBd8qrpzurXkmtJZVpwiQIpr6Q9RCCM8o5g3ar3KI0cjRd+lXOhYn7IC8P/ze
-         9XXRvNzVYqFpvoPGxakYI4LU90/8ty5RE40+MgIzNEe1TYhxVWRi+0jabklExILhNJkX
-         vrqg==
-X-Gm-Message-State: AOAM531t3iagPXqQT0GujFgMmbb7vBxUhKIQeOBM1bgptlWPCLr4MAre
-        Hx8MjFXvn5WhuyRdO0wNVLRhehP/ot7d68XHNOu06g==
-X-Google-Smtp-Source: ABdhPJyvU0aPWAbZNBBTFMu8lAzaFaDMBdxzeezJqVEtf7JUnEGWH30MbzadfScGxijR2bznfgG5kndzKGGMa/VaCeE=
-X-Received: by 2002:a05:6512:4021:: with SMTP id br33mr4147162lfb.233.1641815928741;
- Mon, 10 Jan 2022 03:58:48 -0800 (PST)
+        id S245157AbiAJMAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 07:00:16 -0500
+Received: from foss.arm.com ([217.140.110.172]:33488 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S245174AbiAJL7m (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 06:59:42 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C8CA42B;
+        Mon, 10 Jan 2022 03:59:41 -0800 (PST)
+Received: from [10.163.72.167] (unknown [10.163.72.167])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 21C463F5A1;
+        Mon, 10 Jan 2022 03:59:38 -0800 (PST)
+Subject: Re: [PATCH V2 5/7] coresight: trbe: Work around the ignored system
+ register writes
+To:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        coresight@lists.linaro.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641517808-5735-1-git-send-email-anshuman.khandual@arm.com>
+ <1641517808-5735-6-git-send-email-anshuman.khandual@arm.com>
+ <0ce7622a-0c61-ea80-6c53-0388a8b620fe@arm.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <3d549672-5e03-9f36-1331-49ff4dcb3edd@arm.com>
+Date:   Mon, 10 Jan 2022 17:29:42 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20220107181723.54392-1-paul@crapouillou.net> <20220107181723.54392-2-paul@crapouillou.net>
-In-Reply-To: <20220107181723.54392-2-paul@crapouillou.net>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Mon, 10 Jan 2022 12:58:12 +0100
-Message-ID: <CAPDyKFobtZ_WGtbzhHdBRDT4RjQ8M_NXF+FmqXg2ZHTX=Z1frg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/6] PM: core: Remove DEFINE_UNIVERSAL_DEV_PM_OPS() macro
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Len Brown <len.brown@intel.com>,
-        Pavel Machek <pavel@ucw.cz>, list@opendingux.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Jonathan Cameron <jonathan.cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <0ce7622a-0c61-ea80-6c53-0388a8b620fe@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 7 Jan 2022 at 19:17, Paul Cercueil <paul@crapouillou.net> wrote:
->
-> The deprecated UNIVERSAL_DEV_PM_OPS() macro uses the provided callbacks
-> for both runtime PM and system sleep, which is very likely to be a
-> mistake, as a system sleep can be triggered while a given device is
-> already PM-suspended, which would cause the suspend callback to be
-> called twice.
->
-> The amount of users of UNIVERSAL_DEV_PM_OPS() is also tiny (16
-> occurences) compared to the number of places where
-> SET_SYSTEM_SLEEP_PM_OPS() is used with pm_runtime_force_suspend() and
-> pm_runtime_force_resume(), which makes me think that none of these cases
-> are actually valid.
->
-> As the new macro DEFINE_UNIVERSAL_DEV_PM_OPS() which was introduced to
-> replace UNIVERSAL_DEV_PM_OPS() is currently unused, remove it before
-> someone starts to use it in yet another invalid case.
->
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
-
-Kind regards
-Uffe
 
 
-> ---
->
-> Notes:
->     v2: No change
->     v3: - Keep UNIVERSAL_DEV_PM_OPS deprecated
->         - Rework commit message
->
->  include/linux/pm.h | 21 ++++++++-------------
->  1 file changed, 8 insertions(+), 13 deletions(-)
->
-> diff --git a/include/linux/pm.h b/include/linux/pm.h
-> index e1e9402180b9..02f059d814bb 100644
-> --- a/include/linux/pm.h
-> +++ b/include/linux/pm.h
-> @@ -366,6 +366,12 @@ static const struct dev_pm_ops name = { \
->         SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
->  }
->
-> +/* Deprecated. Use DEFINE_SIMPLE_DEV_PM_OPS() instead. */
-> +#define SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> +const struct dev_pm_ops __maybe_unused name = { \
-> +       SET_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> +}
-> +
->  /*
->   * Use this for defining a set of PM operations to be used in all situations
->   * (system suspend, hibernation or runtime PM).
-> @@ -378,20 +384,9 @@ static const struct dev_pm_ops name = { \
->   * suspend and "early" resume callback pointers, .suspend_late() and
->   * .resume_early(), to the same routines as .runtime_suspend() and
->   * .runtime_resume(), respectively (and analogously for hibernation).
-> + *
-> + * Deprecated. You most likely don't want this macro.
->   */
-> -#define DEFINE_UNIVERSAL_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn) \
-> -static const struct dev_pm_ops name = { \
-> -       SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> -       RUNTIME_PM_OPS(suspend_fn, resume_fn, idle_fn) \
-> -}
-> -
-> -/* Deprecated. Use DEFINE_SIMPLE_DEV_PM_OPS() instead. */
-> -#define SIMPLE_DEV_PM_OPS(name, suspend_fn, resume_fn) \
-> -const struct dev_pm_ops __maybe_unused name = { \
-> -       SET_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> -}
-> -
-> -/* Deprecated. Use DEFINE_UNIVERSAL_DEV_PM_OPS() instead. */
->  #define UNIVERSAL_DEV_PM_OPS(name, suspend_fn, resume_fn, idle_fn) \
->  const struct dev_pm_ops __maybe_unused name = { \
->         SET_SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn) \
-> --
-> 2.34.1
->
+On 1/10/22 4:33 PM, Suzuki K Poulose wrote:
+> On 07/01/2022 01:10, Anshuman Khandual wrote:
+>> TRBE implementations affected by Arm erratum #2064142 might fail to write
+>> into certain system registers after the TRBE has been disabled. Under some
+>> conditions after TRBE has been disabled, writes into certain TRBE registers
+>> TRBLIMITR_EL1, TRBPTR_EL1, TRBBASER_EL1, TRBSR_EL1 and TRBTRG_EL1 will be
+>> ignored and not be effected.
+>>
+>> Work around this problem in the TRBE driver by executing TSB CSYNC and DSB
+>> just after the trace collection has stopped and before performing a system
+>> register write to one of the affected registers. This just updates the TRBE
+>> driver as required.
+>>
+>> Cc: Catalin Marinas <catalin.marinas@arm.com>
+>> Cc: Will Deacon <will@kernel.org>
+>> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+>> Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+>> Cc: coresight@lists.linaro.org
+>> Cc: linux-doc@vger.kernel.org
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Cc: linux-kernel@vger.kernel.org
+>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+>> ---
+>>   arch/arm64/Kconfig                           |  2 +-
+>>   drivers/hwtracing/coresight/coresight-trbe.c | 54 ++++++++++++++------
+>>   drivers/hwtracing/coresight/coresight-trbe.h |  8 ---
+>>   3 files changed, 39 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>> index f1651cb71ef3..b6d62672bf7d 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -780,7 +780,7 @@ config ARM64_ERRATUM_2224489
+>>     config ARM64_ERRATUM_2064142
+>>       bool "Cortex-A510: 2064142: workaround TRBE register writes while disabled"
+>> -    depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
+>> +    depends on CORESIGHT_TRBE
+>>       default y
+>>       help
+>>         This option adds the workaround for ARM Cortex-A510 erratum 2064142.
+>> diff --git a/drivers/hwtracing/coresight/coresight-trbe.c b/drivers/hwtracing/coresight/coresight-trbe.c
+>> index 276862c07e32..850e9fca6847 100644
+>> --- a/drivers/hwtracing/coresight/coresight-trbe.c
+>> +++ b/drivers/hwtracing/coresight/coresight-trbe.c
+>> @@ -91,10 +91,12 @@ struct trbe_buf {
+>>    */
+>>   #define TRBE_WORKAROUND_OVERWRITE_FILL_MODE    0
+>>   #define TRBE_WORKAROUND_WRITE_OUT_OF_RANGE    1
+>> +#define TRBE_NEEDS_DRAIN_AFTER_DISABLE        2
+>>     static int trbe_errata_cpucaps[] = {
+>>       [TRBE_WORKAROUND_OVERWRITE_FILL_MODE] = ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE,
+>>       [TRBE_WORKAROUND_WRITE_OUT_OF_RANGE] = ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE,
+>> +    [TRBE_NEEDS_DRAIN_AFTER_DISABLE] = ARM64_WORKAROUND_2064142,
+>>       -1,        /* Sentinel, must be the last entry */
+>>   };
+>>   @@ -167,6 +169,11 @@ static inline bool trbe_may_write_out_of_range(struct trbe_cpudata *cpudata)
+>>       return trbe_has_erratum(cpudata, TRBE_WORKAROUND_WRITE_OUT_OF_RANGE);
+>>   }
+>>   +static inline bool trbe_needs_drain_after_disable(struct trbe_cpudata *cpudata)
+>> +{
+>> +    return trbe_has_erratum(cpudata, TRBE_NEEDS_DRAIN_AFTER_DISABLE);
+>> +}
+>> +
+>>   static int trbe_alloc_node(struct perf_event *event)
+>>   {
+>>       if (event->cpu == -1)
+>> @@ -174,30 +181,42 @@ static int trbe_alloc_node(struct perf_event *event)
+>>       return cpu_to_node(event->cpu);
+>>   }
+>>   -static void trbe_drain_buffer(void)
+>> +static inline void trbe_drain_buffer(void)
+>>   {
+>>       tsb_csync();
+>>       dsb(nsh);
+>>   }
+>>   -static void trbe_drain_and_disable_local(void)
+>> +static inline void set_trbe_disabled(struct trbe_cpudata *cpudata)
+>>   {
+>>       u64 trblimitr = read_sysreg_s(SYS_TRBLIMITR_EL1);
+>>   -    trbe_drain_buffer();
+>> -
+>>       /*
+>>        * Disable the TRBE without clearing LIMITPTR which
+>>        * might be required for fetching the buffer limits.
+>>        */
+>>       trblimitr &= ~TRBLIMITR_ENABLE;
+>>       write_sysreg_s(trblimitr, SYS_TRBLIMITR_EL1);
+>> +
+>> +    /*
+>> +     * Errata affected TRBE implementation will need TSB CSYNC and
+>> +     * DSB in order to prevent subsequent writes into certain TRBE
+>> +     * system registers from being ignored and not effected.
+>> +     */
+> 
+> minor nit: This comment could be moved to the definition of the
+> function "trbe_needs_drain_after_disable()" to make more sense.
+> The name is implicit here indicating, why we are doing a drain.
+
+Sure, will move the comment just before the function definition.
+
+> 
+> Either ways:
+> 
+> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> 
