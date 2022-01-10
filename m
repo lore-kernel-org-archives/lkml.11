@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C885C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D045C4707E
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239924AbiAJHq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:46:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51632 "EHLO
+        id S243987AbiAJHqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:46:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241810AbiAJHjm (ORCPT
+        with ESMTP id S240429AbiAJHgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:39:42 -0500
+        Mon, 10 Jan 2022 02:36:17 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3536C02549D;
-        Sun,  9 Jan 2022 23:33:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6030DC025187;
+        Sun,  9 Jan 2022 23:31:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B154B81216;
-        Mon, 10 Jan 2022 07:33:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3CD8C36AED;
-        Mon, 10 Jan 2022 07:33:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19F52B81212;
+        Mon, 10 Jan 2022 07:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BDFCC36AE9;
+        Mon, 10 Jan 2022 07:31:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800026;
-        bh=zw1NdbOtkyijo7fXN+XvLZTKIYt/6pYw8B0XdMToLBU=;
+        s=korg; t=1641799899;
+        bh=LWMxIqdPLrruG753ovFKYiDSZqY2xr4yMtOUiZIOR7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hy01yk+N8eZJNkZyRtZ3YTqamMFVT/5EcNfKOiBIgYyMbTR1kGbytAX4E8+0SIP5k
-         lyfLR0Kcmlbcdh9+l4x9zl6kk9FJs7R5/LIZU5Dl8GqspVEnzzr9pxLyMMpge2g26q
-         6sRlbQJaMuOgZxqvw5AMGGGXpypPJ0NTzsO10JdA=
+        b=VnWqmGdCVvGFn2fy86yIOnIbw8F5POvos80LzpG84PpryhjomdA2vFAemuPJuQ+Qd
+         ypP1/aES55nQe824OKmloCxkBZQ9vLFLrhypUF1sJ3XC5fbW6gpyGDz12rkXzTH7FF
+         k8gLGh9l7oQtvZrT5pKzdN5Lcf0eu+ylklJqGyrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 53/72] auxdisplay: charlcd: checking for pointer reference before dereferencing
-Date:   Mon, 10 Jan 2022 08:23:30 +0100
-Message-Id: <20220110071823.336401449@linuxfoundation.org>
+        stable@vger.kernel.org, Aaron Ma <aaron.ma@canonical.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 10/72] Revert "net: usb: r8152: Add MAC passthrough support for more Lenovo Docks"
+Date:   Mon, 10 Jan 2022 08:22:47 +0100
+Message-Id: <20220110071821.868066147@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -49,39 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Sampaio <sampaio.ime@gmail.com>
+From: Aaron Ma <aaron.ma@canonical.com>
 
-[ Upstream commit 4daa9ff89ef27be43c15995412d6aee393a78200 ]
+commit 00fcf8c7dd564c44448ff6a39728d2ca0c8efbd8 upstream.
 
-Check if the pointer lcd->ops->init_display exists before dereferencing it.
-If a driver called charlcd_init() without defining the ops, this would
-return segmentation fault, as happened to me when implementing a charlcd
-driver.  Checking the pointer before dereferencing protects from
-segmentation fault.
+This reverts commit f77b83b5bbab53d2be339184838b19ed2c62c0a5.
 
-Signed-off-by: Luiz Sampaio <sampaio.ime@gmail.com>
-Signed-off-by: Miguel Ojeda <ojeda@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This change breaks multiple usb to ethernet dongles attached on Lenovo
+USB hub.
+
+Fixes: f77b83b5bbab ("net: usb: r8152: Add MAC passthrough support for more Lenovo Docks")
+Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
+Link: https://lore.kernel.org/r/20220105155102.8557-1-aaron.ma@canonical.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/auxdisplay/charlcd.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/usb/r8152.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/auxdisplay/charlcd.c b/drivers/auxdisplay/charlcd.c
-index 304accde365c8..6c010d4efa4ae 100644
---- a/drivers/auxdisplay/charlcd.c
-+++ b/drivers/auxdisplay/charlcd.c
-@@ -578,6 +578,9 @@ static int charlcd_init(struct charlcd *lcd)
- 	 * Since charlcd_init_display() needs to write data, we have to
- 	 * enable mark the LCD initialized just before.
- 	 */
-+	if (WARN_ON(!lcd->ops->init_display))
-+		return -EINVAL;
-+
- 	ret = lcd->ops->init_display(lcd);
- 	if (ret)
- 		return ret;
--- 
-2.34.1
-
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -9638,9 +9638,12 @@ static int rtl8152_probe(struct usb_inte
+ 		netdev->hw_features &= ~NETIF_F_RXCSUM;
+ 	}
+ 
+-	if (udev->parent &&
+-			le16_to_cpu(udev->parent->descriptor.idVendor) == VENDOR_ID_LENOVO) {
+-		tp->lenovo_macpassthru = 1;
++	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
++		switch (le16_to_cpu(udev->descriptor.idProduct)) {
++		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
++		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
++			tp->lenovo_macpassthru = 1;
++		}
+ 	}
+ 
+ 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
 
 
