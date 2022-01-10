@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A02C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238105AbiAJHlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:41:32 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41338 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241095AbiAJHep (ORCPT
+        id S240524AbiAJHls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:41:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241428AbiAJHfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:34:45 -0500
+        Mon, 10 Jan 2022 02:35:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D251C034008;
+        Sun,  9 Jan 2022 23:30:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1346A61192;
-        Mon, 10 Jan 2022 07:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7ACBC36AED;
-        Mon, 10 Jan 2022 07:34:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47DB2B81219;
+        Mon, 10 Jan 2022 07:30:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F94AC36AE9;
+        Mon, 10 Jan 2022 07:30:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800083;
-        bh=zENv4HK7dy6g+eUa3yM2KKt4TG/axtrDyosh4Wfu/bc=;
+        s=korg; t=1641799845;
+        bh=bOhQIlelHmocyKnG+J9cBmRX+vsXjphmZVb/GZGImSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=haLgdJpsuYepRWj90RrH32WATPi1ls8+akQoKZpL0yR8csysu4EQ5pus/uyBkJ0z6
-         h9wF+My/jBRDdaBDnx6RDQo4tQyMcLEkcKOamSGMAnhT3OrahhWZl7ayb39noGgq6i
-         bwqJwqWGA91DkBWOyJJcOIeKbNzjqVfULODaSazo=
+        b=gQqg/xZuwD0VMDiUgDgHEZPL8yq/R4rnc6OtyqF1MT2WNUNFNEIarw9mlLXTUSU5W
+         M+SRwrjyZDZg2Q7YaibObubYb6OTiiOJNGxnAXJYegsm1Iq48hqWKv6RZcLRA7YQjn
+         /LdWaRNwKkwZHpgqYHCyeUco45ovMQXkykTs5jUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunyan Zhang <chunyan.zhang@unisoc.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: [PATCH 5.15 41/72] power: supply: core: Break capacity loop
-Date:   Mon, 10 Jan 2022 08:23:18 +0100
-Message-Id: <20220110071822.952583458@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com,
+        David Ahern <dsahern@kernel.org>, Thomas Graf <tgraf@suug.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 17/43] ipv4: Check attribute length for RTA_GATEWAY in multipath route
+Date:   Mon, 10 Jan 2022 08:23:14 +0100
+Message-Id: <20220110071817.931116602@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
+In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
+References: <20220110071817.337619922@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,37 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: David Ahern <dsahern@kernel.org>
 
-commit 51c7b6a0398f54b9120795796a4cff4fc9634f7d upstream.
+commit 7a3429bace0e08d94c39245631ea6bc109dafa49 upstream.
 
-We should not go on looking for more capacity tables after
-we realize we have looked at the last one in
-power_supply_find_ocv2cap_table().
+syzbot reported uninit-value:
+============================================================
+  BUG: KMSAN: uninit-value in fib_get_nhs+0xac4/0x1f80
+  net/ipv4/fib_semantics.c:708
+   fib_get_nhs+0xac4/0x1f80 net/ipv4/fib_semantics.c:708
+   fib_create_info+0x2411/0x4870 net/ipv4/fib_semantics.c:1453
+   fib_table_insert+0x45c/0x3a10 net/ipv4/fib_trie.c:1224
+   inet_rtm_newroute+0x289/0x420 net/ipv4/fib_frontend.c:886
 
-Fixes: 3afb50d7125b ("power: supply: core: Add some helpers to use the battery OCV capacity table")
-Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>
-Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Add helper to validate RTA_GATEWAY length before using the attribute.
+
+Fixes: 4e902c57417c ("[IPv4]: FIB configuration using struct fib_config")
+Reported-by: syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com
+Signed-off-by: David Ahern <dsahern@kernel.org>
+Cc: Thomas Graf <tgraf@suug.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/supply/power_supply_core.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ net/ipv4/fib_semantics.c |   29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
---- a/drivers/power/supply/power_supply_core.c
-+++ b/drivers/power/supply/power_supply_core.c
-@@ -853,6 +853,10 @@ power_supply_find_ocv2cap_table(struct p
- 		return NULL;
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -663,6 +663,19 @@ static int fib_count_nexthops(struct rtn
+ 	return nhs;
+ }
  
- 	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
-+		/* Out of capacity tables */
-+		if (!info->ocv_table[i])
-+			break;
++static int fib_gw_from_attr(__be32 *gw, struct nlattr *nla,
++			    struct netlink_ext_ack *extack)
++{
++	if (nla_len(nla) < sizeof(*gw)) {
++		NL_SET_ERR_MSG(extack, "Invalid IPv4 address in RTA_GATEWAY");
++		return -EINVAL;
++	}
 +
- 		temp_diff = abs(info->ocv_temp[i] - temp);
++	*gw = nla_get_in_addr(nla);
++
++	return 0;
++}
++
+ /* only called when fib_nh is integrated into fib_info */
+ static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
+ 		       int remaining, struct fib_config *cfg,
+@@ -705,7 +718,11 @@ static int fib_get_nhs(struct fib_info *
+ 				return -EINVAL;
+ 			}
+ 			if (nla) {
+-				fib_cfg.fc_gw4 = nla_get_in_addr(nla);
++				ret = fib_gw_from_attr(&fib_cfg.fc_gw4, nla,
++						       extack);
++				if (ret)
++					goto errout;
++
+ 				if (fib_cfg.fc_gw4)
+ 					fib_cfg.fc_gw_family = AF_INET;
+ 			} else if (nlav) {
+@@ -903,6 +920,7 @@ int fib_nh_match(struct net *net, struct
+ 		attrlen = rtnh_attrlen(rtnh);
+ 		if (attrlen > 0) {
+ 			struct nlattr *nla, *nlav, *attrs = rtnh_attrs(rtnh);
++			int err;
  
- 		if (temp_diff < best_temp_diff) {
+ 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
+ 			nlav = nla_find(attrs, attrlen, RTA_VIA);
+@@ -913,12 +931,17 @@ int fib_nh_match(struct net *net, struct
+ 			}
+ 
+ 			if (nla) {
++				__be32 gw;
++
++				err = fib_gw_from_attr(&gw, nla, extack);
++				if (err)
++					return err;
++
+ 				if (nh->fib_nh_gw_family != AF_INET ||
+-				    nla_get_in_addr(nla) != nh->fib_nh_gw4)
++				    gw != nh->fib_nh_gw4)
+ 					return 1;
+ 			} else if (nlav) {
+ 				struct fib_config cfg2;
+-				int err;
+ 
+ 				err = fib_gw_from_via(&cfg2, nlav, extack);
+ 				if (err)
 
 
