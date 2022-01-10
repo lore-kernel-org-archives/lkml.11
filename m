@@ -2,59 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C205EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84556C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:27:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240446AbiAJI1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:27:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240478AbiAJI0t (ORCPT
+        id S240592AbiAJI1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:27:16 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:8049 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240426AbiAJI0v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:26:49 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 449E3C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:26:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=kj/0GWOlRnOB2zpQoSY1L9VJzIVf6PWotYpNkxVVSF0=; b=ycnVGAWGVoOzSSqRP91lqi27dr
-        xfOJnaAiSbOfSDpH2YRksSnDfLkPBYn0geBbQUwSsbzqvsTKbSmXxa6RYxp2i+vM6kYcxQWo9d11F
-        vIWiGdqExoSdXzbETv/Qs2+WhZuXnQZ9s8p0GOUb1uuEzIFcmU6+5IznJlf68sAoKZLR5vL7wq0xV
-        4V0DJbp5h1NRquBoSEYPBCns7jJcSU/auaMlLYVz82zHtW7u8Bpe8SCPF7dKjcFQG9BpoiiaeopHF
-        GYyaAs79fhf7JW0lgHW6qBdn+Spr2/hxs2YNxrWGO1JPOblCGGNcxli/4jtD9upm7zO+84Izl6s9z
-        1LqjdQDQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6q0q-009qQn-ND; Mon, 10 Jan 2022 08:26:44 +0000
-Date:   Mon, 10 Jan 2022 00:26:44 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 04/28] gup: Optimise compound_range_next()
-Message-ID: <YdvtxDWN7Dc11ZB5@infradead.org>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-5-willy@infradead.org>
+        Mon, 10 Jan 2022 03:26:51 -0500
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Mon, 10 Jan 2022
+ 16:26:44 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH 1/2] dt-bindings: serial: meson: Drop compatible = amlogic,meson-gx-uart.
+Date:   Mon, 10 Jan 2022 16:26:09 +0800
+Message-ID: <20220110082616.13474-1-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110042406.499429-5-willy@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 04:23:42AM +0000, Matthew Wilcox (Oracle) wrote:
-> By definition, a compound page has an order >= 1, so the second half
-> of the test was redundant.  Also, this cannot be a tail page since
-> it's the result of calling compound_head(), so use PageHead() instead
-> of PageCompound().
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Deprecated, don't use anymore because compatible =
+amlogic,meson-gx-uart. Don't differentiate between GXBB, GXL
+and G12A which have different revisions of the UART IP.
+So it's split into GXBB, GXL and G12A.
 
-Looks good,
+Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+---
+ .../devicetree/bindings/serial/amlogic,meson-uart.yaml | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index 72e8868db3e0..ad9f1f4537a0 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -28,7 +28,10 @@ properties:
+               - amlogic,meson6-uart
+               - amlogic,meson8-uart
+               - amlogic,meson8b-uart
+-              - amlogic,meson-gx-uart
++              - amlogic,meson-gx-uart # deprecated, use revision specific property below
++              - amlogic,meson-gxbb-uart
++              - amlogic,meson-gxl-uart
++              - amlogic,meson-g12a-uart
+               - amlogic,meson-s4-uart
+           - const: amlogic,meson-ao-uart
+       - description: Everything-Else power domain UART controller
+@@ -36,7 +39,10 @@ properties:
+           - amlogic,meson6-uart
+           - amlogic,meson8-uart
+           - amlogic,meson8b-uart
+-          - amlogic,meson-gx-uart
++          - amlogic,meson-gx-uart # deprecated, use revision specific property below
++          - amlogic,meson-gxbb-uart
++          - amlogic,meson-gxl-uart
++          - amlogic,meson-g12a-uart
+           - amlogic,meson-s4-uart
+ 
+   reg:
+
+base-commit: 99a507a8ea28542ec196e2dd80096708e2482735
+-- 
+2.33.1
+
