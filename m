@@ -2,95 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4386BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EECCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 20:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245744AbiAJUPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 15:15:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
+        id S245756AbiAJUQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 15:16:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245729AbiAJUPx (ORCPT
+        with ESMTP id S245729AbiAJUQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 15:15:53 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C0BC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 12:15:53 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id q25so49704199edb.2
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 12:15:53 -0800 (PST)
+        Mon, 10 Jan 2022 15:16:22 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A40C06173F;
+        Mon, 10 Jan 2022 12:16:22 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so1766544pjp.0;
+        Mon, 10 Jan 2022 12:16:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BEapTfvNdqFS9jG6DA+h63+yWOu3K060tLSEs+AVFko=;
-        b=Y8gq6xnRGJFLCoyi+PH1EPWhWtPVgLxIXl8VtSeqtJJiTjBTldk2/K9ymvhPhWmveo
-         d9wiPtI8ilLCfSPhDBoZfUDb48mhHT1hILxVmw6KGfiyOss5oU/yXj0fyzg1NrjJmf+M
-         DAoNYb4EGK79nCTSUeamaxj+aBZBJ9hCkIxVY=
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bRe6M5AX2fPQvayGmPdGz6POX5LLWdgtZ17K2TZp4oo=;
+        b=U8cH8wS2Cr7sMyJZJrWkNeDAppf1i6NngGkKQjOSq4ixSwREg3dJ0BAOqYVweAebvB
+         ziZBBaMRSyGC30NwEW7S+IPWSRfu0ViMeZK0O3mtFMA7oUcO4bwwnLnSGAGwHeVFtH4I
+         DXjOd4aRZKwmTyrTFamstmYyXW1JDc+gVLqIk6ePOKiugNrfDWG6KBQR8+CcfzZe67eM
+         JhgRlSjUEIyf9J3WYyOikmIf60DAJE2vXi4tTTGcxzfDtiY15N63g3ep23ht49xqOMGb
+         X+f0Ks95s8x2k4VZDBs/8xIWDjqgimF6wR1U7EL3dvhRQjZos+Up+6frAnCRv9716Q1v
+         FA3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BEapTfvNdqFS9jG6DA+h63+yWOu3K060tLSEs+AVFko=;
-        b=2hvA0u5/dQu8xOqarAqRZ0sQMVWvhMdyw60QTgC0C8afTRK8scgVuH1ItXd5cbXH3N
-         lajKJKsoegK+1RFg/yYHnqcoDuHLEGYZpmylTjkiJkUwukvH21FoRdfLt/4rgHSU+QX0
-         h75GV9b1raG+2lDXi23y0SwTGOOm3XeAk4iMFGWxgZWfMJsGALqksFWa8vgPR4TTsWKy
-         5ghLiGzodtCwVbGbyKQaAWarYLrZnog5Y4rVZZQZSYVwM+0/YDkrcQlRO7zgxjWVcYdq
-         s7aVf34jZyr181ch+PAjasg2JyOPaWzCzJ6ciVAjITjuRbMDBkL33cdkHaUN8ZTRsx3v
-         8EvQ==
-X-Gm-Message-State: AOAM530mr9n+lkVtSkXxtMJd7GjyqqTdiUrVRjKk4AQg4+8s3a9qtWtJ
-        SgAUFv8bysXhMtueiVQo1FtvwxO77Txs4xv9whQ=
-X-Google-Smtp-Source: ABdhPJzMVNvdYNwxHq6/4MVKw6x79rTXf6/2Nul/k8TsPYDMU/KlB2073zLtUl6/S8yqMD8fUQujqA==
-X-Received: by 2002:a17:906:dc8c:: with SMTP id cs12mr1043224ejc.769.1641845751665;
-        Mon, 10 Jan 2022 12:15:51 -0800 (PST)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id u11sm3357384edt.97.2022.01.10.12.15.50
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bRe6M5AX2fPQvayGmPdGz6POX5LLWdgtZ17K2TZp4oo=;
+        b=uX2qOWHVoCOWDWhyJctA8sR8mKMplxF6nr/Ql2OsPI4YjKrpURbmeqp3DBRKAOxbpu
+         ZNHL5N7vnhg5KEmrZXjNmpizFUGnUW1ZuzMWFmMcAwvaWgoSwCx3IxgHika0iQbT2ORS
+         0mrUy0auONZCRHneSvGNDH/gPhgQ8CZlNl12fg1dCoLyWxtZ2IydmklC86x0qXjlkDdp
+         ec3Zf8Qe6cF5MncA1Dn6CoWzaD2hyvEf1cLv0ygCtEG2KR8FkWlRQGSNPipAaT1fYna4
+         o5GvOUJiX8ZqkqfnU48Rf/YedFolE3cnee7E8s6quPkbN3y17xVyohj7FrDMjj/ywruz
+         xOfw==
+X-Gm-Message-State: AOAM532yvsb+9T8s6wBdY0+Wqy4n0v8DcLrnHwYRQU2bH7HeBG1J4B2D
+        7fnX9rBezE2FSNQjMB9Inugil//u0BY=
+X-Google-Smtp-Source: ABdhPJy9A5z8P9jErlsaTsS9OFoLCO1luOu6R8g8vtelJsHLDEh7uZU5g95jHVVoa+eM/xA2BryyDQ==
+X-Received: by 2002:a62:2743:0:b0:4bd:356:21e with SMTP id n64-20020a622743000000b004bd0356021emr1285971pfn.51.1641845780700;
+        Mon, 10 Jan 2022 12:16:20 -0800 (PST)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id my5sm11321692pjb.5.2022.01.10.12.16.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 12:15:51 -0800 (PST)
-Received: by mail-wr1-f52.google.com with SMTP id e9so27464011wra.2
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 12:15:50 -0800 (PST)
-X-Received: by 2002:adf:c74e:: with SMTP id b14mr1026415wrh.97.1641845750470;
- Mon, 10 Jan 2022 12:15:50 -0800 (PST)
+        Mon, 10 Jan 2022 12:16:20 -0800 (PST)
+Subject: Re: [PATCH 5.15 00/72] 5.15.14-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        stable@vger.kernel.org
+References: <20220110071821.500480371@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <254e451b-52f8-598c-d32f-9dfd7dd83932@gmail.com>
+Date:   Mon, 10 Jan 2022 12:16:16 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <YdwVl0H54fmUIux0@zn.tnic> <CAHk-=wh+UbGrgH4CzKSoTYGPidyv5isiLMxJKAqnV3NFTiRdaQ@mail.gmail.com>
- <Ydx8fUCotPI++UEW@zn.tnic> <265db742-0539-a66f-ff00-2b18cb2add88@intel.com>
-In-Reply-To: <265db742-0539-a66f-ff00-2b18cb2add88@intel.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Mon, 10 Jan 2022 12:15:34 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wjhf7s91dtCLGbOUWLDNA2vMmSFPWjWtxa8ete=9cLJPQ@mail.gmail.com>
-Message-ID: <CAHk-=wjhf7s91dtCLGbOUWLDNA2vMmSFPWjWtxa8ete=9cLJPQ@mail.gmail.com>
-Subject: Re: [GIT PULL] x86/cpu for v5.17
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Borislav Petkov <bp@suse.de>, x86-ml <x86@kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        "Shutemov, Kirill" <kirill.shutemov@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 12:10 PM Dave Hansen <dave.hansen@intel.com> wrote:
->
-> There are four basic options here for TDX:
->
-> 1. Paper over the #VE in the #VE handler itself
+On 1/9/22 11:22 PM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.14 release.
+> There are 72 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.14-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Ahh, I saw it, but didn't really react to the fact that unlike the
-other 'wrmsrl_safe()' cases, it takes #VE instead of #GP.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-I do think that perhaps just doing fixup_exception() in the #VE
-handler is the most obvious case. It's not like exceptions are meant
-to be somehow specific to #GP.
-
-But hey, I don't really care that deeply. I just reacted to this all
-looking odd, and I've already done the pull. So it's not like I'm
-NAK'ing the whole vendor test, it was just surprising to me.
-
-So I don't want people to feel like they have to do that wrmsrl_safe()
-thing, or add a feature flag or anything. I see why it happened now,
-and I may think it's a bit odd still, but it's really not a huge deal.
-
-                   Linus
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
