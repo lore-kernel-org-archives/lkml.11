@@ -2,162 +2,250 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD7CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 11:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244947AbiAJLlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 06:41:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244875AbiAJLkx (ORCPT
+        id S244945AbiAJLnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 06:43:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34811 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244925AbiAJLlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 06:40:53 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9511AC06173F;
-        Mon, 10 Jan 2022 03:40:52 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1n6t2f-000747-Ab; Mon, 10 Jan 2022 12:40:49 +0100
-Message-ID: <4398ddfe-9db4-bf67-902d-e0416b815878@leemhuis.info>
-Date:   Mon, 10 Jan 2022 12:40:48 +0100
+        Mon, 10 Jan 2022 06:41:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641814901;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SsWQC8aTb+0uRe3yU+LwCtHB9iia3Osu0BBlRAz4Dj0=;
+        b=futY8jD0bx8u3ZSMnv4xgVIkFqrhmEe+8+MLM0VPZ3PsOL/6dk0pboyomFGeZd1a74uiu0
+        m+FwRJZPjaSuc8phiWgxZo3dFjL4tLc7fKpsb2qqPFc6SubbUA9M7f3crgEtNdlRCHF1ei
+        tNY8L593iJCCbF0goOuMUNWzHjTpnEA=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-484-qwlPu5dvOY6QkLgcx-fLhQ-1; Mon, 10 Jan 2022 06:41:40 -0500
+X-MC-Unique: qwlPu5dvOY6QkLgcx-fLhQ-1
+Received: by mail-ed1-f72.google.com with SMTP id h6-20020a056402280600b003f9967993aeso9889950ede.10
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 03:41:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SsWQC8aTb+0uRe3yU+LwCtHB9iia3Osu0BBlRAz4Dj0=;
+        b=ZOBQDC2LUWe3CNWT4GDFetexuDiQYN7PC0kgUuVjKj7RUdGIvQA/FTESvXIP+f9vVL
+         G68pcaMvIlgTqmOEW6+BNoEFRhQjDFCg4JEintMaI/nsIE8btduny5U4fFDxfQkV16Ur
+         qZCTN2cpm8vcLA7zZ2Qb5SbAqsC0wwn0AVDlZ9D8zGfLnG6flCAdlcWSiOIcwItE5bEI
+         h2PGp3jMGnwH9l7CZjCR6lOrICbyMzkL1a2gLAezhJl489Nq7ozMPBXkN12NnxNYiimY
+         L12jGPoJrlRuQNGMMUHU7zAb+g1kf/4CLeJOd2jK6+PwO0v1KyGSBBH69VS6I6ArXcXF
+         Nd2A==
+X-Gm-Message-State: AOAM5308hnl6CH6630bIMkE5hI9ESuFY8t5Vd++7joy1+7XrTbk1/Tjk
+        CKYsnA2fvlx9JCdc5g+bDmwIBXxyRHg92Tw5q26nnxDXzJI30uS0MlGRtFNAZBKnfAR9muXVyzE
+        bduWGrxJSJTa6kPEfohllOl2C
+X-Received: by 2002:a17:907:a420:: with SMTP id sg32mr1390945ejc.310.1641814899128;
+        Mon, 10 Jan 2022 03:41:39 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwa47UJCAu9cZOZqhb8987Jy+Gr9KRUjqDbs/oRBNFOeATkg186ylFpwptic1AlmBR/yUCuXg==
+X-Received: by 2002:a17:907:a420:: with SMTP id sg32mr1390927ejc.310.1641814898923;
+        Mon, 10 Jan 2022 03:41:38 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id j21sm2321879ejj.133.2022.01.10.03.41.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 03:41:38 -0800 (PST)
+Message-ID: <c992ece7-6878-a39e-0386-5a499265c4cb@redhat.com>
+Date:   Mon, 10 Jan 2022 12:41:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-BS
-To:     Matthias Brugger <mbrugger@suse.com>, linux-doc@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     workflows@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-References: <cover.1641565030.git.linux@leemhuis.info>
- <f71246e0999520d681c7b35d24f7eed2f53ee2b4.1641565030.git.linux@leemhuis.info>
- <28b56512-d681-4a3a-98f0-a2eae34a217e@suse.com>
- <1126ce91-f22b-c397-4d1e-13d290a424a5@leemhuis.info>
- <8e6f07ef-10fe-381c-3a8d-db497492036c@suse.com>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: [RFC PATCH v2 1/2] docs: add a document about regression handling
-In-Reply-To: <8e6f07ef-10fe-381c-3a8d-db497492036c@suse.com>
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v6] x86/PCI: Ignore E820 reservations for bridge windows
+ on newer systems
+Content-Language: en-US
+To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>
+Cc:     linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+        x86@kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Benoit_Gr=c3=a9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>, stable@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+References: <20211217141348.379461-1-hdegoede@redhat.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20211217141348.379461-1-hdegoede@redhat.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1641814852;ff1feeda;
-X-HE-SMSGID: 1n6t2f-000747-Ab
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07.01.22 18:44, Matthias Brugger wrote:
-> On 07/01/2022 17:51, Thorsten Leemhuis wrote:
->> On 07.01.22 16:37, Matthias Brugger wrote:
->>> On 07/01/2022 15:21, Thorsten Leemhuis wrote:
->>>> Create a document explaining various aspects around regression handling
->>>> and tracking both for users and developers. Among others describe the
->>>> first rule of Linux kernel development and what it means in practice.
->>>> Also explain what a regression actually is and how to report one
->>>> properly. The text additionally provides a brief introduction to the
->>>> bot
->>>> the kernel's regression tracker uses to facilitate his work. To sum
->>>> things up, provide a few quotes from Linus to show how serious he takes
->>>> regressions.
->>>>
->>>> Signed-off-by: Thorsten Leemhuis <linux@leemhuis.info>
->>> [...]
->>>> +The important bits for people fixing regressions
->>>> +================================================
->>>> +
->>>> +When receiving regression reports by mail, check if the reporter CCed
->>>> `the
->>>> +regression mailing list <https://lore.kernel.org/regressions/>`_
->>>> +(regressions@lists.linux.dev). If not, forward or bounce the report
->>>> to the Linux
->>>> +kernel's regression tracker (regressions@leemhuis.info), unless you
->>>> plan on
->>>
->>> I would have expected it to be the same mailing list
->>> (regressions@lists.linux.dev), is this a typo maybe?
->>
->> Thx for taking a look. Hmm. That's possible, but I (and the grep call I
->> just ran) fail to spot the typo.
->>
->> Maybe the wording is to confusing: regressions@lists.linux.dev is the
->> list, regressions@leemhuis.info is a dedicated email address I (the
->> kernel's regression tracker) use for regression tracking (which reminds
->> me: maybe I should ask for a alias like regressions@kernel.org or
->> regression-tracker@kernel.org).
+Hi All,
+
+On 12/17/21 15:13, Hans de Goede wrote:
+> Some BIOS-es contain a bug where they add addresses which map to system
+> RAM in the PCI host bridge window returned by the ACPI _CRS method, see
+> commit 4dc2287c1805 ("x86: avoid E820 regions when allocating address
+> space").
 > 
-> Yes it's the wording then :)
-> Anyway I just wonder why you we should send the regression to the
-> regressions email list, but only to the tracker email address. For me
-> that's the confusing part. I'd expect to send it to the list as well and
-> the tracker takes it from there. If for any reason someone does not want
-> to send a regression to the list, then he can send it to the tracker
-> directly. That's my understanding of how this works. If that's correct
-> then I'd say we should just explain the difference.
+> To work around this bug Linux excludes E820 reserved addresses when
+> allocating addresses from the PCI host bridge window since 2010.
+> 
+> Recently (2019) some systems have shown-up with E820 reservations which
+> cover the entire _CRS returned PCI bridge memory window, causing all
+> attempts to assign memory to PCI BARs which have not been setup by the
+> BIOS to fail. For example here are the relevant dmesg bits from a
+> Lenovo IdeaPad 3 15IIL 81WE:
+> 
+>  [mem 0x000000004bc50000-0x00000000cfffffff] reserved
+>  pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
+> 
+> The ACPI specifications appear to allow this new behavior:
+> 
+> The relationship between E820 and ACPI _CRS is not really very clear.
+> ACPI v6.3, sec 15, table 15-374, says AddressRangeReserved means:
+> 
+>   This range of addresses is in use or reserved by the system and is
+>   not to be included in the allocatable memory pool of the operating
+>   system's memory manager.
+> 
+> and it may be used when:
+> 
+>   The address range is in use by a memory-mapped system device.
+> 
+> Furthermore, sec 15.2 says:
+> 
+>   Address ranges defined for baseboard memory-mapped I/O devices, such
+>   as APICs, are returned as reserved.
+> 
+> A PCI host bridge qualifies as a baseboard memory-mapped I/O device,
+> and its apertures are in use and certainly should not be included in
+> the general allocatable pool, so the fact that some BIOS-es reports
+> the PCI aperture as "reserved" in E820 doesn't seem like a BIOS bug.
+> 
+> So it seems that the excluding of E820 reserved addresses is a mistake.
+> 
+> Ideally Linux would fully stop excluding E820 reserved addresses,
+> but then the old systems this was added for will regress.
+> Instead keep the old behavior for old systems, while ignoring
+> the E820 reservations for any systems from now on.
+> 
+> Old systems are defined here as BIOS year < 2018, this was chosen to make
+> sure that E820 reservations will not be used on the currently affected
+> systems, while at the same time also taking into account that the systems
+> for which the E820 checking was originally added may have received BIOS
+> updates for quite a while (esp. CVE related ones), giving them a more
+> recent BIOS year then 2010.
+> 
+> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=206459
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1868899
+> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1871793
+> BugLink: https://bugs.launchpad.net/bugs/1878279
+> BugLink: https://bugs.launchpad.net/bugs/1931715
+> BugLink: https://bugs.launchpad.net/bugs/1932069
+> BugLink: https://bugs.launchpad.net/bugs/1921649
+> Cc: Benoit Grégoire <benoitg@coeus.ca>
+> Cc: Hui Wang <hui.wang@canonical.com>
+> Cc: stable@vger.kernel.org
+> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+> Changes in v6:
+> - Remove the possibility to change the behavior from the commandline
+>   because of worries that users may use this to paper over other problems
 
-You comments made be revisit the section and made me spot a few other
-issues I found less than ideal. So I rewrote it over the weekend (more
-than once, to be precise...). I hope this clears things up.
+ping ?
 
-```
-The important bits for people fixing regressions
-================================================
+Regards,
 
-When submitting fixes for regressions, add "Link:" tags pointing to all
-places where the issue was reported, as tools like the Linux kernel
-regression bot 'regzbot' heavily rely on these; these pointers are also
-of great value for people looking into the issue some time in the
-future, as explained in `Documentation/process/submitting-patches.rst`
-and :ref:`Documentation/process/5.Posting.rst <development_posting>`::
+Hans
 
-       Link:
-https://lore.kernel.org/r/30th.anniversary.repost@klaava.Helsinki.FI/
-       Link: https://bugzilla.kernel.org/show_bug.cgi?id=1234567890
 
-Let the Linux kernel's regression tracker and all other subscribers of
-the `regression mailing list <https://lore.kernel.org/regressions/>`_
-(regressions@lists.linux.dev) quickly known about newly reported
-regressions:
 
- * When receiving a mailed report that did not CC the list, immediately
-send at least a brief "Reply-all" with the list CCed to get it into the
-loop; also ensure its CCed on all future replies, in case it got lost.
 
- * If you receive a report from a bug tracker, forward or bounce the
-report to the list, unless the reporter followed
-`Documentation/admin-guide/reporting-issues.rst` instructions and did it
-already.
 
-[Optional] Ensure the Linux kernel regression bot 'regzbot' tracks the
-issue:
 
- * For mailed reports, check if the reporter included a 'regzbot
-command' like the ``#regzbot introduced v5.13..v5.14-rc1`` described
-above. If not, send a reply with the regressions list in CC, which
-includes a paragraph like the following:
 
-       #regzbot ^introduced v5.13..v5.14-rc1
+> Changes in v5:
+> - Drop mention of Windows behavior from the commit msg, replace with a
+>   reference to the specs
+> - Improve documentation in Documentation/admin-guide/kernel-parameters.txt
+> - Reword the big comment added, use "PCI host bridge window" in it and drop
+>   all refences to Windows
+> 
+> Changes in v4:
+> - Rewrap the big comment block to fit in 80 columns
+> - Add Rafael's Acked-by
+> - Add Cc: stable@vger.kernel.org
+> 
+> Changes in v3:
+> - Commit msg tweaks (drop dmesg timestamps, typo fix)
+> - Use "defined(CONFIG_...)" instead of "defined CONFIG_..."
+> - Add Mika's Reviewed-by
+> 
+> Changes in v2:
+> - Replace the per model DMI quirk approach with disabling E820 reservations
+>   checking for all systems with a BIOS year >= 2018
+> - Add documentation for the new kernel-parameters to
+>   Documentation/admin-guide/kernel-parameters.txt
+> ---
+> Other patches trying to address the same issue:
+> https://lore.kernel.org/r/20210624095324.34906-1-hui.wang@canonical.com
+> https://lore.kernel.org/r/20200617164734.84845-1-mika.westerberg@linux.intel.com
+> V1 patch:
+> https://lore.kernel.org/r/20211005150956.303707-1-hdegoede@redhat.com
+> ---
+>  arch/x86/kernel/resource.c | 23 ++++++++++++++++++++++-
+>  1 file changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
+> index 9b9fb7882c20..9ae64f9af956 100644
+> --- a/arch/x86/kernel/resource.c
+> +++ b/arch/x86/kernel/resource.c
+> @@ -1,4 +1,5 @@
+>  // SPDX-License-Identifier: GPL-2.0
+> +#include <linux/dmi.h>
+>  #include <linux/ioport.h>
+>  #include <asm/e820/api.h>
+>  
+> @@ -23,11 +24,31 @@ static void resource_clip(struct resource *res, resource_size_t start,
+>  		res->start = end + 1;
+>  }
+>  
+> +/*
+> + * Some BIOS-es contain a bug where they add addresses which map to
+> + * system RAM in the PCI host bridge window returned by the ACPI _CRS
+> + * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
+> + * allocating address space"). To avoid this Linux by default excludes
+> + * E820 reservations when allocating addresses since 2010.
+> + * In 2019 some systems have shown-up with E820 reservations which cover
+> + * the entire _CRS returned PCI host bridge window, causing all attempts
+> + * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
+> + *
+> + * Ideally Linux would fully stop using E820 reservations, but then
+> + * the old systems this was added for will regress.
+> + * Instead keep the old behavior for old systems, while ignoring the
+> + * E820 reservations for any systems from now on.
+> + */
+>  static void remove_e820_regions(struct resource *avail)
+>  {
+> -	int i;
+> +	int i, year = dmi_get_bios_year();
+>  	struct e820_entry *entry;
+>  
+> +	if (year >= 2018)
+> +		return;
+> +
+> +	pr_info_once("PCI: Removing E820 reservations from host bridge windows\n");
+> +
+>  	for (i = 0; i < e820_table->nr_entries; i++) {
+>  		entry = &e820_table->entries[i];
+>  
+> 
 
-  Note, in this case there is a caret (^) before the `introduced` to
-make regzbot treat the parent mail (the one you reply to) as the report
-for the regression you want to see tracked.
-
-  Instead of specifying a version range you can also state a commit-id,
-in case the reporter identified the culprit.
-
- * When receiving a report from a bug tracker and forwarding it to the
-regressions list (see above), include a paragraph like this:
-
-       #regzbot introduced: v5.13..v5.14-rc1
-       #regzbot from: Some N. Ice Human <some.human@example.com>
-       #regzbot monitor:
-http://some.bugtracker.example.com/ticket?id=123456789
-```
-
-Note, regzbot does not yet support "#regzbot from" and "#regzbot monitor
-<bugtracker>", but I wanted to work on that soon anyway -- and this text
-will likely take weeks before it hits mailine, so this shouldn't be a
-problem.
-
-Ciao, Thorsten
