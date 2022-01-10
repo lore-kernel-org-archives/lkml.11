@@ -2,148 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B53DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04336C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:45:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233981AbiAJNpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 08:45:05 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:39066 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233468AbiAJNot (ORCPT
+        id S233304AbiAJNpH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:45:07 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:35948 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233472AbiAJNos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 08:44:49 -0500
-X-UUID: 2bd42c30de3842d3b734c44c3d332270-20220110
-X-UUID: 2bd42c30de3842d3b734c44c3d332270-20220110
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <chun-jie.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 501186542; Mon, 10 Jan 2022 21:44:43 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 10 Jan 2022 21:44:42 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 10 Jan 2022 21:44:42 +0800
-From:   Chun-Jie Chen <chun-jie.chen@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <srv_heupstream@mediatek.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>
-Subject: [v1 07/16] clk: mediatek: Add MT8186 imp i2c wrapper clock support
-Date:   Mon, 10 Jan 2022 21:44:07 +0800
-Message-ID: <20220110134416.5191-8-chun-jie.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220110134416.5191-1-chun-jie.chen@mediatek.com>
-References: <20220110134416.5191-1-chun-jie.chen@mediatek.com>
+        Mon, 10 Jan 2022 08:44:48 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 85742210E2;
+        Mon, 10 Jan 2022 13:44:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1641822285; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Es/vszyVq/0VASvIbhasfzhr23C3SCe8HYi55zTaJVU=;
+        b=WBzun96dSjBdmxU7VNJVw8gRHYuto4uKj9FkQrMgAP64I64pLM1VXqwh/SgfwKUMs/HO4b
+        Q2tQFZ114xb1pgwoP5swVt0grhJ2XxxxOSxmCdQA9UCG8Km6wACVXsu/ZIG62mTX850Gkd
+        m8xzg27TYZTXHUQY0jEP4N/tdcWji08=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1641822285;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Es/vszyVq/0VASvIbhasfzhr23C3SCe8HYi55zTaJVU=;
+        b=oVjVE/WCjrhzuVAVCCbt/2MPJuYtUbthUeNGUSRaOr0tvYKdM1InI28nE3hK/wFqQTkC41
+        5pWjpDlAIwYrfWCQ==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 76A86A3B81;
+        Mon, 10 Jan 2022 13:44:45 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 0AA1FA05B4; Mon, 10 Jan 2022 14:44:45 +0100 (CET)
+Date:   Mon, 10 Jan 2022 14:44:45 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     jack@suse.com, tytso@mit.edu, linux-ext4@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next -v2] ext4: Fix jbd2_journal_shrink_scan() and
+ jbd2_journal_shrink_count() kernel-doc comment
+Message-ID: <20220110134445.gzknemajl32rrryh@quack3.lan>
+References: <20220110132841.34531-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220110132841.34531-1-yang.lee@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add MT8186 imp i2c wrapper clock controllers which provide clock gate
-control in i2c IP blocks.
+On Mon 10-01-22 21:28:41, Yang Li wrote:
+> Add the description of @shrink and @sc in jbd2_journal_shrink_scan() and
+> jbd2_journal_shrink_count() kernel-doc comment to remove warnings found
+> by running scripts/kernel-doc, which is caused by using 'make W=1'.
+> fs/jbd2/journal.c:1296: warning: Function parameter or member 'shrink'
+> not described in 'jbd2_journal_shrink_scan'
+> fs/jbd2/journal.c:1296: warning: Function parameter or member 'sc' not
+> described in 'jbd2_journal_shrink_scan'
+> fs/jbd2/journal.c:1320: warning: Function parameter or member 'shrink'
+> not described in 'jbd2_journal_shrink_count'
+> fs/jbd2/journal.c:1320: warning: Function parameter or member 'sc' not
+> described in 'jbd2_journal_shrink_count'
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-Signed-off-by: Chun-Jie Chen <chun-jie.chen@mediatek.com>
----
- drivers/clk/mediatek/Makefile                 |  2 +-
- .../clk/mediatek/clk-mt8186-imp_iic_wrap.c    | 66 +++++++++++++++++++
- 2 files changed, 67 insertions(+), 1 deletion(-)
- create mode 100644 drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c
+Thanks! Feel free to add:
 
-diff --git a/drivers/clk/mediatek/Makefile b/drivers/clk/mediatek/Makefile
-index b139acdff591..8f8240e4d8d0 100644
---- a/drivers/clk/mediatek/Makefile
-+++ b/drivers/clk/mediatek/Makefile
-@@ -68,7 +68,7 @@ obj-$(CONFIG_COMMON_CLK_MT8183_MMSYS) += clk-mt8183-mm.o
- obj-$(CONFIG_COMMON_CLK_MT8183_VDECSYS) += clk-mt8183-vdec.o
- obj-$(CONFIG_COMMON_CLK_MT8183_VENCSYS) += clk-mt8183-venc.o
- obj-$(CONFIG_COMMON_CLK_MT8186) += clk-mt8186-mcu.o clk-mt8186-topckgen.o clk-mt8186-infra_ao.o \
--				   clk-mt8186-apmixedsys.o
-+				   clk-mt8186-apmixedsys.o clk-mt8186-imp_iic_wrap.o
- obj-$(CONFIG_COMMON_CLK_MT8192) += clk-mt8192.o
- obj-$(CONFIG_COMMON_CLK_MT8192_AUDSYS) += clk-mt8192-aud.o
- obj-$(CONFIG_COMMON_CLK_MT8192_CAMSYS) += clk-mt8192-cam.o
-diff --git a/drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c b/drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c
-new file mode 100644
-index 000000000000..18aee488df69
---- /dev/null
-+++ b/drivers/clk/mediatek/clk-mt8186-imp_iic_wrap.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Copyright (c) 2022 MediaTek Inc.
-+// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
-+
-+#include "clk-gate.h"
-+#include "clk-mtk.h"
-+
-+#include <dt-bindings/clock/mt8186-clk.h>
-+#include <linux/clk-provider.h>
-+#include <linux/platform_device.h>
-+
-+static const struct mtk_gate_regs imp_iic_wrap_cg_regs = {
-+	.set_ofs = 0xe08,
-+	.clr_ofs = 0xe04,
-+	.sta_ofs = 0xe00,
-+};
-+
-+#define GATE_IMP_IIC_WRAP(_id, _name, _parent, _shift)			\
-+	GATE_MTK(_id, _name, _parent, &imp_iic_wrap_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
-+
-+static const struct mtk_gate imp_iic_wrap_clks[] = {
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C0,
-+		"imp_iic_wrap_ap_clock_i2c0", "infra_ao_i2c_ap", 0),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C1,
-+		"imp_iic_wrap_ap_clock_i2c1", "infra_ao_i2c_ap", 1),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C2,
-+		"imp_iic_wrap_ap_clock_i2c2", "infra_ao_i2c_ap", 2),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C3,
-+		"imp_iic_wrap_ap_clock_i2c3", "infra_ao_i2c_ap", 3),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C4,
-+		"imp_iic_wrap_ap_clock_i2c4", "infra_ao_i2c_ap", 4),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C5,
-+		"imp_iic_wrap_ap_clock_i2c5", "infra_ao_i2c_ap", 5),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C6,
-+		"imp_iic_wrap_ap_clock_i2c6", "infra_ao_i2c_ap", 6),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C7,
-+		"imp_iic_wrap_ap_clock_i2c7", "infra_ao_i2c_ap", 7),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C8,
-+		"imp_iic_wrap_ap_clock_i2c8", "infra_ao_i2c_ap", 8),
-+	GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_AP_CLOCK_I2C9,
-+		"imp_iic_wrap_ap_clock_i2c9", "infra_ao_i2c_ap", 9),
-+};
-+
-+static const struct mtk_clk_desc imp_iic_wrap_desc = {
-+	.clks = imp_iic_wrap_clks,
-+	.num_clks = ARRAY_SIZE(imp_iic_wrap_clks),
-+};
-+
-+static const struct of_device_id of_match_clk_mt8186_imp_iic_wrap[] = {
-+	{
-+		.compatible = "mediatek,mt8186-imp_iic_wrap",
-+		.data = &imp_iic_wrap_desc,
-+	}, {
-+		/* sentinel */
-+	}
-+};
-+
-+static struct platform_driver clk_mt8186_imp_iic_wrap_drv = {
-+	.probe = mtk_clk_simple_probe,
-+	.driver = {
-+		.name = "clk-mt8186-imp_iic_wrap",
-+		.of_match_table = of_match_clk_mt8186_imp_iic_wrap,
-+	},
-+};
-+builtin_platform_driver(clk_mt8186_imp_iic_wrap_drv);
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
+> ---
+>  fs/jbd2/journal.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/fs/jbd2/journal.c b/fs/jbd2/journal.c
+> index f13d548e4a7f..ad32fd92d251 100644
+> --- a/fs/jbd2/journal.c
+> +++ b/fs/jbd2/journal.c
+> @@ -1287,6 +1287,8 @@ static int jbd2_min_tag_size(void)
+>  
+>  /**
+>   * jbd2_journal_shrink_scan()
+> + * @shrink: shrinker to work on
+> + * @sc: reclaim request to process
+>   *
+>   * Scan the checkpointed buffer on the checkpoint list and release the
+>   * journal_head.
+> @@ -1312,6 +1314,8 @@ static unsigned long jbd2_journal_shrink_scan(struct shrinker *shrink,
+>  
+>  /**
+>   * jbd2_journal_shrink_count()
+> + * @shrink: shrinker to work on
+> + * @sc: reclaim request to process
+>   *
+>   * Count the number of checkpoint buffers on the checkpoint list.
+>   */
+> -- 
+> 2.20.1.7.g153144c
+> 
 -- 
-2.18.0
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
