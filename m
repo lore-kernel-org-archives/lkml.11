@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F97BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0294EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241267AbiAJHjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:39:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41016 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239949AbiAJHcS (ORCPT
+        id S241551AbiAJHjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:39:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60560 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240672AbiAJHcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:18 -0500
+        Mon, 10 Jan 2022 02:32:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B2FB60C07;
-        Mon, 10 Jan 2022 07:32:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF91C36AEF;
-        Mon, 10 Jan 2022 07:32:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A129FB81208;
+        Mon, 10 Jan 2022 07:32:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3639C36AED;
+        Mon, 10 Jan 2022 07:32:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799937;
-        bh=d54omvJKXtxsw0qDMGjWdh74hPgtXtK5QlJLBKK81Wk=;
+        s=korg; t=1641799940;
+        bh=IWDSQyEn1gvvs88sj42JoA8oCzbf87RCIuKJS851JSo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vMLbCwSuKtlVyobQemOwyXfFSfjiFPUXyXFnh1DWPgIOazoA0RHHybC1/SKQ25uDO
-         kS1SsgOgKxd7TSfK3w/VqlsiUOSf1nM9nD91/GVHNJM9Vc02Sy2LR/wNE/L/rGMIif
-         Q2H/5qGPDXL16flEn/s+z1bJwe94r+/x411JvI7s=
+        b=Z2ZgngDv9kxyoWDn9XxiCJf9KMFneVfQ4a3aLtoT2Rxl7TSopF00QO/WA5kLNpmJk
+         Ig5+8WKjj4kbfmBUcrGoc2RbkKJNRHda+79BA8404i3rBlR7Tk27ASBh4lmY5pjOHm
+         drxlWwn9CgJldtwTA17lraEI76erkWLRV8tSn/+I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 22/72] ipv6: Check attribute length for RTA_GATEWAY in multipath route
-Date:   Mon, 10 Jan 2022 08:22:59 +0100
-Message-Id: <20220110071822.321331406@linuxfoundation.org>
+Subject: [PATCH 5.15 23/72] ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
+Date:   Mon, 10 Jan 2022 08:23:00 +0100
+Message-Id: <20220110071822.354269152@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -48,58 +48,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Ahern <dsahern@kernel.org>
 
-commit 4619bcf91399f00a40885100fb61d594d8454033 upstream.
+commit 1ff15a710a862db1101b97810af14aedc835a86a upstream.
 
-Commit referenced in the Fixes tag used nla_memcpy for RTA_GATEWAY as
-does the current nla_get_in6_addr. nla_memcpy protects against accessing
-memory greater than what is in the attribute, but there is no check
-requiring the attribute to have an IPv6 address. Add it.
+Make sure RTA_GATEWAY for IPv6 multipath route has enough bytes to hold
+an IPv6 address.
 
-Fixes: 51ebd3181572 ("ipv6: add support of equal cost multipath (ECMP)")
+Fixes: 6b9ea5a64ed5 ("ipv6: fix multipath route replace error recovery")
 Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc: Roopa Prabhu <roopa@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c |   21 ++++++++++++++++++++-
- 1 file changed, 20 insertions(+), 1 deletion(-)
+ net/ipv6/route.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 --- a/net/ipv6/route.c
 +++ b/net/ipv6/route.c
-@@ -5224,6 +5224,19 @@ out:
- 	return should_notify;
- }
- 
-+static int fib6_gw_from_attr(struct in6_addr *gw, struct nlattr *nla,
-+			     struct netlink_ext_ack *extack)
-+{
-+	if (nla_len(nla) < sizeof(*gw)) {
-+		NL_SET_ERR_MSG(extack, "Invalid IPv6 address in RTA_GATEWAY");
-+		return -EINVAL;
-+	}
-+
-+	*gw = nla_get_in6_addr(nla);
-+
-+	return 0;
-+}
-+
- static int ip6_route_multipath_add(struct fib6_config *cfg,
- 				   struct netlink_ext_ack *extack)
- {
-@@ -5264,7 +5277,13 @@ static int ip6_route_multipath_add(struc
+@@ -5453,7 +5453,11 @@ static int ip6_route_multipath_del(struc
  
  			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
  			if (nla) {
--				r_cfg.fc_gateway = nla_get_in6_addr(nla);
-+				int ret;
-+
-+				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
+-				nla_memcpy(&r_cfg.fc_gateway, nla, 16);
++				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
 +							extack);
-+				if (ret)
-+					return ret;
++				if (err)
++					return err;
 +
  				r_cfg.fc_flags |= RTF_GATEWAY;
  			}
- 			r_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
+ 		}
 
 
