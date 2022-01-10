@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ADB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAFDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241359AbiAJHjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:39:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60580 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240691AbiAJHc0 (ORCPT
+        id S241799AbiAJHjk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:39:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48962 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240718AbiAJHc2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:26 -0500
+        Mon, 10 Jan 2022 02:32:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E197C033268;
+        Sun,  9 Jan 2022 23:28:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55900B81202;
-        Mon, 10 Jan 2022 07:32:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D360C36AED;
-        Mon, 10 Jan 2022 07:32:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3C3D611C6;
+        Mon, 10 Jan 2022 07:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD479C36AE9;
+        Mon, 10 Jan 2022 07:28:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799943;
-        bh=cKjPmRM8ypJylgsOOQD2RqjrD5l7FMaIltUJJ/AFrVw=;
+        s=korg; t=1641799718;
+        bh=1PC9Oavmy3rDsCgNb2kVCXK643NTyi/TUNXya1Ck5Og=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JjaSWbaVOh8i3SpgkFAksBxXayJV+qo03aT7vGLQHW2h1H8eLUBpC8Zs9XpZy3zas
-         WnKMtaciY4WiPoKnfegzQREpkBSLAkwvRKQDHlAW4iZpfP5Afme2gryOF9D6rayOQs
-         BoiewBNOPPVl2+DGduot31OeFY50tmHZ6qQqGaco=
+        b=0avR3S91AzwTGPRuv37uSKsEgMrt9qShCfUA2ivERg54Jdi9TlwV1hRn2rpF/PpqJ
+         yM9zQuZnp75ECrFUcVXnJWmJxSj9FVQBAWzqutZReFEOJ3pQh37z+UlvOndk/Ztekj
+         xZEUgXDePL02QWhaj1o7uC/sSbJNPGCKniVDuyYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
+        stable@vger.kernel.org, Thomas Toye <thomas@toye.io>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 24/72] lwtunnel: Validate RTA_ENCAP_TYPE attribute length
-Date:   Mon, 10 Jan 2022 08:23:01 +0100
-Message-Id: <20220110071822.385374355@linuxfoundation.org>
+Subject: [PATCH 5.4 25/34] rndis_host: support Hytera digital radios
+Date:   Mon, 10 Jan 2022 08:23:20 +0100
+Message-Id: <20220110071816.513121363@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
+In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
+References: <20220110071815.647309738@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,67 +48,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Thomas Toye <thomas@toye.io>
 
-commit 8bda81a4d400cf8a72e554012f0d8c45e07a3904 upstream.
+commit 29262e1f773b4b6a43711120be564c57fca07cfb upstream.
 
-lwtunnel_valid_encap_type_attr is used to validate encap attributes
-within a multipath route. Add length validation checking to the type.
+Hytera makes a range of digital (DMR) radios. These radios can be
+programmed to a allow a computer to control them over Ethernet over USB,
+either using NCM or RNDIS.
 
-lwtunnel_valid_encap_type_attr is called converting attributes to
-fib{6,}_config struct which means it is used before fib_get_nhs,
-ip6_route_multipath_add, and ip6_route_multipath_del - other
-locations that use rtnh_ok and then nla_get_u16 on RTA_ENCAP_TYPE
-attribute.
+This commit adds support for RNDIS for Hytera radios. I tested with a
+Hytera PD785 and a Hytera MD785G. When these radios are programmed to
+set up a Radio to PC Network using RNDIS, an USB interface will be added
+with class 2 (Communications), subclass 2 (Abstract Modem Control) and
+an interface protocol of 255 ("vendor specific" - lsusb even hints "MSFT
+RNDIS?").
 
-Fixes: 9ed59592e3e3 ("lwtunnel: fix autoload of lwt modules")
+This patch is similar to the solution of this StackOverflow user, but
+that only works for the Hytera MD785:
+https://stackoverflow.com/a/53550858
 
-Signed-off-by: David Ahern <dsahern@kernel.org>
+To use the "Radio to PC Network" functionality of Hytera DMR radios, the
+radios need to be programmed correctly in CPS (Hytera's Customer
+Programming Software). "Forward to PC" should be checked in "Network"
+(under "General Setting" in "Conventional") and the "USB Network
+Communication Protocol" should be set to RNDIS.
+
+Signed-off-by: Thomas Toye <thomas@toye.io>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/lwtunnel.c      |    4 ++++
- net/ipv4/fib_semantics.c |    3 +++
- net/ipv6/route.c         |    4 ++++
- 3 files changed, 11 insertions(+)
+ drivers/net/usb/rndis_host.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/net/core/lwtunnel.c
-+++ b/net/core/lwtunnel.c
-@@ -197,6 +197,10 @@ int lwtunnel_valid_encap_type_attr(struc
- 			nla_entype = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
- 
- 			if (nla_entype) {
-+				if (nla_len(nla_entype) < sizeof(u16)) {
-+					NL_SET_ERR_MSG(extack, "Invalid RTA_ENCAP_TYPE");
-+					return -EINVAL;
-+				}
- 				encap_type = nla_get_u16(nla_entype);
- 
- 				if (lwtunnel_valid_encap_type(encap_type,
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -740,6 +740,9 @@ static int fib_get_nhs(struct fib_info *
- 			}
- 
- 			fib_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
-+			/* RTA_ENCAP_TYPE length checked in
-+			 * lwtunnel_valid_encap_type_attr
-+			 */
- 			nla = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
- 			if (nla)
- 				fib_cfg.fc_encap_type = nla_get_u16(nla);
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5287,6 +5287,10 @@ static int ip6_route_multipath_add(struc
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
- 			r_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
-+
-+			/* RTA_ENCAP_TYPE length checked in
-+			 * lwtunnel_valid_encap_type_attr
-+			 */
- 			nla = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
- 			if (nla)
- 				r_cfg.fc_encap_type = nla_get_u16(nla);
+--- a/drivers/net/usb/rndis_host.c
++++ b/drivers/net/usb/rndis_host.c
+@@ -609,6 +609,11 @@ static const struct usb_device_id	produc
+ 				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
+ 	.driver_info = (unsigned long) &rndis_poll_status_info,
+ }, {
++	/* Hytera Communications DMR radios' "Radio to PC Network" */
++	USB_VENDOR_AND_INTERFACE_INFO(0x238b,
++				      USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
++	.driver_info = (unsigned long)&rndis_info,
++}, {
+ 	/* RNDIS is MSFT's un-official variant of CDC ACM */
+ 	USB_INTERFACE_INFO(USB_CLASS_COMM, 2 /* ACM */, 0x0ff),
+ 	.driver_info = (unsigned long) &rndis_info,
 
 
