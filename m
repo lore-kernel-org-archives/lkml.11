@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 347EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:38:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEEC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240645AbiAJHix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:38:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60286 "EHLO
+        id S240650AbiAJHi4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:38:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60428 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232553AbiAJHbv (ORCPT
+        with ESMTP id S239596AbiAJHcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:31:51 -0500
+        Mon, 10 Jan 2022 02:32:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8234FB811F5;
-        Mon, 10 Jan 2022 07:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA410C36AEF;
-        Mon, 10 Jan 2022 07:31:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58828B81212;
+        Mon, 10 Jan 2022 07:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D285C36AF2;
+        Mon, 10 Jan 2022 07:32:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799909;
-        bh=khURfKpZ4jnfWxYaCKjSklf5rGn3G4A+XcYST7Hp+K8=;
+        s=korg; t=1641799929;
+        bh=amkLwSEaFB8ELixfHTAcmT95x8/YFpi2ur/98Fmnou8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YG8W8rlq6nTmtR8wl5HpSk9nVwtKuaLdX0Zm1jIQ2/wA34XKXt/Zv/KW4iY6klv3C
-         ZWuSgAHf49V9PdI3jELt3a6F3cHounAGmz/aEKpkjzCBcAU/5IJ4Ri+e6nog8abv9b
-         E+RORAN3rMLtrVeiEnnVyCW/wc9CrnFXL+19Z+MQ=
+        b=CSp5CLipA5jXkm6/bfzx13a5Z086+UvXwpwPIJ0y5XYe9ZRpiA2ApRBcr0oHRjUds
+         4x8OJR0DBd8QKedyo2IvtUqzSgAsk3HRPAibpg5pfU9kPbW70LfJmnMhPn7qJo7Vfn
+         JWmEDBGaBZmbLFGwrsDrtxBZV48MLB5yMUa3lmAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 5.15 13/72] mac80211: initialize variable have_higher_than_11mbit
-Date:   Mon, 10 Jan 2022 08:22:50 +0100
-Message-Id: <20220110071821.996398773@linuxfoundation.org>
+        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>
+Subject: [PATCH 5.15 02/72] selftests: x86: fix [-Wstringop-overread] warn in test_process_vm_readv()
+Date:   Mon, 10 Jan 2022 08:22:39 +0100
+Message-Id: <20220110071821.589550032@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -46,41 +45,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
 
-commit 68a18ad71378a56858141c4449e02a30c829763e upstream.
+commit dd40f44eabe1e122c6852fabb298aac05b083fce upstream.
 
-Clang static analysis reports this warnings
+Fix the following [-Wstringop-overread] by passing in the variable
+instead of the value.
 
-mlme.c:5332:7: warning: Branch condition evaluates to a
-  garbage value
-    have_higher_than_11mbit)
-    ^~~~~~~~~~~~~~~~~~~~~~~
+test_vsyscall.c: In function ‘test_process_vm_readv’:
+test_vsyscall.c:500:22: warning: ‘__builtin_memcmp_eq’ specified bound 4096 exceeds source size 0 [-Wstringop-overread]
+  500 |                 if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
+      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-have_higher_than_11mbit is only set to true some of the time in
-ieee80211_get_rates() but is checked all of the time.  So
-have_higher_than_11mbit needs to be initialized to false.
-
-Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20211223162848.3243702-1-trix@redhat.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mac80211/mlme.c |    2 +-
+ tools/testing/selftests/x86/test_vsyscall.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/mac80211/mlme.c
-+++ b/net/mac80211/mlme.c
-@@ -5216,7 +5216,7 @@ static int ieee80211_prep_connection(str
- 	 */
- 	if (new_sta) {
- 		u32 rates = 0, basic_rates = 0;
--		bool have_higher_than_11mbit;
-+		bool have_higher_than_11mbit = false;
- 		int min_rate = INT_MAX, min_rate_index = -1;
- 		const struct cfg80211_bss_ies *ies;
- 		int shift = ieee80211_vif_get_shift(&sdata->vif);
+--- a/tools/testing/selftests/x86/test_vsyscall.c
++++ b/tools/testing/selftests/x86/test_vsyscall.c
+@@ -497,7 +497,7 @@ static int test_process_vm_readv(void)
+ 	}
+ 
+ 	if (vsyscall_map_r) {
+-		if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
++		if (!memcmp(buf, remote.iov_base, sizeof(buf))) {
+ 			printf("[OK]\tIt worked and read correct data\n");
+ 		} else {
+ 			printf("[FAIL]\tIt worked but returned incorrect data\n");
 
 
