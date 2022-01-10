@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80F28C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7829C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240621AbiAJHeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:34:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38784 "EHLO
+        id S240205AbiAJHeN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:34:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37136 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240230AbiAJH33 (ORCPT
+        with ESMTP id S239358AbiAJH3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:29:29 -0500
+        Mon, 10 Jan 2022 02:29:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A727611B8;
-        Mon, 10 Jan 2022 07:29:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D2BBC36AE9;
-        Mon, 10 Jan 2022 07:29:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13C73611BF;
+        Mon, 10 Jan 2022 07:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED01DC36AED;
+        Mon, 10 Jan 2022 07:29:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799769;
-        bh=12lybpMKHhawVt8MCae9nzetMzfc8flqHe6kQ8r7dZc=;
+        s=korg; t=1641799760;
+        bh=GzX5Qx6BbH+zpfgKGRJuQDIGxJwTCJ11gUzBsPtfKNI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OEQ53VrR8YXH4XESK6T9xkPdUEKSC3LJoJLBuPgJyiVl0LFjsDMOWtOVuypYN1YM4
-         4OO/1ACjofbBibGQ6l2O5VFqtiecYe+6AHp3C0Z4S80R5TLZd1e9I7XL9kriFdyCym
-         9LqiyhswQuLFUbGvcOwLaSXL9SDGDTuSAEd1Mv6g=
+        b=a7+CPpbniCuMiBsa5L/+TDzzOrvyvJxTmkL1dQVOiQ064UCCB2WFKUa8SzgB9+dXX
+         FM7Za+7MHAGq4z7EJne/R/YDyRJUxozcdED3KrILLvqlTXFETrMWmhlfmrMai9C6Ha
+         Z5BU2xMvHWoRGUEjTLvky6hTQMos1FB/JzhNNY2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com,
-        David Ahern <dsahern@kernel.org>, Thomas Graf <tgraf@suug.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 14/34] ipv4: Check attribute length for RTA_GATEWAY in multipath route
-Date:   Mon, 10 Jan 2022 08:23:09 +0100
-Message-Id: <20220110071816.131748180@linuxfoundation.org>
+        Christian Melki <christian.melki@t2data.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Wadim Egorov <w.egorov@phytec.de>
+Subject: [PATCH 5.4 21/34] net: phy: micrel: set soft_reset callback to genphy_soft_reset for KSZ8081
+Date:   Mon, 10 Jan 2022 08:23:16 +0100
+Message-Id: <20220110071816.360206462@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
 References: <20220110071815.647309738@linuxfoundation.org>
@@ -47,93 +47,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Christian Melki <christian.melki@t2data.com>
 
-commit 7a3429bace0e08d94c39245631ea6bc109dafa49 upstream.
+commit 764d31cacfe48440745c4bbb55a62ac9471c9f19 upstream.
 
-syzbot reported uninit-value:
-============================================================
-  BUG: KMSAN: uninit-value in fib_get_nhs+0xac4/0x1f80
-  net/ipv4/fib_semantics.c:708
-   fib_get_nhs+0xac4/0x1f80 net/ipv4/fib_semantics.c:708
-   fib_create_info+0x2411/0x4870 net/ipv4/fib_semantics.c:1453
-   fib_table_insert+0x45c/0x3a10 net/ipv4/fib_trie.c:1224
-   inet_rtm_newroute+0x289/0x420 net/ipv4/fib_frontend.c:886
+Following a similar reinstate for the KSZ9031.
 
-Add helper to validate RTA_GATEWAY length before using the attribute.
+Older kernels would use the genphy_soft_reset if the PHY did not implement
+a .soft_reset.
 
-Fixes: 4e902c57417c ("[IPv4]: FIB configuration using struct fib_config")
-Reported-by: syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Thomas Graf <tgraf@suug.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Bluntly removing that default may expose a lot of situations where various
+PHYs/board implementations won't recover on various changes.
+Like with this implementation during a 4.9.x to 5.4.x LTS transition.
+I think it's a good thing to remove unwanted soft resets but wonder if it
+did open a can of worms?
+
+Atleast this fixes one iMX6 FEC/RMII/8081 combo.
+
+Fixes: 6e2d85ec0559 ("net: phy: Stop with excessive soft reset")
+Signed-off-by: Christian Melki <christian.melki@t2data.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20210224205536.9349-1-christian.melki@t2data.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Wadim Egorov <w.egorov@phytec.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/fib_semantics.c |   29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ drivers/net/phy/micrel.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -654,6 +654,19 @@ static int fib_count_nexthops(struct rtn
- 	return nhs;
- }
- 
-+static int fib_gw_from_attr(__be32 *gw, struct nlattr *nla,
-+			    struct netlink_ext_ack *extack)
-+{
-+	if (nla_len(nla) < sizeof(*gw)) {
-+		NL_SET_ERR_MSG(extack, "Invalid IPv4 address in RTA_GATEWAY");
-+		return -EINVAL;
-+	}
-+
-+	*gw = nla_get_in_addr(nla);
-+
-+	return 0;
-+}
-+
- /* only called when fib_nh is integrated into fib_info */
- static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
- 		       int remaining, struct fib_config *cfg,
-@@ -696,7 +709,11 @@ static int fib_get_nhs(struct fib_info *
- 				return -EINVAL;
- 			}
- 			if (nla) {
--				fib_cfg.fc_gw4 = nla_get_in_addr(nla);
-+				ret = fib_gw_from_attr(&fib_cfg.fc_gw4, nla,
-+						       extack);
-+				if (ret)
-+					goto errout;
-+
- 				if (fib_cfg.fc_gw4)
- 					fib_cfg.fc_gw_family = AF_INET;
- 			} else if (nlav) {
-@@ -894,6 +911,7 @@ int fib_nh_match(struct fib_config *cfg,
- 		attrlen = rtnh_attrlen(rtnh);
- 		if (attrlen > 0) {
- 			struct nlattr *nla, *nlav, *attrs = rtnh_attrs(rtnh);
-+			int err;
- 
- 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
- 			nlav = nla_find(attrs, attrlen, RTA_VIA);
-@@ -904,12 +922,17 @@ int fib_nh_match(struct fib_config *cfg,
- 			}
- 
- 			if (nla) {
-+				__be32 gw;
-+
-+				err = fib_gw_from_attr(&gw, nla, extack);
-+				if (err)
-+					return err;
-+
- 				if (nh->fib_nh_gw_family != AF_INET ||
--				    nla_get_in_addr(nla) != nh->fib_nh_gw4)
-+				    gw != nh->fib_nh_gw4)
- 					return 1;
- 			} else if (nlav) {
- 				struct fib_config cfg2;
--				int err;
- 
- 				err = fib_gw_from_via(&cfg2, nlav, extack);
- 				if (err)
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1096,6 +1096,7 @@ static struct phy_driver ksphy_driver[]
+ 	.probe		= kszphy_probe,
+ 	.config_init	= ksz8081_config_init,
+ 	.ack_interrupt	= kszphy_ack_interrupt,
++	.soft_reset	= genphy_soft_reset,
+ 	.config_intr	= kszphy_config_intr,
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
 
 
