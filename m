@@ -2,52 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02879C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAC7C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237835AbiAJBBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 20:01:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
+        id S232277AbiAJBBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 20:01:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237733AbiAJBAT (ORCPT
+        with ESMTP id S237723AbiAJBAS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 20:00:19 -0500
+        Sun, 9 Jan 2022 20:00:18 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9F4C061751;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C1DC061748;
         Sun,  9 Jan 2022 17:00:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B506B8108E;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D91CB8107A;
         Mon, 10 Jan 2022 01:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 39C30C36B0C;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C15FC36B11;
         Mon, 10 Jan 2022 01:00:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641776414;
-        bh=7Nuqy5cbvoYALOLWhivsBWhhOpiniaWaV5F+QOXK7m0=;
+        bh=7+otGPkYH4sDjaNmEi2KF255l+yGGwmulscIWmkXOVc=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DOR8qbDPFCT6btjCrublBauBlDGgudGoY2qbR6ZgYcZ9IYPeg2Bnf1Vm3Px3j3hJM
-         uxpC2JA2DRw6W0koSCOeAwSbc0ltJYNiODPcn8wnDWmy7CU1C5OSakFas7dLtZpeog
-         Oypi+1PToXDQb4pZqW75nmtpTg97ab/Vq6UJw41Hwf8HoANZ2m+jGqo+kexVfg3tK+
-         J4U+IFQTLkD0r5npCyi8TCgpBroSaXCAjpbEw4fVnu06p71nY4C4osvyf9yvsSc2iQ
-         sgaqA7gD0bejfHXLFdKrtk15PjpN5Z/ARI3h0sm/97Dv+biIdWdZLnqY1yHMsSMK7w
-         xn8/f0SGeqv4g==
+        b=jVSuUCN2ZxKdDdQyelMAidiJfwhGcr52upFfeajmJPC4LrKp2ZHVeO0B///bUkcbC
+         zqpHm56Epre8q+V2lY4QKXcl/hVIeITIriLLd+djhvcJMXFDerBZAFGsVb/TQY4ZgL
+         60VovYNrXZl2BwBo5U3rnTScZIlDxkk7RT7kAMNXUVZLED+h4c1I2ykUOKSnUwb35e
+         plQfV+6W269NYGVprkAlftA3OcY9jPkq4Ytk2YuHp2YL+Ags/Rls0idNJ/Vf69vjJP
+         d7rcJ0OdKJLa/71Oc7S7ZXzLoWcx5/l51WSPZU3MMqmA/aXqHbN7IlAvib2bqsDI/l
+         XBz8wMpS2m4lw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 278C2F6078A;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3B05FF6078E;
         Mon, 10 Jan 2022 01:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bnx2x: Remove useless DMA-32 fallback configuration
+Subject: Re: [PATCH net-next] page_pool: remove spinlock in
+ page_pool_refill_alloc_cache()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164177641415.18208.6978874619681470579.git-patchwork-notify@kernel.org>
+Message-Id: <164177641423.18208.18113929340653001001.git-patchwork-notify@kernel.org>
 Date:   Mon, 10 Jan 2022 01:00:14 +0000
-References: <29608a525876afddceabf8f11b2ba606da8748fc.1641730747.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <29608a525876afddceabf8f11b2ba606da8748fc.1641730747.git.christophe.jaillet@wanadoo.fr>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     aelior@marvell.com, skalluru@marvell.com, manishc@marvell.com,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org
+References: <20220107090042.13605-1-linyunsheng@huawei.com>
+In-Reply-To: <20220107090042.13605-1-linyunsheng@huawei.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hawk@kernel.org,
+        ilias.apalodimas@linaro.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -57,19 +58,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun,  9 Jan 2022 13:19:28 +0100 you wrote:
-> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-> dev->dma_mask is non-NULL.
-> So, if it fails, the 32 bits case will also fail for the same reason.
+On Fri, 7 Jan 2022 17:00:42 +0800 you wrote:
+> As page_pool_refill_alloc_cache() is only called by
+> __page_pool_get_cached(), which assumes non-concurrent access
+> as suggested by the comment in __page_pool_get_cached(), and
+> ptr_ring allows concurrent access between consumer and producer,
+> so remove the spinlock in page_pool_refill_alloc_cache().
 > 
-> Moreover, dma_set_mask_and_coherent() returns 0 or -EIO, so the return
-> code of the function can be used directly.
+> Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - bnx2x: Remove useless DMA-32 fallback configuration
-    https://git.kernel.org/netdev/net-next/c/3aa440503be5
+  - [net-next] page_pool: remove spinlock in page_pool_refill_alloc_cache()
+    https://git.kernel.org/netdev/net-next/c/07b17f0f7485
 
 You are awesome, thank you!
 -- 
