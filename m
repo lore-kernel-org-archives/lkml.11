@@ -2,165 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A70EC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:54:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFE8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233612AbiAJNyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 08:54:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54428 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230145AbiAJNyU (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 08:54:20 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED73C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 05:54:20 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id a18so52839258edj.7
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 05:54:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=djPW+e1c8spfYeyL5AbJ32h9GSIUYbKoLv2DLHaOq+0=;
-        b=bl9J2QtWDuUmQlp5N7WmOsJhVeMPiTX+NiVRwh9l87FNYClRzAhBufVdMy0MCqtNFV
-         dq4421mAxg0ILI2S2MCCP1ns1H4QhlZT4aWwoBhR0cZUmunXHRx+d+HuOX/d5PKXrzPG
-         TK+4Hu5xgpHlwxKj6pUbOw6pX2/G4EJ8DfXnXNMUesmDYorizgDzkPnVKpRJhctC8sUZ
-         B2ri5NpHRwtPw2fRocdZhxoBuaBCKzAjfaykJZay8LbVDX930o0CDQ/LHWyda4xFV+Hc
-         WugS89G4jBlr4VL2uypPxdIO8AzpqLxqh+es+3YLGWyAingktkoxMNPCyXb/hyfzuCo6
-         mj1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=djPW+e1c8spfYeyL5AbJ32h9GSIUYbKoLv2DLHaOq+0=;
-        b=0aD3uQdcp2P9Qo3JA/gt6ZW9dc3mnNzv9JMBNatnOAbDSYyPP8rMN608/+6J2NDjAI
-         FBaVAe/8TLxq/Q9pW0RaLHee73qjoeQyRfEfQMiiHEH5CiAmURiOeBDWPg1qF+h289ba
-         khuc2xfKCd8MjGa4MFhjqTKqdJBYvH3yKpvWiAM3v74UTBsXsGzTjqOIRuqEWcHm+TZW
-         P8hFf0IbW8QHUCvpcski7xQ6GjGyUtvOY9R/0DDZo7BKojfLscEvnIHFJ20NEW6q8zkp
-         fFyP+WlvKc+4Vv5rRd3l3pPih4wIWtgRfg1ljyCeT35Ri+Gg9O61t1rKYisiSSr3PGM9
-         KolA==
-X-Gm-Message-State: AOAM530+95xGQ3gr8JQDARvYrjD9TCGFkAAsKKjPhZmqPBv8NLn94pzQ
-        0Xh9qBUkcaQFWce0c37JjE4ErOw0Hwy3zvdtf43k
-X-Google-Smtp-Source: ABdhPJyFGnfUMGEnoNxRXvUJpCvABNYtlKdS/8DhFo1CC6qDSFOT+cL5Hg32zlVk43P8LVymiEdjB1533Wdjtj+EyFw=
-X-Received: by 2002:a05:6402:cbb:: with SMTP id cn27mr5089054edb.246.1641822858820;
- Mon, 10 Jan 2022 05:54:18 -0800 (PST)
+        id S234494AbiAJNzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:55:04 -0500
+Received: from mga03.intel.com ([134.134.136.65]:34264 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230145AbiAJNzB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 08:55:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641822901; x=1673358901;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=2Zp7VMePQmtzmmh0s8Eo1QaSbTDDrEWbBROEmgXFs2I=;
+  b=jlSeRhnvIEKrTDD3bEb0rLES/FRCwl4TXUZKyHxmAmSVUbWfSxhc/Hr/
+   /CijFpmow8ogOi+h1fCHBBXNRYtGzx+aB1v48l4ZwxZehKERm6YYp/02F
+   PWXup1N2L8JLUL49NicGlbb5RSZFli1ktxzzK5wbkU+9WXFDyp4Uf7nX7
+   mZeSqFekGcCwtNE6+V1HtDnsVkfBKPjZsKMZHGccqYHEUa1uFVkphHVap
+   VCXJi9xYsGehe0Y2y+Q//6ADwso04sOIIhAdfo38NrhFkvDT0Vri3eTtN
+   BOEDETxukhP4H5F/j0bPpyGUf2zdvj/PncYdMfQhzCx5fCBAZRP/RW5il
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="243179109"
+X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
+   d="scan'208";a="243179109"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 05:55:00 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
+   d="scan'208";a="622679026"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 10 Jan 2022 05:54:59 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n6v8U-0003Ze-KA; Mon, 10 Jan 2022 13:54:58 +0000
+Date:   Mon, 10 Jan 2022 21:54:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1518/2380]
+ arch/powerpc/include/asm/book3s/64/hash.h:248:22: error: expected '=', ',',
+ ';', 'asm' or '__attribute__' before 'hash__vmemmap_create_mapping'
+Message-ID: <202201102123.ZtrMza46-lkp@intel.com>
 MIME-Version: 1.0
-References: <20210830141737.181-1-xieyongji@bytedance.com> <20220110075546-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220110075546-mutt-send-email-mst@kernel.org>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Mon, 10 Jan 2022 21:54:08 +0800
-Message-ID: <CACycT3v1aEViw7vV4x5qeGVPrSrO-BTDvQshEX35rx_X0Au2vw@mail.gmail.com>
-Subject: Re: [PATCH v12 00/13] Introduce VDUSE - vDPA Device in Userspace
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Christian Brauner <christian.brauner@canonical.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org,
-        Greg KH <gregkh@linuxfoundation.org>,
-        He Zhe <zhe.he@windriver.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Joe Perches <joe@perches.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>,
-        John Garry <john.garry@huawei.com>, songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 8:57 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Aug 30, 2021 at 10:17:24PM +0800, Xie Yongji wrote:
-> > This series introduces a framework that makes it possible to implement
-> > software-emulated vDPA devices in userspace. And to make the device
-> > emulation more secure, the emulated vDPA device's control path is handled
-> > in the kernel and only the data path is implemented in the userspace.
-> >
-> > Since the emuldated vDPA device's control path is handled in the kernel,
-> > a message mechnism is introduced to make userspace be aware of the data
-> > path related changes. Userspace can use read()/write() to receive/reply
-> > the control messages.
-> >
-> > In the data path, the core is mapping dma buffer into VDUSE daemon's
-> > address space, which can be implemented in different ways depending on
-> > the vdpa bus to which the vDPA device is attached.
-> >
-> > In virtio-vdpa case, we implements a MMU-based software IOTLB with
-> > bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
-> > buffer is reside in a userspace memory region which can be shared to the
-> > VDUSE userspace processs via transferring the shmfd.
-> >
-> > The details and our user case is shown below:
-> >
-> > ------------------------    -------------------------   ----------------------------------------------
-> > |            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
-> > |       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
-> > |       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
-> > ------------+-----------     -----------+------------   -------------+----------------------+---------
-> >             |                           |                            |                      |
-> >             |                           |                            |                      |
-> > ------------+---------------------------+----------------------------+----------------------+---------
-> > |    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
-> > |    -------+--------           --------+--------            -------+--------          -----+----    |
-> > |           |                           |                           |                       |        |
-> > | ----------+----------       ----------+-----------         -------+-------                |        |
-> > | | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
-> > | ----------+----------       ----------+-----------         -------+-------                |        |
-> > |           |      virtio bus           |                           |                       |        |
-> > |   --------+----+-----------           |                           |                       |        |
-> > |                |                      |                           |                       |        |
-> > |      ----------+----------            |                           |                       |        |
-> > |      | virtio-blk device |            |                           |                       |        |
-> > |      ----------+----------            |                           |                       |        |
-> > |                |                      |                           |                       |        |
-> > |     -----------+-----------           |                           |                       |        |
-> > |     |  virtio-vdpa driver |           |                           |                       |        |
-> > |     -----------+-----------           |                           |                       |        |
-> > |                |                      |                           |    vdpa bus           |        |
-> > |     -----------+----------------------+---------------------------+------------           |        |
-> > |                                                                                        ---+---     |
-> > -----------------------------------------------------------------------------------------| NIC |------
-> >                                                                                          ---+---
-> >                                                                                             |
-> >                                                                                    ---------+---------
-> >                                                                                    | Remote Storages |
-> >                                                                                    -------------------
-> >
-> > We make use of it to implement a block device connecting to
-> > our distributed storage, which can be used both in containers and
-> > VMs. Thus, we can have an unified technology stack in this two cases.
-> >
-> > To test it with null-blk:
-> >
-> >   $ qemu-storage-daemon \
-> >       --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
-> >       --monitor chardev=charmonitor \
-> >       --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
-> >       --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
-> >
-> > The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
->
-> It's been half a year - any plans to upstream this?
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   351bfbf7f1e8dce84b605c8007c98dd603c4ca4d
+commit: 2df1932116ea94f774804fbd4fcfc0eb60704764 [1518/2380] headers/deps: printk: Reduce <linux/printk.h> header dependencies
+config: powerpc64-randconfig-r001-20220109 (https://download.01.org/0day-ci/archive/20220110/202201102123.ZtrMza46-lkp@intel.com/config)
+compiler: powerpc64le-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=2df1932116ea94f774804fbd4fcfc0eb60704764
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 2df1932116ea94f774804fbd4fcfc0eb60704764
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc prepare
 
-Yeah, this is on my to-do list this month.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Sorry for taking so long... I've been working on another project
-enabling userspace RDMA with VDUSE for the past few months. So I
-didn't have much time for this. Anyway, I will submit the first
-version as soon as possible.
+All errors (new ones prefixed by >>):
 
-Thanks,
-Yongji
+   In file included from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   arch/powerpc/include/asm/mmu.h: In function 'strict_kernel_rwx_enabled':
+   arch/powerpc/include/asm/mmu.h:340:16: error: 'rodata_enabled' undeclared (first use in this function); did you mean 'radix_enabled'?
+     340 |         return rodata_enabled;
+         |                ^~~~~~~~~~~~~~
+         |                radix_enabled
+   arch/powerpc/include/asm/mmu.h:340:16: note: each undeclared identifier is reported only once for each function it appears in
+   In file included from arch/powerpc/include/asm/book3s/64/pgtable.h:299,
+                    from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20,
+                    from arch/powerpc/include/asm/book3s/64/mmu.h:33,
+                    from arch/powerpc/include/asm/mmu.h:395,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   arch/powerpc/include/asm/book3s/64/hash.h: At top level:
+>> arch/powerpc/include/asm/book3s/64/hash.h:248:22: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'hash__vmemmap_create_mapping'
+     248 | extern int __meminit hash__vmemmap_create_mapping(unsigned long start,
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/book3s/64/pgtable.h:300,
+                    from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20,
+                    from arch/powerpc/include/asm/book3s/64/mmu.h:33,
+                    from arch/powerpc/include/asm/mmu.h:395,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/radix.h:289:22: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'radix__vmemmap_create_mapping'
+     289 | extern int __meminit radix__vmemmap_create_mapping(unsigned long start,
+         |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20,
+                    from arch/powerpc/include/asm/book3s/64/mmu.h:33,
+                    from arch/powerpc/include/asm/mmu.h:395,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/pgtable.h:1085:29: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'vmemmap_create_mapping'
+    1085 | static inline int __meminit vmemmap_create_mapping(unsigned long start,
+         |                             ^~~~~~~~~~~~~~~~~~~~~~
+   In file included from arch/powerpc/include/asm/mmu.h:395,
+                    from arch/powerpc/include/asm/lppaca.h:46,
+                    from arch/powerpc/include/asm/paca.h:17,
+                    from arch/powerpc/include/asm/current.h:13,
+                    from include/linux/preempt.h:10,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+>> arch/powerpc/include/asm/book3s/64/mmu.h:212:27: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'early_init_mmu'
+     212 | static inline void __init early_init_mmu(void)
+         |                           ^~~~~~~~~~~~~~
+   In file included from include/linux/sched.h:12,
+                    from include/linux/sched/thread_info_api.h:5,
+                    from include/asm-generic/preempt.h:5,
+                    from ./arch/powerpc/include/generated/asm/preempt.h:1,
+                    from include/linux/preempt.h:79,
+                    from arch/powerpc/kernel/asm-offsets.c:12:
+   include/linux/sched/per_task.h:48:11: fatal error: generated/asm-offsets.h: No such file or directory
+      48 | # include <generated/asm-offsets.h>
+         |           ^~~~~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
+   make[2]: *** [scripts/Makefile.build:121: arch/powerpc/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1197: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
+
+
+vim +248 arch/powerpc/include/asm/book3s/64/hash.h
+
+c605782b1c3f1c arch/powerpc/include/asm/pte-hash64.h     Benjamin Herrenschmidt 2009-03-10  245  
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  246  
+c766ee72235d09 arch/powerpc/include/asm/book3s/64/hash.h Christophe Leroy       2018-10-09  247  int hash__map_kernel_page(unsigned long ea, unsigned long pa, pgprot_t prot);
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29 @248  extern int __meminit hash__vmemmap_create_mapping(unsigned long start,
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  249  					      unsigned long page_size,
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  250  					      unsigned long phys);
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  251  extern void hash__vmemmap_remove_mapping(unsigned long start,
+31a14fae92b29b arch/powerpc/include/asm/book3s/64/hash.h Aneesh Kumar K.V       2016-04-29  252  				     unsigned long page_size);
+32b53c012e0bfe arch/powerpc/include/asm/book3s/64/hash.h Reza Arbab             2017-01-03  253  
+
+:::::: The code at line 248 was first introduced by commit
+:::::: 31a14fae92b29b7a7fcc65600f072bf448d3b0eb powerpc/mm: Abstraction for vmemmap and map_kernel_page()
+
+:::::: TO: Aneesh Kumar K.V <aneesh.kumar@linux.vnet.ibm.com>
+:::::: CC: Michael Ellerman <mpe@ellerman.id.au>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
