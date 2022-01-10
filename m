@@ -2,205 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C00FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:28:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242909AbiAJJ1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:27:21 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:52839 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238210AbiAJJ1C (ORCPT
+        id S238497AbiAJJ2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:28:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242933AbiAJJ2A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:27:02 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04426;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1QvNC4_1641806784;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1QvNC4_1641806784)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 10 Jan 2022 17:27:00 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/3] net/smc: Introduce a new conn->lgr validity check helper
-Date:   Mon, 10 Jan 2022 17:26:23 +0800
-Message-Id: <1641806784-93141-3-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
-References: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
+        Mon, 10 Jan 2022 04:28:00 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C26FC061757
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:27:59 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id k30so7896269wrd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:27:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3JIe/AziNkL7QWWwzr2FGj9H5QSbDRRWwjLKOVDugLY=;
+        b=4e/NgOncPGsI6zL82IKBGE3RBzWcjd1sdmMoSfIeMMq+biJ+zFQ12dPnmoHrSyF1xK
+         2BkUZwWICKVO4SteHjvVLKvJB9ATXfg51nfZSwlQq77s9g/hwyC0nnsO+bgfBdq3Akoi
+         9e9nLREII4Uc+KUJYMZIIrhyna9Auemz9XbYnL3XGgstSUhh8UVLVs7YFxTMgZ8G5kg7
+         +wnIIgQQWV9Pgr6kXgJ1ZobbydhZ4DCcxn60Xesojt8EiL71Ks0IfMv5sJdgP4QmAfqC
+         MZIoS2QQfVrwjuXnj/U8qkecb5Pt5ggMsicb56e2GCFt+t1i648g0w0JUmIQ/nARiuNg
+         kYaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=3JIe/AziNkL7QWWwzr2FGj9H5QSbDRRWwjLKOVDugLY=;
+        b=CUAOPH+aFRlaG1gstj1a8z4sa2nuGjEdM15jxzJ2Pw7kYHFEoOksWxGRjLj+8FiYRc
+         GbKaiNM/SdkO60h7FmffyJivtGNNIb5+IfQNgfQP1ynkyf/uTJfDTLRVUqPfgo/74xut
+         GLnWmYVHkcO4woVSrcNcQE9Ww8PLglddeSSSL+uqVw1JMyusp7KSvpFFnVkBT5sPTenm
+         oOSTxpD/JA+9rVho4qBmTy0ZCXLrAfzG9h2ApfFlaME2NZY3OillBUWM58TXoS+O/kNQ
+         BRSRC1teut6KAO0kUqUIMQRIzAIt2X6HDR/op8s2Dc8UDf604pSHQkP02Ntg6hRoSrzX
+         LMeg==
+X-Gm-Message-State: AOAM531K9u8jV64Qov7cVoik4Xz7LAvOhJCdZECIOvon7YrjhJ9WaMKW
+        E1o6ou507beHAp4tf3b+731/IQ==
+X-Google-Smtp-Source: ABdhPJxif1cXTO0qc4AtrxnBYKdw1S+IGnZNRgcQM96lZpohEhKLaAGAuc9lRusoIkLi0vPyC0k68A==
+X-Received: by 2002:a05:6000:1569:: with SMTP id 9mr63539563wrz.127.1641806878077;
+        Mon, 10 Jan 2022 01:27:58 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:94e5:2e36:6bcc:a9f1? ([2001:861:44c0:66c0:94e5:2e36:6bcc:a9f1])
+        by smtp.gmail.com with ESMTPSA id m6sm7068700wrx.36.2022.01.10.01.27.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 01:27:57 -0800 (PST)
+Subject: Re: [PATCH V4 0/5] the UART driver compatible with
+To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <20220110085604.18042-1-yu.tu@amlogic.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <1f4b9288-c7ff-c895-425c-187d058642b9@baylibre.com>
+Date:   Mon, 10 Jan 2022 10:27:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+In-Reply-To: <20220110085604.18042-1-yu.tu@amlogic.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is no longer suitable to identify whether a smc connection
-is registered in a link group through checking if conn->lgr
-is NULL, because conn->lgr won't be reset even the connection
-is unregistered from a link group.
+Hi,
 
-So this patch introduces a new helper smc_conn_lgr_valid() and
-replaces all the check of conn->lgr in original implementation
-with the new helper to judge if conn->lgr is valid to use.
+On 10/01/2022 09:55, Yu Tu wrote:
+> Using the common Clock code to describe the UART baud rate
+> clock makes it easier for the UART driver to be compatible
+> with the baud rate requirements of the UART IP on different
+> meson chips. Add Meson S4 SoC compatible.
+> 
+> Yu Tu (5):
+>   dt-bindings: serial: meson: Drop compatible = amlogic,meson-gx-uart.
+>   tty: serial: meson: Request the register region in meson_uart_probe()
+>   tty: serial: meson: The UART baud rate calculation is described using
+>     the common clock code.
+>   tty: serial: meson: Make the bit24 and bit [26,27] of the UART_REG5
+>     register writable
+>   tty: serial: meson: Added S4 SOC compatibility.
 
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/af_smc.c   |  6 +++++-
- net/smc/smc_cdc.c  |  3 ++-
- net/smc/smc_clc.c  |  2 +-
- net/smc/smc_core.c | 14 ++++++++------
- net/smc/smc_core.h |  5 +++++
- net/smc/smc_diag.c |  6 +++---
- 6 files changed, 24 insertions(+), 12 deletions(-)
+Weird, the subjects are fine in the cover letter but are all truncated in the email thread:
+[PATCH V4 0/5] the UART driver compatible with
+[PATCH V4 1/5] dt-bindings: serial: meson: Drop
+[PATCH V4 2/5] tty: serial: meson: Request the register
+...
+Only the last one is OK.
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 9713059..7c27bb6 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -634,9 +634,13 @@ static void smc_conn_abort(struct smc_sock *smc, int local_first)
- {
- 	struct smc_connection *conn = &smc->conn;
- 	struct smc_link_group *lgr = conn->lgr;
-+	bool lgr_valid = false;
-+
-+	if (smc_conn_lgr_valid(conn))
-+		lgr_valid = true;
- 
- 	smc_conn_free(conn);
--	if (local_first)
-+	if (local_first && lgr_valid)
- 		smc_lgr_cleanup_early(lgr);
- }
- 
-diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
-index 84c8a43..9d5a971 100644
---- a/net/smc/smc_cdc.c
-+++ b/net/smc/smc_cdc.c
-@@ -197,7 +197,8 @@ int smc_cdc_get_slot_and_msg_send(struct smc_connection *conn)
- {
- 	int rc;
- 
--	if (!conn->lgr || (conn->lgr->is_smcd && conn->lgr->peer_shutdown))
-+	if (!smc_conn_lgr_valid(conn) ||
-+	    (conn->lgr->is_smcd && conn->lgr->peer_shutdown))
- 		return -EPIPE;
- 
- 	if (conn->lgr->is_smcd) {
-diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 8409ab7..5a21108 100644
---- a/net/smc/smc_clc.c
-+++ b/net/smc/smc_clc.c
-@@ -774,7 +774,7 @@ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info, u8 version)
- 	dclc.os_type = version == SMC_V1 ? 0 : SMC_CLC_OS_LINUX;
- 	dclc.hdr.typev2 = (peer_diag_info == SMC_CLC_DECL_SYNCERR) ?
- 						SMC_FIRST_CONTACT_MASK : 0;
--	if ((!smc->conn.lgr || !smc->conn.lgr->is_smcd) &&
-+	if ((!smc_conn_lgr_valid(&smc->conn) || !smc->conn.lgr->is_smcd) &&
- 	    smc_ib_is_valid_local_systemid())
- 		memcpy(dclc.id_for_peer, local_systemid,
- 		       sizeof(local_systemid));
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 26a113d..c27a7d5 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -212,7 +212,7 @@ static void smc_lgr_unregister_conn(struct smc_connection *conn)
- {
- 	struct smc_link_group *lgr = conn->lgr;
- 
--	if (!lgr)
-+	if (!smc_conn_lgr_valid(conn))
- 		return;
- 	write_lock_bh(&lgr->conns_lock);
- 	if (conn->alert_token_local) {
-@@ -1132,7 +1132,7 @@ void smc_conn_free(struct smc_connection *conn)
- 		return;
- 
- 	conn->freed = 1;
--	if (!conn->alert_token_local)
-+	if (!smc_conn_lgr_valid(conn))
- 		/* The connection was registered in a link group
- 		 * defore, but now it is unregistered from it.
- 		 */
-@@ -2262,14 +2262,16 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 
- void smc_sndbuf_sync_sg_for_cpu(struct smc_connection *conn)
- {
--	if (!conn->lgr || conn->lgr->is_smcd || !smc_link_active(conn->lnk))
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
-+	    !smc_link_active(conn->lnk))
- 		return;
- 	smc_ib_sync_sg_for_cpu(conn->lnk, conn->sndbuf_desc, DMA_TO_DEVICE);
- }
- 
- void smc_sndbuf_sync_sg_for_device(struct smc_connection *conn)
- {
--	if (!conn->lgr || conn->lgr->is_smcd || !smc_link_active(conn->lnk))
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
-+	    !smc_link_active(conn->lnk))
- 		return;
- 	smc_ib_sync_sg_for_device(conn->lnk, conn->sndbuf_desc, DMA_TO_DEVICE);
- }
-@@ -2278,7 +2280,7 @@ void smc_rmb_sync_sg_for_cpu(struct smc_connection *conn)
- {
- 	int i;
- 
--	if (!conn->lgr || conn->lgr->is_smcd)
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
- 		return;
- 	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
- 		if (!smc_link_active(&conn->lgr->lnk[i]))
-@@ -2292,7 +2294,7 @@ void smc_rmb_sync_sg_for_device(struct smc_connection *conn)
- {
- 	int i;
- 
--	if (!conn->lgr || conn->lgr->is_smcd)
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
- 		return;
- 	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
- 		if (!smc_link_active(&conn->lgr->lnk[i]))
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index edbd401..630298b 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -408,6 +408,11 @@ static inline struct smc_connection *smc_lgr_find_conn(
- 	return res;
- }
- 
-+static inline bool smc_conn_lgr_valid(struct smc_connection *conn)
-+{
-+	return conn->lgr && conn->alert_token_local;
-+}
-+
- /* returns true if the specified link is usable */
- static inline bool smc_link_usable(struct smc_link *lnk)
- {
-diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
-index c952986a..25ef26b 100644
---- a/net/smc/smc_diag.c
-+++ b/net/smc/smc_diag.c
-@@ -89,7 +89,7 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 	r->diag_state = sk->sk_state;
- 	if (smc->use_fallback)
- 		r->diag_mode = SMC_DIAG_MODE_FALLBACK_TCP;
--	else if (smc->conn.lgr && smc->conn.lgr->is_smcd)
-+	else if (smc_conn_lgr_valid(&smc->conn) && smc->conn.lgr->is_smcd)
- 		r->diag_mode = SMC_DIAG_MODE_SMCD;
- 	else
- 		r->diag_mode = SMC_DIAG_MODE_SMCR;
-@@ -142,7 +142,7 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 			goto errout;
- 	}
- 
--	if (smc->conn.lgr && !smc->conn.lgr->is_smcd &&
-+	if (smc_conn_lgr_valid(&smc->conn) && !smc->conn.lgr->is_smcd &&
- 	    (req->diag_ext & (1 << (SMC_DIAG_LGRINFO - 1))) &&
- 	    !list_empty(&smc->conn.lgr->list)) {
- 		struct smc_diag_lgrinfo linfo = {
-@@ -162,7 +162,7 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 		if (nla_put(skb, SMC_DIAG_LGRINFO, sizeof(linfo), &linfo) < 0)
- 			goto errout;
- 	}
--	if (smc->conn.lgr && smc->conn.lgr->is_smcd &&
-+	if (smc_conn_lgr_valid(&smc->conn) && smc->conn.lgr->is_smcd &&
- 	    (req->diag_ext & (1 << (SMC_DIAG_DMBINFO - 1))) &&
- 	    !list_empty(&smc->conn.lgr->list)) {
- 		struct smc_connection *conn = &smc->conn;
--- 
-1.8.3.1
+
+> 
+> V1 -> V2: Use CCF to describe the UART baud rate clock.Make some changes as
+> discussed in the email
+> V2 -> V3: add compatible = "amlogic,meson-gx-uart". Because it must change
+> the DTS before it can be deleted
+> V3 -> V4: Change CCF to describe the UART baud rate clock as discussed
+> in the email.
+> 
+> Link:https://lore.kernel.org/linux-amlogic/20211230102110.3861-4-yu.tu@amlogic.com/
+> 
+>  .../bindings/serial/amlogic,meson-uart.yaml   |  10 +-
+>  drivers/tty/serial/meson_uart.c               | 244 ++++++++++++------
+>  2 files changed, 177 insertions(+), 77 deletions(-)
+> 
 
