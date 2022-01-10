@@ -2,163 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BF9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238498AbiAJRjx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 12:39:53 -0500
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:55187 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S238488AbiAJRjw (ORCPT
+        id S238456AbiAJRmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 12:42:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238382AbiAJRme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 12:39:52 -0500
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20AHc0dQ028470
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 12:38:01 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 9E78715C00C8; Mon, 10 Jan 2022 12:38:00 -0500 (EST)
-Date:   Mon, 10 Jan 2022 12:38:00 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
-        Simo Sorce <simo@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Walton <noloader@gmail.com>,
-        Stephan Mueller <smueller@chronox.de>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Alexander E. Patrakov" <patrakov@gmail.com>,
-        "Ahmed S. Darwish" <darwish.07@gmail.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Vito Caputo <vcaputo@pengaru.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
-        William Jon McCann <mccann@jhu.edu>,
-        zhangjs <zachary@baishancloud.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Florian Weimer <fweimer@redhat.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Peter Matthias <matthias.peter@bsi.bund.de>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Neil Horman <nhorman@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Petr Tesarik <ptesarik@suse.cz>,
-        John Haxby <john.haxby@oracle.com>,
-        Alexander Lobakin <alobakin@mailbox.org>,
-        Jirka Hladky <jhladky@redhat.com>
-Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
-Message-ID: <Ydxu+KS5UkQ6hU9R@mit.edu>
-References: <YaZHKHjomEivul6U@kroah.com>
- <YaZqVxI1C8RByq+w@gmail.com>
- <CAHmME9p60Ve5XJTVcmGvSpUkg_hRp_i0rGG0R9VhuwLs0o_nXQ@mail.gmail.com>
- <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
- <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
- <20211210014337.xmin2lu5rhhe3b3t@valinor>
- <20220110132349.siplwka7yhe2tmwc@valinor>
- <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
- <YdxCsI3atPILABYe@mit.edu>
- <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
+        Mon, 10 Jan 2022 12:42:34 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6A1C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:42:34 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id a18so55606769edj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:42:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ivp04c2e3aswpbUBl40rsDf5F/qMDtdT9+Y9jMZOA1Q=;
+        b=TTdgKky08/wWY8IHzQ4R8Iu6WyCMszal1xCNQXMIJQFj7tisdchulnP4SWln7HChj3
+         erP0vKpWvoXP6NoMkeWf1ihDRZubjTL6cpa8AQ3I6XIbuWr0Yi5+G3ZkfRNwD7MSWx5E
+         EVNav+oSusoTbkI8xMHCIK7H2IjGRrU1kjjyI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ivp04c2e3aswpbUBl40rsDf5F/qMDtdT9+Y9jMZOA1Q=;
+        b=VERM5zIre+wVkGM79F0nM+Bb0ugUoDo6VHxyThvjcH7dnrGMXMdNToguV5BUe5igXb
+         tgIEyDlW7nkRSd94Pl0hdl06ilTiwh9eIW/NUnnpQGSX0/8cfMbV34MYDcmQpDPZ4nMe
+         Q5yGHkOWU9Iz4n0SVOC08cqXZv+4ZqwTLkUPqcTV9+Icf2lGIy7h3eNEBPuKUYaN6XUp
+         ftAP807Xdv8UWmLUWfDbjLxsc560LyNnuwpVWbjRUHHX5Kj9nTqhhumR2/OccyuB1Fiz
+         aZc45ZaI/SNsfuM1VDI2vR47N3nePEZS+mYv97z5sWiuBOXpbhgacUx4sgTM7Kd+YBzt
+         ZqEg==
+X-Gm-Message-State: AOAM533H+J/CDggKsbbWtfAKZ3exr1eXwHjzLpWbYDUGPTXLlUXvYKwJ
+        5fG8PYUmcR71kBibwbWxXocM6p4kgQSFXa8OzhQ=
+X-Google-Smtp-Source: ABdhPJxPNAy1iYKw25BW8pTRHxb8oARmetp+Xcjc97T+n3QqzTXy0/N6WS0Pya73uNorXNNBv0DDug==
+X-Received: by 2002:a05:6402:440e:: with SMTP id y14mr766578eda.12.1641836552379;
+        Mon, 10 Jan 2022 09:42:32 -0800 (PST)
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
+        by smtp.gmail.com with ESMTPSA id hb17sm2596857ejc.195.2022.01.10.09.42.29
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 09:42:31 -0800 (PST)
+Received: by mail-wr1-f43.google.com with SMTP id a5so24283632wrh.5
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 09:42:29 -0800 (PST)
+X-Received: by 2002:adf:c74e:: with SMTP id b14mr579287wrh.97.1641836549717;
+ Mon, 10 Jan 2022 09:42:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
+References: <000000000000e8f8f505d0e479a5@google.com> <20211211015620.1793-1-hdanton@sina.com>
+ <YbQUSlq76Iv5L4cC@sol.localdomain> <YdW3WfHURBXRmn/6@sol.localdomain>
+ <CAHk-=wjqh_R9w4-=wfegut2C0Bg=sJaPrayk39JRCkZc=O+gsw@mail.gmail.com>
+ <CAHk-=wjddvNbZBuvh9m_2VYFC1W7HvbP33mAzkPGOCHuVi5fJg@mail.gmail.com>
+ <CAHk-=wjn5xkLWaF2_4pMVEkZrTA=LiOH=_pQK0g-_BMSE-8Jxg@mail.gmail.com>
+ <Ydw4hWCRjAhGfCAv@cmpxchg.org> <CAJuCfpHg=SPzx7SGUL75DVpMy0BDEwVj4o-SM0UKGmEJrOSdvg@mail.gmail.com>
+In-Reply-To: <CAJuCfpHg=SPzx7SGUL75DVpMy0BDEwVj4o-SM0UKGmEJrOSdvg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 10 Jan 2022 09:42:13 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiZ=oic3UfejGzy_31RYggtZWUeF1gE82_NHAA=ENY6Kw@mail.gmail.com>
+Message-ID: <CAHk-=wiZ=oic3UfejGzy_31RYggtZWUeF1gE82_NHAA=ENY6Kw@mail.gmail.com>
+Subject: Re: psi_trigger_poll() is completely broken
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Eric Biggers <ebiggers@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 03:38:08PM +0100, Jason A. Donenfeld wrote:
-> 
-> Yea, I'm not really compelled by it as something real that we'd
-> actually want to have for something serious. Keep in mind: this thread
-> isn't really about cryptography, but just about compliance nonsense.
-> BUT, if it turns out that the path to these people getting their green
-> compliance checkbox stamp isn't actually thousands of lines of new
-> code, but rather some glue bridging the /dev/urandom / getrandom(2)
-> API into the blah cryptoapi thing, that's... interesting news to me.
-> I'm not even saying, at this stage anyhow, that I want to do this, but
-> I do find it a very interesting data point.
+On Mon, Jan 10, 2022 at 9:25 AM Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> About the issue of serializing concurrent writes for
+> cgroup_pressure_write() similar to how psi_write() does. Doesn't
+> of->mutex inside kernfs_fop_write_iter() serialize the writes to the
+> same file?
 
-The last time I had the displeasure of looking into the FIPS
-certification, which granted, was over a decade ago when I was in
-IBM's Linux Technology Center, what I learned was it all depends on
-the FIPS certification lab.  NIST writes the documentation, but what
-really matters is the FIPS certification lab that a hardware or
-software vendor pays $$$$ to in order to get the magic certificate
-which allows you to sell into *some* government contracts.  (When I
-had to go through the all of the nonsense to get a TS/SCI clearance to
-support the real-time kernel for all of the IBM servers for the
-DDG/1000 Zumwalt Class destroyer, they didn't care about getting FIPS
-certified.  I've also seen tighter security measures for computer
-rooms at NYC financial companies than at a Top Secret machine root at
-said defense contractor.  Go figure....)
+Ahh, yes, it looks like that does solve the serialization issue.
+Sorry, I missed that because I'm not actually all that familiar with
+the kernfs 'of' code.
 
-The other thing I learned for those customers who *did* care, was that
-the only thing that got certified was a specific binary image.  If you
-replace the kernel or OpenSSL library with, say, a bugfixed version
-that fixed an actively exploited zero day, *boom*, that would break
-the certification and the system would no longer be FIPS certified.
+So the only issue is the trigger lifetime one, and if a single trigger
+is sufficient and returning -EBUSY for trying to replace an existing
+one is good, then I think that's the proper fix.
 
-Some FIPS labs would allow you to certify the "cryptographic core" of
-the OpenSSL library, which the OpenSSL library would then dlopen, and
-so as long as the bugfix was in, say, the ASN.1 parser, and you didn't
-need to change the "cryptographic core" it was OK --- and you just
-needed to hope that there weren't any bugs in the cryptographic core,
-since then you wouldn't be allowed to fix it --- since FIPS compliance
-was more important than, say, the *actual* security of the system in
-question.
+I'm very busy with the merge window (and some upcoming travel and
+family events), so I'm hoping somebody will write and test such a
+patch. Please?
 
-So yeah, as I said, it's all about TSA-style security theatre, and
-when I worked for IBM and there was millions of dollars on the line, I
-might have cared.  For upstream development, (and blessedly, this is
-not something that my current employer has needed to worry about) I
-care far less about it.
-
-If we want to add a CONFIG_RANDOM_SECURITY_THEATRE build option which
-diverts getrandom and /dev/urandom to use crypto/drbg, I'm going to
-think it's a waste of time, and there are some things about
-crypto/drbg that I'm not psyched about such as the fact that only
-reseed after 2**20 calls to drbg_generate(), and the drbg statemachine
-will initialize itself from get_random_bytes() in early boot, when the
-CRNG is least likely to be securely initialized.  So **I** wouldn't
-want to use it for my own personal security, but if it allows Ubuntu
-to sell into the US govnerment market, my only hope is that this
-wouldn't be inflicted on all of their customers, but only those US
-Government customers who care (and as near as I can tell, this is
-*not* all USG customers).
-
-> > Specifically, I think that if you change your perspective from, "how can we
-> > change the algorithms of the RNG to be FIPS" to "how can we bend FIPS within
-> > its limits so that having what customers want would minimally impact the
-> > quality of the RNG implementation or introduce undue maintenance burdens."
-> 
-> We're now starting to get some idea about how this FIPS stuff bends.
-
-Well, if we optionally (if jitterentropy_rng is compiled in), we would
-periodically pull from it as one additional entropy source into the
-input_pool, it won't do any harm --- other than the CPU overhead
-consumed by jitterentropy, of course.  Maybe that would make some
-people happy, including some FIPS Labs?
-
-I've also seen some FIPS certifications which didn't care about what
-the kernel did, but only cared about what was in the OpenSSL library.
-(Which is where the story about segregating out the cryptographic core
-so that you could actually patch most zero-days without having to go
-back to the FIPS certification lab, pay $$$, and wait months for the
-updated binary to be certified.)
-
-So I suspect that there will be a lot of anecdotal evidence, but the
-only thing we can probably say with any amount of certainity is Your
-Mileage May Vary.
-
-Cheers,
-
-						- Ted
+                   Linus
