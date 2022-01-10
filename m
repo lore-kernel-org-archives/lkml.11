@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 807D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239299AbiAJHYW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:24:22 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34868 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239232AbiAJHYN (ORCPT
+        id S239347AbiAJHYx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:24:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55702 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239275AbiAJHYS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:24:13 -0500
+        Mon, 10 Jan 2022 02:24:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7ED60611AD;
-        Mon, 10 Jan 2022 07:24:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EB1BC36AED;
-        Mon, 10 Jan 2022 07:24:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE499B811F9;
+        Mon, 10 Jan 2022 07:24:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD7AC36B02;
+        Mon, 10 Jan 2022 07:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799452;
-        bh=84qzenAi/MN28XMQ5nketlIT30hEZ5thlwSQ3CPqIz0=;
+        s=korg; t=1641799455;
+        bh=dFWgtxdjNZ6HdV/b/Wms6eheXCudLzIFxWtVUkfVP1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1rG54k8zR6g8EFjseNV18WOTgFw3UHE3PBsLq8Jxj1l5cjXIbju4ARFYC0HoKDD16
-         xtixJt7/7vwqPJPWVNu35Y4q9MLdOilqUja+S8lng8Fix4O2KoyxqqeD0QJkNZc0Qc
-         wKkxg8VSwd7SgCp68sMP+ZsGNOU+LnHWDIbpkMOo=
+        b=msRh3GPgboRuxcjl96lFwKNfvq199ZBSUUgrHudSi2b1IGNCrZoQLoS+GTotAwk8j
+         zOpEONPfUL/lcbs2Q9dtRmbY7o4ifXHqFw3jenoF9gMc4Fsiycrb29DgyhW+GTBqRT
+         fH/Z1gFjQuPYGP4JYfKysI+XkkwY0SchCiAbieUU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lukasz Cieplicki <lukaszx.cieplicki@intel.com>,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
-        Gurucharan G <gurucharanx.g@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 4.4 05/14] i40e: Fix incorrect netdevs real number of RX/TX queues
-Date:   Mon, 10 Jan 2022 08:22:44 +0100
-Message-Id: <20220110071811.954298622@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH 4.4 14/14] power: reset: ltc2952: Fix use of floating point literals
+Date:   Mon, 10 Jan 2022 08:22:53 +0100
+Message-Id: <20220110071812.234681669@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071811.779189823@linuxfoundation.org>
 References: <20220110071811.779189823@linuxfoundation.org>
@@ -48,86 +46,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit e738451d78b2f8a9635d66c6a87f304b4d965f7a upstream.
+commit 644106cdb89844be2496b21175b7c0c2e0fab381 upstream.
 
-There was a wrong queues representation in sysfs during
-driver's reinitialization in case of online cpus number is
-less than combined queues. It was caused by stopped
-NetworkManager, which is responsible for calling vsi_open
-function during driver's initialization.
-In specific situation (ex. 12 cpus online) there were 16 queues
-in /sys/class/net/<iface>/queues. In case of modifying queues with
-value higher, than number of online cpus, then it caused write
-errors and other errors.
-Add updating of sysfs's queues representation during driver
-initialization.
+A new commit in LLVM causes an error on the use of 'long double' when
+'-mno-x87' is used, which the kernel does through an alias,
+'-mno-80387' (see the LLVM commit below for more details around why it
+does this).
 
-Fixes: 41c445ff0f48 ("i40e: main driver core")
-Signed-off-by: Lukasz Cieplicki <lukaszx.cieplicki@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
-Tested-by: Gurucharan G <gurucharanx.g@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+drivers/power/reset/ltc2952-poweroff.c:162:28: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
+        data->wde_interval = 300L * 1E6L;
+                                  ^
+drivers/power/reset/ltc2952-poweroff.c:162:21: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
+        data->wde_interval = 300L * 1E6L;
+                           ^
+drivers/power/reset/ltc2952-poweroff.c:163:41: error: expression requires  'long double' type support, but target 'x86_64-unknown-linux-gnu' does not support it
+        data->trigger_delay = ktime_set(2, 500L*1E6L);
+                                               ^
+3 errors generated.
+
+This happens due to the use of a 'long double' literal. The 'E6' part of
+'1E6L' causes the literal to be a 'double' then the 'L' suffix promotes
+it to 'long double'.
+
+There is no visible reason for floating point values in this driver, as
+the values are only assigned to integer types. Use NSEC_PER_MSEC, which
+is the same integer value as '1E6L', to avoid changing functionality but
+fix the error.
+
+Fixes: 6647156c00cc ("power: reset: add LTC2952 poweroff driver")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1497
+Link: https://github.com/llvm/llvm-project/commit/a8083d42b1c346e21623a1d36d1f0cadd7801d83
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+[nathan: Resolve conflict due to lack of 8b0e195314fab]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c |   32 +++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
+ drivers/power/reset/ltc2952-poweroff.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -5361,6 +5361,27 @@ int i40e_open(struct net_device *netdev)
- }
+--- a/drivers/power/reset/ltc2952-poweroff.c
++++ b/drivers/power/reset/ltc2952-poweroff.c
+@@ -169,8 +169,8 @@ static void ltc2952_poweroff_kill(void)
  
- /**
-+ * i40e_netif_set_realnum_tx_rx_queues - Update number of tx/rx queues
-+ * @vsi: vsi structure
-+ *
-+ * This updates netdev's number of tx/rx queues
-+ *
-+ * Returns status of setting tx/rx queues
-+ **/
-+static int i40e_netif_set_realnum_tx_rx_queues(struct i40e_vsi *vsi)
-+{
-+	int ret;
-+
-+	ret = netif_set_real_num_rx_queues(vsi->netdev,
-+					   vsi->num_queue_pairs);
-+	if (ret)
-+		return ret;
-+
-+	return netif_set_real_num_tx_queues(vsi->netdev,
-+					    vsi->num_queue_pairs);
-+}
-+
-+/**
-  * i40e_vsi_open -
-  * @vsi: the VSI to open
-  *
-@@ -5394,13 +5415,7 @@ int i40e_vsi_open(struct i40e_vsi *vsi)
- 			goto err_setup_rx;
+ static void ltc2952_poweroff_default(struct ltc2952_poweroff *data)
+ {
+-	data->wde_interval = ktime_set(0, 300L*1E6L);
+-	data->trigger_delay = ktime_set(2, 500L*1E6L);
++	data->wde_interval = ktime_set(0, 300L * NSEC_PER_MSEC);
++	data->trigger_delay = ktime_set(2, 500L * NSEC_PER_MSEC);
  
- 		/* Notify the stack of the actual queue counts. */
--		err = netif_set_real_num_tx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
--		if (err)
--			goto err_set_queues;
--
--		err = netif_set_real_num_rx_queues(vsi->netdev,
--						   vsi->num_queue_pairs);
-+		err = i40e_netif_set_realnum_tx_rx_queues(vsi);
- 		if (err)
- 			goto err_set_queues;
- 
-@@ -9415,6 +9430,9 @@ struct i40e_vsi *i40e_vsi_setup(struct i
- 		ret = i40e_config_netdev(vsi);
- 		if (ret)
- 			goto err_netdev;
-+		ret = i40e_netif_set_realnum_tx_rx_queues(vsi);
-+		if (ret)
-+			goto err_netdev;
- 		ret = register_netdev(vsi->netdev);
- 		if (ret)
- 			goto err_netdev;
+ 	hrtimer_init(&data->timer_trigger, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+ 	data->timer_trigger.function = ltc2952_poweroff_timer_trigger;
 
 
