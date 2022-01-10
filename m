@@ -2,55 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C75F9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241775AbiAJIhN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:37:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241453AbiAJIfH (ORCPT
+        id S241816AbiAJIhW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:37:22 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:53080 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S241446AbiAJIfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:35:07 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DE2C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:35:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=pwXNrUv0UZs8siJQlbihEV1HU713jh8nfynS6ueSAT4=; b=wOeUKqZr8hfvVIYN/6SRi2rS+0
-        eK9ZesWtOkT/GDIksg2c/fRLYHR4ez1uh4f7p5kodRSmQK2S+PxUljO/AVrDA1f1II/IAd/TaBGC0
-        m6yrRWRZOMW5gTqBKwJ/3mroBhBuaLE/EeyzaDEP8P85Y+DljaMrUHTO11GFQghrOtejJy1jb8GqR
-        BJ+wDs27KqyOmN53Kqzg13J9EmNZ2jUWk5SGNVty3QSadkLUkmorPWx5SOiLpe5Vu+fKzwQiXgWad
-        JKqGRa7gDVabmVtAOL0H93+1IIh3Ff03LSEsl/Mav1+t4SJGq5SUOk5WnPC43x2OBL8iGKffXRUmh
-        4tPjf19w==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6q8t-009uQQ-LY; Mon, 10 Jan 2022 08:35:03 +0000
-Date:   Mon, 10 Jan 2022 00:35:03 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 16/28] mm: Remove page_cache_add_speculative() and
- page_cache_get_speculative()
-Message-ID: <YdvvtxMxcjIL+Ggj@infradead.org>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-17-willy@infradead.org>
+        Mon, 10 Jan 2022 03:35:06 -0500
+X-UUID: 04d5fbe3b250478d8922c361320a5616-20220110
+X-UUID: 04d5fbe3b250478d8922c361320a5616-20220110
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1173358465; Mon, 10 Jan 2022 16:35:02 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Mon, 10 Jan 2022 16:35:00 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 10 Jan 2022 16:34:59 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        "Tzung-Bi Shih" <tzungbi@chromium.org>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v4, 10/15] media: mtk-vcodec: Fix v4l2-compliance fail
+Date:   Mon, 10 Jan 2022 16:34:37 +0800
+Message-ID: <20220110083442.32604-11-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220110083442.32604-1-yunfei.dong@mediatek.com>
+References: <20220110083442.32604-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110042406.499429-17-willy@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 04:23:54AM +0000, Matthew Wilcox (Oracle) wrote:
-> These wrappers have no more callers, so delete them.
+Need to use default pic info when get pic info fail.
 
-Looks good,
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+---
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
+index 34ee4a0092ff..75210eb829d0 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
+@@ -478,11 +478,14 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
+ 		ctx->picinfo.pic_w = pix_mp->width;
+ 		ctx->picinfo.pic_h = pix_mp->height;
+ 
++		/*
++		 * If get pic info fail, need to use the default pic info params, or
++		 * v4l2-compliance will fail
++		 */
+ 		ret = vdec_if_get_param(ctx, GET_PARAM_PIC_INFO, &ctx->picinfo);
+ 		if (ret) {
+ 			mtk_v4l2_err("[%d]Error!! Get GET_PARAM_PICTURE_INFO Fail",
+ 				     ctx->id);
+-			return -EINVAL;
+ 		}
+ 
+ 		ctx->last_decoded_picinfo = ctx->picinfo;
+-- 
+2.25.1
+
