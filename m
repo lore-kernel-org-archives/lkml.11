@@ -2,68 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A74A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:26:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240360AbiAJIZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240299AbiAJIZd (ORCPT
+        id S240407AbiAJI0Q convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:26:16 -0500
+Received: from mail3.swissbit.com ([176.95.1.57]:48684 "EHLO
+        mail3.swissbit.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240383AbiAJI0I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:25:33 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2105DC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:25:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=YynQkzcvAks2tBBSZS0aAIuAsmuAABDla0Di0gbOoYo=; b=2RGKLhJqTuO4wHte2T1fnyxYko
-        JdIgS93faNbq7P3qA9vP6wqgeMF9o0U2JryPpDMmZu2sqBeokULrOjPFmsE1ou7QEm5i9raUshx1B
-        mjemeg8ZHn2Ic0VY6n2b155iOPh+3+pO0zKX7aqS6ZlVFXug3NsmwLiY0AFm290MbE0aZtMP2+qUN
-        Zg8LasmfoJ0VGq3B2uPV+6UxHbZ7xiJfpswWETevAqc4SanSTuSVE5SGlIJZqK3Ay8oNOa0ilnxQR
-        DKimnYnU+XjhmGXax0JQzrzLCYWDn2o4rRvjvT7YENfDVwepJ7Fcjf9V8+Ud4pKL7r/ao3igqbgrG
-        SbRAZciw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6pza-009qBQ-0J; Mon, 10 Jan 2022 08:25:26 +0000
-Date:   Mon, 10 Jan 2022 00:25:25 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 03/28] gup: Change the calling convention for
- compound_range_next()
-Message-ID: <YdvtdULHKIeGrX0z@infradead.org>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-4-willy@infradead.org>
+        Mon, 10 Jan 2022 03:26:08 -0500
+Received: from mail3.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id 0C241462AA3;
+        Mon, 10 Jan 2022 09:26:03 +0100 (CET)
+Received: from mail3.swissbit.com (localhost [127.0.0.1])
+        by DDEI (Postfix) with ESMTP id E373E462A93;
+        Mon, 10 Jan 2022 09:26:02 +0100 (CET)
+X-TM-AS-ERS: 10.149.2.84-127.5.254.253
+X-TM-AS-SMTP: 1.0 ZXguc3dpc3NiaXQuY29t Y2xvZWhsZUBoeXBlcnN0b25lLmNvbQ==
+X-DDEI-TLS-USAGE: Used
+Received: from ex.swissbit.com (SBDEEX02.sbitdom.lan [10.149.2.84])
+        by mail3.swissbit.com (Postfix) with ESMTPS;
+        Mon, 10 Jan 2022 09:26:02 +0100 (CET)
+Received: from sbdeex02.sbitdom.lan (10.149.2.84) by sbdeex02.sbitdom.lan
+ (10.149.2.84) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 10 Jan
+ 2022 09:26:02 +0100
+Received: from sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74]) by
+ sbdeex02.sbitdom.lan ([fe80::e0eb:ade8:2d90:1f74%8]) with mapi id
+ 15.02.0986.014; Mon, 10 Jan 2022 09:26:02 +0100
+From:   =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        "jason.wessel@windriver.com" <jason.wessel@windriver.com>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "daniel.thompson@linaro.org" <daniel.thompson@linaro.org>,
+        =?iso-8859-1?Q?Christian_L=F6hle?= <CLoehle@hyperstone.com>
+Subject: [PATCHv3] Documentation: kgdb: Replace deprecated remotebaud
+Thread-Topic: [PATCHv3] Documentation: kgdb: Replace deprecated remotebaud
+Thread-Index: AQHYBfuzQ/xkgkc310q0gpUtO+y3YQ==
+Date:   Mon, 10 Jan 2022 08:26:02 +0000
+Message-ID: <efa448f3c8074fac9e07e258d327cbae@hyperstone.com>
+References: <13287b7914344c7995de27224cd2fa73@hyperstone.com>
+ <4050689967ed46baaa3bfadda53a0e73@hyperstone.com>,<87ee5kpki1.fsf@meer.lwn.net>
+In-Reply-To: <87ee5kpki1.fsf@meer.lwn.net>
+Accept-Language: en-US, de-DE
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.154.1.4]
+Content-Type: text/plain;
+        charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110042406.499429-4-willy@infradead.org>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-TMASE-Version: DDEI-5.1-8.6.1018-26644.006
+X-TMASE-Result: 10--1.590300-10.000000
+X-TMASE-MatchedRID: BFQSNthdAqJ+wAuSUWlj5BIRh9wkXSlFVFeUPAjsd8YE71b5Svg0gCGu
+        zVLLKJdOBjIbat56Enk5suuA6RHmUZzAN0sNcMp5PwKTD1v8YV5MkOX0UoduuXQDcRg9v/E4Jzf
+        pn/oR511RU8+vUCslgMpjK4dbPxs8aDAi8sBNMoELbigRnpKlKWxlRJiH4397SNmQ01MKRa3cfM
+        7WJ5cTywI/v7yt3viNlL8mYas79H+kIttNw5TROQ==
+X-TMASE-SNAP-Result: 1.821001.0001-0-1-22:0,33:0,34:0-0
+X-TMASE-INERTIA: 0-0;;;;
+X-TMASE-XGENCLOUD: 6b9b5f45-ab67-4eb3-ae6a-58e97cd18256-0-0-200-0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 04:23:41AM +0000, Matthew Wilcox (Oracle) wrote:
-> Return the head page instead of storing it to a passed parameter.
-> Pass the start page directly instead of passing a pointer to it.
+Using set remotebaud to set the baud rate was deprecated in
+gdb-7.7 and completely removed from the command parser in gdb-7.8
+(released in 2014). Adopt set serial baud instead.
 
-Looks good, but when we're changing the calling conventions anyway:
+Change since v2:
+  - Add historical example in the documentation
 
-> -static inline void compound_range_next(unsigned long i, unsigned long npages,
-> -				       struct page **list, struct page **head,
-> -				       unsigned int *ntails)
-> +static inline struct page *compound_range_next(unsigned long i,
-> +		unsigned long npages, struct page *start, unsigned int *ntails)
+Signed-off-by: Christian Loehle <cloehle@hyperstone.com>
+---
+ Documentation/dev-tools/kgdb.rst | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-To me the logical argument order would be something like:
+diff --git a/Documentation/dev-tools/kgdb.rst b/Documentation/dev-tools/kgdb.rst
+index 43456244651a..d7acb2bdb0ba 100644
+--- a/Documentation/dev-tools/kgdb.rst
++++ b/Documentation/dev-tools/kgdb.rst
+@@ -557,9 +557,14 @@ Connecting with gdb to a serial port
+    Example (using a directly connected port)::
+ 
+            % gdb ./vmlinux
+-           (gdb) set remotebaud 115200
++           (gdb) set serial baud 115200
+            (gdb) target remote /dev/ttyS0
+ 
++   Example (using a directly connected port with gdb version < 7.8)::
++
++           % gdb ./vmlinux
++           (gdb) set remotebaud 115200
++           (gdb) target remote /dev/ttyS0
+ 
+    Example (kgdb to a terminal server on TCP port 2012)::
+ 
+-- 
+2.34.1
+Hyperstone GmbH | Reichenaustr. 39a  | 78467 Konstanz
+Managing Director: Dr. Jan Peter Berns.
+Commercial register of local courts: Freiburg HRB381782
 
-static inline struct page *compound_range_next(struct page *start,
-		unsigned long npages,, unsigned long i, unsigned int *ntails)
-
-where the two first arguments pass in what is worked on and match the 
-calling conventions of the caller.
