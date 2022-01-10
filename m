@@ -2,60 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71611C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04027C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:33:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240868AbiAJId2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:33:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
+        id S240715AbiAJIdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:33:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240574AbiAJIbY (ORCPT
+        with ESMTP id S241222AbiAJIbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:31:24 -0500
+        Mon, 10 Jan 2022 03:31:43 -0500
 Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF8EC03400C
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:31:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739F3C06118A
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:31:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
         :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=e79RBh3RTVWPj6rYkP4UHRg/Ov+OQkUWfvKe2DbQ7YY=; b=CHAML+e1cyUBVcOWaNpXlSAVu6
-        m4CWrK994Ga2b7HmYQGIuOCsX/gMCU4BQ0MX/keA4/DlLTAIs0zWWuh4IIiKS8k0bORvkCWuk9Cpk
-        r3Lgo0KcN6dE/iTCYL/FWatH2wyTZSR6zhKNThUZykrh8Yeb3WRPgrE+hbKl2zUDt4Hr9+3laJm54
-        M7TALUBT2B7k3HvXoDbE+ovLejixjK3P6lVZM/bJ9ZO6/YKjsbUXjQJNAAZ7HJN9G6gf3Af/5mh/o
-        Mt1CqlEVZqQRxDbFN9ZxigMVpjTXCcayPuv+/yoh2MjRt+mju6jIknmhHniYtFPMhDBWMqOYj9O63
-        9+iZhHbQ==;
+        bh=OfXH7HuA9nnmU4LMS967gWPUmYbFP+jE6Cczd4vRZXQ=; b=A0toOgDZ/7tlodAkcTYqYrCJ+G
+        oMha2mvB9ojaHKjRdf2iBCy+WyO3gEZwyN1G1FhtY2vxukiT9xMP0hatIeLHRRaXsYS8euIKXXZDC
+        Tmph31BEHsULn8/XL27zi4kj7STNC5VjsTi9nI8VQ7y0hisIf2x61aNJAIpWeTKvEGqQEBE3pkdxa
+        KG2Di90YQXGGtEJ0cjmWi6rR/cY2d3FpGWFHWDwyk97tpH0qZCIo1EDtLKULWlXLxA/GRKgbl5fB3
+        czPvl0talEq6ehY6Sclkfj42gS2QIkX4oSAidyG4IOe7uCOTDq4umD4hh1LTRrqcf54yCSzxaU8+b
+        emUxJvHA==;
 Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6q58-009sr0-VD; Mon, 10 Jan 2022 08:31:10 +0000
-Date:   Mon, 10 Jan 2022 00:31:10 -0800
+        id 1n6q5b-009t3P-W8; Mon, 10 Jan 2022 08:31:40 +0000
+Date:   Mon, 10 Jan 2022 00:31:39 -0800
 From:   Christoph Hellwig <hch@infradead.org>
 To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
 Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 08/28] gup: Handle page split race more efficiently
-Message-ID: <YdvuzvdoYz1KzFWo@infradead.org>
+Subject: Re: [PATCH v2 09/28] gup: Turn hpage_pincount_add() into
+ page_pincount_add()
+Message-ID: <Ydvu61c/6+DikC0/@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-9-willy@infradead.org>
+ <20220110042406.499429-10-willy@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220110042406.499429-9-willy@infradead.org>
+In-Reply-To: <20220110042406.499429-10-willy@infradead.org>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 04:23:46AM +0000, Matthew Wilcox (Oracle) wrote:
-> If we hit the page split race, the current code returns NULL which will
-> presumably trigger a retry under the mmap_lock.  This isn't necessary;
-> we can just retry the compound_head() lookup.  This is a very minor
-> optimisation of an unlikely path, but conceptually it matches (eg)
-> the page cache RCU-protected lookup.
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+On Mon, Jan 10, 2022 at 04:23:47AM +0000, Matthew Wilcox (Oracle) wrote:
+> Simplify try_grab_compound_head() and remove an unnecessary
+> VM_BUG_ON by handling pages both with and without a pincount field in
+> page_pincount_add().
 
-Looks good,
+Nice:
 
 Reviewed-by: Christoph Hellwig <hch@lst.de>
