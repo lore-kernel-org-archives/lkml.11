@@ -2,111 +2,256 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6416C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B124EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242727AbiAJJD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:03:29 -0500
-Received: from mail-ua1-f50.google.com ([209.85.222.50]:35669 "EHLO
-        mail-ua1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242588AbiAJJA3 (ORCPT
+        id S242631AbiAJJF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:05:26 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:42260 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S242926AbiAJJEt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:00:29 -0500
-Received: by mail-ua1-f50.google.com with SMTP id m90so6871773uam.2;
-        Mon, 10 Jan 2022 01:00:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8NhtBWzQ5apsDhjpCyjxZEW0Il7Jt/CqRkEvPo1Xwf8=;
-        b=BaEL8y1aUS20a94tbSZHSEhXO70YCxxyBHC7LdxaR1RXs9+qO6hWzW32p5SSG4zhtv
-         BeKvvFaAAzY1tLrkqEdmvIeC7umirBmkgRBCi4vRmj2AjW6uxWWgXC00Dqu9n5HaTO6X
-         NofbNkKtWwkLzhvs++ReA/trOQSU1LTNwHEPCI9AhvdT7ScUCgeezPPdSvrQnf2c22IQ
-         IKFjWuiy+LID4ELIKGW4LAps0gmdEkWClw+QhouIQ5eVojmJMSTX0l24pklDBh5kK2Xu
-         kyrrRgM1m9WaxAplETYGxyIA5pvwrai0r4rVWYZdoUxMXRf4hpLPVFKu6itsS2t/gkid
-         F67g==
-X-Gm-Message-State: AOAM532Vb6Met+qsXgysLORKQA1kbPCTSCMLv6kz21UJUoJU+cRyuxMp
-        o7ZgUC75ys45UhuH6G5ltAHEH5MOZ2zQRg==
-X-Google-Smtp-Source: ABdhPJzUqwqg7A1u/EPIdXKEQ2fkQIQtqmXnNKFqJB/1VrLAzWGxs4Uy/0Ovf9gaGgF5sf4YV2sqLg==
-X-Received: by 2002:ab0:3301:: with SMTP id r1mr24729796uao.96.1641805228239;
-        Mon, 10 Jan 2022 01:00:28 -0800 (PST)
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
-        by smtp.gmail.com with ESMTPSA id f132sm3508217vkf.18.2022.01.10.01.00.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 01:00:27 -0800 (PST)
-Received: by mail-ua1-f54.google.com with SMTP id p37so22113110uae.8;
-        Mon, 10 Jan 2022 01:00:26 -0800 (PST)
-X-Received: by 2002:a67:e985:: with SMTP id b5mr1097590vso.77.1641805226820;
- Mon, 10 Jan 2022 01:00:26 -0800 (PST)
+        Mon, 10 Jan 2022 04:04:49 -0500
+HMM_SOURCE_IP: 172.18.0.218:40496.657948967
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-202.80.192.38 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 92D48280114;
+        Mon, 10 Jan 2022 17:04:31 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 8f2e6f7d82494e7baa53aeed8090a6a0 for j.vosburgh@gmail.com;
+        Mon, 10 Jan 2022 17:04:34 CST
+X-Transaction-ID: 8f2e6f7d82494e7baa53aeed8090a6a0
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        huyd12@chinatelecom.cn
+Subject: [RESEND PATCH v5] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
+Date:   Mon, 10 Jan 2022 04:04:10 -0500
+Message-Id: <20220110090410.70176-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <cover.1641289490.git.zong.li@sifive.com> <0419b2865c87f72adeb4edee9113a959e468b4a5.1641289490.git.zong.li@sifive.com>
-In-Reply-To: <0419b2865c87f72adeb4edee9113a959e468b4a5.1641289490.git.zong.li@sifive.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 10 Jan 2022 10:00:15 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUyYVBXAeJ8XS9OsUePpFLgpCXYT5rH_bJCvCg3eaav_w@mail.gmail.com>
-Message-ID: <CAMuHMdUyYVBXAeJ8XS9OsUePpFLgpCXYT5rH_bJCvCg3eaav_w@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: Add dma-channels for pdma device node
-To:     Zong Li <zong.li@sifive.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Bin Meng <bin.meng@windriver.com>, green.wan@sifive.com,
-        Vinod <vkoul@kernel.org>, dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zong,
+Since ipv6 neighbor solicitation and advertisement messages
+isn't handled gracefully in bonding6 driver, we can see packet
+drop due to inconsistency bewteen mac address in the option
+message and source MAC .
 
-On Wed, Jan 5, 2022 at 6:44 AM Zong Li <zong.li@sifive.com> wrote:
-> Add dma-channels property, then we can determine how many channels there
-> by device tree, rather than statically defines it in PDMA driver
->
-> Signed-off-by: Zong Li <zong.li@sifive.com>
+Another examples is ipv6 neighbor solicitation and advertisement
+messages from VM via tap attached to host brighe, the src mac
+mighe be changed through balance-alb mode, but it is not synced
+with Link-layer address in the option message.
 
-Thanks for your patch!
+The patch implements bond6's tx handle for ipv6 neighbor
+solicitation and advertisement messages.
 
-> --- a/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
-> +++ b/Documentation/devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml
-> @@ -34,12 +34,17 @@ properties:
->      minItems: 1
->      maxItems: 8
->
-> +  dma-channels:
-> +    minimum: 1
-> +    maximum: 4
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+---
+ drivers/net/bonding/bond_alb.c | 149 +++++++++++++++++++++++++++++++++
+ 1 file changed, 149 insertions(+)
 
-As per my comment on [PATCH 3/3], perhaps you want to use a default
-value of 4, and document that here, too?
+diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+index 533e476988f2..485e4863a365 100644
+--- a/drivers/net/bonding/bond_alb.c
++++ b/drivers/net/bonding/bond_alb.c
+@@ -22,6 +22,8 @@
+ #include <asm/byteorder.h>
+ #include <net/bonding.h>
+ #include <net/bond_alb.h>
++#include <net/ndisc.h>
++#include <net/ip6_checksum.h>
+ 
+ static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
+ 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
+@@ -1269,6 +1271,137 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+ 	return res;
+ }
+ 
++/*determine if the packet is NA or NS*/
++static bool __alb_determine_nd(struct icmp6hdr *hdr)
++{
++	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
++	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
++		return true;
++	}
++
++	return false;
++}
++
++static void alb_change_nd_option(struct sk_buff *skb, void *data)
++{
++	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
++	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
++	struct net_device *dev = skb->dev;
++	struct icmp6hdr *icmp6h = icmp6_hdr(skb);
++	struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
++	u8 *lladdr = NULL;
++	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
++				offsetof(struct nd_msg, opt));
++
++	while (ndoptlen) {
++		int l;
++
++		switch (nd_opt->nd_opt_type) {
++		case ND_OPT_SOURCE_LL_ADDR:
++		case ND_OPT_TARGET_LL_ADDR:
++			lladdr = ndisc_opt_addr_data(nd_opt, dev);
++			break;
++
++		default:
++			lladdr = NULL;
++			break;
++		}
++
++		l = nd_opt->nd_opt_len << 3;
++
++		if (ndoptlen < l || l == 0)
++			return;
++
++		if (lladdr) {
++			memcpy(lladdr, data, dev->addr_len);
++			icmp6h->icmp6_cksum = 0;
++
++			icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
++							      &ip6hdr->daddr,
++						ntohs(ip6hdr->payload_len),
++						IPPROTO_ICMPV6,
++						csum_partial(icmp6h,
++							     ntohs(ip6hdr->payload_len), 0));
++			return;
++		}
++		ndoptlen -= l;
++		nd_opt = ((void *)nd_opt) + l;
++	}
++}
++
++static u8 *alb_get_lladdr(struct sk_buff *skb)
++{
++	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
++	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
++	struct net_device *dev = skb->dev;
++	u8 *lladdr = NULL;
++	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
++				offsetof(struct nd_msg, opt));
++
++	while (ndoptlen) {
++		int l;
++
++		switch (nd_opt->nd_opt_type) {
++		case ND_OPT_SOURCE_LL_ADDR:
++		case ND_OPT_TARGET_LL_ADDR:
++			lladdr = ndisc_opt_addr_data(nd_opt, dev);
++			break;
++
++		default:
++			break;
++		}
++
++		l = nd_opt->nd_opt_len << 3;
++
++		if (ndoptlen < l || l == 0)
++			return NULL;
++
++		if (lladdr)
++			return lladdr;
++
++		ndoptlen -= l;
++		nd_opt = ((void *)nd_opt) + l;
++	}
++
++	return lladdr;
++}
++
++static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
++			      struct slave *tx_slave)
++{
++	struct ipv6hdr *ip6hdr;
++	struct icmp6hdr *hdr;
++
++	if (skb->protocol == htons(ETH_P_IPV6)) {
++		if (tx_slave && tx_slave !=
++		    rcu_access_pointer(bond->curr_active_slave)) {
++			ip6hdr = ipv6_hdr(skb);
++			if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
++				hdr = icmp6_hdr(skb);
++				if (__alb_determine_nd(hdr))
++					alb_change_nd_option(skb, tx_slave->dev->dev_addr);
++			}
++		}
++	}
++}
++
++static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
++{
++	struct ipv6hdr *ip6hdr;
++	struct icmp6hdr *hdr;
++
++	if (skb->protocol == htons(ETH_P_IPV6)) {
++		ip6hdr = ipv6_hdr(skb);
++		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
++			hdr = icmp6_hdr(skb);
++			if (__alb_determine_nd(hdr))
++				return true;
++		}
++	}
++
++	return false;
++}
++
+ /************************ exported alb functions ************************/
+ 
+ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+@@ -1350,6 +1483,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+ 		switch (skb->protocol) {
+ 		case htons(ETH_P_IP):
+ 		case htons(ETH_P_IPV6):
++			if (alb_determine_nd(skb, bond))
++				break;
++
+ 			hash_index = bond_xmit_hash(bond, skb);
+ 			if (bond->params.tlb_dynamic_lb) {
+ 				tx_slave = tlb_choose_channel(bond,
+@@ -1446,6 +1582,18 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+ 			break;
+ 		}
+ 
++		if (alb_determine_nd(skb, bond)) {
++			u8 *lladdr;
++
++			lladdr = alb_get_lladdr(skb);
++			if (lladdr) {
++				if (!bond_slave_has_mac_rx(bond, lladdr)) {
++					do_tx_balance = false;
++					break;
++				}
++			}
++		}
++
+ 		hash_start = (char *)&ip6hdr->daddr;
+ 		hash_size = sizeof(ip6hdr->daddr);
+ 		break;
+@@ -1489,6 +1637,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
+ 	struct slave *tx_slave = NULL;
+ 
+ 	tx_slave = bond_xmit_alb_slave_get(bond, skb);
++	alb_set_nd_option(skb, bond, tx_slave);
+ 	return bond_do_alb_xmit(skb, bond, tx_slave);
+ }
+ 
 
-> +
->    '#dma-cells':
->      const: 1
->
->  required:
->    - compatible
->    - reg
-> +  - dma-channels
->    - interrupts
->    - '#dma-cells'
->
+base-commit: 7a29b11da9651ef6a970e2f6bfd276f053aeb06a
+-- 
+2.27.0
 
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
