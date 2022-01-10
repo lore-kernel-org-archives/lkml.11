@@ -2,193 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4167C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 15:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F702C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 15:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236216AbiAJPew (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 10:34:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53424 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231674AbiAJPev (ORCPT
+        id S236250AbiAJPfv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 10:35:51 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:51028 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232443AbiAJPft (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 10:34:51 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Mon, 10 Jan 2022 10:35:49 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 389D221124;
+        Mon, 10 Jan 2022 15:35:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641828948; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ou3hccuGrE9JX8ZCJzM6cwwz70DUBXZo8YDkFQ3OmgU=;
+        b=PrmKoWzFsbyfvSb85EG+7a+KnQSInEofOGbULgFiRtsmU3oTRlEhCdcAQhbre+XgrNlO0V
+        KD+gX50zp9mR5IetyEeduRbpkbVhw9wnQy7KV3M1KkxmgGBiBsV1uPCR4cpKQhL8eX89RG
+        2HaSTF3R14e5o/fe0xY1M/5N2z9xQF8=
+Received: from suse.cz (unknown [10.100.201.86])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20C3FB81671;
-        Mon, 10 Jan 2022 15:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05E2BC36AE3;
-        Mon, 10 Jan 2022 15:34:46 +0000 (UTC)
-Date:   Mon, 10 Jan 2022 10:34:45 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Pingfan Liu <kernelfans@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>, stable@vger.kernel.org
-Subject: Re: [PATCH 2/2] tracing: Add test for user space strings when
- filtering on string pointers
-Message-ID: <20220110103445.21801e12@gandalf.local.home>
-In-Reply-To: <YdukyGuyYlCa/sZT@piliu.users.ipa.redhat.com>
-References: <20220107225655.647376947@goodmis.org>
-        <20220107225840.003487216@goodmis.org>
-        <YdukyGuyYlCa/sZT@piliu.users.ipa.redhat.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by relay2.suse.de (Postfix) with ESMTPS id 3CB19A3B81;
+        Mon, 10 Jan 2022 15:35:47 +0000 (UTC)
+Date:   Mon, 10 Jan 2022 16:35:46 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Yu Zhao <yuzhao@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Rik van Riel <riel@surriel.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        Konstantin Kharlamov <Hi-Angel@yandex.ru>
+Subject: Re: [PATCH v6 6/9] mm: multigenerational lru: aging
+Message-ID: <YdxSUuDc3OC4pe+f@dhcp22.suse.cz>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <20220104202227.2903605-7-yuzhao@google.com>
+ <Ydg8AeE6JIUnC+ps@dhcp22.suse.cz>
+ <YdjOazilBEkdUT7x@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdjOazilBEkdUT7x@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 11:15:20 +0800
-Pingfan Liu <kernelfans@gmail.com> wrote:
-
-> Hi Steven,
+On Fri 07-01-22 16:36:11, Yu Zhao wrote:
+> On Fri, Jan 07, 2022 at 02:11:29PM +0100, Michal Hocko wrote:
+> > On Tue 04-01-22 13:22:25, Yu Zhao wrote:
+> > [...]
+> > > +static void lru_gen_age_node(struct pglist_data *pgdat, struct scan_control *sc)
+> > > +{
+> > > +	struct mem_cgroup *memcg;
+> > > +	bool success = false;
+> > > +	unsigned long min_ttl = READ_ONCE(lru_gen_min_ttl);
+> > > +
+> > > +	VM_BUG_ON(!current_is_kswapd());
+> > > +
+> > > +	current->reclaim_state->mm_walk = &pgdat->mm_walk;
+> > > +
+> > > +	memcg = mem_cgroup_iter(NULL, NULL, NULL);
+> > > +	do {
+> > > +		struct lruvec *lruvec = mem_cgroup_lruvec(memcg, pgdat);
+> > > +
+> > > +		if (age_lruvec(lruvec, sc, min_ttl))
+> > > +			success = true;
+> > > +
+> > > +		cond_resched();
+> > > +	} while ((memcg = mem_cgroup_iter(NULL, memcg, NULL)));
+> > > +
+> > > +	if (!success && mutex_trylock(&oom_lock)) {
+> > > +		struct oom_control oc = {
+> > > +			.gfp_mask = sc->gfp_mask,
+> > > +			.order = sc->order,
+> > > +		};
+> > > +
+> > > +		if (!oom_reaping_in_progress())
+> > > +			out_of_memory(&oc);
+> > > +
+> > > +		mutex_unlock(&oom_lock);
+> > > +	}
+> > 
+> > Why do you need to trigger oom killer from this path? Why cannot you
+> > rely on the page allocator to do that like we do now?
 > 
-> This patch passed my test. But I have some concern, please see comment inline.
-
-Thanks, can I add a "Tested-by:" from you?
-
-(when I have my final version)
-
-> > index 996920ed1812..cf0fa9a785c7 100644
-> > --- a/kernel/trace/trace_events_filter.c
-> > +++ b/kernel/trace/trace_events_filter.c
-> > @@ -5,6 +5,7 @@
-> >   * Copyright (C) 2009 Tom Zanussi <tzanussi@gmail.com>
-> >   */
-> >  
-> > +#include <linux/uaccess.h>
-> >  #include <linux/module.h>
-> >  #include <linux/ctype.h>
-> >  #include <linux/mutex.h>
-> > @@ -654,12 +655,50 @@ DEFINE_EQUALITY_PRED(32);
-> >  DEFINE_EQUALITY_PRED(16);
-> >  DEFINE_EQUALITY_PRED(8);
-> >  
-> > +/* user space strings temp buffer */
-> > +#define USTRING_BUF_SIZE	512  
+> This is per desktop users' (repeated) requests. The can't tolerate
+> thrashing as servers do because of UI lags; and they usually don't
+> have fancy tools like oomd.
 > 
-> Should it be PATH_MAX(4096) in case of matching against a file path?
+> Related discussions I saw:
+> https://github.com/zen-kernel/zen-kernel/issues/218
+> https://lore.kernel.org/lkml/20101028191523.GA14972@google.com/
+> https://lore.kernel.org/lkml/20211213051521.21f02dd2@mail.inbox.lv/
+> https://lore.kernel.org/lkml/54C2C89C.8080002@gmail.com/
+> https://lore.kernel.org/lkml/d9802b6a-949b-b327-c4a6-3dbca485ec20@gmx.com/
 
-I went back and forth with this size in my head, and since I currently do
-not free it, and it is 4 * nr_cpus in size, I went with the smallest number
-I felt was OK.
+I do not really see any arguments why an userspace based trashing
+detection cannot be used for those. Could you clarify?
 
-We can increase it in the future, and even expose the size to user space.
+Also my question was pointing to why out_of_memory is called from the
+reclaim rather than the allocator (memcg charging path). It is the
+caller of the reclaim to control different reclaim strategies and tell
+when all the hopes are lost and the oom killer should be invoked. This
+allows for a different policies at the allocator level and this change
+will break that AFAICS. E.g. what if the underlying allocation context
+is __GFP_NORETRY?
+ 
+> >From patch 8:
+>   Personal computers
+>   ------------------
+>   :Thrashing prevention: Write ``N`` to
+>    ``/sys/kernel/mm/lru_gen/min_ttl_ms`` to prevent the working set of
+>    ``N`` milliseconds from getting evicted. The OOM killer is invoked if
+>    this working set can't be kept in memory. Based on the average human
+>    detectable lag (~100ms), ``N=1000`` usually eliminates intolerable
+>    lags due to thrashing. Larger values like ``N=3000`` make lags less
+>    noticeable at the cost of more OOM kills.
 
-> 
-> > +
-> > +struct ustring_buffer {
-> > +	char		buffer[USTRING_BUF_SIZE];
-> > +};
-> > +
-> > +static __percpu struct ustring_buffer *ustring_per_cpu;
-> > +
-> > +static __always_inline char *test_string(char *str)
-> > +{
-> > +	struct ustring_buffer *ubuf;
-> > +	char __user *ustr;
-> > +	char *kstr;
-> > +
-> > +	if (!ustring_per_cpu)
-> > +		return NULL;
-> > +
-> > +	ubuf = this_cpu_ptr(ustring_per_cpu);
-> > +	kstr = ubuf->buffer;
-> > +
-> > +	if (likely((unsigned long)str >= TASK_SIZE)) {
-> > +		/* For safety, do not trust the string pointer */
-> > +		if (!strncpy_from_kernel_nofault(kstr, str, USTRING_BUF_SIZE))  
-> 
-> Since no other trace_event_class except event_class_syscall_enter tries
-> to uaccess, so the unreliable source only comes from
-> event_class_syscall_enter.
-> 
-> In that case, the access to kernel address is forbidden. So here just
-> return -EACCES ?
+This is a very good example of something that should be a self contained
+patch with its own justification. TBH it is really not all that clear to
+me that we want to provide any user visible knob to control OOM behavior
+based on a time based QoS.
 
-I changed the way all pointers work. Any event that access a string pointer
-(there are a few), and we filter on it, then I want it to go through this
-path.
-
-And returning -EACCES is useless this is done in the filtering logic and
-that error will not be exposed to anyone. The best we can do is to fail the
-filter.
-
-> 
-> > +			return NULL;
-> > +	} else {
-> > +		/* user space address? */
-> > +		ustr = str;
-> > +		if (!strncpy_from_user_nofault(kstr, ustr, USTRING_BUF_SIZE))
-> > +			return NULL;
-> > +	}
-> > +	return kstr;
-> > +}
-> > +
-> >  /* Filter predicate for fixed sized arrays of characters */
-> >  static int filter_pred_string(struct filter_pred *pred, void *event)
-> >  {
-> >  	char *addr = (char *)(event + pred->offset);
-> >  	int cmp, match;
-> >  
-> > +	addr = test_string(addr);  
-> 
-> Among all of trace_event_class, only event_class_syscall_enter exposed
-> to this fault (uprobe does not uaccess). So I think the strncpy_*() can
-> be avoided based on class, which improves performance.
-
-The thing is, tracing should never cause a fault in the system. If a
-pointer is bad and you filter on it, it should not cause a crash. Your
-patch showed me we have this issues with kernel pointers too. And since we
-have no safe "strncmp" the best we can do is a safe "strncpy" and then
-compare it.
-
-You actually exposed more issues than the one you were trying to solve, and
-this patch now addresses those issues.
-
-Yes, it will impact performance, but robustness always trumps performance.
-
-> 
-> > +	if (!addr)
-> > +		return 0;
-> > +
-> >  	cmp = pred->regex.match(addr, &pred->regex, pred->regex.field_len);
-> >  
-> >  	match = cmp ^ pred->not;
-> > @@ -671,10 +710,16 @@ static int filter_pred_string(struct filter_pred *pred, void *event)
-> >  static int filter_pred_pchar(struct filter_pred *pred, void *event)
-> >  {
-> >  	char **addr = (char **)(event + pred->offset);
-> > +	char *str;
-> >  	int cmp, match;
-> > -	int len = strlen(*addr) + 1;	/* including tailing '\0' */
-> > +	int len;
-> > +
-> > +	str = test_string(*addr);
-> > +	if (!str)
-> > +		return 0;
-> >  
-> > -	cmp = pred->regex.match(*addr, &pred->regex, len);
-> > +	len = strlen(str) + 1;	/* including tailing '\0' */
-> > +	cmp = pred->regex.match(str, &pred->regex, len);
-> >  
-> >  	match = cmp ^ pred->not;
-> >  
-> > @@ -784,6 +829,10 @@ static int filter_pred_none(struct filter_pred *pred, void *event)
-> >  
-> >  static int regex_match_full(char *str, struct regex *r, int len)
-> >  {
-> > +	str = test_string(str);  
-> 
-> Since all regex_match_*() are called in filter_pred_*(), which have
-> already protected codes from page fault. So no need to double check.
-
-Ah, you're right. I only need to add this to filter_pred_pchar() and not
-the regex.
-
-Thanks, I'll send a v2.
-
--- Steve
+-- 
+Michal Hocko
+SUSE Labs
