@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D903C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1474CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:30:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240379AbiAJH34 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:29:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239798AbiAJH0w (ORCPT
+        id S239915AbiAJHaJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:30:09 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36776 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239785AbiAJH0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:26:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B62C02983D;
-        Sun,  9 Jan 2022 23:25:55 -0800 (PST)
+        Mon, 10 Jan 2022 02:26:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F3E611CB;
-        Mon, 10 Jan 2022 07:25:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02FF7C36AED;
-        Mon, 10 Jan 2022 07:25:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D51B0611BC;
+        Mon, 10 Jan 2022 07:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAB8FC36AED;
+        Mon, 10 Jan 2022 07:26:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799554;
-        bh=oRuKsWuXd7rWSTaW3hc33NOCyZXi5lLLPnILt8k0u/I=;
+        s=korg; t=1641799608;
+        bh=nRf2YnszFlBRJ5SE2pq88CkT1YtF9Z2oYJoZxoIQuuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wvuSO7etq4NCkDpMgRtWQ4wxuEJvXXGArzzIO/l0c30ER7xVzqwh8vlzH2oFzqVp5
-         Wwz4icJbdlnp1C7SELjqCOOrszFjntTINBpV3YmxrNR82WvdeZrx6/e5c9sPiwaNhJ
-         0ewpK81RcvNyGA/fsSeUmKjgss4QR9LSdCsfai78=
+        b=FxuN79tcVKZ7ekI9iUovXcnACo9rtpPh5ZqPjNHvIH9N0+ohrGmf8kQORFfsAFoAP
+         4+F6Z1wRsgBfdm0vSSXULHrKtr7Tzi5tN7hyVI6Ll6AxLIUD1FJ9BzA/LBRRpAFFFo
+         irnFzrIuF0D+pz2GwN3e6t7f+M3f/2CElV0LMvdg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 12/22] sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
-Date:   Mon, 10 Jan 2022 08:23:05 +0100
-Message-Id: <20220110071814.676562253@linuxfoundation.org>
+        stable@vger.kernel.org, Ivan Levshin <ivan.levshin@microfocus.com>,
+        Takashi Iwai <tiwai@suse.de>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 4.14 01/22] Bluetooth: btusb: Apply QCA Rome patches for some ATH3012 models
+Date:   Mon, 10 Jan 2022 08:22:54 +0100
+Message-Id: <20220110071814.308754523@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
 References: <20220110071814.261471354@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -49,65 +48,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 7d18a07897d07495ee140dd319b0e9265c0f68ba upstream.
+commit 803cdb8ce584198cd45825822910cac7de6378cb upstream.
 
-tx_queue_len can be set to ~0U, we need to be more
-careful about overflows.
+In commit f44cb4b19ed4 ("Bluetooth: btusb: Fix quirk for Atheros
+1525/QCA6174") we tried to address the non-working Atheros BT devices
+by changing the quirk from BTUSB_ATH3012 to BTUSB_QCA_ROME.  This made
+such devices working while it turned out to break other existing chips
+with the very same USB ID, hence it was reverted afterwards.
 
-__fls(0) is undefined, as this report shows:
+This is another attempt to tackle the issue.  The essential point to
+use BTUSB_QCA_ROME is to apply the btusb_setup_qca() and do RAM-
+patching.  And the previous attempt failed because btusb_setup_qca()
+returns -ENODEV if the ROM version doesn't match with the expected
+ones.  For some devices that have already the "correct" ROM versions,
+we may just skip the setup procedure and continue the rest.
 
-UBSAN: shift-out-of-bounds in net/sched/sch_qfq.c:1430:24
-shift exponent 51770272 is too large for 32-bit type 'int'
-CPU: 0 PID: 25574 Comm: syz-executor.0 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x201/0x2d8 lib/dump_stack.c:106
- ubsan_epilogue lib/ubsan.c:151 [inline]
- __ubsan_handle_shift_out_of_bounds+0x494/0x530 lib/ubsan.c:330
- qfq_init_qdisc+0x43f/0x450 net/sched/sch_qfq.c:1430
- qdisc_create+0x895/0x1430 net/sched/sch_api.c:1253
- tc_modify_qdisc+0x9d9/0x1e20 net/sched/sch_api.c:1660
- rtnetlink_rcv_msg+0x934/0xe60 net/core/rtnetlink.c:5571
- netlink_rcv_skb+0x200/0x470 net/netlink/af_netlink.c:2496
- netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
- netlink_unicast+0x814/0x9f0 net/netlink/af_netlink.c:1345
- netlink_sendmsg+0xaea/0xe60 net/netlink/af_netlink.c:1921
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x5b9/0x910 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmsg+0x280/0x370 net/socket.c:2492
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+So, the first fix we'll need is to add a check of the ROM version in
+the function to skip the setup if the ROM version looks already sane,
+so that it can be applied for all ath devices.
 
-Fixes: 462dbc9101ac ("pkt_sched: QFQ Plus: fair-queueing service at DRR cost")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+However, the world is a bit more complex than that simple solution.
+Since BTUSB_ATH3012 quirk checks the bcdDevice and bails out when it's
+0x0001 at the beginning of probing, so the device probe always aborts
+here.
+
+In this patch, we add another check of ROM version again, and if the
+device needs patching, the probe continues.  For that, a slight
+refactoring of btusb_qca_send_vendor_req() was required so that the
+probe function can pass usb_device pointer directly before allocating
+hci_dev stuff.
+
+Fixes: commit f44cb4b19ed4 ("Bluetooth: btusb: Fix quirk for Atheros 1525/QCA6174")
+Bugzilla: http://bugzilla.opensuse.org/show_bug.cgi?id=1082504
+Tested-by: Ivan Levshin <ivan.levshin@microfocus.com>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/sched/sch_qfq.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/bluetooth/btusb.c |   32 +++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -1425,10 +1425,8 @@ static int qfq_init_qdisc(struct Qdisc *
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -2548,11 +2548,9 @@ static const struct qca_device_info qca_
+ 	{ 0x00000302, 28, 4, 18 }, /* Rome 3.2 */
+ };
+ 
+-static int btusb_qca_send_vendor_req(struct hci_dev *hdev, u8 request,
++static int btusb_qca_send_vendor_req(struct usb_device *udev, u8 request,
+ 				     void *data, u16 size)
+ {
+-	struct btusb_data *btdata = hci_get_drvdata(hdev);
+-	struct usb_device *udev = btdata->udev;
+ 	int pipe, err;
+ 	u8 *buf;
+ 
+@@ -2567,7 +2565,7 @@ static int btusb_qca_send_vendor_req(str
+ 	err = usb_control_msg(udev, pipe, request, USB_TYPE_VENDOR | USB_DIR_IN,
+ 			      0, 0, buf, size, USB_CTRL_SET_TIMEOUT);
+ 	if (err < 0) {
+-		BT_ERR("%s: Failed to access otp area (%d)", hdev->name, err);
++		dev_err(&udev->dev, "Failed to access otp area (%d)", err);
+ 		goto done;
+ 	}
+ 
+@@ -2723,20 +2721,38 @@ static int btusb_setup_qca_load_nvm(stru
+ 	return err;
+ }
+ 
++/* identify the ROM version and check whether patches are needed */
++static bool btusb_qca_need_patch(struct usb_device *udev)
++{
++	struct qca_version ver;
++
++	if (btusb_qca_send_vendor_req(udev, QCA_GET_TARGET_VERSION, &ver,
++				      sizeof(ver)) < 0)
++		return false;
++	/* only low ROM versions need patches */
++	return !(le32_to_cpu(ver.rom_version) & ~0xffffU);
++}
++
+ static int btusb_setup_qca(struct hci_dev *hdev)
+ {
++	struct btusb_data *btdata = hci_get_drvdata(hdev);
++	struct usb_device *udev = btdata->udev;
+ 	const struct qca_device_info *info = NULL;
+ 	struct qca_version ver;
+ 	u32 ver_rom;
+ 	u8 status;
+ 	int i, err;
+ 
+-	err = btusb_qca_send_vendor_req(hdev, QCA_GET_TARGET_VERSION, &ver,
++	err = btusb_qca_send_vendor_req(udev, QCA_GET_TARGET_VERSION, &ver,
+ 					sizeof(ver));
  	if (err < 0)
  		return err;
  
--	if (qdisc_dev(sch)->tx_queue_len + 1 > QFQ_MAX_AGG_CLASSES)
--		max_classes = QFQ_MAX_AGG_CLASSES;
--	else
--		max_classes = qdisc_dev(sch)->tx_queue_len + 1;
-+	max_classes = min_t(u64, (u64)qdisc_dev(sch)->tx_queue_len + 1,
-+			    QFQ_MAX_AGG_CLASSES);
- 	/* max_cl_shift = floor(log_2(max_classes)) */
- 	max_cl_shift = __fls(max_classes);
- 	q->max_agg_classes = 1<<max_cl_shift;
+ 	ver_rom = le32_to_cpu(ver.rom_version);
++	/* Don't care about high ROM versions */
++	if (ver_rom & ~0xffffU)
++		return 0;
++
+ 	for (i = 0; i < ARRAY_SIZE(qca_devices_table); i++) {
+ 		if (ver_rom == qca_devices_table[i].rom_version)
+ 			info = &qca_devices_table[i];
+@@ -2747,7 +2763,7 @@ static int btusb_setup_qca(struct hci_de
+ 		return -ENODEV;
+ 	}
+ 
+-	err = btusb_qca_send_vendor_req(hdev, QCA_CHECK_STATUS, &status,
++	err = btusb_qca_send_vendor_req(udev, QCA_CHECK_STATUS, &status,
+ 					sizeof(status));
+ 	if (err < 0)
+ 		return err;
+@@ -2974,7 +2990,8 @@ static int btusb_probe(struct usb_interf
+ 		/* Old firmware would otherwise let ath3k driver load
+ 		 * patch and sysconfig files
+ 		 */
+-		if (le16_to_cpu(udev->descriptor.bcdDevice) <= 0x0001)
++		if (le16_to_cpu(udev->descriptor.bcdDevice) <= 0x0001 &&
++		    !btusb_qca_need_patch(udev))
+ 			return -ENODEV;
+ 	}
+ 
+@@ -3136,6 +3153,7 @@ static int btusb_probe(struct usb_interf
+ 	}
+ 
+ 	if (id->driver_info & BTUSB_ATH3012) {
++		data->setup_on_usb = btusb_setup_qca;
+ 		hdev->set_bdaddr = btusb_set_bdaddr_ath3012;
+ 		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+ 		set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
 
 
