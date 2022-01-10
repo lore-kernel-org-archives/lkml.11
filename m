@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD18BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239514AbiAJHbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:31:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240080AbiAJH21 (ORCPT
+        id S239826AbiAJHbx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:31:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38028 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240081AbiAJH22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:28:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75647C028C3E;
-        Sun,  9 Jan 2022 23:26:12 -0800 (PST)
+        Mon, 10 Jan 2022 02:28:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1446E611AD;
-        Mon, 10 Jan 2022 07:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82F7C36AED;
-        Mon, 10 Jan 2022 07:26:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B23C8611C9;
+        Mon, 10 Jan 2022 07:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97EF9C36AE9;
+        Mon, 10 Jan 2022 07:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799571;
-        bh=JxrTnYrluUzQyCZxsBv86/R8GKc3cF/aI2jya1JUmaM=;
+        s=korg; t=1641799707;
+        bh=WLcjkDH0MA5Ws7HBfmZfW8Pr+NSz5/fPbxZShZIadus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZGwhY2nsvEfjWeaMcPlfKRfrI6nedUKXGaDgyCGPyQ5FVda0Jsy3k926iPy2r0Ji+
-         P9khmkoSHbo2irZoq839a11XXQRKElOM/M7JuprbR9jiAw+UNihzFXxBvck12tg/lk
-         kULdLDq8bbQ6NYnKNXsVvglYhZzl4ouUl1YfvLRA=
+        b=y6ylJ21a726y9kFRVTpyhQHT6A7NfAzw/eGdxuhF4gWpe2zyNYmWA7TeGnN/ydd1/
+         YyE2ptOchsJjT5QXiffXY7HKJEt7hUFByFD5DMIsftr375MrtKOHpxniDrT71zc3BB
+         0Kh+Wv0rSAxqLN0j9ZvtwLO9TcJww5ueGlsxGJpg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 18/22] ipv6: Do cleanup if attribute validation fails in multipath route
-Date:   Mon, 10 Jan 2022 08:23:11 +0100
-Message-Id: <20220110071814.868559413@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.4 09/34] RDMA/uverbs: Check for null return of kmalloc_array
+Date:   Mon, 10 Jan 2022 08:23:04 +0100
+Message-Id: <20220110071815.967327967@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071814.261471354@linuxfoundation.org>
-References: <20220110071814.261471354@linuxfoundation.org>
+In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
+References: <20220110071815.647309738@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 95bdba23b5b4aa75fe3e6c84335e638641c707bb ]
+commit 7694a7de22c53a312ea98960fcafc6ec62046531 upstream.
 
-As Nicolas noted, if gateway validation fails walking the multipath
-attribute the code should jump to the cleanup to free previously
-allocated memory.
+Because of the possible failure of the allocation, data might be NULL
+pointer and will cause the dereference of the NULL pointer later.
+Therefore, it might be better to check it and return -ENOMEM.
 
-Fixes: 1ff15a710a86 ("ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route")
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Link: https://lore.kernel.org/r/20220103170555.94638-1-dsahern@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6884c6c4bd09 ("RDMA/verbs: Store the write/write_ex uapi entry points in the uverbs_api")
+Link: https://lore.kernel.org/r/20211231093315.1917667-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/route.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/infiniband/core/uverbs_uapi.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 008ebda35ed22..79b67f8048b5b 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -3236,12 +3236,10 @@ static int ip6_route_multipath_add(struct fib6_config *cfg,
- 
- 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
- 			if (nla) {
--				int ret;
--
--				ret = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
-+				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
- 							extack);
--				if (ret)
--					return ret;
-+				if (err)
-+					goto cleanup;
- 
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
--- 
-2.34.1
-
+--- a/drivers/infiniband/core/uverbs_uapi.c
++++ b/drivers/infiniband/core/uverbs_uapi.c
+@@ -450,6 +450,9 @@ static int uapi_finalize(struct uverbs_a
+ 	uapi->num_write_ex = max_write_ex + 1;
+ 	data = kmalloc_array(uapi->num_write + uapi->num_write_ex,
+ 			     sizeof(*uapi->write_methods), GFP_KERNEL);
++	if (!data)
++		return -ENOMEM;
++
+ 	for (i = 0; i != uapi->num_write + uapi->num_write_ex; i++)
+ 		data[i] = &uapi->notsupp_method;
+ 	uapi->write_methods = data;
 
 
