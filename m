@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:26:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 986A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238676AbiAJE0Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:26:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36626 "EHLO
+        id S238697AbiAJE00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:26:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238569AbiAJEYg (ORCPT
+        with ESMTP id S238581AbiAJEYh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 23:24:36 -0500
+        Sun, 9 Jan 2022 23:24:37 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5D9C061748
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D54C06173F
         for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=pr6dwM9p32xFGkENVfW8ccHIrI0fREnA+ZakTJ73Pp8=; b=diLvaBxsmnGNc0FH5T2NoqikDX
-        Q4Ygnsy6APbDxF2yhgPg/bUDT/ZZl5VKG73fA3Wb/qUY1yr/6zw06e9ozJDWRpziaMw2g2IVFIu6U
-        QnHwvyE3ecy9hBMdhQhrtNPVBoIQRVfVsI3wVBFTXIjA17sjB/F36yzkUY1r2uMTg8eCIyjpcgs9o
-        HERYwayFGxgm8bF0MKu0UBGFNSiWSAGYzZjJQKryikGkg7Sgy50thISU/Y4S9hK8usWe9Zha3lydG
-        neZjS1K3jtVAYFKarLfjPxhFpKfl6hIaB5iteXtDUv2QkKsgaiFuxpgj50rTbXDia0Jtfj3fRnA79
-        jjHXkc7g==;
+        bh=toFUQqgYtl0v327PRslx3eBHdHJmUYmTsDw9nmAaME0=; b=dM3u7vcFyE2WKYv1dSy8MDTHG5
+        IGAL8q8VFYIIRashMmorLNTm3sfc4dsBwvsqXdwH3y6KCv4JHhMrUkNUaRhwrNh5yh725n0YhK8uw
+        uW0u2BPiVjZpRxGA5+PijRHAsruBIUkNi6bZ6q+KJ4SsxA8TzXWqvvxvCsEhpH3lPDBG40DST1uQU
+        kbK2dhclA8f1ozFQx3bUSlmcnxiaW/oifphqGtxqcIiXCiRKXu7tMuaANJJXGhBHcHxpfplm/Ptis
+        Fx5YfJgoXVKWnN7dbFWK9ykw1dmIks3XqCyIjI/EA5z4yJI/wEO7F4IKRUdt4ZvZa29a/EBWNGFiz
+        MrAhv56g==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6mE8-0025wo-Pi; Mon, 10 Jan 2022 04:24:12 +0000
+        id 1n6mE9-0025xA-Jy; Mon, 10 Jan 2022 04:24:13 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 12/28] mm: Add folio_put_refs()
-Date:   Mon, 10 Jan 2022 04:23:50 +0000
-Message-Id: <20220110042406.499429-13-willy@infradead.org>
+Subject: [PATCH v2 23/28] gup: Convert gup_huge_pud() to use a folio
+Date:   Mon, 10 Jan 2022 04:24:01 +0000
+Message-Id: <20220110042406.499429-24-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
@@ -46,46 +46,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is like folio_put(), but puts N references at once instead of
-just one.  It's like put_page_refs(), but does one atomic operation
-instead of two, and is available to more than just gup.c.
+Use the new folio-based APIs.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/linux/mm.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ mm/gup.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 598be27d4d2e..bf9624ca61c3 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1234,6 +1234,26 @@ static inline void folio_put(struct folio *folio)
- 		__put_page(&folio->page);
+diff --git a/mm/gup.c b/mm/gup.c
+index a006bce2d47b..7b7bf8361558 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -2527,7 +2527,8 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+ 			unsigned long end, unsigned int flags,
+ 			struct page **pages, int *nr)
+ {
+-	struct page *head, *page;
++	struct page *page;
++	struct folio *folio;
+ 	int refs;
+ 
+ 	if (!pud_access_permitted(orig, flags & FOLL_WRITE))
+@@ -2543,17 +2544,17 @@ static int gup_huge_pud(pud_t orig, pud_t *pudp, unsigned long addr,
+ 	page = nth_page(pud_page(orig), (addr & ~PUD_MASK) >> PAGE_SHIFT);
+ 	refs = record_subpages(page, addr, end, pages + *nr);
+ 
+-	head = try_grab_compound_head(pud_page(orig), refs, flags);
+-	if (!head)
++	folio = try_grab_folio(page, refs, flags);
++	if (!folio)
+ 		return 0;
+ 
+ 	if (unlikely(pud_val(orig) != pud_val(*pudp))) {
+-		put_compound_head(head, refs, flags);
++		gup_put_folio(folio, refs, flags);
+ 		return 0;
+ 	}
+ 
+ 	*nr += refs;
+-	SetPageReferenced(head);
++	folio_set_referenced(folio);
+ 	return 1;
  }
  
-+/**
-+ * folio_put_refs - Reduce the reference count on a folio.
-+ * @folio: The folio.
-+ * @refs: The number of references to reduce.
-+ *
-+ * If the folio's reference count reaches zero, the memory will be
-+ * released back to the page allocator and may be used by another
-+ * allocation immediately.  Do not access the memory or the struct folio
-+ * after calling folio_put_refs() unless you can be sure that these weren't
-+ * the last references.
-+ *
-+ * Context: May be called in process or interrupt context, but not in NMI
-+ * context.  May be called while holding a spinlock.
-+ */
-+static inline void folio_put_refs(struct folio *folio, int refs)
-+{
-+	if (folio_ref_sub_and_test(folio, refs))
-+		__put_page(&folio->page);
-+}
-+
- static inline void put_page(struct page *page)
- {
- 	struct folio *folio = page_folio(page);
 -- 
 2.33.0
 
