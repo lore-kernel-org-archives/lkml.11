@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7800CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A36FC2BA80
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242496AbiAJHkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42390 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233961AbiAJHeK (ORCPT
+        id S242350AbiAJHkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:40:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58326 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240134AbiAJHaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:34:10 -0500
+        Mon, 10 Jan 2022 02:30:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8736E611A6;
-        Mon, 10 Jan 2022 07:34:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 705BFC36AE9;
-        Mon, 10 Jan 2022 07:34:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 363DCB81219;
+        Mon, 10 Jan 2022 07:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6063AC36AFB;
+        Mon, 10 Jan 2022 07:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800049;
-        bh=Szb9TvzsCywHF4L0vx7zk+gn/LMnbJj7FKMxDHllITc=;
+        s=korg; t=1641799847;
+        bh=31yQ4M//QHOHNxcA+8askJI836thsVQc74Z6+Lo2RIA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XprrK7ukLAupxZtACqyIDp0OiXXoocgso9dnACyoq7GY8BX0Dqv+Tj3r+QWuGzodC
-         kgG5hBDEzvz41WHtaes/5aauEFvNQlmB6fNCallslrO/lw8Sm31Ke6mVcQeb3R7kig
-         PPX7Ik8Xm9PUkAo5CUSUe38y7CXzeFARE/gqMGt4=
+        b=gTobP+B3xV8UhqzB2ytIFwXGLPyYPbwn1vu8UVFVoH5wwI/mMndgoBoO+UuTtiQ40
+         jMuOEF91XH754kWdjLrdRPRytQo+af1yXWOO/kbppuN0Bu4SW/lnlZ0BJKnhWHOS3m
+         uUAPE+1EsyQvvmmpdDO/nChvAVEpzorziuz56zhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Prike Liang <Prike.Liang@amd.com>,
-        Evan Quan <evan.quan@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Lu Tixiong <lutianxiong@huawei.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Lixiaokeng <lixiaokeng@huawei.com>,
+        Linfeilong <linfeilong@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 61/72] drm/amd/pm: skip setting gfx cgpg in the s0ix suspend-resume
-Date:   Mon, 10 Jan 2022 08:23:38 +0100
-Message-Id: <20220110071823.621425731@linuxfoundation.org>
+Subject: [PATCH 5.10 35/43] scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+Date:   Mon, 10 Jan 2022 08:23:32 +0100
+Message-Id: <20220110071818.531046233@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
+In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
+References: <20220110071817.337619922@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,63 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Prike Liang <Prike.Liang@amd.com>
+From: Lixiaokeng <lixiaokeng@huawei.com>
 
-[ Upstream commit 8c45096c60d6ce6341c374636100ed1b2c1c33a1 ]
+[ Upstream commit 1b8d0300a3e9f216ae4901bab886db7299899ec6 ]
 
-In the s0ix entry need retain gfx in the gfxoff state,so here need't
-set gfx cgpg in the S0ix suspend-resume process. Moreover move the S0ix
-check into SMU12 can simplify the code condition check.
+|- iscsi_if_destroy_conn            |-dev_attr_show
+ |-iscsi_conn_teardown
+  |-spin_lock_bh                     |-iscsi_sw_tcp_conn_get_param
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1712
-Signed-off-by: Prike Liang <Prike.Liang@amd.com>
-Reviewed-by: Evan Quan <evan.quan@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+  |-kfree(conn->persistent_address)   |-iscsi_conn_get_param
+  |-kfree(conn->local_ipaddr)
+                                       ==>|-read persistent_address
+                                       ==>|-read local_ipaddr
+  |-spin_unlock_bh
+
+When iscsi_conn_teardown() and iscsi_conn_get_param() happen in parallel, a
+UAF may be triggered.
+
+Link: https://lore.kernel.org/r/046ec8a0-ce95-d3fc-3235-666a7c65b224@huawei.com
+Reported-by: Lu Tixiong <lutianxiong@huawei.com>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Lixiaokeng <lixiaokeng@huawei.com>
+Signed-off-by: Linfeilong <linfeilong@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c      | 7 ++-----
- drivers/gpu/drm/amd/pm/swsmu/smu12/smu_v12_0.c | 3 ++-
- 2 files changed, 4 insertions(+), 6 deletions(-)
+ drivers/scsi/libiscsi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-index 04863a7971155..30ee8819587e2 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -1536,9 +1536,7 @@ static int smu_suspend(void *handle)
- 
- 	smu->watermarks_bitmap &= ~(WATERMARKS_LOADED);
- 
--	/* skip CGPG when in S0ix */
--	if (smu->is_apu && !adev->in_s0ix)
--		smu_set_gfx_cgpg(&adev->smu, false);
-+	smu_set_gfx_cgpg(&adev->smu, false);
- 
- 	return 0;
- }
-@@ -1569,8 +1567,7 @@ static int smu_resume(void *handle)
- 		return ret;
- 	}
- 
--	if (smu->is_apu)
--		smu_set_gfx_cgpg(&adev->smu, true);
-+	smu_set_gfx_cgpg(&adev->smu, true);
- 
- 	smu->disable_uclk_switch = 0;
- 
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu12/smu_v12_0.c b/drivers/gpu/drm/amd/pm/swsmu/smu12/smu_v12_0.c
-index 43028f2cd28b5..9c91e79c955fb 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu12/smu_v12_0.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu12/smu_v12_0.c
-@@ -120,7 +120,8 @@ int smu_v12_0_powergate_sdma(struct smu_context *smu, bool gate)
- 
- int smu_v12_0_set_gfx_cgpg(struct smu_context *smu, bool enable)
+diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
+index 30d27b6706746..d4e66c595eb87 100644
+--- a/drivers/scsi/libiscsi.c
++++ b/drivers/scsi/libiscsi.c
+@@ -2950,6 +2950,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
  {
--	if (!(smu->adev->pg_flags & AMD_PG_SUPPORT_GFX_PG))
-+	/* Until now the SMU12 only implemented for Renoir series so here neen't do APU check. */
-+	if (!(smu->adev->pg_flags & AMD_PG_SUPPORT_GFX_PG) || smu->adev->in_s0ix)
- 		return 0;
+ 	struct iscsi_conn *conn = cls_conn->dd_data;
+ 	struct iscsi_session *session = conn->session;
++	char *tmp_persistent_address = conn->persistent_address;
++	char *tmp_local_ipaddr = conn->local_ipaddr;
  
- 	return smu_cmn_send_smc_msg_with_param(smu,
+ 	del_timer_sync(&conn->transport_timer);
+ 
+@@ -2971,8 +2973,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	spin_lock_bh(&session->frwd_lock);
+ 	free_pages((unsigned long) conn->data,
+ 		   get_order(ISCSI_DEF_MAX_RECV_SEG_LEN));
+-	kfree(conn->persistent_address);
+-	kfree(conn->local_ipaddr);
+ 	/* regular RX path uses back_lock */
+ 	spin_lock_bh(&session->back_lock);
+ 	kfifo_in(&session->cmdpool.queue, (void*)&conn->login_task,
+@@ -2984,6 +2984,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	mutex_unlock(&session->eh_mutex);
+ 
+ 	iscsi_destroy_conn(cls_conn);
++	kfree(tmp_persistent_address);
++	kfree(tmp_local_ipaddr);
+ }
+ EXPORT_SYMBOL_GPL(iscsi_conn_teardown);
+ 
 -- 
 2.34.1
 
