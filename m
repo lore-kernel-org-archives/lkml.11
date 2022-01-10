@@ -2,106 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F5BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 14:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235149AbiAJOCb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 09:02:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
+        id S234542AbiAJOEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 09:04:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234923AbiAJOC3 (ORCPT
+        with ESMTP id S234143AbiAJOEY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 09:02:29 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0DA5C06173F;
-        Mon, 10 Jan 2022 06:02:28 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1n6vFg-0005FF-59; Mon, 10 Jan 2022 15:02:24 +0100
-Message-ID: <a754b7d0-8a20-9730-c439-1660994005d0@leemhuis.info>
-Date:   Mon, 10 Jan 2022 15:02:23 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-BW
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Rao Shoaib <rao.shoaib@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>,
-        regressions@lists.linux.dev
-References: <CAKXUXMzZkQvHJ35nwVhcJe+DrtEXGw+eKGVD04=xRJkVUC2sPA@mail.gmail.com>
- <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Re: Observation of a memory leak with commit 314001f0bf92 ("af_unix:
- Add OOB support")
-In-Reply-To: <20220109132038.38f8ae4f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1641823349;ec920999;
-X-HE-SMSGID: 1n6vFg-0005FF-59
+        Mon, 10 Jan 2022 09:04:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC07C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 06:04:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7771A61278
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 14:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FD5C36AED;
+        Mon, 10 Jan 2022 14:04:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641823462;
+        bh=yE2q+xnkfSNyw3eRPs9WaUSPN7vUF0dmIhBs7LZbHFg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
+         References:From;
+        b=LDV3s/c0hJgMGiN8m9GyXfd/k6To6vXJaSMrKx5pxoQpfW3h6JVrD2nFHN2Djm9OP
+         97Ram/i4F0LY1S8LJUPWr/OmuIJNM9z1dVkfFcS5BaHeh5H8EUBUFt1zMy+UeFkJUt
+         +QKb5qMMTfdvxXPVy7cGasCx/Yj0mMO0QBVUqeXoBD0wDU3OWLt/P2N+VZlcL6FElx
+         oJxZyqYg8fFvToZwODgifOMOkcx1TTD85MQSsM1Pe+qOZSEgRDzQaFbI5NtksDsoYd
+         RjMrrLMGHFsrOmA5j5WK+4rlRuQr4ADZQcmgZw89qgaTk0OO0N6t3f3/R7XqkyRU1A
+         wMSnh4/peKjpA==
+From:   Tom Zanussi <zanussi@kernel.org>
+To:     rostedt@goodmis.org
+Cc:     mhiramat@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 2/6] tracing: Change event_trigger_ops func() to trigger()
+Date:   Mon, 10 Jan 2022 08:04:12 -0600
+Message-Id: <36ab812e3ee74ee03ae0043fda41a858ee728c00.1641823001.git.zanussi@kernel.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1641823001.git.zanussi@kernel.org>
+References: <cover.1641823001.git.zanussi@kernel.org>
+In-Reply-To: <cover.1641823001.git.zanussi@kernel.org>
+References: <cover.1641823001.git.zanussi@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The name of the func() callback on event_trigger_ops is too generic
+and is easily confused with other callbacks with that name, so change
+it to something that reflects its actual purpose.
 
-On 09.01.22 22:20, Jakub Kicinski wrote:
-> On Fri, 7 Jan 2022 07:48:46 +0100 Lukas Bulwahn wrote:
->> Dear Rao and David,
->>
->>
->> In our syzkaller instance running on linux-next,
->> https://elisa-builder-00.iol.unh.edu/syzkaller-next/, we have been
->> observing a memory leak in prepare_creds,
->> https://elisa-builder-00.iol.unh.edu/syzkaller-next/report?id=1dcac8539d69ad9eb94ab2c8c0d99c11a0b516a3,
->> for quite some time.
->>
->> It is reproducible on v5.15-rc1, v5.15, v5.16-rc8 and next-20220104.
->> So, it is in mainline, was released and has not been fixed in
->> linux-next yet.
->>
->> As syzkaller also provides a reproducer, we bisected this memory leak
->> to be introduced with  commit 314001f0bf92 ("af_unix: Add OOB
->> support").
->>
->> We also tested that reverting this commit on torvalds' current tree
->> made the memory leak with the reproducer go away.
->>
->> Could you please have a look how your commit introduces this memory
->> leak? We will gladly support testing your fix in case help is needed.
-> 
-> Let's test the regression/bug report tracking bot :)
-> 
-> #regzbot introduced: 314001f0bf92
+In this case, the main purpose of the callback is to implement an
+event trigger, so call it trigger() instead.
 
-Great, thx for trying, you only did a small mistake: it lacked a caret
-(^) before the "introduced", which would have told regzbot that the
-parent mail (the one you quoted) is the one containing the report (which
-later is linked in patch descriptions of fixes and allows rezgbot to
-connect things). That's why regzbot now thinks you reported the issue
-and looks out for patches and commits that link to your mail. :-/
+Also add some more documentation to event_trigger_ops describing the
+callbacks a bit better.
 
-Don't worry, I just added it properly and now mark this as duplicate:
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ kernel/trace/trace.h                | 19 ++++++++++++++----
+ kernel/trace/trace_eprobe.c         |  2 +-
+ kernel/trace/trace_events_hist.c    | 12 ++++++------
+ kernel/trace/trace_events_trigger.c | 30 ++++++++++++++---------------
+ 4 files changed, 37 insertions(+), 26 deletions(-)
 
-#regzbot dup-of:
-https://lore.kernel.org/lkml/CAKXUXMzZkQvHJ35nwVhcJe%2BDrtEXGw%2BeKGVD04=xRJkVUC2sPA@mail.gmail.com/
+diff --git a/kernel/trace/trace.h b/kernel/trace/trace.h
+index 25bd5706ef0b..1a73659222d4 100644
+--- a/kernel/trace/trace.h
++++ b/kernel/trace/trace.h
+@@ -1619,10 +1619,20 @@ extern int register_trigger_hist_enable_disable_cmds(void);
+  * The methods in this structure provide per-event trigger hooks for
+  * various trigger operations.
+  *
++ * The @init and @free methods are used during trigger setup and
++ * teardown, typically called from an event_command's @parse()
++ * function implementation.
++ *
++ * The @print method is used to print the trigger spec.
++ *
++ * The @trigger method is the function that actually implements the
++ * trigger and is called in the context of the triggering event
++ * whenever that event occurs.
++ *
+  * All the methods below, except for @init() and @free(), must be
+  * implemented.
+  *
+- * @func: The trigger 'probe' function called when the triggering
++ * @trigger: The trigger 'probe' function called when the triggering
+  *	event occurs.  The data passed into this callback is the data
+  *	that was supplied to the event_command @reg() function that
+  *	registered the trigger (see struct event_command) along with
+@@ -1651,9 +1661,10 @@ extern int register_trigger_hist_enable_disable_cmds(void);
+  *	(see trace_event_triggers.c).
+  */
+ struct event_trigger_ops {
+-	void			(*func)(struct event_trigger_data *data,
+-					struct trace_buffer *buffer, void *rec,
+-					struct ring_buffer_event *rbe);
++	void			(*trigger)(struct event_trigger_data *data,
++					   struct trace_buffer *buffer,
++					   void *rec,
++					   struct ring_buffer_event *rbe);
+ 	int			(*init)(struct event_trigger_ops *ops,
+ 					struct event_trigger_data *data);
+ 	void			(*free)(struct event_trigger_ops *ops,
+diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
+index 84d5bfa34a99..6d363fd8a1e4 100644
+--- a/kernel/trace/trace_eprobe.c
++++ b/kernel/trace/trace_eprobe.c
+@@ -543,7 +543,7 @@ static void eprobe_trigger_func(struct event_trigger_data *data,
+ }
+ 
+ static struct event_trigger_ops eprobe_trigger_ops = {
+-	.func			= eprobe_trigger_func,
++	.trigger		= eprobe_trigger_func,
+ 	.print			= eprobe_trigger_print,
+ 	.init			= eprobe_trigger_init,
+ 	.free			= eprobe_trigger_free,
+diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
+index 89bbbbd3a3f5..229ce5c2dfd3 100644
+--- a/kernel/trace/trace_events_hist.c
++++ b/kernel/trace/trace_events_hist.c
+@@ -5759,7 +5759,7 @@ static void event_hist_trigger_free(struct event_trigger_ops *ops,
+ }
+ 
+ static struct event_trigger_ops event_hist_trigger_ops = {
+-	.func			= event_hist_trigger,
++	.trigger		= event_hist_trigger,
+ 	.print			= event_hist_trigger_print,
+ 	.init			= event_hist_trigger_init,
+ 	.free			= event_hist_trigger_free,
+@@ -5793,7 +5793,7 @@ static void event_hist_trigger_named_free(struct event_trigger_ops *ops,
+ }
+ 
+ static struct event_trigger_ops event_hist_trigger_named_ops = {
+-	.func			= event_hist_trigger,
++	.trigger		= event_hist_trigger,
+ 	.print			= event_hist_trigger_print,
+ 	.init			= event_hist_trigger_named_init,
+ 	.free			= event_hist_trigger_named_free,
+@@ -6383,28 +6383,28 @@ hist_enable_count_trigger(struct event_trigger_data *data,
+ }
+ 
+ static struct event_trigger_ops hist_enable_trigger_ops = {
+-	.func			= hist_enable_trigger,
++	.trigger		= hist_enable_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+ };
+ 
+ static struct event_trigger_ops hist_enable_count_trigger_ops = {
+-	.func			= hist_enable_count_trigger,
++	.trigger		= hist_enable_count_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+ };
+ 
+ static struct event_trigger_ops hist_disable_trigger_ops = {
+-	.func			= hist_enable_trigger,
++	.trigger		= hist_enable_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+ };
+ 
+ static struct event_trigger_ops hist_disable_count_trigger_ops = {
+-	.func			= hist_enable_count_trigger,
++	.trigger		= hist_enable_count_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+diff --git a/kernel/trace/trace_events_trigger.c b/kernel/trace/trace_events_trigger.c
+index 15aae07cbe61..24aceeb50dc0 100644
+--- a/kernel/trace/trace_events_trigger.c
++++ b/kernel/trace/trace_events_trigger.c
+@@ -68,7 +68,7 @@ event_triggers_call(struct trace_event_file *file,
+ 		if (data->paused)
+ 			continue;
+ 		if (!rec) {
+-			data->ops->func(data, buffer, rec, event);
++			data->ops->trigger(data, buffer, rec, event);
+ 			continue;
+ 		}
+ 		filter = rcu_dereference_sched(data->filter);
+@@ -78,7 +78,7 @@ event_triggers_call(struct trace_event_file *file,
+ 			tt |= data->cmd_ops->trigger_type;
+ 			continue;
+ 		}
+-		data->ops->func(data, buffer, rec, event);
++		data->ops->trigger(data, buffer, rec, event);
+ 	}
+ 	return tt;
+ }
+@@ -106,7 +106,7 @@ event_triggers_post_call(struct trace_event_file *file,
+ 		if (data->paused)
+ 			continue;
+ 		if (data->cmd_ops->trigger_type & tt)
+-			data->ops->func(data, NULL, NULL, NULL);
++			data->ops->trigger(data, NULL, NULL, NULL);
+ 	}
+ }
+ EXPORT_SYMBOL_GPL(event_triggers_post_call);
+@@ -1023,28 +1023,28 @@ traceoff_trigger_print(struct seq_file *m, struct event_trigger_ops *ops,
+ }
+ 
+ static struct event_trigger_ops traceon_trigger_ops = {
+-	.func			= traceon_trigger,
++	.trigger		= traceon_trigger,
+ 	.print			= traceon_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+ };
+ 
+ static struct event_trigger_ops traceon_count_trigger_ops = {
+-	.func			= traceon_count_trigger,
++	.trigger		= traceon_count_trigger,
+ 	.print			= traceon_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+ };
+ 
+ static struct event_trigger_ops traceoff_trigger_ops = {
+-	.func			= traceoff_trigger,
++	.trigger		= traceoff_trigger,
+ 	.print			= traceoff_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+ };
+ 
+ static struct event_trigger_ops traceoff_count_trigger_ops = {
+-	.func			= traceoff_count_trigger,
++	.trigger		= traceoff_count_trigger,
+ 	.print			= traceoff_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+@@ -1135,14 +1135,14 @@ snapshot_trigger_print(struct seq_file *m, struct event_trigger_ops *ops,
+ }
+ 
+ static struct event_trigger_ops snapshot_trigger_ops = {
+-	.func			= snapshot_trigger,
++	.trigger		= snapshot_trigger,
+ 	.print			= snapshot_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+ };
+ 
+ static struct event_trigger_ops snapshot_count_trigger_ops = {
+-	.func			= snapshot_count_trigger,
++	.trigger		= snapshot_count_trigger,
+ 	.print			= snapshot_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+@@ -1226,14 +1226,14 @@ stacktrace_trigger_print(struct seq_file *m, struct event_trigger_ops *ops,
+ }
+ 
+ static struct event_trigger_ops stacktrace_trigger_ops = {
+-	.func			= stacktrace_trigger,
++	.trigger		= stacktrace_trigger,
+ 	.print			= stacktrace_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+ };
+ 
+ static struct event_trigger_ops stacktrace_count_trigger_ops = {
+-	.func			= stacktrace_count_trigger,
++	.trigger		= stacktrace_count_trigger,
+ 	.print			= stacktrace_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_trigger_free,
+@@ -1353,28 +1353,28 @@ void event_enable_trigger_free(struct event_trigger_ops *ops,
+ }
+ 
+ static struct event_trigger_ops event_enable_trigger_ops = {
+-	.func			= event_enable_trigger,
++	.trigger		= event_enable_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+ };
+ 
+ static struct event_trigger_ops event_enable_count_trigger_ops = {
+-	.func			= event_enable_count_trigger,
++	.trigger		= event_enable_count_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+ };
+ 
+ static struct event_trigger_ops event_disable_trigger_ops = {
+-	.func			= event_enable_trigger,
++	.trigger		= event_enable_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+ };
+ 
+ static struct event_trigger_ops event_disable_count_trigger_ops = {
+-	.func			= event_enable_count_trigger,
++	.trigger		= event_enable_count_trigger,
+ 	.print			= event_enable_trigger_print,
+ 	.init			= event_trigger_init,
+ 	.free			= event_enable_trigger_free,
+-- 
+2.17.1
 
-Thx again for trying.
-
-
-I wonder if this mistake could be avoided. I came up with one idea while
-walking the dog:
-
- * if there is *no* parent mail, then "regzbot introduce" could consider
-the current mail as the report
-
- * if there *is* a parent mail, then "regzbot introduce" could consider
-the parent as the report
-
-Then regzbot would have done the right thing in this case. But there is
-a "but": I wonder if such an approach would be too much black magic that
-confuses more than it helps. What do you think?
-
-Ciao, Thorsten
