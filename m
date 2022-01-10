@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E20C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240566AbiAJHoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:44:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49924 "EHLO
+        id S243032AbiAJHoa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:44:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240961AbiAJHeb (ORCPT
+        with ESMTP id S240992AbiAJHeb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:34:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6944FC0253A0;
-        Sun,  9 Jan 2022 23:30:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3EDC0253B2;
+        Sun,  9 Jan 2022 23:30:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11792B811F5;
-        Mon, 10 Jan 2022 07:30:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E531C36AED;
-        Mon, 10 Jan 2022 07:30:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04D84B811F5;
+        Mon, 10 Jan 2022 07:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E6F9C36AE9;
+        Mon, 10 Jan 2022 07:30:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799802;
-        bh=uBdHps0ZrJgucE7hAVqdKjWVMwERvWHx5aEmtElClyY=;
+        s=korg; t=1641799805;
+        bh=Z+zCmTEq1nUUaLCcSgs4oup25kLMn11yeAWlNCsjOKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OmkyspVHy+3Dk1yCNH8cykrVUcSy+/06YEG7ae1AbFTypKxTgbe5DenZ7f7/Jjy7K
-         zgfPVga054VWgYGHNiKheqIcwC/B44ZvmVGnfJKWYBIJHYkiPOtWYhO0RNYVo2eA9w
-         fvlBS3KiN6vF4ihX/1Hvl2/CP4qgjJMrinC0Q1H4=
+        b=FtHKTV8Ixjf4foW3h352WTx8pd3hrECx/4+7C7tSUCq90D9UF5sHvRCLe3F3Ycya+
+         IgpBt0WFRTLh7Wv0sPNFltkNPHHZ0co3sYw75i7mG50VeshQ+6s8GopzTiDD9llqJq
+         NZeqRuQCl8Rtkp3YE84Guoh2cbPqJo8rEr5YD2ks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Ashwin Vijayavel <ashwin.vijayavel@intel.com>,
-        Karen Sornek <karen.sornek@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH 5.10 07/43] iavf: Fix limit of total number of queues to active queues of VF
-Date:   Mon, 10 Jan 2022 08:23:04 +0100
-Message-Id: <20220110071817.599617504@linuxfoundation.org>
+        syzbot+6d532fa8f9463da290bc@syzkaller.appspotmail.com,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.10 08/43] RDMA/core: Dont infoleak GRH fields
+Date:   Mon, 10 Jan 2022 08:23:05 +0100
+Message-Id: <20220110071817.631453319@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -51,43 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karen Sornek <karen.sornek@intel.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-commit b712941c8085e638bb92456e866ed3de4404e3d5 upstream.
+commit b35a0f4dd544eaa6162b6d2f13a2557a121ae5fd upstream.
 
-In the absence of this validation, if the user requests to
-configure queues more than the enabled queues, it results in
-sending the requested number of queues to the kernel stack
-(due to the asynchronous nature of VF response), in which
-case the stack might pick a queue to transmit that is not
-enabled and result in Tx hang. Fix this bug by
-limiting the total number of queues allocated for VF to
-active queues of VF.
+If dst->is_global field is not set, the GRH fields are not cleared
+and the following infoleak is reported.
 
-Fixes: d5b33d024496 ("i40evf: add ndo_setup_tc callback to i40evf")
-Signed-off-by: Ashwin Vijayavel <ashwin.vijayavel@intel.com>
-Signed-off-by: Karen Sornek <karen.sornek@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+=====================================================
+BUG: KMSAN: kernel-infoleak in instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+BUG: KMSAN: kernel-infoleak in _copy_to_user+0x1c9/0x270 lib/usercopy.c:33
+ instrument_copy_to_user include/linux/instrumented.h:121 [inline]
+ _copy_to_user+0x1c9/0x270 lib/usercopy.c:33
+ copy_to_user include/linux/uaccess.h:209 [inline]
+ ucma_init_qp_attr+0x8c7/0xb10 drivers/infiniband/core/ucma.c:1242
+ ucma_write+0x637/0x6c0 drivers/infiniband/core/ucma.c:1732
+ vfs_write+0x8ce/0x2030 fs/read_write.c:588
+ ksys_write+0x28b/0x510 fs/read_write.c:643
+ __do_sys_write fs/read_write.c:655 [inline]
+ __se_sys_write fs/read_write.c:652 [inline]
+ __ia32_sys_write+0xdb/0x120 fs/read_write.c:652
+ do_syscall_32_irqs_on arch/x86/entry/common.c:114 [inline]
+ __do_fast_syscall_32+0x96/0xf0 arch/x86/entry/common.c:180
+ do_fast_syscall_32+0x34/0x70 arch/x86/entry/common.c:205
+ do_SYSENTER_32+0x1b/0x20 arch/x86/entry/common.c:248
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+
+Local variable resp created at:
+ ucma_init_qp_attr+0xa4/0xb10 drivers/infiniband/core/ucma.c:1214
+ ucma_write+0x637/0x6c0 drivers/infiniband/core/ucma.c:1732
+
+Bytes 40-59 of 144 are uninitialized
+Memory access of size 144 starts at ffff888167523b00
+Data copied to user address 0000000020000100
+
+CPU: 1 PID: 25910 Comm: syz-executor.1 Not tainted 5.16.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+=====================================================
+
+Fixes: 4ba66093bdc6 ("IB/core: Check for global flag when using ah_attr")
+Link: https://lore.kernel.org/r/0e9dd51f93410b7b2f4f5562f52befc878b71afa.1641298868.git.leonro@nvidia.com
+Reported-by: syzbot+6d532fa8f9463da290bc@syzkaller.appspotmail.com
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_main.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/infiniband/core/uverbs_marshall.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2598,8 +2598,11 @@ static int iavf_validate_ch_config(struc
- 		total_max_rate += tx_rate;
- 		num_qps += mqprio_qopt->qopt.count[i];
- 	}
--	if (num_qps > IAVF_MAX_REQ_QUEUES)
-+	if (num_qps > adapter->num_active_queues) {
-+		dev_err(&adapter->pdev->dev,
-+			"Cannot support requested number of queues\n");
- 		return -EINVAL;
-+	}
+--- a/drivers/infiniband/core/uverbs_marshall.c
++++ b/drivers/infiniband/core/uverbs_marshall.c
+@@ -66,7 +66,7 @@ void ib_copy_ah_attr_to_user(struct ib_d
+ 	struct rdma_ah_attr *src = ah_attr;
+ 	struct rdma_ah_attr conv_ah;
  
- 	ret = iavf_validate_tx_bandwidth(adapter, total_max_rate);
- 	return ret;
+-	memset(&dst->grh.reserved, 0, sizeof(dst->grh.reserved));
++	memset(&dst->grh, 0, sizeof(dst->grh));
+ 
+ 	if ((ah_attr->type == RDMA_AH_ATTR_TYPE_OPA) &&
+ 	    (rdma_ah_get_dlid(ah_attr) > be16_to_cpu(IB_LID_PERMISSIVE)) &&
 
 
