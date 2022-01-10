@@ -2,92 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFCBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242259AbiAJI5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:57:40 -0500
-Received: from proxima.lasnet.de ([78.47.171.185]:54072 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241968AbiAJI5G (ORCPT
+        id S242508AbiAJI5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:57:53 -0500
+Received: from mail-sh.amlogic.com ([58.32.228.43]:19223 "EHLO
+        mail-sh.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242538AbiAJI51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:57:06 -0500
-Received: from [IPV6:2003:e9:d726:98fc:cdf9:bc0b:bacf:e07a] (p200300e9d72698fccdf9bc0bbacfe07a.dip0.t-ipconnect.de [IPv6:2003:e9:d726:98fc:cdf9:bc0b:bacf:e07a])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 4E392C05A1;
-        Mon, 10 Jan 2022 09:57:02 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1641805022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IaYI1Hh+FARrQFhEF0cAj1myGc5Q4XmWUc/d7YCm7jg=;
-        b=BKDixR9k/4qpycMv7rQ/G7RH+cpCQMhfg2Acg7w/IGD1+rdGc5GseTOKD1i5UytXMKqtya
-        P9+m/lrTcpfV8t+WRUlMGlNtdTfnCBT3W8oaWT/c/QANHfS8NRCf5jFbZ8zLkQKvCLOOed
-        yGN/gBkqLSKlNjs5VwU5jbRUgT9G9/ug6FAbjZjNAuIT5fsTHyNvRRkC436soN+aEoRniV
-        fSJBQsh9SDom8Jd1MGrnbTkQiNUoyVzEIweKsN+YisIWze//bFrVeLV78xblj6gwoFbxoe
-        L4XDfc5zqgf30t6x3WHLdxo49ceKt7ZOybXOlcFfw7OJj9A8fL1NUhfAbNhaRw==
-Message-ID: <871f2181-6356-8bfd-47cb-0872d70b2cd9@datenfreihafen.org>
-Date:   Mon, 10 Jan 2022 09:57:01 +0100
+        Mon, 10 Jan 2022 03:57:27 -0500
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Mon, 10 Jan 2022
+ 16:56:50 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-serial@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH V4 1/5] dt-bindings: serial: meson: Drop
+Date:   Mon, 10 Jan 2022 16:56:00 +0800
+Message-ID: <20220110085604.18042-2-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220110085604.18042-1-yu.tu@amlogic.com>
+References: <20220110085604.18042-1-yu.tu@amlogic.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Subject: Re: [PATCH -next v2] ieee802154: atusb: move to new USB API
-Content-Language: en-US
-To:     Pavel Skripkin <paskripkin@gmail.com>, alex.aring@gmail.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <2439d9ab-133f-0338-24f9-a9a5cd2065a3@datenfreihafen.org>
- <20220108131838.12321-1-paskripkin@gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220108131838.12321-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Deprecated, don't use anymore because compatible =
+amlogic,meson-gx-uart. Don't differentiate between GXBB, GXL
+and G12A which have different revisions of the UART IP.
+So it's split into GXBB, GXL and G12A.
 
-Hello.
+Signed-off-by: Yu Tu <yu.tu@amlogic.com>
+---
+ .../devicetree/bindings/serial/amlogic,meson-uart.yaml | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-On 08.01.22 14:18, Pavel Skripkin wrote:
-> Old USB API is prone to uninit value bugs if error handling is not
-> correct. Let's move atusb to use new USB API to
-> 
-> 	1) Make code more simple, since new API does not require memory
-> 	   to be allocates via kmalloc()
-> 
-> 	2) Defend driver from usb-related uninit value bugs.
-> 
-> 	3) Make code more modern and simple
-> 
-> This patch removes atusb usb wrappers as Greg suggested [0], this will make
-> code more obvious and easier to understand over time, and replaces old
-> API calls with new ones.
-> 
-> Also this patch adds and updates usb related error handling to prevent
-> possible uninit value bugs in future
-> 
-> Link: https://lore.kernel.org/all/YdL0GPxy4TdGDzOO@kroah.com/ [0]
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
-> 
-> Changes in v2:
-> 	- Fixed logic bug in atusb_get_and_conf_chip()
-> 	- Renamed rc variable to reg in atusb_read_subreg()
-> 
-> ---
->   drivers/net/ieee802154/atusb.c | 186 ++++++++++++---------------------
->   1 file changed, 67 insertions(+), 119 deletions(-)
+diff --git a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+index 72e8868db3e0..ad9f1f4537a0 100644
+--- a/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
++++ b/Documentation/devicetree/bindings/serial/amlogic,meson-uart.yaml
+@@ -28,7 +28,10 @@ properties:
+               - amlogic,meson6-uart
+               - amlogic,meson8-uart
+               - amlogic,meson8b-uart
+-              - amlogic,meson-gx-uart
++              - amlogic,meson-gx-uart # deprecated, use revision specific property below
++              - amlogic,meson-gxbb-uart
++              - amlogic,meson-gxl-uart
++              - amlogic,meson-g12a-uart
+               - amlogic,meson-s4-uart
+           - const: amlogic,meson-ao-uart
+       - description: Everything-Else power domain UART controller
+@@ -36,7 +39,10 @@ properties:
+           - amlogic,meson6-uart
+           - amlogic,meson8-uart
+           - amlogic,meson8b-uart
+-          - amlogic,meson-gx-uart
++          - amlogic,meson-gx-uart # deprecated, use revision specific property below
++          - amlogic,meson-gxbb-uart
++          - amlogic,meson-gxl-uart
++          - amlogic,meson-g12a-uart
+           - amlogic,meson-s4-uart
+ 
+   reg:
+-- 
+2.33.1
 
-
-This patch has been applied to the wpan-next tree and will be
-part of the next pull request to net-next. Thanks!
-
-regards
-Stefan Schmidt
