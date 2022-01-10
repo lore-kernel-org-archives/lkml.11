@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:48:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F524C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240416AbiAJHr5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:47:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        id S236875AbiAJHsR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:48:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242370AbiAJHkl (ORCPT
+        with ESMTP id S241989AbiAJHkH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:40:41 -0500
+        Mon, 10 Jan 2022 02:40:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E6BC033275;
-        Sun,  9 Jan 2022 23:34:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6237C0251BD;
+        Sun,  9 Jan 2022 23:33:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35DE861192;
-        Mon, 10 Jan 2022 07:34:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC4CC36AEF;
-        Mon, 10 Jan 2022 07:34:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 75A5F60B63;
+        Mon, 10 Jan 2022 07:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B1DBC36AE9;
+        Mon, 10 Jan 2022 07:33:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800080;
-        bh=Zml5vsmKBW934+KJOkwoCv9DpISaKkxpPTFMp2BHLQk=;
+        s=korg; t=1641800031;
+        bh=miwMnJgVOnR+9E9/tWDy+mlTU5eoEgWYT3bcqx54edA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPC7VmEpGfZbnxNRbZ1sYzcOIw37E/epxXO/PSNE0neDmFqQLHGbfmhsYdI21kRV7
-         bO6ihlb2X1x8nsV3+m0usbizoRX2LvjuL7+lZ7Q5rlXu2Q++xcndpwH+Y0r4PhlH7M
-         MrGj7kFEMMMenUz1fAhhT609xv0xfsFjsp9gyJMY=
+        b=sMObtAg1IjmerI1bPycudQJIwTFHLH9aY0on+dc4OBKX6uLmaqNVwEvA5SKI+el7A
+         NZI+ELaW369UhSgWecq161e70oYH9kpgj1RsEak54xF2Fw++6CbXnqgtv7MBE/Uigt
+         S9N0Rr12sGPHG9+AbaDvD8V09Xwe/jEvLAUbnWl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kirill Tkhai <ktkhai@virtuozzo.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        Dave Chinner <dchinner@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>
-Subject: [PATCH 5.15 40/72] xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
-Date:   Mon, 10 Jan 2022 08:23:17 +0100
-Message-Id: <20220110071822.914334103@linuxfoundation.org>
+        stable@vger.kernel.org, Lijo Lazar <lijo.lazar@amd.com>,
+        Hawking Zhang <Hawking.Zhang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 55/72] drm/amd/pm: Fix xgmi link control on aldebaran
+Date:   Mon, 10 Jan 2022 08:23:32 +0100
+Message-Id: <20220110071823.419565546@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -51,35 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Lijo Lazar <lijo.lazar@amd.com>
 
-commit 983d8e60f50806f90534cc5373d0ce867e5aaf79 upstream.
+[ Upstream commit 19e66d512e4182a0461530fa3159638e0f55d97e ]
 
-The old ALLOCSP/FREESP ioctls in XFS can be used to preallocate space at
-the end of files, just like fallocate and RESVSP.  Make the behavior
-consistent with the other ioctls.
+Fix the message argument.
+	0: Allow power down
+	1: Disallow power down
 
-Reported-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Eric Sandeen <sandeen@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lijo Lazar <lijo.lazar@amd.com>
+Reviewed-by: Hawking Zhang <Hawking.Zhang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/xfs/xfs_ioctl.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/xfs/xfs_ioctl.c
-+++ b/fs/xfs/xfs_ioctl.c
-@@ -687,7 +687,8 @@ xfs_ioc_space(
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+index 5019903db492a..c9cfeb094750d 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/aldebaran_ppt.c
+@@ -1619,7 +1619,7 @@ static int aldebaran_allow_xgmi_power_down(struct smu_context *smu, bool en)
+ {
+ 	return smu_cmn_send_smc_msg_with_param(smu,
+ 					       SMU_MSG_GmiPwrDnControl,
+-					       en ? 1 : 0,
++					       en ? 0 : 1,
+ 					       NULL);
+ }
  
- 	if (bf->l_start > XFS_ISIZE(ip)) {
- 		error = xfs_alloc_file_space(ip, XFS_ISIZE(ip),
--				bf->l_start - XFS_ISIZE(ip), 0);
-+				bf->l_start - XFS_ISIZE(ip),
-+				XFS_BMAPI_PREALLOC);
- 		if (error)
- 			goto out_unlock;
- 	}
+-- 
+2.34.1
+
 
 
