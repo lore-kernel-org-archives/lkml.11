@@ -2,93 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63177C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F03C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:09:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243616AbiAJKHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:07:12 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:59314 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234093AbiAJKHL (ORCPT
+        id S243633AbiAJKJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:09:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58576 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234093AbiAJKJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:07:11 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 8E2651C0B76; Mon, 10 Jan 2022 11:07:08 +0100 (CET)
-Date:   Mon, 10 Jan 2022 11:07:08 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 5.10 09/43] netrom: fix copying in user data in
- nr_setsockopt
-Message-ID: <20220110100708.GA5588@duo.ucw.cz>
-References: <20220110071817.337619922@linuxfoundation.org>
- <20220110071817.669190550@linuxfoundation.org>
+        Mon, 10 Jan 2022 05:09:08 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68269C06173F;
+        Mon, 10 Jan 2022 02:09:08 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id A8B501F43744
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1641809347;
+        bh=9r/SDK6nozUu5OWdjoYPAUhp3hjBUTHjNcy/d6M0jgc=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=WcHo25d+Tywel71wR0c+GwyX5XpRG3rJEHviTasqUvqh+sDhc4FFxKMvnt4pGKimK
+         yvGVBlFqmW05dJ3aO3QJDNQmXTC5a31mMtQ9qDT20emZnvV/xq1W9ljkN93kJhOTiJ
+         ioi/SP1A92tc46RyIyCXLvX03qRD3qp4Jy4tChtYHnk5tk+Mp5PrHE4Hbu7J77oMa5
+         72ipZ9sWmccyF8JBcGy5ORq+zYYDkuIliHES6/ZXF3dezsULqlmullRP7xlahWog4+
+         kL6PT4n3P2vpCm1QxacbyNPtEemg26ixY0UIIeMDDAkmYqYhZk5b2/PbfwWeCTI7kC
+         LUZx1lJA5Yj+w==
+Subject: Re: [PATCH v1 2/2] pinctrl: add pinctrl driver on mt8186
+To:     Guodong Liu <guodong.liu@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@kernel.org>
+Cc:     Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220110073111.31306-1-guodong.liu@mediatek.com>
+ <20220110073111.31306-2-guodong.liu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Message-ID: <c7d7fbe3-1fe2-8765-5577-b4b06cebe9b6@collabora.com>
+Date:   Mon, 10 Jan 2022 11:09:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="pf9I7BMVVzbSWLtt"
-Content-Disposition: inline
-In-Reply-To: <20220110071817.669190550@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220110073111.31306-2-guodong.liu@mediatek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---pf9I7BMVVzbSWLtt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi!
-
-> From: Christoph Hellwig <hch@lst.de>
->=20
-> commit 3087a6f36ee028ec095c04a8531d7d33899b7fed upstream.
->=20
-> This code used to copy in an unsigned long worth of data before
-> the sockptr_t conversion, so restore that.
-
-Maybe, but then	the size checks	need to	be updated, too.
-
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: David S. Miller <davem@davemloft.net>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Il 10/01/22 08:31, Guodong Liu ha scritto:
+> This commit includes pinctrl driver for mt8186.
+> 
+> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
 > ---
->  net/netrom/af_netrom.c |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> --- a/net/netrom/af_netrom.c
-> +++ b/net/netrom/af_netrom.c
-> @@ -306,7 +306,7 @@ static int nr_setsockopt(struct socket *
->  	if (optlen < sizeof(unsigned int))
+>   drivers/pinctrl/mediatek/Kconfig              |    6 +
+>   drivers/pinctrl/mediatek/Makefile             |    1 +
+>   drivers/pinctrl/mediatek/pinctrl-mt8186.c     | 1313 ++++++++++
+>   drivers/pinctrl/mediatek/pinctrl-mtk-mt8186.h | 2186 +++++++++++++++++
+>   4 files changed, 3506 insertions(+)
+>   create mode 100644 drivers/pinctrl/mediatek/pinctrl-mt8186.c
+>   create mode 100644 drivers/pinctrl/mediatek/pinctrl-mtk-mt8186.h
+> 
+> diff --git a/drivers/pinctrl/mediatek/Kconfig b/drivers/pinctrl/mediatek/Kconfig
+> index 66db4ac5d169..2cb5963cef4c 100644
+> --- a/drivers/pinctrl/mediatek/Kconfig
+> +++ b/drivers/pinctrl/mediatek/Kconfig
+> @@ -147,6 +147,12 @@ config PINCTRL_MT8183
+>   	default ARM64 && ARCH_MEDIATEK
+>   	select PINCTRL_MTK_PARIS
+>   
+> +config PINCTRL_MT8186
+> +	bool "Mediatek MT8186 pin control"
+> +	depends on OF
+> +	depends on ARM64 || COMPILE_TEST
 
-This should   be   < sizeof(unsigned long)) ... AFAICT.
+Like the other MTK pinctrl drivers, please add:
+	default ARM64 && ARCH_MEDIATEK
 
->  		return -EINVAL;
-> =20
-> -	if (copy_from_sockptr(&opt, optval, sizeof(unsigned int)))
-> +	if (copy_from_sockptr(&opt, optval, sizeof(unsigned long)))
->  		return -EFAULT;
-> =20
 
-Best regards,
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+With that fixed,
 
---pf9I7BMVVzbSWLtt
-Content-Type: application/pgp-signature; name="signature.asc"
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
------BEGIN PGP SIGNATURE-----
+> +	select PINCTRL_MTK_PARIS
+> +
+>   config PINCTRL_MT8192
+>   	bool "Mediatek MT8192 pin control"
+>   	depends on OF
+> diff --git a/drivers/pinctrl/mediatek/Makefile b/drivers/pinctrl/mediatek/Makefile
+> index 1e3931d924e7..29018d6ad0de 100644
+> --- a/drivers/pinctrl/mediatek/Makefile
+> +++ b/drivers/pinctrl/mediatek/Makefile
+> @@ -21,6 +21,7 @@ obj-$(CONFIG_PINCTRL_MT7986)	+= pinctrl-mt7986.o
+>   obj-$(CONFIG_PINCTRL_MT8167)	+= pinctrl-mt8167.o
+>   obj-$(CONFIG_PINCTRL_MT8173)	+= pinctrl-mt8173.o
+>   obj-$(CONFIG_PINCTRL_MT8183)	+= pinctrl-mt8183.o
+> +obj-$(CONFIG_PINCTRL_MT8186)	+= pinctrl-mt8186.o
+>   obj-$(CONFIG_PINCTRL_MT8192)	+= pinctrl-mt8192.o
+>   obj-$(CONFIG_PINCTRL_MT8195)    += pinctrl-mt8195.o
+>   obj-$(CONFIG_PINCTRL_MT8365)	+= pinctrl-mt8365.o
+> diff --git a/drivers/pinctrl/mediatek/pinctrl-mt8186.c b/drivers/pinctrl/mediatek/pinctrl-mt8186.c
+> new file mode 100644
+> index 000000000000..1e550b15b9d4
+> --- /dev/null
+> +++ b/drivers/pinctrl/mediatek/pinctrl-mt8186.c
+> @@ -0,0 +1,1313 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYdwFTAAKCRAw5/Bqldv6
-8vfBAJ0RhsWD/rzFW3orbWdDzc4TZzvGTgCgrVp1cMAZ+2WFDCPjok5cxZxbg6s=
-=kxTY
------END PGP SIGNATURE-----
-
---pf9I7BMVVzbSWLtt--
