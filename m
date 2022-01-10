@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 845AEC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C91C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242028AbiAJHkJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49472 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240802AbiAJHcc (ORCPT
+        id S241930AbiAJHj5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:39:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41478 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239681AbiAJHcw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27D0C02546C;
-        Sun,  9 Jan 2022 23:29:12 -0800 (PST)
+        Mon, 10 Jan 2022 02:32:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92078611EF;
-        Mon, 10 Jan 2022 07:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7101DC36AFB;
-        Mon, 10 Jan 2022 07:29:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B76A611A3;
+        Mon, 10 Jan 2022 07:32:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49FD2C36AE9;
+        Mon, 10 Jan 2022 07:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799752;
-        bh=0uDRVNZtBJj3oG7p+xlsXINlOicQ/rJ6DHGuDupzTls=;
+        s=korg; t=1641799971;
+        bh=aGCz36vNGwIQ60C4D02oEUjhaOn9ARIbmrSMX9g914k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BxGJeWrmuPhEwO8i6RhDEiRj/Xg5aHHSCECqilpv5wS83pc5Iw57NJR7MzqlCY8GK
-         m3S4OKfTSnT+TCOTM036Hi9cPFYdwNAOYagW2ULgQaSaXbpcHuBc180pWwXJ8oTcbM
-         4SqOmWfhUmEuFkQi2alPjeFLbKGJpCKY7Gr/AG+8=
+        b=xZWwKIbHCNcTPI3Wexg383Ju4O2BSJ+7FOhi4EHe8UJsbH7DxRgqtsaV8dfl2YzXa
+         JD21Vk8tHdZg1U1PTZjEaxD75gvI4tc0XTebwNwQhQ5DlPXb6QUKpfhV6ZSTxLAUeK
+         aa2uSuQASKd+qxog1MvVBX4VWSQ99gGeUObFdnA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 18/34] lwtunnel: Validate RTA_ENCAP_TYPE attribute length
-Date:   Mon, 10 Jan 2022 08:23:13 +0100
-Message-Id: <20220110071816.265043508@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.15 04/72] tracing: Tag trace_percpu_buffer as a percpu pointer
+Date:   Mon, 10 Jan 2022 08:22:41 +0100
+Message-Id: <20220110071821.658453846@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071815.647309738@linuxfoundation.org>
-References: <20220110071815.647309738@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,67 +46,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 
-commit 8bda81a4d400cf8a72e554012f0d8c45e07a3904 upstream.
+commit f28439db470cca8b6b082239314e9fd10bd39034 upstream.
 
-lwtunnel_valid_encap_type_attr is used to validate encap attributes
-within a multipath route. Add length validation checking to the type.
+Tag trace_percpu_buffer as a percpu pointer to resolve warnings
+reported by sparse:
+  /linux/kernel/trace/trace.c:3218:46: warning: incorrect type in initializer (different address spaces)
+  /linux/kernel/trace/trace.c:3218:46:    expected void const [noderef] __percpu *__vpp_verify
+  /linux/kernel/trace/trace.c:3218:46:    got struct trace_buffer_struct *
+  /linux/kernel/trace/trace.c:3234:9: warning: incorrect type in initializer (different address spaces)
+  /linux/kernel/trace/trace.c:3234:9:    expected void const [noderef] __percpu *__vpp_verify
+  /linux/kernel/trace/trace.c:3234:9:    got int *
 
-lwtunnel_valid_encap_type_attr is called converting attributes to
-fib{6,}_config struct which means it is used before fib_get_nhs,
-ip6_route_multipath_add, and ip6_route_multipath_del - other
-locations that use rtnh_ok and then nla_get_u16 on RTA_ENCAP_TYPE
-attribute.
+Link: https://lkml.kernel.org/r/ebabd3f23101d89cb75671b68b6f819f5edc830b.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
 
-Fixes: 9ed59592e3e3 ("lwtunnel: fix autoload of lwt modules")
-
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 07d777fe8c398 ("tracing: Add percpu buffers for trace_printk()")
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/lwtunnel.c      |    4 ++++
- net/ipv4/fib_semantics.c |    3 +++
- net/ipv6/route.c         |    4 ++++
- 3 files changed, 11 insertions(+)
+ kernel/trace/trace.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/core/lwtunnel.c
-+++ b/net/core/lwtunnel.c
-@@ -190,6 +190,10 @@ int lwtunnel_valid_encap_type_attr(struc
- 			nla_entype = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -3231,7 +3231,7 @@ struct trace_buffer_struct {
+ 	char buffer[4][TRACE_BUF_SIZE];
+ };
  
- 			if (nla_entype) {
-+				if (nla_len(nla_entype) < sizeof(u16)) {
-+					NL_SET_ERR_MSG(extack, "Invalid RTA_ENCAP_TYPE");
-+					return -EINVAL;
-+				}
- 				encap_type = nla_get_u16(nla_entype);
+-static struct trace_buffer_struct *trace_percpu_buffer;
++static struct trace_buffer_struct __percpu *trace_percpu_buffer;
  
- 				if (lwtunnel_valid_encap_type(encap_type,
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -732,6 +732,9 @@ static int fib_get_nhs(struct fib_info *
- 			}
+ /*
+  * This allows for lockless recording.  If we're nested too deeply, then
+@@ -3260,7 +3260,7 @@ static void put_trace_buf(void)
  
- 			fib_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
-+			/* RTA_ENCAP_TYPE length checked in
-+			 * lwtunnel_valid_encap_type_attr
-+			 */
- 			nla = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
- 			if (nla)
- 				fib_cfg.fc_encap_type = nla_get_u16(nla);
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -5156,6 +5156,10 @@ static int ip6_route_multipath_add(struc
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
- 			r_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
-+
-+			/* RTA_ENCAP_TYPE length checked in
-+			 * lwtunnel_valid_encap_type_attr
-+			 */
- 			nla = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
- 			if (nla)
- 				r_cfg.fc_encap_type = nla_get_u16(nla);
+ static int alloc_percpu_trace_buffer(void)
+ {
+-	struct trace_buffer_struct *buffers;
++	struct trace_buffer_struct __percpu *buffers;
+ 
+ 	if (trace_percpu_buffer)
+ 		return 0;
 
 
