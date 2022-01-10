@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2016C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F80C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 04:27:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238795AbiAJE1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 23:27:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S239014AbiAJE1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 23:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238720AbiAJEZF (ORCPT
+        with ESMTP id S238718AbiAJEZF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 9 Jan 2022 23:25:05 -0500
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F805C034000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F573C06118C
         for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 20:24:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=Tv81wfblYI2u4OnQaOMT5hu8NAr/0b4Pr52a1X1WL0g=; b=diks2I8M9hwZoO5nHFOXQp5WyE
-        eA0oBnejOYqo+gENL+UsfMVy2fpxjWcrb7cx8F1VccqE0JvMXMYxPIwO1yv1SwfSxeISuecUznhZ7
-        bAIhQh40BWNiigAhbgDK/3iP4kW1Lnu4yIh/wLpKya93/tiE/PYCK52JWgDPxwa5XkP+PYAQL7W0m
-        hLYS7ATN46P4pWbEIuy8Rm5w77AT4mexrKdF3SaxgC0ebQqzikpT8VZrNc77UhRWc0OZNbNp/Rqif
-        D3rJTMFywPuaEVUm8fKfWuQftRHYCeN6D0Hg7QNvMqMprECBqONl3IDrBpubXzBu0TXHe840r9AYj
-        F5VLmCtQ==;
+        bh=sKOYhN/P0cXC4qhPysyjZBfoAmLRLRFdOpaxGNZHEz8=; b=PJspN4WZf/k+qjE/mGfGFFrgkY
+        cA9Kf5HN8fC0T5MXeLaNiI+h4JFXcp/9uKj/3uMyuTO3+G9NY0mZ3v0iR+rS7St765/En7TFFYyaK
+        afHgj6DavPUc5K/Gsvjr8ejQPe2KTJly2O5vES3UKprH4ErwcIuKqvQP9L6OXTEv598D/7XyE9ljw
+        8hMsHnVRf1L1j0kB+nF0cImF8Sw9s2rRq0e6wHGDOJ1gVRMGSTi/oKvvNaCPc+7DovYWH/cF8mhFs
+        r0XVqQPnvjqP4glZTdD9RFs9qMq2qgOLgKuwdzz8EG0OLCYNN7CpZuOPMKe/A7VZvKgLI4LWkuluJ
+        33unxJwQ==;
 Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n6mE9-0025x8-HW; Mon, 10 Jan 2022 04:24:13 +0000
+        id 1n6mE8-0025wg-GU; Mon, 10 Jan 2022 04:24:12 +0000
 From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
 To:     linux-mm@kvack.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
@@ -34,9 +34,9 @@ Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
         Christoph Hellwig <hch@infradead.org>,
         William Kucharski <william.kucharski@oracle.com>,
         linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: [PATCH v2 22/28] gup: Convert gup_huge_pmd() to use a folio
-Date:   Mon, 10 Jan 2022 04:24:00 +0000
-Message-Id: <20220110042406.499429-23-willy@infradead.org>
+Subject: [PATCH v2 08/28] gup: Handle page split race more efficiently
+Date:   Mon, 10 Jan 2022 04:23:46 +0000
+Message-Id: <20220110042406.499429-9-willy@infradead.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220110042406.499429-1-willy@infradead.org>
 References: <20220110042406.499429-1-willy@infradead.org>
@@ -46,49 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new folio-based APIs.
+If we hit the page split race, the current code returns NULL which will
+presumably trigger a retry under the mmap_lock.  This isn't necessary;
+we can just retry the compound_head() lookup.  This is a very minor
+optimisation of an unlikely path, but conceptually it matches (eg)
+the page cache RCU-protected lookup.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- mm/gup.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ mm/gup.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/mm/gup.c b/mm/gup.c
-index 250326458df6..a006bce2d47b 100644
+index afb638a30e44..dbb1b54d0def 100644
 --- a/mm/gup.c
 +++ b/mm/gup.c
-@@ -2492,7 +2492,8 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
- 			unsigned long end, unsigned int flags,
- 			struct page **pages, int *nr)
+@@ -68,7 +68,10 @@ static void put_page_refs(struct page *page, int refs)
+  */
+ static inline struct page *try_get_compound_head(struct page *page, int refs)
  {
--	struct page *head, *page;
-+	struct page *page;
-+	struct folio *folio;
- 	int refs;
+-	struct page *head = compound_head(page);
++	struct page *head;
++
++retry:
++	head = compound_head(page);
  
- 	if (!pmd_access_permitted(orig, flags & FOLL_WRITE))
-@@ -2508,17 +2509,17 @@ static int gup_huge_pmd(pmd_t orig, pmd_t *pmdp, unsigned long addr,
- 	page = nth_page(pmd_page(orig), (addr & ~PMD_MASK) >> PAGE_SHIFT);
- 	refs = record_subpages(page, addr, end, pages + *nr);
- 
--	head = try_grab_compound_head(pmd_page(orig), refs, flags);
--	if (!head)
-+	folio = try_grab_folio(page, refs, flags);
-+	if (!folio)
- 		return 0;
- 
- 	if (unlikely(pmd_val(orig) != pmd_val(*pmdp))) {
--		put_compound_head(head, refs, flags);
-+		gup_put_folio(folio, refs, flags);
- 		return 0;
+ 	if (WARN_ON_ONCE(page_ref_count(head) < 0))
+ 		return NULL;
+@@ -86,7 +89,7 @@ static inline struct page *try_get_compound_head(struct page *page, int refs)
+ 	 */
+ 	if (unlikely(compound_head(page) != head)) {
+ 		put_page_refs(head, refs);
+-		return NULL;
++		goto retry;
  	}
  
- 	*nr += refs;
--	SetPageReferenced(head);
-+	folio_set_referenced(folio);
- 	return 1;
- }
- 
+ 	return head;
 -- 
 2.33.0
 
