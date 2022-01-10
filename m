@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1E3C3525B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA39C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242476AbiAJHks (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:40:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34106 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240195AbiAJHdv (ORCPT
+        id S242450AbiAJHkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:40:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240044AbiAJHaa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:33:51 -0500
+        Mon, 10 Jan 2022 02:30:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64891C028BA2;
+        Sun,  9 Jan 2022 23:27:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3320CB81217;
-        Mon, 10 Jan 2022 07:33:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A5FEC36AED;
-        Mon, 10 Jan 2022 07:33:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 058D3611AD;
+        Mon, 10 Jan 2022 07:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBEFFC36AED;
+        Mon, 10 Jan 2022 07:27:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800029;
-        bh=o5kFP8oQmTF+hd+jHzzz40Ex04sUdxCwM94ZL0yWrWY=;
+        s=korg; t=1641799650;
+        bh=AYGIfW94MQBnAGeV9cDSaBI/rEOKwJdLO5F0GReZ6KA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p2MtzxQo5IewBVuBZhVHZQTWJhN9HGLt38Rh7trxgkJOPLyeZX46AJDvdYLTE8Kjd
-         vRSWkMSFDRo7HWSnvH/R69keXoFEQ4zUGnz55rulqfvNBaLJpqI2jsgGhX8G0SH5ay
-         cQyMBfAOKWEchFYbHaqKNxUE7ATMRNdcNhRm5ydw=
+        b=nGiuBvn5GewwGZrxRLtzxaqQlVZ89vbJ7TYt8wV7NmecTZPJbIFmtQ3xu3ZVOalW4
+         xREh4K+fCKAPAv4dnzyQuKSW19LmxYkt7qDaiNMWFae/4FeltKmhp5Y/Q/EUItsJ5k
+         e0b9x1PKx3SvvrYKJ63HhsuD9Lh+kFhskFYsPRog=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 54/72] drm/amdgpu: fix dropped backing store handling in amdgpu_dma_buf_move_notify
-Date:   Mon, 10 Jan 2022 08:23:31 +0100
-Message-Id: <20220110071823.381194092@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 10/21] sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+Date:   Mon, 10 Jan 2022 08:23:11 +0100
+Message-Id: <20220110071814.294402969@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-References: <20220110071821.500480371@linuxfoundation.org>
+In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
+References: <20220110071813.967414697@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,36 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <ckoenig.leichtzumerken@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit fc74881c28d314b10efac016ef49df4ff40b8b97 ]
+commit 7d18a07897d07495ee140dd319b0e9265c0f68ba upstream.
 
-bo->tbo.resource can now be NULL.
+tx_queue_len can be set to ~0U, we need to be more
+careful about overflows.
 
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1811
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211210083927.1754-1-christian.koenig@amd.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+__fls(0) is undefined, as this report shows:
+
+UBSAN: shift-out-of-bounds in net/sched/sch_qfq.c:1430:24
+shift exponent 51770272 is too large for 32-bit type 'int'
+CPU: 0 PID: 25574 Comm: syz-executor.0 Not tainted 5.16.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0x201/0x2d8 lib/dump_stack.c:106
+ ubsan_epilogue lib/ubsan.c:151 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x494/0x530 lib/ubsan.c:330
+ qfq_init_qdisc+0x43f/0x450 net/sched/sch_qfq.c:1430
+ qdisc_create+0x895/0x1430 net/sched/sch_api.c:1253
+ tc_modify_qdisc+0x9d9/0x1e20 net/sched/sch_api.c:1660
+ rtnetlink_rcv_msg+0x934/0xe60 net/core/rtnetlink.c:5571
+ netlink_rcv_skb+0x200/0x470 net/netlink/af_netlink.c:2496
+ netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+ netlink_unicast+0x814/0x9f0 net/netlink/af_netlink.c:1345
+ netlink_sendmsg+0xaea/0xe60 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x5b9/0x910 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmsg+0x280/0x370 net/socket.c:2492
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 462dbc9101ac ("pkt_sched: QFQ Plus: fair-queueing service at DRR cost")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/sched/sch_qfq.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c
-index ae6ab93c868b8..7444484a12bf8 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c
-@@ -384,7 +384,7 @@ amdgpu_dma_buf_move_notify(struct dma_buf_attachment *attach)
- 	struct amdgpu_vm_bo_base *bo_base;
- 	int r;
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -1430,10 +1430,8 @@ static int qfq_init_qdisc(struct Qdisc *
+ 	if (err < 0)
+ 		return err;
  
--	if (bo->tbo.resource->mem_type == TTM_PL_SYSTEM)
-+	if (!bo->tbo.resource || bo->tbo.resource->mem_type == TTM_PL_SYSTEM)
- 		return;
- 
- 	r = ttm_bo_validate(&bo->tbo, &placement, &ctx);
--- 
-2.34.1
-
+-	if (qdisc_dev(sch)->tx_queue_len + 1 > QFQ_MAX_AGG_CLASSES)
+-		max_classes = QFQ_MAX_AGG_CLASSES;
+-	else
+-		max_classes = qdisc_dev(sch)->tx_queue_len + 1;
++	max_classes = min_t(u64, (u64)qdisc_dev(sch)->tx_queue_len + 1,
++			    QFQ_MAX_AGG_CLASSES);
+ 	/* max_cl_shift = floor(log_2(max_classes)) */
+ 	max_cl_shift = __fls(max_classes);
+ 	q->max_agg_classes = 1<<max_cl_shift;
 
 
