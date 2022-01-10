@@ -2,102 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F404C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B656DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 08:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241523AbiAJInJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:43:09 -0500
-Received: from mail-ed1-f53.google.com ([209.85.208.53]:36570 "EHLO
-        mail-ed1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241656AbiAJIlQ (ORCPT
+        id S241582AbiAJInP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 03:43:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241717AbiAJIl0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 03:41:16 -0500
-Received: by mail-ed1-f53.google.com with SMTP id 30so48860667edv.3
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:41:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=un2mvr4VqMhvI9NwYFd0JoMH/h5euFiFUR2JJUFZ+6w=;
-        b=yQ8EVUcRh+j5nwHkGhR4p6waxiAW4qsAOn522w5LtXxN7beczRxugljapKNcNmxply
-         VO4a0z8Su4B8cq6Jj/ka+sg65ftpLhewRnifeIH3U689yIlfm//eJ9sLYKuE1ESTI2MK
-         9uo6HYWyKUh8aPU/qrLjG8JubINZiriKkTEMN0zxdrJuaeNqoopllSo0Lyj9PRqnUIox
-         fqWLMHoz+n/dsbsJb/2d92PE3HNhKSE0rO2kCvNRu7Ybz1WZfbqKZ/BYQ6S+fIBhojZy
-         EzYbsEW+THNmcEPLdTVG/g6WtnJHYv/xqS5sE4BbD9WmdwICV0LRqwPipcysZJbcDohf
-         ZHHA==
-X-Gm-Message-State: AOAM532x7dzAQZtcBWDOmkAJEqndn6/4NpeP2wa2rf3CCbFZRu2S8Yau
-        QKl8bgXfgz/ig9pH3Hv8POY=
-X-Google-Smtp-Source: ABdhPJwUG7RBPKOv3HseIRWV/X7k6ByBafNVo9Y1Zz3veotWeabwxMLa5SNcFf4NmpoiwFOBgzji6w==
-X-Received: by 2002:a05:6402:190a:: with SMTP id e10mr856255edz.135.1641804075176;
-        Mon, 10 Jan 2022 00:41:15 -0800 (PST)
-Received: from [192.168.1.126] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.googlemail.com with ESMTPSA id 5sm2158478eji.104.2022.01.10.00.41.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 00:41:14 -0800 (PST)
-Message-ID: <7b46e580-269c-bbf5-1319-47f91e2e89fa@kernel.org>
-Date:   Mon, 10 Jan 2022 09:41:13 +0100
+        Mon, 10 Jan 2022 03:41:26 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AED8C03400A
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 00:41:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zAtKu7P8fv2P49P7cdzZ6hqSkFnk9bs2455/DWJXuSU=; b=C7heQV030RjaYXIiVwtSD86ZS+
+        MOdpkFywTN9bK6P5NN9MLM8zWIFUDj4+FrKNIgt9gtczE9/UmZBM16OL3/XifxYWuF731VmwI38QJ
+        4KwvyNXHDmNp8N+zckQ/NSrFCQ/BPx3xsagSxmn76OiprU5cpi0ey4yXs/M01YLEbE1qtlPjfxJgJ
+        D7bH208RDMMvhuvMq3oczkpB6zFfr1MuD5tBZ+Tiv+X7hsWeEPO3E3p05M5GvOG26tH6UqZ8O9vyz
+        Zv30x3tPCKuMPMEBivWIaSuAZAtf0xWlarrdxYWJpusDfIAAsh+mFgxX6xgrFQDn12wV7ouOccyE8
+        Rr1qMslg==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n6qF0-009y6A-Ev; Mon, 10 Jan 2022 08:41:22 +0000
+Date:   Mon, 10 Jan 2022 00:41:22 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        William Kucharski <william.kucharski@oracle.com>,
+        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH v2 26/28] gup: Convert compound_range_next() to
+ gup_folio_range_next()
+Message-ID: <YdvxMgDFJBI77iHo@infradead.org>
+References: <20220110042406.499429-1-willy@infradead.org>
+ <20220110042406.499429-27-willy@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v1 07/14] arm64: defconfig: build ads1015 adc driver as a
- module
-Content-Language: en-US
-To:     Marcel Ziswiler <marcel@ziswiler.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Marek Vasut <marek.vasut@gmail.com>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        =?UTF-8?Q?Guido_G=c3=bcnther?= <agx@sigxcpu.org>,
-        Olof Johansson <olof@lixom.net>,
-        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
-        linux-kernel@vger.kernel.org
-References: <20220107180314.1816515-1-marcel@ziswiler.com>
- <20220107180314.1816515-8-marcel@ziswiler.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220107180314.1816515-8-marcel@ziswiler.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220110042406.499429-27-willy@infradead.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/01/2022 19:03, Marcel Ziswiler wrote:
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> 
-> Build Texas Instruments ADS1015 ADC IIO driver as a module.
+On Mon, Jan 10, 2022 at 04:24:04AM +0000, Matthew Wilcox (Oracle) wrote:
+> +static inline struct folio *gup_folio_range_next(unsigned long i,
+>  		unsigned long npages, struct page *start, unsigned int *ntails)
+>  {
+> -	struct page *next, *page;
+> +	struct page *next;
+> +	struct folio *folio;
+>  	unsigned int nr = 1;
+>  
+>  	next = nth_page(start, i);
+> +	folio = page_folio(next);
 
-This should be probably squashed with several others of such changes
-because probably the answer to "why" is the same.
+Superficial nit:  initialization next and folio at declaration time
+would reada little better.
 
-Anyway: why?
+Otherwise looks good:
 
-> 
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-> ---
-> 
->  arch/arm64/configs/defconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-> index 86d39d8456c1..1d0fe0bd0059 100644
-> --- a/arch/arm64/configs/defconfig
-> +++ b/arch/arm64/configs/defconfig
-> @@ -1071,6 +1071,7 @@ CONFIG_QCOM_SPMI_VADC=m
->  CONFIG_QCOM_SPMI_ADC5=m
->  CONFIG_ROCKCHIP_SARADC=m
->  CONFIG_RZG2L_ADC=m
-> +CONFIG_TI_ADS1015=m
->  CONFIG_IIO_CROS_EC_SENSORS_CORE=m
->  CONFIG_IIO_CROS_EC_SENSORS=m
->  CONFIG_IIO_ST_LSM6DSX=m
-> 
-
-
-Best regards,
-Krzysztof
+Reviewed-by: Christoph Hellwig <hch@lst.de>
