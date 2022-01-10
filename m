@@ -2,82 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E023EC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 16:59:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E389C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 17:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237853AbiAJQ7p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 11:59:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237327AbiAJQ7n (ORCPT
+        id S237861AbiAJRAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 12:00:47 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4379 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237327AbiAJRAq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 11:59:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58270C06173F;
-        Mon, 10 Jan 2022 08:59:42 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 457F461341;
-        Mon, 10 Jan 2022 16:59:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D50C36AE3;
-        Mon, 10 Jan 2022 16:59:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641833980;
-        bh=dL5sJz14KH/MnFm5LiWq3OK9TibKvIP5py+qchPUekA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=RDraMqr7XGnCR4woIVwGa1WdQQQwyYNS1cCiaqmGtWhWfe4/HCgvzb6GDiHK1vUuQ
-         GoRLtJGFjk+a2DOwby5nTgvxOjLVGlSTI3N6TyP1Su6A6kg7+ZDEKbvLSzy+FYXX2A
-         +kjSm2N/OomoHMcSLUyhPk1aiknBe8g5eSzKgX0VodiAJVhGsk/jnY5ku1G3OuOwxd
-         Re5mTP75shNx1VpiEqTgyI0YtLcDK+iaK/6q4IDkBxIsyTpTdNJxrB/1OgTc0su7Rx
-         aiXcQh2I2n+hCUetVHfe10aNDFXaZDyKgi1GfkKJ218OgVTbLbkrjlbFBW94WPGf1O
-         etzmbZQfVquIw==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Tong Tiangen <tongtiangen@huawei.com>
-Subject: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
-Date:   Tue, 11 Jan 2022 00:52:08 +0800
-Message-Id: <20220110165208.1826-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 10 Jan 2022 12:00:46 -0500
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JXg4T0Zxhz67x8s;
+        Tue, 11 Jan 2022 00:58:01 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 18:00:44 +0100
+Received: from [10.47.24.251] (10.47.24.251) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Mon, 10 Jan
+ 2022 17:00:43 +0000
+Subject: Re: [PATCH v4 01/48] libperf: Add comments to perf_cpu_map.
+To:     Ian Rogers <irogers@google.com>, Andi Kleen <ak@linux.intel.com>,
+        "Jiri Olsa" <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        "Arnaldo Carvalho de Melo" <acme@kernel.org>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Ingo Molnar" <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Alexander Shishkin" <alexander.shishkin@linux.intel.com>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Vineet Singh" <vineet.singh@intel.com>,
+        James Clark <james.clark@arm.com>,
+        "Mathieu Poirier" <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, <coresight@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>, <zhengjun.xing@intel.com>
+CC:     <eranian@google.com>
+References: <20220105061351.120843-1-irogers@google.com>
+ <20220105061351.120843-2-irogers@google.com>
+From:   John Garry <john.garry@huawei.com>
+Message-ID: <aea97c61-b684-3322-05a2-f55a7877e1b9@huawei.com>
+Date:   Mon, 10 Jan 2022 17:00:27 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220105061351.120843-2-irogers@google.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.24.251]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-eBPF's exception tables needs to be modified to relative synchronously.
+On 05/01/2022 06:13, Ian Rogers wrote:
+> A particular observed problem is confusing the index with the CPU value,
+> documentation should hopefully reduce this type of problem.
+> 
+> Reviewed-by: James Clark<james.clark@arm.com>
+> Signed-off-by: Ian Rogers<irogers@google.com>
 
-Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- arch/riscv/net/bpf_jit_comp64.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_comp64.c
-index 69bab7e28f91..44c97535bc15 100644
---- a/arch/riscv/net/bpf_jit_comp64.c
-+++ b/arch/riscv/net/bpf_jit_comp64.c
-@@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_insn *insn,
- 	offset = pc - (long)&ex->insn;
- 	if (WARN_ON_ONCE(offset >= 0 || offset < INT_MIN))
- 		return -ERANGE;
--	ex->insn = pc;
-+	ex->insn = offset;
- 
- 	/*
- 	 * Since the extable follows the program, the fixup offset is always
--- 
-2.34.1
-
+Reviewed-by: John Garry <john.garry@huawei.com>
