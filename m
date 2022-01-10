@@ -2,125 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5080CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234709AbiAJNzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S234918AbiAJNzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:55:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41362 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234685AbiAJNzH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 08:55:07 -0500
-Received: from mga17.intel.com ([192.55.52.151]:14998 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233954AbiAJNzC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 08:55:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641822902; x=1673358902;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=cicLgHiEPGQOrIjOfgQxMbxQzmM/uxWwtuhfal7Bd1E=;
-  b=RV9w3h5YLKb0fQsezk6H+TVgvtg2POfb2gE3tTh9DeWqPfeyEV3150Ew
-   ug29tEtAQhcmFfFucYEGRS/zn9KNuJ5JrVcuA+M7K2/tPxAZvPIpP29RV
-   Uc3ni8H7Uhpg0x+iPtQwEerXTo7HooTCHfcIllet1PeDFIqVFR0TEa4QE
-   HuVe1JMMRdbAWbE4rnZ+gM+38nN98+wIKMapR5btpvHB0gIbyYnej75KJ
-   0pM6LH4LMQ5CfQdGy3t5eO1dfEfElvjD7nXtQRYtjGlsq/VA2TA7JnSiD
-   fHHLKu++CpYsAkRWPJBjuEvCVqmdLg93ZXqBd55LZdZel/39k/XGBcDZa
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="223921295"
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="223921295"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 05:55:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="764520088"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 10 Jan 2022 05:54:59 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n6v8U-0003ZZ-I4; Mon, 10 Jan 2022 13:54:58 +0000
-Date:   Mon, 10 Jan 2022 21:54:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFE8DB81654;
+        Mon, 10 Jan 2022 13:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BBDDC36AE5;
+        Mon, 10 Jan 2022 13:54:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641822904;
+        bh=rj4fKmBFoTHA0iE6ZmISK6tpcbjzpc6k3C0OppRQfXI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=mLOFKpfG5t6VcVdIo8HnBo4TNSUN0tKjo69CxcZVSODX4E/wp4Qq2JAJ/RDV2iBbg
+         18oBED1NTpckFJA7zbUwmTe1QZE4Wrro1ocg82W3n7wpQftGoLJTQU3AGP/LJ9nGtl
+         Q1izKRVSRFl6rZoA9r+DPbZMSAWeVNeOvLI1TwuOkyOMR0Vxizmi4PdQpSPxz5GxbU
+         IUGNwPnsHWCL6bNde0DXS2J3fJM+zoTRiiZyZjjXvYXH9EbYJcQEeV9hygDLBG7CEx
+         yorgSW3rmF3Zs+Ti399XXtPitqyOhR30/IelIneFxcNpCUNwpdPhrkyTKHSXYqYfRA
+         etY7UfhX/G3nQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, openbmc@lists.ozlabs.org,
-        Tomer Maimon <tmaimon77@gmail.com>,
-        Joel Stanley <joel@jms.id.au>, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>
-Subject: Re: [PATCH v4 5/9] pinctrl: nuvoton: Add driver for WPCM450
-Message-ID: <202201102127.3Rm7ZYyP-lkp@intel.com>
-References: <20220109173000.1242703-6-j.neuschaefer@gmx.net>
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list\:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list\:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+Subject: Re: [PATCH v2 12/35] brcmfmac: pcie: Fix crashes due to early IRQs
+References: <20220104072658.69756-1-marcan@marcan.st>
+        <20220104072658.69756-13-marcan@marcan.st>
+        <CAHp75VdeNhmRUW1mFY-H5vyzTRHZ9Y2dv03eo+rfcTQKjn9tuQ@mail.gmail.com>
+        <759f46bd-bfc2-62c6-6257-a2a0d702e2b6@marcan.st>
+Date:   Mon, 10 Jan 2022 15:54:54 +0200
+In-Reply-To: <759f46bd-bfc2-62c6-6257-a2a0d702e2b6@marcan.st> (Hector Martin's
+        message of "Thu, 6 Jan 2022 22:10:45 +0900")
+Message-ID: <87bl0jlmq9.fsf@tynnyri.adurom.net>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220109173000.1242703-6-j.neuschaefer@gmx.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi "Jonathan,
+Hector Martin <marcan@marcan.st> writes:
 
-I love your patch! Perhaps something to improve:
+> On 04/01/2022 23.12, Andy Shevchenko wrote:
+>> On Tue, Jan 4, 2022 at 9:29 AM Hector Martin <marcan@marcan.st> wrote:
+>>>
+>>> The driver was enabling IRQs before the message processing was
+>>> initialized. This could cause IRQs to come in too early and crash the
+>>> driver. Instead, move the IRQ enable and hostready to a bus preinit
+>>> function, at which point everything is properly initialized.
+>>>
+>>> Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
+>> 
+>> You should gather fixes at the beginning of the series, and even
+>> possible to send them as a separate series. In the current state it's
+>> unclear if there are dependencies on your new feature (must not be for
+>> fixes that meant to be backported).
+>> 
+>
+> Thanks, I wasn't sure what order you wanted those in. I'll put them at
+> the top for v3. I think none of those should have any dependencies on
+> the rest of the patches, modulo some trivial rebase wrangling.
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on linus/master v5.16 next-20220110]
-[cannot apply to linusw-pinctrl/devel]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+If there are no dependencies, please send the brcmfmac fixes separately
+so that I can apply them earlier.
 
-url:    https://github.com/0day-ci/linux/commits/Jonathan-Neusch-fer/Nuvoton-WPCM450-pinctrl-and-GPIO-driver/20220110-013733
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arm64-randconfig-r014-20220109 (https://download.01.org/0day-ci/archive/20220110/202201102127.3Rm7ZYyP-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f3a344d2125fa37e59bae1b0874442c650a19607)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/0day-ci/linux/commit/e62ece12931654ffea372713cc39fd64779c8b4a
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Jonathan-Neusch-fer/Nuvoton-WPCM450-pinctrl-and-GPIO-driver/20220110-013733
-        git checkout e62ece12931654ffea372713cc39fd64779c8b4a
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/pinctrl/nuvoton/
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c:1564:41: warning: format specifies type 'int' but the argument has type 'unsigned long' [-Wformat]
-           dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-                                           ~~     ^~~~~~~~~~~~~~~~~~~~~~~~~~
-                                           %lu
-   include/linux/dev_printk.h:163:47: note: expanded from macro 'dev_dbg'
-                   dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
-                                                       ~~~     ^~~~~~~~~~~
-   include/linux/dev_printk.h:129:34: note: expanded from macro 'dev_printk'
-                   _dev_printk(level, dev, fmt, ##__VA_ARGS__);            \
-                                           ~~~    ^~~~~~~~~~~
-   include/linux/kernel.h:46:25: note: expanded from macro 'ARRAY_SIZE'
-   #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
-                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +1564 drivers/pinctrl/nuvoton/pinctrl-npcm7xx.c
-
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1559  
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1560  static int npcm7xx_get_groups_count(struct pinctrl_dev *pctldev)
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1561  {
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1562  	struct npcm7xx_pinctrl *npcm = pinctrl_dev_get_drvdata(pctldev);
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1563  
-3b588e43ee5c7a Tomer Maimon 2018-08-08 @1564  	dev_dbg(npcm->dev, "group size: %d\n", ARRAY_SIZE(npcm7xx_groups));
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1565  	return ARRAY_SIZE(npcm7xx_groups);
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1566  }
-3b588e43ee5c7a Tomer Maimon 2018-08-08  1567  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
