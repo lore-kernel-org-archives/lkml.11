@@ -2,191 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 713BDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 23:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E970C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 23:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345675AbiAJXPD (ORCPT
+        id S1345677AbiAJXQE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 18:15:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241981AbiAJXPC (ORCPT
+        Mon, 10 Jan 2022 18:16:04 -0500
+Received: from gandalf.ozlabs.org ([150.107.74.76]:34837 "EHLO
+        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233410AbiAJXQD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 18:15:02 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D960C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 15:15:02 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id h1so14385174pls.11
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 15:15:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tXD6ds/wJNNNR6+gsUz5E9zXmo4UgZdSVHvbR14gs+Y=;
-        b=YPI2hPSopRnZCPT/iL0sax0Wp52cZrLsqy1lEM2vxAmASicbqppqQjMXU58P3odr1A
-         rMKoe01Qp3ZoNKOytAZat0ly1xG5QHrYZj6s6tOJJaORR/N+EHIu/IVltY9Em74QRhjD
-         mh2sY2UOo/q85QYIHEHzeVDNpTzSJwcLoxkO4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tXD6ds/wJNNNR6+gsUz5E9zXmo4UgZdSVHvbR14gs+Y=;
-        b=v8sBBShH0zMGFAPUALEqS78ipvHrJ8ov41FeAFt3RwcjZRqdF9ht8ryhO15J6kdOfM
-         x9R4eWU444J2EnHB6bYvXxsiAbrHLt4VGDjAQh7HRc3ZOzPcPsGxI/dQvB04oLNNei1K
-         CO1tkeUgyJ0hcJl3C+smOdGsc9qDgc4/eRBl+S/A151r1tcAnTnYw1Vy1bJjZr3ZRjq5
-         W3JTp8Z/3ACgRC+3r96wSQXpML7HKFc02XqCyzW4/sOrJ/Gf75qP3c/5MvOlZpLuPRpW
-         6jiX7Yof3LY9zwWcSiOwXqdcSnRLa/chK1QnIF0gw+pK2anoJwatdHIlanvmSTW0VUxH
-         RKiw==
-X-Gm-Message-State: AOAM532PadcpjklyIFExbUc16kfEoQXCDV7WW/2R5nwWDVwwJ2J1UDLx
-        3Lwsf9oC2u2kGqtSemng55z3lQ==
-X-Google-Smtp-Source: ABdhPJyHLbP73irp3jUBms2zRagRvjxwRqg6bBuffJjq2JpKWCStbbVpNXQWTOgbjb+4N8+j+rRqDQ==
-X-Received: by 2002:a17:90a:948c:: with SMTP id s12mr109699pjo.106.1641856501976;
-        Mon, 10 Jan 2022 15:15:01 -0800 (PST)
-Received: from kuabhs-cdev.c.googlers.com.com (254.80.82.34.bc.googleusercontent.com. [34.82.80.254])
-        by smtp.gmail.com with ESMTPSA id z12sm6123924pga.28.2022.01.10.15.15.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 15:15:01 -0800 (PST)
-From:   Abhishek Kumar <kuabhs@chromium.org>
-To:     kvalo@codeaurora.org, ath10k@lists.infradead.org
-Cc:     pillair@codeaurora.org, linux-wireless@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kuabhs@chromium.org,
-        dianders@chromium.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH v2 1/2] ath10k: search for default BDF name provided in DT
-Date:   Mon, 10 Jan 2022 23:14:14 +0000
-Message-Id: <20220110231255.v2.1.Ie4dcc45b0bf365077303c596891d460d716bb4c5@changeid>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
+        Mon, 10 Jan 2022 18:16:03 -0500
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JXqSd1xnjz4xbT;
+        Tue, 11 Jan 2022 10:16:01 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641856561;
+        bh=sfR9eksd3kCKqgWf7HXPvaLjK2sSn75wSE/Mzzk4wbQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eYFv3RrQ9QzmYjBgCqTwFsEI8ysmQ89PaY4mCqYWZvsu0Bi6oK6m5107ULoRTJ2Ou
+         QY00+1DbzQJDpHvbBsk+zMrRjnbo+/mSse9RMZ8XtQmFovl6Z2TsXNBNWXkzEbx6ct
+         SfxWZn+O2JY9Xae8hk3ht5fEVr0xmOKcUQpOfNNpN7cn/eJC2MyKP0Hil+3kkiiOPC
+         0PLaigOvfsLrblMycHDT4NqHfWFjAjf3W1OIfHT7oDca81JWlRs0UCEaiG0Q/+io8S
+         5ar5f9gdzzrEJrc4ZufJJ8yOXM+4QvYUZmEfFawOGnTBXBUeLC3zsNeMUlwOoVZqQM
+         iDOJoe8zvxnwQ==
+Date:   Tue, 11 Jan 2022 10:15:59 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Jonathan Corbet <corbet@lwn.net>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        Harinder Singh <sharinder@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the kunit-next tree with the
+ jc_docs tree
+Message-ID: <20220111101559.3f787248@canb.auug.org.au>
+In-Reply-To: <20211224163707.70e04c0f@canb.auug.org.au>
+References: <20211224163707.70e04c0f@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/X4P7J5LXokEFGYhT4fQCZo8";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There can be cases where the board-2.bin does not contain
-any BDF matching the chip-id+board-id+variant combination.
-This causes the wlan probe to fail and renders wifi unusable.
-For e.g. if the board-2.bin has default BDF as:
-bus=snoc,qmi-board-id=67 but for some reason the board-id
-on the wlan chip is not programmed and read 0xff as the
-default value. In such cases there won't be any matching BDF
-because the board-2.bin will be searched with following:
-bus=snoc,qmi-board-id=ff
-To address these scenarios, there can be an option to provide
-fallback default BDF name in the device tree. If none of the
-BDF names match then the board-2.bin file can be searched with
-default BDF names assigned in the device tree.
+--Sig_/X4P7J5LXokEFGYhT4fQCZo8
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-The default BDF name can be set as:
-wifi@a000000 {
-	status = "okay";
-	qcom,ath10k-default-bdf = "bus=snoc,qmi-board-id=67";
-};
+Hi all,
 
-Tested-on: WCN3990 hw1.0 SNOC WLAN.HL.3.2.2-00696-QCAHLSWMTPL-1
-Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
----
+On Fri, 24 Dec 2021 16:37:07 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Today's linux-next merge of the kunit-next tree got a conflict in:
+>=20
+>   Documentation/dev-tools/kunit/start.rst
+>=20
+> between commit:
+>=20
+>   c48b9ef1f794 ("Documentation: KUnit: Rewrite getting started")
+>=20
+> from the jc_docs tree and commit:
+>=20
+>   4c2911f1e140 ("kunit: tool: reconfigure when the used kunitconfig chang=
+es")
+>=20
+> from the kunit-next tree.
+>=20
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>=20
+>=20
+> diff --cc Documentation/dev-tools/kunit/start.rst
+> index a858ab009944,0a5e65540974..000000000000
+> --- a/Documentation/dev-tools/kunit/start.rst
+> +++ b/Documentation/dev-tools/kunit/start.rst
+> @@@ -59,19 -44,23 +59,20 @@@ or ``VFAT_FS``. To run ``FAT_KUNIT_TEST
+>  =20
+>   	CONFIG_LIST_KUNIT_TEST=3Dy
+>  =20
+>  -:doc:`kunit_tool <kunit-tool>` will ensure that all config options set =
+in
+>  -``.kunitconfig`` are set in the kernel ``.config`` before running the t=
+ests.
+>  -It'll warn you if you haven't included the dependencies of the options =
+you're
+>  -using.
+>  +Before running the tests, kunit_tool ensures that all config options
+>  +set in ``.kunitconfig`` are set in the kernel ``.config``. It will warn
+>  +you if you have not included dependencies for the options used.
+>  =20
+> - .. note ::
+> -    The configuration is only updated if the ``.kunitconfig`` is not a
+> -    subset of ``.config``. You can use tools (for example:
+> -    make menuconfig) to adjust other config options.
+> + .. note::
+> +    If you change the ``.kunitconfig``, kunit.py will trigger a rebuild =
+of the
+> +    ``.config`` file. But you can edit the ``.config`` file directly or =
+with
+> +    tools like ``make menuconfig O=3D.kunit``. As long as its a superset=
+ of
+> +    ``.kunitconfig``, kunit.py won't overwrite your changes.
+>  =20
+>  -
+>  -Running the tests (KUnit Wrapper)
+>  ----------------------------------
+>  -
+>  -To make sure that everything is set up correctly, simply invoke the Pyt=
+hon
+>  -wrapper from your kernel repo:
+>  +Running Tests (KUnit Wrapper)
+>  +-----------------------------
+>  +1. To make sure that everything is set up correctly, invoke the Python
+>  +   wrapper from your kernel repository:
+>  =20
+>   .. code-block:: bash
+>  =20
 
-Changes in v2: Fix printf formatting issue.
+This is now a conflict between the jc_docs tree and Linus' tree.
 
- drivers/net/wireless/ath/ath10k/core.c | 30 ++++++++++++++++++++++++++
- drivers/net/wireless/ath/ath10k/core.h |  5 +++++
- drivers/net/wireless/ath/ath10k/qmi.c  |  4 ++++
- 3 files changed, 39 insertions(+)
+--=20
+Cheers,
+Stephen Rothwell
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
-index 8f5b8eb368fa..756856a8eed3 100644
---- a/drivers/net/wireless/ath/ath10k/core.c
-+++ b/drivers/net/wireless/ath/ath10k/core.c
-@@ -1081,6 +1081,32 @@ int ath10k_core_check_dt(struct ath10k *ar)
- }
- EXPORT_SYMBOL(ath10k_core_check_dt);
- 
-+int ath10k_core_parse_default_bdf_dt(struct ath10k *ar)
-+{
-+	struct device_node *node;
-+	const char *board_name = NULL;
-+
-+	ar->id.default_bdf[0] = '\0';
-+
-+	node = ar->dev->of_node;
-+	if (!node)
-+		return -ENOENT;
-+
-+	of_property_read_string(node, "qcom,ath10k-default-bdf",
-+				&board_name);
-+	if (!board_name)
-+		return -ENODATA;
-+
-+	if (strscpy(ar->id.default_bdf,
-+		    board_name, sizeof(ar->id.default_bdf)) < 0)
-+		ath10k_warn(ar,
-+			    "default board name is longer than allocated buffer, board_name: %s; allocated size: %ld\n",
-+			    board_name, sizeof(ar->id.default_bdf));
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(ath10k_core_parse_default_bdf_dt);
-+
- static int ath10k_download_fw(struct ath10k *ar)
- {
- 	u32 address, data_len;
-@@ -1441,6 +1467,10 @@ static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
- 	if (ret == -ENOENT && fallback_boardname2)
- 		ret = ath10k_core_search_bd(ar, fallback_boardname2, data, len);
- 
-+	/* check default BDF name if provided in device tree */
-+	if (ret == -ENOENT && ar->id.default_bdf[0] != '\0')
-+		ret = ath10k_core_search_bd(ar, ar->id.default_bdf, data, len);
-+
- 	if (ret == -ENOENT) {
- 		ath10k_err(ar,
- 			   "failed to fetch board data for %s from %s/%s\n",
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 9f6680b3be0a..1201bb7bb8ab 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -79,6 +79,9 @@
- /* The magic used by QCA spec */
- #define ATH10K_SMBIOS_BDF_EXT_MAGIC "BDF_"
- 
-+/* Default BDF board name buffer size */
-+#define ATH10K_DEFAULT_BDF_BUFFER_SIZE 0x40
-+
- /* Default Airtime weight multipler (Tuned for multiclient performance) */
- #define ATH10K_AIRTIME_WEIGHT_MULTIPLIER  4
- 
-@@ -1102,6 +1105,7 @@ struct ath10k {
- 		bool ext_bid_supported;
- 
- 		char bdf_ext[ATH10K_SMBIOS_BDF_EXT_STR_LENGTH];
-+		char default_bdf[ATH10K_DEFAULT_BDF_BUFFER_SIZE];
- 	} id;
- 
- 	int fw_api;
-@@ -1342,6 +1346,7 @@ int ath10k_core_register(struct ath10k *ar,
- void ath10k_core_unregister(struct ath10k *ar);
- int ath10k_core_fetch_board_file(struct ath10k *ar, int bd_ie_type);
- int ath10k_core_check_dt(struct ath10k *ar);
-+int ath10k_core_parse_default_bdf_dt(struct ath10k *ar);
- void ath10k_core_free_board_files(struct ath10k *ar);
- 
- #endif /* _CORE_H_ */
-diff --git a/drivers/net/wireless/ath/ath10k/qmi.c b/drivers/net/wireless/ath/ath10k/qmi.c
-index 80fcb917fe4e..a57675308014 100644
---- a/drivers/net/wireless/ath/ath10k/qmi.c
-+++ b/drivers/net/wireless/ath/ath10k/qmi.c
-@@ -831,6 +831,10 @@ static int ath10k_qmi_fetch_board_file(struct ath10k_qmi *qmi)
- 	if (ret)
- 		ath10k_dbg(ar, ATH10K_DBG_QMI, "DT bdf variant name not set.\n");
- 
-+	ret = ath10k_core_parse_default_bdf_dt(ar);
-+	if (ret)
-+		ath10k_dbg(ar, ATH10K_DBG_QMI, "Default BDF name not set in device tree.\n");
-+
- 	return ath10k_core_fetch_board_file(qmi->ar, ATH10K_BD_IE_BOARD);
- }
- 
--- 
-2.34.1.575.g55b058a8bb-goog
+--Sig_/X4P7J5LXokEFGYhT4fQCZo8
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHcvi8ACgkQAVBC80lX
+0Gx34Af/ZlUfL0BUpamQQwuOwJjAt3ucEyrez2VLeSglKvTvMF8fGgaUduIrmfI2
+0NVJ5s6Lbah73JS7n2whP8EsP4PUTQE4gqJQxEBG0pJP2A4kaSi4rW5Xm3TnKrtB
+yi8sAsvcwurYn7ofF26pwFa8W3K3Q7raMJpE6dzg8MTJY/L/CTZ4F1j3+TymjdVn
+hWhEUf9DUzZ8mGZGKKauxtJFneKC+tHNaB+oov84DvUZt6F2LG2YQ0oNaKH+1de/
+McF/wgya8YePhPhEV4m66I8miAbELJFEAWmjpXic2yA6hYpeSggx8L5mkw4Amfcg
+5aut5GkFrw+KzEnYWutkyHRz5kNXMQ==
+=MU9L
+-----END PGP SIGNATURE-----
+
+--Sig_/X4P7J5LXokEFGYhT4fQCZo8--
