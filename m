@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4843C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AADCBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241037AbiAJHjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:39:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40974 "EHLO
+        id S241107AbiAJHjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:39:09 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40998 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239902AbiAJHcN (ORCPT
+        with ESMTP id S239923AbiAJHcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:32:13 -0500
+        Mon, 10 Jan 2022 02:32:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F04F611B7;
-        Mon, 10 Jan 2022 07:32:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57312C36AED;
-        Mon, 10 Jan 2022 07:32:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56B046066C;
+        Mon, 10 Jan 2022 07:32:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D5D3C36AED;
+        Mon, 10 Jan 2022 07:32:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799931;
-        bh=VbNmRcpihmGSCFw+x/pGX2jqtKCrQZWhDtyNFbDRR/E=;
+        s=korg; t=1641799934;
+        bh=Fg09m/mCPd1Mc5MQ5ehZXYmVp5soqYL9q9NmgVntLis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sDx6HtMjy5baJsUiBSp8wtq4YypaHCCnH9Ozf/YgpFUqSyXfBNhblBNgbXkHhANhM
-         JB7NOrSfm18IIxULWLoGEbDsfMPkN36jBR1TUT23hOWQVbm0g4K+O2GT6FtMLvx5XJ
-         7CF6c+fgzMJpGr1XQyX54Md/IM6fC1VbvSxIKbcc=
+        b=larjxkVmYlvNCePsqmd2myBEYrjMU5Utpih0Jgxi7UcJc5RA5MM8etJMiS96HGA9X
+         kZ7ZM48YRAOBPDBCFqYqPxR41KDtzQDXoIzue2jZf0wmjHyk0Gd6HQmT1fUmuxp2PI
+         8pfffo3ctPDWYHWYHMw+LI5aTqzjxZBCUMqZrLQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com,
-        David Ahern <dsahern@kernel.org>, Thomas Graf <tgraf@suug.ch>,
+        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 20/72] ipv4: Check attribute length for RTA_GATEWAY in multipath route
-Date:   Mon, 10 Jan 2022 08:22:57 +0100
-Message-Id: <20220110071822.260222128@linuxfoundation.org>
+Subject: [PATCH 5.15 21/72] ipv4: Check attribute length for RTA_FLOW in multipath route
+Date:   Mon, 10 Jan 2022 08:22:58 +0100
+Message-Id: <20220110071822.290525529@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -49,91 +47,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: David Ahern <dsahern@kernel.org>
 
-commit 7a3429bace0e08d94c39245631ea6bc109dafa49 upstream.
+commit 664b9c4b7392ce723b013201843264bf95481ce5 upstream.
 
-syzbot reported uninit-value:
-============================================================
-  BUG: KMSAN: uninit-value in fib_get_nhs+0xac4/0x1f80
-  net/ipv4/fib_semantics.c:708
-   fib_get_nhs+0xac4/0x1f80 net/ipv4/fib_semantics.c:708
-   fib_create_info+0x2411/0x4870 net/ipv4/fib_semantics.c:1453
-   fib_table_insert+0x45c/0x3a10 net/ipv4/fib_trie.c:1224
-   inet_rtm_newroute+0x289/0x420 net/ipv4/fib_frontend.c:886
-
-Add helper to validate RTA_GATEWAY length before using the attribute.
+Make sure RTA_FLOW is at least 4B before using.
 
 Fixes: 4e902c57417c ("[IPv4]: FIB configuration using struct fib_config")
-Reported-by: syzbot+d4b9a2851cc3ce998741@syzkaller.appspotmail.com
 Signed-off-by: David Ahern <dsahern@kernel.org>
-Cc: Thomas Graf <tgraf@suug.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/fib_semantics.c |   29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ net/ipv4/fib_semantics.c |   17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
 --- a/net/ipv4/fib_semantics.c
 +++ b/net/ipv4/fib_semantics.c
-@@ -662,6 +662,19 @@ static int fib_count_nexthops(struct rtn
- 	return nhs;
- }
- 
-+static int fib_gw_from_attr(__be32 *gw, struct nlattr *nla,
-+			    struct netlink_ext_ack *extack)
-+{
-+	if (nla_len(nla) < sizeof(*gw)) {
-+		NL_SET_ERR_MSG(extack, "Invalid IPv4 address in RTA_GATEWAY");
-+		return -EINVAL;
-+	}
-+
-+	*gw = nla_get_in_addr(nla);
-+
-+	return 0;
-+}
-+
- /* only called when fib_nh is integrated into fib_info */
- static int fib_get_nhs(struct fib_info *fi, struct rtnexthop *rtnh,
- 		       int remaining, struct fib_config *cfg,
-@@ -704,7 +717,11 @@ static int fib_get_nhs(struct fib_info *
- 				return -EINVAL;
- 			}
- 			if (nla) {
--				fib_cfg.fc_gw4 = nla_get_in_addr(nla);
-+				ret = fib_gw_from_attr(&fib_cfg.fc_gw4, nla,
-+						       extack);
-+				if (ret)
-+					goto errout;
-+
- 				if (fib_cfg.fc_gw4)
- 					fib_cfg.fc_gw_family = AF_INET;
- 			} else if (nlav) {
-@@ -902,6 +919,7 @@ int fib_nh_match(struct net *net, struct
- 		attrlen = rtnh_attrlen(rtnh);
- 		if (attrlen > 0) {
- 			struct nlattr *nla, *nlav, *attrs = rtnh_attrs(rtnh);
-+			int err;
- 
- 			nla = nla_find(attrs, attrlen, RTA_GATEWAY);
- 			nlav = nla_find(attrs, attrlen, RTA_VIA);
-@@ -912,12 +930,17 @@ int fib_nh_match(struct net *net, struct
+@@ -731,8 +731,13 @@ static int fib_get_nhs(struct fib_info *
  			}
  
- 			if (nla) {
-+				__be32 gw;
-+
-+				err = fib_gw_from_attr(&gw, nla, extack);
-+				if (err)
-+					return err;
-+
- 				if (nh->fib_nh_gw_family != AF_INET ||
--				    nla_get_in_addr(nla) != nh->fib_nh_gw4)
-+				    gw != nh->fib_nh_gw4)
- 					return 1;
- 			} else if (nlav) {
- 				struct fib_config cfg2;
--				int err;
+ 			nla = nla_find(attrs, attrlen, RTA_FLOW);
+-			if (nla)
++			if (nla) {
++				if (nla_len(nla) < sizeof(u32)) {
++					NL_SET_ERR_MSG(extack, "Invalid RTA_FLOW");
++					return -EINVAL;
++				}
+ 				fib_cfg.fc_flow = nla_get_u32(nla);
++			}
  
- 				err = fib_gw_from_via(&cfg2, nlav, extack);
- 				if (err)
+ 			fib_cfg.fc_encap = nla_find(attrs, attrlen, RTA_ENCAP);
+ 			nla = nla_find(attrs, attrlen, RTA_ENCAP_TYPE);
+@@ -963,8 +968,14 @@ int fib_nh_match(struct net *net, struct
+ 
+ #ifdef CONFIG_IP_ROUTE_CLASSID
+ 			nla = nla_find(attrs, attrlen, RTA_FLOW);
+-			if (nla && nla_get_u32(nla) != nh->nh_tclassid)
+-				return 1;
++			if (nla) {
++				if (nla_len(nla) < sizeof(u32)) {
++					NL_SET_ERR_MSG(extack, "Invalid RTA_FLOW");
++					return -EINVAL;
++				}
++				if (nla_get_u32(nla) != nh->nh_tclassid)
++					return 1;
++			}
+ #endif
+ 		}
+ 
 
 
