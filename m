@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240678AbiAJHl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:41:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241022AbiAJHec (ORCPT
+        id S238105AbiAJHlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:41:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41338 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241095AbiAJHep (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:34:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA54DC025246;
-        Sun,  9 Jan 2022 23:30:20 -0800 (PST)
+        Mon, 10 Jan 2022 02:34:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B25B611E2;
-        Mon, 10 Jan 2022 07:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30349C36AE9;
-        Mon, 10 Jan 2022 07:30:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1346A61192;
+        Mon, 10 Jan 2022 07:34:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7ACBC36AED;
+        Mon, 10 Jan 2022 07:34:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799819;
-        bh=2KlE26ZJLolX3C57NOq5F8IXmQohsH+1VYKtkYusRfk=;
+        s=korg; t=1641800083;
+        bh=zENv4HK7dy6g+eUa3yM2KKt4TG/axtrDyosh4Wfu/bc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2W+qcuduYfIf14j9Hr9Lyl1r/w45Fzo/OrpuufpetDbNnQjna8WmeB11kkx/CzFO1
-         2Wnop2iryJ4IRIPjkdrPqjDDx37UMR0ErP+3VgEqKqDhFzWbBd25FKh8+WUJHFRlc+
-         6R4djoDlLvFcTNFkMUkLTpl2x2eimGgSlB0imyp4=
+        b=haLgdJpsuYepRWj90RrH32WATPi1ls8+akQoKZpL0yR8csysu4EQ5pus/uyBkJ0z6
+         h9wF+My/jBRDdaBDnx6RDQo4tQyMcLEkcKOamSGMAnhT3OrahhWZl7ayb39noGgq6i
+         bwqJwqWGA91DkBWOyJJcOIeKbNzjqVfULODaSazo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kirill Tkhai <ktkhai@virtuozzo.com>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        "Darrick J. Wong" <darrick.wong@oracle.com>,
-        Dave Chinner <dchinner@redhat.com>,
-        Eric Sandeen <sandeen@redhat.com>
-Subject: [PATCH 5.10 26/43] xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
-Date:   Mon, 10 Jan 2022 08:23:23 +0100
-Message-Id: <20220110071818.227285059@linuxfoundation.org>
+        stable@vger.kernel.org, Chunyan Zhang <chunyan.zhang@unisoc.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH 5.15 41/72] power: supply: core: Break capacity loop
+Date:   Mon, 10 Jan 2022 08:23:18 +0100
+Message-Id: <20220110071822.952583458@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
-References: <20220110071817.337619922@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Darrick J. Wong <djwong@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-commit 983d8e60f50806f90534cc5373d0ce867e5aaf79 upstream.
+commit 51c7b6a0398f54b9120795796a4cff4fc9634f7d upstream.
 
-The old ALLOCSP/FREESP ioctls in XFS can be used to preallocate space at
-the end of files, just like fallocate and RESVSP.  Make the behavior
-consistent with the other ioctls.
+We should not go on looking for more capacity tables after
+we realize we have looked at the last one in
+power_supply_find_ocv2cap_table().
 
-Reported-by: Kirill Tkhai <ktkhai@virtuozzo.com>
-Signed-off-by: Darrick J. Wong <djwong@kernel.org>
-Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
-Reviewed-by: Dave Chinner <dchinner@redhat.com>
-Reviewed-by: Eric Sandeen <sandeen@redhat.com>
+Fixes: 3afb50d7125b ("power: supply: core: Add some helpers to use the battery OCV capacity table")
+Cc: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Cc: Baolin Wang <baolin.wang@linux.alibaba.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/xfs/xfs_ioctl.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/power/supply/power_supply_core.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/fs/xfs/xfs_ioctl.c
-+++ b/fs/xfs/xfs_ioctl.c
-@@ -686,7 +686,8 @@ xfs_ioc_space(
+--- a/drivers/power/supply/power_supply_core.c
++++ b/drivers/power/supply/power_supply_core.c
+@@ -853,6 +853,10 @@ power_supply_find_ocv2cap_table(struct p
+ 		return NULL;
  
- 	if (bf->l_start > XFS_ISIZE(ip)) {
- 		error = xfs_alloc_file_space(ip, XFS_ISIZE(ip),
--				bf->l_start - XFS_ISIZE(ip), 0);
-+				bf->l_start - XFS_ISIZE(ip),
-+				XFS_BMAPI_PREALLOC);
- 		if (error)
- 			goto out_unlock;
- 	}
+ 	for (i = 0; i < POWER_SUPPLY_OCV_TEMP_MAX; i++) {
++		/* Out of capacity tables */
++		if (!info->ocv_table[i])
++			break;
++
+ 		temp_diff = abs(info->ocv_temp[i] - temp);
+ 
+ 		if (temp_diff < best_temp_diff) {
 
 
