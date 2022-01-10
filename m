@@ -2,85 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61244C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:44:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241927AbiAJSoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:44:09 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:60530 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239447AbiAJSoF (ORCPT
+        id S242035AbiAJSoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 13:44:21 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:56948 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241010AbiAJSoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:44:05 -0500
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20AIhwRD024096;
-        Mon, 10 Jan 2022 12:43:58 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1641840238;
-        bh=GXFv+aD2Z2QpT9wkKsMxpEH3rvlER44XWUwe0K4BQGo=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=Q19vHUXdIct9YXddCk9aYe0mYdaZr5u/dtOqG0+gTBRxSAJ7v2eLzAxZTwe1nncKv
-         HRudZ1ATy/XaLUflANitx63S+X/Eez2b8yLr8CjaesjjmT0aRoHEhgEHaE58Bwafgs
-         g/1Sw72x/HJIyNP2il0WJp4gUdPDcqFBZwzBCq3I=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20AIhwuF017932
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 10 Jan 2022 12:43:58 -0600
-Received: from DFLE111.ent.ti.com (10.64.6.32) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 10
- Jan 2022 12:43:58 -0600
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 10 Jan 2022 12:43:58 -0600
-Received: from [10.249.36.164] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20AIhvjn023819;
-        Mon, 10 Jan 2022 12:43:57 -0600
-Subject: Re: [PATCH] iommu/omap: Fix missing put_device() call in
- omap_iommu_probe_device
-To:     Miaoqian Lin <linmq006@gmail.com>
-CC:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
-        "Nagalla, Hari" <hnagalla@ti.com>
-References: <20220107080428.10873-1-linmq006@gmail.com>
- <de3a3e1c-6c51-e951-cc7f-9ce2ccb3f283@ti.com>
- <20220110022531.GA61@VICKYMQLIN-NB1.localdomain>
-From:   Suman Anna <s-anna@ti.com>
-Message-ID: <fd659736-2106-1be3-084b-7caddf2dc18e@ti.com>
-Date:   Mon, 10 Jan 2022 12:43:57 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 10 Jan 2022 13:44:20 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 7D4E61C0B76; Mon, 10 Jan 2022 19:44:19 +0100 (CET)
+Date:   Mon, 10 Jan 2022 19:44:19 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Pavel Machek <pavel@denx.de>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        alsa-devel <alsa-devel@alsa-project.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/5] ASoC: sh: rz-ssi: Drop calling rz_ssi_pio_recv()
+ recursively
+Message-ID: <20220110184418.GE3396@duo.ucw.cz>
+References: <20220110094711.8574-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220110094711.8574-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <2f338a37-f2ca-33e4-284e-5d263f7b93da@intel.com>
+ <CA+V-a8vz25B=cw_C4YMBRdDxeq7mi8Zc+noqpdHqfMP8eNHYFg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20220110022531.GA61@VICKYMQLIN-NB1.localdomain>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="OZkY3AIuv2LYvjdk"
+Content-Disposition: inline
+In-Reply-To: <CA+V-a8vz25B=cw_C4YMBRdDxeq7mi8Zc+noqpdHqfMP8eNHYFg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miaoqian,
 
-On 1/9/22 8:43 PM, Miaoqian Lin wrote:
-> Hi Suman Anna,
-> On Fri, Jan 07, 2022 at 08:42:16AM -0600, Suman Anna wrote:
->> Hi Miaoqian,
->>
->>
->>> Add the corresponding 'put_device()' in the error handling paths.
->>
->> Also, need it in the regular path, not just in error handling path.
-> I think after calling platform_get_drvdata() normally, the
-> reference will be released in other functions, so don't need it in the
-> regular path.
-> 
+--OZkY3AIuv2LYvjdk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No, it's a local reference and is acquired within omap_iommu_probe_device() and
-needs to be released within this function. What other function are you referring
-to here?
+Hi!
 
-regards
-Suman
+> > On 2022-01-10 10:47 AM, Lad Prabhakar wrote:
+> > > Instead of recursively calling rz_ssi_pio_recv() use a while loop
+> > > to read the samples from RX fifo.
+> >
+> > Recursion and loops are means for doing something repeatedly. Could you
+> > specify _why_ such change was made i.e. the conversion from one method
+> > into the other? I bet the code is not being changed for the sake of
+> > changing it, the reason is simply missing in the commit message.
+> >
+> I had feedback from Pavel "recursion is unwelcome in kernel due to
+> limited stack use." which I did agree with as a result I have come up
+> with this patch. Also to add this driver will later be used on Renesas
+> RZ/A2 SoC's which runs with limited memory.
+>=20
+> > Please note that refactoring below function into while-loop has a side
+> > effect: everything had to be indented by additional tab. Generally,
+> > readability increases if function is shaped 'linearly'.
+> >
+> I do agree, my initial patch just added a jump back to the start of
+> the function if there are more samples, but Biju suggested to use a
+> while loop instead.
 
+Yes, loop is better.
+
+I'd actually do while(true) and avoid using the done variable.
+
+    if (!(!frames_left && fifo_samples >=3D runtime->channels))
+              break;
+
+will do the trick. Better yet, do
+
+    if (frames_left || fifo_samples < runtime->channels)
+              break;
+
+because double negation is quite confusing and looks like typo.
+
+Best regards,
+								Pavel
+
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--OZkY3AIuv2LYvjdk
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYdx+ggAKCRAw5/Bqldv6
+8iWeAJwMFgmovkkcykQkiCov9xgLKwcKjACfRihbqO9B2VDa06HpO5bEfLl222U=
+=AYcv
+-----END PGP SIGNATURE-----
+
+--OZkY3AIuv2LYvjdk--
