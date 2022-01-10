@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:00:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C414CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 01:00:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237786AbiAJBA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 9 Jan 2022 20:00:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237687AbiAJBAP (ORCPT
+        id S237811AbiAJBAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 9 Jan 2022 20:00:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59004 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237699AbiAJBAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 9 Jan 2022 20:00:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D8DC06173F;
-        Sun,  9 Jan 2022 17:00:14 -0800 (PST)
+        Sun, 9 Jan 2022 20:00:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D20561093;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 804AD610A7;
+        Mon, 10 Jan 2022 01:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 42901C36B0D;
         Mon, 10 Jan 2022 01:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id BAA71C36AF8;
-        Mon, 10 Jan 2022 01:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641776413;
-        bh=cUhaWZHYpcYcrXLhOAVImihV/TLJac/2TWQmffO+QtQ=;
+        s=k20201202; t=1641776414;
+        bh=YvLDByRfF2X2n4Xcwxe3RiePY6WQIqiC/svno//r7vs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=TCWLQTVJW7S4IbqdobeJrsPbBzKPT5pzJcmOVKYHcF8V8OC1oVcE+2v4hzjFa0QUK
-         WNyvSxgVK5cPn9W3VJo4yW8+NsWHrcL9pd1XPCASrp0G+pdUz9/TPU004ypvvXn6Ut
-         F20OJlZZBHaax9Cp4IKX/8iN/AA2pSZ13CaOR5maIFoL1zQu7DIt2I7z04LYKMU93o
-         X/aNQ0HB+zFVOUp46oDahjeXnSlXEdQXfWtrv00uXZKMAGcNvFmnivdwl9qoUyNXM8
-         CMlcCzfat4ngj7+8wU0fKgP5NqGLUhgYMKNLhg/nabHFm23imTpNhtNq0DlsR1oSfU
-         SIlpoybnJfEzw==
+        b=MX2KyUa48e3zm7/yTyn7ExaHlmCjnKxTfnqon6BK8dDglUt9BemZfw4sw29tC0zcE
+         6jYP1OSGWv9a9/+UdhI1asxL0wuRyn9pa8AukQjFirNRonHhSsRMTc02povXwihjwd
+         zEVkEgZ0JiVjQJOowB/dWvJLawGOxlGQGqoLyCfSJQuXOgRW/ZZYkPQqVHq1g+oxDH
+         GeVFYQ7V/exSyKG+R+JVPy737qQPJuOnVzxSwosYhFd6Xtyirrch/aQQxAv61Lwgcn
+         d1HyudBBrKygbS1LZbxMfzz050hbEoUzW2/t4E0kIjN03itHQ2VtjHD2d7cTZvMGjF
+         CI5YBaq9Z2F/g==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8CDDF6078F;
-        Mon, 10 Jan 2022 01:00:13 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 31532F60790;
+        Mon, 10 Jan 2022 01:00:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] cxgb4: Remove useless DMA-32 fallback configuration
+Subject: Re: [PATCH] rocker: Remove useless DMA-32 fallback configuration
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164177641368.18208.5077653983544342613.git-patchwork-notify@kernel.org>
-Date:   Mon, 10 Jan 2022 01:00:13 +0000
-References: <56db10d53be0897ff1be5f37d64b91cb7e1d932c.1641736387.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <56db10d53be0897ff1be5f37d64b91cb7e1d932c.1641736387.git.christophe.jaillet@wanadoo.fr>
+Message-Id: <164177641419.18208.6006211503621263592.git-patchwork-notify@kernel.org>
+Date:   Mon, 10 Jan 2022 01:00:14 +0000
+References: <9ba2d13099d216f3df83e50ad33a05504c90fe7c.1641744274.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <9ba2d13099d216f3df83e50ad33a05504c90fe7c.1641744274.git.christophe.jaillet@wanadoo.fr>
 To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     rajur@chelsio.com, davem@davemloft.net, kuba@kernel.org,
+Cc:     jiri@resnulli.us, davem@davemloft.net, kuba@kernel.org,
         linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         netdev@vger.kernel.org
 Precedence: bulk
@@ -57,20 +54,20 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Sun,  9 Jan 2022 14:53:27 +0100 you wrote:
+On Sun,  9 Jan 2022 17:04:48 +0100 you wrote:
 > As stated in [1], dma_set_mask() with a 64-bit mask never fails if
 > dev->dma_mask is non-NULL.
 > So, if it fails, the 32 bits case will also fail for the same reason.
 > 
-> So, if dma_set_mask_and_coherent() succeeds, 'highdma' is known to be true.
-> 
 > Simplify code and remove some dead code accordingly.
+> 
+> [1]: https://lkml.org/lkml/2021/6/7/398
 > 
 > [...]
 
 Here is the summary with links:
-  - cxgb4: Remove useless DMA-32 fallback configuration
-    https://git.kernel.org/netdev/net-next/c/7fc7fc5da61b
+  - rocker: Remove useless DMA-32 fallback configuration
+    https://git.kernel.org/netdev/net-next/c/7ac2d77c97d0
 
 You are awesome, thank you!
 -- 
