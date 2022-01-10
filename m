@@ -2,54 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9304C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 13:01:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235246AbiAJNBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 08:01:10 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:42786 "EHLO
+        id S235392AbiAJNBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:01:18 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:42862 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231656AbiAJM7z (ORCPT
+        with ESMTP id S234233AbiAJNAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:59:55 -0500
-Date:   Mon, 10 Jan 2022 12:59:53 -0000
+        Mon, 10 Jan 2022 08:00:03 -0500
+Date:   Mon, 10 Jan 2022 13:00:00 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1641819594;
+        s=2020; t=1641819601;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UjeqJ4GSwfqdPtR2mocifLg0mCvhNuJqOxta26ebrDY=;
-        b=rbf8cSN3gfRlCZ3WxvVFEq9DvKcFTT1tN84QInp5uTqZUkxEa2gHY+uCZYf0nyDdzlGvVN
-        yXvOjL/c++kQLTvp4vxfVCaXkvABueCJDgNiixUU/3MRwcafvGDi/x2nAWB+gwa3yKVME1
-        2r2A2FYLGf6dCi14QjRkdY38qXJ+VPgQ4Sguj4MnG1TmWSFClrYcPPBnpDvOErtEUI5AhG
-        DJVBk4JHPmSChx5APTkvPl9nnhtcm/Zyf3WAqEZt5RkMTN9GJORkUGzhDFtozod+X6NKm/
-        gEcRmhxyAV1PscRofuF2qYn5tGlGfuHehZ2M3taLXtcmrvw3r76kw63fa2Hgow==
+        bh=/gg2hqLRpEfuycfD3SFXIH8uDH369qHJtBGbElKCyiw=;
+        b=lxo0AszhSTIdBodAqlHnff/Bdo02hwHHbkBWDzK+f8H65Za9YsYkGtuC9R7gnSUtlsThzR
+        Myp8jElllhYRiCaO/dutEcj9iKeqWL5YV/KeHFmOf+EWIfoFtM47RnElQC3ZpEeqUOiJ7X
+        JFU5ba19mgoykW6u6KVjFJBgHBCrQdl7xjjZ6Rry1/N8sdydN1f9HcsXlCO7PufF4mtIKZ
+        zjuZXYzMD6V5dPLJNL/oCELhMIJBU60Rpzqy+10yXvFkhJqt9sMb9YJKHEuhdr+DWUtKyR
+        2ddARP9HkpF+qJ5Vzj1sItb5Hf0vEJXdiszWCgsU4EJzEval7IiCfN9mLYaJqA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1641819594;
+        s=2020e; t=1641819601;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UjeqJ4GSwfqdPtR2mocifLg0mCvhNuJqOxta26ebrDY=;
-        b=Hj7OoFcxR5u7MMo/2mNXCxqRpvGjWel4bsGQ7lQ8j8oi8SWynrcjusjzmaT840WY3sxP5o
-        9jvr0oEAleMaNkDA==
-From:   "tip-bot2 for Drew Fustini" <tip-bot2@linutronix.de>
+        bh=/gg2hqLRpEfuycfD3SFXIH8uDH369qHJtBGbElKCyiw=;
+        b=G7P/Usfj0SAPndldEl9qY6PxDcn1k3+DFh2i3d/vrX0jHi47y/mcU49GALq+Cd28ActZYS
+        N1BbU3KntVay94AQ==
+From:   "tip-bot2 for Biju Das" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/pistachio: Fix
- -Wunused-but-set-variable warning
-Cc:     kernel test robot <lkp@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Drew Fustini <dfustini@baylibre.com>, x86@kernel.org,
+Subject: [tip: timers/core] reset: Add of_reset_control_get_optional_exclusive()
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20211123192524.1038304-1-dfustini@baylibre.com>
-References: <20211123192524.1038304-1-dfustini@baylibre.com>
+In-Reply-To: <20211112184413.4391-2-biju.das.jz@bp.renesas.com>
+References: <20211112184413.4391-2-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
-Message-ID: <164181959340.16921.12441384820128333820.tip-bot2@tip-bot2>
+Message-ID: <164181960008.16921.1670033423151054314.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -60,40 +59,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     0642fb4ba68f7158f7a6d92190b3090cf0c7fac6
-Gitweb:        https://git.kernel.org/tip/0642fb4ba68f7158f7a6d92190b3090cf0c7fac6
-Author:        Drew Fustini <dfustini@baylibre.com>
-AuthorDate:    Tue, 23 Nov 2021 11:25:24 -08:00
-Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Tue, 14 Dec 2021 10:17:36 +01:00
+Commit-ID:     c4f5b30dda01f2f6979a9681142de454991182ee
+Gitweb:        https://git.kernel.org/tip/c4f5b30dda01f2f6979a9681142de454991182ee
+Author:        Biju Das <biju.das.jz@bp.renesas.com>
+AuthorDate:    Fri, 12 Nov 2021 18:44:10 
+Committer:     Philipp Zabel <p.zabel@pengutronix.de>
+CommitterDate: Fri, 19 Nov 2021 12:23:45 +01:00
 
-clocksource/drivers/pistachio: Fix -Wunused-but-set-variable warning
+reset: Add of_reset_control_get_optional_exclusive()
 
-Variable 'overflow' set but not used, but this is the intended behavior.
-The hardware only updates the counter register after the overflow
-register read. However, the value of overflow is not actually needed.
+Add optional variant of of_reset_control_get_exclusive(). If the
+requested reset is not specified in the device tree, this function
+returns NULL instead of an error.
 
-Link: https://lore.kernel.org/lkml/202111200402.afQsussU-lkp@intel.com/
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Drew Fustini <dfustini@baylibre.com>
-Link: https://lore.kernel.org/r/20211123192524.1038304-1-dfustini@baylibre.com
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20211112184413.4391-2-biju.das.jz@bp.renesas.com
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
 ---
- drivers/clocksource/timer-pistachio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/reset.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/clocksource/timer-pistachio.c b/drivers/clocksource/timer-pistachio.c
-index 6f37181..69c069e 100644
---- a/drivers/clocksource/timer-pistachio.c
-+++ b/drivers/clocksource/timer-pistachio.c
-@@ -71,7 +71,8 @@ static u64 notrace
- pistachio_clocksource_read_cycles(struct clocksource *cs)
- {
- 	struct pistachio_clocksource *pcs = to_pistachio_clocksource(cs);
--	u32 counter, overflow;
-+	__maybe_unused u32 overflow;
-+	u32 counter;
- 	unsigned long flags;
+diff --git a/include/linux/reset.h b/include/linux/reset.h
+index db0e611..8a21b57 100644
+--- a/include/linux/reset.h
++++ b/include/linux/reset.h
+@@ -455,6 +455,26 @@ static inline struct reset_control *of_reset_control_get_exclusive(
+ }
  
- 	/*
+ /**
++ * of_reset_control_get_optional_exclusive - Lookup and obtain an optional exclusive
++ *                                           reference to a reset controller.
++ * @node: device to be reset by the controller
++ * @id: reset line name
++ *
++ * Optional variant of of_reset_control_get_exclusive(). If the requested reset
++ * is not specified in the device tree, this function returns NULL instead of
++ * an error.
++ *
++ * Returns a struct reset_control or IS_ERR() condition containing errno.
++ *
++ * Use of id names is optional.
++ */
++static inline struct reset_control *of_reset_control_get_optional_exclusive(
++				struct device_node *node, const char *id)
++{
++	return __of_reset_control_get(node, id, 0, false, true, true);
++}
++
++/**
+  * of_reset_control_get_shared - Lookup and obtain a shared reference
+  *                               to a reset controller.
+  * @node: device to be reset by the controller
