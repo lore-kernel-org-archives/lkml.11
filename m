@@ -2,129 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DF9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB63C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:30:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243952AbiAJK2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:28:45 -0500
-Received: from foss.arm.com ([217.140.110.172]:59558 "EHLO foss.arm.com"
+        id S243928AbiAJKaZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:30:25 -0500
+Received: from foss.arm.com ([217.140.110.172]:59592 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242027AbiAJK23 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:28:29 -0500
+        id S235505AbiAJKaY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 05:30:24 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0FED8ED1;
-        Mon, 10 Jan 2022 02:28:28 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.11.128])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4FD4F3F5A1;
-        Mon, 10 Jan 2022 02:28:26 -0800 (PST)
-Date:   Mon, 10 Jan 2022 10:27:59 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] arm64: atomics: Dereference matching size
-Message-ID: <YdwKLwvDRfc59c8U@FVFF77S0Q05N>
-References: <20220107232746.1540130-1-keescook@chromium.org>
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DED3DED1;
+        Mon, 10 Jan 2022 02:30:23 -0800 (PST)
+Received: from [10.57.34.253] (unknown [10.57.34.253])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 23B4D3F5A1;
+        Mon, 10 Jan 2022 02:30:23 -0800 (PST)
+Subject: Re: linux-next: Fixes tag needs some work in the jc_docs tree
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220107103649.53774b30@canb.auug.org.au>
+ <c13988e1-fd85-03e5-a05d-7bfee16d4c8d@arm.com>
+ <2359d7d0-3530-c849-5a52-d7b362df2dd1@infradead.org>
+From:   James Clark <james.clark@arm.com>
+Message-ID: <527649a0-9c1e-f9cf-62aa-d13af10930e7@arm.com>
+Date:   Mon, 10 Jan 2022 10:30:21 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220107232746.1540130-1-keescook@chromium.org>
+In-Reply-To: <2359d7d0-3530-c849-5a52-d7b362df2dd1@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kees,
 
-On Fri, Jan 07, 2022 at 03:27:46PM -0800, Kees Cook wrote:
-> When building with -Warray-bounds (which is desired to be enabled
-> globally), the following warning is generated:
+
+On 07/01/2022 16:19, Randy Dunlap wrote:
+> Hi James,
 > 
-> In file included from ./arch/arm64/include/asm/lse.h:16,
->                  from ./arch/arm64/include/asm/cmpxchg.h:14,
->                  from ./arch/arm64/include/asm/atomic.h:16,
->                  from ./include/linux/atomic.h:7,
->                  from ./include/asm-generic/bitops/atomic.h:5,
->                  from ./arch/arm64/include/asm/bitops.h:25,
->                  from ./include/linux/bitops.h:33,
->                  from ./include/linux/kernel.h:22,
->                  from kernel/printk/printk.c:22:
-> ./arch/arm64/include/asm/atomic_lse.h:247:9: warning: array subscript 'long unsigned int[0]' is partly outside array bounds of 'atomic_t[1]' [-Warray-bounds]
->   247 |         asm volatile(                                                   \
->       |         ^~~
-> ./arch/arm64/include/asm/atomic_lse.h:266:1: note: in expansion of macro '__CMPXCHG_CASE'
->   266 | __CMPXCHG_CASE(w,  , acq_, 32,  a, "memory")
->       | ^~~~~~~~~~~~~~
-> kernel/printk/printk.c:3606:17: note: while referencing 'printk_cpulock_owner'
->  3606 | static atomic_t printk_cpulock_owner = ATOMIC_INIT(-1);
->       |                 ^~~~~~~~~~~~~~~~~~~~
+> First of all, don't always believe what checkpatch says.
+> Just take it as a hint.
 > 
-> This is due to the compiler seeing an unsigned long * cast against
-> something (atomic_t) that is int sized. Replace the cast with the
-> matching size cast. This results in no change in binary output.
-
-Just to check, I assume both GCC and Clang are happy with this applied?
-
-I recall that (historically at least) clang would warn about size mismatches
-for inline assembly and would sometimes require more care. I don't see anythign
-for which that would matter, but I just want to check.
-
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Boqun Feng <boqun.feng@gmail.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Signed-off-by: Kees Cook <keescook@chromium.org>
-> ---
->  arch/arm64/include/asm/atomic_lse.h | 2 +-
->  arch/arm64/include/asm/cmpxchg.h    | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+> On 1/7/22 02:25, James Clark wrote:
+>>
+>>
+>> On 06/01/2022 23:36, Stephen Rothwell wrote:
+>>> Hi all,
+>>>
+>>> In commit
+>>>
+>>>   e94f43ea200a ("docs: automarkup.py: Fix invalid HTML link output and broken URI fragments")
+>>>
+>>> Fixes tag
+>>>
+>>>   Fixes: d18b01789ae5 ("docs: Add automatic cross-reference for
+>>>
+>>> has these problem(s):
+>>>
+>>>   - Subject has leading but no trailing parentheses
+>>>   - Subject has leading but no trailing quotes
+>>
+>> Hi Stephen,
+>>
+>> Which validator are you using for this output? checkpatch.pl has a validator for commit references
+>> and it actually complains _more_ if it's not wrapped at 75 chars. At least for ones in the
+>> body of the commit rather than the fixes reference. Which is a bit confusing if there is
+>> a difference in the rule.
+>>
+>>>
+>>> Please do not split Fixes tags across more than one line.
+>>>
+>>
+>> Is this just for the fixes tag and not for the one in the body? Would you consider adding
+>> this check to checkpatch.pl and submitting-patches.rst as I don't see that rule mentioned there.
 > 
-> diff --git a/arch/arm64/include/asm/atomic_lse.h b/arch/arm64/include/asm/atomic_lse.h
-> index d955ade5df7c..5d460f6b7675 100644
-> --- a/arch/arm64/include/asm/atomic_lse.h
-> +++ b/arch/arm64/include/asm/atomic_lse.h
-> @@ -249,7 +249,7 @@ __lse__cmpxchg_case_##name##sz(volatile void *ptr,			\
->  	"	mov	%" #w "[tmp], %" #w "[old]\n"			\
->  	"	cas" #mb #sfx "\t%" #w "[tmp], %" #w "[new], %[v]\n"	\
->  	"	mov	%" #w "[ret], %" #w "[tmp]"			\
-> -	: [ret] "+r" (x0), [v] "+Q" (*(unsigned long *)ptr),		\
-> +	: [ret] "+r" (x0), [v] "+Q" (*(u##sz *)ptr),			\
->  	  [tmp] "=&r" (tmp)						\
->  	: [old] "r" (x1), [new] "r" (x2)				\
->  	: cl);								\
+> submitting-patches.rst says:
+> 
+> If your patch fixes a bug in a specific commit, e.g. you found an issue using
+> ``git bisect``, please use the 'Fixes:' tag with the first 12 characters of
+> the SHA-1 ID, and the one line summary.  Do not split the tag across multiple
+> lines, tags are exempt from the "wrap at 75 columns" rule in order to simplify
+> parsing scripts.  For example::
 
-It might be worth nothing that __ll_sc__cmpxchg_case_##name##sz already uses
-the same constraint:
+Thanks I missed that bit.
+> 
+> 	Fixes: 54a4f0239f2e ("KVM: MMU: make kvm_mmu_zap_page() return the number of pages it actually freed")
+> 
+> 
+> Yes, checkpatch warns about that. Just ignore it.
 
-	[v] "+Q" (*(u##sz *)ptr
+I looked into adding a line break warning in checkpatch for 'Fixes:' but it's not easy because it seems like
+the fixes field is more permissive than the other one:
 
-... since that explains why we only need to update the LSE form and not the
-LL/SC form, and indicates that this is unlikely to be problematic.
+	o Fixes: style doesn't require ("<commit_description>")
+	parentheses and double quotes like other uses of
+	git commit ID and description.
 
-Either way:
-
-Acked-by: Mark Rutland <mark.rutland@arm.com>
-
-Thanks,
-Mark.
-
-> diff --git a/arch/arm64/include/asm/cmpxchg.h b/arch/arm64/include/asm/cmpxchg.h
-> index f9bef42c1411..497acf134d99 100644
-> --- a/arch/arm64/include/asm/cmpxchg.h
-> +++ b/arch/arm64/include/asm/cmpxchg.h
-> @@ -243,7 +243,7 @@ static inline void __cmpwait_case_##sz(volatile void *ptr,		\
->  	"	cbnz	%" #w "[tmp], 1f\n"				\
->  	"	wfe\n"							\
->  	"1:"								\
-> -	: [tmp] "=&r" (tmp), [v] "+Q" (*(unsigned long *)ptr)		\
-> +	: [tmp] "=&r" (tmp), [v] "+Q" (*(u##sz *)ptr)			\
->  	: [val] "r" (val));						\
->  }
->  
-> -- 
-> 2.30.2
+> 
+>> @Jonathan, I'm happy to resubmit with the changes, but it might be easier if you just
+>> make the fix in place.
+>>
+>> Thanks
+>> James
 > 
