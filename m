@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0573FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6106C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240417AbiAJHlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:41:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
+        id S239645AbiAJHlM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:41:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240945AbiAJHea (ORCPT
+        with ESMTP id S240574AbiAJHea (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:34:30 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF34EC025393;
-        Sun,  9 Jan 2022 23:29:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72B0DC0253FE;
+        Sun,  9 Jan 2022 23:29:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D4E1611BB;
-        Mon, 10 Jan 2022 07:29:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E354C36AED;
-        Mon, 10 Jan 2022 07:29:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E39611B9;
+        Mon, 10 Jan 2022 07:29:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E87FEC36AE9;
+        Mon, 10 Jan 2022 07:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799788;
-        bh=amkLwSEaFB8ELixfHTAcmT95x8/YFpi2ur/98Fmnou8=;
+        s=korg; t=1641799777;
+        bh=JYszoI4w8EG/f+eoMv21Wl7Zb0swvHUpwQCPoozk21E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UbtnyqRQws2EL4w7fjHK8pyzCAyTbvhCcIQOXSNPXSN2Y0zCMX9SyYCqfG1kgDKsg
-         dJg4OklPG4d/lrk6X3PDbFyvkqBPIFmJGCtOE41obp9f8S3EOZi7Zc3pXcNMNwxei9
-         rmWGPkXSWkue+8o4dxHurZOpmiIdKN3Nm9cku0C0=
+        b=pXO+l76xOIk9fmPgQX5eQzvwB7Ez82CvvJBujGMyGY+QBk+aGgYFM5Ho11nQQQtoV
+         rp3R0YWVS+FXF+U7BCyurPRlQmDZLTWrPYwE2RfWCh+Mg3sjGCVdHfnFjMfvMbcShb
+         Jm8z8t00lm+ozhuvkgfPAzKAKKrIyDdcvpcxgjqI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuah Khan <skhan@linuxfoundation.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Subject: [PATCH 5.10 02/43] selftests: x86: fix [-Wstringop-overread] warn in test_process_vm_readv()
-Date:   Mon, 10 Jan 2022 08:22:59 +0100
-Message-Id: <20220110071817.417485930@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH 5.10 11/43] mac80211: initialize variable have_higher_than_11mbit
+Date:   Mon, 10 Jan 2022 08:23:08 +0100
+Message-Id: <20220110071817.734448998@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071817.337619922@linuxfoundation.org>
 References: <20220110071817.337619922@linuxfoundation.org>
@@ -48,35 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Tom Rix <trix@redhat.com>
 
-commit dd40f44eabe1e122c6852fabb298aac05b083fce upstream.
+commit 68a18ad71378a56858141c4449e02a30c829763e upstream.
 
-Fix the following [-Wstringop-overread] by passing in the variable
-instead of the value.
+Clang static analysis reports this warnings
 
-test_vsyscall.c: In function ‘test_process_vm_readv’:
-test_vsyscall.c:500:22: warning: ‘__builtin_memcmp_eq’ specified bound 4096 exceeds source size 0 [-Wstringop-overread]
-  500 |                 if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
-      |                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+mlme.c:5332:7: warning: Branch condition evaluates to a
+  garbage value
+    have_higher_than_11mbit)
+    ^~~~~~~~~~~~~~~~~~~~~~~
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
+have_higher_than_11mbit is only set to true some of the time in
+ieee80211_get_rates() but is checked all of the time.  So
+have_higher_than_11mbit needs to be initialized to false.
+
+Fixes: 5d6a1b069b7f ("mac80211: set basic rates earlier")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Link: https://lore.kernel.org/r/20211223162848.3243702-1-trix@redhat.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/x86/test_vsyscall.c |    2 +-
+ net/mac80211/mlme.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/testing/selftests/x86/test_vsyscall.c
-+++ b/tools/testing/selftests/x86/test_vsyscall.c
-@@ -497,7 +497,7 @@ static int test_process_vm_readv(void)
- 	}
- 
- 	if (vsyscall_map_r) {
--		if (!memcmp(buf, (const void *)0xffffffffff600000, 4096)) {
-+		if (!memcmp(buf, remote.iov_base, sizeof(buf))) {
- 			printf("[OK]\tIt worked and read correct data\n");
- 		} else {
- 			printf("[FAIL]\tIt worked but returned incorrect data\n");
+--- a/net/mac80211/mlme.c
++++ b/net/mac80211/mlme.c
+@@ -5194,7 +5194,7 @@ static int ieee80211_prep_connection(str
+ 	 */
+ 	if (new_sta) {
+ 		u32 rates = 0, basic_rates = 0;
+-		bool have_higher_than_11mbit;
++		bool have_higher_than_11mbit = false;
+ 		int min_rate = INT_MAX, min_rate_index = -1;
+ 		const struct cfg80211_bss_ies *ies;
+ 		int shift = ieee80211_vif_get_shift(&sdata->vif);
 
 
