@@ -2,148 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD9DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:23:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0414C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 18:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239113AbiAJSXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:23:19 -0500
-Received: from aposti.net ([89.234.176.197]:35302 "EHLO aposti.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239088AbiAJSXQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:23:16 -0500
-From:   Paul Cercueil <paul@crapouillou.net>
-To:     Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, list@opendingux.net,
-        Paul Cercueil <paul@crapouillou.net>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Subject: [PATCH v3 2/2] hwmon: Add "label" attribute
-Date:   Mon, 10 Jan 2022 18:22:56 +0000
-Message-Id: <20220110182256.30763-3-paul@crapouillou.net>
-In-Reply-To: <20220110182256.30763-1-paul@crapouillou.net>
-References: <20220110182256.30763-1-paul@crapouillou.net>
+        id S239130AbiAJSYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 13:24:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239088AbiAJSYL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 13:24:11 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A986C06173F;
+        Mon, 10 Jan 2022 10:24:11 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id c71so45572041edf.6;
+        Mon, 10 Jan 2022 10:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+OBKlMrGeRwIefZjUnO53bTZIl+uI828EXtV9Nyw2sk=;
+        b=etturC84fe4kezIFLvLDguzVmw3WtSl1PjQhSslQESVDw15acoPKNOEyn2KDaMzbh0
+         eKVXnyMxtUxw1lzjA6bH0ZFmr8JW+CHBmoK3HetA3iYGVhshyWHK1X4vbyZ6dCdMwDs4
+         fiDKOcj6jt3eO2eBqSxltrQ8J/Hs6VgiVnPCGN2CQqQp2F7zh+ziQgT2xDv06bbguSOI
+         Z6/M29xIJGy4MpKMx+MYSlOKZiaPQ1FPOSOs3VDiJP0jxVhRaQhvbhnoO3mWB73d/Oi9
+         UAoJImpUxyeqtPwm93dKmyJOvI6RP6YQcSRkBLRWu8Npbbsx54fh2FyZ91IJXDkFYrTa
+         ds0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+OBKlMrGeRwIefZjUnO53bTZIl+uI828EXtV9Nyw2sk=;
+        b=OGNWmvWbkCLtcT17igyqNv3nRlvaD7FDVUV9hhEBb9z2U8lDjxZuGjgMPcZ54jKPx+
+         ffByXdiYlYLgKvOsNySKXkTfIQgravmQcVpPGBN2/oPKGBXUf/eX5tcZMrh9ACW63dRy
+         hBMwK35OU5foFcyORMU+I5lsWxPM90BBS5uyZn2qW63teln3WsBC4UKr5zZnN2XZRWSo
+         OORek1eMC46sVCurFo0Us8wMe7YbaT8GUvliBSKnRn4qUhMmup2TaHWPBDtC4hCDJCTD
+         fro+Enj2sxGOt5w1ISThG0QU8LJzoWXTdm+hnXpBhxgMWesfCPUD1ttrDhp8+txLkrwk
+         FkSg==
+X-Gm-Message-State: AOAM5332FUBftCa3dRSbp6qrzVucrD3kmUWtTd1Vzbnyvu7zm5Qx5UdQ
+        /hY3s/vFoyecMeD67fmjMQiYLDRnrFM46LPgpz2uZANtq2w=
+X-Google-Smtp-Source: ABdhPJxDtUnFS0ICcjJjaUcy6GqZkIiQUUUJ1CXLBLx6+TORFdiGKNjZrq2NLGQCVYpdw4GkjRi2LHxnXMFlvgV1yyo=
+X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr639572ejc.497.1641839049368;
+ Mon, 10 Jan 2022 10:24:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220106062255.3208817-1-cosmin.tanislav@analog.com>
+ <20220106062255.3208817-3-cosmin.tanislav@analog.com> <CAHp75Vcq76iaHHp2oXFsaE4d_+EGH87DxQRYu7Ys-adN_4mmUw@mail.gmail.com>
+ <953f1539-a4fc-ab8e-bcf9-287ac91ba42b@gmail.com>
+In-Reply-To: <953f1539-a4fc-ab8e-bcf9-287ac91ba42b@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 10 Jan 2022 20:22:20 +0200
+Message-ID: <CAHp75Vc=+378EzDsibOaHRHCUoR8jBLO8ZZgf-G1i6N6Jm-AOg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: addac: ad74413r: correct comparator gpio getters
+ mask usage
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a label is defined in the device tree for this device add that
-to the device specific attributes. This is useful for userspace to
-be able to identify an individual device when multiple identical
-chips are present in the system.
+On Mon, Jan 10, 2022 at 6:55 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:
+> On 1/9/22 14:13, Andy Shevchenko wrote:
+> > On Fri, Jan 7, 2022 at 7:34 AM Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Tested-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
----
+...
 
-Notes:
-    v2: - Cache label into hwmon_device
-        - Rename hwmon_dev_name_is_visible() to hwmon_dev_attr_is_visible()
-    v3: Move the code setting the label around in the probe function to fix
-        error handling issue.
+> >> -       status &= AD74413R_DIN_COMP_OUT_SHIFT_X(real_offset);
+> >> +       status &= BIT(real_offset);
+> >
+> > But this is completely different.
+>
+> What do you mean by this is completely different?
+>
+> It was broken before, it is fixed now. Indeed, I'm missing
+> the Fixes tag, if that's what you meant.
 
- drivers/hwmon/hwmon.c | 34 +++++++++++++++++++++++++++++++---
- 1 file changed, 31 insertions(+), 3 deletions(-)
+Yeah, I explained myself below. I think you got the idea.
 
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 3501a3ead4ba..8d787dba3e38 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -18,6 +18,7 @@
- #include <linux/list.h>
- #include <linux/module.h>
- #include <linux/pci.h>
-+#include <linux/property.h>
- #include <linux/slab.h>
- #include <linux/string.h>
- #include <linux/thermal.h>
-@@ -30,6 +31,7 @@
- 
- struct hwmon_device {
- 	const char *name;
-+	const char *label;
- 	struct device dev;
- 	const struct hwmon_chip_info *chip;
- 	struct list_head tzdata;
-@@ -71,17 +73,29 @@ name_show(struct device *dev, struct device_attribute *attr, char *buf)
- }
- static DEVICE_ATTR_RO(name);
- 
-+static ssize_t
-+label_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	return sysfs_emit(buf, "%s\n", to_hwmon_device(dev)->label);
-+}
-+static DEVICE_ATTR_RO(label);
-+
- static struct attribute *hwmon_dev_attrs[] = {
- 	&dev_attr_name.attr,
-+	&dev_attr_label.attr,
- 	NULL
- };
- 
--static umode_t hwmon_dev_name_is_visible(struct kobject *kobj,
-+static umode_t hwmon_dev_attr_is_visible(struct kobject *kobj,
- 					 struct attribute *attr, int n)
- {
- 	struct device *dev = kobj_to_dev(kobj);
-+	struct hwmon_device *hdev = to_hwmon_device(dev);
- 
--	if (to_hwmon_device(dev)->name == NULL)
-+	if (attr == &dev_attr_name.attr && hdev->name == NULL)
-+		return 0;
-+
-+	if (attr == &dev_attr_label.attr && hdev->label == NULL)
- 		return 0;
- 
- 	return attr->mode;
-@@ -89,7 +103,7 @@ static umode_t hwmon_dev_name_is_visible(struct kobject *kobj,
- 
- static const struct attribute_group hwmon_dev_attr_group = {
- 	.attrs		= hwmon_dev_attrs,
--	.is_visible	= hwmon_dev_name_is_visible,
-+	.is_visible	= hwmon_dev_attr_is_visible,
- };
- 
- static const struct attribute_group *hwmon_dev_attr_groups[] = {
-@@ -117,6 +131,7 @@ static void hwmon_dev_release(struct device *dev)
- 	if (hwdev->group.attrs)
- 		hwmon_free_attrs(hwdev->group.attrs);
- 	kfree(hwdev->groups);
-+	kfree(hwdev->label);
- 	kfree(hwdev);
- }
- 
-@@ -733,6 +748,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
- 			const struct attribute_group **groups)
- {
- 	struct hwmon_device *hwdev;
-+	const char *label;
- 	struct device *hdev;
- 	int i, err, id;
- 
-@@ -788,6 +804,18 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
- 		hdev->groups = groups;
- 	}
- 
-+	if (device_property_present(dev, "label")) {
-+		err = device_property_read_string(dev, "label", &label);
-+		if (err < 0)
-+			goto free_hwmon;
-+
-+		hwdev->label = kstrdup(label, GFP_KERNEL);
-+		if (hwdev->label == NULL) {
-+			err = -ENOMEM;
-+			goto free_hwmon;
-+		}
-+	}
-+
- 	hwdev->name = name;
- 	hdev->class = &hwmon_class;
- 	hdev->parent = dev;
+...
+
+> >> +       bitmap_zero(bits, chip->ngpio);
+> >> +
+> >>          for_each_set_bit(offset, mask, chip->ngpio) {
+> >>                  unsigned int real_offset = st->comp_gpio_offsets[offset];
+> >>
+> >>                  if (val & BIT(real_offset))
+> >> -                       *bits |= offset;
+> >> +                       *bits |= BIT(offset);
+> >
+> > So, how was it working before? If it fixes, it should go with the
+> > Fixes tag and before patch 2.
+> >
+> > On top of that, you may try to see if one of bitmap_*() APIs can be
+> > suitable here to perform the above in a more optimal way.
+> > (At least this conditional can be replaced with __asign_bit() call,
+> > but I think refactoring the entire loop may reveal a better approach)
+>
+> I can replace the if and bitmap_zero with __assign_bit, as you
+> suggested. I'm not familiar with bitmap APIs, do you have a suggestion?
+
+For now I'm lacking any new suggestions. If you don't see any better
+approaches, let's go with __assign_bit().
+
 -- 
-2.34.1
-
+With Best Regards,
+Andy Shevchenko
