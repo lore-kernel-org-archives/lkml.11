@@ -2,104 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EED8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E44CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:56:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243365AbiAJHwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:52:41 -0500
-Received: from out162-62-57-252.mail.qq.com ([162.62.57.252]:53329 "EHLO
-        out162-62-57-252.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243461AbiAJHub (ORCPT
+        id S236140AbiAJHz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232584AbiAJHxk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:50:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1641801027;
-        bh=4/D9bsQYTExfGj/Kw0XJPUykeRczvoxzNQdeTQGgfuU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=YtJ8CrACJqpV78bbfEXJsna9tuAQlgX/axMCKG2BPXwBRAvjAv9r1j5C4hg58eUdr
-         xM7TCBHXR4tLU5KckQPo3jGUDXx/0/yUyPi85f2ggHkv6kcdSMmDQQNXLvOjCFwFBJ
-         QtJvOkBUBI3kfzt5Sy4BVItbzyeKTNYdDE4BxH34=
-Received: from localhost ([119.32.47.91])
-        by newxmesmtplogicsvrszc11.qq.com (NewEsmtp) with SMTP
-        id BC28D21C; Mon, 10 Jan 2022 15:47:02 +0800
-X-QQ-mid: xmsmtpt1641800822tp8masu2j
-Message-ID: <tencent_15A7824636308FBA779482A8D296ADB0A607@qq.com>
-X-QQ-XMAILINFO: OfSYiviZO9YdmdcN850B6VCN5Oun1MpScidBKLKEp7n/KUBzvVWUy7r/3bu2W7
-         +6drgSgykPAuOjYqgg5zL+lFC9XKXiYNILxmjF6UYaFDITEVjM4RFT5CbZme/Ntb2O1+e/nLh5bS
-         OltW0hy1Q7GeBLvee725G75N6/AqIlWNXcP6H/WRcTpZRvcVukwJhBN+f96s/OvR2sAyOXPm5L3b
-         mXLpdbmUgIHNSMDluBc0RN4cSUrzj/YDlPW+GXBPChp5QUawTbA463xv/ltFXEKfWbpp8YAbihz9
-         YJnaAnwWmxPQFVCGvv1Ns8tcOEQIZIrX60OOg8g8w9xLTPg0nEXC6+im/vE1cYcZbU0/UdrYNK29
-         drzBGlNd+UwAsgaFOI34xhYNypwov/Kaw9Ri9OGkuERcIUypQV2mWmoX20mbmkuE7KVZgkoAkPP0
-         ku3I4v41RHbq44WEe8Fq+zdzi5sPaebxlayMqWk5JzfbUSChamgWc4IrOxqNiACWf1+FizIIu1nJ
-         48PxKoWzxjs4DjSsaNxo2gophzwmdhjy4G1Q9C4snwN8mNPqp/kBCd2/E8d0PDYAiX3qbqStwEDg
-         3cnPfZsYVWB2vZ/EK1QDOHrHQPyGqk5PatjgnZHxOw/0qgLq0FilBDCrL7hOKUTz0ZtFsffw/Gg7
-         m07cABaDstdZAz6wgieiGzrn9a2T2dePd9WiP2TxKW1P2sA/6MyWOJHp3N5u69okDU3RuX1GNmSQ
-         6EmoQHbU1H8CoykI4rraXuAE8Zbh9guwoQdYLDxqc1pRaGNpldgBfyT/U9bb9P+9HDfaR0yvMes8
-         lyiw4B98NOAm9NUDOhkVmuAnE1Mi8nGr3ONlNhi/3bSN6/pckAnihbmXueKCsD9N5PrCIyLH3baO
-         zzjXf6ATYN
-Date:   Mon, 10 Jan 2022 15:47:02 +0800
-From:   Conley Lee <conleylee@foxmail.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     davem@davemloft.net, mripard@kernel.org, wens@csie.org,
-        jernej.skrabec@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] sun4i-emac.c: enable emac tx dma
-X-OQ-MSGID: <Ydvkdjh+uL0wALF5@fedora>
-References: <YdLhQjUTobcLq73j@Red>
- <tencent_E4BA4D6105A46CCC1E8AEF48057EA5FE5B08@qq.com>
- <YdtJTQJJ4aEUcp/D@Red>
+        Mon, 10 Jan 2022 02:53:40 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4DF4C03327D
+        for <linux-kernel@vger.kernel.org>; Sun,  9 Jan 2022 23:43:55 -0800 (PST)
+Date:   Mon, 10 Jan 2022 08:43:53 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1641800634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AYq5G9lgiVp0cF250rfn+yN99kmFZjjrNjZ4Pnf7uWc=;
+        b=Kh4DMynpSosqw2U0wRoMJgbR778dSXXWTKH1mI+OONwH9VCDyo4CoqMYWv3IgltKBpX7iR
+        0P3l/wbbPWK98/a7VTM6REiVg4bazKnP2BMhwxkI2t13kRivjnSqprXp8v0XygbuL/zh/1
+        zE3hx3W64YlHak0KAQP0DUui3NqJbhrBPhDZWwH3luJA7GX7hV+Wdfpb++zf47SVXiCXdX
+        sOadVCN/5wQaGeYBH4xb2xQ0LM6FYnFOLrLPyDaBT7p9gafwaNY5y44wJoSAmP+Jb+2m4+
+        +5MDz9/EDZPqa9vZrRJ8b4wjcy8Nls2QwF0quGof8q0RhzcqWa1HWdyXV8NShQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1641800634;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AYq5G9lgiVp0cF250rfn+yN99kmFZjjrNjZ4Pnf7uWc=;
+        b=mh/9QkYXqYKpQ1YfKjo0UY2qMLVpgW5uYiXkflfbBNFSbI9mngWdgga+Ng/gewO3MXupzj
+        0QdxK71P3DUZLODQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Waiman Long <longman@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] locking/local_lock: Make the empty local_lock_*()
+ function a macro.
+Message-ID: <YdvjuZATR4727gaT@linutronix.de>
+References: <20220105202623.1118172-1-bigeasy@linutronix.de>
+ <00c4c55b-7fa6-d29c-4a80-c196922ef527@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdtJTQJJ4aEUcp/D@Red>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <00c4c55b-7fa6-d29c-4a80-c196922ef527@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/09/22 at 09:45下午, Corentin Labbe wrote:
-> Date: Sun, 9 Jan 2022 21:45:01 +0100
-> From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> To: conleylee@foxmail.com
-> Cc: davem@davemloft.net, mripard@kernel.org, wens@csie.org,
->  jernej.skrabec@gmail.com, netdev@vger.kernel.org,
->  linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
->  linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v1] sun4i-emac.c: enable emac tx dma
-> 
-> Le Sun, Jan 09, 2022 at 05:17:55PM +0800, conleylee@foxmail.com a écrit :
-> > From: conley <conleylee@foxmail.com>
-> > 
-> > Hello
-> > I am reading the R40 user manual and trying to create a new path to enable
-> > emac tx dma channel. According to the figure 8-21(TX Operation Diagram),
-> > I try to enable emac tx dma channel by the follow steps:
-> > 1. enable tx dma mode
-> > 2. set packet lengths
-> > 2. move data from skb to tx fifo by using dma in xmit function.
-> > 3. start transfer from tx fifo to phy in dma tx done callback
-> > 
-> > But it doesn't work. emac tx interrupt and dma finished interrupt are
-> > raised, but no packets are transmitted (I test it by tcpdump).
-> > Do you know how to configure the emac tx dma correctly? Thanks ~
-> > 
-> 
-> Hello
-> 
-> Here are my thoughts to help you:
-> - Your email is not a real patch, but an ask for help, so you should not use [ PATCH ] in the subject.
-> - If it was a patch, "v1" is not necessary
-> - Your patch below is doing too many unrelated different things, it is hard to see the DMA TX enable part
-> - I think you could first send a preliminary patch which adds all EMAC_INT_CTL_TX_xxx which are already used by the driver (to reduce the diff)
-> - Without the DTB change, it is hard to see the whole picture, did you correctly use the right dma number for an easy example.
-> - Knowing also the board (and so PHY, modes etc...) could help
-> - I think your priority should not to add TX, but to fix reported problems to your initial patch (build warnings/error https://marc.info/?l=linux-arm-kernel&m=164159846213585&w=2) since your work on TX will need to be applied after this.
-> - For the previous point, always build test with at least 2 different 32/64 arch. And if possible a total different arch (like x86_64).
-> 
-> Anyway, I will try to test your patch on my a10 board
-> 
-> Regards
-Thanks a lot for your help ~ I will submit an patch which add all
-register related. By the way, the build warnings problems have been fixed
-by Jakub Kicinski <kuba@kernel.org>.
+On 2022-01-05 22:34:31 [-0500], Waiman Long wrote:
+>=20
+> I try out this patch and it indeed helps to reduce the object size of
+> functions that use local_lock(). However, the extra code isn't an additio=
+nal
+> mov+add.
+>=20
+> Using folio_add_lru() as an example,
+>=20
+> Without the patch:
+>=20
+> 466=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 local_lock(&lru_pvecs.lock);
+> =C2=A0=C2=A0 0x00000000000032ee <+14>:=C2=A0=C2=A0=C2=A0 mov=C2=A0=C2=A0=
+=C2=A0 $0x1,%edi
+> =C2=A0=C2=A0 0x00000000000032f3 <+19>:=C2=A0=C2=A0=C2=A0 callq=C2=A0 0x32=
+f8 <folio_add_lru+24>
+> =C2=A0=C2=A0 0x00000000000032f8 <+24>:=C2=A0=C2=A0=C2=A0 callq=C2=A0 0x32=
+fd <folio_add_lru+29>
+
+The call here might be due to some debugging switches or compiler
+optimisation. I have with no debug and gcc-11:
+| # mm/swap.c:466:     local_lock(&lru_pvecs.lock);
+|         movq    $lru_pvecs, %rbx        #, tmp135
+|         movq    %rbx, %rax      # tmp135, tcp_ptr__
+| #APP
+| # 466 "mm/swap.c" 1
+|         add %gs:this_cpu_off(%rip), %rax        # this_cpu_off, tcp_ptr__
+
+so it is mov per-CPU variable, add per-CPU offset.
+
+Sebastian
