@@ -2,193 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40ED1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2DA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 19:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243086AbiAJTFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:05:41 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:40262 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242273AbiAJTFj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 14:05:39 -0500
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AIwu78018262;
-        Mon, 10 Jan 2022 19:05:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=FeLEXjcoSfGjBLT/zVMTX5ZaZ+6PuLKEpeuZJt23z5k=;
- b=n8aQraWy4H/lBd9srkWgOzR/SfalMu+Zc6Bv58DTP8Rpwxj5GLnKKI4yz1A22u5fncJy
- zI63tAiZNE7q26hVicQSZopcyVIcovxt54zRmPPrZLIfDN3LvqGzvqPL5aZE+oIT95r0
- G3OX/+LKs1OxU8jNxCc/OScLqCdj+ZiE9DgpHe1GCYnm3eWALIhG5AUVl3jxemgUzw/I
- tK6qyYtltYeA9aq6ObPfS+PfOYypz68E7rU2d/Wk5yBuKX79GFuEMd9SY42OC+hho2/m
- pc1APBpo3snroqh1uggvvLeysQL6wFRNXL3ACyDcKXI3PjNQjmfcBD1c0h48lq7GP5vX BQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgjdbsdqc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 19:05:26 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20AJ0Q9B139090;
-        Mon, 10 Jan 2022 19:05:25 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com [104.47.66.40])
-        by aserp3030.oracle.com with ESMTP id 3df0ncygd2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 19:05:25 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IlHWqQIHwoP7QkPlgadfYIyQdPmNlnLI/jcZAQMJya2rsxZGqANOoqHAWsTkMGw0BxXoSTVFi1hecbvW99tHDruW7PTbbfXCFbMExRIRU1JKEIgfQhWgYpW+70ZdATmebJq+pe53abPNQTc2THISS3h/csUviJqIeyvzlRAH/byY9J10NAw/TV8j20frZbD+930sEvbFwPZ4SvfqJvr6dhEr05R6aYM+09M8Uu2QkxKrbWlc6daFHr46XrUr2EX7GCKBluQIRIrYYZJK+jZ5AwEikfjJb4yL/afeD+tj+GUADMwInJiaORqEvujO4GWAmHWiHvQWx/N4GUHZT3tHuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FeLEXjcoSfGjBLT/zVMTX5ZaZ+6PuLKEpeuZJt23z5k=;
- b=kwcouRnMVvBE99c14zZMiSr45lSCY0Kfjc/S8vTL/f9eHmTr/EHjJC0nta7tiXiy1XsNU978Vtyfwd5HjzHFw+keJcDWLerFes1041dAvP7tiCZXff8zX/36OtvraM5vP26l/qEOZ47GdGS0kC8aHdOneXtMd1MU+JruYFlmiVC/DYfRJmsdbMckgspnsEyCRbsYsOBJwsG2eOt9xva8rptXhjXrkai84YUP0cYkoquA+J8MWU3hwBrHOKysJWtysFuArV4rpy83oujVqC7xrjRNlglAmBxaFibPpLWJsDDgkjcJsLNVuCcS/YbzyuQrXqXn+EVmaSSJROxaZ7cT2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FeLEXjcoSfGjBLT/zVMTX5ZaZ+6PuLKEpeuZJt23z5k=;
- b=T/hRjJ8Se50zxod/c4MXp44T9Tj2bc2w2ceGPyf8bA+KwKPbmS06LxlHughCD6Ci3nKUAlrWPvYvy0pKNehBo8bjNvR+SRofOj7vIESDY3TtgzSy4fLlPlt1yw0C2RJkM47/xpCJfR967XI+G33uBlyh3UKo9IgvSP0xkhhYe6o=
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com (2603:10b6:a03:20d::23)
- by BYAPR10MB2455.namprd10.prod.outlook.com (2603:10b6:a02:b7::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.10; Mon, 10 Jan
- 2022 19:05:21 +0000
-Received: from BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::8502:19a4:8a7f:ea73]) by BY5PR10MB4196.namprd10.prod.outlook.com
- ([fe80::8502:19a4:8a7f:ea73%5]) with mapi id 15.20.4867.012; Mon, 10 Jan 2022
- 19:05:21 +0000
-Message-ID: <c19eefb9-76ef-5e03-50e2-8a90c20a4c19@oracle.com>
-Date:   Mon, 10 Jan 2022 11:05:18 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [External] : Re: [PATCH v2 06/28] gup: Fix some contiguous memmap
- assumptions
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     linux-mm@kvack.org, John Hubbard <jhubbard@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-7-willy@infradead.org>
- <YdvuhjweiC1SjVF4@infradead.org> <Ydw2iQR8fT+qGkz6@casper.infradead.org>
-From:   Mike Kravetz <mike.kravetz@oracle.com>
-In-Reply-To: <Ydw2iQR8fT+qGkz6@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR1401CA0009.namprd14.prod.outlook.com
- (2603:10b6:301:4b::19) To BY5PR10MB4196.namprd10.prod.outlook.com
- (2603:10b6:a03:20d::23)
+        id S243112AbiAJTGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:06:24 -0500
+Received: from ms.lwn.net ([45.79.88.28]:51110 "EHLO ms.lwn.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242273AbiAJTGW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 14:06:22 -0500
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 6A3C836E;
+        Mon, 10 Jan 2022 19:06:22 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 6A3C836E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1641841582; bh=I27HtCbenu1YUK+88801ssWNiY6yTKRNWPPcmHtLwiU=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WCf0gOnTm8Ov9mqov8iOQY2xdFedGCTtw5wBrb50U2eqXkbRA8WDNMdmRLVUW2VHT
+         C+S33rO20jIXiPn6fVXvCNCYjXdB2+03natY8L9ru34b294e0I6cQnJfA8Tcwq1kDo
+         CjeYGYnmbLsc6BWKgDTaTzblQddBJCD6C7Xr8WNILC8huVMhOleSQGcRhziXEs8QRi
+         Bb+2MnJrBh18LyDqRqa9whySFBMRsy7XpGZA5Q68mWCza6QyTVz5h/oXzoNCL1tUcm
+         NaPOUd2Jceji5F3MC/K0SU14Mn9UJ2ACqApQNmFVp3+4SiWh2wDRIlacojICSFToIu
+         KR3WePGSsRLYw==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: [GIT PULL] Documentation for 5.17
+Date:   Mon, 10 Jan 2022 12:06:33 -0700
+Message-ID: <87v8yrjtqe.fsf@meer.lwn.net>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ab2acdbb-22b3-443b-9d8e-08d9d46c2660
-X-MS-TrafficTypeDiagnostic: BYAPR10MB2455:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR10MB24552CF36F67F871E81125E3E2509@BYAPR10MB2455.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pqo44oB/DbcZLl1igZ8uJprj0rbs+ZuySr+sqXfVpW9Trg937S1NIUl+eeUxAUYkraR3Wdj8IA21Ih75e7yvp5Yyk4ECOqgrO6Mt3MwusBL7ikp/eVCUWwbp17rQIiiFg73mzLiDvii+wvP77wJ1U3d+JdC4QbrLQ9WQ8V7fXFFTqpM430FPyu3/YySoFkr/aZDj9wV8pKg/lDjR9Kg2SCEB8YtyVh6v6F+iXqzo+GDWYCnlfrnVTQghlrpRuXUnf39KEGzs64hyBKjeFB3njSUnEsjLKvoQnopr6nIkNl8lTZwHSyZ/n+lDkCYFuYMOkJggJW3yL0pUIskYHYHM5nZgsOVJtQSrJwhl/lMyd2TPFatt0insrNSy1odYGsGmVeldmaeUloIFidFc95iT4Xwxi/ACQ+3ch4/+t9vSWWHU3vyx0Dd4m2aHD87QVUQn+KvSiKrMWuRsjhf0n07izldsh2jqO0GGSLlb6nqmEjRE2u7Y4mx6AUGuBOfXAtd7NTjHJYgUxc5I7cI2zX5kF1m9PFoDtAhxLqwnIUNhECMzXGQE0l1LKLLPYKZ6YFWrCORBMkiaZsvpJUidxMC+oP/JB2mmGWyKh7/cI16rox8oiWxNvl93CSZh6Rz/MEOw/0dTzHGvlybal2Y7b4JRqrvUlwb5M4aCM9gW3HGsZjN9MYJ0b1VKe7CR5uORm09V6s/Rox3GbpaXIhZgCySxBRgpSGjTfDvyp7HU3O9lZWrqLwU6Om5Iqka9YZQqC5KuS/H5BW2MgVaB62h85kEQ0wrvp3Lbx93YufEBhDdIkar/7p95DDcJpeYQvt+VX4ALLFMIjkflPdsQQHyIOx8TJSvU+EBFMSlCI+jPBxLwkNo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR10MB4196.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(316002)(52116002)(8676002)(2616005)(54906003)(966005)(110136005)(6666004)(31686004)(83380400001)(6486002)(66946007)(86362001)(66476007)(66556008)(44832011)(26005)(5660300002)(4326008)(186003)(2906002)(53546011)(6506007)(36756003)(6512007)(31696002)(38350700002)(508600001)(38100700002)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZjVqeVNMV0pNQTgrOWZYdUpsc1paZXY1ekNBV3FsaGY4WFdyZm82Sk9adldS?=
- =?utf-8?B?MmxPbUJoN1lHWU1KQUNyYnVRYzBSRWxLbCtjRWpBWERKc3h4K0lWd1dsa3dO?=
- =?utf-8?B?b1p3cEJXeCtiL3JQTmdjT3ZWaWpNUS9TNlBlaW5GdnBpaE9QQWdPL0JaZlJS?=
- =?utf-8?B?VVU3amVac1NpMlVUSjNiWkxkN1ZnQXQzMXpsMXo5cHNGWHV1NVlSR3QyTjZW?=
- =?utf-8?B?Zm51T3hweEQzaWRtL1JGYjhCMGlXSnpselJzZVNMUDVuVUxRVytDUTg3dmZv?=
- =?utf-8?B?dlVFQUMyT2RPYVFlTm00MDdZWjNPS0g3TFZZRTkzZ2puaDBoTUVwS3FCTm9S?=
- =?utf-8?B?dmRpTDB1OFBhRmpiMm5hanVRU1dud0FrR0xBbEdOQjMrR3N6M0VsWUZQSEU4?=
- =?utf-8?B?TVl1dUJ3VmNwVU9Bc1d3WUFaS2ZQUXZHYXEyblhYRWxxeUVXZm5hMkg4RExW?=
- =?utf-8?B?VkZ3YlZETitSVlI1cE5KQW5FZDI4cGxka2tZVTg5eW9GRmpBZnhsMmVRVzB0?=
- =?utf-8?B?eGJXRDBmNUxEMlo5bzdMVkZsYkhnV3ExUjBISFRsdjZGN2hKL2FxQUR4cU9V?=
- =?utf-8?B?eFczMkdtOG5Jc3kxcVJua0NOWjJ2Vm1rUjNmMU1Na2hiajV3WG5WenU4Qnc2?=
- =?utf-8?B?bnkxODJQSDcvT0l1NkNtL0VqMzdRbVVwUUdZQkoybWdnRGxpbVdxTzhsUjhh?=
- =?utf-8?B?U2E1dUF0RUxyMGY2WkIwaEFtY0xIa2N1YWlDbTNwQlc4cnkzbm80Z3krNTB4?=
- =?utf-8?B?TVJlSDF6Y25OaVlJbXl3MktYU3I2UC9wN25wcnlEOUhoQWc0MmNXUnA2YTh3?=
- =?utf-8?B?QjdILzdLTzVIVExid2krQVBFUUVSNGpCRVZQcWhYazFOMi9lTTN5cW9tVS83?=
- =?utf-8?B?aUZMVGJFS0ZGQVlCMlVIMTBVVC9DK1dIT2RsbHl1bTVNY3VXYmNRTy9SUndZ?=
- =?utf-8?B?dkU0QzdRTW9vNFUyWlJQTllHU0NxV0Z6SVI4amp6VTNjdEx1MzJFSW9XRmww?=
- =?utf-8?B?dkpEaFF2cFN5Z3puNHFXMjdoWG5OWG56bjNNVGdOK21YaldJQU51UVV0Mmhm?=
- =?utf-8?B?WUJuZ1p6SjRuSlRJNlZFOVhHaGlMWUZIeWtXTnRia2FrZ0FBWkpNSzhCdkVT?=
- =?utf-8?B?ZGFsU1lqS01sS0I4OGRSdGRjamh0TERxcU5rM205aGlwd2tZL0x5ODlxZitT?=
- =?utf-8?B?c3VWcGI0bjFsVU95c3dzSnUvb1JMb0hud0psUkVXU0E2aXJLRFMxajkxeTN3?=
- =?utf-8?B?azYwZ3Jjd1VyYUZKcGtRWnFmS21FMzJ6UnlVamZDUjRxYkdLL291UmdDRnZM?=
- =?utf-8?B?cVdBWS9zZFpGMDM0R05vUC9mc1Nta0ZQd1hITTJXWnJ1QTV2M2lTMG94Ny9O?=
- =?utf-8?B?UFd4NlJzQmlmYzc1YSs5ZmJtc2tCNDRhNWI2bWlqSFB6QXRDczRQRGZnWVEy?=
- =?utf-8?B?dXRTYkxBOWlTN3BVV0tydXVoY2pPSmhPdVFNaEtCN3J5TGJBdXZzeWtGZm05?=
- =?utf-8?B?b2RuTlowS0pMUEl4WEJxYStaVS9sOEN1ejVRb0FTd3RaSCtJRGtJcVIxT1px?=
- =?utf-8?B?MUxKczcvQXNiN0xkQmV5ck54emdHMUM3SFhoZmZkcjd5WFZObVQ4RkM5dXlk?=
- =?utf-8?B?dHlCTGh5NHZ2RzFOTEZhN2dzdWdYMWNlQm1rbmJncnRLNEF2bDJDQmsvd2J6?=
- =?utf-8?B?QXUwQ2NQMXZ6NTVubVhNR3NHOVZ5K3hoL1B0K2hmcThxNWhrNUo3WkNHdDV0?=
- =?utf-8?B?VGJjM3JCVEFXUFh5SXBxZDJLVDZvSG1rUTIyOWxZb1VXaWNXNHdYbVNBM1Fl?=
- =?utf-8?B?OFNPZXBjQzNRQXpSZlZFZndyWU16d3VkZDdoRHdSS3J5aE5Yd2xaTGtjWWhy?=
- =?utf-8?B?QnllUVgxak8yajRtdjZMVVorekNVN0VuYTlwOC82VDR4UDROY3ZtVjZKdkpL?=
- =?utf-8?B?SHNuaThEWFJJZjYrbGpCRlQwa0s2aHUxUzMwaFQyNnhIeW8xcDZmQnpzUlRr?=
- =?utf-8?B?SFJEU3YzbGtwVkM0UDhMbkxnTXBLK00rL043K05aczFhMDZXUDJ3L2hheFl1?=
- =?utf-8?B?TVJqWGRmekhYUEJNU1VqdkZUVVoyM3NjMGhjOFN4U1N6eEw1WUU4OXhLMDNz?=
- =?utf-8?B?Y2ZJbDlqMURvb2l4VWJKTWM2NkFHZmVhS054RndGc2IrTElMelpwZmRKYWxs?=
- =?utf-8?Q?9z1nCO6QNjnRVP7XGkkPvQ4=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ab2acdbb-22b3-443b-9d8e-08d9d46c2660
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB4196.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jan 2022 19:05:21.7258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MOdnzGmx6VM1+8fx0SoY4xOCUYh615qVWKhffOjyqQlcTqIBuaN0pcr3BHZ0bm7uwpG9vAKe3UdZfJ+gL+/31g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2455
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10223 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0 spamscore=0
- phishscore=0 adultscore=0 suspectscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201100130
-X-Proofpoint-GUID: 3upw_r42Qqd_FAcJJWkvQvop7s_cjjfU
-X-Proofpoint-ORIG-GUID: 3upw_r42Qqd_FAcJJWkvQvop7s_cjjfU
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/10/22 05:37, Matthew Wilcox wrote:
-> On Mon, Jan 10, 2022 at 12:29:58AM -0800, Christoph Hellwig wrote:
->> On Mon, Jan 10, 2022 at 04:23:44AM +0000, Matthew Wilcox (Oracle) wrote:
->>> Several functions in gup.c assume that a compound page has virtually
->>> contiguous page structs.  This isn't true for SPARSEMEM configs unless
->>> SPARSEMEM_VMEMMAP is also set.  Fix them by using nth_page() instead of
->>> plain pointer arithmetic.
->>
->> So is this an actualy bug that need a Fixes tag, or do all architectures
->> that support THP and sparsemem use SPARSEMEM_VMEMMAP?
-> 
-> As far as I can tell (and I am by no means an expert in this area),
-> this problem only affects pages of order MAX_ORDER or higher.  That is,
-> somebody using regular 2MB hugepages on x86 won't see a problem, whether
-> they're using VMEMMAP or not.  It only starts to become a problem for
-> 1GB hugepages.
-> 
-> Since THPs are (currently) only allocated from the page allocator, it's
-> never a problem for THPs, only hugetlbfs.  Correcting the places which
-> can't see a 1GB page is just defense against copy-and-paste programming.
-> 
-> So I'll defer to Mike -- does this ever affect real systems and thus
-> warrant a backport?  I know this doesn't affect UEK because we enable
-> SPARSEMEM_VMEMMAP.
+The following changes since commit 0fcfb00b28c0b7884635dacf38e46d60bf3d4eb1:
 
-I guess it all depends on your definition of 'real' systems.  I am unaware
-of any distros that disable SPARSEMEM_VMEMMAP, but I do not know or have
-access to them all.
+  Linux 5.16-rc4 (2021-12-05 14:08:22 -0800)
 
-In arch specific Kconfig files, SPARSEMEM_VMEMMAP is enabled by default
-(if sparsemem is enabled).  However, it is 'possible' to configure a kernel
-with SPARSEMEM and without SPARSEMEM_VMEMMAP.
+are available in the Git repository at:
 
-This issue came up almost a year ago in this thread:
-https://lore.kernel.org/linux-mm/20210217184926.33567-1-mike.kravetz@oracle.com/
+  git://git.lwn.net/linux.git tags/docs-5.17
 
-In practice, I do not recall ever seeing this outside of debug environments
-specifically trying to hit the issue.
--- 
-Mike Kravetz
+for you to fetch changes up to 87d6576ddf8ac25f36597bc93ca17f6628289c16:
+
+  scripts: sphinx-pre-install: Fix ctex support on Debian (2022-01-07 09:33=
+:13 -0700)
+
+----------------------------------------------------------------
+This isn't a hugely busy cycle for documentation, but a few significant
+things still showed up:
+
+ - A documentation section for ARC processors
+ - Reworked and enhanced KUnit documentation
+ - The ability to pick your own theme for HTML builds; if the default
+   "Read the Docs" theme isn't ugly enough for you, you can now pick
+   an uglier one.
+ - More Chinese translation work
+
+Plus the usual assortment of fixes and cleanups.
+
+The KUnit documentation update leads to a couple of simple conflicts
+with the KUnit tree - but they wanted this work to go via this path.
+----------------------------------------------------------------
+Ahmed Zaki (1):
+      Doc: networking: Fix the title's Sphinx overline in rds.rst
+
+Alex Shi (1):
+      doc/zh_CN: add Chinese document coding style reminder
+
+Alexey Brodkin (2):
+      docs: Add documentation for ARC processors
+      docs: ARC: Improve readability
+
+Anssi Hannula (1):
+      docs/vm: clarify overcommit amount sysctl behavior
+
+Christian L=C3=B6hle (1):
+      Documentation: kgdb: Replace deprecated remotebaud
+
+Harinder Singh (7):
+      Documentation: KUnit: Rewrite main page
+      Documentation: KUnit: Rewrite getting started
+      Documentation: KUnit: Added KUnit Architecture
+      Documentation: kunit: Reorganize documentation related to running tes=
+ts
+      Documentation: KUnit: Rework writing page to focus on writing tests
+      Documentation: KUnit: Restyle Test Style and Nomenclature page
+      Documentation: KUnit: Restyled Frequently Asked Questions
+
+James Clark (1):
+      docs: automarkup.py: Fix invalid HTML link output and broken URI frag=
+ments
+
+Jonathan Corbet (2):
+      Merge tag 'v5.16-rc4' into docs-next
+      docs: discourage use of list tables
+
+Lukas Bulwahn (2):
+      Documentation: kgdb: properly capitalize the MAGIC_SYSRQ config
+      Documentation: refer to config RANDOMIZE_BASE for kernel address-spac=
+e randomization
+
+Mauro Carvalho Chehab (8):
+      docs: allow selecting a Sphinx theme
+      docs: allow to pass extra DOCS_CSS themes via make
+      docs: set format for the classic mode
+      docs: add support for RTD dark mode
+      docs: Makefile: use the right path for DOCS_CSS
+      docs: address some text issues with css/theme support
+      scripts: sphinx-pre-install: add required ctex dependency
+      scripts: sphinx-pre-install: Fix ctex support on Debian
+
+Miguel Ojeda (1):
+      Remove mentions of the Trivial Patch Monkey
+
+Rae Moar (1):
+      Documentation: dev-tools: Add KTAP specification
+
+Randy Dunlap (1):
+      Documentation/sphinx: fix typos of "its"
+
+Shile Zhang (1):
+      docs/zh_CN: Update and fix a couple of typos
+
+Shuah Khan (1):
+      docs: update self-protection __ro_after_init status
+
+Tang Yizhou (7):
+      doc/zh-CN: Update cpufreq-stats.rst to make it more readable
+      doc/zh-CN: Update cpu-freq/cpu-drivers.rst to make it more readable
+      doc/zh-CN: Update cpu-freq/core.rst to make it more readable
+      docs/zh_CN: Add cputopology Chinese translation
+      docs/zh_CN: Add sched-capacity Chinese translation
+      docs/zh_CN: Add sched-design-CFS Chinese translation
+      docs/zh_CN: Add sched-domains translation
+
+Thorsten Leemhuis (1):
+      docs: 5.Posting.rst: describe Fixes: and Link: tags
+
+Yang Yang (2):
+      docs/zh_CN: Add zh_CN/accounting/taskstats.rst
+      docs/zh_CN: Add zh_CN/accounting/delay-accounting.rst
+
+Yanteng Si (12):
+      docs/zh_CN: add pciebus-howto translation
+      docs/zh_CN: add pci-iov-howto translation
+      docs/zh_CN: move sparse into dev-tools
+      docs/zh_CN: update sparse translation
+      docs/zh_CN: add scheduler index translation
+      docs/zh_CN: add completion translation
+      docs/zh_CN: add scheduler sched-arch translation
+      docs/zh_CN: add scheduler sched-bwc translation
+      docs/scheduler: fix typo and warning in sched-bwc
+      docs/trace: fix a label of boottime-trace
+      docs/zh_CN: add msi-howto translation
+      docs/zh_CN: add sysfs-pci trnaslation
+
+Zhiqiang Liu (1):
+      doc: fs: remove bdev_try_to_free_page related doc
+
+ Documentation/Makefile                             |  11 +-
+ .../admin-guide/blockdev/drbd/figures.rst          |   4 +-
+ .../drbd/{node-states-8.dot =3D> peer-states-8.dot}  |   5 -
+ Documentation/admin-guide/hw-vuln/spectre.rst      |   2 +-
+ Documentation/arc/arc.rst                          |  85 +++
+ Documentation/arc/features.rst                     |   3 +
+ Documentation/arc/index.rst                        |  17 +
+ Documentation/arch.rst                             |   1 +
+ Documentation/conf.py                              |  97 +++-
+ Documentation/dev-tools/index.rst                  |   1 +
+ Documentation/dev-tools/kgdb.rst                   |   6 +-
+ Documentation/dev-tools/ktap.rst                   | 298 +++++++++++
+ Documentation/dev-tools/kunit/architecture.rst     | 204 ++++++++
+ Documentation/dev-tools/kunit/faq.rst              |  73 ++-
+ Documentation/dev-tools/kunit/index.rst            | 172 +++---
+ .../dev-tools/kunit/kunit_suitememorydiagram.svg   |  81 +++
+ Documentation/dev-tools/kunit/run_manual.rst       |  57 ++
+ Documentation/dev-tools/kunit/run_wrapper.rst      | 247 +++++++++
+ Documentation/dev-tools/kunit/start.rst            | 198 +++----
+ Documentation/dev-tools/kunit/style.rst            | 105 ++--
+ Documentation/dev-tools/kunit/usage.rst            | 578 +++++++++--------=
+----
+ Documentation/doc-guide/sphinx.rst                 |  22 +-
+ Documentation/filesystems/locking.rst              |   5 -
+ Documentation/networking/rds.rst                   |   2 +-
+ Documentation/process/5.Posting.rst                |  29 +-
+ Documentation/process/changes.rst                  |  11 +
+ Documentation/process/submitting-patches.rst       |  22 +-
+ Documentation/scheduler/sched-bwc.rst              |   5 +-
+ Documentation/security/self-protection.rst         |   3 +-
+ Documentation/sphinx-static/theme_overrides.css    |  16 +-
+ Documentation/sphinx-static/theme_rtd_colors.css   |  37 ++
+ Documentation/sphinx/automarkup.py                 |  25 +-
+ Documentation/sphinx/kernel_abi.py                 |   2 +-
+ Documentation/sphinx/kernel_feat.py                |   2 +-
+ Documentation/trace/boottime-trace.rst             |   4 +-
+ Documentation/translations/zh_CN/PCI/index.rst     |   7 +-
+ Documentation/translations/zh_CN/PCI/msi-howto.rst | 233 +++++++++
+ .../translations/zh_CN/PCI/pci-iov-howto.rst       | 170 ++++++
+ .../translations/zh_CN/PCI/pciebus-howto.rst       | 192 +++++++
+ Documentation/translations/zh_CN/PCI/sysfs-pci.rst | 126 +++++
+ .../zh_CN/accounting/delay-accounting.rst          | 111 ++++
+ .../translations/zh_CN/accounting/index.rst        |   4 +-
+ .../translations/zh_CN/accounting/taskstats.rst    | 145 ++++++
+ .../translations/zh_CN/admin-guide/README.rst      |  11 +-
+ .../translations/zh_CN/admin-guide/cputopology.rst |  96 ++++
+ .../translations/zh_CN/admin-guide/index.rst       |   2 +-
+ Documentation/translations/zh_CN/cpu-freq/core.rst |  24 +-
+ .../translations/zh_CN/cpu-freq/cpu-drivers.rst    | 139 ++---
+ .../translations/zh_CN/cpu-freq/cpufreq-stats.rst  |  45 +-
+ .../translations/zh_CN/dev-tools/index.rst         |   2 +-
+ .../zh_CN/{sparse.txt =3D> dev-tools/sparse.rst}     |  67 ++-
+ Documentation/translations/zh_CN/index.rst         |   7 +-
+ .../translations/zh_CN/scheduler/completion.rst    | 256 +++++++++
+ .../translations/zh_CN/scheduler/index.rst         |  44 ++
+ .../translations/zh_CN/scheduler/sched-arch.rst    |  76 +++
+ .../translations/zh_CN/scheduler/sched-bwc.rst     | 204 ++++++++
+ .../zh_CN/scheduler/sched-capacity.rst             | 390 ++++++++++++++
+ .../zh_CN/scheduler/sched-design-CFS.rst           | 205 ++++++++
+ .../translations/zh_CN/scheduler/sched-domains.rst |  72 +++
+ Documentation/vm/overcommit-accounting.rst         |   3 +-
+ MAINTAINERS                                        |   7 +-
+ scripts/sphinx-pre-install                         |   4 +
+ 62 files changed, 4239 insertions(+), 833 deletions(-)
+ rename Documentation/admin-guide/blockdev/drbd/{node-states-8.dot =3D> pee=
+r-states-8.dot} (71%)
+ create mode 100644 Documentation/arc/arc.rst
+ create mode 100644 Documentation/arc/features.rst
+ create mode 100644 Documentation/arc/index.rst
+ create mode 100644 Documentation/dev-tools/ktap.rst
+ create mode 100644 Documentation/dev-tools/kunit/architecture.rst
+ create mode 100644 Documentation/dev-tools/kunit/kunit_suitememorydiagram.=
+svg
+ create mode 100644 Documentation/dev-tools/kunit/run_manual.rst
+ create mode 100644 Documentation/dev-tools/kunit/run_wrapper.rst
+ create mode 100644 Documentation/sphinx-static/theme_rtd_colors.css
+ create mode 100644 Documentation/translations/zh_CN/PCI/msi-howto.rst
+ create mode 100644 Documentation/translations/zh_CN/PCI/pci-iov-howto.rst
+ create mode 100644 Documentation/translations/zh_CN/PCI/pciebus-howto.rst
+ create mode 100644 Documentation/translations/zh_CN/PCI/sysfs-pci.rst
+ create mode 100644 Documentation/translations/zh_CN/accounting/delay-accou=
+nting.rst
+ create mode 100644 Documentation/translations/zh_CN/accounting/taskstats.r=
+st
+ create mode 100644 Documentation/translations/zh_CN/admin-guide/cputopolog=
+y.rst
+ rename Documentation/translations/zh_CN/{sparse.txt =3D> dev-tools/sparse.=
+rst} (58%)
+ create mode 100644 Documentation/translations/zh_CN/scheduler/completion.r=
+st
+ create mode 100644 Documentation/translations/zh_CN/scheduler/index.rst
+ create mode 100644 Documentation/translations/zh_CN/scheduler/sched-arch.r=
+st
+ create mode 100644 Documentation/translations/zh_CN/scheduler/sched-bwc.rst
+ create mode 100644 Documentation/translations/zh_CN/scheduler/sched-capaci=
+ty.rst
+ create mode 100644 Documentation/translations/zh_CN/scheduler/sched-design=
+-CFS.rst
+ create mode 100644 Documentation/translations/zh_CN/scheduler/sched-domain=
+s.rst
