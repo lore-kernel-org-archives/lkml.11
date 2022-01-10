@@ -2,85 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F80CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 10:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243711AbiAJKOX convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 05:14:23 -0500
-Received: from lithops.sigma-star.at ([195.201.40.130]:54490 "EHLO
-        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243714AbiAJKOI (ORCPT
+        id S243756AbiAJKPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:15:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239060AbiAJKPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 05:14:08 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id A59D9614E2C4;
-        Mon, 10 Jan 2022 11:14:04 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id WaqFIDSVFe8L; Mon, 10 Jan 2022 11:14:04 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 0F0F3614E2CB;
-        Mon, 10 Jan 2022 11:14:04 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id ow2vDdpUq3-d; Mon, 10 Jan 2022 11:14:03 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id D1EFD614E2C4;
-        Mon, 10 Jan 2022 11:14:03 +0100 (CET)
-Date:   Mon, 10 Jan 2022 11:14:03 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     chengzhihao1 <chengzhihao1@huawei.com>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        mcoquelin stm32 <mcoquelin.stm32@gmail.com>,
-        kirill shutemov <kirill.shutemov@linux.intel.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-mtd <linux-mtd@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <1422943582.246718.1641809643674.JavaMail.zimbra@nod.at>
-In-Reply-To: <0477fadd-dfb5-c581-ee6a-ed6df9a966a3@huawei.com>
-References: <20211227032246.2886878-1-chengzhihao1@huawei.com> <20211227032246.2886878-6-chengzhihao1@huawei.com> <1985807262.244880.1641762859448.JavaMail.zimbra@nod.at> <0477fadd-dfb5-c581-ee6a-ed6df9a966a3@huawei.com>
-Subject: Re: [PATCH v6 05/15] ubifs: Rename whiteout atomically
+        Mon, 10 Jan 2022 05:15:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8B6EC06173F;
+        Mon, 10 Jan 2022 02:15:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AA476124F;
+        Mon, 10 Jan 2022 10:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9AC9C36AE9;
+        Mon, 10 Jan 2022 10:14:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641809700;
+        bh=TqPm7m1Wb0a6egGV5nH0SK7kmvwvQl7qaDYB8oW0lRI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=I3cjis+qAfD7EQerPM4kuOUMwDEb3ZOZsqOYvntuzr1hkMELGVgFz2nvHuizhMVfZ
+         QjYt9GHQ7DHbOo8js2Fr3Jc2u0VGLIr5Bly6Dzko9F12sRFh5KlxyR+ENl/rDz7EEZ
+         40MVYplTsfpmduxc9qUSMv+tGMioliFZLmAQF7oflzipOrDlaqUg8ATHC/phjiD42V
+         cFBGydolIxzFam5/EAxsK9Lm+GLMSZxgtmylQYe1m4HZgCYcrtl170EUb0iYoCve54
+         H62LgEm/F7I3Lx+Lc6riTLV/STC+qiUXtHPJ1nVXMOImJGZRbUcqu0mBm4ktVwvMBT
+         wwqEGPt+Mm6cA==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?utf-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+Subject: Re: [PATCH v2 00/35] brcmfmac: Support Apple T2 and M1 platforms
+References: <20220104072658.69756-1-marcan@marcan.st>
+Date:   Mon, 10 Jan 2022 12:14:51 +0200
+In-Reply-To: <20220104072658.69756-1-marcan@marcan.st> (Hector Martin's
+        message of "Tue, 4 Jan 2022 16:26:23 +0900")
+Message-ID: <87tuebvqw4.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF95 (Linux)/8.8.12_GA_3809)
-Thread-Topic: ubifs: Rename whiteout atomically
-Thread-Index: Of79WMESjxJ46JfpBVi92+tw9bYfxg==
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
------ Ursprüngliche Mail -----
-> Von: "chengzhihao1" <chengzhihao1@huawei.com>
-> An: "richard" <richard@nod.at>
-> CC: "Miquel Raynal" <miquel.raynal@bootlin.com>, "Vignesh Raghavendra" <vigneshr@ti.com>, "mcoquelin stm32"
-> <mcoquelin.stm32@gmail.com>, "kirill shutemov" <kirill.shutemov@linux.intel.com>, "Sascha Hauer"
-> <s.hauer@pengutronix.de>, "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-kernel" <linux-kernel@vger.kernel.org>
-> Gesendet: Montag, 10. Januar 2022 10:35:02
-> Betreff: Re: [PATCH v6 05/15] ubifs: Rename whiteout atomically
+Hector Martin <marcan@marcan.st> writes:
 
-> Hi, Richard
->> 
->> How do you make sure the the whiteout is never written to disk (by writeback)
->> before ubifs_jnl_rename() linked
->> it? That's the reason why other filesystems use the tmpfile mechanism for
->> whiteouts too.
->> 
-> 
-> The whiteout inode is clean after creation from create_whiteout(), and
-> it can't be marked dirty until ubifs_jnl_rename() finished. So, I think
-> there is no chance for whiteout being written on disk. Then,
-> 'ubifs_assert(c, !whiteout_ui->dirty)' never fails in ubifs_jnl_rename()
-> during my local stress tests. You may add some delay executions after
-> whiteout creation to make sure that whiteout won't be written back
-> before ubifs_jnl_rename().
+> Hi everyone,
+>
+> Happy new year! This 35-patch series adds proper support for the
+> Broadcom FullMAC chips used on Apple T2 and M1 platforms:
+>
+> - BCM4355C1
+> - BCM4364B2/B3
+> - BCM4377B3
+> - BCM4378B1
+> - BCM4387C2
 
-From UBIFS point of view I fully agree with you. I'm just a little puzzled why
-other filesystems use the tmpfile approach. My fear is that VFS can do things
-to the inode we don't have in mind right now.
+35 patches is a lot to review. It would make things easier for reviewers
+if you can split this into smaller patchsets, 10-12 patches per set is
+what I usually recommend. More info in the wiki link below.
 
-Thanks,
-//richard
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
