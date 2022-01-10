@@ -2,46 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC757C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:43:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 473AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239960AbiAJHnR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:43:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240058AbiAJHaa (ORCPT
+        id S239825AbiAJHnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:43:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42278 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239877AbiAJHdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:30:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A23C028BB7;
-        Sun,  9 Jan 2022 23:27:47 -0800 (PST)
+        Mon, 10 Jan 2022 02:33:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2B63B81205;
-        Mon, 10 Jan 2022 07:27:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B44BC36AE9;
-        Mon, 10 Jan 2022 07:27:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 579EA60A7C;
+        Mon, 10 Jan 2022 07:33:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C718C36AED;
+        Mon, 10 Jan 2022 07:33:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799664;
-        bh=ldemisgRMwXP+iN87RvpgDewWLe8tBYlf7SosR+KaLA=;
+        s=korg; t=1641800034;
+        bh=ks0iY5W/D2uOfI02lcMoJnGZiwHirz40hj0r2rGPzEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AUXaAhxkUqVUytXfA64Y7N8UU7cTCgrEnmuwenvUu0HL0xe9Gt8Exw1uBkmfMmYZB
-         JjcB+BNdqOcfF6BqijQc32E6kfAmz6yZ9ZhZKbHDLwej7lufpBtbEtggjvSnxZiyVf
-         OhpcK0FpDrqNt+G0Ukm81T5jvJ549+hWe2dJgapI=
+        b=F5a/Mt+iXgqlu3Lwz9kfuIdGcmTh2jUaRxM1y/6mc2DX9N1EevIPVvqnwXSOrf8Vo
+         4xmvqg3e+Ck4RWKIxBA44BTnBHKoRDa5y3LRinmKq8LvKpIDqEv7HQVVRhKWg0gAzc
+         m5q8aE/9BW21Y8zznu1mi4LSFxKYrEGntblaZvxQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 15/21] ipv6: Continue processing multipath route even if gateway attribute is invalid
-Date:   Mon, 10 Jan 2022 08:23:16 +0100
-Message-Id: <20220110071814.448271281@linuxfoundation.org>
+Subject: [PATCH 5.15 56/72] usb: mtu3: fix interval value for intr and isoc
+Date:   Mon, 10 Jan 2022 08:23:33 +0100
+Message-Id: <20220110071823.458372636@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
-References: <20220110071813.967414697@linuxfoundation.org>
+In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
+References: <20220110071821.500480371@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,49 +45,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+From: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-[ Upstream commit e30a845b0376eb51c9c94f56bbd53b2e08ba822f ]
+[ Upstream commit e3d4621c22f90c33321ae6a6baab60cdb8e5a77c ]
 
-ip6_route_multipath_del loop continues processing the multipath
-attribute even if delete of a nexthop path fails. For consistency,
-do the same if the gateway attribute is invalid.
+Use the Interval value from isoc/intr endpoint descriptor, no need
+minus one. The original code doesn't cause transfer error for
+normal cases, but it may have side effect with respond time of ERDY
+or tPingTimeout.
 
-Fixes: 1ff15a710a86 ("ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route")
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Link: https://lore.kernel.org/r/20220103171911.94739-1-dsahern@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Link: https://lore.kernel.org/r/20211218095749.6250-1-chunfeng.yun@mediatek.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/route.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/usb/mtu3/mtu3_gadget.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 1bc81be07ccda..8a437c20eeccd 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4608,8 +4608,10 @@ static int ip6_route_multipath_del(struct fib6_config *cfg,
- 			if (nla) {
- 				err = fib6_gw_from_attr(&r_cfg.fc_gateway, nla,
- 							extack);
--				if (err)
--					return err;
-+				if (err) {
-+					last_err = err;
-+					goto next_rtnh;
-+				}
- 
- 				r_cfg.fc_flags |= RTF_GATEWAY;
- 			}
-@@ -4618,6 +4620,7 @@ static int ip6_route_multipath_del(struct fib6_config *cfg,
- 		if (err)
- 			last_err = err;
- 
-+next_rtnh:
- 		rtnh = rtnh_next(rtnh, &remaining);
- 	}
- 
+diff --git a/drivers/usb/mtu3/mtu3_gadget.c b/drivers/usb/mtu3/mtu3_gadget.c
+index 0b21da4ee1836..9977600616d7e 100644
+--- a/drivers/usb/mtu3/mtu3_gadget.c
++++ b/drivers/usb/mtu3/mtu3_gadget.c
+@@ -77,7 +77,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
+ 		if (usb_endpoint_xfer_int(desc) ||
+ 				usb_endpoint_xfer_isoc(desc)) {
+ 			interval = desc->bInterval;
+-			interval = clamp_val(interval, 1, 16) - 1;
++			interval = clamp_val(interval, 1, 16);
+ 			if (usb_endpoint_xfer_isoc(desc) && comp_desc)
+ 				mult = comp_desc->bmAttributes;
+ 		}
+@@ -89,7 +89,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
+ 		if (usb_endpoint_xfer_isoc(desc) ||
+ 				usb_endpoint_xfer_int(desc)) {
+ 			interval = desc->bInterval;
+-			interval = clamp_val(interval, 1, 16) - 1;
++			interval = clamp_val(interval, 1, 16);
+ 			mult = usb_endpoint_maxp_mult(desc) - 1;
+ 		}
+ 		break;
 -- 
 2.34.1
 
