@@ -2,117 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71963C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:39:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C5EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243104AbiAJJjh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:39:37 -0500
-Received: from mga17.intel.com ([192.55.52.151]:52319 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243074AbiAJJj0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:39:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641807566; x=1673343566;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=s/RWFzzqwbfMGxk/Eez+XiAdcFU0czVYK/+efkvgPIc=;
-  b=bDs3Sztz7qy0Y9I3okvarQkTl4oTrXeZAJY3iI8W78lHwVsyZzH8z1Pz
-   3Al5Z4ReJ8NIcfzfczRwpgPWaqNqkdE2dKsoEQB+ZUya6RmBms01tQxPs
-   OOQaY4RHYmFxri+MJWRqnNup/sq4hn6orWd5S7cyECzPATQwzR30HpAeU
-   QLwQ2y7JglTsuXaWSHIdSpdUTmN1DZGUgHmKGwC8yv9PKm6hFXfj2ukJa
-   1JRFVGkFSYI0ZhTfd/etU3BK2mpAV7bKmIfIixkeuF/maoBiqfVDzRFPG
-   nMNdk9cNosbwnI6LaEghnj4MorFY3bKwh/bj1oYZn3qC0GFjxoEoNeeAC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10222"; a="223886134"
-X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="223886134"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 01:39:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,276,1635231600"; 
-   d="scan'208";a="622617584"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 10 Jan 2022 01:39:23 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n6r99-0002iO-9Q; Mon, 10 Jan 2022 09:39:23 +0000
-Date:   Mon, 10 Jan 2022 17:38:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 2225/2375] include/linux/mm_types_task.h:11:10:
- fatal error: generated/bounds.h: No such file or directory
-Message-ID: <202201101751.rDcZKbLH-lkp@intel.com>
+        id S243150AbiAJJjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:39:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243126AbiAJJjr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 04:39:47 -0500
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4126CC061757;
+        Mon, 10 Jan 2022 01:39:47 -0800 (PST)
+Received: by mail-ua1-x92d.google.com with SMTP id m90so7029482uam.2;
+        Mon, 10 Jan 2022 01:39:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lGrJMU2mwu0fhNFQYYVjFh5GQMFij2+6pzvwpPSmMUg=;
+        b=bZyww6cN0axjDXR2tDv6wNDKfXNYWrhvCLxt09BnYp9x2fFM7Z1Wp856Ff4XuEZPwE
+         0hL6h81L9nNRXmlcpfHXPYK4/4W5KlNdGw4bmjAyixexEzZYbafhuqrmJfmuUdP+rLV/
+         NFvcEoVxtAvFjixht009zeoN/XrBqU7O9g2lr3IqMk9Gg0PMU8dD8dDpXZxfxQPefVAK
+         uLDvPsqQJvtcsn0R+QWlPrazd4QgPd6mKt8c8JkyE3KOlvqFNnpIsJAW8fUG26CCFXrJ
+         0/+74W7fnX0mr0fKNnJytvuGkDRXbn9yb2NobN+H5wX7Xe/j+z262t864+r62RfTao1O
+         g2DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lGrJMU2mwu0fhNFQYYVjFh5GQMFij2+6pzvwpPSmMUg=;
+        b=mDcxfT47ZM072EWJoiyoNfkKf8acEmmYc5runtyhEnMtvrM/fp2LOiiHaohx3WZFr6
+         8iI/HAZhJcYYv3ipGoJQEfzvWb3PEljKVp3oxM0HVuyKg3SBrQ2D3gORYl9kC8e8tDRv
+         yJ8EiiCm0/yQ9Moq84bZWEE/E+ysoVIs1v4OzzkLUBKFt7Wa7fXA7vaBS4PU/ds1FrCb
+         3lo4v0+a3RJntgMD6jZhlSfSNhfrfvbFsQPxA/DBa8GPkT2KQd+spMREXca+y9w9zsJ9
+         NqIGAAXy086aQEIgs6Ks6L0r1S+zkbySYMmcw9RpgU1MKW8tcGxN/y8rMo2PN2FmPxfX
+         hMrw==
+X-Gm-Message-State: AOAM532IW9lRkChAu869YsNkodEidpTXSgCbW8bvJ2VamqZfB8GDZILH
+        NK108en48JxBgheaKsKJn8vMFA2vCM635QFBc9M=
+X-Google-Smtp-Source: ABdhPJx4+2OwV0Y0Zm3EhlAfuLuJxsdQE/hK2p2Xh7sWMDKPVtYLJq7YsdptYm//WdoGA+x0cCBEiXl+vStV3JOM8hg=
+X-Received: by 2002:a05:6102:3ec1:: with SMTP id n1mr3722110vsv.1.1641807581584;
+ Mon, 10 Jan 2022 01:39:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220110083910.1351020-1-sergio.paracuellos@gmail.com>
+ <20220110083910.1351020-4-sergio.paracuellos@gmail.com> <5368e89c391e1329ed2be6496655f1bb50acfd19.camel@pengutronix.de>
+In-Reply-To: <5368e89c391e1329ed2be6496655f1bb50acfd19.camel@pengutronix.de>
+From:   Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Date:   Mon, 10 Jan 2022 10:39:30 +0100
+Message-ID: <CAMhs-H_gjW_6p6yBWf+k2PBym4N+k+rBEXR9S8c13NU-UWD4VQ@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] clk: ralink: make system controller node a reset provider
+To:     Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     "open list:COMMON CLK FRAMEWORK" <linux-clk@vger.kernel.org>,
+        John Crispin <john@phrozen.org>, linux-staging@lists.linux.dev,
+        Greg KH <gregkh@linuxfoundation.org>,
+        NeilBrown <neil@brown.name>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   391ce485ced0e47bf8d2ce8bc32bb87887e16656
-commit: 86c0c813105219163a284f01933d35a9a34f36d8 [2225/2375] headers/deps: mm: Optimize <linux/mm_api.h> dependencies, remove <linux/mm_page_address.h> inclusion
-config: sparc-randconfig-r016-20220109 (https://download.01.org/0day-ci/archive/20220110/202201101751.rDcZKbLH-lkp@intel.com/config)
-compiler: sparc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=86c0c813105219163a284f01933d35a9a34f36d8
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 86c0c813105219163a284f01933d35a9a34f36d8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc prepare
+Hi Philipp,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for the review.
 
-All errors (new ones prefixed by >>):
+On Mon, Jan 10, 2022 at 10:13 AM Philipp Zabel <p.zabel@pengutronix.de> wrote:
+>
+> Hi Sergio,
+>
+> On Mon, 2022-01-10 at 09:39 +0100, Sergio Paracuellos wrote:
+> > +static int mt7621_assert_device(struct reset_controller_dev *rcdev,
+> > +                             unsigned long id)
+> > +{
+> > +     struct mt7621_rst *data = to_mt7621_rst(rcdev);
+> > +     struct regmap *sysc = data->sysc;
+> > +
+> > +     if (id == MT7621_RST_SYS)
+> > +             return -EINVAL;
+>
+> Better implement the .of_xlate callback and check there instead.
+>
+> That way it would fail on reset_control_get() rather than handing out a
+> valid reset controller that just doesn't work.
 
-   In file included from include/linux/mm_types.h:7,
-                    from include/linux/mm_page_address.h:5,
-                    from include/asm-generic/memory_model.h:14,
-                    from arch/sparc/include/asm/page_32.h:137,
-                    from arch/sparc/include/asm/page.h:10,
-                    from arch/sparc/include/asm/string_32.h:13,
-                    from arch/sparc/include/asm/string.h:7,
-                    from include/linux/string.h:20,
-                    from include/linux/uuid.h:12,
-                    from include/linux/mod_devicetable.h:13,
-                    from scripts/mod/devicetable-offsets.c:3:
->> include/linux/mm_types_task.h:11:10: fatal error: generated/bounds.h: No such file or directory
-      11 | #include <generated/bounds.h>
-         |          ^~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
-   make[2]: *** [scripts/Makefile.build:121: scripts/mod/devicetable-offsets.s] Error 1
-   make[2]: Target '__build' not remade because of errors.
-   make[1]: *** [Makefile:1196: prepare0] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Pretty clear, thanks. Will change this check into '.of_xlate' callback
+and remove it from here.
 
+>
+> > +
+> > +     return regmap_update_bits(sysc, SYSC_REG_RESET_CTRL, BIT(id), BIT(id));
+> > +}
+> > +
+> > +static int mt7621_deassert_device(struct reset_controller_dev *rcdev,
+> > +                               unsigned long id)
+> > +{
+> > +     struct mt7621_rst *data = to_mt7621_rst(rcdev);
+> > +     struct regmap *sysc = data->sysc;
+> > +
+> > +     if (id == MT7621_RST_SYS)
+> > +             return -EINVAL;
+>
+> Same as above.
 
-vim +11 include/linux/mm_types_task.h
+Ditto.
 
-2e58f173ab89b2 Ingo Molnar 2017-02-04   4  
-9e7d2e44dd88ba Ingo Molnar 2017-02-04   5  /*
-9e7d2e44dd88ba Ingo Molnar 2017-02-04   6   * Here are the definitions of the MM data types that are embedded in 'struct task_struct'.
-9e7d2e44dd88ba Ingo Molnar 2017-02-04   7   *
-9e7d2e44dd88ba Ingo Molnar 2017-02-04   8   * (These are defined separately to decouple sched.h from mm_types.h as much as possible.)
-9e7d2e44dd88ba Ingo Molnar 2017-02-04   9   */
-9e7d2e44dd88ba Ingo Molnar 2017-02-04  10  
-c869d2d00b80c5 Ingo Molnar 2021-11-24 @11  #include <generated/bounds.h>
-c869d2d00b80c5 Ingo Molnar 2021-11-24  12  
+>
+> > +     return regmap_update_bits(sysc, SYSC_REG_RESET_CTRL, BIT(id), 0);
+> > +}
+> > +
+> > +static int mt7621_reset_device(struct reset_controller_dev *rcdev,
+> > +                            unsigned long id)
+> > +{
+> > +     int ret;
+> > +
+> > +     ret = mt7621_assert_device(rcdev, id);
+> > +     if (ret < 0)
+> > +             return ret;
+> > +
+> > +     return mt7621_deassert_device(rcdev, id);
+> > +}
+>
+> Is this known to work for all possible users, without delay between
+> assert and deassert?
 
-:::::: The code at line 11 was first introduced by commit
-:::::: c869d2d00b80c5c84a6c5b655fb865fa1db70b52 headers/deps: mm: Optimize <linux/mm_types.h> dependencies
+It seems it is. This is based on the original reset implementation for
+ralink. See:
 
-:::::: TO: Ingo Molnar <mingo@kernel.org>
-:::::: CC: Ingo Molnar <mingo@kernel.org>
+https://elixir.bootlin.com/linux/v5.16/source/arch/mips/ralink/reset.c#L55
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> Are there any users of the reset_control_reset() API at all? This API
+> was added for self-clearing reset bits, so if there are no users that
+> need to pretend this is a reset pulse at the hardware level (there may
+> be), I'd prefer if this was just left out.
+
+I am not following you here. What do you mean?
+
+>
+> Apart from this, this looks good to me.
+
+Thanks, I will include of_xlate callback changes and send v7.
+
+>
+> regards
+> Philipp
+
+Best regards,
+    Sergio Paracuellos
