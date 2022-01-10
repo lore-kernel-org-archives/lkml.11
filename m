@@ -2,119 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1B4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 09:35:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242977AbiAJJcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 04:32:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242972AbiAJJbf (ORCPT
+        id S242983AbiAJJfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 04:35:10 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:31082 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242952AbiAJJfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 04:31:35 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3260C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:31:34 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id d14so10821838ila.1
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 01:31:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lpHgw6UpVVG5H52/tvDsDE4I8M6x/y865h/7HwVLG7U=;
-        b=JfDVm3uBcevT4eiLNGWsg9uSDxPmCKimiFap3zfcV3/T9N49KhP2MALeypetQXArbW
-         0Vi9mlmqTS4f1svjgFH2eGMfRuZWav4m3iw+4y2l2z6lrIkVIuHrMw9A0QA+tRWNsgjI
-         eGK3EMqvkBrFWzU2qfRW89LEROefsrlSiZx+w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lpHgw6UpVVG5H52/tvDsDE4I8M6x/y865h/7HwVLG7U=;
-        b=miG6TQhIw/jPu2hcEg+TKJNRJoTVHztrWOJR5ML6SCqmwUoSsgOOz36ag2zDj5RrlJ
-         gfAE4NpmnCbuN/o5G3uwj2DNN6wcGAZ3/eu6mxA6TjYrAeC+A5VxsWcqCXZJXSxnPNKR
-         V/wCUdoU2gxb69An44ZXxXPbigcoP/auKJyhm7KPn/Kj23mvvD/xRkrax87R44ovIenk
-         qE1HHLobOp4Njm8zxNctk7RPbp+Q61x1cxSTHxUMR+oZs7cAQFsfpqNETSqiEMz3YUQX
-         oa5Kuq/gGZk8r17fAmR+BhQ2iy4vBYd4aObou434UTXjT4db6Ssjkve+8ZPAWa0L9z+j
-         7WNA==
-X-Gm-Message-State: AOAM533daQt3VkAAGfzQKQFQCoYDifMCVQj8xH0vAbNofMClvvK9YKtW
-        JPfCUB/VOyIWqJvBNh7zSuO0P1bohh06CyNgvEuTqQ==
-X-Google-Smtp-Source: ABdhPJzgHOZExtCPA3Jb6BdJBdMMzFv4mrZHCv73Xpy8ayJyi9Rweur1v7bUrxh6WNniiAAD0yhQksZuIuk8J3Sd0bU=
-X-Received: by 2002:a92:6f09:: with SMTP id k9mr8744870ilc.61.1641807094384;
- Mon, 10 Jan 2022 01:31:34 -0800 (PST)
+        Mon, 10 Jan 2022 04:35:06 -0500
+Received: from kwepemi500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JXT9G5s6Vz1FCWs;
+        Mon, 10 Jan 2022 17:31:30 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ kwepemi500009.china.huawei.com (7.221.188.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 17:35:04 +0800
+Received: from [10.174.178.46] (10.174.178.46) by
+ kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 17:35:03 +0800
+Subject: Re: [PATCH v6 05/15] ubifs: Rename whiteout atomically
+To:     Richard Weinberger <richard@nod.at>
+CC:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        mcoquelin stm32 <mcoquelin.stm32@gmail.com>,
+        "kirill shutemov" <kirill.shutemov@linux.intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20211227032246.2886878-1-chengzhihao1@huawei.com>
+ <20211227032246.2886878-6-chengzhihao1@huawei.com>
+ <1985807262.244880.1641762859448.JavaMail.zimbra@nod.at>
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+Message-ID: <0477fadd-dfb5-c581-ee6a-ed6df9a966a3@huawei.com>
+Date:   Mon, 10 Jan 2022 17:35:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20220105220653.122451-1-gwendal@chromium.org> <CAE_wzQ_DTnrU9QbADZuNyt4fszAiTwa04D9muC-xE_S3MM9eGQ@mail.gmail.com>
- <CAPUE2uu3FPvxHHGYGbckxR=QmWt3=KwFk3DYoqBSmaQd+AO0QA@mail.gmail.com> <20220106110558.49dd6f26@coco.lan>
-In-Reply-To: <20220106110558.49dd6f26@coco.lan>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Mon, 10 Jan 2022 01:31:23 -0800
-Message-ID: <CAPUE2usF1m8rmE1_Nrdv_B5SfXExzKzGnhcZrmcSHFSMQzyjiw@mail.gmail.com>
-Subject: Re: [PATCH 00/17] Add export symbol namespace PL_CHROMEOS
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Dmitry Torokhov <dtor@chromium.org>, bleung@chromium.org,
-        groeck@chromium.org, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com, benjamin.tissoires@redhat.com,
-        hverkuil-cisco@xs4all.nl, lee.jones@linaro.org,
-        pmalani@chromium.org, sre@kernel.org, thierry.reding@gmail.com,
-        u.kleine-koenig@pengutronix.de, lgirdwood@gmail.com,
-        a.zummo@towertech.it, cychiang@chromium.org, perex@perex.cz,
-        linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1985807262.244880.1641762859448.JavaMail.zimbra@nod.at>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.46]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 2:06 AM Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
->
-> Em Wed, 5 Jan 2022 20:26:36 -0800
-> Gwendal Grignou <gwendal@chromium.org> escreveu:
->
-> > On Wed, Jan 5, 2022 at 2:58 PM Dmitry Torokhov <dtor@chromium.org> wrote:
-> > >
-> > > Hi Gwendal,
-> > >
-> > > On Wed, Jan 5, 2022 at 2:07 PM Gwendal Grignou <gwendal@chromium.org> wrote:
-> > > >
-> > > > Add a symbol namespace for functions exported by the plaform chromeos
-> > > > subsystem.
-> > >
-> > > It would be great to explain why this is needed/desirable. What are
-> > > the benefits of introducing this namespace? What problem are you
-> > > trying to solve?
-> > The issue came when reviewing an iio sensor
-> > (https://www.spinics.net/lists/linux-iio/msg66280.html). I wanted to
-> > be ahead of the curve (for once).
->
-> Patch 01 should clearly document the reason why this is needed.
-> Yet, see below.
->
-> While I see value on using namespaces, we should have extra care when
-> this is used for kAPIs designed for a product/system. I mean, what
-> prevents that the affected drivers won't support some day different
-> non-ChromeOS products? We have a media driver originally written to
-> work with the One Laptop Per Children hardware, that used some
-> product-specific kAPIs, that were extended a couple years later to
-> cover different types of hardware.
->
-> What happens if some day, a driver introduced to be used on a ChromeOS
-> hardware would also be used by a non-ChromeOS hardware? This could
-> become messy as times goes by.
->
-> Instead, IMO, it would make sense to have per-subsystem namespaces.
-> So, for instance, placing iio under an IIO-specific namespace
-> (and the same for other subsystems) makes more sense on my
-> eyes, as the namespace boundary will be clearer, and an IIO driver
-> will always be IIO, no matter on what hardware such driver would
-> be used.
-I based this patchset on the current/future use in the IIO subsystem,
-where the namespaces are used for small subsystem like HID,
-IIO_HID_ATTRIBUTES, or code shared among sensors drivers of the same
-vendor (LTC2497, more to come).
-Since the usage of namespace in the kernel is not clearly defined yet,
-I wait for the dust to settle and more usage to emerge before tuning
-this patchset.
+Hi, Richard
+> 
+> How do you make sure the the whiteout is never written to disk (by writeback) before ubifs_jnl_rename() linked
+> it? That's the reason why other filesystems use the tmpfile mechanism for whiteouts too.
+> 
 
-Thanks,
-Gwendal.
->
-> Thanks,
-> Mauro
+The whiteout inode is clean after creation from create_whiteout(), and 
+it can't be marked dirty until ubifs_jnl_rename() finished. So, I think 
+there is no chance for whiteout being written on disk. Then, 
+'ubifs_assert(c, !whiteout_ui->dirty)' never fails in ubifs_jnl_rename() 
+during my local stress tests. You may add some delay executions after 
+whiteout creation to make sure that whiteout won't be written back 
+before ubifs_jnl_rename().
+
+BTW, I considered plan B(Binding whiteout to a negative dentry), but we 
+cannot get parent dir's entry in do_rename(), so I abandoned it.
+--- a/fs/ubifs/dir.c
++++ b/fs/ubifs/dir.c
+@@ -1334,7 +1335,8 @@ static int do_rename(struct inode *old_dir, struct 
+dentry *old_dentry,
+                         goto out_release;
+                 }
+
+-               err = do_tmpfile(old_dir, old_dentry, S_IFCHR | 
+WHITEOUT_MODE, &whiteout);
++               // tmp_dentry = d_alloc(old_dir_dentry, &slash_name); 
+// refer to vfs_tmpfile
++               err = do_tmpfile(old_dir, tmp_dentry, S_IFCHR | 
+WHITEOUT_MODE, &whiteout);
+                 if (err) {
+                         kfree(dev);
+                         goto out_release;
