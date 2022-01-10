@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3988DC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EAFC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:46:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243927AbiAJHqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:46:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
+        id S243858AbiAJHp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:45:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240378AbiAJHio (ORCPT
+        with ESMTP id S241748AbiAJHiS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:38:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD62C0258DB;
-        Sun,  9 Jan 2022 23:33:27 -0800 (PST)
+        Mon, 10 Jan 2022 02:38:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0FBEC028BB1;
+        Sun,  9 Jan 2022 23:32:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E290361193;
-        Mon, 10 Jan 2022 07:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C86C8C36AED;
-        Mon, 10 Jan 2022 07:33:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5C6BB81213;
+        Mon, 10 Jan 2022 07:32:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FAF0C36AED;
+        Mon, 10 Jan 2022 07:32:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641800006;
-        bh=3Ickka+6v+gJYj2pcGsavEYdwSot3ss+0+8d/9R7JoQ=;
+        s=korg; t=1641799963;
+        bh=5ucqwL7Dxkwj99euF0edW3rqp3iP71cRd2u/ZGk/uBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uab5ORkOwmpM+QGPgTomoZ8OzNWelrJjYH9k4ehIeGtGZdqwvo5pQjGfldJBJgQfN
-         tFVjeQGq0789z4qXdZ+W6ZvAxtcAlBpk+6VvWRlaV5hphsdSv1AYVlhhFofRTSKdhZ
-         tfzzz2qqCx2Weew8LBAFlLZKHYj+ZlIHW3Z0fYGE=
+        b=Joj5pbsBMUEXkr2g6F/IyqexB9vdYtZsk2oJZUFmBRoZWXlcRF/UnIW8jnce2nvfR
+         OpPyn5uVUj5j75sKuXNEfcLUBm81xgK9568XFc01KpeTO31ayqzVPNJZryBPdUK2aN
+         mRWdsyK4GRdvwfq3owvFNbPGQfUCZ4Qby/fRLrZQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Aayush Agarwal <aayush.a.agarwal@oracle.com>
-Subject: [PATCH 5.15 47/72] phonet: refcount leak in pep_sock_accep
-Date:   Mon, 10 Jan 2022 08:23:24 +0100
-Message-Id: <20220110071823.142663066@linuxfoundation.org>
+        stable@vger.kernel.org, Arthur Kiyanovski <akiyano@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 30/72] net: ena: Fix wrong rx request id by resetting device
+Date:   Mon, 10 Jan 2022 08:23:07 +0100
+Message-Id: <20220110071822.580753572@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
 References: <20220110071821.500480371@linuxfoundation.org>
@@ -49,31 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Arthur Kiyanovski <akiyano@amazon.com>
 
-commit bcd0f93353326954817a4f9fa55ec57fb38acbb0 upstream.
+commit cb3d4f98f0b26eafa0b913ac3716e4714254a747 upstream.
 
-sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
-invoked in subsequent failure branches(pep_accept_conn() != 0).
+A wrong request id received from the device is a sign that
+something is wrong with it, therefore trigger a device reset.
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
+Also add some debug info to the "Page is NULL" print to make
+it easier to debug.
+
+Fixes: 1738cd3ed342 ("net: ena: Add a driver for Amazon Elastic Network Adapters (ENA)")
+Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/phonet/pep.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c |   11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
---- a/net/phonet/pep.c
-+++ b/net/phonet/pep.c
-@@ -868,6 +868,7 @@ static struct sock *pep_sock_accept(stru
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -1428,6 +1428,7 @@ static struct sk_buff *ena_rx_skb(struct
+ 				  u16 *next_to_clean)
+ {
+ 	struct ena_rx_buffer *rx_info;
++	struct ena_adapter *adapter;
+ 	u16 len, req_id, buf = 0;
+ 	struct sk_buff *skb;
+ 	void *page_addr;
+@@ -1440,8 +1441,14 @@ static struct sk_buff *ena_rx_skb(struct
+ 	rx_info = &rx_ring->rx_buffer_info[req_id];
  
- 	err = pep_accept_conn(newsk, skb);
- 	if (err) {
-+		__sock_put(sk);
- 		sock_put(newsk);
- 		newsk = NULL;
- 		goto drop;
+ 	if (unlikely(!rx_info->page)) {
+-		netif_err(rx_ring->adapter, rx_err, rx_ring->netdev,
+-			  "Page is NULL\n");
++		adapter = rx_ring->adapter;
++		netif_err(adapter, rx_err, rx_ring->netdev,
++			  "Page is NULL. qid %u req_id %u\n", rx_ring->qid, req_id);
++		ena_increase_stat(&rx_ring->rx_stats.bad_req_id, 1, &rx_ring->syncp);
++		adapter->reset_reason = ENA_REGS_RESET_INV_RX_REQ_ID;
++		/* Make sure reset reason is set before triggering the reset */
++		smp_mb__before_atomic();
++		set_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
+ 		return NULL;
+ 	}
+ 
 
 
