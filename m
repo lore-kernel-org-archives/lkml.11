@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2290BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48237C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:26:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239417AbiAJH0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:26:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35358 "EHLO
+        id S239760AbiAJH0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:26:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35438 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239370AbiAJHY7 (ORCPT
+        with ESMTP id S239287AbiAJHZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:24:59 -0500
+        Mon, 10 Jan 2022 02:25:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDADE61194;
-        Mon, 10 Jan 2022 07:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A074EC36AED;
-        Mon, 10 Jan 2022 07:24:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DCAB611A3;
+        Mon, 10 Jan 2022 07:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34174C36AED;
+        Mon, 10 Jan 2022 07:25:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799498;
-        bh=5AycrP6fhzyZWUTosB32ZZVjaR3QhOE2NrfcmR2OBgM=;
+        s=korg; t=1641799506;
+        bh=SuaPqRIS/EoDXtFwglhRwh+gMYjrD0lXCeGpCJ9cAKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yy+8zGmFtgBn25kOEN92gjvDe4WCcmnKfizXADfwfoNStC8SCOTjIK4Wv8BjSxGo7
-         tLMiKYwj+tV7CviYjwf09kESPkMm/yJaQCvUqPe3mfQK41URMWIkO70SIXn6lvPFMA
-         g+AYq74/JaP+5BBEwnLp/sYfOnu1vlC63pbNo4cE=
+        b=Z8XP/IAjnz0BLNeL+07MgVw8HjY7RlpNFU1yGSfqk1XNiC9Qp0VDEctJaqX4nqtcm
+         TEKUgjXE4YHsd/ZlexJdcLU3f4z5umOwcNwxsIytbNXdas9sEwFw4xLKhIBq47j8bh
+         BDEwDTaE2RWPu3/wr0Nd2Q4UpwOPA59e0PemHBlA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Zyngier <marc.zyngier@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 4.9 14/21] arm64: move !VHE work to end of el2_setup
-Date:   Mon, 10 Jan 2022 08:23:01 +0100
-Message-Id: <20220110071813.280605016@linuxfoundation.org>
+        stable@vger.kernel.org, Lu Tixiong <lutianxiong@huawei.com>,
+        Mike Christie <michael.christie@oracle.com>,
+        Lee Duncan <lduncan@suse.com>,
+        Lixiaokeng <lixiaokeng@huawei.com>,
+        Linfeilong <linfeilong@huawei.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 17/21] scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+Date:   Mon, 10 Jan 2022 08:23:04 +0100
+Message-Id: <20220110071813.390730855@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220110071812.806606886@linuxfoundation.org>
 References: <20220110071812.806606886@linuxfoundation.org>
@@ -48,80 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Lixiaokeng <lixiaokeng@huawei.com>
 
-commit d61c97a7773d0848b4bf5c4697855c7ce117362c upstream.
+[ Upstream commit 1b8d0300a3e9f216ae4901bab886db7299899ec6 ]
 
-We only need to initialise sctlr_el1 if we're installing an EL2 stub, so
-we may as well defer this until we're doing so. Similarly, we can defer
-intialising CPTR_EL2 until then, as we do not access any trapped
-functionality as part of el2_setup.
+|- iscsi_if_destroy_conn            |-dev_attr_show
+ |-iscsi_conn_teardown
+  |-spin_lock_bh                     |-iscsi_sw_tcp_conn_get_param
 
-This patch modified el2_setup accordingly, allowing us to remove a
-branch and simplify the code flow.
+  |-kfree(conn->persistent_address)   |-iscsi_conn_get_param
+  |-kfree(conn->local_ipaddr)
+                                       ==>|-read persistent_address
+                                       ==>|-read local_ipaddr
+  |-spin_unlock_bh
 
-Acked-by: Marc Zyngier <marc.zyngier@arm.com>
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When iscsi_conn_teardown() and iscsi_conn_get_param() happen in parallel, a
+UAF may be triggered.
+
+Link: https://lore.kernel.org/r/046ec8a0-ce95-d3fc-3235-666a7c65b224@huawei.com
+Reported-by: Lu Tixiong <lutianxiong@huawei.com>
+Reviewed-by: Mike Christie <michael.christie@oracle.com>
+Reviewed-by: Lee Duncan <lduncan@suse.com>
+Signed-off-by: Lixiaokeng <lixiaokeng@huawei.com>
+Signed-off-by: Linfeilong <linfeilong@huawei.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/kernel/head.S |   37 +++++++++++++++++--------------------
- 1 file changed, 17 insertions(+), 20 deletions(-)
+ drivers/scsi/libiscsi.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/arm64/kernel/head.S
-+++ b/arch/arm64/kernel/head.S
-@@ -553,26 +553,6 @@ set_hcr:
- 	msr	vpidr_el2, x0
- 	msr	vmpidr_el2, x1
+diff --git a/drivers/scsi/libiscsi.c b/drivers/scsi/libiscsi.c
+index 30e954bb6c81e..8d1a05d5eb4dd 100644
+--- a/drivers/scsi/libiscsi.c
++++ b/drivers/scsi/libiscsi.c
+@@ -2991,6 +2991,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ {
+ 	struct iscsi_conn *conn = cls_conn->dd_data;
+ 	struct iscsi_session *session = conn->session;
++	char *tmp_persistent_address = conn->persistent_address;
++	char *tmp_local_ipaddr = conn->local_ipaddr;
  
--	/*
--	 * When VHE is not in use, early init of EL2 and EL1 needs to be
--	 * done here.
--	 * When VHE _is_ in use, EL1 will not be used in the host and
--	 * requires no configuration, and all non-hyp-specific EL2 setup
--	 * will be done via the _EL1 system register aliases in __cpu_setup.
--	 */
--	cbnz	x2, 1f
--
--	/* sctlr_el1 */
--	mov	x0, #0x0800			// Set/clear RES{1,0} bits
--CPU_BE(	movk	x0, #0x33d0, lsl #16	)	// Set EE and E0E on BE systems
--CPU_LE(	movk	x0, #0x30d0, lsl #16	)	// Clear EE and E0E on LE systems
--	msr	sctlr_el1, x0
--
--	/* Coprocessor traps. */
--	mov	x0, #0x33ff
--	msr	cptr_el2, x0			// Disable copro. traps to EL2
--1:
--
- #ifdef CONFIG_COMPAT
- 	msr	hstr_el2, xzr			// Disable CP15 traps to EL2
- #endif
-@@ -598,6 +578,23 @@ CPU_LE(	movk	x0, #0x30d0, lsl #16	)	// C
- 	ret
+ 	del_timer_sync(&conn->transport_timer);
  
- install_el2_stub:
-+	/*
-+	 * When VHE is not in use, early init of EL2 and EL1 needs to be
-+	 * done here.
-+	 * When VHE _is_ in use, EL1 will not be used in the host and
-+	 * requires no configuration, and all non-hyp-specific EL2 setup
-+	 * will be done via the _EL1 system register aliases in __cpu_setup.
-+	 */
-+	/* sctlr_el1 */
-+	mov	x0, #0x0800			// Set/clear RES{1,0} bits
-+CPU_BE(	movk	x0, #0x33d0, lsl #16	)	// Set EE and E0E on BE systems
-+CPU_LE(	movk	x0, #0x30d0, lsl #16	)	// Clear EE and E0E on LE systems
-+	msr	sctlr_el1, x0
-+
-+	/* Coprocessor traps. */
-+	mov	x0, #0x33ff
-+	msr	cptr_el2, x0			// Disable copro. traps to EL2
-+
- 	/* Hypervisor stub */
- 	adrp	x0, __hyp_stub_vectors
- 	add	x0, x0, #:lo12:__hyp_stub_vectors
+@@ -3012,8 +3014,6 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	spin_lock_bh(&session->frwd_lock);
+ 	free_pages((unsigned long) conn->data,
+ 		   get_order(ISCSI_DEF_MAX_RECV_SEG_LEN));
+-	kfree(conn->persistent_address);
+-	kfree(conn->local_ipaddr);
+ 	/* regular RX path uses back_lock */
+ 	spin_lock_bh(&session->back_lock);
+ 	kfifo_in(&session->cmdpool.queue, (void*)&conn->login_task,
+@@ -3025,6 +3025,8 @@ void iscsi_conn_teardown(struct iscsi_cls_conn *cls_conn)
+ 	mutex_unlock(&session->eh_mutex);
+ 
+ 	iscsi_destroy_conn(cls_conn);
++	kfree(tmp_persistent_address);
++	kfree(tmp_local_ipaddr);
+ }
+ EXPORT_SYMBOL_GPL(iscsi_conn_teardown);
+ 
+-- 
+2.34.1
+
 
 
