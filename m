@@ -2,159 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CE2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 12:16:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245419AbiAJMP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 07:15:29 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22168 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S245358AbiAJMNv (ORCPT
+        id S245445AbiAJMQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 07:16:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59406 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245345AbiAJMPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 07:13:51 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20AC8hCG028776;
-        Mon, 10 Jan 2022 12:13:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=Xak/CKLMnioeGOSndHD6lQ+kfo22g2B8NuO2kHa7z0E=;
- b=TmqMf5H6DVJ8wH7eTGzr6aWgdMp+Aa6moKzaVc28L9S385jSv7u7b3ngf90du0mNw+vM
- iTlhJvZ08BXo8d7Oz/PgsOgUihkujeRXVLvpb54RBIKHnYDhJZZfC5i5ja3j9mWeUDOx
- p0dv9+yLp9J5CR9ccZjz/W9/HVdoxlYR/SEvg4H338ho+p9gv5FAt4W1dU+nKzOjjEMV
- QKHN+p2KZGEBsLnN7hd1B4pY71DtNC16YaOzUIkU/Tami+kAlOMxe4Tw2X2bQWEnRz97
- fijKKPFpFhiJMcF72mSOsREdxPM/S3ZIf9xvqpFK1EifnRrm0mP8uqG8oMLa3fiwsm+b Sw== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3df37wv2yr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 12:13:42 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20ACDR7p032182;
-        Mon, 10 Jan 2022 12:13:41 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma05fra.de.ibm.com with ESMTP id 3df288ukb2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 12:13:39 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20ACDO5v43843854
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 10 Jan 2022 12:13:24 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F09CBA405E;
-        Mon, 10 Jan 2022 12:13:23 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 41957A4055;
-        Mon, 10 Jan 2022 12:13:23 +0000 (GMT)
-Received: from sig-9-65-93-173.ibm.com (unknown [9.65.93.173])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 10 Jan 2022 12:13:23 +0000 (GMT)
-Message-ID: <6361f769a41d319810f33c559f52938cf93607bb.camel@linux.ibm.com>
-Subject: Re: [PATCH v2 2/6] fs-verity: define a function to return the
- integrity protected file digest
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Vitaly Chikunov <vt@altlinux.org>
-Cc:     linux-integrity@vger.kernel.org,
-        Eric Biggers <ebiggers@kernel.org>,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 10 Jan 2022 07:13:22 -0500
-In-Reply-To: <20220110004738.kzhzyastvq5rn2g5@altlinux.org>
-References: <20220109185517.312280-1-zohar@linux.ibm.com>
-         <20220109185517.312280-3-zohar@linux.ibm.com>
-         <20220110004738.kzhzyastvq5rn2g5@altlinux.org>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 8t7hD3g3bgukSVN8lyjGERRfOlEohop0
-X-Proofpoint-ORIG-GUID: 8t7hD3g3bgukSVN8lyjGERRfOlEohop0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-10_05,2022-01-10_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
- priorityscore=1501 suspectscore=0 clxscore=1015 spamscore=0 phishscore=0
- mlxscore=0 impostorscore=0 bulkscore=0 malwarescore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201100085
+        Mon, 10 Jan 2022 07:15:06 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972B6C061751;
+        Mon, 10 Jan 2022 04:15:05 -0800 (PST)
+Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1n6tZn-0008Q4-Rw; Mon, 10 Jan 2022 13:15:04 +0100
+Message-ID: <ff982786-4033-7450-c10c-8ce71c28d6eb@leemhuis.info>
+Date:   Mon, 10 Jan 2022 13:15:02 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: Possible regression: unable to mount CIFS 1.0 shares from older
+ machines since 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c
+Content-Language: en-BS
+To:     Davyd McColl <davydm@gmail.com>,
+        "lsahlber@redhat.com" <lsahlber@redhat.com>,
+        "stfrench@microsoft.com" <stfrench@microsoft.com>
+Cc:     "linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <D58238A4-F04E-458E-AB05-4A74235B2C65@getmailspring.com>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <D58238A4-F04E-458E-AB05-4A74235B2C65@getmailspring.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1641816905;ce951aab;
+X-HE-SMSGID: 1n6tZn-0008Q4-Rw
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Vitaly,
+Hi, this is your Linux kernel regression tracker speaking.
 
-On Mon, 2022-01-10 at 03:47 +0300, Vitaly Chikunov wrote:
-> Mimi,
+On 10.01.22 06:53, Davyd McColl wrote:
 > 
-> On Sun, Jan 09, 2022 at 01:55:13PM -0500, Mimi Zohar wrote:
-> > Define a function named fsverity_get_digest() to return the verity file
-> > digest and the associated hash algorithm (enum hash_algo).
-> > 
-> > Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
-> > ---
-> >  fs/verity/Kconfig            |  1 +
-> >  fs/verity/fsverity_private.h |  7 -------
-> >  fs/verity/measure.c          | 40 ++++++++++++++++++++++++++++++++++++
-> >  include/linux/fsverity.h     | 18 ++++++++++++++++
-> >  4 files changed, 59 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/fs/verity/measure.c b/fs/verity/measure.c
-> > index f0d7b30c62db..52906b2e5811 100644
-> > --- a/fs/verity/measure.c
-> > +++ b/fs/verity/measure.c
-> > @@ -57,3 +57,43 @@ int fsverity_ioctl_measure(struct file *filp, void __user *_uarg)
-> >  	return 0;
-> >  }
-> >  EXPORT_SYMBOL_GPL(fsverity_ioctl_measure);
-> > +
-> > +/**
-> > + * fsverity_get_digest() - get a verity file's digest
-> > + * @inode: inode to get digest of
-> > + * @digest: (out) pointer to the digest
-> > + * @alg: (out) pointer to the hash algorithm enumeration
-> > + *
-> > + * Return the file hash algorithm and digest of an fsverity protected file.
-> > + *
-> > + * Return: 0 on success, -errno on failure
-> > + */
-> > +int fsverity_get_digest(struct inode *inode,
-> > +			    u8 digest[FS_VERITY_MAX_DIGEST_SIZE],
-> > +			    enum hash_algo *alg)
-> > +{
-> > +	const struct fsverity_info *vi;
-> > +	const struct fsverity_hash_alg *hash_alg;
-> > +	int i;
-> > +
-> > +	vi = fsverity_get_info(inode);
-> > +	if (!vi)
-> > +		return -ENODATA; /* not a verity file */
-> > +
-> > +	hash_alg = vi->tree_params.hash_alg;
-> > +	memset(digest, 0, FS_VERITY_MAX_DIGEST_SIZE);
-> > +	*alg = HASH_ALGO__LAST;
+> I'm following advice from the thread at
+> https://bugzilla.kernel.org/show_bug.cgi?id=215375
+> <https://bugzilla.kernel.org/show_bug.cgi?id=215375> as to how to report
+> this, so please bear with me and redirect me as necessary.
 > 
-> Perhaps this line is redundant (*alg is overwritten later) and would
-> needlessly mangle output value in case of -EINVAL while it's being
-> untouched on -ENODATA.
+> Since commit 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c,
+
+FWIW, that is "cifs: remove support for NTLM and weaker authentication
+algorithms"
+
+> I'm unable to
+> mount a CIFS 1.0 share ( from a media player: mede8er med600x3d, which
+> runs some older linux). Apparently I'm not the only one, according to
+> that thread, though the other affected party there is windows-based.
 > 
-
-Thanks!
-
-Mimi
-
+> I first logged this in the Gentoo bugtracker
+> (https://bugs.gentoo.org/821895 <https://bugs.gentoo.org/821895>) and a
+> reversion patch is available there for the time being.
 > 
-> > +
-> > +	/* convert hash algorithm to hash_algo_name */
-> > +	i = match_string(hash_algo_name, HASH_ALGO__LAST, hash_alg->name);
-> > +	if (i < 0)
-> > +		return -EINVAL;
-> > +	*alg = i;
-> > +
-> > +	memcpy(digest, vi->file_digest, hash_alg->digest_size);
-> > +
-> > +	pr_debug("file digest %s:%*phN\n", hash_algo_name[*alg],
-> > +		  hash_digest_size[*alg], digest);
-> > +
-> > +	return 0;
-> > +}
+> I understand that some of the encryption methods upon which the original
+> feature relied are to be removed and, as such, the ability to mount
+> these older shares was removed. This is sure to affect anyone running
+> older Windows virtual machines (or older, internally-visible windows
+> hosts) in addition to anyone attempting to connect to shares from
+> esoteric devices like mine.
 
+> Whilst I understand the desire to clean up code and remove dead
+> branches, I'd really appreciate it if this particular feature remains
+> available either by kernel configuration (which suits me fine, but is
+> likely to be a hassle for anyone running a binary distribution) or via
+> boot parameters. In the mean-time, I'm updating my own sync software to
+> support this older device because if I can't sync media to the player,
+> the device is not very useful to me.
 
+From my point of view this afaics looks like one of those issues where
+the "no regressions" rule gets tricky. But I told Davyd to bring it
+forward here to get it discussed in the open. I also wonder if some
+middle-ground solution could be found in this particular case -- e.g.
+one where the commit stated above gets reverted and the code then
+slightly changed to only allow weaker authentication if the user
+manually requests in somehow, for example using a module parameter or
+something in /proc or /sys.
+
+Ciao, Thorsten
+
+P.S.: Anyway, getting this tracked:
+
+#regzbot ^introduced 76a3c92ec9e0668e4cd0e9ff1782eb68f61a179c
+#regzbot title cifs: unable to shares that require NTLM or weaker
+authentication algorithms
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215375
