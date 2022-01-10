@@ -2,108 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A6EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B367BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240140AbiAJHc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:32:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240127AbiAJH2b (ORCPT
+        id S239674AbiAJHdI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:33:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36500 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240119AbiAJH2b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 10 Jan 2022 02:28:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8428BC028BED;
-        Sun,  9 Jan 2022 23:26:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44374B81216;
-        Mon, 10 Jan 2022 07:26:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E9E9C36AE9;
-        Mon, 10 Jan 2022 07:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C48A611D3;
+        Mon, 10 Jan 2022 07:28:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F8AC36AE9;
+        Mon, 10 Jan 2022 07:28:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799611;
-        bh=NuKUQB0gWOdiObICUzL0v8caEKtF50JBpnSDLvALOdw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cu+MHLEL0zsYBusik3wuUu9u1sU/AJKZOk9kVFxdjvBALc6SC9DlpC+uVJjYylemS
-         vb7vgIRE54S/AMHwt708OBhLUT+uT32hkNwytIQz3emXrQBjS4Z74VRjuNi6by5CCS
-         zEcxzselUyEWYiW2S4l8ImZmo08dmCDp2D94Ycb8=
+        s=korg; t=1641799709;
+        bh=D8LBidOLjBzdTIhwKiHL1SfhnvOMGjFNjh2z2ukCbBo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ZsoPszEOWsKZQR76SDvDFgcf8kC8H2YiuJd2eP5ssSA84B0osYQNFvItT0gn2ukay
+         4uqovqd7/R2rxXtFc7ZiwqDu5C0ueqRvUk2qHu0lbeVElHZoKK06JbK6ScG/sTNMmS
+         VZECPOwKoY/vI4fGQRXOlbf1Hm1PUCtrrUNF7KMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 4.19 01/21] tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
-Date:   Mon, 10 Jan 2022 08:23:02 +0100
-Message-Id: <20220110071814.015920375@linuxfoundation.org>
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+Subject: [PATCH 5.4 00/34] 5.4.171-rc1 review
+Date:   Mon, 10 Jan 2022 08:22:55 +0100
+Message-Id: <20220110071815.647309738@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071813.967414697@linuxfoundation.org>
-References: <20220110071813.967414697@linuxfoundation.org>
+MIME-Version: 1.0
 User-Agent: quilt/0.66
 X-stable: review
 X-Patchwork-Hint: ignore
-MIME-Version: 1.0
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.171-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.171-rc1
+X-KernelTest-Deadline: 2022-01-12T07:18+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+This is the start of the stable review cycle for the 5.4.171 release.
+There are 34 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 823e670f7ed616d0ce993075c8afe0217885f79d upstream.
+Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
+Anything received after that time might be too late.
 
-With the new osnoise tracer, we are seeing the below splat:
-    Kernel attempted to read user page (c7d880000) - exploit attempt? (uid: 0)
-    BUG: Unable to handle kernel data access on read at 0xc7d880000
-    Faulting instruction address: 0xc0000000002ffa10
-    Oops: Kernel access of bad area, sig: 11 [#1]
-    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
-    ...
-    NIP [c0000000002ffa10] __trace_array_vprintk.part.0+0x70/0x2f0
-    LR [c0000000002ff9fc] __trace_array_vprintk.part.0+0x5c/0x2f0
-    Call Trace:
-    [c0000008bdd73b80] [c0000000001c49cc] put_prev_task_fair+0x3c/0x60 (unreliable)
-    [c0000008bdd73be0] [c000000000301430] trace_array_printk_buf+0x70/0x90
-    [c0000008bdd73c00] [c0000000003178b0] trace_sched_switch_callback+0x250/0x290
-    [c0000008bdd73c90] [c000000000e70d60] __schedule+0x410/0x710
-    [c0000008bdd73d40] [c000000000e710c0] schedule+0x60/0x130
-    [c0000008bdd73d70] [c000000000030614] interrupt_exit_user_prepare_main+0x264/0x270
-    [c0000008bdd73de0] [c000000000030a70] syscall_exit_prepare+0x150/0x180
-    [c0000008bdd73e10] [c00000000000c174] system_call_vectored_common+0xf4/0x278
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.171-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-osnoise tracer on ppc64le is triggering osnoise_taint() for negative
-duration in get_int_safe_duration() called from
-trace_sched_switch_callback()->thread_exit().
+thanks,
 
-The problem though is that the check for a valid trace_percpu_buffer is
-incorrect in get_trace_buf(). The check is being done after calculating
-the pointer for the current cpu, rather than on the main percpu pointer.
-Fix the check to be against trace_percpu_buffer.
+greg k-h
 
-Link: https://lkml.kernel.org/r/a920e4272e0b0635cf20c444707cbce1b2c8973d.1640255304.git.naveen.n.rao@linux.vnet.ibm.com
+-------------
+Pseudo-Shortlog of commits:
 
-Cc: stable@vger.kernel.org
-Fixes: e2ace001176dc9 ("tracing: Choose static tp_printk buffer by explicit nesting count")
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/trace/trace.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.171-rc1
 
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -2822,7 +2822,7 @@ static char *get_trace_buf(void)
- {
- 	struct trace_buffer_struct *buffer = this_cpu_ptr(trace_percpu_buffer);
- 
--	if (!buffer || buffer->nesting >= 4)
-+	if (!trace_percpu_buffer || buffer->nesting >= 4)
- 		return NULL;
- 
- 	buffer->nesting++;
+wolfgang huang <huangjinhui@kylinos.cn>
+    mISDN: change function names to avoid conflicts
+
+Zekun Shen <bruceshenzk@gmail.com>
+    atlantic: Fix buff_ring OOB in aq_ring_rx_clean
+
+yangxingwu <xingwu.yang@gmail.com>
+    net: udp: fix alignment problem in udp4_seq_show()
+
+William Zhao <wizhao@redhat.com>
+    ip6_vti: initialize __ip6_tnl_parm struct in vti6_siocdevprivate
+
+Lixiaokeng <lixiaokeng@huawei.com>
+    scsi: libiscsi: Fix UAF in iscsi_conn_get_param()/iscsi_conn_teardown()
+
+Chunfeng Yun <chunfeng.yun@mediatek.com>
+    usb: mtu3: fix interval value for intr and isoc
+
+David Ahern <dsahern@kernel.org>
+    ipv6: Do cleanup if attribute validation fails in multipath route
+
+David Ahern <dsahern@kernel.org>
+    ipv6: Continue processing multipath route even if gateway attribute is invalid
+
+Hangyu Hua <hbh25y@gmail.com>
+    phonet: refcount leak in pep_sock_accep
+
+Thomas Toye <thomas@toye.io>
+    rndis_host: support Hytera digital radios
+
+Nathan Chancellor <nathan@kernel.org>
+    power: reset: ltc2952: Fix use of floating point literals
+
+Linus Walleij <linus.walleij@linaro.org>
+    power: supply: core: Break capacity loop
+
+Darrick J. Wong <djwong@kernel.org>
+    xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like fallocate
+
+Christian Melki <christian.melki@t2data.com>
+    net: phy: micrel: set soft_reset callback to genphy_soft_reset for KSZ8081
+
+Eric Dumazet <edumazet@google.com>
+    sch_qfq: prevent shift-out-of-bounds in qfq_init_qdisc
+
+Linus Lüssing <linus.luessing@c0d3.blue>
+    batman-adv: mcast: don't send link-local multicast to mcast routers
+
+David Ahern <dsahern@kernel.org>
+    lwtunnel: Validate RTA_ENCAP_TYPE attribute length
+
+David Ahern <dsahern@kernel.org>
+    ipv6: Check attribute length for RTA_GATEWAY when deleting multipath route
+
+David Ahern <dsahern@kernel.org>
+    ipv6: Check attribute length for RTA_GATEWAY in multipath route
+
+David Ahern <dsahern@kernel.org>
+    ipv4: Check attribute length for RTA_FLOW in multipath route
+
+David Ahern <dsahern@kernel.org>
+    ipv4: Check attribute length for RTA_GATEWAY in multipath route
+
+Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+    i40e: Fix incorrect netdev's real number of RX/TX queues
+
+Mateusz Palczewski <mateusz.palczewski@intel.com>
+    i40e: Fix for displaying message regarding NVM version
+
+Di Zhu <zhudi2@huawei.com>
+    i40e: fix use-after-free in i40e_sync_filters_subtask()
+
+Tom Rix <trix@redhat.com>
+    mac80211: initialize variable have_higher_than_11mbit
+
+Jiasheng Jiang <jiasheng@iscas.ac.cn>
+    RDMA/uverbs: Check for null return of kmalloc_array
+
+Leon Romanovsky <leonro@nvidia.com>
+    RDMA/core: Don't infoleak GRH fields
+
+Karen Sornek <karen.sornek@intel.com>
+    iavf: Fix limit of total number of queues to active queues of VF
+
+Pavel Skripkin <paskripkin@gmail.com>
+    ieee802154: atusb: fix uninit value in atusb_set_extended_addr
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    tracing: Tag trace_percpu_buffer as a percpu pointer
+
+Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+    tracing: Fix check for trace_percpu_buffer validity in get_trace_buf()
+
+Shuah Khan <skhan@linuxfoundation.org>
+    selftests: x86: fix [-Wstringop-overread] warn in test_process_vm_readv()
+
+Nathan Chancellor <nathan@kernel.org>
+    Input: touchscreen - Fix backport of a02dcde595f7cbd240ccd64de96034ad91cffc40
+
+Chao Yu <chao@kernel.org>
+    f2fs: quota: fix potential deadlock
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                         |  4 +-
+ drivers/infiniband/core/uverbs_marshall.c        |  2 +-
+ drivers/infiniband/core/uverbs_uapi.c            |  3 ++
+ drivers/input/touchscreen/of_touchscreen.c       |  8 ++--
+ drivers/isdn/mISDN/core.c                        |  6 +--
+ drivers/isdn/mISDN/core.h                        |  4 +-
+ drivers/isdn/mISDN/layer1.c                      |  4 +-
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c |  8 ++++
+ drivers/net/ethernet/intel/i40e/i40e_main.c      | 60 ++++++++++++++++++++----
+ drivers/net/ethernet/intel/iavf/iavf_main.c      |  5 +-
+ drivers/net/ieee802154/atusb.c                   | 10 ++--
+ drivers/net/phy/micrel.c                         |  1 +
+ drivers/net/usb/rndis_host.c                     |  5 ++
+ drivers/power/reset/ltc2952-poweroff.c           |  4 +-
+ drivers/power/supply/power_supply_core.c         |  4 ++
+ drivers/scsi/libiscsi.c                          |  6 ++-
+ drivers/usb/mtu3/mtu3_gadget.c                   |  4 +-
+ fs/f2fs/checkpoint.c                             |  3 +-
+ fs/xfs/xfs_ioctl.c                               |  3 +-
+ kernel/trace/trace.c                             |  6 +--
+ net/batman-adv/multicast.c                       | 15 ++++--
+ net/batman-adv/multicast.h                       | 10 ++--
+ net/batman-adv/soft-interface.c                  |  7 ++-
+ net/core/lwtunnel.c                              |  4 ++
+ net/ipv4/fib_semantics.c                         | 49 ++++++++++++++++---
+ net/ipv4/udp.c                                   |  2 +-
+ net/ipv6/ip6_vti.c                               |  2 +
+ net/ipv6/route.c                                 | 32 ++++++++++++-
+ net/mac80211/mlme.c                              |  2 +-
+ net/phonet/pep.c                                 |  1 +
+ net/sched/sch_qfq.c                              |  6 +--
+ tools/testing/selftests/x86/test_vsyscall.c      |  2 +-
+ 32 files changed, 217 insertions(+), 65 deletions(-)
 
 
