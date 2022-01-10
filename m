@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE0D3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 10 Jan 2022 07:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239327AbiAJHZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 02:25:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55802 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239317AbiAJHYa (ORCPT
+        id S239428AbiAJHZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 02:25:35 -0500
+Received: from out162-62-57-252.mail.qq.com ([162.62.57.252]:56697 "EHLO
+        out162-62-57-252.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239314AbiAJHYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 02:24:30 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1883DB811F5;
-        Mon, 10 Jan 2022 07:24:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614D5C36AED;
-        Mon, 10 Jan 2022 07:24:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641799466;
-        bh=pcw/Sg/w0E9cf2w+sEgUp/zOjqIvw3IKwr7bxLEonhY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wqqBotNswcHAXruaHM5F0jZDfChOPoaVknaVP5L2UCO66GKAZtupKywS/3ZrjXeAE
-         dxP/OQzTUt7jEG6rHKKI9hRd6shB+4BdTghC89H/h+e63D+q9mwh8dEewwlH/DjFer
-         WI4UhOm9Xk61TWHOynnkKrscpt6iLD4S6hVHswJs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Aayush Agarwal <aayush.a.agarwal@oracle.com>
-Subject: [PATCH 4.4 09/14] phonet: refcount leak in pep_sock_accep
-Date:   Mon, 10 Jan 2022 08:22:48 +0100
-Message-Id: <20220110071812.079686737@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110071811.779189823@linuxfoundation.org>
-References: <20220110071811.779189823@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 10 Jan 2022 02:24:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1641799466;
+        bh=9k1eFxwwZYjFKr+WJMD9o6mAxJi78ILGRPskXq6r9Nw=;
+        h=From:To:Cc:Subject:Date;
+        b=RvmkWRGgc9cJZOlbPuUmCGG/LdL5fUOJoTPfl8oMyQ+jmk1ZcwJjGgQKvgrTffT5J
+         uauZ4XBeIx3375NEPKKr8EuhOGbmH1ADEDrX/R7JG1kwMUTCxFHEkXq0ybFVbWTZzI
+         Wo4eMVsE6K7CE3T8RSh+J5d8VHnmc19VZdLafzIE=
+Received: from fedora.. ([119.32.47.91])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id 5CD80CD5; Mon, 10 Jan 2022 15:23:13 +0800
+X-QQ-mid: xmsmtpt1641799393t3g57ii7w
+Message-ID: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
+X-QQ-XMAILINFO: N9vFsJHELd5M78BrG7pkWX+iqbIqvE7AJmW7380o2BEH1iGng8N8iYDr23IHo0
+         2v85PrK3LhxPTuXuJTMpGt5FSAX55+vCRTUUfDQYQZjLzLS4wgqfsnyxOPKY88UZH+fq7B7SVDmr
+         dH8aN8VKngMlB7QGBWnJt0u1+pEJImetkN3N5snGKPgq1U+miR/dCgaVIkcJ8mKtb5SFwOClyDCO
+         1ALTtuzFg/Uk+7X0g1VjR2DFSkKdClV2kPEMM/BuB3nDc73VlTxFv1Zc+4sb/UaVT1KS3+UmQzW7
+         SZdETf3eXJEzCaeyQhDGd6NoE47AbbjaerHrLco3zt9rdIp02vBg6F4WhWnhMU9fZO/bCZVmhE/U
+         oyDnjZqCu9dgEAndmMq2pZT/z0zzPZUDkZOZKse1fstQJFKF6MoYtdHYa8PLmxPaXdTxlLY9vzQU
+         xkG2Sf/ZWYLnZ0F+lfbf04NnhAyMTYxk4gYU2l8JkxJjQuEa2rmV/NIBjBZI/0CjPTiSMTPKDLjm
+         O77kAoan5Tr+onw/dZr8S2dp94R2kG9EY3aD6rcgELmjDVTYaQW/HxwvUa1r+mlLtuSMBVS9dbKw
+         3sQ/2O/j5d3hwYJhbK4UsqrNBKVO9qP/tnjN4LNhKJIjqBb8aSW17lElY2zhO4dYAkrxU2YYYGFF
+         vazyiHqDHIErFFGWXpHG4DvdpRKA7Gq9ko07Ws8+l+R0bWBZ/PshiHfjOMQCORNXDpLpMM+bwvX/
+         0wxd/M6RtBRwDUfdt7F3qlx87LvmxJJKxOUkWL/npIg3mMEnSe/dKjQo46xRsM12qGqh6Jdvy66E
+         80C08x/3Iv+dLBVZFdgk2YMtFZ+/0kGganAlZ7YMRHudd1oMlUu1rTvXAjN+m1dbJWDKIGsyDr8D
+         aShgpCwK32DvezXFVayNBSM5dI48SCi9mMKMiu2YTEuXRBrJ2FGt8=
+From:   conleylee@foxmail.com
+To:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
+        wens@csie.org
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, conley <conleylee@foxmail.com>
+Subject: [PATCH 0/2] sun4i-emac: replace magic number with marcos
+Date:   Mon, 10 Jan 2022 15:23:07 +0800
+X-OQ-MSGID: <20220110072309.2259523-1-conleylee@foxmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: conley <conleylee@foxmail.com>
 
-commit bcd0f93353326954817a4f9fa55ec57fb38acbb0 upstream.
+- sun4i-emac.h: add register related marcos
+- sun4i-emac.c: replace magic number with marco
 
-sock_hold(sk) is invoked in pep_sock_accept(), but __sock_put(sk) is not
-invoked in subsequent failure branches(pep_accept_conn() != 0).
+*** BLURB HERE ***
 
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Link: https://lore.kernel.org/r/20211209082839.33985-1-hbh25y@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Aayush Agarwal <aayush.a.agarwal@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- net/phonet/pep.c |    1 +
- 1 file changed, 1 insertion(+)
+conley (2):
+  sun4i-emac.h: add register related marcos
+  sun4i-emac.c: replace magic number with macro
 
---- a/net/phonet/pep.c
-+++ b/net/phonet/pep.c
-@@ -878,6 +878,7 @@ static struct sock *pep_sock_accept(stru
- 
- 	err = pep_accept_conn(newsk, skb);
- 	if (err) {
-+		__sock_put(sk);
- 		sock_put(newsk);
- 		newsk = NULL;
- 		goto drop;
+ drivers/net/ethernet/allwinner/sun4i-emac.c | 26 ++++++++++-----------
+ drivers/net/ethernet/allwinner/sun4i-emac.h | 18 ++++++++++++++
+ 2 files changed, 31 insertions(+), 13 deletions(-)
 
+-- 
+2.31.1
 
