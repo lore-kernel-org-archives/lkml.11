@@ -2,174 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348778AbiAKH7t (ORCPT
+        id S1348785AbiAKIAU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:59:49 -0500
-Received: from mga07.intel.com ([134.134.136.100]:18837 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235827AbiAKH7s (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:59:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641887988; x=1673423988;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Afn//rSP4R9SsyZ6VJF11Y3rnLWXeO8abK+Y2aty1FU=;
-  b=T/J3mCJmP5TI7yIJ//cVCynxQnRdfPiu7HaeftkXfMD5z3b5ePyUUUB7
-   u2tm0AfyiNAngUFOKu32oJIsDKfWlzt56HD+5HxXh+U6P1YBMw9Hkcm2O
-   KoHr7UCVwY/zartTxpL7sE+NiOBIcTMcwUMAIG/6Y6lK5vdbpl+1y/u3e
-   tYVNc6RfJZUXyVaFIiMUxz7mYhsmTTpTiyvCiJ7Vc5bO9EqgP0uqhr3wE
-   01otaPfWQBY5DQEXGZLuA+BttJ35JECln9zZuPzVsq36VmAggOLBJSlrT
-   v0CGvMsXz4B3+5l987ds5P6c0lKWQy/8rGJ5/z2AeCJla+O5IBghxHCXj
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="306779923"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="306779923"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 23:59:48 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="622983509"
-Received: from xiaoyaol-mobl.ccr.corp.intel.com (HELO [10.255.30.76]) ([10.255.30.76])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 23:59:45 -0800
-Message-ID: <8a6e5b96-1191-7693-314a-1714cb7c9c9c@intel.com>
-Date:   Tue, 11 Jan 2022 15:59:43 +0800
+        Tue, 11 Jan 2022 03:00:20 -0500
+Received: from lithops.sigma-star.at ([195.201.40.130]:44204 "EHLO
+        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235827AbiAKIAR (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 03:00:17 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 76914614E2C4;
+        Tue, 11 Jan 2022 09:00:16 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id u7Ek8Ybj6hVR; Tue, 11 Jan 2022 09:00:15 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 13819614E2CB;
+        Tue, 11 Jan 2022 09:00:15 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id MnDfqMAWnTUP; Tue, 11 Jan 2022 09:00:14 +0100 (CET)
+Received: from blindfold.corp.sigma-star.at (213-47-184-186.cable.dynamic.surfer.at [213.47.184.186])
+        by lithops.sigma-star.at (Postfix) with ESMTPSA id B9DFB614E2C4;
+        Tue, 11 Jan 2022 09:00:14 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-um@vger.kernel.org, anton.ivanov@cambridgegreys.com,
+        johannes@sipsolutions.net, Richard Weinberger <richard@nod.at>
+Subject: [PATCH] MAINTAINERS: Update UserModeLinux entry
+Date:   Tue, 11 Jan 2022 08:58:51 +0100
+Message-Id: <20220111075851.12605-1-richard@nod.at>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.4.1
-Subject: Re: [PATCH v2] KVM: x86/pt: Ignore all unknown Intel PT capabilities
-Content-Language: en-US
-To:     Like Xu <like.xu.linux@gmail.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220110034747.30498-1-likexu@tencent.com>
- <YdzV33X5w6+tCamI@google.com>
- <80b40829-0d25-eb84-7bd7-f21685daeb20@gmail.com>
-From:   Xiaoyao Li <xiaoyao.li@intel.com>
-In-Reply-To: <80b40829-0d25-eb84-7bd7-f21685daeb20@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/2022 12:20 PM, Like Xu wrote:
-> On 11/1/2022 8:57 am, Sean Christopherson wrote:
->> On Mon, Jan 10, 2022, Like Xu wrote:
->>> From: Like Xu <likexu@tencent.com>
->>>
->>> Some of the new Intel PT capabilities (e.g. SDM Vol3, 32.2.4 Event
->>> Tracing, it exposes details about the asynchronous events, when they are
->>> generated, and when their corresponding software event handler completes
->>> execution) cannot be safely and fully emulated by the KVM, especially
->>> emulating the simultaneous writing of guest PT packets generated by
->>> the KVM to the guest PT buffer.
->>>
->>> For KVM, it's better to advertise currently supported features based on
->>> the "static struct pt_cap_desc" implemented in the host PT driver and
->>> ignore _all_ unknown features before they have been investigated one by
->>> one and supported in a safe manner, leaving the rest as system-wide-only
->>> tracing capabilities.
->>>
->>> Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
->>> Signed-off-by: Like Xu <likexu@tencent.com>
->>> ---
->>> v1 -> v2 Changelog:
->>> - Be safe and ignore _all_ unknown capabilities. (Paolo)
->>>
->>> Previous:
->>> https://lore.kernel.org/kvm/20220106085533.84356-1-likexu@tencent.com/
->>>
->>>   arch/x86/kvm/cpuid.c | 2 ++
->>>   1 file changed, 2 insertions(+)
->>>
->>> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
->>> index 0b920e12bb6d..439b93359848 100644
->>> --- a/arch/x86/kvm/cpuid.c
->>> +++ b/arch/x86/kvm/cpuid.c
->>> @@ -901,6 +901,8 @@ static inline int __do_cpuid_func(struct 
->>> kvm_cpuid_array *array, u32 function)
->>>               break;
->>>           }
->>> +        /* It's better to be safe and ignore _all_ unknown 
->>> capabilities. */
->>
->> No need to justify why unknown capabilities are hidden as that's very 
->> much (supposed
->> to be) standard KVM behavior.
->>
->>> +        entry->ebx &= GENMASK(5, 0);
->>
->> Please add a #define somewhere so that this is self-documenting, e.g. see
->> KVM_SUPPORTED_XCR0.
-> 
-> How about we define this macro in the <asm/intel_pt.h> so that the next 
-> PT capability
-> enabler can update the mask with minimal effort, considering that many 
-> pure kernel
-> developers don't care about KVM code ?
-> 
->>
->> And why just EBX?  ECX appears to enumerate features too, and EDX is 
->> presumably
->> reserved to enumerate yet more features when EBX/ECX run out of bits.
-> 
-> Yes, how about this version:
-> 
-> diff --git a/arch/x86/include/asm/intel_pt.h 
-> b/arch/x86/include/asm/intel_pt.h
-> index ebe8d2ea44fe..da94d0eeb9df 100644
-> --- a/arch/x86/include/asm/intel_pt.h
-> +++ b/arch/x86/include/asm/intel_pt.h
-> @@ -24,6 +24,12 @@ enum pt_capabilities {
->       PT_CAP_psb_periods,
->   };
-> 
-> +#define GUEST_SUPPORTED_CPUID_14_EBX    \
-> +    (BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5))
-> +
-> +#define GUEST_SUPPORTED_CPUID_14_ECX    \
-> +    (BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(31))
-> +
+Add Johannes and form a maintainer group with on a common
+git repository.
 
-I doubt BIT(3) of CPUID_14_ECX can be exposed to guest directly.
+While we are here, remove inactive developers.
+Jeff, thanks for your great work!
 
-It means "output to Trace Transport Subsystem Supported". If I 
-understand correctly, it at least needs passthrough of the said 
-Transport Subsystem or emulation of it.
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ MAINTAINERS | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
->   #if defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_INTEL)
->   void cpu_emergency_stop_pt(void);
->   extern u32 intel_pt_validate_hw_cap(enum pt_capabilities cap);
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 0b920e12bb6d..be8c9170f98e 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -19,6 +19,7 @@
->   #include <asm/user.h>
->   #include <asm/fpu/xstate.h>
->   #include <asm/sgx.h>
-> +#include <asm/intel_pt.h>
->   #include "cpuid.h"
->   #include "lapic.h"
->   #include "mmu.h"
-> @@ -900,7 +901,10 @@ static inline int __do_cpuid_func(struct 
-> kvm_cpuid_array *array, u32 function)
->               entry->eax = entry->ebx = entry->ecx = entry->edx = 0;
->               break;
->           }
-> -
-> +        entry->eax = min(entry->eax, 1u);
-> +        entry->ebx &= GUEST_SUPPORTED_CPUID_14_EBX;
-> +        entry->ecx &= GUEST_SUPPORTED_CPUID_14_ECX;
-> +        entry->edx = 0;
->           for (i = 1, max_idx = entry->eax; i <= max_idx; ++i) {
->               if (!do_host_cpuid(array, function, i))
->                   goto out;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8912b2c1260c..6d095b5ba326 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -19896,14 +19896,15 @@ F:	Documentation/admin-guide/media/zr364xx*
+ F:	drivers/media/usb/zr364xx/
+=20
+ USER-MODE LINUX (UML)
+-M:	Jeff Dike <jdike@addtoit.com>
+ M:	Richard Weinberger <richard@nod.at>
+ M:	Anton Ivanov <anton.ivanov@cambridgegreys.com>
++M:	Johannes Berg <johannes@sipsolutions.net>
+ L:	linux-um@lists.infradead.org
+ S:	Maintained
+ W:	http://user-mode-linux.sourceforge.net
+ Q:	https://patchwork.ozlabs.org/project/linux-um/list/
+-T:	git git://git.kernel.org/pub/scm/linux/kernel/git/rw/uml.git
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/uml/linux.git next
++T:	git git://git.kernel.org/pub/scm/linux/kernel/git/uml/linux.git fixes
+ F:	Documentation/virt/uml/
+ F:	arch/um/
+ F:	arch/x86/um/
+--=20
+2.26.2
+
