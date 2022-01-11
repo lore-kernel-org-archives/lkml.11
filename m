@@ -2,178 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A100C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB334C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235600AbiAKDZ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 22:25:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346716AbiAKDY4 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 22:24:56 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3DAC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 19:24:55 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id h5-20020a9d6a45000000b005908066fa64so16382940otn.7
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 19:24:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vt6eTIkW2rjgsDlp2Z3piPi66iajGtL8d5EhM3+JwDc=;
-        b=PDZZMBR3ILiRIPUN7aXI728zpXb1y8zLSKQ+ENdryuEu01RNFHW3NFifiIvPv5NTkt
-         gQvucQoKuoyoiBdHwegVWLXrARPhRgbk37t3X/nUIkLw+ZvCwRXcGIVo5C5GRM0ay+r5
-         sKCIFheAYgxBzU5ddo8oHeh80RHyypLkVEBnN+pX5Z0w63O/+NwuyCH63nu0gRwEqq1W
-         hickR/I8duDLsKa5m4fmwUMzVG6somKefc2CbIi+Nvw+ulu3T4VEl9uY24SAmZjrUUPV
-         8UhgRYdeJDh/pPhC9Ycg1dqKbFzgIbilUSUCq8pkXSd6nbiXDUI6gvK881OlAT+XnwoB
-         AxIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vt6eTIkW2rjgsDlp2Z3piPi66iajGtL8d5EhM3+JwDc=;
-        b=WDdMltzX2ZTo7Q5yxTz2uK+4ow+EKvcVVA8iwPx3ZR9n+o2rLu5zcyjhjhB4D8cZn9
-         5u7F4PlinNXzVMJrJwooi68oK2aby5LDy3RGTVVC4FAC9TmFUhv/iX21vYV76YbSbmgh
-         cFiLAky0jVZRYc76gF1LCQLG9+hFYy2KY2dWr3y+HzQFGIjZ1Bm0s3X6H0VQ0+qsCi7l
-         k0LWmKGgglG30cXT7cZxH8liXM5+rERMJYChLYX1SZ4oPHwOhLuK93H3JYR/4tNaSHp0
-         ILQfqSGJHT1sTqOYQZX4zJ0z2Kel9KtQLvsVtp6QL5LukBomOnUAhtsXHiRHAgsECfEY
-         bLMg==
-X-Gm-Message-State: AOAM530vFotoNOXYxAx0LYOqeQziXKVRjjOQYUNYxnZAeKJjfoI32j5Q
-        JWKK2FQBsb11m5M49jfAAXFT7kZNAGjIr/XOWmT1mQ==
-X-Google-Smtp-Source: ABdhPJxN1qdnCnvDwG4vqV5IYMMsFcmQo3pz7JTnaUYQacPcCthQJujAOML/NRV8FYO5TPRfc2jv+EkJnWYW5eq2qqA=
-X-Received: by 2002:a05:6830:441f:: with SMTP id q31mr2162701otv.14.1641871494663;
- Mon, 10 Jan 2022 19:24:54 -0800 (PST)
-MIME-Version: 1.0
-References: <20211117080304.38989-1-likexu@tencent.com> <c840f1fe-5000-fb45-b5f6-eac15e205995@redhat.com>
- <CALMp9eRA8hw9zVEwnZEX56Gao-MibX5A+XXYS-n-+X0BkhrSvQ@mail.gmail.com>
- <438d42de-78e1-0ce9-6a06-38194de4abd4@redhat.com> <CALMp9eSLU1kfffC3Du58L8iPY6LmKyVO0yU7c3wEnJAD9JZw4w@mail.gmail.com>
- <CALMp9eR3PEgXhe_z8ArHK0bPeW4=htta_f3LHTm9jqL2rtcT7A@mail.gmail.com>
- <a2b6fb82-292b-f714-cfd7-31a5310c28ed@gmail.com> <CALMp9eQbiqjf_MMJP9Cc9=Ubm7qKv88BXtu3=7z8ax9W_1AY4Q@mail.gmail.com>
- <1f293656-49f5-ce02-1c59-a0f215306033@gmail.com>
-In-Reply-To: <1f293656-49f5-ce02-1c59-a0f215306033@gmail.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Mon, 10 Jan 2022 19:24:43 -0800
-Message-ID: <CALMp9eTqMMia0Vx=kfGpQVHVYvSCDtuBN1eDr12cop0EAzCSaw@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/svm: Add module param to control PMU virtualization
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        id S235845AbiAKDZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 22:25:59 -0500
+Received: from mga02.intel.com ([134.134.136.20]:46706 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1348042AbiAKDZl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 22:25:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641871541; x=1673407541;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=7nvliX2pitYIn5elvcc0RhLaOrecvDNaby86k0Cd5T0=;
+  b=Z8R4a8gqmri5CRIyZyFd/3+1sjGCMoHO/rQGFJOQWEr9yvqG9Q/oB9V/
+   k/4u26IlrTqbiamJ40eRsTjX+ZOfpSTzolSTLnsZKc+NpynXamvqtXPWT
+   VIamvZXEIsoSTaeyqIMk/mPx6dWTYsAfAg1LEjxjFvISi3rB0/5MF0aJe
+   s6d1+EaqWrKvHi8C4AEiytAOMuOVvUEdYifwifcHkaemuhgTLq9avHAQK
+   hYOz/E9d6Y7Uq7qd1dl+rYAsesLKrwDAcq9RZXdOakkqJBQhsA4xVcyfR
+   8rP61hbI48T27bdLusu4C6MWIG2j1iw2jofseZNClVlO5WkgUz5Ujb+5R
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="230734096"
+X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
+   d="scan'208";a="230734096"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 19:25:41 -0800
+X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
+   d="scan'208";a="528546614"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 19:25:37 -0800
+Date:   Tue, 11 Jan 2022 11:36:30 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
+        tglx@linutronix.de, Vitaly Kuznetsov <vkuznets@redhat.com>,
         Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, David Dunn <daviddunn@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/6] KVM: x86: Move check_processor_compatibility from
+ init ops to runtime ops
+Message-ID: <20220111033629.GC2175@gao-cwp>
+References: <20211227081515.2088920-1-chao.gao@intel.com>
+ <20211227081515.2088920-2-chao.gao@intel.com>
+ <YdzAzT5AqO0aCsHk@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdzAzT5AqO0aCsHk@google.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 6:11 PM Like Xu <like.xu.linux@gmail.com> wrote:
+On Mon, Jan 10, 2022 at 11:27:09PM +0000, Sean Christopherson wrote:
+>On Mon, Dec 27, 2021, Chao Gao wrote:
+>> so that KVM can do compatibility checks on hotplugged CPUs. Drop __init
+>> from check_processor_compatibility() and its callees.
 >
-> On 11/1/2022 2:13 am, Jim Mattson wrote:
-> > On Sun, Jan 9, 2022 at 10:23 PM Like Xu <like.xu.linux@gmail.com> wrote:
-> >>
-> >> On 9/1/2022 9:23 am, Jim Mattson wrote:
-> >>> On Fri, Dec 10, 2021 at 7:48 PM Jim Mattson <jmattson@google.com> wrote:
-> >>>>
-> >>>> On Fri, Dec 10, 2021 at 6:15 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
-> >>>>>
-> >>>>> On 12/10/21 20:25, Jim Mattson wrote:
-> >>>>>> In the long run, I'd like to be able to override this system-wide
-> >>>>>> setting on a per-VM basis, for VMs that I trust. (Of course, this
-> >>>>>> implies that I trust the userspace process as well.)
-> >>>>>>
-> >>>>>> How would you feel if we were to add a kvm ioctl to override this
-> >>>>>> setting, for a particular VM, guarded by an appropriate permissions
-> >>>>>> check, like capable(CAP_SYS_ADMIN) or capable(CAP_SYS_MODULE)?
-> >>>>>
-> >>>>> What's the rationale for guarding this with a capability check?  IIRC
-> >>>>> you don't have such checks for perf_event_open (apart for getting kernel
-> >>>>> addresses, which is not a problem for virtualization).
-> >>>>
-> >>>> My reasoning was simply that for userspace to override a mode 0444
-> >>>> kernel module parameter, it should have the rights to reload the
-> >>>> module with the parameter override. I wasn't thinking specifically
-> >>>> about PMU capabilities.
-> >>
-> >> Do we have a precedent on any module parameter rewriting for privileger ?
-> >>
-> >> A further requirement is whether we can dynamically change this part of
-> >> the behaviour when the guest is already booted up.
-> >>
-> >>>
-> >>> Assuming that we trust userspace to decide whether or not to expose a
-> >>> virtual PMU to a guest (as we do on the Intel side), perhaps we could
-> >>> make use of the existing PMU_EVENT_FILTER to give us per-VM control,
-> >>> rather than adding a new module parameter for per-host control. If
-> >>
-> >> Various granularities of control are required to support vPMU production
-> >> scenarios, including per-host, per-VM, and dynamic-guest-alive control.
-> >>
-> >>> userspace calls KVM_SET_PMU_EVENT_FILTER with an action of
-> >>> KVM_PMU_EVENT_ALLOW and an empty list of allowed events, KVM could
-> >>> just disable the virtual PMU for that VM.
-> >>
-> >> AMD will also have "CPUID Fn8000_0022_EBX[NumCorePmc, 3:0]".
-> >
-> > Where do you see this? Revision 3.33 (November 2021) of the AMD APM,
-> > volume 3, only goes as high as CPUID Fn8000_0021.
+>Losing the __init annotation on all these helpers makes me a bit sad, more from a
+>documentation perspective than a "but we could shave a few bytes" perspective.
+
+This makes sense.
+
+>More than once I've wondered why some bit of code isn't __init, only to realize
+>its used for hotplug.
+
+Same problem to some global data structures which can be __initdata if hotplug
+isn't supported.
+
 >
-> Try APM Revision: 4.04 (November 2021),  page 1849/3273,
-> "CPUID Fn8000_0022_EBX Extended Performance Monitoring and Debug".
+>What if we added an __init_or_hotplug annotation that is a nop if HOTPLUG_CPU=y?
 
-Is this a public document?
+Personally __init_or_hotplug is a little long as an annotation. How about
+__hotplug?
 
-> Given the current ambiguity in this revision, the AMD folks will reveal more
-> details bout this field in the next revision.
+One concern is: is it acceptable to introduce a new annotation and use it in
+new code but not fix all places that should use it in existing code.
+
+I think the right process is
+1. introduce a new annotation
+2. fix existing code to use this annotation
+3. add new code.
+
+There is no doubt that #2 would take great effort. I'm not sure if it is really
+worth it.
+
+>At a glance, KVM could use that if the guts of kvm_online_cpu() were #idef'd out
+>on !CONFIG_HOTPLUG_CPU.  That also give us a bit of test coverage for bots that
+>build with SMP=n.
+
+Will do with your suggested-by.
+
 >
-> >
-> >>>
-> >>> Today, the semantics of an empty allow list are quite different from
-> >>> the proposed pmuv module parameter being false. However, it should be
-> >>> an easy conversion. Would anyone be concerned about changing the
-> >>> current semantics of an empty allow list? Is there a need for
-> >>> disabling PMU virtualization for legacy userspace implementations that
-> >>> can't be modified to ask for an empty allow list?
-> >>>
-> >>
-> >> AFAI, at least one user-space agent has integrated with it plus additional
-> >> "action"s.
-> >>
-> >> Once the API that the kernel presents to user space has been defined,
-> >> it's best not to change it and instead fall into remorse.
-> >
-> > Okay.
-> >
-> > I propose the following:
-> > 1) The new module parameter should apply to Intel as well as AMD, for
-> > situations where userspace is not trusted.
-> > 2) If the module parameter allows PMU virtualization, there should be
-> > a new KVM_CAP whereby userspace can enable/disable PMU virtualization.
-> > (Since you require a dynamic toggle, and there is a move afoot to
-> > refuse guest CPUID changes once a guest is running, this new KVM_CAP
-> > is needed on Intel as well as AMD).
+>diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+>index a80e3b0c11a8..30bbcb4f4057 100644
+>--- a/arch/x86/kvm/x86.c
+>+++ b/arch/x86/kvm/x86.c
+>@@ -11380,7 +11380,7 @@ void kvm_arch_hardware_unsetup(void)
+>        static_call(kvm_x86_hardware_unsetup)();
+> }
 >
-> Both hands in favour. Do you need me as a labourer, or you have a ready-made one ?
-
-We could split the work. Since (1) is a modification of the change you
-proposed in this thread, perhaps you could apply it to both AMD and
-Intel in v2? We can find someone for (2).
-
-> > 3) If the module parameter does not allow PMU virtualization, there
-> > should be no userspace override, since we have no precedent for
-> > authorizing that kind of override.
+>-int kvm_arch_check_processor_compat(void)
+>+int __init_or_hotplug kvm_arch_check_processor_compat(void)
+> {
+>        struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
 >
-> Uh, I thought you (Google) had a lot of these (interesting) use cases internally.
-
-We have modified some module parameters so that they can be changed at
-runtime, but we don't have any concept of a privileged userspace
-overriding a module parameter restriction.
-
-> >
-> >> "But I am not a decision maker. " :D
-> >>
-> >> Thanks,
-> >> Like Xu
-> >>
+>diff --git a/include/linux/init.h b/include/linux/init.h
+>index d82b4b2e1d25..33788b3c180a 100644
+>--- a/include/linux/init.h
+>+++ b/include/linux/init.h
+>@@ -53,6 +53,12 @@
+> #define __exitdata     __section(".exit.data")
+> #define __exit_call    __used __section(".exitcall.exit")
+>
+>+#ifdef CONFIG_HOTPLUG_CPU
+>+#define __init_or_hotplug
+>+#else
+>+#define __init_or_hotplug __init
+>+#endif /* CONFIG_HOTPLUG_CPU
+>+
+> /*
+>  * modpost check for section mismatches during the kernel build.
+>  * A section mismatch happens when there are references from a
+>
