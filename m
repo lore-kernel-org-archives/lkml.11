@@ -2,120 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00889C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:59:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0420C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:00:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349057AbiAKI7q (ORCPT
+        id S1349103AbiAKJAC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:59:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
+        Tue, 11 Jan 2022 04:00:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236410AbiAKI7m (ORCPT
+        with ESMTP id S236626AbiAKJAA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:59:42 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15C5C06173F;
-        Tue, 11 Jan 2022 00:59:41 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id o12so53844485lfk.1;
-        Tue, 11 Jan 2022 00:59:41 -0800 (PST)
+        Tue, 11 Jan 2022 04:00:00 -0500
+Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEA6C06173F;
+        Tue, 11 Jan 2022 01:00:00 -0800 (PST)
+Received: by mail-ot1-x332.google.com with SMTP id o3-20020a9d4043000000b0058f31f4312fso17907786oti.1;
+        Tue, 11 Jan 2022 01:00:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6nEJxrC4VF52kQQsquVABp1lWQCr9hliOF685p20gBY=;
-        b=TDKbVRvR44rzTiWqaqeJCI2IErsf3K0AkKOncfqrFtzCzzxK0kVQGxuBrfemty+iwh
-         0U+AAgBavx+nHC4eWULR8BXDxf1ae1PWYQKKyR9VEXWTtpmD91dMh/7W2ePDJsiUO6xS
-         +WVvOGvz1bwB+kuzAT0mLPsQk68VBZU9J6Rjk6FTY2W3pljRrPNFy61Y1v56J8JQ9Ncb
-         c3/EdlKXieuTpMbAg/7xj15dezkz8QwP/Lsqzfh7CoydmWvA9hS/Nc7qoTyLFdAQUHsY
-         FRS5MvyOhhl+s0D7THITRbRSoSIT2JEZH0u7ds61zsXuSYYFuj1E2FZj0Aqi68FPoxUd
-         Mq4g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bpi5yDslZk96fGP0AiL8cVK6M5zVjolT/YXQK+TShT4=;
+        b=eFUOEGUfVwr+KA/dAq1Chz/htbufTyGyC7BwTd95/DvX090ijtoqnldGYGbSLkuQXR
+         oKJNgV4K47rMHkjMou5rvfrMuJuzjDE5uQezF+MDd7CDjmcIaU2JdeJ73owOQgvs86R3
+         ftz0GuTOdgUMqpVHms2F0Pnaiwy3byXKNnCACETNPdd+k2I9idlRXH91q3y67mRS6jeW
+         9JQEOTxitLAtNw2x2X1JUjZdv0GhshpHr47QX3jyb00sv/kvKQT/Z3RAGtjJ44lJ4dyv
+         BUIm1uUaV3u102hBloRdhg0b1QztiPlefiyGVOGhoMztdTG3JyhCCMd68lHZrDsBTG16
+         eNmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6nEJxrC4VF52kQQsquVABp1lWQCr9hliOF685p20gBY=;
-        b=3a2+GyhdIMkR9QmVZQfYXy8WiaKPbOgmzkAFXJmhHK1SVAijqts2ZBvpQURqXIqzrV
-         zB57344K8t2BUC1FVIGlkwLa9G11j+SMw7b842z3BsphGdEGLZ3O6Uefcu3156qFqm23
-         P3sdPUuNurvPEw8hV2xdxhkdz8Dg3ds+neyKMxkfa3PLvRHGPLwcjH0Fe1d4gBZqj/wh
-         QU+YNgnJeLkHCh+CcY0Rl960+TD3Tvklb9m8NYraYPB1Oz5ikKPVNAey1zsJ1On7RfcU
-         6goZQdDvWWpMkHpaO4KjHvLoqvxbh5AX62Z6OtTnoBXrvDkjbpioYPGSGJqfj7bPZ3Cy
-         OC2A==
-X-Gm-Message-State: AOAM531q8u4sUMogXJgV84QSfiaPzcsqJlJf61nIDRJ9SXwP/PpGXeKl
-        4k3M2LSpTLJ0Qg3WAP6ZK/0=
-X-Google-Smtp-Source: ABdhPJxDW5jjSr6LF6rIE41gSK6F+vTyYsZ3vnc92yuIWqQPeWNguXcIK0Tz6CGWst39vHdVQa1Rdg==
-X-Received: by 2002:a2e:9c07:: with SMTP id s7mr2246267lji.476.1641891580304;
-        Tue, 11 Jan 2022 00:59:40 -0800 (PST)
-Received: from ?IPv6:2a00:1370:810c:714f:a10:76ff:fe69:21b6? ([2a00:1370:810c:714f:a10:76ff:fe69:21b6])
-        by smtp.googlemail.com with ESMTPSA id e8sm1246693lji.2.2022.01.11.00.59.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 00:59:39 -0800 (PST)
-Subject: Re: [PATCH 1/8] signal: Make SIGKILL during coredumps an explicit
- special case
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-api@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
- <20211213225350.27481-1-ebiederm@xmission.com>
- <9363765f-9883-75ee-70f1-a1a8e9841812@gmail.com>
- <87pmp67y4r.fsf@email.froward.int.ebiederm.org>
- <5bbb54c4-7504-cd28-5dde-4e5965496625@gmail.com>
- <87bl0m14ew.fsf@email.froward.int.ebiederm.org>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <6692758a-0af2-67e0-26fd-365625b3ad0c@gmail.com>
-Date:   Tue, 11 Jan 2022 11:59:39 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bpi5yDslZk96fGP0AiL8cVK6M5zVjolT/YXQK+TShT4=;
+        b=r7m9ueL9pK91lCrDK/B6KViuEmkGILXFpj1GwBeyvz+IEsPcLZDc7bC5w6RKlVD2/J
+         SqxGRq0qkKLCRTD1CBA62GwkjoNV3SkeU0oUL1kFmBunY+RSwz8uyHWLLgljvHzLKcHR
+         hIo3murZg71Vd0lq8hWZsciduYKm/AI/H/DowKuBaBsEzdB44hiUnrMkLZt0gYiLxHba
+         rA+h0uOmYEcri3gZDdlfnKyKzgsR/LKyh+toaIMfPDMXOLYaIn854TU+6tIM6c7ThhEu
+         erq4q4YhbimXD9Heqei3Gn5QfxH/8d7m62XZSE4Jmh90x+4nccCwKu0hD5MH9uM+799f
+         sW8g==
+X-Gm-Message-State: AOAM533xfb9j1u2gd0ej/DRhaMd3UyOkiQ3eWh7ZEQDQ256zOzQ2ldH/
+        zNiNTiP+clN4YjAzqRgqENcOqYKkDue82Up+5D0=
+X-Google-Smtp-Source: ABdhPJxBtMctMZ2FSy/SM0hSNvXMghYRzhYObXWQyWPEWXbR2jnbEHYpfydwBbZo6+51vTDmuc3Po1sBuk5I6P4MSkc=
+X-Received: by 2002:a9d:5190:: with SMTP id y16mr2674164otg.189.1641891599946;
+ Tue, 11 Jan 2022 00:59:59 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <87bl0m14ew.fsf@email.froward.int.ebiederm.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20211210154332.11526-1-brijesh.singh@amd.com> <20211210154332.11526-25-brijesh.singh@amd.com>
+ <cd8f3190-75b3-1fd5-000a-370e6c53f766@intel.com> <20211213154753.nkkxk6w25tdnagwt@amd.com>
+In-Reply-To: <20211213154753.nkkxk6w25tdnagwt@amd.com>
+From:   Chao Fan <fanchao.njupt@gmail.com>
+Date:   Tue, 11 Jan 2022 16:59:49 +0800
+Message-ID: <CAEdG=2VOcMkyRdDRy=L6NJ1728n_jUYWv_W6Y0-GaHStgGfsLw@mail.gmail.com>
+Subject: Re: [PATCH v8 24/40] x86/compressed/acpi: move EFI system table
+ lookup to helper
+To:     Michael Roth <michael.roth@amd.com>
+Cc:     Dave Hansen <dave.hansen@intel.com>, fanc.fnst@cn.fujitsu.com,
+        j-nomura@ce.jp.nec.com, bp@suse.de,
+        Brijesh Singh <brijesh.singh@amd.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
+        tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-08.01.2022 21:13, Eric W. Biederman пишет:
-> Dmitry Osipenko <digetx@gmail.com> writes:
-> 
->> 05.01.2022 22:58, Eric W. Biederman пишет:
->>>
->>> I have not yet been able to figure out how to run gst-pluggin-scanner in
->>> a way that triggers this yet.  In truth I can't figure out how to
->>> run gst-pluggin-scanner in a useful way.
->>>
->>> I am going to set up some unit tests and see if I can reproduce your
->>> hang another way, but if you could give me some more information on what
->>> you are doing to trigger this I would appreciate it.
->>
->> Thanks, Eric. The distro is Arch Linux, but it's a development
->> environment where I'm running latest GStreamer from git master. I'll try
->> to figure out the reproduction steps and get back to you.
-> 
-> Thank you.
-> 
-> Until I can figure out why this is causing problems I have dropped the
-> following two patches from my queue:
->  signal: Make SIGKILL during coredumps an explicit special case
->  signal: Drop signals received after a fatal signal has been processed
-> 
-> I have replaced them with the following two patches that just do what
-> is needed for the rest of the code in the series:
->  signal: Have prepare_signal detect coredumps using
->  signal: Make coredump handling explicit in complete_signal
-> 
-> Perversely my failure to change the SIGKILL handling when coredumps are
-> happening proves to me that I need to change the SIGKILL handling when
-> coredumps are happening to make the code more maintainable.
+Hi, I am this Chao Fan, and <fanc.fnst@cn.fujitsu.com> won't be used again.
+Please add me with fanchao.njupt@gmail.com
+Many thanks.
 
-Eric, thank you again. I started to look at the reproduction steps and
-haven't completed it yet. Turned out the problem affects only older
-NVIDIA Tegra2 Cortex-A9 CPU that lacks support of ARM NEON instructions
-set, hence the problem isn't visible on x86 and other CPUs out of the
-box. I'll need to check whether the problem could be simulated on all
-arches or maybe it's specific to VFP exception handling of ARM32.
+Thanks,
+Chao Fan
+
+Michael Roth <michael.roth@amd.com> =E4=BA=8E2021=E5=B9=B412=E6=9C=8814=E6=
+=97=A5=E5=91=A8=E4=BA=8C 11:46=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Fri, Dec 10, 2021 at 10:54:35AM -0800, Dave Hansen wrote:
+> > On 12/10/21 7:43 AM, Brijesh Singh wrote:
+> > > +/*
+> > > + * Helpers for early access to EFI configuration table
+> > > + *
+> > > + * Copyright (C) 2021 Advanced Micro Devices, Inc.
+> > > + *
+> > > + * Author: Michael Roth <michael.roth@amd.com>
+> > > + */
+> >
+> > It doesn't seem quite right to slap this copyright on a file that's ful=
+l
+> > of content that came from other files.  It would be one thing if
+> > arch/x86/boot/compressed/acpi.c had this banner in it already.  Also, a
+>
+> Yah, acpi.c didn't have any copyright banner so I used my 'default'
+> template for new files here to cover any additions, but that does give
+> a misleading impression.
+>
+> I'm not sure how this is normally addressed, but I'm planning on just
+> continuing the acpi.c tradition of *not* adding copyright notices for new
+> code, and simply document that the contents of the file are mostly moveme=
+nt
+> from acpi.c
+>
+> > arch/x86/boot/compressed/acpi.c had this banner in it already.  Also, a
+> > bunch of the lines in this file seem to come from:
+> >
+> >       commit 33f0df8d843deb9ec24116dcd79a40ca0ea8e8a9
+> >       Author: Chao Fan <fanc.fnst@cn.fujitsu.com>
+> >       Date:   Wed Jan 23 19:08:46 2019 +0800
+>
+> AFAICT the full author list for the changes in question are, in
+> alphabetical order:
+>
+>   Chao Fan <fanc.fnst@cn.fujitsu.com>
+>   Junichi Nomura <j-nomura@ce.jp.nec.com>
+>   Borislav Petkov <bp@suse.de>
+>
+> Chao, Junichi, Borislav,
+>
+> If you would like to be listed as an author in efi.c (which is mainly jus=
+t a
+> movement of EFI config table parsing code from acpi.c into re-usable help=
+er
+> functions in efi.c), please let me know and I'll add you.
+>
+> Otherwise, I'll plan on adopting the acpi.c precedent for this as well, w=
+hich
+> is to not list individual authors, since it doesn't seem right to add Aut=
+hor
+> fields retroactively without their permission.
