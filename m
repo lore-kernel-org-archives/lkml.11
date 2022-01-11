@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5072C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 01:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE80C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 01:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346357AbiAKBZK (ORCPT
+        id S1346424AbiAKBZS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 20:25:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45056 "EHLO
+        Mon, 10 Jan 2022 20:25:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346265AbiAKBY6 (ORCPT
+        with ESMTP id S1346297AbiAKBZA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 20:24:58 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6634C06175A;
-        Mon, 10 Jan 2022 17:24:51 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id w26so4104506wmi.0;
-        Mon, 10 Jan 2022 17:24:51 -0800 (PST)
+        Mon, 10 Jan 2022 20:25:00 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC6CC061751;
+        Mon, 10 Jan 2022 17:24:58 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id v6so30028683wra.8;
+        Mon, 10 Jan 2022 17:24:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZMPDzSjQOrUNWqC2VSg8brQGgBuhUXpA3LowQDg7QLw=;
-        b=dRBROPBBDXjlIatKXI1B/6UOMPn5j/DxUxs0wV1kKWQnhHArRMCPXW6LJRB3bD2/KS
-         4z3aWKZQ4e2KS3IqGQEqxXhjM5VG6leJ0p1arNRxy3bwT+FnzyW9gHGt7xScqIPfKCLP
-         4yzD1DaSu9UP1d97toJ5sBNbCC7lhSp02ch7PdR9+7koi/UA0zmyKa419XoXOVqEQhb6
-         wwy/vNOlCVHw/6TnvEujzSC5uzuhX28egYD+Sd1HA4tApHEwWt1wKPe6C55NjxMJG0dK
-         VndFaLpK0GHp1gHLjPlPgRpNaAO1oY+SZsTi8zw+KyJ0K7f3vvlgbx0Kj0ANLW/15vwG
-         PS8A==
+        bh=cLHZNKxSVLlIqt82iN+00oFOdp+Zw3lomAl6fzMW3gQ=;
+        b=E97YACHjCfA9o7nbBNMoNuGTlk5ww1E/pGt2T80i6nTf4voJ2+m973msMByvGKfZCg
+         /r6Ed2lI9aPTOLEvnqghjaiORTGYlmiuSRHrcfmihkwlN8klBoSoE0zINvH7S+6C26pd
+         LJxNq5+VJWLOGrUpynL3eY6qvEUM4MlKIPDH5L/aPvv5EGMUgl7mRnbCg1jARTmCNGqN
+         30SNuXC8K9Fhf8i6+FcOx01SAVQEnkd9kdhqD76voNUgqV5JsFkAxugZ8cqQkvsUdZM6
+         ZwacmybXvQzyv+lfOe8r6IRu1+SbFNy9ZnuyR+eNqhOIwofkSlwkB75efOAJxLALBSrm
+         kuwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZMPDzSjQOrUNWqC2VSg8brQGgBuhUXpA3LowQDg7QLw=;
-        b=NegXgMZNikzkjf+2L7PeTO6Y/p04GJgc0t9ApzWwlvpli3h0/f+gQEUOtgkXw0yPLc
-         ugu5xG+BA1fUWgACGhZq3Bgz7pt5rsLh6lGIp95dWkFt4Kw8nV787yWt/PjNhf3zFTGu
-         xUNuOJkE8WED3iRweTAL11exfgRovIZtIh7KhsDmrVKY5nJ5wludvJR+ByFklD15ZSG0
-         1YXBErF71WDmiU8tw0FSGGqNekHZ5NJervWsDs0lbwhPzxI6AP3AKfExhviQDwO+ddb+
-         thGxgrmxkCaDEccpJ8a8j2yd+zLksK96bBtK9VSw0DcgJVcfC6SDMW3TX4dje0jbwelI
-         /j6g==
-X-Gm-Message-State: AOAM530h9RKgC8yh4R3RdiGDuI25N4dH7NyO0t0SSAlTKFQoEoGBNMXi
-        x92r5QMlAcFJsdvN8hOwO/WJssTS1Rc=
-X-Google-Smtp-Source: ABdhPJwZQMIAah5MNkGLIHGtWLlMBOSlkCIxtcWgoT3edWp8cvUpZyvRGSIrY4RDJjA8yh2Tv0RIcw==
-X-Received: by 2002:a1c:f20e:: with SMTP id s14mr326748wmc.186.1641864290249;
-        Mon, 10 Jan 2022 17:24:50 -0800 (PST)
+        bh=cLHZNKxSVLlIqt82iN+00oFOdp+Zw3lomAl6fzMW3gQ=;
+        b=3lDCfBnpJuAaL8LD9SvM8hg8LB1nExcq4RHZxGW9v1wPDSDuulJBFAyD2aFO9ZH92I
+         L93j0k8hOxREYiGlmB63y5whIBv3p5268ShZVQf18yJ8iK1PjRrenwuW3x6vHgp20RE7
+         X2Md/JmOF7wLE6yJptiMvj2LN2+TAlOoi6waPDkgjVSlD5sid0xikYUdPKpqOXlo3w2X
+         Zf2Q1PZnNkfNcQb/9BjshhjA670dPX6Rwi9a4k+vyZ5lq4kFDQPdmRE39zptTV8QSlHb
+         KqdlmugY3C2xH+gjDxbvpbrb+qJg4NasDkMOC9K2GAgtGkWk1Ylg8dEk+pVwvmgsjfbk
+         NuRA==
+X-Gm-Message-State: AOAM530kgevx0dVPsIVDk3B+qVa6WMernXVcEP01i3Wulkaj0vWk2N/r
+        yanXUkSO1VaugNzTOcijOzJ6PQYQBN8=
+X-Google-Smtp-Source: ABdhPJycmpPYwVnA2PBfXK/arNpJX02Fu1XAxJuzT/SY1+MVe/Q1mQCyMv4OBHocREiUHjedv1S+9g==
+X-Received: by 2002:a05:6000:1866:: with SMTP id d6mr1702705wri.704.1641864297269;
+        Mon, 10 Jan 2022 17:24:57 -0800 (PST)
 Received: from 127.0.0.1localhost ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.49
+        by smtp.gmail.com with ESMTPSA id i8sm709886wru.26.2022.01.10.17.24.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 17:24:49 -0800 (PST)
+        Mon, 10 Jan 2022 17:24:57 -0800 (PST)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -58,9 +58,9 @@ Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH 07/14] ipv6: pass flow in ip6_make_skb together with cork
-Date:   Tue, 11 Jan 2022 01:21:39 +0000
-Message-Id: <eae1be625797e0323e3e1e82b44cc0d716e2fcc9.1641863490.git.asml.silence@gmail.com>
+Subject: [PATCH 14/14] net: inline sock_alloc_send_skb
+Date:   Tue, 11 Jan 2022 01:21:47 +0000
+Message-Id: <00f1789794462df0bd2f23bd9672cc7ddc740494.1641863490.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1641863490.git.asml.silence@gmail.com>
 References: <cover.1641863490.git.asml.silence@gmail.com>
@@ -70,139 +70,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Another preparation patch. inet_cork_full already contains a field for
-iflow, so we can avoid passing a separate struct iflow6 into
-__ip6_append_data() and ip6_make_skb(), and use the flow stored in
-inet_cork_full. Make sure callers set cork->fl right, i.e. we init it in
-ip6_append_data() and right before the only ip6_make_skb() call.
+sock_alloc_send_skb() is simple and just proxying to another function,
+so we can inline it and cut associated overhead.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/net/ipv6.h    |  2 +-
- net/ipv6/ip6_output.c | 20 +++++++++-----------
- net/ipv6/udp.c        |  4 +++-
- 3 files changed, 13 insertions(+), 13 deletions(-)
+ include/net/sock.h | 10 ++++++++--
+ net/core/sock.c    |  7 -------
+ 2 files changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index 3afcb128e064..5e0b56d66724 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -1020,7 +1020,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
- 			     void *from, int length, int transhdrlen,
--			     struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
-+			     struct ipcm6_cookie *ipc6,
- 			     struct rt6_info *rt, unsigned int flags,
- 			     struct inet_cork_full *cork);
- 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index 62da09819750..0cc490f2cfbf 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1350,7 +1350,7 @@ static void ip6_append_data_mtu(unsigned int *mtu,
- 
- static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 			  struct inet6_cork *v6_cork, struct ipcm6_cookie *ipc6,
--			  struct rt6_info *rt, struct flowi6 *fl6)
-+			  struct rt6_info *rt)
- {
- 	struct ipv6_pinfo *np = inet6_sk(sk);
- 	unsigned int mtu;
-@@ -1391,7 +1391,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- 	}
- 	dst_hold(&rt->dst);
- 	cork->base.dst = &rt->dst;
--	cork->fl.u.ip6 = *fl6;
- 	v6_cork->hop_limit = ipc6->hlimit;
- 	v6_cork->tclass = ipc6->tclass;
- 	if (rt->dst.flags & DST_XFRM_TUNNEL)
-@@ -1422,7 +1421,6 @@ static int ip6_setup_cork(struct sock *sk, struct inet_cork_full *cork,
- }
- 
- static int __ip6_append_data(struct sock *sk,
--			     struct flowi6 *fl6,
- 			     struct sk_buff_head *queue,
- 			     struct inet_cork_full *cork_full,
- 			     struct inet6_cork *v6_cork,
-@@ -1434,6 +1432,7 @@ static int __ip6_append_data(struct sock *sk,
- {
- 	struct sk_buff *skb, *skb_prev = NULL;
- 	struct inet_cork *cork = &cork_full->base;
-+	struct flowi6 *fl6 = &cork_full->fl.u.ip6;
- 	unsigned int maxfraglen, fragheaderlen, mtu, orig_mtu, pmtu;
- 	struct ubuf_info *uarg = NULL;
- 	int exthdrlen = 0;
-@@ -1786,19 +1785,19 @@ int ip6_append_data(struct sock *sk,
- 		 * setup for corking
- 		 */
- 		err = ip6_setup_cork(sk, &inet->cork, &np->cork,
--				     ipc6, rt, fl6);
-+				     ipc6, rt);
- 		if (err)
- 			return err;
- 
-+		inet->cork.fl.u.ip6 = *fl6;
- 		exthdrlen = (ipc6->opt ? ipc6->opt->opt_flen : 0);
- 		length += exthdrlen;
- 		transhdrlen += exthdrlen;
- 	} else {
--		fl6 = &inet->cork.fl.u.ip6;
- 		transhdrlen = 0;
- 	}
- 
--	return __ip6_append_data(sk, fl6, &sk->sk_write_queue, &inet->cork,
-+	return __ip6_append_data(sk, &sk->sk_write_queue, &inet->cork,
- 				 &np->cork, sk_page_frag(sk), getfrag,
- 				 from, length, transhdrlen, flags, ipc6);
- }
-@@ -1967,9 +1966,8 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 			     int getfrag(void *from, char *to, int offset,
- 					 int len, int odd, struct sk_buff *skb),
- 			     void *from, int length, int transhdrlen,
--			     struct ipcm6_cookie *ipc6, struct flowi6 *fl6,
--			     struct rt6_info *rt, unsigned int flags,
--			     struct inet_cork_full *cork)
-+			     struct ipcm6_cookie *ipc6, struct rt6_info *rt,
-+			     unsigned int flags, struct inet_cork_full *cork)
- {
- 	struct inet6_cork v6_cork;
- 	struct sk_buff_head queue;
-@@ -1986,7 +1984,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 	cork->base.opt = NULL;
- 	cork->base.dst = NULL;
- 	v6_cork.opt = NULL;
--	err = ip6_setup_cork(sk, cork, &v6_cork, ipc6, rt, fl6);
-+	err = ip6_setup_cork(sk, cork, &v6_cork, ipc6, rt);
- 	if (err) {
- 		ip6_cork_release(cork, &v6_cork);
- 		return ERR_PTR(err);
-@@ -1994,7 +1992,7 @@ struct sk_buff *ip6_make_skb(struct sock *sk,
- 	if (ipc6->dontfrag < 0)
- 		ipc6->dontfrag = inet6_sk(sk)->dontfrag;
- 
--	err = __ip6_append_data(sk, fl6, &queue, cork, &v6_cork,
-+	err = __ip6_append_data(sk, &queue, cork, &v6_cork,
- 				&current->task_frag, getfrag, from,
- 				length + exthdrlen, transhdrlen + exthdrlen,
- 				flags, ipc6);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 9a91b51d8e3f..2580705431ea 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1533,9 +1533,11 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		struct inet_cork_full cork;
- 		struct sk_buff *skb;
- 
-+		cork.fl.u.ip6 = fl6;
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 7b4b4237e6e0..cde35481a152 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -1810,11 +1810,17 @@ int sock_getsockopt(struct socket *sock, int level, int op,
+ 		    char __user *optval, int __user *optlen);
+ int sock_gettstamp(struct socket *sock, void __user *userstamp,
+ 		   bool timeval, bool time32);
+-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+-				    int noblock, int *errcode);
+ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 				     unsigned long data_len, int noblock,
+ 				     int *errcode, int max_page_order);
 +
- 		skb = ip6_make_skb(sk, getfrag, msg, ulen,
- 				   sizeof(struct udphdr), &ipc6,
--				   &fl6, (struct rt6_info *)dst,
-+				   (struct rt6_info *)dst,
- 				   msg->msg_flags, &cork);
- 		err = PTR_ERR(skb);
- 		if (!IS_ERR_OR_NULL(skb))
++static inline struct sk_buff *sock_alloc_send_skb(struct sock *sk,
++						  unsigned long size,
++						  int noblock, int *errcode)
++{
++	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
++}
++
+ void *sock_kmalloc(struct sock *sk, int size, gfp_t priority);
+ void sock_kfree_s(struct sock *sk, void *mem, int size);
+ void sock_kzfree_s(struct sock *sk, void *mem, int size);
+diff --git a/net/core/sock.c b/net/core/sock.c
+index e21485ab285d..25a266a429d4 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -2592,13 +2592,6 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ }
+ EXPORT_SYMBOL(sock_alloc_send_pskb);
+ 
+-struct sk_buff *sock_alloc_send_skb(struct sock *sk, unsigned long size,
+-				    int noblock, int *errcode)
+-{
+-	return sock_alloc_send_pskb(sk, size, 0, noblock, errcode, 0);
+-}
+-EXPORT_SYMBOL(sock_alloc_send_skb);
+-
+ int __sock_cmsg_send(struct sock *sk, struct msghdr *msg, struct cmsghdr *cmsg,
+ 		     struct sockcm_cookie *sockc)
+ {
 -- 
 2.34.1
 
