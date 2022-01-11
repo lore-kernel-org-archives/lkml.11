@@ -2,75 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AFE9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D589FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238779AbiAKOBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 09:01:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiAKOBW (ORCPT
+        id S238981AbiAKOCk convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 09:02:40 -0500
+Received: from mail-qt1-f180.google.com ([209.85.160.180]:37725 "EHLO
+        mail-qt1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238129AbiAKOCj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 09:01:22 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5106C06173F;
-        Tue, 11 Jan 2022 06:01:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=LF/mpBO5j1rUYISJ5kTuyMtADrx3r6gpROrYNypLtkw=; b=ve3hDqC3IqQ2LgppYwfdzXoY6L
-        94cU5qrji9ovRx53/JbeLkUzFgUGK/W5Ml4v53FUWv9U64eXrdTIFJjrlU50FtLUjA0HLjJukmRgP
-        oSiTNGxKDnbCl1OcOgro86+aPljLxTeQf7TUyiQldEqqNwih2GdrvLilg3TIf1m0UOaQlpNfJ6nz4
-        GTzVHHf8oeSCEvM4W5SHosSz4c7kAW9OtkN3pugOIguBCf4/YzktoWpU0xZpi/4EWan+TDW8LS2zQ
-        v8KaAtChv4JZF7/TsQ3TVSBIKkMEb48fzI/9DBiN0KYxGZc2Rx9IVODfiXezpHiOc0ns/oOiiS7I5
-        TCQdL+ag==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7Hi9-003Ipl-Pe; Tue, 11 Jan 2022 14:01:17 +0000
-Date:   Tue, 11 Jan 2022 14:01:17 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev
-Subject: Re: Phyr Starter
-Message-ID: <Yd2NraXh3ka8PdrQ@casper.infradead.org>
-References: <YdyKWeU0HTv8m7wD@casper.infradead.org>
- <82989486-3780-f0aa-c13d-994e97d4ac89@nvidia.com>
+        Tue, 11 Jan 2022 09:02:39 -0500
+Received: by mail-qt1-f180.google.com with SMTP id c15so18163311qtc.4;
+        Tue, 11 Jan 2022 06:02:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XuRUuLBL0LO4l/7Vzw5hsRxoKoTaJt1gWWvfirCSVGU=;
+        b=W61eZWziCTqZnpxJyizO7pYL+8iEgY99XsuvrURS/mgfP+S/+mfNPgnpn2zrEt3vVi
+         V/UqREa9urncP23/VS6fGQEfXFJ9z6ScEjfcqnle/qk5DrPewfKlMKi7ZgxbJJceDwJt
+         AcQ3A6i3zlDaQoj5q9oQoI6Y5htg+324vSUA6R7YCx49IWDZ2m8uwb9Iax5a0UuMl5p0
+         KW+9sSOHirz6EAgqzUhzHzd2FwYLLrgzlVawgkgDo9PWSPHpb2OtHEwZKUxK0T8Hq1s5
+         F52gxH3nboC/ZPW0qErirs1SsEimSg0jY7cg1wCUHgpc0LAfxhqc7NNw7Z+38KwXHcG7
+         vgSg==
+X-Gm-Message-State: AOAM532VJDEFUEl/CGpIqoqU3XDHQH4wZjdBM1/GaZHpX3vdXiMhToB4
+        g9fMSo+Xf6AncZCuAuKdR3wIte1Pl7izaF3DrSc=
+X-Google-Smtp-Source: ABdhPJzXA7cm/2zBttHyL3oyAnskPD0Lo3P6S49TZ9PZ0l0J7HO3gc8HjpKSmEm4UxxOWKD0TgiTdibTD1Zt+RHCuTk=
+X-Received: by 2002:a05:622a:44e:: with SMTP id o14mr3696357qtx.369.1641909757395;
+ Tue, 11 Jan 2022 06:02:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <82989486-3780-f0aa-c13d-994e97d4ac89@nvidia.com>
+References: <20220110171123.GA60297@bhelgaas> <3f85e298-2e55-2190-21b7-596cfc8388aa@redhat.com>
+In-Reply-To: <3f85e298-2e55-2190-21b7-596cfc8388aa@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 11 Jan 2022 15:02:26 +0100
+Message-ID: <CAJZ5v0gdK1ULNztKE3OARkm46iwz9LUcCYHvOkKsOm3LSx+d8A@mail.gmail.com>
+Subject: Re: [PATCH v6] x86/PCI: Ignore E820 reservations for bridge windows
+ on newer systems
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        =?UTF-8?Q?Krzysztof_Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Myron Stowe <myron.stowe@redhat.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Benoit_Gr=C3=A9goire?= <benoitg@coeus.ca>,
+        Hui Wang <hui.wang@canonical.com>,
+        Stable <stable@vger.kernel.org>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 12:17:18AM -0800, John Hubbard wrote:
-> Zooming in on the pinning aspect for a moment: last time I attempted to
-> convert O_DIRECT callers from gup to pup, I recall wanting very much to
-> record, in each bio_vec, whether these pages were acquired via FOLL_PIN,
-> or some non-FOLL_PIN method. Because at the end of the IO, it is not
-> easy to disentangle which pages require put_page() and which require
-> unpin_user_page*().
-> 
-> And changing the bio_vec for *that* purpose was not really acceptable.
-> 
-> But now that you're looking to change it in a big way (and with some
-> spare bits avaiable...oohh!), maybe I can go that direction after all.
-> 
-> Or, are you looking at a design in which any phyr is implicitly FOLL_PIN'd
-> if it exists at all?
+On Mon, Jan 10, 2022 at 10:25 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 1/10/22 18:11, Bjorn Helgaas wrote:
+> > On Mon, Jan 10, 2022 at 12:41:37PM +0100, Hans de Goede wrote:
+> >> Hi All,
+> >>
+> >> On 12/17/21 15:13, Hans de Goede wrote:
+> >>> Some BIOS-es contain a bug where they add addresses which map to system
+> >>> RAM in the PCI host bridge window returned by the ACPI _CRS method, see
+> >>> commit 4dc2287c1805 ("x86: avoid E820 regions when allocating address
+> >>> space").
+> >>>
+> >>> To work around this bug Linux excludes E820 reserved addresses when
+> >>> allocating addresses from the PCI host bridge window since 2010.
+> >>>
+> >>> Recently (2019) some systems have shown-up with E820 reservations which
+> >>> cover the entire _CRS returned PCI bridge memory window, causing all
+> >>> attempts to assign memory to PCI BARs which have not been setup by the
+> >>> BIOS to fail. For example here are the relevant dmesg bits from a
+> >>> Lenovo IdeaPad 3 15IIL 81WE:
+> >>>
+> >>>  [mem 0x000000004bc50000-0x00000000cfffffff] reserved
+> >>>  pci_bus 0000:00: root bus resource [mem 0x65400000-0xbfffffff window]
+> >>>
+> >>> The ACPI specifications appear to allow this new behavior:
+> >>>
+> >>> The relationship between E820 and ACPI _CRS is not really very clear.
+> >>> ACPI v6.3, sec 15, table 15-374, says AddressRangeReserved means:
+> >>>
+> >>>   This range of addresses is in use or reserved by the system and is
+> >>>   not to be included in the allocatable memory pool of the operating
+> >>>   system's memory manager.
+> >>>
+> >>> and it may be used when:
+> >>>
+> >>>   The address range is in use by a memory-mapped system device.
+> >>>
+> >>> Furthermore, sec 15.2 says:
+> >>>
+> >>>   Address ranges defined for baseboard memory-mapped I/O devices, such
+> >>>   as APICs, are returned as reserved.
+> >>>
+> >>> A PCI host bridge qualifies as a baseboard memory-mapped I/O device,
+> >>> and its apertures are in use and certainly should not be included in
+> >>> the general allocatable pool, so the fact that some BIOS-es reports
+> >>> the PCI aperture as "reserved" in E820 doesn't seem like a BIOS bug.
+> >>>
+> >>> So it seems that the excluding of E820 reserved addresses is a mistake.
+> >>>
+> >>> Ideally Linux would fully stop excluding E820 reserved addresses,
+> >>> but then the old systems this was added for will regress.
+> >>> Instead keep the old behavior for old systems, while ignoring
+> >>> the E820 reservations for any systems from now on.
+> >>>
+> >>> Old systems are defined here as BIOS year < 2018, this was chosen to make
+> >>> sure that E820 reservations will not be used on the currently affected
+> >>> systems, while at the same time also taking into account that the systems
+> >>> for which the E820 checking was originally added may have received BIOS
+> >>> updates for quite a while (esp. CVE related ones), giving them a more
+> >>> recent BIOS year then 2010.
+> >>>
+> >>> BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=206459
+> >>> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1868899
+> >>> BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1871793
+> >>> BugLink: https://bugs.launchpad.net/bugs/1878279
+> >>> BugLink: https://bugs.launchpad.net/bugs/1931715
+> >>> BugLink: https://bugs.launchpad.net/bugs/1932069
+> >>> BugLink: https://bugs.launchpad.net/bugs/1921649
+> >>> Cc: Benoit Grégoire <benoitg@coeus.ca>
+> >>> Cc: Hui Wang <hui.wang@canonical.com>
+> >>> Cc: stable@vger.kernel.org
+> >>> Reviewed-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+> >>> Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> >>> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> >>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> >>> ---
+> >>> Changes in v6:
+> >>> - Remove the possibility to change the behavior from the commandline
+> >>>   because of worries that users may use this to paper over other problems
+> >>
+> >> ping ?
+> >
+> > Thanks, Hans.  Maybe I'm quixotic, but I'm still hoping for an
+> > approach based on firmware behavior instead of firmware date.  If
+> > nobody else tries, I will eventually try myself, but I don't have any
+> > ETA.
+>
+> I really do NOT see how doing a better approach later blocks
+> merging the date based fix now ?
+>
+> The date based approach can simply be replaced by any better
+> solution later.
 
-That.  I think there's still good reasons to keep a single-page (or
-maybe dual-page) GUP around, but no reason to mix it with ranges.
+Agreed.
 
-> Or any other thoughts in this area are very welcome.
+> Can we please merge the date based approach now so peoples broken
+> systems get fixed now, rather then at some unknown later time ?
 
-That's there's no support for unpinning part of a range.  You pin it,
-do the IO, unpin it.  That simplifies the accounting.
-
+OK, I'll queue it up.  Thanks!
