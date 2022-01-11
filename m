@@ -2,164 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2F69C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 589DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbiAKUwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 15:52:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235228AbiAKUwE (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 15:52:04 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 321DEC028BEF;
-        Tue, 11 Jan 2022 12:51:43 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id o3so436905wrh.10;
-        Tue, 11 Jan 2022 12:51:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=XsmDxnCmqgTxDyNS30YCzdo9ghvlXMe30S1Vu2XW6pA=;
-        b=XmLwRH8rQDlvIfMWQoNeqlHsHbJr3QflEMhvJzmk49sfMHRl7UM9dVu+NbrQS+NG+o
-         YuMiG/nFJ2sl/N4IwwprPSpZ5dY/NkFAyWhEKVVDfe8cg8y/ENddcsyusXIU8jHUTCOw
-         iqNSeGvW9sPeU69+8PH1NpLftafibuh74nHyuTOvHnnnQD9ve21dYznDCXZAcgqKIGHx
-         /hq501ZyX/u1kkWqUBQSkjTEa/Om45Mxaz/t4jaUzmRg6iyX0QUJ5rZgbPkRe+z6elsQ
-         iNNwUSRfl/sdApnW+hnIbYn/cMKKAi1ghOAbxlc73XTHecDhGnbTEr8nbjKuYwc3UtAx
-         w7BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=XsmDxnCmqgTxDyNS30YCzdo9ghvlXMe30S1Vu2XW6pA=;
-        b=ZI/Fob+NjqCRg+9pPcgRjstym2CRRKmqDbNqYgRsnKlNq5ULo3VnmpmJmbrng9S0sr
-         66t4wh7peoRCPIXhGIse2cvxB68Ftv59HZ3qZDyqIotfB77b1Bwix6p6+JLnNrIUOtMq
-         zWz/HsI0ElH7duqt+T94gBZve1r9n3v6bOPiIVqn07Qp/FmsI7iAeECLOi93ABb3QYkK
-         hvdYO3Nn60woFvZadINxY2oAhi4sCiCYuk1w3JFD/Qxj0Kulm84QIfu2WWQKdwjyPAmB
-         EYit58UmQ+Z/SAym/HyqHp4aB8OsADQl6hKg0vFTrBl5bFqu+t/SNVAgkOESc2/lvH5k
-         REww==
-X-Gm-Message-State: AOAM532ac7BssfzMwLsDDJ86TKc78bG8T0SpfYyLY9pwf+yTakS3Z5cM
-        NyKXSeHXwwGWkseysOqwJis=
-X-Google-Smtp-Source: ABdhPJyc1m4l/BAJ5VYwYFruoGf1pbhMkcAMYjttL7V832KUi/rbuA0MyhIG35kSGQS4gVl5uRXbGA==
-X-Received: by 2002:a5d:64c3:: with SMTP id f3mr5224559wri.155.1641934301765;
-        Tue, 11 Jan 2022 12:51:41 -0800 (PST)
-Received: from [192.168.8.198] ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id j11sm3921394wmq.23.2022.01.11.12.51.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 12:51:41 -0800 (PST)
-Message-ID: <d9714712-075f-17af-b4f0-67f82178abae@gmail.com>
-Date:   Tue, 11 Jan 2022 20:48:12 +0000
+        id S237067AbiAKUxA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 15:53:00 -0500
+Received: from mail-am6eur05on2040.outbound.protection.outlook.com ([40.107.22.40]:3659
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233848AbiAKUwi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 15:52:38 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bpu/E16fEci5SHRxFq2m36+tXPayPnolXP6Sg5Y9bjiuxNWoRkQVaxW0x7mWkmqm2+9WlSf8zvVbhcHnW/APndXUmycEsmoa7IShQdSXskAIt9ky634MzSNw7EBUf50MgiFLF6kEcx+tzltCwmCIiVmJ0guIZ1xlL2i/xCsYJvad0gePurhKo7/pbI95zEXTpbSpdkrEcfDQur4JDVlS0I+ocNNyWAF0aEjoisur0U61WT+WGxj9HVvvFEtFR9IXXOqGawyX+VGECnqcelNGm2ODrkNO1H3ynIka8RqGZopkoYb3Hpf7WSJiAZwkT6dT6VvcPyTIoLRCmOVtEpz4fA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c9ilmMalg7qeO/FkMkpcTs40jVEoTK135MkmeOviZWU=;
+ b=lzxGHGkSMEogaz0rVsML3mVO4hWJVgzoBI4eskC9TF5CY7nPhBue5HRPD28iiUfLdJkMimjDccKLhItlKlk1Cj3gq6gm3E/qHOPuVlCTIcDyqYlfdPqGLU0Zm9VZw1TN5xuxIXaWEtim55FDImAe6PMpz4bwiYCyRF2DOm7SdXYnanuFhkmgv/FrN8Z0/ndzgaXHNmBZBteopT6/ygej0GoUXxr1bh8Skwc64pTHT5QLSaMlDbw6XKU+43+DeElk5PqblOc46vH7izohlsltTuTB365aOi6s4XEZvhExWXr7/ouV+vNTVy4i5kEdncWDIgHYkMH0BiGdJiGPRd5Kww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c9ilmMalg7qeO/FkMkpcTs40jVEoTK135MkmeOviZWU=;
+ b=npx9JhV5JUBsms3kdAmrcD4TGEIdjYahVFZI3ZuTlRn/bKgi0h51iZCzn8KK7d15mPPcMOyJSWCDsWWxK2voOrtRoj2yRGObwbbTkHLiOZueSEEK6zcBr/oFY90gPziPJITHZJbIUSvfeg49q+qqWBHu0k3i7754+v0aI4rpKvs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
+ by VI1PR04MB6014.eurprd04.prod.outlook.com (2603:10a6:803:c9::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Tue, 11 Jan
+ 2022 20:52:32 +0000
+Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::f853:4e9a:7ab6:dbf7]) by VI1PR04MB4688.eurprd04.prod.outlook.com
+ ([fe80::f853:4e9a:7ab6:dbf7%5]) with mapi id 15.20.4867.011; Tue, 11 Jan 2022
+ 20:52:32 +0000
+Date:   Tue, 11 Jan 2022 22:52:29 +0200
+From:   Abel Vesa <abel.vesa@nxp.com>
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     Stephen Boyd <sboyd@kernel.org>, linux-imx@nxp.com,
+        mturquette@baylibre.com, robh+dt@kernel.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, kernel@pengutronix.de, festevam@gmail.com,
+        ulf.hansson@linaro.org, aisheng.dong@nxp.com, stefan@agner.ch,
+        linus.walleij@linaro.org, gregkh@linuxfoundation.org,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, adrian.hunter@intel.com,
+        jirislaby@kernel.org, giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v7 5/7] clk: imx: Add initial support for i.MXRT1050
+ clock driver
+Message-ID: <Yd3uDSAwQMoNz8e3@abelvesa>
+References: <20220103233948.198119-1-Mr.Bossman075@gmail.com>
+ <20220103233948.198119-6-Mr.Bossman075@gmail.com>
+ <20220105235157.8ED80C36AEB@smtp.kernel.org>
+ <89046151-e44e-6828-ad76-8574fba4fca8@gmail.com>
+ <20220110201201.C1E37C36AE9@smtp.kernel.org>
+ <Ydy3qvT5w6IWnR7s@abelvesa>
+ <baa991a5-31d8-80fb-faf0-b443626030d4@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <baa991a5-31d8-80fb-faf0-b443626030d4@gmail.com>
+X-ClientProxiedBy: VI1PR09CA0076.eurprd09.prod.outlook.com
+ (2603:10a6:802:29::20) To VI1PR04MB4688.eurprd04.prod.outlook.com
+ (2603:10a6:803:6a::30)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 13/14] net: inline part of skb_csum_hwoffload_help
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <cover.1641863490.git.asml.silence@gmail.com>
- <0bc041d2d38a08064a642c05ca8cceb0ca165f88.1641863490.git.asml.silence@gmail.com>
- <918a937f6cef44e282353001a7fbba7a@AcuMS.aculab.com>
- <25f5ba09-a54c-c386-e142-7b7454f1d8d4@gmail.com>
- <f2e3693ec8d1498aa376f72ebd49e058@AcuMS.aculab.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <f2e3693ec8d1498aa376f72ebd49e058@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d6d18511-0394-43e2-aad3-08d9d5444978
+X-MS-TrafficTypeDiagnostic: VI1PR04MB6014:EE_
+X-Microsoft-Antispam-PRVS: <VI1PR04MB6014947C2FDAECB370D69EACF6519@VI1PR04MB6014.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2btoxZG/BcgvCWcrH13NI1/tQi93jodcfwlrKU31mNuSPMHQu0deROeAOVkomwWOwP7ZhRCkoPfv9dfIi7PLYHPGPFp6lkQNGIPOwNDV4PvjVXbHl2+pd8WeqFgxnPEzj45yGugc/T87h1hIAkJqHLGA62EJBJvA3m7VLHcUJRikPGPt/Y5vfxMTd5YM1yzwU24q/umeqFLc2tzOSLV20hahSFP5blRsDegIy0jUMA1H0GmcF1IUQbSr/Lb9lQ07Vmq9P0CuxGVMca+0LwO5wF62l3OOJy8XIUnisdUZdWKmXzXoV6BtKg2wKDzIaFRuzGPEz8qNNYL5xMxUZunEN6H7k7/W/+2UTDw85F5WIUPSEHgTHxnOP92bidCzzsIxT9M4dWUyJ2neS+9+FHjyqEb2U8EHPhI4MAz58xjRaNJvIlSZQMR3oaS+WW0DXQ59QvMLc69cg8FgGmaKe7zz99zoJEStIEXQmpz+kuOF+6YlLFHxSGuH1g4sZ/ioKvcH1zwidJvOpIWeHLXzKUySlgjBngqV5/aYKUpWvIK+YvXtTZ+yMcoibZDlaktXaCe642JsY2UXz8KC39i/gcg7+fq54llD1qZl6WVz9UFtTeHvD1uCVcJfyc0SAco3igsoPF5L04Zswr8ZDgTvwy6zEfZEy2TFWk3LI2sLFsfnXAxM49bj2J0qYBOL2HZbAOebnP2m6NE4ZjD1ix6xOwh/4g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(33716001)(6506007)(53546011)(8676002)(6512007)(38100700002)(316002)(5660300002)(4326008)(6666004)(2906002)(38350700002)(508600001)(6916009)(9686003)(26005)(7416002)(66946007)(186003)(83380400001)(86362001)(66476007)(66556008)(6486002)(52116002)(8936002)(44832011);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Dc72J8SdP8XBRyPAD+H/7Rk+l2Q3qzK4bAEBtEnh2pQIcb+m0ARy+A0nLSlp?=
+ =?us-ascii?Q?D6hC5SvQzG9k6Iv50tjkdnC4BCXQYwZl++ruARRQxDD/18FSEfjZA/iyvtdC?=
+ =?us-ascii?Q?PX6HDNiDlLOQ3jCXAdYM2qSRbAQ0rascawSZkhGRqK7J9FpFbsm41HDcw4+l?=
+ =?us-ascii?Q?GHtUMnb7OxU9grbOEV/aJedkfoG4HPqAMpJpLkSrHeUFMid8fPxTGNGE0Xmg?=
+ =?us-ascii?Q?R7MV3RYrv7nIEoexeGPq18v5OgDsUquJmz1WHnrlozoMGfh+kA2hichLcxwO?=
+ =?us-ascii?Q?XCiEis/YCxajQc9j5i1aNb+ZjMqC2yX5KhuHEkTTDLeo7U7zzCmBFRxKnTOE?=
+ =?us-ascii?Q?vEKlcA+fSFmoG/+lD83uHj+ojf+UZ7UkRE+Cwk1pHtE9q0ivlv2Nk2vKgPyE?=
+ =?us-ascii?Q?kyJgKnE8OgnwLPAy/Yq03Z0sOREB/egJ707s8yDu3U6jkqokFfMcsOwoqBGC?=
+ =?us-ascii?Q?OGYOGRcRaMSnrekDADMTWJ1UVgmBNV3rk+77ZMCBSjIteJhwNXOKbqIoOJt+?=
+ =?us-ascii?Q?/HSJJUzHPZqjK181Ht1xTHFwOOk35fN15pmI67b4u48TWwR8daYodeEmzuSn?=
+ =?us-ascii?Q?xe19LWaO+m49KwN9CL6QsClaJQPH9d+zbw2o7gF9n7awriBwzP8yKtMI5w4N?=
+ =?us-ascii?Q?u7bbhsLrW7SjAnPP7D8iGWE2owy4bjDKJl6qnWpBECy3XQyjhasXk311PM5x?=
+ =?us-ascii?Q?oCJzgoWlofeZFN5ATHnGAspaXtoCq9AecqEhSWeHvh7wOTtNek5irBMaLN5u?=
+ =?us-ascii?Q?Byou7Mbk5ip5tnQWM5QHtG4EF45+U/hZlc1yTPzD3M26ck9BLqsNhhi7t37a?=
+ =?us-ascii?Q?G7kJMILHvg6lGgT0/2Mcj11p2oNdqfGTFExs/0mM8AR2Sisr5OciAF6nOwKW?=
+ =?us-ascii?Q?OdtXOahx0i0QgQRfMXFtHK2es9PWRVftFhwQwiHH/mPk7mAUQAJ452J+r2A5?=
+ =?us-ascii?Q?kumVBoIZOcJhK92+5R0F43YTozzoadvh8nBkGAoX/GjqteP6q/50/lyRXlpE?=
+ =?us-ascii?Q?lnifAUZOArBdXQQfT313k9g8A3EvhbeM8Y7fMm6I9u83t3AsDxvlyVAfSLoQ?=
+ =?us-ascii?Q?MancBO4RHcasL308JIdIPO7jOGcH6bSY8Ru1MYclkz5xZMG9Umgc3GuQmVv+?=
+ =?us-ascii?Q?5OaaADgx9j3mCXmD7WZ+4fvsWEoYC6XgqCjwq7mDfJv0zdwC1c6G1Gpjkp41?=
+ =?us-ascii?Q?HlJBZYrAyFhDKm5Ydifv9uLsPvdvREEuFj0bpFHZ4yLEzGCMSCzbaQy0PIcX?=
+ =?us-ascii?Q?eqzAVmEmyvuxJyyLM34h4DblrTMAta83+Kmc8f/RcWHuJtHdQLVxWpXZs1o2?=
+ =?us-ascii?Q?HGbbKwuSIhd38xUp8md4ULWRJALSbsoXt8tdV6B7qHcNbcaIdUO4ruxRnel8?=
+ =?us-ascii?Q?LgesVA/McrJjopUpsnlBqAdZ9gSl6WgFMVnaD+h45zrbk6wzji1G9+KeNfp+?=
+ =?us-ascii?Q?sLCnOkNc4795y0yXbIolKog67/crf+hmMbT9ExSSoqadGzq36pPZXmNE9xp5?=
+ =?us-ascii?Q?nua8OhL4Btna5dTWh5oIfVJ1GcYyKCrgz3aITQfMljqkNTMikbyj0CSv94un?=
+ =?us-ascii?Q?foKm69GcfAfxNQDtjLUzdgX5fHmFwvljFDfpSg3QtyE4fjMG+q2Lj5JAvrDt?=
+ =?us-ascii?Q?szRftQEA+KN4I7oPd7eBl3c=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d6d18511-0394-43e2-aad3-08d9d5444978
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 20:52:31.9429
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uwChWVc8O5/QyF/Fa9sCJNAa5SMfBd4qEAKX8RL51W5a3qEVRKLh2RKQopgq0sNxZ3cnmSlTUDVG7aGHIMyKEA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 17:25, David Laight wrote:
-> From: Pavel Begunkov
->> Sent: 11 January 2022 16:59
->>
->> On 1/11/22 09:24, David Laight wrote:
->>> From: Pavel Begunkov
->>>> Sent: 11 January 2022 01:22
->>>>
->>>> Inline a HW csum'ed part of skb_csum_hwoffload_help().
->>>>
->>>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->>>> ---
->>>>    include/linux/netdevice.h | 16 ++++++++++++++--
->>>>    net/core/dev.c            | 13 +++----------
->>>>    2 files changed, 17 insertions(+), 12 deletions(-)
->>>>
->>>> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->>>> index 3213c7227b59..fbe6c764ce57 100644
->>>> --- a/include/linux/netdevice.h
->>>> +++ b/include/linux/netdevice.h
->>>> @@ -4596,8 +4596,20 @@ void netdev_rss_key_fill(void *buffer, size_t len);
->>>>
->>>>    int skb_checksum_help(struct sk_buff *skb);
->>>>    int skb_crc32c_csum_help(struct sk_buff *skb);
->>>> -int skb_csum_hwoffload_help(struct sk_buff *skb,
->>>> -			    const netdev_features_t features);
->>>> +int __skb_csum_hwoffload_help(struct sk_buff *skb,
->>>> +			      const netdev_features_t features);
->>>> +
->>>> +static inline int skb_csum_hwoffload_help(struct sk_buff *skb,
->>>> +					  const netdev_features_t features)
->>>> +{
->>>> +	if (unlikely(skb_csum_is_sctp(skb)))
->>>> +		return !!(features & NETIF_F_SCTP_CRC) ? 0 :
->>>
->>> If that !! doing anything? - doesn't look like it.
->>
->> It doesn't, but left the original style
+On 22-01-10 19:18:58, Jesse Taube wrote:
 > 
-> It just makes you think it is needed...
 > 
->>>> +			skb_crc32c_csum_help(skb);
->>>> +
->>>> +	if (features & NETIF_F_HW_CSUM)
->>>> +		return 0;
->>>> +	return __skb_csum_hwoffload_help(skb, features);
->>>> +}
->>>
->>> Maybe you should remove some bloat by moving the sctp code
->>> into the called function.
->>> This probably needs something like?
->>>
->>> {
->>> 	if (features & NETIF_F_HW_CSUM && !skb_csum_is_sctp(skb))
->>> 		return 0;
->>> 	return __skb_csum_hw_offload(skb, features);
->>> }
->>
->> I don't like inlining that sctp chunk myself. It seems your way would
->> need another skb_csum_is_sctp() in __skb_csum_hw_offload(), if so I
->> don't think it's worth it. Would've been great to put the
->> NETIF_F_HW_CSUM check first and hide sctp, but don't think it's
->> correct. Would be great to hear some ideas.
+> On 1/10/22 17:48, Abel Vesa wrote:
+> > On 22-01-10 12:12:00, Stephen Boyd wrote:
+> > > Quoting Jesse Taube (2022-01-09 11:07:42)
+> > > > > > +
+> > > > > > +       clk_hw_data->num = IMXRT1050_CLK_END;
+> > > > > > +       hws = clk_hw_data->hws;
+> > > > > > +
+> > > > > > +       hws[IMXRT1050_CLK_OSC] = __clk_get_hw(of_clk_get_by_name(np, "osc"));
+> > > > > 
+> > > > > Use clk_parent_data instead and reference the binding name with .fw_name
+> > > > 
+> > > > Hi Stephen, sorry to bother you again.
+> > > > I'm wondering if adding `clk_parent_data` is necessary as it seems like
+> > > > it wold be a big change and the other IMX boards haven't implemented
+> > > > this yet would it be okay if I don't do this, or if it is necessary
+> > > > could you link to a patch set to change it.
+> > > > 
+> > > 
+> > > Is it a big change because the imx_clk_hw*() APIs aren't prepared for
+> > > non-string parents? Can you make some clk_parent_data based APIs and
+> > > migrate things over gradually? This is really a question for i.MX folks
+> > > to see if anyone is working on moving away from the string names.
+> > 
+> > I'm currently looking into it. I would suggest we take this patch as is
+> > and I'll switch it later on to clk_parent_data.
+> Thanks so much that would be great!
 > 
-> Given the definition:
-> 
-> static inline bool skb_csum_is_sctp(struct sk_buff *skb)
-> {
-> 	return skb->csum_not_inet;
-> }
-> 
-> I wouldn't worry about doing it twice.
-> 
-> Also skb_crc32_csum_help() is only called one.
-> Make it static (so inlined) and pass 'features' into it.
-> 
-> In reality sctp is such a slow crappy protocol that a few extra
-> function calls will make diddly-squit difference.
-> (And yes, we do actually use the sctp stack.)
+> Should I sent the other changes requested I have them ready? Or should i
+> wait.
 
-I was more thinking about non-sctp path without NETIF_F_HW_CSUM
+Sure, send it. If Stephen is OK with my suggestion, I will pick it.
 
-
--- 
-Pavel Begunkov
+> 
+> Best regards
+> 	Jesse Taube
