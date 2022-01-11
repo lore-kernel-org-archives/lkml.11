@@ -2,108 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 629E1C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8735EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237156AbiAKV4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 16:56:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
+        id S245679AbiAKVy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 16:54:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232579AbiAKVz6 (ORCPT
+        with ESMTP id S244768AbiAKVyW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 16:55:58 -0500
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 174BFC06173F;
-        Tue, 11 Jan 2022 13:55:58 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 7FF7F100D5855;
-        Tue, 11 Jan 2022 22:55:55 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 612A8350DA7; Tue, 11 Jan 2022 22:55:55 +0100 (CET)
-Date:   Tue, 11 Jan 2022 22:55:55 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Yao Hongbo <yaohongbo@linux.alibaba.com>, bhelgaas@google.com,
-        zhangliguang@linux.alibaba.com,
-        alikernel-developer@linux.alibaba.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [RFC PATCH v2] PCI: Waiting command completed in
- get_port_device_capability()
-Message-ID: <20220111215555.GA19605@wunner.de>
-References: <1641525769-113099-1-git-send-email-yaohongbo@linux.alibaba.com>
- <20220111185538.GA152548@bhelgaas>
+        Tue, 11 Jan 2022 16:54:22 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE1FC06173F;
+        Tue, 11 Jan 2022 13:54:22 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id y10so872530qtw.1;
+        Tue, 11 Jan 2022 13:54:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=dwv8zU8n8yiogijHIs2AxKIN+CujA549uEl1KGc0Fvk=;
+        b=aOIMywn9Tv/KtesiTMbUlu1L9A6aOlQ34jYj+zfDTNBfcL4/uucaYxRl7jx4L+uOmp
+         p/0PjbTSJ6K2Gfa4WvE+Mo9B+CBbP1nD2p2ecD9zRbG5EPxl401gLNDaHdKmCUl7BS+m
+         cyBtjLau7V5lyEWran8c7OwG1Ra2Y//xUYi3y8ObjrKAnXriqV+1b7D7QxP8vZczRFDu
+         /Xq1D6yfukxrcuLa8Cohc8q3IHEm1bhEiV31rnsVFTH3xgRD8B1LJEY8b7PU8mzKvKSW
+         jywlZLjxbBm2yynSys3878j9PlZGOT084TCtHZy4oIGrueV11Nfi6wDz9ILWZpPvy+XA
+         tWZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=dwv8zU8n8yiogijHIs2AxKIN+CujA549uEl1KGc0Fvk=;
+        b=Bf/SVnMvWnPoh5D1WXF74gqKYiSvFxGsV+NPSSriJaPaA6DRRyaxvdDKmSqu0Cf7lH
+         8JHoVUDwn+jlWVDAqpzuxfTIjkHuFRJd7JkE7aiCHjALU0Sd9nYqobMQZSTvH4UlwdbW
+         BjsAu2Cf+qq0aQeqhKtMVn6I2NaKixmZQF7rhw+jbtrbTQ7bNDPluYeK9W//CWAmDGHp
+         uMR6UBgrKUn+5OApwnyJokH+GxGV2B1NmsX3WRZ89gNVUIbZTNn13FS4xfGeBpKrWVw9
+         M3G6c3k05Y9j4SCMNPUXfxxgzgMc96LQN0/alRNvjzae+Q0kFpwLzPIohj86oire4Mfq
+         hqyA==
+X-Gm-Message-State: AOAM532qSqRknU5F2fpiC5/lQHfjhkoFOzIzLrg0w97M3lyyu3wwlEZG
+        vEOyJw4M1HzE4s77Ezwf0EQ=
+X-Google-Smtp-Source: ABdhPJwmFJwRyW0dwBWesz2FiEvUJwHPZYwMPvE9D3m1+MJu0YV/YRL3uWQht+5iMk4Qm0SEun557w==
+X-Received: by 2002:a05:622a:30b:: with SMTP id q11mr5509321qtw.529.1641938060622;
+        Tue, 11 Jan 2022 13:54:20 -0800 (PST)
+Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id l10sm7591020qtk.18.2022.01.11.13.54.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 13:54:20 -0800 (PST)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, Mr.Bossman075@gmail.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH v8 1/7] ARM: imx: Add initial support for i.MXRT10xx family
+Date:   Tue, 11 Jan 2022 16:54:09 -0500
+Message-Id: <20220111215415.2075257-2-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
+References: <20220111212606.2072669-1-Mr.Bossman075@gmail.com>
+ <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220111185538.GA152548@bhelgaas>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 12:55:38PM -0600, Bjorn Helgaas wrote:
-> On Fri, Jan 07, 2022 at 11:22:49AM +0800, Yao Hongbo wrote:
-> > According to the PCIe specification Revision 5.0, section
-> > 7.5.3.11 (slot Status Register), if Command Complete notification
+From: Giulio Benetti <giulio.benetti@benettiengineering.com>
 
-Hm, I only have the PCIe r4.0 Base Spec available and the section
-number is 7.8.11 there.  Is 7.5.3.11 really correct for the r5.0 spec?
+The i.MXRT10xx family of processors features NXP's implementation of the
+Arm Cortex-M7 core and in some case the Arm Cortex-M4 core too.
 
+This patch aims to add an initial support for imxrt.
 
-> > However, before probing the pcie hotplug service, there needs to set
-> > HPIE bit in the slot ctrl register to disable hotplug interrupts,
-> > and there is no wait currently.
+Signed-off-by: Giulio Benetti <giulio.benetti@benettiengineering.com>
+Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+[Jesse: removed SOC_IMXRT's 'depends on ARCH_MULTI_V7' and 'select
+ARM_GIC if ARCH_MULTI_V7']
+---
+V1->V2:
+* Remove depends ARCH_MULTI_V7
+* Remove select PINCTRL_IMXRT
+* Change commit description
+V2->V3:
+* Nothing done
+V3->V4:
+* Nothing done
+V4->V5:
+* Nothing done
+V5->V6:
+* Nothing done
+V6->V7:
+* Nothing done
+V7->V8:
+* Nothing done
+---
+ arch/arm/mach-imx/Kconfig      |  7 +++++++
+ arch/arm/mach-imx/Makefile     |  2 ++
+ arch/arm/mach-imx/mach-imxrt.c | 19 +++++++++++++++++++
+ 3 files changed, 28 insertions(+)
+ create mode 100644 arch/arm/mach-imx/mach-imxrt.c
 
-There is a similar issue on resume.  The PCI core writes to the
-Slot Control register in...
+diff --git a/arch/arm/mach-imx/Kconfig b/arch/arm/mach-imx/Kconfig
+index b407b024dde3..5ad3a8b9b4b6 100644
+--- a/arch/arm/mach-imx/Kconfig
++++ b/arch/arm/mach-imx/Kconfig
+@@ -239,6 +239,13 @@ config SOC_IMX7ULP
+ 	help
+ 	  This enables support for Freescale i.MX7 Ultra Low Power processor.
+ 
++config SOC_IMXRT
++	bool "i.MXRT support"
++	depends on ARM_SINGLE_ARMV7M
++	select ARMV7M_SYSTICK if ARM_SINGLE_ARMV7M
++	help
++	  This enables support for Freescale i.MXRT Crossover processor.
++
+ config SOC_VF610
+ 	bool "Vybrid Family VF610 support"
+ 	select ARM_GIC if ARCH_MULTI_V7
+diff --git a/arch/arm/mach-imx/Makefile b/arch/arm/mach-imx/Makefile
+index d1506ef7a537..3b1145722a44 100644
+--- a/arch/arm/mach-imx/Makefile
++++ b/arch/arm/mach-imx/Makefile
+@@ -65,6 +65,8 @@ obj-$(CONFIG_SOC_IMX50) += mach-imx50.o
+ obj-$(CONFIG_SOC_IMX51) += mach-imx51.o
+ obj-$(CONFIG_SOC_IMX53) += mach-imx53.o
+ 
++obj-$(CONFIG_SOC_IMXRT) += mach-imxrt.o
++
+ obj-$(CONFIG_SOC_VF610) += mach-vf610.o
+ 
+ obj-$(CONFIG_SOC_LS1021A) += mach-ls1021a.o
+diff --git a/arch/arm/mach-imx/mach-imxrt.c b/arch/arm/mach-imx/mach-imxrt.c
+new file mode 100644
+index 000000000000..2063a3059c84
+--- /dev/null
++++ b/arch/arm/mach-imx/mach-imxrt.c
+@@ -0,0 +1,19 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2019
++ * Author(s): Giulio Benetti <giulio.benetti@benettiengineering.com>
++ */
++
++#include <linux/kernel.h>
++#include <asm/mach/arch.h>
++#include <asm/v7m.h>
++
++static const char *const imxrt_compat[] __initconst = {
++	"fsl,imxrt1050",
++	NULL
++};
++
++DT_MACHINE_START(IMXRTDT, "IMXRT (Device Tree Support)")
++	.dt_compat = imxrt_compat,
++	.restart = armv7m_restart,
++MACHINE_END
+-- 
+2.34.1
 
-  pci_pm_resume_noirq()
-    pci_pm_default_resume_early()
-      pci_restore_state()
-        pci_restore_pcie_state()
-
-...and to ensure that the proper Command Completed dance is performed,
-we do this in pciehp_resume_noirq() and pciehp_runtime_resume():
-
-	/* pci_restore_state() just wrote to the Slot Control register */
-	ctrl->cmd_started = jiffies;
-	ctrl->cmd_busy = true;
-
-That was introduced by 469e764c4a3c.
-
-I'd prefer that we do the same in pciehp_probe() (or pcie_init())
-if we come to the conlusion that we want to continue disabling HPIE
-and CCIE in get_port_device_capability().  It's a much simpler and
-smaller solution than the one proposed in the present patch.
-
-
-> But now, on ACPI systems, we only clear HPIE and CCIE here if we *do*
-> have the hotplug driver (because host->native_pcie_hotplug only
-> remains set if we have been granted control via _OSC, and we only
-> request control when CONFIG_HOTPLUG_PCI_PCIE is enabled).  On these
-> systems, we should be able to remove this disable code because pciehp
-> will do whatever it needs.
-
-I guess an argument could be made that even though CONFIG_HOTPLUG_PCI_PCIE
-is enabled, pciehp may fail to probe, e.g. because the call to kzalloc()
-in pcie_init() returns NULL due to insufficient memory.  Then the interrupt
-would remain enabled if the BIOS neglected to disable it.  That could be
-accounted for by rearranging pciehp such that the interrupt is disabled
-first thing on probe.  Of course that approach doesn't solve the problem
-if CONFIG_HOTPLUG_PCI_PCIE is disabled and we'd still have to disable
-the interrupt in get_port_device_capability() in that case.
-
-I think it generally makes sense to assume the worst and compensate for
-broken BIOSes.
-
-Hotplug and PME share the same MSI or MSI-X vector per section 6.7.3.4
-of the PCIe Base Spec, so enabled but unhandled hotplug interrupts will
-cause the PME interrupt handler to run.  That's probably not fatal,
-but still undesirable.
-
-Thanks,
-
-Lukas
