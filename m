@@ -2,132 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A7B4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 00:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE4EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 00:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345819AbiAKAGU (ORCPT
+        id S1345828AbiAKAPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 19:06:20 -0500
-Received: from mga06.intel.com ([134.134.136.31]:42271 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242685AbiAKAGT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 19:06:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641859579; x=1673395579;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=p7nsmEccBKpPlOWZFEkdVoJGgRfuwq0AFf2KH3+X540=;
-  b=JfCOoP2l8DEA0Yj1lUVZ4y2U2UJq2hC98UBWjGQKJ3WkjNPPD4cuOTbl
-   89RoCbI0rNCJzFW2KeiMZohBDyESWFsuPtRzoWJXyKbL5II4LeRis2dNL
-   rDww2YguDKxHa9OR02aRtdZpDrQ3nrLV1vCJlgh2dO7dR6+K1fPOUeBLU
-   ROvBVoW8Dst4yojLZ4fgPWM7er5wFOXQUrVFRold8a5JhjzB3MjEvheBa
-   PLclmgDWh5TbTqGxWbA4XAuPljTh/wPXq8tJG7sBv8fkrfNzjoS06qPAO
-   KtFnw2gnzA246QXLgirBtoL6eo3T9SLJ/PN0u8COBsara56SiHUwR/5Y1
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304103492"
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="304103492"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 16:06:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="622863838"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 10 Jan 2022 16:06:16 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n74g3-00045s-Jr; Tue, 11 Jan 2022 00:06:15 +0000
-Date:   Tue, 11 Jan 2022 08:06:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        srv_heupstream@mediatek.com
-Subject: Re: [v1 06/16] clk: mediatek: Add MT8186 apmixedsys clock support
-Message-ID: <202201110701.jdDbg8yY-lkp@intel.com>
-References: <20220110134416.5191-7-chun-jie.chen@mediatek.com>
+        Mon, 10 Jan 2022 19:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242685AbiAKAPS (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 19:15:18 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBA1C06173F;
+        Mon, 10 Jan 2022 16:15:17 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id g26so50389941lfv.11;
+        Mon, 10 Jan 2022 16:15:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=92d8AwPw4yRi2sHQ6z2EC/EZpooHKJ1o4fM/qffcFXY=;
+        b=ELhaEJfvbEhtsQXWTRivo8aJ+2gdeKPiDXmaiPskq95KBmVtnvnhrHFwJ4Hvcn5OR4
+         AWsv4Os8WRpBFGdTqhmX91gmeXMxXKnCETw+ydUi8kIqsVe7QJ9W1aCC3dMPwjxIBHzx
+         wxxD8SA8mk+1cPx+J6lsoruSCNTqvNvmXXpb4pgq7tuGp98FAPtn5Q0dpoottDKXU64f
+         4iZ1RLtLjdojfcMjLBZJAQO8S/EVozwYUPyWHyzkmF4dEplV1H9NR4tiihVoA2EG5oHd
+         Szn9P/c8J4clMRyQfQTtA/HkMTTuGd+kWG7R6ZFHtW8WvUSIXADvIO63Vg9LWBb8QsZz
+         6AIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=92d8AwPw4yRi2sHQ6z2EC/EZpooHKJ1o4fM/qffcFXY=;
+        b=GMMOWclM4fI0eToqpPXOJ2tIoLp8SJg6ACNse6m+G77npRDKwFdiX6kxHLM6iXM1YF
+         XOMAKzFlt5lLEEQ5vbE5cfhB3ehlHW8e9RSkHsGJc9wze//8oa3JMcOdhp9Gc6PB76OX
+         a5A/OzSfz6MTQ1PKMyPWi58fk2vpVPXKxm57CHNJ7dSFJVLuYmNxm7ujKh2+Cp4ybOtm
+         dtqzZaQtE88fIff74VxG6vsuEfHYMqLf9gfUDv/MmUaSprkXsiG7cZZSy0yLDsBmCmMZ
+         2d8vh6ztXT4UAmm1nUb1U0ksPYQEliB18dANMDbT/bh3DJD7sbNg5wBV0ZkFms2VK2HG
+         6qFg==
+X-Gm-Message-State: AOAM532WLScKlp7zqktkBhLwcsn5oPBCfiAe8iuEimBOHBU41engd7c7
+        LossCnKBPnfygm/s9EccVNd/2f3C9bPUyY/tlv4+EwGE
+X-Google-Smtp-Source: ABdhPJyxK4gD/3/HIg7bkF1mYOSnLlahLwI7orMRBRWo+m+auhN2Sehp13SiQKg8FVBCSltuWkbwEMc8MHSZw3NNF98=
+X-Received: by 2002:a2e:aa9b:: with SMTP id bj27mr1223272ljb.23.1641860115541;
+ Mon, 10 Jan 2022 16:15:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110134416.5191-7-chun-jie.chen@mediatek.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220111000002.139789-1-jlayton@kernel.org>
+In-Reply-To: <20220111000002.139789-1-jlayton@kernel.org>
+From:   Steve French <smfrench@gmail.com>
+Date:   Mon, 10 Jan 2022 18:15:04 -0600
+Message-ID: <CAH2r5mtuDExJ981zs_Y=pDZhRyoTFQkKVcWef3Z=QNkz=QSyyA@mail.gmail.com>
+Subject: Re: [PATCH] cifs: move superblock magic defitions to magic.h
+To:     Jeff Layton <jlayton@kernel.org>
+Cc:     CIFS <linux-cifs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Chun-Jie,
+Patch looks fine to me.  Do you want me to add it to the cifs for-next
+for this merge window, or do you want it merged through a different
+tree?
 
-Thank you for the patch! Yet something to improve:
+On Mon, Jan 10, 2022 at 6:00 PM Jeff Layton <jlayton@kernel.org> wrote:
+>
+> Help userland apps to identify cifs and smb2 mounts.
+>
+> Signed-off-by: Jeff Layton <jlayton@kernel.org>
+> ---
+>  fs/cifs/cifsfs.c           | 3 ++-
+>  fs/cifs/cifsglob.h         | 2 --
+>  fs/cifs/smb1ops.c          | 3 ++-
+>  fs/cifs/smb2glob.h         | 2 --
+>  fs/cifs/smb2ops.c          | 5 +++--
+>  include/uapi/linux/magic.h | 4 ++++
+>  6 files changed, 11 insertions(+), 8 deletions(-)
+>
+> diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
+> index dca42aa87d30..5a4d56622d2b 100644
+> --- a/fs/cifs/cifsfs.c
+> +++ b/fs/cifs/cifsfs.c
+> @@ -26,6 +26,7 @@
+>  #include <linux/random.h>
+>  #include <linux/uuid.h>
+>  #include <linux/xattr.h>
+> +#include <uapi/linux/magic.h>
+>  #include <net/ipv6.h>
+>  #include "cifsfs.h"
+>  #include "cifspdu.h"
+> @@ -202,7 +203,7 @@ cifs_read_super(struct super_block *sb)
+>                 sb->s_time_max = ts.tv_sec;
+>         }
+>
+> -       sb->s_magic = CIFS_MAGIC_NUMBER;
+> +       sb->s_magic = CIFS_SUPER_MAGIC;
+>         sb->s_op = &cifs_super_ops;
+>         sb->s_xattr = cifs_xattr_handlers;
+>         rc = super_setup_bdi(sb);
+> diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
+> index be74606724c7..50e857e0a311 100644
+> --- a/fs/cifs/cifsglob.h
+> +++ b/fs/cifs/cifsglob.h
+> @@ -24,8 +24,6 @@
+>  #include "../smbfs_common/smb2pdu.h"
+>  #include "smb2pdu.h"
+>
+> -#define CIFS_MAGIC_NUMBER 0xFF534D42      /* the first four bytes of SMB PDUs */
+> -
+>  #define SMB_PATH_MAX 260
+>  #define CIFS_PORT 445
+>  #define RFC1001_PORT 139
+> diff --git a/fs/cifs/smb1ops.c b/fs/cifs/smb1ops.c
+> index 3b83839fc2c2..dcc8b97e2bbf 100644
+> --- a/fs/cifs/smb1ops.c
+> +++ b/fs/cifs/smb1ops.c
+> @@ -7,6 +7,7 @@
+>
+>  #include <linux/pagemap.h>
+>  #include <linux/vfs.h>
+> +#include <uapi/linux/magic.h>
+>  #include "cifsglob.h"
+>  #include "cifsproto.h"
+>  #include "cifs_debug.h"
+> @@ -878,7 +879,7 @@ cifs_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
+>  {
+>         int rc = -EOPNOTSUPP;
+>
+> -       buf->f_type = CIFS_MAGIC_NUMBER;
+> +       buf->f_type = CIFS_SUPER_MAGIC;
+>
+>         /*
+>          * We could add a second check for a QFS Unix capability bit
+> diff --git a/fs/cifs/smb2glob.h b/fs/cifs/smb2glob.h
+> index ca692b2283cd..4125fd113cfb 100644
+> --- a/fs/cifs/smb2glob.h
+> +++ b/fs/cifs/smb2glob.h
+> @@ -13,8 +13,6 @@
+>  #ifndef _SMB2_GLOB_H
+>  #define _SMB2_GLOB_H
+>
+> -#define SMB2_MAGIC_NUMBER 0xFE534D42
+> -
+>  /*
+>   *****************************************************************
+>   * Constants go here
+> diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
+> index c5b1dea54ebc..57e856c195b5 100644
+> --- a/fs/cifs/smb2ops.c
+> +++ b/fs/cifs/smb2ops.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/sort.h>
+>  #include <crypto/aead.h>
+>  #include <linux/fiemap.h>
+> +#include <uapi/linux/magic.h>
+>  #include "cifsfs.h"
+>  #include "cifsglob.h"
+>  #include "smb2pdu.h"
+> @@ -2747,7 +2748,7 @@ smb2_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
+>                 goto qfs_exit;
+>
+>         rsp = (struct smb2_query_info_rsp *)rsp_iov.iov_base;
+> -       buf->f_type = SMB2_MAGIC_NUMBER;
+> +       buf->f_type = SMB2_SUPER_MAGIC;
+>         info = (struct smb2_fs_full_size_info *)(
+>                 le16_to_cpu(rsp->OutputBufferOffset) + (char *)rsp);
+>         rc = smb2_validate_iov(le16_to_cpu(rsp->OutputBufferOffset),
+> @@ -2789,7 +2790,7 @@ smb311_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
+>
+>         rc = SMB311_posix_qfs_info(xid, tcon, fid.persistent_fid,
+>                                    fid.volatile_fid, buf);
+> -       buf->f_type = SMB2_MAGIC_NUMBER;
+> +       buf->f_type = SMB2_SUPER_MAGIC;
+>         SMB2_close(xid, tcon, fid.persistent_fid, fid.volatile_fid);
+>         return rc;
+>  }
+> diff --git a/include/uapi/linux/magic.h b/include/uapi/linux/magic.h
+> index a3034558b018..9438fd4a79c9 100644
+> --- a/include/uapi/linux/magic.h
+> +++ b/include/uapi/linux/magic.h
+> @@ -53,6 +53,7 @@
+>  #define QNX6_SUPER_MAGIC       0x68191122      /* qnx6 fs detection */
+>  #define AFS_FS_MAGIC           0x6B414653
+>
+> +
+>  #define REISERFS_SUPER_MAGIC   0x52654973      /* used by gcc */
+>                                         /* used by file system utilities that
+>                                            look at the superblock, etc.  */
+> @@ -61,6 +62,9 @@
+>  #define REISER2FS_JR_SUPER_MAGIC_STRING        "ReIsEr3Fs"
+>
+>  #define SMB_SUPER_MAGIC                0x517B
+> +#define CIFS_SUPER_MAGIC       0xFF534D42      /* the first four bytes of SMB PDUs */
+> +#define SMB2_SUPER_MAGIC       0xFE534D42
+> +
+>  #define CGROUP_SUPER_MAGIC     0x27e0eb
+>  #define CGROUP2_SUPER_MAGIC    0x63677270
+>
+> --
+> 2.34.1
+>
 
-[auto build test ERROR on clk/clk-next]
-[also build test ERROR on robh/for-next v5.16 next-20220110]
-[cannot apply to mbgg-mediatek/for-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
 
-url:    https://github.com/0day-ci/linux/commits/Chun-Jie-Chen/dt-bindings-ARM-Mediatek-Add-new-document-bindings-of-MT8186-clock/20220110-224451
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git clk-next
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220111/202201110701.jdDbg8yY-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/2b9fcab7333544a52a4e5fd9e42764e1f1e7a7b1
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Chun-Jie-Chen/dt-bindings-ARM-Mediatek-Add-new-document-bindings-of-MT8186-clock/20220110-224451
-        git checkout 2b9fcab7333544a52a4e5fd9e42764e1f1e7a7b1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+-- 
+Thanks,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/clk/mediatek/clk-mt8186-apmixedsys.c: In function 'clk_mt8186_apmixed_probe':
->> drivers/clk/mediatek/clk-mt8186-apmixedsys.c:102:9: error: implicit declaration of function 'mtk_clk_unregister'; did you mean 'devm_clk_unregister'? [-Werror=implicit-function-declaration]
-     102 |         mtk_clk_unregister(clk_data);
-         |         ^~~~~~~~~~~~~~~~~~
-         |         devm_clk_unregister
-   cc1: some warnings being treated as errors
-
-
-vim +102 drivers/clk/mediatek/clk-mt8186-apmixedsys.c
-
-    82	
-    83	static int clk_mt8186_apmixed_probe(struct platform_device *pdev)
-    84	{
-    85		struct clk_onecell_data *clk_data;
-    86		struct device_node *node = pdev->dev.of_node;
-    87		int r;
-    88	
-    89		clk_data = mtk_alloc_clk_data(CLK_APMIXED_NR_CLK);
-    90		if (!clk_data)
-    91			return -ENOMEM;
-    92	
-    93		mtk_clk_register_plls(node, plls, ARRAY_SIZE(plls), clk_data);
-    94	
-    95		r = of_clk_add_provider(node, of_clk_src_onecell_get, clk_data);
-    96		if (r)
-    97			goto unregister_clk;
-    98	
-    99		return r;
-   100	
-   101	unregister_clk:
- > 102		mtk_clk_unregister(clk_data);
-   103		mtk_free_clk_data(clk_data);
-   104		return r;
-   105	}
-   106	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Steve
