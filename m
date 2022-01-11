@@ -2,140 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D53DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:07:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12988C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349798AbiAKQHB (ORCPT
+        id S1349810AbiAKQJT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 11:07:01 -0500
-Received: from slate.cs.rochester.edu ([128.151.167.14]:60622 "EHLO
-        slate.cs.rochester.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240042AbiAKQHA (ORCPT
+        Tue, 11 Jan 2022 11:09:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51498 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349797AbiAKQJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 11:07:00 -0500
-Received: from node1x10a.cs.rochester.edu (node1x10a.cs.rochester.edu [192.5.53.74])
-        by slate.cs.rochester.edu (8.14.7/8.14.7) with ESMTP id 20BG55iO020545
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Tue, 11 Jan 2022 11:05:05 -0500
-Received: from node1x10a.cs.rochester.edu (localhost [127.0.0.1])
-        by node1x10a.cs.rochester.edu (8.15.2/8.15.1) with ESMTP id 20BG55J9002813;
-        Tue, 11 Jan 2022 11:05:05 -0500
-Received: (from szhai2@localhost)
-        by node1x10a.cs.rochester.edu (8.15.2/8.15.1/Submit) id 20BG4vuZ002812;
-        Tue, 11 Jan 2022 11:04:57 -0500
-From:   Shuang Zhai <szhai2@cs.rochester.edu>
-To:     yuzhao@google.com
-Cc:     Michael@michaellarabel.com, ak@linux.intel.com,
-        akpm@linux-foundation.org, axboe@kernel.dk, bgeffon@google.com,
-        catalin.marinas@arm.com, corbet@lwn.net,
-        dave.hansen@linux.intel.com, djbyrne@mtu.edu, hannes@cmpxchg.org,
-        hdanton@sina.com, heftig@archlinux.org,
-        holger@applied-asynchrony.com, jsbarnes@google.com,
-        kernel@xanmod.org, linux-arm-kernel@lists.infradead.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, mgorman@suse.de, mhocko@kernel.org,
-        page-reclaim@google.com, riel@surriel.com, sofia.trinh@edi.works,
-        steven@liquorix.net, suleiman@google.com, szhai2@cs.rochester.edu,
-        torvalds@linux-foundation.org, vbabka@suse.cz, will@kernel.org,
-        willy@infradead.org, x86@kernel.org, ying.huang@intel.com
-Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
-Date:   Tue, 11 Jan 2022 11:04:55 -0500
-Message-Id: <20220111160455.2773-1-szhai2@cs.rochester.edu>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
-References: <Yd1Css8+jsspeZHh@google.com>
+        Tue, 11 Jan 2022 11:09:18 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BFDC06173F;
+        Tue, 11 Jan 2022 08:09:18 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id 30so67566656edv.3;
+        Tue, 11 Jan 2022 08:09:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y5b2WCfiLE/Bx4/dpY4C6bJT06fNP89i6/fpYE4KF+0=;
+        b=BsAav0femDyQhXoH3aCMW31pO7HR6N3Mci21EVYSzTUEX9SjrmUXjTAZ7HhUDPdu75
+         5tTVDG1bN4PR12EX0Od67iPpzIYE72jnXoYTouvz4e0RaHZyRRMHvkC61erMzu89h1rY
+         AtpErAP5/Jl0cvBWEZBQwMyZ3KPUNcWazC5J3JEEuNHbttKXvBY3yDKevX0G+PXsv39j
+         i6K3RAl2yfLzu85qDxYPgLp1P9XwQmk6eyqPGwuIHJFm3Lwk4VWopnTAXQ2e7wrLJ55L
+         ofgjkDWveKjeqtiiCalAJPRoXiBki6L2UtbafS3pZl6moEqecoY6gIb31dVIkP3mEt5V
+         BtNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y5b2WCfiLE/Bx4/dpY4C6bJT06fNP89i6/fpYE4KF+0=;
+        b=AistNlUFpX640+jvqJt0JJMIy7RXRNWGdsVUva5lpu2E4/ecFSqnfANEG5rKWIoR+4
+         yag2TZIhrw5B63Y3nXc2eMqxGy7e0lsmb9eAeb65NtkjzE80FeYdQUQi4VdlHPyVhr9I
+         Ze5MaK2hGbiYA6Uvxe0LDxtpQVJpnEOJ9oyGTlXOq9icjdj28wE9ZzbvDBkTIEOlqF1N
+         VXvh3ephAhthH/8OhefkgHxHAQJA2MCMqUiQrHYrog1JsZIBBgX1VmB0xAyoM1GrRNMA
+         Y/SmKQq0buKgs+rwldT3ev+2AmoVN838+8s+UUniIExnoUZeSYcLByPm6xZVcfHmA45F
+         gIwQ==
+X-Gm-Message-State: AOAM530EURFCY/HHSbwENM0nSiKy+0GxkeHAC5rG1eaDSnKL+r/y1quP
+        OCxbhihHiZzvuHZmQRl3o1BfEYm90AXUUQ==
+X-Google-Smtp-Source: ABdhPJy/CsJN4YuqQxpJKoXySd+4SVxR7dx+q7ZQmxn5CJTLlnQMo465RmjphVRqEbmXZQGHRym6lg==
+X-Received: by 2002:a17:907:a41e:: with SMTP id sg30mr4144806ejc.249.1641917356745;
+        Tue, 11 Jan 2022 08:09:16 -0800 (PST)
+Received: from tiger.museclub.art (p200300cf9f0b7c00c3a5ee4155775dd9.dip0.t-ipconnect.de. [2003:cf:9f0b:7c00:c3a5:ee41:5577:5dd9])
+        by smtp.googlemail.com with ESMTPSA id s4sm3790158ejm.146.2022.01.11.08.09.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 08:09:16 -0800 (PST)
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+To:     eugene.shalygin@gmail.com
+Cc:     andy.shevchenko@gmail.com, pauk.denis@gmail.com,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: PATCH v3 ASUS EC Sensors
+Date:   Tue, 11 Jan 2022 17:08:51 +0100
+Message-Id: <20220111160900.1150050-1-eugene.shalygin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yu Zhao wrote:
-> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
->> On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
->>> TLDR
->>> ====
->>> The current page reclaim is too expensive in terms of CPU usage and it
->>> often makes poor choices about what to evict. This patchset offers an
->>> alternative solution that is performant, versatile and
->>> straightforward.
->>
->> <snipped>
->>
->>> Summery
->>> =======
->>> The facts are:
->>> 1. The independent lab results and the real-world applications
->>>     indicate substantial improvements; there are no known regressions.
->>> 2. Thrashing prevention, working set estimation and proactive reclaim
->>>     work out of the box; there are no equivalent solutions.
->>> 3. There is a lot of new code; nobody has demonstrated smaller changes
->>>     with similar effects.
->>>
->>> Our options, accordingly, are:
->>> 1. Given the amount of evidence, the reported improvements will likely
->>>     materialize for a wide range of workloads.
->>> 2. Gauging the interest from the past discussions [14][15][16], the
->>>     new features will likely be put to use for both personal computers
->>>     and data centers.
->>> 3. Based on Google's track record, the new code will likely be well
->>>     maintained in the long term. It'd be more difficult if not
->>>     impossible to achieve similar effects on top of the existing
->>>     design.
->>
->> Hi Andrew, Linus,
->>
->> Can you please take a look at this patchset and let me know if it's
->> 5.17 material?
->>
->> My goal is to get it merged asap so that users can reap the benefits
->> and I can push the sequels. Please examine the data provided -- I
->> think the unprecedented coverage and the magnitude of the improvements
->> warrant a green light.
-> 
-> Downstream kernel maintainers who have been carrying MGLRU for more than
-> 3 versions, can you please provide your Acked-by tags?
-> 
-> Having this patchset in the mainline will make your job easier :)
-> 
->     Alexandre - the XanMod Kernel maintainer
->                 https://xanmod.org
->     
->     Brian     - the Chrome OS kernel memory maintainer
->                 https://www.chromium.org
->     
->     Jan       - the Arch Linux Zen kernel maintainer
->                 https://archlinux.org
->     
->     Steven    - the Liquorix kernel maintainer
->                 https://liquorix.net
->     
->     Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
->                 https://chromium.googlesource.com/chromiumos/third_party/kernel
-> 
-> Also my gratitude to those who have helped test MGLRU:
-> 
->     Daniel - researcher at Michigan Tech
->              benchmarked memcached
->     
->     Holger - who has been testing/patching/contributing to various
->              subsystems since ~2008
->     
->     Shuang - researcher at University of Rochester
->              benchmarked fio and provided a report
->     
->     Sofia  - EDI https://www.edi.works
->              benchmarked the top eight memory hogs and provided reports
-> 
-> Can you please provide your Tested-by tags? This will ensure the credit
-> for your contributions.
-> 
-> Thanks!
+Changes in v3:
+    - Removed BIOS version checks and BIOS version dependent mutex path.
 
-I have tested MGLRU using fio [1]. The performance improvement is fabulous.
-I hope this patchset could eventually get merged to enable large scale test
-and let more users talk about their experience.
 
-Tested-by: Shuang Zhai <szhai2@cs.rochester.edu>
-
-[1] https://lore.kernel.org/lkml/20220105024423.26409-1-szhai2@cs.rochester.edu/
