@@ -2,200 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E987C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA36C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344327AbiAKRfO (ORCPT
+        id S1344382AbiAKRgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:35:14 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:27372 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344135AbiAKRfM (ORCPT
+        Tue, 11 Jan 2022 12:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242666AbiAKRgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:35:12 -0500
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20BFEbv6004636;
-        Tue, 11 Jan 2022 17:33:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=hSkarNCfPVmhtIU0NZmds0Ywh+xOdci1sOVyX1QgEsc=;
- b=jdFcbt2zpwL1syZig2LqPDtTmb7JYNOznO4x+X8BRpA/ZRDeb85BNM8sA7S4fV+QmbIx
- ghr2J+sAhJCs3gpA3rNdPfA0yk6P5c26PV3CD8T7ke4BwMtBLPOT68L1wJmv6U18Fe1a
- pH9kKJQ31ceUnnB5tLkBOex0UAa6UvAywT5W0eJ/eBCz5EmJgutWqOYWXhMN0+DVg7et
- O7CkHYlx9b6ThzrMT62l6FqGdEZEuQhps2+Z8gWhPXO3Y2l07FxdicUeiqXlUwe8Xa19
- hALliuhMyKSFkIKuNbVMBaXQRrsocqESjyPucMdPhlYO52yeQi1+JozCx/LAm+P8qwN3 HQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgjdbv3td-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 17:33:01 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20BHGSGc188538;
-        Tue, 11 Jan 2022 17:33:00 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2169.outbound.protection.outlook.com [104.47.56.169])
-        by aserp3030.oracle.com with ESMTP id 3df0neb720-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 17:33:00 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OxKgCc67ehLd3LgAeK0sTDWv/BpExAcRQqSJnEy5dOaWqzTdJgjuvxd5okRzq3RcgzPsEUaYSK+ZWkj9+hx1Jrh7fCbXVoZjg5CNhy7icE6DuL8045T6TS292HRQAa9H5lAeyIG4xjissQotfQN6kAqRKB41cYz8oR2iaLTSwimPrNlTZ2uGboKIWGRhq1IWEPrwuB9u5512IDzTzEhu7QbwWpSCtHiCV8oJ+rKpXYni6o+6gtIXfNAQoMXb2N/G6hY1bp6U/f1G9QEEVSf/gZvpgEMnlc8GdLG/sHZRFtbn789vwe7y09thWSME6XOK7/pNjYHYCGLB+/Cg7vuOkw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hSkarNCfPVmhtIU0NZmds0Ywh+xOdci1sOVyX1QgEsc=;
- b=l6JMeTFIqiELSWHB81sIlTrMq7CrkSLXEP/3SyYoHzCKCpLfGmTHDB8oFaffidoHG3pUckqNUdJ+L9KEwpmnrH2WsQhOIw1CPF+L77suBLPdzujk+177rJ2mC9bt3HAdsxDNCCe1gDBkslHg9iGW7/10FUettqzS9h1TlIOoWOWU6YcC3dZAvuOApLFE3QUCF8yvkG+tOwKt1BW1VydS0Q76JTIXSOYHND45D4rCe7E61r2urdQlU5/QYLUxRZ/xTOm7kikeJPwLAsxFcli+Kjq4Mc4FHbNQQjyRW/sXDwgZP+X/AJNId/Jct6kVYoaG/Wp7VHhjLQ1aSj6R31Oo4w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 11 Jan 2022 12:36:31 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13945C061748
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:36:31 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id w7so18277687plp.13
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:36:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hSkarNCfPVmhtIU0NZmds0Ywh+xOdci1sOVyX1QgEsc=;
- b=oZgFOl2ogVol/aLQQLaMt7Jf+zW2jm5Db5rqfsgDcaJBi2FwMAPRjNm/AKpz0UCPdLshVempdMIooTPZ0LAp7EiCWwi9DnytmRVpbw0n4N4SbiVipjs/3TOCLSNIYiROJhKlT5YzEMC1FwOFwCsiEoWOXnjNlvU+ZMs/+UiZu/A=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4641.namprd10.prod.outlook.com
- (2603:10b6:303:6d::5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Tue, 11 Jan
- 2022 17:32:58 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b889:5c86:23c0:82b8]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::b889:5c86:23c0:82b8%4]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
- 17:32:58 +0000
-Date:   Tue, 11 Jan 2022 20:32:43 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH v2] counter: fix an IS_ERR() vs NULL bug
-Message-ID: <20220111173243.GA2192@kili>
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kmqD567CtlmXllpc1rQayweyZNMIGqk+RZtPJBuYT90=;
+        b=sivzBEkWVy1S0pf5Z71owP5T4t13Zyykw7vqCCakVV0L1ZomD5pSrWWdeOgJuBAzWL
+         zFUHh31Ym7mqCNUa7K4JxPVQhFbPy4N3qrzqt5roRk7BcHeqGnIc2hOgv6DFtWK5tTy2
+         WdWZCAOQdakcQ38IpcuCVuoEK9rwgLOE50yRhvkZiFuadJGbVSlIPWXMc7yIFrHCMtIG
+         bTt98MWR4oDq6HIq7Y/sVn7MmFX9CS1xFwzTO6bvb1DR9JWIcoX/Hrrl/rCckOdh5LoP
+         mdC2nr6t5awVklH9vDGx4GBF7LvyiGNU3Chu6orbgSoWmiYl0jqTamZ/7yzMNKGRgmwF
+         24Ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kmqD567CtlmXllpc1rQayweyZNMIGqk+RZtPJBuYT90=;
+        b=ppuwfXxXyKJc2ffjkvBiJKvUpeynzOV3nJ3cct0CXGBs8w98avHiGzOYEYyQpb6F6h
+         P/supRUeNmnFznHRRJ6eRLN25IBE9ud/z7TMdlE51prwkPpaNzIFQ3L4cdEZKahDW6vU
+         o3rI1ts9DDENx3NnSe6CKqol7GHcFeySbPBCwMaZzspcIBolVgAmnawOwjH6PwKxYJVy
+         cGuLh2n4JvHw+vInP11Co43p01BrzFAq1d7DgQ+gUqbQxIotzslPqkHqpae9Czor0O9i
+         jmpUJKNHkYCcvmj/3dpJvAQ01647w+f2I9V999VhPBo7IR85JJa3LXzet2T9tsAu+UKs
+         oF8g==
+X-Gm-Message-State: AOAM532jKpdnx8Kxp931EZt5cHDf9+637btqxfTfhQP5agk+PUssl2C/
+        QNYylx7zKJ0+8THw58alPME3fw==
+X-Google-Smtp-Source: ABdhPJyi/ql3rEX/0G3ckRnHJKB6twfx7NB9W6on7gUjJywSRrz2rhGBuYgadAJVOgr9Cf/e9+m1Mg==
+X-Received: by 2002:a62:79c2:0:b0:4bd:e9da:c173 with SMTP id u185-20020a6279c2000000b004bde9dac173mr5462897pfc.65.1641922590326;
+        Tue, 11 Jan 2022 09:36:30 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id qe10sm3488021pjb.5.2022.01.11.09.36.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 09:36:29 -0800 (PST)
+Date:   Tue, 11 Jan 2022 17:36:25 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Raghavendra Rao Ananta <rananta@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [RFC PATCH v3 01/11] KVM: Capture VM start
+Message-ID: <Yd3AGRtkBgWSmGf2@google.com>
+References: <20220104194918.373612-1-rananta@google.com>
+ <20220104194918.373612-2-rananta@google.com>
+ <Ydjje8qBOP3zDOZi@google.com>
+ <CAJHc60ziKv6P4ZmpLXrv+s4DrrDtOwuQRAc4bKcrbR3aNAK5mQ@mail.gmail.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-ClientProxiedBy: ZR0P278CA0157.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:41::22) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bf96b445-9af7-4b11-7eb6-08d9d52868f6
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4641:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR10MB4641E6042ED130053F0D57078E519@CO1PR10MB4641.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2201;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hq9AUgCO0juXJ5HluL6XBK77LqW19Kpy4v6N+BLxv0R3TMG9EnKP6JXfniY+ye+fI76SNMSLrlA4JeOREE0Cw3jk4v6X4Q/H4WaltWoIW/bMynTs/9+8x/C329RLUc3F0B8LsbY33FNjnTXcn1hqUaBgy/Ee7TdCDUi5qflrR37Dx+PhK7ie6XkhiGvYgpd20D+ZrVBzSXd5IsLzrbUugnPXCoXicZhT7bHsCP4EsOPDQkNpSBoWhUEPszEden4b1rRaZwpw2WraTId2XfXSxESQIcEzs6sZFGojgt6JOF+exDq0j3ijjw5VEPnkMMvjP0MZSl+qSVlSiJH7QS/Il1ZkYFq+VIikCDy2sLT1bKExegWAAl7b8OFVE9nevN6V/LJSmnGG+t2yl+4cR4OIJH9yFajd48MUMqDbNZXmGNHCmX/BRJ8cBVCfyjMSRRkoVJUuwaWRcn3cz0Kw5914AUzk9bWkGXgmP928zPIHW4PMeav5l4wDp9aDEBObzZgDakVTHCCIrLaeGFc2xOlf9nh/H8c1xwvbQKgfNRHgAU459XwL0tIgfcXKF0a/+eQCYSie5MxwlVZaDR9aMKBdKBxhIDnRm9B8tInDc0DpXJKiU/aGFZVsZwRW1bMkDd9x70KINaju9BPxzJsosxcEG+2o58OwLeB15gEcay03hBvOAnXNyrW/XdUwZBEGYs5KVU5blE+y8I0SKOB3tGn0FQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(8676002)(26005)(8936002)(38100700002)(38350700002)(6666004)(6506007)(186003)(83380400001)(44832011)(33656002)(66946007)(33716001)(6512007)(9686003)(5660300002)(6916009)(316002)(66556008)(66476007)(2906002)(54906003)(6486002)(508600001)(52116002)(4326008)(86362001)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SnZctqTkXwIVf/kbg5VWtdwWVj32+EJiA8zlDW90rr0Mx5KyxtkgWgNniyGf?=
- =?us-ascii?Q?ptvfK0FDLDqU5+LZSC3kHfOdsw23lc9XP/x71/ozIH/I0IOAO3r3iNORmykg?=
- =?us-ascii?Q?Z35mdwHe7M8qVvDdrb1oXX+JeLKQK7QrfFzcq/BUm3TI/S7vkejYjh1K9eDM?=
- =?us-ascii?Q?0Ck8HHJwopiTjmzE+CRwU+m1EMdfzPV5LWcWS0dygSPj498YMC71ZDwOUnfK?=
- =?us-ascii?Q?UbzAqXceTw3FFVJZwZ4gDreLDCW8CO0a0YxVcSJldVqc6tUfKiHs2dkHDZld?=
- =?us-ascii?Q?8Bni37pLe6MQm2tShGfJDhSjUjxCvaEqX/XzCqQdI8FdJg8/HacluE1fakfh?=
- =?us-ascii?Q?pJNxHt2cY3AC26YJTZKcKtv6KYOA6CQ6JqpnGaUsKregXLQfxupbdX1i0WEv?=
- =?us-ascii?Q?V6hVBjuJBhdFgy16II8TVeHWzS8XuG8dqJzqXs8Y32CLDCQmiZOJIX1AURW+?=
- =?us-ascii?Q?WZEwTvWkjNh/WqwZOs3y32Yk8jNcOxtv4F6KCa0dMZhCKhODdfeilO44SIL/?=
- =?us-ascii?Q?vJHw3CZGGEhtb5a7+Ueli8VMuf1I8UVUPCKKHQyd7wULc2bQuJcCK4zpWh0M?=
- =?us-ascii?Q?YhmnhtK9oPdCZ8B9WOVeb42EdNa03j1BT2pOEIeJdk8zBYnlmSn/EPfxDFLr?=
- =?us-ascii?Q?zZlojviBMe6gBQytSgmvRla6Vpwhv0LxFuSNxnTQVMgQYfvIU/8Dg7+OrUbM?=
- =?us-ascii?Q?oybD7Hvcojw0LtwZC98a7cewZKqj7adxjQ5chfrBLEb6xPg/+Bgb1PpMXUrx?=
- =?us-ascii?Q?cOfkADeUvy6UxPs4gccPAzquCf9loU+T9JEkN1aucAYhqJsf0lhO/n+x3aqU?=
- =?us-ascii?Q?C29jW+vkyhfo5C39fL/N781Y/6/AzboZIBAowNi8xhFLT5WzB6GqT0+Ahv2X?=
- =?us-ascii?Q?TFku4cDF5tSV9wPxg6IFFJhEQ4QCUJ0kTW+cHoY2eCT2t7OLrolJA7JKuTib?=
- =?us-ascii?Q?MajrGpBfZ6kngJS02U4jA0jhNjrosd8kVH66XU7CWJGGn/Vt8pe9OozWioe4?=
- =?us-ascii?Q?+00qblYK9ZIOLy7emKMsAFmPxeinm2VsozETUiNUlVHXpYjaFVrDj9aEgH7A?=
- =?us-ascii?Q?2M+q2Eeh8iEJ5xyAd1rN/F44cbbFFKk7oWd/y1BpLZoUb/ANps6T2bhwHOc7?=
- =?us-ascii?Q?1EGRi2JuZbmjiEQ7xYuv/I694hOo5lga8TCwo6s3W6WLCRzS4ctN0Xbz0HXB?=
- =?us-ascii?Q?iF9NTEga3ks6uouNYCa+EqD5S4BIsRwfxjToDI2qo9ySgN/CV6Di28kVPMra?=
- =?us-ascii?Q?DsiNXDxIot3UKGZhI8KnM7e+5aBPP7rYAhK9wjYvOsZw+wrUA3evNz7Syq2o?=
- =?us-ascii?Q?FYN0T6UIdcaW6eJ99d4sCXcuJ8hZNPDrdt6HzddDd6FJwJCgz86D21di8gtW?=
- =?us-ascii?Q?kcbmvo3iEMnJtaFotr3UVm3YANRvPm5KvqDJlyaC2u5g0sSFS6wxmXlZ8oOi?=
- =?us-ascii?Q?69xUmzaVcH2D6TpU0WKiML2RLcbAbG4upkVnqi8p7LESGVUzjCsgUNgu1rAy?=
- =?us-ascii?Q?vn5l4mMRkIzthbv0hciDMKxcLyS1oKQYzpHaw/8rAN3BDlfeRHSxk7HX/rUe?=
- =?us-ascii?Q?2Wycmw/fs7HgHJPEoxhfQXNor1P8Dr+EgRlEGgwLETkSUhvzzwW063IvvJy/?=
- =?us-ascii?Q?FNlnXiAZQagOYJRpyA//YJ5H+MsldarEhDRCLqRfyghrfBsa7nI+vBnEcD4O?=
- =?us-ascii?Q?mlhxpsUkZYcTLC9r9MjhZXn5Yyg=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf96b445-9af7-4b11-7eb6-08d9d52868f6
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 17:32:58.7903
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c6V3XG6YiDWFjfU2YhAEN51O12ltrquHW13R4JiNl6kB1gTJBxxF1ptxM2eA3PhRS25pJq2M3by/AQXZkYeiws4+ELOCSGkJw+Tk6KwssHk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4641
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10224 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0 spamscore=0
- phishscore=0 adultscore=0 suspectscore=0 mlxscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201110095
-X-Proofpoint-GUID: B5dOGetowKCLKibcBmkm0pHe_g9njhUS
-X-Proofpoint-ORIG-GUID: B5dOGetowKCLKibcBmkm0pHe_g9njhUS
+In-Reply-To: <CAJHc60ziKv6P4ZmpLXrv+s4DrrDtOwuQRAc4bKcrbR3aNAK5mQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are 8 callers for devm_counter_alloc() and they all check for NULL
-instead of error pointers.  I think NULL is the better thing to return
-for allocation functions so update counter_alloc() and devm_counter_alloc()
-to return NULL instead of error pointers.
+On Mon, Jan 10, 2022, Raghavendra Rao Ananta wrote:
+> On Fri, Jan 7, 2022 at 5:06 PM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > On Tue, Jan 04, 2022, Raghavendra Rao Ananta wrote:
+> > > +#define kvm_vm_has_started(kvm) (kvm->vm_started)
+> >
+> > Needs parantheses around (kvm), but why bother with a macro?  This is the same
+> > header that defines struct kvm.
+> >
+> No specific reason for creating a macro as such. I can remove it if it
+> feels noisy.
 
-Fixes: c18e2760308e ("counter: Provide alternative counter registration functions")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
-v2: make additional style changes
+Please do.  In the future, don't use a macro unless there's a good reason to do
+so.  Don't get me wrong, I love abusing macros, but for things like this they are
+completely inferior to
 
- drivers/counter/counter-core.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+  static inline bool kvm_vm_has_started(struct kvm *kvm)
+  {
+  	return kvm->vm_started;
+  }
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 7e0957eea094..869894b74741 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -90,10 +90,8 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- 	int err;
- 
- 	ch = kzalloc(sizeof(*ch) + sizeof_priv, GFP_KERNEL);
--	if (!ch) {
--		err = -ENOMEM;
--		goto err_alloc_ch;
--	}
-+	if (!ch)
-+		return NULL;
- 
- 	counter = &ch->counter;
- 	dev = &counter->dev;
-@@ -123,9 +121,8 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- err_ida_alloc:
- 
- 	kfree(ch);
--err_alloc_ch:
- 
--	return ERR_PTR(err);
-+	return NULL;
- }
- EXPORT_SYMBOL_GPL(counter_alloc);
- 
-@@ -208,12 +205,12 @@ struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv
- 	int err;
- 
- 	counter = counter_alloc(sizeof_priv);
--	if (IS_ERR(counter))
--		return counter;
-+	if (!counter)
-+		return NULL;
- 
- 	err = devm_add_action_or_reset(dev, devm_counter_put, counter);
- 	if (err < 0)
--		return ERR_PTR(err);
-+		return NULL;
- 
- 	return counter;
- }
--- 
-2.20.1
+because a helper function gives us type safety, doesn't suffer from concatenation
+of tokens potentially doing weird things, is easier to extend to a multi-line
+implementation, etc...
 
+An example of when it's ok to use a macro is x86's
+
+  #define kvm_arch_vcpu_memslots_id(vcpu) ((vcpu)->arch.hflags & HF_SMM_MASK ? 1 : 0)
+
+which uses a macro instead of a proper function to avoid a circular dependency
+due to arch/x86/include/asm/kvm_host.h being included by include/linux/kvm_host.h
+and thus x86's implementation of kvm_arch_vcpu_memslots_id() coming before the
+definition of struct kvm_vcpu.  But that's very much an exception and done only
+because the alternatives suck more.
+
+> > > +                      */
+> > > +                     mutex_lock(&kvm->lock);
+> >
+> > This adds unnecessary lock contention when running vCPUs.  The naive solution
+> > would be:
+> >                         if (!kvm->vm_started) {
+> >                                 ...
+> >                         }
+> >
+> Not sure if I understood the solution..
+
+In your proposed patch, KVM_RUN will take kvm->lock _every_ time.  That introduces
+unnecessary contention as it will serialize this bit of code if multiple vCPUs
+are attempting KVM_RUN.  By checking !vm_started, only the "first" KVM_RUN for a
+VM will acquire kvm->lock and thus avoid contention once the VM is up and running.
+There's still a possibility that multiple vCPUs will contend for kvm->lock on their
+first KVM_RUN, hence the quotes.  I called it "naive" because it's possible there's
+a more elegant solution depending on the use case, e.g. a lockless approach might
+work (or it might not).
+
+> > > +                     kvm->vm_started = true;
+> > > +                     mutex_unlock(&kvm->lock);
+> >
+> > Lastly, why is this in generic KVM?
+> >
+> The v1 of the series originally had it in the arm specific code.
+> However, I was suggested to move it to the generic code since the book
+> keeping is not arch specific and could be helpful to others too [1].
+
+I'm definitely in favor of moving/adding thing to generic KVM when it makes sense,
+but I'm skeptical in this particular case.  The code _is_ arch specific in that
+arm64 apparently needs to acquire kvm->lock when checking if a vCPU has run, e.g.
+versus a hypothetical x86 use case that might be completely ok with a lockless
+implementation.  And it's not obvious that there's a plausible, safe use case
+outside of arm64, e.g. on x86, there is very, very little that is truly shared
+across the entire VM/system, most things are per-thread/core/package in some way,
+shape, or form.  In other words, I'm a wary of providing something like this for
+x86 because odds are good that any use will be functionally incorrect.
