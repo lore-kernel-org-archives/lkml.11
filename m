@@ -2,141 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F7A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB93C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:12:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245713AbiAKPKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:10:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56196 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241778AbiAKPKp (ORCPT
+        id S241842AbiAKPMI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 10:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231534AbiAKPMH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:10:45 -0500
+        Tue, 11 Jan 2022 10:12:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A045C06173F;
+        Tue, 11 Jan 2022 07:12:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 997EF61422;
-        Tue, 11 Jan 2022 15:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE4FC36AEB;
-        Tue, 11 Jan 2022 15:10:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB392615F7;
+        Tue, 11 Jan 2022 15:12:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD21AC36AE3;
+        Tue, 11 Jan 2022 15:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641913844;
-        bh=McsMtOZ08KNWSnvYFOe9+6qopfWa4aTK73Luxx5P3hM=;
-        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
-        b=DNpfDhPldxCXoEMFoSG9T69ITKuzR7l5o1TUboM2eBnDVC96zyQuhCvY0FQk0uMFH
-         EsbPXYK0j1b+Mt6gFfEPSKY3lAvfotrXpk1sTIRSSyey5rm1M1EEEjzpK2eoVSws0l
-         9Gv3yIIcoFSorx6q2a9SVQsnx1ii0vso+OawPTcn0Er3nqNRBtIooGWaR+8uJKNMhO
-         5aOqYCeXnq0QoF3/t+ip3aRutJ1Eo4MNdWvdM6LmH6FTFaTbdCF1gurJhSAcmxfuie
-         6DiVRKddngeHnkcKM6eNIaAjs5tGoZpFzLH3MYhHzmIRBnHCb9IcICCCJiCJGm0mDZ
-         mRpbeQf+zihlQ==
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailauth.nyi.internal (Postfix) with ESMTP id 9ACA627C005A;
-        Tue, 11 Jan 2022 10:10:41 -0500 (EST)
-Received: from imap48 ([10.202.2.98])
-  by compute5.internal (MEProxy); Tue, 11 Jan 2022 10:10:41 -0500
-X-ME-Sender: <xms:753dYTVHh6VdTqykd5DQwTFAgBibeMtuBBaBR9zg0-yIChjkuEZoBg>
-    <xme:753dYbkLZefzSqMVxjUkC0sfpinhDDcgClUxTUELPgQ6NeyIpJc21GK6yBVemQlUE
-    VsHApcD52PbKUqGxlA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrudehfedgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgfgsehtqhertderreejnecuhfhrohhmpedftehn
-    ugihucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecugg
-    ftrfgrthhtvghrnhepvdelheejjeevhfdutdeggefftdejtdffgeevteehvdfgjeeiveei
-    ueefveeuvdetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprghnugihodhmvghsmhhtphgruhhthhhpvghrshhonhgrlhhithihqdduudeiudek
-    heeifedvqddvieefudeiiedtkedqlhhuthhopeepkhgvrhhnvghlrdhorhhgsehlihhnuh
-    igrdhluhhtohdruhhs
-X-ME-Proxy: <xmx:753dYfaLeoIhK2mhrLaGTpCiiGufV2nw04A7qOyKvZlqhS0ah-HYRA>
-    <xmx:753dYeUHmEf-VDFD7Qi5UxWgz8w0qLH91okAyR91Ap2mUr2BXR9ZHw>
-    <xmx:753dYdneMiwtY0tj8wbyw8iiJYBq7x00KZgIlkh9VpUJ5DKYxE3dvA>
-    <xmx:8Z3dYReZHnH6x8hSQoRM46Bi7ny7wUMVACUbPEs-9XCK4EGYmp7-R_9lDcPRaoxT>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 44B3921E006E; Tue, 11 Jan 2022 10:10:39 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4569-g891f756243-fm-20220111.001-g891f7562
-Mime-Version: 1.0
-Message-Id: <fcd3a0f9-0228-4b4a-b425-a7438acef3b9@www.fastmail.com>
-In-Reply-To: <CAHmME9qw8hbbE2y56t7zygedofDDDLoPUxYWGZB_Kae0ipFARA@mail.gmail.com>
-References: <f4a4c9a6a06b6ab00dde24721715abaeca184a0d.camel@redhat.com>
- <CAHmME9qP9eYfPH+8eRvpx_tW8iAtDc-byVMvh4tFL_cABdsiOA@mail.gmail.com>
- <20211210014337.xmin2lu5rhhe3b3t@valinor>
- <20220110132349.siplwka7yhe2tmwc@valinor>
- <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
- <YdxCsI3atPILABYe@mit.edu>
- <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
- <Ydxu+KS5UkQ6hU9R@mit.edu> <Ydx7D3H0PS0Zs9/B@sol.localdomain>
- <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
- <YdyNxJzdBmSSEtDC@mit.edu>
- <CAHmME9rmWBA02SyeFiiGZ8=kydYJSJwcYPscBrTBzoXMEPH9sQ@mail.gmail.com>
- <e6fac6ab-07eb-4d8c-9206-bacf6660a7cf@www.fastmail.com>
- <CAHmME9qw8hbbE2y56t7zygedofDDDLoPUxYWGZB_Kae0ipFARA@mail.gmail.com>
-Date:   Tue, 11 Jan 2022 07:10:18 -0800
-From:   "Andy Lutomirski" <luto@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>,
-        "Marcelo Henrique Cerri" <marcelo.cerri@canonical.com>,
-        "Simo Sorce" <simo@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Jeffrey Walton" <noloader@gmail.com>,
-        "Stephan Mueller" <smueller@chronox.de>,
-        "Linux Crypto Mailing List" <linux-crypto@vger.kernel.org>,
-        "Willy Tarreau" <w@1wt.eu>, "Nicolai Stange" <nstange@suse.de>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Alexander E. Patrakov" <patrakov@gmail.com>,
-        "Ahmed S. Darwish" <darwish.07@gmail.com>,
-        "Matthew Garrett" <mjg59@srcf.ucam.org>,
-        "Vito Caputo" <vcaputo@pengaru.com>,
-        "Andreas Dilger" <adilger.kernel@dilger.ca>,
-        "Jan Kara" <jack@suse.cz>, "Ray Strode" <rstrode@redhat.com>,
-        "William Jon McCann" <mccann@jhu.edu>,
-        zhangjs <zachary@baishancloud.com>,
-        "Florian Weimer" <fweimer@redhat.com>,
-        "Lennart Poettering" <mzxreary@0pointer.de>,
-        "Peter Matthias" <matthias.peter@bsi.bund.de>,
-        "Neil Horman" <nhorman@redhat.com>,
-        "Randy Dunlap" <rdunlap@infradead.org>,
-        "Julia Lawall" <julia.lawall@inria.fr>,
-        "Dan Carpenter" <dan.carpenter@oracle.com>,
-        "Andy Lavr" <andy.lavr@gmail.com>,
-        "Petr Tesarik" <ptesarik@suse.cz>,
-        "John Haxby" <john.haxby@oracle.com>,
-        "Alexander Lobakin" <alobakin@mailbox.org>,
-        "Jirka Hladky" <jhladky@redhat.com>,
-        "Eric Biggers" <ebiggers@kernel.org>
-Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        s=k20201202; t=1641913926;
+        bh=I5Qc8vbwvVy/aqgno0y7bTdjb1/0xZxYIZ9CJ8/dEkE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jm3cHJ2IYC8yoVpreoW55qBNFJM3U6rRNS3SXF3hqh9uBdae+TKd24UeBAssffL7j
+         iQWsg8QGaxy2DQlwhD7qxgitqp2YGZeo+pCDqn6C2GV2Vy51K7S2PigUZVcE8AtiYu
+         UProDwtygPX/u27z7Ub5TVu74+6HgOg/A7uBSiruPgfy5ewU/hmq5DjdSlMWdhJkBh
+         zuKy/+USNq3R4moFRADNs1z0Sm8zNSgMIc32RW8tT24/vYr1CMn68E4e3+td1xCLGG
+         S7CGBEzvbu53Sly6UBQQqPWmpqtHXpSQSZsrezLk+BpRFdVggWiz78soofbrURaFy1
+         PCVuKOXgy1oYw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id BA16140714; Tue, 11 Jan 2022 12:12:02 -0300 (-03)
+Date:   Tue, 11 Jan 2022 12:12:02 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Riccardo Mancini <rickyman7@gmail.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vineet Singh <vineet.singh@intel.com>,
+        James Clark <james.clark@arm.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
+        eranian@google.com
+Subject: Re: [PATCH v3 06/48] perf cpumap: Switch cpu_map__build_map to cpu
+ function
+Message-ID: <Yd2eQiPIvEf0c42x@kernel.org>
+References: <20211230072030.302559-1-irogers@google.com>
+ <20211230072030.302559-8-irogers@google.com>
+ <YdybPJKjqx6zb28/@kernel.org>
+ <YdyfCN1/JWJtJHTO@kernel.org>
+ <Ydyjvcma/wMTPwbn@kernel.org>
+ <Ydymdm/PoB0hQVUT@kernel.org>
+ <CAP-5=fVAa3JVbdzNZg0LrVfw__9U9Q8PkHcro+TJiFVyvTho+A@mail.gmail.com>
+ <YdzSKOWJRC0dRnSn@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YdzSKOWJRC0dRnSn@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Em Mon, Jan 10, 2022 at 09:41:12PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Mon, Jan 10, 2022 at 02:29:58PM -0800, Ian Rogers escreveu:
+> > On Mon, Jan 10, 2022 at 1:34 PM Arnaldo Carvalho de Melo
+> > <acme@kernel.org> wrote:
+> > >
+> > > Em Mon, Jan 10, 2022 at 06:23:09PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > > > Em Mon, Jan 10, 2022 at 06:03:04PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > > > > Em Mon, Jan 10, 2022 at 05:46:52PM -0300, Arnaldo Carvalho de Melo escreveu:
+> > > > > > At this point we need to remove the now unused perf_env__get_cpu(), and
+> > > > > > then deal with the fallout in the following patches that needlessly
+> > > > > > modify this unused function.
+> > > > > >
+> > > > > > Doing that now.
+> > > > >
+> > > > > Done, force pushed to tmp.perf/perf_cpu, now it is going again thru the
+> > > > > build containers, a better start now:
+> > >
+> > > > So far so good:
+> > >
+> > > perf test ok, just that one that is failing, but before this series as
+> > > well:
+> > >
+> > >  89: perf all metricgroups test                                      : FAILED!
+> > 
+> > Could you add the verbose output? I suspect it is fixed by this:
+> > https://lore.kernel.org/lkml/20211223183948.3423989-1-irogers@google.com/
+> 
+> I'll try it.
+> 
+> BTW, here are the final tests, problems with arm 32 and 64-bit, I'll go thru
+> them tomorrow, to fix in the cset the problem appears, so that we keep it
+> bisectable, else you can get what I have in tmp.perf/perf_cpu, fix it and
+> tomorrow I'll retest.
+> 
+>   27    85.67 debian:11                     : Ok   gcc (Debian 10.2.1-6) 10.2.1 20210110 , Debian clang version 11.0.1-2
+>   28    98.65 debian:experimental           : Ok   gcc (Debian 11.2.0-13) 11.2.0 , Debian clang version 13.0.0-9+b2
+>   29     8.69 debian:experimental-x-arm64   : FAIL gcc version 11.2.0 (Debian 11.2.0-9)
+>     arch/arm64/util/pmu.c: In function 'pmu_events_map__find':
+>     arch/arm64/util/pmu.c:18:35: error: invalid operands to binary != (have 'int' and 'struct perf_cpu')
+>        18 |                 if (pmu->cpus->nr != cpu__max_cpu())
+>           |                     ~~~~~~~~~~~~~ ^~ ~~~~~~~~~~~~~~
+>           |                              |       |
+>           |                              int     struct perf_cpu
+>     make[5]: *** [/git/perf-5.16.0/tools/build/Makefile.build:139: util] Error 2
+>     make[4]: *** [/git/perf-5.16.0/tools/build/Makefile.build:139: arm64] Error 2
+>     make[3]: *** [/git/perf-5.16.0/tools/build/Makefile.build:139: arch] Error 2
+>   30    19.15 debian:experimental-x-mips    : Ok   mips-linux-gnu-gcc (Debian 10.2.1-6) 10.2.1 20210110
 
+Fixed with the patch below squashed into 48/48 where the problem
+was introduced.
 
-On Tue, Jan 11, 2022, at 5:06 AM, Jason A. Donenfeld wrote:
-> Hi Andy,
->
-> On Tue, Jan 11, 2022 at 2:44 AM Andy Lutomirski <luto@kernel.org> wrot=
-e:
->> So let=E2=80=99s solve it for real.  Have a driver (in a module) that
->
-> Um, let's not. This really isn't something the kernel needs to solve
-> here at all. There's a viable userspace solution. I see that the
-> discussion of something finally slightly technical (as opposed to just
-> compliance BS) has nerd sniped you a bit, but keep in mind what the
-> actual overall picture is. This isn't something that needs to be done.
-> My little CUSE thing (which I'm happy to develop out a bit more, even)
-> has the intent of fulfilling a compliance checkbox and nothing more.
->
+tmp.perf/perf_cpu updated.
 
+[perfbuilder@five ~]$ dm debian:experimental-x-arm64 ubuntu:16.04-x-arm ubuntu:16.04-x-arm64 ubuntu:18.04-x-arm  ubuntu:18.04-x-arm64
+   1    26.08 debian:experimental-x-arm64   : Ok   aarch64-linux-gnu-gcc (Debian 11.2.0-9) 11.2.0
+   2    21.68 ubuntu:16.04-x-arm            : Ok   arm-linux-gnueabihf-gcc (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609
+   3    21.53 ubuntu:16.04-x-arm64          : Ok   aarch64-linux-gnu-gcc (Ubuntu/Linaro 5.4.0-6ubuntu1~16.04.9) 5.4.0 20160609
+   4    61.22 ubuntu:18.04-x-arm            : Ok   arm-linux-gnueabihf-gcc (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0
+   5   108.41 ubuntu:18.04-x-arm64          : Ok   aarch64-linux-gnu-gcc (Ubuntu/Linaro 7.5.0-3ubuntu1~18.04) 7.5.0
+BUILD_TARBALL_HEAD=5610e6f0b9e64a02dfc906c9db9d18fd198200d9
+ 6 238.918
+[perfbuilder@five ~]$
 
-Can you develop your CUSE thing enough that it=E2=80=99s credibly safe a=
-gainst side channels?  If so, fine.
-
-I admit this is all rather absurd. FIPS aware userspace can do whatever =
-it wants, and
-It should be aware that /dev/urandom IS NOT FIPS.  What=E2=80=99s the pr=
-oblem?  rand(3) isn=E2=80=99t FIPS either, but no one puts person-years =
-of effort into trying to paint it FIPS-colored
+diff --git a/tools/perf/arch/arm/util/cs-etm.c b/tools/perf/arch/arm/util/cs-etm.c
+index 129c0272d65b8596..2e8b2c4365a0003f 100644
+--- a/tools/perf/arch/arm/util/cs-etm.c
++++ b/tools/perf/arch/arm/util/cs-etm.c
+@@ -203,9 +203,11 @@ static int cs_etm_set_option(struct auxtrace_record *itr,
+ 	struct perf_cpu_map *online_cpus = perf_cpu_map__new(NULL);
+ 
+ 	/* Set option of each CPU we have */
+-	for (i = 0; i < cpu__max_cpu(); i++) {
+-		if (!perf_cpu_map__has(event_cpus, i) ||
+-		    !perf_cpu_map__has(online_cpus, i))
++	for (i = 0; i < cpu__max_cpu().cpu; i++) {
++		struct perf_cpu cpu = { .cpu = i, };
++
++		if (!perf_cpu_map__has(event_cpus, cpu) ||
++		    !perf_cpu_map__has(online_cpus, cpu))
+ 			continue;
+ 
+ 		if (option & BIT(ETM_OPT_CTXTID)) {
+@@ -522,9 +524,11 @@ cs_etm_info_priv_size(struct auxtrace_record *itr __maybe_unused,
+ 
+ 	/* cpu map is not empty, we have specific CPUs to work with */
+ 	if (!perf_cpu_map__empty(event_cpus)) {
+-		for (i = 0; i < cpu__max_cpu(); i++) {
+-			if (!perf_cpu_map__has(event_cpus, i) ||
+-			    !perf_cpu_map__has(online_cpus, i))
++		for (i = 0; i < cpu__max_cpu().cpu; i++) {
++			struct perf_cpu cpu = { .cpu = i, };
++
++			if (!perf_cpu_map__has(event_cpus, cpu) ||
++			    !perf_cpu_map__has(online_cpus, cpu))
+ 				continue;
+ 
+ 			if (cs_etm_is_ete(itr, i))
+@@ -536,8 +540,10 @@ cs_etm_info_priv_size(struct auxtrace_record *itr __maybe_unused,
+ 		}
+ 	} else {
+ 		/* get configuration for all CPUs in the system */
+-		for (i = 0; i < cpu__max_cpu(); i++) {
+-			if (!perf_cpu_map__has(online_cpus, i))
++		for (i = 0; i < cpu__max_cpu().cpu; i++) {
++			struct perf_cpu cpu = { .cpu = i, };
++
++			if (!perf_cpu_map__has(online_cpus, cpu))
+ 				continue;
+ 
+ 			if (cs_etm_is_ete(itr, i))
+@@ -722,8 +728,10 @@ static int cs_etm_info_fill(struct auxtrace_record *itr,
+ 	} else {
+ 		/* Make sure all specified CPUs are online */
+ 		for (i = 0; i < perf_cpu_map__nr(event_cpus); i++) {
+-			if (perf_cpu_map__has(event_cpus, i) &&
+-			    !perf_cpu_map__has(online_cpus, i))
++			struct perf_cpu cpu = { .cpu = i, };
++
++			if (perf_cpu_map__has(event_cpus, cpu) &&
++			    !perf_cpu_map__has(online_cpus, cpu))
+ 				return -EINVAL;
+ 		}
+ 
+@@ -743,9 +751,12 @@ static int cs_etm_info_fill(struct auxtrace_record *itr,
+ 
+ 	offset = CS_ETM_SNAPSHOT + 1;
+ 
+-	for (i = 0; i < cpu__max_cpu() && offset < priv_size; i++)
+-		if (perf_cpu_map__has(cpu_map, i))
++	for (i = 0; i < cpu__max_cpu().cpu && offset < priv_size; i++) {
++		struct perf_cpu cpu = { .cpu = i, };
++
++		if (perf_cpu_map__has(cpu_map, cpu))
+ 			cs_etm_get_metadata(i, &offset, itr, info);
++	}
+ 
+ 	perf_cpu_map__put(online_cpus);
+ 
+diff --git a/tools/perf/arch/arm64/util/pmu.c b/tools/perf/arch/arm64/util/pmu.c
+index d3a18f9c85f6a731..79124bba713e5f0d 100644
+--- a/tools/perf/arch/arm64/util/pmu.c
++++ b/tools/perf/arch/arm64/util/pmu.c
+@@ -15,7 +15,7 @@ const struct pmu_events_map *pmu_events_map__find(void)
+ 		 * The cpumap should cover all CPUs. Otherwise, some CPUs may
+ 		 * not support some events or have different event IDs.
+ 		 */
+-		if (pmu->cpus->nr != cpu__max_cpu())
++		if (pmu->cpus->nr != cpu__max_cpu().cpu)
+ 			return NULL;
+ 
+ 		return perf_pmu__find_map(pmu);
