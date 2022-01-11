@@ -2,198 +2,369 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05E5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:06:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC714C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:08:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348389AbiAKHGK (ORCPT
+        id S1348400AbiAKHH7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:06:10 -0500
-Received: from mail-dm6nam08on2069.outbound.protection.outlook.com ([40.107.102.69]:14688
-        "EHLO NAM04-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230147AbiAKHGJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:06:09 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gy0DzcHzyfmZplkoc0GugNbjryHO2KaprjR+e+OxWyXDp0rWILKjz983qcc74iyZxjTI/vIgsviK2+KRS8eqWqNmQGuD6uDsuz4ADfWS1Ntv0ypNizNHO5XCA/6EvOMw7jn0gHt0gAcXcRcjRRn90tacIBhs9BKAhJucPxtNjLHGK4tAzTKPkwWpcHCEQfZ7a4f52yaZx7eTZL0KIc2vFtbh/p5+p4BFJqkmryHJdnuiiRByUo1F6j+E8os6nuau03ihJQYb3T/EbtHw20mZihp7QeRPr+pKDH6BNWo1m+bJ5qqBJEAjKCLD1C2RXAzDY22q8vRplGRlWXzYeOElfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X2rkOt/mOytGLA2rwE6ajT4TpgGkmoS7rIr2MqXHMps=;
- b=nVsrPIR7VG/tVUXYdQe/eYVHZvekbBET1+KrkoAZcKGqypcZ0Lodu1DKAX0xkwf1q9wzvbskpQhOwXdgni9X0TbjVNWVGrUypvC+PDD//bLXKcYJQ9SxA6XXIY3+AInw6wf0u3usxjysQjQMcEc+bOBIf1WRzJJvGrzFatZr3ZkKwdAZj3ro8P7XXZrDaee8hNMRL1u8qyrVdNpm6Bcjn26VMtjZALKBnY/I7BaJOT9BUR5ik+DAMoCYEdu0GdwKTO33GpduQBEgwlMm5KDCEb84SGh/hqCB130ewCwI4LDSxPmkenFhsB5OSOsN4/QuKrJ+6zEdZYClFnIlJgm4Ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X2rkOt/mOytGLA2rwE6ajT4TpgGkmoS7rIr2MqXHMps=;
- b=frAuQvG9oNLeYvTdy6lTgaImWrW04WMpfacWqMXoExOD20GaRpwMhhjxjx/GtucrdGwwF2kA/N9DkCk1V9NrwGrxMWVK7eZfc3KeSu6Coo8vdQYppnFLRkeh0YrICjZYDyH6SR0cA0lNA61iN8yI7PfNDhMOuMPpo6u9xXI5jLDEdtFra3euQDjEFlrOnXHgchnoBK+NIV2lctEo3zyieAtpv6xWG7mG7nHh3ZuyO/3YWat88yiSsNYUsOakUrfzaQbZUVutJtPHLhr6bnMQFkVQAvTB0Nm7YN2zEF+imMPdNAUoqawQ4JQw7uYhV68ciT6si6/XDommEBMuIQrH/g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4130.namprd12.prod.outlook.com (2603:10b6:a03:20b::16)
- by BYAPR12MB4630.namprd12.prod.outlook.com (2603:10b6:a03:107::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Tue, 11 Jan
- 2022 07:06:07 +0000
-Received: from BY5PR12MB4130.namprd12.prod.outlook.com
- ([fe80::8496:16fd:65c5:4af7]) by BY5PR12MB4130.namprd12.prod.outlook.com
- ([fe80::8496:16fd:65c5:4af7%4]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
- 07:06:07 +0000
-Message-ID: <9191dcc5-375d-b894-a711-5eadebb51c5f@nvidia.com>
-Date:   Mon, 10 Jan 2022 23:06:05 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v2 20/28] gup: Convert gup_pte_range() to use a folio
-Content-Language: en-US
-To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>, linux-mm@kvack.org
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-21-willy@infradead.org>
-From:   John Hubbard <jhubbard@nvidia.com>
-In-Reply-To: <20220110042406.499429-21-willy@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR03CA0032.namprd03.prod.outlook.com
- (2603:10b6:a02:a8::45) To BY5PR12MB4130.namprd12.prod.outlook.com
- (2603:10b6:a03:20b::16)
+        Tue, 11 Jan 2022 02:07:59 -0500
+Received: from mga03.intel.com ([134.134.136.65]:25656 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230147AbiAKHH6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 02:07:58 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641884878; x=1673420878;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vjcYpOjyTiusIE4W9pdhetnwso1DxKgCw8J3hiO/sAU=;
+  b=ODjWR3xEKyxk9aMxRo80whD01iR6vIes8c4k+5a98+SFlHH++Dik1iz1
+   YiAb1FGzBbvnlA9b6iGn/IDunFrSRGPIWO3pLfPe/7/0sEUvVdi6KOXlF
+   iJIEi9jB52+DY7FW7lIwLhSX2Wyx/lmp7CgHhttGjCtkHrORCcQOC7FNO
+   dEvvyKaJCak2dUd0wxSbnwFRQB58NxalltT1gARBl+VGrJjJj1K2eFThx
+   Vlxz5oy02vPd1gQaa5iN95NWUHfFHk9H6FLVvxdBaDDKKal+nUZDbAiod
+   FtpnMCbPrhOlyuj1h17BA3bgmx+ZeiSHbbhPsrGppOzl1X/5N3h15O6mR
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="243373402"
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="243373402"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 23:07:58 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="690891828"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.68])
+  by orsmga005.jf.intel.com with ESMTP; 10 Jan 2022 23:07:54 -0800
+Date:   Tue, 11 Jan 2022 15:00:00 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Lizhi Hou <lizhi.hou@xilinx.com>
+Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        maxz@xilinx.com, sonal.santan@xilinx.com, yliu@xilinx.com,
+        michal.simek@xilinx.com, stefanos@xilinx.com,
+        devicetree@vger.kernel.org, trix@redhat.com, mdf@kernel.org,
+        robh@kernel.org, dwmw2@infradead.org,
+        Max Zhen <max.zhen@xilinx.com>
+Subject: Re: [PATCH V4 XRT Alveo Infrastructure 5/5] fpga: xrt: management
+ physical function driver
+Message-ID: <20220111070000.GC979169@yilunxu-OptiPlex-7050>
+References: <20220105225013.1567871-1-lizhi.hou@xilinx.com>
+ <20220105225013.1567871-6-lizhi.hou@xilinx.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6cfbda2c-f320-4bdf-03f6-08d9d4d0d6c2
-X-MS-TrafficTypeDiagnostic: BYAPR12MB4630:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB4630A6C9B38299175A170929A8519@BYAPR12MB4630.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fWfn7Mtgd7f0KXhdri8GhoFC+VsMHnlQpGabxmtQMtQ8hdQhXwuUyT/mMYU5UAJMzGZ3wLGdr4dxbJhSBsXdlSnzc2k4L2WB5fm25f8EbNpxoVLIQQaNkmnTkynNjXbeebsobKXaIqleW73IrmmUoAc0zm/mIrxUVFzxqR9dCcOOgJyZV/FdpIdNzSiiSvABB4xkANwVuL4ofRSfzGHtKCiRpUUBdG0RYkq8qCgCGglkego3xNmMkiFc6KudqVFYvVf/auyjjwjRHhOf969hGo7rro4g3l8Lal7M2Las3YcnYI82JDQyt2Kv8aP/9iKQUKG2cCPHO5CFhxf8T6EnnkyyCPCtcx7DilnkHeogXaMs1KtjH9q2u8JKjUMn8ZYTno7C9JlwQk+SpgHfdyl1sMrmyZ8LBXEr/ABaWBwLT9aLg4HtfEhAuq7WfRXCtuK0gwi7EyVXwXlzsp87vepbayE57hw/zFDliZhR8x70+qffgaZxWaQp10rw+P3HAKijuuGZqsbUtSdwOweOoxLoNM0MKn6JLj6d2NZtfd2mvZip0NZszj3H1njuvi6zczrQmy5iPXyiirCs32f64MeewuGAssM8ZZhXjUeH+UpfVzM9/+TwW1dak7N0JFbcR8DDuo0fTc99Fua9WUOSwi470AFXQY11kKZA5/vnOljlieYWY+ZHDvJmsYXGgQv/Fd+3EAOpFnbyE6WSSwdxmptCLZK75+Gm0UC91+Z8JJhs4Y0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4130.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6486002)(8676002)(31686004)(2906002)(4326008)(53546011)(83380400001)(66556008)(66476007)(6512007)(66946007)(316002)(86362001)(186003)(36756003)(8936002)(38100700002)(508600001)(2616005)(26005)(54906003)(5660300002)(6506007)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TnV5YnF4dkZQVDR6a2VDSW5qWFk5cXVxTXJ0S1hmcTkyb3hqd3RMdkpSQVpP?=
- =?utf-8?B?bVk1ZnJFbWFmYktrcFN5RnVaTnVLQ3J4UmxKMVVpQWhKUDR5bjNaNnF0MzNw?=
- =?utf-8?B?VnVsNFZ1VDJaRzNGK0E0cnlndEMyM0k2OThXYW90cEFCdmtLUWxIejhORjBS?=
- =?utf-8?B?WXlSRWc5MzZFenQ4eG9iL3Jvbk5lVk5kV0hCU1prV3N0eVpITUFlMDhYdSt0?=
- =?utf-8?B?UzJjZURaOXZzaTlHMnFtdnFhRFpPUDROTWYraDdWejlwaWtZeVF1UEVBT2Rx?=
- =?utf-8?B?NmVLa1I2Qzltbk53UEdiUit4cFNLdWFCYjdmNW44bnVzamFRT2lHaC81elhK?=
- =?utf-8?B?cVNyRnBGVWNlaUJYa1dkcVR4bUpmWndZdW01QTVDQ1UxckhEMHVHMGlPUXFy?=
- =?utf-8?B?SkNBRlpndlB6MWxjUS9CNk14czlZaXc1Q1F1YllFWTJQRytYUjVkOU16OVlV?=
- =?utf-8?B?WFpOMnIvNDI0T2tjbXQzV2l2Y3FGWWRka1FSUE9GSnpRQVVEbzlhc1U2dWxS?=
- =?utf-8?B?ZUtldlJyeTRJTXRsNTRmaXVma3h1dkxXZWluVFRCeFVTbnEwZHl6a1pxU29T?=
- =?utf-8?B?SVd3aTNtZHNvaFliL3FzSzc4ZytGTm1NUkhJMytpQTA1MklaSmhqZVRjSU5N?=
- =?utf-8?B?TDc0R0JMTW5kZmY1SExUMHJSVmdMdG51NmF5MjJCbnIzSWx3VndLazFHRkFF?=
- =?utf-8?B?MUxuMm1BWmpoMDdma1crdGdMSW5PaXF5NlBSbWFud3J0djNvVWwzeFduZ28r?=
- =?utf-8?B?Q21vNEhSNGpJRmlXUWpFZmVuNXUvZENvbFFJZmJWMW1lWWkrYit2ZHFQNnVh?=
- =?utf-8?B?dWZLb0lia3JRUDExMDd0aG1MK1p1WnM1UEhta1d2aStBMUFIUDZwaGNmcDc4?=
- =?utf-8?B?L0toNjZsN0Z2ck9sQ2JoQzdBd3FEbHNaYnFILzl3UzB0dCsvczNhOWpJRjVC?=
- =?utf-8?B?NDB6eFBkb0VYTmVvMHdMNkMzQUpSK29IMWRCV1dwSlZMYmdvWlJNcTJrcmpt?=
- =?utf-8?B?NHZiL1VILzE1U243VUFwRjZSc2hCS21rOGFuM0NoYUE0aytxU2svdzhURWdD?=
- =?utf-8?B?VGs1YnBNWDlJWXpDcDlIdEc4Si9FRldWSnA5cHhkcFdGaXZMeEdsOGg2R3M1?=
- =?utf-8?B?THg5em9qSkFnWExabUl6QnNRb3ZaTnlXaUgxSjM2bWJqMEJKNm9QdGJmUnNK?=
- =?utf-8?B?MHI0b3JYVUJ0S1o4TGFEVkNrUmNoTlRUU0JvREQvaUNqTDNkdnU2Vy9HS1Ru?=
- =?utf-8?B?TVEvVDU2SjF3cDMvWkVjVm1IUVpabmNNb3JoWkZaNW1PaVFSR1RFUytxQTNC?=
- =?utf-8?B?QUZ2bkluK1I2QjFEbStveWMyb2xkRDAzYTZPdzZoM0g5MGlKeEkxQVFWcTlN?=
- =?utf-8?B?UmRzNnpiTUpJVEVqRVhab0pBTy9TN2tNdXFYYWNpVWtRaEpZdXdxMWUzLzdR?=
- =?utf-8?B?OXpyK1FoTTIwQ3NKTWRxdXN3OWkvRkUrTkxjUDdmRHF1alY2Z1FXdFhPK29t?=
- =?utf-8?B?S3hGNjZ2UDNtZjNEbWtXNTRYSWRobTZjcCtRN0pZdnVXblNUOTIxZWdVYmx4?=
- =?utf-8?B?UXJoWDZnaCtKcTZDM3VmekpSdm9JeWZST0hFREluMVEwZjc5d2pxZENuMXdz?=
- =?utf-8?B?T2NhTFdoRWlJYjB1VmxVSUdpK0k4SjZseHN4M0pCTFZEYytMby9kcjZyeFVQ?=
- =?utf-8?B?NVJnakJGcDA3czNsMzlOUTlTdC9JSW1JK00wcTk0TnA4L1RSV2c3dkt6akZ4?=
- =?utf-8?B?UldFV2JOOGFES3VTSit0YTJXOGFGV3YrSWlhb1VQZlp5eWcwSG1DcVNhT0ZW?=
- =?utf-8?B?cFpuN0lBb2E4YzI3RTBWUkUxd2ZGWEdQSVhoeE9jOWVESVlIQW5iRUlFek5G?=
- =?utf-8?B?UFFETnpJK3FBekRpQ1g0Qm0wTm1HTHlXR0hxaUlMRi9NcThyTHU4SkRYK3gy?=
- =?utf-8?B?dlM3UHh1NlcwN20zdTQ5T21qa0ZlK21wL3Fmd1RhaVlLbzhlYkY0ZjV5ZTlu?=
- =?utf-8?B?YXgyWCtrZkRzbzFLQ1ZOSjhjMUZpbllFTWl0MUF6TVNKR083NWJKbTlTRjc2?=
- =?utf-8?B?VlFyQ0pmeTY0U0JqbU1ndGI3WkgyQmNUc3Jmbk1MdFQrRWNKZHhEeC9BQTMy?=
- =?utf-8?B?L3N0YkhNOUVyY0dxNllVWFpyQ3lGUitsR1crMWx6dVVYbU84R0JKamxDOEJ2?=
- =?utf-8?Q?yWsDjJOD5cLT7DbqhirzQ1M=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6cfbda2c-f320-4bdf-03f6-08d9d4d0d6c2
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4130.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 07:06:07.2210
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eRyGWhrCRaksWc4AkvRD/wMahD9cubbORYUlaoS5QjvbwTjPPziC7ftaK3qENfHNgby7DSuNeb3CkRbO2L5wSQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB4630
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220105225013.1567871-6-lizhi.hou@xilinx.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/9/22 20:23, Matthew Wilcox (Oracle) wrote:
-> We still call try_grab_folio() once per PTE; a future patch could
-> optimise to just adjust the reference count for each page within
-> the folio.
+On Wed, Jan 05, 2022 at 02:50:13PM -0800, Lizhi Hou wrote:
+> The PCIE device driver which attaches to management function on Alveo
+> devices. It instantiates one or more partition. Each partition consists
+> a set of hardward endpoints. A flat device tree is associated with each
+> partition. The first version of this driver uses test version flat device
+> tree and call xrt lib API to unflatten it.
 > 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Signed-off-by: Sonal Santan <sonal.santan@xilinx.com>
+> Signed-off-by: Max Zhen <max.zhen@xilinx.com>
+> Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
 > ---
->   mm/gup.c | 16 +++++++---------
->   1 file changed, 7 insertions(+), 9 deletions(-)
-
-Still looks good.
-
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-
-
-thanks,
--- 
-John Hubbard
-NVIDIA
-
+>  drivers/fpga/Makefile             |   1 +
+>  drivers/fpga/xrt/Kconfig          |   1 +
+>  drivers/fpga/xrt/mgmt/Kconfig     |  14 +++
+>  drivers/fpga/xrt/mgmt/Makefile    |  16 +++
+>  drivers/fpga/xrt/mgmt/dt-test.dts |  12 +++
+>  drivers/fpga/xrt/mgmt/dt-test.h   |  15 +++
+>  drivers/fpga/xrt/mgmt/xmgmt-drv.c | 158 ++++++++++++++++++++++++++++++
+>  7 files changed, 217 insertions(+)
+>  create mode 100644 drivers/fpga/xrt/mgmt/Kconfig
+>  create mode 100644 drivers/fpga/xrt/mgmt/Makefile
+>  create mode 100644 drivers/fpga/xrt/mgmt/dt-test.dts
+>  create mode 100644 drivers/fpga/xrt/mgmt/dt-test.h
+>  create mode 100644 drivers/fpga/xrt/mgmt/xmgmt-drv.c
 > 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index c3e514172eaf..27cc097ec05d 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -2235,7 +2235,8 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
->   	ptem = ptep = pte_offset_map(&pmd, addr);
->   	do {
->   		pte_t pte = ptep_get_lockless(ptep);
-> -		struct page *head, *page;
-> +		struct page *page;
-> +		struct folio *folio;
->   
->   		/*
->   		 * Similar to the PMD case below, NUMA hinting must take slow
-> @@ -2262,22 +2263,20 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
->   		VM_BUG_ON(!pfn_valid(pte_pfn(pte)));
->   		page = pte_page(pte);
->   
-> -		head = try_grab_compound_head(page, 1, flags);
-> -		if (!head)
-> +		folio = try_grab_folio(page, 1, flags);
-> +		if (!folio)
->   			goto pte_unmap;
->   
->   		if (unlikely(page_is_secretmem(page))) {
-> -			put_compound_head(head, 1, flags);
-> +			gup_put_folio(folio, 1, flags);
->   			goto pte_unmap;
->   		}
->   
->   		if (unlikely(pte_val(pte) != pte_val(*ptep))) {
-> -			put_compound_head(head, 1, flags);
-> +			gup_put_folio(folio, 1, flags);
->   			goto pte_unmap;
->   		}
->   
-> -		VM_BUG_ON_PAGE(compound_head(page) != head, page);
-> -
->   		/*
->   		 * We need to make the page accessible if and only if we are
->   		 * going to access its content (the FOLL_PIN case).  Please
-> @@ -2291,10 +2290,9 @@ static int gup_pte_range(pmd_t pmd, unsigned long addr, unsigned long end,
->   				goto pte_unmap;
->   			}
->   		}
-> -		SetPageReferenced(page);
-> +		folio_set_referenced(folio);
->   		pages[*nr] = page;
->   		(*nr)++;
-> -
->   	} while (ptep++, addr += PAGE_SIZE, addr != end);
->   
->   	ret = 1;
+> diff --git a/drivers/fpga/Makefile b/drivers/fpga/Makefile
+> index 5bd41cf4c7ec..544e2144878f 100644
+> --- a/drivers/fpga/Makefile
+> +++ b/drivers/fpga/Makefile
+> @@ -52,3 +52,4 @@ obj-$(CONFIG_FPGA_DFL_PCI)		+= dfl-pci.o
+>  
+>  # XRT drivers for Alveo
+>  obj-$(CONFIG_FPGA_XRT_LIB)		+= xrt/lib/
+> +obj-$(CONFIG_FPGA_XRT_XMGMT)		+= xrt/mgmt/
+> diff --git a/drivers/fpga/xrt/Kconfig b/drivers/fpga/xrt/Kconfig
+> index 04c3bb5aaf4f..50422f77c6df 100644
+> --- a/drivers/fpga/xrt/Kconfig
+> +++ b/drivers/fpga/xrt/Kconfig
+> @@ -4,3 +4,4 @@
+>  #
+>  
+>  source "drivers/fpga/xrt/lib/Kconfig"
+> +source "drivers/fpga/xrt/mgmt/Kconfig"
+> diff --git a/drivers/fpga/xrt/mgmt/Kconfig b/drivers/fpga/xrt/mgmt/Kconfig
+> new file mode 100644
+> index 000000000000..a978747482be
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/Kconfig
+> @@ -0,0 +1,14 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +#
+> +# Xilinx XRT FPGA device configuration
+> +#
+> +
+> +config FPGA_XRT_XMGMT
+> +	tristate "Xilinx Alveo Management Driver"
+> +	depends on FPGA_XRT_LIB
+> +	select FPGA_BRIDGE
+> +	select FPGA_REGION
+> +	help
+> +	  Select this option to enable XRT PCIe driver for Xilinx Alveo FPGA.
+> +	  This driver provides interfaces for userspace application to access
+> +	  Alveo FPGA device.
+> diff --git a/drivers/fpga/xrt/mgmt/Makefile b/drivers/fpga/xrt/mgmt/Makefile
+> new file mode 100644
+> index 000000000000..c5134bf71cca
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/Makefile
+> @@ -0,0 +1,16 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +#
+> +# Copyright (C) 2020-2022 Xilinx, Inc. All rights reserved.
+> +#
+> +# Authors: Sonal.Santan@xilinx.com
+> +#
+> +
+> +FULL_XRT_PATH=$(srctree)/$(src)/..
+> +
+> +obj-$(CONFIG_FPGA_XRT_LIB) += xrt-mgmt.o
+> +
+> +xrt-mgmt-objs :=		\
+> +	xmgmt-drv.o		\
+> +	dt-test.dtb.o
+> +
+> +ccflags-y := -I$(FULL_XRT_PATH)/include
+> diff --git a/drivers/fpga/xrt/mgmt/dt-test.dts b/drivers/fpga/xrt/mgmt/dt-test.dts
+> new file mode 100644
+> index 000000000000..68dbcb7fd79d
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/dt-test.dts
+> @@ -0,0 +1,12 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/dts-v1/;
+> +
+> +/ {
+> +	compatible = "xlnx,alveo-partition", "simple-bus";
+> +	#address-cells = <2>;
+> +	#size-cells = <2>;
+> +	pr_isolate_ulp@0,41000 {
+> +		compatible = "xlnx,alveo-pr-isolation";
+> +		reg = <0x0 0x41000 0x0 0x1000>;
+> +	};
+> +};
 
+I remember Rob's comments: 
+
+"we'd need to create a base tree (if there isn't one) with nodes
+for the USB or PCI device(s) and then an overlay for the device can be
+applied to those nodes."
+
+https://lore.kernel.org/linux-fpga/CAL_JsqJfyRymB=VxLuQqLpep+Q1Eie48dobv9sC5OizDz0d2DQ@mail.gmail.com/
+
+So could we firstly create a pci device node under the of_root when
+the driver probing, then add the partition DTs under the pci device node
+by overlay machenism.
+
+I'm considering if finally we could leverage the existing of-fpga-region
+that reprograms and enumerates FPGA sub devices by overlay.
+
+Open for discussion.
+
+Thanks,
+Yilun
+
+> diff --git a/drivers/fpga/xrt/mgmt/dt-test.h b/drivers/fpga/xrt/mgmt/dt-test.h
+> new file mode 100644
+> index 000000000000..6ec4203afbd2
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/dt-test.h
+> @@ -0,0 +1,15 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +/*
+> + * Copyright (C) 2020-2022 Xilinx, Inc.
+> + *
+> + * Authors:
+> + *	Lizhi Hou <lizhih@xilinx.com>
+> + */
+> +
+> +#ifndef _DT_TEST_H_
+> +#define _DT_TEST_H_
+> +
+> +extern u8 __dtb_dt_test_begin[];
+> +extern u8 __dtb_dt_test_end[];
+> +
+> +#endif	/* _DT_TEST_H_ */
+> diff --git a/drivers/fpga/xrt/mgmt/xmgmt-drv.c b/drivers/fpga/xrt/mgmt/xmgmt-drv.c
+> new file mode 100644
+> index 000000000000..87abe5b86e0b
+> --- /dev/null
+> +++ b/drivers/fpga/xrt/mgmt/xmgmt-drv.c
+> @@ -0,0 +1,158 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Xilinx Alveo Management Function Driver
+> + *
+> + * Copyright (C) 2020-2022 Xilinx, Inc.
+> + *
+> + * Authors:
+> + *	Cheng Zhen <maxz@xilinx.com>
+> + *	Lizhi Hou <lizhih@xilinx.com>
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/pci.h>
+> +#include <linux/aer.h>
+> +#include <linux/vmalloc.h>
+> +#include <linux/delay.h>
+> +#include "xpartition.h"
+> +#include "dt-test.h"
+> +
+> +#define XMGMT_MODULE_NAME	"xrt-mgmt"
+> +
+> +#define XMGMT_PDEV(xm)		((xm)->pdev)
+> +#define XMGMT_DEV(xm)		(&(XMGMT_PDEV(xm)->dev))
+> +#define xmgmt_err(xm, fmt, args...)	\
+> +	dev_err(XMGMT_DEV(xm), "%s: " fmt, __func__, ##args)
+> +#define xmgmt_warn(xm, fmt, args...)	\
+> +	dev_warn(XMGMT_DEV(xm), "%s: " fmt, __func__, ##args)
+> +#define xmgmt_info(xm, fmt, args...)	\
+> +	dev_info(XMGMT_DEV(xm), "%s: " fmt, __func__, ##args)
+> +#define xmgmt_dbg(xm, fmt, args...)	\
+> +	dev_dbg(XMGMT_DEV(xm), "%s: " fmt, __func__, ##args)
+> +#define XMGMT_DEV_ID(_pcidev)			\
+> +	({ typeof(_pcidev) (pcidev) = (_pcidev);	\
+> +	((pci_domain_nr((pcidev)->bus) << 16) |	\
+> +	PCI_DEVID((pcidev)->bus->number, (pcidev)->devfn)); })
+> +
+> +#define XRT_MAX_READRQ		512
+> +
+> +/* PCI Device IDs */
+> +#define PCI_DEVICE_ID_U50		0x5020
+> +static const struct pci_device_id xmgmt_pci_ids[] = {
+> +	{ PCI_DEVICE(PCI_VENDOR_ID_XILINX, PCI_DEVICE_ID_U50), }, /* Alveo U50 */
+> +	{ 0, }
+> +};
+> +
+> +struct xmgmt {
+> +	struct pci_dev *pdev;
+> +	void *base_partition;
+> +
+> +	bool ready;
+> +};
+> +
+> +static int xmgmt_config_pci(struct xmgmt *xm)
+> +{
+> +	struct pci_dev *pdev = XMGMT_PDEV(xm);
+> +	int rc;
+> +
+> +	rc = pcim_enable_device(pdev);
+> +	if (rc < 0) {
+> +		xmgmt_err(xm, "failed to enable device: %d", rc);
+> +		return rc;
+> +	}
+> +
+> +	rc = pci_enable_pcie_error_reporting(pdev);
+> +	if (rc)
+> +		xmgmt_warn(xm, "failed to enable AER: %d", rc);
+> +
+> +	pci_set_master(pdev);
+> +
+> +	rc = pcie_get_readrq(pdev);
+> +	if (rc > XRT_MAX_READRQ)
+> +		pcie_set_readrq(pdev, XRT_MAX_READRQ);
+> +	return 0;
+> +}
+> +
+> +static int xmgmt_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+> +{
+> +	struct xrt_partition_range ranges[PCI_NUM_RESOURCES];
+> +	struct xrt_partition_info xp_info = { 0 };
+> +	struct device *dev = &pdev->dev;
+> +	int ret, i, idx = 0;
+> +	struct xmgmt *xm;
+> +
+> +	xm = devm_kzalloc(dev, sizeof(*xm), GFP_KERNEL);
+> +	if (!xm)
+> +		return -ENOMEM;
+> +	xm->pdev = pdev;
+> +	pci_set_drvdata(pdev, xm);
+> +
+> +	ret = xmgmt_config_pci(xm);
+> +	if (ret)
+> +		goto failed;
+> +
+> +	for (i = 0; i < PCI_NUM_RESOURCES; i++) {
+> +		if (pci_resource_len(pdev, i) > 0) {
+> +			ranges[idx].bar_idx = i;
+> +			ranges[idx].base = pci_resource_start(pdev, i);
+> +			ranges[idx].size = pci_resource_len(pdev, i);
+> +			idx++;
+> +		}
+> +	}
+> +	xp_info.num_range = idx;
+> +	xp_info.ranges = ranges;
+> +	xp_info.fdt = __dtb_dt_test_begin;
+> +	xp_info.fdt_len = (u32)(__dtb_dt_test_end - __dtb_dt_test_begin);
+> +	ret = xrt_partition_create(&pdev->dev, &xp_info, &xm->base_partition);
+> +	if (ret)
+> +		goto failed;
+> +
+> +	xmgmt_info(xm, "%s started successfully", XMGMT_MODULE_NAME);
+> +	return 0;
+> +
+> +failed:
+> +	if (xm->base_partition)
+> +		xrt_partition_destroy(xm->base_partition);
+> +	pci_set_drvdata(pdev, NULL);
+> +	return ret;
+> +}
+> +
+> +static void xmgmt_remove(struct pci_dev *pdev)
+> +{
+> +	struct xmgmt *xm = pci_get_drvdata(pdev);
+> +
+> +	xrt_partition_destroy(xm->base_partition);
+> +	pci_disable_pcie_error_reporting(xm->pdev);
+> +	xmgmt_info(xm, "%s cleaned up successfully", XMGMT_MODULE_NAME);
+> +}
+> +
+> +static struct pci_driver xmgmt_driver = {
+> +	.name = XMGMT_MODULE_NAME,
+> +	.id_table = xmgmt_pci_ids,
+> +	.probe = xmgmt_probe,
+> +	.remove = xmgmt_remove,
+> +};
+> +
+> +static int __init xmgmt_init(void)
+> +{
+> +	int res = 0;
+> +
+> +	res = pci_register_driver(&xmgmt_driver);
+> +	if (res)
+> +		return res;
+> +
+> +	return 0;
+> +}
+> +
+> +static __exit void xmgmt_exit(void)
+> +{
+> +	pci_unregister_driver(&xmgmt_driver);
+> +}
+> +
+> +module_init(xmgmt_init);
+> +module_exit(xmgmt_exit);
+> +
+> +MODULE_DEVICE_TABLE(pci, xmgmt_pci_ids);
+> +MODULE_AUTHOR("XRT Team <runtime@xilinx.com>");
+> +MODULE_DESCRIPTION("Xilinx Alveo management function driver");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.27.0
