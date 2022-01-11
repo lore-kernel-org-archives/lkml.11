@@ -2,136 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:10:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37254C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:11:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349840AbiAKQKo (ORCPT
+        id S1349846AbiAKQLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 11:10:44 -0500
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:48653 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1343495AbiAKQKn (ORCPT
+        Tue, 11 Jan 2022 11:11:02 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:59700 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343508AbiAKQLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 11:10:43 -0500
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20BG8jiU007374
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 11:08:45 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 24DC415C00C8; Tue, 11 Jan 2022 11:08:45 -0500 (EST)
-Date:   Tue, 11 Jan 2022 11:08:45 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
-        Simo Sorce <simo@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Walton <noloader@gmail.com>,
-        Stephan Mueller <smueller@chronox.de>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Alexander E. Patrakov" <patrakov@gmail.com>,
-        "Ahmed S. Darwish" <darwish.07@gmail.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Vito Caputo <vcaputo@pengaru.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
-        William Jon McCann <mccann@jhu.edu>,
-        zhangjs <zachary@baishancloud.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Peter Matthias <matthias.peter@bsi.bund.de>,
-        Neil Horman <nhorman@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Petr Tesarik <ptesarik@suse.cz>,
-        John Haxby <john.haxby@oracle.com>,
-        Alexander Lobakin <alobakin@mailbox.org>,
-        Jirka Hladky <jhladky@redhat.com>,
-        Eric Biggers <ebiggers@kernel.org>
-Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
-Message-ID: <Yd2rjQhK71L2vwgb@mit.edu>
-References: <YdxCsI3atPILABYe@mit.edu>
- <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
- <Ydxu+KS5UkQ6hU9R@mit.edu>
- <Ydx7D3H0PS0Zs9/B@sol.localdomain>
- <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
- <YdyNxJzdBmSSEtDC@mit.edu>
- <CAHmME9rmWBA02SyeFiiGZ8=kydYJSJwcYPscBrTBzoXMEPH9sQ@mail.gmail.com>
- <e6fac6ab-07eb-4d8c-9206-bacf6660a7cf@www.fastmail.com>
- <Ydz1F/AqB1oO/qHF@mit.edu>
- <CAHmME9o8FFLC3vvTN0cNzdzoYvBFwJMUCTaxOhnXfTaEELbBeg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHmME9o8FFLC3vvTN0cNzdzoYvBFwJMUCTaxOhnXfTaEELbBeg@mail.gmail.com>
+        Tue, 11 Jan 2022 11:11:01 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 4D7B021135;
+        Tue, 11 Jan 2022 16:11:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1641917460; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sc1CBYFF5ymyW+1HvB5nHhEJzHMwZx8HHI5lpt+9E7g=;
+        b=gw//o/SEbQ5lH7CGHX2p+7nOep+l/uxv2g40y/F68M9U+CPc3GzDzmhWNti91BtFmvrQrw
+        EOH9PAfkdwjpoMylAUgPP0DzkNFUCssc8qcykV9sUOrtaWqDtYgN1Nh5MwZTnvP+thS56S
+        iN1Cau4rfcAPOk0zUKaZ+JunUU4IHGE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1641917460;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sc1CBYFF5ymyW+1HvB5nHhEJzHMwZx8HHI5lpt+9E7g=;
+        b=F+bpKfSDND4/zG+ELos1B9ivmFs3AIAmqjoC0/Cc5Y16b5wRXMin1MuFTpbFSBPmnMGPZn
+        AuaFa7YekP0+3rBQ==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 36DC3A3B90;
+        Tue, 11 Jan 2022 16:11:00 +0000 (UTC)
+Date:   Tue, 11 Jan 2022 17:11:00 +0100
+Message-ID: <s5hee5eb6cr.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Tom Rix <trix@redhat.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "james.schulman@cirrus.com" <james.schulman@cirrus.com>,
+        "david.rhodes@cirrus.com" <david.rhodes@cirrus.com>,
+        "tanureal@opensource.cirrus.com" <tanureal@opensource.cirrus.com>,
+        "perex@perex.cz" <perex@perex.cz>,
+        "tiwai@suse.com" <tiwai@suse.com>,
+        "nathan@kernel.org" <nathan@kernel.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "patches@opensource.cirrus.com" <patches@opensource.cirrus.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>
+Subject: Re: [PATCH] ALSA: hda: cs35l41: fix double free in cs35l41_hda_probe()
+In-Reply-To: <CAHp75VdJOzYR0HsZ2LWn-iAMwcM3s0NNDKQdXZZudcEB9RwE9A@mail.gmail.com>
+References: <20220108140756.3985487-1-trix@redhat.com>
+        <CAHp75VfbSmgeyi=8q1_he7mpGrNxYAOewKYWD=h8BSuxz2XWOw@mail.gmail.com>
+        <0c0926d9-9b72-1519-7e22-e90ffc229940@redhat.com>
+        <CAHp75VdJOzYR0HsZ2LWn-iAMwcM3s0NNDKQdXZZudcEB9RwE9A@mail.gmail.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 02:16:30PM +0100, Jason A. Donenfeld wrote:
-> I spent some time reading about FIPS certification, compliance, and
-> the requirements of various customers. One thing in particular leapt
-> out at me, which I think you've been saying over and over in this
-> thread but I didn't fully understand until this morning:
+On Mon, 10 Jan 2022 11:21:11 +0100,
+Andy Shevchenko wrote:
 > 
-> The goal is generally to have particular pieces of software or
-> particular solutions FIPS certified. And to do this, they start from
-> the top of the stack and move onward down. Most OSS software out there
-> today isn't really FIPS ready and oftentimes a full solution needs
-> modifications in one place or another. Other times, it's enough to
-> plug in the right userspace crypto libraries. And I noticed in looking
-> at things that are FIPS certified that random number generation tends
-> to go through a userspace abstraction layer. And, it looks like these
-> abstraction layers all have FIPS-able RNG hooks. You mentioned OpenSSL
-> earlier, and it looks like even libgcrypt and wolfSSL have an
-> abstraction layer for this.
+> On Mon, Jan 10, 2022 at 2:37 AM Tom Rix <trix@redhat.com> wrote:
+> > On 1/9/22 2:33 PM, Andy Shevchenko wrote:
+> > On Saturday, January 8, 2022, <trix@redhat.com> wrote:
+> 
+> ...
+> 
+> >> +       if (unlikely(ret)) {
+> >
+> > This is double weird. First of all, wtf unlikely is here? Second, I commented on the patch that does something with this driver and pointed out to the return 0 in some cases. This one seems a band aid.
+> >
+> > Unlikely to have an error.
+> 
+> We don't use likely() and unlikely() here and there, you need to
+> provide a very good justification of its use.
+> 
+> For the record, I forwarded you my review against the code where you
+> can find much more issues with it that are subject to fix / amend.
 
-I know this thread is about security theatre, not real security, but
-there's an even more important reason why the FIPS cryptographic
-module should be as high in the stack as possible (e.g., in
-userspace).  Let's consider as, Albert Einstein would put it, the
-following gedanken experiment:
+For this particular bug fix, Dan submitted a simpler patch and I took
+it now:
+  https://lore.kernel.org/r/20220111072232.GG11243@kili
 
-Let's presume that in 2008, there was a FIPS-140 certified OS
-designating the Linux kernel as the "cryptographic module", and so
-/dev/urandom was hacked to be "FIPS certified".  Huzzah!  Now let's
-assume that OS was using Ubuntu, which, being derived from Debian, was
-subject to a distribution "value add" where in blind obedience to a
-valgrind warning, there was a distro-level change which resulted in
-OpenSSL on Debian and Debian derivitives generating extremely
-predictable keys[1].  This caused fairly massive security problems for
-any use of OpenSSL, including ssh, certificate generation, etc. ---
-despite the FIPS 140 certification of the OS.  Oops!
 
-[1] https://en.wikinews.org/wiki/Predictable_random_number_generator_discovered_in_the_Debian_version_of_OpenSSL
+thanks,
 
-It might be *cheaper* to claim that your OS is FIPS 140 certified by
-hacking /dev/urandom.  Otherwise, you might have to have a responsible
-security engineer audit the various userspace cryptographic libraries,
-and that would be way more expensive.  It's much easier for a product
-manager to say, "my work here is done" after applying a patch to the
-Linux kernel for /dev/urandom, and not bothering to get an engineer to
-certify the rest of the cryptographic stack.
-
-And, if enterprise customers just care that an enterprise distro can
-claim "FIPS 140 compliance", and they can push that claim of FIPS
-compliance to the PCI certification authorities, they're happy.  So
-ultimately, this is really an economic requirement, not a security
-requirement.  And given that enterprise distros are the ones getting
-paid $$$ in order to claim FIPS 140 compliance, then from an upstream
-perspective, if our gaols is to optimzie the speed of getrandom(2) and
-/dev/urandom, and to encourage application programmers to do the right
-thing --- and *not* security theare for the sake of economic goals, we
-should make technical decisions accordingly.
-
-Cheers,
-
-					- Ted
+Takashi
