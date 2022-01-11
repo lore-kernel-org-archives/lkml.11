@@ -2,201 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09BAC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D313C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350242AbiAKSyS (ORCPT
+        id S1350275AbiAKSzq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:54:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350127AbiAKSyR (ORCPT
+        Tue, 11 Jan 2022 13:55:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54620 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350250AbiAKSzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:54:17 -0500
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E676C061748
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:54:16 -0800 (PST)
-Received: by mail-yb1-xb31.google.com with SMTP id g81so22816252ybg.10
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:54:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dL+btzQ+xCxXspDJaZJGykFcK855V7Nc4qMk1w8Krog=;
-        b=do5RkxEiTvBJKwP8Dwceb93LhoaiHtrVK3rpQLZL6591RN7aCxg+6wrPkIfrG+3vx2
-         HZkeIHoe4AJ6wOHohpMrkiWbIOacLU6s2IyUsIXNJNiIK0g0t+oib5q4qKKfEC3MhWj2
-         GQZUli8+aMDP731VX5OnkTNhIACQdB3JbOekC2lsqiITasdmocNW3gVj5WGQSo03IVpZ
-         KGevY2wEgZdHPI7Dut+Y6Br/2su6UD48i9VKEk0Nfz81VvW8+YOPRnlaz8bGElKfazWR
-         zD7scaBip1NPm0RwZdW9zkGduOghl2GO3aPzMVIKp12HHtga1ELUBnND7Rus/2DHk/Rp
-         YTOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dL+btzQ+xCxXspDJaZJGykFcK855V7Nc4qMk1w8Krog=;
-        b=I5TOKcgUG1jwsjynW3QiDAxJ9uqsQvQuLYocc9ILyVteSWObnx9jLJBkkiAxQ1FZSF
-         b2W8DFbLGwgHAehVmybBYGPXvpz1kP3s0UuuMUXTOBy83CmpZ18wRMmf/YzJR5omE0OL
-         K0GbPjaBeLPyyM9adczfxnwKFTYg1P8yDXdAAx/zew+/5kQSvOsgTBjzbukLlvokkFpW
-         4uX3B4lwD0vPxGRKEDT4CggyIzkKy7zBgrgxZcHqVqTc7eTRSoZ0y7E9xjl7OW+vwSlw
-         g0S9D8FjEIP9Bpv+nFwRBuiHMl72YcFKXk9wf0FH53C8ddpuD50cjbQF/jG3SVLApDMF
-         3QkA==
-X-Gm-Message-State: AOAM5301Rds3Vb9K5BVSEYzLxja7OUvmsZBjpEpTQsFlIr6I/1+mcy/I
-        fWdY2Rsk2y36hsE9WCIg7p+RcZ1lrhpxaT6xlvCBjw==
-X-Google-Smtp-Source: ABdhPJzdKh4TYtVP9wJaIC9WtAXx8WjDTCq5KBT609w0WccuH6YBlrmVHkTjxZ89JzWrJ3ZhBf1h0/HOXcQQkM4gZ+8=
-X-Received: by 2002:a25:c841:: with SMTP id y62mr8493349ybf.196.1641927255567;
- Tue, 11 Jan 2022 10:54:15 -0800 (PST)
+        Tue, 11 Jan 2022 13:55:41 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CF356176D;
+        Tue, 11 Jan 2022 18:55:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8210C36AE3;
+        Tue, 11 Jan 2022 18:55:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641927339;
+        bh=zojY8MTCnk8nwBqZ+pXLnQcYipINl6Y5Z/qNYwqhFRc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=q6rIpxYlfnP/5Kr6nyyWLHpNrmEsfDvrClt4rm7Sxa+1/jl/V84qxepgXn6Z1rAuV
+         D4gwcA5ZtoWGkG6HLcaC+VisaRHHhwJbOIdSmEU6qKbp+oWzrfFQi8OP1ZmfgK8KGT
+         mtMF+0rbkAPCQKXPXwlIXWrhLX2nDzaohYCxuShmtjY1QZGoVnUQdnhDCk4RGeYGCH
+         JqWvFMyFdFXK+NlxHa/2xaj+Fa911Zg0OouSpg7ZOaBvPfXIhBlQBskNawWvNYPpEF
+         I8pNitn+N71ZQzXYH4yFJvtFiD07SMzFThKa0m1x6j1pnwBd5t6JwSHMP9A3hOWbgW
+         quz7Pk34Z32wA==
+Date:   Tue, 11 Jan 2022 12:55:38 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc:     bhelgaas@google.com, lukas@wunner.de,
+        zhangliguang@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [RFC PATCH v2] PCI: Waiting command completed in
+ get_port_device_capability()
+Message-ID: <20220111185538.GA152548@bhelgaas>
 MIME-Version: 1.0
-References: <20220104194918.373612-1-rananta@google.com> <20220104194918.373612-2-rananta@google.com>
- <CAAeT=Fxyct=WLUvfbpROKwB9huyt+QdJnKTaj8c5NKk+UY51WQ@mail.gmail.com>
- <CAJHc60za+E-zEO5v2QeKuifoXznPnt5n--g1dAN5jgsuq+SxrA@mail.gmail.com> <CAAeT=FwfjUiaWAJHCEqTCyu9PRr+JEKx1v0P-CJ=2-yGBvaGbA@mail.gmail.com>
-In-Reply-To: <CAAeT=FwfjUiaWAJHCEqTCyu9PRr+JEKx1v0P-CJ=2-yGBvaGbA@mail.gmail.com>
-From:   Raghavendra Rao Ananta <rananta@google.com>
-Date:   Tue, 11 Jan 2022 10:54:05 -0800
-Message-ID: <CAJHc60zTkVb6LJDrYLrYgZ8dDigcAFkCq9sr96g4Lz0fkVGROw@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 01/11] KVM: Capture VM start
-To:     Reiji Watanabe <reijiw@google.com>
-Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
-        Ricardo Koller <ricarkol@google.com>,
-        Oliver Upton <oupton@google.com>,
-        Jing Zhang <jingzhangos@google.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1641525769-113099-1-git-send-email-yaohongbo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 4:04 PM Reiji Watanabe <reijiw@google.com> wrote:
->
-> On Fri, Jan 7, 2022 at 3:43 PM Raghavendra Rao Ananta
-> <rananta@google.com> wrote:
-> >
-> > Hi Reiji,
-> >
-> > On Thu, Jan 6, 2022 at 10:07 PM Reiji Watanabe <reijiw@google.com> wrote:
-> > >
-> > > Hi Raghu,
-> > >
-> > > On Tue, Jan 4, 2022 at 11:49 AM Raghavendra Rao Ananta
-> > > <rananta@google.com> wrote:
-> > > >
-> > > > Capture the start of the KVM VM, which is basically the
-> > > > start of any vCPU run. This state of the VM is helpful
-> > > > in the upcoming patches to prevent user-space from
-> > > > configuring certain VM features after the VM has started
-> > > > running.
-> > > >
-> > > > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
-> > > > ---
-> > > >  include/linux/kvm_host.h | 3 +++
-> > > >  virt/kvm/kvm_main.c      | 9 +++++++++
-> > > >  2 files changed, 12 insertions(+)
-> > > >
-> > > > diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> > > > index c310648cc8f1..d0bd8f7a026c 100644
-> > > > --- a/include/linux/kvm_host.h
-> > > > +++ b/include/linux/kvm_host.h
-> > > > @@ -623,6 +623,7 @@ struct kvm {
-> > > >         struct notifier_block pm_notifier;
-> > > >  #endif
-> > > >         char stats_id[KVM_STATS_NAME_SIZE];
-> > > > +       bool vm_started;
-> > >
-> > > Since KVM_RUN on any vCPUs doesn't necessarily mean that the VM
-> > > started yet, the name might be a bit misleading IMHO.  I would
-> > > think 'has_run_once' or 'ran_once' might be more clear (?).
-> > >
-> > I always struggle with the names; but if you feel that 'ran_once'
-> > makes more sense for a reader, I can change it.
->
-> I would prefer 'ran_once'.
->
-Yes, that makes sense. I think the name created a lot of confusion for
-the patch.
+[+cc Lukas, Rafael (in case you have any recollection of 2bd50dd800b5)]
 
-Thanks,
-Raghavendra
->
-> > > >  };
-> > > >
-> > > >  #define kvm_err(fmt, ...) \
-> > > > @@ -1666,6 +1667,8 @@ static inline bool kvm_check_request(int req, struct kvm_vcpu *vcpu)
-> > > >         }
-> > > >  }
-> > > >
-> > > > +#define kvm_vm_has_started(kvm) (kvm->vm_started)
-> > > > +
-> > > >  extern bool kvm_rebooting;
-> > > >
-> > > >  extern unsigned int halt_poll_ns;
-> > > > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> > > > index 72c4e6b39389..962b91ac2064 100644
-> > > > --- a/virt/kvm/kvm_main.c
-> > > > +++ b/virt/kvm/kvm_main.c
-> > > > @@ -3686,6 +3686,7 @@ static long kvm_vcpu_ioctl(struct file *filp,
-> > > >         int r;
-> > > >         struct kvm_fpu *fpu = NULL;
-> > > >         struct kvm_sregs *kvm_sregs = NULL;
-> > > > +       struct kvm *kvm = vcpu->kvm;
-> > > >
-> > > >         if (vcpu->kvm->mm != current->mm || vcpu->kvm->vm_dead)
-> > > >                 return -EIO;
-> > > > @@ -3723,6 +3724,14 @@ static long kvm_vcpu_ioctl(struct file *filp,
-> > > >                         if (oldpid)
-> > > >                                 synchronize_rcu();
-> > > >                         put_pid(oldpid);
-> > > > +
-> > > > +                       /*
-> > > > +                        * Since we land here even on the first vCPU run,
-> > > > +                        * we can mark that the VM has started running.
-> > > > +                        */
-> > >
-> > > It might be nicer to add a comment why the code below gets kvm->lock.
-> > >
-> > I've been going back and forth on this one. Initially I considered
-> > simply going with atomic_t, but the patch 4/11 (KVM: arm64: Setup a
-> > framework for hypercall bitmap firmware registers)
-> > kvm_arm_set_fw_reg_bmap()'s implementation felt like we need a lock to
-> > have the whole 'is the register busy?' operation atomic. But, that's
-> > just one of the applications.
->
-> I understand why you need the code to get the lock here with the
-> current implementation.
-> But, since the code just set the one field (vm_started) with the lock,
-> I thought the intention of getting the lock might not be so obvious.
-> (But, maybe clear enough looking at the code in the patch-4)
->
-> Thanks,
-> Reiji
->
->
-> > > Anyway, the patch generally looks good to me, and thank you
-> > > for making this change (it works for my purpose as well).
-> > >
-> > > Reviewed-by: Reiji Watanabe <reijiw@google.com>
-> > >
-> > Glad that it's helping you as well and thanks for the review.
-> >
-> > Regards,
-> > Raghavendra
-> >
-> > > Thanks,
-> > > Reiji
-> > >
-> > >
-> > > > +                       mutex_lock(&kvm->lock);
-> > > > +                       kvm->vm_started = true;
-> > > > +                       mutex_unlock(&kvm->lock);
-> > > >                 }
-> > > >                 r = kvm_arch_vcpu_ioctl_run(vcpu);
-> > > >                 trace_kvm_userspace_exit(vcpu->run->exit_reason, r);
-> > > > --
-> > > > 2.34.1.448.ga2b2bfdf31-goog
-> > > >
+On Fri, Jan 07, 2022 at 11:22:49AM +0800, Yao Hongbo wrote:
+> According to the PCIe specification Revision 5.0, section
+> 7.5.3.11 (slot Status Register), if Command Complete notification
+> is supported,  a write to the slot control register needs to set
+> the command completed bit, which can indicate the controller is
+> ready to receive the next command.
+> 
+> However, before probing the pcie hotplug service, there needs to set
+> HPIE bit in the slot ctrl register to disable hotplug interrupts,
+> and there is no wait currently.
+> 
+> The interval between the two functions get_port_device_capability() and
+> pcie_disable_notification() is not long, which may cause the latter to
+> be interfered by the former.
+> 
+> The command complete event received by pcie_disable_notification() may
+> belong to the operation of get_port_device_capability().
+
+Yes, looks like a potential problem.
+
+> Signed-off-by: Liguang Zhang <zhangliguang@linux.alibaba.com>
+> Signed-off-by: Yao Hongbo <yaohongbo@linux.alibaba.com>
+> ---
+>  drivers/pci/pcie/portdrv_core.c | 40 ++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 38 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+> index bda6308..ec2088b6e 100644
+> --- a/drivers/pci/pcie/portdrv_core.c
+> +++ b/drivers/pci/pcie/portdrv_core.c
+> @@ -15,6 +15,7 @@
+>  #include <linux/string.h>
+>  #include <linux/slab.h>
+>  #include <linux/aer.h>
+> +#include <linux/delay.h>
+>  
+>  #include "../pci.h"
+>  #include "portdrv.h"
+> @@ -190,6 +191,42 @@ static int pcie_init_service_irqs(struct pci_dev *dev, int *irqs, int mask)
+>  	return 0;
+>  }
+>  
+> +static void pcie_port_disable_hp_interrupt(struct pci_dev *dev)
+> +{
+> +	u16 slot_status;
+> +	u32 slot_cap;
+> +	int timeout = 1000;
+> +
+> +	pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+> +			PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+> +
+> +	/*
+> +	 * If the command completed notification is not supported,
+> +	 * we don't need to wait after writing to the slot ctrl register.
+> +	 */
+> +	pcie_capability_read_dword(dev, PCI_EXP_SLTCAP, &slot_cap);
+> +	if (slot_cap & PCI_EXP_SLTCAP_NCCS)
+> +		return;
+> +
+> +	do {
+> +		pcie_capability_read_word(dev, PCI_EXP_SLTSTA, &slot_status);
+> +		if (slot_status == (u16) ~0) {
+> +			pci_info(dev, "%s: no response from device\n",  __func__);
+> +			return;
+> +		}
+> +
+> +		if (slot_status & PCI_EXP_SLTSTA_CC) {
+> +			pcie_capability_write_word(dev, PCI_EXP_SLTSTA, PCI_EXP_SLTSTA_CC);
+> +			return;
+> +		}
+> +
+> +		msleep(10);
+> +		timeout -= 10;
+> +	} while (timeout >= 0);
+> +
+> +	pci_info(dev, "Timeout on hotplug disable interrupt!\n");
+> +}
+> +
+>  /**
+>   * get_port_device_capability - discover capabilities of a PCI Express port
+>   * @dev: PCI Express port to examine
+> @@ -213,8 +250,7 @@ static int get_port_device_capability(struct pci_dev *dev)
+>  		 * Disable hot-plug interrupts in case they have been enabled
+>  		 * by the BIOS and the hot-plug service driver is not loaded.
+>  		 */
+> -		pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+> -			  PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+> +		pcie_port_disable_hp_interrupt(dev);
+
+This originally came from 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port
+services during port initialization"), where we disable hotplug
+interrupts in case the hotplug driver is not available.
+
+In general, I think the OS should not be responsible for disabling
+interrupts for feature X.  The OS may predate feature X and may not
+know anything about X at all.  The power-on default for interrupts
+related to X should be "disabled" (as it is for HPIE and CCIE), and if
+firmware enables them, it should disable them or arrange to handle
+them itself before handing off to the OS.
+
+I don't know whether 2bd50dd800b5 was prompted by spurious hotplug
+interrupts or not.  If it was, I think we were seeing a firmware
+defect or possibly a pciehp initialization issue.
+
+At the time of 2bd50dd800b5, we always cleared HPIE and CCIE here.
+
+But now, on ACPI systems, we only clear HPIE and CCIE here if we *do*
+have the hotplug driver (because host->native_pcie_hotplug only
+remains set if we have been granted control via _OSC, and we only
+request control when CONFIG_HOTPLUG_PCI_PCIE is enabled).  On these
+systems, we should be able to remove this disable code because pciehp
+will do whatever it needs.
+
+For non-ACPI systems, bridge->native_pcie_hotplug will always be set,
+so we will clear HPIE and CCIE here and then (if
+CONFIG_HOTPLUG_PCI_PCIE is enabled) initialize pciehp soon after,
+which may be a problem as you describe.
+
+What kind of system are you seeing the problem on?  It seems like it
+should be safe to drop the HPIE and CCIE disable here for ACPI
+systems.  And *likely* we could do the same for non-ACPI systems,
+though I have no experience there.
+
+Bjorn
