@@ -2,83 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1073EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343779AbiAKQpD (ORCPT
+        id S1343822AbiAKQpp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 11:45:03 -0500
-Received: from h2.fbrelay.privateemail.com ([131.153.2.43]:38825 "EHLO
-        h2.fbrelay.privateemail.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240793AbiAKQpB (ORCPT
+        Tue, 11 Jan 2022 11:45:45 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:53626 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240793AbiAKQpo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 11:45:01 -0500
-Received: from MTA-11-3.privateemail.com (mta-11-1.privateemail.com [198.54.118.201])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by h1.fbrelay.privateemail.com (Postfix) with ESMTPS id 79E3E1802431;
-        Tue, 11 Jan 2022 11:45:00 -0500 (EST)
-Received: from mta-11.privateemail.com (localhost [127.0.0.1])
-        by mta-11.privateemail.com (Postfix) with ESMTP id B91FB1800145;
-        Tue, 11 Jan 2022 11:44:58 -0500 (EST)
-Received: from localhost.localdomain (unknown [10.20.151.140])
-        by mta-11.privateemail.com (Postfix) with ESMTPA id 525D41800147;
-        Tue, 11 Jan 2022 11:44:57 -0500 (EST)
-From:   Jordy Zomer <jordy@pwning.systems>
-To:     jordy@pwning.systems
-Cc:     krzysztof.kozlowski@canonical.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v3] nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
-Date:   Tue, 11 Jan 2022 17:44:51 +0100
-Message-Id: <20220111164451.3232987-1-jordy@pwning.systems>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20211117171706.2731410-1-jordy@pwning.systems>
-References: <20211117171706.2731410-1-jordy@pwning.systems>
+        Tue, 11 Jan 2022 11:45:44 -0500
+Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20BBoJgU024713;
+        Tue, 11 Jan 2022 17:45:24 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=IN9ceG9HgeMhT60YAmViP0IH3j3ce+PtYoMrQL69pyY=;
+ b=aM8Te+X1D5uu1hxdZjH3li1a+pzjU9Gs3a7F9dBKOuY/nmQjb1lQVKOdCG3g2F3inpRy
+ kyuLVh1MjbJ1TI7LWNBDTqC6i35XaZgBm7UVs0QlclPeeEi7TLMOg1VRiMYbB9qXQ+9Q
+ 7IhtynAsEL1AhuNCTVT15UiwfG5dAgc/VFQLglTKTEDT33ogwuEXKCinwAvSwFuir8bo
+ pn2zjHJcTtRfrW+uigunYNSdEPUAMnIlVKYrX/FUQ8ywtuHV4beX1delfVdCFlP7OCY2
+ m22HyFJWLM3vVxD4FE7vsE/JNZfXJXYNWxWLeWP5TL/2/VMeXgWYSW5ej/0HKTEa9OTA Nw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dh9cb9c63-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:45:23 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0E19C10002A;
+        Tue, 11 Jan 2022 17:45:22 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 02154245FC8;
+        Tue, 11 Jan 2022 17:45:22 +0100 (CET)
+Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 11 Jan 2022 17:45:21
+ +0100
+From:   Valentin Caron <valentin.caron@foss.st.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Jiri Slaby <jirislaby@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Erwan Le Ray <erwan.leray@foss.st.com>,
+        Valentin Caron <valentin.caron@foss.st.com>,
+        <linux-serial@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/2] serial: stm32: fix software flow control
+Date:   Tue, 11 Jan 2022 17:44:39 +0100
+Message-ID: <20220111164441.6178-1-valentin.caron@foss.st.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It appears that there are some buffer overflows in EVT_TRANSACTION.
-This happens because the length parameters that are passed to memcpy
-come directly from skb->data and are not guarded in any way.
+This serie fix issues on STM32 USART driver when using software flow control.
 
-Signed-off-by: Jordy Zomer <jordy@pwning.systems>
----
- drivers/nfc/st21nfca/se.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Valentin Caron (2):
+  serial: stm32: prevent TDR register overwrite when sending x_char
+  serial: stm32: fix software flow control transfer
 
-diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
-index a43fc4117fa5..c922f10d0d7b 100644
---- a/drivers/nfc/st21nfca/se.c
-+++ b/drivers/nfc/st21nfca/se.c
-@@ -316,6 +316,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 			return -ENOMEM;
- 
- 		transaction->aid_len = skb->data[1];
-+
-+		/* Checking if the length of the AID is valid */
-+		if (transaction->aid_len > sizeof(transaction->aid))
-+			return -EINVAL;
-+
- 		memcpy(transaction->aid, &skb->data[2],
- 		       transaction->aid_len);
- 
-@@ -325,6 +330,11 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
- 			return -EPROTO;
- 
- 		transaction->params_len = skb->data[transaction->aid_len + 3];
-+
-+		/* Total size is allocated (skb->len - 2) minus fixed array members */
-+		if (transaction->params_len > ((skb->len - 2) - sizeof(struct nfc_evt_transaction)))
-+			return -EINVAL;
-+
- 		memcpy(transaction->params, skb->data +
- 		       transaction->aid_len + 4, transaction->params_len);
- 
+ drivers/tty/serial/stm32-usart.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
 -- 
-2.27.0
+2.17.1
 
