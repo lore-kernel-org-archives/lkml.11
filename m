@@ -2,68 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D271DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CEE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347449AbiAKEJA (ORCPT
+        id S1347458AbiAKEK0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 23:09:00 -0500
-Received: from smtpbg126.qq.com ([106.55.201.22]:27449 "EHLO smtpbg587.qq.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1347448AbiAKEI5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 23:08:57 -0500
-X-QQ-mid: bizesmtp2t1641874129t0i3xrpx5
-Received: from localhost.localdomain (unknown [111.193.225.251])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 11 Jan 2022 12:08:42 +0800 (CST)
-X-QQ-SSF: 01000000002000B06000000A0000000
-X-QQ-FEAT: 835QeueZ15tztOVm6/bsUfNjyJ6gY/fZsz15qIb0Z3mmrNfg+V8Vx19fsnM1g
-        ui9IO0N3pojArQbqo7hfZd1Rp0HaEtTxuPhWDDSmuoVgDLn/qXLcC0tW8op/Q4g/vRLTDdK
-        +j2aGxgPdRyBf3pwX1zhpRiEQ9EpaKi94jBzlmUqvsKbD9PD7kDslqMHe5uoJ4o+B9qYpg7
-        T4TziNgnFghO3ecsSDkBJSvnMJ2T29yeDJ3X7CwvnWLuw/q59fsempaBuACe2SQIotlhcic
-        Q5D+gNEsdY+ceovSszwVh5VmCft3Qz9PJ28sHEukYsTFTaWN65J8iEyGpNh6HIe196aMQgo
-        R0wPrit9aDl2b6mBxYynWt11oWyaQ==
-X-QQ-GoodBg: 0
-From:   dongsheng li <lidongsheng@dayudpu.com>
-To:     mst@redhat.com, jasowang@redhat.com
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org,
-        dongsheng li <lidongsheng@dayudpu.com>
-Subject: [PATCH] virtio_vdpa: Support surprise removal of virtio vdpa device
-Date:   Tue, 11 Jan 2022 12:08:31 +0800
-Message-Id: <20220111040831.5224-1-lidongsheng@dayudpu.com>
-X-Mailer: git-send-email 2.17.1
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:dayudpu.com:qybgspam:qybgspam2
+        Mon, 10 Jan 2022 23:10:26 -0500
+Received: from mga09.intel.com ([134.134.136.24]:6906 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234203AbiAKEKZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 23:10:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641874225; x=1673410225;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Fko5tSHAqkpnrbRvu4UMb7PHCxpyhJg0p+Ve7Au1TpI=;
+  b=GH2k6ahY2Ottai3Bc7QkNhsmEitl1290qkhTei74ajQ+MS4w5dS5I/Mc
+   ViEadSdtPFJT6gh7N0zgIvaQIKchjf01ylSjfubdhRW/na+aCFoOFYw0y
+   OSzxeI+WZ77iFeYiwuIfojxc+VkyfPlQCkbYroFLrlvfvpdo6PM1batrN
+   mdbt54DP7T5ykPwknZzf4YjN9Fiec438gxGmXIQ12g7axl7pKDC56E2Ko
+   XMGdVtx7oN6mz+i6Z5oDzCvbap1EMoICOOtEbJPNRQ8Xab5eKOvj3+PX9
+   ErWJdHqCO8/vnwQd075GV4K9w0cy13Rs5Zc20PAUorDINX3quclNuzlSz
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="243194191"
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="243194191"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 20:10:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="514937789"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 10 Jan 2022 20:10:23 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n78UI-0004JB-L6; Tue, 11 Jan 2022 04:10:22 +0000
+Date:   Tue, 11 Jan 2022 12:10:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Brazdil <dbrazdil@google.com>
+Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
+ 2564/2575] arch/arm64/kvm/hyp/nvhe/iommu/s2mpu.c:104: warning: This comment
+ starts with '/**', but isn't a kernel-doc comment. Refer
+ Documentation/doc-guide/kernel-doc.rst
+Message-ID: <202201111216.YaxndGDc-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When virtio vdpa device removed, the abnormal damage of the device cannot be
-perceived normally, which will cause problems similar to:
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
+head:   d52e3e4473075ddf199c9ae763e747302d729468
+commit: f6b90bb6f59d0dab524f623b255f29c149557270 [2564/2575] ANDROID: KVM: arm64: Enable S2MPUs in __pkvm_init_stage2_iommu
+config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220111/202201111216.YaxndGDc-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/f6b90bb6f59d0dab524f623b255f29c149557270
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
+        git checkout f6b90bb6f59d0dab524f623b255f29c149557270
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-Commit 43bb40c5b926 ("virtio_pci: Support surprise removal of
-virtio pci device")
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Hence, add the ability to abort the command on surprise removal
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: dongsheng li <lidongsheng@dayudpu.com>
+>> arch/arm64/kvm/hyp/nvhe/iommu/s2mpu.c:104: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    * Initialize S2MPU device and set all GB regions to 1G granularity with
+
+
+vim +104 arch/arm64/kvm/hyp/nvhe/iommu/s2mpu.c
+
+   102	
+   103	/**
+ > 104	 * Initialize S2MPU device and set all GB regions to 1G granularity with
+   105	 * given protection bits.
+   106	 */
+   107	static void initialize_with_prot(struct s2mpu *dev, enum mpt_prot prot)
+   108	{
+   109		unsigned int gb, vid;
+   110	
+   111		/* Must write CONTEXT_CFG_VALID_VID before setting L1ENTRY registers. */
+   112		__set_context_ids(dev);
+   113	
+   114		for_each_gb_and_vid(gb, vid)
+   115			__set_l1entry_attr_with_prot(dev, gb, vid, prot);
+   116		__all_invalidation(dev);
+   117	
+   118		/* Set control registers, enable the S2MPU. */
+   119		__set_control_regs(dev);
+   120	}
+   121	
+
 ---
- drivers/virtio/virtio_vdpa.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
-index 4a9ddb44b2a7..fd930409d190 100644
---- a/drivers/virtio/virtio_vdpa.c
-+++ b/drivers/virtio/virtio_vdpa.c
-@@ -374,6 +374,7 @@ static void virtio_vdpa_remove(struct vdpa_device *vdpa)
- {
- 	struct virtio_vdpa_device *vd_dev = vdpa_get_drvdata(vdpa);
- 
-+	virtio_break_device(vd_dev->vdev);
- 	unregister_virtio_device(&vd_dev->vdev);
- }
- 
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
