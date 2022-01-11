@@ -2,156 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:51:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F5FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344792AbiAKRvN (ORCPT
+        id S1344933AbiAKRvV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:51:13 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:54174
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344791AbiAKRvG (ORCPT
+        Tue, 11 Jan 2022 12:51:21 -0500
+Received: from mail-oi1-f179.google.com ([209.85.167.179]:35810 "EHLO
+        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344709AbiAKRvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:51:06 -0500
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D2F1F40A54
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:51:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641923464;
-        bh=0lTX/pRjq8fGrSEdb45cqNSVN0bzGZ2/ArUtBalm9jo=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=dc8kKipck8+4Ul6U6wHkC5y1YngnUAMAzuqxUNHJkr88ssvS8TpeFOsUfSc1+HQoC
-         Tqpr2JIq339rAuFnOnSmKvonVbjbxx4JV4B7nqEIYMimyWThQk6hGhoAmlAbiMlYeN
-         q/VZIn+9N5aEG0xnG2O+8UNicHtzpxXNf0J1T/HBnW9uo7M+oKDWT8ugXc4Rkvdeu4
-         KvEN2ARS1Vo4qCREwl58wkTEbF5Ge6tyqYv2F4HgybP7G3u3Wuxl55QSbfelytxSGj
-         TI3S9hw72VFn8Vt97yaQ8pCUI8/sZZPWH7Sk/2TLnvrf4nX5WmvKVYyUTP3erEX6fM
-         /EAyY56Y/j5Wg==
-Received: by mail-ed1-f72.google.com with SMTP id z10-20020a05640235ca00b003f8efab3342so14008428edc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:51:04 -0800 (PST)
+        Tue, 11 Jan 2022 12:51:12 -0500
+Received: by mail-oi1-f179.google.com with SMTP id s127so133938oig.2;
+        Tue, 11 Jan 2022 09:51:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0lTX/pRjq8fGrSEdb45cqNSVN0bzGZ2/ArUtBalm9jo=;
-        b=c1GVqRbqxtiu7jTnmCToqpuQY1jMCKh6JdXNG23XQP0DMU+rpvp7QY4Lp4Qw1ZBLyG
-         BznHWF1IiWZyjnTsjL5MMLYz6s0D1aWya2LOzyd0mKc0NPi1nLPrdUiWAq9rKQLUyngt
-         sD8s7RzvlIWChGyu3wSxGEo/Rjf1/WQMR48K7um+6ix1gCyhGc4z7ql2cEHhe0FNk68x
-         kXzFdj6/RYUj70ahqTHkjYJ9CDYomKlYzYwgXk4PeZA1SAehh+5QMBcQtnRy+kegdiAD
-         IW6E1LU0K/ze8c2GwuLfLntE0Hrb6zaynT5V9RIQhJhqFC1TpmTxup9haU7XQkCueRQf
-         TIgQ==
-X-Gm-Message-State: AOAM5305sxrnELLUP3Dl/6qozSbkgLS3qeOEkSC7D4kLpPsv0nelQbGW
-        fz+cKPNjO4Kv54gAnUGqs59IEP0zOw9dvLNgVs5N/6JsyI1GTMOPI57Dk6ISmJmU4+8B4ziuv9d
-        ks5Fouch/d+2y1dx3bBGMIwqINB2YF9dyzx9f2U3Qqg==
-X-Received: by 2002:a17:906:7199:: with SMTP id h25mr4637459ejk.734.1641923461940;
-        Tue, 11 Jan 2022 09:51:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx1N007d3shEa8Ib3SDImdT17QSvZTGxNtwZXkqztluxz5huESUnu16sC4O6EqMG0YJnFlSOQ==
-X-Received: by 2002:a17:906:7199:: with SMTP id h25mr4637445ejk.734.1641923461774;
-        Tue, 11 Jan 2022 09:51:01 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id p25sm5265160edw.75.2022.01.11.09.51.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YLwMXDjgYaMucaEpjbLaU3ZVYir+jitVxo6AlZa92zw=;
+        b=mQby70h4xXugbBM63Xx3AuWGQythp0LcIYf20A1cP+ALmEHJ6N1lqp7kyCKEqoXyxl
+         u/qk25t1ejerQiA5q4Nfn2uWX5XU0gIdTbuOv/1kkB299HXKtsILkAN6LeIzo26ynpdT
+         O5/SEHI/g72jxTp02UAviaLh5yJzcLAjTJuRxhBsYd2gqJq0LI63C8Xr6HGWhZMupuDZ
+         doa2XgEWhzqU80kwUsrI1veA2Q8cDMS4QH39zqGfNVWHeA2sx0SQsQnMc69wO/Uxb2Ir
+         ml4/WSWJfst4+e6nPrOew/D8EafaphCLeFmBtJadnReWaWieKYEIuqL3Bt0rrN+URWev
+         3Y7g==
+X-Gm-Message-State: AOAM530jY3xQD7A1D7zoyx1LVLOjJ+S4xRsl4Cl6KkNgVuLxaLfpQxvb
+        cDPrWajiAYXb3F8PgvV8Jg==
+X-Google-Smtp-Source: ABdhPJxtF9KFP4FdzDu3hfRlArCaOryvwCUmwNwEqeKeTgBZ1PTN6Bp3xjoZeXc8CLs9kJ5aw29K9Q==
+X-Received: by 2002:a05:6808:138e:: with SMTP id c14mr2703861oiw.55.1641923471316;
+        Tue, 11 Jan 2022 09:51:11 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id l1sm2141051oti.51.2022.01.11.09.51.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 09:51:01 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Chanwoo Choi <cw00.choi@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v2 3/4] regulator: dt-bindings: maxim,max77693: convert to dtschema
-Date:   Tue, 11 Jan 2022 18:50:16 +0100
-Message-Id: <20220111175017.223966-4-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220111175017.223966-1-krzysztof.kozlowski@canonical.com>
-References: <20220111175017.223966-1-krzysztof.kozlowski@canonical.com>
+        Tue, 11 Jan 2022 09:51:10 -0800 (PST)
+Received: (nullmailer pid 3227865 invoked by uid 1000);
+        Tue, 11 Jan 2022 17:51:09 -0000
+Date:   Tue, 11 Jan 2022 11:51:09 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Dan Murphy <dmurphy@ti.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: net: ti,dp83869: Drop value on boolean
+ 'ti,max-output-impedance'
+Message-ID: <Yd3DjWmrHV71+1Ac@robh.at.kernel.org>
+References: <20220107030513.2385482-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107030513.2385482-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the regulator bindings of Maxim MAX77693 MUIC to DT schema format.
-The existing bindings were defined in ../bindings/mfd/max77693.txt.
+On Thu, 06 Jan 2022 21:05:13 -0600, Rob Herring wrote:
+> DT booleans don't have a value and 'ti,max-output-impedance' is defined and
+> used as a boolean. So drop the bogus value in the example.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/net/ti,dp83869.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- .../bindings/regulator/maxim,max77693.yaml    | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77693.yaml
-
-diff --git a/Documentation/devicetree/bindings/regulator/maxim,max77693.yaml b/Documentation/devicetree/bindings/regulator/maxim,max77693.yaml
-new file mode 100644
-index 000000000000..20d8559bdc2b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/maxim,max77693.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/maxim,max77693.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Maxim MAX77693 MicroUSB and Companion Power Management IC regulators
-+
-+maintainers:
-+  - Chanwoo Choi <cw00.choi@samsung.com>
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-+
-+description: |
-+  This is a part of device tree bindings for Maxim MAX77693 MicroUSB Integrated
-+  Circuit (MUIC).
-+
-+  See also Documentation/devicetree/bindings/mfd/maxim,max77693.yaml for
-+  additional information and example.
-+
-+properties:
-+  CHARGER:
-+    type: object
-+    $ref: regulator.yaml#
-+    additionalProperties: false
-+    description: |
-+      Current regulator.
-+
-+    properties:
-+      regulator-name: true
-+      regulator-always-on: true
-+      regulator-boot-on: true
-+      regulator-min-microamp:
-+        minimum: 60000
-+      regulator-max-microamp:
-+        maximum: 2580000
-+
-+    required:
-+      - regulator-name
-+
-+patternProperties:
-+  "^ESAFEOUT[12]$":
-+    type: object
-+    $ref: regulator.yaml#
-+    additionalProperties: false
-+    description: |
-+      Safeout LDO regulator.
-+
-+    properties:
-+      regulator-name: true
-+      regulator-always-on: true
-+      regulator-boot-on: true
-+      regulator-min-microvolt:
-+        minimum: 3300000
-+      regulator-max-microvolt:
-+        maximum: 4950000
-+
-+    required:
-+      - regulator-name
-+
-+additionalProperties: false
--- 
-2.32.0
-
+Applied, thanks!
