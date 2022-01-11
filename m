@@ -2,115 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C40AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:21:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236094AbiALAVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 19:21:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230147AbiALAVv (ORCPT
+        id S236299AbiALAWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 19:22:01 -0500
+Received: from ec2-13-52-33-57.us-west-1.compute.amazonaws.com ([13.52.33.57]:45012
+        "EHLO aurora.tech" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S236095AbiALAV6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 19:21:51 -0500
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF9A0C06173F;
-        Tue, 11 Jan 2022 16:21:50 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JYSt520fWz4xtf;
-        Wed, 12 Jan 2022 11:21:48 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1641946909;
-        bh=pWR0F1Pzz3t59vyhhhWsePr/xIsKtinI1MrS69LcH+E=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Qp0ldJbU0d/Rd2hPuHjiW+GEBW95zbCIwqP7tDqUQOrKDyRjeqVqC3Wu4k7L2LBLP
-         LJpA5sA03en1Eb2fjT/SdythcGQtPXr+YeBLWXcNpbendl+wwpEkzgdtQ0MC3a/Njn
-         Qx4QnJe5q0NWYbNgs4DYhnQwSSS5hAsPJXOGkTLQi2SXCt62/R6I05dy0fmz3HJfqE
-         2QRbz2lPcOpET7SsxDXgxZJgFRBcExNrKQSLORCQd/bkyLlW4agPXVpeMYZJsK/rpw
-         dwJ86owSINhgwAoRdvnWpKWnL8g7qKGbskt1oj4UyY/6No4NPVim1ZsjTVTWT3XkMg
-         8nXQz8iUpcKSA==
-Date:   Wed, 12 Jan 2022 11:21:47 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Yinan Liu <yinan@linux.alibaba.com>
-Subject: linux-next: manual merge of the ftrace tree with the kbuild tree
-Message-ID: <20220112112147.3e19ce23@canb.auug.org.au>
+        Tue, 11 Jan 2022 19:21:58 -0500
+X-Greylist: delayed 2567 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 19:21:58 EST
+Received: by aurora.tech (Postfix, from userid 1001)
+        id 9814516402F9; Tue, 11 Jan 2022 15:33:23 -0800 (PST)
+From:   Alison Chaiken <achaiken@aurora.tech>
+To:     tglx@linutronix.de
+Cc:     peterz@infradead.org, paulmck@kernel.org,
+        valentin.schneider@arm.com, frederic@kernel.org,
+        linux-kernel@vger.kernel.org, glenn@aurora.tech,
+        alison@she-devel.com, Alison Chaiken <achaiken@aurora.tech>
+Subject: [PATCH 4/4] RCU: update documentation regarding kthread_prio cmdline parameter
+Date:   Tue, 11 Jan 2022 15:32:53 -0800
+Message-Id: <20220111233253.21692-5-achaiken@aurora.tech>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220111233253.21692-1-achaiken@aurora.tech>
+References: <20220111233253.21692-1-achaiken@aurora.tech>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/hbqfl/N6O/56_5migZ9LuR=";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/hbqfl/N6O/56_5migZ9LuR=
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Inform readers that the priority of RCU no-callback threads will also
+be boosted.
 
-Hi all,
+Signed-off-by: Alison Chaiken <achaiken@aurora.tech>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Today's linux-next merge of the ftrace tree got a conflict in:
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 1396fd2d9031..b844978e1bdf 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -4439,6 +4439,8 @@
+ 			(the least-favored priority).  Otherwise, when
+ 			RCU_BOOST is not set, valid values are 0-99 and
+ 			the default is zero (non-realtime operation).
++			When RCU_NOCB_CPU is set, also adjust the
++			priority of NOCB callback kthreads.
+ 
+ 	rcutree.rcu_nocb_gp_stride= [KNL]
+ 			Set the number of NOCB callback kthreads in
+-- 
+2.32.0
 
-  scripts/link-vmlinux.sh
-
-between commit:
-
-  7d153696e5db ("kbuild: do not include include/config/auto.conf from shell=
- scripts")
-
-from the kbuild tree and commit:
-
-  4f1f18311591 ("scripts: ftrace - move the sort-processing in ftrace_init")
-
-from the ftrace tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc scripts/link-vmlinux.sh
-index 5189c9a12066,dd9955f45774..000000000000
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@@ -412,11 -411,8 +412,8 @@@ if is_enabled CONFIG_BUILDTIME_TABLE_SO
-  	fi
-  fi
- =20
-- info SYSMAP System.map
-- mksysmap vmlinux System.map
--=20
-  # step a (see comment above)
- -if [ -n "${CONFIG_KALLSYMS}" ]; then
- +if is_enabled CONFIG_KALLSYMS; then
-  	mksysmap ${kallsyms_vmlinux} .tmp_System.map
- =20
-  	if ! cmp -s System.map .tmp_System.map; then
-
---Sig_/hbqfl/N6O/56_5migZ9LuR=
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHeHxsACgkQAVBC80lX
-0GwiFQf/dKVwG65IVK08HsTS76vrpVY0Lboqs8j2pZhrtGQ0oACESCPUjYLm+asy
-PPgYevr4d52IqG9pWx79eokHKc/bXlLV5fuWth2M6fu/QN2oCFlreDmFoF7hzYg3
-x9syhYf+Cfiz6RifcVaxDaWtaQqNMvwRNX9hmcT5EruLQu8OT1YwBnst237p4nsu
-j3NIRXe/ab2HTBJwmOYSX0MZMGfnauvm0qkV3Df1NMuqqIF8+Qa6V96IFVIr/UHA
-hscvu2CuYA44uT6RMNbywzwgZAQD/d9XznocRvcAHnKfH0GPu1cKihxTk6CwXMs3
-Q5I6HsSzJNXkDw+qiW5we/5bQfqkqQ==
-=sXRj
------END PGP SIGNATURE-----
-
---Sig_/hbqfl/N6O/56_5migZ9LuR=--
