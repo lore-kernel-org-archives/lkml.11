@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E14C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 173C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:40:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347326AbiAKDje (ORCPT
+        id S1347248AbiAKDku (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 22:39:34 -0500
-Received: from foss.arm.com ([217.140.110.172]:41338 "EHLO foss.arm.com"
+        Mon, 10 Jan 2022 22:40:50 -0500
+Received: from foss.arm.com ([217.140.110.172]:41376 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347259AbiAKDj3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 22:39:29 -0500
+        id S1347416AbiAKDjj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 22:39:39 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B9F1E6D;
-        Mon, 10 Jan 2022 19:39:28 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 19DBA6D;
+        Mon, 10 Jan 2022 19:39:39 -0800 (PST)
 Received: from p8cg001049571a15.arm.com (unknown [10.163.72.238])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CEFED3F774;
-        Mon, 10 Jan 2022 19:39:25 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2EFBA3F774;
+        Mon, 10 Jan 2022 19:39:35 -0800 (PST)
 From:   Anshuman Khandual <anshuman.khandual@arm.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
@@ -27,9 +27,9 @@ Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
         Suzuki Poulose <suzuki.poulose@arm.com>,
         coresight@lists.linaro.org, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V3 4/7] arm64: errata: Add detection for TRBE trace data corruption
-Date:   Tue, 11 Jan 2022 09:09:03 +0530
-Message-Id: <1641872346-3270-5-git-send-email-anshuman.khandual@arm.com>
+Subject: [PATCH V3 7/7] coresight: trbe: Work around the trace data corruption
+Date:   Tue, 11 Jan 2022 09:09:06 +0530
+Message-Id: <1641872346-3270-8-git-send-email-anshuman.khandual@arm.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1641872346-3270-1-git-send-email-anshuman.khandual@arm.com>
 References: <1641872346-3270-1-git-send-email-anshuman.khandual@arm.com>
@@ -38,9 +38,11 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 TRBE implementations affected by Arm erratum #1902691 might corrupt trace
-data or deadlock, when it's being written into the memory. So effectively
-TRBE is broken and hence cannot be used to capture trace data. This adds
-a new errata ARM64_ERRATUM_1902691 in arm64 errata framework.
+data or deadlock, when it's being written into the memory. Workaround this
+problem in the driver, by preventing TRBE initialization on affected cpus.
+The firmware must have disabled the access to TRBE for the kernel on such
+implementations. This will cover the kernel for any firmware that doesn't
+do this already. This just updates the TRBE driver as required.
 
 Cc: Catalin Marinas <catalin.marinas@arm.com>
 Cc: Will Deacon <will@kernel.org>
@@ -51,89 +53,68 @@ Cc: linux-doc@vger.kernel.org
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Acked-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
- Documentation/arm64/silicon-errata.rst |  2 ++
- arch/arm64/Kconfig                     | 18 ++++++++++++++++++
- arch/arm64/kernel/cpu_errata.c         |  9 +++++++++
- arch/arm64/tools/cpucaps               |  1 +
- 4 files changed, 30 insertions(+)
+ arch/arm64/Kconfig                           |  2 +-
+ drivers/hwtracing/coresight/coresight-trbe.c | 12 ++++++++++++
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index e0ef3e9a4b8b..50018f60c4d4 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -56,6 +56,8 @@ stable kernels.
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A510     | #2038923        | ARM64_ERRATUM_2038923       |
- +----------------+-----------------+-----------------+-----------------------------+
-+| ARM            | Cortex-A510     | #1902691        | ARM64_ERRATUM_1902691       |
-++----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A53      | #826319         | ARM64_ERRATUM_826319        |
- +----------------+-----------------+-----------------+-----------------------------+
- | ARM            | Cortex-A53      | #827319         | ARM64_ERRATUM_827319        |
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 188eae6ef28d..f1651cb71ef3 100644
+index 209e481acf0d..8a2245c3e857 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -819,6 +819,24 @@ config ARM64_ERRATUM_2038923
+@@ -821,7 +821,7 @@ config ARM64_ERRATUM_2038923
  
- 	  If unsure, say Y.
- 
-+config ARM64_ERRATUM_1902691
-+	bool "Cortex-A510: 1902691: workaround TRBE trace corruption"
-+	depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
-+	default y
-+	help
-+	  This option adds the workaround for ARM Cortex-A510 erratum 1902691.
-+
-+	  Affected Cortex-A510 core might cause trace data corruption, when being written
-+	  into the memory. Effectively TRBE is broken and hence cannot be used to capture
-+	  trace data.
-+
-+	  Work around this problem in the driver by just preventing TRBE initialization on
-+	  affected cpus. The firmware must have disabled the access to TRBE for the kernel
-+	  on such implementations. This will cover the kernel for any firmware that doesn't
-+	  do this already.
-+
-+	  If unsure, say Y.
-+
- config CAVIUM_ERRATUM_22375
- 	bool "Cavium erratum 22375, 24313"
+ config ARM64_ERRATUM_1902691
+ 	bool "Cortex-A510: 1902691: workaround TRBE trace corruption"
+-	depends on COMPILE_TEST # Until the CoreSight TRBE driver changes are in
++	depends on CORESIGHT_TRBE
  	default y
-diff --git a/arch/arm64/kernel/cpu_errata.c b/arch/arm64/kernel/cpu_errata.c
-index 60b0c1f1d912..a3336dfb5a8a 100644
---- a/arch/arm64/kernel/cpu_errata.c
-+++ b/arch/arm64/kernel/cpu_errata.c
-@@ -615,6 +615,15 @@ const struct arm64_cpu_capabilities arm64_errata[] = {
- 		/* Cortex-A510 r0p0 - r0p2 */
- 		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 2)
- 	},
-+#endif
-+#ifdef CONFIG_ARM64_ERRATUM_1902691
-+	{
-+		.desc = "ARM erratum 1902691",
-+		.capability = ARM64_WORKAROUND_1902691,
+ 	help
+ 	  This option adds the workaround for ARM Cortex-A510 erratum 1902691.
+diff --git a/drivers/hwtracing/coresight/coresight-trbe.c b/drivers/hwtracing/coresight/coresight-trbe.c
+index 6254ba598df2..75b608bc400b 100644
+--- a/drivers/hwtracing/coresight/coresight-trbe.c
++++ b/drivers/hwtracing/coresight/coresight-trbe.c
+@@ -93,12 +93,14 @@ struct trbe_buf {
+ #define TRBE_WORKAROUND_WRITE_OUT_OF_RANGE	1
+ #define TRBE_NEEDS_DRAIN_AFTER_DISABLE		2
+ #define TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE	3
++#define TRBE_IS_BROKEN				4
+ 
+ static int trbe_errata_cpucaps[] = {
+ 	[TRBE_WORKAROUND_OVERWRITE_FILL_MODE] = ARM64_WORKAROUND_TRBE_OVERWRITE_FILL_MODE,
+ 	[TRBE_WORKAROUND_WRITE_OUT_OF_RANGE] = ARM64_WORKAROUND_TRBE_WRITE_OUT_OF_RANGE,
+ 	[TRBE_NEEDS_DRAIN_AFTER_DISABLE] = ARM64_WORKAROUND_2064142,
+ 	[TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE] = ARM64_WORKAROUND_2038923,
++	[TRBE_IS_BROKEN] = ARM64_WORKAROUND_1902691,
+ 	-1,		/* Sentinel, must be the last entry */
+ };
+ 
+@@ -192,6 +194,11 @@ static inline bool trbe_needs_ctxt_sync_after_enable(struct trbe_cpudata *cpudat
+ 	return trbe_has_erratum(cpudata, TRBE_NEEDS_CTXT_SYNC_AFTER_ENABLE);
+ }
+ 
++static inline bool trbe_is_broken(struct trbe_cpudata *cpudata)
++{
++	return trbe_has_erratum(cpudata, TRBE_IS_BROKEN);
++}
 +
-+		/* Cortex-A510 r0p0 - r0p1 */
-+		ERRATA_MIDR_REV_RANGE(MIDR_CORTEX_A510, 0, 0, 1)
-+	},
- #endif
- 	{
- 	}
-diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-index 45a06d36d080..e7719e8f18de 100644
---- a/arch/arm64/tools/cpucaps
-+++ b/arch/arm64/tools/cpucaps
-@@ -57,6 +57,7 @@ WORKAROUND_1508412
- WORKAROUND_1542419
- WORKAROUND_2064142
- WORKAROUND_2038923
-+WORKAROUND_1902691
- WORKAROUND_TRBE_OVERWRITE_FILL_MODE
- WORKAROUND_TSB_FLUSH_FAILURE
- WORKAROUND_TRBE_WRITE_OUT_OF_RANGE
+ static int trbe_alloc_node(struct perf_event *event)
+ {
+ 	if (event->cpu == -1)
+@@ -1288,6 +1295,11 @@ static void arm_trbe_probe_cpu(void *info)
+ 	 */
+ 	trbe_check_errata(cpudata);
+ 
++	if (trbe_is_broken(cpudata)) {
++		pr_err("Disabling TRBE on cpu%d due to erratum\n", cpu);
++		goto cpu_clear;
++	}
++
+ 	/*
+ 	 * If the TRBE is affected by erratum TRBE_WORKAROUND_OVERWRITE_FILL_MODE,
+ 	 * we must always program the TBRPTR_EL1, 256bytes from a page
 -- 
 2.25.1
 
