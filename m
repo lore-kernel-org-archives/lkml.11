@@ -2,160 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB0FEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240758AbiAKNmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 08:42:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240723AbiAKNmC (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 08:42:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6B4C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:42:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62F71B818B8
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED65C36AE3;
-        Tue, 11 Jan 2022 13:41:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641908518;
-        bh=1CtuOB0vDk0i5VHaDx1yRgLANkCIdPjX042q41eAXJU=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=W/kCUMC3sIYbHXtH5vF9eGXWbOdx+oYA9qVDhDC6WfXagQ9p1AxtRDcdFqdGUv7ml
-         pgUUgSuVqqBoZkWYOo6qtOSQLrlpH/0hXX8j0H56mVB0kJjvz4JUzqxRij9bLosJyN
-         VbD/Jy209OHtU6JaVCwQDf2h090OmqFhmAA4lmON720kLf18eBhUUqYCL6gBd6ZyIm
-         lu6Jr8kWEImbeo/gB0Yn21/cKouOW3+BX2kn4k/YH3EbWY8kPvTjE21Qeiz68nCIiJ
-         xshdyoiJQhhQ7zis/5JFQ4/GXNx1JemvD+4IYB4Ae0uUbS8WWqIv1MsE9rI9fHIhiQ
-         tMfo/bhQ1PqcA==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     kbuild@lists.01.org, Wen Gong <quic_wgong@quicinc.com>,
-        lkp@intel.com, kbuild-all@lists.01.org, ath11k@lists.infradead.org,
+        id S240751AbiAKNmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 08:42:18 -0500
+Received: from mga04.intel.com ([192.55.52.120]:45185 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240649AbiAKNmR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 08:42:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641908537; x=1673444537;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yDCHUQBUGZPvgMw0jxUpeD6RdPHQaA2QSgQjo47V2vU=;
+  b=c04L5DBQduF31Glpg4m3kwHaDh8CLc7zpNr/O+UVnV/itHGPNN2Dm3Uf
+   2XVTFKhaMtTRRBmCjfMutS5EbV3iXkxYPCaHsDqmhoQaI0oRHu9qNTYuX
+   jszndxanQ0uHa4De1EpAlR5R337OduqPtvA9dGpTfDsbemL4cEnlmSvPi
+   aFwgE32TkJ+eptY3aeVFfuInyVVCvF1rWDxBBZBphn4GepErlx7WPPfT+
+   bN8NKMroGl8LM6O/PVkLhx8ej5ztjGoFUa9oupodPBMGXCG9nhX/cW3qd
+   T5dFMVaM3E6e72HNLScwsWJomQlGx0f4Da9szl2M53wYsgzEJ579NiOE0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="242296416"
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="242296416"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 05:42:00 -0800
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="619828353"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 05:41:57 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1n7HOF-009FDJ-Fw;
+        Tue, 11 Jan 2022 15:40:43 +0200
+Date:   Tue, 11 Jan 2022 15:40:43 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     John Ogness <john.ogness@linutronix.de>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Qais Yousef <qais.yousef@arm.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
         linux-kernel@vger.kernel.org
-Subject: Re: [kvalo-ath:pending 8/17] drivers/net/wireless/ath/ath11k/dp_tx.c:511 ath11k_dp_tx_update_txcompl() error: uninitialized symbol 'rate_idx'.
-References: <202112230637.BasxPV7i-lkp@intel.com>
-Date:   Tue, 11 Jan 2022 15:41:55 +0200
-In-Reply-To: <202112230637.BasxPV7i-lkp@intel.com> (Dan Carpenter's message of
-        "Wed, 5 Jan 2022 17:49:29 +0300")
-Message-ID: <878rvmv17g.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Subject: Re: [PATCH 1/2] printk: Add new pr_*_deferred_once() variants
+Message-ID: <Yd2I28a+BuuIdBcv@smile.fi.intel.com>
+References: <20210123233741.3614408-1-qais.yousef@arm.com>
+ <20210123233741.3614408-2-qais.yousef@arm.com>
+ <YA6fTuFEaCjFQB3h@hirez.programming.kicks-ass.net>
+ <87y2gh2shy.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87y2gh2shy.fsf@jogness.linutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(Moving from ath10k to ath11k list)
+On Mon, Jan 25, 2021 at 12:04:01PM +0106, John Ogness wrote:
+> On 2021-01-25, Peter Zijlstra <peterz@infradead.org> wrote:
+> > On Sat, Jan 23, 2021 at 11:37:40PM +0000, Qais Yousef wrote:
 
-Dan Carpenter <dan.carpenter@oracle.com> writes:
+...
 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git pending
-> head:   c9a516b946c4b3ce25d422890ca78d0ca730b065
-> commit: 1b8bb94c0612cf32e418e90ae93cf37214d84669 [8/17] ath11k: report
-> tx bitrate for iw wlan station dump
-> config: microblaze-randconfig-m031-20211222
-> (https://download.01.org/0day-ci/archive/20211223/202112230637.BasxPV7i-lkp@intel.com/config)
-> compiler: microblaze-linux-gcc (GCC) 11.2.0
+> > We should be very close to printk not needing this anymore, printk
+> > people?
+> 
+> It will disappear once console printing threads are introduced. We
+> probably still have a few kernel releases until we see that. First we
+> need to finish merging full lockless access, remove the safe buffers,
+> and merge the atomic consoles.
 
-This was also a test commit in the pending branch, the actual commit is:
+Where are we now at this?
 
-1b8bb94c0612 ath11k: report tx bitrate for iw wlan station dump
+I almost easily can reproduce the below at boot time for last several releases
 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
->
-> smatch warnings:
-> drivers/net/wireless/ath/ath11k/dp_tx.c:511
-> ath11k_dp_tx_update_txcompl() error: uninitialized symbol 'rate_idx'.
->
-> vim +/rate_idx +511 drivers/net/wireless/ath/ath11k/dp_tx.c
->
-> 1b8bb94c0612cf Wen Gong 2021-12-20 418 void
-> ath11k_dp_tx_update_txcompl(struct ath11k *ar, struct hal_tx_status
-> *ts)
-> 1b8bb94c0612cf Wen Gong   2021-12-20  419  {
-> 1b8bb94c0612cf Wen Gong   2021-12-20  420  	struct ath11k_base *ab = ar->ab;
-> 1b8bb94c0612cf Wen Gong 2021-12-20 421 struct ath11k_per_peer_tx_stats
-> *peer_stats = &ar->cached_stats;
-> 1b8bb94c0612cf Wen Gong 2021-12-20 422 enum hal_tx_rate_stats_pkt_type
-> pkt_type;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  423  	enum hal_tx_rate_stats_sgi sgi;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  424  	enum hal_tx_rate_stats_bw bw;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  425  	struct ath11k_peer *peer;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  426  	struct ath11k_sta *arsta;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  427  	struct ieee80211_sta *sta;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  428  	u16 rate, ru_tones;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  429  	u8 mcs, rate_idx, ofdma;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  430  	int ret;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  431  
-> 1b8bb94c0612cf Wen Gong   2021-12-20  432  	spin_lock_bh(&ab->base_lock);
-> 1b8bb94c0612cf Wen Gong 2021-12-20 433 peer =
-> ath11k_peer_find_by_id(ab, ts->peer_id);
-> 1b8bb94c0612cf Wen Gong   2021-12-20  434  	if (!peer || !peer->sta) {
-> 1b8bb94c0612cf Wen Gong 2021-12-20 435 ath11k_dbg(ab,
-> ATH11K_DBG_DP_TX,
-> 1b8bb94c0612cf Wen Gong 2021-12-20 436 "failed to find the peer by id
-> %u\n", ts->peer_id);
-> 1b8bb94c0612cf Wen Gong   2021-12-20  437  		goto err_out;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  438  	}
-> 1b8bb94c0612cf Wen Gong   2021-12-20  439  
-> 1b8bb94c0612cf Wen Gong   2021-12-20  440  	sta = peer->sta;
-> 1b8bb94c0612cf Wen Gong 2021-12-20 441 arsta = (struct ath11k_sta
-> *)sta->drv_priv;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  442  
-> 1b8bb94c0612cf Wen Gong 2021-12-20 443 memset(&arsta->txrate, 0,
-> sizeof(arsta->txrate));
-> 1b8bb94c0612cf Wen Gong 2021-12-20 444 pkt_type =
-> FIELD_GET(HAL_TX_RATE_STATS_INFO0_PKT_TYPE,
-> 1b8bb94c0612cf Wen Gong   2021-12-20  445  			     ts->rate_stats);
-> 1b8bb94c0612cf Wen Gong 2021-12-20 446 mcs =
-> FIELD_GET(HAL_TX_RATE_STATS_INFO0_MCS,
-> 1b8bb94c0612cf Wen Gong   2021-12-20  447  			ts->rate_stats);
-> 1b8bb94c0612cf Wen Gong 2021-12-20 448 sgi =
-> FIELD_GET(HAL_TX_RATE_STATS_INFO0_SGI,
-> 1b8bb94c0612cf Wen Gong   2021-12-20  449  			ts->rate_stats);
-> 1b8bb94c0612cf Wen Gong 2021-12-20 450 bw =
-> FIELD_GET(HAL_TX_RATE_STATS_INFO0_BW, ts->rate_stats);
-> 1b8bb94c0612cf Wen Gong 2021-12-20 451 ru_tones =
-> FIELD_GET(HAL_TX_RATE_STATS_INFO0_TONES_IN_RU, ts->rate_stats);
-> 1b8bb94c0612cf Wen Gong 2021-12-20 452 ofdma =
-> FIELD_GET(HAL_TX_RATE_STATS_INFO0_OFDMA_TX, ts->rate_stats);
-> 1b8bb94c0612cf Wen Gong   2021-12-20  453  
-> 1b8bb94c0612cf Wen Gong 2021-12-20 454 /* This is to prefer choose the
-> real NSS value arsta->last_txrate.nss,
-> 1b8bb94c0612cf Wen Gong 2021-12-20 455 * if it is invalid, then choose
-> the NSS value while assoc.
-> 1b8bb94c0612cf Wen Gong   2021-12-20  456  	 */
-> 1b8bb94c0612cf Wen Gong   2021-12-20  457  	if (arsta->last_txrate.nss)
-> 1b8bb94c0612cf Wen Gong 2021-12-20 458 arsta->txrate.nss =
-> arsta->last_txrate.nss;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  459  	else
-> 1b8bb94c0612cf Wen Gong 2021-12-20 460 arsta->txrate.nss =
-> arsta->peer_nss;
-> 1b8bb94c0612cf Wen Gong   2021-12-20  461  
-> 1b8bb94c0612cf Wen Gong 2021-12-20 462 if (pkt_type ==
-> HAL_TX_RATE_STATS_PKT_TYPE_11A ||
-> 1b8bb94c0612cf Wen Gong 2021-12-20 463 pkt_type ==
-> HAL_TX_RATE_STATS_PKT_TYPE_11B) {
-> 1b8bb94c0612cf Wen Gong 2021-12-20 464 ret =
-> ath11k_mac_hw_ratecode_to_legacy_rate(mcs,
-> 1b8bb94c0612cf Wen Gong 2021-12-20 465 pkt_type,
-> 1b8bb94c0612cf Wen Gong 2021-12-20 466 &rate_idx,
-> 1b8bb94c0612cf Wen Gong 2021-12-20 467 &rate);
-> 1b8bb94c0612cf Wen Gong   2021-12-20  468  		if (ret < 0)
-> 1b8bb94c0612cf Wen Gong   2021-12-20  469  			goto err_out;
->
-> "rate_idx" not initialized on other paths.
+ cblist_init_generic: Setting adjustable number of callback queues.
 
-Wen, can you please send a patch fixing this?
+ =============================
+ [ BUG: Invalid wait context ]
+ 5.16.0-next-20220111-00101-gb3e9f395c6f1 #28 Not tainted
+ -----------------------------
+ swapper/0/1 is trying to lock:
+ ffffffffb3dce758 (&port_lock_key){....}-{3:3}, at: serial8250_console_write+0x3a8/0x480
+ other info that might help us debug this:
+ context-{5:5}
+ 3 locks held by swapper/0/1:
+  #0: ffffffffb2955e08 (rcu_tasks.cbs_gbl_lock){....}-{2:2}, at: cblist_init_generic.constprop.0+0x14/0x1e0
+  #1: ffffffffb2953ec0 (console_lock){+.+.}-{0:0}, at: _printk+0x53/0x6a
+  #2: ffffffffb2873ca0 (console_owner){....}-{0:0}, at: console_unlock+0x157/0x580
+ stack backtrace:
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.16.0-next-20220111-00101-gb3e9f395c6f1 #28
+ Hardware name: Intel Corporation CHERRYVIEW D0 PLATFORM/Braswell CRB, BIOS BRAS.X64.B082.R00.1507270557 07/27/2015
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x57/0x7d
+  __lock_acquire.cold+0xca/0x2e8
+  ? stack_trace_save+0x46/0x70
+  lock_acquire+0xd2/0x300
+  ? serial8250_console_write+0x3a8/0x480
+  _raw_spin_lock_irqsave+0x39/0x50
+  ? serial8250_console_write+0x3a8/0x480
+  serial8250_console_write+0x3a8/0x480
+  console_unlock+0x397/0x580
+  vprintk_emit+0x99/0x2e0
+  _printk+0x53/0x6a
+  cblist_init_generic.constprop.0.cold+0x24/0x31
+  rcu_init_tasks_generic+0x5/0xd9
+  kernel_init_freeable+0x14d/0x294
+  ? rest_init+0x250/0x250
+  kernel_init+0x11/0x110
+  ret_from_fork+0x22/0x30
+  </TASK>
+ cblist_init_generic: Setting shift to 2 and lim to 1.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+With Best Regards,
+Andy Shevchenko
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
