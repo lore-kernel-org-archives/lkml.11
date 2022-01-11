@@ -2,110 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B47EDC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD35C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243755AbiAKDIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 22:08:52 -0500
-Received: from mga17.intel.com ([192.55.52.151]:21785 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231326AbiAKDIv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 22:08:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641870531; x=1673406531;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RMI1RbSj7Nf4sUd+ZkqJlzpz1NnGp0vcp4SZw2pUIQ4=;
-  b=RSpicIQe+l5aR4AIzuC7Z2G+QfPrxtJX2eUH1qOY1k3rT6EwxePehKGR
-   VcpNjVzxpM5q5aq+g1/U+HYQqByxWC+ikXsREKKcm9P/6HvQqxqx0xc5d
-   80ca176wYGw+0I6CvsxB0yKyYcqGAU4RdQmqiHxfen2mMynEEZxRt09pF
-   aL3kt1wUbPDK0911UGkoiibrke7aenkr/OkFxdj8DXwwkloDxtatHulJO
-   Dk1LhvrNCn41twWI7BU27Y1Qm3tlRLuHgQRLEaiwKDsKIIah4gCa6JXB5
-   dPYZynFvjofaS3G0BhWJm23OtMYQPbWhwzVzw2x45xSEsIW38zY7Y8isc
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="224085784"
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="224085784"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 19:08:51 -0800
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="622907157"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 19:08:40 -0800
-Date:   Tue, 11 Jan 2022 11:19:34 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
-        tglx@linutronix.de, Marc Zyngier <maz@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Alexandru Elisei <alexandru.elisei@arm.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        id S233739AbiAKDLR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 22:11:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229523AbiAKDLQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 22:11:16 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4395C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 19:11:16 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id c3so15082633pls.5
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 19:11:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:references:in-reply-to:mime-version
+         :message-id:content-transfer-encoding;
+        bh=zbUZ8MBTmVmuuh6nLO3oUSWnxXuwL880OdPfuGWzHYk=;
+        b=cxfkFqPRjJsidUYoFqrkjQu+rytMjDJUVHRqWFdLhQu7zfbmc+PGsEdtTH6lq0LnJU
+         f5llsTXt4jzLni4sIqAcUlN9VkfhJNiySYlWNNC80IBjoftWpG/WhY9heJDB24FqGmaG
+         FAS3RDxvyPRGi8juK2nJRGYUBftDRSHQ+GD618Yb/syIM7tg4DpnVWnGwkVuVZpKHeMW
+         kI7YgZVMdm3PbPuDtBH8+XvwzliKRslPcLotmZ3h2WyhJkvo/hZsHmLfpRfMPh1gQuLE
+         p+xbSvu4WniS0b8Q0UD2Rao/OuI6yO+l3p3GlSi1Xvgm2a356mk5UVFvDeoRQJeHQm6J
+         LT9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
+         :mime-version:message-id:content-transfer-encoding;
+        bh=zbUZ8MBTmVmuuh6nLO3oUSWnxXuwL880OdPfuGWzHYk=;
+        b=iYauQMkQS2nZ6Eyqdnq/PGmg2ncToPCtjHdL8evTrkfmSoqITxDi52AhFmrNQsUFVF
+         FtnP7XusZFBbkZhUr7xgDkryqmaPGNMTFdBd0I3F6dfy3XEZ1/CmRHJy0CI3zpXoJDPT
+         6ILvrKeBWnwndjllkEUyitkgZnGc13gZrPtTLpibu42wIs35nAlQaGsuJcJ2Zy0OXP74
+         WmtaVtoUFA4EZNN1zCimqhguSpnL0YyyKG4FBpqFlmo2T0qsvOp2zOQrS8sl5xrc78ZV
+         587CKlZnEno/Xb19JZpqTdwjXRZYz6bHQ5SpEAH6jkJdW347grXVWgu836XqkdfDECBP
+         +08A==
+X-Gm-Message-State: AOAM530B8VZJcWHJxQ4guHfAGLFwFCSQLFv7S69Pxq7mYnvSfnZxpJWv
+        tmFEqi+bIR0T0WmgI6BJ27c=
+X-Google-Smtp-Source: ABdhPJwvS1ggfWVk1+YTM2VQ1yaJh/hW9pOxZQQtZVk1N6qWAZQMXv//b71/0S/AB/keLx9+1yye6Q==
+X-Received: by 2002:a63:7a52:: with SMTP id j18mr2377642pgn.319.1641870676336;
+        Mon, 10 Jan 2022 19:11:16 -0800 (PST)
+Received: from localhost (124-171-74-95.tpgi.com.au. [124.171.74.95])
+        by smtp.gmail.com with ESMTPSA id g5sm8697284pfj.143.2022.01.10.19.11.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 19:11:16 -0800 (PST)
+Date:   Tue, 11 Jan 2022 13:11:11 +1000
+From:   Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH] powerpc/time: Fix build failure due to
+ do_hard_irq_enable() on PPC32
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anup Patel <anup.patel@wdc.com>,
-        Atish Patra <atish.patra@wdc.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        David Hildenbrand <david@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
-        Bharata B Rao <bharata@linux.ibm.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, kvm-riscv@lists.infradead.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH 3/6] KVM: Remove opaque from
- kvm_arch_check_processor_compat
-Message-ID: <20220111031933.GB2175@gao-cwp>
-References: <20211227081515.2088920-1-chao.gao@intel.com>
- <20211227081515.2088920-4-chao.gao@intel.com>
- <Ydy8BCfE0jhJd5uE@google.com>
+        Paul Mackerras <paulus@samba.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+References: <247e01e0e10f4dbc59b5ff89e81702eb1ee7641e.1641828571.git.christophe.leroy@csgroup.eu>
+In-Reply-To: <247e01e0e10f4dbc59b5ff89e81702eb1ee7641e.1641828571.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ydy8BCfE0jhJd5uE@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Message-Id: <1641870650.jvmi84hc0s.astroid@bobo.none>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 11:06:44PM +0000, Sean Christopherson wrote:
->On Mon, Dec 27, 2021, Chao Gao wrote:
->> No arch implementation uses this opaque now.
->
->Except for the RISC-V part, this can be a pure revert of commit b99040853738 ("KVM:
->Pass kvm_init()'s opaque param to additional arch funcs").  I think it makes sense
->to process it as a revert, with a short blurb in the changelog to note that RISC-V
->is manually modified as RISC-V support came along in the interim.
+Excerpts from Christophe Leroy's message of January 11, 2022 1:29 am:
+> 	  CC      arch/powerpc/kernel/time.o
+> 	In file included from <command-line>:
+> 	./arch/powerpc/include/asm/hw_irq.h: In function 'do_hard_irq_enable':
+> 	././include/linux/compiler_types.h:335:45: error: call to '__compiletime=
+_assert_35' declared with attribute error: BUILD_BUG failed
+> 	  335 |         _compiletime_assert(condition, msg, __compiletime_assert=
+_, __COUNTER__)
+> 	      |                                             ^
+> 	././include/linux/compiler_types.h:316:25: note: in definition of macro =
+'__compiletime_assert'
+> 	  316 |                         prefix ## suffix();                     =
+        \
+> 	      |                         ^~~~~~
+> 	././include/linux/compiler_types.h:335:9: note: in expansion of macro '_=
+compiletime_assert'
+> 	  335 |         _compiletime_assert(condition, msg, __compiletime_assert=
+_, __COUNTER__)
+> 	      |         ^~~~~~~~~~~~~~~~~~~
+> 	./include/linux/build_bug.h:39:37: note: in expansion of macro 'compilet=
+ime_assert'
+> 	   39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), =
+msg)
+> 	      |                                     ^~~~~~~~~~~~~~~~~~
+> 	./include/linux/build_bug.h:59:21: note: in expansion of macro 'BUILD_BU=
+G_ON_MSG'
+> 	   59 | #define BUILD_BUG() BUILD_BUG_ON_MSG(1, "BUILD_BUG failed")
+> 	      |                     ^~~~~~~~~~~~~~~~
+> 	./arch/powerpc/include/asm/hw_irq.h:483:9: note: in expansion of macro '=
+BUILD_BUG'
+> 	  483 |         BUILD_BUG();
+> 	      |         ^~~~~~~~~
+>=20
+> should_hard_irq_enable() returns false on PPC32 so this BUILD_BUG() shoul=
+dn't trigger.
+>=20
+> Force inlining of should_hard_irq_enable()
+>=20
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Fixes: 0faf20a1ad16 ("powerpc/64s/interrupt: Don't enable MSR[EE] in irq =
+handlers unless perf is in use")
+> Cc: Nicholas Piggin <npiggin@gmail.com>
 
-commit b99040853738 adds opaque param to kvm_arch_hardware_setup(), which isn't
-reverted in this patch. I.e., this patch is a partial revert of b99040853738
-plus manual changes to RISC-V. Given that, "process it as a revert" means
-clearly say in changelog that this commit contains a partial revert of commit
-b99040853738 ("KVM: Pass kvm_init()'s opaque param to additional arch funcs").
+Acked-by: Nicholas Piggin <npiggin@gmail.com>
 
-Right?
+Thanks,
+Nick
+
+> ---
+>  arch/powerpc/include/asm/hw_irq.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/arch/powerpc/include/asm/hw_irq.h b/arch/powerpc/include/asm=
+/hw_irq.h
+> index a58fb4aa6c81..674e5aaafcbd 100644
+> --- a/arch/powerpc/include/asm/hw_irq.h
+> +++ b/arch/powerpc/include/asm/hw_irq.h
+> @@ -473,7 +473,7 @@ static inline bool arch_irq_disabled_regs(struct pt_r=
+egs *regs)
+>  	return !(regs->msr & MSR_EE);
+>  }
+> =20
+> -static inline bool should_hard_irq_enable(void)
+> +static __always_inline bool should_hard_irq_enable(void)
+>  {
+>  	return false;
+>  }
+> --=20
+> 2.33.1
+>=20
