@@ -2,143 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 818C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDACFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349129AbiAKJAo (ORCPT
+        id S1349130AbiAKJBR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 04:00:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54317 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349133AbiAKJAm (ORCPT
+        Tue, 11 Jan 2022 04:01:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236319AbiAKJBQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 04:00:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641891640;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HwTgs2Y/gzDETqEOa6cQ15U5dH6fx+WgFTgxP975v6Q=;
-        b=gDWrQeambq5xOYRRcHZNcVV9tG/csQBBwflMuRO+ZDBZb/+Z/4klSdBM0PscdwRqclY9jG
-        ZCuUHM8hsi4G48q3+q/0qIQ21JtxL5ghQZ3BRF765jxGQJQ4AlfYYTjE7f++U/mQemH2xM
-        rHTBXOD2azT4myq4uCd1C5gRjwxGWkQ=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-616-NlelGdW1P_GOXz4UoGwmvw-1; Tue, 11 Jan 2022 04:00:38 -0500
-X-MC-Unique: NlelGdW1P_GOXz4UoGwmvw-1
-Received: by mail-ed1-f72.google.com with SMTP id t1-20020a056402524100b003f8500f6e35so12742714edd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 01:00:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=HwTgs2Y/gzDETqEOa6cQ15U5dH6fx+WgFTgxP975v6Q=;
-        b=OUEm9NreuRg4/5hyGcKWiE3l5QhDjFnFRLAmG6J8pPgF84sLxdwqo+mouJwAJj6l2d
-         u5iiEVVcPlOsbM8SsNnU8PhMAtfHJGUhN8xtMI/G/bVBxk0zR4eIYVKFJYDTw6IrCJ3U
-         wr0tfBWl3KqYl/s8+Vop0NGti2r18ngyoJmTcSwe7Rs+O5bEgnpmDRdgiYCatwFeUn2u
-         UVxLrCAc7WfaYEiTjxj1LMiht0lzBMK88mJIpf+6LQB9ktng1rhdy/9L/VDGwaHnqGoH
-         77LYPFVxhLQkcw+O+xSURMupIZMIyRSp/P8jb+P6D1iSIzSBB16++vdq+Dlhjg5hr+t4
-         wWTA==
-X-Gm-Message-State: AOAM533WotiCtTrX5fIO4SjxwzXPlmIeptceYP8uMbMwHZv65ABmbhMq
-        KaoHKCzzbohdHORs4aGw23rBehNfcDiKmOh0XcJmuEzctwnDWgt8FRkS1Xm72dlzHRYmXI2rLFH
-        FotiKDnQ0aGWhjdzfkfnwckWG
-X-Received: by 2002:aa7:db90:: with SMTP id u16mr3397372edt.403.1641891637581;
-        Tue, 11 Jan 2022 01:00:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyt1tzZWdcTIPjqZ/ckY27ze6jZWXnU+i9Or1hNPoXVzyiDFui8mVzHKOKlX5UJaksDRC7jqg==
-X-Received: by 2002:aa7:db90:: with SMTP id u16mr3397346edt.403.1641891637307;
-        Tue, 11 Jan 2022 01:00:37 -0800 (PST)
-Received: from ?IPV6:2003:cb:c702:6800:150a:bea9:f03e:c4da? (p200300cbc7026800150abea9f03ec4da.dip0.t-ipconnect.de. [2003:cb:c702:6800:150a:bea9:f03e:c4da])
-        by smtp.gmail.com with ESMTPSA id h11sm4815589edb.59.2022.01.11.01.00.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 01:00:36 -0800 (PST)
-Message-ID: <865621ac-81e4-5396-ded1-3502b1e5a061@redhat.com>
-Date:   Tue, 11 Jan 2022 10:00:36 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Alistair Popple <apopple@nvidia.com>, Peter Xu <peterx@redhat.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     Andrea Arcangeli <aarcange@redhat.com>,
-        Yang Shi <shy828301@gmail.com>,
+        Tue, 11 Jan 2022 04:01:16 -0500
+X-Greylist: delayed 457 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 11 Jan 2022 01:01:16 PST
+Received: from mail.itouring.de (mail.itouring.de [IPv6:2a01:4f8:a0:4463::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1A4C06173F;
+        Tue, 11 Jan 2022 01:01:16 -0800 (PST)
+Received: from tux.applied-asynchrony.com (p5b07ee01.dip0.t-ipconnect.de [91.7.238.1])
+        by mail.itouring.de (Postfix) with ESMTPSA id E4900103765;
+        Tue, 11 Jan 2022 09:53:36 +0100 (CET)
+Received: from [192.168.100.221] (hho.applied-asynchrony.com [192.168.100.221])
+        by tux.applied-asynchrony.com (Postfix) with ESMTP id 75FA3F01624;
+        Tue, 11 Jan 2022 09:53:36 +0100 (CET)
+Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
+To:     Yu Zhao <yuzhao@google.com>, Alexandre Frade <kernel@xanmod.org>,
+        Brian Geffon <bgeffon@google.com>,
+        Daniel Byrne <djbyrne@mtu.edu>,
+        Jan Alexander Steffens <heftig@archlinux.org>,
+        Shuang Zhai <szhai2@cs.rochester.edu>,
+        Sofia Trinh <sofia.trinh@edi.works>,
+        Steven Barrett <steven@liquorix.net>,
+        Suleiman Souhlal <suleiman@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
+        Jesse Barnes <jsbarnes@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Michael Larabel <Michael@michaellarabel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Rik van Riel <riel@surriel.com>,
         Vlastimil Babka <vbabka@suse.cz>,
-        Hugh Dickins <hughd@google.com>,
+        Will Deacon <will@kernel.org>,
+        Ying Huang <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
         Andrew Morton <akpm@linux-foundation.org>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>
-References: <20211115134951.85286-1-peterx@redhat.com>
- <20211115134951.85286-2-peterx@redhat.com>
- <849f1e44-d35e-b8c6-c7c3-a73941028ba7@redhat.com>
- <4711362.BPgp0156Pq@nvdebian>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [PATCH RFC v2 1/2] mm: Don't skip swap entry even if zap_details
- specified
-In-Reply-To: <4711362.BPgp0156Pq@nvdebian>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <YdSuSHa/Vjl6bPkg@google.com> <Yd1Css8+jsspeZHh@google.com>
+From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+Organization: Applied Asynchrony, Inc.
+Message-ID: <ca3a7d27-150d-ed06-c8f8-0c74c4f00667@applied-asynchrony.com>
+Date:   Tue, 11 Jan 2022 09:53:36 +0100
+MIME-Version: 1.0
+In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11.01.22 08:40, Alistair Popple wrote:
-> On Monday, 10 January 2022 7:37:15 PM AEDT David Hildenbrand wrote:
->> On 15.11.21 14:49, Peter Xu wrote:
->>> This check existed since the 1st git commit of Linux repository, but at that
->>> time there's no page migration yet so I think it's okay.
+On 2022-01-11 09:41, Yu Zhao wrote:
+> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
+>> On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
+>>> TLDR
+>>> ====
+>>> The current page reclaim is too expensive in terms of CPU usage and it
+>>> often makes poor choices about what to evict. This patchset offers an
+>>> alternative solution that is performant, versatile and
+>>> straightforward.
+>>
+>> <snipped>
+>>
+>>> Summery
+>>> =======
+>>> The facts are:
+>>> 1. The independent lab results and the real-world applications
+>>>     indicate substantial improvements; there are no known regressions.
+>>> 2. Thrashing prevention, working set estimation and proactive reclaim
+>>>     work out of the box; there are no equivalent solutions.
+>>> 3. There is a lot of new code; nobody has demonstrated smaller changes
+>>>     with similar effects.
 >>>
->>> With page migration enabled, it should logically be possible that we zap some
->>> shmem pages during migration.  When that happens, IIUC the old code could have
->>> the RSS counter accounted wrong on MM_SHMEMPAGES because we will zap the ptes
->>> without decreasing the counters for the migrating entries.  I have no unit test
->>> to prove it as I don't know an easy way to trigger this condition, though.
->>>
->>> Besides, the optimization itself is already confusing IMHO to me in a few points:
->>>
->>>   - The wording "skip swap entries" is confusing, because we're not skipping all
->>>     swap entries - we handle device private/exclusive pages before that.
+>>> Our options, accordingly, are:
+>>> 1. Given the amount of evidence, the reported improvements will likely
+>>>     materialize for a wide range of workloads.
+>>> 2. Gauging the interest from the past discussions [14][15][16], the
+>>>     new features will likely be put to use for both personal computers
+>>>     and data centers.
+>>> 3. Based on Google's track record, the new code will likely be well
+>>>     maintained in the long term. It'd be more difficult if not
+>>>     impossible to achieve similar effects on top of the existing
+>>>     design.
 >>
->> I think one part of the confusion is "swap vs non-swap" entries.
->> For !pte_none() && !pte_present() we can have
+>> Hi Andrew, Linus,
 >>
->> * swap entry
->> * non-swap entry
->> ** device exclusive entry
->> ** device private entry
->> ** HWpoison entry
->> ** migration entry
+>> Can you please take a look at this patchset and let me know if it's
+>> 5.17 material?
 >>
->> So the comment claims to skip "swap entries" but also skips HWpoison and
->> migration entries, and I think that's the confusing part.
->> Both only apply to PageAnon().
+>> My goal is to get it merged asap so that users can reap the benefits
+>> and I can push the sequels. Please examine the data provided -- I
+>> think the unprecedented coverage and the magnitude of the improvements
+>> warrant a green light.
 > 
-> I must be missing something but why do these only apply to PageAnon()?
-
-My memory might be wrong. I remember that for PageAnon() we need
-migration/hwpoison entries because there is no way we could refault the
-page from a mapping once we zap the entry. For everything else, we could
-zap and refault. But looks like we indeed also use migration/hwpoison
-entries for pages with a mapping, although it might not be strictly
-required.
-
+> Downstream kernel maintainers who have been carrying MGLRU for more than
+> 3 versions, can you please provide your Acked-by tags?
 > 
->> IIUC, the only way we could get details != NULL is via unmap_mapping_page()+unmap_mapping_pages().
->>
->> I do wonder if any of the callers really cares about PageAnon() pages where this would be relevant.
->>
->> Am I wrong or is unmap_mapping_pages() never called with "even_cows == true" and we can remove
->> that paremeter:
+> Having this patchset in the mainline will make your job easier :)
 > 
-> Except that unmap_mapping_range() takes `even_cows` as a parameter and passes
-> that to unmap_mapping_pages(), and from what I can tell there are callers of
-> unmap_mapping_range() that set `even_cows = true`.
+>     Alexandre - the XanMod Kernel maintainer
+>                 https://xanmod.org
+>     
+>     Brian     - the Chrome OS kernel memory maintainer
+>                 https://www.chromium.org
+>     
+>     Jan       - the Arch Linux Zen kernel maintainer
+>                 https://archlinux.org
+>     
+>     Steven    - the Liquorix kernel maintainer
+>                 https://liquorix.net
+>     
+>     Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
+>                 https://chromium.googlesource.com/chromiumos/third_party/kernel
+> 
+> Also my gratitude to those who have helped test MGLRU:
+> 
+>     Daniel - researcher at Michigan Tech
+>              benchmarked memcached
+>     
+>     Holger - who has been testing/patching/contributing to various
+>              subsystems since ~2008
+>     
+>     Shuang - researcher at University of Rochester
+>              benchmarked fio and provided a report
+>     
+>     Sofia  - EDI https://www.edi.works
+>              benchmarked the top eight memory hogs and provided reports
+> 
+> Can you please provide your Tested-by tags? This will ensure the credit
+> for your contributions.
+> 
+> Thanks!
+> 
 
-You're right.
+Have been pounding on this "in production" on several different machines
+(server, desktop, laptop) and 5.15.x without any issues, so:
 
--- 
-Thanks,
+Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
 
-David / dhildenb
+Looking forward to seeing this in mainline!
 
+cheers,
+Holger
