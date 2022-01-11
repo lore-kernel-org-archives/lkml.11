@@ -2,89 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:54:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241174AbiAKNyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 08:54:15 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:51922 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241065AbiAKNyO (ORCPT
+        id S241174AbiAKNzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 08:55:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239487AbiAKNzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 08:54:14 -0500
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 81AC7201378;
-        Tue, 11 Jan 2022 13:54:12 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id BE00A808C2; Tue, 11 Jan 2022 14:01:55 +0100 (CET)
-Date:   Tue, 11 Jan 2022 14:01:55 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     torvalds@linux-foundation.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [GIT PULL] pcmcia updates for v5.17
-Message-ID: <Yd1/w23Z8J6O6Y7v@owl.dominikbrodowski.net>
+        Tue, 11 Jan 2022 08:55:49 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11F8C06173F;
+        Tue, 11 Jan 2022 05:55:48 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id w26so5218318wmi.0;
+        Tue, 11 Jan 2022 05:55:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5QHegbcEygh2W5IGA3CayrM6SBPU+A/OGV2FmBEZvB8=;
+        b=NulLQl18nPDc0P6PvcEjc+yU1ZTlH2TNAAD2KgB3zQnSoT7QHhhQlsiQ0uWkbDmbJ9
+         f5rDKnX44C9aNNl4OWyUfsV4jc2IAOYsUjrlIkN6ZAwCF0cd5nCXAv7+O/qGUcFMRs/P
+         v/VEmJjQFbbtcT/3QgmY7DrxaMbMqLVRWvvaV1qemJRUjGthu7l9nxtBdsr1l0gF2MBT
+         CCpwHXJV0L4aSkEIR6coC/ViNLTLhPRMyIs2FWV9j+5mSWV1WNjK/0pvJPZQ2/xVgSpa
+         EmIgWo6P8FBKvOp6Ed2fHBfxn3yC/h8TjPuH/wY0M3YqYYZr90Y4tSqPgkv6BIaZJStc
+         hunA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5QHegbcEygh2W5IGA3CayrM6SBPU+A/OGV2FmBEZvB8=;
+        b=R428hTtQ8WKW93V0bwzAi44rSQGGyjLO9/5UodglA8/p8uQ5SkuywyMSMB/qGx08br
+         tCbz76DF5oI7KlKyFlu+lCEjmPZ5rEOQAQs4lBSuBIZAcg702B+GXVG3p5ZUZcYNBWtI
+         1k5qIcj29tHwUZtIJKaVJZ/df1Qb1Mjg7Lxm3xwpEKyrewWhudXH5L0oiFAngNCd6QZq
+         +AwTnFqAg2FvMNeC0eqbOy1B/fp/SYkF3Yv446fzcD+B0rVRJii4u+rlTcJ/fi+N3hNU
+         mbbWVNvipg+XcDXdd02XNeA8ulWCOQ11tnAiyNCtx8S6gQJpD/zvjZ44W4H36h9+eTa0
+         Skvg==
+X-Gm-Message-State: AOAM531BXXNfIzowhk1ffGWaGnEQeGDxjGbz5rSuw9k2TuvfqSjAOa9J
+        TOUiitl2qyHzpE67/mNoxY8+qhk+StX2bvG7BkM=
+X-Google-Smtp-Source: ABdhPJz8QQziEnUftyubzwIgqz2M+dbnbj1BFQWQo81+ecWeHjfvQikJL7IiehweL733BoK4XsFnLW2OWESHx37z1sA=
+X-Received: by 2002:a7b:c142:: with SMTP id z2mr2513949wmi.167.1641909347544;
+ Tue, 11 Jan 2022 05:55:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <CAKcFiNDyPSx_M9HJNhDJd0Omq4JFLXNjDR_9bxaSjvmPc2bXxQ@mail.gmail.com>
+In-Reply-To: <CAKcFiNDyPSx_M9HJNhDJd0Omq4JFLXNjDR_9bxaSjvmPc2bXxQ@mail.gmail.com>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Tue, 11 Jan 2022 08:55:36 -0500
+Message-ID: <CAB_54W7d80pgJ-9+0H9Gn6-NO6j+qzKDXVr3p_qYmbTXo2OCRA@mail.gmail.com>
+Subject: Re: INFO: task hung in nl802154_pre_doit
+To:     cruise k <cruise4k@gmail.com>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        Hao Sun <sunhao.th@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+Hi,
 
-A few PCMCIA changes since commit 278218f6778bc7d6f8b67199446c56cec7ebb841:
+On Mon, 10 Jan 2022 at 22:01, cruise k <cruise4k@gmail.com> wrote:
+>
+> Hi,
+>
+> Syzkaller found the following issue:
+>
+> HEAD commit: 75acfdb Linux 5.16-rc8
+> git tree: upstream
+> console output: https://pastebin.com/raw/AzAMX5zz
+> kernel config: https://pastebin.com/raw/XsnKfdRt
+>
+> And hope the report log can help you.
+>
+> [ 1251.721354][   T59] INFO: task syz-executor.0:2134 blocked for more
+> than 143 seconds.
 
-  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input (2022-01-01 10:21:49 -0800)
+any reproducer here?
+The console output shows "ieee802154 phy1 wpan1: encryption failed:
+-22" so I guess something was configured.
 
-are available in the Git repository at
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/brodo/linux.git pcmcia-next
-
-for you to fetch changes up to fbb3485f1f931102d8ba606f1c28123f5b48afa3:
-
-  pcmcia: fix setting of kthread task states (2022-01-09 21:30:04 +0100)
-
-A number of odd cleanups and fixes, including one for a small race in the
-handling of the pccardd kernel thread.
-
-Thanks,
-	Dominik
-
-----------------------------------------------------------------
-Cai Huoqing (1):
-      pcmcia: Make use of the helper macro SET_NOIRQ_SYSTEM_SLEEP_PM_OPS()
-
-Dominik Brodowski (4):
-      pcmcia: comment out unused exca_readw() function
-      pcmcia: make pcmcia_release_io() void, as no-one is interested in return value
-      pcmcia: use sysfs_emit{,_at} for sysfs output
-      pcmcia: fix setting of kthread task states
-
-Lukas Bulwahn (1):
-      pcmcia: clean up dead drivers for CompuLab CM-X255/CM-X270 boards
-
-Tom Saeger (1):
-      MAINTAINERS: update PCMCIA tree
-
-Zhou Qingyang (2):
-      pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in __nonstatic_find_io_region()
-      pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
-
- MAINTAINERS                      |   2 +-
- drivers/pcmcia/Kconfig           |   2 +-
- drivers/pcmcia/Makefile          |   2 -
- drivers/pcmcia/cs.c              |   8 +--
- drivers/pcmcia/ds.c              |  20 +++----
- drivers/pcmcia/pcmcia_resource.c |   5 +-
- drivers/pcmcia/pxa2xx_cm_x255.c  | 124 ---------------------------------------
- drivers/pcmcia/pxa2xx_cm_x270.c  | 103 --------------------------------
- drivers/pcmcia/pxa2xx_cm_x2xx.c  |  44 --------------
- drivers/pcmcia/rsrc_nonstatic.c  |  12 +++-
- drivers/pcmcia/socket_sysfs.c    |  18 +++---
- drivers/pcmcia/yenta_socket.c    |  23 ++++----
- 12 files changed, 43 insertions(+), 320 deletions(-)
- delete mode 100644 drivers/pcmcia/pxa2xx_cm_x255.c
- delete mode 100644 drivers/pcmcia/pxa2xx_cm_x270.c
- delete mode 100644 drivers/pcmcia/pxa2xx_cm_x2xx.c
+- Alex
