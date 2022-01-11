@@ -2,238 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EF3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 06:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9F9C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 06:18:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348038AbiAKGOW (ORCPT
+        id S1348094AbiAKGSU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 01:14:22 -0500
-Received: from helcar.hmeau.com ([216.24.177.18]:59320 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232314AbiAKGOV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 01:14:21 -0500
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.92 #5 (Debian))
-        id 1n7APq-0007Yd-To; Tue, 11 Jan 2022 17:13:56 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Tue, 11 Jan 2022 17:13:54 +1100
-Date:   Tue, 11 Jan 2022 17:13:54 +1100
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Stephan Mueller <smueller@chronox.de>
-Cc:     Nicolai Stange <nstange@suse.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
-        Zaibo Xu <xuzaibo@huawei.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com,
-        Eric Biggers <ebiggers@kernel.org>, Petr Vorel <pvorel@suse.cz>
-Subject: [PATCH] crypto: api - Disallow sha1 in FIPS-mode while allowing
- hmac(sha1)
-Message-ID: <Yd0gInht+V+Kcsw2@gondor.apana.org.au>
-References: <20211209090358.28231-1-nstange@suse.de>
- <87r1a7thy0.fsf@suse.de>
- <YcvEkfS4cONDXXB9@gondor.apana.org.au>
- <2468270.qO8rWLYou6@tauon.chronox.de>
- <YdepEhTI/LB9wdJr@gondor.apana.org.au>
+        Tue, 11 Jan 2022 01:18:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232725AbiAKGST (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 01:18:19 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 377E1C06173F;
+        Mon, 10 Jan 2022 22:18:19 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id m13so16708981pji.3;
+        Mon, 10 Jan 2022 22:18:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:organization:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=X18v40N5uNeF4+CxOKsSVdbKFEsMdXIdNxMHtmaLwOg=;
+        b=dT/e3xwnwJjpE4movXCCfNcZovcHkl71fXQxB35sT1aaBs9gqi3tdY355frbZ240ZR
+         TYf7DKppKmZ8gGEULR34UkpVXjEuBQSSjfS1DcuVTg2U1x9iVAYXq37EGXytxrgOmz6Z
+         G31myFDh/pEl1bf27dB4UsDZPNRUCONfnAWeYnELzJJ/myo6AfVPVY4JG0XDqobPruD3
+         /C4qGUIIvz5kHDzYHoqNYRnqQAzw1bfm/wlcMiszPMSg2GF9LYN8n6tp8CH9ADRExd9a
+         m8geOKe5G/M4F4Fm74KlnNF4I3HFfZbe7Y+DPtPd3gRccBycVwgcOQr4e+PqQfoHE1jb
+         omvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=X18v40N5uNeF4+CxOKsSVdbKFEsMdXIdNxMHtmaLwOg=;
+        b=2iq043gc1h1L4FS8O5w9DJ/do2QJKG6YuH7ofDxusmpCr5PJ6ydfFgRSvfX+/SI5H6
+         mI0a5CiWlIirwmCy0Lt6gNaOFQGpsO6JyrfHKo/gEU6qRsu9V5bhnI4wrLKU8IR42Qrz
+         DQVFmBmqr46gaNE/tlJFqMYwggkC6okGCEg3XM8+DYJE43ntJJiDhTJeRnMSP7fJ1dG0
+         itHEHxjZuuENWAG+M5RbUeSAMGMdSFupuBCuP+3WPwan1lccoA4wp4UPPR3O/yxVjkJA
+         E48FnZtUs6KJ+OU+wZVGBl/eaYx/Nep5IzvE/kNw4JylAbl5BA7Bte+V1IhVh6GF17tF
+         oyrw==
+X-Gm-Message-State: AOAM531PedvpRw51wzyv+qJhcSV/0chrTgabWH8LJmj61HKXf8j4o9in
+        lSOAcaQ5bHfeYye7Jm52Kis=
+X-Google-Smtp-Source: ABdhPJwfAIdWa+7sJg6SLLD5LRkeD2p5JRQemA4o10kwgRdmOEWj/vIG5DuP5vdZXy9Zk17vC7pVVA==
+X-Received: by 2002:a17:90a:294f:: with SMTP id x15mr1573022pjf.136.1641881898544;
+        Mon, 10 Jan 2022 22:18:18 -0800 (PST)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id s6sm900240pjp.19.2022.01.10.22.18.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 22:18:18 -0800 (PST)
+Message-ID: <7fa1a2d8-040c-1485-41ae-ad51f1182bdb@gmail.com>
+Date:   Tue, 11 Jan 2022 14:18:09 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdepEhTI/LB9wdJr@gondor.apana.org.au>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Content-Language: en-US
+To:     Jim Mattson <jmattson@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, David Dunn <daviddunn@google.com>
+References: <20211117080304.38989-1-likexu@tencent.com>
+ <c840f1fe-5000-fb45-b5f6-eac15e205995@redhat.com>
+ <CALMp9eRA8hw9zVEwnZEX56Gao-MibX5A+XXYS-n-+X0BkhrSvQ@mail.gmail.com>
+ <438d42de-78e1-0ce9-6a06-38194de4abd4@redhat.com>
+ <CALMp9eSLU1kfffC3Du58L8iPY6LmKyVO0yU7c3wEnJAD9JZw4w@mail.gmail.com>
+ <CALMp9eR3PEgXhe_z8ArHK0bPeW4=htta_f3LHTm9jqL2rtcT7A@mail.gmail.com>
+ <a2b6fb82-292b-f714-cfd7-31a5310c28ed@gmail.com>
+ <CALMp9eQbiqjf_MMJP9Cc9=Ubm7qKv88BXtu3=7z8ax9W_1AY4Q@mail.gmail.com>
+ <1f293656-49f5-ce02-1c59-a0f215306033@gmail.com>
+ <CALMp9eTqMMia0Vx=kfGpQVHVYvSCDtuBN1eDr12cop0EAzCSaw@mail.gmail.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+Organization: Tencent
+Subject: Re: [PATCH] KVM: x86/svm: Add module param to control PMU
+ virtualization
+In-Reply-To: <CALMp9eTqMMia0Vx=kfGpQVHVYvSCDtuBN1eDr12cop0EAzCSaw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 01:44:34PM +1100, Herbert Xu wrote:
->
-> I'm already writing this up for sha1 anyway so let me polish it
-> off and I'll post it soon which you can then reuse it for dh.
+On 11/1/2022 11:24 am, Jim Mattson wrote:
+> On Mon, Jan 10, 2022 at 6:11 PM Like Xu <like.xu.linux@gmail.com> wrote:
+>>
+>> On 11/1/2022 2:13 am, Jim Mattson wrote:
+>>> On Sun, Jan 9, 2022 at 10:23 PM Like Xu <like.xu.linux@gmail.com> wrote:
+>>>>
+>>>> On 9/1/2022 9:23 am, Jim Mattson wrote:
+>>>>> On Fri, Dec 10, 2021 at 7:48 PM Jim Mattson <jmattson@google.com> wrote:
+>>>>>>
+>>>>>> On Fri, Dec 10, 2021 at 6:15 PM Paolo Bonzini <pbonzini@redhat.com> wrote:
+>>>>>>>
+>>>>>>> On 12/10/21 20:25, Jim Mattson wrote:
+>>>>>>>> In the long run, I'd like to be able to override this system-wide
+>>>>>>>> setting on a per-VM basis, for VMs that I trust. (Of course, this
+>>>>>>>> implies that I trust the userspace process as well.)
+>>>>>>>>
+>>>>>>>> How would you feel if we were to add a kvm ioctl to override this
+>>>>>>>> setting, for a particular VM, guarded by an appropriate permissions
+>>>>>>>> check, like capable(CAP_SYS_ADMIN) or capable(CAP_SYS_MODULE)?
+>>>>>>>
+>>>>>>> What's the rationale for guarding this with a capability check?  IIRC
+>>>>>>> you don't have such checks for perf_event_open (apart for getting kernel
+>>>>>>> addresses, which is not a problem for virtualization).
+>>>>>>
+>>>>>> My reasoning was simply that for userspace to override a mode 0444
+>>>>>> kernel module parameter, it should have the rights to reload the
+>>>>>> module with the parameter override. I wasn't thinking specifically
+>>>>>> about PMU capabilities.
+>>>>
+>>>> Do we have a precedent on any module parameter rewriting for privileger ?
+>>>>
+>>>> A further requirement is whether we can dynamically change this part of
+>>>> the behaviour when the guest is already booted up.
+>>>>
+>>>>>
+>>>>> Assuming that we trust userspace to decide whether or not to expose a
+>>>>> virtual PMU to a guest (as we do on the Intel side), perhaps we could
+>>>>> make use of the existing PMU_EVENT_FILTER to give us per-VM control,
+>>>>> rather than adding a new module parameter for per-host control. If
+>>>>
+>>>> Various granularities of control are required to support vPMU production
+>>>> scenarios, including per-host, per-VM, and dynamic-guest-alive control.
+>>>>
+>>>>> userspace calls KVM_SET_PMU_EVENT_FILTER with an action of
+>>>>> KVM_PMU_EVENT_ALLOW and an empty list of allowed events, KVM could
+>>>>> just disable the virtual PMU for that VM.
+>>>>
+>>>> AMD will also have "CPUID Fn8000_0022_EBX[NumCorePmc, 3:0]".
+>>>
+>>> Where do you see this? Revision 3.33 (November 2021) of the AMD APM,
+>>> volume 3, only goes as high as CPUID Fn8000_0021.
+>>
+>> Try APM Revision: 4.04 (November 2021),  page 1849/3273,
+>> "CPUID Fn8000_0022_EBX Extended Performance Monitoring and Debug".
+> 
+> Is this a public document?
 
-Here is something that seems to work for sha1/hmac.  Please let
-me know if you see any issues with this approach for dh.
+The latest version of APM (40332) is revision v4.04, released on 12/1/2021.
 
-Thanks,
+> 
+>> Given the current ambiguity in this revision, the AMD folks will reveal more
+>> details bout this field in the next revision.
+>>
+>>>
+>>>>>
+>>>>> Today, the semantics of an empty allow list are quite different from
+>>>>> the proposed pmuv module parameter being false. However, it should be
+>>>>> an easy conversion. Would anyone be concerned about changing the
+>>>>> current semantics of an empty allow list? Is there a need for
+>>>>> disabling PMU virtualization for legacy userspace implementations that
+>>>>> can't be modified to ask for an empty allow list?
+>>>>>
+>>>>
+>>>> AFAI, at least one user-space agent has integrated with it plus additional
+>>>> "action"s.
+>>>>
+>>>> Once the API that the kernel presents to user space has been defined,
+>>>> it's best not to change it and instead fall into remorse.
+>>>
+>>> Okay.
+>>>
+>>> I propose the following:
+>>> 1) The new module parameter should apply to Intel as well as AMD, for
+>>> situations where userspace is not trusted.
+>>> 2) If the module parameter allows PMU virtualization, there should be
+>>> a new KVM_CAP whereby userspace can enable/disable PMU virtualization.
+>>> (Since you require a dynamic toggle, and there is a move afoot to
+>>> refuse guest CPUID changes once a guest is running, this new KVM_CAP
+>>> is needed on Intel as well as AMD).
+>>
+>> Both hands in favour. Do you need me as a labourer, or you have a ready-made one ?
+> 
+> We could split the work. Since (1) is a modification of the change you
+> proposed in this thread, perhaps you could apply it to both AMD and
 
----8<---
-Currently we do not distinguish between algorithms that fail on
-the self-test vs. those which are disabled in FIPS mode (not allowed).
-Both are marked as having failed the self-test.
+We obviously need extra code to make the module parameters suitable for Intel 
+since it
+affects other features (such as LBR and PEBS), we may not rush to draw this line 
+clearly.
 
-As it has been requested that we need to disable sha1 in FIPS
-mode while still allowing hmac(sha1) this approach needs to change.
+> Intel in v2? We can find someone for (2).
 
-This patch allows this scenario by adding a new flag FIPS_INTERNAL
-to indicate those algorithms that have passed the self-test and are
-not FIPS-allowed.  They can then be used for the self-testing of
-other algorithms or by those that are explicitly allowed to use them
-(currently just hmac).
+The ioctl_set_pmu_event_filter() interface is already practical for dynamic toggle,
+as not being able to program any events is the same as having none vPMU,
+w/o considering performance impact of traversing the list.
 
-Note that as a side-effect of this patch algorithms which are not
-FIPS-allowed will now return ENOENT instead of ELIBBAD.  Hopefully
-this is not an issue as some people were relying on this already.
+I am not sure if the maintainer will buy in another KVM_CAP for only per-VM, 
+considering
+"CPUID Fn8000_0022_EBX[NumCorePmc, 3:0]" is a feature that will be available soon.
 
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> 
+>>> 3) If the module parameter does not allow PMU virtualization, there
+>>> should be no userspace override, since we have no precedent for
+>>> authorizing that kind of override.
+>>
+>> Uh, I thought you (Google) had a lot of these (interesting) use cases internally.
+> 
+> We have modified some module parameters so that they can be changed at
+> runtime, but we don't have any concept of a privileged userspace
+> overriding a module parameter restriction.
 
-diff --git a/crypto/algapi.c b/crypto/algapi.c
-index a366cb3e8aa1..649731856843 100644
---- a/crypto/algapi.c
-+++ b/crypto/algapi.c
-@@ -322,7 +322,13 @@ void crypto_alg_tested(const char *name, int err)
- found:
- 	q->cra_flags |= CRYPTO_ALG_DEAD;
- 	alg = test->adult;
--	if (err || list_empty(&alg->cra_list))
-+
-+	if (list_empty(&alg->cra_list))
-+		goto complete;
-+
-+	if (err == -ECANCELED)
-+		alg->cra_flags |= CRYPTO_ALG_FIPS_INTERNAL;
-+	else if (err)
- 		goto complete;
- 
- 	alg->cra_flags |= CRYPTO_ALG_TESTED;
-diff --git a/crypto/api.c b/crypto/api.c
-index cf0869dd130b..4c343585d4ea 100644
---- a/crypto/api.c
-+++ b/crypto/api.c
-@@ -314,6 +314,10 @@ struct crypto_alg *crypto_alg_mod_lookup(const char *name, u32 type, u32 mask)
- 	if (!((type | mask) & CRYPTO_ALG_INTERNAL))
- 		mask |= CRYPTO_ALG_INTERNAL;
- 
-+	/* Ditto for FIPS_INTERNAL. */
-+	if (!((type | mask) & CRYPTO_ALG_FIPS_INTERNAL))
-+		mask |= CRYPTO_ALG_FIPS_INTERNAL;
-+
- 	larval = crypto_larval_lookup(name, type, mask);
- 	if (IS_ERR(larval) || !crypto_is_larval(larval))
- 		return larval;
-diff --git a/crypto/hmac.c b/crypto/hmac.c
-index 25856aa7ccbf..fea669310f52 100644
---- a/crypto/hmac.c
-+++ b/crypto/hmac.c
-@@ -169,6 +169,7 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
- 	struct crypto_alg *alg;
- 	struct shash_alg *salg;
- 	u32 mask;
-+	u32 type;
- 	int err;
- 	int ds;
- 	int ss;
-@@ -182,8 +183,9 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
- 		return -ENOMEM;
- 	spawn = shash_instance_ctx(inst);
- 
-+	type = CRYPTO_ALG_FIPS_INTERNAL;
- 	err = crypto_grab_shash(spawn, shash_crypto_instance(inst),
--				crypto_attr_alg_name(tb[1]), 0, mask);
-+				crypto_attr_alg_name(tb[1]), type, mask);
- 	if (err)
- 		goto err_free_inst;
- 	salg = crypto_spawn_shash_alg(spawn);
-diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 5831d4bbc64f..6e2221a492e8 100644
---- a/crypto/testmgr.c
-+++ b/crypto/testmgr.c
-@@ -1664,7 +1664,8 @@ static int test_hash_vs_generic_impl(const char *generic_driver,
- 	if (strcmp(generic_driver, driver) == 0) /* Already the generic impl? */
- 		return 0;
- 
--	generic_tfm = crypto_alloc_shash(generic_driver, 0, 0);
-+	generic_tfm = crypto_alloc_shash(generic_driver,
-+					 CRYPTO_ALG_FIPS_INTERNAL, 0);
- 	if (IS_ERR(generic_tfm)) {
- 		err = PTR_ERR(generic_tfm);
- 		if (err == -ENOENT) {
-@@ -2387,7 +2388,8 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
- 	if (strcmp(generic_driver, driver) == 0) /* Already the generic impl? */
- 		return 0;
- 
--	generic_tfm = crypto_alloc_aead(generic_driver, 0, 0);
-+	generic_tfm = crypto_alloc_aead(generic_driver,
-+					CRYPTO_ALG_FIPS_INTERNAL, 0);
- 	if (IS_ERR(generic_tfm)) {
- 		err = PTR_ERR(generic_tfm);
- 		if (err == -ENOENT) {
-@@ -2986,7 +2988,8 @@ static int test_skcipher_vs_generic_impl(const char *generic_driver,
- 	if (strcmp(generic_driver, driver) == 0) /* Already the generic impl? */
- 		return 0;
- 
--	generic_tfm = crypto_alloc_skcipher(generic_driver, 0, 0);
-+	generic_tfm = crypto_alloc_skcipher(generic_driver,
-+					    CRYPTO_ALG_FIPS_INTERNAL, 0);
- 	if (IS_ERR(generic_tfm)) {
- 		err = PTR_ERR(generic_tfm);
- 		if (err == -ENOENT) {
-@@ -5328,7 +5331,6 @@ static const struct alg_test_desc alg_test_descs[] = {
- 	}, {
- 		.alg = "sha1",
- 		.test = alg_test_hash,
--		.fips_allowed = 1,
- 		.suite = {
- 			.hash = __VECS(sha1_tv_template)
- 		}
-@@ -5637,9 +5639,6 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
- 		if (i < 0)
- 			goto notest;
- 
--		if (fips_enabled && !alg_test_descs[i].fips_allowed)
--			goto non_fips_alg;
--
- 		rc = alg_test_cipher(alg_test_descs + i, driver, type, mask);
- 		goto test_done;
- 	}
-@@ -5649,8 +5648,7 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
- 	if (i < 0 && j < 0)
- 		goto notest;
- 
--	if (fips_enabled && ((i >= 0 && !alg_test_descs[i].fips_allowed) ||
--			     (j >= 0 && !alg_test_descs[j].fips_allowed)))
-+	if (fips_enabled && (j >= 0 && !alg_test_descs[j].fips_allowed))
- 		goto non_fips_alg;
- 
- 	rc = 0;
-@@ -5671,10 +5669,15 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
- 		}
- 		WARN(1, "alg: self-tests for %s (%s) failed (rc=%d)",
- 		     driver, alg, rc);
--	} else {
--		if (fips_enabled)
--			pr_info("alg: self-tests for %s (%s) passed\n",
-+	} else if (fips_enabled) {
-+		pr_info("alg: self-tests for %s (%s) passed\n",
-+			driver, alg);
-+
-+		if (i >= 0 && !alg_test_descs[i].fips_allowed) {
-+			pr_info("alg: %s (%s) is disabled due to FIPS\n",
- 				driver, alg);
-+			rc = -ECANCELED;
-+		}
- 	}
- 
- 	return rc;
-diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index 855869e1fd32..df3f68dfe8c7 100644
---- a/include/linux/crypto.h
-+++ b/include/linux/crypto.h
-@@ -132,6 +132,15 @@
-  */
- #define CRYPTO_ALG_ALLOCATES_MEMORY	0x00010000
- 
-+/*
-+ * Mark an algorithm as a service implementation only usable by a
-+ * template and never by a normal user of the kernel crypto API.
-+ * This is intended to be used by algorithms that are themselves
-+ * not FIPS-approved but may instead be used to implement parts of
-+ * a FIPS-approved algorithm (e.g., sha1 vs. hmac(sha1)).
-+ */
-+#define CRYPTO_ALG_FIPS_INTERNAL	0x00020000
-+
- /*
-  * Transform masks and values (for crt_flags).
-  */
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Considering that the semantics of the different module parameters are different,
+allowing one of them to be overridden does not mean that such a generic framework
+is promising, but it makes sense for the community to see another case for it.
+
+> 
+>>>
+>>>> "But I am not a decision maker. " :D
+>>>>
+>>>> Thanks,
+>>>> Like Xu
+>>>>
+> 
