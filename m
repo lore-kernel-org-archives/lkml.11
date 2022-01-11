@@ -2,158 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7DD6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31348C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350414AbiAKTPA (ORCPT
+        id S1350426AbiAKTPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:15:00 -0500
-Received: from conssluserg-04.nifty.com ([210.131.2.83]:40503 "EHLO
-        conssluserg-04.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350417AbiAKTO7 (ORCPT
+        Tue, 11 Jan 2022 14:15:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350417AbiAKTPK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:14:59 -0500
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180]) (authenticated)
-        by conssluserg-04.nifty.com with ESMTP id 20BJEcfg015619
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 04:14:38 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-04.nifty.com 20BJEcfg015619
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1641928479;
-        bh=CtHOSXVtKGXQXItvatUNChY2KFd7B8FzZNRA3joojV8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dAuAbFqqSJjG8V7tBiELyMPuV1NlvDduZwC9vzk+LdZQ1IFv3ya4ATFo/UEECniQ2
-         jHTYVd91v2e+Mc+CTT/Zki/mO9vfouU3u7gkJCQ4nxW8TcbTW/nRcBOww+yGXxqdjt
-         dAAC1eLDMCU0u2xq1NDPk/CYZTnLo9OF7O+cFJDGQboNXa50usKM61vD+UDxQEUIF5
-         s5tq1+lONP2EBCpBSJQe1+YsRmUNj8WO41myJk9z4nPNCyLrhZw1y1uz5kFSffQHkH
-         U9+IVU3LyG0lFUMnRaUg0SeGtdEsdb/QHagBxaRqIKshBEGuiFMoqIipCwTdzjN8Io
-         5kI+6LJAWAqOA==
-X-Nifty-SrcIP: [209.85.214.180]
-Received: by mail-pl1-f180.google.com with SMTP id l15so253769pls.7
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:14:38 -0800 (PST)
-X-Gm-Message-State: AOAM531SnutwShP8no4J3oTNrznUSaBxUDVnqNJFJXRnup1elpgsm89l
-        wtkzuPbxkbh+43wjHD9VcjJq027ZKX2Z0Of2PTE=
-X-Google-Smtp-Source: ABdhPJxNA+PXoK9Dd+LkSQ5hqaVAmVLjFXI7W4EF5Nez/GBtC+uDQzvlywQprHUfDfJeF0tRnCK2CR7f34O6ZxumwdQ=
-X-Received: by 2002:a17:90a:680a:: with SMTP id p10mr4715814pjj.144.1641928477950;
- Tue, 11 Jan 2022 11:14:37 -0800 (PST)
+        Tue, 11 Jan 2022 14:15:10 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFBEBC06173F;
+        Tue, 11 Jan 2022 11:15:09 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id 0A3BC1F447B6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1641928508;
+        bh=GtBWQubh7MRSfsrJwouzQ1KZLx9kkRfXx1s3sYvQ1W8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FqgYA820nG/BheP0MtLycz0Xh86cW9CV7nbyfTgJaj+3HrenpVEcCXZ18TCqs/7qg
+         4W04n5wreMasp0sdnxAo6AmMlVk0IwAwR7Mk+IOrNPh35ATUdxiKA1RBDE3bfEsy9+
+         keW7SGu4QwoyuOesqaFH2qCvd9kXw6W86G1SEgAHP1urdkjUNsqdHxa8EnSMxPw1VR
+         2vHAITsjYtD29gbpqgQM6t8EhqnjuQFDdr9wWStY9uFWjfoN20RdTEeV4tZ37YR2OP
+         U3gcgc9tgoOuGp7xhLW/UijDulnXXnPPjsiIRg5JgHJaCREMloJN6lu67xGZIUs/Zs
+         KLcpWbJ1xvysQ==
+Date:   Tue, 11 Jan 2022 14:15:01 -0500
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        chun-jie.chen@mediatek.com, devicetree@vger.kernel.org,
+        drinkcat@chromium.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        srv_heupstream@mediatek.com
+Subject: Re: [PATCH v2 1/5] arm64: dts: mediatek: Correct uart clock of MT8192
+Message-ID: <20220111191501.dspzjabuuohinufz@notapiano>
+References: <20220106032420.11544-1-allen-kh.cheng@mediatek.com>
+ <20220106032420.11544-2-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-References: <20220108140415.3360088-1-gregkh@linuxfoundation.org>
-In-Reply-To: <20220108140415.3360088-1-gregkh@linuxfoundation.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 12 Jan 2022 04:14:00 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASC+PBFqbsAFWbePoEjL5d21z95Nb84AHTkPjiMcWG_Gg@mail.gmail.com>
-Message-ID: <CAK7LNASC+PBFqbsAFWbePoEjL5d21z95Nb84AHTkPjiMcWG_Gg@mail.gmail.com>
-Subject: Re: [PATCH] export: fix string handling of namespace in EXPORT_SYMBOL_NS
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Emil Velikov <emil.l.velikov@gmail.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Matthias Maennich <maennich@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220106032420.11544-2-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 8, 2022 at 11:04 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> Commit c3a6cf19e695 ("export: avoid code duplication in
-> include/linux/export.h") broke the ability for a defined string to be
-> used as a namespace value.  Fix this up by adding another layer of
-> indirection to preserve the previous functionality.
->
-> Fixes: c3a6cf19e695 ("export: avoid code duplication in include/linux/export.h")
-> Cc: Miroslav Benes <mbenes@suse.cz>
-> Cc: Emil Velikov <emil.l.velikov@gmail.com>
-> Cc: Jessica Yu <jeyu@kernel.org>
-> Cc: Quentin Perret <qperret@google.com>
-> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> Cc: Matthias Maennich <maennich@google.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
-> Note, I found this while forward porting an out-of-tree Android kernel
-> patch from 5.4 to 5.10 that used module namespaces to help wall-off vfs
-> symbols from being used by non-filesystem modules.  This issue does not
-> affect any in-kernel code, so I am not so sure if it really is needed
-> here, but it does restore the previous functionality that was being used
-> in older kernels so it might be good to put back in case others want to
-> do much the same thing.
->
->  include/linux/export.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/include/linux/export.h b/include/linux/export.h
-> index 27d848712b90..9a992809f57d 100644
-> --- a/include/linux/export.h
-> +++ b/include/linux/export.h
-> @@ -162,8 +162,10 @@ struct kernel_symbol {
->
->  #define EXPORT_SYMBOL(sym)             _EXPORT_SYMBOL(sym, "")
->  #define EXPORT_SYMBOL_GPL(sym)         _EXPORT_SYMBOL(sym, "_gpl")
-> -#define EXPORT_SYMBOL_NS(sym, ns)      __EXPORT_SYMBOL(sym, "", #ns)
-> -#define EXPORT_SYMBOL_NS_GPL(sym, ns)  __EXPORT_SYMBOL(sym, "_gpl", #ns)
-> +#define _EXPORT_SYMBOL_NS(sym, ns)     __EXPORT_SYMBOL(sym, "", #ns)
-> +#define _EXPORT_SYMBOL_NS_GPL(sym, ns) __EXPORT_SYMBOL(sym, "_gpl", #ns)
-> +#define EXPORT_SYMBOL_NS(sym, ns)      _EXPORT_SYMBOL_NS(sym, ns)
-> +#define EXPORT_SYMBOL_NS_GPL(sym, ns)  _EXPORT_SYMBOL_NS_GPL(sym, ns)
->
->  #endif /* !__ASSEMBLY__ */
->
-> --
-> 2.34.1
->
+Hi Allen,
 
-I see __stringify() a few files above.
-So, you can use it here as well.
+thank you for improving the commit message! However, please see my comment
+below.
 
+On Thu, Jan 06, 2022 at 11:24:16AM +0800, allen-kh.cheng wrote:
+> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
+> 
+> When the initial devicetree for mt8192 was added in 48489980e27e ("arm64:
+> dts: Add Mediatek SoC MT8192 and evaluation board dts and Makefile"), the
+> clock driver for mt8192 was not yet upstream, so the clock property nodes
+> were set to the clk26m clock as a placeholder.
+> 
+> Given that the clock driver has since been added through 710573dee31b ("clk:
+> mediatek: Add MT8192 basic clocks support"), as well as its dt-bindings
+> through f35f1a23e0e1 ("clk: mediatek: Add dt-bindings of MT8192 clocks") and
+> devicetree nodes through 5d2b897bc6f5 ("arm64: dts: mediatek: Add mt8192
+> clock controllers"), fix the uart clock property to point to the actual
 
-Does the following code work?   (untested)
+This sentence is incomplete. It is missing "clock." at the end. Could you please
+add it?
 
+Same thing for all other patches in this series.
 
+After fixing that typo in the commit message of all patches, please add my
+reviewed-by in all patches:
 
+Reviewed-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-
-diff --git a/include/linux/export.h b/include/linux/export.h
-index 27d848712b90..5910ccb66ca2 100644
---- a/include/linux/export.h
-+++ b/include/linux/export.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_EXPORT_H
- #define _LINUX_EXPORT_H
-
-+#include <linux/stringify.h>
-+
- /*
-  * Export symbols from the kernel to modules.  Forked from module.h
-  * to reduce the amount of pointless cruft we feed to gcc when only
-@@ -154,7 +156,6 @@ struct kernel_symbol {
- #endif /* CONFIG_MODULES */
-
- #ifdef DEFAULT_SYMBOL_NAMESPACE
--#include <linux/stringify.h>
- #define _EXPORT_SYMBOL(sym, sec)       __EXPORT_SYMBOL(sym, sec,
-__stringify(DEFAULT_SYMBOL_NAMESPACE))
- #else
- #define _EXPORT_SYMBOL(sym, sec)       __EXPORT_SYMBOL(sym, sec, "")
-@@ -162,8 +163,8 @@ struct kernel_symbol {
-
- #define EXPORT_SYMBOL(sym)             _EXPORT_SYMBOL(sym, "")
- #define EXPORT_SYMBOL_GPL(sym)         _EXPORT_SYMBOL(sym, "_gpl")
--#define EXPORT_SYMBOL_NS(sym, ns)      __EXPORT_SYMBOL(sym, "", #ns)
--#define EXPORT_SYMBOL_NS_GPL(sym, ns)  __EXPORT_SYMBOL(sym, "_gpl", #ns)
-+#define EXPORT_SYMBOL_NS(sym, ns)      __EXPORT_SYMBOL(sym, "",
-__stringify(ns))
-+#define EXPORT_SYMBOL_NS_GPL(sym, ns)  __EXPORT_SYMBOL(sym, "_gpl",
-__stringify(ns))
-
- #endif /* !__ASSEMBLY__ */
-
-
-
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+Thanks,
+Nícolas
