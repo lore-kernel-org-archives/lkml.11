@@ -2,116 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 799B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 12:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 948EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 12:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239548AbiAKMht (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 07:37:49 -0500
-Received: from foss.arm.com ([217.140.110.172]:45706 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229885AbiAKMhs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 07:37:48 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4AC11FB;
-        Tue, 11 Jan 2022 04:37:47 -0800 (PST)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CB87E3F774;
-        Tue, 11 Jan 2022 04:37:45 -0800 (PST)
-Subject: Re: [PATCH v2 1/3] sched/pelt: Don't sync hardly util_sum with
- uti_avg
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        rickyiu@google.com, odin@uged.al, sachinp@linux.vnet.ibm.com,
-        naresh.kamboju@linaro.org
-References: <20211222093802.22357-1-vincent.guittot@linaro.org>
- <20211222093802.22357-2-vincent.guittot@linaro.org>
- <9e526482-905c-e759-8aa6-1ff84bb5b2a3@arm.com>
- <CAKfTPtBR3BWCwEaJe0Cq6K5__zNxfU7FFo2f0bpOPkvzxKdiww@mail.gmail.com>
- <8f39d837-2589-4f7b-5232-1ed134fb1ad7@arm.com>
- <CAKfTPtCVD40GiDEG0pnU+k-nwMAh2PSu_OXq4w3k0A0zR4cLpw@mail.gmail.com>
- <f1549032-50f6-e9fc-a7ae-24373352576b@arm.com>
- <CAKfTPtAREuJtj8AuZPwfe_=W7v8J-UOXDWeyBL0-VcKGaTSr5Q@mail.gmail.com>
- <CAKfTPtCgxwK6tYxKK69nBuGwNjsFBbE+WuohmhWJRo++pPKqog@mail.gmail.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-Message-ID: <50253205-08d9-5ff4-98a9-3aa3bc669a75@arm.com>
-Date:   Tue, 11 Jan 2022 13:37:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S239479AbiAKMjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 07:39:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41902 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239392AbiAKMjU (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 07:39:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6C2C614B1;
+        Tue, 11 Jan 2022 12:39:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71962C36AEB;
+        Tue, 11 Jan 2022 12:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641904759;
+        bh=uimpmS7EpG9U7VOVIAPAv29+NVT2dj0HCG1jYmILb5o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WThR+Ypr228/WkCU2V3LRlXln3yvPe7VXfVUgYBSFzJghl7sRgZpLXJIIasWH/Rc3
+         hg95/mWGhePEnDSecuR/Uv9f4sQZT+xNRuHwHkvoCiYuDK7bopROAV2MZ29+3eAjxK
+         XFwawOgYz9ezsDMWwewGxS6h0XrUtk33azefL3Wh9OFfrbgT966yIMs3Uaj99QDqwV
+         HTPENWjPAgnFoqLSI8rgeV2YmLj2A3h2B2jQfeKsxmphhQHBjVgAOlRehsgUVwTvob
+         Pyip8XkHvmJdl59Ey8YMC7DAsa6pQ5TXkW4QTamhVN4biC7Wzdd2/9dtXN3t5QDGO6
+         1kUDJtEqNsBkA==
+Date:   Tue, 11 Jan 2022 13:39:15 +0100
+From:   Wolfram Sang <wsa@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>, Terry.Bowman@amd.com,
+        Jean Delvare <jdelvare@suse.de>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH] i2c: piix4: Replace piix4_smbus driver's cd6h/cd7h port
+ io accesses with mmio accesses
+Message-ID: <Yd16cw0AaYcf7eSf@kunai>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>, Terry.Bowman@amd.com,
+        Jean Delvare <jdelvare@suse.de>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+References: <20210715221828.244536-1-Terry.Bowman@amd.com>
+ <20210907183720.6e0be6b6@endymion>
+ <20211105170550.746443b9@endymion>
+ <33a0cd08-a336-34b3-d36c-f827b8054e9e@amd.com>
+ <c28ab909-99b4-b43c-e330-b07e35afb981@amd.com>
+ <ebee1239-4ed4-8c68-54e0-f684cea71e93@roeck-us.net>
+ <YdoG+en5Z/MaS/wu@ninjato>
+ <CAHp75VfC2XsF2j=obXu7RLNZkKSsZ20eOH2-UMA9AoMAemKa9Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAKfTPtCgxwK6tYxKK69nBuGwNjsFBbE+WuohmhWJRo++pPKqog@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pgNChH66zJmaFl9u"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfC2XsF2j=obXu7RLNZkKSsZ20eOH2-UMA9AoMAemKa9Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/01/2022 08:54, Vincent Guittot wrote:
-> On Fri, 7 Jan 2022 at 16:21, Vincent Guittot <vincent.guittot@linaro.org> wrote:
->>
->> On Fri, 7 Jan 2022 at 12:43, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
->>>
->>> On 05/01/2022 14:57, Vincent Guittot wrote:
->>>> On Wed, 5 Jan 2022 at 14:15, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
->>>>>
->>>>> On 04/01/2022 14:42, Vincent Guittot wrote:
->>>>>> On Tue, 4 Jan 2022 at 12:47, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
->>>>>>>
->>>>>>> On 22/12/2021 10:38, Vincent Guittot wrote:
 
-[...]
+--pgNChH66zJmaFl9u
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
->>>> Some of the changes done in PELT signal propagation that replace
->>>> subtracting util_sum  by using util_avg * divider instead, are related
->>>> to other problems with sched group hierarchy and
->>>> throttling/unthrottling. I'm not 100% confident that using fixes tag
->>>> to backport this on stables doesn't need to backport more patches on
->>>> other areas in order to not resurrect old problems. So I wonder if
->>>> it's worth  backporting this on stables
->>>
->>> OK, I see. So only 1c35b07e6d39 (i.e. the util _sum/_avg change in
->>> update_cfs_rq_load_avg() (1)) caused the CPU frequency regression. That
->>> was the reason why I initially suggested to split the patch-set
->>> differently. But you said that you saw the issue also when (1) is fixed.
->>
->> Ok, I think that we were not speaking about the same setup. I wrongly
->> read that you were saying that
->> sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * MIN_DIVIDER);
->> was only needed in update_cfs_rq_load_avg() but not in the other places.
->>
->> But what you said is that we only need the below to fix the perf
->> regression raised by rick ?
->>      r = removed_util;
->>      sub_positive(&sa->util_avg, r);
->>  -   sa->util_sum = sa->util_avg * divider;
->>  +   sub_positive(&sa->util_sum, r * divider);
->>  +   sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * MIN_DIVIDER);
-> 
-> The test with the code above doesn't trigger any SCHEd_WARN over the
-> weekend so it's probably ok to make a dedicated patch for this with
-> tag.
-> I'm going to prepare a v2
 
-Yes, `sa->X_sum = max_t(u32, sa->X_sum, sa->X_avg * MIN_DIVIDER)` is
-needed for all 3 X = [load, runnable, util] in  update_cfs_rq_load_avg()
-to not hit the  SCHED_WARN_ON() in cfs_rq_is_decayed().
+> I have briefly read the discussion by the link you provided above in
+> this thread. I'm not sure I understand the issue and if Intel hardware
+> is affected. Is there any summary of the problem?
 
->> The WARN that I mentioned in my previous email was about not adding
->> the max_t in all 3 places. I rerun some test today and I triggered the
->> WARN after a detach without the max_t line.
->>
->> I can probably isolate the code above in a dedicated patch for the
->> regression raised by Rick and we could consider adding a fixes tag; I
->> will run more tests with only this part during the weekend.
->> That being said, we need to stay consistent in all 3 places where we
->> move or propagate some *_avg. In particular, using  "sa->util_sum =
->> sa->util_avg * divider" has the drawback of filtering the contribution
->> not already accounted for in util_avg and the impact is much larger
->> than expected. It means that  although fixing only
->> update_cfs_rq_load_avg() seems enough for rick's case, some other
->> cases could be impacted by the 2 other places and we need to fixed
->> them now that we have a better view of the root cause
+I guess the original patch description should explain it. You can find
+it here:
 
-Agreed.
+http://patchwork.ozlabs.org/project/linux-i2c/patch/20210715221828.244536-1-Terry.Bowman@amd.com/
+
+If this is not sufficient, hopefully Terry can provide more information?
+
+
+--pgNChH66zJmaFl9u
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmHdenMACgkQFA3kzBSg
+KbZgvBAAkJhhT0pH8RdKpq/Kd4K8hMAOp3dIq+iW1R7KhstRHMvBtGBrSdKqg81t
+XVRSHjBhvN+2cOI5RmQ29S9KzmhXEQ4wqGvg4dUejlYQfTk5T3ecNfjsHBpqppNN
+t9x1qlxaseL5iKhjcHUoJQ39k0VtuvdH6t2pscdlZwLANLGHFzFTd2Zzx2GK7Bdd
+9YpO+1OOv3wGSJWoCl1Ujt2IADhjiR//sHYnN+Uto5ty8HY2oSNVHnek9NdUiK7G
+5QGbDh2sdeGiFHqjCUWkJt6uMtjc0aB3ZYKSQrUoStvJxzFbwEs0ivvSrNsfIsph
+mFqjE9paRbXa/tJfXvPxFiCp4JdCp4PGXjpzchb1yGp/7/2e+kjMpIGgkKjToP+k
+77bilj8JvGJr+Le6qK7pwdS3DTGBGyCBrF8KVt2zoJAZtWtpsRUh8MDpGM53P0Ek
+i0yrbAtCfthUQ8KJ7WVWt0oXcBrmCejIqmW/Qlf+JttGPenQ/FDB32k7TswcBsEe
+8mInlL6EW10seQ2mTgd2F7O63uBsoXu0BgXV6vDZu6SN9Y65AudlpyzHeNO1h08U
+WfDA0Tf58VmEcw2mFUOg+rgHJnIwOgujqD123bym0ax1BuEMXb07gKwC7WDlQS6k
+IIEzW8FKvXiUF5ld6SftAwGdN+BI3PcJK034bnOXYAFI0zi6lp0=
+=Jb4b
+-----END PGP SIGNATURE-----
+
+--pgNChH66zJmaFl9u--
