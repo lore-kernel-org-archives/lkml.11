@@ -2,152 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A94E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E723EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243082AbiAKOzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 09:55:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34348 "EHLO
+        id S243032AbiAKO4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 09:56:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238388AbiAKOzq (ORCPT
+        with ESMTP id S238388AbiAKO4X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 09:55:46 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45ABC06173F;
-        Tue, 11 Jan 2022 06:55:45 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id k18so33394908wrg.11;
-        Tue, 11 Jan 2022 06:55:45 -0800 (PST)
+        Tue, 11 Jan 2022 09:56:23 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B55CC06173F;
+        Tue, 11 Jan 2022 06:56:23 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id z22so23185668edd.12;
+        Tue, 11 Jan 2022 06:56:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VNhQnlMhvZFeqKFtcbirLwBnaDxp0A+t+c6ov/Vom3A=;
-        b=fSCTF3uiZoV4YA+UwoGanep4ibgNA2mv96cP5pAzRjHEgkGWF/gzsLU3fiI4miQ/Ou
-         lWXeg74DV7NzWkoMKfYeYaynZrNusr74RU0VXBH7StWbUX+FGRtoNMti8sWtGaOkxV/V
-         YnqWNKNZKBZJKqDbIbRf38l5LddkIAt+sgt4brkyNtCP4wBh2gVDO1uyNGVNQXnWzPe/
-         QfpU+VmKvPlarRBM28wBMhwrhWSBVAZH71VRc/uE0GqjhnezdsXocEBX6YM5SoIH7d9B
-         qdmQndSskqBHrSpp+yPGAa+uEghpE8DhUKYLD2av43IYctL/zEke9JR1Kw+PHLy5NEtb
-         BqSA==
+        bh=iXoxzIB0Q30uSSCy8ea/hQfPQ11tgFsxBDq8iurj7Jw=;
+        b=HTkZPzbMmT7xlSc5LgUoFT1m36lYdJj1qMOZswFGBIKCukxGyNHUFUKcLk4OqWVOwL
+         UcpGscjs5oXkeA+rr07jnTMpCO8McUsIVOaBIKV8RmCXMUaIxIzN8xCRk5sauuuvCcaQ
+         JjGzH/roSSvLAFGHBxId/daiDGdzbt1EeYZn7QmIWMRr0IX8TY7+fvLEJIysMr3wXh7a
+         q9+lABEd1UAeXDlLAw9BVJZ9Qi1IWgaX1depYVJyZdwZN7Kt3K4ThlFhcXXIvPHXIt9o
+         8mr3jODfaf4Q152jq0V8al3MzbW0DJjeFzAjtt7lNGto0P/FZ1O1SxoD5566d7TfTKiv
+         49pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VNhQnlMhvZFeqKFtcbirLwBnaDxp0A+t+c6ov/Vom3A=;
-        b=t2icfFAlfeymkJc4omoSNFEmbuALLcWy8uZ5kb5BsA43GZf3WambndjCfI6AwBHxLb
-         oAdLGpLyJA/ohadTZvPahGcrbKHpwiWn53JeltE9o9C2F5EycpP4YggfBbYl6+ZOs7Xy
-         hkW29ZCFwgl/KPYmCxhfSD6QPCsen4mOliPoT3arQx8dyAH9SuHdlKmxtYNbVqbvuUUS
-         wo2A0ImlXDR8XhHsOZsWen3q3MFNY4qcHe2D2wqpDhe+zqQxgtQ3pV0FsLA6C/JKSnl2
-         GOGmC/Vo2/U/m0VFOYQUd3ePclSxwXT2VtN3t2o4+wTcR6DscktwpQq0nOkMvSGsiHmm
-         vezw==
-X-Gm-Message-State: AOAM533xqPynfIQm1LwQM7BzKXrvqsi733JUU2BIdeUVbSYES8FlyJTX
-        7O+dxTDbFi2H4OHjAX6A9osT/YJ2K1NjYZMqARw=
-X-Google-Smtp-Source: ABdhPJxFhUKU/9e21CJy5hEz2i64VYpcj95VqbQEe3B0CR2NmtVcjFJzceaXCQvyJwUzGk9DSPnbKu+1IWxD/n38ucY=
-X-Received: by 2002:a5d:4488:: with SMTP id j8mr4069349wrq.515.1641912944329;
- Tue, 11 Jan 2022 06:55:44 -0800 (PST)
+        bh=iXoxzIB0Q30uSSCy8ea/hQfPQ11tgFsxBDq8iurj7Jw=;
+        b=c4lhRLtGX02QOsxcwL5/QkrHmRwacG3ZB2Gw9HpCqqf7FidIawXVCSW4cI5OLC3LzC
+         cagEpYltdm5CMdXGxr+1ldM9pcO3N0/9k5LidD0rcP1B93OrWQD7+ewj+pYbmxKZgSh6
+         UYHPMAOGfxrbSrE1AvAxUZRgVdDYwT0wf9CuCUo3x+KzrK19ymN1MgkqCAmfXj9c376J
+         yKMWPmkOpR7uwWGJeM39o3xYvJoKSK1NGO7EIssFp86n5DoQ8QMTXCqAGudI3YF9gMpE
+         oPvu1qP0TbVcQBlpXJs3rPW1kh8V5JNHv/iPYFL7QDypJRLk5dZw6k2wAyG7Qaa/7Suq
+         lhYw==
+X-Gm-Message-State: AOAM53206G3aVXRG4+bMVreNpqE0gAfU58mR9jUukaVNmg2MGafBe4EO
+        WtxMC3lOmxwAxyL6mzk6dscIFXzPJbfS6XW/B9+F7axUuks=
+X-Google-Smtp-Source: ABdhPJy7OHUoQutneJThCYc1kpdVXsRdRJj+w2tWrxSkQXXlEPL26qm3bDk8Bg9TXqlCFEg5Mlqc8OIyyMr3Syehdo8=
+X-Received: by 2002:a17:906:3ed0:: with SMTP id d16mr3931238ejj.636.1641912982092;
+ Tue, 11 Jan 2022 06:56:22 -0800 (PST)
 MIME-Version: 1.0
-References: <20220106234319.2067842-1-atomlin@redhat.com>
-In-Reply-To: <20220106234319.2067842-1-atomlin@redhat.com>
-From:   Allen <allen.lkml@gmail.com>
-Date:   Tue, 11 Jan 2022 06:55:33 -0800
-Message-ID: <CAOMdWSJHm9bRAcrB6U+FsRiK6Fg2bbtbUH82w54VD7kbFmnVsA@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 00/13] module: core code clean up
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
+References: <20210715221828.244536-1-Terry.Bowman@amd.com> <20210907183720.6e0be6b6@endymion>
+ <20211105170550.746443b9@endymion> <33a0cd08-a336-34b3-d36c-f827b8054e9e@amd.com>
+ <c28ab909-99b4-b43c-e330-b07e35afb981@amd.com> <ebee1239-4ed4-8c68-54e0-f684cea71e93@roeck-us.net>
+ <YdoG+en5Z/MaS/wu@ninjato> <CAHp75VfC2XsF2j=obXu7RLNZkKSsZ20eOH2-UMA9AoMAemKa9Q@mail.gmail.com>
+ <Yd16cw0AaYcf7eSf@kunai> <811d6ec7-7eac-dfd3-5927-4adcc2251fab@amd.com> <CAHp75Vfv9kgxu5u1YfjEuRmwj=jSybmZ92bpt30jB8MX4LFHaQ@mail.gmail.com>
+In-Reply-To: <CAHp75Vfv9kgxu5u1YfjEuRmwj=jSybmZ92bpt30jB8MX4LFHaQ@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 11 Jan 2022 16:54:35 +0200
+Message-ID: <CAHp75Vf3G1ftL6VrCchCTC7UbEyWD65wdjRjYOwxY9ONxZ=DCQ@mail.gmail.com>
+Subject: Re: [PATCH] i2c: piix4: Replace piix4_smbus driver's cd6h/cd7h port
+ io accesses with mmio accesses
+To:     Terry Bowman <Terry.Bowman@amd.com>
+Cc:     Wolfram Sang <wsa@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.de>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        linux-watchdog@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Robert Richter <rrichter@amd.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aaron,
+On Tue, Jan 11, 2022 at 4:53 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Tue, Jan 11, 2022 at 4:13 PM Terry Bowman <Terry.Bowman@amd.com> wrote:
+> > The cd6h/cd7h port I/O can be disabled on recent AMD processors and these
+> > changes replace the cd6h/cd7h port I/O accesses with with MMIO accesses.
+> > I can provide more details or answer questions.
+>
+> AFAIU the issue the list of questions looks like this (correct me, if
+> I'm wrong):
+> - some chips switched from I/O to MMIO
+> - the bus driver has shared resources with another (TCO) driver
+>
+> Now, technically what you are trying is to find a way to keep the
+> original functionality on old machines and support new ones without
+> much trouble.
+>
+> From what I see, the silver bullet may be the switch to regmap as we
+> have done in I2C DesignWare driver implementation.
+>
+> Yes, it's a much more invasive solution, but at the same time it's
+> much cleaner from my p.o.v. And you may easily split it to logical
+> parts (prepare drivers, switch to regmap, add a new functionality).
+>
+> I might be missing something and above not gonna work, please tell me
+> what I miss in that case.
 
-  My apologies for not replying earlier.
+On top of that I'm wondering why slow I/O is used? Do we have anything
+that really needs that or is it simply a cargo-cult?
 
-  Thank you so much for doing this. I had a very similar approach, to
-move code out based on the
-  flags. I will am in the process of reviewing and testing the changes
-you have posted.
-
-Thanks.
-
-On Thu, Jan 6, 2022 at 3:43 PM Aaron Tomlin <atomlin@redhat.com> wrote:
->
-> Hi Luis,
->
-> As per your suggestion [1], this is an attempt to refactor and split
-> optional code out of core module support code into separate components.
-> Unfortunately, nothing has been thoroughly tested yet. Please let me know
-> your thoughts.
->
-> Changes since v1 [2]:
->
->   - Moved module version support code into a new file
->
-> [1]: https://lore.kernel.org/lkml/YbEZ4HgSYQEPuRmS@bombadil.infradead.org/
-> [2]: https://lore.kernel.org/lkml/20211228213041.1356334-1-atomlin@redhat.com/
->
-> Aaron Tomlin (13):
->   module: Move all into module/
->   module: Simple refactor in preparation for split
->   module: Move livepatch support to a separate file
->   module: Move latched RB-tree support to a separate file
->   module: Move arch strict rwx support to a separate file
->   module: Move strict rwx support to a separate file
->   module: Move extra signature support out of core code
->   module: Move kmemleak support to a separate file
->   module: Move kallsyms support into a separate file
->   module: Move procfs support into a separate file
->   module: Move sysfs support into a separate file
->   module: Move kdb_modules list out of core code
->   module: Move version support into a separate file
->
->  include/linux/module.h                        |   76 +-
->  kernel/Makefile                               |    4 +-
->  kernel/debug/kdb/kdb_main.c                   |    5 +
->  kernel/module-internal.h                      |   31 -
->  kernel/module/Makefile                        |   17 +
->  kernel/module/arch_strict_rwx.c               |   44 +
->  kernel/module/debug_kmemleak.c                |   30 +
->  kernel/module/internal.h                      |  169 ++
->  kernel/module/kallsyms.c                      |  506 +++++
->  kernel/module/livepatch.c                     |   75 +
->  kernel/{module.c => module/main.c}            | 1872 +----------------
->  kernel/module/procfs.c                        |  111 +
->  .../signature.c}                              |    0
->  kernel/module/signing.c                       |  120 ++
->  kernel/module/strict_rwx.c                    |   83 +
->  kernel/module/sysfs.c                         |  426 ++++
->  kernel/module/tree_lookup.c                   |  108 +
->  kernel/module/version.c                       |  113 +
->  kernel/module_signing.c                       |   45 -
->  19 files changed, 1968 insertions(+), 1867 deletions(-)
->  delete mode 100644 kernel/module-internal.h
->  create mode 100644 kernel/module/Makefile
->  create mode 100644 kernel/module/arch_strict_rwx.c
->  create mode 100644 kernel/module/debug_kmemleak.c
->  create mode 100644 kernel/module/internal.h
->  create mode 100644 kernel/module/kallsyms.c
->  create mode 100644 kernel/module/livepatch.c
->  rename kernel/{module.c => module/main.c} (63%)
->  create mode 100644 kernel/module/procfs.c
->  rename kernel/{module_signature.c => module/signature.c} (100%)
->  create mode 100644 kernel/module/signing.c
->  create mode 100644 kernel/module/strict_rwx.c
->  create mode 100644 kernel/module/sysfs.c
->  create mode 100644 kernel/module/tree_lookup.c
->  create mode 100644 kernel/module/version.c
->  delete mode 100644 kernel/module_signing.c
->
-> --
-> 2.31.1
->
-
+> > On 1/11/22 6:39 AM, Wolfram Sang wrote:
+> > >
+> > >> I have briefly read the discussion by the link you provided above in
+> > >> this thread. I'm not sure I understand the issue and if Intel hardware
+> > >> is affected. Is there any summary of the problem?
+> > >
+> > > I guess the original patch description should explain it. You can find
+> > > it here:
+> > >
+> > > http://patchwork.ozlabs.org/project/linux-i2c/patch/20210715221828.244536-1-Terry.Bowman@amd.com/
+> > >
+> > > If this is not sufficient, hopefully Terry can provide more information?
 
 -- 
-       - Allen
+With Best Regards,
+Andy Shevchenko
