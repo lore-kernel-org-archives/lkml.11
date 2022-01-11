@@ -2,160 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDACFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349130AbiAKJBR (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 04:01:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236319AbiAKJBQ (ORCPT
+        id S236780AbiAKJCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 04:02:15 -0500
+Received: from 1.mo552.mail-out.ovh.net ([178.32.96.117]:34563 "EHLO
+        1.mo552.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236605AbiAKJCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 04:01:16 -0500
-X-Greylist: delayed 457 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 11 Jan 2022 01:01:16 PST
-Received: from mail.itouring.de (mail.itouring.de [IPv6:2a01:4f8:a0:4463::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C1A4C06173F;
-        Tue, 11 Jan 2022 01:01:16 -0800 (PST)
-Received: from tux.applied-asynchrony.com (p5b07ee01.dip0.t-ipconnect.de [91.7.238.1])
-        by mail.itouring.de (Postfix) with ESMTPSA id E4900103765;
-        Tue, 11 Jan 2022 09:53:36 +0100 (CET)
-Received: from [192.168.100.221] (hho.applied-asynchrony.com [192.168.100.221])
-        by tux.applied-asynchrony.com (Postfix) with ESMTP id 75FA3F01624;
-        Tue, 11 Jan 2022 09:53:36 +0100 (CET)
-Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
-To:     Yu Zhao <yuzhao@google.com>, Alexandre Frade <kernel@xanmod.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <YdSuSHa/Vjl6bPkg@google.com> <Yd1Css8+jsspeZHh@google.com>
-From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-Organization: Applied Asynchrony, Inc.
-Message-ID: <ca3a7d27-150d-ed06-c8f8-0c74c4f00667@applied-asynchrony.com>
-Date:   Tue, 11 Jan 2022 09:53:36 +0100
+        Tue, 11 Jan 2022 04:02:14 -0500
+Received: from mxplan5.mail.ovh.net (unknown [10.108.4.36])
+        by mo552.mail-out.ovh.net (Postfix) with ESMTPS id D4DDE2252A;
+        Tue, 11 Jan 2022 09:02:10 +0000 (UTC)
+Received: from kaod.org (37.59.142.95) by DAG4EX1.mxp5.local (172.16.2.31)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17; Tue, 11 Jan
+ 2022 10:02:01 +0100
+Authentication-Results: garm.ovh; auth=pass (GARM-95G001713f3599-f95f-45bc-8458-3cc8394211bc,
+                    5383433EA887FCAE918FFCB03530F9AACAE8953B) smtp.auth=clg@kaod.org
+X-OVh-ClientIp: 82.64.250.170
+Message-ID: <83cac5d2-b5f2-836c-1f4f-bfe054a8bedb@kaod.org>
+Date:   Tue, 11 Jan 2022 10:02:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [patch] genirq/msi: Populate sysfs entry only once
 Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+CC:     Bjorn Helgaas <helgaas@kernel.org>, Marc Zygnier <maz@kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Megha Dey <megha.dey@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, <linux-pci@vger.kernel.org>,
+        <xen-devel@lists.xenproject.org>, Juergen Gross <jgross@suse.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        <linux-s390@vger.kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Jon Mason <jdmason@kudzu.us>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Allen Hubbe <allenbh@gmail.com>, <linux-ntb@googlegroups.com>
+References: <20211206210600.123171746@linutronix.de>
+ <20211206210749.224917330@linutronix.de> <87leznqx2a.ffs@tglx>
+From:   =?UTF-8?Q?C=c3=a9dric_Le_Goater?= <clg@kaod.org>
+In-Reply-To: <87leznqx2a.ffs@tglx>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [37.59.142.95]
+X-ClientProxiedBy: DAG6EX1.mxp5.local (172.16.2.51) To DAG4EX1.mxp5.local
+ (172.16.2.31)
+X-Ovh-Tracer-GUID: 62e82270-dbcc-463c-8f53-caaee6d6cca0
+X-Ovh-Tracer-Id: 5157184527403223894
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvuddrudehvddguddvjecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfhfhfgjtgfgihesthekredttdefjeenucfhrhhomhepveorughrihgtpgfnvggpifhorghtvghruceotghlgheskhgrohgurdhorhhgqeenucggtffrrghtthgvrhhnpeeigedvffekgeeftedutddttdevudeihfegudffkeeitdekkeetkefhffelveelleenucfkpheptddrtddrtddrtddpfeejrdehledrudegvddrleehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehmgihplhgrnhehrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheptghlgheskhgrohgurdhorhhgpdhrtghpthhtoheplhhinhhugidqnhhtsgesghhoohhglhgvghhrohhuphhsrdgtohhm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-11 09:41, Yu Zhao wrote:
-> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
->> On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
->>> TLDR
->>> ====
->>> The current page reclaim is too expensive in terms of CPU usage and it
->>> often makes poor choices about what to evict. This patchset offers an
->>> alternative solution that is performant, versatile and
->>> straightforward.
->>
->> <snipped>
->>
->>> Summery
->>> =======
->>> The facts are:
->>> 1. The independent lab results and the real-world applications
->>>     indicate substantial improvements; there are no known regressions.
->>> 2. Thrashing prevention, working set estimation and proactive reclaim
->>>     work out of the box; there are no equivalent solutions.
->>> 3. There is a lot of new code; nobody has demonstrated smaller changes
->>>     with similar effects.
->>>
->>> Our options, accordingly, are:
->>> 1. Given the amount of evidence, the reported improvements will likely
->>>     materialize for a wide range of workloads.
->>> 2. Gauging the interest from the past discussions [14][15][16], the
->>>     new features will likely be put to use for both personal computers
->>>     and data centers.
->>> 3. Based on Google's track record, the new code will likely be well
->>>     maintained in the long term. It'd be more difficult if not
->>>     impossible to achieve similar effects on top of the existing
->>>     design.
->>
->> Hi Andrew, Linus,
->>
->> Can you please take a look at this patchset and let me know if it's
->> 5.17 material?
->>
->> My goal is to get it merged asap so that users can reap the benefits
->> and I can push the sequels. Please examine the data provided -- I
->> think the unprecedented coverage and the magnitude of the improvements
->> warrant a green light.
+On 1/10/22 19:12, Thomas Gleixner wrote:
+> The MSI entries for multi-MSI are populated en bloc for the MSI descriptor,
+> but the current code invokes the population inside the per interrupt loop
+> which triggers a warning in the sysfs code and causes the interrupt
+> allocation to fail.
 > 
-> Downstream kernel maintainers who have been carrying MGLRU for more than
-> 3 versions, can you please provide your Acked-by tags?
+> Move it outside of the loop so it works correctly for single and multi-MSI.
 > 
-> Having this patchset in the mainline will make your job easier :)
+> Fixes: bf5e758f02fc ("genirq/msi: Simplify sysfs handling")
+> Reported-by: Borislav Petkov <bp@alien8.de>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
+
+Thanks,
+
+C.
+
+> ---
+>   kernel/irq/msi.c |   11 +++++------
+>   1 file changed, 5 insertions(+), 6 deletions(-)
 > 
->     Alexandre - the XanMod Kernel maintainer
->                 https://xanmod.org
->     
->     Brian     - the Chrome OS kernel memory maintainer
->                 https://www.chromium.org
->     
->     Jan       - the Arch Linux Zen kernel maintainer
->                 https://archlinux.org
->     
->     Steven    - the Liquorix kernel maintainer
->                 https://liquorix.net
->     
->     Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
->                 https://chromium.googlesource.com/chromiumos/third_party/kernel
-> 
-> Also my gratitude to those who have helped test MGLRU:
-> 
->     Daniel - researcher at Michigan Tech
->              benchmarked memcached
->     
->     Holger - who has been testing/patching/contributing to various
->              subsystems since ~2008
->     
->     Shuang - researcher at University of Rochester
->              benchmarked fio and provided a report
->     
->     Sofia  - EDI https://www.edi.works
->              benchmarked the top eight memory hogs and provided reports
-> 
-> Can you please provide your Tested-by tags? This will ensure the credit
-> for your contributions.
-> 
-> Thanks!
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -887,12 +887,11 @@ int __msi_domain_alloc_irqs(struct irq_d
+>   			ret = msi_init_virq(domain, virq + i, vflags);
+>   			if (ret)
+>   				return ret;
+> -
+> -			if (info->flags & MSI_FLAG_DEV_SYSFS) {
+> -				ret = msi_sysfs_populate_desc(dev, desc);
+> -				if (ret)
+> -					return ret;
+> -			}
+> +		}
+> +		if (info->flags & MSI_FLAG_DEV_SYSFS) {
+> +			ret = msi_sysfs_populate_desc(dev, desc);
+> +			if (ret)
+> +				return ret;
+>   		}
+>   		allocated++;
+>   	}
 > 
 
-Have been pounding on this "in production" on several different machines
-(server, desktop, laptop) and 5.15.x without any issues, so:
-
-Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-
-Looking forward to seeing this in mainline!
-
-cheers,
-Holger
