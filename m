@@ -2,103 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:19:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE722C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241596AbiAKOTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 09:19:53 -0500
-Received: from mga12.intel.com ([192.55.52.136]:3744 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241424AbiAKOTw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 09:19:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641910792; x=1673446792;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bjmRYcPiOSTmJ8eUv83YKuMyPL5Rx4ijsqVPkpiDxoc=;
-  b=IflNObXiiW4AP6aSUuLDIrziJoXlIqrrJFAAwsvAQiSM1nVq7nSK7e/3
-   gRguNA2nsS5ixGfhx6d0+19Qdx9VD/7o74JXK5ta4Hhinfp6IBywQPG6v
-   CYyaS2CQLAy7oawd+H8om11hQdXhVkUnhIpHyd7r5HVz9mPv4+iMfpgbq
-   53q93theHCfSPWofXMmOcmOUvkO1Ra99B8Cb7eUlR0uop9kGKDGc5wuoc
-   /V2V9nTZ1kFTM3j1e2dnSvpU6Bh6YxWwE/g2KHz7+dXQU7AQ9l5leCdW6
-   5RrY4OmBLjzTfe6VsdVnf3zfToTDjnR3xjA5LOYSumsmBOrBoWTTdQqrE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="223474902"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="223474902"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 06:19:52 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="613229699"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 06:19:50 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n7Hyu-009G33-PI;
-        Tue, 11 Jan 2022 16:18:36 +0200
-Date:   Tue, 11 Jan 2022 16:18:36 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sakari Ailus <sakari.ailus@linux.intel.com>
-Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Subject: Re: [PATCH v1 1/1] vsprintf: Fix potential unaligned access
-Message-ID: <Yd2RvIeP3LRc/+gl@smile.fi.intel.com>
-References: <20220110205049.11696-1-andriy.shevchenko@linux.intel.com>
- <YdyvXq8D2jsiM47E@paasikivi.fi.intel.com>
- <Yd1XlN0e23GRF9i6@smile.fi.intel.com>
- <Yd1h8c8Sk4fZ+h0A@paasikivi.fi.intel.com>
- <Yd1odcLqimcvSreV@smile.fi.intel.com>
- <Yd2QkVMnmZ57qXTH@paasikivi.fi.intel.com>
+        id S241656AbiAKOUf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 09:20:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:29310 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241605AbiAKOUb (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 09:20:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641910829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DLeGoC7PaBq143VYr5AITMLTNpwAc7CdBxFfAI3CL8Y=;
+        b=GE03wYIH9CeIQ/fHh1/omOwjFNfa0wgiC+kotoQg9bZ2dFXU8vJspX9jY4zinpi2zCjy2n
+        SvWRo363kwk3NeGJLOHb7qnzfGiMqDkn8CGX0qNMKByeDwB0z3RpS1WFLjhuWC7j6wupaI
+        mLbSPjmPUANX/rsV1S103dTqXca0Pfg=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-449-DYLKKlJUNaCTOCc8dDE73A-1; Tue, 11 Jan 2022 09:20:28 -0500
+X-MC-Unique: DYLKKlJUNaCTOCc8dDE73A-1
+Received: by mail-ot1-f72.google.com with SMTP id v22-20020a0568301bd600b00590a8d65e0fso1903637ota.4
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 06:20:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=DLeGoC7PaBq143VYr5AITMLTNpwAc7CdBxFfAI3CL8Y=;
+        b=6tq35LASx5uwXv1AF3yOuO3fk5S2Uhk29c6phUEdh0UzWWFHnBxqyIez5zfXFDZm9h
+         fFRnm0hH3IYNzEjXQ7SaveZKc2EnYyMl7QZbEuhFZFnkWUT25bNz8elOkc/rxrKx4fHC
+         WasldMcRPDMKbIkbcR5+n+AnbRbRWVlSIs6bu6utDpA+CDYk1OIrbx4iVqG/rVuifSPI
+         G1+2cROERW28d8V1dHCVP7IcxDMF353Y9lHzP9Kib6BChxJvZg/8E6BItfef98D1sWAs
+         T/7ez+7XRhKmQGX08IT9itXW58JuwbAjA84bAZSezAD9rby8IUFy2ZVJ4n9s06fnzQ1L
+         DrVA==
+X-Gm-Message-State: AOAM532Pt3baXXMuerNqFEQ+j0iCO11AGLgfDEFHvoBpHs2XZlt2GMCP
+        purehCnePmqMaZDri+RMYYukTs3PGI/t3+BPBohkTAxtWWi3PMk5z4CCkM57L69/Eodl9v+0jIf
+        WTABN71k4+KkrTodFNbE5u02YjKQU+l3pYbKDd8vmsp5vo1+xNtHc0B9KiB3hmohPijRq3qQ=
+X-Received: by 2002:a05:6830:924:: with SMTP id v36mr3446338ott.223.1641910827182;
+        Tue, 11 Jan 2022 06:20:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy7WmC88LeKTxcunkdMEN5AxzKjcRCjyWscxMjkFN+ASB2E8PFbgPaKf27NYG4IXhxj5clvtg==
+X-Received: by 2002:a05:6830:924:: with SMTP id v36mr3446315ott.223.1641910826870;
+        Tue, 11 Jan 2022 06:20:26 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id g50sm1672559oic.25.2022.01.11.06.20.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 06:20:26 -0800 (PST)
+Subject: Re: [PATCH] netfilter: extend CONFIG_NF_CONNTRACK compile time checks
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
+        kuba@kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20211225173744.3318250-1-trix@redhat.com>
+ <Yd1SCbvjeXE+ceRo@salvia>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <c31ca0e7-2895-eae9-c52d-41c0f187443e@redhat.com>
+Date:   Tue, 11 Jan 2022 06:20:24 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yd2QkVMnmZ57qXTH@paasikivi.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <Yd1SCbvjeXE+ceRo@salvia>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 04:13:37PM +0200, Sakari Ailus wrote:
-> On Tue, Jan 11, 2022 at 01:22:29PM +0200, Andy Shevchenko wrote:
-> > On Tue, Jan 11, 2022 at 12:54:41PM +0200, Sakari Ailus wrote:
-> > > On Tue, Jan 11, 2022 at 12:10:28PM +0200, Andy Shevchenko wrote:
-> > > > On Tue, Jan 11, 2022 at 12:12:46AM +0200, Sakari Ailus wrote:
-> > > > > On Mon, Jan 10, 2022 at 10:50:49PM +0200, Andy Shevchenko wrote:
-> > > > > > The %p4cc specifier in some cases might get an unaligned pointer.
-> > > > > > Due to this we need to make copy to local variable once to avoid
-> > > > > > potential crashes on some architectures due to improper access.
-> > > > > 
-> > > > > I guess this problem exists virtually everywhere where pointers are being
-> > > > > handled: the pointer could be unaligned.
-> > > > 
-> > > > True. And my patch improves the situation.
-> > > > See, for example, 0f70fe605fad ("hexdump: fix for non-aligned buffers").
-> > > 
-> > > This is different since there's no guarantee of a void pointer's alignment.
-> > > 
-> > > The pixelformat used for %p4cc is a pointer to u32.
-> > 
-> > Oh, look at the %p, compiler doesn't know about the %p extensions and caller
-> > may supply whatever they want, i.e. %p may take any address that can be kept
-> > in void *. Actual argument _is_ void *. What you put there as u32 is just
-> > personal expectation, and not the reality.
-> 
-> If you assume this, you should add get_unaligned() calls in all places
-> where you're casting a type to another with higher alignment requirements.
 
-Those places so far were not subject of any reports, but ideally yes, you are
-right (in a scope of %p extensions, otherwise it's silly).
+On 1/11/22 1:46 AM, Pablo Neira Ayuso wrote:
+> Hi,
+>
+> On Sat, Dec 25, 2021 at 09:37:44AM -0800, trix@redhat.com wrote:
+>> From: Tom Rix <trix@redhat.com>
+>>
+>> Extends
+>> commit 83ace77f5117 ("netfilter: ctnetlink: remove get_ct indirection")
+>>
+>> Add some compile time checks by following the ct and ctinfo variables
+>> that are only set when CONFIG_NF_CONNTRACK is enabled.
+>>
+>> In nfulnl_log_packet(), ct is only set when CONFIG_NF_CONNTRACK
+>> is enabled. ct's later use in __build_packet_message() is only
+>> meaningful when CONFIG_NF_CONNTRACK is enabled, so add a check.
+>>
+>> In nfqnl_build_packet_message(), ct and ctinfo are only set when
+>> CONFIG_NF_CONNTRACK is enabled.  Add a check for their decl and use.
+>>
+>> nfqnl_ct_parse() is a static function, move the check to the whole
+>> function.
+>>
+>> In nfqa_parse_bridge(), ct and ctinfo are only set by the only
+>> call to nfqnl_ct_parse(), so add a check for their decl and use.
+>>
+>> Consistently initialize ctinfo to 0.
+> Are compile warning being trigger without this patch, maybe with
+> CONFIG_NF_CONNTRACK=n?
 
-I will leave this to the VSPRINTF / PRINTK maintainers to proceed. Personally
-I found this patch useful since we don't know what other user will do unaligned
-call to it.
+No compiler warnings, this was found by visual inspection.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Robot says to entend more, so I want to make sure a human is also 
+interested.
 
+Tom
+
+>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>>   net/netfilter/nfnetlink_log.c   |  4 +++-
+>>   net/netfilter/nfnetlink_queue.c | 18 +++++++++++++-----
+>>   2 files changed, 16 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/net/netfilter/nfnetlink_log.c b/net/netfilter/nfnetlink_log.c
+>> index ae9c0756bba59..e79d152184b71 100644
+>> --- a/net/netfilter/nfnetlink_log.c
+>> +++ b/net/netfilter/nfnetlink_log.c
+>> @@ -627,9 +627,11 @@ __build_packet_message(struct nfnl_log_net *log,
+>>   			 htonl(atomic_inc_return(&log->global_seq))))
+>>   		goto nla_put_failure;
+>>   
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   	if (ct && nfnl_ct->build(inst->skb, ct, ctinfo,
+>>   				 NFULA_CT, NFULA_CT_INFO) < 0)
+>>   		goto nla_put_failure;
+>> +#endif
+>>   
+>>   	if ((pf == NFPROTO_NETDEV || pf == NFPROTO_BRIDGE) &&
+>>   	    nfulnl_put_bridge(inst, skb) < 0)
+>> @@ -689,7 +691,7 @@ nfulnl_log_packet(struct net *net,
+>>   	struct nfnl_log_net *log = nfnl_log_pernet(net);
+>>   	const struct nfnl_ct_hook *nfnl_ct = NULL;
+>>   	struct nf_conn *ct = NULL;
+>> -	enum ip_conntrack_info ctinfo;
+>> +	enum ip_conntrack_info ctinfo = 0;
+>>   
+>>   	if (li_user && li_user->type == NF_LOG_TYPE_ULOG)
+>>   		li = li_user;
+>> diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
+>> index 44c3de176d186..d59cae7561bf8 100644
+>> --- a/net/netfilter/nfnetlink_queue.c
+>> +++ b/net/netfilter/nfnetlink_queue.c
+>> @@ -386,8 +386,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+>>   	struct sk_buff *entskb = entry->skb;
+>>   	struct net_device *indev;
+>>   	struct net_device *outdev;
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   	struct nf_conn *ct = NULL;
+>>   	enum ip_conntrack_info ctinfo = 0;
+>> +#endif
+>>   	struct nfnl_ct_hook *nfnl_ct;
+>>   	bool csum_verify;
+>>   	char *secdata = NULL;
+>> @@ -595,8 +597,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
+>>   	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
+>>   		goto nla_put_failure;
+>>   
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
+>>   		goto nla_put_failure;
+>> +#endif
+>>   
+>>   	if (cap_len > data_len &&
+>>   	    nla_put_be32(skb, NFQA_CAP_LEN, htonl(cap_len)))
+>> @@ -1104,13 +1108,13 @@ static int nfqnl_recv_verdict_batch(struct sk_buff *skb,
+>>   	return 0;
+>>   }
+>>   
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   static struct nf_conn *nfqnl_ct_parse(struct nfnl_ct_hook *nfnl_ct,
+>>   				      const struct nlmsghdr *nlh,
+>>   				      const struct nlattr * const nfqa[],
+>>   				      struct nf_queue_entry *entry,
+>>   				      enum ip_conntrack_info *ctinfo)
+>>   {
+>> -#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   	struct nf_conn *ct;
+>>   
+>>   	ct = nf_ct_get(entry->skb, ctinfo);
+>> @@ -1125,10 +1129,8 @@ static struct nf_conn *nfqnl_ct_parse(struct nfnl_ct_hook *nfnl_ct,
+>>   				      NETLINK_CB(entry->skb).portid,
+>>   				      nlmsg_report(nlh));
+>>   	return ct;
+>> -#else
+>> -	return NULL;
+>> -#endif
+>>   }
+>> +#endif
+>>   
+>>   static int nfqa_parse_bridge(struct nf_queue_entry *entry,
+>>   			     const struct nlattr * const nfqa[])
+>> @@ -1172,11 +1174,13 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
+>>   	struct nfnl_queue_net *q = nfnl_queue_pernet(info->net);
+>>   	u_int16_t queue_num = ntohs(info->nfmsg->res_id);
+>>   	struct nfqnl_msg_verdict_hdr *vhdr;
+>> -	enum ip_conntrack_info ctinfo;
+>>   	struct nfqnl_instance *queue;
+>>   	struct nf_queue_entry *entry;
+>>   	struct nfnl_ct_hook *nfnl_ct;
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   	struct nf_conn *ct = NULL;
+>> +	enum ip_conntrack_info ctinfo = 0;
+>> +#endif
+>>   	unsigned int verdict;
+>>   	int err;
+>>   
+>> @@ -1198,11 +1202,13 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
+>>   	/* rcu lock already held from nfnl->call_rcu. */
+>>   	nfnl_ct = rcu_dereference(nfnl_ct_hook);
+>>   
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   	if (nfqa[NFQA_CT]) {
+>>   		if (nfnl_ct != NULL)
+>>   			ct = nfqnl_ct_parse(nfnl_ct, info->nlh, nfqa, entry,
+>>   					    &ctinfo);
+>>   	}
+>> +#endif
+>>   
+>>   	if (entry->state.pf == PF_BRIDGE) {
+>>   		err = nfqa_parse_bridge(entry, nfqa);
+>> @@ -1218,8 +1224,10 @@ static int nfqnl_recv_verdict(struct sk_buff *skb, const struct nfnl_info *info,
+>>   				 payload_len, entry, diff) < 0)
+>>   			verdict = NF_DROP;
+>>   
+>> +#if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>>   		if (ct && diff)
+>>   			nfnl_ct->seq_adjust(entry->skb, ct, ctinfo, diff);
+>> +#endif
+>>   	}
+>>   
+>>   	if (nfqa[NFQA_MARK])
+>> -- 
+>> 2.26.3
+>>
 
