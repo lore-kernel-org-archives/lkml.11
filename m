@@ -2,241 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B137C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D687C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:04:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243365AbiAKPES (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:04:18 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:39380 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240338AbiAKPEQ (ORCPT
+        id S243685AbiAKPEn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 10:04:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38037 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244170AbiAKPEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:04:16 -0500
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20BDBtL4019436;
-        Tue, 11 Jan 2022 15:03:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=VBAn9GmpmF+nkAmMrgs/brG9lHBl+XY/LyxeQmn6OBA=;
- b=JNOpTLpLmJi3FgnBhXqWzAQi7ljYFrEd9xmehHLpKsghv/Fc3QUy0gF/dEiFXZ4C1Mdw
- 0yBIbNCPH2Iy7Zl68rQzx9s1g/0xjtK4/SDSoVlAlSrVn5DTgnzvI+4eEVro/+4z/NM2
- QshTCIbYfYxlwNYTP4gnpk9MmaFbrIAclMm8bgtCBOOg3YJT21rC9Ga86mZvqIfSOKNO
- hXkTmxQN9wyLeLap/pP1ilZ/21j4kGp8ZmcADGNvKx99YSTXS3M2q2VuMUiAcKlhLHzv
- EifMQaKfuQy6JaPbcOx+6Luntya7NO/4Gx2ICbg/7PshcmxC1e0LxKRtZPbHfOJARItp Jw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgn74b776-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 15:03:41 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20BF20pc065813;
-        Tue, 11 Jan 2022 15:03:40 GMT
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2048.outbound.protection.outlook.com [104.47.66.48])
-        by aserp3020.oracle.com with ESMTP id 3df2e4vw19-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 15:03:40 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RrjaFDzaLx/iCKzRPdl/ujzTBVuRiNCwtxNOM4elPy3is0aLNmHcaGOAXsNyCfvNxyLM711lOqfM8c3A+CMw5QkWNe4FTUGSZIA2BjdHeKo51jtnIjxpVU+ci98CKss4Gp2mCiVC4BheDvCjJCDfVL5qWYFW4EOd3JmeDqSRy9E6232QcZeklBwOYZUaUR6zCy6wvm5wJKlQ7wOdJqsCmjwW4alEkyXBjJngBNZKH4oTos/m81p0ozNV2OutA8cIwRvBm2151LfikMuXj5DlXkbWyhm8gr46K0HAYr/abBSvme2RL38Ml3qHa2Mt9E93ee5HsorxsEmn9abBXI5CKw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VBAn9GmpmF+nkAmMrgs/brG9lHBl+XY/LyxeQmn6OBA=;
- b=W6JZKvXfdqFCnVaE78TXCvrbE+j+ahpEQzp/3uvDRXKRW9ekk5d/JclmcYFBU+5wA87OgdHc6VyjUUjNOcnnyxwqAo0+5rPHCv+AGkRJGw/7sIeoidAe6VCR04Qa2MXWBZa/cv+NLhvq6HFJV+1n8lBXqkVaHiuNShRisi5v+ZNLdbiaNLER/59J26eWg2XbCtYd5xNqGfTdAquUQv716zXuf5FHdIaNlvuXGAP+7uD8uuoWXBacqpR7qvvZI1kPwgyPuOnpAxigrizdK04Is1cqBONEcFwdb9FMhDBBkym3JKILJG2nQDJLWkCg5DtWOv2aYlirXmsUarMrUqOVxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VBAn9GmpmF+nkAmMrgs/brG9lHBl+XY/LyxeQmn6OBA=;
- b=Ut145/F7FD2CD29M65dRmYYj+2cli71BNC/5nPCWyRXT0FkUNAVnua4GJvHjxNQnIJ/wv1FAHuHMnoeLMFX468g7gYxIbnoex1Y7buP29vVDyNHAz52HQBG6NFSSmknNisELdkgzl297hJHZ4fJtDAfAbDyi10GRIPvkRXPu0PU=
-Received: from CO1PR10MB4722.namprd10.prod.outlook.com (2603:10b6:303:9e::12)
- by CO1PR10MB4562.namprd10.prod.outlook.com (2603:10b6:303:93::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Tue, 11 Jan
- 2022 15:03:38 +0000
-Received: from CO1PR10MB4722.namprd10.prod.outlook.com
- ([fe80::30b4:4c4c:82df:29f6]) by CO1PR10MB4722.namprd10.prod.outlook.com
- ([fe80::30b4:4c4c:82df:29f6%4]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
- 15:03:38 +0000
-Message-ID: <7f420af1-9fce-5a36-5788-8de52502781f@oracle.com>
-Date:   Tue, 11 Jan 2022 09:03:22 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH v19 01/13] kdump: add helper parse_crashkernel_high_low()
+        Tue, 11 Jan 2022 10:04:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641913480;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=D71TOijj/AaLdV4YKK2S1vulUsaeY97bR41W9OoZ9Ow=;
+        b=ahSCpm7iv1sTyU7iZK1WERHrpcSUSUsrWJEmOMzS5k8iCBiNe9CAII/hKt8lXVNcOe9LzZ
+        iWK6JQSon48wbwqz00qtWth63rh751qtItiFVX33whetPwOnzjWihzTbSRejN4YLfN61+X
+        BLD3lTvFJJuPMiPW2tNLHMlZjUn8fRM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-668-J8WF9aDANEyieIRi0fbUog-1; Tue, 11 Jan 2022 10:04:37 -0500
+X-MC-Unique: J8WF9aDANEyieIRi0fbUog-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B570284BA54;
+        Tue, 11 Jan 2022 15:04:35 +0000 (UTC)
+Received: from [10.22.11.115] (unknown [10.22.11.115])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A8E797EDA0;
+        Tue, 11 Jan 2022 15:04:33 +0000 (UTC)
+Message-ID: <86891228-9c91-09f1-0e2d-0a3392649d52@redhat.com>
+Date:   Tue, 11 Jan 2022 10:04:33 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] f2fs: move f2fs to use reader-unfair rwsems
 Content-Language: en-US
-To:     Zhen Lei <thunder.leizhen@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org, Dave Young <dyoung@redhat.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        kexec@lists.infradead.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Feng Zhou <zhoufeng.zf@bytedance.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Chen Zhou <dingguo.cz@antgroup.com>
-References: <20211228132612.1860-1-thunder.leizhen@huawei.com>
- <20211228132612.1860-2-thunder.leizhen@huawei.com>
-From:   john.p.donnelly@oracle.com
-In-Reply-To: <20211228132612.1860-2-thunder.leizhen@huawei.com>
+To:     Tim Murray <timmurray@google.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-f2fs-devel@lists.sourceforge.net,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>
+References: <20220108164617.3130175-1-jaegeuk@kernel.org>
+ <YdvoxkAAquI17UbX@infradead.org>
+ <a23a3226-95d9-9835-c1c7-2d13f4a1ee16@redhat.com>
+ <CAEe=SxnWeK0pSfijPKJSTxBiMgD1Ev69fV3qSTCgWASk0b3vhA@mail.gmail.com>
+ <9efbbcb7-29cd-a8ab-0632-01986edc862f@redhat.com>
+ <CAEe=Sx=C8e7=A6ziy8dYC+FvkWvVYZ+o=XMCP_4vX0efsUPT4Q@mail.gmail.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <CAEe=Sx=C8e7=A6ziy8dYC+FvkWvVYZ+o=XMCP_4vX0efsUPT4Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0127.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:193::6) To CO1PR10MB4722.namprd10.prod.outlook.com
- (2603:10b6:303:9e::12)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ecd636c8-2a6a-4cd0-ccb3-08d9d5138b9e
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4562:EE_
-X-Microsoft-Antispam-PRVS: <CO1PR10MB45629F30404CE6788F7B8D80C7519@CO1PR10MB4562.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:826;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XekoRyW27++tWPhpT6YOMUlA4COc4mjHNPsEX5VmZJliyuPNipGhCkDHGOIuxd3x5Veo3xrK1BP6W5aqDJZ5dEZiNKHTgTa7mmYGLB5kKtUAnK5glT7mBtzAU+xayChR99ZJpIrC4dVFZAYYP7hHedq5jQDZNi3gLtHiVpIVMawgT+/A4J5Y3S/969jfVpqye+iPOYtymRM/Ov+sEm+9StLNSEBtKakKIMI64wEGKWycAmNhAjXBuZAanYC6XPm/LkPJQkJbL1eFgQHJRKkbN76UCJ08nKG+SvbWZSJNaFr/T7AqZdtzdnHkYkyuRWjBUoJ02Sv+ZkdSbYeLJw/VzLk/+ip2XPFzK2K2Ku189ficUfoyzp9OdBEtj05Uy86eM+cae8APZJZU2KmPlpkWuyyFhyeXwFZzUtg6/E5+Qc/MLzgkl8MBdG3DGXG8He6cTu0TyuNHwJlGizmK4PvdXW6bJH7FeotaH3Tuqn8uOHFRJrWUpa6MStFVB1sWqkLI9OGBQrAO3qjqgLEpHE5L5X/r3z1OybhYoyYieQRR5SJh2iXEyqxGLTc4DqNelfh1bzx4g9xfB0usdmAkP3h7848MwYf+x2YZXfEii+vCxCXrth03eRQ+XGkv/JmDQdUnJTZNvUeteF8B46pgVBFDH0Z4rsz1yydttLVt+4hnioJynefYeHuDRp/Bp3D3GPWWerEEV489Haaue08O+l/qYroU186qSZwNWK7OarV9ORU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4722.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2906002)(54906003)(110136005)(66476007)(6486002)(5660300002)(921005)(508600001)(2616005)(66556008)(316002)(36756003)(86362001)(4326008)(38100700002)(6666004)(53546011)(31696002)(8936002)(26005)(7416002)(8676002)(66946007)(6512007)(31686004)(9686003)(6506007)(186003)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NzgxYVg1Y0lxNmMyVnpHZTFHa1FMbUxNSWxib1FjNzZMZ2pnczFxVzNuODhy?=
- =?utf-8?B?bEJ4aDZ2OHUveFhXVzJtL1VhMDFhQUVjendmMEZKOHoyVDlEa3N2clU2Yys4?=
- =?utf-8?B?T214cU9HWVM4S2lwOXp2azlqazNXMW5VcFVMeU5PYVphUmdxaHpDd201Rkhi?=
- =?utf-8?B?ZU02UXFEK2JSSThLVEhhMUNqNk5iaXdQRlZSOE9PUXo3aENzT05IZUorUXBT?=
- =?utf-8?B?YVQ0c0NIUUlPTE5aTEJCd3JVcDdjMkNFK3BzWEM4d0RSRFhqenJ6ejJHd1Iz?=
- =?utf-8?B?aUlTdXVyUEMvY1VtZHZOL2RwVUlYUUZOZ2tkQkRIYUhtMXllZ0QwUmQzMmFV?=
- =?utf-8?B?NTd3REw4YlNJVlVnOVdMckl3OVdzUzgwbkl6ZUlkZk5kN1NkSWJDOHo3bTMr?=
- =?utf-8?B?V0c3VW0rR2syZ3VXQXFyM1B0VVkrNUk1UUpOUzJtaVVobGREbVZ1T0lXSnd5?=
- =?utf-8?B?ajBlTVUyUU1GRGRyU0RVN3puQmNicU5BWUd3MGRaVlp5Y2lNTTJyeUtTRWpv?=
- =?utf-8?B?emRhQzQyZG1nY21YWG51YVJOVnNkei9VY0p5cUVJUjlaR2VuZW5TVnMzMVR5?=
- =?utf-8?B?NUNrMmI0TU9XMUo1cDNwWDZVNnlHV2dJQkJ4dm1wZktBb2ZtUHMrYTFOWGhl?=
- =?utf-8?B?RXU4MFF3WGIzUHM2Y1N5bWkrS3pIR3JxSnBqN3EyQXpNNGYwNVVJK1pQZTV0?=
- =?utf-8?B?V3VkcStBVFRKQXZIQVg3ZGxUL1RDQUo5TDA5WXBlQmNUaXRjNWZSMWRELzZG?=
- =?utf-8?B?cW1IV3pTenEwL01XVUtibFRDM0hCMTZVRGtSSUNzTngzYjJlb250WG8yekRr?=
- =?utf-8?B?UGduOFFCQXBCajN3elhmUXNoclZXK0dpZkpsMkdUL1JIa0s0ZW5BQU54TTJF?=
- =?utf-8?B?M1QwWTR2WTBPZzFNdWVTTUxlZWNpNURLSytqMnM0M3NsMCtNMVpTT2FLb0hh?=
- =?utf-8?B?a285RnNKeDlXb3lyRVZBdUpOU2pOWlFISEwzVjdhWS9pNWpPdld3Wm81eUhV?=
- =?utf-8?B?aUk5bGZJTHNTTjNVeFdGVzNsam9ObGVSU29WV055NW1EMDUvcjA1Z2FsUHJW?=
- =?utf-8?B?QVdnYkY3OTZsd2tlc212MitNY1dUanh4Nys4Ym1iQ0hpY0tOT1RQR2RQZzYz?=
- =?utf-8?B?VDVqeS9XZlNxOFhrZXkwcjdsVUM2NE9udnNFcVlhT3ZhNFFTWnc4MnBUQkxs?=
- =?utf-8?B?TzdkZVhEd3YzaW10OW94MnoxQXVqODVPK3ZjSEFRdlBPWFNIU0c2dlc0NHVG?=
- =?utf-8?B?eEZyVkFOYWFCTlZ0RVR1M2JtMmtaaHloY0xmb2N5bjN0SndKNnhwd2NoS2JE?=
- =?utf-8?B?b2ZhM2hXWVhNVU82UkI5UmNzSUwrSFU5NkVrSjdnMmF2bUFQM2pYWkMrMmxi?=
- =?utf-8?B?WjJSMmNhNU01VWxNTW44Uko0MUhIcjNhdE5CNWxlbkZ4eWJSbTA1QXlld0pa?=
- =?utf-8?B?L3htK1JEN2NGNDUrTE1OaWtUWDZ2N1RPRHlaUGRIVDlEdlNLSjIxb3dBS3pr?=
- =?utf-8?B?cTJaL2htS3N3QUlYTS9ETXVCNVFRZTdZWVVWcHh4eFpTYVZ0aForbndXZnBB?=
- =?utf-8?B?WmxsOVNrYWdZbFFiZkIvNU1paHBMMnR2ZlVPbnVGYnhURkllclRTMUJGZzd5?=
- =?utf-8?B?UXRQR2F1aERDWjdNWERWRW9qVnY0bkNBc1FMaVJITkYwZkdOOXdHdkI4MU94?=
- =?utf-8?B?Z28vWTA0WVhrSnJTUjJKa1BIYk1MSUNDa2k0UlZ4cVdHVWMwR0VYZzBqYlUx?=
- =?utf-8?B?ZWhzR3B5N1k1MVNSZDNQT1RhR3ZhQWZqTGJwZTNHbjJlOHVCSXowYXduRnlz?=
- =?utf-8?B?Z0hOWnJ6aHdzMjdRMzlNVjJIWTBkTFQrMUR5cnNPcHB5VTUzRE1HZ1pzRkhj?=
- =?utf-8?B?UHpIajBNMGpIVm5IbTJQWGFza3p3aFF2Vm1CWHR0LzVsemxKWkV6cEpNSEN5?=
- =?utf-8?B?WHlNZ3lNWWd3Z2xFMzhac2cwVEltWnBmTGhWVXo5MDNhN0lDanhXM2hQazQy?=
- =?utf-8?B?bHhuVHFFUTFXd21KdU1lQUhOaWVGZnJyd1ZmNktaREVseDgrNkVoMkw4RE5j?=
- =?utf-8?B?c1hJQ3l4bk50TVFqREhvQkpTTVFaU2RWS0owaFRXcFZKaWdRek1LV1EzNkY1?=
- =?utf-8?B?N3ovN1E3T0hocUQ0Uno1OVRoeTUxbk9tM2dBb2krK0dUSWxEdzVUeDJOM2Vr?=
- =?utf-8?B?UFF6VkxhenkwT1hXS3lCbjRtaStFWXFBMWFFdkY2NGt3bmlCUW9uMlRSU1JG?=
- =?utf-8?B?WW1RL3ZXSmU0QXU1OXBSZW9yODh3PT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ecd636c8-2a6a-4cd0-ccb3-08d9d5138b9e
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4722.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 15:03:37.9107
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gtBhydoKYCgNg/JjSshknLiQ8KJiIpWdiV0cOB4ogMrGrtmD5+0KoYQWP2eUii4mV5IHqR3X/fVBmWtfwnmrXueIy+24/EnTlPNDrkWfPtU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4562
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10223 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 adultscore=0
- suspectscore=0 mlxlogscore=999 bulkscore=0 phishscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201110089
-X-Proofpoint-ORIG-GUID: l4IiQfj8S4PZG_Wx-idRffAGkxJRrazU
-X-Proofpoint-GUID: l4IiQfj8S4PZG_Wx-idRffAGkxJRrazU
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/28/21 7:26 AM, Zhen Lei wrote:
-> The bootup command line option crashkernel=Y,low is valid only when
-> crashkernel=X,high is specified. Putting their parsing into a separate
-> function makes the code logic clearer and easier to understand the strong
-> dependencies between them.
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
- >
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
 
-> ---
->   include/linux/crash_core.h |  3 +++
->   kernel/crash_core.c        | 35 +++++++++++++++++++++++++++++++++++
->   2 files changed, 38 insertions(+)
-> 
-> diff --git a/include/linux/crash_core.h b/include/linux/crash_core.h
-> index de62a722431e7db..2d3a64761d18998 100644
-> --- a/include/linux/crash_core.h
-> +++ b/include/linux/crash_core.h
-> @@ -83,5 +83,8 @@ int parse_crashkernel_high(char *cmdline, unsigned long long system_ram,
->   		unsigned long long *crash_size, unsigned long long *crash_base);
->   int parse_crashkernel_low(char *cmdline, unsigned long long system_ram,
->   		unsigned long long *crash_size, unsigned long long *crash_base);
-> +int __init parse_crashkernel_high_low(char *cmdline,
-> +				      unsigned long long *high_size,
-> +				      unsigned long long *low_size);
->   
->   #endif /* LINUX_CRASH_CORE_H */
-> diff --git a/kernel/crash_core.c b/kernel/crash_core.c
-> index eb53f5ec62c900f..8966beaf7c4fd52 100644
-> --- a/kernel/crash_core.c
-> +++ b/kernel/crash_core.c
-> @@ -295,6 +295,41 @@ int __init parse_crashkernel_low(char *cmdline,
->   				"crashkernel=", suffix_tbl[SUFFIX_LOW]);
->   }
->   
-> +/**
-> + * parse_crashkernel_high_low - Parsing "crashkernel=X,high" and possible
-> + *				"crashkernel=Y,low".
-> + * @cmdline:	The bootup command line.
-> + * @high_size:	Save the memory size specified by "crashkernel=X,high".
-> + * @low_size:	Save the memory size specified by "crashkernel=Y,low" or "-1"
-> + *		if it's not specified.
-> + *
-> + * Returns 0 on success, else a negative status code.
-> + */
-> +int __init parse_crashkernel_high_low(char *cmdline,
-> +				      unsigned long long *high_size,
-> +				      unsigned long long *low_size)
-> +{
-> +	int ret;
-> +	unsigned long long base;
-> +
-> +	BUG_ON(!high_size || !low_size);
-> +
-> +	/* crashkernel=X,high */
-> +	ret = parse_crashkernel_high(cmdline, 0, high_size, &base);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (*high_size <= 0)
-> +		return -EINVAL;
-> +
-> +	/* crashkernel=Y,low */
-> +	ret = parse_crashkernel_low(cmdline, 0, low_size, &base);
-> +	if (ret)
-> +		*low_size = -1;
-> +
-> +	return 0;
-> +}
-> +
->   Elf_Word *append_elf_note(Elf_Word *buf, char *name, unsigned int type,
->   			  void *data, size_t data_len)
->   {
+On 1/11/22 01:53, Tim Murray wrote:
+> On Mon, Jan 10, 2022 at 8:15 PM Waiman Long <longman@redhat.com> wrote:
+>> That is not how rwsem works. A reader which fails to get the lock
+>> because it is write-locked will remove its reader count before going to
+>> sleep. So the reader count will be zero eventually. Of course, there is
+>> a short period of time where the reader count will be non-zero until the
+>> reader removes its own reader count. So if a new writer comes in at that
+>> time, it will fail its initial trylock and probably go to optimistic
+>> spinning mode. If the writer that owns the lock release it at the right
+>> moment, the reader may acquire the read lock.
+> Thanks for the correction, that makes sense. I haven't spent too much
+> time on rwsem internals and I'm not confident about when flags are set
+> and cleared in sem->count; is there a case where sem->count after
+> up_write() could be nonzero?
+>
+> An example from one trace:
+>
+> 1. Low-priority userspace thread 4764 is blocked in f2fs_unlink,
+> probably at f2fs_lock_op, which is a wrapper around
+> down_read(cp_rwsem).
+> 2. f2fs-ckpt runs at t=0ms and wakes thread 4764, making it runnable.
+> 3. At t=1ms, f2fs-ckpt enters uninterruptible sleep and blocks at
+> rwsem_down_write_slowpath per sched_blocked_reason.
+> 4. At t=26ms, thread 4764 runs for the first time since being made
+> runnable. Within 40us, thread 4764 unblocks f2fs-ckpt and makes it
+> runnable.
+>
+> Since thread 4764 is awakened by f2fs-ckpt but never runs before it
+> unblocks f2fs-ckpt in down_write_slowpath(), the only idea I had is
+> that cp_rwsem->count is nonzero after f2fs-ckpt's up_write() in step 2
+> (maybe because of rwsem_mark_wake()?).
+>
+>> I do have a question about the number of readers in such a case compared
+>> with the number of writers. Are there a large number of low priority
+>> hanging around? What is an average read lock hold time?
+>>
+>> Blocking for 9.7s for a write lock is quite excessive and we need to
+>> figure out how this happen.,
+> Just to be 100% clear, it's not a single 9.7s stall, it's many smaller
+> stalls of 10-500+ms in f2fs-ckpt that add up to 9.7s over that range.
+>
+> f2fs is not my area of expertise, but my understanding is that
+> cp_rwsem in f2fs has many (potentially unbounded) readers and a single
+> writer. Arbitrary userspace work (fsync, creating/deleting/truncating
+> files, atomic writes) may grab the read lock, but assuming the
+> merge_checkpoint option is enabled, only f2fs-ckpt will ever grab the
+> write lock during normal operation. However, in this particular
+> example, it looks like there may have been 5-10 threads blocked on
+> f2fs-ckpt that were awakened alongside thread 4764 in step 2.
+>
+> I'll defer to the f2fs experts on the average duration that the read
+> lock is held.
+
+Thanks for the explanation.
+
+Another question that I have is whether the test result is based on the 
+latest upstream kernel or earlier kernel version. We used to allow 
+reader optimistic spinning which was then removed in later kernel. 
+Reader optimistic spinning may further increase writer wait time.
+
+Anyway, AFAICS, this patch keeps readers out of the rwsem wait queue and 
+so only writers can go into it. We can make an unfair rwsem to give 
+preference to writers in the wait queue and wake up readers only if 
+there is no more writers in the wait queue or even in the optimistic 
+spinning queue. That should achieve the same effect as this patch.
+
+Cheers,
+Longman
 
