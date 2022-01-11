@@ -2,136 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD8FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62DC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343654AbiAKPyF (ORCPT
+        id S1349747AbiAKPyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:54:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349717AbiAKPyD (ORCPT
+        Tue, 11 Jan 2022 10:54:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33616 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349717AbiAKPyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:54:03 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FF5C06173F;
-        Tue, 11 Jan 2022 07:54:03 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id v123so11392307wme.2;
-        Tue, 11 Jan 2022 07:54:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=nB8ZCrankHzHcyFv7VI9Wl5C6LAOn4lhmHRycfbWy7U=;
-        b=QmTwbWUjBoUAuxlE8ytjljwFhZDpavttR3I3lLL4Xyo/D5dapapFbgcjfVazavMIVR
-         hGUJL3/MpGOE1TD7y+KCDQQtt0mZ8VpglkJIBA8602zPhjUTISus8UNAK+WmUMX2W7qA
-         6BDBrjur9ZYht0brx6qNPS92J0weRCIMmaBLaLCVEK7VkHWNAC8ghinEHI/pghgQ8DJi
-         j73kfZ+/Ht0QmzS+DWtATGo1/M+DRtlooE6NnzbnfGDZXxD2a26BGjl57yUcpGVhTnRV
-         jnznb0pTpYeHGhGwHh032hn+lNKrC5iH7v7Rm0gR5zb21HBCrVPo2s1zGlsc4mE7btFa
-         aiGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nB8ZCrankHzHcyFv7VI9Wl5C6LAOn4lhmHRycfbWy7U=;
-        b=W2jOht2CN1vdH9xR9QY/64KSrbsRn3g0exFjqnMB0Sm2bzzCtB6YBUcU3TztUakQ8e
-         NyetZoarOybgfY4LZ5bbewd+vfZAjAmCxrteEgUnnesw0Kb5APp65i3z0BVfPclWj8K7
-         rAq2GORo1WQ/NWCB57mSaSPhinoQjSkZ5nCDsocwI+jyDtuP/367xs1+Ep5p3r7+a0Dx
-         IaHUE+j1QpfxFk6msGn9CABK7IwRAdnYgnFF+TwGpg6rWdJsE+jL7fQs7Yo5b6IkRNEz
-         plx7Sg3uv2AoBD3UZL7e82IyC5Ok6NFcPtU4OCrdJxU/QwDUVv+H/Vgveqa65ObHGTg8
-         zHWQ==
-X-Gm-Message-State: AOAM533zFPEuPzNnPfqK7rilxVxqIol10LrxmHf3Tdjx98vz5uAZHrOt
-        rrlIe0FH56hFJffarkdXEMc=
-X-Google-Smtp-Source: ABdhPJz2+BnH0HpORwHCCQLaK+gBsBJKXKIJuW6bYZSnWVrDA0yD7jrhkEsZxi4+Td24tzU4eM4S6g==
-X-Received: by 2002:a7b:c5c4:: with SMTP id n4mr3028051wmk.134.1641916441690;
-        Tue, 11 Jan 2022 07:54:01 -0800 (PST)
-Received: from [192.168.8.198] ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id az6sm922297wmb.48.2022.01.11.07.54.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 07:54:01 -0800 (PST)
-Message-ID: <4bc0e57b-ee3b-ae77-5d5d-213a48bdf4b0@gmail.com>
-Date:   Tue, 11 Jan 2022 15:50:54 +0000
+        Tue, 11 Jan 2022 10:54:16 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D14FB81BF8;
+        Tue, 11 Jan 2022 15:54:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE563C36AEB;
+        Tue, 11 Jan 2022 15:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641916454;
+        bh=T5c0P8FQreFRKifJE6e3VfdZbkyIrx9FCHWvF3HAhiI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=rwbeq0Su4ZnZp2ul6F2k4DIsunfjn6CeEzBimEPwKjVYMlRM6nJZ8i/lcseyZRq01
+         hOsT1xxCdws9wKyLY6i7K8lt4RBwpZUuCdosDgMwKxx8sRsfdET0b+MyZ7u6fhVktB
+         gVhE7WzIruePUwNtqQdtp0bHmiBB5obNXMRY3F7XSI93JQVPj2OyMOR2sk+3JNFgUv
+         donNVu2a5vMyZle3x858i2iPLij2yL7sI5EqVlBH1OtkH36dpPqN9rNwthRuTbrCB/
+         Nq7mcEnsLoEi7dX2ZO9eRW6CDCXmpwmT5de/JXb0uQsAjZKOKAgg00y8Iw1XEymkEb
+         lmjrjZF8x49Pg==
+Date:   Tue, 11 Jan 2022 09:54:12 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, lorenzo.pieralisi@arm.com,
+        robh@kernel.org, kw@linux.com, bhelgaas@google.com,
+        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Sunil Muthuswamy <sunilmut@microsoft.com>
+Subject: Re: [PATCH -next] PCI: hv: Unsigned comparison with less than zero
+Message-ID: <20220111155412.GA142851@bhelgaas>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC v2 02/19] skbuff: pass a struct ubuf_info in msghdr
-Content-Language: en-US
-To:     Hao Xu <haoxu@linux.alibaba.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
-References: <cover.1640029579.git.asml.silence@gmail.com>
- <7dae2f61ee9a1ad38822870764fcafad43a3fe4e.1640029579.git.asml.silence@gmail.com>
- <fd376342-13e2-4ce9-074a-f6b3da69be3b@linux.alibaba.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <fd376342-13e2-4ce9-074a-f6b3da69be3b@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111012622.19447-1-yang.lee@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 13:51, Hao Xu wrote:
-> 在 2021/12/21 下午11:35, Pavel Begunkov 写道:
->> Instead of the net stack managing ubuf_info, allow to pass it in from
->> outside in a struct msghdr (in-kernel structure), so io_uring can make
->> use of it.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
-> Hi Pavel,
-> I've some confusions here since I have a lack of
-> network knowledge.
-> The first one is why do we make ubuf_info visible
-> for io_uring. Why not just follow the old MSG_ZEROCOPY
-> logic?
+[+cc Sunil]
 
-I assume you mean leaving allocation up and so in socket awhile the
-patchset let's io_uring to manage and control ubufs. In short,
-performance and out convenience
+On Tue, Jan 11, 2022 at 09:26:22AM +0800, Yang Li wrote:
+> The return from the call to bitmap_find_free_region() is int, it can be
+> a negative error code, however this is being assigned to an unsigned
+> int variable 'index', so making 'index' an int.
+> 
+> Eliminate the following coccicheck warning:
+> ./drivers/pci/controller/pci-hyperv.c:712:5-10: WARNING: Unsigned
+> expression compared with zero: index < 0
 
-TL;DR;
-First, we want a nice and uniform API with io_uring, i.e. posting
-an CQE instead of polling an err queue/etc., and for that the network
-will need to know about io_uring ctx in some way. As an alternative it
-may theoretically be registered in socket, but it'll quickly turn into
-a huge mess, consider that it's a many to many relation b/w io_uring and
-sockets. The fact that io_uring holds refs to files will only complicate
-it.
+Definitely looks like a bug.  Thanks very much for catching it!
 
-It will also limit API. For instance, we won't be able to use a single
-ubuf with several different sockets.
+Minor things:
 
-Another problem is performance, registration or some other tricks
-would some additional sync. It'd also need sync on use, say it's
-just one rcu_read, but the problem that it only adds up to complexity
-and prevents some other optimisations. E.g. we amortise to ~0 atomics
-getting refs on skb setups based on guarantees io_uring provides, and
-not only. SKBFL_MANAGED_FRAGS can only work with pages being controlled
-by the issuer, and so it needs some context as currently provided by
-ubuf. io_uring also caches ubufs, which relies on io_uring locking, so
-it removes kmalloc/free for almost zero overhead.
+  1) Can you make the subject and commit log talk about the *bug* this
+     fixes, which is that an error return from
+     bitmap_find_free_region() is currently ignored and we instead
+     return a completely bogus *hwirq from
+     hv_pci_vec_alloc_device_irq()?
 
+     The warning is only secondary.
 
-> The second one, my understanding about the buffer
-> lifecycle is that the kernel side informs
-> the userspace by a cqe generated by the ubuf_info
-> callback that all the buffers attaching to the
-> same notifier is now free to use when all the data
-> is sent, then why is the flush in 13/19 needed as
-> it is at the submission period?
+  2) When fixing a bug, can you also mention the commit that
+     *introduced* the bug, so we can figure out where the fix needs to
+     be backported?
 
-Probably I wasn't clear enough. A user has to flush a notifier, only
-then it's expected to post an CQE after all buffers attached to it
-are freed. io_uring holds one ubuf ref, which will be release on flush.
-I also need to add a way to flush without send.
+     It looks like c10bdb758ca4 ("PCI: hv: Add arm64 Hyper-V vPCI
+     support"), so we should have a line like this:
 
-Will spend some time documenting for next iteration.
+     Fixes: c10bdb758ca4 ("PCI: hv: Add arm64 Hyper-V vPCI support")
 
--- 
-Pavel Begunkov
+     In this case, c10bdb758ca4 is still pending for the current merge
+     window, so we'll probably squash this fix into the commit so
+     there's no bisection window between c10bdb758ca4 and the fix.
+
+  3) Please cc the author of the original commit in case there's
+     something we're missing (I added Sunil here).
+
+  4) Make the subject line start with a verb so it matches the style
+     in drivers/pci/, where I try to make the subject line a sentence
+     that makes sense all by itself and tells what the patch does.
+
+Thanks again for the fix!
+
+Bjorn
+
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> ---
+>  drivers/pci/controller/pci-hyperv.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
+> index 26c9c8ec0989..20ea2ee330b8 100644
+> --- a/drivers/pci/controller/pci-hyperv.c
+> +++ b/drivers/pci/controller/pci-hyperv.c
+> @@ -701,7 +701,7 @@ static int hv_pci_vec_alloc_device_irq(struct irq_domain *domain,
+>  				       irq_hw_number_t *hwirq)
+>  {
+>  	struct hv_pci_chip_data *chip_data = domain->host_data;
+> -	unsigned int index;
+> +	int index;
+>  
+>  	/* Find and allocate region from the SPI bitmap */
+>  	mutex_lock(&chip_data->map_lock);
+> -- 
+> 2.20.1.7.g153144c
+> 
