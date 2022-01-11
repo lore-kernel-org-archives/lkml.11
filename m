@@ -2,105 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD10C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 01:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78354C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 01:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243420AbiAKBTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 20:19:24 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31085 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243319AbiAKBTX (ORCPT
+        id S1346202AbiAKBV3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 20:21:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243319AbiAKBV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 20:19:23 -0500
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JXt6q1D8wz1FCcr;
-        Tue, 11 Jan 2022 09:15:47 +0800 (CST)
-Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 11 Jan 2022 09:19:21 +0800
-Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
- (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 11 Jan
- 2022 09:19:21 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <target-devel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>
-CC:     <hch@lst.de>, <james.smart@broadcom.com>,
-        <martin.petersen@oracle.com>
-Subject: [PATCH -next v2] scsi: efct: don't use GFP_KERNEL under spin lock
-Date:   Tue, 11 Jan 2022 09:24:41 +0800
-Message-ID: <20220111012441.3232527-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 10 Jan 2022 20:21:28 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485F8C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 17:21:28 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id i5so7296553edf.9
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 17:21:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VghT5Vb1bGkkfuhJyJBbYpfymLiEG6YlV0Ofo+lXSRs=;
+        b=CuoC1S5DPEPzxhaI/t/Zt5/7ZnredBXUx63/7QgMSrKdR6dU+kjwkn5e4Y9dVXNX5l
+         Vo7r+EcjrjXKC7eYS94RpKiX0PkhEoqLxQYqUn0fSn6sOhYsh649ExJNudF9PbHfqlwH
+         HhetD8jit7LuyHbRhw8nh7NJ4t8W84qHpTvYE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VghT5Vb1bGkkfuhJyJBbYpfymLiEG6YlV0Ofo+lXSRs=;
+        b=W+PaNIP0AGKU/cmOP11EPegKMRcXICQ4KPGweQF46XuipsZ6N2FmfEAP2PJ9uu7UiF
+         VbWaVys8GVKzFTzAhNjzUStfTaJ5yf8QXrXa87lcDnZVzn7pyoAVy83vexmUqN3Lqybm
+         /gMIwjSkuO1tL22pQ8iIjhj9cmgup0Bv40qiMfZRkEgvMHVOyrP+8vrUtjCbVt8QnSRD
+         ZW0KlFhYS56ZCUKeLMZ/l7UN204pKFC3jZ3PkzQHxZJ/sylmkZ7CfodbY25oDxPP8sqE
+         /gejB2xjsmWyGA6sltnsz6Yx7vf33+piDlrU7lA2UNu+CZ2ooUyqtDruFl4v5GGY0iOl
+         v4FA==
+X-Gm-Message-State: AOAM5309NtzMt9D/Y6u07LJT2fE02ChveqlHDcTi2fT5aujlxNQ55o2P
+        O1RgqvcL1izrkHhgQzWffq53ESXessWmRElBPls=
+X-Google-Smtp-Source: ABdhPJwSqDpAjBIQZwMdyUV4GZ9CpzuD+BRnmlNKdmWuJho5ecOY4Tbrv4srVcP+Do2DWAdGWdQQFw==
+X-Received: by 2002:a17:907:1b0d:: with SMTP id mp13mr1763714ejc.29.1641864086731;
+        Mon, 10 Jan 2022 17:21:26 -0800 (PST)
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com. [209.85.128.44])
+        by smtp.gmail.com with ESMTPSA id l9sm619018ejh.66.2022.01.10.17.21.25
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 17:21:25 -0800 (PST)
+Received: by mail-wm1-f44.google.com with SMTP id v123so9978761wme.2
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 17:21:25 -0800 (PST)
+X-Received: by 2002:a05:600c:4c94:: with SMTP id g20mr337592wmp.26.1641864085524;
+ Mon, 10 Jan 2022 17:21:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500017.china.huawei.com (7.185.36.243)
-X-CFilter-Loop: Reflected
+References: <CAPM=9tz=_hRpQV1V3M-=KmVVEbr1K166qeb-ne64PHk9Sn-ozg@mail.gmail.com>
+ <CAHk-=wg9hDde_L3bK9tAfdJ4N=TJJ+SjO3ZDONqH5=bVoy_Mzg@mail.gmail.com>
+ <CAKMK7uEag=v-g6ygHPcT-uQJJx+5KOh2ZRzC2QtM-MCjjW67TA@mail.gmail.com>
+ <CADnq5_P9n39RQ5+Nm8O=YKXXvXh1CEzwC2fOEzEJuS2zQLUWEw@mail.gmail.com>
+ <CAHk-=wgDGcaRxUwRCR6p-rxDVO78Yj4YyM6ZsPRGiT2JOCoQ6A@mail.gmail.com> <CADnq5_OYO7kq+9DBnDvbSfpouFvdLB0LPSL6+f1ZPRBsV=qEqA@mail.gmail.com>
+In-Reply-To: <CADnq5_OYO7kq+9DBnDvbSfpouFvdLB0LPSL6+f1ZPRBsV=qEqA@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 10 Jan 2022 17:21:09 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wiCCRG9Lwzr+Cur=K1V2GJ9ab_ket7EnG4RZhJ8jJM7xQ@mail.gmail.com>
+Message-ID: <CAHk-=wiCCRG9Lwzr+Cur=K1V2GJ9ab_ket7EnG4RZhJ8jJM7xQ@mail.gmail.com>
+Subject: Re: [git pull] drm for 5.17-rc1 (pre-merge window pull)
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Daniel Vetter <daniel.vetter@ffwll.ch>,
+        "Wentland, Harry" <harry.wentland@amd.com>,
+        Dave Airlie <airlied@gmail.com>,
+        "Koenig, Christian" <christian.koenig@amd.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-GFP_KERNEL/GFP_DMA can't be used under a spin lock, according the
-comment of els_ios_lock, it's used to protect els ios list, so we
-can move down the spin lock to avoid using this flag under the lock.
+On Mon, Jan 10, 2022 at 5:11 PM Alex Deucher <alexdeucher@gmail.com> wrote:
+>
+> We are putting together a system to try and repro the issue.  Does it
+> happen with a single monitor or only with two?
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 8f406ef72859 ("scsi: elx: libefc: Extended link Service I/O handling")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  move up unlock to just protect list_add_tail()
----
- drivers/scsi/elx/libefc/efc_els.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Nope. With a single monitor everything seems to look fine. And when I
+plug in the second monitor, it immediately starts happening again.
 
-diff --git a/drivers/scsi/elx/libefc/efc_els.c b/drivers/scsi/elx/libefc/efc_els.c
-index 7bb4f9aad2c8..84bc81d7ce76 100644
---- a/drivers/scsi/elx/libefc/efc_els.c
-+++ b/drivers/scsi/elx/libefc/efc_els.c
-@@ -46,18 +46,14 @@ efc_els_io_alloc_size(struct efc_node *node, u32 reqlen, u32 rsplen)
- 
- 	efc = node->efc;
- 
--	spin_lock_irqsave(&node->els_ios_lock, flags);
--
- 	if (!node->els_io_enabled) {
- 		efc_log_err(efc, "els io alloc disabled\n");
--		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 		return NULL;
- 	}
- 
- 	els = mempool_alloc(efc->els_io_pool, GFP_ATOMIC);
- 	if (!els) {
- 		atomic_add_return(1, &efc->els_io_alloc_failed_count);
--		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 		return NULL;
- 	}
- 
-@@ -74,7 +70,6 @@ efc_els_io_alloc_size(struct efc_node *node, u32 reqlen, u32 rsplen)
- 					      &els->io.req.phys, GFP_KERNEL);
- 	if (!els->io.req.virt) {
- 		mempool_free(els, efc->els_io_pool);
--		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 		return NULL;
- 	}
- 
-@@ -94,10 +89,11 @@ efc_els_io_alloc_size(struct efc_node *node, u32 reqlen, u32 rsplen)
- 
- 		/* add els structure to ELS IO list */
- 		INIT_LIST_HEAD(&els->list_entry);
-+		spin_lock_irqsave(&node->els_ios_lock, flags);
- 		list_add_tail(&els->list_entry, &node->els_ios_list);
-+		spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 	}
- 
--	spin_unlock_irqrestore(&node->els_ios_lock, flags);
- 	return els;
- }
- 
--- 
-2.25.1
+It also seems to depend a bit on the screen contents - or possibly on
+what else is going on. Hiding the browser window makes it happen less,
+I think. But I suspect that's about "less gpu activity" than anything
+else.
 
+I'll see if I can bisect it at least partially.
+
+                  Linus
