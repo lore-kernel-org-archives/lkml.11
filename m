@@ -2,97 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E0F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5669EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348827AbiAKIPt (ORCPT
+        id S1348828AbiAKIRT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:15:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235106AbiAKIPt (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:15:49 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB51C06173F;
-        Tue, 11 Jan 2022 00:15:46 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id l15so15974302pls.7;
-        Tue, 11 Jan 2022 00:15:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:organization:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=65e4pY8c6IKP5/BwWsThn09+viwP4Cyof2rq2OFXBLA=;
-        b=JLj76DTnuqGLWS3wL4xskV1uf4xVSbCIclOhGiKxT4Hc6rpcJ2AiCFloz539jmg1tB
-         gYw2AQWFbPKnqcRywJmHXil9qd1TZzxd9Uin5bgWv9cOIHVXIaCWQJxBmJ3J6dMwxnuD
-         RCCN3K2varbNOyS8dNBGUNpCvOyhnoTBuQl3mUGDDv7R4535j+zNflkkacYgjY+lVCfb
-         5yX+JJ1L4UCdyUZX800upmeHwDpO0iJo5XHvsYUVIiXhXjr6YGIh6+nBV4mV2RsymYYm
-         tCTflUZQ2cUsjrEwh0Xb0SfRYGqfbNZbDiSUzOHwqakXFavykXv9zQTcyqxugKzeqlG4
-         y88A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=65e4pY8c6IKP5/BwWsThn09+viwP4Cyof2rq2OFXBLA=;
-        b=e7+TSipJ6iA95JDrxnA6hcVb4kZYt/dSOK1aQlhZLwVhu9OzRbGcHlZLBiWnbmPJXz
-         I6RH/ks44rEk5PFWuehq2NOqywNtlTOBuWT7QgY7QpxP9ScKLZotRgnuuDQdhfYVlZQd
-         +FbeZRkCPKrELRo8eouAnk7k1Yln5mk/bfLYppHtJti+RzE6yWCeYDAAI0r+ftNQS2+I
-         PVLvs4aHZRlfwgIvn4bX8sC23UK2iYfsyaG6+Ds162AngpAghDhor3MpWAH3XD9ufjvT
-         ktr6F0MsN7xPG0mS1bc9IQFYN5myplu4ea8UE7VOef1cHqqZRVLHN/4QWbpBFZVWV7B1
-         TwyQ==
-X-Gm-Message-State: AOAM530UqBgVUP/DyF6Od9Xaj0A0FakWs0PPmvTWFgxZJEIKd7A1YZ34
-        D6ps8T/S0NsdtTOUNFPRk3Q=
-X-Google-Smtp-Source: ABdhPJwFGoWgo+kK/ZP3yeqM9tGaVtD51Vubm7aOGIatueuMYBzU5Sxlpw+VCc4s4DBYEVh0nCDXgQ==
-X-Received: by 2002:a17:90b:3ecc:: with SMTP id rm12mr1851434pjb.225.1641888946117;
-        Tue, 11 Jan 2022 00:15:46 -0800 (PST)
-Received: from [192.168.255.10] ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id g6sm7621531pgk.37.2022.01.11.00.15.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 00:15:45 -0800 (PST)
-Message-ID: <4afbaf27-04a9-91a6-f9fa-178e4624b482@gmail.com>
-Date:   Tue, 11 Jan 2022 16:15:36 +0800
+        Tue, 11 Jan 2022 03:17:19 -0500
+Received: from smtp21.cstnet.cn ([159.226.251.21]:43502 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S235106AbiAKIRR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 03:17:17 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-01 (Coremail) with SMTP id qwCowAD3zKXwPN1hL6cqBg--.37574S2;
+        Tue, 11 Jan 2022 16:16:48 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     krzysztof.kozlowski@canonical.com, gregkh@linuxfoundation.org,
+        jirislaby@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] tty: serial: samsung_tty: Check null pointer after calling of_match_node
+Date:   Tue, 11 Jan 2022 16:16:47 +0800
+Message-Id: <20220111081647.637752-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Content-Language: en-US
-To:     Xiaoyao Li <xiaoyao.li@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>
-References: <20220110034747.30498-1-likexu@tencent.com>
- <YdzV33X5w6+tCamI@google.com>
- <80b40829-0d25-eb84-7bd7-f21685daeb20@gmail.com>
- <8a6e5b96-1191-7693-314a-1714cb7c9c9c@intel.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-Subject: Re: [PATCH v2] KVM: x86/pt: Ignore all unknown Intel PT capabilities
-In-Reply-To: <8a6e5b96-1191-7693-314a-1714cb7c9c9c@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: qwCowAD3zKXwPN1hL6cqBg--.37574S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7GFWkXr1xKry8Cw1DuF18Grg_yoWDKwbEkw
+        nrWasrCr17Cr1ktwn3AryfuF9ayw4DZFn5Z3WFqas3XrZxXF4fXrWvqrnrJ3s7W3yUKFZ8
+        GrnI9FWfA3Z2qjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFyl
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
+        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUeHUDDUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/1/2022 3:59 pm, Xiaoyao Li wrote:
->>
->> +#define GUEST_SUPPORTED_CPUID_14_EBX    \
->> +    (BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5))
->> +
->> +#define GUEST_SUPPORTED_CPUID_14_ECX    \
->> +    (BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(31))
->> +
-> 
-> I doubt BIT(3) of CPUID_14_ECX can be exposed to guest directly.
-> 
-> It means "output to Trace Transport Subsystem Supported". If I understand 
-> correctly, it at least needs passthrough of the said Transport Subsystem or 
-> emulation of it.
+If there is no suitable node, of_match_node() will return NULL pointer.
+Therefore it should be better to check it in order to avoid the
+dereference of NULL pointer.
+And the only caller s3c24xx_serial_probe() has already checked the
+return value of the s3c24xx_get_driver_data().
+So the new check can be dealed with.
 
-I'm not surprised that we can route Intel Guest PT output to a platform-specific
-trace endpoint (e.g., physical or emulated JTAG) as an MMIO debug port.
+Fixes: 55ed51fff224 ("{tty: serial, nand: onenand}: samsung: rename to fix build warning")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+ drivers/tty/serial/samsung_tty.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/tty/serial/samsung_tty.c b/drivers/tty/serial/samsung_tty.c
+index e2f49863e9c2..efbf9a7d5e92 100644
+--- a/drivers/tty/serial/samsung_tty.c
++++ b/drivers/tty/serial/samsung_tty.c
+@@ -2185,6 +2185,9 @@ s3c24xx_get_driver_data(struct platform_device *pdev)
+ 		const struct of_device_id *match;
+ 
+ 		match = of_match_node(s3c24xx_uart_dt_match, pdev->dev.of_node);
++		if (!match)
++			return NULL;
++
+ 		return (struct s3c24xx_serial_drv_data *)match->data;
+ 	}
+ #endif
+-- 
+2.25.1
+
