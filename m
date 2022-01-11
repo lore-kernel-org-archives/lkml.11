@@ -2,227 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA0BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B70D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:05:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236298AbiAKU6V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 15:58:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35914 "EHLO
+        id S245485AbiAKVFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 16:05:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234266AbiAKU6T (ORCPT
+        with ESMTP id S237002AbiAKVEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 15:58:19 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0115BC061751
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:58:19 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id d14so340763ila.1
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:58:18 -0800 (PST)
+        Tue, 11 Jan 2022 16:04:32 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B08DCC061757
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:04:31 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id x6so1064217lfa.5
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:04:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=2ahL35IHg4dlOtunupJ1fxmYljQSk3/XbWgiVkXrlmE=;
-        b=N4vS5CS8ixDl8/0fNwwcktNYhkEtFyc/8sMh8Cq2rT9QgkxShpADpmvBaExjxOBKJi
-         xowxh6/L+x1Zx3w+kjH0KVk/IKH66JcFc6R9Ejp8+vpVorvzZd1Ugz+RKow5iqaC+uUt
-         VC35K/brHYm8PsyZxQBEVHY28Xl6jU7/8qEntpeO4i7lzW708YjLyNpmA/+Xdbrmk80G
-         QFCNS1tZcK38BfWKRFMa0xitepV2loD9mIk+Ukdd8w+EGF6KCejdWMq3blDEgVsCppxK
-         e7yZJpWEtFICRKYAIqSPSEk//RZ5NExbr4nbeinxZs1bMpqfuixWtISHfyzXeepWNlVk
-         t+1A==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=G0YuEwCZnEuKRpVHXAiy69Z0RUFspZC8cHSjq2E3Eto=;
+        b=qTdZ5dTgpxUc0ZcpidxLsEDi6ERAo8DHppbBJPpYplppIMsdax7ZVx2GfuYIzFUVAF
+         +tOQb43S73Rfi+LWRdO6GqUFiE2h+bbbxlz1GZgiPHkf9mKrXq9mbQGbVQjYcaHoJuHR
+         zjKucDCVEsS+bhlWpbNRGdhIadDyswENHSVsfF/aA0YxmICNTWyeE97DPl2bXniIluGc
+         QMRcF+gyM9f3tcJsd/10oBCG9yaHz6LkVEKNthySqWWZ37KxO3+/qCo5ka3vAc7Ifa2L
+         10jO7uyi44Qf/tRw8QyQMaR0qhMT0cICAoWB4iIG/4L6U8KqmgnEIqz+2A6/Jda3r8Uo
+         RKpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2ahL35IHg4dlOtunupJ1fxmYljQSk3/XbWgiVkXrlmE=;
-        b=jzrQp6gpzeqPhgedQQ+eWQXxZUPTg5lvC5tGcAsFJozoKozBRV63Nqa/hEn1RaOf3l
-         koydQUVNEFo6wjn5QAdWjfXxn3FzYAEwn1MEzek5tk3NmfJhA4odU7kNdMoOH2ZeAZhy
-         XzCCjwZmU0BxhH3lncaLBIHy/lz7y5s/OwBEmz8dJtKl6cDy2uIaCUUgr6sIqb8yVLzV
-         vVmrJw9N9JgkCSRUqQChpW/9xZ/BI0LBOMRPTfuvQ83VUeFzHWI5YxtaHcbNzAqWORsk
-         GyASqlp09XacI0R0n2njTjWLUDun+aIN0CcqIlG+Olf8+U5ldbybSH4kZtBJ1g+og0HA
-         AwSw==
-X-Gm-Message-State: AOAM533D9ctJsGdJKE/s0ug6JycKLE3EUX6Kx5/VV4/hVcNdz30Y7pr7
-        D16gkx/wx000+BpIziSzzpSk4Q==
-X-Google-Smtp-Source: ABdhPJx3vgWaeNGH1OUkN3n0xRSrikREwz/P4b5PvMZTs52hZUMLeLUa7D2Q5BtANMLmFQ//5iA+gw==
-X-Received: by 2002:a05:6e02:1748:: with SMTP id y8mr1729519ill.305.1641934698241;
-        Tue, 11 Jan 2022 12:58:18 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id f12sm267143ioh.50.2022.01.11.12.58.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 12:58:17 -0800 (PST)
-Message-ID: <7a145d96-9c33-b91d-b0cd-ed2fb8ef6cb4@linaro.org>
-Date:   Tue, 11 Jan 2022 14:58:16 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=G0YuEwCZnEuKRpVHXAiy69Z0RUFspZC8cHSjq2E3Eto=;
+        b=hj5K/UnwlFVoBmhdNEkZmFhnX59urHg3BtrnhEjq1k2iKhlRF/MNjgwiyLr0f84sKz
+         cyuzhNQJ5+k6izgQVEeVUG9HewW5aaLTyaF/B2R6e/p4gb46rbO8lNwRIx4Ij31u5BRn
+         VqMcwFRy+qOn7jEzwWmc2tuvWS8DaLxRX6t3/F8gKgRgotZw+kMxp5fqnVsb7AurV8w8
+         czgZmPh4Kb2wdqjEMmVaMwqKRMLyNcSMabnvusIGD197CgoF6RTb6kSDI2DO/6PXqljN
+         fZhfuRbeMBv6XtyiosGXO+gZPV2dtgchTF+dzJFXy9uXvu+YNNW8sVdzPXHSCvUcoy+a
+         +MhA==
+X-Gm-Message-State: AOAM531we6gibfYHeKybRCQEr1FOa4oKdHkhbStDaJK5UM7kcfewuI4f
+        xE2E23ukk+Icv8OjC+pjzFcoqCFlZC8z/fsQnkFV+A==
+X-Google-Smtp-Source: ABdhPJzeO4rualg1booOzsUS3uAdK5sSssH1EAbNZfANOukwZD7t8d8mIVQd3g6cPIbfo7bMnRfW6rPqpxrPZ15ACFc=
+X-Received: by 2002:a2e:a5c9:: with SMTP id n9mr3176921ljp.220.1641935069710;
+ Tue, 11 Jan 2022 13:04:29 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH net 2/2] net: ipa: prevent concurrent replenish
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>, Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, jponduru@codeaurora.org,
-        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
-        agross@kernel.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111192150.379274-1-elder@linaro.org>
- <20220111192150.379274-3-elder@linaro.org> <Yd3miKw2AIY8Rr0F@google.com>
-From:   Alex Elder <elder@linaro.org>
-In-Reply-To: <Yd3miKw2AIY8Rr0F@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20211217144119.2538175-1-anders.roxell@linaro.org> <20211217144119.2538175-6-anders.roxell@linaro.org>
+In-Reply-To: <20211217144119.2538175-6-anders.roxell@linaro.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 11 Jan 2022 13:04:18 -0800
+Message-ID: <CAKwvOdk0p98ac0yVLwLiJXndvyJw+Ufpxke2WEVrhyUOftN6=Q@mail.gmail.com>
+Subject: Re: [PATCH 4.19 5/6] ARM: 8788/1: ftrace: remove old mcount support
+To:     Anders Roxell <anders.roxell@linaro.org>,
+        Greg KH <gregkh@linuxfoundation.org>
+Cc:     stable@vger.kernel.org, linux-kernel@vger.kernel.org,
+        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, clang-built-linux@googlegroups.com,
+        ulli.kroll@googlemail.com, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org, amitkarwar@gmail.com,
+        nishants@marvell.com, gbhat@marvell.com, huxinming820@gmail.com,
+        kvalo@codeaurora.org, linux-wireless@vger.kernel.org,
+        rostedt@goodmis.org, mingo@redhat.com, dmitry.torokhov@gmail.com,
+        nathan@kernel.org, linux-input@vger.kernel.org,
+        Stefan Agner <stefan@agner.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 2:20 PM, Matthias Kaehlcke wrote:
-> On Tue, Jan 11, 2022 at 01:21:50PM -0600, Alex Elder wrote:
->> We have seen cases where an endpoint RX completion interrupt arrives
->> while replenishing for the endpoint is underway.  This causes another
->> instance of replenishing to begin as part of completing the receive
->> transaction.  If this occurs it can lead to transaction corruption.
->>
->> Use a new atomic variable to ensure only replenish instance for an
->> endpoint executes at a time.
->>
->> Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
->> Signed-off-by: Alex Elder <elder@linaro.org>
->> ---
->>   drivers/net/ipa/ipa_endpoint.c | 13 +++++++++++++
->>   drivers/net/ipa/ipa_endpoint.h |  2 ++
->>   2 files changed, 15 insertions(+)
->>
->> diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
->> index 8b055885cf3cf..a1019f5fe1748 100644
->> --- a/drivers/net/ipa/ipa_endpoint.c
->> +++ b/drivers/net/ipa/ipa_endpoint.c
->> @@ -1088,15 +1088,27 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, bool add_one)
->>   		return;
->>   	}
->>   
->> +	/* If already active, just update the backlog */
->> +	if (atomic_xchg(&endpoint->replenish_active, 1)) {
->> +		if (add_one)
->> +			atomic_inc(&endpoint->replenish_backlog);
->> +		return;
->> +	}
->> +
->>   	while (atomic_dec_not_zero(&endpoint->replenish_backlog))
->>   		if (ipa_endpoint_replenish_one(endpoint))
->>   			goto try_again_later;
-> 
-> I think there is a race here, not sure whether it's a problem: If the first
-> interrupt is here just when a 2nd interrupt evaluates 'replenish_active' the
-> latter will return, since it looks like replenishing is still active, when it
-> actually just finished. Would replenishing be kicked off anyway shortly after
-> or could the transaction be stalled until another endpoint RX completion
-> interrupt arrives?
+ On Fri, Dec 17, 2021 at 6:41 AM Anders Roxell <anders.roxell@linaro.org> wrote:
+>
+> From: Stefan Agner <stefan@agner.ch>
+>
+> commit d3c61619568c88d48eccd5e74b4f84faa1440652 upstream.
+>
+> Commit cafa0010cd51 ("Raise the minimum required gcc version to 4.6")
+> raised the minimum GCC version to 4.6. Old mcount is only required for
+> GCC versions older than 4.4.0. Hence old mcount support can be dropped
+> too.
 
-I acknowledge the race you point out.  You're saying another
-thread could test the flag after the while loop exits, but
-before the flag gets reset to 0.  And that means that other
-thread would skip the replenishing it would otherwise do.
-
-To be honest, that is a different scenario than the one I
-was trying to prevent, because it involves two threads, rather
-than one thread entering this function a second time (via an
-interrupt).  But regardless, I think it's OK.
-
-The replenishing loop is intentionally tolerant of errors.
-It will send as many receive buffers to the hardware as there
-is room for, but will stop and "try again later" if an
-error occurs.   Even if the specific case you mention
-occurred it wouldn't be a problem because we'd get another
-shot at it.  I'll explain.
-
-
-The replenish_backlog is the number of "open slots" the hardware
-has to hold a receive buffer.  When the backlog reaches 0, the
-hardware is "full."
-
-When a receive operation completes (in ipa_endpoint_rx_complete())
-it calls ipa_endpoint_replenish(), requesting that we add one to
-the backlog (to account for the buffer just consumed).  What this
-means is that if the hardware has *any* receive buffers, a
-replenish will eventually be requested (when one completes).
-
-The logic in ipa_endpoint_replenish() tolerates an error
-attempting to send a new receive buffer to the hardware.
-If that happens, we just try again later--knowing that
-the next RX completion will trigger that retry.
-
-The only case where we aren't guaranteed a subsequent call
-to ipa_endpoint_replenish() is when the hardware has *zero*
-receive buffers, or the backlog is the maximum.  In that
-case we explicitly schedule a new replenish via delayed
-work.
-
-Now, two more points.
-- If the while loop exits without an error replenishing,
-   the hardware is "full", so there are buffers that will
-   complete, and trigger a replenish call.  So if the race
-   occurred, it would be harmless.
-- If the while loop exits because of an error replenishing
-   one buffer, it jumps to try_again_later.  In that case,
-   either the hardware has at least one receive buffer (so
-   we'll get another replenish), or it has none and we will
-   schedule delayed work to to schedule another replenish.
-
-So I think that even if the race you point out occurs, the
-replenish logic will eventually get another try.
-
-I don't claim my logic is flawless; if it's wrong I can
-find another solution.
-
-Thanks.
-
-					-Alex
-
-PS  I will be implementing some improvements to this logic
-     soon, but this is a simple bug fix for back-port.
-
-
->> +
->> +	atomic_set(&endpoint->replenish_active, 0);
->> +
->>   	if (add_one)
->>   		atomic_inc(&endpoint->replenish_backlog);
->>   
->>   	return;
->>   
->>   try_again_later:
->> +	atomic_set(&endpoint->replenish_active, 0);
->> +
->>   	/* The last one didn't succeed, so fix the backlog */
->>   	delta = add_one ? 2 : 1;
->>   	backlog = atomic_add_return(delta, &endpoint->replenish_backlog);
->> @@ -1691,6 +1703,7 @@ static void ipa_endpoint_setup_one(struct ipa_endpoint *endpoint)
->>   		 * backlog is the same as the maximum outstanding TREs.
->>   		 */
->>   		endpoint->replenish_enabled = false;
->> +		atomic_set(&endpoint->replenish_active, 0);
->>   		atomic_set(&endpoint->replenish_saved,
->>   			   gsi_channel_tre_max(gsi, endpoint->channel_id));
->>   		atomic_set(&endpoint->replenish_backlog, 0);
->> diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
->> index 0a859d10312dc..200f093214997 100644
->> --- a/drivers/net/ipa/ipa_endpoint.h
->> +++ b/drivers/net/ipa/ipa_endpoint.h
->> @@ -53,6 +53,7 @@ enum ipa_endpoint_name {
->>    * @netdev:		Network device pointer, if endpoint uses one
->>    * @replenish_enabled:	Whether receive buffer replenishing is enabled
->>    * @replenish_ready:	Number of replenish transactions without doorbell
->> + * @replenish_active:	1 when replenishing is active, 0 otherwise
->>    * @replenish_saved:	Replenish requests held while disabled
->>    * @replenish_backlog:	Number of buffers needed to fill hardware queue
->>    * @replenish_work:	Work item used for repeated replenish failures
->> @@ -74,6 +75,7 @@ struct ipa_endpoint {
->>   	/* Receive buffer replenishing for RX endpoints */
->>   	bool replenish_enabled;
->>   	u32 replenish_ready;
->> +	atomic_t replenish_active;
->>   	atomic_t replenish_saved;
->>   	atomic_t replenish_backlog;
->>   	struct delayed_work replenish_work;		/* global wq */
->> -- 
->> 2.32.0
->>
-
+cafa0010cd51 first landed in v4.19-rc1, so that lgtm.
+-- 
+Thanks,
+~Nick Desaulniers
