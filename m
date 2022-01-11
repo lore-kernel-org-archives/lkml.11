@@ -2,310 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5423DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6567C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:43:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238551AbiAKTmz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:42:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
+        id S238527AbiAKTm7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 14:42:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238022AbiAKTmu (ORCPT
+        with ESMTP id S238194AbiAKTmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 14:42:50 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36861C061751
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55390C061757
         for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:42:50 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id y4-20020a5b0f44000000b00611862e546dso32616ybr.7
+Received: by mail-lf1-x130.google.com with SMTP id d3so235515lfv.13
         for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:42:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=0ZjUIsLW4acHCjBv+u6cMQmjq5bt8fbJ806Zes8EZIE=;
-        b=sQL03s7vgv1vzShIYJCYEgWgL8UsKXJ/CtD9/dVCEARL96A5mtf6TDO9DH9SJwPIZM
-         XjKg5FXk0TmxaIWA4pbZfrq2ZwgKKdy65x/X+xBYVjs6TZpAWXmH7cSSpSTTAfAUAM3+
-         tcxjJRRR74sp25hss6iri/Q8XK86hgDpJz9RU4hwk+91wi2Ggh/JscN9K1K5j1IrEftA
-         6Wl6abam9t63aKn3pLFzeyXFtgmwd1iz3od5cnTw5Y1+DSbRqUzIr0/2qtNvidI6xNqU
-         tjVhJ4rYxf7SsbIyGTeBVdN2FKNDixNySKhcr44DX6nDYV7wtEYnqccuxBLqs41cP2z5
-         9DTw==
+        bh=72nCaH0D5cVWOpCSRc18GR2eFwD5HF2lWhLZ438H8+E=;
+        b=IbI2Ue6xwevdXzForB3sPC7JLpGCLW4aJaiaqGPQM519ZpN4Iw53D7dK6TEvItwJQM
+         lU0w7yPNWbufVbo7aTy0WNF/06ot4HROv5RcW7EH+B/47POEIinAhzsJIzijm2pqH0rA
+         32W/JrQJcTgkaHK2M1qJ6iERelYscbkX2JYhs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=0ZjUIsLW4acHCjBv+u6cMQmjq5bt8fbJ806Zes8EZIE=;
-        b=l6OBGMByVEDTian13/SZfjwiSM8DlA2fcXP8s8v8+U66CGr0/TfCWiMNf5oTung5/J
-         PIHmcOdGyr3MX9qQ4c4nbopjR+Kk/rXmqIWN7RodUnhJEKS/tS3SF6q9nH53TzHE+hRL
-         n2ax7P0t8y+2A1TbFuEokffSY5IStM37d+Ohe3eUDicmFpDGmULsSrurho0j72mVKkTZ
-         v1jg14ohmBbkqBGJmRUfHHWSOt9cPU/ZGMD3HO/HKv9uj/0CyApQ0BURDIw07/qz2H5p
-         akvo1JYStMd7cwsXATu9/e9rigFgKVdUZIlruQ3Ky0k66cyXL+fUsqXNFql+4xKFttRv
-         ZIhw==
-X-Gm-Message-State: AOAM533Z0KDMGugI6tE0XrU6VvuffcqyuEryufA5POThl45FEIZulS0J
-        ERtiyOLai0UV3Lb4LvV7eJsAq6Ex9jppsA==
-X-Google-Smtp-Source: ABdhPJxEyrBFfq0EYaHGpSsAPYXRIdOZ3Ncs6drlt0Rmh9umYGkQ5WeQEHRGNEmQLAyl+Xx3Qa3D5/15ICrrUw==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:8c76:9de0:1a30:7de8])
- (user=dlatypov job=sendgmr) by 2002:a25:cdc3:: with SMTP id
- d186mr8428161ybf.400.1641930169460; Tue, 11 Jan 2022 11:42:49 -0800 (PST)
-Date:   Tue, 11 Jan 2022 11:42:30 -0800
-In-Reply-To: <20220111194231.1797841-1-dlatypov@google.com>
-Message-Id: <20220111194231.1797841-6-dlatypov@google.com>
-Mime-Version: 1.0
-References: <20220111194231.1797841-1-dlatypov@google.com>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
-Subject: [PATCH v2 5/6] kunit: split out part of kunit_assert into a static const
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        torvalds@linux-foundation.org, Daniel Latypov <dlatypov@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=72nCaH0D5cVWOpCSRc18GR2eFwD5HF2lWhLZ438H8+E=;
+        b=k89HacVmx8Zs7Irg617LtsMGaK14Zgj9PxBU/4T1gwlm3aKDV7vkefcbPf76FUI41A
+         Y3vq011ZBTJVbHgjZetsVxte+gPA5rL0NiYQ/sazm4mfG2I8rEZjIP2JPNXQng2zEaBd
+         uLZ4JVOJ6XBxNg8eQM101WI/bxYSIJ30NQnVI8deE7bSHY8D3z+PFkiiyCagXL1Jyd/5
+         iHVFuo1YHecoJsPBVez4KjrkwilngQfh5Xkir/1Kts9/qdudW7/DZ4OjWrUcSfwVEz0z
+         LeAqgKMm1LDQkfIHODyS19VLfoo2lVrQpfXvW646OD11ilQowAC0Pia18MhOOw85nnuc
+         3vlg==
+X-Gm-Message-State: AOAM53112VdLo+QjtiqZbZIlBqPy9GtJg97JWq9Y2LS9HDXJyKxOzPeV
+        QZed/xxNpKGXGZemEwtHgfLGJ3jnBJNpDpnf4F4=
+X-Google-Smtp-Source: ABdhPJyt7ZWDy2BU1KOUXuvdKS18d9of2DSrHVNbd4lRasByDo9c5FT0NR3oNVPsKXza3k4RVVVtIg==
+X-Received: by 2002:a19:f803:: with SMTP id a3mr4257242lff.95.1641930168539;
+        Tue, 11 Jan 2022 11:42:48 -0800 (PST)
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
+        by smtp.gmail.com with ESMTPSA id r4sm142927lfn.103.2022.01.11.11.42.48
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 11:42:48 -0800 (PST)
+Received: by mail-lf1-f41.google.com with SMTP id br17so360773lfb.6
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:42:48 -0800 (PST)
+X-Received: by 2002:adf:c74e:: with SMTP id b14mr5117431wrh.97.1641929709117;
+ Tue, 11 Jan 2022 11:35:09 -0800 (PST)
+MIME-Version: 1.0
+References: <20220111071212.1210124-1-surenb@google.com> <Yd3RClhoz24rrU04@sol.localdomain>
+ <CAHk-=wgwb6pJjvHYmOMT-yp5RYvw0pbv810Wcxdm5S7dWc-s0g@mail.gmail.com> <CAJuCfpE3feNU=36qRUdCJsk41rxQBv1gRYy5R1dB1djMd0NLjg@mail.gmail.com>
+In-Reply-To: <CAJuCfpE3feNU=36qRUdCJsk41rxQBv1gRYy5R1dB1djMd0NLjg@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 11 Jan 2022 11:34:53 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wj9-9mFcoaD3rdHd+HKYpyTXkkE2iJkPoTTCrp-+sD=ew@mail.gmail.com>
+Message-ID: <CAHk-=wj9-9mFcoaD3rdHd+HKYpyTXkkE2iJkPoTTCrp-+sD=ew@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] psi: Fix uaf issue when psi trigger is destroyed
+ while being polled
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     Eric Biggers <ebiggers@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Android Kernel Team <kernel-team@android.com>,
+        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is per Linus's suggestion in [1].
+On Tue, Jan 11, 2022 at 11:27 AM Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> Thanks for the explanation!
+> So, it sounds like the best (semantically correct) option I have here
+> is smp_store_release() to set the pointer, and then smp_load_acquire()
+> to read it. Is my understanding correct?
 
-The issue there is that every KUNIT_EXPECT/KUNIT_ASSERT puts a
-kunit_assert object onto the stack. Normally we rely on compilers to
-elide this, but when that doesn't work out, this blows up the stack
-usage of kunit test functions.
+Yeah, that's the clearest one from a memory ordering standpoint, and
+is generally also cheap.
 
-We can move some data off the stack by making it static.
-This change introduces a new `struct kunit_loc` to hold the file and
-line number and then just passing assert_type (EXPECT or ASSERT) as an
-argument.
-
-In [1], it was suggested to also move out the format string as well, but
-users could theoretically craft a format string at runtime, so we can't.
-
-This change leaves a copy of `assert_type` in kunit_assert for now
-because cleaning up all the macros to not pass it around is a bit more
-involved.
-
-Here's an example of the expanded code for KUNIT_FAIL():
-if (__builtin_expect(!!(!(false)), 0)) {
-  static const struct kunit_loc loc = { .file = ... };
-  struct kunit_fail_assert __assertion = { .assert = { .type ...  };
-  kunit_do_failed_assertion(test, &loc, KUNIT_EXPECTATION, &__assertion.assert, ...);
-};
-
-[1] https://groups.google.com/g/kunit-dev/c/i3fZXgvBrfA/m/VULQg1z6BAAJ
-
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
-Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-Reviewed-by: David Gow <davidgow@google.com>
----
- include/kunit/assert.h | 25 ++++++++++++++++---------
- include/kunit/test.h   | 12 +++++++++++-
- lib/kunit/assert.c     |  9 +++++----
- lib/kunit/test.c       | 15 +++++++++------
- 4 files changed, 41 insertions(+), 20 deletions(-)
-
-diff --git a/include/kunit/assert.h b/include/kunit/assert.h
-index 3da6c792496c..4f91dbdb886a 100644
---- a/include/kunit/assert.h
-+++ b/include/kunit/assert.h
-@@ -28,11 +28,21 @@ enum kunit_assert_type {
- 	KUNIT_EXPECTATION,
- };
- 
-+/**
-+ * struct kunit_loc - Identifies the source location of a line of code.
-+ * @line: the line number in the file.
-+ * @file: the file name.
-+ */
-+struct kunit_loc {
-+	int line;
-+	const char *file;
-+};
-+
-+#define KUNIT_CURRENT_LOC { .file = __FILE__, .line = __LINE__ }
-+
- /**
-  * struct kunit_assert - Data for printing a failed assertion or expectation.
-  * @type: the type (either an expectation or an assertion) of this kunit_assert.
-- * @line: the source code line number that the expectation/assertion is at.
-- * @file: the file path of the source file that the expectation/assertion is in.
-  * @message: an optional message to provide additional context.
-  * @format: a function which formats the data in this kunit_assert to a string.
-  *
-@@ -40,9 +50,7 @@ enum kunit_assert_type {
-  * format a string to a user reporting the failure.
-  */
- struct kunit_assert {
--	enum kunit_assert_type type;
--	int line;
--	const char *file;
-+	enum kunit_assert_type type; // TODO(dlatypov@google.com): delete this
- 	struct va_format message;
- 	void (*format)(const struct kunit_assert *assert,
- 		       struct string_stream *stream);
-@@ -65,14 +73,13 @@ struct kunit_assert {
-  */
- #define KUNIT_INIT_ASSERT_STRUCT(assert_type, fmt) {			       \
- 	.type = assert_type,						       \
--	.file = __FILE__,						       \
--	.line = __LINE__,						       \
- 	.message = KUNIT_INIT_VA_FMT_NULL,				       \
- 	.format = fmt							       \
- }
- 
--void kunit_base_assert_format(const struct kunit_assert *assert,
--			      struct string_stream *stream);
-+void kunit_assert_prologue(const struct kunit_loc *loc,
-+			   enum kunit_assert_type type,
-+			   struct string_stream *stream);
- 
- void kunit_assert_print_msg(const struct kunit_assert *assert,
- 			    struct string_stream *stream);
-diff --git a/include/kunit/test.h b/include/kunit/test.h
-index 25ea3bce6663..7b752175e614 100644
---- a/include/kunit/test.h
-+++ b/include/kunit/test.h
-@@ -772,13 +772,18 @@ void __printf(2, 3) kunit_log_append(char *log, const char *fmt, ...);
- #define KUNIT_SUCCEED(test) do {} while (0)
- 
- void kunit_do_failed_assertion(struct kunit *test,
-+			       const struct kunit_loc *loc,
-+			       enum kunit_assert_type type,
- 			       struct kunit_assert *assert,
- 			       const char *fmt, ...);
- 
--#define KUNIT_ASSERTION(test, pass, assert_class, INITIALIZER, fmt, ...) do {  \
-+#define KUNIT_ASSERTION(test, assert_type, pass, assert_class, INITIALIZER, fmt, ...) do { \
- 	if (unlikely(!(pass))) {					       \
-+		static const struct kunit_loc loc = KUNIT_CURRENT_LOC;	       \
- 		struct assert_class __assertion = INITIALIZER;		       \
- 		kunit_do_failed_assertion(test,				       \
-+					  &loc,				       \
-+					  assert_type,			       \
- 					  &__assertion.assert,		       \
- 					  fmt,				       \
- 					  ##__VA_ARGS__);		       \
-@@ -788,6 +793,7 @@ void kunit_do_failed_assertion(struct kunit *test,
- 
- #define KUNIT_FAIL_ASSERTION(test, assert_type, fmt, ...)		       \
- 	KUNIT_ASSERTION(test,						       \
-+			assert_type,					       \
- 			false,						       \
- 			kunit_fail_assert,				       \
- 			KUNIT_INIT_FAIL_ASSERT_STRUCT(assert_type),      \
-@@ -818,6 +824,7 @@ void kunit_do_failed_assertion(struct kunit *test,
- 			      fmt,					       \
- 			      ...)					       \
- 	KUNIT_ASSERTION(test,						       \
-+			assert_type,					       \
- 			!!(condition) == !!expected_true,		       \
- 			kunit_unary_assert,				       \
- 			KUNIT_INIT_UNARY_ASSERT_STRUCT(assert_type,	       \
-@@ -876,6 +883,7 @@ do {									       \
- 	typeof(right) __right = (right);				       \
- 									       \
- 	KUNIT_ASSERTION(test,						       \
-+			assert_type,					       \
- 			__left op __right,				       \
- 			assert_class,					       \
- 			ASSERT_CLASS_INIT(assert_type,			       \
-@@ -1230,6 +1238,7 @@ do {									       \
- 	const char *__right = (right);				       \
- 									       \
- 	KUNIT_ASSERTION(test,						       \
-+			assert_type,					       \
- 			strcmp(__left, __right) op 0,			       \
- 			kunit_binary_str_assert,			       \
- 			KUNIT_INIT_BINARY_STR_ASSERT_STRUCT(assert_type,       \
-@@ -1289,6 +1298,7 @@ do {									       \
- 	typeof(ptr) __ptr = (ptr);					       \
- 									       \
- 	KUNIT_ASSERTION(test,						       \
-+			assert_type,					       \
- 			!IS_ERR_OR_NULL(__ptr),				       \
- 			kunit_ptr_not_err_assert,			       \
- 			KUNIT_INIT_PTR_NOT_ERR_STRUCT(assert_type,	       \
-diff --git a/lib/kunit/assert.c b/lib/kunit/assert.c
-index 4d9a1295efc7..9f4492a8e24e 100644
---- a/lib/kunit/assert.c
-+++ b/lib/kunit/assert.c
-@@ -10,12 +10,13 @@
- 
- #include "string-stream.h"
- 
--void kunit_base_assert_format(const struct kunit_assert *assert,
-+void kunit_assert_prologue(const struct kunit_loc *loc,
-+			   enum kunit_assert_type type,
- 			      struct string_stream *stream)
- {
- 	const char *expect_or_assert = NULL;
- 
--	switch (assert->type) {
-+	switch (type) {
- 	case KUNIT_EXPECTATION:
- 		expect_or_assert = "EXPECTATION";
- 		break;
-@@ -25,9 +26,9 @@ void kunit_base_assert_format(const struct kunit_assert *assert,
- 	}
- 
- 	string_stream_add(stream, "%s FAILED at %s:%d\n",
--			  expect_or_assert, assert->file, assert->line);
-+			  expect_or_assert, loc->file, loc->line);
- }
--EXPORT_SYMBOL_GPL(kunit_base_assert_format);
-+EXPORT_SYMBOL_GPL(kunit_assert_prologue);
- 
- void kunit_assert_print_msg(const struct kunit_assert *assert,
- 			    struct string_stream *stream)
-diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-index 345a9dd88c27..7dec3248562f 100644
---- a/lib/kunit/test.c
-+++ b/lib/kunit/test.c
-@@ -240,7 +240,8 @@ static void kunit_print_string_stream(struct kunit *test,
- 	}
- }
- 
--static void kunit_fail(struct kunit *test, struct kunit_assert *assert)
-+static void kunit_fail(struct kunit *test, const struct kunit_loc *loc,
-+		       enum kunit_assert_type type, struct kunit_assert *assert)
- {
- 	struct string_stream *stream;
- 
-@@ -250,12 +251,12 @@ static void kunit_fail(struct kunit *test, struct kunit_assert *assert)
- 	if (!stream) {
- 		WARN(true,
- 		     "Could not allocate stream to print failed assertion in %s:%d\n",
--		     assert->file,
--		     assert->line);
-+		     loc->file,
-+		     loc->line);
- 		return;
- 	}
- 
--	kunit_base_assert_format(assert, stream);
-+	kunit_assert_prologue(loc, type, stream);
- 	assert->format(assert, stream);
- 
- 	kunit_print_string_stream(test, stream);
-@@ -277,6 +278,8 @@ static void __noreturn kunit_abort(struct kunit *test)
- }
- 
- void kunit_do_failed_assertion(struct kunit *test,
-+			       const struct kunit_loc *loc,
-+			       enum kunit_assert_type type,
- 			       struct kunit_assert *assert,
- 			       const char *fmt, ...)
- {
-@@ -286,11 +289,11 @@ void kunit_do_failed_assertion(struct kunit *test,
- 	assert->message.fmt = fmt;
- 	assert->message.va = &args;
- 
--	kunit_fail(test, assert);
-+	kunit_fail(test, loc, type, assert);
- 
- 	va_end(args);
- 
--	if (assert->type == KUNIT_ASSERTION)
-+	if (type == KUNIT_ASSERTION)
- 		kunit_abort(test);
- }
- EXPORT_SYMBOL_GPL(kunit_do_failed_assertion);
--- 
-2.34.1.575.g55b058a8bb-goog
-
+                Linus
