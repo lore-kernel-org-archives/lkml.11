@@ -2,250 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 569C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 05:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B81C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 05:17:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234747AbiAKFPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 00:15:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233896AbiAKFO7 (ORCPT
+        id S238818AbiAKFRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 00:17:31 -0500
+Received: from mail-4319.protonmail.ch ([185.70.43.19]:21215 "EHLO
+        mail-4319.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235370AbiAKFRa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 00:14:59 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3AE2C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 21:14:58 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id i3so44013369ybh.11
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 21:14:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=F1DnS9sCmbdeb4JrbE2m/+T6GWQXHNi5EGutXDvA3b4=;
-        b=B+1y0he3f2uT2uw6Qquv5i3oxPVwwyTgAM7PFihWed5i7NzYtMpIwuAmHaW0jxi5aW
-         plGvuh1VgGiFZImCHIh6QPWuKVLt6PFXJr10Wm9lDGIGJiQL8D02eCgrI8uMMHpkzNtj
-         07bAdPyGUSmXrIlEz94j5d7rrx5UtFsDcecDdgOvOldIIZruWZiHgovPGC2JiWH7ZK/V
-         /A2Ohx22LS0TVKFIDORjWZMRcKBScKj0YU10x0F1zarn5EFrISvlbRMFL6GgZG3n2gO5
-         Dybrv4nHKaxKhJcVx3X/5ejet+QXB90DaOAz7VVKFa5Koxzt4Ewfk28dwse9hkXbJa4a
-         DQaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=F1DnS9sCmbdeb4JrbE2m/+T6GWQXHNi5EGutXDvA3b4=;
-        b=Jo0IBBX1ZOunfycGhPlFCEm6Ov1MXjkbcy566NkHHHC4/Gq8OBjmuaenBmmbrv2LV2
-         Ww+uUuro+otV2Eu3y/JKQVoxsqi6yrCpglIMDQGUwlnBWUK9yT157l3cmQr8qlG7k0W6
-         330GxhTSL99ctNHfWUBm5C7d1LxWyRKK3za4J7calphkHxuEAvsXAKL88ZOvYyxPzxee
-         fc2luXxjdo+OHR0DugDvZeNDHVgwpyq9tWu9PLkapG9weAT0odbeYK31jvyajaGCgXX2
-         7GfwtYmEJW52CAwowKeEgyp1XOOey4/emCUsva+EN8AvPsJr/1S1UmRo8VHeRZ2Hi+0j
-         y1Rg==
-X-Gm-Message-State: AOAM531u8NjMS1+O1tHBXa4RPaNbfza1Y78HaBQzcHw2WNXKwy8ZhHsC
-        oCr/yXCMrVGJWZXB4xDD28b1/SsOvsIfj3vXVMQwFX1zenVboQ==
-X-Google-Smtp-Source: ABdhPJwjrbbHpyHT5HbhjU4WFLXOGAm53DJGXXsHAcO7EA8L+8O9q7Z7b6EWiCNetOSMv1U8JjT3NCbzfw98IfUS2JI=
-X-Received: by 2002:a25:2416:: with SMTP id k22mr3808436ybk.553.1641878097867;
- Mon, 10 Jan 2022 21:14:57 -0800 (PST)
+        Tue, 11 Jan 2022 00:17:30 -0500
+Date:   Tue, 11 Jan 2022 05:17:26 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail2; t=1641878248;
+        bh=cYRvPsRTbr0F5Cm8cyAJ/mKD2RTDDw1A0v/DzkSatCQ=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
+         References:From:To:Cc;
+        b=hfA0/CRWFAyhXB6BLEJDd9HBXjUactsFBPdCpKVcrjAIcVgNcJdyx23xz9Qnfgt32
+         xCpqb0/AG5DkIoQtsv5BKLz1FlHTRkEYAtH0Hv3eMq4VU/4bLd+g2nnEu0I1RVE4vV
+         eO9OhuE1P3k2YfmFADDyrSKNeJK++Udxr+rOXa8DVpQEgyeSRaqRBumIA5IP0yBxZP
+         iHvL1DmNDI5cnVCptXkqDgOqRDJLjOhpSGx5NoXXuhH+PsMGW6dZaciDjWLgw7Gp9E
+         fGFloNx5Ajo3dciUiAkv5oMv/n84HymBdIl6g41/EGrlgPREUuKARGxloPqzK2Z9Sc
+         rbxR5qC1VlJ2w==
+To:     Ard Biesheuvel <ardb@kernel.org>
+From:   Orlando Chamberlain <redecorating@protonmail.com>
+Cc:     Aditya Garg <gargaditya08@live.com>,
+        "jk@ozlabs.org" <jk@ozlabs.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Aun-Ali Zaidi <admin@kodeit.net>
+Reply-To: Orlando Chamberlain <redecorating@protonmail.com>
+Subject: Re: [BUG][SEVERE] Enabling EFI runtime services causes panics in the T2 security chip on Macs equipped with it.
+Message-ID: <20220111051717.25b86946@localhost>
+In-Reply-To: <CAMj1kXEjmJxS-_r4HK_v_Qm85y2oeawk+bWUpSY7mV5NLFCm4g@mail.gmail.com>
+References: <6D757C75-65B1-468B-842D-10410081A8E4@live.com> <CAMj1kXETPO9iJoFm26v5gof2xpakHkvz3YV4ahet7BLjX5m5FQ@mail.gmail.com> <D3B9962F-F6F0-4622-9E0F-A3EABACAD471@live.com> <CAMj1kXGem3QB0rj-b57xrcDYkCv6Moi=RX1OUspj3s4vMtsdug@mail.gmail.com> <CAMj1kXEjmJxS-_r4HK_v_Qm85y2oeawk+bWUpSY7mV5NLFCm4g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220110071821.500480371@linuxfoundation.org>
-In-Reply-To: <20220110071821.500480371@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 11 Jan 2022 10:44:46 +0530
-Message-ID: <CA+G9fYu+CPS8mx0h2c-Y-uaoRA42te93UfA6v3ygWimZ6Ly8-g@mail.gmail.com>
-Subject: Re: [PATCH 5.15 00/72] 5.15.14-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 at 13:03, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.14 release.
-> There are 72 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 12 Jan 2022 07:18:05 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.14-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Tue, 11 Jan 2022 04:45:35 +1100
+"Ard Biesheuvel" <ardb@kernel.org> wrote:
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+> On Mon, 10 Jan 2022 at 17:37, Ard Biesheuvel <ardb@kernel.org> wrote:
+> >
+> > On Mon, 10 Jan 2022 at 17:28, Aditya Garg <gargaditya08@live.com>
+> > wrote: =20
+> ...
+> > > >>
+> > > >> This seems to be triggered by EFI_QUERY_VARIABLE_INFO here
+> > > >> =20
+> > > >
+> > > > This is interesting. QueryVariableInfo() was introduced in EFI
+> > > > 2.00, and for a very long time, Intel MACs would claim to
+> > > > implement EFI 1.10 only. This means Linux would never attempt
+> > > > to use QueryVariableInfo() on such platforms.
+> > > >
+> > > > Can you please check your boot log which revision it claims to
+> > > > implement now?
+> > > >
+> > > > Mine says
+> > > >
+> > > > efi: EFI v1.10 by Apple =20
+> > >
+> > > Mine says
+> > >
+> > > efi: EFI v2.40 by Apple
+> > > =20
+>=20
+> Can you check whether things work as before after applying the change
+> below?
+>=20
+> diff --git a/arch/x86/platform/efi/efi.c b/arch/x86/platform/efi/efi.c
+> index 147c30a81f15..d7203355cc69 100644
+> --- a/arch/x86/platform/efi/efi.c
+> +++ b/arch/x86/platform/efi/efi.c
+> @@ -399,7 +399,7 @@ static int __init efi_systab_init(unsigned long
+> phys) efi_nr_tables           =3D systab32->nr_tables;
+>         }
+>=20
+> -       efi.runtime_version =3D hdr->revision;
+> +       efi.runtime_version =3D EFI_1_10_SYSTEM_TABLE_REVISION;
+>=20
+>         efi_systab_report_header(hdr, efi_fw_vendor);
+>         early_memunmap(p, size);
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+This patch works for me, I was able to use `efibootmgr -t 2` without
+panics and the change to the boot timeout value persisted after a
+reboot. (I don't think the Apple firmware would actually use this
+timeout value for a timeout time, but it is an nvram vairable that i
+was able to write to)
 
-## Build
-* kernel: 5.15.14-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.15.y
-* git commit: e8d40b0a77381adfdcadb8307596341334c9e18d
-* git describe: v5.15.13-73-ge8d40b0a7738
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.13-73-ge8d40b0a7738
+efi: EFI v2.40 by Apple
+efi: ACPI=3D0x7affe000 ACPI 2.0=3D0x7affe014 SMBIOS=3D0x7aed0000 SMBIOS 3.0=
+=3D0x7aece000=20
+SMBIOS 3.1.1 present.
+DMI: Apple Inc. MacBookPro16,1/Mac-E1008331FDC96864, BIOS 1715.60.5.0.0 (iB=
+ridge: 19.16.10647.0.0,0) 11/16/2021
 
-## Test Regressions (compared to v5.15.11-129-g47b0c2878802)
-No test regressions found.
+("iBridge" might be something to use for a quirk, as it should cover
+all Macs with the T2 chip)
 
-## Metric Regressions (compared to v5.15.11-129-g47b0c2878802)
-No metric regressions found.
 
-## Test Fixes (compared to v5.15.11-129-g47b0c2878802)
-No test fixes found.
+--=20
 
-## Metric Fixes (compared to v5.15.11-129-g47b0c2878802)
-No metric fixes found.
-
-## Test result summary
-total: 97540, pass: 83368, fail: 678, skip: 12534, xfail: 960
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 263 total, 257 passed, 6 failed
-* arm64: 42 total, 40 passed, 2 failed
-* dragonboard-410c: 1 total, 1 passed, 0 failed
-* hi6220-hikey: 1 total, 1 passed, 0 failed
-* i386: 40 total, 37 passed, 3 failed
-* juno-r2: 1 total, 1 passed, 0 failed
-* mips: 37 total, 31 passed, 6 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 56 total, 50 passed, 6 failed
-* riscv: 28 total, 23 passed, 5 failed
-* s390: 22 total, 20 passed, 2 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x15: 1 total, 1 passed, 0 failed
-* x86: 1 total, 1 passed, 0 failed
-* x86_64: 42 total, 40 passed, 2 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kselftest-android
-* kselftest-arm64
-* kselftest-arm64/arm64.btitest.bti_c_func
-* kselftest-arm64/arm64.btitest.bti_j_func
-* kselftest-arm64/arm64.btitest.bti_jc_func
-* kselftest-arm64/arm64.btitest.bti_none_func
-* kselftest-arm64/arm64.btitest.nohint_func
-* kselftest-arm64/arm64.btitest.paciasp_func
-* kselftest-arm64/arm64.nobtitest.bti_c_func
-* kselftest-arm64/arm64.nobtitest.bti_j_func
-* kselftest-arm64/arm64.nobtitest.bti_jc_func
-* kselftest-arm64/arm64.nobtitest.bti_none_func
-* kselftest-arm64/arm64.nobtitest.nohint_func
-* kselftest-arm64/arm64.nobtitest.paciasp_func
-* kselftest-bpf
-* kselftest-breakpoints
-* kselftest-capabilities
-* kselftest-cgroup
-* kselftest-clone3
-* kselftest-core
-* kselftest-cpu-hotplug
-* kselftest-cpufreq
-* kselftest-drivers
-* kselftest-efivarfs
-* kselftest-filesystems
-* kselftest-firmware
-* kselftest-fpu
-* kselftest-futex
-* kselftest-gpio
-* kselftest-intel_pstate
-* kselftest-ipc
-* kselftest-ir
-* kselftest-kcmp
-* kselftest-kexec
-* kselftest-kvm
-* kselftest-lib
-* kselftest-livepatch
-* kselftest-lkdtm
-* kselftest-membarrier
-* kselftest-memfd
-* kselftest-memory-hotplug
-* kselftest-mincore
-* kselftest-mount
-* kselftest-mqueue
-* kselftest-net
-* kselftest-netfilter
-* kselftest-nsfs
-* kselftest-openat2
-* kselftest-pid_namespace
-* kselftest-pidfd
-* kselftest-proc
-* kselftest-pstore
-* kselftest-ptrace
-* kselftest-rseq
-* kselftest-rtc
-* kselftest-seccomp
-* kselftest-sigaltstack
-* kselftest-size
-* kselftest-splice
-* kselftest-static_keys
-* kselftest-sync
-* kselftest-sysctl
-* kselftest-tc-testing
-* kselftest-timens
-* kselftest-timers
-* kselftest-tmpfs
-* kselftest-tpm2
-* kselftest-user
-* kselftest-vm
-* kselftest-x86
-* kselftest-zram
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-controllers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-cve-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-open-posix-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* ltp-syscalls-tests
-* ltp-tracing-tests
-* network-basic-tests
-* packetdrill
-* perf
-* rcutorture
-* ssuite
-* v4l2-compliance
-
---
-Linaro LKFT
-https://lkft.linaro.org
