@@ -2,159 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F19C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD8FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349722AbiAKPxo (ORCPT
+        id S1343654AbiAKPyF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:53:44 -0500
-Received: from ewsoutbound.kpnmail.nl ([195.121.94.168]:61518 "EHLO
-        ewsoutbound.kpnmail.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343654AbiAKPxm (ORCPT
+        Tue, 11 Jan 2022 10:54:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349717AbiAKPyD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:53:42 -0500
-X-KPN-MessageId: 8da454f4-72f6-11ec-8862-005056aba152
-Received: from smtp.kpnmail.nl (unknown [10.31.155.39])
-        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
-        id 8da454f4-72f6-11ec-8862-005056aba152;
-        Tue, 11 Jan 2022 16:53:00 +0100 (CET)
+        Tue, 11 Jan 2022 10:54:03 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FF5C06173F;
+        Tue, 11 Jan 2022 07:54:03 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id v123so11392307wme.2;
+        Tue, 11 Jan 2022 07:54:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=xs4all.nl; s=xs4all01;
-        h=content-type:from:to:subject:mime-version:date:message-id;
-        bh=mVdBKq941lH1RljJoRLz7YFt47OS4LC0wZ46bPhLPMk=;
-        b=eKkbIzjCqCaimnaLOuVv4LpzfkHj9RkgJ81dFaJdlqidlQjGhpQDkoi5RlGlCVvNyDeyXzd4SU7Ym
-         2B+N1Wi5G6FfmfLMyxCewQHfBCwG8Ga8qW9M9DcFdHsSmp4Ows7ES1iM6zz+Q3Yfhlrp/DNb3qPlfY
-         6v2XSUI9i+shrN/df6SV8uxMTTcQ6Xa3qmq579sGaiESOv6g/oj6O7z/JRbraiYQQSHeosigtre5Q3
-         /q6bIkHIqiCxhpI9NGI+Ay0YzJG2VKG4g/w7i9hJiIZf7ZVLe67pseyXS59Us0EEwFigtLFhh+P0LB
-         ctObuVZL7kU7RkcDYAedMW6G407oBPA==
-X-KPN-VerifiedSender: Yes
-X-CMASSUN: 33|jrUMIdbS0XQXMQaX8JQf1yXvyTD33F5lIxq+6/J8hcn9MMTBxWdIV9i06ciH35N
- bWycFAjZaaYUtbe25ObAnqw==
-X-Originating-IP: 193.91.129.219
-Received: from [192.168.2.10] (cdb815bc1.dhcp.as2116.net [193.91.129.219])
-        by smtp.xs4all.nl (Halon) with ESMTPSA
-        id a5358a2c-72f6-11ec-81f5-005056ab7447;
-        Tue, 11 Jan 2022 16:53:40 +0100 (CET)
-Message-ID: <c6adb59e-4554-dc08-3772-148eb22c29ba@xs4all.nl>
-Date:   Tue, 11 Jan 2022 16:53:40 +0100
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nB8ZCrankHzHcyFv7VI9Wl5C6LAOn4lhmHRycfbWy7U=;
+        b=QmTwbWUjBoUAuxlE8ytjljwFhZDpavttR3I3lLL4Xyo/D5dapapFbgcjfVazavMIVR
+         hGUJL3/MpGOE1TD7y+KCDQQtt0mZ8VpglkJIBA8602zPhjUTISus8UNAK+WmUMX2W7qA
+         6BDBrjur9ZYht0brx6qNPS92J0weRCIMmaBLaLCVEK7VkHWNAC8ghinEHI/pghgQ8DJi
+         j73kfZ+/Ht0QmzS+DWtATGo1/M+DRtlooE6NnzbnfGDZXxD2a26BGjl57yUcpGVhTnRV
+         jnznb0pTpYeHGhGwHh032hn+lNKrC5iH7v7Rm0gR5zb21HBCrVPo2s1zGlsc4mE7btFa
+         aiGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nB8ZCrankHzHcyFv7VI9Wl5C6LAOn4lhmHRycfbWy7U=;
+        b=W2jOht2CN1vdH9xR9QY/64KSrbsRn3g0exFjqnMB0Sm2bzzCtB6YBUcU3TztUakQ8e
+         NyetZoarOybgfY4LZ5bbewd+vfZAjAmCxrteEgUnnesw0Kb5APp65i3z0BVfPclWj8K7
+         rAq2GORo1WQ/NWCB57mSaSPhinoQjSkZ5nCDsocwI+jyDtuP/367xs1+Ep5p3r7+a0Dx
+         IaHUE+j1QpfxFk6msGn9CABK7IwRAdnYgnFF+TwGpg6rWdJsE+jL7fQs7Yo5b6IkRNEz
+         plx7Sg3uv2AoBD3UZL7e82IyC5Ok6NFcPtU4OCrdJxU/QwDUVv+H/Vgveqa65ObHGTg8
+         zHWQ==
+X-Gm-Message-State: AOAM533zFPEuPzNnPfqK7rilxVxqIol10LrxmHf3Tdjx98vz5uAZHrOt
+        rrlIe0FH56hFJffarkdXEMc=
+X-Google-Smtp-Source: ABdhPJz2+BnH0HpORwHCCQLaK+gBsBJKXKIJuW6bYZSnWVrDA0yD7jrhkEsZxi4+Td24tzU4eM4S6g==
+X-Received: by 2002:a7b:c5c4:: with SMTP id n4mr3028051wmk.134.1641916441690;
+        Tue, 11 Jan 2022 07:54:01 -0800 (PST)
+Received: from [192.168.8.198] ([148.252.129.73])
+        by smtp.gmail.com with ESMTPSA id az6sm922297wmb.48.2022.01.11.07.54.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 07:54:01 -0800 (PST)
+Message-ID: <4bc0e57b-ee3b-ae77-5d5d-213a48bdf4b0@gmail.com>
+Date:   Tue, 11 Jan 2022 15:50:54 +0000
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.4.1
-Subject: Re: [PATCH v3 07/23] media: atmel: atmel-isc-base: use streaming
- status when queueing buffers
+ Thunderbird/91.4.1
+Subject: Re: [RFC v2 02/19] skbuff: pass a struct ubuf_info in msghdr
 Content-Language: en-US
-To:     Eugen Hristev <eugen.hristev@microchip.com>,
-        linux-media@vger.kernel.org, robh+dt@kernel.org, jacopo@jmondi.org,
-        laurent.pinchart@ideasonboard.com, sakari.ailus@iki.fi
-Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        nicolas.ferre@microchip.com
-References: <20211213134940.324266-1-eugen.hristev@microchip.com>
- <20211213134940.324266-8-eugen.hristev@microchip.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20211213134940.324266-8-eugen.hristev@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Hao Xu <haoxu@linux.alibaba.com>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>, Jens Axboe <axboe@kernel.dk>
+References: <cover.1640029579.git.asml.silence@gmail.com>
+ <7dae2f61ee9a1ad38822870764fcafad43a3fe4e.1640029579.git.asml.silence@gmail.com>
+ <fd376342-13e2-4ce9-074a-f6b3da69be3b@linux.alibaba.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <fd376342-13e2-4ce9-074a-f6b3da69be3b@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/12/2021 14:49, Eugen Hristev wrote:
-> During experiments with libcamera, it looks like vb2_is_streaming returns
-> true before our start streaming is called.
-> Order of operations is streamon -> queue -> start_streaming
-> ISC would have started the DMA immediately when a buffer is being added
-> to the vbqueue if the queue is streaming.
-> It is more safe to start the DMA after the start streaming of the driver is
-> called.
-> Thus, even if vb2queue is streaming, add the buffer to the dma queue of the
-> driver instead of actually starting the DMA process, if the start streaming
-> has not been called yet.
-> 
-> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-> ---
->  drivers/media/platform/atmel/atmel-isc-base.c | 17 ++++++++++-------
->  1 file changed, 10 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
-> index 26a6090f056c..e6c9071c04f0 100644
-> --- a/drivers/media/platform/atmel/atmel-isc-base.c
-> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
-> @@ -441,12 +441,14 @@ static void isc_buffer_queue(struct vb2_buffer *vb)
->  	unsigned long flags;
->  
->  	spin_lock_irqsave(&isc->dma_queue_lock, flags);
-> -	if (!isc->cur_frm && list_empty(&isc->dma_queue) &&
-> -		vb2_is_streaming(vb->vb2_queue)) {
-> +
-> +	if (!isc->cur_frm && list_empty(&isc->dma_queue) && !isc->stop) {
->  		isc->cur_frm = buf;
->  		isc_start_dma(isc);
-> -	} else
-> +	} else {
->  		list_add_tail(&buf->list, &isc->dma_queue);
-> +	}
-> +
->  	spin_unlock_irqrestore(&isc->dma_queue_lock, flags);
->  }
+On 1/11/22 13:51, Hao Xu wrote:
+> 在 2021/12/21 下午11:35, Pavel Begunkov 写道:
+>> Instead of the net stack managing ubuf_info, allow to pass it in from
+>> outside in a struct msghdr (in-kernel structure), so io_uring can make
+>> use of it.
+>>
+>> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+>> ---
+> Hi Pavel,
+> I've some confusions here since I have a lack of
+> network knowledge.
+> The first one is why do we make ubuf_info visible
+> for io_uring. Why not just follow the old MSG_ZEROCOPY
+> logic?
 
-Both the old and new code doesn't make a lot of sense.
+I assume you mean leaving allocation up and so in socket awhile the
+patchset let's io_uring to manage and control ubufs. In short,
+performance and out convenience
 
-buf_queue is only called by vb2 if start_streaming has already been called or is
-about to be called.
+TL;DR;
+First, we want a nice and uniform API with io_uring, i.e. posting
+an CQE instead of polling an err queue/etc., and for that the network
+will need to know about io_uring ctx in some way. As an alternative it
+may theoretically be registered in socket, but it'll quickly turn into
+a huge mess, consider that it's a many to many relation b/w io_uring and
+sockets. The fact that io_uring holds refs to files will only complicate
+it.
 
-Typically all that the buf_queue op does is to call list_add_tail(&buf->list, &isc->dma_queue);
-inside the spinlock.
+It will also limit API. For instance, we won't be able to use a single
+ubuf with several different sockets.
 
->  
-> @@ -1014,7 +1016,7 @@ static int isc_s_fmt_vid_cap(struct file *file, void *priv,
->  {
->  	struct isc_device *isc = video_drvdata(file);
->  
-> -	if (vb2_is_streaming(&isc->vb2_vidq))
-> +	if (!isc->stop)
+Another problem is performance, registration or some other tricks
+would some additional sync. It'd also need sync on use, say it's
+just one rcu_read, but the problem that it only adds up to complexity
+and prevents some other optimisations. E.g. we amortise to ~0 atomics
+getting refs on skb setups based on guarantees io_uring provides, and
+not only. SKBFL_MANAGED_FRAGS can only work with pages being controlled
+by the issuer, and so it needs some context as currently provided by
+ubuf. io_uring also caches ubufs, which relies on io_uring locking, so
+it removes kmalloc/free for almost zero overhead.
 
-This is weird as well. Normally this calls vb2_is_busy to check if the
-queue is busy (that really means that buffers are already allocated, so
-changing the format isn't allowed anymore).
 
->  		return -EBUSY;
->  
->  	return isc_set_fmt(isc, f);
-> @@ -1536,7 +1538,7 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
->  
->  		isc_update_awb_ctrls(isc);
->  
-> -		if (vb2_is_streaming(&isc->vb2_vidq)) {
-> +		if (!isc->stop) {
+> The second one, my understanding about the buffer
+> lifecycle is that the kernel side informs
+> the userspace by a cqe generated by the ubuf_info
+> callback that all the buffers attaching to the
+> same notifier is now free to use when all the data
+> is sent, then why is the flush in 13/19 needed as
+> it is at the submission period?
 
-Ditto.
+Probably I wasn't clear enough. A user has to flush a notifier, only
+then it's expected to post an CQE after all buffers attached to it
+are freed. io_uring holds one ubuf ref, which will be release on flush.
+I also need to add a way to flush without send.
 
->  			/*
->  			 * If we are streaming, we can update profile to
->  			 * have the new settings in place.
-> @@ -1552,8 +1554,7 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
->  		}
->  
->  		/* if we have autowhitebalance on, start histogram procedure */
-> -		if (ctrls->awb == ISC_WB_AUTO &&
-> -		    vb2_is_streaming(&isc->vb2_vidq) &&
-> +		if (ctrls->awb == ISC_WB_AUTO && !isc->stop &&
->  		    ISC_IS_FORMAT_RAW(isc->config.sd_format->mbus_code))
->  			isc_set_histogram(isc, true);
->  
-> @@ -1829,6 +1830,8 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
->  	struct vb2_queue *q = &isc->vb2_vidq;
->  	int ret = 0;
->  
-> +	isc->stop = true;
-> +
+Will spend some time documenting for next iteration.
 
-I'm really not sure that you need the stop bool at all.
-
->  	INIT_WORK(&isc->awb_work, isc_awb_work);
->  
->  	ret = v4l2_device_register_subdev_nodes(&isc->v4l2_dev);
-
-Regards,
-
-	Hans
+-- 
+Pavel Begunkov
