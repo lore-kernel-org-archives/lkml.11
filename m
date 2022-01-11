@@ -2,97 +2,303 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F63C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF0DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350365AbiAKTKr (ORCPT
+        id S1350391AbiAKTMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:10:47 -0500
-Received: from mga04.intel.com ([192.55.52.120]:14399 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243149AbiAKTKp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:10:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641928245; x=1673464245;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=guB/DjhT2AMQhK/vQUIlG64RQu1W/DQlUEBykbhTvTk=;
-  b=HWWjPozSZ0FrI28MvEa2hu063In4Uj4KG0fcDEzBrQfTtIBXjNzXL/pk
-   pD/5T89bFszarEaaB+SgqBCKDmQ3RMSY+EP+K2+npNwHxPQGB4j4lDTbQ
-   S2unkrDmTy5M2ueOzKBSXJ3gbrO4MUL+Rdfng8zjzwsaktbanyCZP/O1k
-   3gfG9zbWXIgJw8d/8QqOPvqeQIsFqqQWc2MHdPcPI7g/h6OrjB3nKdVoM
-   IrG7ySfFPlOW/GwzBMT9MGZlTBsu/XQ0AjukFZRQqNieKfoxqQA70ViG9
-   d3Nve3VRQZjL37mzWp8OVVUukhKKu1YMl7SjiBklvRqY6qUDnCouTF5kZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="242379200"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="242379200"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 11:10:45 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="613315060"
-Received: from padhika1-mobl.amr.corp.intel.com (HELO [10.209.13.65]) ([10.209.13.65])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 11:10:44 -0800
-Message-ID: <3a361a1d-0e14-8884-c5bb-90aeb87e38ef@intel.com>
-Date:   Tue, 11 Jan 2022 11:10:40 -0800
+        Tue, 11 Jan 2022 14:12:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243270AbiAKTMp (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 14:12:45 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED14C061748
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:12:45 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id m13so556645pji.3
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:12:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Cj/+pQ+TtfHL2NX+OfFYOfj8tH9YtaAE2RZYOHqHiRE=;
+        b=P4xxx2yQaqkIkvOkzwOAuagTF9X3VnQAdtx4W3oBFppAYNi95LmNOcTZwgrfuKCTWs
+         svdeVnNopY7oSVgGKBkESdu+zK/ntWVns2fF44Sjg3z4atMOY0T7YAcgZQqbbo89GYng
+         u9BqusYcwk9MjoVGPMpstgtDiVG9+nmQGanatKIS47AKf2EcV6aYnkUruzYrGFJCB6Gs
+         5x4WQ3smzEHiVKzDDkNDA0b9a7jbKaAYCV5W3VgcCT0+SuUC7X/69phqdcu00axtUqus
+         8chxfeO5WzlKhl6qGYZMoI/wbLgpUhgz1zwqJkEn5dh8MaNWhL+MRaDT3qn3QzIbQuzs
+         D3Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Cj/+pQ+TtfHL2NX+OfFYOfj8tH9YtaAE2RZYOHqHiRE=;
+        b=HZE0RAEOSV3R2/kxQ3WJTXKZ4YDMtGyitvtLkUR0QahoeAm9SWzmibYLBhtIGZaPrd
+         jT6p5zJHEh89wJOrHIjbRkailBsQnLVReT+W71lG8n0uE47/n7HmplTuT8PVVCGMnnWT
+         boYuPovqTl289hG/L8bdojeMQyPd3nKmf78Mey4H8PkW/U1ZfIwxZydJgQM3kNi6KiPu
+         FGTE7pUX7bvHd8cECMqwdquk/UOXjzVPsqwrPvhJMT5Vqpmva5vSX5yYHW5DmH73skGp
+         Htb34A1q6MGnQ3/Bte1yxiQCuVDYT8Sdj0twdY5Fn0MVgOKLeIna8T+UqrnOp0MsDb4T
+         mNjQ==
+X-Gm-Message-State: AOAM532skoprAvYlYVoCkiY/g4tDLXltLjkYbdtHPNcECResraEfzxUu
+        emZ114TkK5it1/OpkghgYQt2vGrNHDdD9cHCC/m7uQ==
+X-Google-Smtp-Source: ABdhPJxprsXuwze5Ru6IcgCzB4rmNk1NCrRWGtTNiT1guit/xqnPyFx3PU7jb2jJ70fct5X3Wtl7BWeArV9HZaYjSmA=
+X-Received: by 2002:a62:ed06:0:b0:4bb:1152:2fbd with SMTP id
+ u6-20020a62ed06000000b004bb11522fbdmr5842018pfh.34.1641928364710; Tue, 11 Jan
+ 2022 11:12:44 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCHv2 5/7] x86/mm: Reserve unaccepted memory bitmap
-Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220111113314.27173-1-kirill.shutemov@linux.intel.com>
- <20220111113314.27173-6-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220111113314.27173-6-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20210719082756.15733-1-ms@dev.tdt.de> <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
+ <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
+In-Reply-To: <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Tue, 11 Jan 2022 11:12:33 -0800
+Message-ID: <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
+Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+To:     Martin Schiller <ms@dev.tdt.de>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 03:33, Kirill A. Shutemov wrote:
-> Unaccepted memory bitmap is allocated during decompression stage and
-> handed over to main kernel image via boot_params. The bitmap is used to
-> track if memory has been accepted.
-> 
-> Reserve unaccepted memory bitmap has to prevent reallocating memory for
-> other means.
+On Mon, Jan 10, 2022 at 11:44 PM Martin Schiller <ms@dev.tdt.de> wrote:
+>
+> On 2022-01-11 00:12, Tim Harvey wrote:
+> > On Mon, Jul 19, 2021 at 2:07 AM Martin Schiller <ms@dev.tdt.de> wrote:
+> >>
+> >> This adds the possibility to configure the RGMII RX/TX clock skew via
+> >> devicetree.
+> >>
+> >> Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and
+> >> add
+> >> the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
+> >> devicetree.
+> >>
+> >> Furthermore, a warning is now issued if the phy mode is configured to
+> >> "rgmii" and an internal delay is set in the phy (e.g. by
+> >> pin-strapping),
+> >> as in the dp83867 driver.
+> >>
+> >> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+> >> ---
+> >>
+> >> Changes to v5:
+> >> o remove #if IS_ENABLED(CONFIG_OF_MDIO) check
+> >> o rename new function to xway_gphy_rgmii_init()
+> >>
+> >> Changes to v4:
+> >> o Fix Alignment to match open parenthesis
+> >>
+> >> Changes to v3:
+> >> o Fix typo in commit message
+> >> o use FIELD_PREP() and FIELD_GET() macros
+> >> o further code cleanups
+> >> o always mask rxskew AND txskew value in the register value
+> >>
+> >> Changes to v2:
+> >> o Fix missing whitespace in warning.
+> >>
+> >> Changes to v1:
+> >> o code cleanup and use phy_modify().
+> >> o use default of 2.0ns if delay property is absent instead of
+> >> returning
+> >>   an error.
+> >>
+> >> ---
+> >>  drivers/net/phy/intel-xway.c | 78
+> >> ++++++++++++++++++++++++++++++++++++
+> >>  1 file changed, 78 insertions(+)
+> >>
+> >> diff --git a/drivers/net/phy/intel-xway.c
+> >> b/drivers/net/phy/intel-xway.c
+> >> index d453ec016168..fd7da2eeb963 100644
+> >> --- a/drivers/net/phy/intel-xway.c
+> >> +++ b/drivers/net/phy/intel-xway.c
+> >> @@ -8,11 +8,16 @@
+> >>  #include <linux/module.h>
+> >>  #include <linux/phy.h>
+> >>  #include <linux/of.h>
+> >> +#include <linux/bitfield.h>
+> >>
+> >> +#define XWAY_MDIO_MIICTRL              0x17    /* mii control */
+> >>  #define XWAY_MDIO_IMASK                        0x19    /* interrupt
+> >> mask */
+> >>  #define XWAY_MDIO_ISTAT                        0x1A    /* interrupt
+> >> status */
+> >>  #define XWAY_MDIO_LED                  0x1B    /* led control */
+> >>
+> >> +#define XWAY_MDIO_MIICTRL_RXSKEW_MASK  GENMASK(14, 12)
+> >> +#define XWAY_MDIO_MIICTRL_TXSKEW_MASK  GENMASK(10, 8)
+> >> +
+> >>  /* bit 15:12 are reserved */
+> >>  #define XWAY_MDIO_LED_LED3_EN          BIT(11) /* Enable the
+> >> integrated function of LED3 */
+> >>  #define XWAY_MDIO_LED_LED2_EN          BIT(10) /* Enable the
+> >> integrated function of LED2 */
+> >> @@ -157,6 +162,75 @@
+> >>  #define PHY_ID_PHY11G_VR9_1_2          0xD565A409
+> >>  #define PHY_ID_PHY22F_VR9_1_2          0xD565A419
+> >>
+> >> +static const int xway_internal_delay[] = {0, 500, 1000, 1500, 2000,
+> >> 2500,
+> >> +                                        3000, 3500};
+> >> +
+> >> +static int xway_gphy_rgmii_init(struct phy_device *phydev)
+> >> +{
+> >> +       struct device *dev = &phydev->mdio.dev;
+> >> +       unsigned int delay_size = ARRAY_SIZE(xway_internal_delay);
+> >> +       s32 int_delay;
+> >> +       int val = 0;
+> >> +
+> >> +       if (!phy_interface_is_rgmii(phydev))
+> >> +               return 0;
+> >> +
+> >> +       /* Existing behavior was to use default pin strapping delay in
+> >> rgmii
+> >> +        * mode, but rgmii should have meant no delay.  Warn existing
+> >> users,
+> >> +        * but do not change anything at the moment.
+> >> +        */
+> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
+> >> +               u16 txskew, rxskew;
+> >> +
+> >> +               val = phy_read(phydev, XWAY_MDIO_MIICTRL);
+> >> +               if (val < 0)
+> >> +                       return val;
+> >> +
+> >> +               txskew = FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK,
+> >> val);
+> >> +               rxskew = FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK,
+> >> val);
+> >> +
+> >> +               if (txskew > 0 || rxskew > 0)
+> >> +                       phydev_warn(phydev,
+> >> +                                   "PHY has delays (e.g. via pin
+> >> strapping), but phy-mode = 'rgmii'\n"
+> >> +                                   "Should be 'rgmii-id' to use
+> >> internal delays txskew:%d ps rxskew:%d ps\n",
+> >> +                                   xway_internal_delay[txskew],
+> >> +                                   xway_internal_delay[rxskew]);
+> >> +               return 0;
+> >> +       }
+> >> +
+> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+> >> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
+> >> +               int_delay = phy_get_internal_delay(phydev, dev,
+> >> +
+> >> xway_internal_delay,
+> >> +                                                  delay_size, true);
+> >> +
+> >> +               if (int_delay < 0) {
+> >> +                       phydev_warn(phydev, "rx-internal-delay-ps is
+> >> missing, use default of 2.0 ns\n");
+> >> +                       int_delay = 4; /* 2000 ps */
+> >> +               }
+> >> +
+> >> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK,
+> >> int_delay);
+> >> +       }
+> >> +
+> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+> >> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
+> >> +               int_delay = phy_get_internal_delay(phydev, dev,
+> >> +
+> >> xway_internal_delay,
+> >> +                                                  delay_size, false);
+> >> +
+> >> +               if (int_delay < 0) {
+> >> +                       phydev_warn(phydev, "tx-internal-delay-ps is
+> >> missing, use default of 2.0 ns\n");
+> >> +                       int_delay = 4; /* 2000 ps */
+> >> +               }
+> >> +
+> >> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK,
+> >> int_delay);
+> >> +       }
+> >> +
+> >> +       return phy_modify(phydev, XWAY_MDIO_MIICTRL,
+> >> +                         XWAY_MDIO_MIICTRL_RXSKEW_MASK |
+> >> +                         XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
+> >> +}
+> >> +
+> >>  static int xway_gphy_config_init(struct phy_device *phydev)
+> >>  {
+> >>         int err;
+> >> @@ -204,6 +278,10 @@ static int xway_gphy_config_init(struct
+> >> phy_device *phydev)
+> >>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
+> >>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
+> >>
+> >> +       err = xway_gphy_rgmii_init(phydev);
+> >> +       if (err)
+> >> +               return err;
+> >> +
+> >>         return 0;
+> >>  }
+> >>
+> >> --
+> >> 2.20.1
+> >>
+> >
+> > Martin,
+> >
+> > I've got some boards with the GPY111 phy on them and I'm finding that
+> > modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless I
+> > do a soft reset (BCMR_RESET) first. I don't see anything in the
+> > datasheet which specifies this to be the case so I'm interested it
+> > what you have found. Are you sure adjusting the skews like this
+> > without a soft (or hard pin based) reset actually works?
+> >
+> > Best regards,
+> >
+> > Tim
+>
+> Hello Tim,
+>
+> yes, you are right. It is not applied immediately. The link needs to be
+> toggled to get this settings active. But my experience shows that this
+> would be done in the further boot process anyway e.g. by restarting the
+> autonegotiation etc.
+>
 
-I'm having a hard time parsing that changelog, especially the second 
-paragraph.  Could you give it another shot?
+Martin,
 
-> +	/* Mark unaccepted memory bitmap reserved */
-> +	if (boot_params.unaccepted_memory) {
-> +		unsigned long size;
-> +
-> +		/* One bit per 2MB */
-> +		size = DIV_ROUND_UP(e820__end_of_ram_pfn() * PAGE_SIZE,
-> +				    PMD_SIZE * BITS_PER_BYTE);
-> +		memblock_reserve(boot_params.unaccepted_memory, size);
-> +	}
+I added a debug statement in xway_gphy_rgmii_init and here you can see
+it gets called 'before' the link comes up from the NIC on a board that
+has a cable plugged in at power-on. I can tell from testing that the
+rx_delay/tx_delay set in xway_gphy_rgmii_init does not actually take
+effect unless I then bring the link down and up again manually as you
+indicate.
 
-Is it OK that the size of the bitmap is inferred from 
-e820__end_of_ram_pfn()?  Is this OK in the presence of mem= and other 
-things that muck with the e820?
+# dmesg | egrep "xway|nicvf"
+[    6.855971] xway_gphy_rgmii_init mdio_thunder MDI_MIICTRL:0xb100
+rx_delay=1500 tx_delay=500
+[    6.999651] nicvf, ver 1.0
+[    7.002478] nicvf 0000:05:00.1: Adding to iommu group 7
+[    7.007785] nicvf 0000:05:00.1: enabling device (0004 -> 0006)
+[    7.053189] nicvf 0000:05:00.2: Adding to iommu group 8
+[    7.058511] nicvf 0000:05:00.2: enabling device (0004 -> 0006)
+[   11.044616] nicvf 0000:05:00.2 eth1: Link is Up 1000 Mbps Full duplex
+
+If I add a 'genphy_soft_reset(phydev);' at the top of
+xway_gphy_rgmii_init before the write to XWAY_MDIO_MIICTRL the values
+do take effect so perhaps that's the proper fix.
+
+I'm not fond of even using this phy driver either as it blatantly
+forces LED configuration which may not agree with what boot firmware
+does. I've noticed phy drivers starting to configure LED behavior more
+and more but it seems like there should be dt bindings for that or
+maybe an option to preserve the configuration that is set from boot
+firmware.
+
+Best regards,
+
+Tim
