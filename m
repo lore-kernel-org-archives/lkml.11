@@ -2,153 +2,265 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6E37C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E85AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346371AbiAKSqM (ORCPT
+        id S1346306AbiAKSqO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:46:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346266AbiAKSqJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:46:09 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61A4C061748
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:46:08 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id g14so21455436ybs.8
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:46:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=atishpatra.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sM8wuZyLOamyQ+NaAWxgxygW9jRKD3OsUdPukmMlL1U=;
-        b=OpLYe3hGobUDsobWW/zx65mRZbZ+bnV73uNhO5xjHnaneVs0YX2ZC/o290orDokc0u
-         WNiWHsAC9xKw+VU2KOnbLTcKHOqsdO5P1aE1IXFuxwY4ZDxpzzL/jn+Lw37Pt6HUlJdW
-         LTMdizaDElo92GlzxfbX8joJBw9EPa9Fmw2r0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sM8wuZyLOamyQ+NaAWxgxygW9jRKD3OsUdPukmMlL1U=;
-        b=dLQc4s0rJXzE1jGGuF1vpxajhM59wNFcXNA9idJ3iYYpd+dtwLieW3LlI/r9YCK+RS
-         8WFuNeYozSW3qGqRAV3jqbvwO0Vo7buMwSPeGC9Q7BHyi9UvsvomjKS0pzyG3d5UemLF
-         lw+Py+J9FezDUlhZr8t2FFGcBtnMrUSX05Gpm/B1qkd5kJ+EP2Wy3dJyEQ2jbLDLHrw0
-         rNY6qeoZM6qLdtxR2rJnu1B/122m7xZbB6XbJP9MnOYWCVpcXGQtkm9/IL/YPzxirkmE
-         eRBBDjpWvr0a8540bg2tz7k3Hr/ILPKfwbIX8J+RoDibHoncYnjP5QT9xMff6+ADwyaQ
-         i7ww==
-X-Gm-Message-State: AOAM532cZ7jG9xfHKWZ2FrGsDxjsKqJAp9taTOTUft1pWuvIl990DBPt
-        tP6yqlSbMXFMrB80nmb1g8jk0+5cLUc4xz0XVUWU
-X-Google-Smtp-Source: ABdhPJx0Y8SQdmOLymALspxxE440M5sdcmWqHQIm5ZCLL7vr2lFtY9Dk3p4WLCtnG5DHhsKNkV8pIQcewm2Nq+Si/qc=
-X-Received: by 2002:a25:d14c:: with SMTP id i73mr832991ybg.713.1641926766802;
- Tue, 11 Jan 2022 10:46:06 -0800 (PST)
+        Tue, 11 Jan 2022 13:46:14 -0500
+Received: from mail-dm6nam11on2083.outbound.protection.outlook.com ([40.107.223.83]:56928
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1346268AbiAKSqK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 13:46:10 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=awfVeEciVjMQrlpHOYFQGrNrOVDW4DTLo19t5DlZnb8SoqjRZ2NXADUqQSnsHdIVkqixWRupl2dSHeo03y6kfSdvHuIJHSMvOg+766Ccg401Itb3bha7kLvvphKVMqKRca3I1MVuOp+FgD/+xGTPa8yBQ2NFDEU9Nb9+cOB1h/dVYySrewTQQQRqPmz+92SRNWoJFqVWCPX9ek+F0eNMd8ijbybfOypyLaF90VuOQGSQzjfvX5bkMexFklZnUxHcpTIImZQwAybrfb3lhAXi+9KZOUrJicEwTgdKrvyWdX7xSOkNwETXQc10n8s4JY03lQD5TmzuySBLzvKRdpmiSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mXYZNUzTWVTPgL4YEYRncozB2YklqYyv/gNe11XxZic=;
+ b=iz+3GiqkvQKcynvTSmDblvHwBMjai688xGf3kDt4AaQWRY+CQ51lAzO/oEXSupffSLwH2Sjr662p0PBOpCXbSpuvaCMM2S3tso++BSxkOehu+Bu24AdFs6wVqBZnC7JsH2OL0A75fv6trez2KRTvIBd/yifmhP7VNhuEDItHuyRvVzcRa7C7p85CkjhGQqRg8ecV4TC6cK2MBnYcRfBt5kyyH5VEiWapTW0h46AumJoxUwGDBvyhq2jGn6TfVKP1xiFY6EA+1TEG3cVwvkoSmqvEJBEvFYJ7Hc/cTI1f6CrBsnmdg3kBdDVMzOOidzn8oGYSRvlrrgKfs2S738f6Yg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mXYZNUzTWVTPgL4YEYRncozB2YklqYyv/gNe11XxZic=;
+ b=uRKhga3Zcpvmgn50JyjgICDn+Soh/kXUQskTKdUQWJmQtujHJX1g92Ri/MAR1w6gboz3/Y393FSY8fAwyR61j3O2d+uAhBHdupu9TCwTGM2HfJDQNRAiIYj3msA8k6usgil6nO+/ZyE/y32JivaC1H2y1fxBwkm5e8F4BbxkPE5URWHmhJIidBPSEY90Wb+GYkzWJ9xY4bUvcCZ1inT1Zrj22tsC0sFr8GXyiI7W7IYiIlsp6vnKWbS1i3/5Ba9LiB2VV6UW/1fBzUPc0CroipM2EzgWGoEDlMMKrRjQm/yTfYtz/K1oR8mfmXa5YT+TRMr30iBQmrWd2Bn6D5u26A==
+Received: from DM6PR11CA0049.namprd11.prod.outlook.com (2603:10b6:5:14c::26)
+ by MN2PR12MB4048.namprd12.prod.outlook.com (2603:10b6:208:1d5::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Tue, 11 Jan
+ 2022 18:46:08 +0000
+Received: from DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:14c:cafe::f4) by DM6PR11CA0049.outlook.office365.com
+ (2603:10b6:5:14c::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9 via Frontend
+ Transport; Tue, 11 Jan 2022 18:46:08 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT022.mail.protection.outlook.com (10.13.172.210) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4867.9 via Frontend Transport; Tue, 11 Jan 2022 18:46:08 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 11 Jan
+ 2022 18:46:07 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 11 Jan
+ 2022 10:46:07 -0800
+Received: from amhetre.nvidia.com (10.127.8.9) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Tue, 11 Jan 2022 18:46:05 +0000
+From:   Ashish Mhetre <amhetre@nvidia.com>
+To:     <thierry.reding@gmail.com>, <jonathanh@nvidia.com>,
+        <amhetre@nvidia.com>, <linux-tegra@vger.kernel.org>,
+        <krzysztof.kozlowski@canonical.com>, <linux-kernel@vger.kernel.org>
+CC:     <Snikam@nvidia.com>, <vdumpa@nvidia.com>
+Subject: [Patch V1 3/4] memory: tegra: add mc-err support for T186
+Date:   Wed, 12 Jan 2022 00:15:49 +0530
+Message-ID: <1641926750-27544-4-git-send-email-amhetre@nvidia.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1641926750-27544-1-git-send-email-amhetre@nvidia.com>
+References: <1641926750-27544-1-git-send-email-amhetre@nvidia.com>
+X-NVConfidentiality: public
 MIME-Version: 1.0
-References: <20220111142054.18733-1-nikita.shubin@maquefel.me> <B6E7919C-9414-4CC1-BB86-7D358085CECD@jrtc27.com>
-In-Reply-To: <B6E7919C-9414-4CC1-BB86-7D358085CECD@jrtc27.com>
-From:   Atish Patra <atishp@atishpatra.org>
-Date:   Tue, 11 Jan 2022 10:45:56 -0800
-Message-ID: <CAOnJCUJ6JNY9eWrPhGi3XK3omDwXhM37oimsZoqxbOP_f7vUog@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/1] perf tools: Add 'm' event modifier for counting
-To:     Jessica Clarke <jrtc27@jrtc27.com>
-Cc:     Nikita Shubin <nikita.shubin@maquefel.me>,
-        Atish Patra <atishp@rivosinc.com>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux <linux@yadro.com>, Nikita Shubin <n.shubin@yadro.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>,
-        John Garry <john.garry@huawei.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Song Liu <song@kernel.org>,
-        Madhavan Srinivasan <maddy@linux.ibm.com>,
-        linux-perf-users@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9f0c1262-28a1-4cda-3c0e-08d9d532a195
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4048:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB40489B768C6C7AAB4CC6C564CA519@MN2PR12MB4048.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:245;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +eNKrul/PgH8HmAk0rJxI4F0M7YarS6Xx5/EI+ZW+SJzQyyOBRGuCVIzNUmDc/F3MjfZeEc2UHoFyEFXQsLKBD+ZM+Bnin4pCZBgXbSvbL298hyZyZ8zmS+fXSlDZchJ8Ymr3Z4OwH9yfu4mp0SwzFarJ2aC7EEPjUX/g85irIjbV/FWMaJMf4+xAZ6UkdugvCt1jIUuRmRseRkIbMsp0PP1tqsk65gYaDdvXsUGjZL6kxIk1SsJO64R+ZEDQzhTlnqUsStd1/qWI4/DaH5AOsbcet3GH2sAghRDd0VgPjXE5oiDWs85m1iAZ1bZQ6PzrxkZuErGXHnbKAASn+QDtVmD20Mj7STxC20BCdD/9TXc0GOngkEkPgr8QT1Qj9+YChFBaVjmamOWCulyH3EFAqtoEvtcjM1dwJgFNOpbVC9Ql/KghdTzPm9GD1KGzN3j1c86oaiPLfxb2Pq62pLRg4FJ38e1n36N4HtX9NghoObhHij9RANHbgjx8FKMsLbHiK2jXuWD3lzTRTLiXmzVPG5l1kEl5E/0L1IT1WDIQgccsHkVA/g4Th+1N1D2ZawNna/AAKs++a436BFxTOMWBIK/OpZlFHYGuJOOWUF96rMhufj4WZ04M7BqIRZ4HUBqa15b+cFid1blydh2UFSr5oBmNKhEcZyUbay0JX0VywI7vUVK+8+Ctw1ea443zuR9uO86lqkhvS7eHQYxSb0vYURdG56TDeMa06PwVa5MZJudMWP2rLIx38Qh910svNmrqdOE1Dnd66Q+MNVLZ0YwJkGvgGAWQWZNoXwi3Tvsgtw=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700002)(356005)(70206006)(4326008)(8936002)(81166007)(26005)(2906002)(54906003)(36756003)(86362001)(36860700001)(70586007)(47076005)(7696005)(107886003)(40460700001)(508600001)(83380400001)(316002)(6666004)(82310400004)(2616005)(110136005)(426003)(186003)(336012)(5660300002)(8676002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 18:46:08.2504
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f0c1262-28a1-4cda-3c0e-08d9d532a195
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4048
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 6:29 AM Jessica Clarke <jrtc27@jrtc27.com> wrote:
->
-> On 11 Jan 2022, at 14:20, Nikita Shubin <nikita.shubin@maquefel.me> wrote:
-> >
-> > From: Nikita Shubin <n.shubin@yadro.com>
-> >
-> > This patch is a proposal to add Machine Mode modifier that is currently
-> > available only for RISC-V for perf tool.
-> >
-> > We don't currently have a level that is lower than kernel, so i don't
-> > see we can reuse something existing for this purpose.
-> >
+Add all mc-errors supported by T186.
+Implement mc interrupt handling routine for T186.
 
-Thanks for a quick turnaround with a working patch!!
+Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+---
+ drivers/memory/tegra/mc.h       |  17 +++++++
+ drivers/memory/tegra/tegra186.c | 100 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 117 insertions(+)
 
-However, the use case can be applied to other arch as well. It would
-be good to classify this
-as excluding "firmware" events instead of machine mode which is a
-RISC-V terminology.
-Ofcourse, the current documentation should indicate that this option
-is only useful
-for RISC-V right now.
-
-I would like to understand if this idea is appealing to the broader community.
-
-> > The exclude_machine bit seems harmless to as no one will proccess it apart
-> > of riscv.
->
-> Armv8 has equivalent bits in PMEVTYPER<n>_EL0 and PMCCFILTR_EL0 for
-> EL-based filtering, which includes filtering EL3.
->
-> Jess
->
-> > Patch depends on Atish Patra PMU series:
-> > https://lwn.net/Articles/879905/
-> > + some modifications to pass execlude event to SBI PMU extension
-> >
-> > Tested with qemu.
-> >
-> > Nikita Shubin (1):
-> >  perf tools: Add 'm' event modifier for counting machine
-> >
-> > include/uapi/linux/perf_event.h        |  3 ++-
-> > tools/include/uapi/linux/perf_event.h  |  3 ++-
-> > tools/perf/Documentation/perf-list.txt |  1 +
-> > tools/perf/tests/parse-events.c        | 18 ++++++++++++++++++
-> > tools/perf/util/evsel.c                |  4 +++-
-> > tools/perf/util/parse-events.c         | 18 +++++++++++++-----
-> > tools/perf/util/parse-events.l         |  2 +-
-> > 7 files changed, 40 insertions(+), 9 deletions(-)
-> >
-> > --
-> > 2.31.1
-> >
-> >
-> > _______________________________________________
-> > linux-riscv mailing list
-> > linux-riscv@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-riscv
->
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
-
-
-
+diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
+index 2d4f495..7817492 100644
+--- a/drivers/memory/tegra/mc.h
++++ b/drivers/memory/tegra/mc.h
+@@ -44,6 +44,15 @@
+ #define MC_TIMING_CONTROL_DBG				0xf8
+ #define MC_TIMING_CONTROL				0xfc
+ 
++#define MC_ERR_VPR_STATUS				0x654
++#define MC_ERR_VPR_ADR					0x658
++#define MC_ERR_SEC_STATUS				0x67c
++#define MC_ERR_SEC_ADR					0x680
++#define MC_ERR_MTS_STATUS				0x9b0
++#define MC_ERR_MTS_ADR					0x9b4
++#define MC_ERR_GENERALIZED_CARVEOUT_STATUS		0xc00
++#define MC_ERR_GENERALIZED_CARVEOUT_ADR			0xc04
++
+ #define MC_INT_DECERR_ROUTE_SANITY			BIT(20)
+ #define MC_INT_WCAM_ERR					BIT(19)
+ #define MC_INT_SCRUB_ECC_WR_ACK				BIT(18)
+@@ -159,6 +168,14 @@ extern const struct tegra_mc_ops tegra186_mc_ops;
+ extern const char * const tegra_mc_status_names[32];
+ extern const char * const tegra_mc_error_names[8];
+ 
++struct tegra_mc_error {
++	u32 int_bit;
++	const char *msg;
++	u32 status_reg;
++	u32 addr_reg;
++	u32 addr_reg_hi;
++};
++
+ /*
+  * These IDs are for internal use of Tegra ICC drivers. The ID numbers are
+  * chosen such that they don't conflict with the device-tree ICC node IDs.
+diff --git a/drivers/memory/tegra/tegra186.c b/drivers/memory/tegra/tegra186.c
+index 6766cc4..4f3ae71 100644
+--- a/drivers/memory/tegra/tegra186.c
++++ b/drivers/memory/tegra/tegra186.c
+@@ -146,8 +146,107 @@ static void tegra186_mc_clear_interrupt(struct tegra_mc *mc)
+ 	mc_writel(mc, MC_INTSTATUS_CLEAR, MC_INTSTATUS);
+ }
+ 
++static const struct tegra_mc_error int_mc_errors[] = {
++	{
++		.int_bit = MC_INT_DECERR_EMEM,
++		.msg = "EMEM address decode error",
++		.status_reg = MC_ERR_STATUS,
++		.addr_reg = MC_ERR_ADR,
++	},
++	{
++		.int_bit = MC_INT_SECURITY_VIOLATION,
++		.msg = "non secure access to secure region",
++		.status_reg = MC_ERR_STATUS,
++		.addr_reg = MC_ERR_ADR,
++	},
++	{
++		.int_bit = MC_INT_DECERR_VPR,
++		.msg = "MC request violates VPR requirements",
++		.status_reg = MC_ERR_VPR_STATUS,
++		.addr_reg = MC_ERR_VPR_ADR,
++	},
++	{
++		.int_bit = MC_INT_SECERR_SEC,
++		.msg = "MC request violated SEC carveout requirements",
++		.status_reg = MC_ERR_SEC_STATUS,
++		.addr_reg = MC_ERR_SEC_ADR,
++	},
++	{
++		.int_bit = MC_INT_DECERR_MTS,
++		.msg = "MTS carveout access violation",
++		.status_reg = MC_ERR_MTS_STATUS,
++		.addr_reg = MC_ERR_MTS_ADR,
++	},
++	{
++		.int_bit = MC_INT_DECERR_GENERALIZED_CARVEOUT,
++		.msg = "GSC access violation",
++		.status_reg = MC_ERR_GENERALIZED_CARVEOUT_STATUS,
++		.addr_reg = MC_ERR_GENERALIZED_CARVEOUT_ADR,
++	},
++};
++
++static irqreturn_t tegra186_mc_handle_irq(int irq, void *data)
++{
++	struct tegra_mc *mc = data;
++	unsigned long status;
++	unsigned int bit;
++
++	status = mc_readl(mc, MC_INTSTATUS) & mc->soc->intmask;
++	if (!status)
++		return IRQ_NONE;
++
++	for_each_set_bit(bit, &status, 32) {
++		const char *error = int_mc_errors[bit].msg ?: "unknown";
++		const char *client = "unknown";
++		const char *direction, *secure;
++		phys_addr_t addr = 0;
++		unsigned int i;
++		u8 id;
++		u32 value;
++
++		value = mc_readl(mc, int_mc_errors[bit].status_reg);
++
++#ifdef CONFIG_PHYS_ADDR_T_64BIT
++		if (mc->soc->num_address_bits > 32) {
++			addr = ((value >> MC_ERR_STATUS_ADR_HI_SHIFT) &
++				MC_ERR_STATUS_ADR_HI_MASK);
++			addr <<= 32;
++		}
++#endif
++		addr |= mc_readl(mc, int_mc_errors[bit].addr_reg);
++
++		if (value & MC_ERR_STATUS_RW)
++			direction = "write";
++		else
++			direction = "read";
++
++		if (value & MC_ERR_STATUS_SECURITY)
++			secure = "secure ";
++		else
++			secure = "";
++
++		id = value & mc->soc->client_id_mask;
++
++		for (i = 0; i < mc->soc->num_clients; i++) {
++			if (mc->soc->clients[i].id == id) {
++				client = mc->soc->clients[i].name;
++				break;
++			}
++		}
++
++		dev_err_ratelimited(mc->dev, "%s: %s%s @%pa: %s\n",
++				    client, secure, direction, &addr, error);
++	}
++
++	/* clear interrupts */
++	mc_writel(mc, status, MC_INTSTATUS);
++
++	return IRQ_HANDLED;
++}
++
+ const struct tegra_mc_interrupt_ops tegra186_mc_interrupt_ops = {
+ 	.clear_interrupt = tegra186_mc_clear_interrupt,
++	.handle_irq = tegra186_mc_handle_irq,
+ };
+ 
+ const struct tegra_mc_ops tegra186_mc_ops = {
+@@ -886,6 +985,7 @@ const struct tegra_mc_soc tegra186_mc_soc = {
+ 	.num_clients = ARRAY_SIZE(tegra186_mc_clients),
+ 	.clients = tegra186_mc_clients,
+ 	.num_address_bits = 40,
++	.client_id_mask = 0xff,
+ 	.intmask = MC_INT_WCAM_ERR | MC_INT_SCRUB_ECC_WR_ACK |
+ 		   MC_INT_DECERR_GENERALIZED_CARVEOUT | MC_INT_DECERR_MTS |
+ 		   MC_INT_SECERR_SEC | MC_INT_DECERR_VPR |
 -- 
-Regards,
-Atish
+2.7.4
+
