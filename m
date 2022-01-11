@@ -2,87 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0671FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:36:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243754AbiAKUg5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 15:36:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
+        id S244087AbiAKUmA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 15:42:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233821AbiAKUg4 (ORCPT
+        with ESMTP id S233821AbiAKUl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 15:36:56 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E69C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:36:55 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id m4so1003544edb.10
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:36:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rhTc2fZPRf49402IZJZrD0G7GSgDTNNYfixj1K2wtCE=;
-        b=OnO/1NBECg49FscHQiUJJsI8kyhIwulL1CMWTPj8c0arPJ6mcuNDGMP5Z05+RZhGTw
-         8Qh32WeUSDrvpb5ZBfUM3ESbcIof4lmsWcUQjW6k/+74HYvPJHnWn/a2ppJXhT7w2/D9
-         JIMurhESR3+nOenjxbC56gH0WvfIU30WlZzUU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rhTc2fZPRf49402IZJZrD0G7GSgDTNNYfixj1K2wtCE=;
-        b=P6VrP20zoBLSZqS17AVEkivx2uBt4XV4NnnLYk3E5kJqP+IgW26oZBEKjHssxyb1Xg
-         q5+D0epLE9EvqLfD88YQyWJXJuK3Ai712sL5JMz8ubDmOQaDOm7omdklm4PJt1Rn6Zl3
-         hEZlyStgk0ABunicHa2TlYYJ/KlxMnfC1qXZqxNbtAd715cHaVBjUVGZvfik0wflGInT
-         fSdMZZiXRbFgvmXxAb6/QAagcmqcsRuo0BQwMaZjshQBiKdNU0JHHYRsjL/DUJLBU4aa
-         BRxv4Ofa3LWF4pppQyYruJcBrcnO8ni6QS86tAPDPLK0R6KU4hN9h9Xu118qoV48wtCa
-         hqrA==
-X-Gm-Message-State: AOAM531XGMG+gkrE1pkce2Dn+Y4+SMJHMBrENfwQDYokIdpHquzXWiXg
-        h+nirmau/wdRWX1adE6bTynoXzs7eNRcswYafMI=
-X-Google-Smtp-Source: ABdhPJzKR8ptVlpklPwEkNvSowiumfxJsrztEZm+xlmNs7ECndUl6NyDMMIdOkVrhkrsYqbIHet7WQ==
-X-Received: by 2002:a17:906:9912:: with SMTP id zl18mr4873850ejb.348.1641933413949;
-        Tue, 11 Jan 2022 12:36:53 -0800 (PST)
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com. [209.85.221.53])
-        by smtp.gmail.com with ESMTPSA id d1sm3965241ejo.176.2022.01.11.12.36.51
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 12:36:52 -0800 (PST)
-Received: by mail-wr1-f53.google.com with SMTP id s1so412449wra.6
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:36:51 -0800 (PST)
-X-Received: by 2002:adf:f54e:: with SMTP id j14mr5154363wrp.442.1641933411136;
- Tue, 11 Jan 2022 12:36:51 -0800 (PST)
+        Tue, 11 Jan 2022 15:41:57 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FEF6C06173F;
+        Tue, 11 Jan 2022 12:41:57 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JYN0F6kl2z4xmx;
+        Wed, 12 Jan 2022 07:41:49 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641933711;
+        bh=yq+/dnA+ItMpfCTHJZDB+Ogmt6oelxd4pb0RcNcbpzE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=M6/DtQhbD7UQYda5yzKV7evwDx1Wv8HD6m+LqaSjkb6CN3EfDgbkI/zCUDGKpzMYA
+         V72VSKeMfqeRWEQYs0aTkXEBu/28pqmPx2ue3CFuPXxBUkbtilUkd2SF2Ln5HWVNFZ
+         ZpY6VYgWgRUMKdiymAnlg3JZEz+cYFl9ZwXzagWxsxB0LIIOPGSESjPexsaAGE7vRp
+         x98WhQ33fhcjYnqhGJK9F+LZmdDx0R/sVu43xO8KVEXY+ePSWjcohxV3+9j4z8gx3p
+         ers1+J1w4ZmeySQMQHKWdATG6svXCXngXkAQG2ph+61eub3sCNzKk5aXMvuLUZTWbI
+         PXA9HRHjYQPlw==
+Date:   Wed, 12 Jan 2022 07:41:47 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        ARM <linux-arm-kernel@lists.infradead.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: error fetching the arm-soc-fixes tree
+Message-ID: <20220112074147.7d38bc43@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20220111155255.745428-1-brgl@bgdev.pl>
-In-Reply-To: <20220111155255.745428-1-brgl@bgdev.pl>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 11 Jan 2022 12:36:35 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wg1RUc-41K=XTQavnkuLg2=oe8r8LWBocWWWXhM77=2gw@mail.gmail.com>
-Message-ID: <CAHk-=wg1RUc-41K=XTQavnkuLg2=oe8r8LWBocWWWXhM77=2gw@mail.gmail.com>
-Subject: Re: [GIT PULL] gpio: updates for v5.17
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/=30Ug5mcAkLId/DId9Mh2.Z";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 7:53 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> The gpio-sim module is back, this time without any changes to configfs. This
-> results in a less elegant user-space interface but I never got any follow-up on
-> the committable items and didn't want to delay this module for several more
-> months.
+--Sig_/=30Ug5mcAkLId/DId9Mh2.Z
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Yeah, I think that was the right choice.
+Hi all,
 
-I actually did spend some time looking at the configfs code, and it
-just worried me. It may have been clever, but there was no real
-serious user that would have used it outside of this gpio use-case,
-and the games it played with the dentry layer were scary. With no real
-maintainer for configfs, and no VFS person willing to work on it, I
-think it was a dead end. With that in mind, the fewer fancy configfs
-users we have, and the fewer reasons to use it, the better.
+Fetching the arm-soc-fixes tree
+(git://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git#arm/fixes)
+produces this error:
 
-            Linus
+fatal: couldn't find remote ref refs/heads/arm/fixes
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/=30Ug5mcAkLId/DId9Mh2.Z
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHd64sACgkQAVBC80lX
+0Gy73gf/ZOk65scGtbeQGuyi8H2oMpBP0zo16OMygtwY3wau3pq3ifIAA/gQgpZS
+6m5bN9wBsLt/2I0KlU+Cu4DbWtsFWBSosng8OgkWMRk4p4oa4Jht4hV33uJifasm
+2q9N7hZ6/DYgbq8fpRkJzTyYp/4suKlQNsdr7vVZ9jp3S04YWG5UMmSvWaLXtu1s
+4NC6rKQnwFvesK0v3TnV7agRXWO1hT8jrx7P3jNcp238YycUXBrOR3MRDUS2nTUO
+AGI1PIAxjfbi/G7vHg6qMpFX6BRZmFvFhfAWaem9wlRCo9OljJtsE9FNn8qdZ3Ao
+JUjPDn1HwKHp117OS3H0MLwoav7cPw==
+=kb7I
+-----END PGP SIGNATURE-----
+
+--Sig_/=30Ug5mcAkLId/DId9Mh2.Z--
