@@ -2,122 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DBA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A87DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbiAKDMC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 22:12:02 -0500
-Received: from outgoing-auth-1.mit.edu ([18.9.28.11]:53939 "EHLO
-        outgoing.mit.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229523AbiAKDMB (ORCPT
+        id S234527AbiAKDMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 22:12:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229523AbiAKDMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 22:12:01 -0500
-Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
-        (authenticated bits=0)
-        (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 20B3AFvn012506
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 10 Jan 2022 22:10:15 -0500
-Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 22C2415C00C8; Mon, 10 Jan 2022 22:10:15 -0500 (EST)
-Date:   Mon, 10 Jan 2022 22:10:15 -0500
-From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     Andy Lutomirski <luto@kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Marcelo Henrique Cerri <marcelo.cerri@canonical.com>,
-        Simo Sorce <simo@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Walton <noloader@gmail.com>,
-        Stephan Mueller <smueller@chronox.de>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Willy Tarreau <w@1wt.eu>, Nicolai Stange <nstange@suse.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        "Alexander E. Patrakov" <patrakov@gmail.com>,
-        "Ahmed S. Darwish" <darwish.07@gmail.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Vito Caputo <vcaputo@pengaru.com>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        Jan Kara <jack@suse.cz>, Ray Strode <rstrode@redhat.com>,
-        William Jon McCann <mccann@jhu.edu>,
-        zhangjs <zachary@baishancloud.com>,
-        Florian Weimer <fweimer@redhat.com>,
-        Lennart Poettering <mzxreary@0pointer.de>,
-        Peter Matthias <matthias.peter@bsi.bund.de>,
-        Neil Horman <nhorman@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Petr Tesarik <ptesarik@suse.cz>,
-        John Haxby <john.haxby@oracle.com>,
-        Alexander Lobakin <alobakin@mailbox.org>,
-        Jirka Hladky <jhladky@redhat.com>,
-        Eric Biggers <ebiggers@kernel.org>
-Subject: Re: [PATCH v43 01/15] Linux Random Number Generator
-Message-ID: <Ydz1F/AqB1oO/qHF@mit.edu>
-References: <20220110132349.siplwka7yhe2tmwc@valinor>
- <CAHmME9oSK5sVVhMewm-oVvn=twP4yyYnLY0OVebYZ0sy1mQAyA@mail.gmail.com>
- <YdxCsI3atPILABYe@mit.edu>
- <CAHmME9oRdoc3c36gXAcmOwumwvUi_6oqCsLmFxRP_NDMz_MK1Q@mail.gmail.com>
- <Ydxu+KS5UkQ6hU9R@mit.edu>
- <Ydx7D3H0PS0Zs9/B@sol.localdomain>
- <CAHmME9pe-DxTcFcMtsNnLPcccoY+0gEysivZQszAusH1M8ThmA@mail.gmail.com>
- <YdyNxJzdBmSSEtDC@mit.edu>
- <CAHmME9rmWBA02SyeFiiGZ8=kydYJSJwcYPscBrTBzoXMEPH9sQ@mail.gmail.com>
- <e6fac6ab-07eb-4d8c-9206-bacf6660a7cf@www.fastmail.com>
+        Mon, 10 Jan 2022 22:12:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C275C06173F;
+        Mon, 10 Jan 2022 19:12:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18C6AB817D4;
+        Tue, 11 Jan 2022 03:12:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 387AFC36AE9;
+        Tue, 11 Jan 2022 03:12:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641870734;
+        bh=yYT1LgS1YCJPnQWbemQOZnqx45HA1VBzrJhciandTU8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HUXrUoFP6R3CJx/Ib/3qu47iDvuaaRGJNwYX80sOqloUkmz76LfY+3QHhKWfliSEy
+         ZbYEsgeB1EBPfUnDNpYKxUC39wlQT/Ctn+C8XYFgo7WSw8gnn14mtNBTKY62XdFutw
+         +uXpipZ5RjJmX1nxwcJoZcEW1K2uSZiGsHBQuiZMNMJDnqYQ5MB63+VNOhxFPU5pzQ
+         JJLqGOuplulj0YKl2rlbckrJtFr4O9P200MMT7JeRcf6Pwdh41hBBLwRDuvBMe0iXF
+         +mgXujdecHk362sg4YhNad4HBp6miWXc2dSQFFnv6F2Daxky4Lxu/m65x5ZJWafNzO
+         9SuIoI2NxOz3g==
+Date:   Mon, 10 Jan 2022 19:12:12 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     hannes@cmpxchg.org, torvalds@linux-foundation.org, tj@kernel.org,
+        lizefan.x@bytedance.com, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, corbet@lwn.net,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org, kernel-team@android.com,
+        syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
+Subject: Re: [PATCH 1/1] psi: Fix uaf issue when psi trigger is destroyed
+ while being polled
+Message-ID: <Ydz1jAp6RW3t0owj@sol.localdomain>
+References: <20220111025138.1071848-1-surenb@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e6fac6ab-07eb-4d8c-9206-bacf6660a7cf@www.fastmail.com>
+In-Reply-To: <20220111025138.1071848-1-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 05:44:03PM -0800, Andy Lutomirski wrote:
+On Mon, Jan 10, 2022 at 06:51:38PM -0800, Suren Baghdasaryan wrote:
+> With write operation on psi files replacing old trigger with a new one,
+> the lifetime of its waitqueue is totally arbitrary. Overwriting an
+> existing trigger causes its waitqueue to be freed and pending poll()
+> will stumble on trigger->event_wait which was destroyed.
+> Fix this by disallowing to redefine an existing psi trigger. If a write
+> operation is used on a file descriptor with an already existing psi
+> trigger, the operation will fail with EBUSY error.
+> Also bypass a check for psi_disabled in the psi_trigger_destroy as the
+> flag can be flipped after the trigger is created, leading to a memory
+> leak.
 > 
-> So let’s solve it for real.  Have a driver (in a module) that
-> exposes a /dev/urandom compatible interface to the CryptoAPI DRBG.
-> We can do a really nice job of it, and maybe it’ll be 100 lines of
-> code.  People can do whatever they like with it in their container
-> manager or boot scripts. And if it has a problem (where it’s *less*
-> secure than the real urandom), we can say “I told you so”.
-> 
-> We can go one step farther: add an LSM hook to getrandom().  Then
-> someone can hack up a fips_t policy for SELinux that turns off
-> getrandom.
+> Reported-by: syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
+> Analyzed-by: Eric Biggers <ebiggers@kernel.org>
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
-These are both dangerous.  The first means creating a new device node
-which effectively is /dev/drbg-random which could be bind mounted or
-mknod'ed to be /dev/urandom.  But if the user boots a kernel that
-doesn't support this new device node, it will mean opening
-/dev/urandom will get ENODEV.
+Please include Fixes and Cc stable tags.
 
-Similarly, getrandom(2) never fails.  By allowing a SELinux policy to
-force it to fail with ENOSYS, or some other error, it means exposing
-userspace code to a failure path that may not be as well tested.
-Sure, *sane* code might fall back to opening /dev/urandom; but the
-whole point of getrandom(2) was that it was a dumb, stupid interface
-interface that could be safely used by application programmers.  Not
-paranoid OS crypto engineers that carefully check the error returns of
-all system calls, with appropriate fallbacks and making sure that code
-always "fails safe".
+> diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
+> index cafb8c114a21..e6878238fb19 100644
+> --- a/kernel/cgroup/cgroup.c
+> +++ b/kernel/cgroup/cgroup.c
+> @@ -3642,6 +3642,12 @@ static ssize_t cgroup_pressure_write(struct kernfs_open_file *of, char *buf,
+>  	cgroup_get(cgrp);
+>  	cgroup_kn_unlock(of->kn);
+>  
+> +	/* Allow only one trigger per file descriptor */
+> +	if (READ_ONCE(ctx->psi.trigger)) {
+> +		cgroup_put(cgrp);
+> +		return -EBUSY;
+> +	}
+> +
 
-Right now, the enterprise distros are doing their own thing, and quite
-frankly, I don't see a problem with that.  If it turns out DRBG is
-less secure (and there are some things that fill me with disquiet),
-then let them take the economic consequences, since they are the ones
-who are doing this for the economic advantages of trying to claim FIPS
-compliance.
+Doesn't the task have exclusive access to the file at this point?  READ_ONCE()
+is only needed instead of a plain load when the field can be concurrently
+changed by another thread.
 
-If we must support this in the upstream kernel, then configure it via
-CONFIG_RANDOM_SECURITY_THEATRE which redirects getrandom(2) and
-/dev/[u]random to DRBG.  I'd prefer that it be possible for someone to
-put "random_security_theatre=0" on the boot command line which would
-disable redirecting the interfaces to DRBG so if it turns out that
-DRBG *is* less secure, we can give advice on how to turn it off
-without requiring a patched kernel.  :-)
+> diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+> index 1652f2bb54b7..882bf62cc247 100644
+> --- a/kernel/sched/psi.c
+> +++ b/kernel/sched/psi.c
+> @@ -1151,7 +1151,6 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+>  	t->event = 0;
+>  	t->last_event_time = 0;
+>  	init_waitqueue_head(&t->event_wait);
+> -	kref_init(&t->refcount);
+>  
+>  	mutex_lock(&group->trigger_lock);
+>  
+> @@ -1180,15 +1179,21 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+>  	return t;
+>  }
+>  
+> -static void psi_trigger_destroy(struct kref *ref)
+> +void psi_trigger_destroy(void **trigger_ptr)
+>  {
+> -	struct psi_trigger *t = container_of(ref, struct psi_trigger, refcount);
+> -	struct psi_group *group = t->group;
+> +	struct psi_trigger *t;
+> +	struct psi_group *group;
+>  	struct task_struct *task_to_destroy = NULL;
+>  
+> -	if (static_branch_likely(&psi_disabled))
+> +	/*
+> +	 * We do not check psi_disabled since it might have been disabled after
+> +	 * the trigger got created.
+> +	 */
+> +	t = xchg(trigger_ptr, NULL);
+> +	if (!t)
+>  		return;
 
-						- Ted
+Likewise, doesn't the task have exclusive access to the file at this point?
+This is only called during ->release().
+
+And why does this take a pointer to a pointer instead of just the pointer?
+
+> @@ -1305,14 +1289,24 @@ static ssize_t psi_write(struct file *file, const char __user *user_buf,
+>  
+>  	buf[buf_size - 1] = '\0';
+>  
+> -	new = psi_trigger_create(&psi_system, buf, nbytes, res);
+> -	if (IS_ERR(new))
+> -		return PTR_ERR(new);
+> -
+>  	seq = file->private_data;
+> +
+>  	/* Take seq->lock to protect seq->private from concurrent writes */
+>  	mutex_lock(&seq->lock);
+> -	psi_trigger_replace(&seq->private, new);
+> +
+> +	/* Allow only one trigger per file descriptor */
+> +	if (READ_ONCE(seq->private)) {
+> +		mutex_unlock(&seq->lock);
+> +		return -EBUSY;
+> +	}
+
+Likewise, what does this race against that would require the use of READ_ONCE()?
+
+- Eric
