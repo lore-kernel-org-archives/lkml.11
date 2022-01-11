@@ -2,54 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7389DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 12:58:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240186AbiAKM6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 07:58:08 -0500
-Received: from mail-ua1-f43.google.com ([209.85.222.43]:35660 "EHLO
-        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236707AbiAKM6D (ORCPT
+        id S240162AbiAKNBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 08:01:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50794 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231899AbiAKNBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 07:58:03 -0500
-Received: by mail-ua1-f43.google.com with SMTP id m90so14257299uam.2
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 04:58:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Az9SJsw+wZpmJKB6Xg6YAXw2YkxdJkbobQxJTC0e2pw=;
-        b=ucrAI6P1Z+GeXW+Au/TMmB8VlVZgvqusPNmNHdnArKrWh4IxTilmPqHWfUWpSElvqW
-         XsQ+kYIAkEXBD1OCS7CTu66KJ0wdXQ45mMkMHw0LvMFQc+dBlSCPevgmJ2NBLEvCh1eP
-         Q51xSAjiDDc14NNp5hvl4LATT+MhGtG5Th7Xwwo8fKL3H8DR6+csSBmbUyznGU7JCDrD
-         KxDY65qqri0BEa0Asfd8TutFcJ5YRaZcjMcCfJwUw6S+Peku8ttF3xBqnPemzZEUfE9b
-         YNr1T8cdKxSIMEzfNFRhu7kiEi85NMfp5gDd9ioLhJbbnOQ21Kv2X1gMShByF4N6EIhE
-         /6oQ==
-X-Gm-Message-State: AOAM532YBoc2Sh2WP1nPoSrlmMUlAG2mfThXF/b8lmDthVvMRpgsQKyt
-        gqmPUncfI5ND9CGfuM8VhxZaAz6MpOkgfw==
-X-Google-Smtp-Source: ABdhPJyHaYaVrrxzm/kvqu6Hs2sPIxxgFC7V89jTWlIN6Apz2jIV0lSb5lJdgQI2/0VIb7LFB3nIoQ==
-X-Received: by 2002:ab0:5973:: with SMTP id o48mr1763465uad.54.1641905882901;
-        Tue, 11 Jan 2022 04:58:02 -0800 (PST)
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com. [209.85.221.176])
-        by smtp.gmail.com with ESMTPSA id e74sm5406984vke.51.2022.01.11.04.58.02
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 04:58:02 -0800 (PST)
-Received: by mail-vk1-f176.google.com with SMTP id n124so5631686vke.6
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 04:58:02 -0800 (PST)
-X-Received: by 2002:ac5:c967:: with SMTP id t7mr2170857vkm.20.1641905882170;
- Tue, 11 Jan 2022 04:58:02 -0800 (PST)
+        Tue, 11 Jan 2022 08:01:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA2E0615E5
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:00:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28C27C36AF4
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:00:59 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Y4VbAUFw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1641906056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1vNhyTvbhYcwcjZouw5facRPBQCg0Uj6EBfEZGojWW8=;
+        b=Y4VbAUFwWqq09Ew7YIw3uK6RSuhuhsXo44/fGgqOiFE4tRZjNxp9PfJtKjLSmqpkoMQliY
+        aXc84h+HSzOuwDpbCBvoIseG7x5uYZkVbf36jK2ByDBYvrV5eWJCHGnSFel4EfAzf+UrxT
+        IexY8Q6wUk5uagFyuCdgAl0s9Yfztag=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 19cb5d33 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Tue, 11 Jan 2022 13:00:56 +0000 (UTC)
+Received: by mail-yb1-f170.google.com with SMTP id p187so4511390ybc.0
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:00:55 -0800 (PST)
+X-Gm-Message-State: AOAM532oPGYhvomkQhSK739Q06SXAKNoOdHKxRsjAe1dflM1EDW+iHCf
+        St1Q3c8ByO+K5D2iJymMzPwWPW7FxUr1Ecm4ag4=
+X-Google-Smtp-Source: ABdhPJxm2gaN69Jz1T4aLeNDck2NO7Igln6r49r9nBJuTPlq56P6027rPlL8k55yn4wX94h9+nXZINYIyAs0teF2CB8=
+X-Received: by 2002:a25:a0c4:: with SMTP id i4mr5901763ybm.457.1641906055073;
+ Tue, 11 Jan 2022 05:00:55 -0800 (PST)
 MIME-Version: 1.0
 References: <20211223141113.1240679-1-Jason@zx2c4.com> <20211223141113.1240679-2-Jason@zx2c4.com>
  <CAMuHMdU0spv9X_wErkBBWQ9kV9f1zE_YNcu5nPbTG_64Lh_h0w@mail.gmail.com>
- <CAHmME9pZu-UvCK=uP-sxXL127BmbjmrD2=M7cNd9vHdJEsverw@mail.gmail.com> <Yd18+iQ8zicsSPa0@zx2c4.com>
-In-Reply-To: <Yd18+iQ8zicsSPa0@zx2c4.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 11 Jan 2022 13:57:51 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVJSAe_uQ0yzBL9gkzhW+8Po81Eh332NFENMHCUqbw-dQ@mail.gmail.com>
-Message-ID: <CAMuHMdVJSAe_uQ0yzBL9gkzhW+8Po81Eh332NFENMHCUqbw-dQ@mail.gmail.com>
+ <CAHmME9pZu-UvCK=uP-sxXL127BmbjmrD2=M7cNd9vHdJEsverw@mail.gmail.com>
+ <Yd18+iQ8zicsSPa0@zx2c4.com> <CAMuHMdVJSAe_uQ0yzBL9gkzhW+8Po81Eh332NFENMHCUqbw-dQ@mail.gmail.com>
+In-Reply-To: <CAMuHMdVJSAe_uQ0yzBL9gkzhW+8Po81Eh332NFENMHCUqbw-dQ@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 11 Jan 2022 14:00:44 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pvGoPCL=KBJGa-3vZTY1Afshk0ccfGiL-zFVNHh1CjPA@mail.gmail.com>
+Message-ID: <CAHmME9pvGoPCL=KBJGa-3vZTY1Afshk0ccfGiL-zFVNHh1CjPA@mail.gmail.com>
 Subject: Re: [PATCH v2 2/2] random: use BLAKE2s instead of SHA1 in extraction
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Theodore Tso <tytso@mit.edu>,
         Greg KH <gregkh@linuxfoundation.org>,
@@ -59,46 +61,19 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
-
-On Tue, Jan 11, 2022 at 1:50 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> On Tue, Jan 11, 2022 at 1:28 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> > If you're really quite concerned about m68k code size, I can probably
-
-It's not just m68k. There exist ARM SoCs with 8 MiB builtin SRAM that
-are used in products running Linux.
-
-> > do some things to reduce that. For example, blake2s256_hmac is only
-> > used by wireguard and it could probably be made local there. And with
-> > some trivial loop re-rolling, I can shave off another 2300 bytes. And
-> > I bet I can find a few other things too. The question is: how
-> > important is this to you?
+On Tue, Jan 11, 2022 at 1:58 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> Cool, much more than 1000 bytes:
 >
-> And with another trick (see below), another extra 1000 bytes or so
-> shaved off. Aside from moving blake2s256_hmac, I'm not really super
-> enthusiastic about making these changes, but depending on how important
-> this is to you, maybe we can make something work. There are probably
-> additional possibilities too with the code.
+> add/remove: 1/0 grow/shrink: 0/1 up/down: 160/-4032 (-3872)
+> Function                                     old     new   delta
+> blake2s_sigma                                  -     160    +160
+> blake2s_compress_generic                    4448     416   -4032
+> Total: Before=4227876, After=4224004, chg -0.09%
+>
+> I don't know what the impact is on performance, and if the compiler
+> might do a good job unrolling this again when performance matters
+> (i.e. if CONFIG_CC_OPTIMIZE_FOR_SIZE is not set).
 
-Cool, much more than 1000 bytes:
+Oh, wow, that's a lot indeed.
 
-add/remove: 1/0 grow/shrink: 0/1 up/down: 160/-4032 (-3872)
-Function                                     old     new   delta
-blake2s_sigma                                  -     160    +160
-blake2s_compress_generic                    4448     416   -4032
-Total: Before=4227876, After=4224004, chg -0.09%
-
-I don't know what the impact is on performance, and if the compiler
-might do a good job unrolling this again when performance matters
-(i.e. if CONFIG_CC_OPTIMIZE_FOR_SIZE is not set).
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+I guess the new code could be ifdef'd in a CONFIG_CC_OPTIMIZE_FOR_SIZE block?
