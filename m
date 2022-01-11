@@ -2,109 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573CEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B49C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:43:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345791AbiAKSnh (ORCPT
+        id S1346013AbiAKSnw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:43:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241456AbiAKSnc (ORCPT
+        Tue, 11 Jan 2022 13:43:52 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:3756 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345904AbiAKSnk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:43:32 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE8AC06173F;
-        Tue, 11 Jan 2022 10:43:32 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id i9so313967oih.4;
-        Tue, 11 Jan 2022 10:43:32 -0800 (PST)
+        Tue, 11 Jan 2022 13:43:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GpNeYP+ZR6OUFLEINi1QUPQn4aQI/nnpx2oqcRjgaxU=;
-        b=iXtmUgCbRBiqCTxwl9mhU5tmBHeY1kdq5WxbJ9Tnt6nUCoK/PUm8R+ebm5j32BIssm
-         KThQ94Aday13xrQCZ3HeWQDPbdCc8iUVSn7ciANsDZAYpZ8LT1dBq1zZ6MUvROQQ0Ubu
-         A53s86jfbuFFNGgseo+pL4iqTh/XScWb3i2Pych5ObQIfId0n4kReymLPZt762LSI5/M
-         asF1eUpzud+wOJxvZh7L/SW+hLAIkXoqomagGaz3klzQYuMCDwmmqsJbzTjZuGYLavWn
-         F3UoJPJvgyEYVd6Rt4TBvxLuTa6+hhw2QgHJKmuPrQ0cRXrcmC6JvNfL9FToapSmR6T5
-         wHAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GpNeYP+ZR6OUFLEINi1QUPQn4aQI/nnpx2oqcRjgaxU=;
-        b=lqLc7WHeTUigadU7+k/CucSKCFsBWZV+yyV2e1L84fH981ylHodLgrqQ/5MWGBJSMH
-         wc5XcoSMeDTAVQIsJqPXLzVLglrYExIhMmJ9uscOMvaODiVVdEQJYI1BwGaDXckEK77i
-         NK0YrF/Sxt/d4KpxiiBbReIlVkB5IO8AAx6xIUqBIRJsQi4RshsEoKTeqTFw4ANXds6h
-         Gx8a+k2TITHK5N/zHS0J2sC1mFscWUbdC4iOBENAb49cJUshwaxNAozc1CDrJWBJXi4p
-         6uYQtZk0OVgklke4aPzF7CH3+isMFCfAYzJZiDlsZp+cWXv9AN0Ne3hbI54oyPl4J63T
-         9aug==
-X-Gm-Message-State: AOAM531VFJKJxTIii8lMXrl0yGBsUPZTQNezIxi/rVsKaqBLT48FtNrY
-        viwB8d7amxGKWLmCDq4Iwm90k9GcZxA=
-X-Google-Smtp-Source: ABdhPJxwckguTkCT8dwP3PfVIySLsZPGEz1d7gHoayyU787C6SF/f7MnkSj/JjnPasb5GqJsqqIwiA==
-X-Received: by 2002:a05:6808:13ca:: with SMTP id d10mr2793573oiw.62.1641926611830;
-        Tue, 11 Jan 2022 10:43:31 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id j20sm539128otp.52.2022.01.11.10.43.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 10:43:31 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH 1/3] hwmon: (asus-ec-sensors) add driver for ASUS EC
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Denis Pauk <pauk.denis@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hwmon@vger.kernel.org
-References: <20220111160900.1150050-1-eugene.shalygin@gmail.com>
- <20220111160900.1150050-2-eugene.shalygin@gmail.com>
- <805dd382-262c-36f0-fcf5-5776223040c8@roeck-us.net>
- <CAB95QATsy2ACgyxWLy2PM2peqoYDEa_j96VNSHBG6GMd+x3LzQ@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Message-ID: <050ee3ed-4c30-afb9-d7ce-898d634284be@roeck-us.net>
-Date:   Tue, 11 Jan 2022 10:43:28 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641926621; x=1673462621;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=ZEQ7c5Wte+Bpc0DSIpNa+mO0RuSI2Cnezy8aLBuGog8=;
+  b=jOqRFJjEBkHa+30NznQLxO3/LUJ6uQ3NCYSgtGYMg0C2lxdYKlYNIuPE
+   k+VX9GKwYKIUh+7pRrNh0B3p6bn/9DyJFAbp8IjWzls0/G9Q3GrMElwKJ
+   jIZ/Fsbaz3RpFXc13VYwiZfci2MRD6kHFEf2G4ktjeHJ1fJelLdpzjVPS
+   w=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jan 2022 10:43:40 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 10:43:39 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 11 Jan 2022 10:43:38 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Tue, 11 Jan 2022 10:43:38 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v11 0/4] group dp driver related patches into one series
+Date:   Tue, 11 Jan 2022 10:43:22 -0800
+Message-ID: <1641926606-1012-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <CAB95QATsy2ACgyxWLy2PM2peqoYDEa_j96VNSHBG6GMd+x3LzQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 9:22 AM, Eugene Shalygin wrote:
->> I do not see the point of marking this as doc strings
-> …
->> and neither this one, nor anywhere else where "**" is used.
->> The resulting "documentation" is just confusing and provides no value.
-> 
-> My editor shows nice tooltips for /** comments and I did not realise
-> kernel doc processes
-> all the source unconditionally. Anyway, I removed them.
-> 
->> Why not just "sensors" directly ? Is there ever going to be anything else ?
->> If not, the value could be added to the dmi array directly without pointer
->> indirection.
-> 
-> I once had an ASUS board where they changed board headers in some
-> hardware revision. I suspect the EC sensors
-> interface is valid for their other boards too, we just need users to
-> collect those data. It's quite possible that the DMI
-> board version would change in that case, so that we can add another
-> DMI match if required.
-> So, I'll take your advice and move the sensors to the driver_data field.
-> 
->> FWIW, MODULE_VERSION tends to have zero value since it tends to end up
->> not being updated.
-> 
-> Setting the value to 0 then :)
-> 
+Group below 4 dp driver related patches into one series.
 
-Just drop it.
+Kuogee Hsieh (4):
+  drm/msm/dp: do not initialize phy until plugin interrupt received
+  drm/msm/dp:  populate connector of struct  dp_panel
+  drm/msm/dp: add support of tps4 (training pattern 4) for HBR3
+  drm/msm/dp: stop link training after link training 2 failed
 
-Guenter
+ drivers/gpu/drm/msm/dp/dp_catalog.c |  12 ++---
+ drivers/gpu/drm/msm/dp/dp_catalog.h |   2 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 100 ++++++++++++++++--------------------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |   8 +--
+ drivers/gpu/drm/msm/dp/dp_display.c |  94 ++++++++++++++++++++++-----------
+ 5 files changed, 121 insertions(+), 95 deletions(-)
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
