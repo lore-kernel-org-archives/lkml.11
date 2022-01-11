@@ -2,121 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23805C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236873AbiAKTiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:38:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236751AbiAKTiV (ORCPT
+        id S237035AbiAKTk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 14:40:27 -0500
+Received: from relmlor1.renesas.com ([210.160.252.171]:10234 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236898AbiAKTk0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:38:21 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E0CC06173F;
-        Tue, 11 Jan 2022 11:38:20 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id g11so391536lfu.2;
-        Tue, 11 Jan 2022 11:38:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=gCA03Y8txjZiDgmmkgC6vSFKPvusDQ96DqTHZL4jtHk=;
-        b=FZMSntPkSIzKrqITY9rAON0lmZYT/THkwcu2kSIZzsmU84vXUvnzLa2SFJA72IfETY
-         MTgCbXLIbwaNrhSG2AKYlDzxlQ1n4zobcbJ/M1Ju05R5ScvkiQnOhkxcd4boBc1JHypt
-         cgRIOJse4I07nEnsaZxBonFSnjCj6D3oe2E31JXK2a7X9oKvhUuqMkvqIrf+xqY1MbgD
-         Ie9x520HIONwTpEKJUAzBvsd+HOu2KaGJ4FQHcaSnEA0/t2pIi/Ds4UMu6Mu9+wZ1X6w
-         jNixV38ZnCM0PTyhuh5TFuZurIdJI4RJIsgzvL0qBkbQY+rtTS05a8UTgZ5cqe/GBLzv
-         liwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=gCA03Y8txjZiDgmmkgC6vSFKPvusDQ96DqTHZL4jtHk=;
-        b=ulR0Ehpowy+Fgxj61QxPmOkMIdnsAf9ud0YrpN0Ncfs0ADP+T8CK2M340FeUs6cR4T
-         egnmRjT4h/UVQ50VJEFbVHAkqc8EcN2GYC5x+dCnND7aPGFer8YwetAjB29uXB6c8Re5
-         xRjzMmaiBjLJrIzTpZpH03r2GsNRPokPYDUV7r4RSeNWh7AEjm2dGhrjjQRqO2ItRyv9
-         iHGsSxCHWxPSEBYSN6zm0S+0+zzYKFiPjr7zYQh8eFMoGzuQ+LXt4yUx4gVkSdFFCT01
-         jXdHcMJ8AcbT1Dbnt4R+/6GmTPcDVAO+JS6bDnthuRQycS/hu1JzMJC3ICFTTSy/LfkT
-         j8nw==
-X-Gm-Message-State: AOAM530SHf/qs6weLau1NGts9x7sMffVxGus+voR7d2PomFxf8sGPBXb
-        m0kxzZ/7WLXRDOA1MhBw1Sg=
-X-Google-Smtp-Source: ABdhPJxuTBO7wEiTLvI+W/Xa1On/i+omE0wFswDUMxG8C6QIYgu8MpzMsLxU+w7zBoxbOx2/u4wQSA==
-X-Received: by 2002:a2e:9ec7:: with SMTP id h7mr292524ljk.394.1641929899202;
-        Tue, 11 Jan 2022 11:38:19 -0800 (PST)
-Received: from [10.0.0.42] (91-153-170-164.elisa-laajakaista.fi. [91.153.170.164])
-        by smtp.gmail.com with ESMTPSA id i16sm1427429lfe.273.2022.01.11.11.38.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 11:38:18 -0800 (PST)
-Message-ID: <83c51ee4-ac10-0e44-d1cc-f69cebcbf0b8@gmail.com>
-Date:   Tue, 11 Jan 2022 21:43:20 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v5] ASoC: dt-bindings: davinci-mcasp: convert McASP
- bindings to yaml schema
-Content-Language: en-US
-From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
-To:     Jayesh Choudhary <j-choudhary@ti.com>, robh+dt@kernel.org
-Cc:     lgirdwood@gmail.com, broonie@kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220103074427.4233-1-j-choudhary@ti.com>
- <2cf3c89c-169f-3421-25d4-c80a6c9737ae@gmail.com>
-In-Reply-To: <2cf3c89c-169f-3421-25d4-c80a6c9737ae@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Tue, 11 Jan 2022 14:40:26 -0500
+X-IronPort-AV: E=Sophos;i="5.88,279,1635174000"; 
+   d="scan'208";a="106150611"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 12 Jan 2022 04:40:24 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 0B34540FE059;
+        Wed, 12 Jan 2022 04:40:22 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] media: davinci: vpif: Use platform_get_irq_optional() to get the interrupt
+Date:   Tue, 11 Jan 2022 19:40:13 +0000
+Message-Id: <20220111194014.5908-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+platform_get_resource(pdev, IORESOURCE_IRQ, ..) relies on static
+allocation of IRQ resources in DT core code, this causes an issue
+when using hierarchical interrupt domains using "interrupts" property
+in the node as this bypasses the hierarchical setup and messes up the
+irq chaining.
 
+In preparation for removal of static setup of IRQ resource from DT core
+code use platform_get_irq_optional().
 
-On 1/11/22 21:21, Péter Ujfalusi wrote:
-> Hi Javesh,
-> 
-> On 03/01/2022 09:44, Jayesh Choudhary wrote:
->> Convert the bindings for McASP controllers for TI SOCs from txt
->> to YAML schema.
->>
->> Adds additional properties 'clocks', 'clock-names', 'power-domains',
->> '#sound-dai-cells' and 'port' which were missing from the txt file.
->> Removes properties 'sram-size-playback' and 'sram-size-capture'
->> since they are not used.
->> Adds 'dmas' and 'dma-names' in the example which were missing from
->> the txt file.
->> Changes 'interrupts' and 'interrupt-names' from optional to
->> required properties.
->> Changes 'op-modes', 'serial-dir' to optional properties as they are
->> not needed if the McASP is used only as GPIO.
->> Changes 'tdm-slots' to required property only for I2S operation mode.
->>
->> Adds the yaml file in the 'MAINTAINERS' under the heading 'TEXAS
->> INSTRUMENTS ASoC DRIVERS'
-> 
-> I would have added description for the GPIO support as it is not obvious
-> that 2 is going to be for AXR2 or 29 is for ACLKR pin.
-> But I don't think this functionality is going to be used apart from the
-> one dra7 evm.
-> 
-> Thank you for the updates and the nice work!
-> 
-> Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
-> 
-...
+While at it, propagate error code in case devm_request_irq() fails
+instead of returning -EINVAL.
 
->> +properties:
->> +  compatible:
->> +    enum:
->> +      - ti,dm646x-mcasp-audio
->> +      - ti,da830-mcasp-audio
->> +      - ti,am33xx-mcasp-audio
->> +      - ti,dra7-mcasp-audio
->> +      - ti,omap4-mcasp-audio
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+Hi All,
 
-This is the only thing which bugs me: the pointless '-audio' postfix for
-the compatible string...
+This patch is part of series [0], instead of resending the entire series
+I am re-sending this alone patch after rebasing on patch series [1].
 
+[0] https://patchwork.linuxtv.org/project/linux-media/list/?series=7073
+[1] https://patchwork.linuxtv.org/project/linux-media/list/?series=7000
+
+Cheers,
+Prabhakar
+---
+ drivers/media/platform/davinci/vpif.c         | 18 ++++++++------
+ drivers/media/platform/davinci/vpif_capture.c | 24 ++++++++++++-------
+ drivers/media/platform/davinci/vpif_display.c | 21 ++++++++++------
+ 3 files changed, 40 insertions(+), 23 deletions(-)
+
+diff --git a/drivers/media/platform/davinci/vpif.c b/drivers/media/platform/davinci/vpif.c
+index 03b4e51bb13a..97ef770266af 100644
+--- a/drivers/media/platform/davinci/vpif.c
++++ b/drivers/media/platform/davinci/vpif.c
+@@ -20,8 +20,10 @@
+ #include <linux/err.h>
+ #include <linux/init.h>
+ #include <linux/io.h>
++#include <linux/irq.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/spinlock.h>
+@@ -437,11 +439,12 @@ static void vpif_pdev_release(struct device *dev)
+ 
+ static int vpif_probe(struct platform_device *pdev)
+ {
+-	static struct resource *res_irq;
++	static struct resource res_irq;
+ 	struct platform_device *pdev_capture, *pdev_display;
+ 	struct device_node *endpoint = NULL;
+ 	struct vpif_data *data;
+ 	int ret;
++	int irq;
+ 
+ 	vpif_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(vpif_base))
+@@ -471,12 +474,13 @@ static int vpif_probe(struct platform_device *pdev)
+ 	 * For DT platforms, manually create platform_devices for
+ 	 * capture/display drivers.
+ 	 */
+-	res_irq = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+-	if (!res_irq) {
+-		dev_warn(&pdev->dev, "Missing IRQ resource.\n");
+-		ret = -EINVAL;
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		ret = irq;
+ 		goto err_put_rpm;
+ 	}
++	res_irq = (struct resource)DEFINE_RES_IRQ_NAMED(irq, of_node_full_name(pdev->dev.of_node));
++	res_irq.flags |= irq_get_trigger_type(irq);
+ 
+ 	pdev_capture = kzalloc(sizeof(*pdev_capture), GFP_KERNEL);
+ 	if (!pdev_capture) {
+@@ -486,7 +490,7 @@ static int vpif_probe(struct platform_device *pdev)
+ 
+ 	pdev_capture->name = "vpif_capture";
+ 	pdev_capture->id = -1;
+-	pdev_capture->resource = res_irq;
++	pdev_capture->resource = &res_irq;
+ 	pdev_capture->num_resources = 1;
+ 	pdev_capture->dev.dma_mask = pdev->dev.dma_mask;
+ 	pdev_capture->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
+@@ -505,7 +509,7 @@ static int vpif_probe(struct platform_device *pdev)
+ 
+ 	pdev_display->name = "vpif_display";
+ 	pdev_display->id = -1;
+-	pdev_display->resource = res_irq;
++	pdev_display->resource = &res_irq;
+ 	pdev_display->num_resources = 1;
+ 	pdev_display->dev.dma_mask = pdev->dev.dma_mask;
+ 	pdev_display->dev.coherent_dma_mask = pdev->dev.coherent_dma_mask;
+diff --git a/drivers/media/platform/davinci/vpif_capture.c b/drivers/media/platform/davinci/vpif_capture.c
+index 8fe55374c5a3..aaf8a0ec98ff 100644
+--- a/drivers/media/platform/davinci/vpif_capture.c
++++ b/drivers/media/platform/davinci/vpif_capture.c
+@@ -1607,7 +1607,6 @@ static __init int vpif_probe(struct platform_device *pdev)
+ {
+ 	struct vpif_subdev_info *subdevdata;
+ 	struct i2c_adapter *i2c_adap;
+-	struct resource *res;
+ 	int subdev_count;
+ 	int res_idx = 0;
+ 	int i, err;
+@@ -1632,15 +1631,22 @@ static __init int vpif_probe(struct platform_device *pdev)
+ 		goto vpif_free;
+ 	}
+ 
+-	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, res_idx))) {
+-		err = devm_request_irq(&pdev->dev, res->start, vpif_channel_isr,
+-					IRQF_SHARED, VPIF_DRIVER_NAME,
+-					(void *)(&vpif_obj.dev[res_idx]->
+-					channel_id));
+-		if (err) {
+-			err = -EINVAL;
++	while (1) {
++		int irq;
++
++		err = platform_get_irq_optional(pdev, res_idx);
++		if (err < 0 && err != -ENXIO)
++			goto vpif_unregister;
++		if (err > 0)
++			irq = err;
++		else
++			break;
++
++		err = devm_request_irq(&pdev->dev, irq, vpif_channel_isr,
++				       IRQF_SHARED, VPIF_DRIVER_NAME,
++				       (void *)(&vpif_obj.dev[res_idx]->channel_id));
++		if (err)
+ 			goto vpif_unregister;
+-		}
+ 		res_idx++;
+ 	}
+ 
+diff --git a/drivers/media/platform/davinci/vpif_display.c b/drivers/media/platform/davinci/vpif_display.c
+index 59f6b782e104..c4a0c4a4448c 100644
+--- a/drivers/media/platform/davinci/vpif_display.c
++++ b/drivers/media/platform/davinci/vpif_display.c
+@@ -1221,7 +1221,6 @@ static __init int vpif_probe(struct platform_device *pdev)
+ {
+ 	struct vpif_subdev_info *subdevdata;
+ 	struct i2c_adapter *i2c_adap;
+-	struct resource *res;
+ 	int subdev_count;
+ 	int res_idx = 0;
+ 	int i, err;
+@@ -1245,13 +1244,21 @@ static __init int vpif_probe(struct platform_device *pdev)
+ 		goto vpif_free;
+ 	}
+ 
+-	while ((res = platform_get_resource(pdev, IORESOURCE_IRQ, res_idx))) {
+-		err = devm_request_irq(&pdev->dev, res->start, vpif_channel_isr,
+-					IRQF_SHARED, VPIF_DRIVER_NAME,
+-					(void *)(&vpif_obj.dev[res_idx]->
+-					channel_id));
++	while (1) {
++		int irq;
++
++		err = platform_get_irq_optional(pdev, res_idx);
++		if (err < 0 && err != -ENXIO)
++			goto vpif_unregister;
++		if (err > 0)
++			irq = err;
++		else
++			break;
++
++		err = devm_request_irq(&pdev->dev, irq, vpif_channel_isr,
++				       IRQF_SHARED, VPIF_DRIVER_NAME,
++				       (void *)(&vpif_obj.dev[res_idx]->channel_id));
+ 		if (err) {
+-			err = -EINVAL;
+ 			vpif_err("VPIF IRQ request failed\n");
+ 			goto vpif_unregister;
+ 		}
 -- 
-Péter
+2.17.1
+
