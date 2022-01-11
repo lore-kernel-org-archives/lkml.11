@@ -2,204 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B38C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 573CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345619AbiAKSmU (ORCPT
+        id S1345791AbiAKSnh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:42:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60194 "EHLO
+        Tue, 11 Jan 2022 13:43:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241456AbiAKSmT (ORCPT
+        with ESMTP id S241456AbiAKSnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:42:19 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F902C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:42:19 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id w16so70797574edc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:42:19 -0800 (PST)
+        Tue, 11 Jan 2022 13:43:32 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAE8AC06173F;
+        Tue, 11 Jan 2022 10:43:32 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id i9so313967oih.4;
+        Tue, 11 Jan 2022 10:43:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nlv1m0oWEWqiXdzkq1FrQ63DGvpn5XRpuHy2G/KiWa4=;
-        b=FeMHMKmjeGqqoYlN0lmvGnc5tvk3svsJhTjO0oXhkGS+MxcT2SfRcnFfUp2+B2K+wO
-         2giMGlEp4nctatlgshafQW9MJU0m6j7U42SJ6Xrcj55fqJUzUY5NJ1TrDT0HfbpaYj8U
-         NChHW1WQd/Pdkn0F7iI78aEW0Y2x+6xR3FtyaReaYMTsnoIyxSbuiKT3rzcEwevjB0i0
-         esNnm3fe45iu6MU3Zp7IzWTldqLeyv2w6toL0iFdD9o/XpQJWCeobXZkEbbGf87pnTyO
-         pofazbD3rQmYJKMTiXONjjYDuTeYJC4Yw/6ycol1EHluaoVYV3qkQs2BghFTqMDleYd/
-         4EQw==
+        d=gmail.com; s=20210112;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=GpNeYP+ZR6OUFLEINi1QUPQn4aQI/nnpx2oqcRjgaxU=;
+        b=iXtmUgCbRBiqCTxwl9mhU5tmBHeY1kdq5WxbJ9Tnt6nUCoK/PUm8R+ebm5j32BIssm
+         KThQ94Aday13xrQCZ3HeWQDPbdCc8iUVSn7ciANsDZAYpZ8LT1dBq1zZ6MUvROQQ0Ubu
+         A53s86jfbuFFNGgseo+pL4iqTh/XScWb3i2Pych5ObQIfId0n4kReymLPZt762LSI5/M
+         asF1eUpzud+wOJxvZh7L/SW+hLAIkXoqomagGaz3klzQYuMCDwmmqsJbzTjZuGYLavWn
+         F3UoJPJvgyEYVd6Rt4TBvxLuTa6+hhw2QgHJKmuPrQ0cRXrcmC6JvNfL9FToapSmR6T5
+         wHAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nlv1m0oWEWqiXdzkq1FrQ63DGvpn5XRpuHy2G/KiWa4=;
-        b=hJhshgr/PyxtHNlrzitkEKv27Aqb8VnGMBnr/w2sa+P17Uu2Nx1iVrBCc/3/Bu/4XA
-         fhC0hSlc42Jf41eUAaDa9U/iHCJdiM0h40KjGFimZxIXUmfe7gsF0+gbqjaPsAiXgsuX
-         mWkY1NmjRtePmWZm1v0qRw5o7dUl2Yf2hMV+h7AWjFkGuFZl9sCw6bUKE7qIqfsJ8ywo
-         eP/kQZWaz3l3rAQuLYwQhM1Xx4j0XY81LLTw+663wIv9jxOXLnw6bv5ythbtU+/81dD4
-         dRuoTZYUX5daM5SB55aR5YBDM1xAHdrmKcrHaftbvSoqqtgaK3RIDjJJd9MgeusrAqz0
-         qvmQ==
-X-Gm-Message-State: AOAM531iK+JJSx1oaj8env+tkG7aax8/rfM3kXC/pr7wx0B7boQymF/A
-        5fUDIC9BPboDC/czGYCDl6xzYcAzn/mPqqB5ms0jIQ==
-X-Google-Smtp-Source: ABdhPJybavSkCnT8Lo198i/c+n/vKgJF4wCc1ZFYWGqHcCkfCu5pdx6cl6czugcmgdCiv4Je0yqkD95FQHmQfXIoyQg=
-X-Received: by 2002:aa7:d785:: with SMTP id s5mr5460664edq.215.1641926537331;
- Tue, 11 Jan 2022 10:42:17 -0800 (PST)
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=GpNeYP+ZR6OUFLEINi1QUPQn4aQI/nnpx2oqcRjgaxU=;
+        b=lqLc7WHeTUigadU7+k/CucSKCFsBWZV+yyV2e1L84fH981ylHodLgrqQ/5MWGBJSMH
+         wc5XcoSMeDTAVQIsJqPXLzVLglrYExIhMmJ9uscOMvaODiVVdEQJYI1BwGaDXckEK77i
+         NK0YrF/Sxt/d4KpxiiBbReIlVkB5IO8AAx6xIUqBIRJsQi4RshsEoKTeqTFw4ANXds6h
+         Gx8a+k2TITHK5N/zHS0J2sC1mFscWUbdC4iOBENAb49cJUshwaxNAozc1CDrJWBJXi4p
+         6uYQtZk0OVgklke4aPzF7CH3+isMFCfAYzJZiDlsZp+cWXv9AN0Ne3hbI54oyPl4J63T
+         9aug==
+X-Gm-Message-State: AOAM531VFJKJxTIii8lMXrl0yGBsUPZTQNezIxi/rVsKaqBLT48FtNrY
+        viwB8d7amxGKWLmCDq4Iwm90k9GcZxA=
+X-Google-Smtp-Source: ABdhPJxwckguTkCT8dwP3PfVIySLsZPGEz1d7gHoayyU787C6SF/f7MnkSj/JjnPasb5GqJsqqIwiA==
+X-Received: by 2002:a05:6808:13ca:: with SMTP id d10mr2793573oiw.62.1641926611830;
+        Tue, 11 Jan 2022 10:43:31 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j20sm539128otp.52.2022.01.11.10.43.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 10:43:31 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Subject: Re: [PATCH 1/3] hwmon: (asus-ec-sensors) add driver for ASUS EC
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org
+References: <20220111160900.1150050-1-eugene.shalygin@gmail.com>
+ <20220111160900.1150050-2-eugene.shalygin@gmail.com>
+ <805dd382-262c-36f0-fcf5-5776223040c8@roeck-us.net>
+ <CAB95QATsy2ACgyxWLy2PM2peqoYDEa_j96VNSHBG6GMd+x3LzQ@mail.gmail.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Message-ID: <050ee3ed-4c30-afb9-d7ce-898d634284be@roeck-us.net>
+Date:   Tue, 11 Jan 2022 10:43:28 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220108012304.1049587-1-dlatypov@google.com> <20220108012304.1049587-3-dlatypov@google.com>
- <CAFd5g45HcdzB_CTNRRpH8BFbBvG0nDS4_6VUj3Tqx8XOuVTNOQ@mail.gmail.com>
- <CAGS_qxqhhu=Jy+vwWZGZLRG4qW5=ZJ8t7QbjtL54onc4-NFnrw@mail.gmail.com> <CABVgOSkyJvM=beWD8PM-sobHnVNRyqQYQpjeBYhbUEP4Lz8bLA@mail.gmail.com>
-In-Reply-To: <CABVgOSkyJvM=beWD8PM-sobHnVNRyqQYQpjeBYhbUEP4Lz8bLA@mail.gmail.com>
-From:   Daniel Latypov <dlatypov@google.com>
-Date:   Tue, 11 Jan 2022 10:42:06 -0800
-Message-ID: <CAGS_qxo3Va9EybJ4O109qF4wyAv7K2_4_ZBLsc5ovioAVDjb=Q@mail.gmail.com>
-Subject: Re: [PATCH 2/6] kunit: move check if assertion passed into the macros
-To:     David Gow <davidgow@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        torvalds@linux-foundation.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAB95QATsy2ACgyxWLy2PM2peqoYDEa_j96VNSHBG6GMd+x3LzQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 10:51 PM David Gow <davidgow@google.com> wrote:
->
-> On Tue, Jan 11, 2022 at 6:33 AM Daniel Latypov <dlatypov@google.com> wrote:
-> >
-> > On Mon, Jan 10, 2022 at 2:21 PM Brendan Higgins
-> > <brendanhiggins@google.com> wrote:
-> > >
-> > > On Fri, Jan 7, 2022 at 8:23 PM Daniel Latypov <dlatypov@google.com> wrote:
-> > > >
-> > > > Currently the code always calls kunit_do_assertion() even though it does
-> > > > nothing when `pass` is true.
-> > > >
-> > > > This change moves the `if(!(pass))` check into the macro instead
-> > > > and renames the function to kunit_failed_assertion().
-> > > > I feel this a  bit easier to read and understand.
-> > > >
-> > > > This has the potential upside of avoiding a function call that does
-> > > > nothing most of the time (assuming your tests are passing) but comes
-> > > > with the downside of generating a bit more code and branches.
-> > > >
-> > > > This also means we don't have to initialize structs that we don't need,
-> > > > which will become a tiny bit more expensive if we switch over to using
-> > > > static variables to try and reduce stack usage. (There's runtime code
-> > > > to check if the variable has been initialized yet or not).
-> > > >
-> > > > Signed-off-by: Daniel Latypov <dlatypov@google.com>
-> > >
-> > > Tiny nit, see below. Otherwise:
-> > >
-> > > Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-> > >
-> > > > ---
-> > > >  include/kunit/test.h | 20 ++++++++++----------
-> > > >  lib/kunit/test.c     | 13 ++++---------
-> > > >  2 files changed, 14 insertions(+), 19 deletions(-)
-> > > >
-> > > > diff --git a/include/kunit/test.h b/include/kunit/test.h
-> > > > index b26400731c02..690a28dfc795 100644
-> > > > --- a/include/kunit/test.h
-> > > > +++ b/include/kunit/test.h
-> > > > @@ -770,18 +770,18 @@ void __printf(2, 3) kunit_log_append(char *log, const char *fmt, ...);
-> > > >   */
-> > > >  #define KUNIT_SUCCEED(test) do {} while (0)
-> > > >
-> > > > -void kunit_do_assertion(struct kunit *test,
-> > > > -                       struct kunit_assert *assert,
-> > > > -                       bool pass,
-> > > > -                       const char *fmt, ...);
-> > > > +void kunit_failed_assertion(struct kunit *test,
-> > > > +                           struct kunit_assert *assert,
-> > > > +                           const char *fmt, ...);
-> > >
-> > > Tiny nit: I think this should be kunit_fail_assertion. I think
-> > > functions should be in the active tense, imperative mood since when
-> > > you call a function you are telling it to do something.
-> > >
-> > > Also, do we need to worry about this getting confused with KUNIT_FAIL,
-> > > or KUNIT_FAIL_ASSERTION:
-> >
-> > So do we want to try and pick a different name from
-> > kunit_fail_assertion() to avoid confusion with the macro?
-> > That's partly why I went with past tense.
-> > Perhaps: "kunit_do_assertion() => kunit_do_failed_assertion()" instead?
->
-> I'm not particularly picky about the name personally. But if I had to
-> join the bikeshedding, I'd probably go with kunit_assertion_fail() or
-> similar (kunit_assertion_failed works too, past-tense-wise.)
->
-> But kunit_do_fail{,ed}_assertion() would work too.
+On 1/11/22 9:22 AM, Eugene Shalygin wrote:
+>> I do not see the point of marking this as doc strings
+> …
+>> and neither this one, nor anywhere else where "**" is used.
+>> The resulting "documentation" is just confusing and provides no value.
+> 
+> My editor shows nice tooltips for /** comments and I did not realise
+> kernel doc processes
+> all the source unconditionally. Anyway, I removed them.
+> 
+>> Why not just "sensors" directly ? Is there ever going to be anything else ?
+>> If not, the value could be added to the dmi array directly without pointer
+>> indirection.
+> 
+> I once had an ASUS board where they changed board headers in some
+> hardware revision. I suspect the EC sensors
+> interface is valid for their other boards too, we just need users to
+> collect those data. It's quite possible that the DMI
+> board version would change in that case, so that we can add another
+> DMI match if required.
+> So, I'll take your advice and move the sensors to the driver_data field.
+> 
+>> FWIW, MODULE_VERSION tends to have zero value since it tends to end up
+>> not being updated.
+> 
+> Setting the value to 0 then :)
+> 
 
-I've gone ahead and locally renamed it to kunit_do_failed_assertion().
-Talking offline, Brendan seemed ok with it, so we have 2 votes of
-"it's good enough".
+Just drop it.
 
->
->
-> >
-> > Tangent: we have some similar confusing names, e.g. KUNIT_ASSERTION is
-> > both the name of a macro and an enum (kunit_assert_type), and those
-> > have the exact same case.
-> >
-> > >
-> > > https://elixir.bootlin.com/linux/v5.16/source/include/kunit/test.h#L788
-> > >
-> > > ?
-> > >
-> > > >  #define KUNIT_ASSERTION(test, pass, assert_class, INITIALIZER, fmt, ...) do {  \
-> > > > -       struct assert_class __assertion = INITIALIZER;                         \
-> > > > -       kunit_do_assertion(test,                                               \
-> > > > -                          &__assertion.assert,                                \
-> > > > -                          pass,                                               \
-> > > > -                          fmt,                                                \
-> > > > -                          ##__VA_ARGS__);                                     \
-> > > > +       if (!(pass)) {                                                         \
-> > > > +               struct assert_class __assertion = INITIALIZER;                 \
-> > > > +               kunit_failed_assertion(test,                                   \
-> > > > +                                      &__assertion.assert,                    \
-> > > > +                                      fmt,                                    \
-> > > > +                                      ##__VA_ARGS__);                         \
-> > > > +       }                                                                      \
-> > > >  } while (0)
-> > > >
-> > > >
-> > > > diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-> > > > index c7ed4aabec04..5ad671745483 100644
-> > > > --- a/lib/kunit/test.c
-> > > > +++ b/lib/kunit/test.c
-> > > > @@ -275,16 +275,11 @@ static void __noreturn kunit_abort(struct kunit *test)
-> > > >         WARN_ONCE(true, "Throw could not abort from test!\n");
-> > > >  }
-> > > >
-> > > > -void kunit_do_assertion(struct kunit *test,
-> > > > -                       struct kunit_assert *assert,
-> > > > -                       bool pass,
-> > > > -                       const char *fmt, ...)
-> > > > +void kunit_failed_assertion(struct kunit *test,
-> > > > +                           struct kunit_assert *assert,
-> > > > +                           const char *fmt, ...)
-> > > >  {
-> > > >         va_list args;
-> > > > -
-> > > > -       if (pass)
-> > > > -               return;
-> > > > -
-> > > >         va_start(args, fmt);
-> > > >
-> > > >         assert->message.fmt = fmt;
-> > > > @@ -297,7 +292,7 @@ void kunit_do_assertion(struct kunit *test,
-> > > >         if (assert->type == KUNIT_ASSERTION)
-> > > >                 kunit_abort(test);
-> > > >  }
-> > > > -EXPORT_SYMBOL_GPL(kunit_do_assertion);
-> > > > +EXPORT_SYMBOL_GPL(kunit_failed_assertion);
-> > > >
-> > > >  void kunit_init_test(struct kunit *test, const char *name, char *log)
-> > > >  {
-> > > > --
-> > > > 2.34.1.575.g55b058a8bb-goog
-> > > >
+Guenter
+
