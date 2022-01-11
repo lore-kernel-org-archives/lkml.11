@@ -2,288 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B5BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F31C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240166AbiAKTuG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:50:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
+        id S240851AbiAKTxQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 14:53:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239082AbiAKTuB (ORCPT
+        with ESMTP id S236475AbiAKTxO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:50:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A517CC06173F;
-        Tue, 11 Jan 2022 11:50:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2341FB81C20;
-        Tue, 11 Jan 2022 19:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6924EC36AE9;
-        Tue, 11 Jan 2022 19:49:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641930597;
-        bh=yzpiOcIaZAFz66wpbSFV4nYHEJIrxjwnt4oQT6ol0bE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R8P2vph61aomu1a2a9jgxWp+VHYfFVImR5japexIR3BdYwh6TqCUUu7SP1bef5Z/F
-         5xK3+h3cNFO3kxIrrDR5xbSHQxCa2T4JDHz+JLbBCuHZz0mvYGJTH070S/g/Dw2Uqp
-         TzmH+QhXgSuhY1KT5lvT5fF6MkI894N/YsPObu3podSQg57eLjq31Ko1KzGN79sRqc
-         3WUSfwoe8k2dUgLX6PhUek25SmNiRQEVXYymcHZXYjjbP1iES9Bh+yl2VCj1U3Oq1+
-         0ZsbLC3QwbMXhfU7wsSpLeRct9JgbYqsdf8gh6WfshnG9Z7mTUbwUBR+s7dshGlN/b
-         amKlNrcmoCjuA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id C6F1940714; Tue, 11 Jan 2022 16:49:54 -0300 (-03)
-Date:   Tue, 11 Jan 2022 16:49:54 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Ian Rogers <irogers@google.com>
-Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>,
-        Riccardo Mancini <rickyman7@gmail.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vineet Singh <vineet.singh@intel.com>,
-        James Clark <james.clark@arm.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Leo Yan <leo.yan@linaro.org>, coresight@lists.linaro.org,
-        linux-arm-kernel@lists.infradead.org, zhengjun.xing@intel.com,
-        eranian@google.com
-Subject: Re: [PATCH v4 02/48] perf stat: Add aggr creators that are passed a
- cpu.
-Message-ID: <Yd3fYqKi9X+fonEn@kernel.org>
-References: <20220105061351.120843-1-irogers@google.com>
- <20220105061351.120843-3-irogers@google.com>
- <Yd3bbelDA1qGPodk@kernel.org>
+        Tue, 11 Jan 2022 14:53:14 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7572AC06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:53:14 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id w188so494464oiw.13
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:53:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxtx.org; s=google;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tjcdg3Ey3f8JqyyzT+Cl24fjuGmW4SbKqOF/PBidjqw=;
+        b=hi83Xs0ac2F2+QsZ7+i2Hvbx/N2A5elBXFw59+QgJjNTybr6QyoaM6Zfx7JgdZslxu
+         rYjHABxNI2z+2nxJQBInxUuqgV+q+FJc+NPZMSPAL/qaCRlnwZfY1+iWE+hugdo0Q3+j
+         jfNOQIMppS9rJOWHEeQkr+4yXDt0DhCdAzvp0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Tjcdg3Ey3f8JqyyzT+Cl24fjuGmW4SbKqOF/PBidjqw=;
+        b=gMT+O7GhktA7ACAlYJZjg02sn+2vOq+iwkfx5DHnNcM18Fsrv62RUqM26WODWuGa1Y
+         neqh6knWxRKI38uG6q7UOt070+A+7rFYkxVa2nKJ3Gzix3Pi5rr8yPDMSIWw43m+gsvs
+         agz9NGxjuOzAvz+rlSQRhdTqLqpxehtzwf/1z515wxuvK+FR8h9L+41GukHQKU+bGi5v
+         HuWMiB6sbD9VrrXvb3Med8A2K7EQ1VdWN0a3cGb/tkxDJFNCyGqa8n5YSNS66hd3o0AF
+         x+R1BbFgtTTgZp0Xs0Pa4fQ4apX2ccvK8LRej2FbB+5irH/omH/aYOYFVO2Hi8N2ni24
+         zn/Q==
+X-Gm-Message-State: AOAM530Ig/1rW27AUpAM0UMoZD7wjgJ1q5bjFttpKHtZl1z4lp46u4tM
+        PLEzN1kovT137r9tZR+DBg66fkdcvF6Q0PcK
+X-Google-Smtp-Source: ABdhPJx4/yEP3bceehG7/01WrYo9pOVIDHPGvoHXeK1GTaH4YVVWOuoHDy92ZZExzuMV5qgkl5CD0g==
+X-Received: by 2002:a05:6808:169f:: with SMTP id bb31mr3002278oib.87.1641930793777;
+        Tue, 11 Jan 2022 11:53:13 -0800 (PST)
+Received: from fedora64.linuxtx.org (104-189-158-32.lightspeed.rcsntx.sbcglobal.net. [104.189.158.32])
+        by smtp.gmail.com with ESMTPSA id bb20sm2178310oob.4.2022.01.11.11.53.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 11:53:12 -0800 (PST)
+Sender: Justin Forbes <jmforbes@linuxtx.org>
+From:   "Justin M. Forbes" <jforbes@fedoraproject.org>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     jmforbes@linuxtx.org,
+        "Justin M. Forbes" <jforbes@fedoraproject.org>
+Subject: [PATCH] lib/crypto: add prompts back to crypto libraries
+Date:   Tue, 11 Jan 2022 13:53:08 -0600
+Message-Id: <20220111195309.634965-1-jforbes@fedoraproject.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yd3bbelDA1qGPodk@kernel.org>
-X-Url:  http://acmel.wordpress.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Tue, Jan 11, 2022 at 04:33:01PM -0300, Arnaldo Carvalho de Melo escreveu:
-> Em Tue, Jan 04, 2022 at 10:13:05PM -0800, Ian Rogers escreveu:
-> > The cpu_map and index can get confused. Add variants of the cpu_map__get
-> > routines that are passed a cpu. Make the existing cpu_map__get routines
-> > use the new functions with a view to remove them when no longer used.
-> > 
-> > Reviewed-by: James Clark <james.clark@arm.com>
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> >  tools/perf/util/cpumap.c | 79 +++++++++++++++++++++++-----------------
-> >  tools/perf/util/cpumap.h |  6 ++-
-> >  2 files changed, 51 insertions(+), 34 deletions(-)
-> > 
-> > diff --git a/tools/perf/util/cpumap.c b/tools/perf/util/cpumap.c
-> > index 87d3eca9b872..49fba2c53822 100644
-> > --- a/tools/perf/util/cpumap.c
-> > +++ b/tools/perf/util/cpumap.c
-> > @@ -128,21 +128,23 @@ int cpu_map__get_socket_id(int cpu)
-> >  	return ret ?: value;
-> >  }
-> >  
-> > -struct aggr_cpu_id cpu_map__get_socket(struct perf_cpu_map *map, int idx,
-> > -					void *data __maybe_unused)
-> > +struct aggr_cpu_id cpu_map__get_socket_aggr_by_cpu(int cpu, void *data __maybe_unused)
-> >  {
-> > -	int cpu;
-> >  	struct aggr_cpu_id id = cpu_map__empty_aggr_cpu_id();
-> >  
-> > -	if (idx > map->nr)
-> > -		return id;
-> > -
-> > -	cpu = map->map[idx];
-> > -
-> >  	id.socket = cpu_map__get_socket_id(cpu);
-> >  	return id;
-> >  }
-> >  
-> > +struct aggr_cpu_id cpu_map__get_socket(struct perf_cpu_map *map, int idx,
-> > +				       void *data)
-> > +{
-> > +	if (idx < 0 || idx > map->nr)
-> > +		return cpu_map__empty_aggr_cpu_id();
-> > +
-> > +	return cpu_map__get_socket_aggr_by_cpu(map->map[idx], data);
-> > +}
-> > +
-> 
-> 
-> This 'idx < 0' wasn't in the original code nor is described in the
-> comment log message, please avoid doing this, this may be harmless or
-> even a good hardening, but either way would be interesting to have it in
-> a separate patch. This eases review as in the end this code is just a
-> refactoring, moving things around but in the end should be equivalent code.
-> 
-> There are a few more, please consider this and if you agree, to speed
-> things up I can make the changes here, if I think this won't fallout in
-> changes to subsequent patches touching this area.
+Commit 6048fdcc5f269 ("lib/crypto: blake2s: include as built-in") took
+away a number of prompt texts from other crypto libraries. This makes
+values flip from built-in to module when oldconfig runs, and causes
+problems when these crypto libs need to be built in for thingslike
+BIG_KEYS.
 
-Nah, should be harmless, and its too much work already, so lets leave it
-as-is, but please consider this in the future.
+Fixes: 6048fdcc5f269 ("lib/crypto: blake2s: include as built-in")
+Signed-off-by: Justin M. Forbes <jforbes@fedoraproject.org>
+---
+ lib/crypto/Kconfig | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-- Arnaldo
- 
-> - Arnaldo
-> 
-> >  static int cmp_aggr_cpu_id(const void *a_pointer, const void *b_pointer)
-> >  {
-> >  	struct aggr_cpu_id *a = (struct aggr_cpu_id *)a_pointer;
-> > @@ -200,15 +202,10 @@ int cpu_map__get_die_id(int cpu)
-> >  	return ret ?: value;
-> >  }
-> >  
-> > -struct aggr_cpu_id cpu_map__get_die(struct perf_cpu_map *map, int idx, void *data)
-> > +struct aggr_cpu_id cpu_map__get_die_aggr_by_cpu(int cpu, void *data)
-> >  {
-> > -	int cpu, die;
-> > -	struct aggr_cpu_id id = cpu_map__empty_aggr_cpu_id();
-> > -
-> > -	if (idx > map->nr)
-> > -		return id;
-> > -
-> > -	cpu = map->map[idx];
-> > +	struct aggr_cpu_id id;
-> > +	int die;
-> >  
-> >  	die = cpu_map__get_die_id(cpu);
-> >  	/* There is no die_id on legacy system. */
-> > @@ -220,7 +217,7 @@ struct aggr_cpu_id cpu_map__get_die(struct perf_cpu_map *map, int idx, void *dat
-> >  	 * with the socket ID and then add die to
-> >  	 * make a unique ID.
-> >  	 */
-> > -	id = cpu_map__get_socket(map, idx, data);
-> > +	id = cpu_map__get_socket_aggr_by_cpu(cpu, data);
-> >  	if (cpu_map__aggr_cpu_id_is_empty(id))
-> >  		return id;
-> >  
-> > @@ -228,6 +225,15 @@ struct aggr_cpu_id cpu_map__get_die(struct perf_cpu_map *map, int idx, void *dat
-> >  	return id;
-> >  }
-> >  
-> > +struct aggr_cpu_id cpu_map__get_die(struct perf_cpu_map *map, int idx,
-> > +				    void *data)
-> > +{
-> > +	if (idx < 0 || idx > map->nr)
-> > +		return cpu_map__empty_aggr_cpu_id();
-> 
-> Ditto
-> 
-> > +
-> > +	return cpu_map__get_die_aggr_by_cpu(map->map[idx], data);
-> > +}
-> > +
-> >  int cpu_map__get_core_id(int cpu)
-> >  {
-> >  	int value, ret = cpu__get_topology_int(cpu, "core_id", &value);
-> > @@ -239,20 +245,13 @@ int cpu_map__get_node_id(int cpu)
-> >  	return cpu__get_node(cpu);
-> >  }
-> >  
-> > -struct aggr_cpu_id cpu_map__get_core(struct perf_cpu_map *map, int idx, void *data)
-> > +struct aggr_cpu_id cpu_map__get_core_aggr_by_cpu(int cpu, void *data)
-> >  {
-> > -	int cpu;
-> > -	struct aggr_cpu_id id = cpu_map__empty_aggr_cpu_id();
-> > -
-> > -	if (idx > map->nr)
-> > -		return id;
-> > -
-> > -	cpu = map->map[idx];
-> > -
-> > -	cpu = cpu_map__get_core_id(cpu);
-> > +	struct aggr_cpu_id id;
-> > +	int core = cpu_map__get_core_id(cpu);
-> >  
-> >  	/* cpu_map__get_die returns a struct with socket and die set*/
-> > -	id = cpu_map__get_die(map, idx, data);
-> > +	id = cpu_map__get_die_aggr_by_cpu(cpu, data);
-> >  	if (cpu_map__aggr_cpu_id_is_empty(id))
-> >  		return id;
-> >  
-> > @@ -260,19 +259,33 @@ struct aggr_cpu_id cpu_map__get_core(struct perf_cpu_map *map, int idx, void *da
-> >  	 * core_id is relative to socket and die, we need a global id.
-> >  	 * So we combine the result from cpu_map__get_die with the core id
-> >  	 */
-> > -	id.core = cpu;
-> > +	id.core = core;
-> >  	return id;
-> > +
-> >  }
-> >  
-> > -struct aggr_cpu_id cpu_map__get_node(struct perf_cpu_map *map, int idx, void *data __maybe_unused)
-> > +struct aggr_cpu_id cpu_map__get_core(struct perf_cpu_map *map, int idx, void *data)
-> > +{
-> > +	if (idx < 0 || idx > map->nr)
-> > +		return cpu_map__empty_aggr_cpu_id();
-> 
-> Ditto
-> 
-> > +
-> > +	return cpu_map__get_core_aggr_by_cpu(map->map[idx], data);
-> > +}
-> > +
-> > +struct aggr_cpu_id cpu_map__get_node_aggr_by_cpu(int cpu, void *data __maybe_unused)
-> >  {
-> >  	struct aggr_cpu_id id = cpu_map__empty_aggr_cpu_id();
-> >  
-> > +	id.node = cpu_map__get_node_id(cpu);
-> > +	return id;
-> > +}
-> > +
-> > +struct aggr_cpu_id cpu_map__get_node(struct perf_cpu_map *map, int idx, void *data)
-> > +{
-> >  	if (idx < 0 || idx >= map->nr)
-> > -		return id;
-> > +		return cpu_map__empty_aggr_cpu_id();
-> >  
-> > -	id.node = cpu_map__get_node_id(map->map[idx]);
-> > -	return id;
-> > +	return cpu_map__get_node_aggr_by_cpu(map->map[idx], data);
-> >  }
-> >  
-> >  int cpu_map__build_socket_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **sockp)
-> > diff --git a/tools/perf/util/cpumap.h b/tools/perf/util/cpumap.h
-> > index a27eeaf086e8..c62d67704425 100644
-> > --- a/tools/perf/util/cpumap.h
-> > +++ b/tools/perf/util/cpumap.h
-> > @@ -31,13 +31,17 @@ size_t cpu_map__snprint(struct perf_cpu_map *map, char *buf, size_t size);
-> >  size_t cpu_map__snprint_mask(struct perf_cpu_map *map, char *buf, size_t size);
-> >  size_t cpu_map__fprintf(struct perf_cpu_map *map, FILE *fp);
-> >  int cpu_map__get_socket_id(int cpu);
-> > +struct aggr_cpu_id cpu_map__get_socket_aggr_by_cpu(int cpu, void *data);
-> >  struct aggr_cpu_id cpu_map__get_socket(struct perf_cpu_map *map, int idx, void *data);
-> >  int cpu_map__get_die_id(int cpu);
-> > +struct aggr_cpu_id cpu_map__get_die_aggr_by_cpu(int cpu, void *data);
-> >  struct aggr_cpu_id cpu_map__get_die(struct perf_cpu_map *map, int idx, void *data);
-> >  int cpu_map__get_core_id(int cpu);
-> > +struct aggr_cpu_id cpu_map__get_core_aggr_by_cpu(int cpu, void *data);
-> >  struct aggr_cpu_id cpu_map__get_core(struct perf_cpu_map *map, int idx, void *data);
-> >  int cpu_map__get_node_id(int cpu);
-> > -struct aggr_cpu_id  cpu_map__get_node(struct perf_cpu_map *map, int idx, void *data);
-> > +struct aggr_cpu_id cpu_map__get_node_aggr_by_cpu(int cpu, void *data);
-> > +struct aggr_cpu_id cpu_map__get_node(struct perf_cpu_map *map, int idx, void *data);
-> >  int cpu_map__build_socket_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **sockp);
-> >  int cpu_map__build_die_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **diep);
-> >  int cpu_map__build_core_map(struct perf_cpu_map *cpus, struct cpu_aggr_map **corep);
-> > -- 
-> > 2.34.1.448.ga2b2bfdf31-goog
-> 
-> -- 
-> 
-> - Arnaldo
+diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
+index 8620f38e117c..a3e41b7a8054 100644
+--- a/lib/crypto/Kconfig
++++ b/lib/crypto/Kconfig
+@@ -40,7 +40,7 @@ config CRYPTO_LIB_CHACHA_GENERIC
+ 	  of CRYPTO_LIB_CHACHA.
 
+ config CRYPTO_LIB_CHACHA
+-	tristate
++	tristate "ChaCha library interface"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
+ 	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
+ 	help
+@@ -65,7 +65,7 @@ config CRYPTO_LIB_CURVE25519_GENERIC
+ 	  of CRYPTO_LIB_CURVE25519.
+
+ config CRYPTO_LIB_CURVE25519
+-	tristate
++	tristate "Curve25519 scalar multiplication library"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
+ 	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
+ 	help
+@@ -100,7 +100,7 @@ config CRYPTO_LIB_POLY1305_GENERIC
+ 	  of CRYPTO_LIB_POLY1305.
+
+ config CRYPTO_LIB_POLY1305
+-	tristate
++	tristate "Poly1305 library interface"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
+ 	select CRYPTO_LIB_POLY1305_GENERIC if CRYPTO_ARCH_HAVE_LIB_POLY1305=n
+ 	help
+@@ -109,7 +109,7 @@ config CRYPTO_LIB_POLY1305
+ 	  is available and enabled.
+
+ config CRYPTO_LIB_CHACHA20POLY1305
+-	tristate
++	tristate "ChaCha20-Poly1305 AEAD support (8-byte nonce library version)"
+ 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
+ 	depends on CRYPTO_ARCH_HAVE_LIB_POLY1305 || !CRYPTO_ARCH_HAVE_LIB_POLY1305
+ 	select CRYPTO_LIB_CHACHA
 -- 
+2.34.1
 
-- Arnaldo
