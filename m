@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B72C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244810AbiAKUxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 15:53:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34622 "EHLO
+        id S237598AbiAKUxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 15:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236657AbiAKUxJ (ORCPT
+        with ESMTP id S235828AbiAKUxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 15:53:09 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE4BC034002
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:53:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFD0C034000;
+        Tue, 11 Jan 2022 12:53:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8036261749
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 20:53:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E8334C36AF5;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 295FB616B7;
+        Tue, 11 Jan 2022 20:53:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8D22DC36AE9;
         Tue, 11 Jan 2022 20:53:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641934387;
-        bh=LR/5iNvQTy2WLNEkrDGrIZJcf4eaBVCF4NOM/hbzNVg=;
+        bh=SC5aelwjnHnDj54LGOzD6PRK4LTHsKbl8BmqQufhD9g=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=n9+WRPll5QzJvOidLZPQwV4bBaJvRkLUUM7DlniwdWIZuigEXHEqHngiSm01bWmra
-         JXtNpvaNmjDmn4MBEatDadM2UXHnr97DMnLB5kPYdm2IY9HdiZZRjE5wDoQCvbwZyW
-         utTMX0s5wbth+qLugRq9gM179dYhfqDY5NptDvMETklm1kDnyAaZBkUwDWibIGYhlk
-         pJO8ibXsvuzX5brMeVUfbGeo7YvAiEp4N3NfmCknbR0LuOwuCBZedWzrWyD4cIoMMS
-         rAODeexWUtTQJY/t2vOZ1RE7tERqwC0YrZLq8wnNJ9fmRqP2MdRV0XHkSDmBOTPx11
-         NanlViCVKzkFQ==
+        b=CiySeMNFSzLMRTzUB8BCVrU4HBH7lXZws7aBtRp+lP54JmRaCaYjjqEx+3ieEN0SK
+         mMMu/JXWMQd8MKvXcRNdkzwic27gCE4lMRjvIElm0j6h5yje9pDw4Jg6vP3URxeRyw
+         QZFiZBwJXjBGpZ0mvUAdw/CHPhLpiaRzX5aOaUZPKw3XU1IhSn74uMgqIVYnqBTJ9E
+         sA+uGKO0V25537cdFTSIaJU43YcdkkXsbU6ExliJwK/bepYs1wBxXLePYResqIZwZZ
+         I6VYSVVYpaDKd54b+rboL/CWS8c6l6XLufVuEFKxHQBXSqmr+aehFLNeL8fPj5wkjd
+         leBmXn2adUvzg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D484EF6078C;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7C7D8F6078C;
         Tue, 11 Jan 2022 20:53:07 +0000 (UTC)
-Subject: Re: [GIT PULL] removal of trivial.git
+Subject: Re: [GIT PULL] hwmon updates for v5.17
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <nycvar.YFH.7.76.2201101025190.28059@cbobk.fhfr.pm>
-References: <nycvar.YFH.7.76.2201101025190.28059@cbobk.fhfr.pm>
+In-Reply-To: <20220110041722.2095990-1-linux@roeck-us.net>
+References: <20220110041722.2095990-1-linux@roeck-us.net>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <nycvar.YFH.7.76.2201101025190.28059@cbobk.fhfr.pm>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jikos/trivial.git for-linus
-X-PR-Tracked-Commit-Id: 081c8919b02bc1077279cd03972d7ec6f53a6c6b
+X-PR-Tracked-Message-Id: <20220110041722.2095990-1-linux@roeck-us.net>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-for-v5.17
+X-PR-Tracked-Commit-Id: 00f5117c5f785b95b13663e52dcdcf684a47d4e3
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7db48b6b4a03c067159a1dbd8f917453ae3154cb
-Message-Id: <164193438785.11435.15624796885787518837.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 4a110907a118346cfafc3aa3a75a632fac11b7a9
+Message-Id: <164193438750.11435.13217514998372229845.pr-tracker-bot@kernel.org>
 Date:   Tue, 11 Jan 2022 20:53:07 +0000
-To:     Jiri Kosina <jikos@kernel.org>
+To:     Guenter Roeck <linux@roeck-us.net>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 10 Jan 2022 10:29:42 +0100 (CET):
+The pull request you sent on Sun,  9 Jan 2022 20:17:22 -0800:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jikos/trivial.git for-linus
+> git://git.kernel.org/pub/scm/linux/kernel/git/groeck/linux-staging.git hwmon-for-v5.17
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7db48b6b4a03c067159a1dbd8f917453ae3154cb
+https://git.kernel.org/torvalds/c/4a110907a118346cfafc3aa3a75a632fac11b7a9
 
 Thank you!
 
