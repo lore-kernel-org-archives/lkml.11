@@ -2,95 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F18C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23805C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236743AbiAKTh5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:37:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45200 "EHLO
+        id S236873AbiAKTiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 14:38:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236583AbiAKThz (ORCPT
+        with ESMTP id S236751AbiAKTiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:37:55 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B3B4C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:37:55 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id m13so688973pji.3
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:37:55 -0800 (PST)
+        Tue, 11 Jan 2022 14:38:21 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E0CC06173F;
+        Tue, 11 Jan 2022 11:38:20 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id g11so391536lfu.2;
+        Tue, 11 Jan 2022 11:38:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=zGHwR3NiHUMCCbtobgvdiBSkcpXAF9setwIu+L+2NTg=;
-        b=TAGb+YJCDXlRtjUQUm2H3TX+eCODYtkadlIc0LARHDTdwUNOaWlnYbVItKV6ZFEPr1
-         cuhzonW3+Xc7Lf7v+78erPe+pjaUtCwGPGGBf2S/Ag+bsztSgmMctA1FRKkWbQNWn747
-         /D+C2lPI1EFydZQN/VawKEj+VK2qkoVFMN/HYpgf6RHy9snvnbMN4w8lZsR+BcvVVbqB
-         FcjVWcUwz/5eaIfUo/mQZjQ5bb3IauEUxfNZriFqV3CCuS5sRmU4qA2sUpY87UBRe1vb
-         taAuwPX6zJ7hkBg2eryl243n1O5zePA+QqV3lsOKtjyDKIJADikzb8vHLdYV4Laae6He
-         m4oQ==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=gCA03Y8txjZiDgmmkgC6vSFKPvusDQ96DqTHZL4jtHk=;
+        b=FZMSntPkSIzKrqITY9rAON0lmZYT/THkwcu2kSIZzsmU84vXUvnzLa2SFJA72IfETY
+         MTgCbXLIbwaNrhSG2AKYlDzxlQ1n4zobcbJ/M1Ju05R5ScvkiQnOhkxcd4boBc1JHypt
+         cgRIOJse4I07nEnsaZxBonFSnjCj6D3oe2E31JXK2a7X9oKvhUuqMkvqIrf+xqY1MbgD
+         Ie9x520HIONwTpEKJUAzBvsd+HOu2KaGJ4FQHcaSnEA0/t2pIi/Ds4UMu6Mu9+wZ1X6w
+         jNixV38ZnCM0PTyhuh5TFuZurIdJI4RJIsgzvL0qBkbQY+rtTS05a8UTgZ5cqe/GBLzv
+         liwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zGHwR3NiHUMCCbtobgvdiBSkcpXAF9setwIu+L+2NTg=;
-        b=DECgEYHeZG6OHYlVk6UT4biK6dtHZnzAuhYgAkdAy0ie0rWJ/By+o7sAJxs4BvaMyT
-         TPHuB/MdF8qjUl26/m+LVj3YiB3obgfwkwfdF7YZ3iMRuC4UkKjhnMjaIq8EYlkfD0Qu
-         FRjUCaZbzDe2Qrrzb2lRxAxAGoGcLyklacXV0/R+WFwAP5lfsU+JBp/NDSkkC4COiokR
-         Ohh4TKL7X3ch0CopUzq9hqXimxh+IyIU0h3w32ijjJC/a6g+o7AP5bYj8EtDyLzkwL3o
-         YBeuA/BRWABxOobH5LCvx9LHtiCjlRYX16/WE1lIJH00pT+s3xciV1B+ONyM/e5Yx3jj
-         L0pA==
-X-Gm-Message-State: AOAM532wlA3jONuf7DnlbSXKzQJA3iyY6RCslA9bb24OdBDDcBUaIuyN
-        Dd6/gNGycbFs/CGxrxF/VmQpSA==
-X-Google-Smtp-Source: ABdhPJyAO1F86LpATpX13rxQnWzV7BjRnUO+onBahR+oWSETlxXBbl1cZjhcoNjBfMW72JaI3Dhm8Q==
-X-Received: by 2002:a17:902:c410:b0:149:577c:2b08 with SMTP id k16-20020a170902c41000b00149577c2b08mr5957188plk.108.1641929874631;
-        Tue, 11 Jan 2022 11:37:54 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id rm2sm2010382pjb.13.2022.01.11.11.37.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 11:37:53 -0800 (PST)
-Date:   Tue, 11 Jan 2022 19:37:50 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     "Sabri N. Ferreiro" <snferreiro1@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sunhao.th@gmail.com
-Subject: Re: WARNING in kvm_mmu_uninit_tdp_mmu
-Message-ID: <Yd3cjllVD4vS17kG@google.com>
-References: <CAKG+3NTTHD3iXgK67B4R3e+ScZ+vW5H4FdwLYy9CR5oBF44DOA@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=gCA03Y8txjZiDgmmkgC6vSFKPvusDQ96DqTHZL4jtHk=;
+        b=ulR0Ehpowy+Fgxj61QxPmOkMIdnsAf9ud0YrpN0Ncfs0ADP+T8CK2M340FeUs6cR4T
+         egnmRjT4h/UVQ50VJEFbVHAkqc8EcN2GYC5x+dCnND7aPGFer8YwetAjB29uXB6c8Re5
+         xRjzMmaiBjLJrIzTpZpH03r2GsNRPokPYDUV7r4RSeNWh7AEjm2dGhrjjQRqO2ItRyv9
+         iHGsSxCHWxPSEBYSN6zm0S+0+zzYKFiPjr7zYQh8eFMoGzuQ+LXt4yUx4gVkSdFFCT01
+         jXdHcMJ8AcbT1Dbnt4R+/6GmTPcDVAO+JS6bDnthuRQycS/hu1JzMJC3ICFTTSy/LfkT
+         j8nw==
+X-Gm-Message-State: AOAM530SHf/qs6weLau1NGts9x7sMffVxGus+voR7d2PomFxf8sGPBXb
+        m0kxzZ/7WLXRDOA1MhBw1Sg=
+X-Google-Smtp-Source: ABdhPJxuTBO7wEiTLvI+W/Xa1On/i+omE0wFswDUMxG8C6QIYgu8MpzMsLxU+w7zBoxbOx2/u4wQSA==
+X-Received: by 2002:a2e:9ec7:: with SMTP id h7mr292524ljk.394.1641929899202;
+        Tue, 11 Jan 2022 11:38:19 -0800 (PST)
+Received: from [10.0.0.42] (91-153-170-164.elisa-laajakaista.fi. [91.153.170.164])
+        by smtp.gmail.com with ESMTPSA id i16sm1427429lfe.273.2022.01.11.11.38.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 11:38:18 -0800 (PST)
+Message-ID: <83c51ee4-ac10-0e44-d1cc-f69cebcbf0b8@gmail.com>
+Date:   Tue, 11 Jan 2022 21:43:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKG+3NTTHD3iXgK67B4R3e+ScZ+vW5H4FdwLYy9CR5oBF44DOA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v5] ASoC: dt-bindings: davinci-mcasp: convert McASP
+ bindings to yaml schema
+Content-Language: en-US
+From:   =?UTF-8?Q?P=c3=a9ter_Ujfalusi?= <peter.ujfalusi@gmail.com>
+To:     Jayesh Choudhary <j-choudhary@ti.com>, robh+dt@kernel.org
+Cc:     lgirdwood@gmail.com, broonie@kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220103074427.4233-1-j-choudhary@ti.com>
+ <2cf3c89c-169f-3421-25d4-c80a6c9737ae@gmail.com>
+In-Reply-To: <2cf3c89c-169f-3421-25d4-c80a6c9737ae@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 09, 2022, Sabri N. Ferreiro wrote:
-> Hi,
-> 
-> When using Syzkaller to fuzz the Linux kernel, it triggers the following crash.
-> 
-> HEAD commit: a7904a538933 Linux 5.16-rc6
-> git tree: upstream
-> console output: https://pastebin.com/raw/keWCUeJ2
-> kernel config: https://docs.google.com/document/d/1w94kqQ4ZSIE6BW-5WIhqp4_Zh7XTPH57L5OF2Xb6O6o/view
-> C reproducer: https://pastebin.com/raw/kSxa6Yit
-> Syzlang reproducer: https://pastebin.com/raw/2RMu8p6E
-> 
-> If you fix this issue, please add the following tag to the commit:
-> Reported-by: Yuheng Shen mosesfonscqf75@gmail.com
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 5 PID: 29657 at arch/x86/kvm/mmu/tdp_mmu.c:46
-> kvm_mmu_uninit_tdp_mmu+0xb9/0xf0
 
-I wasn't able to reproduce to confirm, but this is more than likely fixed by
-commit 3a0f64de479c ("KVM: x86/mmu: Don't advance iterator after restart due to yielding"),
-which didn't land until 5.16-rc7.
+
+On 1/11/22 21:21, Péter Ujfalusi wrote:
+> Hi Javesh,
+> 
+> On 03/01/2022 09:44, Jayesh Choudhary wrote:
+>> Convert the bindings for McASP controllers for TI SOCs from txt
+>> to YAML schema.
+>>
+>> Adds additional properties 'clocks', 'clock-names', 'power-domains',
+>> '#sound-dai-cells' and 'port' which were missing from the txt file.
+>> Removes properties 'sram-size-playback' and 'sram-size-capture'
+>> since they are not used.
+>> Adds 'dmas' and 'dma-names' in the example which were missing from
+>> the txt file.
+>> Changes 'interrupts' and 'interrupt-names' from optional to
+>> required properties.
+>> Changes 'op-modes', 'serial-dir' to optional properties as they are
+>> not needed if the McASP is used only as GPIO.
+>> Changes 'tdm-slots' to required property only for I2S operation mode.
+>>
+>> Adds the yaml file in the 'MAINTAINERS' under the heading 'TEXAS
+>> INSTRUMENTS ASoC DRIVERS'
+> 
+> I would have added description for the GPIO support as it is not obvious
+> that 2 is going to be for AXR2 or 29 is for ACLKR pin.
+> But I don't think this functionality is going to be used apart from the
+> one dra7 evm.
+> 
+> Thank you for the updates and the nice work!
+> 
+> Acked-by: Peter Ujfalusi <peter.ujfalusi@gmail.com>
+> 
+...
+
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - ti,dm646x-mcasp-audio
+>> +      - ti,da830-mcasp-audio
+>> +      - ti,am33xx-mcasp-audio
+>> +      - ti,dra7-mcasp-audio
+>> +      - ti,omap4-mcasp-audio
+
+This is the only thing which bugs me: the pointless '-audio' postfix for
+the compatible string...
+
+-- 
+Péter
