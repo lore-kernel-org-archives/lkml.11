@@ -2,118 +2,211 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 630F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240964AbiAKNqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 08:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46668 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240678AbiAKNqx (ORCPT
+        id S241004AbiAKNrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 08:47:05 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17339 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240678AbiAKNrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 08:46:53 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4413BC06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:46:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=5hmzL0ZLGqEvLhxt4LfKaZzEs7EYYCoq9RGBa9ZBDf0=; b=iSSJbfr12iqcifaqmPvqBXI3iL
-        5kAag8cDMh38bxMVKOwhSpmuLFIR/1BnQfvkDh8K9pgBT7qNzgAjchraqn76KTPT2yVs1AZMTyOGL
-        AuDhiV8jnIhZdA0DTatdCI387h3kX31CsYwLjNdB2J2bdtsndiBXKB296+PxnZ4B2ROqzs5nNTOH7
-        OsTSiVe9znqBqOaQsyGsaGaQEBbs5SWv30H6/dEA17m+89hy+/7Q1hpiPPbnMIKuGydnuNJz8ixXx
-        Gt8Q4YNf20p5p437drePynD/txDHkC3WMq5ln46XZnD4fFdhOZpg9R8touZZvNxMlq6g8R326hgsu
-        jgl6pc9w==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7HU2-003IHp-1X; Tue, 11 Jan 2022 13:46:42 +0000
-Date:   Tue, 11 Jan 2022 13:46:42 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     John Hubbard <jhubbard@nvidia.com>
-Cc:     linux-mm@kvack.org, Christoph Hellwig <hch@infradead.org>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-kernel@vger.kernel.org, Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH v2 09/28] gup: Turn hpage_pincount_add() into
- page_pincount_add()
-Message-ID: <Yd2KQmYXIs2ZTNDU@casper.infradead.org>
-References: <20220110042406.499429-1-willy@infradead.org>
- <20220110042406.499429-10-willy@infradead.org>
- <8ad9c4b4-19a6-b22d-91b8-72125bc710cd@nvidia.com>
+        Tue, 11 Jan 2022 08:47:03 -0500
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JYBmL2H7Tz9ryK;
+        Tue, 11 Jan 2022 21:45:54 +0800 (CST)
+Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 11 Jan 2022 21:47:01 +0800
+Received: from huawei.com (10.175.124.27) by dggpemm500004.china.huawei.com
+ (7.185.36.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 11 Jan
+ 2022 21:47:00 +0800
+From:   Laibin Qiu <qiulaibin@huawei.com>
+To:     <axboe@kernel.dk>, <ming.lei@redhat.com>, <john.garry@huawei.com>
+CC:     <martin.petersen@oracle.com>, <hare@suse.de>,
+        <johannes.thumshirn@wdc.com>, <andriy.shevchenko@linux.intel.com>,
+        <bvanassche@acm.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next v4] blk-mq: fix tag_get wait task can't be awakened
+Date:   Tue, 11 Jan 2022 22:02:16 +0800
+Message-ID: <20220111140216.1858823-1-qiulaibin@huawei.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8ad9c4b4-19a6-b22d-91b8-72125bc710cd@nvidia.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500004.china.huawei.com (7.185.36.219)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 08:32:20PM -0800, John Hubbard wrote:
-> On 1/9/22 20:23, Matthew Wilcox (Oracle) wrote:
-> ...
-> > diff --git a/mm/gup.c b/mm/gup.c
-> > index dbb1b54d0def..3ed9907f3c8d 100644
-> > --- a/mm/gup.c
-> > +++ b/mm/gup.c
-> > @@ -29,12 +29,23 @@ struct follow_page_context {
-> >   	unsigned int page_mask;
-> >   };
-> > -static void hpage_pincount_add(struct page *page, int refs)
-> > +/*
-> > + * When pinning a compound page of order > 1 (which is what
-> > + * hpage_pincount_available() checks for), use an exact count to track
-> > + * it, via page_pincount_add/_sub().
-> > + *
-> > + * However, be sure to *also* increment the normal page refcount field
-> > + * at least once, so that the page really is pinned.  That's why the
-> > + * refcount from the earlier try_get_compound_head() is left intact.
-> > + */
-> 
-> I just realized, after looking at this again in a later patch, that the
-> last paragraph, above, is now misplaced. It refers to the behavior of the
-> caller, not to this routine. So it needs to be airlifted back to the
-> caller.
+In case of shared tags, there might be more than one hctx which
+allocates from the same tags, and each hctx is limited to allocate at
+most:
+        hctx_max_depth = max((bt->sb.depth + users - 1) / users, 4U);
 
-I really do think it fits better here.  The thing is there's just one
-caller, so it's a little hard to decide what "all callers" need when
-there's only one.  Maybe I can wordsmith this a bit to read better.
+tag idle detection is lazy, and may be delayed for 30sec, so there
+could be just one real active hctx(queue) but all others are actually
+idle and still accounted as active because of the lazy idle detection.
+Then if wake_batch is > hctx_max_depth, driver tag allocation may wait
+forever on this real active hctx.
 
-> > +static void page_pincount_add(struct page *page, int refs)
-> >   {
-> > -	VM_BUG_ON_PAGE(!hpage_pincount_available(page), page);
-> >   	VM_BUG_ON_PAGE(page != compound_head(page), page);
-> > -	atomic_add(refs, compound_pincount_ptr(page));
-> > +	if (hpage_pincount_available(page))
-> > +		atomic_add(refs, compound_pincount_ptr(page));
-> > +	else
-> > +		page_ref_add(page, refs * (GUP_PIN_COUNTING_BIAS - 1));
-> >   }
-> >   static void hpage_pincount_sub(struct page *page, int refs)
-> > @@ -150,21 +161,7 @@ struct page *try_grab_compound_head(struct page *page,
-> >   		if (!page)
-> >   			return NULL;
-> > -		/*
-> > -		 * When pinning a compound page of order > 1 (which is what
-> > -		 * hpage_pincount_available() checks for), use an exact count to
-> > -		 * track it, via hpage_pincount_add/_sub().
-> > -		 *
-> > -		 * However, be sure to *also* increment the normal page refcount
-> > -		 * field at least once, so that the page really is pinned.
-> > -		 * That's why the refcount from the earlier
-> > -		 * try_get_compound_head() is left intact.
-> > -		 */
-> 
-> ...here.
-> 
-> > -		if (hpage_pincount_available(page))
-> > -			hpage_pincount_add(page, refs);
-> > -		else
-> > -			page_ref_add(page, refs * (GUP_PIN_COUNTING_BIAS - 1));
-> > -
-> > +		page_pincount_add(page, refs);
-> >   		mod_node_page_state(page_pgdat(page), NR_FOLL_PIN_ACQUIRED,
-> >   				    refs);
-> 
-> thanks,
-> -- 
-> John Hubbard
-> NVIDIA
+Fix this by recalculating wake_batch when inc or dec active_queues.
+
+Fixes: 0d2602ca30e41 ("blk-mq: improve support for shared tags maps")
+Suggested-by: Ming Lei <ming.lei@redhat.com>
+Suggested-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
+---
+ block/blk-mq-tag.c      | 39 ++++++++++++++++++++++++++++++++-------
+ include/linux/sbitmap.h | 11 +++++++++++
+ lib/sbitmap.c           | 22 +++++++++++++++++++---
+ 3 files changed, 62 insertions(+), 10 deletions(-)
+
+diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
+index e55a6834c9a6..48b00d56141a 100644
+--- a/block/blk-mq-tag.c
++++ b/block/blk-mq-tag.c
+@@ -16,6 +16,21 @@
+ #include "blk-mq-sched.h"
+ #include "blk-mq-tag.h"
+ 
++/*
++ * Recalculate wakeup batch when tag is shared by hctx.
++ */
++static void blk_mq_update_wake_batch(struct blk_mq_tags *tags,
++		unsigned int users)
++{
++	if (!users)
++		return;
++
++	sbitmap_queue_recalculate_wake_batch(&tags->bitmap_tags,
++			users);
++	sbitmap_queue_recalculate_wake_batch(&tags->breserved_tags,
++			users);
++}
++
+ /*
+  * If a previously inactive queue goes active, bump the active user count.
+  * We need to do this before try to allocate driver tag, then even if fail
+@@ -24,18 +39,25 @@
+  */
+ bool __blk_mq_tag_busy(struct blk_mq_hw_ctx *hctx)
+ {
++	unsigned int users;
+ 	if (blk_mq_is_shared_tags(hctx->flags)) {
+ 		struct request_queue *q = hctx->queue;
+ 
+-		if (!test_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags) &&
+-		    !test_and_set_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags))
+-			atomic_inc(&hctx->tags->active_queues);
++		if (test_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags) ||
++		    test_and_set_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags)) {
++			return true;
++		}
+ 	} else {
+-		if (!test_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state) &&
+-		    !test_and_set_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state))
+-			atomic_inc(&hctx->tags->active_queues);
++		if (test_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state) ||
++		    test_and_set_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state)) {
++			return true;
++		}
+ 	}
+ 
++	users = atomic_inc_return(&hctx->tags->active_queues);
++
++	blk_mq_update_wake_batch(hctx->tags, users);
++
+ 	return true;
+ }
+ 
+@@ -56,6 +78,7 @@ void blk_mq_tag_wakeup_all(struct blk_mq_tags *tags, bool include_reserve)
+ void __blk_mq_tag_idle(struct blk_mq_hw_ctx *hctx)
+ {
+ 	struct blk_mq_tags *tags = hctx->tags;
++	unsigned int users;
+ 
+ 	if (blk_mq_is_shared_tags(hctx->flags)) {
+ 		struct request_queue *q = hctx->queue;
+@@ -68,7 +91,9 @@ void __blk_mq_tag_idle(struct blk_mq_hw_ctx *hctx)
+ 			return;
+ 	}
+ 
+-	atomic_dec(&tags->active_queues);
++	users = atomic_dec_return(&tags->active_queues);
++
++	blk_mq_update_wake_batch(tags, users);
+ 
+ 	blk_mq_tag_wakeup_all(tags, false);
+ }
+diff --git a/include/linux/sbitmap.h b/include/linux/sbitmap.h
+index fc0357a6e19b..95df357ec009 100644
+--- a/include/linux/sbitmap.h
++++ b/include/linux/sbitmap.h
+@@ -415,6 +415,17 @@ static inline void sbitmap_queue_free(struct sbitmap_queue *sbq)
+ 	sbitmap_free(&sbq->sb);
+ }
+ 
++/**
++ * sbitmap_queue_recalculate_wake_batch() - Recalculate wake batch
++ * @sbq: Bitmap queue to recalculate wake batch.
++ * @users: Number of shares.
++ *
++ * Like sbitmap_queue_update_wake_batch(), this will calculate wake batch
++ * by depth. This interface is for HCTX shared tags or queue shared tags.
++ */
++void sbitmap_queue_recalculate_wake_batch(struct sbitmap_queue *sbq,
++					    unsigned int users);
++
+ /**
+  * sbitmap_queue_resize() - Resize a &struct sbitmap_queue.
+  * @sbq: Bitmap queue to resize.
+diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+index 2709ab825499..94b3272effd8 100644
+--- a/lib/sbitmap.c
++++ b/lib/sbitmap.c
+@@ -457,10 +457,9 @@ int sbitmap_queue_init_node(struct sbitmap_queue *sbq, unsigned int depth,
+ }
+ EXPORT_SYMBOL_GPL(sbitmap_queue_init_node);
+ 
+-static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
+-					    unsigned int depth)
++static inline void __sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
++					    unsigned int wake_batch)
+ {
+-	unsigned int wake_batch = sbq_calc_wake_batch(sbq, depth);
+ 	int i;
+ 
+ 	if (sbq->wake_batch != wake_batch) {
+@@ -476,6 +475,23 @@ static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
+ 	}
+ }
+ 
++static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
++					    unsigned int depth)
++{
++	unsigned int wake_batch = sbq_calc_wake_batch(sbq, depth);
++
++	__sbitmap_queue_update_wake_batch(sbq, wake_batch);
++}
++
++void sbitmap_queue_recalculate_wake_batch(struct sbitmap_queue *sbq,
++					    unsigned int users)
++{
++	unsigned int wake_batch = clamp_t(unsigned int,
++			(sbq->sb.depth + users - 1) / users, 4U, SBQ_WAKE_BATCH);
++	__sbitmap_queue_update_wake_batch(sbq, wake_batch);
++}
++EXPORT_SYMBOL_GPL(sbitmap_queue_recalculate_wake_batch);
++
+ void sbitmap_queue_resize(struct sbitmap_queue *sbq, unsigned int depth)
+ {
+ 	sbitmap_queue_update_wake_batch(sbq, depth);
+-- 
+2.22.0
+
