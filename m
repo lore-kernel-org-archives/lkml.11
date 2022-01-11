@@ -2,79 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7647C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00889C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236668AbiAKI5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:57:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36792 "EHLO
+        id S1349057AbiAKI7q (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 03:59:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236410AbiAKI5P (ORCPT
+        with ESMTP id S236410AbiAKI7m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:57:15 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA31C06173F;
-        Tue, 11 Jan 2022 00:57:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 3A110CE0CF3;
-        Tue, 11 Jan 2022 08:57:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01CF8C36AE9;
-        Tue, 11 Jan 2022 08:57:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1641891431;
-        bh=NdxodxWZzbwf/ggHaYd5sNJGA5eNob24Z1IUAg07QCw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iqf1MXWMDx5bH13jjIOAjklovdMj8eHdh2yjJ9sI6CIPbsTZ1HDFHYiOxxhGg4lFf
-         r/YSSUY+h33izj2tH2lWc2MpP6jlI4gx2RkJiwtH7SCOwjWlBExjRtQAwJS6lU+cEK
-         orMkCoJgFyb0Iu6/5Lyj5ncCu7ThKgpUGn6nfkWc=
-Date:   Tue, 11 Jan 2022 09:57:08 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Bjorn Helgaas <helgaas@kernel.org>,
-        Marc Zygnier <maz@kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Megha Dey <megha.dey@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, linux-pci@vger.kernel.org,
-        Cedric Le Goater <clg@kaod.org>,
-        xen-devel@lists.xenproject.org, Juergen Gross <jgross@suse.com>,
-        Niklas Schnelle <schnelle@linux.ibm.com>,
-        linux-s390@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com
-Subject: Re: [patch] genirq/msi: Populate sysfs entry only once
-Message-ID: <Yd1GZMvstSNTc80B@kroah.com>
-References: <20211206210600.123171746@linutronix.de>
- <20211206210749.224917330@linutronix.de>
- <87leznqx2a.ffs@tglx>
+        Tue, 11 Jan 2022 03:59:42 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F15C5C06173F;
+        Tue, 11 Jan 2022 00:59:41 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id o12so53844485lfk.1;
+        Tue, 11 Jan 2022 00:59:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6nEJxrC4VF52kQQsquVABp1lWQCr9hliOF685p20gBY=;
+        b=TDKbVRvR44rzTiWqaqeJCI2IErsf3K0AkKOncfqrFtzCzzxK0kVQGxuBrfemty+iwh
+         0U+AAgBavx+nHC4eWULR8BXDxf1ae1PWYQKKyR9VEXWTtpmD91dMh/7W2ePDJsiUO6xS
+         +WVvOGvz1bwB+kuzAT0mLPsQk68VBZU9J6Rjk6FTY2W3pljRrPNFy61Y1v56J8JQ9Ncb
+         c3/EdlKXieuTpMbAg/7xj15dezkz8QwP/Lsqzfh7CoydmWvA9hS/Nc7qoTyLFdAQUHsY
+         FRS5MvyOhhl+s0D7THITRbRSoSIT2JEZH0u7ds61zsXuSYYFuj1E2FZj0Aqi68FPoxUd
+         Mq4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6nEJxrC4VF52kQQsquVABp1lWQCr9hliOF685p20gBY=;
+        b=3a2+GyhdIMkR9QmVZQfYXy8WiaKPbOgmzkAFXJmhHK1SVAijqts2ZBvpQURqXIqzrV
+         zB57344K8t2BUC1FVIGlkwLa9G11j+SMw7b842z3BsphGdEGLZ3O6Uefcu3156qFqm23
+         P3sdPUuNurvPEw8hV2xdxhkdz8Dg3ds+neyKMxkfa3PLvRHGPLwcjH0Fe1d4gBZqj/wh
+         QU+YNgnJeLkHCh+CcY0Rl960+TD3Tvklb9m8NYraYPB1Oz5ikKPVNAey1zsJ1On7RfcU
+         6goZQdDvWWpMkHpaO4KjHvLoqvxbh5AX62Z6OtTnoBXrvDkjbpioYPGSGJqfj7bPZ3Cy
+         OC2A==
+X-Gm-Message-State: AOAM531q8u4sUMogXJgV84QSfiaPzcsqJlJf61nIDRJ9SXwP/PpGXeKl
+        4k3M2LSpTLJ0Qg3WAP6ZK/0=
+X-Google-Smtp-Source: ABdhPJxDW5jjSr6LF6rIE41gSK6F+vTyYsZ3vnc92yuIWqQPeWNguXcIK0Tz6CGWst39vHdVQa1Rdg==
+X-Received: by 2002:a2e:9c07:: with SMTP id s7mr2246267lji.476.1641891580304;
+        Tue, 11 Jan 2022 00:59:40 -0800 (PST)
+Received: from ?IPv6:2a00:1370:810c:714f:a10:76ff:fe69:21b6? ([2a00:1370:810c:714f:a10:76ff:fe69:21b6])
+        by smtp.googlemail.com with ESMTPSA id e8sm1246693lji.2.2022.01.11.00.59.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 00:59:39 -0800 (PST)
+Subject: Re: [PATCH 1/8] signal: Make SIGKILL during coredumps an explicit
+ special case
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        linux-api@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@ZenIV.linux.org.uk>
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+ <20211213225350.27481-1-ebiederm@xmission.com>
+ <9363765f-9883-75ee-70f1-a1a8e9841812@gmail.com>
+ <87pmp67y4r.fsf@email.froward.int.ebiederm.org>
+ <5bbb54c4-7504-cd28-5dde-4e5965496625@gmail.com>
+ <87bl0m14ew.fsf@email.froward.int.ebiederm.org>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <6692758a-0af2-67e0-26fd-365625b3ad0c@gmail.com>
+Date:   Tue, 11 Jan 2022 11:59:39 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87leznqx2a.ffs@tglx>
+In-Reply-To: <87bl0m14ew.fsf@email.froward.int.ebiederm.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 07:12:45PM +0100, Thomas Gleixner wrote:
-> The MSI entries for multi-MSI are populated en bloc for the MSI descriptor,
-> but the current code invokes the population inside the per interrupt loop
-> which triggers a warning in the sysfs code and causes the interrupt
-> allocation to fail.
+08.01.2022 21:13, Eric W. Biederman пишет:
+> Dmitry Osipenko <digetx@gmail.com> writes:
 > 
-> Move it outside of the loop so it works correctly for single and multi-MSI.
+>> 05.01.2022 22:58, Eric W. Biederman пишет:
+>>>
+>>> I have not yet been able to figure out how to run gst-pluggin-scanner in
+>>> a way that triggers this yet.  In truth I can't figure out how to
+>>> run gst-pluggin-scanner in a useful way.
+>>>
+>>> I am going to set up some unit tests and see if I can reproduce your
+>>> hang another way, but if you could give me some more information on what
+>>> you are doing to trigger this I would appreciate it.
+>>
+>> Thanks, Eric. The distro is Arch Linux, but it's a development
+>> environment where I'm running latest GStreamer from git master. I'll try
+>> to figure out the reproduction steps and get back to you.
 > 
-> Fixes: bf5e758f02fc ("genirq/msi: Simplify sysfs handling")
-> Reported-by: Borislav Petkov <bp@alien8.de>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
->  kernel/irq/msi.c |   11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
+> Thank you.
+> 
+> Until I can figure out why this is causing problems I have dropped the
+> following two patches from my queue:
+>  signal: Make SIGKILL during coredumps an explicit special case
+>  signal: Drop signals received after a fatal signal has been processed
+> 
+> I have replaced them with the following two patches that just do what
+> is needed for the rest of the code in the series:
+>  signal: Have prepare_signal detect coredumps using
+>  signal: Make coredump handling explicit in complete_signal
+> 
+> Perversely my failure to change the SIGKILL handling when coredumps are
+> happening proves to me that I need to change the SIGKILL handling when
+> coredumps are happening to make the code more maintainable.
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Eric, thank you again. I started to look at the reproduction steps and
+haven't completed it yet. Turned out the problem affects only older
+NVIDIA Tegra2 Cortex-A9 CPU that lacks support of ARM NEON instructions
+set, hence the problem isn't visible on x86 and other CPUs out of the
+box. I'll need to check whether the problem could be simulated on all
+arches or maybe it's specific to VFP exception handling of ARM32.
