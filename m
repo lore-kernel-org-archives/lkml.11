@@ -2,40 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 666B9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F10F3C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344727AbiAKRb5 (ORCPT
+        id S1344637AbiAKRb7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:31:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344357AbiAKRbT (ORCPT
+        Tue, 11 Jan 2022 12:31:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45352 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344328AbiAKRbT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 12:31:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1B1C061751
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:31:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78C50B81C3D
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4015BC36AF4;
-        Tue, 11 Jan 2022 17:31:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 878EEB81C4D;
+        Tue, 11 Jan 2022 17:31:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FFC5C36AE3;
+        Tue, 11 Jan 2022 17:31:17 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1n7KzL-0032AT-Do;
-        Tue, 11 Jan 2022 12:31:15 -0500
-Message-ID: <20220111173115.271910572@goodmis.org>
+        id 1n7KzM-0032DJ-Bh;
+        Tue, 11 Jan 2022 12:31:16 -0500
+Message-ID: <20220111173116.190327559@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Tue, 11 Jan 2022 12:30:42 -0500
+Date:   Tue, 11 Jan 2022 12:30:47 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Yinan Liu <yinan@linux.alibaba.com>
-Subject: [for-next][PATCH 11/31] ftrace: Add test to make sure compiled time sorts work
+        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        John Kacur <jkacur@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org
+Subject: [for-next][PATCH 16/31] rtla: Real-Time Linux Analysis tool
 References: <20220111173030.999527342@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -43,86 +50,246 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+From: Daniel Bristot de Oliveira <bristot@kernel.org>
 
-Now that ftrace function pointers are sorted at compile time, add a test
-that makes sure they are sorted at run time. This test is only run if it is
-configured in.
+The rtla is a meta-tool that includes a set of commands that aims
+to analyze the real-time properties of Linux. But instead of testing
+Linux as a black box, rtla leverages kernel tracing capabilities to
+provide precise information about the properties and root causes of
+unexpected results.
 
-Link: https://lkml.kernel.org/r/20211206151858.4d21a24d@gandalf.local.home
+rtla --help works and provide information about the available options.
 
-Cc: Yinan Liu <yinan@linux.alibaba.com>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+This is just the "main" and the Makefile, no function yet.
+
+Link: https://lkml.kernel.org/r/f59acda8bc513c4a6c279a9bc3ad112a20690e68.1638182284.git.bristot@kernel.org
+
+Cc: Tao Zhou <tao.zhou@linux.dev>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: John Kacur <jkacur@redhat.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc: linux-rt-users@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 ---
- kernel/trace/Kconfig  | 14 ++++++++++++++
- kernel/trace/ftrace.c | 23 +++++++++++++++++++++++
- 2 files changed, 37 insertions(+)
+ tools/tracing/rtla/Makefile   | 76 +++++++++++++++++++++++++++++++++++
+ tools/tracing/rtla/README.txt | 36 +++++++++++++++++
+ tools/tracing/rtla/src/rtla.c | 72 +++++++++++++++++++++++++++++++++
+ 3 files changed, 184 insertions(+)
+ create mode 100644 tools/tracing/rtla/Makefile
+ create mode 100644 tools/tracing/rtla/README.txt
+ create mode 100644 tools/tracing/rtla/src/rtla.c
 
-diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-index 420ff4bc67fd..f468767bc287 100644
---- a/kernel/trace/Kconfig
-+++ b/kernel/trace/Kconfig
-@@ -915,6 +915,20 @@ config EVENT_TRACE_TEST_SYSCALLS
- 	 TBD - enable a way to actually call the syscalls as we test their
- 	       events
- 
-+config FTRACE_SORT_STARTUP_TEST
-+       bool "Verify compile time sorting of ftrace functions"
-+       depends on DYNAMIC_FTRACE
-+       depends on BUILDTIME_TABLE_SORT
-+       help
-+	 Sorting of the mcount_loc sections that is used to find the
-+	 where the ftrace knows where to patch functions for tracing
-+	 and other callbacks is done at compile time. But if the sort
-+	 is not done correctly, it will cause non-deterministic failures.
-+	 When this is set, the sorted sections will be verified that they
-+	 are in deed sorted and will warn if they are not.
+diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+new file mode 100644
+index 000000000000..fbb755100c7e
+--- /dev/null
++++ b/tools/tracing/rtla/Makefile
+@@ -0,0 +1,76 @@
++NAME	:=	rtla
++VERSION	:=	0.4
 +
-+	 If unsure, say N
++# From libtracefs:
++# Makefiles suck: This macro sets a default value of $(2) for the
++# variable named by $(1), unless the variable has been set by
++# environment or command line. This is necessary for CC and AR
++# because make sets default values, so the simpler ?= approach
++# won't work as expected.
++define allow-override
++  $(if $(or $(findstring environment,$(origin $(1))),\
++            $(findstring command line,$(origin $(1)))),,\
++    $(eval $(1) = $(2)))
++endef
 +
- config RING_BUFFER_STARTUP_TEST
-        bool "Ring buffer startup self test"
-        depends on RING_BUFFER
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 9ca63df6553a..403e485bf091 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -6388,6 +6388,27 @@ static int ftrace_cmp_ips(const void *a, const void *b)
- 	return 0;
- }
- 
-+#ifdef CONFIG_FTRACE_SORT_STARTUP_TEST
-+static void test_is_sorted(unsigned long *start, unsigned long count)
++# Allow setting CC and AR, or setting CROSS_COMPILE as a prefix.
++$(call allow-override,CC,$(CROSS_COMPILE)gcc)
++$(call allow-override,AR,$(CROSS_COMPILE)ar)
++$(call allow-override,STRIP,$(CROSS_COMPILE)strip)
++$(call allow-override,PKG_CONFIG,pkg-config)
++$(call allow-override,LD_SO_CONF_PATH,/etc/ld.so.conf.d/)
++$(call allow-override,LDCONFIG,ldconfig)
++
++INSTALL	=	install
++FOPTS	:=	-flto=auto -ffat-lto-objects -fexceptions -fstack-protector-strong \
++		-fasynchronous-unwind-tables -fstack-clash-protection
++WOPTS	:= 	-Wall -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -Wp,-D_GLIBCXX_ASSERTIONS -Wno-maybe-uninitialized
++
++TRACEFS_HEADERS	:= $$($(PKG_CONFIG) --cflags libtracefs)
++
++CFLAGS	:=	-O -g -DVERSION=\"$(VERSION)\" $(FOPTS) $(MOPTS) $(WOPTS) $(TRACEFS_HEADERS)
++LDFLAGS	:=	-ggdb
++LIBS	:=	$$($(PKG_CONFIG) --libs libtracefs) -lprocps
++
++SRC	:=	$(wildcard src/*.c)
++HDR	:=	$(wildcard src/*.h)
++OBJ	:=	$(SRC:.c=.o)
++DIRS	:=	src
++FILES	:=	Makefile README.txt
++CEXT	:=	bz2
++TARBALL	:=	$(NAME)-$(VERSION).tar.$(CEXT)
++TAROPTS	:=	-cvjf $(TARBALL)
++BINDIR	:=	/usr/bin
++DATADIR	:=	/usr/share
++DOCDIR	:=	$(DATADIR)/doc
++MANDIR	:=	$(DATADIR)/man
++LICDIR	:=	$(DATADIR)/licenses
++
++.PHONY:	all
++all:	rtla
++
++rtla: $(OBJ)
++	$(CC) -o rtla $(LDFLAGS) $(OBJ) $(LIBS)
++
++static: $(OBJ)
++	$(CC) -o rtla-static $(LDFLAGS) --static $(OBJ) $(LIBS) -lpthread -ldl
++
++.PHONY: install
++install:
++	$(INSTALL) -d -m 755 $(DESTDIR)$(BINDIR)
++	$(INSTALL) rtla -m 755 $(DESTDIR)$(BINDIR)
++	$(STRIP) $(DESTDIR)$(BINDIR)/rtla
++
++.PHONY: clean tarball
++clean:
++	@test ! -f rtla || rm rtla
++	@test ! -f rtla-static || rm rtla-static
++	@test ! -f src/rtla.o || rm src/rtla.o
++	@test ! -f $(TARBALL) || rm -f $(TARBALL)
++	@rm -rf *~ $(OBJ) *.tar.$(CEXT)
++
++tarball:  clean
++	rm -rf $(NAME)-$(VERSION) && mkdir $(NAME)-$(VERSION)
++	cp -r $(DIRS) $(FILES) $(NAME)-$(VERSION)
++	tar $(TAROPTS) --exclude='*~' $(NAME)-$(VERSION)
++	rm -rf $(NAME)-$(VERSION)
+diff --git a/tools/tracing/rtla/README.txt b/tools/tracing/rtla/README.txt
+new file mode 100644
+index 000000000000..6c88446f7e74
+--- /dev/null
++++ b/tools/tracing/rtla/README.txt
+@@ -0,0 +1,36 @@
++RTLA: Real-Time Linux Analysis tools
++
++The rtla is a meta-tool that includes a set of commands that
++aims to analyze the real-time properties of Linux. But, instead of
++testing Linux as a black box, rtla leverages kernel tracing
++capabilities to provide precise information about the properties
++and root causes of unexpected results.
++
++Installing RTLA
++
++RTLA depends on some libraries and tools. More precisely, it depends on the
++following libraries:
++
++ - libtracefs
++ - libtraceevent
++ - procps
++
++It also depends on python3-docutils to compile man pages.
++
++For development, we suggest the following steps for compiling rtla:
++
++  $ git clone git://git.kernel.org/pub/scm/libs/libtrace/libtraceevent.git
++  $ cd libtraceevent/
++  $ make
++  $ sudo make install
++  $ cd ..
++  $ git clone git://git.kernel.org/pub/scm/libs/libtrace/libtracefs.git
++  $ cd libtracefs/
++  $ make
++  $ sudo make install
++  $ cd ..
++  $ cd $rtla_src
++  $ make
++  $ sudo make install
++
++For further information, please refer to the rtla man page.
+diff --git a/tools/tracing/rtla/src/rtla.c b/tools/tracing/rtla/src/rtla.c
+new file mode 100644
+index 000000000000..5ae2664ed47d
+--- /dev/null
++++ b/tools/tracing/rtla/src/rtla.c
+@@ -0,0 +1,72 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2021 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
++ */
++
++#include <getopt.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdio.h>
++
++/*
++ * rtla_usage - print rtla usage
++ */
++static void rtla_usage(void)
 +{
 +	int i;
 +
-+	for (i = 1; i < count; i++) {
-+		if (WARN(start[i - 1] > start[i],
-+			 "[%d] %pS at %lx is not sorted with %pS at %lx\n", i,
-+			 (void *)start[i - 1], start[i - 1],
-+			 (void *)start[i], start[i]))
-+			break;
-+	}
-+	if (i == count)
-+		pr_info("ftrace section at %px sorted properly\n", start);
-+}
-+#else
-+static void test_is_sorted(unsigned long *start, unsigned long count)
-+{
-+}
-+#endif
++	static const char *msg[] = {
++		"",
++		"rtla version " VERSION,
++		"",
++		"  usage: rtla COMMAND ...",
++		"",
++		"  commands:",
++		"",
++		NULL,
++	};
 +
- static int ftrace_process_locs(struct module *mod,
- 			       unsigned long *start,
- 			       unsigned long *end)
-@@ -6414,6 +6435,8 @@ static int ftrace_process_locs(struct module *mod,
- 	if (!IS_ENABLED(CONFIG_BUILDTIME_TABLE_SORT) || mod) {
- 		sort(start, count, sizeof(*start),
- 		     ftrace_cmp_ips, NULL);
-+	} else {
-+		test_is_sorted(start, count);
- 	}
- 
- 	start_pg = ftrace_allocate_pages(count);
++	for (i = 0; msg[i]; i++)
++		fprintf(stderr, "%s\n", msg[i]);
++	exit(1);
++}
++
++/*
++ * run_command - try to run a rtla tool command
++ *
++ * It returns 0 if it fails. The tool's main will generally not
++ * return as they should call exit().
++ */
++int run_command(int argc, char **argv, int start_position)
++{
++	return 0;
++}
++
++int main(int argc, char *argv[])
++{
++	int retval;
++
++	/* is it an alias? */
++	retval = run_command(argc, argv, 0);
++	if (retval)
++		exit(0);
++
++	if (argc < 2)
++		goto usage;
++
++	if (strcmp(argv[1], "-h") == 0) {
++		rtla_usage();
++		exit(0);
++	} else if (strcmp(argv[1], "--help") == 0) {
++		rtla_usage();
++		exit(0);
++	}
++
++	retval = run_command(argc, argv, 1);
++	if (retval)
++		exit(0);
++
++usage:
++	rtla_usage();
++	exit(1);
++}
 -- 
 2.33.0
