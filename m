@@ -2,241 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:03:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 385CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344368AbiAKSDr (ORCPT
+        id S1345340AbiAKSDs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:03:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51008 "EHLO
+        Tue, 11 Jan 2022 13:03:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345146AbiAKSD3 (ORCPT
+        with ESMTP id S1345156AbiAKSDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:03:29 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BDCC06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:03:29 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id F00F51F445DC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1641924208;
-        bh=qNI10ViGfOPX7ep5VeEDaMq7A06oBqtTPrhO0BsGK2I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YOV4M1A6uG+doAJ0g6W04v9I9mmKU6OsXbLg3cvRyNTIud8qydv/nugqaP859j0KG
-         B9MGObBV2MvFLza+Phxt+uaalRzyxm529rsWfLuU+kaeKGJnKAmmgC6HJaDHpe+SeF
-         MULvqU6erWcJUgiEx+i4TJXeyeR04X7I00lmuvOPjGje2Nf3PqDGZyQ+I3PVva7bpK
-         Q9C4iR/aU76t6PLxpnPqBDY8UVv18GzSfzqh00gL7UH4gMjtKWiODpJVo80bMlLZNK
-         XlL8JnxwCsr/wJ4nQU3jdG9/xKXXuqxYVPccsatPpg4sZDG0Rx+7tLd/9F5MiSFPeF
-         gfsYfj9Hfzj3Q==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Robert Beckett <bob.beckett@collabora.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/4] drm/i915: add gtt misalignment test
-Date:   Tue, 11 Jan 2022 18:02:37 +0000
-Message-Id: <20220111180238.1370631-4-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220111180238.1370631-1-bob.beckett@collabora.com>
-References: <20220111180238.1370631-1-bob.beckett@collabora.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 11 Jan 2022 13:03:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551AFC061751;
+        Tue, 11 Jan 2022 10:03:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11D4DB81CB6;
+        Tue, 11 Jan 2022 18:03:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D25B0C36AE3;
+        Tue, 11 Jan 2022 18:03:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641924207;
+        bh=05lhGuQ61qjKfc4Ul1uwx6BDCffTNP4xWGZ86fqYfB8=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=tvXrT0y0nKGnOcCqOITtjA6YKc4KQTch07cGdSn5U+zcJ6Mf5A2sSpqarhIA9mIDD
+         S1RwPtx0b6ZU3EyLyO0gZefIHUxsr5qIyLLwPlVI4QsNWTEZ0Bfkuy6NelVKqRGLvb
+         /nK/aNRln0QNvnb71CWMyD1iRe74sxqfhckd2spi9k3oeutXEC4kDISbFXeakN56dn
+         pI2T9IrIul8bUANOumMqZbO4CJkKRiH1n8XGEDrpWd4aNg2g3pzBEstCF3cVoniuLv
+         sreuNoZSbJaTJS85DooIM+6l6qiCNpt0eeUkVRflWj7V97uyrcGd56WETK4NPL9KNx
+         JNOViCF9eWrPg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B825DF6078E;
+        Tue, 11 Jan 2022 18:03:27 +0000 (UTC)
+Subject: Re: [GIT PULL] LKMM changes for v5.17
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220110184748.GA1012883@paulmck-ThinkPad-P17-Gen-1>
+References: <20220110184748.GA1012883@paulmck-ThinkPad-P17-Gen-1>
+X-PR-Tracked-List-Id: <linux-arch.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220110184748.GA1012883@paulmck-ThinkPad-P17-Gen-1>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/lkmm.2022.01.09a
+X-PR-Tracked-Commit-Id: c438b7d860b4c1acb4ebff6d8d946d593ca5fe1e
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 1c824bf768d69fce36de748c60c7197a2b838944
+Message-Id: <164192420767.4972.2339136732603982789.pr-tracker-bot@kernel.org>
+Date:   Tue, 11 Jan 2022 18:03:27 +0000
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     torvalds@linux-foundation.org, mingo@kernel.org,
+        linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
+        kernel-team@fb.com, boqun.feng@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-add test to check handling of misaligned offsets and sizes
+The pull request you sent on Mon, 10 Jan 2022 10:47:48 -0800:
 
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
----
- drivers/gpu/drm/i915/selftests/i915_gem_gtt.c | 130 ++++++++++++++++++
- 1 file changed, 130 insertions(+)
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/lkmm.2022.01.09a
 
-diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
-index fea031b4ec4f..28de0b333835 100644
---- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
-+++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
-@@ -22,10 +22,12 @@
-  *
-  */
- 
-+#include "gt/intel_gtt.h"
- #include <linux/list_sort.h>
- #include <linux/prime_numbers.h>
- 
- #include "gem/i915_gem_context.h"
-+#include "gem/i915_gem_region.h"
- #include "gem/selftests/mock_context.h"
- #include "gt/intel_context.h"
- #include "gt/intel_gpu_commands.h"
-@@ -1066,6 +1068,120 @@ static int shrink_boom(struct i915_address_space *vm,
- 	return err;
- }
- 
-+static int misaligned_case(struct i915_address_space *vm, struct intel_memory_region *mr,
-+			   u64 addr, u64 size, unsigned long flags)
-+{
-+	struct drm_i915_gem_object *obj;
-+	struct i915_vma *vma;
-+	int err = 0;
-+	u64 expected_vma_size, expected_node_size;
-+
-+	obj = i915_gem_object_create_region(mr, size, 0, 0);
-+	if (IS_ERR(obj))
-+		return PTR_ERR(obj);
-+
-+	vma = i915_vma_instance(obj, vm, NULL);
-+	if (IS_ERR(vma)) {
-+		err = PTR_ERR(vma);
-+		goto err_put;
-+	}
-+
-+	err = i915_vma_pin(vma, 0, 0, addr | flags);
-+	if (err)
-+		goto err_put;
-+	i915_vma_unpin(vma);
-+
-+	if (!drm_mm_node_allocated(&vma->node)) {
-+		err = -EINVAL;
-+		goto err_put;
-+	}
-+
-+	if (i915_vma_misplaced(vma, 0, 0, addr | flags)) {
-+		err = -EINVAL;
-+		goto err_put;
-+	}
-+
-+	expected_vma_size = round_up(size, 1 << (ffs(vma->page_sizes.gtt) - 1));
-+	expected_node_size = expected_vma_size;
-+
-+	if (IS_DG2(vm->i915) && i915_gem_object_is_lmem(obj)) {
-+		/* dg2 should expand lmem node to 2MB */
-+		expected_vma_size = round_up(size, I915_GTT_PAGE_SIZE_64K);
-+		expected_node_size = round_up(size, I915_GTT_PAGE_SIZE_2M);
-+	}
-+
-+	if (vma->size != expected_vma_size || vma->node.size != expected_node_size) {
-+		err = i915_vma_unbind(vma);
-+		err = -EBADSLT;
-+		goto err_put;
-+	}
-+
-+	err = i915_vma_unbind(vma);
-+	if (err)
-+		goto err_put;
-+
-+	GEM_BUG_ON(drm_mm_node_allocated(&vma->node));
-+
-+err_put:
-+	i915_gem_object_put(obj);
-+	cleanup_freed_objects(vm->i915);
-+	return err;
-+}
-+
-+static int misaligned_pin(struct i915_address_space *vm,
-+			  u64 hole_start, u64 hole_end,
-+			  unsigned long end_time)
-+{
-+	struct intel_memory_region *mr;
-+	enum intel_region_id id;
-+	unsigned long flags = PIN_OFFSET_FIXED | PIN_USER;
-+	int err = 0;
-+	u64 hole_size = hole_end - hole_start;
-+
-+	if (i915_is_ggtt(vm))
-+		flags |= PIN_GLOBAL;
-+
-+	for_each_memory_region(mr, vm->i915, id) {
-+		u64 min_alignment = i915_vm_min_alignment(vm, id);
-+		u64 size = min_alignment;
-+		u64 addr = round_up(hole_start + (hole_size / 2), min_alignment);
-+
-+		/* we can't test < 4k alignment due to flags being encoded in lower bits */
-+		if (min_alignment != I915_GTT_PAGE_SIZE_4K) {
-+			err = misaligned_case(vm, mr, addr + (min_alignment / 2), size, flags);
-+			/* misaligned should error with -EINVAL*/
-+			if (!err)
-+				err = -EBADSLT;
-+			if (err != -EINVAL)
-+				return err;
-+		}
-+
-+		/* test for vma->size expansion to min page size */
-+		err = misaligned_case(vm, mr, addr, PAGE_SIZE, flags);
-+		if (min_alignment > hole_size) {
-+			if (!err)
-+				err = -EBADSLT;
-+			else if (err == -ENOSPC)
-+				err = 0;
-+		}
-+		if (err)
-+			return err;
-+
-+		/* test for intermediate size not expanding vma->size for large alignments */
-+		err = misaligned_case(vm, mr, addr, size / 2, flags);
-+		if (min_alignment > hole_size) {
-+			if (!err)
-+				err = -EBADSLT;
-+			else if (err == -ENOSPC)
-+				err = 0;
-+		}
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int exercise_ppgtt(struct drm_i915_private *dev_priv,
- 			  int (*func)(struct i915_address_space *vm,
- 				      u64 hole_start, u64 hole_end,
-@@ -1135,6 +1251,12 @@ static int igt_ppgtt_shrink_boom(void *arg)
- 	return exercise_ppgtt(arg, shrink_boom);
- }
- 
-+static int igt_ppgtt_misaligned_pin(void *arg)
-+{
-+	return exercise_ppgtt(arg, misaligned_pin);
-+}
-+
-+
- static int sort_holes(void *priv, const struct list_head *A,
- 		      const struct list_head *B)
- {
-@@ -1207,6 +1329,12 @@ static int igt_ggtt_lowlevel(void *arg)
- 	return exercise_ggtt(arg, lowlevel_hole);
- }
- 
-+static int igt_ggtt_misaligned_pin(void *arg)
-+{
-+	return exercise_ggtt(arg, misaligned_pin);
-+}
-+
-+
- static int igt_ggtt_page(void *arg)
- {
- 	const unsigned int count = PAGE_SIZE/sizeof(u32);
-@@ -2137,12 +2265,14 @@ int i915_gem_gtt_live_selftests(struct drm_i915_private *i915)
- 		SUBTEST(igt_ppgtt_fill),
- 		SUBTEST(igt_ppgtt_shrink),
- 		SUBTEST(igt_ppgtt_shrink_boom),
-+		SUBTEST(igt_ppgtt_misaligned_pin),
- 		SUBTEST(igt_ggtt_lowlevel),
- 		SUBTEST(igt_ggtt_drunk),
- 		SUBTEST(igt_ggtt_walk),
- 		SUBTEST(igt_ggtt_pot),
- 		SUBTEST(igt_ggtt_fill),
- 		SUBTEST(igt_ggtt_page),
-+		SUBTEST(igt_ggtt_misaligned_pin),
- 		SUBTEST(igt_cs_tlb),
- 	};
- 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/1c824bf768d69fce36de748c60c7197a2b838944
+
+Thank you!
+
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
