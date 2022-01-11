@@ -2,119 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96DD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EA3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:56:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345180AbiAKR4A (ORCPT
+        id S1345099AbiAKR40 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:56:00 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:54378
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344990AbiAKRzQ (ORCPT
+        Tue, 11 Jan 2022 12:56:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53998 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345055AbiAKRzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:55:16 -0500
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 11 Jan 2022 12:55:24 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 9B5803FFD9
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:55:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641923715;
-        bh=BmB9cazi0hKFnRyUoCMsTBlnp9i8I7ETkGf9B7rE1rY=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=S44c47PptfO81kBVgbL9cifo7+YZos/J9DLX/XHsQ6BD/C8qarPVn3EmEW0e3hibw
-         4K8Ts0nc1IKQtOLXrVc2aQhavQMYJ8ruAgEQqckZZ9hDvwq03tpYLqFUIpe9hWphIY
-         RzMa/O9AqVLcCzeW9RnDrNwQrUfrY2mvy82Z8NHMAKlooP8eMEcDRI8zTSHFdRU/0P
-         pdYidDsZQlMaIntvN5aOHw7my+CbiCj8dXsh6ve07SCVFMq+BFU/JAHEM8oWEiC6k0
-         bG+1owBR2g3Gaio66E/ti4xPlR5nYAIFavbWEqvy7DYHBu18HsMfybIEel2Ud/fD21
-         eIsy6ZEuxu6FA==
-Received: by mail-ed1-f71.google.com with SMTP id q15-20020a056402518f00b003f87abf9c37so13992816edd.15
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:55:15 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BmB9cazi0hKFnRyUoCMsTBlnp9i8I7ETkGf9B7rE1rY=;
-        b=tn1qZYypjsLv3vOUhM/6ugLhosL4OhKL1A3gAYpGTJO8VgygFEroVSsOoOfzxonppE
-         gkW1JAo+JR9Vfj6q9uhe8ndvvkS88vhMssICZFh2AT58GPerM89zvt5SmS0mnPP4SsBb
-         ojIeiCrF20akFJJLVvHf20ZH5T3ScFwfV9spijqkFhdXxO9/mEP1JTzxvFGzbMBYnGf7
-         7a4XZUdVqcjTD5tORpbJ8ZTgjQBhmAc+IhKgt7gsCMRL4DxonTOyy5YIo4eiujFtmqnX
-         ArlIp3jExM9TxVKl4emYJZaNcT4CturjTTzdj63e7dQCus9ghIPn2Yk3dn31REsZ6iZx
-         bfbA==
-X-Gm-Message-State: AOAM532GFKMhDziuYAIbnkcvL5Sk+XGY08sEcECQveou9S5otXfUDc3F
-        64rL6336vaNzEe2ov3UHKS0S8pIGux797i2OdnCG/tWNi6h0y+fB3xATVuA71t4GaJ/MP09qu5J
-        mjWo7gzUuWzb5HYWXES1g1zu8yJ577r13lQgZIJblPw==
-X-Received: by 2002:a17:907:7f05:: with SMTP id qf5mr4531075ejc.597.1641923715344;
-        Tue, 11 Jan 2022 09:55:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxJCLUIrpEiP8qBwAD5GuOZRfnAaOXhGkc/rX1rQBiOtBHZz62WPoiPD24pySPPRqGLiXonwQ==
-X-Received: by 2002:a17:907:7f05:: with SMTP id qf5mr4531069ejc.597.1641923715169;
-        Tue, 11 Jan 2022 09:55:15 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id 7sm3759949ejh.161.2022.01.11.09.55.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 09:55:13 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Javier Martinez Canillas <javier@dowhile0.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] dt-bindings: leds: common: fix unit address in max77693 example
-Date:   Tue, 11 Jan 2022 18:54:30 +0100
-Message-Id: <20220111175430.224421-4-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
-References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0B8561747;
+        Tue, 11 Jan 2022 17:55:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0446CC36AE3;
+        Tue, 11 Jan 2022 17:55:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641923723;
+        bh=RVygJsEvssP8P2RLr8QBntsWiyJZVe5Z/MKKlT2crFs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vFwORGSKM8ks3VasGLSqIDIZTlWdmAlZYTgPPWXyAp1b0yRkRrzlyG1VF9zMaWXIH
+         MCIUILIux34Uol1hrouHg4Jiidd2tvzwWWgoFQNhdargIRaM/IH0Izlrr0gLNrfNz5
+         0qAkx42Ycd7KaQg2IcBCD/oAQLLkrWQKuPNuNzLPjlXwbDqTBwE04Zg/cK0y2XtFqx
+         lj3HtfBvuXSjE0AmvoK21oMYGES0xEUbfuPZJ2MXYUTJkUpmZVME3+tCC3fc6bOtH9
+         LXsiwx7IKimIBJY/BLgv8AKpoRlJkz2w6dnW4KmX1IdKxFDMS32hHaPQzMP6xPIC1X
+         tG+APh78riWjQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1n7LMf-00HSbo-4W; Tue, 11 Jan 2022 17:55:21 +0000
+Date:   Tue, 11 Jan 2022 17:55:20 +0000
+Message-ID: <87tuearwc7.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
+        alexandru.elisei@arm.com, anup.patel@wdc.com,
+        aou@eecs.berkeley.edu, atish.patra@wdc.com,
+        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
+        catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, david@redhat.com,
+        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
+        hca@linux.ibm.com, imbrenda@linux.ibm.com, james.morse@arm.com,
+        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        mingo@redhat.com, mpe@ellerman.id.au, nsaenzju@redhat.com,
+        palmer@dabbelt.com, paulmck@kernel.org, paulus@samba.org,
+        paul.walmsley@sifive.com, pbonzini@redhat.com, seanjc@google.com,
+        suzuki.poulose@arm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+Subject: Re: [PATCH 2/5] kvm/arm64: rework guest entry logic
+In-Reply-To: <20220111153539.2532246-3-mark.rutland@arm.com>
+References: <20220111153539.2532246-1-mark.rutland@arm.com>
+        <20220111153539.2532246-3-mark.rutland@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: mark.rutland@arm.com, linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com, anup.patel@wdc.com, aou@eecs.berkeley.edu, atish.patra@wdc.com, benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de, catalin.marinas@arm.com, chenhuacai@kernel.org, dave.hansen@linux.intel.com, david@redhat.com, frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com, hca@linux.ibm.com, imbrenda@linux.ibm.com, james.morse@arm.com, jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org, mingo@redhat.com, mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com, pbonzini@redhat.com, seanjc@google.com, suzuki.poulose@arm.com, tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com, wanpengli@tencent.com, will@kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The max77693 LED device node should not take an unit address, because it
-is instantiated from a max77693 I2C parent device node.  This also
-splits all examples to separate DTS examples because they are actually
-independent.
+On Tue, 11 Jan 2022 15:35:36 +0000,
+Mark Rutland <mark.rutland@arm.com> wrote:
+> 
+> In kvm_arch_vcpu_ioctl_run() we enter an RCU extended quiescent state
+> (EQS) by calling guest_enter_irqoff(), and unmasked IRQs prior to
+> exiting the EQS by calling guest_exit(). As the IRQ entry code will not
+> wake RCU in this case, we may run the core IRQ code and IRQ handler
+> without RCU watching, leading to various potential problems.
+> 
+> Additionally, we do not inform lockdep or tracing that interrupts will
+> be enabled during guest execution, which caan lead to misleading traces
+> and warnings that interrupts have been enabled for overly-long periods.
+> 
+> This patch fixes these issues by using the new timing and context
+> entry/exit helpers to ensure that interrupts are handled during guest
+> vtime but with RCU watching, with a sequence:
+> 
+> 	guest_timing_enter_irqoff();
+> 
+> 	exit_to_guest_mode();
+> 	< run the vcpu >
+> 	enter_from_guest_mode();
+> 
+> 	< take any pending IRQs >
+> 
+> 	guest_timing_exit_irqoff();
+> 
+> Since instrumentation may make use of RCU, we must also ensure that no
+> instrumented code is run during the EQS. I've split out the critical
+> section into a new kvm_arm_enter_exit_vcpu() helper which is marked
+> noinstr.
+> 
+> Fixes: 1b3d546daf85ed2b ("arm/arm64: KVM: Properly account for guest CPU time")
+> Reported-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+> Signed-off-by: Mark Rutland <mark.rutland@arm.com>
+> Cc: Alexandru Elisei <alexandru.elisei@arm.com>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Frederic Weisbecker <frederic@kernel.org>
+> Cc: James Morse <james.morse@arm.com>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Paolo Bonzini <pbonzini@redhat.com>
+> Cc: Paul E. McKenney <paulmck@kernel.org>
+> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> ---
+>  arch/arm64/kvm/arm.c | 51 ++++++++++++++++++++++++++++----------------
+>  1 file changed, 33 insertions(+), 18 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+> index e4727dc771bf..1721df2522c8 100644
+> --- a/arch/arm64/kvm/arm.c
+> +++ b/arch/arm64/kvm/arm.c
+> @@ -764,6 +764,24 @@ static bool kvm_vcpu_exit_request(struct kvm_vcpu *vcpu, int *ret)
+>  			xfer_to_guest_mode_work_pending();
+>  }
+>  
+> +/*
+> + * Actually run the vCPU, entering an RCU extended quiescent state (EQS) while
+> + * the vCPU is running.
+> + *
+> + * This must be noinstr as instrumentation may make use of RCU, and this is not
+> + * safe during the EQS.
+> + */
+> +static int noinstr kvm_arm_vcpu_enter_exit(struct kvm_vcpu *vcpu)
+> +{
+> +	int ret;
+> +
+> +	exit_to_guest_mode();
+> +	ret = kvm_call_hyp_ret(__kvm_vcpu_run, vcpu);
+> +	enter_from_guest_mode();
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * kvm_arch_vcpu_ioctl_run - the main VCPU run function to execute guest code
+>   * @vcpu:	The VCPU pointer
+> @@ -854,9 +872,9 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+>  		 * Enter the guest
+>  		 */
+>  		trace_kvm_entry(*vcpu_pc(vcpu));
+> -		guest_enter_irqoff();
+> +		guest_timing_enter_irqoff();
+>  
+> -		ret = kvm_call_hyp_ret(__kvm_vcpu_run, vcpu);
+> +		ret = kvm_arm_vcpu_enter_exit(vcpu);
+>  
+>  		vcpu->mode = OUTSIDE_GUEST_MODE;
+>  		vcpu->stat.exits++;
+> @@ -891,26 +909,23 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+>  		kvm_arch_vcpu_ctxsync_fp(vcpu);
+>  
+>  		/*
+> -		 * We may have taken a host interrupt in HYP mode (ie
+> -		 * while executing the guest). This interrupt is still
+> -		 * pending, as we haven't serviced it yet!
+> +		 * We must ensure that any pending interrupts are taken before
+> +		 * we exit guest timing so that timer ticks are accounted as
+> +		 * guest time. Transiently unmask interrupts so that any
+> +		 * pending interrupts are taken.
+>  		 *
+> -		 * We're now back in SVC mode, with interrupts
+> -		 * disabled.  Enabling the interrupts now will have
+> -		 * the effect of taking the interrupt again, in SVC
+> -		 * mode this time.
+> +		 * Per ARM DDI 0487G.b section D1.13.4, an ISB (or other
+> +		 * context synchronization event) is necessary to ensure that
+> +		 * pending interrupts are taken.
+>  		 */
+>  		local_irq_enable();
+> +		isb();
+> +		local_irq_disable();
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- Documentation/devicetree/bindings/leds/common.yaml | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+Small nit: we may be able to elide this enable/isb/disable dance if a
+read of ISR_EL1 returns 0.
 
-diff --git a/Documentation/devicetree/bindings/leds/common.yaml b/Documentation/devicetree/bindings/leds/common.yaml
-index 697102707703..328952d7acbb 100644
---- a/Documentation/devicetree/bindings/leds/common.yaml
-+++ b/Documentation/devicetree/bindings/leds/common.yaml
-@@ -185,9 +185,11 @@ examples:
-         };
-     };
- 
--    led-controller@0 {
-+  - |
-+    #include <dt-bindings/leds/common.h>
-+
-+    led-controller {
-         compatible = "maxim,max77693-led";
--        reg = <0 0x100>;
- 
-         led {
-             function = LED_FUNCTION_FLASH;
-@@ -199,6 +201,9 @@ examples:
-         };
-     };
- 
-+  - |
-+    #include <dt-bindings/leds/common.h>
-+
-     i2c {
-         #address-cells = <1>;
-         #size-cells = <0>;
+> +
+> +		guest_timing_exit_irqoff();
+> +
+> +		local_irq_enable();
+>  
+> -		/*
+> -		 * We do local_irq_enable() before calling guest_exit() so
+> -		 * that if a timer interrupt hits while running the guest we
+> -		 * account that tick as being spent in the guest.  We enable
+> -		 * preemption after calling guest_exit() so that if we get
+> -		 * preempted we make sure ticks after that is not counted as
+> -		 * guest time.
+> -		 */
+> -		guest_exit();
+>  		trace_kvm_exit(ret, kvm_vcpu_trap_get_class(vcpu), *vcpu_pc(vcpu));
+>  
+>  		/* Exit types that need handling before we can be preempted */
+
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+
+	M.
+
 -- 
-2.32.0
-
+Without deviation from the norm, progress is not possible.
