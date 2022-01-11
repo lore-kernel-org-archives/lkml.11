@@ -2,56 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 652CFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C570BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:07:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343932AbiAKRGs (ORCPT
+        id S1343779AbiAKRHR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:06:48 -0500
-Received: from cloudserver094114.home.pl ([79.96.170.134]:59296 "EHLO
-        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343798AbiAKRGn (ORCPT
+        Tue, 11 Jan 2022 12:07:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241502AbiAKRHP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:06:43 -0500
-Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
- by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
- id 448dd6b6d81b87be; Tue, 11 Jan 2022 18:06:42 +0100
-Received: from kreacher.localnet (unknown [213.134.181.61])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 11 Jan 2022 12:07:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B028C06173F;
+        Tue, 11 Jan 2022 09:07:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by v370.home.net.pl (Postfix) with ESMTPSA id B2BFE66B10D;
-        Tue, 11 Jan 2022 18:06:41 +0100 (CET)
-From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To:     Linux ACPI <linux-acpi@vger.kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v1 0/3] ACPI: scan: acpi_scan_init() updates
-Date:   Tue, 11 Jan 2022 17:45:23 +0100
-Message-ID: <11903300.O9o76ZdvQC@kreacher>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BE0EB81C01;
+        Tue, 11 Jan 2022 17:07:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D3BC36AEB;
+        Tue, 11 Jan 2022 17:07:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641920833;
+        bh=Bb3A3XFCuWFd37ZgOFBZ6v9nl+Hpbl1G5QlYpLgRpGY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=FFG3DSiV2Wpd/y9VgiD0yjfSnf2K0AdK+UvJi3GzF6RjCSirT91FRbzTkLRhlbi/x
+         3jJcRnVLq4dbnhkE4Cj4WNAOyenHrlGVlA4ebywvDSKbyrV+3uLI7I4NjbMuvBHrkX
+         wmuEGwi/3mLqHcpONGEH0mZt5i4rzd4nCx+h/EqU8FcUYTXg88H0SLBuVNqoWposvH
+         5o9aGwiLVhllnGoSga5L1s646vAkvYb8Q2WNkfDoR+L6HOdIuWEx4/Yc1aHZxk+Klq
+         53N2//GoOXvw0BDyEFlPCompSGVo+W8ddeLaY7wytpcmlRofvmv0J2VreKJWjUktuZ
+         uchRelT6qVAug==
+Date:   Tue, 11 Jan 2022 11:07:11 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Longji Guo <guolongji@uniontech.com>
+Cc:     bhelgaas@google.com, tglx@linutronix.de, mingo@redhat.com,
+        bp@alien8.de, dave.hansen@linux.intel.com, x86@kernel.org,
+        hpa@zytor.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] X86: PCI: ACPI: Remove initialization of static
+ variables to false
+Message-ID: <20220111170711.GA151667@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="UTF-8"
-X-CLIENT-IP: 213.134.181.61
-X-CLIENT-HOSTNAME: 213.134.181.61
-X-VADE-SPAMSTATE: clean
-X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvuddrudehfedgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecujffqoffgrffnpdggtffipffknecuuegrihhlohhuthemucduhedtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvffufffkggfgtgesthfuredttddtjeenucfhrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqeenucggtffrrghtthgvrhhnpefhgedtffejheekgeeljeevvedtuefgffeiieejuddutdekgfejvdehueejjeetvdenucfkphepvddufedrudefgedrudekuddriedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekuddriedupdhhvghlohepkhhrvggrtghhvghrrdhlohgtrghlnhgvthdpmhgrihhlfhhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqpdhrtghpthhtoheplhhinhhugidqrggtphhisehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghnughrihihrdhshhgvvhgthhgvnhhkoheslhhinhhugidrihhnthgvlhdrtghomhdprhgtphhtthhopehmihhkrgdrfigvshhtvghrsggvrhhgsehlihhnuhigrdhinhhtvghlrdgtohhmpdhr
- tghpthhtohephhguvghgohgvuggvsehrvgguhhgrthdrtghomh
-X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211203080758.962-1-guolongji@uniontech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi All,
+On Fri, Dec 03, 2021 at 04:07:58PM +0800, Longji Guo wrote:
+> Remove the initialization of pci_ignore_seg to false which is pointless.
+> 
+> Signed-off-by: Longji Guo <guolongji@uniontech.com>
 
-There are some minor defects in acpi_scan_init() and because recent changes
-cause static checkers to catch them, it is better to address them right away.
+Applied to pci/enumeration for v5.17, thanks!
 
-Please see patch changelogs for the details.
-
-Thanks!
-
-
-
+> ---
+>  arch/x86/pci/acpi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/pci/acpi.c b/arch/x86/pci/acpi.c
+> index 948656069cdd..052f1d78a562 100644
+> --- a/arch/x86/pci/acpi.c
+> +++ b/arch/x86/pci/acpi.c
+> @@ -20,7 +20,7 @@ struct pci_root_info {
+>  };
+>  
+>  static bool pci_use_crs = true;
+> -static bool pci_ignore_seg = false;
+> +static bool pci_ignore_seg;
+>  
+>  static int __init set_use_crs(const struct dmi_system_id *id)
+>  {
+> -- 
+> 2.20.1
+> 
+> 
+> 
