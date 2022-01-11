@@ -2,93 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:46:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB6BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238865AbiAKTqy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47396 "EHLO
+        id S239053AbiAKTsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 14:48:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238704AbiAKTqx (ORCPT
+        with ESMTP id S238704AbiAKTso (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:46:53 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ED25C061751
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:46:52 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id k21so592069lfu.0
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:46:52 -0800 (PST)
+        Tue, 11 Jan 2022 14:48:44 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4673AC06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:48:44 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id m13so740372pji.3
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:48:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=apllgcjqBKhHcPY4Sq8NPNisypZi4criwNIiRJZhedQ=;
-        b=DXpNeyKuZmuLb0+7GiV1ndEf+fbOh4LSggvF/lB4mjqSyH/QPDWvHKtW8+wfmRxaba
-         CMRbxQZXneFCfwegj3BP/5oSBWQReCyHOyGxajdzvQUBoc/sTr26Mziw45CgHIozWfbU
-         lxpsYR6UzLe9x1TAsegfCo9bZRPnIE6G6pQhLcO7CJTwjzQ457+Nhrkm/RVSlqtMK2VM
-         dK39vrS51bbgseP5/FX7eb/Z+dZxg009dY3os8jvlSn6J8p6UC3FJeRoQLnfCRCrijJI
-         YdG2tMitceKSqcEnJy5NTmwqx+p0WTFDeq24g7NLLLO4/LlAjF4KahWVH8c4X1I/QYZL
-         VGRg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=7IRa/e6NB6rFT1xeAvBSmwQEwtCIOQPPZwvTFtfT0gc=;
+        b=fPaHSQdE3mYpMCRD0r2jIiwqBbCuUNXUK+SmiuCkGo1uYDkdrP4XrRaJuzET6B82GC
+         cJaVzeUiT+8uDbOhaVn3hyIRSi5hnLR2Mjae6hQZc7liihRTJMw0XgBaF/+t/3JlL2aw
+         bg9eruXJohq2EJMV79RtIhjFiUv2Lr4TKmijfheulkSqXxhtEZuU5k1YcOW9jlP+0wDd
+         vWEf6UTOr49OJY+lqzZoRIsfBYe6jRQTEgcM8uM2TzD/oLE7DEypKVzTcko1h+VFigaj
+         hb9yjDedHw42DGApOkoSxOB9ueAr/OibAL5TRUGTis+x0l/2DfutaODvKEh7BNdHq+8f
+         4BnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=apllgcjqBKhHcPY4Sq8NPNisypZi4criwNIiRJZhedQ=;
-        b=Cv0c44WrVc/LPlKM7sij6Xu+BdD6pMwqZ/+dtSSWeqrP2YFnBSGjiocK6m42hsklOv
-         4k8dPhlAxdP/CmiJ4mMRFTPk8KRniiRtYvlBQZ86GATTkzUaRgH1tzmjpAkcdvqeKsmd
-         oc1zr4vAFiyYorZi3Yz7ayvS+PsQSuVcI1KuD20ryZc9qgpf/+WFrHs2bwFbVMpBMy1/
-         sH3JZHbIBPouMDY+Fghde3KzgQkSdh9c3zwHomJuqDk4QZYzsuLsoblATWirwKzoEenb
-         wUuhj0RIF6sHDZ2MwQGCQjEgc26MgrKOVkzauzjyS4jl+40N5h/S+0NOKGRpJt/ZhIou
-         pmfg==
-X-Gm-Message-State: AOAM533I/Fx0Nca8/ML66U20uMzfTVvoHXbwOX+GcARINrrvt0AfmKIQ
-        U29HxhFlTTAk8QqgySBBIN0=
-X-Google-Smtp-Source: ABdhPJwoxw5c19Gb3/UWLAH/Kj/4pGO1pTvvZ3zzqg+dVKHuPS8luPJvCmfXz9PXtbHVwDmXmeLV8w==
-X-Received: by 2002:ac2:4f02:: with SMTP id k2mr4319120lfr.187.1641930410857;
-        Tue, 11 Jan 2022 11:46:50 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id k12sm1372993ljq.91.2022.01.11.11.46.50
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Tue, 11 Jan 2022 11:46:50 -0800 (PST)
-Date:   Tue, 11 Jan 2022 22:52:29 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Jeremy Szu <jeremy.szu@canonical.com>
-Cc:     tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
-User-Agent: mtt
-References: <20210519170357.58410-1-jeremy.szu@canonical.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=7IRa/e6NB6rFT1xeAvBSmwQEwtCIOQPPZwvTFtfT0gc=;
+        b=wa1+AuX9FMa0GUvm8KyZ+BwAOpUYJHjS26PRKqCEK6LHn4sHd2egKq6+NZdJFNySOW
+         ah37/AcEZiQMZXN1TBdJhBFnYbWVvtIKPHutwJMD04e/gR5XjLe26IitOnC4/F0FVP2K
+         mf+IbvM5CRuh12reYA0zVDXkPCa5twPKK2/p5UWns7ClN5EVBzs4GpJtDosbCF86tttz
+         VNy0F4cOygYMWY0S8RcGYIK1khWUNkKuA92xV5NshkUY20d4Df2miRglXIZv8O3+otfE
+         mUNUW3FWchRHIj2vMZdGTX/l8wbr/MQzOYsIgHJ4HTZs/byFkLIshy7j0j9+ctWb+GEL
+         5X/w==
+X-Gm-Message-State: AOAM5334K+lqPCAFSWl9xWfguUviyKH7nUphsJ5EMKtb23MdtE7zNDZ2
+        ThvZweSZ2xpt+xF9woQppxZNdg==
+X-Google-Smtp-Source: ABdhPJzztc3BodKbO8ZutiuVhb0R55InpNbOtbss/Y8nHomiSopp+EdSysJPbYytPupgW8FXq58MvA==
+X-Received: by 2002:a63:ab08:: with SMTP id p8mr5348543pgf.617.1641930523609;
+        Tue, 11 Jan 2022 11:48:43 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g5sm12210826pfj.143.2022.01.11.11.48.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 11:48:42 -0800 (PST)
+Date:   Tue, 11 Jan 2022 19:48:39 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Tian, Kevin" <kevin.tian@intel.com>
+Cc:     "Gao, Chao" <chao.gao@intel.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "pbonzini@redhat.com" <pbonzini@redhat.com>,
+        "tglx@linutronix.de" <tglx@linutronix.de>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 5/6] KVM: x86: Remove WARN_ON in
+ kvm_arch_check_processor_compat
+Message-ID: <Yd3fFxg3IjWPUIqH@google.com>
+References: <20211227081515.2088920-1-chao.gao@intel.com>
+ <20211227081515.2088920-6-chao.gao@intel.com>
+ <Ydy6aIyI3jFQvF0O@google.com>
+ <BN9PR11MB5276DEA925C72AF585E7472C8C519@BN9PR11MB5276.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210519170357.58410-1-jeremy.szu@canonical.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB5276DEA925C72AF585E7472C8C519@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Tue, Jan 11, 2022, Tian, Kevin wrote:
+> > From: Sean Christopherson <seanjc@google.com>
+> > Sent: Tuesday, January 11, 2022 7:00 AM
+> > 
+> > On Mon, Dec 27, 2021, Chao Gao wrote:
+> > > kvm_arch_check_processor_compat() needn't be called with interrupt
+> > > disabled, as it only reads some CRs/MSRs which won't be clobbered
+> > > by interrupt handlers or softirq.
+> > >
+> > > What really needed is disabling preemption. No additional check is
+> > > added because if CONFIG_DEBUG_PREEMPT is enabled, smp_processor_id()
+> > > (right above the WARN_ON()) can help to detect any violation.
+> > 
+> > Hrm, IIRC, the assertion that IRQs are disabled was more about detecting
+> > improper usage with respect to KVM doing hardware enabling than it was
+> > about ensuring the current task isn't migrated.  E.g. as exhibited by patch
+> > 06, extra protections (disabling of hotplug in that case) are needed if
+> > this helper is called outside of the core KVM hardware enabling flow since
+> > hardware_enable_all() does its thing via SMP function call.
+> 
+> Looks the WARN_ON() was added by you. 😊
 
-On Thu, May 20, 2021 at 01:03:53AM +0800, Jeremy Szu wrote:
->The HP EliteBook 855 G8 Notebook PC is using ALC285 codec which needs
->ALC285_FIXUP_HP_MUTE_LED fixup to make it works. After applying the
->fixup, the mute/micmute LEDs work good.
+Yeah, past me owes current me a beer.
 
-I've recently got HP EliteBook 855 G8 and it happens that neither micmute LED 
-nor speakers work (except rare cases, more on that later) in 5.16.0. The 
-corresponding ALC285_FIXUP_HP_MUTE_LED fixup is definitely applied (verified by 
-adding a printk into alc285_fixup_hp_mute_led).
+> commit f1cdecf5807b1a91829a2dc4f254bfe6bafd4776
+> Author: Sean Christopherson <sean.j.christopherson@intel.com>
+> Date:   Tue Dec 10 14:44:14 2019 -0800
+> 
+>     KVM: x86: Ensure all logical CPUs have consistent reserved cr4 bits
+> 
+>     Check the current CPU's reserved cr4 bits against the mask calculated
+>     for the boot CPU to ensure consistent behavior across all CPUs.
+> 
+>     Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+>     Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> 
+> But it's unclear to me how this WARN_ON() is related to what the commit
+> msg tries to explain.
 
-What is the most interesting, both micmute LED and speakers do work on rare 
-boots. I've written some scripts to pick up sound from speakers using a 
-known-good USB microphone. Out of 709 boots today only 16 ended up with working 
-micmute LED and speakers.
+Ya, the changelog and lack of a comment is awful.
 
-Is there anything I can do to help with debugging of this problem?
+> When I read this code it's more like a sanity check on the assumption that it
+> is currently called in SMP function call which runs the said function with
+> interrupt disabled.
 
-Initially reported at https://bugzilla.kernel.org/show_bug.cgi?id=215466
+Yes, and as above, that assertion was more about the helper not really being safe
+for general usage as opposed to wanting to detect use from preemptible context.
+If we end up keeping the WARN_ON, I'll happily write a comment explaining the
+point of the assertion.
