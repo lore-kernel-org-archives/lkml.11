@@ -2,144 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FACBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B081C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 19:20:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346530AbiAKTUR (ORCPT
+        id S1346592AbiAKTUT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 14:20:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40478 "EHLO
+        Tue, 11 Jan 2022 14:20:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350494AbiAKTT4 (ORCPT
+        with ESMTP id S1344749AbiAKTUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 14:19:56 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B24C034003
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:18:37 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id o6so342260edc.4
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:18:37 -0800 (PST)
+        Tue, 11 Jan 2022 14:20:03 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22D09C06175D
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:19:48 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id u25so409067edf.1
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:19:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=B44bvcGMR7HJrF8RjjxVk6yTIMoiYipBLak96y+Vc5U=;
-        b=b2vOkvqM6CrU97KTnO6tCUMPeqtx4Tb9raQiqg+DsCBvIm5TjoldAmKmEfiOSjOJi8
-         Q2wHU19wTfiKrO4kFP5KoxmIJN/5uCNBtFVo+DFeoT5q8s6S7/g7wbRMshY/F57KQpZc
-         HByWVJ89WRq9xPL/+lWSfsSWUMQUEeyGZRwaA=
+        bh=wPEufsiWRxBxFa3x05EyMO915zm/zBjp5MyFqHNhJt0=;
+        b=ERiX4Sa6hmrEflDwpKLYWFdH4eDxBQb8cmI+yn5DTykZAfrSCNR3ZM+K/1r1Hyz4WG
+         c9CpxvgXHLNO0t9dA5xzgQl2mgLMUDOCQlkAPquuslr7eILu6G/mtCEOgGFNw2k5h/eH
+         3cCRKxlYIYK2pE4hpJRpHpPUb0I91BhUci27U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=B44bvcGMR7HJrF8RjjxVk6yTIMoiYipBLak96y+Vc5U=;
-        b=U2OPd/2rEOH//LI8o2lm3vfGGmtf2ISFjEW77J6PjCS73IRr3nZEaYsLzn2gTQLTJc
-         QcOsqAuy1fypNORC5ipVr2iJ9+pTAQonwDaRzbRU9eQr/kpQ8w/35XfpJ22oJwL05dDO
-         lMG4e9XzI7IZOgP3hoBbG/SsT7YSxcOq+vw5bvB5yFVAFyTiehpVd53dxsQmeFBHDkuc
-         1yUJ5pGc4VnORr7jLzkUnm13Ieg5OfM+Lj9Tl5If5nczj78fzD40q7hLMBWxfVdvjJ+s
-         9ejeLWsSJWUhCk4yYqJCSl783Oyv7egZMrrOjCOj0O3WqzUscPhWb0Sxu+DgDSPvy8Yq
-         sI9w==
-X-Gm-Message-State: AOAM531LkFygLspuayM5rqEv5k4zblCKIXUwK5X6oqG38zbexlcANU/6
-        50u1psaG9YQvnIp04xf7mv9aIIgHMSiEsik2yu4=
-X-Google-Smtp-Source: ABdhPJzGDNILMyQ4jD/kvTT92RH9yKNPSTBfIIt7cDxB/U1s2d0F5yYRtTQG5YJiahGkqZ0nbNJbXg==
-X-Received: by 2002:a17:907:9616:: with SMTP id gb22mr4571095ejc.412.1641928716164;
-        Tue, 11 Jan 2022 11:18:36 -0800 (PST)
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com. [209.85.208.41])
-        by smtp.gmail.com with ESMTPSA id gz11sm3885602ejc.223.2022.01.11.11.18.35
+        bh=wPEufsiWRxBxFa3x05EyMO915zm/zBjp5MyFqHNhJt0=;
+        b=cD2salKc7WBikJ0iM+2wsMiqknkB9k68lUw4tlGl0aaSrqeQ0d+t0vnNDW8qOa5DK8
+         FY6ttY6oZ2VfBK5tT51O8zFihu5d+uTiKR2iUzxXsw/jWPwxu3sLSuU5IgQeM51+LRb9
+         4J0OznSPi22JGb/kJr/BL/l3deoAJkHRBEFlV1nNVPMejNY0Ljl0XvB2bbexwVEHJ6Ow
+         04P6eVKtWuZEU6P4wnIfreHbiamKmWi26fXU6D4lWjhR6sSGW+GHP4YEyOjfMFx5zacX
+         Mfx369zMCpmchftQ+uxrO6mzqz6cIxrXM+HvUT+HQSznIHSNDCceqN49PN8RY8Zt7E+O
+         vsEA==
+X-Gm-Message-State: AOAM5339FZsbKa/dk/cT4aJTE4RKfmcXg5W7yJKPWOnQLrFp8vdR5PEn
+        1n83Bye+YmKxn4lPGVLHT/zuSy8dwdT0KgJTWNI=
+X-Google-Smtp-Source: ABdhPJwg7c+fDer2O/ztK+gJR1rJV3SWLZjB//bOa9ltPOUwO1tIrsM4BpWyBkW/bxvSuHtW0uqBvw==
+X-Received: by 2002:aa7:d4d9:: with SMTP id t25mr5845531edr.298.1641928786614;
+        Tue, 11 Jan 2022 11:19:46 -0800 (PST)
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
+        by smtp.gmail.com with ESMTPSA id qa11sm3839232ejc.189.2022.01.11.11.19.41
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 11:18:36 -0800 (PST)
-Received: by mail-ed1-f41.google.com with SMTP id c71so307038edf.6
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:18:35 -0800 (PST)
-X-Received: by 2002:a5d:6083:: with SMTP id w3mr1539236wrt.281.1641928308184;
- Tue, 11 Jan 2022 11:11:48 -0800 (PST)
+        Tue, 11 Jan 2022 11:19:44 -0800 (PST)
+Received: by mail-wm1-f47.google.com with SMTP id p1-20020a1c7401000000b00345c2d068bdso2077701wmc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 11:19:41 -0800 (PST)
+X-Received: by 2002:a05:600c:4f49:: with SMTP id m9mr3682702wmq.8.1641928781521;
+ Tue, 11 Jan 2022 11:19:41 -0800 (PST)
 MIME-Version: 1.0
-References: <20220111071212.1210124-1-surenb@google.com> <Yd3RClhoz24rrU04@sol.localdomain>
-In-Reply-To: <Yd3RClhoz24rrU04@sol.localdomain>
+References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
+ <20211213225350.27481-1-ebiederm@xmission.com> <CAHk-=wiS2P+p9VJXV_fWd5ntashbA0QVzJx15rTnWOCAAVJU_Q@mail.gmail.com>
+ <87sfu3b7wm.fsf@email.froward.int.ebiederm.org> <YdniQob7w5hTwB1v@osiris>
+ <87ilurwjju.fsf@email.froward.int.ebiederm.org> <87o84juwhg.fsf@email.froward.int.ebiederm.org>
+ <57dfc87c7dd5a2f9f9841bba1185336016595ef7.camel@trillion01.com>
+ <87lezmrxlq.fsf@email.froward.int.ebiederm.org> <87mtk2qf5s.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <87mtk2qf5s.fsf@email.froward.int.ebiederm.org>
 From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 11 Jan 2022 11:11:32 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wgwb6pJjvHYmOMT-yp5RYvw0pbv810Wcxdm5S7dWc-s0g@mail.gmail.com>
-Message-ID: <CAHk-=wgwb6pJjvHYmOMT-yp5RYvw0pbv810Wcxdm5S7dWc-s0g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] psi: Fix uaf issue when psi trigger is destroyed
- while being polled
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     Suren Baghdasaryan <surenb@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+Date:   Tue, 11 Jan 2022 11:19:25 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wjZ=aFzFb0BkxVEbN3o6a53R8Gq4hHnEZVCmpDKs3_FCw@mail.gmail.com>
+Message-ID: <CAHk-=wjZ=aFzFb0BkxVEbN3o6a53R8Gq4hHnEZVCmpDKs3_FCw@mail.gmail.com>
+Subject: Re: [PATCH 1/8] signal: Make SIGKILL during coredumps an explicit
+ special case
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Olivier Langlois <olivier@trillion01.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>
+        "<linux-arch@vger.kernel.org>" <linux-arch@vger.kernel.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 10:48 AM Eric Biggers <ebiggers@kernel.org> wrote:
+On Tue, Jan 11, 2022 at 10:51 AM Eric W. Biederman
+<ebiederm@xmission.com> wrote:
 >
-> The write here needs to use smp_store_release(), since it is paired with the
-> concurrent READ_ONCE() in psi_trigger_poll().
+> +       while ((n == -ERESTARTSYS) && test_thread_flag(TIF_NOTIFY_SIGNAL)) {
+> +               tracehook_notify_signal();
+> +               n = __kernel_write(file, addr, nr, &pos);
+> +       }
 
-A smp_store_release() doesn't make sense pairing with a READ_ONCE().
+This reads horribly wrongly to me.
 
-Any memory ordering that the smp_store_release() does on the writing
-side is entirely irrelevant, since the READ_ONCE() doesn't imply any
-ordering on the reading side. Ordering one but not the other is
-nonsensical.
+That "tracehook_notify_signal()" thing *has* to be renamed before we
+have anything like this that otherwise looks like "this will just loop
+forever".
 
-So the proper pattern is to use a WRITE_ONCE() to pair with a
-READ_ONCE() (when you don't care about memory ordering, or you handle
-it explicitly), or a smp_load_acquire() with a smp_store_release() (in
-which case writes before the smp_store_release() on the writing side
-will be ordered wrt accesses after smp_load_acquire() on the reading
-side).
+I'm pretty sure we've discussed that "tracehook" thing before - the
+whole header file is misnamed, and most of the functions in theer are
+too.
 
-Of course, in practice, for pointers, the whole "dereference off a
-pointer" on the read side *does* imply a barrier in all relevant
-situations. So yes, a smp_store_release() -> READ_ONCE() does work in
-practice, although it's technically wrong (in particular, it's wrong
-on alpha, because of the completely broken memory ordering that alpha
-has that doesn't even honor data dependencies as read-side orderings)
+As an ugly alternative, open-code it, so that it's clear that "yup,
+that clears the TIF_NOTIFY_SIGNAL flag".
 
-But in this case, I do think that since there's some setup involved
-with the trigger pointer, the proper serialization is to use
-smp_store_release() to set the pointer, and then smp_load_acquire() on
-the reading side.
-
-Or just use the RCU primitives - they are even better optimized, and
-handle exactly that case, and can be more efficient on some
-architectures if release->acquire isn't already cheap.
-
-That said, we've pretty much always accepted that normal word writes
-are not going to tear, so we *have* also accepted just
-
- - do any normal store of a value on the write side
-
- - do a READ_ONCE() on the reading side
-
-where the reading side doesn't actually care *what* value it gets, it
-only cares that the value it gets is *stable* (ie no compiler reloads
-that might show up as two different values on the reading side).
-
-Of course, that has the same issue as WRITE_ONCE/READ_ONCE - you need
-to worry about memory ordering separately.
-
-> > +     seq->private = new;
->
-> Likewise here.
-
-Yeah, same deal, except here you can't even use the RCU ones, because
-'seq->private' isn't annotated for RCU.
-
-Or you'd do the casting, of course.
-
-              Linus
+             Linus
