@@ -2,138 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 926C7C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244043AbiAKRCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:02:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240781AbiAKRCQ (ORCPT
+        id S244123AbiAKRDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 12:03:12 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]:44649 "EHLO
+        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240781AbiAKRDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:02:16 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE928C06173F;
-        Tue, 11 Jan 2022 09:02:15 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id h10so24036945wrb.1;
-        Tue, 11 Jan 2022 09:02:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=mXVQ1PbsGt6E7WnElgMdh7YxskWHKJ7cXGHBOHZ7Esg=;
-        b=NMl70OoyrtUbqH4c2Bqm742xUeygACYhczAcv/5uL8M0eFRgPdU7bRGW7Y/fUfah/v
-         S55faUvcSAN72EhNj50c0CrL/T4TYAdqYELi4oJKrWPEMVl6/1MjHa287HWFSowFnj5F
-         eVJ7wNv+d0G02h2zc+TAJQ4zMLkcK13WCGgHLV+xQh1GnVaMmLLPpLeyKVo+FiIn7upX
-         qcCmhnj98Jh6nfgQF4YmpXkAG+FW/MACbcWrVimHk+wmMWVNb1uwAKu/jlqX0jQJhkmq
-         UAehWKMyONaAmCLVDo3QqhTrAu1Bxcx1oYdIiCdwMIWKSeOPbByd1iuzy/8xMHqm1vbU
-         aoGQ==
+        Tue, 11 Jan 2022 12:03:09 -0500
+Received: by mail-ot1-f44.google.com with SMTP id w19-20020a056830061300b0058f1dd48932so19239978oti.11;
+        Tue, 11 Jan 2022 09:03:09 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mXVQ1PbsGt6E7WnElgMdh7YxskWHKJ7cXGHBOHZ7Esg=;
-        b=rgAyzgCCf3cPeGPJj3f5DlNefLwUPhbqxVje5xCXxzwVS5U9v+Gn6yRhADaLDEYPbl
-         DKyBTpBeiXUox9D0AfH4oH4w1qRtTDV9I1ZctyBhmNoCBhrcjOHZsjyAkP38x187k1Qe
-         tXwje+ed38ueVu9Tj64WtsVRc8rds7pHMB1OJVZT5sb25ZqixOLUE1v777zwi2pn8hIQ
-         hV73482DpH/mb2m9TLzAspdLei8MN6GyfYvcxRWnvguCq3mQWmLhBEV525xVyz+hmkpK
-         yTTcneGPvfoQOmzYkPAzH2agcf7COS5IbeI2BqA0z5EyDmhL9Guf0eMO4DRemNCtHhD0
-         1Rbg==
-X-Gm-Message-State: AOAM5313ETH6NLCNExvOBbkIVs2Yg0hQLhQpYW5X/aLaCl6O5uil/zQm
-        syfJdce11bCHOG+uZ17r2xs=
-X-Google-Smtp-Source: ABdhPJxhYLtku6q2EWXXe/rY01jj9HMQ9McdpVRef2XLXOOq/you036jaEvGHciimDoZa7etQwaeJg==
-X-Received: by 2002:adf:ab59:: with SMTP id r25mr4783092wrc.321.1641920534311;
-        Tue, 11 Jan 2022 09:02:14 -0800 (PST)
-Received: from [192.168.8.198] ([148.252.129.73])
-        by smtp.gmail.com with ESMTPSA id i8sm12587171wry.108.2022.01.11.09.02.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 09:02:13 -0800 (PST)
-Message-ID: <25f5ba09-a54c-c386-e142-7b7454f1d8d4@gmail.com>
-Date:   Tue, 11 Jan 2022 16:59:00 +0000
+        bh=v5pxCwfoCTuq2L7n8+mgWgSvoekCjKiZJBmym09wYFY=;
+        b=8OpcUqcWyrqmJHFcqJlEFoSYxyDxyA1sqLSwOnLCsa32IF3LJvzdt0A5/TkLE/Slr8
+         F6MsZppylr6UAHB6vqgp5vFtts2KpmYFyogiqw1g71Jgs6xtfrnRYBjei6lBCOQAdzy+
+         ZzBfiqtlmy6pxrK+GKUthFXLEtPSJBe0zCS93K4ExLtgLem5q2zhdfLj/cmwetJ4YbYB
+         Q0Gta/wvwLxPp8tJZ9dxfGnEeh0RfgVo3Q0Yrk9k+LfU+qyztb76u+4LJI+Pf8ikEsdg
+         rdEFlI9IQS4QgTeYHgOmd36ymQRo5NgW34qL0b3sFWmfQzZFszUj8rCV54TNqm+Gv9tg
+         UMuA==
+X-Gm-Message-State: AOAM531jUTV03/cxfG4nv77cFeJ69dG924UeLm/B0FDJeYwLZ/zPxqd+
+        s2O4EHNjPWOfADa3/DovbA==
+X-Google-Smtp-Source: ABdhPJzMfJtTgvczm2Kzwh4+nG+SG4x4EJsGeop3JT5WO9l1QP7x0N5xbB2Dl+0AXl1yiXnE2pGN2Q==
+X-Received: by 2002:a9d:5d05:: with SMTP id b5mr3906269oti.306.1641920589160;
+        Tue, 11 Jan 2022 09:03:09 -0800 (PST)
+Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.googlemail.com with ESMTPSA id 12sm501983otu.9.2022.01.11.09.03.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 09:03:08 -0800 (PST)
+From:   Rob Herring <robh@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: mdio: Drop resets/reset-names child properties
+Date:   Tue, 11 Jan 2022 11:02:47 -0600
+Message-Id: <20220111170248.3160841-1-robh@kernel.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH 13/14] net: inline part of skb_csum_hwoffload_help
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <cover.1641863490.git.asml.silence@gmail.com>
- <0bc041d2d38a08064a642c05ca8cceb0ca165f88.1641863490.git.asml.silence@gmail.com>
- <918a937f6cef44e282353001a7fbba7a@AcuMS.aculab.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <918a937f6cef44e282353001a7fbba7a@AcuMS.aculab.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 09:24, David Laight wrote:
-> From: Pavel Begunkov
->> Sent: 11 January 2022 01:22
->>
->> Inline a HW csum'ed part of skb_csum_hwoffload_help().
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
->>   include/linux/netdevice.h | 16 ++++++++++++++--
->>   net/core/dev.c            | 13 +++----------
->>   2 files changed, 17 insertions(+), 12 deletions(-)
->>
->> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
->> index 3213c7227b59..fbe6c764ce57 100644
->> --- a/include/linux/netdevice.h
->> +++ b/include/linux/netdevice.h
->> @@ -4596,8 +4596,20 @@ void netdev_rss_key_fill(void *buffer, size_t len);
->>
->>   int skb_checksum_help(struct sk_buff *skb);
->>   int skb_crc32c_csum_help(struct sk_buff *skb);
->> -int skb_csum_hwoffload_help(struct sk_buff *skb,
->> -			    const netdev_features_t features);
->> +int __skb_csum_hwoffload_help(struct sk_buff *skb,
->> +			      const netdev_features_t features);
->> +
->> +static inline int skb_csum_hwoffload_help(struct sk_buff *skb,
->> +					  const netdev_features_t features)
->> +{
->> +	if (unlikely(skb_csum_is_sctp(skb)))
->> +		return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> 
-> If that !! doing anything? - doesn't look like it.
+resets/reset-names are device specific and don't belong in the MDIO bus
+schema. For example, it doesn't match what is defined for the
+"qca,ar9331-switch" binding which defines "reset-names" to be "switch"
+rather than "phy". Neither name is that useful IMO.
 
-It doesn't, but left the original style
+Other child properties are also device specific, but those won't conflict
+with device schemas.
 
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/net/mdio.yaml | 6 ------
+ 1 file changed, 6 deletions(-)
 
->> +			skb_crc32c_csum_help(skb);
->> +
->> +	if (features & NETIF_F_HW_CSUM)
->> +		return 0;
->> +	return __skb_csum_hwoffload_help(skb, features);
->> +}
-> 
-> Maybe you should remove some bloat by moving the sctp code
-> into the called function.
-> This probably needs something like?
-> 
-> {
-> 	if (features & NETIF_F_HW_CSUM && !skb_csum_is_sctp(skb))
-> 		return 0;
-> 	return __skb_csum_hw_offload(skb, features);
-> }
-
-I don't like inlining that sctp chunk myself. It seems your way would
-need another skb_csum_is_sctp() in __skb_csum_hw_offload(), if so I
-don't think it's worth it. Would've been great to put the
-NETIF_F_HW_CSUM check first and hide sctp, but don't think it's
-correct. Would be great to hear some ideas.
-
+diff --git a/Documentation/devicetree/bindings/net/mdio.yaml b/Documentation/devicetree/bindings/net/mdio.yaml
+index 53206e4a7a14..b5706d4e7e38 100644
+--- a/Documentation/devicetree/bindings/net/mdio.yaml
++++ b/Documentation/devicetree/bindings/net/mdio.yaml
+@@ -76,12 +76,6 @@ patternProperties:
+           the turn around line low at end of the control phase of the
+           MDIO transaction.
+ 
+-      resets:
+-        maxItems: 1
+-
+-      reset-names:
+-        const: phy
+-
+       reset-gpios:
+         maxItems: 1
+         description:
 -- 
-Pavel Begunkov
+2.32.0
+
