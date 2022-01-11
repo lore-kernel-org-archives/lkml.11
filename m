@@ -2,123 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23800C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 353C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242057AbiAKRwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:52:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48158 "EHLO
+        id S1344872AbiAKRwx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 12:52:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344872AbiAKRwd (ORCPT
+        with ESMTP id S242204AbiAKRwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:52:33 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBBD3C034001;
-        Tue, 11 Jan 2022 09:51:25 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id e19so11669223plc.10;
-        Tue, 11 Jan 2022 09:51:25 -0800 (PST)
+        Tue, 11 Jan 2022 12:52:46 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A034DC06175A
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:52:45 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id r28so6070124wrc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:52:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dCLKPvyqwFiADeW+fUHpp9nGxWyERyIzo7SwvZQVl9s=;
-        b=ZNrTBDgtZqfO/0O53VItY+K50sRyRO/na+zTvONRWtyTbwdYbhkhi5Hu2gKFEe2D/g
-         Nnh8WsX5J7CCnTsCUSg9HtbUCPFWPTQ3k6mS69EuE2c8owF2ITCpxI7UJ6Jn2A4YuDCF
-         9JQ+WpvwRErEy5O4WtipqJ5RG8QIsx/TdLAa8cjQ9MHBabhdnLhi2EOz3oG3jWe27Qqm
-         OffY1/kCH69ThL34Jng8c4HijqodU/cJn9PApWrlSBTN7BFJNFb9fGjC1/a94h+O7lLE
-         twHAdDYbAwQY360CJXEQBaiJlbbej5CHyQJ0f05Tbn80scTpsq2iIAwGGS9ChvfSfVF5
-         /T3w==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vQV7H1k8exOsSWKyQG8KsYMhFmUsr7KfsLG2MHz/o1w=;
+        b=wbT3spThsr/W+NEL008mAHAbggqQ2ihoWWllfG+L4kCSIv1OT+mxhVFT9Xu1lgvIF6
+         UpY/GVGa5gFqxaEyeovNIyngExV+/NbcGXrH5BLqiiMXE0QLvtyD4SdWnwtXHCegzSsq
+         aMtoWWLv7dfHVoXotfUvYpOCKR0drophadDmcpR/LhHQ04ZSnfNg6MebA4UqIMBLSXEn
+         ujhyMQ36X4QmNMQr7jtmMognGzDXlVTdDelv0fL7r+UdwM2eWC16dv6D4J4ZZ3A5p8qV
+         QvNP3tuBmAOqhv0zf9Te312E7+4sTXTt+cmCODhTX6Znv+U/ku+/+JpxK8KQTcmRy+fS
+         rVaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dCLKPvyqwFiADeW+fUHpp9nGxWyERyIzo7SwvZQVl9s=;
-        b=a33EPPn5yp5+VHkKFO4X9JlKQJdwa3Nk7fMPcv9PU1IB/iSBT2T6Pvm7UNUddEjaXL
-         IJJaFZLPTSMI8I7HI3dgaueiGafgzJruGRdsY2WyvRhPK45mTDJON919k5PmM+f4UvZL
-         nkb0sz8aniwT0zIQvaXmMQoQQMlLnA41mgsstd6G3qf9Pw12t6nrbfD+bwP4eHiOQRWv
-         cl7SDjtGExJo6XbM72LRMHoMRBpGL0VpWp2SOSn5p1A7E1OYMSsVnTLQK4oWWN0/0TO4
-         rKMbWW44gywALKd04R3uZs3GfQtQcGLKk8i4UD6tnmr982Z3P688f0mjBL4yc+CFEy8j
-         Tx+g==
-X-Gm-Message-State: AOAM530bb2hOI0sNCkxlExOZ0tz154vbkmKIxPNgOGNwwVBN/BO9xBmd
-        LKpWzh60BiAl8LKQFTzGr52TkS8N/uUH+qxGrws=
-X-Google-Smtp-Source: ABdhPJydex/pZa/4x+YHMH39gD/e+xj74BR+O6j9dxvaO25qdr9CmE/7L4+pz0l4wjJfYoyr/SRVhaeHRmPponx1o8s=
-X-Received: by 2002:a63:7c50:: with SMTP id l16mr4997656pgn.95.1641923485232;
- Tue, 11 Jan 2022 09:51:25 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vQV7H1k8exOsSWKyQG8KsYMhFmUsr7KfsLG2MHz/o1w=;
+        b=wfVgWwgS3zS/z2CkFmCIf4iGEPYqM9zKhi/l/J6cRgPyCk0lvNCX8DnkoRkLd6JonR
+         ydNdf3wVjNw+/0oyd4CSNi8mYeeMhO7UE2o3VOHRzfK/JDyYzT3usARXmj3NBWa5FVg6
+         nIGab20zZVSeoM670Y4wZsX1G6zUzbfrbDA+WFckfF8PKrIXI3Kw4T8K93FGP21d3vwM
+         J77ymVgYScO9u1j6T5xJrD3OYK/gcOz07inty9wWqWI/eLOGZxY+SexIa8+A91Ng7r5C
+         fWaBdZNtoFph4IoU/Q+D8D9BlpqAW2sUlisrt7BVAfIvlh6fAQffpnZ8gcMIQl7LL72i
+         muBw==
+X-Gm-Message-State: AOAM5327LH7bs5WTdtDQFO3F+bmVBCJSq6M369Gl1AsDJdjDzxwi3o7p
+        TYfuE27rMh+RYY6J6EscJtqw5w==
+X-Google-Smtp-Source: ABdhPJy/SOq67WEpADi1gHx1k1OD5/uwhjSEt55UTwb/G6+/YUHv8px0Q2P0S9U1Q6+lJBpgMIaP5Q==
+X-Received: by 2002:a5d:6d8a:: with SMTP id l10mr4845085wrs.534.1641923563972;
+        Tue, 11 Jan 2022 09:52:43 -0800 (PST)
+Received: from ?IPv6:2a01:e34:ed2f:f020:f884:1ae9:44d3:2a67? ([2a01:e34:ed2f:f020:f884:1ae9:44d3:2a67])
+        by smtp.googlemail.com with ESMTPSA id i11sm9031090wrn.59.2022.01.11.09.52.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 09:52:14 -0800 (PST)
+Subject: Re: [PATCH v5 2/6] powercap/drivers/dtpm: Add hierarchy creation
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     rjw@rjwysocki.net, lukasz.luba@arm.com, robh@kernel.org,
+        heiko@sntech.de, arnd@linaro.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@kernel.org>
+References: <20211218130014.4037640-1-daniel.lezcano@linaro.org>
+ <20211218130014.4037640-3-daniel.lezcano@linaro.org>
+ <CAPDyKFrLTsUxG8JHdK33h2BT8pxeHk6kiU-4uGrvxUhcQKg3Sw@mail.gmail.com>
+ <8fcc0ef8-b0c7-da73-434f-31c88896aed5@linaro.org>
+ <CAPDyKFqzxnfh0kow5mzoApFMQpKOAv=e1b7Cy9H-iEh99Wmagw@mail.gmail.com>
+ <cbc70ea7-39b4-b5e8-b5c0-45fb436f53eb@linaro.org>
+ <CAPDyKFoFpEjakaeb1JvYg47qoagGnzwyh2T1SpHQiwB3sFgkoA@mail.gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <aad4eb52-67b0-a486-53c6-755de3dee6be@linaro.org>
+Date:   Tue, 11 Jan 2022 18:52:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220108051121.28632-1-yichun@openresty.com>
-In-Reply-To: <20220108051121.28632-1-yichun@openresty.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 11 Jan 2022 09:51:13 -0800
-Message-ID: <CAADnVQLRtVtfw3GxiHskLRBV8BKgeEVOP8qbje-mRNKn9rMOFw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: core: Fix the call ins's offset s32 -> s16 truncation
-To:     "Yichun Zhang (agentzh)" <yichun@openresty.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAPDyKFoFpEjakaeb1JvYg47qoagGnzwyh2T1SpHQiwB3sFgkoA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 7, 2022 at 9:11 PM Yichun Zhang (agentzh)
-<yichun@openresty.com> wrote:
->
-> The BPF interpreter always truncates the BPF CALL instruction's 32-bit
-> jump offset to 16-bit. Large BPF programs run by the interpreter often
-> hit this issue and result in weird behaviors when jumping to the wrong
-> destination instructions.
->
-> The BPF JIT compiler does not have this bug.
->
-> Fixes: 1ea47e01ad6ea ("bpf: add support for bpf_call to interpreter")
-> Signed-off-by: Yichun Zhang (agentzh) <yichun@openresty.com>
-> ---
->  kernel/bpf/core.c | 15 ++++++++-------
->  1 file changed, 8 insertions(+), 7 deletions(-)
->
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 2405e39d800f..dc3c90992f33 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -59,6 +59,9 @@
->  #define CTX    regs[BPF_REG_CTX]
->  #define IMM    insn->imm
->
-> +static u64 (*interpreters_args[])(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5,
-> +                                 const struct bpf_insn *insn);
-> +
->  /* No hurry in this branch
->   *
->   * Exported for the bpf jit load helper.
-> @@ -1560,10 +1563,10 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
->                 CONT;
->
->         JMP_CALL_ARGS:
-> -               BPF_R0 = (__bpf_call_base_args + insn->imm)(BPF_R1, BPF_R2,
-> -                                                           BPF_R3, BPF_R4,
-> -                                                           BPF_R5,
-> -                                                           insn + insn->off + 1);
-> +               BPF_R0 = (interpreters_args[insn->off])(BPF_R1, BPF_R2,
-> +                                                       BPF_R3, BPF_R4,
-> +                                                       BPF_R5,
-> +                                                       insn + insn->imm + 1);
->                 CONT;
->
->         JMP_TAIL_CALL: {
-> @@ -1810,9 +1813,7 @@ EVAL4(PROG_NAME_LIST, 416, 448, 480, 512)
->  void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
->  {
->         stack_depth = max_t(u32, stack_depth, 1);
-> -       insn->off = (s16) insn->imm;
-> -       insn->imm = interpreters_args[(round_up(stack_depth, 32) / 32) - 1] -
-> -               __bpf_call_base_args;
-> +       insn->off = (round_up(stack_depth, 32) / 32) - 1;
->         insn->code = BPF_JMP | BPF_CALL_ARGS;
+On 11/01/2022 09:28, Ulf Hansson wrote:
+> On Mon, 10 Jan 2022 at 16:55, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
+>>
+>> On 07/01/2022 16:54, Ulf Hansson wrote:
+>>> [...]
+>>>
+>>>>>> +static int dtpm_for_each_child(const struct dtpm_node *hierarchy,
+>>>>>> +                              const struct dtpm_node *it, struct dtpm *parent)
+>>>>>> +{
+>>>>>> +       struct dtpm *dtpm;
+>>>>>> +       int i, ret;
+>>>>>> +
+>>>>>> +       for (i = 0; hierarchy[i].name; i++) {
+>>>>>> +
+>>>>>> +               if (hierarchy[i].parent != it)
+>>>>>> +                       continue;
+>>>>>> +
+>>>>>> +               dtpm = dtpm_node_callback[hierarchy[i].type](&hierarchy[i], parent);
+>>>>>> +               if (!dtpm || IS_ERR(dtpm))
+>>>>>> +                       continue;
+>>>>>> +
+>>>>>> +               ret = dtpm_for_each_child(hierarchy, &hierarchy[i], dtpm);
+>>>>>
+>>>>> Why do you need to recursively call dtpm_for_each_child() here?
+>>>>>
+>>>>> Is there a restriction on how the dtpm core code manages adding
+>>>>> children/parents?
+>>>>
+>>>> [ ... ]
+>>>>
+>>>> The recursive call is needed given the structure of the tree in an array
+>>>> in order to connect with the parent.
+>>>
+>>> Right, I believe I understand what you are trying to do here, but I am
+>>> not sure if this is the best approach to do this. Maybe it is.
+>>>
+>>> The problem is that we are also allocating memory for a dtpm and we
+>>> call dtpm_register() on it in this execution path - and this memory
+>>> doesn't get freed up nor unregistered, if any of the later recursive
+>>> calls to dtpm_for_each_child() fails.
+>>>
+>>> The point is, it looks like it can get rather messy with the recursive
+>>> calls to cope with the error path. Maybe it's easier to store the
+>>> allocated dtpms in a list somewhere and use this to also find a
+>>> reference of a parent?
+>>
+>> I think it is better to continue the construction with other nodes even
+>> some of them failed to create, it should be a non critical issue. As an
+>> analogy, if one thermal zone fails to create, the other thermal zones
+>> are not removed.
+> 
+> Well, what if it fails because its "consumer part" is waiting for some
+> resource to become available?
+> 
+> Maybe the devfreq driver/subsystem isn't available yet and causes
+> -EPROBE_DEFER, for example. Perhaps this isn't the way the dtpm
+> registration works currently, but sure it's worth considering when
+> going forward, no?
 
-Neat. Please add a test case and resubmit.
+It should be solved by the fact that the DTPM description is a module
+and loaded after the system booted. The module loading ordering is
+solved by userspace.
+
+I agree, we could improve that but it is way too complex to be addressed
+in a single series and should be part of a specific change IMO.
+
+> In any case, papering over the error seems quite scary to me. I would
+> much prefer if we instead could propagate the error code correctly to
+> the caller of dtpm_create_hierarchy(), to allow it to retry if
+> necessary.
+
+It is really something we should be able to address later.
+
+>> In addition, that should allow multiple nodes description for different
+>> DT setup for the same platform. That should fix the issue pointed by Bjorn.
+>>
+>>> Later on, when we may decide to implement "dtpm_destroy_hierarchy()"
+>>> (or whatever we would call such interface), you probably need a list
+>>> of the allocated dtpms anyway, don't you think?
+>>
+>> No it is not necessary, the dtpms list is the dtpm tree itself and it
+>> can be destroyed recursively.
+> 
+> I could quite figure out how that should work though, but I assume
+> that is what the ->release() callback in the struct dtpm_ops is there
+> to help with, in some way.
+> 
+> Kind regards
+> Uffe
+> 
+
+
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
