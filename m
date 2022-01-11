@@ -2,91 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D30C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EF79C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 09:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236883AbiAKJNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 04:13:43 -0500
-Received: from mga06.intel.com ([134.134.136.31]:34703 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234465AbiAKJNm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 04:13:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641892422; x=1673428422;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wxK4JVsCowwIeFcR/jlNkVOqhexiiPM/2Udwn90bZxk=;
-  b=kWvLRDWxK6oZud5wR6zDmk+LZN8ulJLBPRA9kXDyd7Tu1lot0TDfQjar
-   HD1XeS+gJTNmdWSZ5/9GMXnWMPiF/J0tQjxmajQtRVMcvirnQBb3ivpGZ
-   sF4awQFMC36hC4Xm652flP6drxcLktk0VcNA+/dqV7ikXP6yJ4oj2KXhG
-   kfMOoH+YklgTDu/3QLWYmftrWcKCqRGxbgLN91oA1zAKp9RhCmEdgdqUM
-   tuOZzS2J+d4O/apIWMh603TEZ08pcDdbY8mVgUJXSPTQZ8X9YCLFgdK/T
-   4wKPGULU7aRwvwxgo18Ievy/Z5GFlYDp9F12STRC5H5b/Yy5sX1M+Z6UR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304179660"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="304179660"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 01:13:41 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="558302531"
-Received: from noblecat-mobl.ger.corp.intel.com (HELO [10.213.217.217]) ([10.213.217.217])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 01:13:39 -0800
-Message-ID: <5da796b5-a19e-e07b-7cb5-7a30726bd2ff@linux.intel.com>
-Date:   Tue, 11 Jan 2022 09:13:37 +0000
+        id S237017AbiAKJO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 04:14:29 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:47116 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234465AbiAKJO2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 04:14:28 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 406F31F41CF3
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1641892467;
+        bh=OpxYFNpUHYIuTIBv0HTc/nmFe9b8Qv/VGZti7c3+o2U=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=E36tFSyAwJ9yqEtW4Zcvc4HVc5FLPeXnQLYaUHLeifo11gu0nrFYC+KLoL1I5wQUc
+         S0gtJ6Wg+HcWrdQXzuQDhl2NIWOZrk5opIpPRITsMDsDkSi/XOTvWCzr0mJ1JwfN49
+         +X1aS8HgGRjr3ngm3mHvdVKIcGjWxBz13wCTl5Eqwqm43o7GXVdyQXuf48BK3xr5Nk
+         otD8S5HJwXMMl+A2AUoM/aWxIJb+fSeAy3rcEa9DkbfP5YempRDLYjmk4Mla6C1e5D
+         dbCv8ynX5pr2F12D3mVTfuXItQeE/PxnxUUcjyl582bHDOM2MdwgXYK7pwCW1yRASV
+         JiDoBJx+kpv3w==
+Subject: Re: [PATCH v2 5/6] memory: mtk-smi: Add sleep ctrl function
+To:     Yong Wu <yong.wu@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, youlin.pei@mediatek.com,
+        anan.sun@mediatek.com, lc.kan@mediatek.com, yi.kuo@mediatek.com,
+        anthony.huang@mediatek.com
+References: <20220111063904.7583-1-yong.wu@mediatek.com>
+ <20220111063904.7583-6-yong.wu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Message-ID: <e3815197-8963-99a6-e83d-b801de1725f3@collabora.com>
+Date:   Tue, 11 Jan 2022 10:14:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH] i915: make array flex_regs static const
+In-Reply-To: <20220111063904.7583-6-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
 Content-Language: en-US
-To:     Colin Ian King <colin.i.king@gmail.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220109203152.51414-1-colin.i.king@gmail.com>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <20220109203152.51414-1-colin.i.king@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 09/01/2022 20:31, Colin Ian King wrote:
-> Don't populate the read-only array flex_regs on the stack but
-> instead it static const. Also makes the object code a little smaller.
+Il 11/01/22 07:39, Yong Wu ha scritto:
+> Sleep control means that when the larb goes to sleep, we should wait a bit
+> until all the current commands are finished. Thus, when the larb runtime
+> suspends, we need to enable this function to wait until all the existed
+> commands are finished. When the larb resumes, just disable this function.
+> This function only improves the safety of bus. Add a new flag for this
+> function. Prepare for mt8186.
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->   drivers/gpu/drm/i915/i915_perf.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/i915_perf.c b/drivers/gpu/drm/i915/i915_perf.c
-> index e27f3b7cf094..df698960fdc0 100644
-> --- a/drivers/gpu/drm/i915/i915_perf.c
-> +++ b/drivers/gpu/drm/i915/i915_perf.c
-> @@ -2114,7 +2114,7 @@ gen8_update_reg_state_unlocked(const struct intel_context *ce,
->   	u32 ctx_oactxctrl = stream->perf->ctx_oactxctrl_offset;
->   	u32 ctx_flexeu0 = stream->perf->ctx_flexeu0_offset;
->   	/* The MMIO offsets for Flex EU registers aren't contiguous */
-> -	i915_reg_t flex_regs[] = {
-> +	static const i915_reg_t flex_regs[] = {
->   		EU_PERF_CNTL0,
->   		EU_PERF_CNTL1,
->   		EU_PERF_CNTL2,
-> 
+> Signed-off-by: Anan Sun <anan.sun@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-And will merge shortly, thanks for the patch.
-
-Regards,
-
-Tvrtko
