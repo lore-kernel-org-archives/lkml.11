@@ -2,129 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 101BFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:35:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8720C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343637AbiAKPfv (ORCPT
+        id S1343654AbiAKPgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:35:51 -0500
-Received: from foss.arm.com ([217.140.110.172]:48172 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240480AbiAKPfu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:35:50 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 648871FB;
-        Tue, 11 Jan 2022 07:35:49 -0800 (PST)
-Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DB9C83F774;
-        Tue, 11 Jan 2022 07:35:44 -0800 (PST)
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
-        anup.patel@wdc.com, aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
-        catalin.marinas@arm.com, chenhuacai@kernel.org,
-        dave.hansen@linux.intel.com, david@redhat.com,
-        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
-        hca@linux.ibm.com, imbrenda@linux.ibm.com, james.morse@arm.com,
-        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
-        mark.rutland@arm.com, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
-        paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com,
-        pbonzini@redhat.com, seanjc@google.com, suzuki.poulose@arm.com,
-        tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-Subject: [PATCH 0/5] kvm: fix latent guest entry/exit bugs
-Date:   Tue, 11 Jan 2022 15:35:34 +0000
-Message-Id: <20220111153539.2532246-1-mark.rutland@arm.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 11 Jan 2022 10:36:06 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:58141 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240480AbiAKPgF (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 10:36:05 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R621e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1afBHr_1641915362;
+Received: from 30.39.146.113(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1afBHr_1641915362)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 11 Jan 2022 23:36:03 +0800
+Message-ID: <ee973642-6bae-e748-cea9-ed18bca461f0@linux.alibaba.com>
+Date:   Tue, 11 Jan 2022 23:36:02 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH net 1/3] net/smc: Resolve the race between link group
+ access and termination
+To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641806784-93141-1-git-send-email-guwen@linux.alibaba.com>
+ <1641806784-93141-2-git-send-email-guwen@linux.alibaba.com>
+ <8b720956-c8fe-0fe2-b019-70518d5c60c8@linux.ibm.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <8b720956-c8fe-0fe2-b019-70518d5c60c8@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Several architectures have latent bugs around guest entry/exit, most
-notably:
+Thanks for your review.
 
-1) Several architectures enable interrupts between guest_enter() and
-   guest_exit(). As this period is an RCU extended quiescent state (EQS) this
-   is unsound unless the irq entry code explicitly wakes RCU, which most
-   architectures only do for entry from usersapce or idle.
+On 2022/1/11 4:23 pm, Karsten Graul wrote:
+> On 10/01/2022 10:26, Wen Gu wrote:
+>> We encountered some crashes caused by the race between the access
+>> and the termination of link groups.
+>>
+> 
+> These waiters (seaparate ones for smcd and smcr) are used to wait for all lgrs
+> to be deleted when a module unload or reboot was triggered, so it must only be
+> woken up when the lgr is actually freed.
 
-   I believe this affects: arm64, riscv, s390
+Thanks for your reminding, I will move the wake-up code to __smc_lgr_free().
 
-   I am not sure about powerpc.
-
-2) Several architectures permit instrumentation of code between
-   guest_enter() and guest_exit(), e.g. KASAN, KCOV, KCSAN, etc. As
-   instrumentation may directly o indirectly use RCU, this has the same
-   problems as with interrupts.
-
-   I believe this affects: arm64, mips, powerpc, riscv, s390
-
-3) Several architectures do not inform lockdep and tracing that
-   interrupts are enabled during the execution of the guest, or do so in
-   an incorrect order. Generally
-   this means that logs will report IRQs being masked for much longer
-   than is actually the case, which is not ideal for debugging. I don't
-   know whether this affects the correctness of lockdep.
-
-   I believe this affects: arm64, mips, powerpc, riscv, s390
-
-This was previously fixed for x86 specifically in a series of commits:
-
-  87fa7f3e98a1310e ("x86/kvm: Move context tracking where it belongs")
-  0642391e2139a2c1 ("x86/kvm/vmx: Add hardirq tracing to guest enter/exit")
-  9fc975e9efd03e57 ("x86/kvm/svm: Add hardirq tracing on guest enter/exit")
-  3ebccdf373c21d86 ("x86/kvm/vmx: Move guest enter/exit into .noinstr.text")
-  135961e0a7d555fc ("x86/kvm/svm: Move guest enter/exit into .noinstr.text")
-  160457140187c5fb ("KVM: x86: Defer vtime accounting 'til after IRQ handling")
-  bc908e091b326467 ("KVM: x86: Consolidate guest enter/exit logic to common helpers")
-
-But other architectures were left broken, and the infrastructure for
-handling this correctly is x86-specific.
-
-This series introduces generic helper functions which can be used to
-handle the problems above, and migrates architectures over to these,
-fixing the latent issues.
-
-I wasn't able to figure my way around powerpc and s390, so I have not
-altered these. I'd appreciate if anyone could take a look at those
-cases, and either have a go at patches or provide some feedback as to
-any alternative approaches which work work better there.
-
-I have build-tested the arm64, mips, riscv, and x86 cases, but I don't
-have a suitable HW setup to test these, so any review and/or testing
-would be much appreciated.
-
-I've pushed the series (based on v5.16) to my kvm/entry-rework branch:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=kvm/entry-rework
-  git://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git kvm/entry-rework
-
-... also tagged as kvm-entry-rework-20210111
+And maybe the vlan put and device put of smcd are also need to be moved
+to __smc_lgr_free()?, because it also seems to be more suitable to put these
+resources when lgr is actually freed. What do you think?
 
 Thanks,
-Mark.
-
-Mark Rutland (5):
-  kvm: add exit_to_guest_mode() and enter_from_guest_mode()
-  kvm/arm64: rework guest entry logic
-  kvm/mips: rework guest entry logic
-  kvm/riscv: rework guest entry logic
-  kvm/x86: rework guest entry logic
-
- arch/arm64/kvm/arm.c     |  51 +++++++++++-------
- arch/mips/kvm/mips.c     |  37 ++++++++++++--
- arch/riscv/kvm/vcpu.c    |  44 ++++++++++------
- arch/x86/kvm/svm/svm.c   |   4 +-
- arch/x86/kvm/vmx/vmx.c   |   4 +-
- arch/x86/kvm/x86.c       |   4 +-
- arch/x86/kvm/x86.h       |  45 ----------------
- include/linux/kvm_host.h | 108 +++++++++++++++++++++++++++++++++++++--
- 8 files changed, 206 insertions(+), 91 deletions(-)
-
--- 
-2.30.2
-
+Wen Gu
