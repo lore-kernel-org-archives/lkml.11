@@ -2,76 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0132EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91875C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:04:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350153AbiAKSEM (ORCPT
+        id S1350165AbiAKSEO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:04:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344360AbiAKSDj (ORCPT
+        Tue, 11 Jan 2022 13:04:14 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4389 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345158AbiAKSDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:03:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB7B0C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 10:03:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A1553B81C04
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 18:03:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 593B7C36AE3;
-        Tue, 11 Jan 2022 18:03:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641924216;
-        bh=u7ZHUdJCKySxUyXzQ75radbM/RCwTsoT81xt1C6H/4U=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=sduwYHj4t+mEugkjcm2GSsLiPHgn5slx8wGXUe9wmEb3GenMvnXZIleJviJbcWwiT
-         qBAs/Pjs6hRDPM0/quIAuFKc0F1Bwh53Xz/AGkQqNp656uGYYFI8PX05XkfUZCU29/
-         8eoGDrEEhf3icKU45fC6KCvjoS26PdiE2Ffrwl05V4gB/2/YzxsMTZKdVwskrJGoB5
-         1KPtfFVZ2+fYAl0MZXC4MOz1rDU7aFoWILRw0r23VMRCkq0mU5YQbjnvZ9OvHt4EbP
-         k65EpvlQuYSq35uiN/7z9PL2GUwH3rC0vko3rCxEaN4LSfc++vsEHlx2io4r0cS/TZ
-         dkyeM2IFrmHwA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 43CBAF6078A;
-        Tue, 11 Jan 2022 18:03:36 +0000 (UTC)
-Subject: Re: [GIT PULL] printk for 5.17
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YdxDzgijikydIwOP@alley>
-References: <YdxDzgijikydIwOP@alley>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YdxDzgijikydIwOP@alley>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.17
-X-PR-Tracked-Commit-Id: d12013c80e1524e3e85c01d50adcefd70b1a8b6f
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: a229327733b86aa585effdb0d27a87b12aa51597
-Message-Id: <164192421627.4972.5614920480911998547.pr-tracker-bot@kernel.org>
-Date:   Tue, 11 Jan 2022 18:03:36 +0000
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org
+        Tue, 11 Jan 2022 13:03:51 -0500
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JYJPq0CrVz67cQc;
+        Wed, 12 Jan 2022 02:00:15 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 11 Jan 2022 19:03:47 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <dhowells@redhat.com>, <dwmw2@infradead.org>,
+        <herbert@gondor.apana.org.au>, <davem@davemloft.net>
+CC:     <keyrings@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-integrity@vger.kernel.org>, <linux-fscrypt@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <zohar@linux.ibm.com>,
+        <ebiggers@kernel.org>, Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH 01/14] mpi: Introduce mpi_key_length()
+Date:   Tue, 11 Jan 2022 19:03:05 +0100
+Message-ID: <20220111180318.591029-2-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220111180318.591029-1-roberto.sassu@huawei.com>
+References: <20220111180318.591029-1-roberto.sassu@huawei.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 10 Jan 2022 15:33:50 +0100:
+Introduce the new function to get the number of bits and bytes from an MPI.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.17
+Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+---
+ include/linux/mpi.h |  2 ++
+ lib/mpi/mpicoder.c  | 33 ++++++++++++++++++++++++++-------
+ 2 files changed, 28 insertions(+), 7 deletions(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/a229327733b86aa585effdb0d27a87b12aa51597
-
-Thank you!
-
+diff --git a/include/linux/mpi.h b/include/linux/mpi.h
+index eb0d1c1db208..a7dd4c9d8120 100644
+--- a/include/linux/mpi.h
++++ b/include/linux/mpi.h
+@@ -90,6 +90,8 @@ enum gcry_mpi_format {
+ };
+ 
+ MPI mpi_read_raw_data(const void *xbuffer, size_t nbytes);
++int mpi_key_length(const void *xbuffer, unsigned int ret_nread,
++		   unsigned int *nbits_arg, unsigned int *nbytes_arg);
+ MPI mpi_read_from_buffer(const void *buffer, unsigned *ret_nread);
+ int mpi_fromstr(MPI val, const char *str);
+ MPI mpi_scanval(const char *string);
+diff --git a/lib/mpi/mpicoder.c b/lib/mpi/mpicoder.c
+index 39c4c6731094..cd10ae9968b7 100644
+--- a/lib/mpi/mpicoder.c
++++ b/lib/mpi/mpicoder.c
+@@ -79,22 +79,41 @@ MPI mpi_read_raw_data(const void *xbuffer, size_t nbytes)
+ }
+ EXPORT_SYMBOL_GPL(mpi_read_raw_data);
+ 
+-MPI mpi_read_from_buffer(const void *xbuffer, unsigned *ret_nread)
++int mpi_key_length(const void *xbuffer, unsigned int ret_nread,
++		   unsigned int *nbits_arg, unsigned int *nbytes_arg)
+ {
+ 	const uint8_t *buffer = xbuffer;
+-	unsigned int nbits, nbytes;
+-	MPI val;
++	unsigned int nbits;
+ 
+-	if (*ret_nread < 2)
+-		return ERR_PTR(-EINVAL);
++	if (ret_nread < 2)
++		return -EINVAL;
+ 	nbits = buffer[0] << 8 | buffer[1];
+ 
+ 	if (nbits > MAX_EXTERN_MPI_BITS) {
+ 		pr_info("MPI: mpi too large (%u bits)\n", nbits);
+-		return ERR_PTR(-EINVAL);
++		return -EINVAL;
+ 	}
+ 
+-	nbytes = DIV_ROUND_UP(nbits, 8);
++	if (nbits_arg)
++		*nbits_arg = nbits;
++	if (nbytes_arg)
++		*nbytes_arg = DIV_ROUND_UP(nbits, 8);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(mpi_key_length);
++
++MPI mpi_read_from_buffer(const void *xbuffer, unsigned int *ret_nread)
++{
++	const uint8_t *buffer = xbuffer;
++	unsigned int nbytes;
++	MPI val;
++	int ret;
++
++	ret = mpi_key_length(xbuffer, *ret_nread, NULL, &nbytes);
++	if (ret < 0)
++		return ERR_PTR(ret);
++
+ 	if (nbytes + 2 > *ret_nread) {
+ 		pr_info("MPI: mpi larger than buffer nbytes=%u ret_nread=%u\n",
+ 				nbytes, *ret_nread);
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.32.0
+
