@@ -2,134 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9EFCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 257C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350127AbiAKSvy convert rfc822-to-8bit (ORCPT
+        id S1350186AbiAKSwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:51:54 -0500
-Received: from out02.mta.xmission.com ([166.70.13.232]:43654 "EHLO
-        out02.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242645AbiAKSvx (ORCPT
+        Tue, 11 Jan 2022 13:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34518 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242645AbiAKSwk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:51:53 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:41480)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n7MFM-0064vi-Bf; Tue, 11 Jan 2022 11:51:52 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:34256 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n7MFK-00EYmx-4x; Tue, 11 Jan 2022 11:51:51 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Olivier Langlois <olivier@trillion01.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "<linux-arch@vger.kernel.org>" <linux-arch@vger.kernel.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <20211213225350.27481-1-ebiederm@xmission.com>
-        <CAHk-=wiS2P+p9VJXV_fWd5ntashbA0QVzJx15rTnWOCAAVJU_Q@mail.gmail.com>
-        <87sfu3b7wm.fsf@email.froward.int.ebiederm.org>
-        <YdniQob7w5hTwB1v@osiris>
-        <87ilurwjju.fsf@email.froward.int.ebiederm.org>
-        <87o84juwhg.fsf@email.froward.int.ebiederm.org>
-        <57dfc87c7dd5a2f9f9841bba1185336016595ef7.camel@trillion01.com>
-        <87lezmrxlq.fsf@email.froward.int.ebiederm.org>
-Date:   Tue, 11 Jan 2022 12:51:43 -0600
-In-Reply-To: <87lezmrxlq.fsf@email.froward.int.ebiederm.org> (Eric
-        W. Biederman's message of "Tue, 11 Jan 2022 11:28:01 -0600")
-Message-ID: <87mtk2qf5s.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 11 Jan 2022 13:52:40 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C646C06173F;
+        Tue, 11 Jan 2022 10:52:40 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id o7so116625ioo.9;
+        Tue, 11 Jan 2022 10:52:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+d1ZeXXq1xWjZdp0a/kklqkhFu5pCumiIP9r3pU07RA=;
+        b=ixZToSTvKWyoKi8kROyeDiMw1wQ5IFcOJPJFNnsQO6K8WwoM5oXR0oWJXfkGYb186y
+         5bNbeamb22HD3vx58AzgbhDhBpxcfMJf7cpa4/8WyF1wZ24A9+K66PNGVl0Oha0RwMB7
+         lRWgRlPVgLizHDrAC6wdz6k9AXA7BljTWN2uYfmNceRx2hTmVnCCip+5a57UwxWCob7B
+         KVKrfohOqQJ2v9c5mcEqMpMj3Or5LIbJQYkjGD0PERi+6dK6IW9JUPBizq3/M0XHLUES
+         KfGBxf32JZ5yJmwfhAi/sKdYsK80P1Nu0Pa3bbHTUl3rhWVqwNoU/NEQGt12w7USeqpb
+         8b3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+d1ZeXXq1xWjZdp0a/kklqkhFu5pCumiIP9r3pU07RA=;
+        b=TViz4g30zlzYMSVrSH6YJkSoE5TisJQzOtNDp3THbmspf+VW/brUeMk0WQNtGbqD5V
+         sWUVp0oQ/WcnaMrtshvQ6c3DoC4wnibqHNzS265jxwG/15h9LrB1dL+dNvIVaqTOy/bi
+         Nev0POBclDdimsiPUM3Uba2RiK8mQNR/iHTTPcVhrlgGb9px0NdgD7A1mC7NejnmEGTO
+         i9dVYVZ2X4SZ1w6anBwfxQz0VeeZPoS99vL0iH/UKpSkKWFG9Lwsak1dT2W4SvnKJyuq
+         yWVfVf4sLGLLuZXw1kS6EtiPVDvuuYWAW/pBMsBMXSSI8DBbsq7EfFLa6PlG816fsoIJ
+         uTrw==
+X-Gm-Message-State: AOAM530upPYEIH86zp2/EErvwSHzjwHp7ZVZm1NCEz9zBRe2kL0+bAIP
+        oKeuAiYUq7Dc2Cx2lnhY8Y7oRhyzawkhqEfaB/s=
+X-Google-Smtp-Source: ABdhPJwivP9fRDpKvRLUdMR7csDsvPZRq6oOhKSUxm/dEZywlXLCLZJwMUYNdFdp1I4bVmWcYuMlJNVE0mavGO+LgbA=
+X-Received: by 2002:a05:6638:4090:: with SMTP id m16mr3291604jam.67.1641927160095;
+ Tue, 11 Jan 2022 10:52:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1n7MFK-00EYmx-4x;;;mid=<87mtk2qf5s.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1/sAY0EBan+5IxNXdYAQEe8V39Z5bYE1WY=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 1/8] signal: Make SIGKILL during coredumps an explicit
- special case
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <20220111160900.1150050-1-eugene.shalygin@gmail.com>
+ <20220111160900.1150050-2-eugene.shalygin@gmail.com> <805dd382-262c-36f0-fcf5-5776223040c8@roeck-us.net>
+ <CAB95QATsy2ACgyxWLy2PM2peqoYDEa_j96VNSHBG6GMd+x3LzQ@mail.gmail.com> <050ee3ed-4c30-afb9-d7ce-898d634284be@roeck-us.net>
+In-Reply-To: <050ee3ed-4c30-afb9-d7ce-898d634284be@roeck-us.net>
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Date:   Tue, 11 Jan 2022 19:52:29 +0100
+Message-ID: <CAB95QATb_En0KqXRktY99q8UXmosCftMrekpFiAKrAocwFEKmg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] hwmon: (asus-ec-sensors) add driver for ASUS EC
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Eric W. Biederman" <ebiederm@xmission.com> writes:
+> Just drop it.
 
-> Olivier Langlois <olivier@trillion01.com> writes:
->
->> On Mon, 2022-01-10 at 15:11 -0600, Eric W. Biederman wrote:
->>> 
->>> 
->>> I have been able to confirm that changing wait_event_interruptible to
->>> wait_event_killable was the culprit.  Something about the way
->>> systemd-coredump handles coredumps is not compatible with
->>> wait_event_killable.
->>
->> This is my experience too that systemd-coredump is doing something
->> unexpected. When I tested the patch:
->> https://lore.kernel.org/lkml/cover.1629655338.git.olivier@trillion01.com/
->>
->> to make sure that the patch worked, sending coredumps to systemd-
->> coredump was making systemd-coredump, well, core dump... Not very
->> useful...
->
-> Oh.  Wow....
->
->> Sending the dumps through a pipe to anything else than systemd-coredump
->> was working fine.
->
-> Interesting.
->
-> I need to read through the pipe code and see how all of that works.  For
-> writing directly to disk only ignoring killable interruptions are the
-> usual semantics.  Ordinary pipe code has different semantics, and I
-> suspect that is what is tripping things up.
->
-> As for systemd-coredump it does whatever it does and I suspect some
-> versions of systemd-coredump are simply not robust if a coredump stops
-> unexpectedly.
->
-> The good news is the pipe code is simple enough, it will be possible to
-> completely read through that code.
+OK.
+Are there any other edits (want to generate as few new emails as possible)?
 
-My bug, obvious in hindsight is that "try_to_wait_up(TASK_INTERRUPTIBLE)"
-does not work on a task that is in sleeping in TASK_KILLABLE.
-That looks fixable in wait_for_dump_helpers it just won't be as easy
-as changing wait_event_interruptible to wait_event_killable.
-
-To prevent short pipe write from causing short writes during a coredump
-I believe all we need to do handle -ERSTARTSYS with TIF_NOTIFY_SIGNAL.
-Something like what I have below.
-
-Until wait_for_dump_helpers is sorted out the coredump won't wait for
-the dump helper the way it should, but otherwise things should work.
-
-diff --git a/fs/coredump.c b/fs/coredump.c
-index 7dece20b162b..0db1baf91420 100644
---- a/fs/coredump.c
-+++ b/fs/coredump.c
-@@ -796,6 +796,10 @@ static int __dump_emit(struct coredump_params *cprm, const void *addr, int nr)
- 	if (dump_interrupted())
- 		return 0;
- 	n = __kernel_write(file, addr, nr, &pos);
-+	while ((n == -ERESTARTSYS) && test_thread_flag(TIF_NOTIFY_SIGNAL)) {
-+		tracehook_notify_signal();
-+		n = __kernel_write(file, addr, nr, &pos);
-+	}
- 	if (n != nr)
- 		return 0;
- 	file->f_pos = pos;
-
-Eric
+Regards,
+Eugene
