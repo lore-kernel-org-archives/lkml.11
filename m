@@ -2,114 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4658C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:20:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 222E2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242111AbiAKRUv convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:20:51 -0500
-Received: from out01.mta.xmission.com ([166.70.13.231]:35542 "EHLO
-        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238268AbiAKRUs (ORCPT
+        id S242729AbiAKRWV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 12:22:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238268AbiAKRWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:20:48 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:33224)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n7KpC-00651J-OM; Tue, 11 Jan 2022 10:20:47 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:59860 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n7KpB-00EEcj-B3; Tue, 11 Jan 2022 10:20:46 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-api@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Kyle Huey <me@kylehuey.com>, Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@ZenIV.linux.org.uk>
-References: <87a6ha4zsd.fsf@email.froward.int.ebiederm.org>
-        <20211213225350.27481-1-ebiederm@xmission.com>
-        <9363765f-9883-75ee-70f1-a1a8e9841812@gmail.com>
-        <87pmp67y4r.fsf@email.froward.int.ebiederm.org>
-        <5bbb54c4-7504-cd28-5dde-4e5965496625@gmail.com>
-        <87bl0m14ew.fsf@email.froward.int.ebiederm.org>
-        <6692758a-0af2-67e0-26fd-365625b3ad0c@gmail.com>
-Date:   Tue, 11 Jan 2022 11:20:16 -0600
-In-Reply-To: <6692758a-0af2-67e0-26fd-365625b3ad0c@gmail.com> (Dmitry
-        Osipenko's message of "Tue, 11 Jan 2022 11:59:39 +0300")
-Message-ID: <87iluqtcj3.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 11 Jan 2022 12:22:19 -0500
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C74C06173F;
+        Tue, 11 Jan 2022 09:22:19 -0800 (PST)
+Received: by mail-io1-xd32.google.com with SMTP id i14so23393221ioj.12;
+        Tue, 11 Jan 2022 09:22:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Z4PSF1qKJn9d8H1hOu0YBwxP6y9n6SgeAApu4vyXpdo=;
+        b=hQcc/9xody5O8hUkmBv5hW5FFhQIAhbDH3ytiOPvcL/imXoeAvZm81jeGqhF0mRNLs
+         Tz3NM0Zaw3wah+uDZgDFWdMLeCJI6ryZbzUOwDkT5A3WOchUFBmw0O0b09TOaHsdh113
+         2ty/s/njqgoAIK3vRObywFYVkuyIlvvcOG4LGJB43sCVTEUGO6swkHNSrSC5rw4xF5uw
+         9JLNdM1hAMSsIYb2XChYZ4ze+AMFcBnASYLefO0m5IYCPk0zyqoojoc/oirOoGt5e50J
+         VUSa48S7YXEjI1gM/oodvHQd0v1lmvj23t99Zafb4ABY/5plKQKHpxlb53v5FhUeH/G/
+         lZgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Z4PSF1qKJn9d8H1hOu0YBwxP6y9n6SgeAApu4vyXpdo=;
+        b=DFDlfVJNODPt9cr4drYnrOPM791gyXzLtuqIzwiaQYH93JDWdIbAAlvZVXmueAovj4
+         jNGSLsdhZVuM/xNLT3GcLzK5R/q143tW/02GzVXlzATVt61208fpAbLcfPYFB3sJfUd2
+         nAJ2ZZVNvyX2JQihOcNUDgnIf/vo+Z1qVlpHC9RlQI/xQ0w6W8LsB65RAIt/KeY/qNYx
+         px/AhA7j+pQGf0YffIl/D57yg/l4q9PkTNCOciHaoA3zRjMPRFr536ktK3Og7aCk2dsp
+         L5fDGsNY0HZz3pYSZSWMlDI8kMf3/QHDsjsjWt6AiR8T/977E7NfCjDlpiXoCl9QPLdL
+         1TJw==
+X-Gm-Message-State: AOAM533z/gseovM1IjpbmNmFzJCxIuj1aXy+hh14vzSf+Ah+n8+beMP8
+        Xw7IyHkpNVGR9bsCUumQd2LzeWFrlbBTnuqze5s=
+X-Google-Smtp-Source: ABdhPJwaWvvhYZt95uzkBI3IFBkQpOcFZp0j2qe06DezXWmKxadseVJf6IkwVafwifBmW6WnftXxvuzZuDhyU5ENUEw=
+X-Received: by 2002:a05:6602:330e:: with SMTP id b14mr2794462ioz.192.1641921739232;
+ Tue, 11 Jan 2022 09:22:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-X-XM-SPF: eid=1n7KpB-00EEcj-B3;;;mid=<87iluqtcj3.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+9cMX4NoesSJ+elhthiVZ8FKRFkT0ojwM=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 1/8] signal: Make SIGKILL during coredumps an explicit
- special case
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+References: <20220111160900.1150050-1-eugene.shalygin@gmail.com>
+ <20220111160900.1150050-2-eugene.shalygin@gmail.com> <805dd382-262c-36f0-fcf5-5776223040c8@roeck-us.net>
+In-Reply-To: <805dd382-262c-36f0-fcf5-5776223040c8@roeck-us.net>
+From:   Eugene Shalygin <eugene.shalygin@gmail.com>
+Date:   Tue, 11 Jan 2022 18:22:08 +0100
+Message-ID: <CAB95QATsy2ACgyxWLy2PM2peqoYDEa_j96VNSHBG6GMd+x3LzQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] hwmon: (asus-ec-sensors) add driver for ASUS EC
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Denis Pauk <pauk.denis@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dmitry Osipenko <digetx@gmail.com> writes:
+> I do not see the point of marking this as doc strings
+=E2=80=A6
+> and neither this one, nor anywhere else where "**" is used.
+> The resulting "documentation" is just confusing and provides no value.
 
-> 08.01.2022 21:13, Eric W. Biederman пишет:
->> Dmitry Osipenko <digetx@gmail.com> writes:
->> 
->>> 05.01.2022 22:58, Eric W. Biederman пишет:
->>>>
->>>> I have not yet been able to figure out how to run gst-pluggin-scanner in
->>>> a way that triggers this yet.  In truth I can't figure out how to
->>>> run gst-pluggin-scanner in a useful way.
->>>>
->>>> I am going to set up some unit tests and see if I can reproduce your
->>>> hang another way, but if you could give me some more information on what
->>>> you are doing to trigger this I would appreciate it.
->>>
->>> Thanks, Eric. The distro is Arch Linux, but it's a development
->>> environment where I'm running latest GStreamer from git master. I'll try
->>> to figure out the reproduction steps and get back to you.
->> 
->> Thank you.
->> 
->> Until I can figure out why this is causing problems I have dropped the
->> following two patches from my queue:
->>  signal: Make SIGKILL during coredumps an explicit special case
->>  signal: Drop signals received after a fatal signal has been processed
->> 
->> I have replaced them with the following two patches that just do what
->> is needed for the rest of the code in the series:
->>  signal: Have prepare_signal detect coredumps using
->>  signal: Make coredump handling explicit in complete_signal
->> 
->> Perversely my failure to change the SIGKILL handling when coredumps are
->> happening proves to me that I need to change the SIGKILL handling when
->> coredumps are happening to make the code more maintainable.
->
-> Eric, thank you again. I started to look at the reproduction steps and
-> haven't completed it yet. Turned out the problem affects only older
-> NVIDIA Tegra2 Cortex-A9 CPU that lacks support of ARM NEON instructions
-> set, hence the problem isn't visible on x86 and other CPUs out of the
-> box. I'll need to check whether the problem could be simulated on all
-> arches or maybe it's specific to VFP exception handling of ARM32.
+My editor shows nice tooltips for /** comments and I did not realise
+kernel doc processes
+all the source unconditionally. Anyway, I removed them.
 
-It sounds like the gstreamer plugins only fail on certain hardware on
-arm32, and things don't hang in coredumps unless the plugins fail.
-That does make things tricky to minimize.
+> Why not just "sensors" directly ? Is there ever going to be anything else=
+ ?
+> If not, the value could be added to the dmi array directly without pointe=
+r
+> indirection.
 
-I have just verified that the known problematic code is not
-in linux-next for Jan 11 2022.
+I once had an ASUS board where they changed board headers in some
+hardware revision. I suspect the EC sensors
+interface is valid for their other boards too, we just need users to
+collect those data. It's quite possible that the DMI
+board version would change in that case, so that we can add another
+DMI match if required.
+So, I'll take your advice and move the sensors to the driver_data field.
 
-If folks as they have time can double check linux-next and verify all is
-well I would appreciate it.  I don't expect that there are problems but
-sometimes one problem hides another.
+> FWIW, MODULE_VERSION tends to have zero value since it tends to end up
+> not being updated.
 
-Eric
+Setting the value to 0 then :)
+
+Best regards,
+Eugene
