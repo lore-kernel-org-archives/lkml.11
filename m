@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E16C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9A9C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:32:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245319AbiAKVb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 16:31:56 -0500
+        id S245323AbiAKVcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 16:32:04 -0500
 Received: from m43-7.mailgun.net ([69.72.43.7]:62766 "EHLO m43-7.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245286AbiAKVby (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 16:31:54 -0500
+        id S245271AbiAKVcD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 16:32:03 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1641936714; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1641936723; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=IipEt6X2sz0uGxKxcrHK14Grejue9YEi7bumYWFyT8M=; b=Vp6zuijvUgIpDLYqoO6tlUK0bidsSF3+nwzqUvnSyXknG4ns37c6qb5lmUqstPRuDP7vL/zP
- a74nA2b+xMRUw0ZIpDoEWefyz62ziKBklyEWW2RXEgL99nZigyvI3OAeyoym9+LuthxDvZU3
- z3uVKjOHP+5KdsrZMqNaaKrehvY=
+ bh=vyBK0LSqO0I5EQ5e4hsKAdcFelt6JTL0Ja4sPoT+Tlw=; b=KRuGvUxqbn/QmyPaKJ0Nj9zyhHHx3hvSCqiuhKGGqYRcOja3V4+S9Wiol1Rqrk1PYaZKJT5m
+ GqEir53iRR77auARBnkmE8iGi7tyOtEzClmE9N2Gxd1doAn1A0hI87q1TMVkHPKMmp2CwucO
+ AnWVxt2V5nsRrceDzr6dUkzE2kc=
 X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
  smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 61ddf74469943108c513a75e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 11 Jan 2022 21:31:48
+ 61ddf75069943108c513df46 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 11 Jan 2022 21:32:00
  GMT
 Sender: quic_akhilpo=quicinc.com@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D7ED7C43619; Tue, 11 Jan 2022 21:31:48 +0000 (UTC)
+        id DA053C4361A; Tue, 11 Jan 2022 21:31:59 +0000 (UTC)
 Received: from hyd-lnxbld559.qualcomm.com (unknown [202.46.22.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: akhilpo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 73337C43616;
-        Tue, 11 Jan 2022 21:31:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 73337C43616
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A0DA3C43619;
+        Tue, 11 Jan 2022 21:31:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org A0DA3C43619
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
 From:   Akhil P Oommen <quic_akhilpo@quicinc.com>
@@ -43,12 +43,20 @@ To:     freedreno <freedreno@lists.freedesktop.org>,
         Rob Clark <robdclark@gmail.com>,
         OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
         <devicetree@vger.kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/4] arm64: dts: qcom: sc7280: Support gpu speedbin
-Date:   Wed, 12 Jan 2022 03:01:28 +0530
-Message-Id: <20220112030115.2.I4c2cb95f06f0c37038c80cc1ad20563fdf0618e2@changeid>
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        Sean Paul <sean@poorly.run>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4/4] drm/msm/adreno: Update the name of 7c3 gpu
+Date:   Wed, 12 Jan 2022 03:01:30 +0530
+Message-Id: <20220112030115.4.Idbc978090270c7b838387acc74d8a06a186a3cf4@changeid>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <20220112030115.1.Ibac66e1e0e565313bc28f192e6c94cb508f205eb@changeid>
 References: <20220112030115.1.Ibac66e1e0e565313bc28f192e6c94cb508f205eb@changeid>
@@ -56,97 +64,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the speedbin fuse and the required opps to support gpu sku.
+Update the name in the gpulist for 7c3 gpu as per the latest
+recommendation.
 
 Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
 ---
 
- arch/arm64/boot/dts/qcom/sc7280.dtsi | 46 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
+ drivers/gpu/drm/msm/adreno/adreno_device.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-index 365a2e0..f8fc8b8 100644
---- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-@@ -605,6 +605,11 @@
- 			power-domains = <&rpmhpd SC7280_MX>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
-+
-+			gpu_speed_bin: gpu_speed_bin@1e9 {
-+				reg = <0x1e9 0x2>;
-+				bits = <5 8>;
-+			};
- 		};
- 
- 		sdhc_1: sdhci@7c4000 {
-@@ -1762,6 +1767,9 @@
- 			interconnect-names = "gfx-mem";
- 			#cooling-cells = <2>;
- 
-+			nvmem-cells = <&gpu_speed_bin>;
-+			nvmem-cell-names = "speed_bin";
-+
- 			gpu_opp_table: opp-table {
- 				compatible = "operating-points-v2";
- 
-@@ -1769,18 +1777,56 @@
- 					opp-hz = /bits/ 64 <315000000>;
- 					opp-level = <RPMH_REGULATOR_LEVEL_LOW_SVS>;
- 					opp-peak-kBps = <1804000>;
-+					opp-supported-hw = <0x03>;
- 				};
- 
- 				opp-450000000 {
- 					opp-hz = /bits/ 64 <450000000>;
- 					opp-level = <RPMH_REGULATOR_LEVEL_SVS>;
- 					opp-peak-kBps = <4068000>;
-+					opp-supported-hw = <0x03>;
- 				};
- 
- 				opp-550000000 {
- 					opp-hz = /bits/ 64 <550000000>;
- 					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
- 					opp-peak-kBps = <6832000>;
-+					opp-supported-hw = <0x03>;
-+				};
-+
-+				opp-608000000 {
-+					opp-hz = /bits/ 64 <608000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L2>;
-+					opp-peak-kBps = <8368000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-700000000 {
-+					opp-hz = /bits/ 64 <700000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_NOM>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-812000000 {
-+					opp-hz = /bits/ 64 <812000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_NOM_L1>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-840000000 {
-+					opp-hz = /bits/ 64 <840000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_TURBO>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
-+				};
-+
-+				opp-900000000 {
-+					opp-hz = /bits/ 64 <900000000>;
-+					opp-level = <RPMH_REGULATOR_LEVEL_TURBO_L1>;
-+					opp-peak-kBps = <8532000>;
-+					opp-supported-hw = <0x02>;
- 				};
- 			};
- 		};
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
+index f35c631..2f1cc56 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_device.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+@@ -330,7 +330,7 @@ static const struct adreno_info gpulist[] = {
+ 		.hwcg = a660_hwcg,
+ 	}, {
+ 		.rev = ADRENO_REV(6, 3, 5, ANY_ID),
+-		.name = "Adreno 7c Gen 3",
++		.name = "Adreno 7c+ Gen 3",
+ 		.fw = {
+ 			[ADRENO_FW_SQE] = "a660_sqe.fw",
+ 			[ADRENO_FW_GMU] = "a660_gmu.bin",
 -- 
 2.7.4
 
