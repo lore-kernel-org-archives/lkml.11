@@ -2,117 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D35BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA60C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349659AbiAKPrF (ORCPT
+        id S1349667AbiAKPrn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:47:05 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:53358 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349554AbiAKPrC (ORCPT
+        Tue, 11 Jan 2022 10:47:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240511AbiAKPrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:47:02 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-213-RicbFyfrMCWpx8UYA-IVfw-1; Tue, 11 Jan 2022 15:46:57 +0000
-X-MC-Unique: RicbFyfrMCWpx8UYA-IVfw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Tue, 11 Jan 2022 15:46:56 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Tue, 11 Jan 2022 15:46:56 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-CC:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Theodore Tso <tytso@mit.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
-Subject: RE: [PATCH v2 2/2] random: use BLAKE2s instead of SHA1 in extraction
-Thread-Topic: [PATCH v2 2/2] random: use BLAKE2s instead of SHA1 in extraction
-Thread-Index: AQHYBunGGyLRC02Uk06ON333WcASqqxd8NBA
-Date:   Tue, 11 Jan 2022 15:46:56 +0000
-Message-ID: <caed82818cdb466aade033501f57d183@AcuMS.aculab.com>
-References: <20211223141113.1240679-1-Jason@zx2c4.com>
- <20211223141113.1240679-2-Jason@zx2c4.com>
- <CAMuHMdU0spv9X_wErkBBWQ9kV9f1zE_YNcu5nPbTG_64Lh_h0w@mail.gmail.com>
- <CAHmME9pZu-UvCK=uP-sxXL127BmbjmrD2=M7cNd9vHdJEsverw@mail.gmail.com>
- <Yd18+iQ8zicsSPa0@zx2c4.com>
-In-Reply-To: <Yd18+iQ8zicsSPa0@zx2c4.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Tue, 11 Jan 2022 10:47:41 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FEEC06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 07:47:41 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id w15-20020a4a9d0f000000b002c5cfa80e84so4536499ooj.5
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 07:47:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jMG0vbtEa+ML1xi6XUQirSdL6PThzAhk+T7wuKwADzk=;
+        b=IuJx7n/w/EvIJQvmXmZO6O68L8pxYvFez3pzSAdz2MJ/yFaM4s0AHZJCXozWW8YLDV
+         Zud7SIrTb8/P1VUt0l4alz3sJcK6oXN/UgOwPHivTzm7Rc6UgZyxYUM1t9IyLz4/4w3Y
+         18NPuxOY2vOX1beWvFcYVtaZ6ZzchwB45XdaFYa5Amv5Hjim8fd0H5oT2TLRCeOOcG1l
+         F7tPt2TDCDF36M5O76bLQDdViOXQWvm2VXy0/HCas2dNSW71QCbp3lUmMgGifX2STRgn
+         5kVgzAuDbsGras11M+eyxJcfkHqUmKzBMB6osLdmGODvH/IxfhzAF5mXsqf8RXM4s+9A
+         tTZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jMG0vbtEa+ML1xi6XUQirSdL6PThzAhk+T7wuKwADzk=;
+        b=7q7qy3PcYDsEpk+mQG+HmjthnWuzMriX/EQUY7nLlFN5VrC91OgMTP0evNzOgXocH3
+         DMPg85g3N0wvL2ZkxvSZLtn2IZA7G9ExfOnoLks60yAzcOuOUETuvXkFpPn78fnLmelq
+         U2sVVaH8Jad851JbOzgvvjjktG7b0mPcP4z2gbKQufiIaNOvgHlVr7d25Of6gZQgOCAK
+         o8WElLiqPEg+V6YbeTl7lNli5dsmEworKfGh2pG3siqi9xiFKrfYK3LRG2FmdrM1Iu11
+         rWBp1n+NjQvVF0qVkn9RFZoZE7Som7a8F7rY4kvQRBC+AibSlpGSOC8i9f+sCP1d12vd
+         OtZA==
+X-Gm-Message-State: AOAM531NAnbsR/CzdA83xPgOfBxz3XxrURTh6mbYh/oJLthQ8mBQsD6E
+        rI7g4J+H8TcriqGJZ4BfBOzt3sw1FXkpK+TPx0E=
+X-Google-Smtp-Source: ABdhPJznbu977mBLf8BFtnM4LnUCv4oN39tXDyA0UffhTak52PzKEZ7+ARl+Gh74qb/NmSkFDVimWK15hH2MtsVMmY8=
+X-Received: by 2002:a4a:9568:: with SMTP id n37mr3492430ooi.73.1641916061107;
+ Tue, 11 Jan 2022 07:47:41 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20211230040626.646807-1-victor.liu@nxp.com> <CADnq5_PsxrYeZ+p5NbXRks3EaJrYNMN+vbUJkiKHZ4cf=x=dsg@mail.gmail.com>
+ <d4ae974f38d96bc02db6c137e622315388a99ba0.camel@nxp.com>
+In-Reply-To: <d4ae974f38d96bc02db6c137e622315388a99ba0.camel@nxp.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Tue, 11 Jan 2022 10:47:29 -0500
+Message-ID: <CADnq5_OxdYK9E8NRk2ExRdwgKdO0L431MaP8TOqvDMcrt61zcw@mail.gmail.com>
+Subject: Re: [PATCH] drm/atomic: Check new_crtc_state->active to determine if
+ CRTC needs disable in self refresh mode
+To:     Liu Ying <victor.liu@nxp.com>
+Cc:     Maling list - DRI developers <dri-devel@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@chromium.org>,
+        David Airlie <airlied@linux.ie>,
+        Sean Paul <seanpaul@chromium.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkDQo+IFNlbnQ6IDExIEphbnVhcnkgMjAyMiAxMjo1MA0K
-PiANCj4gT24gVHVlLCBKYW4gMTEsIDIwMjIgYXQgMToyOCBQTSBKYXNvbiBBLiBEb25lbmZlbGQg
-PEphc29uQHp4MmM0LmNvbT4gd3JvdGU6DQo+ID4gSWYgeW91J3JlIHJlYWxseSBxdWl0ZSBjb25j
-ZXJuZWQgYWJvdXQgbTY4ayBjb2RlIHNpemUsIEkgY2FuIHByb2JhYmx5DQo+ID4gZG8gc29tZSB0
-aGluZ3MgdG8gcmVkdWNlIHRoYXQuIEZvciBleGFtcGxlLCBibGFrZTJzMjU2X2htYWMgaXMgb25s
-eQ0KPiA+IHVzZWQgYnkgd2lyZWd1YXJkIGFuZCBpdCBjb3VsZCBwcm9iYWJseSBiZSBtYWRlIGxv
-Y2FsIHRoZXJlLiBBbmQgd2l0aA0KPiA+IHNvbWUgdHJpdmlhbCBsb29wIHJlLXJvbGxpbmcsIEkg
-Y2FuIHNoYXZlIG9mZiBhbm90aGVyIDIzMDAgYnl0ZXMuIEFuZA0KPiA+IEkgYmV0IEkgY2FuIGZp
-bmQgYSBmZXcgb3RoZXIgdGhpbmdzIHRvby4gVGhlIHF1ZXN0aW9uIGlzOiBob3cNCj4gPiBpbXBv
-cnRhbnQgaXMgdGhpcyB0byB5b3U/DQo+IA0KPiBBbmQgd2l0aCBhbm90aGVyIHRyaWNrIChzZWUg
-YmVsb3cpLCBhbm90aGVyIGV4dHJhIDEwMDAgYnl0ZXMgb3Igc28NCj4gc2hhdmVkIG9mZi4gQXNp
-ZGUgZnJvbSBtb3ZpbmcgYmxha2UyczI1Nl9obWFjLCBJJ20gbm90IHJlYWxseSBzdXBlcg0KPiBl
-bnRodXNpYXN0aWMgYWJvdXQgbWFraW5nIHRoZXNlIGNoYW5nZXMsIGJ1dCBkZXBlbmRpbmcgb24g
-aG93IGltcG9ydGFudA0KPiB0aGlzIGlzIHRvIHlvdSwgbWF5YmUgd2UgY2FuIG1ha2Ugc29tZXRo
-aW5nIHdvcmsuIFRoZXJlIGFyZSBwcm9iYWJseQ0KPiBhZGRpdGlvbmFsIHBvc3NpYmlsaXRpZXMg
-dG9vIHdpdGggdGhlIGNvZGUuDQo+IA0KPiA9PT09DQo+IA0KPiBkaWZmIC0tZ2l0IGEvbGliL2Ny
-eXB0by9ibGFrZTJzLWdlbmVyaWMuYyBiL2xpYi9jcnlwdG8vYmxha2Uycy1nZW5lcmljLmMNCj4g
-aW5kZXggNzVjY2IzZTYzM2U2Li44ZTNjNjM3MjM2M2EgMTAwNjQ0DQo+IC0tLSBhL2xpYi9jcnlw
-dG8vYmxha2Uycy1nZW5lcmljLmMNCj4gKysrIGIvbGliL2NyeXB0by9ibGFrZTJzLWdlbmVyaWMu
-Yw0KPiBAQCAtNDYsNyArNDYsNyBAQCB2b2lkIGJsYWtlMnNfY29tcHJlc3NfZ2VuZXJpYyhzdHJ1
-Y3QgYmxha2Uyc19zdGF0ZSAqc3RhdGUsIGNvbnN0IHU4ICpibG9jaywNCj4gIHsNCj4gIAl1MzIg
-bVsxNl07DQo+ICAJdTMyIHZbMTZdOw0KPiAtCWludCBpOw0KPiArCWludCBpLCBqOw0KDQpVc2Ug
-dW5zaWduZWQgaW50IGksIGo7DQpFbnN1cmVzIHRoZSAnJSA0JyBhcmUgZG9uZSBhcyAnJiAzJyBh
-bmQgdGhlIGRpdmlkZXMgYXMgc2hpZnRzLg0KVW5sZXNzIHRoZSBjb21waWxlciBtYW5hZ2VzIHRv
-IHRyYWNrIHRoZSB2YWxpZCB2YWx1ZXMgdGhhdCB3aWxsDQpldmVuIGdlbmVyYXRlIGJldHRlciBj
-b2RlIG9uIHg4Ni02NC4NCihTYXZlcyBhIHNpZ24gZXh0ZW5zaW9uIHByaW9yIHRvIHRoZSBhcnJh
-eSBpbmRleGVzLikNCg0KPiAgCVdBUk5fT04oSVNfRU5BQkxFRChERUJVRykgJiYNCj4gIAkJKG5i
-bG9ja3MgPiAxICYmIGluYyAhPSBCTEFLRTJTX0JMT0NLX1NJWkUpKTsNCj4gQEAgLTc2LDI5ICs3
-NiwxMSBAQCB2b2lkIGJsYWtlMnNfY29tcHJlc3NfZ2VuZXJpYyhzdHJ1Y3QgYmxha2Uyc19zdGF0
-ZSAqc3RhdGUsIGNvbnN0IHU4ICpibG9jaywNCj4gIAliID0gcm9yMzIoYiBeIGMsIDcpOyBcDQo+
-ICB9IHdoaWxlICgwKQ0KPiANCj4gLSNkZWZpbmUgUk9VTkQocikgZG8geyBcDQo+IC0JRyhyLCAw
-LCB2WzBdLCB2WyA0XSwgdlsgOF0sIHZbMTJdKTsgXA0KPiAtCUcociwgMSwgdlsxXSwgdlsgNV0s
-IHZbIDldLCB2WzEzXSk7IFwNCj4gLQlHKHIsIDIsIHZbMl0sIHZbIDZdLCB2WzEwXSwgdlsxNF0p
-OyBcDQo+IC0JRyhyLCAzLCB2WzNdLCB2WyA3XSwgdlsxMV0sIHZbMTVdKTsgXA0KPiAtCUcociwg
-NCwgdlswXSwgdlsgNV0sIHZbMTBdLCB2WzE1XSk7IFwNCj4gLQlHKHIsIDUsIHZbMV0sIHZbIDZd
-LCB2WzExXSwgdlsxMl0pOyBcDQo+IC0JRyhyLCA2LCB2WzJdLCB2WyA3XSwgdlsgOF0sIHZbMTNd
-KTsgXA0KPiAtCUcociwgNywgdlszXSwgdlsgNF0sIHZbIDldLCB2WzE0XSk7IFwNCj4gLX0gd2hp
-bGUgKDApDQo+IC0JCVJPVU5EKDApOw0KPiAtCQlST1VORCgxKTsNCj4gLQkJUk9VTkQoMik7DQo+
-IC0JCVJPVU5EKDMpOw0KPiAtCQlST1VORCg0KTsNCj4gLQkJUk9VTkQoNSk7DQo+IC0JCVJPVU5E
-KDYpOw0KPiAtCQlST1VORCg3KTsNCj4gLQkJUk9VTkQoOCk7DQo+IC0JCVJPVU5EKDkpOw0KPiAt
-DQo+ICsJCWZvciAoaSA9IDA7IGkgPCAxMDsgKytpKSB7DQo+ICsJCQlmb3IgKGogPSAwOyBqIDwg
-ODsgKytqKQ0KPiArCQkJCUcoaSwgaiwgdltqICUgNF0sIHZbKChqICsgKGogLyA0KSkgJSA0KSAr
-IDRdLCB2WygoaiArIDIgKiAoaiAvIDQpKSAlIDQpICsgOF0sDQo+IHZbKChqICsgMyAqIChqIC8g
-NCkpICUgNCkgKyAxMl0pOw0KDQpJIHRoaW5rIEknZCBsb29rIGF0IGRvaW5nIFswLi4zXSB0aGVu
-IFs0Li43XSB0byBzYXZlIGV4ZWN1dGlvbiB0aW1lLg0KDQpJIGFjdHVhbGx5IHdvbmRlciBob3cg
-bGFyZ2UgYSBibG9jayB5b3UgbmVlZCB0byBiZSBwcm9jZXNzaW5nIHRvIGdldA0KYSBnYWluIGZy
-b20gYWxsIHRoYXQgdW5yb2xsaW5nIG9uIGFyY2hpdGVjdHVyZXMgbGlrZSB4ODYtNjQuDQpUaGUg
-J2NvbGQgY2FjaGUnIHRpbWluZyBtdXN0IGJlIGhvcnJpZC4NCk5ldmVyIG1pbmQgdGhlIHNpZGUg
-ZWZmZWN0cyBvZiBkaXNwbGFjaW5nIHRoYXQgbXVjaCBvdGhlciBjb2RlIGZyb20gdGhlIEktY2Fj
-aGUuDQoNClRoZXJlIGFyZW4ndCBlbm91Z2ggcmVnaXN0ZXJzIHRvIGhvbGQgYWxsIHRoZSB2W10g
-dmFsdWVzIHNvIHRoZXknbGwNCmFsbCBiZSBtZW1vcnkgcmVhZHMgLSBhbmQgdGhlcmUgYXJlIHBy
-b2JhYmx5IG90aGVycyBhcyB3ZWxsLg0KVGhlIG90aGVyIGluc3RydWN0aW9ucyB3aWxsIGhhcHBl
-biBpbiBwYXJhbGxlbCAtIGV2ZW4gMyBvciA0IGZvciBlYWNoIG1lbW9yeSByZWFkLg0KDQoJRGF2
-aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50
-IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTcz
-ODYgKFdhbGVzKQ0K
+Pushed out to drm-misc-next-fixes.
 
+Alex
+
+On Fri, Jan 7, 2022 at 9:07 PM Liu Ying <victor.liu@nxp.com> wrote:
+>
+> On Fri, 2022-01-07 at 14:53 -0500, Alex Deucher wrote:
+> > On Wed, Dec 29, 2021 at 11:07 PM Liu Ying <victor.liu@nxp.com> wrote:
+> > >
+> > > Actual hardware state of CRTC is controlled by the member 'active'
+> > > in
+> > > struct drm_crtc_state instead of the member 'enable', according to
+> > > the
+> > > kernel doc of the member 'enable'.  In fact, the drm client modeset
+> > > and atomic helpers are using the member 'active' to do the control.
+> > >
+> > > Referencing the member 'enable' of new_crtc_state, the function
+> > > crtc_needs_disable() may fail to reflect if CRTC needs disable in
+> > > self refresh mode, e.g., when the framebuffer emulation will be
+> > > blanked
+> > > through the client modeset helper with the next commit, the member
+> > > 'enable' of new_crtc_state is still true while the member 'active'
+> > > is
+> > > false, hence the relevant potential encoder and bridges won't be
+> > > disabled.
+> > >
+> > > So, let's check new_crtc_state->active to determine if CRTC needs
+> > > disable
+> > > in self refresh mode instead of new_crtc_state->enable.
+> > >
+> > > Fixes: 1452c25b0e60 ("drm: Add helpers to kick off self refresh
+> > > mode in drivers")
+> > > Cc: Sean Paul <seanpaul@chromium.org>
+> > > Cc: Rob Clark <robdclark@chromium.org>
+> > > Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> > > Cc: Maxime Ripard <mripard@kernel.org>
+> > > Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> > > Cc: David Airlie <airlied@linux.ie>
+> > > Cc: Daniel Vetter <daniel@ffwll.ch>
+> > > Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> >
+> > Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+> >
+> > Do you need someone to push this for you?
+>
+> Yes, please.  Thanks.
+>
+> Liu Ying
+>
+> >
+> > Alex
+> >
+> > > ---
+> > >  drivers/gpu/drm/drm_atomic_helper.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/gpu/drm/drm_atomic_helper.c
+> > > b/drivers/gpu/drm/drm_atomic_helper.c
+> > > index a7a05e1e26bb..9603193d2fa1 100644
+> > > --- a/drivers/gpu/drm/drm_atomic_helper.c
+> > > +++ b/drivers/gpu/drm/drm_atomic_helper.c
+> > > @@ -1016,7 +1016,7 @@ crtc_needs_disable(struct drm_crtc_state
+> > > *old_state,
+> > >          * it's in self refresh mode and needs to be fully
+> > > disabled.
+> > >          */
+> > >         return old_state->active ||
+> > > -              (old_state->self_refresh_active && !new_state-
+> > > >enable) ||
+> > > +              (old_state->self_refresh_active && !new_state-
+> > > >active) ||
+> > >                new_state->self_refresh_active;
+> > >  }
+> > >
+> > > --
+> > > 2.25.1
+> > >
+>
