@@ -2,78 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8856C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C822C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348483AbiAKHSX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:18:23 -0500
-Received: from smtp21.cstnet.cn ([159.226.251.21]:58218 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233066AbiAKHST (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:18:19 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-01 (Coremail) with SMTP id qwCowAB3fp4gL91hlu8pBg--.37098S2;
-        Tue, 11 Jan 2022 15:17:52 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     heikki.krogerus@linux.intel.com, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] usb: typec: Check error number after calling ida_simple_get
-Date:   Tue, 11 Jan 2022 15:17:51 +0800
-Message-Id: <20220111071751.590487-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S233597AbiAKHUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 02:20:07 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:10013 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233066AbiAKHUG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 02:20:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1641885606; x=1673421606;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3Jyu/v5o+vrp+3w/SDYYyY+040QxdlcF7dPATNH70YY=;
+  b=gVSMLqDA/+3EI+ADbvB1B7iyKfv6v8p1hWpMkHNVlyDMXrYBzSqqJSIg
+   fqkA2H/QbRnMjK7xk+x2jMLNjWVaz+92DCigr6sJzCUklZAnF4IYbJuQm
+   80CuWW8pdzdwr5TiEYanF5tGeaj3nO1Yr6BqFUltVhZSraL42lv73JIHX
+   aavQmz/MK1w4St8h7NGaK4Mjc2thF/cToWleYC8GQacVCu1pIq1AXFilw
+   z9BdB0ff4Y09ivS0rkFb94o8JxsPiiwAK+6/N7qO164is25nYId5wUAwP
+   HZNcO2SRIi3Rc5C+hSRgTEZhuHHUj3mfJJ1D/1CwA9lnl/wpd9quQcnRK
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,279,1635199200"; 
+   d="scan'208";a="21419129"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 11 Jan 2022 08:20:05 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Tue, 11 Jan 2022 08:20:05 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Tue, 11 Jan 2022 08:20:05 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1641885605; x=1673421605;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3Jyu/v5o+vrp+3w/SDYYyY+040QxdlcF7dPATNH70YY=;
+  b=mImTkfGmWhTa5RFiG3xqVVSjwgAI1LZUvKi0XIHdgYU8Zm6qcUKmUQsi
+   TvPt56HycPYVu1Tnz56KlkuWZ9KXy/YWcywQ73zemf/wBiN9fm9v7tg0y
+   eEoWnBaKApayIQbueD7cWVPSf+uMrMszryddorLvWzSl0lEneX5ZZqC57
+   E1EnT37MxwmcuoY+HqAOR0XFrMFn7U3TmbnDAUrimKJVGBPa+JOR+APFL
+   MfnXChOGpusAfSWZf6Eskz08QPV8FXnEXpA4xrc9/xrK9CMBTtmTYN+ZZ
+   wNJYdyEgQ/uTDY2zJBj6ocpI19nABSiAS+UDcHyWkLgDY5DmIg1SptL41
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,279,1635199200"; 
+   d="scan'208";a="21419127"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 11 Jan 2022 08:20:04 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 152F8280065;
+        Tue, 11 Jan 2022 08:20:04 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
+Subject: Re: (EXT) Re: [PATCH] arm64: dts: imx8mm-venice-gw73xx-0x: add dt overlays for serial modes
+Date:   Tue, 11 Jan 2022 08:20:01 +0100
+Message-ID: <2226437.ElGaqSPkdT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <CAJ+vNU0U7HknAZcnua39r9to+kJBea6Fg3NiJ9ybZ1xygKoF4g@mail.gmail.com>
+References: <20211214213630.14819-1-tharvey@gateworks.com> <CAJ+vNU0U7HknAZcnua39r9to+kJBea6Fg3NiJ9ybZ1xygKoF4g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: qwCowAB3fp4gL91hlu8pBg--.37098S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrtFy3XryfZw1fXr17AF43KFg_yoWDJwc_CF
-        sYgrn7Xry5CF93Aw1UJ345ur9Y9a1v9r1UWFsYgan3Ja4DAr18WFWqv3s8X3WxWr48KF98
-        Gr12y3yIgw17ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbcAFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GF4l
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
-        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUekucDUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If allocation fails, the ida_simple_get() will return error number.
-So altmode_id_get() may return error number.
-And then id will be used in altmode_id_remove, causing the BUG_ON().
-Or it will be assigned to alt->id.
-Therefore, it should be better to check it and return error if fails,
-like the ida_simple_get() in typec_register_port().
+Am Dienstag, 11. Januar 2022, 01:00:21 CET schrieb Tim Harvey:
+> [SNIP]
+> > diff --git a/arch/arm64/boot/dts/freescale/Makefile
+> > b/arch/arm64/boot/dts/freescale/Makefile index a14a6173b765..5ec8d59347b6
+> > 100644
+> > --- a/arch/arm64/boot/dts/freescale/Makefile
+> > +++ b/arch/arm64/boot/dts/freescale/Makefile
+> > @@ -44,6 +44,9 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-var-som-symphony.dtb
+> > 
+> >  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw71xx-0x.dtb
+> >  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x.dtb
+> >  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x.dtb
+> > 
+> > +dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs232-rts.dtbo
+> > +dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs422.dtbo
+> > +dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs485.dtbo
+> > 
+> >  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7901.dtb
+> >  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7902.dtb
+> >  dtb-$(CONFIG_ARCH_MXC) += imx8mn-beacon-kit.dtb
+> > 
+> [SNIP]
+> I'm mostly interested to see if my approach to dt fragments here and
+> the naming of the files makes sense to others.
+> 
+> This patch causes the kernel to build dtbo files for:
+> arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dtbo
+> arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dtbo
+> arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dtbo
+> 
+> The intention is that these files are used by boot firmware (U-Boot)
+> to adjust the dtb before passing it to the kernel.
 
-Fixes: 8a37d87d72f0 ("usb: typec: Bus type for alternate modes")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/usb/typec/class.c | 3 +++
- 1 file changed, 3 insertions(+)
+Hi Tim,
 
-diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
-index aeef453aa658..67b3670ede99 100644
---- a/drivers/usb/typec/class.c
-+++ b/drivers/usb/typec/class.c
-@@ -516,6 +516,9 @@ typec_register_altmode(struct device *parent,
- 	struct altmode *alt;
- 	int ret;
- 
-+	if (id < 0)
-+		return ERR_PTR(id);
-+
- 	alt = kzalloc(sizeof(*alt), GFP_KERNEL);
- 	if (!alt) {
- 		altmode_id_remove(parent, id);
--- 
-2.25.1
+do these dtbo actually work? I'm wondering because I was trying to useoverlays 
+myself and noticed that the had to be compiled with -@ for u-boot to be able 
+to apply them. Apparently there are 2 possibilities:
+* Set "DTC_FLAGS_[dtb] := -@" yourself
+See https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+commit/?id=e426d63e752bdbe7d5ba2d872319dde9ab844a07
+
+* Use dedicated overlay target
+See https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/
+commit/?id=15d16d6dadf6947ac7f9a686c615995c5a426ce2
+
+You use neither of them. IIRC just naming the target file .dtbo will not apply 
+symbols (-Q) during dtc call. Can you verify using 'V=1'
+Also I'm wondering which way is the best to go.
+
+Best regards,
+Alexander
+
+
 
