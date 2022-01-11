@@ -2,103 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB96C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B12EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344600AbiAKRc7 (ORCPT
+        id S1344734AbiAKReH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:32:59 -0500
-Received: from ale.deltatee.com ([204.191.154.188]:43930 "EHLO
-        ale.deltatee.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344767AbiAKRcC (ORCPT
+        Tue, 11 Jan 2022 12:34:07 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:28446 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344422AbiAKRdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:32:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
-        Message-ID:From:References:Cc:To:content-disposition;
-        bh=oBrXEHfI6xABrUDZXcl3Ilv2Mnj53ZcLvhEcAszQLhw=; b=YeL6mnl38ypaS0PyULw3luqlUK
-        XeOI6Vhp947TOTlkyofoaX8wJ8Yg8h3TI1VDxJKcJ9GY5xcvig0mIQbG1QAzJj7OFJGoGht0Yb0/K
-        tCS0dg0IMDzl/EH2fKYSqUf/gOewi+o5KmBNzaa7MfqcqWht6q8GI3xD9GYemVOCBS6mmJTuSF8wp
-        PWzBOz3P0o1s2U3pEYwYMqlbrob3xzb0MD0zndcqZ4+3aWrBorD50RGouaf0fv20oDTgMxWvUpoMU
-        2sXHLWkZGVSk79v0DlRL8om4AbtqKRlS5Om4EuhSURfLs+YKil2RSAe8S2cXFLA5uF5y1ZXO38jnC
-        TupA0NOA==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-        by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <logang@deltatee.com>)
-        id 1n7Kzp-009ip7-HL; Tue, 11 Jan 2022 10:31:46 -0700
-To:     John Hubbard <jhubbard@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@nvidia.com>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev
-References: <YdyKWeU0HTv8m7wD@casper.infradead.org>
- <82989486-3780-f0aa-c13d-994e97d4ac89@nvidia.com>
-From:   Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <305b0b3b-e5d1-3dc2-a4a3-01c05dda6748@deltatee.com>
-Date:   Tue, 11 Jan 2022 10:31:42 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 11 Jan 2022 12:33:55 -0500
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20BHSc2M004984;
+        Tue, 11 Jan 2022 17:33:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=LYZkJR4oncJxN66Oc7azyJCnhGGrYnsYS2+B+fYIguE=;
+ b=phckWgCuuTMA98EoBAvvo3laLAaZItybfNT2ooN3ERdS4ssKdKWFtxV+oajLwws/mZOl
+ 5Xn5fyvgfsmchocFGkom7WbdzEv65H8RnX5g9qIgMdV4YhtutieFztzIscGuOk1PszYZ
+ SpGx9ZCwXn211sVXxL7W41umr1nObNTbg++a6Ha9VpygeBHXnfgZHjvgGzeiSEOd1AvS
+ JKRY1PxKIpvap8HXaRKxepeB1agHTDTd+ilddgDiykyAkqkK2Ul85TGmRA7O1qAyszBW
+ WWM58gpyybVwSV2iCL6U+uWBAzVgwGiM0vKzRoOLl+iJ7HhLVYmlRLRb17gUbDFiw/ux OA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dheaxg3cg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:33:52 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20BHVThG014358;
+        Tue, 11 Jan 2022 17:33:52 GMT
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dheaxg3bv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:33:52 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20BHIHDU018620;
+        Tue, 11 Jan 2022 17:33:51 GMT
+Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
+        by ppma01wdc.us.ibm.com with ESMTP id 3df28a9tw0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 11 Jan 2022 17:33:51 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20BHWnX918088322
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 11 Jan 2022 17:32:49 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 32D8F2806F;
+        Tue, 11 Jan 2022 17:32:49 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8AAA228064;
+        Tue, 11 Jan 2022 17:32:47 +0000 (GMT)
+Received: from [9.65.85.237] (unknown [9.65.85.237])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 11 Jan 2022 17:32:47 +0000 (GMT)
+Message-ID: <342ce098-6af5-acc9-86b1-fadfb03c8522@linux.ibm.com>
+Date:   Tue, 11 Jan 2022 12:32:46 -0500
 MIME-Version: 1.0
-In-Reply-To: <82989486-3780-f0aa-c13d-994e97d4ac89@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-CA
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v17 02/15] s390/vfio-ap: use new AP bus interface to
+ search for queue devices
+Content-Language: en-US
+To:     Halil Pasic <pasic@linux.ibm.com>
+Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, jjherne@linux.ibm.com, freude@linux.ibm.com,
+        borntraeger@de.ibm.com, cohuck@redhat.com, mjrosato@linux.ibm.com,
+        alex.williamson@redhat.com, kwankhede@nvidia.com,
+        fiuczy@linux.ibm.com
+References: <20211021152332.70455-1-akrowiak@linux.ibm.com>
+ <20211021152332.70455-3-akrowiak@linux.ibm.com>
+ <20211227092502.7ccdf37b.pasic@linux.ibm.com>
+From:   Tony Krowiak <akrowiak@linux.ibm.com>
+In-Reply-To: <20211227092502.7ccdf37b.pasic@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: nvdimm@lists.linux.dev, dri-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org, linux-mm@kvack.org, netdev@vger.kernel.org, linux-block@vger.kernel.org, ming.lei@redhat.com, joao.m.martins@oracle.com, jgg@nvidia.com, hch@lst.de, linux-kernel@vger.kernel.org, willy@infradead.org, jhubbard@nvidia.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: Phyr Starter
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: mV34uZFP7Lx8TMv5K-5-7phQmFJAJQ3j
+X-Proofpoint-GUID: xLFgryVv_Mxp5g_hIwHJWzQKBxaJV7qe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-11_04,2022-01-11_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
+ phishscore=0 priorityscore=1501 adultscore=0 impostorscore=0
+ malwarescore=0 suspectscore=0 spamscore=0 mlxscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201110095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 2022-01-11 1:17 a.m., John Hubbard wrote:
-> On 1/10/22 11:34, Matthew Wilcox wrote:
->> TLDR: I want to introduce a new data type:
+On 12/27/21 03:25, Halil Pasic wrote:
+> On Thu, 21 Oct 2021 11:23:19 -0400
+> Tony Krowiak <akrowiak@linux.ibm.com> wrote:
+>
+>> his patch refactors the vfio_ap device driver to use the AP bus's
+>> ap_get_qdev() function to retrieve the vfio_ap_queue struct containing
+>> information about a queue that is bound to the vfio_ap device driver.
+>> The bus's ap_get_qdev() function retrieves the queue device from a
+>> hashtable keyed by APQN. This is much more efficient than looping over
+>> the list of devices attached to the AP bus by several orders of
+>> magnitude.
 >>
->> struct phyr {
->>          phys_addr_t addr;
->>          size_t len;
->> };
->>
->> and use it to replace bio_vec as well as using it to replace the array
->> of struct pages used by get_user_pages() and friends.
->>
->> ---
-> 
-> This would certainly solve quite a few problems at once. Very compelling.
+>> Signed-off-by: Tony Krowiak <akrowiak@linux.ibm.com>
+>> Reviewed-by: Halil Pasic <pasic@linux.ibm.com>
+> I assume nothing changed here, and nothing significant changed around
+> this patch (context). If I'm wrong, please tell me and I will
+> re-evaluate.
 
-I agree.
+rebase to this patch -> delete the patch -> fix resultant conflicts
 
-> Zooming in on the pinning aspect for a moment: last time I attempted to
-> convert O_DIRECT callers from gup to pup, I recall wanting very much to
-> record, in each bio_vec, whether these pages were acquired via FOLL_PIN,
-> or some non-FOLL_PIN method. Because at the end of the IO, it is not
-> easy to disentangle which pages require put_page() and which require
-> unpin_user_page*().
-> 
-> And changing the bio_vec for *that* purpose was not really acceptable.
-> 
-> But now that you're looking to change it in a big way (and with some
-> spare bits avaiable...oohh!), maybe I can go that direction after all.
-> 
-> Or, are you looking at a design in which any phyr is implicitly FOLL_PIN'd
-> if it exists at all?
+>
+> Regards,
+> Halil
 
-I'd also second being able to store a handful of flags in each phyr. My
-userspace P2PDMA patchset needs to add a flag to each sgl to indicate
-whether it was mapped as a bus address or not (which would be necessary
-for the DMA mapped side dma_map_phyr).
-
-Though, it's not immediately obvious where to put the flags without
-increasing the size of the structure :(
-
-Logan
