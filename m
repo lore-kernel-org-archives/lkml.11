@@ -2,83 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD928C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE6CCC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344732AbiAKRvA (ORCPT
+        id S1344719AbiAKRvC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:51:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344711AbiAKRu6 (ORCPT
+        Tue, 11 Jan 2022 12:51:02 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:54050
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344699AbiAKRu6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 12:50:58 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC2CC06173F
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 98E78405F2
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:50:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641923457;
+        bh=2zXFpgoXA2AXkam+aZqI+1j2Yu5tLuHo5Qd504tYlzY=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=nVPvZHtuC3Eut9zE/5H0IExv07HWxVPXU9LcSKiOVNEBz8GeCnkGlxGHzIFMBIYLl
+         2QcWKt6j5DRumNZsdN6rxBCBJXLhB3FgKxaGHuAW4YueGMg4trj7Eb6KZ+xeJYM4d1
+         O6P9z87e3klHP5yaNQDVb2yMFaTIdOzxoCjMa8JBLJG4GyGl+PN4HTNKGgVxA8pqce
+         +bQJv/4n038KwKBI4+OsfUoSTpAoHQMYBV99CFx8bppUsifwevhRC7dCM6We5gk/LX
+         RbNFLKxxfp8u5qZLx6coCBlRppDeSAZVhO76r7jItBl5r55jpQ2qjt4xL2f6FcRUM/
+         DUj0CBsA6/lJg==
+Received: by mail-ed1-f72.google.com with SMTP id r8-20020a05640251c800b003f9a52daa3fso13973841edd.22
         for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:50:57 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id u21so47726708edd.5
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:50:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S+o36HqJyPabSJM6qxiXAbPNSzH3hT+Ar4koIOaCZD0=;
-        b=fkLdJd8K8wdXwYwvY0osqkiYuLRASRV7iBfN8SZv/EKDgP0s0+LCVi0O3e6PonZ3qJ
-         ecYvUOMstnQGXFphVswgObo8yA29aRGxzyOiBr6Y48lppQlGPBm/EmUaEu4eZhiIZp5g
-         PhhhTNkHlBahJ2BulJEjbNG+r8oJMjOo0vlMM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S+o36HqJyPabSJM6qxiXAbPNSzH3hT+Ar4koIOaCZD0=;
-        b=ZmOPPgq05ZKfKogscUljXz0lW075LRJL4DtJ9JxqsVTWjxiZn1JLAVJdO3DjrEifWg
-         kg1i9cYtUuYsr94er1Hd1vHGS01I5beve7Xrl/TmkIbLPeB4LoY2+KaK/p+IyRjNePDl
-         lR1ke2SBT2umYMADYpeceVVDmR1ftrLYS8Oim+0VLPwDLO3RtHTPYiuSFkH2gLvv4vgA
-         OuZPRzM59NoZf4uQu2B2NC//Ub5mcWbkfJq2QRqRXPNULY1UQk+peMc5iSKLtmtR5cpR
-         z+QCJ4FDDVLAUS9ShilyIb2ljk0Z0NcdWMDRqbDrrG1CYo8kDJYWnQt5N8Ll96Bc7vZr
-         GTwA==
-X-Gm-Message-State: AOAM532BJlZEM7Yu3FDHVKxr0sJSgsRpMcJw9K8un24YqOeT/a/x+4df
-        DPmf6cAa36dtLc2717NqCmpg3dwAiuI5ofIM5c8=
-X-Google-Smtp-Source: ABdhPJz0Vnv2ocZi7lTWSVwMB1zI9r4F4JPs4lM1XavJhXUMjvDYkttjmpxwrp1SAavZkoGs0nJOfA==
-X-Received: by 2002:a17:907:d29:: with SMTP id gn41mr4546141ejc.538.1641923456147;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2zXFpgoXA2AXkam+aZqI+1j2Yu5tLuHo5Qd504tYlzY=;
+        b=5ZugX79RQaAExmkvIWD+TdOf9mWgNn+cUjBl1x8cNcojR4icFypzEY1qdRz5qo5Ea0
+         BKYQMWWfeMsirOCbncAjp/JDCWUQxKXdfa3mqkM3xXalHi0wOh/HNsDSLULwJEzdXd+D
+         WtRSVtD6/RAUa24x9pics2neTxRMCSssIS6qV+8QYx/HhjFyD9ztCgcyONcjlrxHGAeP
+         hl6bguzf90mUc87cUhEBbIv/8XE/tC0+TRGbCZg0DaniqvZOtG2mdeBjMMIOwNgva4Uz
+         QwBSYvVwr6+1Z4iIFi+OOz5SpoAE5sdx4R9nDz0hu5eBIu/YpN08ytGW5z3LG9LA+AEh
+         G0IQ==
+X-Gm-Message-State: AOAM531eIEQKNswAWoLV57hXQ7KEplVgSGdXiMl5UMiFwe27i3JvKYzu
+        cT5knINL3zmivLovOc+4LYou4sClk/BmnufT/UZpj5RGgBnnuKixXB7Gk6er3ucKtTPLWYUwMnu
+        lcsEdJ8i1WhEDjZjgDw8DrURIjV+tRxetiDlxdv495g==
+X-Received: by 2002:a17:906:d542:: with SMTP id cr2mr4549397ejc.720.1641923457283;
+        Tue, 11 Jan 2022 09:50:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw2kpeA+pUdy5877+VIewlMQ8JeCRKAjmwdHfgw9/xGCtPvVu0MeRfkkHiVU84kGG8jlZaRPA==
+X-Received: by 2002:a17:906:d542:: with SMTP id cr2mr4549387ejc.720.1641923457123;
+        Tue, 11 Jan 2022 09:50:57 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id p25sm5265160edw.75.2022.01.11.09.50.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 11 Jan 2022 09:50:56 -0800 (PST)
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com. [209.85.221.44])
-        by smtp.gmail.com with ESMTPSA id gt20sm3857971ejc.11.2022.01.11.09.50.55
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 09:50:55 -0800 (PST)
-Received: by mail-wr1-f44.google.com with SMTP id q8so34345308wra.12
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:50:55 -0800 (PST)
-X-Received: by 2002:adf:f54e:: with SMTP id j14mr4682353wrp.442.1641923455029;
- Tue, 11 Jan 2022 09:50:55 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Chanwoo Choi <cw00.choi@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH v2 0/4] leds/power/regulator/mfd: dt-bindings: maxim,max77693: convert to dtschema
+Date:   Tue, 11 Jan 2022 18:50:13 +0100
+Message-Id: <20220111175017.223966-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <87v8yrjtqe.fsf@meer.lwn.net>
-In-Reply-To: <87v8yrjtqe.fsf@meer.lwn.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 11 Jan 2022 09:50:39 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wiR_RfCq+ckZOEoV14CAV1+Vua3DM9XU30fxaVhqJ9RMQ@mail.gmail.com>
-Message-ID: <CAHk-=wiR_RfCq+ckZOEoV14CAV1+Vua3DM9XU30fxaVhqJ9RMQ@mail.gmail.com>
-Subject: Re: [GIT PULL] Documentation for 5.17
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 11:06 AM Jonathan Corbet <corbet@lwn.net> wrote:
->
->  - The ability to pick your own theme for HTML builds; if the default
->    "Read the Docs" theme isn't ugly enough for you, you can now pick
->    an uglier one.
+Hi,
 
-Wingdings isn't a choice, it's a way of life.
+Changes since v1
+================
+1. MFD: Use absolute path to schemas, add additionalProperties=false.
+2. Regulator: mention all allowed properties,
+   additionalProperties=false, add min/max values for voltages and
+   current, don't use patternProperties when not needed.
 
-> The KUnit documentation update leads to a couple of simple conflicts
-> with the KUnit tree - but they wanted this work to go via this path.
+Dependencies
+============
+The final patch - MFD maxim,max77693 bindings conversion - depends on
+all previous. Therefore this could go via Rob's or Lee's trees.
 
-Well, I had to pick one of the configuration note rewrites, and who
-knows if I picked the right one.
+Best regards,
+Krzysztof
 
-            Linus
+Krzysztof Kozlowski (4):
+  dt-bindings: leds: maxim,max77693: convert to dtschema
+  dt-bindings: power: supply: maxim,max77693: convert to dtschema
+  regulator: dt-bindings: maxim,max77693: convert to dtschema
+  dt-bindings: mfd: maxim,max77693: convert to dtschema
+
+ .../bindings/leds/maxim,max77693.yaml         | 105 ++++++++++
+ .../devicetree/bindings/mfd/max77693.txt      | 194 ------------------
+ .../bindings/mfd/maxim,max77693.yaml          | 143 +++++++++++++
+ .../bindings/power/supply/maxim,max77693.yaml |  70 +++++++
+ .../bindings/regulator/maxim,max77693.yaml    |  60 ++++++
+ MAINTAINERS                                   |   3 +-
+ 6 files changed, 380 insertions(+), 195 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/leds/maxim,max77693.yaml
+ delete mode 100644 Documentation/devicetree/bindings/mfd/max77693.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max77693.yaml
+ create mode 100644 Documentation/devicetree/bindings/power/supply/maxim,max77693.yaml
+ create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77693.yaml
+
+-- 
+2.32.0
+
