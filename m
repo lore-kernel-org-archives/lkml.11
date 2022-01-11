@@ -2,258 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A6BC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AA2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245562AbiAKVx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 16:53:28 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:57024 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244453AbiAKVxY (ORCPT
+        id S245596AbiAKVxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 16:53:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245575AbiAKVxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 16:53:24 -0500
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20BJO67p019147;
-        Tue, 11 Jan 2022 21:51:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=2H5Wg4txvEfKvOhUbzDzkGIZsIxoIAbeL9o4tNy2Qrc=;
- b=qOeVVrZ4XMps0YWU2JTsWGwSCKzHB83bUFhWmooeZxuIo1K/2Wpq114HIB9mntQydk4o
- tKctaFYcBWNTd3JfUm7ltKOVpAZyjYYiq9Ac4Ha15bdr3x7ELWoLj26GMaCFQUxj2jpA
- n5d+tEn/ruZsyC8loHe5PbeRCZhK1RcYv5sU+EeOX3PEeksDWU0PMHhGxo351Ubq7lqO
- cvG0hbbZ9V7P1VDjUm2kgAVClXvv4TJ7fFzNjVqqJreGuXMzy4K4FPcUJeGEbL9a0y/1
- fs3vTgs1QEi8T8zrCPucPWMVb9PQeCLHf+OOmzvp6aXjO6MVyNJF37V0IqnTA2jTazvN XA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgp7nmaa0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 21:51:39 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20BLkAH6181554;
-        Tue, 11 Jan 2022 21:51:37 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2168.outbound.protection.outlook.com [104.47.55.168])
-        by userp3030.oracle.com with ESMTP id 3deyqxuqnt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 21:51:37 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n/KpF+xJOAoVE+DMS7eaZp5A3thXzSAU67TTlRO/LH6qubDcf2WCQWJsx89WjoY7FSrZA+XHKDfDfl3XPc1L5vG5fMsbvW5N+MRAUqm9KSm/WWAqqvosdjQ2H3moatAalbkc9hICf9DoBg/soAw7or8OHlksEICEo2+lTElILQ5XZ2hYxZ104H1uPpEmwTkVSvsDpkPAU32ib+wQ2tGLT97Mii+zrGtV9TDMe6exg/PN8JjoGVLIN6Idao6ssnK3OM7Q8hPHkft96/KUHw1zZwXCBjrJF4nzW6edIWR5R69Nd+4A7vbgW/OlASaRznamquSK0RKf8KXoWgkEo7t+Wg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2H5Wg4txvEfKvOhUbzDzkGIZsIxoIAbeL9o4tNy2Qrc=;
- b=PV+ko7zOZDUH66OMVg8jSxef0gAbbnNZ9xnrTjB6zF/tSl9i4pAVakMSnJ2661+1OQmbp1SjlNjoM6WolJj566PLQ7Arp9DidG5Rhcc1vFTkjUJgKv2maZ0tM3Xpmi6yfU2wg4WdRlgBdtF7BV/2SptzNE8x/6InhRKjTtTPHp+uIn80tB8Q0azyM6FID7oAXC1tDaAMEgFBlVbC8fVt4Zz5FVvnd8IKDAQUo34QSjROhXdbOyAn3ZXW+nm8N7MJEdNttvTHXt5BZvoOkkTcYi6icV32qDRYUnOdRpuMUXlnkdFK7OxySQlsI6Xfa8uYKBt9cYIrkTGznyrvfqt0LA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 11 Jan 2022 16:53:52 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929DFC061751
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:53:52 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id hv15so1295714pjb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:53:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2H5Wg4txvEfKvOhUbzDzkGIZsIxoIAbeL9o4tNy2Qrc=;
- b=qVEoaKnB08hU5Kr7Yz2NDnWdOVqvrrOhYIimQ0H/jpVwwHhmAoa3evC0iGwHCZsRu4wCvdfaR0ItqDcffCPg7IIxPDvklL1LtNqlOFF4Hrkt0GynvQ0o5n1+jpqKdzT0A5r/gbHManolU2N0SqAAPjMZvJegpl2+UhK9UMidn20=
-Received: from SN6PR10MB2576.namprd10.prod.outlook.com (2603:10b6:805:44::15)
- by SN6PR10MB2893.namprd10.prod.outlook.com (2603:10b6:805:d1::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Tue, 11 Jan
- 2022 21:51:35 +0000
-Received: from SN6PR10MB2576.namprd10.prod.outlook.com
- ([fe80::4c8c:47df:f81e:f412]) by SN6PR10MB2576.namprd10.prod.outlook.com
- ([fe80::4c8c:47df:f81e:f412%5]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
- 21:51:35 +0000
-Date:   Tue, 11 Jan 2022 15:51:29 -0600
-From:   Venu Busireddy <venu.busireddy@oracle.com>
-To:     Brijesh Singh <brijesh.singh@amd.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>, Peter Gonda <pgonda@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Michael Roth <michael.roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com
-Subject: Re: [PATCH v8 12/40] x86/sev: Add helper for validating pages in
- early enc attribute changes
-Message-ID: <Yd374d2+XdBD+vTM@dt>
-References: <20211210154332.11526-1-brijesh.singh@amd.com>
- <20211210154332.11526-13-brijesh.singh@amd.com>
- <YdOGk5b0vYSpP1Ws@dt>
- <7934f88f-8e2b-ea45-6110-202ea8c2ad64@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7934f88f-8e2b-ea45-6110-202ea8c2ad64@amd.com>
-X-ClientProxiedBy: SA0PR13CA0005.namprd13.prod.outlook.com
- (2603:10b6:806:130::10) To SN6PR10MB2576.namprd10.prod.outlook.com
- (2603:10b6:805:44::15)
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HVDl/2NqIhK0g8SQy1/Hn7dbw7ukaYpwfxidGEMrUW0=;
+        b=NXnKp1BeM26sd9pKJ0qzJ7+BV5yNK8Sg7KP+uFnTa0gDIcfxt0im9Z6OmC/HuNpfTi
+         ysMOERa3j5EiZInROVa+VQOedKpAkqftGgECroQ9XFHQF76bo3v2RyIQE6A98TUep06Y
+         UbCWY1xPG21fUMj1AQtddzcdcNxsmx5IzTsLE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HVDl/2NqIhK0g8SQy1/Hn7dbw7ukaYpwfxidGEMrUW0=;
+        b=57JGA7q52G5qunQSBFU3t04g83qhzn1unjImRQjZumFJZkUfe3can1uLWPDM5BnIuq
+         KVaHZxL5y6kCIOYJoFBxnsOsnr761J2Rv9p1Dyd9A4V3HzlHtet9xctKqK9yaC3IBogZ
+         w5zktIvjPgqLgIC03jle3jPjYW1hN71/fmkiQIYvGe6/o19QCiO0ChN5WYDUs+6rTZOQ
+         WJIq/Bz0bVsD5wQZUZ9KVZouqWUgGMIlj91RfLKtetcqjLUZovqaD1dkqcMvzutIcdBh
+         FVHcoeJJdeLVKLRW+w8U2Q+NByD8PiLSEfs4lrGRi+vXDyqteJN8RKDKp45hTolaGdJ1
+         mCWw==
+X-Gm-Message-State: AOAM533cKPI4D6qUHgLMV5rPr3Ywi4DW1QfKdPcG/0SMX7/+mp6KFH/i
+        vYrXDL7MSwDwTcpRD1yJihDsfA==
+X-Google-Smtp-Source: ABdhPJyCubwFlWipUFQ93Pqn9T+zkPi14jU0TNV3UonYGojfMMlnPojt7XR/Ps5IBTcD+zF+ALc7cw==
+X-Received: by 2002:a17:902:8d8d:b0:149:2d7c:da6c with SMTP id v13-20020a1709028d8d00b001492d7cda6cmr6326064plo.134.1641938032084;
+        Tue, 11 Jan 2022 13:53:52 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:f0a7:d33a:2234:5687])
+        by smtp.gmail.com with UTF8SMTPSA id u20sm5792539pfg.105.2022.01.11.13.53.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 13:53:51 -0800 (PST)
+Date:   Tue, 11 Jan 2022 13:53:50 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, jponduru@codeaurora.org,
+        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
+        agross@kernel.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: ipa: prevent concurrent replenish
+Message-ID: <Yd38brbLi2RDYT0P@google.com>
+References: <20220111192150.379274-1-elder@linaro.org>
+ <20220111192150.379274-3-elder@linaro.org>
+ <Yd3miKw2AIY8Rr0F@google.com>
+ <7a145d96-9c33-b91d-b0cd-ed2fb8ef6cb4@linaro.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 19359e98-2caf-4fc6-7d28-08d9d54c8959
-X-MS-TrafficTypeDiagnostic: SN6PR10MB2893:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR10MB28938289459D297D670959BEE6519@SN6PR10MB2893.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5bxpY5tNXiYO7udzPhKCArQcXWwltWt2rYjBBqCQR/klv0Uawh+NkrCFnaH2p+6QTGw6xr7BQ0zAPc8NYgxTD7nQzjBUKZIPrBwFyrPi7FJ6qdpFuCASTnFvFNsqsRIU0RcR1/4I3//+/1rW9Q1q116yptQZRZNBt6HjDUrZUmqsuuB/XY8akhpFPY/M4jrwGb1oh2HMjn4uznKFUQsxuxNDktdUoqidt817/K7ZnaoiCNjAWaUPNEZKkcJrauKHRC8h6vQAtKDSRax05axtGsFrEjbZmGJ8+L4SE+VpC6xrJqAUwawiIpbUQG/hPwO7SAGuOeSs0Z1ERgUDKk2ILkNSpPYP5Q+nKu1Aevjc2meliCBSN9L7QqcC3cG90VbgQGiR+O+c9FJKS8iKxooHsTjWxamyg+P3B01bSU1kqvDfSuMilMqp3eUUeUmrcAZVgHhidY8zywFd2m0AbjsMr3CgbPP7VaqaIFE5y0R4rcj1OIRmI9LZhzb+4Orq7ovo3a+b01UkWLFKoCTAJ4XbDfQOS2n1EMGeyV1VyQMLQS05cM1POfhYvRByHT4ruFFCTVUQnHBq/4d19AQgv/el0vQ8gRxgWn0CzvC9cC5C6J99U3q6oHmgYyVCNlWma6By6Sgd7P8jWv+H1KAde3f8fg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR10MB2576.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(508600001)(6666004)(66556008)(66476007)(66946007)(5660300002)(6916009)(4326008)(54906003)(316002)(6512007)(9686003)(2906002)(7416002)(7406005)(26005)(6506007)(8676002)(8936002)(83380400001)(33716001)(86362001)(186003)(6486002)(38100700002)(53546011)(44832011);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TvWw7zu5XZFR1ynBbo0bd/h7grFNi1TQgSPJZLUUOsLcLrqud5vovdqGltUf?=
- =?us-ascii?Q?jKyH9eY1SK0kxqvd0yDc6DDYmqa2WEGN/VcFUn3tV/9eTFCvFzvMOxjAJ08K?=
- =?us-ascii?Q?M3oJ5I0ePCV2ss5iLCQPz70cv+0wXajkWfHMxCaJaRmv6s6FSAPuVBk04mNc?=
- =?us-ascii?Q?XU48FoknV6CXmhF9+HYYWijFKVVeD7oT5CO1ADSOM4w8PpjwrFxwcw4eVmMc?=
- =?us-ascii?Q?JQnWOxJyL1vpjXSAKBRzrEgtc9wzKaIR2GgX26rwV88opD9AK4e1lJwCl9cc?=
- =?us-ascii?Q?kG0/lOpWhwVoPMaL7JyoIZ04YjGQD0mWUc0q2QRvIofnLvxF1nD09MebJObT?=
- =?us-ascii?Q?7qt25RyiSGy4hUBys/u7A+0XrDC11DZQ7o0pqQ93sHM+jyrL6sgXuGpM7esb?=
- =?us-ascii?Q?4cfF0EOhIHhAnqHH75IbrtziSiHC4CHcuS3Be326VvrKkwJw7DpePeKi2lWa?=
- =?us-ascii?Q?q5aeWH+8dkiZd6E62HI5x7iQ0KD17Pp2Gtigi4VsETywBlF480sRI/zrZmPq?=
- =?us-ascii?Q?IKfji+ggSs0TGAL15ayeRNLCRNTIOjvOb/OoJvXgWfchFjeN0y/BI9Ob4cUS?=
- =?us-ascii?Q?e6VcMFQ8g5BS//UGSfwqP1q8De5fWgPdH8R+QO9WTVTXxg4zz7Abz13ECgFZ?=
- =?us-ascii?Q?i5/U/8oVaRkRXVaS+7A06PL1VWMnMKNadaEKSfuW3EZZbo3eJjTl54ORwLJI?=
- =?us-ascii?Q?jYcLqf0cLomvb27WFemqnIFhcu/B/pFcMojEDVf3gDIm8svIIQ+T2lyv4grv?=
- =?us-ascii?Q?x2w0Gu1f2wpTB3twdkTFzGzVWslNbTZGr1KmjL33uFdlBo4zTIUxRnZfu9bO?=
- =?us-ascii?Q?7KnNQGci1VQv+ewLVeBjeBw7pDUct81tyv8oH6e+BE3mX0tYiJx6crdPOMr4?=
- =?us-ascii?Q?pMnvmCTgLnDc2go+lfgp2Zn7PuYifRx11974eetqP0UZXQjuZDV8NjW1X0zw?=
- =?us-ascii?Q?yl2VYGnDOXZMh/d9gX1dTWWIUModPuCnHfyf4JmDT1cS76HVFBiTKhJZm71/?=
- =?us-ascii?Q?tzRj6CcqDdp+EhbkpIZwIEdxl28ADlik7mKGsI6YiQYrBvvWXH7jogs3BGk9?=
- =?us-ascii?Q?F39NZm9eLYsU8XzDHzeE258Lo15UwwWdat3QNGTbtcrVmjlFdqt+EhyTpCgV?=
- =?us-ascii?Q?Qhc8Se3HZpbpLBsjqN4WT1CKJ10XH88Ib0fQPBKFuXH/rXLy7JaMNQUTYOdC?=
- =?us-ascii?Q?HHwd1mLQ3G0z0DHHFUvMJqioVSxoEDBOA54uCeb/UtX40kp5FEimIy4m3y5L?=
- =?us-ascii?Q?9JTgAGwYYy+C5KFQCBCWMEd0733rDIIBZQnZiIuqZucs1zQeTohqjadpYvH1?=
- =?us-ascii?Q?KMFSQ9xgKrB1wtZCnEzDFTseWRAsKBgP9eMCN7E9FbK8lxzBiCWWjei+HqVI?=
- =?us-ascii?Q?l8yg/5hqvjucwiaYQ9ZcIC9aets8ybGwyJJ/rfrzkLN85UmbW6jtyMVB8AVA?=
- =?us-ascii?Q?9OJyrYmOJEdW69Fk58kphUWnpddBwFWN1FWE5JJJrgLLWIbVfrz0kK965LfC?=
- =?us-ascii?Q?22WTr/gzJhROR4Cp//3vo/tBbB2zKd5XTKEZybGoNhDDTrVJyM1fT6SUips/?=
- =?us-ascii?Q?/ZhVWqqD/AOe1zTboeKJXYFfTOi7P93jdKuNClt5Go/A0/oo2RvigbzRg3+7?=
- =?us-ascii?Q?/rt+YgQgA9EF+SbEHeCia5mDApPNEz4nw9CsAaYPEI2Vrbv0wEQ1xM2IQLlv?=
- =?us-ascii?Q?ucHgDA=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 19359e98-2caf-4fc6-7d28-08d9d54c8959
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR10MB2576.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 21:51:34.9679
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7jVCTiv7KhhUR/y+MDX0S5HjkgeqrYEpGSVSJNU9nXdSNqWNLwr194TVKK3ZObYUX25SNDeg+9XrcaB5OBnjZj8J1OnpSmSdByH15ZYN2K0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2893
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10224 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 spamscore=0
- mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201110113
-X-Proofpoint-GUID: p5eFSxbNhQxgbQPqQ_lFNnRRt04lfmJz
-X-Proofpoint-ORIG-GUID: p5eFSxbNhQxgbQPqQ_lFNnRRt04lfmJz
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <7a145d96-9c33-b91d-b0cd-ed2fb8ef6cb4@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-11 15:22:01 -0600, Brijesh Singh wrote:
-> Hi Venu,
-> 
-> 
-> On 1/3/22 5:28 PM, Venu Busireddy wrote:
-> ...
-> 
-> > > +
-> > > +	 /*
-> > > +	  * Ask the hypervisor to mark the memory pages as private in the RMP
-> > > +	  * table.
-> > > +	  */
-> > 
-> > Indentation is off. While at it, you may want to collapse it into a one
-> > line comment.
-> > 
-> 
-> Based on previous review feedback I tried to keep the comment to 80
-> character limit.
-
-Isn't the line length limit 100 now? Also, there are quite a few lines
-that are longer than 80 characters in this file, and elsewhere.
-
-But you can ignore my comment.
-
-> > > +	early_set_page_state(paddr, npages, SNP_PAGE_STATE_PRIVATE);
-> > > +
-> > > +	/* Validate the memory pages after they've been added in the RMP table. */
-> > > +	pvalidate_pages(vaddr, npages, 1);
-> > > +}
-> > > +
-> > > +void __init early_snp_set_memory_shared(unsigned long vaddr, unsigned long paddr,
-> > > +					unsigned int npages)
-> > > +{
-> > > +	if (!cc_platform_has(CC_ATTR_SEV_SNP))
+On Tue, Jan 11, 2022 at 02:58:16PM -0600, Alex Elder wrote:
+> On 1/11/22 2:20 PM, Matthias Kaehlcke wrote:
+> > On Tue, Jan 11, 2022 at 01:21:50PM -0600, Alex Elder wrote:
+> > > We have seen cases where an endpoint RX completion interrupt arrives
+> > > while replenishing for the endpoint is underway.  This causes another
+> > > instance of replenishing to begin as part of completing the receive
+> > > transaction.  If this occurs it can lead to transaction corruption.
+> > > 
+> > > Use a new atomic variable to ensure only replenish instance for an
+> > > endpoint executes at a time.
+> > > 
+> > > Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
+> > > Signed-off-by: Alex Elder <elder@linaro.org>
+> > > ---
+> > >   drivers/net/ipa/ipa_endpoint.c | 13 +++++++++++++
+> > >   drivers/net/ipa/ipa_endpoint.h |  2 ++
+> > >   2 files changed, 15 insertions(+)
+> > > 
+> > > diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
+> > > index 8b055885cf3cf..a1019f5fe1748 100644
+> > > --- a/drivers/net/ipa/ipa_endpoint.c
+> > > +++ b/drivers/net/ipa/ipa_endpoint.c
+> > > @@ -1088,15 +1088,27 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, bool add_one)
+> > >   		return;
+> > >   	}
+> > > +	/* If already active, just update the backlog */
+> > > +	if (atomic_xchg(&endpoint->replenish_active, 1)) {
+> > > +		if (add_one)
+> > > +			atomic_inc(&endpoint->replenish_backlog);
 > > > +		return;
-> > > +
-> > > +	/*
-> > > +	 * Invalidate the memory pages before they are marked shared in the
-> > > +	 * RMP table.
-> > > +	 */
-> > 
-> > Collapse into one line?
-> > 
-> 
-> same as above.
-
-Same as above.
-
-> 
-> ...
-> 
-> > > +		/*
-> > > +		 * ON SNP, the page state in the RMP table must happen
-> > > +		 * before the page table updates.
-> > > +		 */
-> > > +		early_snp_set_memory_shared((unsigned long)__va(pa), pa, 1);
-> > 
-> > I know "1" implies "true", but to emphasize that the argument is
-> > actually a boolean, could you please change the "1" to "true?"
-> > 
-> 
-> I assume you mean the last argument to the
-> early_snp_set_memory_{private,shared}. Please note that its a number of
-> pages (unsigned int). The 'true' does not make sense to me.
-
-Sorry. While reading the code, I was looking at the invocations
-of pvalidate_pages(), where 0 and 1 are passed instead of "false"
-and "true" for the third argument. But while replying to the thread,
-I marked my comment at the wrong place. I meant to suggest to change
-the third argument to pvalidate_pages().
-
-
 > > > +	}
 > > > +
-> > >   	/* Change the page encryption mask. */
-> > >   	new_pte = pfn_pte(pfn, new_prot);
-> > >   	set_pte_atomic(kpte, new_pte);
-> > > +
-> > > +	/*
-> > > +	 * If page is set encrypted in the page table, then update the RMP table to
-> > > +	 * add this page as private.
-> > > +	 */
-> > > +	if (enc)
-> > > +		early_snp_set_memory_private((unsigned long)__va(pa), pa, 1);
+> > >   	while (atomic_dec_not_zero(&endpoint->replenish_backlog))
+> > >   		if (ipa_endpoint_replenish_one(endpoint))
+> > >   			goto try_again_later;
 > > 
-> > Here too, could you please change the "1" to "true?"
-> > 
+> > I think there is a race here, not sure whether it's a problem: If the first
+> > interrupt is here just when a 2nd interrupt evaluates 'replenish_active' the
+> > latter will return, since it looks like replenishing is still active, when it
+> > actually just finished. Would replenishing be kicked off anyway shortly after
+> > or could the transaction be stalled until another endpoint RX completion
+> > interrupt arrives?
 > 
-> same as above.
+> I acknowledge the race you point out.  You're saying another
+> thread could test the flag after the while loop exits, but
+> before the flag gets reset to 0.  And that means that other
+> thread would skip the replenishing it would otherwise do.
 > 
-> thanks
+> To be honest, that is a different scenario than the one I
+> was trying to prevent, because it involves two threads, rather
+> than one thread entering this function a second time (via an
+> interrupt).  But regardless, I think it's OK.
+> 
+> The replenishing loop is intentionally tolerant of errors.
+> It will send as many receive buffers to the hardware as there
+> is room for, but will stop and "try again later" if an
+> error occurs.   Even if the specific case you mention
+> occurred it wouldn't be a problem because we'd get another
+> shot at it.  I'll explain.
+> 
+> 
+> The replenish_backlog is the number of "open slots" the hardware
+> has to hold a receive buffer.  When the backlog reaches 0, the
+> hardware is "full."
+> 
+> When a receive operation completes (in ipa_endpoint_rx_complete())
+> it calls ipa_endpoint_replenish(), requesting that we add one to
+> the backlog (to account for the buffer just consumed).  What this
+> means is that if the hardware has *any* receive buffers, a
+> replenish will eventually be requested (when one completes).
+> 
+> The logic in ipa_endpoint_replenish() tolerates an error
+> attempting to send a new receive buffer to the hardware.
+> If that happens, we just try again later--knowing that
+> the next RX completion will trigger that retry.
+> 
+> The only case where we aren't guaranteed a subsequent call
+> to ipa_endpoint_replenish() is when the hardware has *zero*
+> receive buffers, or the backlog is the maximum.  In that
+> case we explicitly schedule a new replenish via delayed
+> work.
+> 
+> Now, two more points.
+> - If the while loop exits without an error replenishing,
+>   the hardware is "full", so there are buffers that will
+>   complete, and trigger a replenish call.  So if the race
+>   occurred, it would be harmless.
+> - If the while loop exits because of an error replenishing
+>   one buffer, it jumps to try_again_later.  In that case,
+>   either the hardware has at least one receive buffer (so
+>   we'll get another replenish), or it has none and we will
+>   schedule delayed work to to schedule another replenish.
+> 
+> So I think that even if the race you point out occurs, the
+> replenish logic will eventually get another try.
+> 
+> I don't claim my logic is flawless; if it's wrong I can
+> find another solution.
+
+Thanks for the detailed description!
+
+I agree the race isn't an actual issue as long as it is
+guaranteed that the function is called again 'soon' after
+the race occurred. It seems that should be always the case.
