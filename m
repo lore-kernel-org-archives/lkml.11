@@ -2,319 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E7AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A817C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:34:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347895AbiAKEdJ (ORCPT
+        id S1347882AbiAKEeH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 23:33:09 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:60596 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347878AbiAKEdE (ORCPT
+        Mon, 10 Jan 2022 23:34:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234012AbiAKEeG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 23:33:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641875584;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nLpbspIbehopKxn2rF3AjHCSmpudjuRm/i0geJ0lrYQ=;
-        b=epnQXZtlCDuieFmORXgpMNEAQJojQxLgxEmbLbNGQqbKzzIxRsTLBMG/en+G1PswwxCXn0
-        wqY91aGZ7DALae4CKU9QD3NqMDrZ8vXHh/3j4fQl0Z/OhCKVW4XwSt/1wLFXiF0q3zxPLU
-        X7sMuMdINygW3Bq+bhxTd/xtuNZ0FCM=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-35-Xi22thMxPbaam_eGP-Ae7w-1; Mon, 10 Jan 2022 23:33:03 -0500
-X-MC-Unique: Xi22thMxPbaam_eGP-Ae7w-1
-Received: by mail-pj1-f71.google.com with SMTP id a4-20020a17090a70c400b001b21d9c8bc8so1470601pjm.7
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 20:33:02 -0800 (PST)
+        Mon, 10 Jan 2022 23:34:06 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59442C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 20:34:05 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id l8so13083528plt.6
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 20:34:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uMyFE4hG9HNVlJfPf9YKH//FQ4xNSq0cqHXKoYVzLtY=;
+        b=IoUVuvrgWKhoC6sytqSfwIJI7gkn4fO0B8ADTV3aEgX+knQcJsv0VAQaj1kuLBeNoI
+         O6xnzUblcUsaWiU/Z4wBCsMYs8FnGy+kKltX5jlY/Z5bpv7VT+iDEIl4N5HphnVSPoKc
+         yCPnpKrZyKuNI9FN/+bAZAeyLqf69A96/TysbBvFonI3FqDvEBEBbYX9wpHhrFv1ZrqM
+         dqOYgpXY9ky0C/oAQHLMOCPUXteUxxndCpdzANKI3hQUQxZVPAGAUyi4rSwXbtDp2ABn
+         L+DKYW4o2UtYL9YEHda31pyHov40Rr1EwQ8mQ9Prkrr6+CDQjQO0rFzakHfnfcSZSS1V
+         UWaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nLpbspIbehopKxn2rF3AjHCSmpudjuRm/i0geJ0lrYQ=;
-        b=QscWAcRH9bolrX4DPqN4i2mTpQZ1NWzeb5uc6HZ7rydEfcT7UytQelKFm6YS4zKJe9
-         AX6TXpYsHuwravxnQdcwKy21VKTzRgTizIkG+W2rWSVcDtbpoyBXWFDHmuxA6x0iopFm
-         S2M24YqLl9MxQ30TqW7PW/pss0ihNCe3HB3nQreI+DMcIXw+NcfUbFu+K0iiIXTyK67T
-         OkkvgdRqxLi5heoJ0/G0H8UTDPKzwAEo60jy2FdkznqoSkVEVYXKtV580AkJmVt6Edtt
-         /OnaFPk4j+8ky+6LHEubnPHkXoG9FX6A9O+MeAOLKFgOdfkfo4LVHAfZBh2LJpw9hE5W
-         yMNg==
-X-Gm-Message-State: AOAM532xRyzoot0UGL+gaoC8Xcp+SwYQQoeUjBxHJ8/8e4ZkE/qeyDvC
-        zgKIhcQ0H9VcrJAUoCdaKpVATiIxHpS+oW5hv1tk8IQi6fWCOn5tXG+b0js42GjAR1dB4yls3O8
-        Z0abh4YETqRDQ9ev4IVOSu2Q/
-X-Received: by 2002:a62:e711:0:b0:4bf:1965:35d4 with SMTP id s17-20020a62e711000000b004bf196535d4mr2956892pfh.48.1641875581608;
-        Mon, 10 Jan 2022 20:33:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwNaV7c82GTwcVIr6bVq+wS3qfc+Iv4NnNHlsN4PtQHDG7TtmRMpXw1sIupeV+p2lx6OLxQwQ==
-X-Received: by 2002:a62:e711:0:b0:4bf:1965:35d4 with SMTP id s17-20020a62e711000000b004bf196535d4mr2956878pfh.48.1641875581293;
-        Mon, 10 Jan 2022 20:33:01 -0800 (PST)
-Received: from [10.72.13.222] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t6sm3226769pgk.31.2022.01.10.20.32.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 20:33:00 -0800 (PST)
-Message-ID: <e92eba5b-1fd6-0b58-6fb5-2e322fdad3ef@redhat.com>
-Date:   Tue, 11 Jan 2022 12:32:56 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uMyFE4hG9HNVlJfPf9YKH//FQ4xNSq0cqHXKoYVzLtY=;
+        b=IcxUXIZoeILN0rXBI/AosL41UI6r91rD1ev+2TcVejOdPxXnFGicK0fxQ2hDpCHrPS
+         zp8SRsTO6wEM49lPnNtRM7HTC1/Apcban6OA+D+Zu6gWqhVd27bVlXbR98FxJb8jzmd2
+         7L5onmGZN7mfBsYCSOIfgd6VuDDACC/an6IB8TEQK9fo/2/L6h5+R5vqya8mTXQKRjVV
+         LDVS0/QyukQ603BX3RceSNw9MYPsGDq9zrNXBzYch5fczyRe8LikhRKwh4Da4tGdX4ke
+         3Wr4D3yZFWnWsAUEGLiiURyGjeBpePYEwVCU94q0TgMvZTttrXT5d1tHenNDSWMXePB1
+         lLUA==
+X-Gm-Message-State: AOAM531goaCrw1DeFQ29uPA9e9fTRMch/M9GoEOLqJK9o/5W+eVKlq7+
+        L5DvXHYuyYKTFaOC5G778oSjtmfiKFWkavLxGU02Qw==
+X-Google-Smtp-Source: ABdhPJxDACYVZNSOXRWjP5GTJ3EFQevPl911BeBWcnIlhN78MJFunWDZRUfpIPX1foVzWaUHnTgRqvlXUGm4SWZ6HUg=
+X-Received: by 2002:a63:6c85:: with SMTP id h127mr2530846pgc.491.1641875644641;
+ Mon, 10 Jan 2022 20:34:04 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH 4/4] drivers/net/virtio_net: Added RSS hash report
- control.
-Content-Language: en-US
-To:     Andrew Melnychenko <andrew@daynix.com>, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        mst@redhat.com
-Cc:     yan@daynix.com, yuri.benditovich@daynix.com
-References: <20220109210659.2866740-1-andrew@daynix.com>
- <20220109210659.2866740-5-andrew@daynix.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220109210659.2866740-5-andrew@daynix.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220104194918.373612-1-rananta@google.com> <20220104194918.373612-4-rananta@google.com>
+ <CAAeT=FxCCD+H1z8+gfyBZNeibfAUqUenZZe56Vj_3fCghJjy=Q@mail.gmail.com> <CAJHc60yY9qH5_r09Tz2fhWr+tT+i7RnKhchBuEePCKnos52kwA@mail.gmail.com>
+In-Reply-To: <CAJHc60yY9qH5_r09Tz2fhWr+tT+i7RnKhchBuEePCKnos52kwA@mail.gmail.com>
+From:   Reiji Watanabe <reijiw@google.com>
+Date:   Mon, 10 Jan 2022 20:33:48 -0800
+Message-ID: <CAAeT=FyJcUKP4ZGuMQh-AFExj9X=cXKUf0RueqqqhRwUHL2+sw@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 03/11] KVM: Introduce KVM_CAP_ARM_HVC_FW_REG_BMAP
+To:     Raghavendra Rao Ananta <rananta@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-在 2022/1/10 上午5:06, Andrew Melnychenko 写道:
-> Now it's possible to control supported hashflows.
-> Also added hashflow set/get callbacks.
-> Also, disabling RXH_IP_SRC/DST for TCP would disable then for UDP.
-> TCP and UDP supports only:
-> ethtool -U eth0 rx-flow-hash tcp4 sd
->      RXH_IP_SRC + RXH_IP_DST
-> ethtool -U eth0 rx-flow-hash tcp4 sdfn
->      RXH_IP_SRC + RXH_IP_DST + RXH_L4_B_0_1 + RXH_L4_B_2_3
+On Mon, Jan 10, 2022 at 3:40 PM Raghavendra Rao Ananta
+<rananta@google.com> wrote:
 >
-> Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
-> ---
->   drivers/net/virtio_net.c | 159 +++++++++++++++++++++++++++++++++++++++
->   1 file changed, 159 insertions(+)
+> On Fri, Jan 7, 2022 at 9:40 PM Reiji Watanabe <reijiw@google.com> wrote:
+> >
+> > Hi Raghu,
+> >
+> > On Tue, Jan 4, 2022 at 11:49 AM Raghavendra Rao Ananta
+> > <rananta@google.com> wrote:
+> > >
+> > > Introduce the KVM ARM64 capability, KVM_CAP_ARM_HVC_FW_REG_BMAP,
+> > > to indicate the support for psuedo-firmware bitmap extension.
+> > > Each of these registers holds a feature-set exposed to the guest
+> > > in the form of a bitmap. If supported, a simple 'read' of the
+> > > capability should return the number of psuedo-firmware registers
+> > > supported. User-space can utilize this to discover the registers.
+> > > It can further explore or modify the features using the classical
+> > > GET/SET_ONE_REG interface.
+> > >
+> > > Signed-off-by: Raghavendra Rao Ananta <rananta@google.com>
+> > > ---
+> > >  Documentation/virt/kvm/api.rst | 21 +++++++++++++++++++++
+> > >  include/uapi/linux/kvm.h       |  1 +
+> > >  2 files changed, 22 insertions(+)
+> > >
+> > > diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+> > > index aeeb071c7688..646176537f2c 100644
+> > > --- a/Documentation/virt/kvm/api.rst
+> > > +++ b/Documentation/virt/kvm/api.rst
+> > > @@ -6925,6 +6925,27 @@ indicated by the fd to the VM this is called on.
+> > >  This is intended to support intra-host migration of VMs between userspace VMMs,
+> > >  upgrading the VMM process without interrupting the guest.
+> > >
+> > > +7.30 KVM_CAP_ARM_HVC_FW_REG_BMAP
+> >
+> > IMHO, instead of including its format of the register in the name,
+> > including its purpose/function in the name might be better.
+> > e.g. KVM_CAP_ARM_HVC_FEATURE_REG ?
+> > (Feature fields don't necessarily have to be in a bitmap format
+> >  if they don't fit well although I'm not sure if we have such fields.)
+> >
+> Well we do have registers, KVM_REG_ARM_PSCI_VERSION for instance,
+> that's not covered by this CAP. But sure, I can explicitly add
+> 'FEATURES' to the name. I also wanted to explicitly convey that we are
+> covering the *bitmapped* firmware registers here. But not sure if
+> appending 'BMAP' might give an impression that the CAP itself is
+> bitmapped.
+> Do you think KVM_CAP_ARM_HVC_BMAP_FEAT_REG is better?
+
+Thank you for the explanation! That sounds better to me.
+
+Regards,
+Reiji
+
+
+> > > +
+> > > +:Architectures: arm64
+> > > +:Parameters: None
+> > > +:Returns: Number of psuedo-firmware registers supported
+> >
+> > Looking at patch-4, the return value of this would be the number of
+> > pseudo-firmware *bitmap* registers supported.
+> > BTW, "4.68 KVM_SET_ONE_REG" in the doc uses the word "arm64 firmware
+> > pseudo-registers".  It would be nicer to use the same term.
+> >
+> Nice catch. I'll fix it here in apr.rst.
+> > > +
+> > > +This capability indicates that KVM for arm64 supports the psuedo-firmware
+> > > +register bitmap extension. Each of these registers represent the features
+> > > +supported by a particular type in the form of a bitmap. By default, these
+> > > +registers are set with the upper limit of the features that are supported.
+> > > +
+> > > +The registers can be accessed via the standard SET_ONE_REG and KVM_GET_ONE_REG
+> > > +interfaces. The user-space is expected to read the number of these registers
+> > > +available by reading KVM_CAP_ARM_HVC_FW_REG_BMAP, read the current bitmap
+> > > +configuration via GET_ONE_REG for each register, and then write back the
+> > > +desired bitmap of features that it wishes the guest to see via SET_ONE_REG.
+> > > +
+> > > +Note that KVM doesn't allow the user-space to modify these registers after
+> > > +the VM (any of the vCPUs) has started running.
+> >
+> > Since even if KVM_RUN fails, and the VM hasn't started yet,
+> > it will get immutable. So, "after any of the vCPUs run KVM_RUN."
+> > might be more clear ?
+> >
+> Sure, that's probably more clear. I'll fix it.
 >
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 6e7461b01f87..1b8dd384483c 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -235,6 +235,7 @@ struct virtnet_info {
->   	u8 rss_key_size;
->   	u16 rss_indir_table_size;
->   	u32 rss_hash_types_supported;
-> +	u32 rss_hash_types_saved;
->   
->   	/* Has control virtqueue */
->   	bool has_cvq;
-> @@ -2275,6 +2276,7 @@ static void virtnet_init_default_rss(struct virtnet_info *vi)
->   	int i = 0;
->   
->   	vi->ctrl->rss.table_info.hash_types = vi->rss_hash_types_supported;
-> +	vi->rss_hash_types_saved = vi->rss_hash_types_supported;
->   	vi->ctrl->rss.table_info.indirection_table_mask = vi->rss_indir_table_size - 1;
->   	vi->ctrl->rss.table_info.unclassified_queue = 0;
->   
-> @@ -2289,6 +2291,131 @@ static void virtnet_init_default_rss(struct virtnet_info *vi)
->   	netdev_rss_key_fill(vi->ctrl->rss.key, vi->rss_key_size);
->   }
->   
-> +static void virtnet_get_hashflow(const struct virtnet_info *vi, struct ethtool_rxnfc *info)
-> +{
-> +	info->data = 0;
-> +	switch (info->flow_type) {
-> +	case TCP_V4_FLOW:
-> +		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_TCPv4) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST |
-> +						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-> +		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST;
-> +		}
-> +		break;
-> +	case TCP_V6_FLOW:
-> +		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_TCPv6) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST |
-> +						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-> +		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv6) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST;
-> +		}
-> +		break;
-> +	case UDP_V4_FLOW:
-> +		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_UDPv4) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST |
-> +						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-> +		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST;
-> +		}
-> +		break;
-> +	case UDP_V6_FLOW:
-> +		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_UDPv6) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST |
-> +						 RXH_L4_B_0_1 | RXH_L4_B_2_3;
-> +		} else if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv6) {
-> +			info->data = RXH_IP_SRC | RXH_IP_DST;
-> +		}
-> +		break;
-> +	case IPV4_FLOW:
-> +		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4)
-> +			info->data = RXH_IP_SRC | RXH_IP_DST;
-> +
-> +		break;
-> +	case IPV6_FLOW:
-> +		if (vi->rss_hash_types_saved & VIRTIO_NET_RSS_HASH_TYPE_IPv4)
-> +			info->data = RXH_IP_SRC | RXH_IP_DST;
-> +
-> +		break;
-> +	default:
-> +		info->data = 0;
-> +		break;
-> +	}
-> +}
-> +
-> +static bool virtnet_set_hashflow(struct virtnet_info *vi, struct ethtool_rxnfc *info)
-> +{
-> +	u64 is_iphash = info->data & (RXH_IP_SRC | RXH_IP_DST);
-> +	u64 is_porthash = info->data & (RXH_L4_B_0_1 | RXH_L4_B_2_3);
-> +	u32 new_hashtypes = vi->rss_hash_types_saved;
-> +
-> +	if ((is_iphash && (is_iphash != (RXH_IP_SRC | RXH_IP_DST))) ||
-> +	    (is_porthash && (is_porthash != (RXH_L4_B_0_1 | RXH_L4_B_2_3)))) {
-> +		return false;
-> +	}
-> +
-> +	if (!is_iphash && is_porthash)
-> +		return false;
-
-
-This seems not filter out all the combinations:
-
-e.g RXH_VLAN with port hash?
-
-
-> +
-> +	switch (info->flow_type) {
-> +	case TCP_V4_FLOW:
-> +	case UDP_V4_FLOW:
-> +	case IPV4_FLOW:
-> +		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-> +		if (is_iphash)
-> +			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv4;
-> +
-> +		break;
-> +	case TCP_V6_FLOW:
-> +	case UDP_V6_FLOW:
-> +	case IPV6_FLOW:
-> +		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-> +		if (is_iphash)
-> +			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_IPv6;
-> +
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	switch (info->flow_type) {
-> +	case TCP_V4_FLOW:
-> +		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_TCPv4;
-
-
-Any way to merge the two switch? The code is hard to be reviewed anyhow.
-
-
-> +		if (is_porthash)
-> +			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_TCPv4;
-> +
-> +		break;
-> +	case UDP_V4_FLOW:
-> +		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_UDPv4;
-> +		if (is_porthash)
-> +			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_UDPv4;
-> +
-> +		break;
-> +	case TCP_V6_FLOW:
-> +		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_TCPv6;
-> +		if (is_porthash)
-> +			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_TCPv6;
-> +
-> +		break;
-> +	case UDP_V6_FLOW:
-> +		new_hashtypes &= ~VIRTIO_NET_RSS_HASH_TYPE_UDPv6;
-> +		if (is_porthash)
-> +			new_hashtypes |= VIRTIO_NET_RSS_HASH_TYPE_UDPv6;
-> +
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	if (new_hashtypes != vi->rss_hash_types_saved) {
-> +		vi->rss_hash_types_saved = new_hashtypes;
-> +		vi->ctrl->rss.table_info.hash_types = vi->rss_hash_types_saved;
-> +		if (vi->dev->features & NETIF_F_RXHASH)
-> +			return virtnet_commit_rss_command(vi);
-> +	}
-> +
-> +	return true;
-> +}
->   
->   static void virtnet_get_drvinfo(struct net_device *dev,
->   				struct ethtool_drvinfo *info)
-> @@ -2574,6 +2701,27 @@ static int virtnet_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info,
->   	switch (info->cmd) {
->   	case ETHTOOL_GRXRINGS:
->   		info->data = vi->curr_queue_pairs;
-> +		break;
-> +	case ETHTOOL_GRXFH:
-> +		virtnet_get_hashflow(vi, info);
-> +		break;
-> +	default:
-> +		rc = -EOPNOTSUPP;
-> +	}
-> +
-> +	return rc;
-> +}
-> +
-> +static int virtnet_set_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info)
-> +{
-> +	struct virtnet_info *vi = netdev_priv(dev);
-> +	int rc = 0;
-> +
-> +	switch (info->cmd) {
-> +	case ETHTOOL_SRXFH:
-> +		if (!virtnet_set_hashflow(vi, info))
-> +			rc = -EINVAL;
-> +
->   		break;
->   	default:
->   		rc = -EOPNOTSUPP;
-> @@ -2602,6 +2750,7 @@ static const struct ethtool_ops virtnet_ethtool_ops = {
->   	.get_rxfh = virtnet_get_rxfh,
->   	.set_rxfh = virtnet_set_rxfh,
->   	.get_rxnfc = virtnet_get_rxnfc,
-> +	.set_rxnfc = virtnet_set_rxnfc,
->   };
->   
->   static void virtnet_freeze_down(struct virtio_device *vdev)
-> @@ -2854,6 +3003,16 @@ static int virtnet_set_features(struct net_device *dev,
->   		vi->guest_offloads = offloads;
->   	}
->   
-> +	if ((dev->features ^ features) & NETIF_F_RXHASH) {
-> +		if (features & NETIF_F_RXHASH)
-> +			vi->ctrl->rss.table_info.hash_types = vi->rss_hash_types_saved;
-> +		else
-> +			vi->ctrl->rss.table_info.hash_types = 0;
-
-
-I think it's better to use VIRTIO_NET_HASH_REPORT_NONE here.
-
-Thanks
-
-
-> +
-> +		if (!virtnet_commit_rss_command(vi))
-> +			return -EINVAL;
-> +	}
-> +
->   	return 0;
->   }
->   
-
+> Regards,
+> Raghavendra
+>
+> > Thanks,
+> > Reiji
+> >
+> >
+> >
+> > > +
+> > >  8. Other capabilities.
+> > >  ======================
+> > >
+> > > diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> > > index 1daa45268de2..209b43dbbc3c 100644
+> > > --- a/include/uapi/linux/kvm.h
+> > > +++ b/include/uapi/linux/kvm.h
+> > > @@ -1131,6 +1131,7 @@ struct kvm_ppc_resize_hpt {
+> > >  #define KVM_CAP_EXIT_ON_EMULATION_FAILURE 204
+> > >  #define KVM_CAP_ARM_MTE 205
+> > >  #define KVM_CAP_VM_MOVE_ENC_CONTEXT_FROM 206
+> > > +#define KVM_CAP_ARM_HVC_FW_REG_BMAP 207
+> > >
+> > >  #ifdef KVM_CAP_IRQ_ROUTING
+> > >
+> > > --
+> > > 2.34.1.448.ga2b2bfdf31-goog
+> > >
