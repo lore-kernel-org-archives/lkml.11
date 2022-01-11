@@ -2,148 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A82EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAFD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345444AbiAKSDv (ORCPT
+        id S1345199AbiAKSDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:03:51 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:53178 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345324AbiAKSDg (ORCPT
+        Tue, 11 Jan 2022 13:03:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58166 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345343AbiAKSDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 13:03:36 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id 553951F445D8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1641924215;
-        bh=ZPlwOY+VgFIW9bHeyG/JUeeqGePchWBvBOtEUiWKy3I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I8Svo3f4Rh2CmqXccivrPPH9oIj85cPBVP0to+zbklT5zqmKa/XgBjv8i6g2tOT3R
-         Q8Y8j8jmP7itM224wv6vjSno5Awdon+YZYnFOn+pZOuzw3JcPQdP96RhTPGsSrBauk
-         tPF4rEM4Ht0LAGxQTJMew93YfI46wagQ/GycLg9CxOpliViDA89SnH/bOEnXGXY9nu
-         hdV0rqE34VAfqk+mPXOQEcV1KqPOPucsrRh8k/z9xxfSQmbF+43jycn+lhmkI3v1lt
-         ucywi9m0tGyHZF2qWmRp/8JtjZyItr2rmbMqBvc5/HIG5SQJBj56C+IEcvTFVgIL/r
-         +ON2WhRXdMSLg==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
-        Robert Beckett <bob.beckett@collabora.com>,
-        Simon Ser <contact@emersion.fr>,
-        Pekka Paalanen <ppaalanen@gmail.com>,
-        Jordan Justen <jordan.l.justen@intel.com>,
-        Kenneth Graunke <kenneth@whitecape.org>,
-        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
-        Slawomir Milczarek <slawomir.milczarek@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] drm/i915/uapi: document behaviour for DG2 64K support
-Date:   Tue, 11 Jan 2022 18:02:38 +0000
-Message-Id: <20220111180238.1370631-5-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220111180238.1370631-1-bob.beckett@collabora.com>
-References: <20220111180238.1370631-1-bob.beckett@collabora.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 11 Jan 2022 13:03:38 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BBD9661769
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 18:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 30A6BC36AF4;
+        Tue, 11 Jan 2022 18:03:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641924217;
+        bh=gTlpT8s0DoPQgaU2fM8BxE25s1i5FNoic7YK/lBPufs=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=qPjNA/XBaJksqtNyhC1idoAFnVcRZNptKTEqLi0cX2P5FTxucfcwNsZT5ZEFLryBI
+         zF5JMzO190NvcQaPdkswPnplnFLUTFJBdHUwzYzxDlMrdAEDKs2hkd7UkOl+rAfrJv
+         +K9Vvi+loD3deIgH3FU9QLgpiQuU0JCkp/OPskjD7iDUr4Dt7+mH9YiVTKZppjg6aS
+         S6KJV3fLuZjG/nsqyOGS3Yf20ANlT35fmD50s6EeboiG0uraEm8Fgj1OM6kOaTM7tY
+         CnKxVMTP45lPzQS24hRvCQns0mk2azEcd/LFKNrBsNxy/9nXJITppakgy/k6snV/k2
+         63U59A1TVwM9g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1F253F6078E;
+        Tue, 11 Jan 2022 18:03:37 +0000 (UTC)
+Subject: Re: [GIT PULL] workqueue changes for v5.17-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YdyASuKnqWo5TUdE@slm.duckdns.org>
+References: <YdyASuKnqWo5TUdE@slm.duckdns.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YdyASuKnqWo5TUdE@slm.duckdns.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git for-5.17
+X-PR-Tracked-Commit-Id: 2a8ab0fbd110dec25795a98aaa232ede36f6c855
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: e9e64f85b416a276329134cd83ef8ad78b95a118
+Message-Id: <164192421712.4972.5949589200109773698.pr-tracker-bot@kernel.org>
+Date:   Tue, 11 Jan 2022 18:03:37 +0000
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org,
+        Lai Jiangshan <jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Auld <matthew.auld@intel.com>
+The pull request you sent on Mon, 10 Jan 2022 08:51:54 -1000:
 
-On discrete platforms like DG2, we need to support a minimum page size
-of 64K when dealing with device local-memory. This is quite tricky for
-various reasons, so try to document the new implicit uapi for this.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git for-5.17
 
-v2: Fixed suggestions on formatting [Daniel]
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/e9e64f85b416a276329134cd83ef8ad78b95a118
 
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
-Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-cc: Simon Ser <contact@emersion.fr>
-cc: Pekka Paalanen <ppaalanen@gmail.com>
-Cc: Jordan Justen <jordan.l.justen@intel.com>
-Cc: Kenneth Graunke <kenneth@whitecape.org>
-Cc: mesa-dev@lists.freedesktop.org
-Cc: Tony Ye <tony.ye@intel.com>
-Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
----
- include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 39 insertions(+), 5 deletions(-)
+Thank you!
 
-diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
-index 5e678917da70..486b7b96291e 100644
---- a/include/uapi/drm/i915_drm.h
-+++ b/include/uapi/drm/i915_drm.h
-@@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
- 	/**
- 	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
- 	 * the user with the GTT offset at which this object will be pinned.
-+	 *
- 	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
- 	 * presumed_offset of the object.
-+	 *
- 	 * During execbuffer2 the kernel populates it with the value of the
- 	 * current GTT offset of the object, for future presumed_offset writes.
-+	 *
-+	 * See struct drm_i915_gem_create_ext for the rules when dealing with
-+	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
-+	 * minimum page sizes, like DG2.
- 	 */
- 	__u64 offset;
- 
-@@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
- 	 *
- 	 * The (page-aligned) allocated size for the object will be returned.
- 	 *
--	 * Note that for some devices we have might have further minimum
--	 * page-size restrictions(larger than 4K), like for device local-memory.
--	 * However in general the final size here should always reflect any
--	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
--	 * extension to place the object in device local-memory.
-+	 *
-+	 * **DG2 64K min page size implications:**
-+	 *
-+	 * On discrete platforms, starting from DG2, we have to contend with GTT
-+	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
-+	 * objects.  Specifically the hardware only supports 64K or larger GTT
-+	 * page sizes for such memory. The kernel will already ensure that all
-+	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
-+	 * sizes underneath.
-+	 *
-+	 * Note that the returned size here will always reflect any required
-+	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
-+	 * such as DG2.
-+	 *
-+	 * **Special DG2 GTT address alignment requirement:**
-+	 *
-+	 * The GTT alignment will also need be at least 2M for  such objects.
-+	 *
-+	 * Note that due to how the hardware implements 64K GTT page support, we
-+	 * have some further complications:
-+	 *
-+	 *   1) The entire PDE(which covers a 2MB virtual address range), must
-+	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
-+	 *   PDE is forbidden by the hardware.
-+	 *
-+	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
-+	 *   objects.
-+	 *
-+	 * To keep things simple for userland, we mandate that any GTT mappings
-+	 * must be aligned to and rounded up to 2MB. As this only wastes virtual
-+	 * address space and avoids userland having to copy any needlessly
-+	 * complicated PDE sharing scheme (coloring) and only affects GD2, this
-+	 * id deemed to be a good compromise.
- 	 */
- 	__u64 size;
- 	/**
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
