@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A21C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1010AC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344706AbiAKRtB (ORCPT
+        id S1344628AbiAKRsy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:49:01 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:53876
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344128AbiAKRst (ORCPT
+        Tue, 11 Jan 2022 12:48:54 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:32928
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344578AbiAKRsw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:48:49 -0500
+        Tue, 11 Jan 2022 12:48:52 -0500
 Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id CA052402EB
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:48:48 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E575040046
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:48:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641923328;
-        bh=LcRt8+t0LEGVlfTku7gPMrViX/Nt71eS6TfrRb0aKjQ=;
+        s=20210705; t=1641923330;
+        bh=b8unpukURFoj9tYv6hEHKZIOPqKdbI+UT8tS2dxzJ3A=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=O1wJau/yx+I7et521BeX5dRieFSaZAwFxiXMhUAJGwVmmeadC5d9quw1XMTcqW9ek
-         q2NX1Ktslo7P8lMVmoQq+jUzriaophinVHadxN5jVUht5CFoVI/v4UXUfKdefVgTvy
-         YKEnHH7NWSjWx50xLdNYTfvco2uZpZPiRFfWOJPLnbEfnEscxkoebzD8kHrcif6qSo
-         q89VJhTqJ3o2+PoKddn4GCuso3VTmQeBSu/+6Ar9FATGyMwLWTStY9JFDsQ50YyziD
-         HQ+mfmUMkjxgbMgiWUupLNjPjn7FJLyMyyxJdpWovSFvATgFoi44LmC+UBm9H1CZF9
-         Hb51UUWPl2DvQ==
-Received: by mail-ed1-f70.google.com with SMTP id s7-20020a056402520700b003f841380832so14002358edd.5
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:48:48 -0800 (PST)
+        b=feFkn4szcvNFN/VhwFtXLsTqOixJl5WHL7zaniP9SAo3AfMzLwDi6uTrPGuy7AwEn
+         h7Vyc4+y+0ZKG6R2EdlaNI9fwn7AiZ3NoOzXhx69i0fFZZSJcWhG53gx3Tvc0Qb9BB
+         Z7r4W049G9V3zO9Hy/ejS2H+gi7Rpg59oG9S4NPgZ0hXlf5PRKWLFH0z44A73WknXN
+         Stm81Fv00lnOh1jXRe3OxqMhr3pGb4SicDrVLu7Ex2FCLDQLXhxhsGf/IjTBvpEot6
+         l5xzXfY6x7CtN0AlgNVm+/pZh8J8dptAVeezLD6573EWFdJdDJx66mcOUXAduNemSY
+         zAh+bvHi49Yzg==
+Received: by mail-ed1-f70.google.com with SMTP id z8-20020a056402274800b003f8580bfb99so14006598edd.11
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:48:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LcRt8+t0LEGVlfTku7gPMrViX/Nt71eS6TfrRb0aKjQ=;
-        b=K/UhwZqGgcSz12gu6s0lSCRU07ygAzDvZEjmdm/De6+VvJhKvgmwkr4qP+AQyAOKLt
-         nqBcbuASG5WE5zpWUzAmn2fTYRoowfkeA7JGUOVg5zyG9TNYNZxIJxmcYX/Jsd7dh7yK
-         5GpqVzCXT0Q4d0MFTdrKhTUCd7v9/Im0HbLK1PTZnhR7ijElhvnjIKic7NuFqQ8Iu59T
-         8vOr+K7yh/h4dLDk0pMkEjZkO+egcRtu4k3gZjNK5Cht5iESvAzlzfORuseAT1FnSW5x
-         nL2mWJjPt1Vt/F0N569zWIu88Jfr0onbWfpsKOVfp9X8IzXHsOCyOQafPmWjs4u3mkB9
-         hfCg==
-X-Gm-Message-State: AOAM530acLNIjDXO1dRdSwEq3OtTPprS5N8XpV1Vg21zA2bu9nWpTRP3
-        suESSWNwvMmsciC/Zm1+ERc+qsWvpx+n07gz+AO9PKGR5OxKu2/rOr+kAHSc4mln6+cfcZL4DhA
-        4WjiY+B+Q5cauSTRFKUlahaHyr9u0T80iKCpPe/D2TA==
-X-Received: by 2002:a50:ce4a:: with SMTP id k10mr5454005edj.31.1641923328391;
-        Tue, 11 Jan 2022 09:48:48 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxgF1x3XntlDy5p/SEguWc1VAocNbGh5alkcyHXD9/D2HpsqnHXUWInQydT3dqUznGBo75t3A==
-X-Received: by 2002:a50:ce4a:: with SMTP id k10mr5453985edj.31.1641923328228;
-        Tue, 11 Jan 2022 09:48:48 -0800 (PST)
+        bh=b8unpukURFoj9tYv6hEHKZIOPqKdbI+UT8tS2dxzJ3A=;
+        b=i1K97yRSudkv76oI374VbtIbyiU+tbWxtcF0azVw0uAGvg0ah40jMfgZWapho7oR01
+         lK5rscFBlyRAcuaD/3pJUSkd4YS91U8JJ+YxgIC5EFRDn3AlQY7cvHygYBE8Rk6CGjZb
+         +RMxMyg+XG9iEdzcte7CY0PyAckZKMRcpogshXEQh3JZidkl07WTEy3M2ZY87aXQGshJ
+         WmZtarShR7PL+/prHXPETn3kHlobX91/eUQaiuHp6zP+MViEntxbJvRTSbRf4EI3KJFU
+         Ec0atC/7YuF/r49n+qXrolbuoaR7BvKai46o4ATvTh8GHpzRbO9FcXY2QqupVSz3BFIO
+         0uDQ==
+X-Gm-Message-State: AOAM533f6xftCUtUWBpZJRgAqYoZnRRpCAKZLyyyqh57LB6AALK7G8Ff
+        9Kn/tueNfqPD40jcxED4QBaAddlyfbknXAUrSsQ4h/grQejmxwxR19Fzpj8+2KN4jY5gQmo4CNb
+        /Mt5XvU6OpIzbwhTdtqN3LBK/KqwAZvDR67yU+EIuZg==
+X-Received: by 2002:a17:906:f214:: with SMTP id gt20mr4859168ejb.458.1641923330637;
+        Tue, 11 Jan 2022 09:48:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyAM0/Z9YVcu804le5q3yh75AgpsHjTUH68ArlTniLkfQouy/WQEvSuRTc1ZiHTwflEmE8bPg==
+X-Received: by 2002:a17:906:f214:: with SMTP id gt20mr4859157ejb.458.1641923330509;
+        Tue, 11 Jan 2022 09:48:50 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id i23sm5224489edt.93.2022.01.11.09.48.47
+        by smtp.gmail.com with ESMTPSA id i23sm5224489edt.93.2022.01.11.09.48.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 09:48:47 -0800 (PST)
+        Tue, 11 Jan 2022 09:48:49 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Chanwoo Choi <cw00.choi@samsung.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
@@ -65,9 +65,9 @@ To:     Chanwoo Choi <cw00.choi@samsung.com>,
         Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org
-Subject: [PATCH v2 3/5] regulator: dt-bindings: maxim,max77843: add MAX77843 bindings
-Date:   Tue, 11 Jan 2022 18:48:03 +0100
-Message-Id: <20220111174805.223732-4-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 5/5] MAINTAINERS: mfd: cover MAX77843 by Maxim PMIC/MUIC for Exynos boards entry
+Date:   Tue, 11 Jan 2022 18:48:05 +0100
+Message-Id: <20220111174805.223732-6-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
 References: <20220111174805.223732-1-krzysztof.kozlowski@canonical.com>
@@ -77,87 +77,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the bindings for MAX77843 regulator driver.  The bindings are
-almost identical to MAX77693 bindings, except the actual names of
-regulators.
+The MAX77843 is used in Exynos5433-based TM2 boards and shares some
+parts of code with MAX77693 (regulator and haptic motor drivers).
+Include all MAX77843 drivers in the entry for Maxim PMIC/MUIC drivers
+for Exynos boards, so they will receive some dedicated review coverage.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- .../bindings/regulator/maxim,max77843.yaml    | 65 +++++++++++++++++++
- 1 file changed, 65 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/regulator/maxim,max77843.yaml
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/regulator/maxim,max77843.yaml b/Documentation/devicetree/bindings/regulator/maxim,max77843.yaml
-new file mode 100644
-index 000000000000..a963025e96c1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/regulator/maxim,max77843.yaml
-@@ -0,0 +1,65 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/regulator/maxim,max77843.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Maxim MAX77843 MicroUSB and Companion Power Management IC regulators
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-+
-+description: |
-+  This is a part of device tree bindings for Maxim MAX77843 MicroUSB Integrated
-+  Circuit (MUIC).
-+
-+  See also Documentation/devicetree/bindings/mfd/maxim,max77843.yaml for
-+  additional information and example.
-+
-+properties:
-+  compatible:
-+    const: maxim,max77843-regulator
-+
-+  CHARGER:
-+    type: object
-+    $ref: regulator.yaml#
-+    additionalProperties: false
-+    description: |
-+      Current regulator.
-+
-+    properties:
-+      regulator-name: true
-+      regulator-always-on: true
-+      regulator-boot-on: true
-+      regulator-min-microamp:
-+        minimum: 100000
-+      regulator-max-microamp:
-+        maximum: 3150000
-+
-+    required:
-+      - regulator-name
-+
-+patternProperties:
-+  "^SAFEOUT[12]$":
-+    type: object
-+    $ref: regulator.yaml#
-+    additionalProperties: false
-+    description: |
-+      Safeout LDO regulator.
-+
-+    properties:
-+      regulator-name: true
-+      regulator-always-on: true
-+      regulator-boot-on: true
-+      regulator-min-microvolt:
-+        minimum: 3300000
-+      regulator-max-microvolt:
-+        maximum: 4950000
-+
-+    required:
-+      - regulator-name
-+
-+required:
-+  - compatible
-+
-+additionalProperties: false
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e5f2758531bc..d1f8f312f322 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11693,8 +11693,10 @@ L:	linux-kernel@vger.kernel.org
+ S:	Supported
+ F:	Documentation/devicetree/bindings/*/maxim,max77686.yaml
+ F:	Documentation/devicetree/bindings/*/maxim,max77693.yaml
++F:	Documentation/devicetree/bindings/*/maxim,max77843.yaml
+ F:	Documentation/devicetree/bindings/clock/maxim,max77686.txt
+ F:	Documentation/devicetree/bindings/mfd/max14577.txt
++F:	drivers/*/*max77843.c
+ F:	drivers/*/max14577*.c
+ F:	drivers/*/max77686*.c
+ F:	drivers/*/max77693*.c
 -- 
 2.32.0
 
