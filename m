@@ -2,50 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFFF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20001C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:32:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344876AbiAKRcX (ORCPT
+        id S1344904AbiAKRca (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:32:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344422AbiAKRbW (ORCPT
+        Tue, 11 Jan 2022 12:32:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45386 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344397AbiAKRbV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:31:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 637A8C06175E;
-        Tue, 11 Jan 2022 09:31:20 -0800 (PST)
+        Tue, 11 Jan 2022 12:31:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B17DCB81C48;
-        Tue, 11 Jan 2022 17:31:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 627C5C36AED;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03653B81C56
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:31:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A1DC36AEB;
         Tue, 11 Jan 2022 17:31:19 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1n7KzO-0032K5-Ir;
+        id 1n7KzO-0032LE-UP;
         Tue, 11 Jan 2022 12:31:18 -0500
-Message-ID: <20220111173118.415962778@goodmis.org>
+Message-ID: <20220111173118.778024396@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Tue, 11 Jan 2022 12:30:59 -0500
+Date:   Tue, 11 Jan 2022 12:31:01 -0500
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        John Kacur <jkacur@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>,
-        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [for-next][PATCH 28/31] rtla: Add rtla timerlat top documentation
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [for-next][PATCH 30/31] tracing: Remove duplicate warnings when calling trace_create_file()
 References: <20220111173030.999527342@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,207 +40,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Bristot de Oliveira <bristot@kernel.org>
+From: Yuntao Wang <ytcoode@gmail.com>
 
-Man page for rtla timerlat top mode.
+Since the same warning message is already printed in the
+trace_create_file() function, there is no need to print it again.
 
-Link: https://lkml.kernel.org/r/df06fa7801571078e43d77002c6645bdc49f779a.1638182284.git.bristot@kernel.org
+Link: https://lkml.kernel.org/r/20220109162232.361747-1-ytcoode@gmail.com
 
-Cc: Tao Zhou <tao.zhou@linux.dev>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Cc: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: John Kacur <jkacur@redhat.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc: linux-rt-users@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
 Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 ---
- .../tools/rtla/common_timerlat_options.rst    |  16 ++
- .../tools/rtla/rtla-timerlat-top.rst          | 145 ++++++++++++++++++
- 2 files changed, 161 insertions(+)
- create mode 100644 Documentation/tools/rtla/common_timerlat_options.rst
- create mode 100644 Documentation/tools/rtla/rtla-timerlat-top.rst
+ kernel/trace/trace_events.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/tools/rtla/common_timerlat_options.rst b/Documentation/tools/rtla/common_timerlat_options.rst
-new file mode 100644
-index 000000000000..e9c1bfd55d48
---- /dev/null
-+++ b/Documentation/tools/rtla/common_timerlat_options.rst
-@@ -0,0 +1,16 @@
-+**-p**, **--period** *us*
-+
-+        Set the *timerlat* tracer period in microseconds.
-+
-+**-i**, **--irq** *us*
-+
-+        Stop trace if the *IRQ* latency is higher than the argument in us.
-+
-+**-T**, **--thread** *us*
-+
-+        Stop trace if the *Thread* latency is higher than the argument in us.
-+
-+**-s**, **--stack** *us*
-+
-+        Save the stack trace at the *IRQ* if a *Thread* latency is higher than the
-+        argument in us.
-diff --git a/Documentation/tools/rtla/rtla-timerlat-top.rst b/Documentation/tools/rtla/rtla-timerlat-top.rst
-new file mode 100644
-index 000000000000..1c321de1c171
---- /dev/null
-+++ b/Documentation/tools/rtla/rtla-timerlat-top.rst
-@@ -0,0 +1,145 @@
-+====================
-+rtla-timerlat-top
-+====================
-+-------------------------------------------
-+Measures the operating system timer latency
-+-------------------------------------------
-+
-+:Manual section: 1
-+
-+SYNOPSIS
-+========
-+**rtla timerlat top** [*OPTIONS*] ...
-+
-+DESCRIPTION
-+===========
-+
-+.. include:: common_timerlat_description.rst
-+
-+The **rtla timerlat top** displays a summary of the periodic output
-+from the *timerlat* tracer. It also provides information for each
-+operating system noise via the **osnoise:** tracepoints that can be
-+seem with the option **-T**.
-+
-+OPTIONS
-+=======
-+
-+.. include:: common_timerlat_options.rst
-+
-+.. include:: common_top_options.rst
-+
-+.. include:: common_options.rst
-+
-+EXAMPLE
-+=======
-+
-+In the example below, the *timerlat* tracer is set to capture the stack trace at
-+the IRQ handler, printing it to the buffer if the *Thread* timer latency is
-+higher than *30 us*. It is also set to stop the session if a *Thread* timer
-+latency higher than *30 us* is hit. Finally, it is set to save the trace
-+buffer if the stop condition is hit::
-+
-+  [root@alien ~]# rtla timerlat top -s 30 -t 30 -T
-+                   Timer Latency
-+    0 00:00:59   |          IRQ Timer Latency (us)        |         Thread Timer Latency (us)
-+  CPU COUNT      |      cur       min       avg       max |      cur       min       avg       max
-+    0 #58634     |        1         0         1        10 |       11         2        10        23
-+    1 #58634     |        1         0         1         9 |       12         2         9        23
-+    2 #58634     |        0         0         1        11 |       10         2         9        23
-+    3 #58634     |        1         0         1        11 |       11         2         9        24
-+    4 #58634     |        1         0         1        10 |       11         2         9        26
-+    5 #58634     |        1         0         1         8 |       10         2         9        25
-+    6 #58634     |       12         0         1        12 |       30         2        10        30 <--- CPU with spike
-+    7 #58634     |        1         0         1         9 |       11         2         9        23
-+    8 #58633     |        1         0         1         9 |       11         2         9        26
-+    9 #58633     |        1         0         1         9 |       10         2         9        26
-+   10 #58633     |        1         0         1        13 |       11         2         9        28
-+   11 #58633     |        1         0         1        13 |       12         2         9        24
-+   12 #58633     |        1         0         1         8 |       10         2         9        23
-+   13 #58633     |        1         0         1        10 |       10         2         9        22
-+   14 #58633     |        1         0         1        18 |       12         2         9        27
-+   15 #58633     |        1         0         1        10 |       11         2         9        28
-+   16 #58633     |        0         0         1        11 |        7         2         9        26
-+   17 #58633     |        1         0         1        13 |       10         2         9        24
-+   18 #58633     |        1         0         1         9 |       13         2         9        22
-+   19 #58633     |        1         0         1        10 |       11         2         9        23
-+   20 #58633     |        1         0         1        12 |       11         2         9        28
-+   21 #58633     |        1         0         1        14 |       11         2         9        24
-+   22 #58633     |        1         0         1         8 |       11         2         9        22
-+   23 #58633     |        1         0         1        10 |       11         2         9        27
-+  timerlat hit stop tracing
-+  saving trace to timerlat_trace.txt
-+  [root@alien bristot]# tail -60 timerlat_trace.txt
-+  [...]
-+      timerlat/5-79755   [005] .......   426.271226: #58634 context thread timer_latency     10823 ns
-+              sh-109404  [006] dnLh213   426.271247: #58634 context    irq timer_latency     12505 ns
-+              sh-109404  [006] dNLh313   426.271258: irq_noise: local_timer:236 start 426.271245463 duration 12553 ns
-+              sh-109404  [006] d...313   426.271263: thread_noise:       sh:109404 start 426.271245853 duration 4769 ns
-+      timerlat/6-79756   [006] .......   426.271264: #58634 context thread timer_latency     30328 ns
-+      timerlat/6-79756   [006] ....1..   426.271265: <stack trace>
-+  => timerlat_irq
-+  => __hrtimer_run_queues
-+  => hrtimer_interrupt
-+  => __sysvec_apic_timer_interrupt
-+  => sysvec_apic_timer_interrupt
-+  => asm_sysvec_apic_timer_interrupt
-+  => _raw_spin_unlock_irqrestore			<---- spinlock that disabled interrupt.
-+  => try_to_wake_up
-+  => autoremove_wake_function
-+  => __wake_up_common
-+  => __wake_up_common_lock
-+  => ep_poll_callback
-+  => __wake_up_common
-+  => __wake_up_common_lock
-+  => fsnotify_add_event
-+  => inotify_handle_inode_event
-+  => fsnotify
-+  => __fsnotify_parent
-+  => __fput
-+  => task_work_run
-+  => exit_to_user_mode_prepare
-+  => syscall_exit_to_user_mode
-+  => do_syscall_64
-+  => entry_SYSCALL_64_after_hwframe
-+  => 0x7265000001378c
-+  => 0x10000cea7
-+  => 0x25a00000204a
-+  => 0x12e302d00000000
-+  => 0x19b51010901b6
-+  => 0x283ce00726500
-+  => 0x61ea308872
-+  => 0x00000fe3
-+            bash-109109  [007] d..h...   426.271265: #58634 context    irq timer_latency      1211 ns
-+      timerlat/6-79756   [006] .......   426.271267: timerlat_main: stop tracing hit on cpu 6
-+
-+In the trace, it is possible the notice that the *IRQ* timer latency was
-+already high, accounting *12505 ns*. The IRQ delay was caused by the
-+*bash-109109* process that disabled IRQs in the wake-up path
-+(*_try_to_wake_up()* function). The duration of the IRQ handler that woke
-+up the timerlat thread, informed with the **osnoise:irq_noise** event, was
-+also high and added more *12553 ns* to the Thread latency. Finally, the
-+**osnoise:thread_noise** added by the currently running thread (including
-+the scheduling overhead) added more *4769 ns*. Summing up these values,
-+the *Thread* timer latency accounted for *30328 ns*.
-+
-+The primary reason for this high value is the wake-up path that was hit
-+twice during this case: when the *bash-109109* was waking up a thread
-+and then when the *timerlat* thread was awakened. This information can
-+then be used as the starting point of a more fine-grained analysis.
-+
-+Note that **rtla timerlat** was dispatched without changing *timerlat* tracer
-+threads' priority. That is generally not needed because these threads hava
-+priority *FIFO:95* by default, which is a common priority used by real-time
-+kernel developers to analyze scheduling delays.
-+
-+SEE ALSO
-+--------
-+**rtla-timerlat**\(1), **rtla-timerlat-hist**\(1)
-+
-+*timerlat* tracer documentation: <https://www.kernel.org/doc/html/latest/trace/timerlat-tracer.html>
-+
-+AUTHOR
-+------
-+Written by Daniel Bristot de Oliveira <bristot@kernel.org>
-+
-+.. include:: common_appendix.rst
+diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
+index 92be9cb1d7d4..3147614c1812 100644
+--- a/kernel/trace/trace_events.c
++++ b/kernel/trace/trace_events.c
+@@ -3461,10 +3461,8 @@ create_event_toplevel_files(struct dentry *parent, struct trace_array *tr)
+ 
+ 	entry = trace_create_file("enable", TRACE_MODE_WRITE, d_events,
+ 				  tr, &ftrace_tr_enable_fops);
+-	if (!entry) {
+-		pr_warn("Could not create tracefs 'enable' entry\n");
++	if (!entry)
+ 		return -ENOMEM;
+-	}
+ 
+ 	/* There are not as crucial, just warn if they are not created */
+ 
+@@ -3480,17 +3478,13 @@ create_event_toplevel_files(struct dentry *parent, struct trace_array *tr)
+ 		pr_warn("Could not create tracefs 'set_event_notrace_pid' entry\n");
+ 
+ 	/* ring buffer internal formats */
+-	entry = trace_create_file("header_page", TRACE_MODE_READ, d_events,
++	trace_create_file("header_page", TRACE_MODE_READ, d_events,
+ 				  ring_buffer_print_page_header,
+ 				  &ftrace_show_header_fops);
+-	if (!entry)
+-		pr_warn("Could not create tracefs 'header_page' entry\n");
+ 
+-	entry = trace_create_file("header_event", TRACE_MODE_READ, d_events,
++	trace_create_file("header_event", TRACE_MODE_READ, d_events,
+ 				  ring_buffer_print_entry_header,
+ 				  &ftrace_show_header_fops);
+-	if (!entry)
+-		pr_warn("Could not create tracefs 'header_event' entry\n");
+ 
+ 	tr->event_dir = d_events;
+ 
 -- 
 2.33.0
