@@ -2,131 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB334C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:26:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235845AbiAKDZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 22:25:59 -0500
-Received: from mga02.intel.com ([134.134.136.20]:46706 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348042AbiAKDZl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 22:25:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641871541; x=1673407541;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7nvliX2pitYIn5elvcc0RhLaOrecvDNaby86k0Cd5T0=;
-  b=Z8R4a8gqmri5CRIyZyFd/3+1sjGCMoHO/rQGFJOQWEr9yvqG9Q/oB9V/
-   k/4u26IlrTqbiamJ40eRsTjX+ZOfpSTzolSTLnsZKc+NpynXamvqtXPWT
-   VIamvZXEIsoSTaeyqIMk/mPx6dWTYsAfAg1LEjxjFvISi3rB0/5MF0aJe
-   s6d1+EaqWrKvHi8C4AEiytAOMuOVvUEdYifwifcHkaemuhgTLq9avHAQK
-   hYOz/E9d6Y7Uq7qd1dl+rYAsesLKrwDAcq9RZXdOakkqJBQhsA4xVcyfR
-   8rP61hbI48T27bdLusu4C6MWIG2j1iw2jofseZNClVlO5WkgUz5Ujb+5R
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="230734096"
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="230734096"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 19:25:41 -0800
-X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="528546614"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 19:25:37 -0800
-Date:   Tue, 11 Jan 2022 11:36:30 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
-        tglx@linutronix.de, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/6] KVM: x86: Move check_processor_compatibility from
- init ops to runtime ops
-Message-ID: <20220111033629.GC2175@gao-cwp>
-References: <20211227081515.2088920-1-chao.gao@intel.com>
- <20211227081515.2088920-2-chao.gao@intel.com>
- <YdzAzT5AqO0aCsHk@google.com>
+        id S1346068AbiAKD0C (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 22:26:02 -0500
+Received: from mail-pj1-f52.google.com ([209.85.216.52]:37398 "EHLO
+        mail-pj1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235643AbiAKDZ6 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 22:25:58 -0500
+Received: by mail-pj1-f52.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so2525054pjj.2;
+        Mon, 10 Jan 2022 19:25:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=+IrioJ14vRZe46/0NWAy9KztWiI2hvMJP8opnttVIEU=;
+        b=E2LUMbKztkTD+R4dRyd3OEW/L8sjhTao2v+QXr7+SQeNLFCD9SZlA/H3C3s9Kq0YHv
+         BRSs7iSigT1gvDeZUbwQg50CFR+14FteQvCfaZzXn0ebQOKSlOlZlx4X49wJvf0pmkfs
+         jKy9I1/7I4G5NBWUq4GxivHlqF3CF6YjHas1T54jkSFN4h7Nbakr907qZ+GEztZV5QyR
+         svRH5oBwKfKyV78SKExxpSnspzG+MfCzU+CfiRb836yP5CSaBJnLu/ioy4D6YbSizp7b
+         Zyh/W0drw/FLGMWhrlKyAPMktDrsRP5yV7drXsO+a+IEv2ir27klqqn1YHbqTotJgtT1
+         9Ndg==
+X-Gm-Message-State: AOAM531iH+ID6W/a5nMVT8vdX2uqsSI7Cz0kf5mhCUVn3rqgsYUl1noJ
+        6MBuuIh8DaJAkb3RrWSDl4C8fW6NGv0=
+X-Google-Smtp-Source: ABdhPJxc5akiiLV56FHBQGpILjN/2inSGNxegSXkNU4UvRu5tiBs00Inrw8SHdk82j9XqkA3gUO5Xg==
+X-Received: by 2002:a17:902:c946:b0:149:94d:c049 with SMTP id i6-20020a170902c94600b00149094dc049mr2652243pla.75.1641871557731;
+        Mon, 10 Jan 2022 19:25:57 -0800 (PST)
+Received: from [192.168.51.110] (c-73-241-217-19.hsd1.ca.comcast.net. [73.241.217.19])
+        by smtp.gmail.com with ESMTPSA id b22sm8847399pfv.107.2022.01.10.19.25.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 19:25:57 -0800 (PST)
+Message-ID: <bb83d65e-bcd8-9da8-e54b-0dde6f23434e@acm.org>
+Date:   Mon, 10 Jan 2022 19:25:54 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdzAzT5AqO0aCsHk@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH 0/13] blk: make blk-rq-qos policies pluggable and modular
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>,
+        Wang Jianchao <jianchao.wan9@gmail.com>
+Cc:     axboe@kernel.dk, jbacik@fb.com, tj@kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220110091046.17010-1-jianchao.wan9@gmail.com>
+ <Ydxum/2iwp6hDw68@infradead.org>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <Ydxum/2iwp6hDw68@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 11:27:09PM +0000, Sean Christopherson wrote:
->On Mon, Dec 27, 2021, Chao Gao wrote:
->> so that KVM can do compatibility checks on hotplugged CPUs. Drop __init
->> from check_processor_compatibility() and its callees.
->
->Losing the __init annotation on all these helpers makes me a bit sad, more from a
->documentation perspective than a "but we could shave a few bytes" perspective.
+On 1/10/22 09:36, Christoph Hellwig wrote:
+> On Mon, Jan 10, 2022 at 05:10:33PM +0800, Wang Jianchao wrote:
+>> This patchset attempts to make blk-rq-qos framework pluggable and modular.
+> 
+> I really don't think making them policies modular is a good thing, and
+> your new exports/APIs are a very good sign for why it is not a good
+> idea.
 
-This makes sense.
+Hi Christoph,
 
->More than once I've wondered why some bit of code isn't __init, only to realize
->its used for hotplug.
+Personally I don't need the ability to implement blk-rq-qos 
+functionality as a loadable kernel module.
 
-Same problem to some global data structures which can be __initdata if hotplug
-isn't supported.
+When I implemented the ioprio rq-qos policy (see also blk-ioprio.c) I 
+noticed that I had to make changes in the block layer core 
+(blkcg_init_queue(), rq_qos_id_to_name(), blk-rq-qos.h) instead of 
+having all code related to the new rq-pos policy contained in a single 
+file. I think it would be an improvement if new rq-qos policies could be 
+implemented in a single source file and no block layer core changes 
+would be necessary.
 
->
->What if we added an __init_or_hotplug annotation that is a nop if HOTPLUG_CPU=y?
+Thanks,
 
-Personally __init_or_hotplug is a little long as an annotation. How about
-__hotplug?
+Bart.
 
-One concern is: is it acceptable to introduce a new annotation and use it in
-new code but not fix all places that should use it in existing code.
 
-I think the right process is
-1. introduce a new annotation
-2. fix existing code to use this annotation
-3. add new code.
-
-There is no doubt that #2 would take great effort. I'm not sure if it is really
-worth it.
-
->At a glance, KVM could use that if the guts of kvm_online_cpu() were #idef'd out
->on !CONFIG_HOTPLUG_CPU.  That also give us a bit of test coverage for bots that
->build with SMP=n.
-
-Will do with your suggested-by.
-
->
->diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
->index a80e3b0c11a8..30bbcb4f4057 100644
->--- a/arch/x86/kvm/x86.c
->+++ b/arch/x86/kvm/x86.c
->@@ -11380,7 +11380,7 @@ void kvm_arch_hardware_unsetup(void)
->        static_call(kvm_x86_hardware_unsetup)();
-> }
->
->-int kvm_arch_check_processor_compat(void)
->+int __init_or_hotplug kvm_arch_check_processor_compat(void)
-> {
->        struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
->
->diff --git a/include/linux/init.h b/include/linux/init.h
->index d82b4b2e1d25..33788b3c180a 100644
->--- a/include/linux/init.h
->+++ b/include/linux/init.h
->@@ -53,6 +53,12 @@
-> #define __exitdata     __section(".exit.data")
-> #define __exit_call    __used __section(".exitcall.exit")
->
->+#ifdef CONFIG_HOTPLUG_CPU
->+#define __init_or_hotplug
->+#else
->+#define __init_or_hotplug __init
->+#endif /* CONFIG_HOTPLUG_CPU
->+
-> /*
->  * modpost check for section mismatches during the kernel build.
->  * A section mismatch happens when there are references from a
->
