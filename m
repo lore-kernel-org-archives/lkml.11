@@ -2,133 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 982F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D73C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:18:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240475AbiAKNRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 08:17:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
+        id S240416AbiAKNS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 08:18:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240391AbiAKNRR (ORCPT
+        with ESMTP id S240355AbiAKNSy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 08:17:17 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51BD4C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:17:17 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id g5so7913150plo.12
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:17:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=51hfnZMrjVMwncBAfuPjR9jE1rmCVx4hXfZuwfJArk8=;
-        b=LljzaIex9oaWpQpDIkneXLdfCcqNXilOgXqkk4D/kR7cYhdCa23RDZGJuoq6DBFGtO
-         TTWUAFmaCLHz05QRmZdtZvkYMzdEtuxqpD4CDixUwHnGyp4T73EkQKomQVCKhnxLJTJ2
-         bbtj+7nyl6t95Uc231qFZLxXJfavpeElcBVgpxNE3+0jW78xxdxhGy8doKfjcdXqAw5T
-         HvyP/EQyittIW0StHo18qvuDv2PFZMijQyc78uvJxxzfkvHq6wB/wg85RRM7Lnvo2Pdo
-         u29iAq85glUaEykP2fObR7yddVtFz399OM4p3NsF3ZSC1rzPatOTKrqG8Nul2Xmr6e61
-         RUWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=51hfnZMrjVMwncBAfuPjR9jE1rmCVx4hXfZuwfJArk8=;
-        b=pWDHWItjiGwppRJoy5ZcynYk+N19bCikU3piJuH2UjPATy/+RXr4aXIZoge/4c/a17
-         mEACLpUFnkkcOhSluSLQkLptEdz1tkYKmBTmUtLEBgo2HLBv4pB1ICnEi+AG2EJ6TF8l
-         j7OkqYE9/nkfy0MvvmMD+P7S6Xo0PuRHDX3fR0Nvx3ZiNObiDz7nwV7Cl7OkENB8Skgz
-         YKQ4XhHNmRKgfYvct/tiyjjCT0MvsvO2IMajK+g9TCGq0jLjqR1Uls+b5I6a7xdP469p
-         Qs7DuVnyd7p6XQu/qpJd9b3WVLbY6z/sc4u0YoMuqvURpB1urNDZv2d4IuB6Auwsv3oa
-         +GZg==
-X-Gm-Message-State: AOAM530q+n1F86iXB32tAG8ro6N6ZICS6Uwx9gwOyHxlTxsKNsH2LBbr
-        qxgvhvMqvMkz1V/DQ9o0Vakktg==
-X-Google-Smtp-Source: ABdhPJzTrKFps+GeCoX3uZCxSVOWXOuaPD/0YuD2oXFzH+R10vAlnkfSlcZEwlQMzychksQJaXWtZw==
-X-Received: by 2002:a63:485a:: with SMTP id x26mr4019728pgk.580.1641907036736;
-        Tue, 11 Jan 2022 05:17:16 -0800 (PST)
-Received: from C02FF4E5ML7H.tiktokd.org ([139.177.225.248])
-        by smtp.gmail.com with ESMTPSA id c124sm10080450pfb.139.2022.01.11.05.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 05:17:16 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     will@kernel.org, akpm@linux-foundation.org, david@redhat.com,
-        bodeddub@amazon.com, osalvador@suse.de, mike.kravetz@oracle.com,
-        rientjes@google.com, mark.rutland@arm.com, catalin.marinas@arm.com,
-        james.morse@arm.com
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, duanxiongchun@bytedance.com,
-        fam.zheng@bytedance.com, Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH] arm64: mm: hugetlb: add support for free vmemmap pages of HugeTLB
-Date:   Tue, 11 Jan 2022 21:16:52 +0800
-Message-Id: <20220111131652.61947-1-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+        Tue, 11 Jan 2022 08:18:54 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A431C06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:18:54 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1n7H32-0003aP-TC; Tue, 11 Jan 2022 14:18:48 +0100
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1n7H32-0004av-5M; Tue, 11 Jan 2022 14:18:48 +0100
+Date:   Tue, 11 Jan 2022 14:18:48 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: adc: tsc2046: add .read_raw support
+Message-ID: <20220111131848.GE3326@pengutronix.de>
+References: <20220107093527.3046331-1-o.rempel@pengutronix.de>
+ <20220109155956.003167f1@jic23-huawei>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220109155956.003167f1@jic23-huawei>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:04:41 up 31 days, 21:50, 72 users,  load average: 0.07, 0.27,
+ 0.27
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The preparation of supporting freeing vmemmap associated with each
-HugeTLB page is ready, so we can support this feature for arm64.
+Hi Jonathan,
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
-There is already some discussions about this in [1], but there was no
-conclusion in the end. I copied the concern proposed by Anshuman to here.
+On Sun, Jan 09, 2022 at 04:00:09PM +0000, Jonathan Cameron wrote:
+> On Fri,  7 Jan 2022 10:35:27 +0100
+> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> 
+> > Add read_raw() support to make use of iio_hwmon and other iio clients.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> Hi Oleksij
+> 
+> Main questions in here are around settling time and the interface used for that.
+> 
+> > ---
+> >  drivers/iio/adc/ti-tsc2046.c | 114 ++++++++++++++++++++++++++++++++---
+> >  1 file changed, 106 insertions(+), 8 deletions(-)
+> > 
+> > @@ -252,16 +266,47 @@ static u16 tsc2046_adc_get_value(struct tsc2046_adc_atom *buf)
+> >  static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
+> >  				u32 *effective_speed_hz)
+> >  {
+> > +	struct tsc2046_adc_ch_cfg *ch = &priv->ch_cfg[ch_idx];
+> > +	struct tsc2046_adc_atom *rx_buf, *tx_buf;
+> > +	unsigned int val, val_normalized = 0;
+> > +	int ret, i, count_skip = 0, max_count;
+> >  	struct spi_transfer xfer;
+> >  	struct spi_message msg;
+> > -	int ret;
+> > +	u8 cmd;
+> > +
+> > +	if (!effective_speed_hz) {
+> > +		count_skip = tsc2046_adc_time_to_count(priv, ch->settling_time_us);
+> > +		max_count = count_skip + ch->oversampling_ratio;
+> > +	} else {
+> > +		max_count = 1;
+> > +	}
+> > +
+> > +	tx_buf = kcalloc(max_count, sizeof(*tx_buf), GFP_KERNEL);
+> > +	if (!tx_buf)
+> > +		return -ENOMEM;
+> > +
+> > +	rx_buf = kcalloc(max_count, sizeof(*rx_buf), GFP_KERNEL);
+> > +	if (!rx_buf) {
+> > +		ret = -ENOMEM;
+> > +		goto free_tx;
+> > +	}
+> 
+> I guess these are fine to do everytime because you expect this to be used in
+> paths which aren't called at a particularly high frequency?
 
-1st concern:
-"
-  But what happens when a hot remove section's vmemmap area (which is being
-  teared down) is nearby another vmemmap area which is either created or
-  being destroyed for HugeTLB alloc/free purpose. As you mentioned HugeTLB
-  pages inside the hot remove section might be safe. But what about other
-  HugeTLB areas whose vmemmap area shares page table entries with vmemmap
-  entries for a section being hot removed ? Massive HugeTLB alloc/use/free
-  test cycle using memory just adjacent to a memory hotplug area, which is
-  always added and removed periodically, should be able to expose this problem.
-"
-My Answer: As you already know HugeTLB pages inside the hot remove section
-is safe. Let's talk your question "what about other HugeTLB areas whose
-vmemmap area shares page table entries with vmemmap entries for a section
-being hot removed ?", the question is not established. Why? The minimal
-granularity size of hotplug memory 128MB (on arm64, 4k base page), so any
-HugeTLB smaller than 128MB is within a section, then, there is no share
-(PTE) page tables between HugeTLB in this section and ones in other
-sections and a HugeTLB could not cross two sections. Any HugeTLB bigger
-than 128MB (e.g. 1GB) whose size is an integer multible of a section and
-vmemmap area is also an integer multiple of 2MB. At the time memory is
-removed, all huge pages either have been migrated away or dissolved. The
-vmemmap is stable. So there is no problem in this case as well.
+Yes, this was my assumption as well. Instead of preallocating buffer of
+max size, I hope it is less ugly.
 
-2nd concern:
-"
-  differently, not sure if ptdump would require any synchronization.
+> These buffers could get rather large so maybe you need a cap on settling time?
 
-  Dumping an wrong value is probably okay but crashing because a page table
-  entry is being freed after ptdump acquired the pointer is bad. On arm64,
-  ptdump() is protected against hotremove via [get|put]_online_mems().
-"
-My Answer: The ptdump should be fine since vmemmap_remap_free() only exchanges
-PTEs or split the PMD entry (which means allocating a PTE page table). Both
-operations do not free any page tables, so ptdump cannot run into a UAF on
-any page tables. The wrost case is just dumping an wrong value.
+What do you mean by "cap on settling"?
 
-[1] https://lore.kernel.org/linux-mm/b8cdc9c8-853c-8392-a2fa-4f1a8f02057a@arm.com/T/
+> 
+> > +
+> > +	/*
+> > +	 * Do not enable automatic power down on working samples. Otherwise the
+> > +	 * plates will never be completely charged.
+> > +	 */
+> > +	cmd = tsc2046_adc_get_cmd(priv, ch_idx, true);
+> > +
+> > +	for (i = 0; i < max_count - 1; i++)
+> > +		tx_buf[i].cmd = cmd;
+> > +
+> > +	/* automatically power down on last sample */
+> > +	tx_buf[i].cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
+> >  
+> >  	memset(&xfer, 0, sizeof(xfer));
+> > -	priv->tx_one->cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
+> > -	priv->tx_one->data = 0;
+> > -	xfer.tx_buf = priv->tx_one;
+> > -	xfer.rx_buf = priv->rx_one;
+> 
+> Are these used for anything else?  If not probably need to drop them and
+> their allocation.
 
- fs/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+done
 
-diff --git a/fs/Kconfig b/fs/Kconfig
-index 7a2b11c0b803..04cfd5bf5ec9 100644
---- a/fs/Kconfig
-+++ b/fs/Kconfig
-@@ -247,7 +247,7 @@ config HUGETLB_PAGE
- 
- config HUGETLB_PAGE_FREE_VMEMMAP
- 	def_bool HUGETLB_PAGE
--	depends on X86_64
-+	depends on X86_64 || ARM64
- 	depends on SPARSEMEM_VMEMMAP
- 
- config HUGETLB_PAGE_FREE_VMEMMAP_DEFAULT_ON
+> > -	xfer.len = sizeof(*priv->tx_one);
+> > +	xfer.tx_buf = tx_buf;
+> > +	xfer.rx_buf = rx_buf;
+> > +	xfer.len = sizeof(*tx_buf) * max_count;
+> 
+> This could be very big and more than possible some spi controllers will fail
+> it (or does the SPI core handle splitting very large transfers?)  Maybe a loop
+> is needed with smaller fixed size transfers?
+
+I can't exclude possible issue with some of SPI drivers. But SPI level
+optimizations should be done on SPI driver or framework level.
+
+> >  	spi_message_init_with_transfers(&msg, &xfer, 1);
+> >  
+> >  	/*
+> > @@ -272,13 +317,25 @@ static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
+> >  	if (ret) {
+> >  		dev_err_ratelimited(&priv->spi->dev, "SPI transfer failed %pe\n",
+> >  				    ERR_PTR(ret));
+> > +		*val2 = chan->scan_type.realbits;
+> > +		return IIO_VAL_FRACTIONAL_LOG2;
+> > +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> > +		*val = priv->ch_cfg[chan->channel].oversampling_ratio;
+> > +		return IIO_VAL_INT;
+> > +	case IIO_CHAN_INFO_DEBOUNCE_COUNT:
+> 
+> These are unusual. I think they've only been used for the more literal bounce suppression
+> of a human step counting algorithm.
+> 
+> I'd probably not expect to see the both even if we decide this is applicable.
+
+Ok, i do not need this information so far. I'll remove it
+
+> > +		*val = tsc2046_adc_time_to_count(priv,
+> > +				priv->ch_cfg[chan->channel].settling_time_us);
+> 
+> Setting time is often about external circuitry so it's a bit unusual to expose
+> it to userspace rather than making it a device tree property and just making
+> sure the driver doesn't provide a reading until appropriate debounce has passed.
+> Here is coming from DT anyway, so what benefit do these two read only channel
+> properties provide?
+
+No benefit. Will remove it.
+
+Regards,
+Oleksij
 -- 
-2.11.0
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
