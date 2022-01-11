@@ -2,93 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF1B7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 02:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567F5C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 02:56:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbiAKCzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 21:55:43 -0500
-Received: from mga07.intel.com ([134.134.136.100]:25484 "EHLO mga07.intel.com"
+        id S234316AbiAKC4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 21:56:02 -0500
+Received: from mga14.intel.com ([192.55.52.115]:36005 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233174AbiAKCzi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 21:55:38 -0500
+        id S231590AbiAKC4A (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 21:56:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641869738; x=1673405738;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=P5cQjGjpe08DoL8xRrIcKSdUgjsMsvd+59+DcJoTRC8=;
-  b=n7KwFqhLqFXEWosoQHiq/hFdAZAJ+dxOkT/LpCXpsu98VlUi8PlZmgW6
-   FQAe+yxiP6jAJrH8bldYCaXh/ae9Nyw83lLnA4Zpjh9kYwGaqsfL12SLP
-   BHasZM5a8SmZt7pGsnoaB2lAyMZe+VjUbN+lgzkrS2hX0ghABJsH9Fws8
-   mPm5Njd+eekzOWzNKr/fVb6BvZhoNGs3LhXEElckAnIL+6/a4kRuwqQIH
-   /Aa/gM9mhGDvuqVrH5CbLmSIDL35Jforp7YgdyE1Xl4NK/I/c/H5qkSM9
-   VTUOP4uJ0gKMGbtXTZTTCPkYTvtJ36RxGV20qI0QZ4b7RiWT062762UCj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="306741847"
+  t=1641869760; x=1673405760;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=Le5smb9Fs16QMC54A+jHAhwe2aFlrlpJ2TyA4XfTw0U=;
+  b=HLQvjQpBWe+sh3l1D9n90q64a0HFK11isy2aFbl//UrD5j1FWGAafgv4
+   sr0FJLamCrWrjbe+OXxM/r6b/Os3hWpTk/0brFFCcpRx0x8Bm8suApx6I
+   9CHSz3V2Aqz+fgvmwk/9ZUQ0vaXFKy1WPeI/XZZy+hwYw+psws561LPtV
+   q9LTI1iEHRLm4B/W8U/RNQ+eVa95k4BKzA9kT0U+iTHeOrXVSzGqNNT2Q
+   n9o964/AWOnqMZhJHI6zWGb0LeHdwUNjaMPSMGybHGCjqNI0+QjKxnSkp
+   XQR0LNIFdeKgl+FtovKXAIz44T0aX4PrpeNwkBwMp1sH0zw6h2/9VoVLZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="243586770"
 X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="306741847"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 18:55:37 -0800
+   d="scan'208";a="243586770"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 18:55:59 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,278,1635231600"; 
-   d="scan'208";a="472299592"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 18:55:34 -0800
-Date:   Tue, 11 Jan 2022 11:06:28 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
-        tglx@linutronix.de, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/6] KVM: x86: Use kvm_x86_ops in
- kvm_arch_check_processor_compat
-Message-ID: <20220111030626.GA2175@gao-cwp>
-References: <20211227081515.2088920-1-chao.gao@intel.com>
- <20211227081515.2088920-3-chao.gao@intel.com>
- <YdygsjmoqmfwOVgv@google.com>
+   d="scan'208";a="613065557"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by FMSMGA003.fm.intel.com with ESMTP; 10 Jan 2022 18:55:59 -0800
+Received: from shsmsx606.ccr.corp.intel.com (10.109.6.216) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 18:55:58 -0800
+Received: from shsmsx601.ccr.corp.intel.com (10.109.6.141) by
+ SHSMSX606.ccr.corp.intel.com (10.109.6.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 11 Jan 2022 10:55:56 +0800
+Received: from shsmsx601.ccr.corp.intel.com ([10.109.6.141]) by
+ SHSMSX601.ccr.corp.intel.com ([10.109.6.141]) with mapi id 15.01.2308.020;
+ Tue, 11 Jan 2022 10:55:56 +0800
+From:   "Wang, Wei W" <wei.w.wang@intel.com>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Paolo Bonzini <pbonzini@redhat.com>, KVM <kvm@vger.kernel.org>
+CC:     "Zeng, Guang" <guang.zeng@intel.com>,
+        "Liu, Jing2" <jing2.liu@intel.com>,
+        "Tian, Kevin" <kevin.tian@intel.com>,
+        "Zhong, Yang" <yang.zhong@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "Linux Next Mailing List" <linux-next@vger.kernel.org>
+Subject: RE: linux-next: build warning after merge of the kvm tree
+Thread-Topic: linux-next: build warning after merge of the kvm tree
+Thread-Index: AQHYBgBN69PH6Lz/KEmG8MHTlxN3gqxdIKNg
+Date:   Tue, 11 Jan 2022 02:55:56 +0000
+Message-ID: <507a652f97de4e0fb26d604084ef6f25@intel.com>
+References: <20220110195844.7de09681@canb.auug.org.au>
+In-Reply-To: <20220110195844.7de09681@canb.auug.org.au>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.200.16
+x-originating-ip: [10.239.127.36]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YdygsjmoqmfwOVgv@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 09:10:10PM +0000, Sean Christopherson wrote:
->On Mon, Dec 27, 2021, Chao Gao wrote:
->> check_processor_compatibility() is a "runtime" ops now. Use
->> kvm_x86_ops directly such that kvm_arch_check_processor_compat
->> can be called at runtime.
->> 
->> Signed-off-by: Chao Gao <chao.gao@intel.com>
->> ---
->>  arch/x86/kvm/x86.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->> 
->> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
->> index 6411417b6871..770b68e72391 100644
->> --- a/arch/x86/kvm/x86.c
->> +++ b/arch/x86/kvm/x86.c
->> @@ -11383,7 +11383,6 @@ void kvm_arch_hardware_unsetup(void)
->>  int kvm_arch_check_processor_compat(void *opaque)
->>  {
->>  	struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
->> -	struct kvm_x86_init_ops *ops = opaque;
->>  
->>  	WARN_ON(!irqs_disabled());
->>  
->> @@ -11391,7 +11390,7 @@ int kvm_arch_check_processor_compat(void *opaque)
->>  	    __cr4_reserved_bits(cpu_has, &boot_cpu_data))
->>  		return -EIO;
->>  
->> -	return ops->runtime_ops->check_processor_compatibility();
->> +	return kvm_x86_ops.check_processor_compatibility();
->
->I'd just squash this with patch 01.  And might as well make this a static_call().
+On Monday, January 10, 2022 4:59 PM, Stephen Rothwell wrote:
+> After merging the kvm tree, today's linux-next build (htmldocs) produced =
+this
+> warning:
+>=20
+> Documentation/virt/kvm/api.rst:5549: WARNING: Title underline too short.
+>=20
+> 4.42 KVM_GET_XSAVE2
+> ------------------
 
-Will do
+Should add one more "_" above.
+4.42 KVM_GET_XSAVE2
+-------------------
++-------------------
+
+Paolo, do you want us to send another patch to add it or you can just add i=
+t?
+
+Thanks,
+Wei
