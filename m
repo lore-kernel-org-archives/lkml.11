@@ -2,173 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21718C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D44C6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:53:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348733AbiAKHwx (ORCPT
+        id S1348736AbiAKHxA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:52:53 -0500
-Received: from lithops.sigma-star.at ([195.201.40.130]:44096 "EHLO
-        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236041AbiAKHww (ORCPT
+        Tue, 11 Jan 2022 02:53:00 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:48387 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348734AbiAKHw5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:52:52 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id AD864614E2C4;
-        Tue, 11 Jan 2022 08:52:50 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 2ZT5CSczOSjH; Tue, 11 Jan 2022 08:52:50 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 2A582614E2CB;
-        Tue, 11 Jan 2022 08:52:50 +0100 (CET)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id D7MJJ8k-LbO6; Tue, 11 Jan 2022 08:52:50 +0100 (CET)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-        by lithops.sigma-star.at (Postfix) with ESMTP id 0607E614E2C4;
-        Tue, 11 Jan 2022 08:52:50 +0100 (CET)
-Date:   Tue, 11 Jan 2022 08:52:49 +0100 (CET)
-From:   Richard Weinberger <richard@nod.at>
-To:     torvalds <torvalds@linux-foundation.org>
-Cc:     linux-um <linux-um@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Message-ID: <10132756.248426.1641887569979.JavaMail.zimbra@nod.at>
-Subject: [GIT PULL] UML updates for 5.17
+        Tue, 11 Jan 2022 02:52:57 -0500
+X-Greylist: delayed 468 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 02:52:57 EST
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1n7Bpp-0007JU-UU; Tue, 11 Jan 2022 08:44:49 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1n7Bpn-000129-Ja; Tue, 11 Jan 2022 08:44:47 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 2473824004B;
+        Tue, 11 Jan 2022 08:44:47 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 77943240049;
+        Tue, 11 Jan 2022 08:44:46 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id F0FF9206D4;
+        Tue, 11 Jan 2022 08:44:45 +0100 (CET)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [195.201.40.130]
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF95 (Linux)/8.8.12_GA_3809)
-Thread-Index: RsIVnHqP6wx+gtlWtggyZBf0Dh/AXA==
-Thread-Topic: UML updates for 5.17
+Date:   Tue, 11 Jan 2022 08:44:45 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+Organization: TDT AG
+In-Reply-To: <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
+References: <20210719082756.15733-1-ms@dev.tdt.de>
+ <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
+Message-ID: <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate-type: clean
+X-purgate-ID: 151534::1641887088-000044EC-4633AA0C/0/0
+X-purgate: clean
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus,
+On 2022-01-11 00:12, Tim Harvey wrote:
+> On Mon, Jul 19, 2021 at 2:07 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>> 
+>> This adds the possibility to configure the RGMII RX/TX clock skew via
+>> devicetree.
+>> 
+>> Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and 
+>> add
+>> the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
+>> devicetree.
+>> 
+>> Furthermore, a warning is now issued if the phy mode is configured to
+>> "rgmii" and an internal delay is set in the phy (e.g. by 
+>> pin-strapping),
+>> as in the dp83867 driver.
+>> 
+>> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+>> ---
+>> 
+>> Changes to v5:
+>> o remove #if IS_ENABLED(CONFIG_OF_MDIO) check
+>> o rename new function to xway_gphy_rgmii_init()
+>> 
+>> Changes to v4:
+>> o Fix Alignment to match open parenthesis
+>> 
+>> Changes to v3:
+>> o Fix typo in commit message
+>> o use FIELD_PREP() and FIELD_GET() macros
+>> o further code cleanups
+>> o always mask rxskew AND txskew value in the register value
+>> 
+>> Changes to v2:
+>> o Fix missing whitespace in warning.
+>> 
+>> Changes to v1:
+>> o code cleanup and use phy_modify().
+>> o use default of 2.0ns if delay property is absent instead of 
+>> returning
+>>   an error.
+>> 
+>> ---
+>>  drivers/net/phy/intel-xway.c | 78 
+>> ++++++++++++++++++++++++++++++++++++
+>>  1 file changed, 78 insertions(+)
+>> 
+>> diff --git a/drivers/net/phy/intel-xway.c 
+>> b/drivers/net/phy/intel-xway.c
+>> index d453ec016168..fd7da2eeb963 100644
+>> --- a/drivers/net/phy/intel-xway.c
+>> +++ b/drivers/net/phy/intel-xway.c
+>> @@ -8,11 +8,16 @@
+>>  #include <linux/module.h>
+>>  #include <linux/phy.h>
+>>  #include <linux/of.h>
+>> +#include <linux/bitfield.h>
+>> 
+>> +#define XWAY_MDIO_MIICTRL              0x17    /* mii control */
+>>  #define XWAY_MDIO_IMASK                        0x19    /* interrupt 
+>> mask */
+>>  #define XWAY_MDIO_ISTAT                        0x1A    /* interrupt 
+>> status */
+>>  #define XWAY_MDIO_LED                  0x1B    /* led control */
+>> 
+>> +#define XWAY_MDIO_MIICTRL_RXSKEW_MASK  GENMASK(14, 12)
+>> +#define XWAY_MDIO_MIICTRL_TXSKEW_MASK  GENMASK(10, 8)
+>> +
+>>  /* bit 15:12 are reserved */
+>>  #define XWAY_MDIO_LED_LED3_EN          BIT(11) /* Enable the 
+>> integrated function of LED3 */
+>>  #define XWAY_MDIO_LED_LED2_EN          BIT(10) /* Enable the 
+>> integrated function of LED2 */
+>> @@ -157,6 +162,75 @@
+>>  #define PHY_ID_PHY11G_VR9_1_2          0xD565A409
+>>  #define PHY_ID_PHY22F_VR9_1_2          0xD565A419
+>> 
+>> +static const int xway_internal_delay[] = {0, 500, 1000, 1500, 2000, 
+>> 2500,
+>> +                                        3000, 3500};
+>> +
+>> +static int xway_gphy_rgmii_init(struct phy_device *phydev)
+>> +{
+>> +       struct device *dev = &phydev->mdio.dev;
+>> +       unsigned int delay_size = ARRAY_SIZE(xway_internal_delay);
+>> +       s32 int_delay;
+>> +       int val = 0;
+>> +
+>> +       if (!phy_interface_is_rgmii(phydev))
+>> +               return 0;
+>> +
+>> +       /* Existing behavior was to use default pin strapping delay in 
+>> rgmii
+>> +        * mode, but rgmii should have meant no delay.  Warn existing 
+>> users,
+>> +        * but do not change anything at the moment.
+>> +        */
+>> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
+>> +               u16 txskew, rxskew;
+>> +
+>> +               val = phy_read(phydev, XWAY_MDIO_MIICTRL);
+>> +               if (val < 0)
+>> +                       return val;
+>> +
+>> +               txskew = FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK, 
+>> val);
+>> +               rxskew = FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK, 
+>> val);
+>> +
+>> +               if (txskew > 0 || rxskew > 0)
+>> +                       phydev_warn(phydev,
+>> +                                   "PHY has delays (e.g. via pin 
+>> strapping), but phy-mode = 'rgmii'\n"
+>> +                                   "Should be 'rgmii-id' to use 
+>> internal delays txskew:%d ps rxskew:%d ps\n",
+>> +                                   xway_internal_delay[txskew],
+>> +                                   xway_internal_delay[rxskew]);
+>> +               return 0;
+>> +       }
+>> +
+>> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
+>> +               int_delay = phy_get_internal_delay(phydev, dev,
+>> +                                                  
+>> xway_internal_delay,
+>> +                                                  delay_size, true);
+>> +
+>> +               if (int_delay < 0) {
+>> +                       phydev_warn(phydev, "rx-internal-delay-ps is 
+>> missing, use default of 2.0 ns\n");
+>> +                       int_delay = 4; /* 2000 ps */
+>> +               }
+>> +
+>> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK, 
+>> int_delay);
+>> +       }
+>> +
+>> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
+>> +               int_delay = phy_get_internal_delay(phydev, dev,
+>> +                                                  
+>> xway_internal_delay,
+>> +                                                  delay_size, false);
+>> +
+>> +               if (int_delay < 0) {
+>> +                       phydev_warn(phydev, "tx-internal-delay-ps is 
+>> missing, use default of 2.0 ns\n");
+>> +                       int_delay = 4; /* 2000 ps */
+>> +               }
+>> +
+>> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK, 
+>> int_delay);
+>> +       }
+>> +
+>> +       return phy_modify(phydev, XWAY_MDIO_MIICTRL,
+>> +                         XWAY_MDIO_MIICTRL_RXSKEW_MASK |
+>> +                         XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
+>> +}
+>> +
+>>  static int xway_gphy_config_init(struct phy_device *phydev)
+>>  {
+>>         int err;
+>> @@ -204,6 +278,10 @@ static int xway_gphy_config_init(struct 
+>> phy_device *phydev)
+>>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
+>>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
+>> 
+>> +       err = xway_gphy_rgmii_init(phydev);
+>> +       if (err)
+>> +               return err;
+>> +
+>>         return 0;
+>>  }
+>> 
+>> --
+>> 2.20.1
+>> 
+> 
+> Martin,
+> 
+> I've got some boards with the GPY111 phy on them and I'm finding that
+> modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless I
+> do a soft reset (BCMR_RESET) first. I don't see anything in the
+> datasheet which specifies this to be the case so I'm interested it
+> what you have found. Are you sure adjusting the skews like this
+> without a soft (or hard pin based) reset actually works?
+> 
+> Best regards,
+> 
+> Tim
 
-The following changes since commit 1c3e979bf3e225e5b4b810b24712b16254d608b6:
+Hello Tim,
 
-  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid (2021-12-21 09:30:32 -0800)
+yes, you are right. It is not applied immediately. The link needs to be
+toggled to get this settings active. But my experience shows that this
+would be done in the further boot process anyway e.g. by restarting the
+autonegotiation etc.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/rw/uml.git tags/for-linus-5.17-rc1
-
-for you to fetch changes up to db0dd9cee82270e032123169ceff659eced5115d:
-
-  um: virtio_uml: Allow probing from devicetree (2021-12-22 20:40:05 +0100)
-
-----------------------------------------------------------------
-This pull request contains the following changes for UML:
-
-- set_fs removal
-- Devicetree support
-- Many cleanups from Al
-- Various virtio and build related fixes
-
-----------------------------------------------------------------
-Al Viro (15):
-      uml: trim unused junk from arch/x86/um/sys_call_table_*.c
-      um: move amd64 variant of mmap(2) to arch/x86/um/syscalls_64.c
-      logic_io instance of iounmap() needs volatile on argument
-      um: stop polluting the namespace with registers.h contents
-      uml/i386: missing include in barrier.h
-      um: kill unused cpu()
-      um: remove a dangling extern of syscall_trace()
-      um: unexport handle_page_fault()
-      um, x86: bury crypto_tfm_ctx_offset
-      um: common-offsets.h debriding...
-      um: header debriding - activate_ipi()
-      um: header debriding - mem_user.h
-      um: header debriding - net_*.h
-      um: header debriding - os.h
-      um: header debriding - sigio.h
-
-Changcheng Deng (1):
-      um: Replace if (cond) BUG() with BUG_ON()
-
-Christoph Hellwig (1):
-      um: remove set_fs
-
-Johannes Berg (8):
-      um: fix ndelay/udelay defines
-      um: rename set_signals() to um_set_signals()
-      uml: x86: add FORCE to user_constants.h
-      um: gitignore: Add kernel/capflags.c
-      um: virt-pci: Fix 32-bit compile
-      lib/logic_iomem: Fix 32-bit build
-      lib/logic_iomem: Fix operation on 32-bit
-      um: virtio_uml: Fix time-travel external time propagation
-
-Randy Dunlap (1):
-      um: registers: Rename function names to avoid conflicts and build problems
-
-Sjoerd Simons (1):
-      hostfs: Fix writeback of dirty pages
-
-Vincent Whitchurch (3):
-      um: Extract load file helper from initrd.c
-      um: Add devicetree support
-      um: virtio_uml: Allow probing from devicetree
-
-Yang Guang (1):
-      um: Use swap() to make code cleaner
-
- arch/um/.gitignore                      |  1 +
- arch/um/Kconfig                         |  2 +-
- arch/um/drivers/virt-pci.c              |  8 ++---
- arch/um/drivers/virtio_uml.c            | 54 +++++++++++++++++++++++++++--
- arch/um/include/asm/delay.h             |  4 +--
- arch/um/include/asm/irqflags.h          |  4 +--
- arch/um/include/asm/processor-generic.h |  2 +-
- arch/um/include/asm/thread_info.h       |  4 ---
- arch/um/include/asm/uaccess.h           | 21 ++++++++++--
- arch/um/include/shared/common-offsets.h | 15 --------
- arch/um/include/shared/irq_user.h       |  1 -
- arch/um/include/shared/kern_util.h      |  2 --
- arch/um/include/shared/longjmp.h        |  2 +-
- arch/um/include/shared/mem_user.h       |  5 ---
- arch/um/include/shared/net_kern.h       |  2 --
- arch/um/include/shared/net_user.h       |  1 -
- arch/um/include/shared/os.h             | 17 ++-------
- arch/um/include/shared/registers.h      |  6 ++--
- arch/um/include/shared/sigio.h          |  1 -
- arch/um/kernel/Makefile                 |  4 ++-
- arch/um/kernel/dtb.c                    | 41 ++++++++++++++++++++++
- arch/um/kernel/exec.c                   |  1 +
- arch/um/kernel/initrd.c                 | 48 +++-----------------------
- arch/um/kernel/ksyms.c                  |  2 +-
- arch/um/kernel/load_file.c              | 61 +++++++++++++++++++++++++++++++++
- arch/um/kernel/mem.c                    |  3 +-
- arch/um/kernel/process.c                |  6 +---
- arch/um/kernel/skas/uaccess.c           | 25 --------------
- arch/um/kernel/syscall.c                | 28 ---------------
- arch/um/kernel/trap.c                   |  1 -
- arch/um/kernel/um_arch.c                |  3 ++
- arch/um/kernel/um_arch.h                | 14 ++++++++
- arch/um/os-Linux/registers.c            |  4 +--
- arch/um/os-Linux/sigio.c                | 13 ++++---
- arch/um/os-Linux/signal.c               |  8 ++---
- arch/um/os-Linux/start_up.c             |  2 +-
- arch/x86/kernel/asm-offsets.c           |  3 --
- arch/x86/um/Makefile                    |  2 +-
- arch/x86/um/asm/barrier.h               |  1 +
- arch/x86/um/asm/segment.h               |  8 -----
- arch/x86/um/os-Linux/registers.c        |  1 +
- arch/x86/um/ptrace_32.c                 |  1 +
- arch/x86/um/ptrace_64.c                 |  1 +
- arch/x86/um/shared/sysdep/syscalls_64.h |  3 --
- arch/x86/um/signal.c                    |  1 +
- arch/x86/um/sys_call_table_32.c         |  4 ---
- arch/x86/um/sys_call_table_64.c         | 17 ---------
- arch/x86/um/syscalls_64.c               | 14 +++++++-
- fs/hostfs/hostfs_kern.c                 |  3 ++
- include/asm-generic/logic_io.h          |  2 +-
- lib/logic_iomem.c                       | 23 +++++++------
- 51 files changed, 265 insertions(+), 235 deletions(-)
- create mode 100644 arch/um/kernel/dtb.c
- create mode 100644 arch/um/kernel/load_file.c
- delete mode 100644 arch/um/kernel/syscall.c
- create mode 100644 arch/um/kernel/um_arch.h
+Regards,
+Martin
