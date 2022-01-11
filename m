@@ -2,263 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44C6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:53:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348736AbiAKHxA (ORCPT
+        id S1348748AbiAKHxC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:53:00 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:48387 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348734AbiAKHw5 (ORCPT
+        Tue, 11 Jan 2022 02:53:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:42594 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236041AbiAKHw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:52:57 -0500
-X-Greylist: delayed 468 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 02:52:57 EST
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1n7Bpp-0007JU-UU; Tue, 11 Jan 2022 08:44:49 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1n7Bpn-000129-Ja; Tue, 11 Jan 2022 08:44:47 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 2473824004B;
-        Tue, 11 Jan 2022 08:44:47 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 77943240049;
-        Tue, 11 Jan 2022 08:44:46 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id F0FF9206D4;
-        Tue, 11 Jan 2022 08:44:45 +0100 (CET)
+        Tue, 11 Jan 2022 02:52:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641887577;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s3Y1O09JG5ePpg5LAktUzWgPzg+txuTZh+F8MesPjNg=;
+        b=Ww++8u8Lfli4VrVXozb1uNVMciHqzSWPpaxWqwOG7UDAAxj1Nx5qonH/hHrCSD0Bh9LKEr
+        BSQH1ZazZjHMHQZkn+2mjCgEoVrZMgSngK2g8O7EVQ6CrFkLjBH7twLx/V8vmJVk1B+I4G
+        IzFOAZmRf+iMp07VSt18DV2l+C4+/20=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-382-KZHLwfp_MiyHbBdYkyg6hQ-1; Tue, 11 Jan 2022 02:52:54 -0500
+X-MC-Unique: KZHLwfp_MiyHbBdYkyg6hQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E3F2A85EE62;
+        Tue, 11 Jan 2022 07:52:52 +0000 (UTC)
+Received: from [10.72.14.32] (ovpn-14-32.pek2.redhat.com [10.72.14.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 95E207B9E2;
+        Tue, 11 Jan 2022 07:52:48 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v4 01/21] KVM: arm64: Introduce template for inline
+ functions
+To:     Eric Auger <eauger@redhat.com>, kvmarm@lists.cs.columbia.edu
+Cc:     maz@kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan.Cameron@huawei.com, pbonzini@redhat.com, will@kernel.org
+References: <20210815001352.81927-1-gshan@redhat.com>
+ <20210815001352.81927-2-gshan@redhat.com>
+ <5112b3ba-d038-f622-c67f-e53695cbef37@redhat.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <8b7d3a75-dbf8-c8b9-bbb6-bd89d9429802@redhat.com>
+Date:   Tue, 11 Jan 2022 15:52:44 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <5112b3ba-d038-f622-c67f-e53695cbef37@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 11 Jan 2022 08:44:45 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
- delay configuration
-Organization: TDT AG
-In-Reply-To: <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
-References: <20210719082756.15733-1-ms@dev.tdt.de>
- <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
-Message-ID: <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-type: clean
-X-purgate-ID: 151534::1641887088-000044EC-4633AA0C/0/0
-X-purgate: clean
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-11 00:12, Tim Harvey wrote:
-> On Mon, Jul 19, 2021 at 2:07 AM Martin Schiller <ms@dev.tdt.de> wrote:
->> 
->> This adds the possibility to configure the RGMII RX/TX clock skew via
->> devicetree.
->> 
->> Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and 
->> add
->> the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
->> devicetree.
->> 
->> Furthermore, a warning is now issued if the phy mode is configured to
->> "rgmii" and an internal delay is set in the phy (e.g. by 
->> pin-strapping),
->> as in the dp83867 driver.
->> 
->> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+Hi Eric,
+
+On 11/9/21 11:26 PM, Eric Auger wrote:
+> On 8/15/21 2:13 AM, Gavin Shan wrote:
+>> The inline functions used to get the SMCCC parameters have same
+>> layout. It means these functions can be presented by a template,
+>> to make the code simplified. Besides, this adds more similar inline
+>> functions like smccc_get_arg{4,5,6,7,8}() to visit more SMCCC arguments,
+>> which are needed by SDEI virtualization support.
+>>
+>> Signed-off-by: Gavin Shan <gshan@redhat.com>
 >> ---
->> 
->> Changes to v5:
->> o remove #if IS_ENABLED(CONFIG_OF_MDIO) check
->> o rename new function to xway_gphy_rgmii_init()
->> 
->> Changes to v4:
->> o Fix Alignment to match open parenthesis
->> 
->> Changes to v3:
->> o Fix typo in commit message
->> o use FIELD_PREP() and FIELD_GET() macros
->> o further code cleanups
->> o always mask rxskew AND txskew value in the register value
->> 
->> Changes to v2:
->> o Fix missing whitespace in warning.
->> 
->> Changes to v1:
->> o code cleanup and use phy_modify().
->> o use default of 2.0ns if delay property is absent instead of 
->> returning
->>   an error.
->> 
->> ---
->>  drivers/net/phy/intel-xway.c | 78 
->> ++++++++++++++++++++++++++++++++++++
->>  1 file changed, 78 insertions(+)
->> 
->> diff --git a/drivers/net/phy/intel-xway.c 
->> b/drivers/net/phy/intel-xway.c
->> index d453ec016168..fd7da2eeb963 100644
->> --- a/drivers/net/phy/intel-xway.c
->> +++ b/drivers/net/phy/intel-xway.c
->> @@ -8,11 +8,16 @@
->>  #include <linux/module.h>
->>  #include <linux/phy.h>
->>  #include <linux/of.h>
->> +#include <linux/bitfield.h>
->> 
->> +#define XWAY_MDIO_MIICTRL              0x17    /* mii control */
->>  #define XWAY_MDIO_IMASK                        0x19    /* interrupt 
->> mask */
->>  #define XWAY_MDIO_ISTAT                        0x1A    /* interrupt 
->> status */
->>  #define XWAY_MDIO_LED                  0x1B    /* led control */
->> 
->> +#define XWAY_MDIO_MIICTRL_RXSKEW_MASK  GENMASK(14, 12)
->> +#define XWAY_MDIO_MIICTRL_TXSKEW_MASK  GENMASK(10, 8)
->> +
->>  /* bit 15:12 are reserved */
->>  #define XWAY_MDIO_LED_LED3_EN          BIT(11) /* Enable the 
->> integrated function of LED3 */
->>  #define XWAY_MDIO_LED_LED2_EN          BIT(10) /* Enable the 
->> integrated function of LED2 */
->> @@ -157,6 +162,75 @@
->>  #define PHY_ID_PHY11G_VR9_1_2          0xD565A409
->>  #define PHY_ID_PHY22F_VR9_1_2          0xD565A419
->> 
->> +static const int xway_internal_delay[] = {0, 500, 1000, 1500, 2000, 
->> 2500,
->> +                                        3000, 3500};
->> +
->> +static int xway_gphy_rgmii_init(struct phy_device *phydev)
->> +{
->> +       struct device *dev = &phydev->mdio.dev;
->> +       unsigned int delay_size = ARRAY_SIZE(xway_internal_delay);
->> +       s32 int_delay;
->> +       int val = 0;
->> +
->> +       if (!phy_interface_is_rgmii(phydev))
->> +               return 0;
->> +
->> +       /* Existing behavior was to use default pin strapping delay in 
->> rgmii
->> +        * mode, but rgmii should have meant no delay.  Warn existing 
->> users,
->> +        * but do not change anything at the moment.
->> +        */
->> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
->> +               u16 txskew, rxskew;
->> +
->> +               val = phy_read(phydev, XWAY_MDIO_MIICTRL);
->> +               if (val < 0)
->> +                       return val;
->> +
->> +               txskew = FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK, 
->> val);
->> +               rxskew = FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK, 
->> val);
->> +
->> +               if (txskew > 0 || rxskew > 0)
->> +                       phydev_warn(phydev,
->> +                                   "PHY has delays (e.g. via pin 
->> strapping), but phy-mode = 'rgmii'\n"
->> +                                   "Should be 'rgmii-id' to use 
->> internal delays txskew:%d ps rxskew:%d ps\n",
->> +                                   xway_internal_delay[txskew],
->> +                                   xway_internal_delay[rxskew]);
->> +               return 0;
->> +       }
->> +
->> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
->> +               int_delay = phy_get_internal_delay(phydev, dev,
->> +                                                  
->> xway_internal_delay,
->> +                                                  delay_size, true);
->> +
->> +               if (int_delay < 0) {
->> +                       phydev_warn(phydev, "rx-internal-delay-ps is 
->> missing, use default of 2.0 ns\n");
->> +                       int_delay = 4; /* 2000 ps */
->> +               }
->> +
->> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK, 
->> int_delay);
->> +       }
->> +
->> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
->> +               int_delay = phy_get_internal_delay(phydev, dev,
->> +                                                  
->> xway_internal_delay,
->> +                                                  delay_size, false);
->> +
->> +               if (int_delay < 0) {
->> +                       phydev_warn(phydev, "tx-internal-delay-ps is 
->> missing, use default of 2.0 ns\n");
->> +                       int_delay = 4; /* 2000 ps */
->> +               }
->> +
->> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK, 
->> int_delay);
->> +       }
->> +
->> +       return phy_modify(phydev, XWAY_MDIO_MIICTRL,
->> +                         XWAY_MDIO_MIICTRL_RXSKEW_MASK |
->> +                         XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
->> +}
->> +
->>  static int xway_gphy_config_init(struct phy_device *phydev)
->>  {
->>         int err;
->> @@ -204,6 +278,10 @@ static int xway_gphy_config_init(struct 
->> phy_device *phydev)
->>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
->>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
->> 
->> +       err = xway_gphy_rgmii_init(phydev);
->> +       if (err)
->> +               return err;
->> +
->>         return 0;
->>  }
->> 
->> --
->> 2.20.1
->> 
+>>   include/kvm/arm_hypercalls.h | 34 +++++++++++++++-------------------
+>>   1 file changed, 15 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/include/kvm/arm_hypercalls.h b/include/kvm/arm_hypercalls.h
+>> index 0e2509d27910..ebecb6c68254 100644
+>> --- a/include/kvm/arm_hypercalls.h
+>> +++ b/include/kvm/arm_hypercalls.h
+>> @@ -6,27 +6,21 @@
+>>   
+>>   #include <asm/kvm_emulate.h>
+>>   
+>> -int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
+>> -
+>> -static inline u32 smccc_get_function(struct kvm_vcpu *vcpu)
+>> -{
+>> -	return vcpu_get_reg(vcpu, 0);
+>> +#define SMCCC_DECLARE_GET_FUNC(type, name, reg)			\
+>> +static inline type smccc_get_##name(struct kvm_vcpu *vcpu)	\
+>> +{								\
+>> +	return vcpu_get_reg(vcpu, reg);				\
+>>   }
+>>   
+>> -static inline unsigned long smccc_get_arg1(struct kvm_vcpu *vcpu)
+>> -{
+>> -	return vcpu_get_reg(vcpu, 1);
+>> -}
+>> -
+>> -static inline unsigned long smccc_get_arg2(struct kvm_vcpu *vcpu)
+>> -{
+>> -	return vcpu_get_reg(vcpu, 2);
+>> -}
+>> -
+>> -static inline unsigned long smccc_get_arg3(struct kvm_vcpu *vcpu)
+>> -{
+>> -	return vcpu_get_reg(vcpu, 3);
+>> -}
+>> +SMCCC_DECLARE_GET_FUNC(u32,           function, 0)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg1,     1)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg2,     2)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg3,     3)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg4,     4)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg5,     5)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg6,     6)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg7,     7)
+>> +SMCCC_DECLARE_GET_FUNC(unsigned long, arg8,     8)
+> I think I would keep smccc_get_function() and add macros to get the
+> 64-bit args. SMCCC_DECLARE_GET_FUNC is an odd macro name for a function
+> fetching an arg. I would suggest:
 > 
-> Martin,
-> 
-> I've got some boards with the GPY111 phy on them and I'm finding that
-> modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless I
-> do a soft reset (BCMR_RESET) first. I don't see anything in the
-> datasheet which specifies this to be the case so I'm interested it
-> what you have found. Are you sure adjusting the skews like this
-> without a soft (or hard pin based) reset actually works?
-> 
-> Best regards,
-> 
-> Tim
 
-Hello Tim,
+I agree. The code will be changed accordingly in next respin.
 
-yes, you are right. It is not applied immediately. The link needs to be
-toggled to get this settings active. But my experience shows that this
-would be done in the further boot process anyway e.g. by restarting the
-autonegotiation etc.
+>> +#define SMCCC_DECLARE_GET_ARG(reg)			\
+>> +static inline unsigned long smccc_get_arg##reg(struct kvm_vcpu *vcpu)	\
+>> +{								\
+>> +	return vcpu_get_reg(vcpu, reg);				\
+>>   }
+>>   
+>>   static inline void smccc_set_retval(struct kvm_vcpu *vcpu,
+>>   				    unsigned long a0,
+>> @@ -40,4 +34,6 @@ static inline void smccc_set_retval(struct kvm_vcpu *vcpu,
+>>   	vcpu_set_reg(vcpu, 3, a3);
+>>   }
+>>   
+>> +int kvm_hvc_call_handler(struct kvm_vcpu *vcpu);
+>> +
+> spurious change?
 
-Regards,
-Martin
+I thought the inline function would come before the exposed ones. However,
+I don't think it's necessary. I will drop the changes in next respin.
+
+>>   #endif
+>>
+
+Thanks,
+Gavin
+
