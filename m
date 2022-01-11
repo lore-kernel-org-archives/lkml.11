@@ -2,101 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94FE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10190C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 03:02:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235452AbiAKDCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 22:02:04 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:53616 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235331AbiAKDCD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 22:02:03 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowABnbloR89xhYiBmBQ--.33851S2;
-        Tue, 11 Jan 2022 11:01:37 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     damien.lemoal@opensource.wdc.com, David.Laight@ACULAB.COM,
-        davem@davemloft.net, gregkh@linuxfoundation.org,
-        stable@vger.kernel.org, Naohiro.Aota@wdc.com
-Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v3] ide: Check for null pointer after calling devm_ioremap
-Date:   Tue, 11 Jan 2022 11:01:31 +0800
-Message-Id: <20220111030131.525049-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S235654AbiAKDCi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 22:02:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235706AbiAKDCN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 22:02:13 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 964E6C061759
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 19:02:13 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id v186so34157657ybg.1
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 19:02:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UsWqKCbZLBuzi7usjCmtz/JjjGQctwwjiuVxBcWGtdk=;
+        b=COAmUaQw1ztu/k34hHssrqxJ5Ru3MzmDhsKdPPt76mfpNYxw3av7/WBjz3CxjQpK0P
+         c8WaHCZoGcMflm4zxQj3xt3AExLTuuwAVwPzhm4wAGd4WDQZaMoE+QsfRvxHm/xC30MC
+         tMQdBzZ94m+7iRWM+StA7HvVqsD/xsw5/b+Moc0mT/nllajjOGKBVi/v+hNlKHcklW6l
+         4rwBvGjPvnV8z4NjMehPSrJzkRalwtqGA/k/j1xwnSe+wOWIL96dXFP1QRAkn4Jr7Pfl
+         0v/kHVgCFYj7OTUm+rO3SJ3JCOqgZPJPd2yy+Nr9ldppnJPpYqNXQGP2oCANCXR6J6gc
+         fyoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UsWqKCbZLBuzi7usjCmtz/JjjGQctwwjiuVxBcWGtdk=;
+        b=Ugs6RmJ6i5wxAKKoWvBiR7fx7f2siiEfvkVefTc9/V3H+Zaf4VkCp5Wi1IM9T1w+D/
+         6Gj6rZgbs/wIfIZUeLbmyjySfF5nY8EzKf74RIkXM6ARhHGDXk9ZHb8uUTCHvzyNqgjq
+         I4frBODX3P1JVB2ev8DwowLj+kqOa9MxGFWgNUGdZaRBZ4F9KL4QaNFTMbpoCbQ1ABSQ
+         q8fP7d1GeeVJHhZi5h/1hgT3VRFHJ3pMkVACBk5HmOEIeTdKgMeza9rdHh8IaaKdnH4N
+         vd7t5dEPJovxDf+UXNVF3ZBBxFmqMlz3LBiAd55lnVFy9DjUZCQE42UF1fRUfw8Qghpb
+         StkA==
+X-Gm-Message-State: AOAM5312QR3Z9H21XVS0mMrtjFSXECx4BrqPWtvcmhPgQJLv1k48x30n
+        MGqhwu9DdUvfFgssus9EvBZbL/8fg0www5cYTWd8ZA==
+X-Google-Smtp-Source: ABdhPJzDqMdEbnslQ3eNG6BEi4iBJgsxYWS/6DXV0gipP6o4EahWyajWmuxQEoDLns7m53UXcNmtAhCtWktzOBb64gk=
+X-Received: by 2002:a25:6942:: with SMTP id e63mr3568929ybc.602.1641870132644;
+ Mon, 10 Jan 2022 19:02:12 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowABnbloR89xhYiBmBQ--.33851S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Cw47AF1fZry5Gw1UKr15Arb_yoW8Aw4rpF
-        4SgFWSvrWDWr1UK3WxAr18ZFyUu3ZrJa4FgFyYvw4kZ3s0qr18JrWaqFWIqr9rJrW3CayY
-        v3W2yr4kuFZ8ZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr
-        1j6F4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_
-        Gr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxV
-        WUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI
-        7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r
-        4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8
-        JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUYnYwUU
-        UUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+References: <000000000000e8f8f505d0e479a5@google.com> <20211211015620.1793-1-hdanton@sina.com>
+ <YbQUSlq76Iv5L4cC@sol.localdomain> <YdW3WfHURBXRmn/6@sol.localdomain>
+ <CAHk-=wjqh_R9w4-=wfegut2C0Bg=sJaPrayk39JRCkZc=O+gsw@mail.gmail.com>
+ <CAHk-=wjddvNbZBuvh9m_2VYFC1W7HvbP33mAzkPGOCHuVi5fJg@mail.gmail.com>
+ <CAHk-=wjn5xkLWaF2_4pMVEkZrTA=LiOH=_pQK0g-_BMSE-8Jxg@mail.gmail.com>
+ <Ydw4hWCRjAhGfCAv@cmpxchg.org> <CAJuCfpHg=SPzx7SGUL75DVpMy0BDEwVj4o-SM0UKGmEJrOSdvg@mail.gmail.com>
+ <CAHk-=wiZ=oic3UfejGzy_31RYggtZWUeF1gE82_NHAA=ENY6Kw@mail.gmail.com> <CAJuCfpFFQx525=d8odiiAyi6w5M6KKx-1726zvuV=eADPB8wKg@mail.gmail.com>
+In-Reply-To: <CAJuCfpFFQx525=d8odiiAyi6w5M6KKx-1726zvuV=eADPB8wKg@mail.gmail.com>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Mon, 10 Jan 2022 19:02:01 -0800
+Message-ID: <CAJuCfpEoDOCR--=xshfR+8kPrCN1zSx9Ku7rQS2D+q8WOPee0Q@mail.gmail.com>
+Subject: Re: psi_trigger_poll() is completely broken
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Eric Biggers <ebiggers@kernel.org>, Tejun Heo <tj@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In linux-stable-5.15.13, this file has been removed and combined
-to `drivers/ata/pata_platform.c` without this bug.
-But in the older LTS kernels, like 5.10.90, this bug still exists.
-As the possible failure of the devres_alloc(), the devm_ioremap() and
-devm_ioport_map() may return NULL pointer.
-And then, the 'base' and 'alt_base' are used in plat_ide_setup_ports().
-Therefore, it should be better to add the check in order to avoid the
-dereference of the NULL pointer.
-Actually, it introduced the bug from commit 8cb1f567f4c0
-("ide: Platform IDE driver") and we can know from the commit message
-that it tended to be similar to the `drivers/ata/pata_platform.c`.
-But actually, even the first time pata_platform was built,
-commit a20c9e820864 ("[PATCH] ata: Generic platform_device libata driver"),
-there was no the bug, as there was a check after the ioremap().
-So possibly the bug was caused by ide itself.
+On Mon, Jan 10, 2022 at 10:19 AM Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> On Mon, Jan 10, 2022 at 9:42 AM Linus Torvalds
+> <torvalds@linux-foundation.org> wrote:
+> >
+> > On Mon, Jan 10, 2022 at 9:25 AM Suren Baghdasaryan <surenb@google.com> wrote:
+> > >
+> > > About the issue of serializing concurrent writes for
+> > > cgroup_pressure_write() similar to how psi_write() does. Doesn't
+> > > of->mutex inside kernfs_fop_write_iter() serialize the writes to the
+> > > same file?
+> >
+> > Ahh, yes, it looks like that does solve the serialization issue.
+> > Sorry, I missed that because I'm not actually all that familiar with
+> > the kernfs 'of' code.
+> >
+> > So the only issue is the trigger lifetime one, and if a single trigger
+> > is sufficient and returning -EBUSY for trying to replace an existing
+> > one is good, then I think that's the proper fix.
+> >
+> > I'm very busy with the merge window (and some upcoming travel and
+> > family events), so I'm hoping somebody will write and test such a
+> > patch. Please?
+>
+> Yes, definitely. I'm on it. Will try posting it later today or
+> tomorrow morning if testing reveals something unexpected.
 
-Fixes: 8cb1f567f4c0 ("ide: Platform IDE driver")
-Cc: stable@vger.kernel.org # 5.10
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog
+My first attempt to fix this issue is posted at:
+https://lore.kernel.org/all/20220111025138.1071848-1-surenb@google.com/
+Couple notes:
+- I don't think we need psi_trigger::refcount anymore, therefore it's removed.
+- synchronize_rcu is kept to ensure we do not free group->poll_task
+while psi_schedule_poll_work is using it.
+- Documentation needed minimal changes because it did not clearly
+specify how trigger overwrite should work. Now it does.
 
-v1 -> v2
+I ran as many test cases as I could find/create. I'll work on adding
+some kselftests for psi triggers to test different usage patterns.
+Thanks,
+Suren.
 
-* Change 1. Correct the fixes tag and commit message.
-
-v2 -> v3
-
-* Change 1. Correct the code.
----
- drivers/ide/ide_platform.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/ide/ide_platform.c b/drivers/ide/ide_platform.c
-index 91639fd6c276..5500c5afb3ca 100644
---- a/drivers/ide/ide_platform.c
-+++ b/drivers/ide/ide_platform.c
-@@ -85,6 +85,10 @@ static int plat_ide_probe(struct platform_device *pdev)
- 		alt_base = devm_ioport_map(&pdev->dev,
- 			res_alt->start, resource_size(res_alt));
- 	}
-+	if (!base || !alt_base) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 
- 	memset(&hw, 0, sizeof(hw));
- 	plat_ide_setup_ports(&hw, base, alt_base, pdata, res_irq->start);
--- 
-2.25.1
-
+> Thanks!
+>
+> >
+> >                    Linus
