@@ -2,93 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C489C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21718C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348729AbiAKHwb (ORCPT
+        id S1348733AbiAKHwx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:52:31 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:38615 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236041AbiAKHw3 (ORCPT
+        Tue, 11 Jan 2022 02:52:53 -0500
+Received: from lithops.sigma-star.at ([195.201.40.130]:44096 "EHLO
+        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236041AbiAKHww (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:52:29 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guoheyi@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0V1YjgdZ_1641887545;
-Received: from 30.225.139.228(mailfrom:guoheyi@linux.alibaba.com fp:SMTPD_---0V1YjgdZ_1641887545)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 11 Jan 2022 15:52:27 +0800
-Message-ID: <ad5e5438-4a3f-2447-4af3-7caa91e7252a@linux.alibaba.com>
-Date:   Tue, 11 Jan 2022 15:52:25 +0800
+        Tue, 11 Jan 2022 02:52:52 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id AD864614E2C4;
+        Tue, 11 Jan 2022 08:52:50 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 2ZT5CSczOSjH; Tue, 11 Jan 2022 08:52:50 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 2A582614E2CB;
+        Tue, 11 Jan 2022 08:52:50 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id D7MJJ8k-LbO6; Tue, 11 Jan 2022 08:52:50 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 0607E614E2C4;
+        Tue, 11 Jan 2022 08:52:50 +0100 (CET)
+Date:   Tue, 11 Jan 2022 08:52:49 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     torvalds <torvalds@linux-foundation.org>
+Cc:     linux-um <linux-um@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <10132756.248426.1641887569979.JavaMail.zimbra@nod.at>
+Subject: [GIT PULL] UML updates for 5.17
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [PATCH] drivers/i2c-aspeed: avoid invalid memory reference after
- timeout
-Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-i2c@vger.kernel.org, openbmc@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-References: <20220109132613.122912-1-guoheyi@linux.alibaba.com>
-From:   Heyi Guo <guoheyi@linux.alibaba.com>
-In-Reply-To: <20220109132613.122912-1-guoheyi@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF95 (Linux)/8.8.12_GA_3809)
+Thread-Index: RsIVnHqP6wx+gtlWtggyZBf0Dh/AXA==
+Thread-Topic: UML updates for 5.17
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+Linus,
 
-Any comments?
+The following changes since commit 1c3e979bf3e225e5b4b810b24712b16254d608b6:
 
-Thanks,
+  Merge branch 'for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/hid/hid (2021-12-21 09:30:32 -0800)
 
-Heyi
+are available in the Git repository at:
 
-在 2022/1/9 下午9:26, Heyi Guo 写道:
-> The memory will be freed by the caller if transfer timeout occurs,
-> then it would trigger kernel panic if the peer device responds with
-> something after timeout and triggers the interrupt handler of aspeed
-> i2c driver.
->
-> Set the msgs pointer to NULL to avoid invalid memory reference after
-> timeout to fix this potential kernel panic.
->
-> Signed-off-by: Heyi Guo <guoheyi@linux.alibaba.com>
->
-> -------
->
-> Cc: Brendan Higgins <brendanhiggins@google.com>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Joel Stanley <joel@jms.id.au>
-> Cc: Andrew Jeffery <andrew@aj.id.au>
-> Cc: Philipp Zabel <p.zabel@pengutronix.de>
-> Cc: linux-i2c@vger.kernel.org
-> Cc: openbmc@lists.ozlabs.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-aspeed@lists.ozlabs.org
-> ---
->   drivers/i2c/busses/i2c-aspeed.c | 5 +++++
->   1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/i2c/busses/i2c-aspeed.c b/drivers/i2c/busses/i2c-aspeed.c
-> index 67e8b97c0c950..3ab0396168680 100644
-> --- a/drivers/i2c/busses/i2c-aspeed.c
-> +++ b/drivers/i2c/busses/i2c-aspeed.c
-> @@ -708,6 +708,11 @@ static int aspeed_i2c_master_xfer(struct i2c_adapter *adap,
->   		spin_lock_irqsave(&bus->lock, flags);
->   		if (bus->master_state == ASPEED_I2C_MASTER_PENDING)
->   			bus->master_state = ASPEED_I2C_MASTER_INACTIVE;
-> +		/*
-> +		 * All the buffers may be freed after returning to caller, so
-> +		 * set msgs to NULL to avoid memory reference after freeing.
-> +		 */
-> +		bus->msgs = NULL;
->   		spin_unlock_irqrestore(&bus->lock, flags);
->   
->   		return -ETIMEDOUT;
+  git://git.kernel.org/pub/scm/linux/kernel/git/rw/uml.git tags/for-linus-5.17-rc1
+
+for you to fetch changes up to db0dd9cee82270e032123169ceff659eced5115d:
+
+  um: virtio_uml: Allow probing from devicetree (2021-12-22 20:40:05 +0100)
+
+----------------------------------------------------------------
+This pull request contains the following changes for UML:
+
+- set_fs removal
+- Devicetree support
+- Many cleanups from Al
+- Various virtio and build related fixes
+
+----------------------------------------------------------------
+Al Viro (15):
+      uml: trim unused junk from arch/x86/um/sys_call_table_*.c
+      um: move amd64 variant of mmap(2) to arch/x86/um/syscalls_64.c
+      logic_io instance of iounmap() needs volatile on argument
+      um: stop polluting the namespace with registers.h contents
+      uml/i386: missing include in barrier.h
+      um: kill unused cpu()
+      um: remove a dangling extern of syscall_trace()
+      um: unexport handle_page_fault()
+      um, x86: bury crypto_tfm_ctx_offset
+      um: common-offsets.h debriding...
+      um: header debriding - activate_ipi()
+      um: header debriding - mem_user.h
+      um: header debriding - net_*.h
+      um: header debriding - os.h
+      um: header debriding - sigio.h
+
+Changcheng Deng (1):
+      um: Replace if (cond) BUG() with BUG_ON()
+
+Christoph Hellwig (1):
+      um: remove set_fs
+
+Johannes Berg (8):
+      um: fix ndelay/udelay defines
+      um: rename set_signals() to um_set_signals()
+      uml: x86: add FORCE to user_constants.h
+      um: gitignore: Add kernel/capflags.c
+      um: virt-pci: Fix 32-bit compile
+      lib/logic_iomem: Fix 32-bit build
+      lib/logic_iomem: Fix operation on 32-bit
+      um: virtio_uml: Fix time-travel external time propagation
+
+Randy Dunlap (1):
+      um: registers: Rename function names to avoid conflicts and build problems
+
+Sjoerd Simons (1):
+      hostfs: Fix writeback of dirty pages
+
+Vincent Whitchurch (3):
+      um: Extract load file helper from initrd.c
+      um: Add devicetree support
+      um: virtio_uml: Allow probing from devicetree
+
+Yang Guang (1):
+      um: Use swap() to make code cleaner
+
+ arch/um/.gitignore                      |  1 +
+ arch/um/Kconfig                         |  2 +-
+ arch/um/drivers/virt-pci.c              |  8 ++---
+ arch/um/drivers/virtio_uml.c            | 54 +++++++++++++++++++++++++++--
+ arch/um/include/asm/delay.h             |  4 +--
+ arch/um/include/asm/irqflags.h          |  4 +--
+ arch/um/include/asm/processor-generic.h |  2 +-
+ arch/um/include/asm/thread_info.h       |  4 ---
+ arch/um/include/asm/uaccess.h           | 21 ++++++++++--
+ arch/um/include/shared/common-offsets.h | 15 --------
+ arch/um/include/shared/irq_user.h       |  1 -
+ arch/um/include/shared/kern_util.h      |  2 --
+ arch/um/include/shared/longjmp.h        |  2 +-
+ arch/um/include/shared/mem_user.h       |  5 ---
+ arch/um/include/shared/net_kern.h       |  2 --
+ arch/um/include/shared/net_user.h       |  1 -
+ arch/um/include/shared/os.h             | 17 ++-------
+ arch/um/include/shared/registers.h      |  6 ++--
+ arch/um/include/shared/sigio.h          |  1 -
+ arch/um/kernel/Makefile                 |  4 ++-
+ arch/um/kernel/dtb.c                    | 41 ++++++++++++++++++++++
+ arch/um/kernel/exec.c                   |  1 +
+ arch/um/kernel/initrd.c                 | 48 +++-----------------------
+ arch/um/kernel/ksyms.c                  |  2 +-
+ arch/um/kernel/load_file.c              | 61 +++++++++++++++++++++++++++++++++
+ arch/um/kernel/mem.c                    |  3 +-
+ arch/um/kernel/process.c                |  6 +---
+ arch/um/kernel/skas/uaccess.c           | 25 --------------
+ arch/um/kernel/syscall.c                | 28 ---------------
+ arch/um/kernel/trap.c                   |  1 -
+ arch/um/kernel/um_arch.c                |  3 ++
+ arch/um/kernel/um_arch.h                | 14 ++++++++
+ arch/um/os-Linux/registers.c            |  4 +--
+ arch/um/os-Linux/sigio.c                | 13 ++++---
+ arch/um/os-Linux/signal.c               |  8 ++---
+ arch/um/os-Linux/start_up.c             |  2 +-
+ arch/x86/kernel/asm-offsets.c           |  3 --
+ arch/x86/um/Makefile                    |  2 +-
+ arch/x86/um/asm/barrier.h               |  1 +
+ arch/x86/um/asm/segment.h               |  8 -----
+ arch/x86/um/os-Linux/registers.c        |  1 +
+ arch/x86/um/ptrace_32.c                 |  1 +
+ arch/x86/um/ptrace_64.c                 |  1 +
+ arch/x86/um/shared/sysdep/syscalls_64.h |  3 --
+ arch/x86/um/signal.c                    |  1 +
+ arch/x86/um/sys_call_table_32.c         |  4 ---
+ arch/x86/um/sys_call_table_64.c         | 17 ---------
+ arch/x86/um/syscalls_64.c               | 14 +++++++-
+ fs/hostfs/hostfs_kern.c                 |  3 ++
+ include/asm-generic/logic_io.h          |  2 +-
+ lib/logic_iomem.c                       | 23 +++++++------
+ 51 files changed, 265 insertions(+), 235 deletions(-)
+ create mode 100644 arch/um/kernel/dtb.c
+ create mode 100644 arch/um/kernel/load_file.c
+ delete mode 100644 arch/um/kernel/syscall.c
+ create mode 100644 arch/um/kernel/um_arch.h
