@@ -2,98 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED158C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 830B0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbiAKIgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:36:52 -0500
-Received: from mga06.intel.com ([134.134.136.31]:31519 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231352AbiAKIgv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:36:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641890211; x=1673426211;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=fb8nWMAZrmWV41xVjkHvGnRCVsb+6xDWT6E89YI2w8A=;
-  b=ml2GcNP7vd1cg1Oo0NCQ8/wNVY30Cs3vqRXUFknlUBoXeJHVvnNxs11e
-   WFNKDCB6u/tPsySzj0slMxaHzUKTFkSinJgCfQmOY/uVfLKglkD+ra7m1
-   zFFzc3omNQbUYLgMLoWbI687hLIoP1UmS2H1/OBP25730BzMk/Kk1viZE
-   ri5oTI062bLI9nsgcDNRekN53RJHYspqfI3QARobe3K/PqSxOSA+hXpY+
-   eFWCliO7CLpcn5BmzTmTOe3CyLYDNbZrGu7QzmrNwEjHaqD68hdF2przL
-   ZMc53vcXqwDurwte+q699XFP8nPw2ENQLTR/kzbiX0YBYmzS4c/uHhf6d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304173561"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="304173561"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 00:36:51 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="622997227"
-Received: from sjobrien-mobl3.ger.corp.intel.com (HELO localhost) ([10.252.25.241])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 00:36:49 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Ashish Arora <ashisharora.linux@outlook.com>,
-        "joonas.lahtinen@linux.intel.com" <joonas.lahtinen@linux.intel.com>,
-        "rodrigo.vivi@intel.com" <rodrigo.vivi@intel.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        ville.syrjala@linux.intel.com
-Subject: Re: [PATCH - v3] drm/i915: Discard large BIOS framebuffers causing
- display corruption.
-In-Reply-To: <31D69334-DEF9-41B7-968B-B847796926FF@outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <31D69334-DEF9-41B7-968B-B847796926FF@outlook.com>
-Date:   Tue, 11 Jan 2022 10:36:46 +0200
-Message-ID: <87v8yq8y8x.fsf@intel.com>
+        id S236349AbiAKIjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 03:39:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43742 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234862AbiAKIjU (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 03:39:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6C01B81835;
+        Tue, 11 Jan 2022 08:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A551DC36AE9;
+        Tue, 11 Jan 2022 08:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641890357;
+        bh=KjstXm3UHpeHJfoTkZoKATZzxW41gK7OpFVYXonL5iQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wCIy90jPlxSI99Xmyt2NHEbGN96tQGKdimqXEHyYyAM0DU0RYtOExwHzn6w0Wgsd1
+         bKKf5xrgxSx397kVq/a6U4Nicr9T/IMxCdPTC+ARySBudcPWmpkCgUENr/K5nLXDAz
+         8urQ+sjhw4RgRwjbuJL+UBH5pdm+hbc0T7bQlhlY=
+Date:   Tue, 11 Jan 2022 09:39:13 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     heikki.krogerus@linux.intel.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] usb: typec: Check error number after calling
+ ida_simple_get
+Message-ID: <Yd1CMdAzIXaT/QBB@kroah.com>
+References: <20220111071751.590487-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111071751.590487-1-jiasheng@iscas.ac.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022, Ashish Arora <ashisharora.linux@outlook.com> wrote:
-> From: Ashish Arora <ashisharora.linux@outlook.com>
->
-> On certain 4k panels and Macs, the BIOS framebuffer is larger than what
-> panel requires causing display corruption. Introduce a check for the same.
->
->
-> Signed-off-by: Ashish Arora <ashisharora.linux@outlook.com>
-> Reviewed-by: Aun-Ali Zaidi <admin@kodeit.net>
+On Tue, Jan 11, 2022 at 03:17:51PM +0800, Jiasheng Jiang wrote:
+> If allocation fails, the ida_simple_get() will return error number.
 
-I'll defer to Ville on this one, Cc'd.
+How can allocation fail?  Have you been able to trigger this?
 
-BR,
-Jani.
-
-
-
+> So altmode_id_get() may return error number.
+> And then id will be used in altmode_id_remove, causing the BUG_ON().
+> Or it will be assigned to alt->id.
+> Therefore, it should be better to check it and return error if fails,
+> like the ida_simple_get() in typec_register_port().
+> 
+> Fixes: 8a37d87d72f0 ("usb: typec: Bus type for alternate modes")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 > ---
-> V2 :- Use != instead of < and >
-> V3 :- Mention Macs (Thanks to Orlando)
->  drivers/gpu/drm/i915/display/intel_fbdev.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/i915/display/intel_fbdev.c b/drivers/gpu/drm/i915/display/intel_fbdev.c
-> index 842c04e63..16b1c82b2 100644
-> --- a/drivers/gpu/drm/i915/display/intel_fbdev.c
-> +++ b/drivers/gpu/drm/i915/display/intel_fbdev.c
-> @@ -181,10 +181,10 @@ static int intelfb_create(struct drm_fb_helper *helper,
+>  drivers/usb/typec/class.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+> index aeef453aa658..67b3670ede99 100644
+> --- a/drivers/usb/typec/class.c
+> +++ b/drivers/usb/typec/class.c
+> @@ -516,6 +516,9 @@ typec_register_altmode(struct device *parent,
+>  	struct altmode *alt;
 >  	int ret;
 >  
->  	if (intel_fb &&
-> -	    (sizes->fb_width > intel_fb->base.width ||
-> -	     sizes->fb_height > intel_fb->base.height)) {
-> +	    (sizes->fb_width != intel_fb->base.width ||
-> +	     sizes->fb_height != intel_fb->base.height)) {
->  		drm_dbg_kms(&dev_priv->drm,
-> -			    "BIOS fb too small (%dx%d), we require (%dx%d),"
-> +			    "BIOS fb not valid (%dx%d), we require (%dx%d),"
->  			    " releasing it\n",
->  			    intel_fb->base.width, intel_fb->base.height,
->  			    sizes->fb_width, sizes->fb_height);
+> +	if (id < 0)
+> +		return ERR_PTR(id);
+> +
+>  	alt = kzalloc(sizeof(*alt), GFP_KERNEL);
+>  	if (!alt) {
+>  		altmode_id_remove(parent, id);
+> -- 
+> 2.25.1
+> 
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+How did you test that this change will work properly?
+
+As I have said before, I'm not going to take changes from you unless you
+can prove they have been tested, due to all of the previous problems in
+your submitted patches.
+
+greg k-h
