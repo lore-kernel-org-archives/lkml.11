@@ -2,223 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 11:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 11:49:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239210AbiAKLsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 06:48:24 -0500
-Received: from mga06.intel.com ([134.134.136.31]:30856 "EHLO mga06.intel.com"
+        id S239207AbiAKLtQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 06:49:16 -0500
+Received: from mout.gmx.net ([212.227.15.19]:33691 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238808AbiAKLsR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 06:48:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641901697; x=1673437697;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JuYmIBkvpvdVhi31jq6e1BbQrmM5iNvrfA4jT6YwXCQ=;
-  b=jrzfnn7slkGjU3IZc+yl1eDpJb1vSzK/E/rWfTg64SHgo5NlQAw1lhTC
-   cCNZETBetfrhEsEJeNW8QJHECi72N1XB1NsJDntH1iYbQb1wOdnDTjtNr
-   /JktnfVQpYtRw16bbVxwWynlOzx4oh1l0wQOkHPcDj/0aIffPARbjc0tA
-   iTNiUTarEj1vf6QyoL7TTlKe02O0/rXLwBCvUZOF7FgrIDb196F9bn7f1
-   Dl3iwRvIr5Mqt8KWai7dWzhlOnCXFXS2Zh7NPQ72QE7K8NnNrMHUKeOxJ
-   3WFcMa5W1gUtspUT/VjjvKYt+dui5XLUIwtDXvubzqAnfDN+mQ8YKTJYl
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304205011"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="304205011"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 03:48:07 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="490353874"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 03:48:03 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n7Fc0-009D0g-4e;
-        Tue, 11 Jan 2022 13:46:48 +0200
-Date:   Tue, 11 Jan 2022 13:46:47 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Axe Yang <axe.yang@mediatek.com>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 3/3] mmc: mediatek: add support for SDIO eint irq
-Message-ID: <Yd1uJ+dX2CTEJfYY@smile.fi.intel.com>
-References: <20220111014046.5864-1-axe.yang@mediatek.com>
- <20220111014046.5864-4-axe.yang@mediatek.com>
+        id S238583AbiAKLtP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 06:49:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1641901740;
+        bh=vAQJgoSwF0R1ayJFG1oEsNhYDBTZXrjepkeB6W1xDLI=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=cHzttAeDG3ll7Dei6iCLnijkJeTyOAgI2VLBdXOBRSx5b4SQ/2xeIk/a8NgS1xz6Q
+         HPd8lm0MKmzYEfNZUarca56LPw8zgYhL/Vnw1HQ7Koz/8kFG3DfnN/qCzC2ussi5Sr
+         44Dt+w1K+5U98ZoBm/GQTt9eCypj+MGwiX8TKy/o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530 ([92.116.169.189]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M5QJD-1n5sCX2Qdx-001Uww; Tue, 11
+ Jan 2022 12:49:00 +0100
+Date:   Tue, 11 Jan 2022 12:48:55 +0100
+From:   Helge Deller <deller@gmx.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        John David Anglin <dave.anglin@bell.net>,
+        Sven Schnelle <svens@stackframe.org>
+Cc:     Bart Van Assche <bvanassche@acm.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [GIT PULL] parisc architecture updates v5.17-rc1
+Message-ID: <Yd1up5g3mSzj7eHL@ls3530>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220111014046.5864-4-axe.yang@mediatek.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Provags-ID: V03:K1:FZpyUzG+Fz1YGuZQmJz7ehUdKnOcv2voVQso93lJ2uiviVoAAIf
+ lAyHvVfbEINWmZg3PFoP06YrVR8aauX9adSD8PxKIW6Y1ThnF88ob9lCc1mdKkJeMm+eM9r
+ 0R4HMBpxUY5o9kYy04c845FnrPSIekQGRy2OrDICXl4eJzW1iOJD4dREYXb72e+LbcayCRF
+ y21qBGn1RPn8nwKpmtVBw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:OaBGbX5pVnk=:yGnH66ENd9b6teLD1GTOBL
+ s6q6qJnoKBbsQ4H4v7wSrJHMYhQTs8R/fgJ3Sl9yCWpU9QJM+v3QXT1SEAH5UzAlVXAqAK2qL
+ iGO0HWK5RaoRlfmdA7pbbMBLM8uHsyc4TseVucGi/1gZs14bX4wWRYIUfVjCgfUON9Zg5HzoX
+ 1ObWsdxXj5d+zYWWm3duF7k46XhFvL/LHXl/kuGAOOnplOcZ84u43DY+8cpvxRxY+EgpDkyCO
+ I1M8RZUl1X4ZdVjhPM7jm4ar8pRaiatWNgFNg/d52EQbsRCK388MmrZl9iEIkaFXifvTi6TFI
+ cg/A5B0XdEXsX22LxsghKGo4t3r9x4Ar66LtjUqEfyCvGkpN/UCs0BUtod6zxIVzI8g/MRQ7d
+ /v6K+YpEgCbSXd6lEW+k+crlwxsA8LgKjmSqCW8nQzEjhMf5bjNFwKKzz7N3F2dhoJdqhHJch
+ vaC2ajyY861mgHOBRf380al1obFdF6bvCgCLI27Bbn/T9umTaINUUyI0OICHoLw/ENfBDrchg
+ QFENCK3EztAbJtBd5nvcHwHMiHI7vDKMUsYuZbM7mGKVi+4/l13vfF/RSvTqtoUfpUXgELSSv
+ dJpGITtwfljWSLDzOZplsfxpXlnpbDMic7n+suQTsevar36JMymrjQ6k8mud2+ufO5hl5x3ou
+ 8PYG+KxBj0FwlZDPdQzMB4hea/GmCOTz2Gy/GGoztf+ps1KWr6PbI8xBWYJJRG1Pk9QmNn0/4
+ yPfT43EmfaiMuEgXoDcXFT+yRpw7bLRYAzSYwMLuoBJx73uyJg+INKQRhTpW3kGzxIqx8Np0u
+ O9VMiczTQ2VnLPybmyXJsP/nZY3vPE/3Np08FT5B4J6pcLkQv4xnn2mSft3xl70XCjnyx/6c4
+ WG/kMp6tPRkvNi/N9xXA6pv27ghcFtBOwlo4b0QdWSe16z3y9FeDlpaZ+mu9EET7j3lb9pyAo
+ tgOdBHuLYJ2wjKP3bhzd8jBFD510TPzKDKPbAGBCDhSdDHHwhCz8CY27/2YnyB3MhNHIFGQrM
+ hioIRh+yWIIIxWdYMJu9Q75h8bpFPLhCctmdejdyW0RYte1fRnAXAdmjdRJ8r4Qe3IeOOvQeh
+ FP0hLuR2yL/xyA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 09:40:46AM +0800, Axe Yang wrote:
-> Add support for eint irq when MSDC is used as an SDIO host. This
+The following changes since commit c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
 
-IRQ
+  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
 
-> feature requires SDIO device support async irq function. With this
+are available in the Git repository at:
 
-IRQ
+  http://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/for-5.17/parisc-1
 
-> feature,SDIO host can be awakened by SDIO card in suspend state,
+for you to fetch changes up to 68d247ad38b1ef46bd945a5220fa6d28c901c2f2:
 
-feature, SDIO
+  parisc: Default to 16 CPUs on 32-bit kernel (2022-01-11 11:57:38 +0100)
 
-> without additional pin.
-> 
-> MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
-> turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
-> resume, switch GPIO function back to DAT1 mode then turn on clock.
-> 
-> Some device tree property should be added or modified in msdc node
+----------------------------------------------------------------
+parisc architecture updates for kernel v5.17-rc1
 
-MSDC
+- Fix lpa and lpa_user defines (John David Anglin)
+- Fix symbol lookup of init functions with an __is_kernel() fix (Helge Deller)
+- Fix wrong pdc_toc_pim_11 and pdc_toc_pim_20 definitions (Helge Deller)
+- Add lws_atomic_xchg and lws_atomic_store syscalls (John David Anglin)
+- Rewrite light-weight syscall and futex code (John David Anglin)
+- Enable TOC (transfer of contents) feature unconditionally (Helge Deller)
+- Improve fault handler messages (John David Anglin)
+- Improve build process (Masahiro Yamada)
+- Reduce kernel code footprint of user access functions (Helge Deller)
+- Fix build error due to outX() macros (Bart Van Assche)
+- Ue default_groups in kobj_type in pdc_stable (Greg Kroah-Hartman)
+- Default to 16 CPUs on 32-bit kernel (Helge Deller)
 
-> to support SDIO eint irq. Pinctrls named state_dat1 and state_eint
+----------------------------------------------------------------
+Bart Van Assche (1):
+      parisc: io: Improve the outb(), outw() and outl() macros
 
-IRQ
+Greg Kroah-Hartman (1):
+      parisc: pdc_stable: use default_groups in kobj_type
 
-> are mandatory. And cap-sdio-async-irq flag is necessary since this
-> feature depends on asynchronous interrupt:
->         &mmcX {
->                 ...
->                 pinctrl-names = "default", "state_uhs", "state_eint",
->                                 "state_dat1";
->                 ...
->                 pinctrl-2 = <&mmc2_pins_eint>;
->                 pinctrl-3 = <&mmc2_pins_dat1>;
->                 ...
->                 cap-sdio-async-irq;
->                 ...
->         };
+Helge Deller (7):
+      parisc: Switch user access functions to signal errors in r29 instead of r8
+      parisc: Fix pdc_toc_pim_11 and pdc_toc_pim_20 definitions
+      parisc: Add kgdb io_module to read chars via PDC
+      parisc: Enable TOC (transfer of contents) feature unconditionally
+      parisc: Re-use toc_stack as hpmc_stack
+      sections: Fix __is_kernel() to include init ranges
+      parisc: Default to 16 CPUs on 32-bit kernel
 
-...
+John David Anglin (7):
+      parisc: Define depi_safe macro
+      parisc: Fix lpa and lpa_user defines
+      parisc: Avoid calling faulthandler_disabled() twice
+      parisc: Don't call faulthandler_disabled() in do_page_fault()
+      parisc: Enhance page fault termination message
+      parisc: Rewrite light-weight syscall and futex code
+      parisc: Add lws_atomic_xchg and lws_atomic_store syscalls
 
-> - * Copyright (c) 2014-2015 MediaTek Inc.
-> + * Copyright (c) 2014-2022 MediaTek Inc.
+Masahiro Yamada (1):
+      parisc: decompressor: do not copy source files while building
 
-Shouldn't it be rather like
-
- * Copyright (c) 2014-2015,2022 MediaTek Inc.
-
-?
-
-...
-
-> +static irqreturn_t msdc_sdio_eint_irq(int irq, void *dev_id)
-> +{
-> +	unsigned long flags;
-> +	struct msdc_host *host = (struct msdc_host *)dev_id;
-
-No casting is needed.
-
-> +	struct mmc_host *mmc = mmc_from_priv(host);
-
-Perhaps reversed xmas tree order
-
-	struct msdc_host *host = dev_id;
-	struct mmc_host *mmc = mmc_from_priv(host);
-	unsigned long flags;
-
-?
-
-But hey, why do you need flags?
-
-> +	spin_lock_irqsave(&host->lock, flags);
-> +	if (likely(host->sdio_irq_cnt > 0)) {
-> +		disable_irq_nosync(host->eint_irq);
-> +		disable_irq_wake(host->eint_irq);
-> +		host->sdio_irq_cnt--;
-> +	}
-> +	spin_unlock_irqrestore(&host->lock, flags);
-> +
-> +	sdio_signal_irq(mmc);
-> +
-> +	return IRQ_HANDLED;
-> +}
-
-...
-
-> +static int msdc_request_dat1_eint_irq(struct msdc_host *host)
-> +{
-> +	struct gpio_desc *desc;
-> +	int irq, ret;
-> +
-> +	desc = devm_gpiod_get(host->dev, "eint", GPIOD_IN);
-> +	if (IS_ERR(desc))
-> +		return PTR_ERR(desc);
-> +
-> +	ret = gpiod_to_irq(desc);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	irq = ret;
-> +	ret = devm_request_threaded_irq(host->dev, irq, NULL, msdc_sdio_eint_irq,
-> +					IRQF_TRIGGER_LOW | IRQF_ONESHOT | IRQF_NO_AUTOEN,
-> +					"sdio-eint", host);
-
-> +
-
-Redundant blank line.
-
-> +	if (!ret)
-> +		host->eint_irq = irq;
-> +
-> +	return ret;
-
-I guess I have already commented on this, i.e. use standard pattern
-
-	if (ret)
-		return ret;
-
-	...
-	return 0;
-
-> +}
-
-...
-
-> +		host->pins_eint = pinctrl_lookup_state(host->pinctrl, "state_eint");
-> +		if (IS_ERR(host->pins_eint)) {
-
-> +			dev_dbg(&pdev->dev, "Cannot find pinctrl eint!\n");
-
-In debug mode of pin control this will bring a duplicate message.
-
-> +		} else {
-> +			host->pins_dat1 = pinctrl_lookup_state(host->pinctrl, "state_dat1");
-> +			if (IS_ERR(host->pins_dat1)) {
-> +				ret = dev_err_probe(&pdev->dev, PTR_ERR(host->pins_dat1),
-> +						    "Cannot find pinctrl dat1!\n");
-> +				goto host_free;
-> +			}
-> +
-> +			host->sdio_eint_ready = true;
-> +		}
-> +	}
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+ arch/parisc/Kconfig                     |  17 +-
+ arch/parisc/boot/compressed/.gitignore  |   2 -
+ arch/parisc/boot/compressed/Makefile    |   8 -
+ arch/parisc/boot/compressed/firmware.c  |   2 +
+ arch/parisc/boot/compressed/real2.S     |   2 +
+ arch/parisc/include/asm/assembly.h      |  10 +
+ arch/parisc/include/asm/futex.h         |  59 ++-
+ arch/parisc/include/asm/io.h            |   6 +-
+ arch/parisc/include/asm/special_insns.h |  44 +-
+ arch/parisc/include/asm/uaccess.h       |  12 +-
+ arch/parisc/include/uapi/asm/pdc.h      |  32 +-
+ arch/parisc/kernel/Makefile             |   3 +-
+ arch/parisc/kernel/asm-offsets.c        |   4 +
+ arch/parisc/kernel/hpmc.S               |   6 +-
+ arch/parisc/kernel/kgdb.c               |  21 +
+ arch/parisc/kernel/syscall.S            | 774 ++++++++++++++++++++++++--------
+ arch/parisc/kernel/toc.c                |  18 +-
+ arch/parisc/kernel/toc_asm.S            |  33 +-
+ arch/parisc/kernel/traps.c              |   2 +-
+ arch/parisc/mm/fault.c                  |  23 +-
+ drivers/parisc/pdc_stable.c             |   3 +-
+ include/asm-generic/sections.h          |  10 +-
+ scripts/remove-stale-files              |   5 +
+ 23 files changed, 777 insertions(+), 319 deletions(-)
+ create mode 100644 arch/parisc/boot/compressed/firmware.c
+ create mode 100644 arch/parisc/boot/compressed/real2.S
