@@ -2,115 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E723EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1514C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 14:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243032AbiAKO4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 09:56:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238388AbiAKO4X (ORCPT
+        id S243125AbiAKO5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 09:57:40 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:51484 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238388AbiAKO5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 09:56:23 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B55CC06173F;
-        Tue, 11 Jan 2022 06:56:23 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id z22so23185668edd.12;
-        Tue, 11 Jan 2022 06:56:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iXoxzIB0Q30uSSCy8ea/hQfPQ11tgFsxBDq8iurj7Jw=;
-        b=HTkZPzbMmT7xlSc5LgUoFT1m36lYdJj1qMOZswFGBIKCukxGyNHUFUKcLk4OqWVOwL
-         UcpGscjs5oXkeA+rr07jnTMpCO8McUsIVOaBIKV8RmCXMUaIxIzN8xCRk5sauuuvCcaQ
-         JjGzH/roSSvLAFGHBxId/daiDGdzbt1EeYZn7QmIWMRr0IX8TY7+fvLEJIysMr3wXh7a
-         q9+lABEd1UAeXDlLAw9BVJZ9Qi1IWgaX1depYVJyZdwZN7Kt3K4ThlFhcXXIvPHXIt9o
-         8mr3jODfaf4Q152jq0V8al3MzbW0DJjeFzAjtt7lNGto0P/FZ1O1SxoD5566d7TfTKiv
-         49pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iXoxzIB0Q30uSSCy8ea/hQfPQ11tgFsxBDq8iurj7Jw=;
-        b=c4lhRLtGX02QOsxcwL5/QkrHmRwacG3ZB2Gw9HpCqqf7FidIawXVCSW4cI5OLC3LzC
-         cagEpYltdm5CMdXGxr+1ldM9pcO3N0/9k5LidD0rcP1B93OrWQD7+ewj+pYbmxKZgSh6
-         UYHPMAOGfxrbSrE1AvAxUZRgVdDYwT0wf9CuCUo3x+KzrK19ymN1MgkqCAmfXj9c376J
-         yKMWPmkOpR7uwWGJeM39o3xYvJoKSK1NGO7EIssFp86n5DoQ8QMTXCqAGudI3YF9gMpE
-         oPvu1qP0TbVcQBlpXJs3rPW1kh8V5JNHv/iPYFL7QDypJRLk5dZw6k2wAyG7Qaa/7Suq
-         lhYw==
-X-Gm-Message-State: AOAM53206G3aVXRG4+bMVreNpqE0gAfU58mR9jUukaVNmg2MGafBe4EO
-        WtxMC3lOmxwAxyL6mzk6dscIFXzPJbfS6XW/B9+F7axUuks=
-X-Google-Smtp-Source: ABdhPJy7OHUoQutneJThCYc1kpdVXsRdRJj+w2tWrxSkQXXlEPL26qm3bDk8Bg9TXqlCFEg5Mlqc8OIyyMr3Syehdo8=
-X-Received: by 2002:a17:906:3ed0:: with SMTP id d16mr3931238ejj.636.1641912982092;
- Tue, 11 Jan 2022 06:56:22 -0800 (PST)
+        Tue, 11 Jan 2022 09:57:39 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 254C7212C5;
+        Tue, 11 Jan 2022 14:57:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641913058; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZlxQNmr/ZNHAhEYAOVN3PDy1I660OQmhK5nAkm2oCWQ=;
+        b=HrqlaVXd1oBEoIOYpZ6TTolQmrdqFD4QDrAIF1CcUubAYpX+DbBldIif7Q8oR5bPIBAixc
+        /eyShwKkmkENXGbwjpQbDZdHKLsALWYJA0eLAVIzkc/GHyN2gJBiP4kDM8sC8U3ZQ5xv48
+        qlrQIvK+Jwy/Bb7PKvoQCP++1AVC4vQ=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C860EA3B81;
+        Tue, 11 Jan 2022 14:57:37 +0000 (UTC)
+Date:   Tue, 11 Jan 2022 15:57:36 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>
+Subject: Re: [PATCH v1 1/1] vsprintf: Fix potential unaligned access
+Message-ID: <Yd2a4MApVR8hexny@alley>
+References: <20220110205049.11696-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-References: <20210715221828.244536-1-Terry.Bowman@amd.com> <20210907183720.6e0be6b6@endymion>
- <20211105170550.746443b9@endymion> <33a0cd08-a336-34b3-d36c-f827b8054e9e@amd.com>
- <c28ab909-99b4-b43c-e330-b07e35afb981@amd.com> <ebee1239-4ed4-8c68-54e0-f684cea71e93@roeck-us.net>
- <YdoG+en5Z/MaS/wu@ninjato> <CAHp75VfC2XsF2j=obXu7RLNZkKSsZ20eOH2-UMA9AoMAemKa9Q@mail.gmail.com>
- <Yd16cw0AaYcf7eSf@kunai> <811d6ec7-7eac-dfd3-5927-4adcc2251fab@amd.com> <CAHp75Vfv9kgxu5u1YfjEuRmwj=jSybmZ92bpt30jB8MX4LFHaQ@mail.gmail.com>
-In-Reply-To: <CAHp75Vfv9kgxu5u1YfjEuRmwj=jSybmZ92bpt30jB8MX4LFHaQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 11 Jan 2022 16:54:35 +0200
-Message-ID: <CAHp75Vf3G1ftL6VrCchCTC7UbEyWD65wdjRjYOwxY9ONxZ=DCQ@mail.gmail.com>
-Subject: Re: [PATCH] i2c: piix4: Replace piix4_smbus driver's cd6h/cd7h port
- io accesses with mmio accesses
-To:     Terry Bowman <Terry.Bowman@amd.com>
-Cc:     Wolfram Sang <wsa@kernel.org>, Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.de>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        linux-watchdog@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Robert Richter <rrichter@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220110205049.11696-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 4:53 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, Jan 11, 2022 at 4:13 PM Terry Bowman <Terry.Bowman@amd.com> wrote:
-> > The cd6h/cd7h port I/O can be disabled on recent AMD processors and these
-> > changes replace the cd6h/cd7h port I/O accesses with with MMIO accesses.
-> > I can provide more details or answer questions.
->
-> AFAIU the issue the list of questions looks like this (correct me, if
-> I'm wrong):
-> - some chips switched from I/O to MMIO
-> - the bus driver has shared resources with another (TCO) driver
->
-> Now, technically what you are trying is to find a way to keep the
-> original functionality on old machines and support new ones without
-> much trouble.
->
-> From what I see, the silver bullet may be the switch to regmap as we
-> have done in I2C DesignWare driver implementation.
->
-> Yes, it's a much more invasive solution, but at the same time it's
-> much cleaner from my p.o.v. And you may easily split it to logical
-> parts (prepare drivers, switch to regmap, add a new functionality).
->
-> I might be missing something and above not gonna work, please tell me
-> what I miss in that case.
+On Mon 2022-01-10 22:50:49, Andy Shevchenko wrote:
+> The %p4cc specifier in some cases might get an unaligned pointer.
+> Due to this we need to make copy to local variable once to avoid
+> potential crashes on some architectures due to improper access.
+> 
+> Fixes: af612e43de6d ("lib/vsprintf: Add support for printing V4L2 and DRM fourccs")
+> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On top of that I'm wondering why slow I/O is used? Do we have anything
-that really needs that or is it simply a cargo-cult?
+Looks good to me:
 
-> > On 1/11/22 6:39 AM, Wolfram Sang wrote:
-> > >
-> > >> I have briefly read the discussion by the link you provided above in
-> > >> this thread. I'm not sure I understand the issue and if Intel hardware
-> > >> is affected. Is there any summary of the problem?
-> > >
-> > > I guess the original patch description should explain it. You can find
-> > > it here:
-> > >
-> > > http://patchwork.ozlabs.org/project/linux-i2c/patch/20210715221828.244536-1-Terry.Bowman@amd.com/
-> > >
-> > > If this is not sufficient, hopefully Terry can provide more information?
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 
--- 
-With Best Regards,
-Andy Shevchenko
+I have already sent pull request for 5.17. Could this wait
+for 5.18 or would you prefer to get it into 5.17, please?
+
+My understanding of Sakari's reply is that the current callers
+provide aligned pointers. In that case it would not be urgent.
+But I might have gotten it wrong.
+
+Best Regards,
+Petr
