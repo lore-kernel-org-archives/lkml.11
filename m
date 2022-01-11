@@ -2,99 +2,746 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6E0C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2867AC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 15:42:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349627AbiAKPmN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 10:42:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349558AbiAKPmL (ORCPT
+        id S243296AbiAKPmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 10:42:33 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:41089 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242894AbiAKPmb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 10:42:11 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED2EFC061756;
-        Tue, 11 Jan 2022 07:42:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=PiD83U+1isWh2ax7X4ez/W8TF/mH0BpegLiMXOO1s4I=; b=lY0TwRytqeXGZ5eVocRlXe8XfZ
-        KujVjbP95Qook0wO4qMFjKPG/Yv7qdG9dRUhpnmVHLRUg81aGHP1sESTHourfI1DF82wnxPvaKpbp
-        hKczBgGtD6wuoYseOVpOAtO/whLK//4DAjzl4Z8Pj3iToFT86Wz1ZJ11r9Xb9h53SUAqIdF/pPclG
-        bhvxZiX05/XWHgApaP/rc1XgL7p+jnD1eC7Wpt31x44J52OkQ5+MoyRx75QlwhAFcXDE7RP0kcjT7
-        22DUwoGvIsBaMoEzZOu0unZsuWWbAqULHsoYSJOK7az2tAnoPqAA4Cj0KhHAQsS04kN7z853X3jRu
-        ClNQB6jg==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7JHj-00GlVI-0b; Tue, 11 Jan 2022 15:42:07 +0000
-Date:   Tue, 11 Jan 2022 07:42:06 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Martin Wilck <martin.wilck@suse.com>, Jessica Yu <jeyu@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org
-Subject: Re: [PATCH v3] module: add in-kernel support for decompressing
-Message-ID: <Yd2lTm+lILv6KbRm@bombadil.infradead.org>
-References: <YbLvDWdyFivlj7pP@google.com>
- <YbPsqR5ZyiFwJul3@bombadil.infradead.org>
- <YbP6Q9J++OVKqPfn@google.com>
- <YcC0zpFV8ppOCtZw@bombadil.infradead.org>
- <YcFHZVHbIG3ujDlC@google.com>
- <YcJOUvQJJGSHmlCE@bombadil.infradead.org>
- <YdJmRzDwruE5jt8W@google.com>
+        Tue, 11 Jan 2022 10:42:31 -0500
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 5EE9A60002;
+        Tue, 11 Jan 2022 15:42:26 +0000 (UTC)
+Date:   Tue, 11 Jan 2022 16:43:27 +0100
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Eugen Hristev <eugen.hristev@microchip.com>
+Cc:     linux-media@vger.kernel.org, robh+dt@kernel.org,
+        laurent.pinchart@ideasonboard.com, sakari.ailus@iki.fi,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, nicolas.ferre@microchip.com
+Subject: Re: [PATCH v3 04/23] media: atmel: atmel-isc: split the clock code
+ into separate source file
+Message-ID: <20220111154327.jehoy33ajyxhqgu3@uno.localdomain>
+References: <20211213134940.324266-1-eugen.hristev@microchip.com>
+ <20211213134940.324266-5-eugen.hristev@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YdJmRzDwruE5jt8W@google.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+In-Reply-To: <20211213134940.324266-5-eugen.hristev@microchip.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 02, 2022 at 06:58:15PM -0800, Dmitry Torokhov wrote:
-> OK, so I finally got around to doing it and the differences are pretty
-> much noise, as I expected:
-> 
-> 5.16.0-rc7:         Startup finished in 5.022s (firmware) + 6.106s (loader) + 1.370s (kernel) + 5.685s (initrd) + 10.842s (userspace) = 29.026s
-> 5.16.0-rc7-patched: Startup finished in 4.958s (firmware) + 6.701s (loader) + 1.382s (kernel) + 5.278s (initrd) + 10.822s (userspace) = 29.145s
-> 5.16.0-rc7-patched: Startup finished in 4.953s (firmware) + 5.912s (loader) + 1.385s (kernel) + 5.327s (initrd) + 10.457s (userspace) = 28.036s
-> 
-> Also see attached.
+Hi Eugen
 
-If kmod didn't do the decompression I suspect things might be slightly
-different, but I agree that given the different with kernel compression
-now being done, removing userespace compression might just be noise as
-well.
+On Mon, Dec 13, 2021 at 03:49:21PM +0200, Eugen Hristev wrote:
+> The atmel-isc-base is getting crowded. Split the clock functions into
+> atmel-isc-clk.c.
+>
+> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 
-> > > We still reading and uncompressing
-> > > file in kmod (to make sure the format is valid)
-> > 
-> > I don't understand, that seems wasteful.
-> 
-> This way we can make sure we are not feeding kernel garbage and abort
-> early. Yes, we could just check signature and hope that the data is good
-> (and if it is not the kernel will reject it) but this is not a hot path
-> at all and amount of data we decompress is relatively small, so I do not
-> think trying to optimize this makes much sense (as shown by the numbers
-> above).
+Reviewed-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
 
-Sure. And if an LSM is used, one would assume the LSM does its own finit
-module checks.
+Thanks
+  j
 
-> > > and we can uncompress
-> > > using large buffers (we are not concerned with using unswappable kernel
-> > > memory).
-> > > 
-> > > Maybe in the future when we have streaming and accelerated in-kernel
-> > > decompression API we could optimize for that in kmod and see some
-> > > savings on very large modules.
-> > 
-> > That would be very nice.
-> 
-> Again, practical benefit of doing this is pretty much close to 0 in this
-> particular case.
-
-Based on what is observed so far, I agree.
-
-  Luis
+> ---
+> Changes in v3:
+> - squash with maintainers, add patterns in maintainers
+>
+>  MAINTAINERS                                   |   7 +-
+>  drivers/media/platform/atmel/Makefile         |   3 +-
+>  drivers/media/platform/atmel/atmel-isc-base.c | 295 -----------------
+>  drivers/media/platform/atmel/atmel-isc-clk.c  | 311 ++++++++++++++++++
+>  drivers/media/platform/atmel/atmel-isc.h      |   7 +
+>  5 files changed, 322 insertions(+), 301 deletions(-)
+>  create mode 100644 drivers/media/platform/atmel/atmel-isc-clk.c
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index afb74460e5c1..6aa274129751 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12500,11 +12500,8 @@ L:	linux-media@vger.kernel.org
+>  S:	Supported
+>  F:	Documentation/devicetree/bindings/media/atmel,isc.yaml
+>  F:	Documentation/devicetree/bindings/media/microchip,xisc.yaml
+> -F:	drivers/media/platform/atmel/atmel-isc-base.c
+> -F:	drivers/media/platform/atmel/atmel-isc-regs.h
+> -F:	drivers/media/platform/atmel/atmel-isc.h
+> -F:	drivers/media/platform/atmel/atmel-sama5d2-isc.c
+> -F:	drivers/media/platform/atmel/atmel-sama7g5-isc.c
+> +F:	drivers/media/platform/atmel/atmel-isc*
+> +F:	drivers/media/platform/atmel/atmel-sama*-isc*
+>  F:	include/linux/atmel-isc-media.h
+>
+>  MICROCHIP ISI DRIVER
+> diff --git a/drivers/media/platform/atmel/Makefile b/drivers/media/platform/atmel/Makefile
+> index 39f0a7eba702..794e8f739287 100644
+> --- a/drivers/media/platform/atmel/Makefile
+> +++ b/drivers/media/platform/atmel/Makefile
+> @@ -1,9 +1,10 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+>  atmel-isc-objs = atmel-sama5d2-isc.o
+>  atmel-xisc-objs = atmel-sama7g5-isc.o
+> +atmel-isc-common-objs = atmel-isc-base.o atmel-isc-clk.o
+>
+>  obj-$(CONFIG_VIDEO_ATMEL_ISI) += atmel-isi.o
+> -obj-$(CONFIG_VIDEO_ATMEL_ISC_BASE) += atmel-isc-base.o
+> +obj-$(CONFIG_VIDEO_ATMEL_ISC_BASE) += atmel-isc-common.o
+>  obj-$(CONFIG_VIDEO_ATMEL_ISC) += atmel-isc.o
+>  obj-$(CONFIG_VIDEO_ATMEL_XISC) += atmel-xisc.o
+>  obj-$(CONFIG_VIDEO_MICROCHIP_CSI2DC) += microchip-csi2dc.o
+> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+> index 660cd0ab6749..58f468d32613 100644
+> --- a/drivers/media/platform/atmel/atmel-isc-base.c
+> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
+> @@ -8,10 +8,6 @@
+>   * Author: Eugen Hristev <eugen.hristev@microchip.com>
+>   *
+>   */
+> -
+> -#include <linux/clk.h>
+> -#include <linux/clkdev.h>
+> -#include <linux/clk-provider.h>
+>  #include <linux/delay.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/math64.h>
+> @@ -100,297 +96,6 @@ static inline void isc_reset_awb_ctrls(struct isc_device *isc)
+>  	}
+>  }
+>
+> -static int isc_wait_clk_stable(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	struct regmap *regmap = isc_clk->regmap;
+> -	unsigned long timeout = jiffies + usecs_to_jiffies(1000);
+> -	unsigned int status;
+> -
+> -	while (time_before(jiffies, timeout)) {
+> -		regmap_read(regmap, ISC_CLKSR, &status);
+> -		if (!(status & ISC_CLKSR_SIP))
+> -			return 0;
+> -
+> -		usleep_range(10, 250);
+> -	}
+> -
+> -	return -ETIMEDOUT;
+> -}
+> -
+> -static int isc_clk_prepare(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	int ret;
+> -
+> -	ret = pm_runtime_resume_and_get(isc_clk->dev);
+> -	if (ret < 0)
+> -		return ret;
+> -
+> -	return isc_wait_clk_stable(hw);
+> -}
+> -
+> -static void isc_clk_unprepare(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -
+> -	isc_wait_clk_stable(hw);
+> -
+> -	pm_runtime_put_sync(isc_clk->dev);
+> -}
+> -
+> -static int isc_clk_enable(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	u32 id = isc_clk->id;
+> -	struct regmap *regmap = isc_clk->regmap;
+> -	unsigned long flags;
+> -	unsigned int status;
+> -
+> -	dev_dbg(isc_clk->dev, "ISC CLK: %s, id = %d, div = %d, parent id = %d\n",
+> -		__func__, id, isc_clk->div, isc_clk->parent_id);
+> -
+> -	spin_lock_irqsave(&isc_clk->lock, flags);
+> -	regmap_update_bits(regmap, ISC_CLKCFG,
+> -			   ISC_CLKCFG_DIV_MASK(id) | ISC_CLKCFG_SEL_MASK(id),
+> -			   (isc_clk->div << ISC_CLKCFG_DIV_SHIFT(id)) |
+> -			   (isc_clk->parent_id << ISC_CLKCFG_SEL_SHIFT(id)));
+> -
+> -	regmap_write(regmap, ISC_CLKEN, ISC_CLK(id));
+> -	spin_unlock_irqrestore(&isc_clk->lock, flags);
+> -
+> -	regmap_read(regmap, ISC_CLKSR, &status);
+> -	if (status & ISC_CLK(id))
+> -		return 0;
+> -	else
+> -		return -EINVAL;
+> -}
+> -
+> -static void isc_clk_disable(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	u32 id = isc_clk->id;
+> -	unsigned long flags;
+> -
+> -	spin_lock_irqsave(&isc_clk->lock, flags);
+> -	regmap_write(isc_clk->regmap, ISC_CLKDIS, ISC_CLK(id));
+> -	spin_unlock_irqrestore(&isc_clk->lock, flags);
+> -}
+> -
+> -static int isc_clk_is_enabled(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	u32 status;
+> -	int ret;
+> -
+> -	ret = pm_runtime_resume_and_get(isc_clk->dev);
+> -	if (ret < 0)
+> -		return 0;
+> -
+> -	regmap_read(isc_clk->regmap, ISC_CLKSR, &status);
+> -
+> -	pm_runtime_put_sync(isc_clk->dev);
+> -
+> -	return status & ISC_CLK(isc_clk->id) ? 1 : 0;
+> -}
+> -
+> -static unsigned long
+> -isc_clk_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -
+> -	return DIV_ROUND_CLOSEST(parent_rate, isc_clk->div + 1);
+> -}
+> -
+> -static int isc_clk_determine_rate(struct clk_hw *hw,
+> -				   struct clk_rate_request *req)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	long best_rate = -EINVAL;
+> -	int best_diff = -1;
+> -	unsigned int i, div;
+> -
+> -	for (i = 0; i < clk_hw_get_num_parents(hw); i++) {
+> -		struct clk_hw *parent;
+> -		unsigned long parent_rate;
+> -
+> -		parent = clk_hw_get_parent_by_index(hw, i);
+> -		if (!parent)
+> -			continue;
+> -
+> -		parent_rate = clk_hw_get_rate(parent);
+> -		if (!parent_rate)
+> -			continue;
+> -
+> -		for (div = 1; div < ISC_CLK_MAX_DIV + 2; div++) {
+> -			unsigned long rate;
+> -			int diff;
+> -
+> -			rate = DIV_ROUND_CLOSEST(parent_rate, div);
+> -			diff = abs(req->rate - rate);
+> -
+> -			if (best_diff < 0 || best_diff > diff) {
+> -				best_rate = rate;
+> -				best_diff = diff;
+> -				req->best_parent_rate = parent_rate;
+> -				req->best_parent_hw = parent;
+> -			}
+> -
+> -			if (!best_diff || rate < req->rate)
+> -				break;
+> -		}
+> -
+> -		if (!best_diff)
+> -			break;
+> -	}
+> -
+> -	dev_dbg(isc_clk->dev,
+> -		"ISC CLK: %s, best_rate = %ld, parent clk: %s @ %ld\n",
+> -		__func__, best_rate,
+> -		__clk_get_name((req->best_parent_hw)->clk),
+> -		req->best_parent_rate);
+> -
+> -	if (best_rate < 0)
+> -		return best_rate;
+> -
+> -	req->rate = best_rate;
+> -
+> -	return 0;
+> -}
+> -
+> -static int isc_clk_set_parent(struct clk_hw *hw, u8 index)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -
+> -	if (index >= clk_hw_get_num_parents(hw))
+> -		return -EINVAL;
+> -
+> -	isc_clk->parent_id = index;
+> -
+> -	return 0;
+> -}
+> -
+> -static u8 isc_clk_get_parent(struct clk_hw *hw)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -
+> -	return isc_clk->parent_id;
+> -}
+> -
+> -static int isc_clk_set_rate(struct clk_hw *hw,
+> -			     unsigned long rate,
+> -			     unsigned long parent_rate)
+> -{
+> -	struct isc_clk *isc_clk = to_isc_clk(hw);
+> -	u32 div;
+> -
+> -	if (!rate)
+> -		return -EINVAL;
+> -
+> -	div = DIV_ROUND_CLOSEST(parent_rate, rate);
+> -	if (div > (ISC_CLK_MAX_DIV + 1) || !div)
+> -		return -EINVAL;
+> -
+> -	isc_clk->div = div - 1;
+> -
+> -	return 0;
+> -}
+> -
+> -static const struct clk_ops isc_clk_ops = {
+> -	.prepare	= isc_clk_prepare,
+> -	.unprepare	= isc_clk_unprepare,
+> -	.enable		= isc_clk_enable,
+> -	.disable	= isc_clk_disable,
+> -	.is_enabled	= isc_clk_is_enabled,
+> -	.recalc_rate	= isc_clk_recalc_rate,
+> -	.determine_rate	= isc_clk_determine_rate,
+> -	.set_parent	= isc_clk_set_parent,
+> -	.get_parent	= isc_clk_get_parent,
+> -	.set_rate	= isc_clk_set_rate,
+> -};
+> -
+> -static int isc_clk_register(struct isc_device *isc, unsigned int id)
+> -{
+> -	struct regmap *regmap = isc->regmap;
+> -	struct device_node *np = isc->dev->of_node;
+> -	struct isc_clk *isc_clk;
+> -	struct clk_init_data init;
+> -	const char *clk_name = np->name;
+> -	const char *parent_names[3];
+> -	int num_parents;
+> -
+> -	if (id == ISC_ISPCK && !isc->ispck_required)
+> -		return 0;
+> -
+> -	num_parents = of_clk_get_parent_count(np);
+> -	if (num_parents < 1 || num_parents > 3)
+> -		return -EINVAL;
+> -
+> -	if (num_parents > 2 && id == ISC_ISPCK)
+> -		num_parents = 2;
+> -
+> -	of_clk_parent_fill(np, parent_names, num_parents);
+> -
+> -	if (id == ISC_MCK)
+> -		of_property_read_string(np, "clock-output-names", &clk_name);
+> -	else
+> -		clk_name = "isc-ispck";
+> -
+> -	init.parent_names	= parent_names;
+> -	init.num_parents	= num_parents;
+> -	init.name		= clk_name;
+> -	init.ops		= &isc_clk_ops;
+> -	init.flags		= CLK_SET_RATE_GATE | CLK_SET_PARENT_GATE;
+> -
+> -	isc_clk = &isc->isc_clks[id];
+> -	isc_clk->hw.init	= &init;
+> -	isc_clk->regmap		= regmap;
+> -	isc_clk->id		= id;
+> -	isc_clk->dev		= isc->dev;
+> -	spin_lock_init(&isc_clk->lock);
+> -
+> -	isc_clk->clk = clk_register(isc->dev, &isc_clk->hw);
+> -	if (IS_ERR(isc_clk->clk)) {
+> -		dev_err(isc->dev, "%s: clock register fail\n", clk_name);
+> -		return PTR_ERR(isc_clk->clk);
+> -	} else if (id == ISC_MCK)
+> -		of_clk_add_provider(np, of_clk_src_simple_get, isc_clk->clk);
+> -
+> -	return 0;
+> -}
+> -
+> -int isc_clk_init(struct isc_device *isc)
+> -{
+> -	unsigned int i;
+> -	int ret;
+> -
+> -	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++)
+> -		isc->isc_clks[i].clk = ERR_PTR(-EINVAL);
+> -
+> -	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++) {
+> -		ret = isc_clk_register(isc, i);
+> -		if (ret)
+> -			return ret;
+> -	}
+> -
+> -	return 0;
+> -}
+> -EXPORT_SYMBOL_GPL(isc_clk_init);
+> -
+> -void isc_clk_cleanup(struct isc_device *isc)
+> -{
+> -	unsigned int i;
+> -
+> -	of_clk_del_provider(isc->dev->of_node);
+> -
+> -	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++) {
+> -		struct isc_clk *isc_clk = &isc->isc_clks[i];
+> -
+> -		if (!IS_ERR(isc_clk->clk))
+> -			clk_unregister(isc_clk->clk);
+> -	}
+> -}
+> -EXPORT_SYMBOL_GPL(isc_clk_cleanup);
+>
+>  static int isc_queue_setup(struct vb2_queue *vq,
+>  			    unsigned int *nbuffers, unsigned int *nplanes,
+> diff --git a/drivers/media/platform/atmel/atmel-isc-clk.c b/drivers/media/platform/atmel/atmel-isc-clk.c
+> new file mode 100644
+> index 000000000000..2059fe376b00
+> --- /dev/null
+> +++ b/drivers/media/platform/atmel/atmel-isc-clk.c
+> @@ -0,0 +1,311 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Microchip Image Sensor Controller (ISC) common clock driver setup
+> + *
+> + * Copyright (C) 2016 Microchip Technology, Inc.
+> + *
+> + * Author: Songjun Wu
+> + * Author: Eugen Hristev <eugen.hristev@microchip.com>
+> + *
+> + */
+> +#include <linux/clk.h>
+> +#include <linux/clkdev.h>
+> +#include <linux/clk-provider.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "atmel-isc-regs.h"
+> +#include "atmel-isc.h"
+> +
+> +static int isc_wait_clk_stable(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	struct regmap *regmap = isc_clk->regmap;
+> +	unsigned long timeout = jiffies + usecs_to_jiffies(1000);
+> +	unsigned int status;
+> +
+> +	while (time_before(jiffies, timeout)) {
+> +		regmap_read(regmap, ISC_CLKSR, &status);
+> +		if (!(status & ISC_CLKSR_SIP))
+> +			return 0;
+> +
+> +		usleep_range(10, 250);
+> +	}
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static int isc_clk_prepare(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	int ret;
+> +
+> +	ret = pm_runtime_resume_and_get(isc_clk->dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return isc_wait_clk_stable(hw);
+> +}
+> +
+> +static void isc_clk_unprepare(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +
+> +	isc_wait_clk_stable(hw);
+> +
+> +	pm_runtime_put_sync(isc_clk->dev);
+> +}
+> +
+> +static int isc_clk_enable(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	u32 id = isc_clk->id;
+> +	struct regmap *regmap = isc_clk->regmap;
+> +	unsigned long flags;
+> +	unsigned int status;
+> +
+> +	dev_dbg(isc_clk->dev, "ISC CLK: %s, id = %d, div = %d, parent id = %d\n",
+> +		__func__, id, isc_clk->div, isc_clk->parent_id);
+> +
+> +	spin_lock_irqsave(&isc_clk->lock, flags);
+> +	regmap_update_bits(regmap, ISC_CLKCFG,
+> +			   ISC_CLKCFG_DIV_MASK(id) | ISC_CLKCFG_SEL_MASK(id),
+> +			   (isc_clk->div << ISC_CLKCFG_DIV_SHIFT(id)) |
+> +			   (isc_clk->parent_id << ISC_CLKCFG_SEL_SHIFT(id)));
+> +
+> +	regmap_write(regmap, ISC_CLKEN, ISC_CLK(id));
+> +	spin_unlock_irqrestore(&isc_clk->lock, flags);
+> +
+> +	regmap_read(regmap, ISC_CLKSR, &status);
+> +	if (status & ISC_CLK(id))
+> +		return 0;
+> +	else
+> +		return -EINVAL;
+> +}
+> +
+> +static void isc_clk_disable(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	u32 id = isc_clk->id;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&isc_clk->lock, flags);
+> +	regmap_write(isc_clk->regmap, ISC_CLKDIS, ISC_CLK(id));
+> +	spin_unlock_irqrestore(&isc_clk->lock, flags);
+> +}
+> +
+> +static int isc_clk_is_enabled(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	u32 status;
+> +	int ret;
+> +
+> +	ret = pm_runtime_resume_and_get(isc_clk->dev);
+> +	if (ret < 0)
+> +		return 0;
+> +
+> +	regmap_read(isc_clk->regmap, ISC_CLKSR, &status);
+> +
+> +	pm_runtime_put_sync(isc_clk->dev);
+> +
+> +	return status & ISC_CLK(isc_clk->id) ? 1 : 0;
+> +}
+> +
+> +static unsigned long
+> +isc_clk_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +
+> +	return DIV_ROUND_CLOSEST(parent_rate, isc_clk->div + 1);
+> +}
+> +
+> +static int isc_clk_determine_rate(struct clk_hw *hw,
+> +				  struct clk_rate_request *req)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	long best_rate = -EINVAL;
+> +	int best_diff = -1;
+> +	unsigned int i, div;
+> +
+> +	for (i = 0; i < clk_hw_get_num_parents(hw); i++) {
+> +		struct clk_hw *parent;
+> +		unsigned long parent_rate;
+> +
+> +		parent = clk_hw_get_parent_by_index(hw, i);
+> +		if (!parent)
+> +			continue;
+> +
+> +		parent_rate = clk_hw_get_rate(parent);
+> +		if (!parent_rate)
+> +			continue;
+> +
+> +		for (div = 1; div < ISC_CLK_MAX_DIV + 2; div++) {
+> +			unsigned long rate;
+> +			int diff;
+> +
+> +			rate = DIV_ROUND_CLOSEST(parent_rate, div);
+> +			diff = abs(req->rate - rate);
+> +
+> +			if (best_diff < 0 || best_diff > diff) {
+> +				best_rate = rate;
+> +				best_diff = diff;
+> +				req->best_parent_rate = parent_rate;
+> +				req->best_parent_hw = parent;
+> +			}
+> +
+> +			if (!best_diff || rate < req->rate)
+> +				break;
+> +		}
+> +
+> +		if (!best_diff)
+> +			break;
+> +	}
+> +
+> +	dev_dbg(isc_clk->dev,
+> +		"ISC CLK: %s, best_rate = %ld, parent clk: %s @ %ld\n",
+> +		__func__, best_rate,
+> +		__clk_get_name((req->best_parent_hw)->clk),
+> +		req->best_parent_rate);
+> +
+> +	if (best_rate < 0)
+> +		return best_rate;
+> +
+> +	req->rate = best_rate;
+> +
+> +	return 0;
+> +}
+> +
+> +static int isc_clk_set_parent(struct clk_hw *hw, u8 index)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +
+> +	if (index >= clk_hw_get_num_parents(hw))
+> +		return -EINVAL;
+> +
+> +	isc_clk->parent_id = index;
+> +
+> +	return 0;
+> +}
+> +
+> +static u8 isc_clk_get_parent(struct clk_hw *hw)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +
+> +	return isc_clk->parent_id;
+> +}
+> +
+> +static int isc_clk_set_rate(struct clk_hw *hw,
+> +			    unsigned long rate,
+> +			    unsigned long parent_rate)
+> +{
+> +	struct isc_clk *isc_clk = to_isc_clk(hw);
+> +	u32 div;
+> +
+> +	if (!rate)
+> +		return -EINVAL;
+> +
+> +	div = DIV_ROUND_CLOSEST(parent_rate, rate);
+> +	if (div > (ISC_CLK_MAX_DIV + 1) || !div)
+> +		return -EINVAL;
+> +
+> +	isc_clk->div = div - 1;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct clk_ops isc_clk_ops = {
+> +	.prepare	= isc_clk_prepare,
+> +	.unprepare	= isc_clk_unprepare,
+> +	.enable		= isc_clk_enable,
+> +	.disable	= isc_clk_disable,
+> +	.is_enabled	= isc_clk_is_enabled,
+> +	.recalc_rate	= isc_clk_recalc_rate,
+> +	.determine_rate	= isc_clk_determine_rate,
+> +	.set_parent	= isc_clk_set_parent,
+> +	.get_parent	= isc_clk_get_parent,
+> +	.set_rate	= isc_clk_set_rate,
+> +};
+> +
+> +static int isc_clk_register(struct isc_device *isc, unsigned int id)
+> +{
+> +	struct regmap *regmap = isc->regmap;
+> +	struct device_node *np = isc->dev->of_node;
+> +	struct isc_clk *isc_clk;
+> +	struct clk_init_data init;
+> +	const char *clk_name = np->name;
+> +	const char *parent_names[3];
+> +	int num_parents;
+> +
+> +	if (id == ISC_ISPCK && !isc->ispck_required)
+> +		return 0;
+> +
+> +	num_parents = of_clk_get_parent_count(np);
+> +	if (num_parents < 1 || num_parents > 3)
+> +		return -EINVAL;
+> +
+> +	if (num_parents > 2 && id == ISC_ISPCK)
+> +		num_parents = 2;
+> +
+> +	of_clk_parent_fill(np, parent_names, num_parents);
+> +
+> +	if (id == ISC_MCK)
+> +		of_property_read_string(np, "clock-output-names", &clk_name);
+> +	else
+> +		clk_name = "isc-ispck";
+> +
+> +	init.parent_names	= parent_names;
+> +	init.num_parents	= num_parents;
+> +	init.name		= clk_name;
+> +	init.ops		= &isc_clk_ops;
+> +	init.flags		= CLK_SET_RATE_GATE | CLK_SET_PARENT_GATE;
+> +
+> +	isc_clk = &isc->isc_clks[id];
+> +	isc_clk->hw.init	= &init;
+> +	isc_clk->regmap		= regmap;
+> +	isc_clk->id		= id;
+> +	isc_clk->dev		= isc->dev;
+> +	spin_lock_init(&isc_clk->lock);
+> +
+> +	isc_clk->clk = clk_register(isc->dev, &isc_clk->hw);
+> +	if (IS_ERR(isc_clk->clk)) {
+> +		dev_err(isc->dev, "%s: clock register fail\n", clk_name);
+> +		return PTR_ERR(isc_clk->clk);
+> +	} else if (id == ISC_MCK) {
+> +		of_clk_add_provider(np, of_clk_src_simple_get, isc_clk->clk);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int isc_clk_init(struct isc_device *isc)
+> +{
+> +	unsigned int i;
+> +	int ret;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++)
+> +		isc->isc_clks[i].clk = ERR_PTR(-EINVAL);
+> +
+> +	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++) {
+> +		ret = isc_clk_register(isc, i);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(isc_clk_init);
+> +
+> +void isc_clk_cleanup(struct isc_device *isc)
+> +{
+> +	unsigned int i;
+> +
+> +	of_clk_del_provider(isc->dev->of_node);
+> +
+> +	for (i = 0; i < ARRAY_SIZE(isc->isc_clks); i++) {
+> +		struct isc_clk *isc_clk = &isc->isc_clks[i];
+> +
+> +		if (!IS_ERR(isc_clk->clk))
+> +			clk_unregister(isc_clk->clk);
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(isc_clk_cleanup);
+> diff --git a/drivers/media/platform/atmel/atmel-isc.h b/drivers/media/platform/atmel/atmel-isc.h
+> index 2bfcb135ef13..32448ccfc636 100644
+> --- a/drivers/media/platform/atmel/atmel-isc.h
+> +++ b/drivers/media/platform/atmel/atmel-isc.h
+> @@ -10,6 +10,13 @@
+>   */
+>  #ifndef _ATMEL_ISC_H_
+>
+> +#include <linux/clk-provider.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <media/v4l2-ctrls.h>
+> +#include <media/v4l2-device.h>
+> +#include <media/videobuf2-dma-contig.h>
+> +
+>  #define ISC_CLK_MAX_DIV		255
+>
+>  enum isc_clk_id {
+> --
+> 2.25.1
+>
