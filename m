@@ -2,81 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE28C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DECC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345339AbiAKVyp (ORCPT
+        id S1345484AbiAKVyt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 16:54:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48744 "EHLO
+        Tue, 11 Jan 2022 16:54:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245648AbiAKVyZ (ORCPT
+        with ESMTP id S245669AbiAKVy0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 16:54:25 -0500
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77C58C061751
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:54:25 -0800 (PST)
-Received: by mail-pj1-x1029.google.com with SMTP id m13so1313962pji.3
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 13:54:25 -0800 (PST)
+        Tue, 11 Jan 2022 16:54:26 -0500
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF8CC061748;
+        Tue, 11 Jan 2022 13:54:25 -0800 (PST)
+Received: by mail-qk1-x72d.google.com with SMTP id r139so362195qke.9;
+        Tue, 11 Jan 2022 13:54:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5f2yRwnca4po/TToI5ROjNbeo8iSZ748Ub/QrR0dHuc=;
-        b=EcYu/L/5MbgCkc0L2lvz8kq++K/ZH0L6kyU96mHQoUta86MlYouS8n6Gtky3M+1Y1S
-         wPhzlxv2PiVSZMVHyeV7aFt0UwW3dHGXMDdV419vMkzoTyRYfO4Yljqqg6AujFch4Drv
-         fb107vvImyU7gNrGngWSnpx2pzPfC0aM9s424=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rr6jELGvG2LF019fePgIA2z2VD3l6GZzUoZbl9xOC9k=;
+        b=P9OHSPYXeRdku3OPt4mdo1n4K19IfyFJGs9lCs5rlrUomRY5YQOBU0p1Iwbe3Cp0wy
+         Nk/qOLQY7zwoWyVP8w+RQdTpa7pOQ0ypioQZVDLPH6W9Ze+rRNvHSeD6WRy68y3fxHRK
+         fz4VQk2fuKpXXAoUIFjuQ/0bVAhER9spoi4/EB/W2wTBaqJ7IckFWmVsGozPbwsKdgBY
+         suEPCx0oXX+RSiYCIHkSQ3zvp94TSrXf8kPIq8wxXX2DfLUKTddXW06IDNxwFpu9X/ut
+         x9Ypohf6nlo/NQvBIE1PZjxps1v7z320fdQFMvHzGdnnb5uH5gLkIiraXEFmTLu7hudy
+         qawQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5f2yRwnca4po/TToI5ROjNbeo8iSZ748Ub/QrR0dHuc=;
-        b=UwdSplB+EOoHr0SL50HpaBtYqB5DYN5rbOqubw4ren2gS87G7lWipQ+HAU8PWjYO4w
-         ZWlvJhtYgVK948L0I003sc8Rd0oOwjJUDot5nQGTiNivjWYeKBL2glmckNPcq6TmWrg3
-         oRhSG0N+z+IuM1b6/c3V+rBEH00eJq5zT2bbGetyL6P8LTldJxX4rS+ccjX9Yhn5E9gD
-         UHcAzojUPSU3pddNSbdcfzeQWhoj80sdjWXHO/+2OZYCZld/T0LP4Sm7nJdbUcRiAqbm
-         LW+i0sWWcH7i+IS3Nk9eftM3GXOIC5AP6XXAr8t/S0RpzILSX/iOzhO7CiA5GzAr69VF
-         SjcA==
-X-Gm-Message-State: AOAM532aw0YQG7pIS51ONi+P4Z+K471McnhQnVNK2S65gN20kBqVn4wY
-        9XPJhsp4P5+aNdWOt3zUZQQLqQ==
-X-Google-Smtp-Source: ABdhPJwIONtNTCuP+/Vo0J8+j1E+yBh8BAxbE5zlFWfqgTUvLrNDPMYJfbWwD35RGyvzDpCz9S3efA==
-X-Received: by 2002:a63:1046:: with SMTP id 6mr5708874pgq.602.1641938065083;
-        Tue, 11 Jan 2022 13:54:25 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:f0a7:d33a:2234:5687])
-        by smtp.gmail.com with UTF8SMTPSA id j16sm10322713pfu.216.2022.01.11.13.54.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rr6jELGvG2LF019fePgIA2z2VD3l6GZzUoZbl9xOC9k=;
+        b=j+zNqPd6nflkz7RZvXwSHbBFDqxFg8p3tY9UxwMoelCTvk39Ys5GWS7W64Hqg4KqU9
+         K9sAwk050PzHHecDw61SeCyxIwO0H5XpieFoVQoixuFOizk1JKkvaiSuIqpXuLboXMIb
+         urX1VzHpz5dRoIvnw+lFwHlrsy7PQhFPbZiaHDgkraeYNcejk0wMLRnZw8OBMQR6q5vW
+         a6B4u+Vq8LaWm+eyXNlQ4Y0h1udY7JJpZVU2BdzpdxlnByIOdU+PM5y/7QKRPjxcmRO8
+         5wnEterhghhp1iPmie8nyiYkOZVzjZV3FOXzaiRo/Gjgx0Gm8i/vT5Z2tUl4wLAhEb4U
+         sb7Q==
+X-Gm-Message-State: AOAM532xNWE1Wp42lBrkHYGLCYKwRMuYEtCQNtqCziRNFBGRiYvLdB3G
+        O6xzSA0kWTcg11EKbhs8xgw=
+X-Google-Smtp-Source: ABdhPJy9aEiC1HB6s6hRQUqhE3bahAIA4tMt6DKB4F/NaNWABJpboEZbHHCEg3tw38kzQfuAir5J4g==
+X-Received: by 2002:a37:ccc:: with SMTP id 195mr1480041qkm.304.1641938064951;
         Tue, 11 Jan 2022 13:54:24 -0800 (PST)
-Date:   Tue, 11 Jan 2022 13:54:23 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, jponduru@codeaurora.org,
-        avuyyuru@codeaurora.org, bjorn.andersson@linaro.org,
-        agross@kernel.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, evgreen@chromium.org, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: ipa: prevent concurrent replenish
-Message-ID: <Yd38j7mR5vwqlSMZ@google.com>
-References: <20220111192150.379274-1-elder@linaro.org>
- <20220111192150.379274-3-elder@linaro.org>
+Received: from jesse-desktop.jtp-bos.lab (146-115-144-188.s4282.c3-0.nwt-cbr1.sbo-nwt.ma.cable.rcncustomer.com. [146.115.144.188])
+        by smtp.gmail.com with ESMTPSA id l10sm7591020qtk.18.2022.01.11.13.54.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 13:54:24 -0800 (PST)
+From:   Jesse Taube <mr.bossman075@gmail.com>
+X-Google-Original-From: Jesse Taube <Mr.Bossman075@gmail.com>
+To:     linux-imx@nxp.com
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, kernel@pengutronix.de,
+        festevam@gmail.com, ulf.hansson@linaro.org, aisheng.dong@nxp.com,
+        stefan@agner.ch, linus.walleij@linaro.org,
+        gregkh@linuxfoundation.org, arnd@arndb.de, olof@lixom.net,
+        soc@kernel.org, linux@armlinux.org.uk, abel.vesa@nxp.com,
+        adrian.hunter@intel.com, jirislaby@kernel.org,
+        giulio.benetti@benettiengineering.com,
+        nobuhiro1.iwamatsu@toshiba.co.jp, Mr.Bossman075@gmail.com,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-serial@vger.kernel.org, Jesse Taube <mr.bossman075@gmail.com>
+Subject: [PATCH v8 4/7] dt-bindings: clock: imx: Add documentation for i.MXRT1050 clock
+Date:   Tue, 11 Jan 2022 16:54:12 -0500
+Message-Id: <20220111215415.2075257-5-Mr.Bossman075@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
+References: <20220111212606.2072669-1-Mr.Bossman075@gmail.com>
+ <20220111215415.2075257-1-Mr.Bossman075@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220111192150.379274-3-elder@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 01:21:50PM -0600, Alex Elder wrote:
-> We have seen cases where an endpoint RX completion interrupt arrives
-> while replenishing for the endpoint is underway.  This causes another
-> instance of replenishing to begin as part of completing the receive
-> transaction.  If this occurs it can lead to transaction corruption.
-> 
-> Use a new atomic variable to ensure only replenish instance for an
-> endpoint executes at a time.
-> 
-> Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
-> Signed-off-by: Alex Elder <elder@linaro.org>
+From: Jesse Taube <mr.bossman075@gmail.com>
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Add DT binding documentation for i.MXRT1050 clock driver.
+
+Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+---
+V1->V2:
+* Replace macros with values
+V2->V3:
+* Remove anatop
+* Use lpuart not gpt
+* include imxrt1050-clock.h
+* 2 space tabs to 4
+* Remove oneOf enum
+* Change maxItems to 2
+V3->V4:
+* Nothing done
+V4->V5:
+* Remove extra newline
+* Rename ccm to clock-controller
+* Change minItems to const
+* Change minItems to description
+* Rename file to add 1050
+* Change commit description to just 1050
+V5->V6:
+* Add maxItems for clocks description
+V6->V7:
+* Nothing done
+V7->V8:
+* Nothing done
+---
+ .../bindings/clock/imxrt1050-clock.yaml       | 67 +++++++++++++++++++
+ 1 file changed, 67 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/imxrt1050-clock.yaml
+
+diff --git a/Documentation/devicetree/bindings/clock/imxrt1050-clock.yaml b/Documentation/devicetree/bindings/clock/imxrt1050-clock.yaml
+new file mode 100644
+index 000000000000..35fd08c143f4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/imxrt1050-clock.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/imxrt1050-clock.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Clock bindings for Freescale i.MXRT
++
++maintainers:
++  - Giulio Benetti <giulio.benetti@benettiengineering.com>
++  - Jesse Taube <Mr.Bossman075@gmail.com>
++
++description: |
++  The clock consumer should specify the desired clock by having the clock
++  ID in its "clocks" phandle cell. See include/dt-bindings/clock/imxrt*-clock.h
++  for the full list of i.MXRT clock IDs.
++
++properties:
++  compatible:
++    const: fsl,imxrt1050-ccm
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 2
++
++  clocks:
++    description: 24m osc
++    maxItems: 1
++
++  clock-names:
++    const: osc
++
++  '#clock-cells':
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - '#clock-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/imxrt1050-clock.h>
++
++    clks: clock-controller@400fc000 {
++        compatible = "fsl,imxrt1050-ccm";
++        reg = <0x400fc000 0x4000>;
++        interrupts = <95>, <96>;
++        clocks = <&osc>;
++        clock-names = "osc";
++        #clock-cells = <1>;
++    };
++
++    lpuart1: serial@40184000 {
++        compatible = "fsl,imxrt1050-lpuart";
++        reg = <0x40184000 0x4000>;
++        interrupts = <20>;
++        clocks = <&clks IMXRT1050_CLK_LPUART1>;
++        clock-names = "ipg";
++    };
+-- 
+2.34.1
+
