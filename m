@@ -2,253 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACF4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10909C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348759AbiAKH5W (ORCPT
+        id S1348768AbiAKH7O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:57:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51420 "EHLO
+        Tue, 11 Jan 2022 02:59:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235827AbiAKH5T (ORCPT
+        with ESMTP id S235827AbiAKH7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:57:19 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B5EC061748;
-        Mon, 10 Jan 2022 23:57:18 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id s30so25453515lfo.7;
-        Mon, 10 Jan 2022 23:57:18 -0800 (PST)
+        Tue, 11 Jan 2022 02:59:13 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78843C06173F
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 23:59:12 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id br17so22129280lfb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 23:59:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LWyZT2KfS7vn2dLo/4rK0hRIU1bTIB9BhSt1xTZyjfs=;
-        b=o816YNn0CIDbCy7uwUkg0QIssuplfNYZWg1E7+kMoiU09fEhi1ExzqEDKdXYCKWai9
-         qL9GIVzs3SGnxKwGJEOsSM3dx9RhiXQOO+ArNyWLk+C6CEkyik9J0oiqnGoR0d0pIAj9
-         53smI6i/pfdhdE0TtmtHvyvhbPCgckL8+ELBFQn7KfvHLFewJSBKJEg5/OYThOUaKs30
-         YfS/REggk0oGjchlK3DJSLwWFv3g0lGM/Rxm4G3MobhsE5sy8EV2tAxeU17tchxilpyJ
-         Cm1nk2GkD8C8mwFhmX8oxyCwbcyhBHAvQH1mhnlt/pBPXM0S0279pLMAkDnMH4r8aI8U
-         4vGQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dNtpgItJBIUx2EsKxwE1qB9lXMXL7lSQrxOBWiGduBY=;
+        b=pbf6YpWeL4FRSePzvVTnQ1mPlJC9YYhEsysl24wHC8thv0FJEybikgqWhjqbbAhvnX
+         ccKMf+sdwlW7vrcc7q8UjKb4k2tr/rp3oshMReXm1RLT8Cz8oxh+fe9FU9xDX0o1OgJh
+         YwfH3yDGuAhZoFB0Z7PR2UQ5e5PkfLRMTnrtB+UcdbSzT8xZha5XFSFNoeLUf2ti65Fs
+         29SdQ2yxUKVuiyJukj+9GEsxPDoNLOmpqbYbUzoxbWNxn0sqKa6upTNuSG++0kspj4Sv
+         M143lbQGUS7D/G6ZpBgKEdk583/NKlACQ5AQvo5m34pmNOP66zxMMqQ6v8xzUspwhw++
+         YSKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LWyZT2KfS7vn2dLo/4rK0hRIU1bTIB9BhSt1xTZyjfs=;
-        b=WYIrbhWAC3gGrifEArtJGhYA3s00sCcyqYqiwH40w8lx3/C53v75dQN33oha+i95zn
-         GuewEqgMz0j8wuUGktv7X9scCpVOIgA3kzq6iXJqz8WnV56BaslcvUd2eYBMrznnG3Ln
-         2V5Xiv81/3GZy1P9WDWuIva1rMV/ptz571Y+df4g427qenjkA03jhGSS4ITZobHbpPtQ
-         ZpUEYvYVSivecCD5y+ix4Dkbrc/sj+/NAvrdWx/Vk2osM7mLonzzDxw/WlBXX4CuVae/
-         ucALdh6l1d4gTJ5BFTuBmHFcVjScTD/dQnvOu6kAIqXY+5EmO7cUzoxFt+OfJtgvhWaq
-         LrCg==
-X-Gm-Message-State: AOAM5324Z+uZwPt/blGoQASwOdFKw9eY8H1YQDeB4Gu7YZaSFm5eiw2/
-        L6DwHlSdJ+aVMCKBoxEW4TSKTVMFwvY=
-X-Google-Smtp-Source: ABdhPJwj4SWIivJF19fC8reHgAOesHmr0N4ouSyiTwjUsKFxuFFgsPk/HMJ5T5WGAATZ9pKSch9NEg==
-X-Received: by 2002:a05:651c:49a:: with SMTP id s26mr2063487ljc.109.1641887836867;
-        Mon, 10 Jan 2022 23:57:16 -0800 (PST)
-Received: from ?IPv6:2a00:1370:810c:714f:a10:76ff:fe69:21b6? ([2a00:1370:810c:714f:a10:76ff:fe69:21b6])
-        by smtp.googlemail.com with ESMTPSA id x14sm1206180ljd.76.2022.01.10.23.57.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 Jan 2022 23:57:16 -0800 (PST)
-Subject: Re: [PATCH v5 04/21] kernel: Add combined power-off+restart handler
- call chain API
-To:     =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
-Cc:     Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Joshua Thompson <funaho@jurai.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Santosh Shilimkar <ssantosh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>, alankao@andestech.com,
-        "K . C . Kuen-Chern Lin" <kclin@andestech.com>,
-        linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
-        linux-sh@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20211212210309.9851-1-digetx@gmail.com>
- <20211212210309.9851-5-digetx@gmail.com> <Ydofs2CIfA+r5KAz@qmqm.qmqm.pl>
-From:   Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <80f5a739-0850-a8db-7493-e8c387109ce0@gmail.com>
-Date:   Tue, 11 Jan 2022 10:57:13 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dNtpgItJBIUx2EsKxwE1qB9lXMXL7lSQrxOBWiGduBY=;
+        b=QBbjuzK1Ku6GOY68MJbBhZQkTrAo7ny3OSxs3Rxnh6kq8QrSeZ1zbX56WRZJcyUKUF
+         N3nLO0SmY4WTiLTPclgosN1nxVnURvGC3/zoif7x9CJ6951Po5Ztjv9xYuKK8mjywoz+
+         Yh5r93iTWJBcyVoPrEOrlYgvh5i3DaKwhWWWOIWoTlorJsY9W1HzPditecIRxwI3786n
+         bXpb60OFcVS26YTN5lKdac8Z/9638ZNzyYhBgu2473FAPDdBBrlvW91CK91pOwEpY9NX
+         y4GDyuiLm+Nb2NY0DAUdqmB+EeLAMnu0zSIFhxkRiHICwBN6jz5PwO/XH9RCvQGOrYUq
+         9I1w==
+X-Gm-Message-State: AOAM5321NRwm+bA88Lm37vpC5jpEGhAja6KAr5ifot3Nv/cOTEUcpUuP
+        UYX9m6TS8gdDZlBQ+GFm/igRU0MFTZnVJquxecGeTw==
+X-Google-Smtp-Source: ABdhPJzfMr+A0PhrHu2XGLs1czrc3XQJZqSUNm+6v7LuAcKg5sEjALBTASL5kjDeWPAuHdLeccdWlVvQ0rgjeC/DsfQ=
+X-Received: by 2002:a2e:968a:: with SMTP id q10mr2054360lji.381.1641887950719;
+ Mon, 10 Jan 2022 23:59:10 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <Ydofs2CIfA+r5KAz@qmqm.qmqm.pl>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20211211104324.95957-1-yangyicong@hisilicon.com>
+ <CAKfTPtCaxGhpGk348Q8jGcEA13Xv4VHS+nX0aW4C+ba5df_4Lw@mail.gmail.com>
+ <12315dc8-4b37-339d-3a41-f3a8b10344d7@huawei.com> <CAKfTPtCPRk+2L6wSHBpN-ewTX1Cj4U7a_m1itsSk9Yav-jE-9Q@mail.gmail.com>
+ <a8f0d13a-c2a5-d896-d655-846d373427b8@huawei.com>
+In-Reply-To: <a8f0d13a-c2a5-d896-d655-846d373427b8@huawei.com>
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+Date:   Tue, 11 Jan 2022 08:58:59 +0100
+Message-ID: <CAKfTPtA9WG=nEPdNKgYQzf-Us3-i5+h=+vFcMzaT0yZBmxFeaA@mail.gmail.com>
+Subject: Re: [PATCH] sched/fair: Track target domain's avg_scan_cost in select_idle_cpu
+To:     Yicong Yang <yangyicong@huawei.com>
+Cc:     yangyicong@hisilicon.com, peterz@infradead.org, mingo@redhat.com,
+        juri.lelli@redhat.com, mgorman@techsingularity.net,
+        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+        prime.zeng@huawei.com, linuxarm@huawei.com, 21cnbao@gmail.com,
+        "tiantao (H)" <tiantao6@hisilicon.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-09.01.2022 02:35, Michał Mirosław пишет:
-> On Mon, Dec 13, 2021 at 12:02:52AM +0300, Dmitry Osipenko wrote:
-> [...]
->> +/**
->> + * struct power_off_data - Power-off callback argument
->> + *
->> + * @cb_data: Callback data.
->> + */
->> +struct power_off_data {
->> +	void *cb_data;
->> +};
->> +
->> +/**
->> + * struct power_off_prep_data - Power-off preparation callback argument
->> + *
->> + * @cb_data: Callback data.
->> + */
->> +struct power_off_prep_data {
->> +	void *cb_data;
->> +};
-> 
-> Why two exactly same structures? Why only a single pointer instead? If
-> it just to enable type-checking callbacks, then thouse could be opaque
-> or zero-sized structs that would be embedded or casted away in
-> respective callbacks.
+On Thu, 6 Jan 2022 at 10:10, Yicong Yang <yangyicong@huawei.com> wrote:
+>
+> On 2022/1/4 22:18, Vincent Guittot wrote:
+> > On Thu, 23 Dec 2021 at 09:23, Yicong Yang <yangyicong@huawei.com> wrote:
+> >>
+> >> On 2021/12/22 18:47, Vincent Guittot wrote:
+> >>> On Sat, 11 Dec 2021 at 11:43, Yicong Yang <yangyicong@hisilicon.com> wrote:
+> >>>>
+> >>>> We regulate the LLC domain scan in select_idle_cpu() by comparing
+> >>>> the average scan cost of this_sd against the average idle time of
+> >>>> this_rq. This is correct when the domain to scan is the LLC domain
+> >>>> of this cpu. But when the domain to scan is different from this
+> >>>> LLC domain, we'll have an inaccurate estimation of the scan cost
+> >>>> on the target domain as this_sd->avg_scan_cost contains contributions
+> >>>> of scanning other domains besides the target domain.
+> >>>>
+> >>>> Track the avg_scan_cost of the target domain to make the estimation
+> >>>> more accurate.
+> >>>>
+> >>>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> >>>> ---
+> >>>>  kernel/sched/fair.c | 4 ++--
+> >>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>>
+> >>>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+> >>>> index 6e476f6d9435..6301740d98cb 100644
+> >>>> --- a/kernel/sched/fair.c
+> >>>> +++ b/kernel/sched/fair.c
+> >>>> @@ -6267,7 +6267,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+> >>>>                 }
+> >>>>
+> >>>>                 avg_idle = this_rq->wake_avg_idle;
+> >>>> -               avg_cost = this_sd->avg_scan_cost + 1;
+> >>>> +               avg_cost = sd->avg_scan_cost + 1;
+> >>>>
+> >>>>                 span_avg = sd->span_weight * avg_idle;
+> >>>>                 if (span_avg > 4*avg_cost)
+> >>>> @@ -6305,7 +6305,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+> >>>>                  */
+> >>>>                 this_rq->wake_avg_idle -= min(this_rq->wake_avg_idle, time);
+> >>>>
+> >>>> -               update_avg(&this_sd->avg_scan_cost, time);
+> >>>> +               update_avg(&sd->avg_scan_cost, time);
+> >>>
+> >>> But then you can have several cpus updating the same value simultaneously
+> >>>
+> >>
+> >> yes. sd->avg_scan_cost should includes the contributions of all the cpus scanned the sd.
+> >>
+> >> We regulated the scanning nr based on two things:
+> >> - avg_idle: to indicate how much time we can have for this time scanning
+> >> - avg_cost: to indicate how much time we'll spend for scanning the target domain based
+> >>             on the history cost
+> >>
+> >> Previously sd->avg_scan_cost may not reflect the cost as it count the scanning cost
+> >> on the domain of the scanner cpu, which may not be the domain the cpu scanned.
+> >> For example, cpu 0 on llc A scanned llc B and llc C, we'll count the cost of scanning B
+> >> and C on llc A's avg_scan_cost and we'll use this to estimate the cost for scanning
+> >> llc A, which is not accurate.
+> >
+> > I mean that you can now have several CPUs that will read, modify,
+> > write sd->avg_scan_cost simultaneously without any protection
+> >
+>
+> uh I misunderstood. not sure I've missed something, but looks like we also have this problem
+> when updating &this_sd->avg_scan_cost?
 
-Preparation and final execution are two different operations, it's much
-cleaner from a user's perspective to have same separated, IMO. In the
-future we may would want to extend one of the structs, and not the
-other. Type-checking is another benefit, of course.
+No because this_sd->avg_scan_cost is only used by the local cpu so you
+don't have several cpus trying to update it simultaneously.
 
-The single callback pointer is what is utilized by all current kernel
-users. This may change in the future and then it won't be a problem to
-extend the power-off API without disrupting whole kernel.
-
->> +
->> +/**
->> + * struct restart_data - Restart callback argument
->> + *
->> + * @cb_data: Callback data.
->> + * @cmd: Restart command string.
->> + * @stop_chain: Further lower priority callbacks won't be executed if set to
->> + *		true. Can be changed within callback. Default is false.
->> + * @mode: Reboot mode ID.
->> + */
->> +struct restart_data {
->> +	void *cb_data;
->> +	const char *cmd;
->> +	bool stop_chain;
->> +	enum reboot_mode mode;
->> +};
->> +
->> +/**
->> + * struct reboot_prep_data - Reboot and shutdown preparation callback argument
->> + *
->> + * @cb_data: Callback data.
->> + * @cmd: Restart command string.
->> + * @stop_chain: Further lower priority callbacks won't be executed if set to
->> + *		true. Can be changed within callback. Default is false.
-> 
-> Why would we want to stop power-off or erboot chain? If the callback
-> succeded, then further calls won't be made. If it doesn't succeed, but
-> possibly breaks the system somehow, it shouldn't return. Then the only
-> case left would be to just try the next method of shutting down.
-
-This is what some of the API users were doing for years. I don't know
-for sure why they want to stop the chain, it indeed looks like an
-incorrect behaviour, but that's up to developers to decide. I only
-retained the old behaviour for those users.
-
->> + * @mode: Preparation mode ID.
->> + */
->> +struct reboot_prep_data {
->> +	void *cb_data;
->> +	const char *cmd;
->> +	bool stop_chain;
->> +	enum reboot_prepare_mode mode;
->> +};
->> +
->> +struct sys_off_handler_private_data {
->> +	struct notifier_block power_off_nb;
->> +	struct notifier_block restart_nb;
->> +	struct notifier_block reboot_nb;
-> 
-> What's the difference between restart and reboot?
-
-Reboot is always executed before restart and power-off callbacks. This
-is explained in the doc-comment of the struct sys_off_handler.
-
-+ * @reboot_prepare_cb: Reboot/shutdown preparation callback. All reboot
-+ * preparation callbacks are invoked before @restart_cb or @power_off_cb,
-+ * depending on the mode. It's registered with register_reboot_notifier().
-+ * The point is to remove boilerplate code from drivers which use this
-+ * callback in conjunction with the restart/power-off callbacks.
-+ *
-
-This reboot callback usually performs early preparations that are need
-to be done before machine is placed into reset state, please see [1] for
-the examples.
-
-[1] https://elixir.bootlin.com/linux/v5.16/A/ident/register_reboot_notifier
-
-I agree that "reboot" sounds like a misnomer. This name was coined long
-time ago, perhaps not worth to rename it at this point. I'm also not
-sure what could be a better name.
-
->> +	void (*platform_power_off_cb)(void);
->> +	void (*simple_power_off_cb)(void *data);
->> +	void *simple_power_off_cb_data;
->> +	bool registered;
->> +};
-> 
-> BTW, I couldn't find a right description of my idea of unifying the
-> chains before, so let me sketch it now.
-> 
-> The idea is to have a single system-off chain in which the callback
-> gets a mode ({QUERY_*, PREP_*, DO_*} for each of {*_REBOOT, *_POWEROFF, ...?).
-> The QUERY_* calls would be made in can_kernel_reboot/poweroff(): all
-> would be called, and if at least one returned true, then the shutdown
-> mode would continue. All of PREP_* would be called then. After that
-> all DO_* would be tried until one doesn't return (succeeded or broke
-> the system hard). Classic for(;;); could be a final fallback for the
-> case where arch/machine (lowest priority) call would return instead
-> of halting the system in machine-dependent way. The QUERY and PREP
-> stages could be combined, but I haven't thought about it enough to
-> see what conditions would need to be imposed on the callbacks in
-> that case (maybe it's not worth the trouble, since it isn't a fast
-> path anyway?). The goal here is to have less (duplicated) code in
-> kernel, but otherwise it seems equivalent to your API proposal.
-
-Michał, thank you for the review and suggestions! I'll take another look
-at yours proposal during this merge window, in a preparation to v6.
+>
+> >>
+> >>>>         }
+> >>>>
+> >>>>         return idle_cpu;
+> >>>> --
+> >>>> 2.33.0
+> >>>>
+> >>> .
+> >>>
+> > .
+> >
