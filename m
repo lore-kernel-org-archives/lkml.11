@@ -2,283 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0157BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 00:16:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 533B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 00:17:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345868AbiAKAQb (ORCPT
+        id S1345865AbiAKAR5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 19:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57760 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345861AbiAKAQa (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 19:16:30 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED42C061751
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 16:16:30 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id rj2-20020a17090b3e8200b001b1944bad25so2662786pjb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 16:16:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:from:date:subject:to:cc;
-        bh=OKxY7uPjxFFlFQlDxYMxuTRCsaMzh8pPcJXmf3kY7ws=;
-        b=hY4dwUsHvwrRkYZMn0xRmsott38t8qinCfHVdwHg3VoG4STxrJnvbsJSyfCHz/pEQw
-         niCGazakcqMOBGHLHNmqT4LXgfx7CbDf0eGlrhPhIm+77Pxp1/gwNzOwWl3dQLV3+n3e
-         6IOJ4ArSXc/Yqfk3+aMay+YCqoUAU0K99rsM18XwdGMPKr8+5b+D71Buy/SGGPDKDRak
-         kDuC3TQ9Nt3u2C2utHUkU9QIhvn2086HuxYyJY0p3ndbkCvN+TXUO2w6vX60F/kxNTAi
-         64rgLG3zJL+0gXZsz22qzXTqYVn3huJjivdGUDM5LMT1tHueCbJBeK447Fx3GlaQlnXg
-         PfBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:from:date:subject:to:cc;
-        bh=OKxY7uPjxFFlFQlDxYMxuTRCsaMzh8pPcJXmf3kY7ws=;
-        b=nNcd6WiW2iBrBnWxPiYYM0K4ZD6b+QrIycIxiqXupGE1hIfaZ+qJck+wnDeJVEk2am
-         vvdkB9o7BOyHnvacFAZYcTaR5pIByYu+5uWjV9YJG8GmY3lAgfyWOE9OHddcS8SmeWjw
-         lzFU/GsfGEz8hM01JOYt/BRsIcrChKK7vwQebwms6xm2busq7FX9L+PEf40mnIVBz/6O
-         t6OY4LVi92UJFEI9kP39ElAuPaX85cIh/AF+Ky/p3iRMNSQnlEsW+FBsUv6PwSHPtZAU
-         3NPbBBCpthymAUSLoLTdJbnDIFRC37P5vkLzENDCycEVwj04Fz2/x6U+xzhvt9zbnbhw
-         27JQ==
-X-Gm-Message-State: AOAM533Z0ARfycjvhDIwDj+6bUv+tTiW9qG3GekBxZZk791jcwVg7Btz
-        FiAlLPZR9J/jOFw3yqD3wn9w8w==
-X-Google-Smtp-Source: ABdhPJxZYag+tChJzGuDNCxkXzKJDJIn9XS0QQrdsSJ3hlk7bhBKwxuYiWEEEsEBqv5Qpk6gUbU1tg==
-X-Received: by 2002:a63:a619:: with SMTP id t25mr1907796pge.235.1641860188853;
-        Mon, 10 Jan 2022 16:16:28 -0800 (PST)
-Received: from localhost ([121.99.145.49])
-        by smtp.gmail.com with ESMTPSA id w4sm169662pjq.7.2022.01.10.16.16.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Jan 2022 16:16:28 -0800 (PST)
-Message-ID: <61dccc5c.1c69fb81.9af91.0df6@mx.google.com>
-From:   Daniel Beer <daniel.beer@igorinstitute.com>
-Date:   Tue, 11 Jan 2022 13:00:09 +1300
-Subject: [PATCH 2/2] ASoC: dt-bindings: add bindings for TI TAS5805M.
-To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Andy Liu <andy-liu@ti.com>,
-        Daniel Beer <daniel.beer@igorinstitute.com>,
-        Derek Simkowiak <derek.simkowiak@igorinstitute.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
+        Mon, 10 Jan 2022 19:17:57 -0500
+Received: from mail-dm6nam11on2059.outbound.protection.outlook.com ([40.107.223.59]:29665
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1345849AbiAKARy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 19:17:54 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fYSzzcu9r2eYKNs2dAxsY9qeztOLE0akvsvdpuoxf5uVQ4NiIagAvjpSq1FUQNwA4LN9r+nndvyI0Y2gREK7D8dKeD5dgJjUgMWGnU5Hhmw1rvTtlBwIOCOH065xOfTJ6QCPNPr2fJ4nFx+jHfqBphOmuyidS+96Z14gXNUHRjHzR/0qZlpSBkq5ecRzK0sDZAc+JZMau1CliT8P50GYGH8j3FxpoKwG7CblM6vJsLP4/Fc7t3TeIgX8agDsTCI84/k4HVJxh5Kp71ah6C7Ymwkk1dPXYC4PtI430s1KpD2wUucaKAYskTpwihp5vqMeK250D+AqYrcDhqoX0LJtBg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3MUCI11mOLwo/tYd0941ecqziC+8FoTVfhL59UDjUjE=;
+ b=VUPODcHgaC+Ufxgw0RRclQ3BUk0XRE6TELj6Iehe6l7jsNRXr8YnyP2LX8BqWuR6aHSIGESU3NypdQ5Zklyk9dbvPjSvL+MzXmqD1QgES1sTd6X+97iSznBY8U2d7Yrs9gqBoW7jd6fVb7cXatDTzV9rQyJ0V9rU5XOCr/iicJxT+xPYeKRZribopX/THu033u7uuMaTy+KQeHu2lrv31aIkX1pMWIzZQNcZ3m1ONilqTKV91Sez3F6zOOOLsc2TNYle9htvC7smJf5LmvL27uoC7jXLYfiNyDkYfjCalgWhjNUaMcNaahzo5B3umdM4nCDVDcL+kNiuu/+ADOagcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3MUCI11mOLwo/tYd0941ecqziC+8FoTVfhL59UDjUjE=;
+ b=MDAFOsrn8cAmgOfUMbmSboUL+ORZ2Ba8DKIdfwo9B5rNxW16UWDi3oywXdDO6FY8zu371iMtaDl6ND7VidguUI+FDFNV5dsQkk27Z8W89UnlCPA+dbklXEKiLi6biWBCwObdwTCUYbfjfQbUSbl65c+YQnT1pRtzSNwyIKApHgCP00qyoL530u0AERg5+MjAJZXMchXddtck548MlqCq7tuJZkvTAGbYYeVp0eJXt7TjfbbCW1wsO/qORq6/KCMqT6DRCgat+Mvdm6YNQuDBAe3Sc6CImCzJDqIqPA6e6EtC2v/W0YkhRV/1ffsFGILxda3pkBu4PB5dxWJYPgljpg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5253.namprd12.prod.outlook.com (2603:10b6:208:30b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Tue, 11 Jan
+ 2022 00:17:52 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::464:eb3d:1fde:e6af]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::464:eb3d:1fde:e6af%5]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
+ 00:17:52 +0000
+Date:   Mon, 10 Jan 2022 20:17:51 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Daniel Jordan <daniel.m.jordan@oracle.com>
+Cc:     Alexander Duyck <alexanderduyck@fb.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Segall <bsegall@google.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ingo Molnar <mingo@redhat.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Michal Hocko <mhocko@suse.com>, Nico Pache <npache@redhat.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Steve Sistare <steven.sistare@oracle.com>,
+        Tejun Heo <tj@kernel.org>,
+        Tim Chen <tim.c.chen@linux.intel.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        linux-mm@kvack.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [RFC 00/16] padata, vfio, sched: Multithreaded VFIO page pinning
+Message-ID: <20220111001751.GI2328285@nvidia.com>
+References: <20220106004656.126790-1-daniel.m.jordan@oracle.com>
+ <20220106011306.GY2328285@nvidia.com>
+ <20220107030330.2kcpekbtxn7xmsth@oracle.com>
+ <20220107171248.GU2328285@nvidia.com>
+ <20220110222725.paug7n5oznicceck@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220110222725.paug7n5oznicceck@oracle.com>
+X-ClientProxiedBy: BL0PR0102CA0033.prod.exchangelabs.com
+ (2603:10b6:207:18::46) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 103632ad-5eea-445e-f0ed-08d9d497ce92
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5253:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52538D28AB11D68FA67DE1ECC2519@BL1PR12MB5253.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WkW8varw/EAnTjfDndElbk2K+ZxDKFXDWjgtMDniq8N49AMcltwitwglha/SkdYitu4kDY/SDi2mNY+oH4lgyeA+ZEanoME0U0xocRPKW7kqFZ6vlYt8AShpa2oeNb9BibElHD4Mdnj0c1WU1gdI6G6vm4HRKy4zR+BCGwvCgtinaatRbZul4+k8yekGpDaHO94vmnPAvBePIeEO/0BNSEt1ubKRVSOFArMU/nnRwfMfM+Oa3h4MzA9zcdvJuH0cAiguIVTs/MOAX7/AfNuiA2ilpKmD5mc49UCHf6DXTQCraGPryqX0n33WNfZbZ9sahHBpXBAA4jOV2pIADzDhhj0ufe1bXl+EJMDMXKXz05Sz2hlQU79xYZvLCR/GItdjZfTxt3hVvKgEiyErc0ttFr5M6scvdpGAt/vOTmR5GSDo9BPGQwBY2nYB4aFzIHkAWS1kTLyuXqp03ybm+mI4hZ1Jy8nSZATw3CY+CsoOsshZ3UVwBKCixa3SFSV64G6DzITcd2VkQ3vfBlJWu8dRl+nTn/lotn5RQPfgTFEAqgxB0NZySe9GwG4fl9G9fHT+0TK++aSdTuOzTGWgrmDdXzgIydISIGQM6tjWnDflh8a25UEoYLSN40FV2fGvrebTRBpjsbYHHh2PR77gS9KxQg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR12MB5506.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(36756003)(2616005)(6512007)(4326008)(83380400001)(54906003)(5660300002)(66946007)(6486002)(38100700002)(6916009)(6506007)(7416002)(66556008)(26005)(66476007)(33656002)(1076003)(8676002)(2906002)(8936002)(186003)(86362001)(508600001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L2kowSqlbhxAZkHbbWGM19fnUS33taYHCAdd6nSRHCqCsU4R1ym0PuVDW7ep?=
+ =?us-ascii?Q?tSTJ3ihc6nYHn9usOOlBA8aTfD2nft5pmMRZdBYcsWtSGh/rVkiR/gNHsbe+?=
+ =?us-ascii?Q?hLb/FPmLFRR0P7INRtauYkt6TtORfNdgBb/UCvXNCLHHDn5JBILhmIPEtJC/?=
+ =?us-ascii?Q?psjfhnAdVJ5/NEVmR0pSiXRsKgTHbILz2itAjw+/j9hBEkTO9klzuh0faPlu?=
+ =?us-ascii?Q?dk4hgCm/rLO4WUEnX4SqgQvgY8xgz/zxkdjkT3qb9cx+Og2OZCpgPfJiXaof?=
+ =?us-ascii?Q?QdYtwA22xLT0MWsNWglcA1IXHOUsHlOOfS8nxg1bPk/oTK27/bcQmT+Ca57s?=
+ =?us-ascii?Q?WRY6kp0x0BZcfE3450C96vfR5RdafSN6D0eedH9FEf0WB7FV5Ws8Rs7m5Qia?=
+ =?us-ascii?Q?cEdKsS3WS36AGmuoJQzFXZQJ7D5zOAfhRZKm5L9hbAGk8HhKaZVtOajGx/Ur?=
+ =?us-ascii?Q?75RIl4XSzjQLui/bmjBWp0pNOQI2jeDBXRQFHL7lJDgFEM9IarEnlVNfbxFA?=
+ =?us-ascii?Q?Hsq6qHxHD7e2sh3qiaEjmybA6SQ0e03yJ0Xc75/nTiLFrMKwKjX32E0d7gCe?=
+ =?us-ascii?Q?kYLyfHPGworuPtWiIuj/ISoYF/fkm2tiy7T/xg8LZbSgHRV2vHY5jzu74gfH?=
+ =?us-ascii?Q?L4XBZwwBlpwULCt6OYJdU3CMWfdrKD7/PP+eTICjmHrrPvLkWZT/RkdJI9YY?=
+ =?us-ascii?Q?THr/Z0YGBEbYbiOQeiQCQMrC6co1heR2f2ZOFwhkOJBhxxXsKkRCEEUUI/Al?=
+ =?us-ascii?Q?HKhHmk75NiGWj0qVzajmNKXatYC+FUv2u5Rb9uE5QpIMVBXRyokPfpD44no8?=
+ =?us-ascii?Q?cmXfKOlEv7UMBE5es5jAYgQ843HOpMubfVh7FXKdma22Cz5VLDonMkGIUQfA?=
+ =?us-ascii?Q?pmynFDj53Vdk96k0afeVFbWBIl3kFl7b3zKOgiAkmV28Y66vcbL0JqCKrO8/?=
+ =?us-ascii?Q?lZTnT5vnEeqEK2AA/U+EMUhJzheCe4+VDFzv23QStzJjIsOD5zJVC8hf7uz/?=
+ =?us-ascii?Q?6VMaTR5XN8OeaOrL/VLqvALTmLzMY/VZbHW8cf//w8rynwpciJ4/MLnHuhxN?=
+ =?us-ascii?Q?fXbGjLcXUrox9HqSw/NFt+yNx6Lb6rm2Auvnj+nkgQoi3cjGiCr/GLyMyBSi?=
+ =?us-ascii?Q?b25uWPLHTtuF6aXgltHRXdwd6L9d01JfKwTu1TB6l7fAd8kfBmFqSHL5QRfL?=
+ =?us-ascii?Q?WdH8LqSFGQQBeF5PmZbqRkR9c06X32Ib8CKEVYg2F/guRwAnirS60IvaBv02?=
+ =?us-ascii?Q?DJZfAsHgqpn8QQhMoHGLzkpx71OcyNxinDWnWUWR5ijwIiwb+yzTly0HTgpN?=
+ =?us-ascii?Q?x3JzF3xA4H1NcW3a8xXAfk0bb4TJ1eboaPk1zK1wmP2bUeYS7Qmd+/mnZ/UI?=
+ =?us-ascii?Q?7F5pwmv1LvBv8DQPyH4t9/PQwn8lFaiO6N+Dt9At9H3KjJKVKCmrlF42qfR8?=
+ =?us-ascii?Q?xVFIm8MAB2NZA4kzt4J9OtGXD9UyjpqaXCbYbiODxeM+ROjjExhBq11mxGuO?=
+ =?us-ascii?Q?kMFW4BzDUr8Q0pTcFMdJNQuU3JhndAf5eR9NcvDL7h78IglbOsE9w+7aIrit?=
+ =?us-ascii?Q?SQQ3IDvZ3BhyfQSU9fA=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 103632ad-5eea-445e-f0ed-08d9d497ce92
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 00:17:52.2084
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 036OsMzFCHOHyNo+4uNyxhqFLNH2xjHDbxlglId9cGmHPcYslfLa2BuVD59lTXDZ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5253
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TAS5805M is a class D speaker amplifier with integrated DSP. The
-example here includes a tested flat configuration for mono (PBTL)
-output.
+On Mon, Jan 10, 2022 at 05:27:25PM -0500, Daniel Jordan wrote:
 
-Signed-off-by: Daniel Beer <daniel.beer@igorinstitute.com>
----
- .../devicetree/bindings/sound/tas5805m.yaml   | 201 ++++++++++++++++++
- 1 file changed, 201 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/tas5805m.yaml
+> > > Pinning itself, the only thing being optimized, improves 8.5x in that
+> > > experiment, bringing the time from 1.8 seconds to .2 seconds.  That's a
+> > > significant savings IMHO
+> > 
+> > And here is where I suspect we'd get similar results from folio's
+> > based on the unpin performance uplift we already saw.
+> > 
+> > As long as PUP doesn't have to COW its work is largely proportional to
+> > the number of struct pages it processes, so we should be expecting an
+> > upper limit of 512x gains on the PUP alone with foliation.
+> >
+> > This is in line with what we saw with the prior unpin work.
+> 
+> "in line with what we saw"  Not following.  The unpin work had two
+> optimizations, I think, 4.5x and 3.5x which together give 16x.  Why is
+> that in line with the potential gains from pup?
 
-diff --git a/Documentation/devicetree/bindings/sound/tas5805m.yaml b/Documentation/devicetree/bindings/sound/tas5805m.yaml
-new file mode 100644
-index 000000000000..162008e6a1ed
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/tas5805m.yaml
-@@ -0,0 +1,201 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/tas5805m.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TAS5805M audio amplifier
-+
-+maintainers:
-+  - Daniel Beer <daniel.beer@igorinstitute.com>
-+
-+description: |
-+  The TAS5805M is a class D audio amplifier with a built-in DSP.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,tas5805m
-+
-+  reg:
-+    maxItems: 1
-+    description: |
-+      I2C address of the amplifier. See the datasheet for possible values.
-+
-+  pvdd-supply:
-+    description: |
-+      Regulator for audio power supply (PVDD in the datasheet).
-+
-+  pdn-gpio:
-+    description: |
-+      Power-down control GPIO (PDN pin in the datasheet).
-+
-+  ti,dsp-config: |
-+    description: |
-+      A byte sequence giving DSP configuration. Each pair of bytes, in
-+      sequence, gives a register address and a value to write. If you
-+      are taking this data from TI's PPC3 tool, this should contain only
-+      the register writes following the 5ms delay.
-+
-+examples:
-+  - |
-+    i2c0 {
-+    	#address-cells = <1>;
-+	#size-cells = <0>;
-+	tas5805m: tas5805m@2c {
-+		reg = <0x2c>;
-+		compatible = "ti,tas5805m";
-+		status = "ok";
-+
-+		pvdd-supply = <&audiopwr>;
-+		pdn-gpio = <&tlmm 160 0>;
-+
-+		// Mono PBTL DSP configuration
-+		ti,dsp-config = [
-+			00 00 7f 00 03 00 00 00 7f 00 46 01 00 00 7f 00
-+			03 02 00 00 7f 00 78 80 00 00 7f 00 61 0b 60 01
-+			7d 11 7e ff 00 01 51 05 00 00 02 04 53 00 54 00
-+			00 00 00 00 00 00 00 00 00 00 7f 00 66 87 7f 8c
-+			00 29 18 00 19 40 1a 26 1b e7 1c 00 1d 40 1e 26
-+			1f e7 20 00 21 00 22 00 23 00 24 00 25 00 26 00
-+			27 00 00 2a 24 00 25 80 26 00 27 00 28 00 29 80
-+			2a 00 2b 00 30 00 31 71 32 94 33 9a 00 2c 0c 00
-+			0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00 14 00
-+			15 80 16 00 17 00 18 00 19 00 1a 00 1b 00 1c 00
-+			1d 80 1e 00 1f 00 20 00 21 00 22 00 23 00 28 00
-+			29 80 2a 00 2b 00 2c 00 2d 00 2e 00 2f 00 34 00
-+			35 80 36 00 37 00 38 00 39 00 3a 00 3b 00 48 00
-+			49 80 4a 00 4b 00 4c 00 4d 00 4e 00 4f 00 5c 00
-+			5d 00 5e 57 5f 62 60 00 61 89 62 37 63 4c 64 08
-+			65 13 66 85 67 62 68 40 69 00 6a 00 6b 00 6c 02
-+			6d 66 6e c4 6f 1b 74 00 75 80 76 00 77 00 00 2d
-+			18 7d 19 99 1a 3b 1b e5 1c 00 1d 00 1e 57 1f 62
-+			20 00 21 00 22 00 23 00 24 00 25 00 26 00 27 00
-+			28 00 29 00 2a 00 2b 00 2c 00 2d 80 2e 00 2f 00
-+			00 2e 24 11 25 3d 26 c3 27 1a 00 00 7f aa 00 24
-+			18 08 19 00 1a 00 1b 00 1c 00 1d 00 1e 00 1f 00
-+			20 00 21 00 22 00 23 00 24 00 25 00 26 00 27 00
-+			28 00 29 00 2a 00 2b 00 2c 08 2d 00 2e 00 2f 00
-+			30 00 31 00 32 00 33 00 34 00 35 00 36 00 37 00
-+			38 00 39 00 3a 00 3b 00 3c 00 3d 00 3e 00 3f 00
-+			40 08 41 00 42 00 43 00 44 00 45 00 46 00 47 00
-+			48 00 49 00 4a 00 4b 00 4c 00 4d 00 4e 00 4f 00
-+			50 00 51 00 52 00 53 00 54 08 55 00 56 00 57 00
-+			58 00 59 00 5a 00 5b 00 5c 00 5d 00 5e 00 5f 00
-+			60 00 61 00 62 00 63 00 64 00 65 00 66 00 67 00
-+			68 08 69 00 6a 00 6b 00 6c 00 6d 00 6e 00 6f 00
-+			70 00 71 00 72 00 73 00 74 00 75 00 76 00 77 00
-+			78 00 79 00 7a 00 7b 00 7c 08 7d 00 7e 00 7f 00
-+			00 25 08 00 09 00 0a 00 0b 00 0c 00 0d 00 0e 00
-+			0f 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00
-+			17 00 18 08 19 00 1a 00 1b 00 1c 00 1d 00 1e 00
-+			1f 00 20 00 21 00 22 00 23 00 24 00 25 00 26 00
-+			27 00 28 00 29 00 2a 00 2b 00 2c 08 2d 00 2e 00
-+			2f 00 30 00 31 00 32 00 33 00 34 00 35 00 36 00
-+			37 00 38 00 39 00 3a 00 3b 00 3c 00 3d 00 3e 00
-+			3f 00 40 08 41 00 42 00 43 00 44 00 45 00 46 00
-+			47 00 48 00 49 00 4a 00 4b 00 4c 00 4d 00 4e 00
-+			4f 00 50 00 51 00 52 00 53 00 54 08 55 00 56 00
-+			57 00 58 00 59 00 5a 00 5b 00 5c 00 5d 00 5e 00
-+			5f 00 60 00 61 00 62 00 63 00 64 00 65 00 66 00
-+			67 00 68 08 69 00 6a 00 6b 00 6c 00 6d 00 6e 00
-+			6f 00 70 00 71 00 72 00 73 00 74 00 75 00 76 00
-+			77 00 78 00 79 00 7a 00 7b 00 7c 08 7d 00 7e 00
-+			7f 00 00 26 08 00 09 00 0a 00 0b 00 0c 00 0d 00
-+			0e 00 0f 00 10 00 11 00 12 00 13 00 14 00 15 00
-+			16 00 17 00 18 08 19 00 1a 00 1b 00 1c 00 1d 00
-+			1e 00 1f 00 20 00 21 00 22 00 23 00 24 00 25 00
-+			26 00 27 00 28 00 29 00 2a 00 2b 00 2c 08 2d 00
-+			2e 00 2f 00 30 00 31 00 32 00 33 00 34 00 35 00
-+			36 00 37 00 38 00 39 00 3a 00 3b 00 3c 00 3d 00
-+			3e 00 3f 00 40 08 41 00 42 00 43 00 44 00 45 00
-+			46 00 47 00 48 00 49 00 4a 00 4b 00 4c 00 4d 00
-+			4e 00 4f 00 50 00 51 00 52 00 53 00 54 08 55 00
-+			56 00 57 00 58 00 59 00 5a 00 5b 00 5c 00 5d 00
-+			5e 00 5f 00 60 00 61 00 62 00 63 00 64 00 65 00
-+			66 00 67 00 68 08 69 00 6a 00 6b 00 6c 00 6d 00
-+			6e 00 6f 00 70 00 71 00 72 00 73 00 74 00 75 00
-+			76 00 77 00 78 00 79 00 7a 00 7b 00 7c 08 7d 00
-+			7e 00 7f 00 00 27 08 00 09 00 0a 00 0b 00 0c 00
-+			0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00 14 00
-+			15 00 16 00 17 00 18 08 19 00 1a 00 1b 00 1c 00
-+			1d 00 1e 00 1f 00 20 00 21 00 22 00 23 00 24 00
-+			25 00 26 00 27 00 28 00 29 00 2a 00 2b 00 2c 08
-+			2d 00 2e 00 2f 00 30 00 31 00 32 00 33 00 34 00
-+			35 00 36 00 37 00 38 00 39 00 3a 00 3b 00 3c 00
-+			3d 00 3e 00 3f 00 40 08 41 00 42 00 43 00 44 00
-+			45 00 46 00 47 00 48 00 49 00 4a 00 4b 00 4c 00
-+			4d 00 4e 00 4f 00 50 00 51 00 52 00 53 00 54 08
-+			55 00 56 00 57 00 58 00 59 00 5a 00 5b 00 5c 00
-+			5d 00 5e 00 5f 00 60 00 61 00 62 00 63 00 64 00
-+			65 00 66 00 67 00 68 08 69 00 6a 00 6b 00 6c 00
-+			6d 00 6e 00 6f 00 70 00 71 00 72 00 73 00 74 00
-+			75 00 76 00 77 00 78 00 79 00 7a 00 7b 00 7c 08
-+			7d 00 7e 00 7f 00 00 28 08 00 09 00 0a 00 0b 00
-+			0c 00 0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00
-+			14 00 15 00 16 00 17 00 18 08 19 00 1a 00 1b 00
-+			1c 00 1d 00 1e 00 1f 00 20 00 21 00 22 00 23 00
-+			24 00 25 00 26 00 27 00 28 00 29 00 2a 00 2b 00
-+			2c 08 2d 00 2e 00 2f 00 30 00 31 00 32 00 33 00
-+			34 00 35 00 36 00 37 00 38 00 39 00 3a 00 3b 00
-+			3c 00 3d 00 3e 00 3f 00 40 08 41 00 42 00 43 00
-+			44 00 45 00 46 00 47 00 48 00 49 00 4a 00 4b 00
-+			4c 00 4d 00 4e 00 4f 00 50 00 51 00 52 00 53 00
-+			54 08 55 00 56 00 57 00 58 00 59 00 5a 00 5b 00
-+			5c 00 5d 00 5e 00 5f 00 60 00 61 00 62 00 63 00
-+			64 00 65 00 66 00 67 00 68 08 69 00 6a 00 6b 00
-+			6c 00 6d 00 6e 00 6f 00 70 00 71 00 72 00 73 00
-+			74 00 75 00 76 00 77 00 78 00 79 00 7a 00 7b 00
-+			7c 08 7d 00 7e 00 7f 00 00 29 08 00 09 00 0a 00
-+			0b 00 0c 00 0d 00 0e 00 0f 00 10 00 11 00 12 00
-+			13 00 14 00 15 00 16 00 17 00 00 2e 7c 08 7d 00
-+			7e 00 7f 00 00 2f 08 00 09 00 0a 00 0b 00 0c 00
-+			0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00 14 00
-+			15 00 16 00 17 00 1c 08 1d 00 1e 00 1f 00 20 00
-+			21 00 22 00 23 00 24 00 25 00 26 00 27 00 28 00
-+			29 00 2a 00 2b 00 2c 00 2d 00 2e 00 2f 00 00 2a
-+			48 00 49 01 4a 64 4b 0a 4c 00 4d 01 4e 64 4f 0a
-+			50 00 51 01 52 64 53 0a 54 7e 55 d0 56 b5 57 2d
-+			58 82 59 59 5a 05 5b 7b 00 00 7f 8c 00 2b 34 00
-+			35 0d 36 a6 37 86 38 00 39 0d 3a a6 3b 86 3c 00
-+			3d 06 3e d3 3f 72 40 00 41 00 42 00 43 00 44 00
-+			45 00 46 00 47 00 48 ff 49 81 4a 47 4b ae 4c f9
-+			4d 06 4e 21 4f a9 50 fe 51 01 52 c0 53 79 54 00
-+			55 00 56 00 57 00 58 00 59 00 5a 00 5b 00 00 2d
-+			58 01 59 53 5a 8f 5b cc 5c 01 5d 53 5e 8f 5f cc
-+			60 00 61 22 62 1d 63 95 64 00 65 00 66 00 67 00
-+			68 00 69 00 6a 00 6b 00 6c ff 6d 81 6e 47 6f ae
-+			70 f9 71 06 72 21 73 a9 74 fe 75 01 76 c0 77 79
-+			78 00 79 00 7a 00 7b 00 7c 00 7d 00 7e 00 7f 00
-+			00 00 7f aa 00 2e 40 01 41 d7 42 e8 43 0a 44 01
-+			45 d7 46 e8 47 0a 48 01 49 d7 4a e8 4b 0a 4c 68
-+			4d 82 4e f5 4f bf 50 a7 51 9a 52 74 53 5a 00 2b
-+			20 6a 21 5a 22 dd 23 c9 24 95 25 a5 26 22 27 37
-+			28 6a 29 5a 2a dd 2b c9 2c 68 2d 82 2e f5 2f bf
-+			30 a7 31 9a 32 74 33 5a 0c 6a 0d 5a 0e dd 0f c9
-+			10 95 11 a5 12 22 13 37 14 6a 15 5a 16 dd 17 c9
-+			18 68 19 82 1a f5 1b bf 1c a7 1d 9a 1e 74 1f 5a
-+			00 2a 34 00 35 01 36 64 37 0a 38 00 39 01 3a 64
-+			3b 0a 3c 00 3d 01 3e 64 3f 0a 40 7e 41 d0 42 b5
-+			43 2d 44 82 45 59 46 05 47 7b 00 00 7f 8c 00 2d
-+			30 01 31 53 32 8f 33 cc 34 01 35 53 36 8f 37 cc
-+			38 00 39 03 3a 69 3b c5 3c 00 3d 00 3e 00 3f 00
-+			40 00 41 00 42 00 43 00 44 ff 45 81 46 47 47 ae
-+			48 f9 49 06 4a 21 4b a9 4c fe 4d 01 4e c0 4f 79
-+			50 00 51 00 52 00 53 00 54 00 55 00 56 00 57 00
-+			00 00 7f aa 00 2a 5c 7e 5d d2 5e 19 5f 37 60 81
-+			61 2d 62 e6 63 c9 64 7e 65 d2 66 19 67 37 68 7e
-+			69 d0 6a b5 6b 2d 6c 82 6d 59 6e 05 6f 7b 70 7e
-+			71 d2 72 19 73 37 74 81 75 2d 76 e6 77 c9 78 7e
-+			79 d2 7a 19 7b 37 7c 7e 7d d0 7e b5 7f 2d 00 2b
-+			08 82 09 59 0a 05 0b 7b 00 2e 54 01 55 d7 56 e8
-+			57 0a 58 01 59 d7 5a e8 5b 0a 5c 01 5d d7 5e e8
-+			5f 0a 60 68 61 82 62 f5 63 bf 64 a7 65 9a 66 74
-+			67 5a 00 00 7f 8c 00 2e 10 00 11 80 12 00 13 00
-+			0c 00 0d 80 0e 00 0f 00 08 00 09 80 0a 00 0b 00
-+			18 00 19 80 1a 00 1b 00 1c 40 1d 00 1e 00 1f 00
-+			20 40 21 00 22 00 23 00 00 00 7f 00 30 00 4c 30
-+			03 03 00 00 7f 00 78 80
-+		];
-+	};
-+    };
--- 
-2.30.2
+It is the same basic issue, doing extra work, dirtying extra memory..
 
+> > and completely dwarfed by the populate overhead?
+> 
+> Well yes, but here we all are optimizing gup anyway :-)
+
+Well, I assume because we can user thread the populate, so I'd user
+thread the gup too..
+
+> One of my assumptions was that doing this in the kernel would benefit
+> all vfio users, avoiding duplicating the same sort of multithreading
+> logic across applications, including ones that didn't prefault.
+
+I don't know of other users that use such huge memory sizes this would
+matter, besides a VMM..
+
+> My assumption going into this series was that multithreading VFIO page
+> pinning in the kernel was a viable way forward given the positive
+> feedback I got from the VFIO maintainer last time I posted this, which
+> was admittedly a while ago, and I've since been focused on the other
+> parts of this series rather than what's been happening in the mm lately.
+> Anyway, your arguments are reasonable, so I'll go take a look at some of
+> these optimizations and see where I get.
+
+Well, it is not *unreasonable* it just doesn't seem compelling to me
+yet.
+
+Especially since we are not anywhere close to the limit of single
+threaded performance. Aside from GUP, the whole way we transfer the
+physical pages into the iommu is just begging for optimizations
+eg Matthew's struct phyr needs to be an input and output at the iommu
+layer to make this code really happy.
+
+How much time do we burn messing around in redundant iommu layer
+locking because everything is page at a time?
+
+Jason
