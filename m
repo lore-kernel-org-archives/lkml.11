@@ -2,192 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B89C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 11:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6146AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 11:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238441AbiAKLLb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 06:11:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238050AbiAKLLa (ORCPT
+        id S238587AbiAKLNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 06:13:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36632 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238339AbiAKLNe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 06:11:30 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2249C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 03:11:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=RDA47QM+2pERloyeRR1YQ4763c2uWo7jObsPU122iPw=; b=Oqk20XY2o6SZQT2gu4wvCwu3wT
-        IcivEEyKNwLx4WHL2l54KAx62rW1ozZxikYFLoQ6XijBZ/Mdtr7I7qcWQ5jCA4atvRhpcM2eI/PMw
-        5O3BPNDRumv7aNb3ECX05P5vyUR43QCkCXCTa+/D4/Bg5mqOS3qfUDwHFfScCnYjc6Jec8gkC8Sap
-        lE6M/PPJQxnCuIwc1/4D1XsGgtLEuegvTI5BPPWqeJhyDUqM9vOvyFsaqi814OiHQc7kK2UH/HOjh
-        wEPu2nFi16HZCL2P5gr3lD+Uu1rKmjNfy0zCvy78ckA6ftR+8tz3qr/HKn13vq4SULhRq5e9Yby19
-        KDHQrHIQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7F3c-000b4n-Lc; Tue, 11 Jan 2022 11:11:16 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 74FE3300079;
-        Tue, 11 Jan 2022 12:11:14 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1CBF120280BD8; Tue, 11 Jan 2022 12:11:14 +0100 (CET)
-Date:   Tue, 11 Jan 2022 12:11:14 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        lkp@lists.01.org, lkp@intel.com
-Subject: Re: [x86/entry_32]  aa93e2ad74:
- BUG:soft_lockup-CPU##stuck_for#s![systemd-logind:#]
-Message-ID: <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
-References: <20220106083523.GB32167@xsang-OptiPlex-9020>
+        Tue, 11 Jan 2022 06:13:34 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39DF761596;
+        Tue, 11 Jan 2022 11:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3CA4C36AE3;
+        Tue, 11 Jan 2022 11:13:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1641899613;
+        bh=RusBdLJOhe3F0aFWMDF9tfb7pW5/3dAGW6uBUol0si8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=szf2W6SMe/VUssn1AMG+38/z7ptbdg494uvhrrAMsLUEZILBmeX2qddyYtS8b5NJ6
+         yWMpzhwHbHEF4FCHJ2CRDYfUB/O1og1sfjwH3thRAwPTKEKQu5l/EVgSEQVjZqGg5B
+         bzZtZHybNRrtri/gjLIXi2vp+m9+/NKvbuCrzjVE=
+Date:   Tue, 11 Jan 2022 12:13:30 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Pawel Laszczak <pawell@cadence.com>
+Cc:     "peter.chen@kernel.org" <peter.chen@kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] usb: cdnsp: remove not used variables
+Message-ID: <Yd1mWgwk/PKJkZSo@kroah.com>
+References: <20220111085934.44844-1-pawell@gli-login.cadence.com>
+ <Yd1KBiRB/ByZ2Kx1@kroah.com>
+ <BYAPR07MB53811E109250D3D9C6447847DD519@BYAPR07MB5381.namprd07.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220106083523.GB32167@xsang-OptiPlex-9020>
+In-Reply-To: <BYAPR07MB53811E109250D3D9C6447847DD519@BYAPR07MB5381.namprd07.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 04:35:23PM +0800, kernel test robot wrote:
+On Tue, Jan 11, 2022 at 10:38:53AM +0000, Pawel Laszczak wrote:
+> >
+> >On Tue, Jan 11, 2022 at 09:59:34AM +0100, Pawel Laszczak wrote:
+> >> From: Pawel Laszczak <pawell@cadence.com>
+> >>
+> >> Patch removes not used variables:
+> >>  - ret from cdnsp_decode_trb function
+> >>  - temp_64 from cdnsp_run function
+> >>
+> >> Reported-by: kernel test robot <lkp@intel.com>
+> >> Signed-off-by: Pawel Laszczak <pawell@cadence.com>
+> >> ---
+> >>  drivers/usb/cdns3/cdnsp-debug.h  | 287 +++++++++++++++----------------
+> >>  drivers/usb/cdns3/cdnsp-gadget.c |   3 -
+> >>  2 files changed, 138 insertions(+), 152 deletions(-)
+> >>
+> >> diff --git a/drivers/usb/cdns3/cdnsp-debug.h b/drivers/usb/cdns3/cdnsp-debug.h
+> >> index a8776df2d4e0..29f3cf7ddbaa 100644
+> >> --- a/drivers/usb/cdns3/cdnsp-debug.h
+> >> +++ b/drivers/usb/cdns3/cdnsp-debug.h
+> >> @@ -182,206 +182,195 @@ static inline const char *cdnsp_decode_trb(char *str, size_t size, u32 field0,
+> >>  	int ep_id = TRB_TO_EP_INDEX(field3) - 1;
+> >>  	int type = TRB_FIELD_TO_TYPE(field3);
+> >>  	unsigned int ep_num;
+> >> -	int ret = 0;
+> >
+> >Please fix this function to properly handle the ret value, as I think it
+> >should be checked, right?
 > 
+> I think that it is not needed. Function is used only in one place in trace point in TP_printk. The buffer is
+> big enough (500 bytes) to accommodate whole string.  In this form function can be directly used in
+> TP_printk. If we will use ret instead of string as return type, then driver will need to format this string before
+> calling trace point function and pass this ass parameter.  This solution will have impact for code size and
+> performance even if we disable tracing
+
+You should check somehow that you do not overflow the buffer, right?  To
+not do so is a bit odd.
+
+> >> --- a/drivers/usb/cdns3/cdnsp-gadget.c
+> >> +++ b/drivers/usb/cdns3/cdnsp-gadget.c
+> >> @@ -1243,12 +1243,9 @@ static int cdnsp_run(struct cdnsp_device *pdev,
+> >>  		     enum usb_device_speed speed)
+> >>  {
+> >>  	u32 fs_speed = 0;
+> >> -	u64 temp_64;
+> >>  	u32 temp;
+> >>  	int ret;
+> >>
+> >> -	temp_64 = cdnsp_read_64(&pdev->ir_set->erst_dequeue);
+> >> -	temp_64 &= ~ERST_PTR_MASK;
+> >>  	temp = readl(&pdev->ir_set->irq_control);
+> >>  	temp &= ~IMOD_INTERVAL_MASK;
+> >>  	temp |= ((IMOD_DEFAULT_INTERVAL / 250) & IMOD_INTERVAL_MASK);
+> >> --
+> >> 2.25.1
+> >>
+> >
+> >A separate patch for this.
+> >
+> >Also, are you SURE this is ok to do?  Did you check it on the hardware
+> >that a read is not needed here for it to work properly?
+> >
+> >This type of "warning" is horrible for dealing with hardware devices,
+> >always treat it as incorrect unless you can prove otherwise.
+> >
 > 
-> Greeting,
+> Yes, I've tested it. I think that it was used in some printk and by mistake has not been removed. 
 > 
-> FYI, we noticed the following commit (built with clang-14):
+> The warning was reported by Intel kernel test robot and fix are very simple. Patch is little bigger
+> because some code had to be reformatted.  
 > 
-> commit: aa93e2ad7464ffb90155a5ffdde963816f86d5dc ("x86/entry_32: Remove .fixup usage")
-> https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/core
-> 
-> in testcase: kernel-selftests
-> version: 
-> with following parameters:
-> 
-> 	group: x86
-> 
+> Do I really need to send this as two separate patches
 
-It would be very useful if this thing would also say which of the many
-x86 selftests fails... it appears to be: ldt_gdt_32.
+Yes, you are doing two different things here.
 
-The below fixes it, but I'm still not entirely sure what the actual
-problem is, although Andy did find a bug in that the exception handler
-should do: *(ss:esp) = 0, adding ss-base (using insn_get_seg_base())
-doesn't seem to cure things.
+thanks,
 
-The below simply emulates the pop instruction and relies on the nested
-RESTORE_REGS to actually set the segment register. The testcase now
-successfully completes again.
-
----
- arch/x86/entry/entry_32.S                  | 13 +++++++++----
- arch/x86/include/asm/extable_fixup_types.h |  5 ++++-
- arch/x86/lib/insn-eval.c                   |  5 +++++
- arch/x86/mm/extable.c                      | 17 +++--------------
- 4 files changed, 21 insertions(+), 19 deletions(-)
-
-diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
-index e0a95d8a6553..fff7f2a08ff5 100644
---- a/arch/x86/entry/entry_32.S
-+++ b/arch/x86/entry/entry_32.S
-@@ -268,11 +268,16 @@
- 1:	popl	%ds
- 2:	popl	%es
- 3:	popl	%fs
--	addl	$(4 + \pop), %esp	/* pop the unused "gs" slot */
-+4:	addl	$(4 + \pop), %esp	/* pop the unused "gs" slot */
- 	IRET_FRAME
--	_ASM_EXTABLE_TYPE(1b, 1b, EX_TYPE_POP_ZERO)
--	_ASM_EXTABLE_TYPE(2b, 2b, EX_TYPE_POP_ZERO)
--	_ASM_EXTABLE_TYPE(3b, 3b, EX_TYPE_POP_ZERO)
-+
-+	/*
-+	 * There is no _ASM_EXTABLE_TYPE_REG() for ASM, however since this is
-+	 * ASM the registers are known and we can trivially hard-code them.
-+	 */
-+	_ASM_EXTABLE_TYPE(1b, 2b, EX_TYPE_POP_ZERO|EX_DATA_REG(8))
-+	_ASM_EXTABLE_TYPE(2b, 3b, EX_TYPE_POP_ZERO|EX_DATA_REG(9))
-+	_ASM_EXTABLE_TYPE(3b, 4b, EX_TYPE_POP_ZERO|EX_DATA_REG(10))
- .endm
- 
- .macro RESTORE_ALL_NMI cr3_reg:req pop=0
-diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/asm/extable_fixup_types.h
-index b5ab333e064a..81eedabc1ea1 100644
---- a/arch/x86/include/asm/extable_fixup_types.h
-+++ b/arch/x86/include/asm/extable_fixup_types.h
-@@ -16,6 +16,7 @@
- #define EX_DATA_FLAG_SHIFT		12
- #define EX_DATA_IMM_SHIFT		16
- 
-+#define EX_DATA_REG(reg)		((reg) << EX_DATA_REG_SHIFT)
- #define EX_DATA_FLAG(flag)		((flag) << EX_DATA_FLAG_SHIFT)
- #define EX_DATA_IMM(imm)		((imm) << EX_DATA_IMM_SHIFT)
- 
-@@ -41,7 +42,9 @@
- #define	EX_TYPE_RDMSR_IN_MCE		13
- #define	EX_TYPE_DEFAULT_MCE_SAFE	14
- #define	EX_TYPE_FAULT_MCE_SAFE		15
--#define	EX_TYPE_POP_ZERO		16
-+
-+#define	EX_TYPE_POP_REG			16 /* reg := (long)imm */
-+#define EX_TYPE_POP_ZERO		(EX_TYPE_POP_REG | EX_DATA_IMM(0))
- 
- #define	EX_TYPE_IMM_REG			17 /* reg := (long)imm */
- #define	EX_TYPE_EFAULT_REG		(EX_TYPE_IMM_REG | EX_DATA_IMM(-EFAULT))
-diff --git a/arch/x86/lib/insn-eval.c b/arch/x86/lib/insn-eval.c
-index 666b9c5672a2..b781d324211b 100644
---- a/arch/x86/lib/insn-eval.c
-+++ b/arch/x86/lib/insn-eval.c
-@@ -428,6 +428,11 @@ static const int pt_regoff[] = {
- 	offsetof(struct pt_regs, r13),
- 	offsetof(struct pt_regs, r14),
- 	offsetof(struct pt_regs, r15),
-+#else
-+	offsetof(struct pt_regs, ds),
-+	offsetof(struct pt_regs, es),
-+	offsetof(struct pt_regs, fs),
-+	offsetof(struct pt_regs, gs),
- #endif
- };
- 
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index 41eaa648349e..dba2197c05c3 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -126,18 +126,6 @@ static bool ex_handler_clear_fs(const struct exception_table_entry *fixup,
- 	return ex_handler_default(fixup, regs);
- }
- 
--static bool ex_handler_pop_zero(const struct exception_table_entry *fixup,
--				struct pt_regs *regs)
--{
--	/*
--	 * Typically used for when "pop %seg" traps, in which case we'll clear
--	 * the stack slot and re-try the instruction, which will then succeed
--	 * to pop zero.
--	 */
--	*((unsigned long *)regs->sp) = 0;
--	return ex_handler_default(fixup, regs);
--}
--
- static bool ex_handler_imm_reg(const struct exception_table_entry *fixup,
- 			       struct pt_regs *regs, int reg, int imm)
- {
-@@ -218,8 +206,9 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
- 	case EX_TYPE_RDMSR_IN_MCE:
- 		ex_handler_msr_mce(regs, false);
- 		break;
--	case EX_TYPE_POP_ZERO:
--		return ex_handler_pop_zero(e, regs);
-+	case EX_TYPE_POP_REG:
-+		regs->sp += sizeof(long);
-+		fallthrough;
- 	case EX_TYPE_IMM_REG:
- 		return ex_handler_imm_reg(e, regs, reg, imm);
- 	case EX_TYPE_FAULT_SGX:
-
-
+greg k-h
