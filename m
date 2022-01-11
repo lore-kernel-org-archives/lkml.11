@@ -2,148 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7331FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A116EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:25:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343935AbiAKRXB (ORCPT
+        id S1343982AbiAKRZA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:23:01 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:34634 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238268AbiAKRW6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:22:58 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5F3331F3B8;
-        Tue, 11 Jan 2022 17:22:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1641921777; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rZskkMbhrttBPymzvjqC0CxctwAqREPpDVDJuIHLbQw=;
-        b=EYPm6xaE0PxL6rTyPVl6Mc/d4NkcrJkYiLvxhZejHxDO7P9C4xZCDC5QQ1N+RzliZpBPuE
-        MdSnCZZwtIgSbxsyyseHpoVrAlM0rJ13mKWz0daEK2Knk+jIoiQxUDv3Sbp0Jh/IgQe8il
-        wob4sRVCu6UK9ghTGL4Aa1U/tg0wi7I=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1641921777;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=rZskkMbhrttBPymzvjqC0CxctwAqREPpDVDJuIHLbQw=;
-        b=pocegx6lFJH70d4LTF2pDgthnl+Sz0i42aYqhTqvAZW8XnV5CHMF32go3KQDEXTsqS0ubE
-        tgz9kZR1EjRiENDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 363AC13AE7;
-        Tue, 11 Jan 2022 17:22:57 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id ePRODPG83WGFTgAAMHmgww
-        (envelope-from <bp@suse.de>); Tue, 11 Jan 2022 17:22:57 +0000
-Date:   Tue, 11 Jan 2022 18:23:01 +0100
-From:   Borislav Petkov <bp@suse.de>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
-Subject: [GIT PULL] sched/core for v5.17
-Message-ID: <Yd289b35jcsSdJfl@zn.tnic>
+        Tue, 11 Jan 2022 12:25:00 -0500
+Received: from mga03.intel.com ([134.134.136.65]:11614 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238268AbiAKRYf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 12:24:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641921875; x=1673457875;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=gEUR+PS3VK1rPxJq6WRhpVCCJmBWIol2sYXcM1N0t6I=;
+  b=neRQrHkUc5sTOWvdaUnorTxzbtt4sdBqFv7MjMsNG08Ix9HhdBZug1EV
+   3/coqG52g1JrJB9GX572WVGQIpz5q+64vPjyfGNnDOa9AQM7hDz6CluRg
+   B1v64i/wMh79Ue4tFWxGbjP4iedywa+pNnz2MLW4y52F69uPQagaJLq1f
+   /h3jA3QfxpIKa4FDP9h+1rn8X7Xf5AeSP+N1VGWjPXRyBWeX4RR1GhJ/j
+   HFlM9e+ztQuK2GykFYb44RCdP+/m0uFsY1fQLNFy1D76/PpvL7W+ae9Sa
+   a+dusAHm9m2uywvr9737jW+JH5AGZYWhY2gC3Bgypv63KNvfm2YnTydLQ
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="243497028"
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="243497028"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 09:23:36 -0800
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="592749789"
+Received: from cdoher2x-mobl1.amr.corp.intel.com (HELO [10.212.119.165]) ([10.212.119.165])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 09:23:32 -0800
+Subject: Re: [PATCH] firmware: mediatek: add adsp ipc protocol interface
+To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Cc:     Linux-ALSA <alsa-devel@alsa-project.org>, tzungbi@google.com,
+        cujomalainey@google.com, Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        sound-open-firmware@alsa-project.org
+References: <20220111071011.5964-1-allen-kh.cheng@mediatek.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <91eef4c9-adda-1921-16b5-af181b30d36e@linux.intel.com>
+Date:   Tue, 11 Jan 2022 11:02:03 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220111071011.5964-1-allen-kh.cheng@mediatek.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
 
-please pull the sched/core pile for 5.17.
+> +int mtk_adsp_ipc_send(struct mtk_adsp_ipc *ipc, unsigned int idx, uint32_t msg)
+> +{
+> +	struct mtk_adsp_chan *dsp_chan;
+> +	int ret;
+> +
+> +	if (idx >= MTK_ADSP_MBOX_NUM)
+> +		return -EINVAL;
+> +
+> +	dsp_chan = &ipc->chans[idx];
+> +	ret = mbox_send_message(dsp_chan->ch, &msg);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
 
-Thx.
+this can be simplified a bit without the 'ret' variable
 
----
+return mbox_send_message(dsp_chan->ch, &msg);
 
-The following changes since commit fa55b7dcdc43c1aa1ba12bca9d2dd4318c2a0dbf:
+> +}
+> +EXPORT_SYMBOL(mtk_adsp_ipc_send);
 
-  Linux 5.16-rc1 (2021-11-14 13:56:52 -0800)
 
-are available in the Git repository at:
+> +static int mtk_adsp_ipc_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct mtk_adsp_ipc *dsp_ipc;
+> +	struct mtk_adsp_chan *dsp_chan;
+> +	struct mbox_client *cl;
+> +	char *chan_name;
+> +	int ret;
+> +	int i, j;
+> +
+> +	device_set_of_node_from_dev(&pdev->dev, pdev->dev.parent);
+> +
+> +	dsp_ipc = devm_kzalloc(dev, sizeof(*dsp_ipc), GFP_KERNEL);
+> +	if (!dsp_ipc)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0; i < MTK_ADSP_MBOX_NUM; i++) {
+> +		chan_name = kasprintf(GFP_KERNEL, "mbox%d", i);
+> +		if (!chan_name) {
+> +			ret = -ENOMEM;
+> +			goto out;
+> +		}
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/sched_core_for_v5.17_rc1
+in this case with the existing code you will free something that was not
+allocated. It's not super elegant, consider using different labels as
+suggested below.
 
-for you to fetch changes up to 82762d2af31a60081162890983a83499c9c7dd74:
+> +
+> +		dsp_chan = &dsp_ipc->chans[i];
+> +		cl = &dsp_chan->cl;
+> +		cl->dev = dev->parent;
+> +		cl->tx_block = false;
+> +		cl->knows_txdone = false;
+> +		cl->tx_prepare = NULL;
+> +		cl->rx_callback = mtk_adsp_ipc_recv;
+> +
+> +		dsp_chan->ipc = dsp_ipc;
+> +		dsp_chan->idx = i;
+> +		dsp_chan->ch = mbox_request_channel_byname(cl, chan_name);
+> +		if (IS_ERR(dsp_chan->ch)) {
+> +			ret = PTR_ERR(dsp_chan->ch);
+> +			if (ret != -EPROBE_DEFER)
+> +				dev_err(dev, "Failed to request mbox chan %d ret %d\n",
+> +					i, ret);
+> +			goto out;
 
-  sched/fair: Replace CFS internal cpu_util() with cpu_util_cfs() (2021-12-11 09:10:00 +0100)
+goto out_free;
 
-----------------------------------------------------------------
-Peter Zijlstra says:
+> +		}
+> +
+> +		dev_dbg(dev, "request mbox chan %s\n", chan_name);
+> +		kfree(chan_name);
+> +	}
+> +
+> +	dsp_ipc->dev = dev;
+> +	dev_set_drvdata(dev, dsp_ipc);
+> +	dev_dbg(dev, "MTK ADSP IPC initialized\n");
+> +
+> +	return 0;
+> +
+> +out:
 
-"Mostly minor things this time; some highlights:
+out_free:
+> +	kfree(chan_name);
 
- - core-sched: Add 'Forced Idle' accounting; this allows to track how
-   much CPU time is 'lost' due to core scheduling constraints.
+out:
 
- - psi: Fix for MEM_FULL; a task running reclaim would be counted as a
-   runnable task and prevent MEM_FULL from being reported.
+> +	for (j = 0; j < i; j++) {
+> +		dsp_chan = &dsp_ipc->chans[j];
+> +		mbox_free_channel(dsp_chan->ch);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int mtk_adsp_ipc_remove(struct platform_device *pdev)
+> +{
+> +	struct mtk_adsp_ipc *dsp_ipc = dev_get_drvdata(&pdev->dev);
+> +	struct mtk_adsp_chan *dsp_chan;
+> +	int i;
+> +
+> +	for (i = 0; i < MTK_ADSP_MBOX_NUM; i++) {
+> +		dsp_chan = &dsp_ipc->chans[i];
+> +		mbox_free_channel(dsp_chan->ch);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver mtk_adsp_ipc_driver = {
+> +	.driver = {
+> +		.name = "mtk-adsp-ipc",
+> +	},
+> +	.probe = mtk_adsp_ipc_probe,
+> +	.remove = mtk_adsp_ipc_remove,
+> +};
+> +builtin_platform_driver(mtk_adsp_ipc_driver);
+> +
+> +MODULE_AUTHOR("Allen-KH Cheng <allen-kh.cheng@mediatek.com>");
+> +MODULE_DESCRIPTION("MTK ADSP IPC Driver");
+> +MODULE_LICENSE("GPL v2");
 
- - cpuacct: Long standing fixes for some cgroup accounting issues.
+the v2 here isn't useful, the license information can be found in the
+SPDX line.
 
- - rt: Bandwidth timer could, under unusual circumstances, be failed to
-   armed, leading to indefinite throttling."
+MODULE_LICENSE("GPL");
 
-----------------------------------------------------------------
-Andrey Ryabinin (4):
-      cputime, cpuacct: Include guest time in user time in cpuacct.stat
-      cpuacct: Convert BUG_ON() to WARN_ON_ONCE()
-      sched/cpuacct: Fix user/system in shown cpuacct.usage*
-      sched/cpuacct: Make user/system times in cpuacct.stat more precise
 
-Barry Song (1):
-      sched/fair: Document the slow path and fast path in select_task_rq_fair
-
-Brian Chen (1):
-      psi: Fix PSI_MEM_FULL state when tasks are in memstall and doing reclaim
-
-Dietmar Eggemann (1):
-      sched/fair: Replace CFS internal cpu_util() with cpu_util_cfs()
-
-Josh Don (1):
-      sched/core: Forced idle accounting
-
-Li Hua (1):
-      sched/rt: Try to restart rt period timer when rt runtime exceeded
-
-Liu Xinpeng (2):
-      psi: Remove repeated verbose comment
-      psi: Add a missing SPDX license header
-
-Vincent Donnefort (3):
-      sched/fair: Fix detection of per-CPU kthreads waking a task
-      sched/fair: Fix per-CPU kthread and wakee stacking for asym CPU capacity
-      sched/fair: Cleanup task_util and capacity type
-
- include/linux/psi.h              |   1 +
- include/linux/psi_types.h        |  14 ++++-
- include/linux/sched.h            |   4 ++
- kernel/sched/core.c              |  84 ++++++++++++++++++++++--------
- kernel/sched/core_sched.c        |  66 +++++++++++++++++++++++-
- kernel/sched/cpuacct.c           | 107 ++++++++++++++++++---------------------
- kernel/sched/cpufreq_schedutil.c |   2 +-
- kernel/sched/cputime.c           |   4 +-
- kernel/sched/debug.c             |   4 ++
- kernel/sched/fair.c              |  87 ++++++++-----------------------
- kernel/sched/psi.c               |  47 ++++++++++-------
- kernel/sched/rt.c                |  23 +++++++--
- kernel/sched/sched.h             |  76 ++++++++++++++++++++++++---
- kernel/sched/stats.h             |   5 +-
- 14 files changed, 343 insertions(+), 181 deletions(-)
-
--- 
-Regards/Gruss,
-    Boris.
-
-SUSE Software Solutions Germany GmbH, GF: Ivo Totev, HRB 36809, AG Nürnberg
