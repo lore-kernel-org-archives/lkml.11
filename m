@@ -2,155 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3717BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB60C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349091AbiAKIvy (ORCPT
+        id S1349032AbiAKIwe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:51:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349032AbiAKIvs (ORCPT
+        Tue, 11 Jan 2022 03:52:34 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:42004 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236443AbiAKIw0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:51:48 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0B7C061751
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 00:51:48 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id hv15so10043315pjb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 00:51:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3iqaAGZ9UzBXUbLAm4bUUdw8nwdBCobmyXaVuD0M1O8=;
-        b=BpcDwsI7iX5IWglV3CB1erV4tmyiRc9yjg3obRAkqf97ex0fO8QIkyZB4JKnkKsGK0
-         y2nhSqynYnnhVdX5cnBklZx9kCSAqUZXdX9XhMSaEbVFCPg6ePgwqHceFqH1Hy0bIp8Y
-         BLEIfvvTOO57qMoHfRBjXeONJr4t/GNVvuA1iOK/8Kw0hZxf/EQpI7SAj2Cqwh429fEU
-         +Kabee08MPoy+9fQnGwGzQxm1qEZq5mGgagui3qiUoVXtWkgWU20Fn19m9QNYPK3UiMP
-         28aGeAnp87bJOWx+Zdk3iOwiBzbsQ6fTlB6iUuE0w5RktZ4VIsI/cEtk9g0oywwLHWIa
-         h6FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3iqaAGZ9UzBXUbLAm4bUUdw8nwdBCobmyXaVuD0M1O8=;
-        b=q+0RGMhrviZhx15kU3RG/AAMkdCcW0Ciuo5ZXiwjVBR8Mf13f2OtYkFjalDUywWgk3
-         0V7R+wWVce39YH21X3MhtoEEXf8o9OZcE4S9xjvBVaU1bW0oFOIUbMhDtZh1vepML+99
-         tsBzcgy7hBs3mDIAPWWgZYee/Cp4hZ7F0djzwqCbQt9mPK4NDC3gt1iN/uTNRcd3YFtO
-         7hr6S+dJ2ZPK0myx54CuIB3fIJDb+zFJ08SsDS5+kAUi1YjPkmF8ZV2ap7NLeJF14W3L
-         4C60wspUIIQNooX2H0NFsO1AiZTMUSl/55q5HHC+98dcbF6aWUr+yukb+BVX8FB3fgu8
-         /KDA==
-X-Gm-Message-State: AOAM531NgwXitBXv0+IQYjT3O0I+Y/yzv0/W2ZmH070GfiK3XTN7GQ1j
-        5/OZD6glMXN0nWgsklY5Sj8YXw==
-X-Google-Smtp-Source: ABdhPJy+SBuFVm1a11AHzLGbXIf7gcDDLh5LomRsKXxKTX1T+LtK0Vr6OvMTpoaP93jRT/soiExCTA==
-X-Received: by 2002:aa7:84c1:0:b0:4bf:379:1d85 with SMTP id x1-20020aa784c1000000b004bf03791d85mr3546334pfn.5.1641891107790;
-        Tue, 11 Jan 2022 00:51:47 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id j4sm9447598pfa.149.2022.01.11.00.51.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 00:51:47 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>
-Subject: [PATCH v2 3/3] dmaengine: sf-pdma: Get number of channel by device tree
-Date:   Tue, 11 Jan 2022 16:51:27 +0800
-Message-Id: <78cfa00a02cbd10202040058af22a73caa9c5ae8.1641890718.git.zong.li@sifive.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1641890718.git.zong.li@sifive.com>
-References: <cover.1641890718.git.zong.li@sifive.com>
+        Tue, 11 Jan 2022 03:52:26 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 98259212BC;
+        Tue, 11 Jan 2022 08:52:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1641891145; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YdaLao7sQ3hp1ENT2rZBs8PXqqa7MrZLMaEIV3+L2Xg=;
+        b=BDstn9Ow4SqDmeTH8JIYqALqmOJbrqtstIvb5BcMVNSs/2RXNdBHphZ5UeWEuf2PxEjxSw
+        yI4C1kfimD9nSiitIzkvKBoDp+5XsIjRl/EUpIroQRCgUEp5aLROrIzS4JzgrXwtauPygS
+        WjieWG9nI0JugOk27OovFfBdq30UPas=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1641891145;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YdaLao7sQ3hp1ENT2rZBs8PXqqa7MrZLMaEIV3+L2Xg=;
+        b=sIkNVIWkxtPOYsf7ynPgvm0ueGFZomFUft1rVquFSLcjVkJfPM2dsJxScR2jJxc10OWY1b
+        03kmNKOxM1hlIbAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F066313AC9;
+        Tue, 11 Jan 2022 08:52:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id tkCNOUhF3WGCIgAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Tue, 11 Jan 2022 08:52:24 +0000
+Message-ID: <1a5bd538-063b-c2cf-bb3e-96a6fdb0da0f@suse.de>
+Date:   Tue, 11 Jan 2022 09:52:24 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v3 00/10] drm: Make drivers to honour the nomodeset
+ parameter
+Content-Language: en-US
+To:     Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc:     Brian Starkey <brian.starkey@arm.com>,
+        Chen Feng <puck.chen@hisilicon.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dave Airlie <airlied@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Fabio Estevam <festevam@gmail.com>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        "James (Qian) Wang" <james.qian.wang@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Mihail Atanassov <mihail.atanassov@arm.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Tian Tao <tiantao6@hisilicon.com>,
+        Xinliang Liu <xinliang.liu@linaro.org>,
+        Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+References: <20211222082831.196562-1-javierm@redhat.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20211222082831.196562-1-javierm@redhat.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------S57LvTDmYkVbG2Rpo7NPhccF"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It currently assumes that there are always four channels, it would
-cause the error if there is actually less than four channels. Change
-that by getting number of channel from device tree.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------S57LvTDmYkVbG2Rpo7NPhccF
+Content-Type: multipart/mixed; boundary="------------iunzZnus0OOvar6uRVQ63mo9";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: Javier Martinez Canillas <javierm@redhat.com>,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc: Brian Starkey <brian.starkey@arm.com>, Chen Feng
+ <puck.chen@hisilicon.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Dave Airlie <airlied@redhat.com>, David Airlie <airlied@linux.ie>,
+ Fabio Estevam <festevam@gmail.com>, Gerd Hoffmann <kraxel@redhat.com>,
+ "James (Qian) Wang" <james.qian.wang@arm.com>,
+ John Stultz <john.stultz@linaro.org>, Jonathan Corbet <corbet@lwn.net>,
+ Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+ Liviu Dudau <liviu.dudau@arm.com>, Lucas Stach <l.stach@pengutronix.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>,
+ Mihail Atanassov <mihail.atanassov@arm.com>,
+ NXP Linux Team <linux-imx@nxp.com>,
+ Pengutronix Kernel Team <kernel@pengutronix.de>,
+ Philipp Zabel <p.zabel@pengutronix.de>, Sascha Hauer
+ <s.hauer@pengutronix.de>, Shawn Guo <shawnguo@kernel.org>,
+ Tian Tao <tiantao6@hisilicon.com>, Xinliang Liu <xinliang.liu@linaro.org>,
+ Xinwei Kong <kong.kongxinwei@hisilicon.com>,
+ linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+ virtualization@lists.linux-foundation.org
+Message-ID: <1a5bd538-063b-c2cf-bb3e-96a6fdb0da0f@suse.de>
+Subject: Re: [PATCH v3 00/10] drm: Make drivers to honour the nomodeset
+ parameter
+References: <20211222082831.196562-1-javierm@redhat.com>
+In-Reply-To: <20211222082831.196562-1-javierm@redhat.com>
 
-For backwards-compatible, it uses the default value (i.e. 4) when there
-is no 'dma-channels' information in dts.
+--------------iunzZnus0OOvar6uRVQ63mo9
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
----
- drivers/dma/sf-pdma/sf-pdma.c | 15 +++++++++------
- drivers/dma/sf-pdma/sf-pdma.h |  8 ++------
- 2 files changed, 11 insertions(+), 12 deletions(-)
+SGkNCg0KcGF0Y2hlcyA2IHRvIDEwIGFyZQ0KDQpBY2tlZC1ieTogVGhvbWFzIFppbW1lcm1h
+bm4gPHR6aW1tZXJtYW5uQHN1c2UuZGU+DQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCkFt
+IDIyLjEyLjIxIHVtIDA5OjI4IHNjaHJpZWIgSmF2aWVyIE1hcnRpbmV6IENhbmlsbGFzOg0K
+PiBUaGUgbm9tb2Rlc2V0IGtlcm5lbCBjb21tYW5kIGxpbmUgcGFyYW1ldGVyIGlzIHVzZWQg
+dG8gcHJldmVudCB0aGUgS01TL0RSTQ0KPiBkcml2ZXJzIHRvIGJlIHJlZ2lzdGVyZWQvcHJv
+YmVkLiBCdXQgb25seSBhIGZldyBkcml2ZXJzIGltcGxlbWVudCBzdXBwb3J0DQo+IGZvciB0
+aGlzIGFuZCBtb3N0IERSTSBkcml2ZXJzIGp1c3QgaWdub3JlIGl0Lg0KPiANCj4gVGhpcyBw
+YXRjaCBzZXJpZXMgaXMgYSB2MyB0byBtYWtlIERSTSBkcml2ZXJzIHRvIGhvbm91ciBub21v
+ZGVzZXQuIEl0IGlzDQo+IHBvc3RlZCBhcyBzZXBhcmF0ZSBwYXRjaGVzIHRvIG1ha2UgZWFz
+aWVyIGZvciBkcml2ZXJzIG1haW50YWluZXJzIHRvIGFjaw0KPiBvciBwaWNrIHRoZW0gaW5k
+ZXBlbmRlbnRseSBhdCB0aGVpciBvd24gcGFjZS4NCj4gDQo+IFRoZSBkcm1fbW9kdWxlX3tw
+Y2kscGxhdGZvcm19X2RyaXZlcigpIGhlbHBlciBtYWNyb3MgYXJlIGFkZGVkLCB3aGljaCBh
+cmUNCj4ganVzdCB3cmFwcGVycyBhcm91bmQgbW9kdWxlX3twY2kscGxhdGZvcm19X2RyaXZl
+cigpIGJ1dCBhZGRpbmcgYSBjaGVjayBmb3INCj4gZHJtX2Zpcm13YXJlX2RyaXZlcnNfb25s
+eSgpIGFuZCByZXR1cm5pbmcgLUVOT0RFViBpZiB0aGF0IGlzIHRydWUuDQo+IA0KPiBQQ0kg
+YW5kIHBsYXRmb3JtIERSTSBkcml2ZXJzIGFyZSB0aGVuIG1vZGlmaWVkIGluIHRoZSBmb2xs
+b3dpbmcgcGF0Y2hlcyB0bw0KPiBtYWtlIHVzZSBvZiB0aG9zZSBtYWNyb3MuDQo+IA0KPiBP
+bmx5IEtNUyBkcml2ZXJzIHdpbGwgYmUgcG9ydGVkIHRvIHVzZSB0aGVzZSBuZXcgbWFjcm9z
+LCBhbmQgb25seSBmb3IgUENJDQo+IGFuZCBwbGF0Zm9ybSBEUk0gZHJpdmVycy4gQSBmb2xs
+b3ctdXAgc2VyaWVzIG1pZ2h0IGRvIHRoZSBzYW1lIGZvciBkcml2ZXJzDQo+IHRoYXQgYXJl
+IHJlbmRlcmluZy1vbmx5IGFuZCBmb3IgVVNCL1NQSS9JMkMgZGV2aWNlcywgYnV0IGl0IHdp
+bGwgbmVlZCBtb3JlDQo+IGRpc2N1c3Npb24gdG8gYWdyZWUgd2hldGhlciB0aGF0J3MgZGVz
+aXJhYmxlIG9yIG5vdC4NCj4gDQo+IE5vdCBhbGwgZHJpdmVycyB3ZXJlIHBvc3RlZCBpbiB2
+MyB0byBhdm9pZCBmbG9vZGluZyB0aGUgbGlzdCB3aXRoIHRvbyBtYW55DQo+IHBhdGNoZXMu
+IEknbSBvbmx5IGluY2x1ZGluZyB0aGUgcGF0Y2hlcyBhZGRpbmcgdGhlIG1hY3JvcyBhbmQg
+c29tZSBwYXRjaGVzDQo+IGFzIGFuIGV4YW1wbGUgb2YgdGhlaXIgdXNhZ2UuDQo+IA0KPiBJ
+J3ZlIGJ1aWx0IHRlc3RlZCB3aXRoICdtYWtlIGFsbG1vZGNvbmZpZyAmJiBtYWtlIE09ZHJp
+dmVycy9ncHUvZHJtJyBidXQgSQ0KPiBkb24ndCBoYXZlIGhhcmR3YXJlIHRvIHRlc3QgdGhl
+IGRyaXZlcnMsIHNvIHJldmlldy90ZXN0aW5nIGlzIGFwcHJlY2lhdGVkLg0KPiANCj4gQmVz
+dCByZWdhcmRzLA0KPiBKYXZpZXINCj4gDQo+IENoYW5nZXMgaW4gdjM6DQo+IC0gSW5jbHVk
+ZSBUaG9tYXMgWmltbWVybWFubidzIHBhdGNoZXMgaW4gdGhlIHNlcmllcyBhbmQgcmViYXNl
+IG9uIHRvcC4NCj4gLSBBZGQgY29sbGVjdGVkIEFja2VkLWJ5IHRhZ3MgZnJvbSB2Mi4NCj4g
+DQo+IENoYW5nZXMgaW4gdjI6DQo+IC0gQWRkIGRybV9tb2R1bGVfe3BjaSxwbGF0Zm9ybX1f
+ZHJpdmVyKCkgbWFjcm9zIGFuZCBwdXQgdGhlIGNoZWNrIHRoZXJlDQo+ICAgIChUaG9tYXMg
+WmltbWVybWFubikuDQo+IC0gVXNlIHRoZSBkcm1fbW9kdWxlXypfZHJpdmVyKCkgbWFjcm9z
+IGlmIHBvc3NpYmxlIChUaG9tYXMgWmltbWVybWFubikuDQo+IC0gTGVhdmUgdGhlIERSTSBk
+cml2ZXJzIHRoYXQgZG9uJ3Qgc2V0IHRoZSBEUklWRVJfTU9ERVNFVCBkcml2ZXIgZmVhdHVy
+ZQ0KPiAgICAoTHVjYXMgU3RhY2gpLg0KPiAtIExlYXZlIFVTQi9TUEkvSTJDIGRyaXZlcnMg
+YW5kIG9ubHkgaW5jbHVkZSBQQ0kgYW5kIHBsYXRmb3JtIG9uZXMNCj4gICAgKE5vcmFsZiBU
+csO4bm5lcykuDQo+IC0gQWRkIGNvbGxlY3RlZCBSZXZpZXdlZC1ieSB0YWdzDQo+IA0KPiBK
+YXZpZXIgTWFydGluZXogQ2FuaWxsYXMgKDUpOg0KPiAgICBkcm06IFByb3ZpZGUgcGxhdGZv
+cm0gbW9kdWxlLWluaXQgbWFjcm8NCj4gICAgZHJtL2lteC9kY3NzOiBSZXBsYWNlIG1vZHVs
+ZSBpbml0aWFsaXphdGlvbiB3aXRoIERSTSBoZWxwZXJzDQo+ICAgIGRybS9rb21lZGE6IFJl
+cGxhY2UgbW9kdWxlIGluaXRpYWxpemF0aW9uIHdpdGggRFJNIGhlbHBlcnMNCj4gICAgZHJt
+L2FybS9oZGxjZDogUmVwbGFjZSBtb2R1bGUgaW5pdGlhbGl6YXRpb24gd2l0aCBEUk0gaGVs
+cGVycw0KPiAgICBkcm0vbWFsaWRwOiBSZXBsYWNlIG1vZHVsZSBpbml0aWFsaXphdGlvbiB3
+aXRoIERSTSBoZWxwZXJzDQo+IA0KPiBUaG9tYXMgWmltbWVybWFubiAoNSk6DQo+ICAgIGRy
+bTogUHJvdmlkZSBQQ0kgbW9kdWxlLWluaXQgbWFjcm9zDQo+ICAgIGRybS9hc3Q6IFJlcGxh
+Y2UgbW9kdWxlLWluaXQgYm9pbGVyLXBsYXRlIGNvZGUgd2l0aCBEUk0gaGVscGVycw0KPiAg
+ICBkcm0vYm9jaHM6IFJlcGxhY2UgbW9kdWxlLWluaXQgYm9pbGVyLXBsYXRlIGNvZGUgd2l0
+aCBEUk0gaGVscGVycw0KPiAgICBkcm0vY2lycnVzOiBSZXBsYWNlIG1vZHVsZS1pbml0IGJv
+aWxlci1wbGF0ZSBjb2RlIHdpdGggRFJNIGhlbHBlcnMNCj4gICAgZHJtL2hpc2lsaWNvbi9o
+aWJtYzogUmVwbGFjZSBtb2R1bGUgaW5pdGlhbGl6YXRpb24gd2l0aCBEUk0gaGVscGVycw0K
+PiANCj4gICBEb2N1bWVudGF0aW9uL2dwdS9kcm0taW50ZXJuYWxzLnJzdCAgICAgICAgICAg
+fCAgIDYgKw0KPiAgIC4uLi9ncHUvZHJtL2FybS9kaXNwbGF5L2tvbWVkYS9rb21lZGFfZHJ2
+LmMgICB8ICAgMyArLQ0KPiAgIGRyaXZlcnMvZ3B1L2RybS9hcm0vaGRsY2RfZHJ2LmMgICAg
+ICAgICAgICAgICB8ICAgMyArLQ0KPiAgIGRyaXZlcnMvZ3B1L2RybS9hcm0vbWFsaWRwX2Ry
+di5jICAgICAgICAgICAgICB8ICAgMyArLQ0KPiAgIGRyaXZlcnMvZ3B1L2RybS9hc3QvYXN0
+X2Rydi5jICAgICAgICAgICAgICAgICB8ICAxOCArLS0NCj4gICAuLi4vZ3B1L2RybS9oaXNp
+bGljb24vaGlibWMvaGlibWNfZHJtX2Rydi5jICAgfCAgIDMgKy0NCj4gICBkcml2ZXJzL2dw
+dS9kcm0vaW14L2Rjc3MvZGNzcy1kcnYuYyAgICAgICAgICAgfCAgIDMgKy0NCj4gICBkcml2
+ZXJzL2dwdS9kcm0vdGlueS9ib2Nocy5jICAgICAgICAgICAgICAgICAgfCAgMjAgKy0tDQo+
+ICAgZHJpdmVycy9ncHUvZHJtL3RpbnkvY2lycnVzLmMgICAgICAgICAgICAgICAgIHwgIDE3
+ICstLQ0KPiAgIGluY2x1ZGUvZHJtL2RybV9tb2R1bGUuaCAgICAgICAgICAgICAgICAgICAg
+ICB8IDEyNSArKysrKysrKysrKysrKysrKysNCj4gICAxMCBmaWxlcyBjaGFuZ2VkLCAxNDcg
+aW5zZXJ0aW9ucygrKSwgNTQgZGVsZXRpb25zKC0pDQo+ICAgY3JlYXRlIG1vZGUgMTAwNjQ0
+IGluY2x1ZGUvZHJtL2RybV9tb2R1bGUuaA0KPiANCg0KLS0gDQpUaG9tYXMgWmltbWVybWFu
+bg0KR3JhcGhpY3MgRHJpdmVyIERldmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMg
+R2VybWFueSBHbWJIDQpNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkN
+CihIUkIgMzY4MDksIEFHIE7DvHJuYmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90
+ZXYNCg==
 
-diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-index f12606aeff87..5d386037bf36 100644
---- a/drivers/dma/sf-pdma/sf-pdma.c
-+++ b/drivers/dma/sf-pdma/sf-pdma.c
-@@ -484,21 +484,24 @@ static int sf_pdma_probe(struct platform_device *pdev)
- 	struct sf_pdma *pdma;
- 	struct sf_pdma_chan *chan;
- 	struct resource *res;
--	int len, chans;
--	int ret;
-+	int len, ret;
- 	const enum dma_slave_buswidth widths =
- 		DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
- 		DMA_SLAVE_BUSWIDTH_4_BYTES | DMA_SLAVE_BUSWIDTH_8_BYTES |
- 		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
- 		DMA_SLAVE_BUSWIDTH_64_BYTES;
- 
--	chans = PDMA_NR_CH;
--	len = sizeof(*pdma) + sizeof(*chan) * chans;
-+	len = sizeof(*pdma) + sizeof(*chan) * PDMA_MAX_NR_CH;
- 	pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
- 	if (!pdma)
- 		return -ENOMEM;
- 
--	pdma->n_chans = chans;
-+	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
-+				   &pdma->n_chans);
-+	if (ret) {
-+		dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
-+		pdma->n_chans = PDMA_MAX_NR_CH;
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pdma->membase = devm_ioremap_resource(&pdev->dev, res);
-@@ -556,7 +559,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
- 	struct sf_pdma_chan *ch;
- 	int i;
- 
--	for (i = 0; i < PDMA_NR_CH; i++) {
-+	for (i = 0; i < pdma->n_chans; i++) {
- 		ch = &pdma->chans[i];
- 
- 		devm_free_irq(&pdev->dev, ch->txirq, ch);
-diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
-index 0c20167b097d..8127d792f639 100644
---- a/drivers/dma/sf-pdma/sf-pdma.h
-+++ b/drivers/dma/sf-pdma/sf-pdma.h
-@@ -22,11 +22,7 @@
- #include "../dmaengine.h"
- #include "../virt-dma.h"
- 
--#define PDMA_NR_CH					4
--
--#if (PDMA_NR_CH != 4)
--#error "Please define PDMA_NR_CH to 4"
--#endif
-+#define PDMA_MAX_NR_CH					4
- 
- #define PDMA_BASE_ADDR					0x3000000
- #define PDMA_CHAN_OFFSET				0x1000
-@@ -118,7 +114,7 @@ struct sf_pdma {
- 	void __iomem            *membase;
- 	void __iomem            *mappedbase;
- 	u32			n_chans;
--	struct sf_pdma_chan	chans[PDMA_NR_CH];
-+	struct sf_pdma_chan	chans[PDMA_MAX_NR_CH];
- };
- 
- #endif /* _SF_PDMA_H */
--- 
-2.31.1
+--------------iunzZnus0OOvar6uRVQ63mo9--
 
+--------------S57LvTDmYkVbG2Rpo7NPhccF
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
+
+-----BEGIN PGP SIGNATURE-----
+
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmHdRUgFAwAAAAAACgkQlh/E3EQov+An
+yw/+PqLQFIu9LBnng6lhUGfNB5ZqConOgdctjJWhLNtpFI/AHcnly8Qnqqjoo2va2Z7LwDPhOTxZ
+avQYDTjyJGTTvMTuTq7PCx+mJdgHIv/xRFN46VX/bmHQBKPgUlz9zW99HZUrIJeliSE5AWmIto15
+tfP7yj/1/ABelQGCofNYJIqPqNkxLJ2GedY8SVY0hPQfpR+ZijWEgo65PxkhW82N3qyUJI74+00w
+q4UWcP3/jnTo7Ag9jXfjZZRutE5Pl69lcvKAgBZJx8ehXFU9Hpc9DpCoSXpIK/yoKrxECQ8x9e6H
+3DNR1ey/wHxRGCPNR+d/OI9ugH2ZtZuW3oXCx4WzEBp8oLSFHLIifreH1y/Fu181cghfnjn+FYHn
+PMYhCGZjpOefYEdVCN8FQzbzO4Cgidit5dQYLKkx/YExe8q+d36sA7GODaKCvyg/zEVqrnVf2WjQ
+wIxtelo4lyYZQdpX662RB+Fm5qpOBn9G7S4uIOwCBMw7RS3WDmCtFJ3zGe+qlwJzl2Rez1N8VuIU
+wbejrZO5lC6VPPOrozFyLHJL2hJJc4q5fODYLnmHpyF3gMNH0rEpR6//DY62y1wY+C2+2NU0P5Bt
+ghPKFt/AdTyKdfZXWrxxYeTP3CUUG2/D3hpG7LuVf1HbfrI6on4rL6kqv2fPu/6c0RmMU6HLuR2J
+I0I=
+=dCKg
+-----END PGP SIGNATURE-----
+
+--------------S57LvTDmYkVbG2Rpo7NPhccF--
