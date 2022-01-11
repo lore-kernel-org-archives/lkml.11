@@ -2,88 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF23C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EEB4C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:26:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344061AbiAKR0W (ORCPT
+        id S1344105AbiAKR0h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:26:22 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43084 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343964AbiAKR0V (ORCPT
+        Tue, 11 Jan 2022 12:26:37 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:33894 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344110AbiAKR0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:26:21 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6568EB81C01;
-        Tue, 11 Jan 2022 17:26:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28C43C36AE3;
-        Tue, 11 Jan 2022 17:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641921979;
-        bh=+USC2U210eNPZ+gGshSrTxgkE8++ZidiVRNzC37IG8Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nUslgCvzMWyjlcrZ6gTSHZAyRbpXwq56Pos/HFPUqTWplqQtjCYmXA3t8yBCHDuyO
-         sk0YWNpoVY416UjjHojvnooAsygaXWxvkXu4uma7+Hmt9Ez8vaSgBoQe3TpozY2Pls
-         g4n6Cmsi3JCT1vVw8sWtM2c01DBtdOs8OOkDBgvlR53h73Z0ZTPoDU+Kf+k/rjkTsM
-         w6DYvgbwPDd+nFl3CmHKLorS23ug/0byIO/xvaWOsfEbt9Wc9esRYcB1YojSaGm+++
-         9c2rL2ybunT1F9GKF7MIo2hyTL0ZffIvZ6gZwFrL9xma/hYYVGaDQ1Y/SZEmz8xlIi
-         iVrSEbsFJ9QYQ==
-Date:   Tue, 11 Jan 2022 17:26:14 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Daniel Beer <daniel.beer@igorinstitute.com>
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andy Liu <andy-liu@ti.com>,
-        Derek Simkowiak <derek.simkowiak@igorinstitute.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH 2/2] ASoC: dt-bindings: add bindings for TI TAS5805M.
-Message-ID: <Yd29tk6ZJgDFDvVI@sirena.org.uk>
-References: <61dccc5c.1c69fb81.9af91.0df6@mx.google.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="pespAewDyHzmcXC6"
-Content-Disposition: inline
-In-Reply-To: <61dccc5c.1c69fb81.9af91.0df6@mx.google.com>
-X-Cookie: Many a family tree needs trimming.
+        Tue, 11 Jan 2022 12:26:32 -0500
+Received: from localhost.localdomain (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 57CC620B7185;
+        Tue, 11 Jan 2022 09:26:32 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 57CC620B7185
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1641921992;
+        bh=/LMgLhaArsfcFE415yTvwmoiKO7X/f0JHjs8fU6Vcn0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RcZkXVhCPCtu8IwFyaLtWJxqeY+1Sxqk431xUq2VhOpAdViQvgGNUPkvzltKFSfD7
+         7QO1gIQyxxE7Cpy3icbMZ2B/JAw2atyQZ3+OBsJm4DBdZae67Ln45dy2TQCTLgn65y
+         aowJBe9SeMmEhnM9LvqFOZ8jHd4BPWJnXfA7bdGY=
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     rostedt@goodmis.org, mhiramat@kernel.org
+Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        beaub@linux.microsoft.com
+Subject: [PATCH v9 03/12] user_events: Handle matching arguments from dyn_events
+Date:   Tue, 11 Jan 2022 09:25:53 -0800
+Message-Id: <20220111172602.2513-4-beaub@linux.microsoft.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220111172602.2513-1-beaub@linux.microsoft.com>
+References: <20220111172602.2513-1-beaub@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Ensures that when dynamic events requests a match with arguments that
+they match what is in the user_event.
 
---pespAewDyHzmcXC6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+---
+ kernel/trace/trace_events_user.c | 77 +++++++++++++++++++++++++++++++-
+ 1 file changed, 76 insertions(+), 1 deletion(-)
 
-On Tue, Jan 11, 2022 at 01:00:09PM +1300, Daniel Beer wrote:
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index bc4033111a57..05d0d7e0e6c9 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -39,6 +39,7 @@
+ #define MAX_EVENT_DESC 512
+ #define EVENT_NAME(user_event) ((user_event)->tracepoint.name)
+ #define MAX_FIELD_ARRAY_SIZE 1024
++#define MAX_FIELD_ARG_NAME 256
+ 
+ static char *register_page_data;
+ 
+@@ -695,13 +696,87 @@ static int user_event_free(struct dyn_event *ev)
+ 	return destroy_user_event(user);
+ }
+ 
++static bool user_field_match(struct ftrace_event_field *field, int argc,
++			     const char **argv, int *iout)
++{
++	char *field_name, *arg_name;
++	int len, pos, i = *iout;
++	bool colon = false, match = false;
++
++	if (i >= argc)
++		return false;
++
++	len = MAX_FIELD_ARG_NAME;
++	field_name = kmalloc(len, GFP_KERNEL);
++	arg_name = kmalloc(len, GFP_KERNEL);
++
++	if (!arg_name || !field_name)
++		goto out;
++
++	pos = 0;
++
++	for (; i < argc; ++i) {
++		if (i != *iout)
++			pos += snprintf(arg_name + pos, len - pos, " ");
++
++		pos += snprintf(arg_name + pos, len - pos, argv[i]);
++
++		if (strchr(argv[i], ';')) {
++			++i;
++			colon = true;
++			break;
++		}
++	}
++
++	pos = 0;
++
++	pos += snprintf(field_name + pos, len - pos, field->type);
++	pos += snprintf(field_name + pos, len - pos, " ");
++	pos += snprintf(field_name + pos, len - pos, field->name);
++
++	if (colon)
++		pos += snprintf(field_name + pos, len - pos, ";");
++
++	*iout = i;
++
++	match = strcmp(arg_name, field_name) == 0;
++out:
++	kfree(arg_name);
++	kfree(field_name);
++
++	return match;
++}
++
++static bool user_fields_match(struct user_event *user, int argc,
++			      const char **argv)
++{
++	struct ftrace_event_field *field, *next;
++	struct list_head *head = &user->fields;
++	int i = 0;
++
++	list_for_each_entry_safe_reverse(field, next, head, link)
++		if (!user_field_match(field, argc, argv, &i))
++			return false;
++
++	if (i != argc)
++		return false;
++
++	return true;
++}
++
+ static bool user_event_match(const char *system, const char *event,
+ 			     int argc, const char **argv, struct dyn_event *ev)
+ {
+ 	struct user_event *user = container_of(ev, struct user_event, devent);
++	bool match;
+ 
+-	return strcmp(EVENT_NAME(user), event) == 0 &&
++	match = strcmp(EVENT_NAME(user), event) == 0 &&
+ 		(!system || strcmp(system, USER_EVENTS_SYSTEM) == 0);
++
++	if (match && argc > 0)
++		match = user_fields_match(user, argc, argv);
++
++	return match;
+ }
+ 
+ static struct dyn_event_operations user_event_dops = {
+-- 
+2.17.1
 
-> +  ti,dsp-config: |
-> +    description: |
-> +      A byte sequence giving DSP configuration. Each pair of bytes, in
-> +      sequence, gives a register address and a value to write. If you
-> +      are taking this data from TI's PPC3 tool, this should contain only
-> +      the register writes following the 5ms delay.
-
-This doesn't look appropriate for DT, it looks more like it should be
-loaded as firmware since systems might want to support multiple
-configurations at runtime based on use casea.  It would also be good to
-have code to validate that any supplied coefficeints/firmware don't
-overwrite registers managed by the driver, just in case.
-
---pespAewDyHzmcXC6
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHdvbUACgkQJNaLcl1U
-h9B+qQf/RAvCDjhhHqPNniWnFRpjbe5z/2NuAauqqYPNQYky/skCoi7zrmxcDK4w
-rT59+xQSENPoqc+ribF28qL5PE1XMPyqU+IoplUZ01rwJ+gXBScRECdnpK0geABv
-jWnM2ofpoy1pgAweDEbTi9NiSBGrcOZUrIsN+vVEvKIe45BZ5mV+BmCTMY7m2zl7
-gY0Vvo2wNEhWQmL7B9+6WxNijM7V5SoS8S3KQ/kLudr6Q2ey2ZkD5qq2VpxAUV6t
-qqyDh/agk+j8uhyvn9Rpxem25jDl/7fM4kBMsKAKokYvvKb79rmwcA46mqYwK5D6
-mPevtQRnZDGKTZ/mC2IrK8t8xYx2pA==
-=uhKS
------END PGP SIGNATURE-----
-
---pespAewDyHzmcXC6--
