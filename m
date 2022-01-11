@@ -2,211 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 630F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84530C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 13:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241004AbiAKNrF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 08:47:05 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17339 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240678AbiAKNrD (ORCPT
+        id S241024AbiAKNrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 08:47:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241007AbiAKNrM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 08:47:03 -0500
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JYBmL2H7Tz9ryK;
-        Tue, 11 Jan 2022 21:45:54 +0800 (CST)
-Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 11 Jan 2022 21:47:01 +0800
-Received: from huawei.com (10.175.124.27) by dggpemm500004.china.huawei.com
- (7.185.36.219) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Tue, 11 Jan
- 2022 21:47:00 +0800
-From:   Laibin Qiu <qiulaibin@huawei.com>
-To:     <axboe@kernel.dk>, <ming.lei@redhat.com>, <john.garry@huawei.com>
-CC:     <martin.petersen@oracle.com>, <hare@suse.de>,
-        <johannes.thumshirn@wdc.com>, <andriy.shevchenko@linux.intel.com>,
-        <bvanassche@acm.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next v4] blk-mq: fix tag_get wait task can't be awakened
-Date:   Tue, 11 Jan 2022 22:02:16 +0800
-Message-ID: <20220111140216.1858823-1-qiulaibin@huawei.com>
-X-Mailer: git-send-email 2.22.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500004.china.huawei.com (7.185.36.219)
-X-CFilter-Loop: Reflected
+        Tue, 11 Jan 2022 08:47:12 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A815C06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:47:12 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id e5so11062903wmq.1
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 05:47:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=V4Ho2IGZqdwoGMLvVsdbX6aJWa5uUyOQYVyaaJ3Cu3A=;
+        b=Y8pBngNL3RVTpt6ySKbEGjfxwfDwX5TRfmIkGODc0Adjwx6WF36hvDc2dLcL8O/9Eh
+         ygt8DWoVNwHOD8p9vzB2x+DWz3lPpxMhJzPuxtggsLtUc+pqfNAzSWChHvN30ifTglAe
+         qqsTALhmM7R+qElP426WOnmgqAcWNCbtwyGhFvYJpzdvfEDuGYnIRzKssr06/DKdb/pZ
+         0nKOZQOtmEGqEn2U2ym8/f1qiGGt+K8ztTjY9m84d3HeA4J+qRKKkqz4CfTTuXK9t7RF
+         BJmJ1B6+PcoSFW9GTJcypzRHDQYZXGjw7bPn5VokxZ5pq63p+rm3/bJJrx69ZEGXO0PV
+         JaBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=V4Ho2IGZqdwoGMLvVsdbX6aJWa5uUyOQYVyaaJ3Cu3A=;
+        b=FQP6vF5x5R2G+/Z+MPe33rVkpDNuW3So78IQScR048qRoj9Az+68iR4rU2VO/bL2Uu
+         fOmJqky1Edkx0Ls2o01/ZIhPL7JOIOBJwsigY5uNELLFutdI0oz8WRZ7XXBTZ6xTLiRv
+         yb1rLO06oqY5f1hAaZ1zQ6vzitt7H3+HfPJp0pokZiW4Ej1x3gsKrEuBFA2BC9Jl5q7l
+         iy5NfK7Z33uF5fm1I0A/OPP3ArJQIPp7x3ndj83wul4gQJ687MfbcE3Z9mstGUgajRmM
+         qvGgWc6lg0Tg7+x6+r5BP2TaCakZKyZHb06HY8IYxpa43TSUmyqQHvxTn9RrT5BeKE4I
+         Mm9Q==
+X-Gm-Message-State: AOAM5330XdLEcUu0tr2Snz7cjGQA7ttNo7mjJoZXPLlRDrJartNRNksv
+        24OuOrCJDkZT4ygXbEtXSRm5VQ==
+X-Google-Smtp-Source: ABdhPJz4VnDxBysmfgadlrJfN1QJJpAN7dF733aeL7CaJ0TZUhZhzxmZP9158C6uzDrG7nGBD4k46g==
+X-Received: by 2002:a1c:7517:: with SMTP id o23mr2564044wmc.120.1641908830813;
+        Tue, 11 Jan 2022 05:47:10 -0800 (PST)
+Received: from localhost.localdomain ([2a01:e0a:f:6020:44fe:4c24:d946:283b])
+        by smtp.gmail.com with ESMTPSA id az1sm9618411wrb.104.2022.01.11.05.47.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 05:47:10 -0800 (PST)
+From:   Vincent Guittot <vincent.guittot@linaro.org>
+To:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
+        rickyiu@google.com, odin@uged.al
+Cc:     sachinp@linux.vnet.ibm.com, naresh.kamboju@linaro.org,
+        Vincent Guittot <vincent.guittot@linaro.org>
+Subject: [PATCH v3 0/4]   sched/pelt: Relax the sync of *_sum with *_avg
+Date:   Tue, 11 Jan 2022 14:46:55 +0100
+Message-Id: <20220111134659.24961-1-vincent.guittot@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case of shared tags, there might be more than one hctx which
-allocates from the same tags, and each hctx is limited to allocate at
-most:
-        hctx_max_depth = max((bt->sb.depth + users - 1) / users, 4U);
+Rick reported performance regressions in bugzilla because of cpu
+frequency being lower than before:
+    https://bugzilla.kernel.org/show_bug.cgi?id=215045
 
-tag idle detection is lazy, and may be delayed for 30sec, so there
-could be just one real active hctx(queue) but all others are actually
-idle and still accounted as active because of the lazy idle detection.
-Then if wake_batch is > hctx_max_depth, driver tag allocation may wait
-forever on this real active hctx.
+He bisected the problem to:
+commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
 
-Fix this by recalculating wake_batch when inc or dec active_queues.
+More details are available in commit message of patch 1.
 
-Fixes: 0d2602ca30e41 ("blk-mq: improve support for shared tags maps")
-Suggested-by: Ming Lei <ming.lei@redhat.com>
-Suggested-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Laibin Qiu <qiulaibin@huawei.com>
----
- block/blk-mq-tag.c      | 39 ++++++++++++++++++++++++++++++++-------
- include/linux/sbitmap.h | 11 +++++++++++
- lib/sbitmap.c           | 22 +++++++++++++++++++---
- 3 files changed, 62 insertions(+), 10 deletions(-)
+This patchset reverts the commit above and adds several checks when
+propagating the changes in the hierarchy to make sure that we still have
+coherent util_avg and util_sum.
 
-diff --git a/block/blk-mq-tag.c b/block/blk-mq-tag.c
-index e55a6834c9a6..48b00d56141a 100644
---- a/block/blk-mq-tag.c
-+++ b/block/blk-mq-tag.c
-@@ -16,6 +16,21 @@
- #include "blk-mq-sched.h"
- #include "blk-mq-tag.h"
- 
-+/*
-+ * Recalculate wakeup batch when tag is shared by hctx.
-+ */
-+static void blk_mq_update_wake_batch(struct blk_mq_tags *tags,
-+		unsigned int users)
-+{
-+	if (!users)
-+		return;
-+
-+	sbitmap_queue_recalculate_wake_batch(&tags->bitmap_tags,
-+			users);
-+	sbitmap_queue_recalculate_wake_batch(&tags->breserved_tags,
-+			users);
-+}
-+
- /*
-  * If a previously inactive queue goes active, bump the active user count.
-  * We need to do this before try to allocate driver tag, then even if fail
-@@ -24,18 +39,25 @@
-  */
- bool __blk_mq_tag_busy(struct blk_mq_hw_ctx *hctx)
- {
-+	unsigned int users;
- 	if (blk_mq_is_shared_tags(hctx->flags)) {
- 		struct request_queue *q = hctx->queue;
- 
--		if (!test_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags) &&
--		    !test_and_set_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags))
--			atomic_inc(&hctx->tags->active_queues);
-+		if (test_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags) ||
-+		    test_and_set_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags)) {
-+			return true;
-+		}
- 	} else {
--		if (!test_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state) &&
--		    !test_and_set_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state))
--			atomic_inc(&hctx->tags->active_queues);
-+		if (test_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state) ||
-+		    test_and_set_bit(BLK_MQ_S_TAG_ACTIVE, &hctx->state)) {
-+			return true;
-+		}
- 	}
- 
-+	users = atomic_inc_return(&hctx->tags->active_queues);
-+
-+	blk_mq_update_wake_batch(hctx->tags, users);
-+
- 	return true;
- }
- 
-@@ -56,6 +78,7 @@ void blk_mq_tag_wakeup_all(struct blk_mq_tags *tags, bool include_reserve)
- void __blk_mq_tag_idle(struct blk_mq_hw_ctx *hctx)
- {
- 	struct blk_mq_tags *tags = hctx->tags;
-+	unsigned int users;
- 
- 	if (blk_mq_is_shared_tags(hctx->flags)) {
- 		struct request_queue *q = hctx->queue;
-@@ -68,7 +91,9 @@ void __blk_mq_tag_idle(struct blk_mq_hw_ctx *hctx)
- 			return;
- 	}
- 
--	atomic_dec(&tags->active_queues);
-+	users = atomic_dec_return(&tags->active_queues);
-+
-+	blk_mq_update_wake_batch(tags, users);
- 
- 	blk_mq_tag_wakeup_all(tags, false);
- }
-diff --git a/include/linux/sbitmap.h b/include/linux/sbitmap.h
-index fc0357a6e19b..95df357ec009 100644
---- a/include/linux/sbitmap.h
-+++ b/include/linux/sbitmap.h
-@@ -415,6 +415,17 @@ static inline void sbitmap_queue_free(struct sbitmap_queue *sbq)
- 	sbitmap_free(&sbq->sb);
- }
- 
-+/**
-+ * sbitmap_queue_recalculate_wake_batch() - Recalculate wake batch
-+ * @sbq: Bitmap queue to recalculate wake batch.
-+ * @users: Number of shares.
-+ *
-+ * Like sbitmap_queue_update_wake_batch(), this will calculate wake batch
-+ * by depth. This interface is for HCTX shared tags or queue shared tags.
-+ */
-+void sbitmap_queue_recalculate_wake_batch(struct sbitmap_queue *sbq,
-+					    unsigned int users);
-+
- /**
-  * sbitmap_queue_resize() - Resize a &struct sbitmap_queue.
-  * @sbq: Bitmap queue to resize.
-diff --git a/lib/sbitmap.c b/lib/sbitmap.c
-index 2709ab825499..94b3272effd8 100644
---- a/lib/sbitmap.c
-+++ b/lib/sbitmap.c
-@@ -457,10 +457,9 @@ int sbitmap_queue_init_node(struct sbitmap_queue *sbq, unsigned int depth,
- }
- EXPORT_SYMBOL_GPL(sbitmap_queue_init_node);
- 
--static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
--					    unsigned int depth)
-+static inline void __sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
-+					    unsigned int wake_batch)
- {
--	unsigned int wake_batch = sbq_calc_wake_batch(sbq, depth);
- 	int i;
- 
- 	if (sbq->wake_batch != wake_batch) {
-@@ -476,6 +475,23 @@ static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
- 	}
- }
- 
-+static void sbitmap_queue_update_wake_batch(struct sbitmap_queue *sbq,
-+					    unsigned int depth)
-+{
-+	unsigned int wake_batch = sbq_calc_wake_batch(sbq, depth);
-+
-+	__sbitmap_queue_update_wake_batch(sbq, wake_batch);
-+}
-+
-+void sbitmap_queue_recalculate_wake_batch(struct sbitmap_queue *sbq,
-+					    unsigned int users)
-+{
-+	unsigned int wake_batch = clamp_t(unsigned int,
-+			(sbq->sb.depth + users - 1) / users, 4U, SBQ_WAKE_BATCH);
-+	__sbitmap_queue_update_wake_batch(sbq, wake_batch);
-+}
-+EXPORT_SYMBOL_GPL(sbitmap_queue_recalculate_wake_batch);
-+
- void sbitmap_queue_resize(struct sbitmap_queue *sbq, unsigned int depth)
- {
- 	sbitmap_queue_update_wake_batch(sbq, depth);
+Dietmar found a simple way to reproduce the WARN fixed by 
+commit 1c35b07e6d39 ("sched/fair: Ensure _sum and _avg values stay consistent")
+by looping on hackbench in several different sched group levels.
+
+This patchset as run on the reproducer with success but it probably needs
+more tests by people who faced the WARN before.
+
+The changes done on util_sum have been also applied to runnable_sum and
+load_sum which faces the same rounding problem although this has not been
+reflected in measurable performance impact.
+
+Changes for v3:
+- split patch 1 in 2 patches
+  - One to fix rick's regression
+  - One to apply same changes in other places
+- some typos
+- move main comment so it appears in the 1st patch 
+
+Changes for v2:
+- fix wrong update of load_sum
+- move a change from patch 3 to patch 2
+- update patch 3 commit message
+
+Vincent Guittot (4):
+  sched/pelt: Relax the sync of util_sum with util_avg
+  sched/pelt: Continue to relax the sync of util_sum with util_avg
+  sched/pelt: Relax the sync of runnable_sum with runnable_avg
+  sched/pelt: Relax the sync of load_sum with load_avg
+
+ kernel/sched/fair.c | 113 +++++++++++++++++++++++++++++---------------
+ 1 file changed, 75 insertions(+), 38 deletions(-)
+
 -- 
-2.22.0
+2.17.1
 
