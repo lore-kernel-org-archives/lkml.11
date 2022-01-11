@@ -2,58 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0AF8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 20:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243021AbiAKUP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 15:15:28 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:59746
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243111AbiAKUPZ (ORCPT
+        id S243615AbiAKUPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 15:15:37 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:37776
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243124AbiAKUPZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 15:15:25 -0500
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 95CD13F175
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 20:15:22 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 2C52B3F175
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 20:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641932122;
-        bh=yNEEeI5zCJmr7xVf7gFV3sEIRbcvfS4VZZqxLHMMY6k=;
+        s=20210705; t=1641932125;
+        bh=zzMyOeYd4lATlu6SXmtUhZks+PFFAFcrD95at+LMCx4=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=l5P+3HhlOutfnfiGmChkLNyP9OGNBQ1o30O0S/6DlfYv1s4F9aPpULR1dUlFu5lkW
-         DLdgDVpu+6nk0HMAy6+O3cXCbLCRRg+UOIwC4OnU3Ox6/SEdp+Rs8o7iibHEtMj0C+
-         P48ay7+qx9kd62vRy3bDqq4J9yiGvAGxg7akWX9J9cT7W8cAkOYoCiPOhc001bNN0t
-         8y+OphC4+g05ckG9qEE34e1nnhqWNhmqE4Xow4IlNGrNGS2pLa0O7+QFrkbvHsdYZ2
-         QJdpv59TL2bUdLlkx/3IAMZ97WejKsY4IRMfePD7lI3vx0+pOUJY4T+Xt1zfdRCrgw
-         PxM49DIeTPsSw==
-Received: by mail-ed1-f72.google.com with SMTP id g11-20020a056402090b00b003f8fd1ac475so215032edz.1
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:15:22 -0800 (PST)
+        b=lurv6+otXM1GB83kequpHEDpLGWoqQqzefoQaobmeVMwa2aFG30Ww84bNz0osYOaQ
+         6xB03kUumyilzMA9k/6n3SwErvBZva8ZmFtvqUG5VyUarjiDOHX4YNUR6bGU6vXgr2
+         tcPlcQiBybP6w4y0kbGoGwKXAQ3akqWRNDPAYi/q7YwcjQ7TB6O8pvad4jLsA3N9v6
+         fjmk+0npSYJqqEthyUAmthefjcMwRQMLz2Z0IZ5nuPyb3aaDR2+5utRgX5qRQiXu9s
+         fYN25ufep+95sFKXgXT4u85eol1O2EoW5tsbrhkwjL6dLyWW10x8kHcZJZT6pL07xQ
+         AN5HS+Xr/hBKw==
+Received: by mail-ed1-f71.google.com with SMTP id i9-20020a05640242c900b003fe97faab62so187342edc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 12:15:25 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yNEEeI5zCJmr7xVf7gFV3sEIRbcvfS4VZZqxLHMMY6k=;
-        b=xFDYh+pwwXygzcOyqkuiqhHVHF7Rcfqzo585e0+ZVSG4iG6V9IJke5A5iXEcgGqGMF
-         25i8gEVU9limE+VxBp7qWRA1Be3LX/ltvKUR7lTgoH85tJ0lpTojq+cCyDfWlREibdI1
-         adLYsJjmYJ1P6p6e1BlyeR2b9JVvmYcm4Lg2TLQiHN7motHGRNlw+oRkSc2kBK4HtPyl
-         kuSRYH7mgRBUik5m/E3T/6EwFoz128O4/DXY6mUgTl275plVT0UDvBgekq9xvS/6BwLb
-         kjXNfF87uHToo5gn6TgxkmOaeEjED1xs9bSBNQ1Z0DwqmD3K8DwF+0vHTqd6ER0LOZid
-         +BHg==
-X-Gm-Message-State: AOAM530Vh4qNXXYEBuRm4G2+L2doaZ+Tjw7IggT1Zs5SbAB2VW2+Iv3P
-        6OGnPt99K4szWEXAPB6Gj2/3WUQjzm4SPSAbLsulxCr2pTqkKOtykLmDnrBGhwCTISWseAaymet
-        nPqOcYR1I21qpS9hdodZAMpDrrGM/HiggnD7GcG39+A==
-X-Received: by 2002:aa7:da50:: with SMTP id w16mr5952130eds.41.1641932118820;
-        Tue, 11 Jan 2022 12:15:18 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzKzK3Ptpd9d437ZzvCcxxfRuUl4Nu7v0FlOhHb5BgeOdhnGvZZDtlcZwgwq6CWiep3IXnraA==
-X-Received: by 2002:aa7:da50:: with SMTP id w16mr5952118eds.41.1641932118626;
-        Tue, 11 Jan 2022 12:15:18 -0800 (PST)
+        bh=zzMyOeYd4lATlu6SXmtUhZks+PFFAFcrD95at+LMCx4=;
+        b=WQE0Ds/YdUns9wPQkznUpKH5bVcAkLOOb2fRVvqSAaHtGLy0a/5JVZ/tVdnOxMamt7
+         AZNaiGP3SU5W6zhILHTVfGpcOOi8HUL8Y1k90NoOR3gqyEU0P5YvwnBOJMTGA6hEKRyT
+         FHLVAcphRqjnDojR/iB+k/LwO3GYXcAYoADH7CV1vV8GN9LhMMGoE48AXgSDvpkOWJ6h
+         0HdhyqisoZKP5/v+X49B6ZPTTZoITzCvM9/aTmTfvBq6dlpT3XXR+GFOo2iKvdNibQXD
+         7EUDfxowgriVYg9NVQYTBfhiJI2t3H0pHyqeSZdkOC5ODHm0kAADdfSDyJU//eMcxdxe
+         5EIQ==
+X-Gm-Message-State: AOAM532FxEJ6VzAZ/beE7/P12g1NpfOJJK1y2huVMeO0a6W6MVe4wYUl
+        MYRdO7HPzCskPjThwycW32MFEL4n/9lRVYhErponE2ucr6Q59y8tfWHTmXi8RIi/d0QMjDRSeMB
+        cIMM2yj14Q9YDcjW0/TpVzKG2qqOi3UItNJylMAxEOQ==
+X-Received: by 2002:a17:907:6ea8:: with SMTP id sh40mr4902262ejc.585.1641932124327;
+        Tue, 11 Jan 2022 12:15:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwqjRnzF/+d9jHmNpWhm2DKKgT/66sOUCKGXI9iCOvSb9auVL55voSk4GBjC8XgmId7y2NOUg==
+X-Received: by 2002:a17:907:6ea8:: with SMTP id sh40mr4902244ejc.585.1641932124123;
+        Tue, 11 Jan 2022 12:15:24 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id f23sm3852212ejj.128.2022.01.11.12.15.17
+        by smtp.gmail.com with ESMTPSA id f23sm3852212ejj.128.2022.01.11.12.15.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 12:15:18 -0800 (PST)
+        Tue, 11 Jan 2022 12:15:23 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Tomasz Figa <tomasz.figa@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
@@ -67,9 +67,9 @@ Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
         Sam Protsenko <semen.protsenko@linaro.org>,
         Chanho Park <chanho61.park@samsung.com>,
         Alim Akhtar <alim.akhtar@gmail.com>
-Subject: [PATCH v2 02/28] pinctrl: samsung: accept GPIO bank nodes with a suffix
-Date:   Tue, 11 Jan 2022 21:14:00 +0100
-Message-Id: <20220111201426.326777-3-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH v2 06/28] ARM: dts: exynos: simplify PMIC DVS pin configuration in Peach Pit
+Date:   Tue, 11 Jan 2022 21:14:04 +0100
+Message-Id: <20220111201426.326777-7-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220111201426.326777-1-krzysztof.kozlowski@canonical.com>
 References: <20220111201426.326777-1-krzysztof.kozlowski@canonical.com>
@@ -79,101 +79,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Existing dt-bindings expected that each GPIO/pin bank within pin
-controller has its own node with name matching the bank (e.g. gpa0,
-gpx2) and "gpio-controller" property.  The node name is then used for
-matching between driver data and DTS.
-
-Newly introduced dtschema expects to have nodes ending with "-gpio-bank"
-suffix, so rewrite bank-devicetree matching to look for old and new
-style of naming.
+The pin configuration for PMIC DVS (pmic-dvs-2 and pmic-dvs-3) are
+exactly the same, so merge them.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- drivers/pinctrl/samsung/pinctrl-samsung.c | 57 ++++++++++++++++++-----
- 1 file changed, 45 insertions(+), 12 deletions(-)
+ arch/arm/boot/dts/exynos5420-peach-pit.dts | 11 ++---------
+ 1 file changed, 2 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
-index b19ebc43d886..b3a5bc473841 100644
---- a/drivers/pinctrl/samsung/pinctrl-samsung.c
-+++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
-@@ -1012,13 +1012,56 @@ static void samsung_banks_of_node_put(struct samsung_pinctrl_drv_data *d)
- 		of_node_put(bank->of_node);
- }
+diff --git a/arch/arm/boot/dts/exynos5420-peach-pit.dts b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+index 1ae5528e9ebf..e8819659081a 100644
+--- a/arch/arm/boot/dts/exynos5420-peach-pit.dts
++++ b/arch/arm/boot/dts/exynos5420-peach-pit.dts
+@@ -212,7 +212,7 @@ max77802: pmic@9 {
+ 		interrupts = <1 IRQ_TYPE_NONE>;
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&max77802_irq>, <&pmic_selb>,
+-			    <&pmic_dvs_1>, <&pmic_dvs_2>, <&pmic_dvs_3>;
++			    <&pmic_dvs_1>, <&pmic_dvs_2>;
+ 		wakeup-source;
+ 		reg = <0x9>;
+ 		#clock-cells = <1>;
+@@ -892,14 +892,7 @@ &sd1_cmd {
  
-+/*
-+ * Iterate over all driver pin banks to find one matching the name of node,
-+ * skipping optional "-gpio" node suffix. When found, assign node to the bank.
-+ */
-+static void samsung_banks_of_node_get(struct device *dev,
-+				      struct samsung_pinctrl_drv_data *d,
-+				      struct device_node *node)
-+{
-+	const char *suffix = "-gpio-bank";
-+	struct samsung_pin_bank *bank;
-+	struct device_node *child;
-+	/* Pin bank names are up to 4 characters */
-+	char node_name[20];
-+	unsigned int i;
-+	size_t len;
-+
-+	bank = d->pin_banks;
-+	for (i = 0; i < d->nr_banks; ++i, ++bank) {
-+		strscpy(node_name, bank->name, sizeof(node_name));
-+		len = strlcat(node_name, suffix, sizeof(node_name));
-+		if (len >= sizeof(node_name)) {
-+			dev_err(dev, "Too long pin bank name '%s', ignoring\n",
-+				bank->name);
-+			continue;
-+		}
-+
-+		for_each_child_of_node(node, child) {
-+			if (!of_find_property(child, "gpio-controller", NULL))
-+				continue;
-+			if (of_node_name_eq(child, node_name))
-+				break;
-+			else if (of_node_name_eq(child, bank->name))
-+				break;
-+		}
-+
-+		if (child)
-+			bank->of_node = child;
-+		else
-+			dev_warn(dev, "Missing node for bank %s - invalid DTB\n",
-+				 bank->name);
-+		/* child reference dropped in samsung_drop_banks_of_node() */
-+	}
-+}
-+
- /* retrieve the soc specific data */
- static const struct samsung_pin_ctrl *
- samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
- 			     struct platform_device *pdev)
- {
- 	struct device_node *node = pdev->dev.of_node;
--	struct device_node *np;
- 	const struct samsung_pin_bank_data *bdata;
- 	const struct samsung_pin_ctrl *ctrl;
- 	struct samsung_pin_bank *bank;
-@@ -1082,17 +1125,7 @@ samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
- 	 */
- 	d->virt_base = virt_base[0];
- 
--	for_each_child_of_node(node, np) {
--		if (!of_find_property(np, "gpio-controller", NULL))
--			continue;
--		bank = d->pin_banks;
--		for (i = 0; i < d->nr_banks; ++i, ++bank) {
--			if (of_node_name_eq(np, bank->name)) {
--				bank->of_node = np;
--				break;
--			}
--		}
--	}
-+	samsung_banks_of_node_get(&pdev->dev, d, node);
- 
- 	d->pin_base = pin_base;
- 	pin_base += d->nr_pins;
+ &pinctrl_2 {
+ 	pmic_dvs_2: pmic-dvs-2 {
+-		samsung,pins = "gpj4-2";
+-		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
+-		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+-		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
+-	};
+-
+-	pmic_dvs_3: pmic-dvs-3 {
+-		samsung,pins = "gpj4-3";
++		samsung,pins = "gpj4-2", "gpj4-3";
+ 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
+ 		samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
+ 		samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV1>;
 -- 
 2.32.0
 
