@@ -2,208 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F421C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347419AbiAKEH3 (ORCPT
+        id S1347442AbiAKEIv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 23:07:29 -0500
-Received: from foss.arm.com ([217.140.110.172]:41626 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232625AbiAKEHX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 23:07:23 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E2921FB;
-        Mon, 10 Jan 2022 20:07:23 -0800 (PST)
-Received: from [10.163.72.245] (unknown [10.163.72.245])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 563423F774;
-        Mon, 10 Jan 2022 20:07:20 -0800 (PST)
-Subject: Re: [PATCH] mm/migration: Add trace events for THP migrations
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     linux-mm@kvack.org, Ingo Molnar <mingo@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zi Yan <ziy@nvidia.com>,
-        Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        linux-kernel@vger.kernel.org
-References: <1641531575-28524-1-git-send-email-anshuman.khandual@arm.com>
- <20220110120351.44e60aed@gandalf.local.home>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-Message-ID: <389876c9-dc71-ccf8-1c8a-8e30b55f1b0a@arm.com>
-Date:   Tue, 11 Jan 2022 09:37:23 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Mon, 10 Jan 2022 23:08:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56460 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232625AbiAKEIu (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 23:08:50 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F62BC06173F;
+        Mon, 10 Jan 2022 20:08:50 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JXxyR3L1Pz4y4c;
+        Tue, 11 Jan 2022 15:08:47 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641874128;
+        bh=AUuXzaLZAhyKaIShQ1tVhL+TJ7Ty1V/fGkqASMoF3GY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=EGcjZr61k1SCAcptEzunnd2ky7oq39+ptpIEh0OvTjBVIHEP0Le3AidcyENPue5IC
+         maUZ23JZAAKl4AkqjTatzdLRKHb+wrApTANoZ4aL33I866wYXlCLOGTleTlykp25do
+         iS8jctowqf4Glx4OW6Oijown2qdhcm4Mo0ksIux79CfAJC4hQCLPM93NcS+/blwjkq
+         u6SOejj3jfXOnOloRgY80Sd2rePLQRJVyk5QWfAT+6AOIFiKkrlLY2k9ps6GvY7VW4
+         Y8/mPozRUv5DwZRQmeLFB3LgmroqTq1M2zTqviYA1skoHoQllBfQrfOu3h70gPTT4h
+         QhfWjfxsf0Jug==
+Date:   Tue, 11 Jan 2022 15:08:46 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Jiri Kosina <jikos@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Jiri Kosina <jkosina@suse.cz>, Joe Perches <joe@perches.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Miguel Ojeda <ojeda@kernel.org>
+Subject: linux-next: manual merge of the trivial tree with the jc_docs tree
+Message-ID: <20220111150846.563d051f@canb.auug.org.au>
 MIME-Version: 1.0
-In-Reply-To: <20220110120351.44e60aed@gandalf.local.home>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/=0JOdCy1tHQ+jqPMkcyuvsQ";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+--Sig_/=0JOdCy1tHQ+jqPMkcyuvsQ
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
+Hi all,
 
-On 1/10/22 10:33 PM, Steven Rostedt wrote:
-> On Fri,  7 Jan 2022 10:29:35 +0530
-> Anshuman Khandual <anshuman.khandual@arm.com> wrote:
-> 
->> This adds two trace events for PMD based THP migration without split. These
->> events closely follow the implementation details like setting and removing
->> of PMD migration entries, which are essential operations for THP migration.
->>
->> Cc: Steven Rostedt <rostedt@goodmis.org>
->> Cc: Ingo Molnar <mingo@redhat.com>
->> Cc: Andrew Morton <akpm@linux-foundation.org>
->> Cc: Zi Yan <ziy@nvidia.com>
->> Cc: Naoya Horiguchi <n-horiguchi@ah.jp.nec.com>
->> Cc: John Hubbard <jhubbard@nvidia.com>
->> Cc: Matthew Wilcox <willy@infradead.org>
->> Cc: linux-mm@kvack.org
->> Cc: linux-kernel@vger.kernel.org
->> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->> ---
->> This applies on v5.16-rc8
->>
->> Changes in V1:
->>
->> - Dropped mm, pmdp, page arguments from trace
->> - Updated trace argument names and output format
->>
->> Changes in RFC:
->>
->> https://lore.kernel.org/all/1640328398-20698-1-git-send-email-anshuman.khandual@arm.com/
->>
->>  include/trace/events/thp.h | 37 +++++++++++++++++++++++++++++++++++++
->>  mm/huge_memory.c           |  5 +++++
->>  2 files changed, 42 insertions(+)
->>
->> diff --git a/include/trace/events/thp.h b/include/trace/events/thp.h
->> index d7fbbe551841..193a555aa2ea 100644
->> --- a/include/trace/events/thp.h
->> +++ b/include/trace/events/thp.h
->> @@ -83,6 +83,43 @@ TRACE_EVENT(hugepage_splitting,
->>  		      __entry->addr, __entry->pte)
->>  );
->>  
->> +TRACE_EVENT(set_migration_pmd,
->> +
->> +	TP_PROTO(unsigned long addr, unsigned long pmd),
->> +
->> +	TP_ARGS(addr, pmd),
->> +
->> +	TP_STRUCT__entry(
->> +		__field(unsigned long, addr)
->> +		__field(unsigned long, pmd)
->> +	),
->> +
->> +	TP_fast_assign(
->> +		__entry->addr = addr;
->> +		__entry->pmd = pmd;
->> +	),
->> +
->> +	TP_printk("create pmd migration entry addr=%lx, pmd=%lx", __entry->addr, __entry->pmd)
->> +);
->> +
->> +TRACE_EVENT(remove_migration_pmd,
->> +
->> +	TP_PROTO(unsigned long addr, unsigned long pmd),
->> +
->> +	TP_ARGS(addr, pmd),
->> +
->> +	TP_STRUCT__entry(
->> +		__field(unsigned long, addr)
->> +		__field(unsigned long, pmd)
->> +	),
->> +
->> +	TP_fast_assign(
->> +		__entry->addr = addr;
->> +		__entry->pmd = pmd;
->> +	),
->> +
->> +	TP_printk("remove pmd migration entry addr=%lx, val=%lx", __entry->addr, __entry->pmd)
-> 
-> The two above are pretty much identical, except the first one has "pmd=%lx"
-> for the pmd, and the second has "val=%lx" for the pmd. I'd suggest they
-> both be the same, and then you could save memory by combining the two into
+Today's linux-next merge of the trivial tree got a conflict in:
 
-Right, both can be the same 'pmd=%lx'.
+  Documentation/process/submitting-patches.rst
 
-> DECLARE_EVENT_CLASS() / DEFINE_EVENT() macros:
-> 
-> DECLARE_EVENT_CLASS(migration_pmd,
-> 
-> 	TP_PROTO(unsigned long addr, unsigned long pmd),
-> 
-> 	TP_ARGS(addr, pmd),
-> 
-> 	TP_STRUCT__entry(
-> 		__field(unsigned long, addr)
-> 		__field(unsigned long, pmd)
-> 	),
-> 
-> 	TP_fast_assign(
-> 		__entry->addr = addr;
-> 		__entry->pmd = pmd;
-> 	),
-> 
-> 	TP_printk("create pmd migration entry addr=%lx, pmd=%lx", __entry->addr, __entry->pmd)
-> );
-> 
-> DEFINE_EVENT(migration_pmd, set_migration_pmd,
-> 	TP_PROTO(unsigned long addr, unsigned long pmd),
-> 	TP_ARGS(addr, pmd)
-> );
-> 
-> DEFINE_EVENT(migration_pmd, remove_migration_pmd,
-> 	TP_PROTO(unsigned long addr, unsigned long pmd),
-> 	TP_ARGS(addr, pmd)
-> );
-> 
-> And then you have the same thing, but it combines the code which saves both
-> data and text.
+between commit:
 
-But both need to print different messages. Hence I am wondering whether
-a (const char *) based message can be passed down here as well.
+  6c5ccd24ff17 ("Remove mentions of the Trivial Patch Monkey")
 
-create pmd migration entry addr=%lx, pmd=%lx
-remove pmd migration entry addr=%lx, pmd=%lx
+from the jc_docs tree and commit:
 
-> 
-> -- Steve
-> 
->> +);
->>  #endif /* _TRACE_THP_H */
->>  
->>  /* This part must be outside protection */
->> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
->> index e5483347291c..d0adc019afe0 100644
->> --- a/mm/huge_memory.c
->> +++ b/mm/huge_memory.c
->> @@ -39,6 +39,9 @@
->>  #include <asm/pgalloc.h>
->>  #include "internal.h"
->>  
->> +#define CREATE_TRACE_POINTS
->> +#include <trace/events/thp.h>
->> +
->>  /*
->>   * By default, transparent hugepage support is disabled in order to avoid
->>   * risking an increased memory footprint for applications that are not
->> @@ -3173,6 +3176,7 @@ void set_pmd_migration_entry(struct page_vma_mapped_walk *pvmw,
->>  	set_pmd_at(mm, address, pvmw->pmd, pmdswp);
->>  	page_remove_rmap(page, true);
->>  	put_page(page);
->> +	trace_set_migration_pmd(address, pmd_val(pmdswp));
->>  }
->>  
->>  void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
->> @@ -3206,5 +3210,6 @@ void remove_migration_pmd(struct page_vma_mapped_walk *pvmw, struct page *new)
->>  	if ((vma->vm_flags & VM_LOCKED) && !PageDoubleMap(new))
->>  		mlock_vma_page(new);
->>  	update_mmu_cache_pmd(vma, address, pvmw->pmd);
->> +	trace_remove_migration_pmd(address, pmd_val(pmde));
->>  }
->>  #endif
-> 
+  081c8919b02b ("Documentation: remove trivial tree")
+
+from the trivial tree.
+
+I fixed it up (it was just an empty line difference, I used the latter)
+and can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/=0JOdCy1tHQ+jqPMkcyuvsQ
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHdAs4ACgkQAVBC80lX
+0Gzc7ggAphwnAjkzJ55fag9g5mOUbUI8JERKoIO4Ttm8kLjBBl3451v4xFyakr4v
+r3AI/XOijuFbCKQzHh91aJN7HJK4cKLjigyDPoe27n/80W4JPbHNXZlEKKDqiYrH
+miOMycni91DZVtc89CX8t6RVJBHMgZQ94FsGJbn3PxoyOOFINyZZovGvkmJecGo6
+SRQIbuIuZPAfV8gSI38VkXlRy/b/hDUTaC0Iwgg6K6LybQwOg4wOj8+Rqd/LhA2k
+L2gv5z1V+Guzp8OR90Gv4gucbSkh+wbtNsPdEVDrjghjWKOzKHrynKA17d43YTHF
+Vliw/7OZ+2k0CZWRWP4OD6ghZY5f3w==
+=DGOX
+-----END PGP SIGNATURE-----
+
+--Sig_/=0JOdCy1tHQ+jqPMkcyuvsQ--
