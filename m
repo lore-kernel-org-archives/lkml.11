@@ -2,378 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A9F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 04:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347888AbiAKEhX (ORCPT
+        id S1347905AbiAKEhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 23:37:23 -0500
-Received: from mga06.intel.com ([134.134.136.31]:48511 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234012AbiAKEhW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 23:37:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641875842; x=1673411842;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CGnlIWPi/hH+iO9Qh4brMlKzt8eJJ01Gch7+Zshwins=;
-  b=TslNHj/vgxuvnVnsS3iHgeajyGtCZOiWejXlYLQdvRUyzLJ3AEd+rPUt
-   zZnepFHrtTmFcxEq/HuUSCTrEMpaCc3hDRpjSQ7g4e8wZVpnGMj3NH97h
-   3q96nEP3kFj5VmMmw/GVx3hfF+kyf+tY9TQVqAK/4nzQ8YTUGQYfUL5Y+
-   MOgBeUGWJ/KhYdapwAztQghH00Zk0Rd5MBCYM6Ke6DFfPeoSCfkDLEjDm
-   to4R5qE4fxbm40W73F/H75O7S1kGNEx95Ou0VCyLsj9cBRnNXCF7xsSy3
-   McZgJTNk40jpR5wtC7nyvsN6uKskoKJWOCa2LfXdH7E1mwUVSxGDvDqck
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="304137919"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="304137919"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 20:37:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="474388889"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.68])
-  by orsmga006.jf.intel.com with ESMTP; 10 Jan 2022 20:37:14 -0800
-Date:   Tue, 11 Jan 2022 12:29:20 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Lizhi Hou <lizhi.hou@xilinx.com>
-Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        maxz@xilinx.com, sonal.santan@xilinx.com, yliu@xilinx.com,
-        michal.simek@xilinx.com, stefanos@xilinx.com,
-        devicetree@vger.kernel.org, trix@redhat.com, mdf@kernel.org,
-        robh@kernel.org, dwmw2@infradead.org,
-        Max Zhen <max.zhen@xilinx.com>
-Subject: Re: [PATCH V4 XRT Alveo Infrastructure 3/5] of: create empty of root
-Message-ID: <20220111042920.GA979169@yilunxu-OptiPlex-7050>
-References: <20220105225013.1567871-1-lizhi.hou@xilinx.com>
- <20220105225013.1567871-4-lizhi.hou@xilinx.com>
+        Mon, 10 Jan 2022 23:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347901AbiAKEhb (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 10 Jan 2022 23:37:31 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5930CC061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 20:37:31 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id g11-20020a17090a7d0b00b001b2c12c7273so1087317pjl.0
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 20:37:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:references:in-reply-to:mime-version:message-id
+         :content-transfer-encoding;
+        bh=wqBJsdI9GVnbAZsR64vukangM6ZJA+b32vA9RU1IroQ=;
+        b=Fr0OK1Pm/9oN9HtZ+jHwKQ5JxujZCue3hxCfqzruyxZTYHMa4lqxP8sA7GkVsEq9xX
+         3IxTRRjmgWxmHHzWWl7fu89z6Qy/OuIsWLDIV7l4Qc/avGq4AIBtb6aH6zF113B0UB5K
+         /nfdJ+F+nbA4kRDBcrt+6WNXYL9kEW+Pr/oFT3OAABluZ1zrXtydTOCYpP4yfAV9iNE5
+         jOVA5ENx9FQIwaNrBjBdC+rx6c9w9wGaWyJLGafC400Cxi5nONx/ahS2iFW83eo1jt3C
+         JGhG+jiywmgSepl5/0T7ZvMCA9i7jQBPGAXdv72oOGx2o10t10lcXgbJgzgsztTjukH9
+         IpbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:references:in-reply-to
+         :mime-version:message-id:content-transfer-encoding;
+        bh=wqBJsdI9GVnbAZsR64vukangM6ZJA+b32vA9RU1IroQ=;
+        b=LZfsu1f3oPx1OsJmLmzkMJU+GABlJv4nmZ55XH39Ir+arXVgguTBmu/QHGKpRJIony
+         YPEoiTNJkCNkE+tCDjNocHgCigM/YEwMdes0l6C5PavuiugJT650imR28Cn1P6MpE1cR
+         KtWw1mH3YiHPu/yKEwf44ieSe8G8K8coK7byaUlS5pqCvTK4yGKps+gPgsdSwy8KfPMJ
+         XfLI/gs7KSfL2v+2icNlFKMMWJ+U6Nq0NBMuDSi3P5J0W9ztl6WyyNWr5PNL0rE3uNni
+         t/pil5JAeX1caBE9GP/UgX98FCS7TxkTUplYXh5P5FH1R+LcsAMTj5guVvZVGtE09j2z
+         UH/w==
+X-Gm-Message-State: AOAM533ZDR01KsSp7DFvn316UNoJ4LGSidyIeR//ljapW/883alSrgaq
+        baAEy33paY9xqSFVUVYgcoD9XjLiBGU=
+X-Google-Smtp-Source: ABdhPJwnUmrQV3BpUodFd57dY5gBefMKn5WCiUXYD2qYhM1RI3u8Bkuv2mk5olrZDWNe5Hlrx7fbjQ==
+X-Received: by 2002:a17:902:bd44:b0:14a:2c66:a06c with SMTP id b4-20020a170902bd4400b0014a2c66a06cmr2801512plx.152.1641875850892;
+        Mon, 10 Jan 2022 20:37:30 -0800 (PST)
+Received: from localhost (124-171-74-95.tpgi.com.au. [124.171.74.95])
+        by smtp.gmail.com with ESMTPSA id bo15sm563973pjb.16.2022.01.10.20.37.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 Jan 2022 20:37:30 -0800 (PST)
+Date:   Tue, 11 Jan 2022 14:37:25 +1000
+From:   Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH v2 1/2] powerpc: Fix virt_addr_valid() check
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Kees Cook <keescook@chromium.org>,
+        Laura Abbott <labbott@redhat.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linuxppc-dev@lists.ozlabs.org, Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+References: <20211225120621.13908-1-wangkefeng.wang@huawei.com>
+        <20211225120621.13908-2-wangkefeng.wang@huawei.com>
+        <09ed46a5-6df3-ffc0-8243-61612c06153a@huawei.com>
+In-Reply-To: <09ed46a5-6df3-ffc0-8243-61612c06153a@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105225013.1567871-4-lizhi.hou@xilinx.com>
+Message-Id: <1641871726.fshx7g5r92.astroid@bobo.none>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 02:50:11PM -0800, Lizhi Hou wrote:
-> When OF_FLATTREE is selected and there is not a device tree, create an
-> empty device tree root node. of/unittest.c code is referenced.
-> 
-> Signed-off-by: Sonal Santan <sonal.santan@xilinx.com>
-> Signed-off-by: Max Zhen <max.zhen@xilinx.com>
-> Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
-> ---
->  drivers/of/Makefile        |  5 +++
->  drivers/of/fdt.c           | 90 ++++++++++++++++++++++++++++++++++++++
->  drivers/of/fdt_default.dts |  5 +++
->  drivers/of/of_private.h    | 17 +++++++
->  drivers/of/unittest.c      | 72 ++----------------------------
->  5 files changed, 120 insertions(+), 69 deletions(-)
->  create mode 100644 drivers/of/fdt_default.dts
-> 
-> diff --git a/drivers/of/Makefile b/drivers/of/Makefile
-> index c13b982084a3..a2989055c578 100644
-> --- a/drivers/of/Makefile
-> +++ b/drivers/of/Makefile
-> @@ -1,5 +1,6 @@
->  # SPDX-License-Identifier: GPL-2.0
->  obj-y = base.o device.o platform.o property.o
-> +
+Excerpts from Kefeng Wang's message of January 8, 2022 9:58 pm:
+> Hi PPC maintainers=EF=BC=8C ping..
 
-remove the blank line.
+Hmm. I might have confused myself about this. I'm going back and
+trying to work out what I was thinking when I suggested it. This
+works on 64e because vmalloc space is below the kernel linear map,
+right?
 
->  obj-$(CONFIG_OF_KOBJ) += kobj.o
->  obj-$(CONFIG_OF_DYNAMIC) += dynamic.o
->  obj-$(CONFIG_OF_FLATTREE) += fdt.o
-> @@ -20,4 +21,8 @@ obj-y	+= kexec.o
->  endif
->  endif
->  
-> +ifndef CONFIG_OF_UNITTEST
-> +obj-$(CONFIG_OF_FLATTREE) += fdt_default.dtb.o
-> +endif
-> +
+On 64s it is the other way around and it is still possible to enable=20
+flatmem on 64s. Altough we might just not hit the problem there because=20
+__pa() will not mask away the vmalloc offset for 64s so it will still=20
+return something that's outside the pfn_valid range for flatmem. That's=20
+very subtle though.
 
-Same question as Tom, the unittest should work well with or without
-of_root, is it? So creating an empty root will not affect unittest, so
-why so many ifdefs for CONFIG_OF_UNITTEST?
+The checks added to __pa actually don't prevent vmalloc memory from
+being passed to it either on 64s, only a more basic test.
 
->  obj-$(CONFIG_OF_UNITTEST) += unittest-data/
-> diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-> index 4546572af24b..66ef9ac97829 100644
-> --- a/drivers/of/fdt.c
-> +++ b/drivers/of/fdt.c
-> @@ -466,6 +466,96 @@ void *of_fdt_unflatten_tree(const unsigned long *blob,
->  }
->  EXPORT_SYMBOL_GPL(of_fdt_unflatten_tree);
->  
-> +static int __init of_fdt_root_init(void)
-> +{
-> +	struct device_node *dt = NULL, *np;
-> +	void *fdt = NULL, *fdt_aligned;
-> +	struct property *prop = NULL;
-> +	__be32 *val = NULL;
-> +	int size, rc = 0;
-> +
-> +#if !defined(CONFIG_OF_UNITTEST)
-> +	if (of_root)
-> +		return 0;
-> +#endif
-> +	size = __dtb_fdt_default_end - __dtb_fdt_default_begin;
-> +
-> +	fdt = kmalloc(size + FDT_ALIGN_SIZE, GFP_KERNEL);
-> +	if (!fdt)
-> +		return -ENOMEM;
-> +
-> +	fdt_aligned = PTR_ALIGN(fdt, FDT_ALIGN_SIZE);
-> +	memcpy(fdt_aligned, __dtb_fdt_default_begin, size);
-> +
-> +	if (!of_fdt_unflatten_tree((const unsigned long *)fdt_aligned,
-> +				   NULL, &dt)) {
-> +		pr_warn("%s: unflatten default tree failed\n", __func__);
-> +		kfree(fdt);
-> +		return -ENODATA;
-> +	}
-> +	if (!dt) {
-> +		pr_warn("%s: empty default tree\n", __func__);
-> +		kfree(fdt);
-> +		return -ENODATA;
-> +	}
-> +
-> +	/*
-> +	 * This lock normally encloses of_resolve_phandles()
-> +	 */
-> +	of_overlay_mutex_lock();
-> +
-> +	rc = of_resolve_phandles(dt);
-> +	if (rc) {
-> +		pr_err("%s: Failed to resolve phandles (rc=%i)\n", __func__, rc);
-> +		goto failed;
-> +	}
-> +
-> +	if (!of_root) {
-> +		prop = kcalloc(2, sizeof(*prop), GFP_KERNEL);
-> +		if (!prop) {
-> +			rc = -ENOMEM;
-> +			goto failed;
-> +		}
-> +		val = kzalloc(sizeof(*val), GFP_KERNEL);
-> +		if (!val) {
-> +			rc = -ENOMEM;
-> +			goto failed;
-> +		}
-> +		*val = cpu_to_be32(sizeof(void *) / sizeof(u32));
-> +
-> +		prop->name = "#address-cells";
-> +		prop->value = val;
-> +		prop->length = sizeof(u32);
-> +		of_add_property(dt, prop);
-> +		prop++;
-> +		prop->name = "#size-cells";
-> +		prop->value = val;
-> +		prop->length = sizeof(u32);
-> +		of_add_property(dt, prop);
-> +		of_root = dt;
-> +		for_each_of_allnodes(np)
-> +			__of_attach_node_sysfs(np);
-> +		of_aliases = of_find_node_by_path("/aliases");
-> +		of_chosen = of_find_node_by_path("/chosen");
-> +		of_overlay_mutex_unlock();
-> +pr_info("OF ROOT FLAG %lx\n", of_root->_flags);
-> +		return 0;
-> +	}
-> +
-> +	unittest_data_add(dt);
-
-It's confusing to me. If we need to share some functions with unittest,
-make a new clearly defined (and named) function.
-
-> +
-> +	of_overlay_mutex_unlock();
-> +
-> +	return 0;
-> +
-> +failed:
-> +	of_overlay_mutex_unlock();
-> +	kfree(val);
-> +	kfree(prop);
-> +	return rc;
-> +}
-> +pure_initcall(of_fdt_root_init);
-
-Is it better we have a new Kconfig option for the empty tree creation.
-
-> +
->  /* Everything below here references initial_boot_params directly. */
->  int __initdata dt_root_addr_cells;
->  int __initdata dt_root_size_cells;
-> diff --git a/drivers/of/fdt_default.dts b/drivers/of/fdt_default.dts
-> new file mode 100644
-> index 000000000000..d1f12a76dfc6
-> --- /dev/null
-> +++ b/drivers/of/fdt_default.dts
-> @@ -0,0 +1,5 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/dts-v1/;
-> +
-> +/ {
-> +};
-> diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
-> index 631489f7f8c0..1ef93bccfdba 100644
-> --- a/drivers/of/of_private.h
-> +++ b/drivers/of/of_private.h
-> @@ -41,6 +41,18 @@ extern struct mutex of_mutex;
->  extern struct list_head aliases_lookup;
->  extern struct kset *of_kset;
->  
-> +#if defined(CONFIG_OF_UNITTEST)
-> +extern u8 __dtb_testcases_begin[];
-> +extern u8 __dtb_testcases_end[];
-> +#define __dtb_fdt_default_begin		__dtb_testcases_begin
-> +#define __dtb_fdt_default_end		__dtb_testcases_end
-
-Maybe we don't have to use the test dt data, stick to the default empty
-fdt is fine?
-
-> +void __init unittest_data_add(struct device_node *dt);
-> +#else
-> +extern u8 __dtb_fdt_default_begin[];
-> +extern u8 __dtb_fdt_default_end[];
-> +static inline void unittest_data_add(struct device_node *dt) {}
-> +#endif
-> +
->  #if defined(CONFIG_OF_DYNAMIC)
->  extern int of_property_notify(int action, struct device_node *np,
->  			      struct property *prop, struct property *old_prop);
-> @@ -84,6 +96,11 @@ static inline void __of_detach_node_sysfs(struct device_node *np) {}
->  
->  #if defined(CONFIG_OF_RESOLVE)
->  int of_resolve_phandles(struct device_node *tree);
-> +#else
-> +static inline int of_resolve_phandles(struct device_node *tree)
-> +{
-> +	return 0;
-> +}
-
-If we have an empty of_resolve_phandles, does the empty tree creation
-still works? Or if we don't need this func, just delete in the code.
+I think 64s wants (addr >=3D PAGE_OFFSET && addr < KERN_VIRT_START) as
+the condition.  Could possibly add that check to __pa as well to
+catch vmalloc addresses.
 
 Thanks,
-Yilun
+Nick
 
->  #endif
->  
->  void __of_phandle_cache_inv_entry(phandle handle);
-> diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-> index 8c056972a6dd..745f455235cc 100644
-> --- a/drivers/of/unittest.c
-> +++ b/drivers/of/unittest.c
-> @@ -1402,73 +1402,15 @@ static void attach_node_and_children(struct device_node *np)
->   *	unittest_data_add - Reads, copies data from
->   *	linked tree and attaches it to the live tree
->   */
-> -static int __init unittest_data_add(void)
-> +void __init unittest_data_add(struct device_node *dt)
->  {
-> -	void *unittest_data;
-> -	void *unittest_data_align;
-> -	struct device_node *unittest_data_node = NULL, *np;
-> -	/*
-> -	 * __dtb_testcases_begin[] and __dtb_testcases_end[] are magically
-> -	 * created by cmd_dt_S_dtb in scripts/Makefile.lib
-> -	 */
-> -	extern uint8_t __dtb_testcases_begin[];
-> -	extern uint8_t __dtb_testcases_end[];
-> -	const int size = __dtb_testcases_end - __dtb_testcases_begin;
-> -	int rc;
-> -	void *ret;
-> -
-> -	if (!size) {
-> -		pr_warn("%s: testcases is empty\n", __func__);
-> -		return -ENODATA;
-> -	}
-> -
-> -	/* creating copy */
-> -	unittest_data = kmalloc(size + FDT_ALIGN_SIZE, GFP_KERNEL);
-> -	if (!unittest_data)
-> -		return -ENOMEM;
-> -
-> -	unittest_data_align = PTR_ALIGN(unittest_data, FDT_ALIGN_SIZE);
-> -	memcpy(unittest_data_align, __dtb_testcases_begin, size);
-> -
-> -	ret = of_fdt_unflatten_tree(unittest_data_align, NULL, &unittest_data_node);
-> -	if (!ret) {
-> -		pr_warn("%s: unflatten testcases tree failed\n", __func__);
-> -		kfree(unittest_data);
-> -		return -ENODATA;
-> -	}
-> -	if (!unittest_data_node) {
-> -		pr_warn("%s: testcases tree is empty\n", __func__);
-> -		kfree(unittest_data);
-> -		return -ENODATA;
-> -	}
-> -
-> -	/*
-> -	 * This lock normally encloses of_resolve_phandles()
-> -	 */
-> -	of_overlay_mutex_lock();
-> -
-> -	rc = of_resolve_phandles(unittest_data_node);
-> -	if (rc) {
-> -		pr_err("%s: Failed to resolve phandles (rc=%i)\n", __func__, rc);
-> -		of_overlay_mutex_unlock();
-> -		return -EINVAL;
-> -	}
-> -
-> -	if (!of_root) {
-> -		of_root = unittest_data_node;
-> -		for_each_of_allnodes(np)
-> -			__of_attach_node_sysfs(np);
-> -		of_aliases = of_find_node_by_path("/aliases");
-> -		of_chosen = of_find_node_by_path("/chosen");
-> -		of_overlay_mutex_unlock();
-> -		return 0;
-> -	}
-> +	struct device_node *np;
->  
->  	EXPECT_BEGIN(KERN_INFO,
->  		     "Duplicate name in testcase-data, renamed to \"duplicate-name#1\"");
->  
->  	/* attach the sub-tree to live tree */
-> -	np = unittest_data_node->child;
-> +	np = dt->child;
->  	while (np) {
->  		struct device_node *next = np->sibling;
->  
-> @@ -1479,10 +1421,6 @@ static int __init unittest_data_add(void)
->  
->  	EXPECT_END(KERN_INFO,
->  		   "Duplicate name in testcase-data, renamed to \"duplicate-name#1\"");
-> -
-> -	of_overlay_mutex_unlock();
-> -
-> -	return 0;
->  }
->  
->  #ifdef CONFIG_OF_OVERLAY
-> @@ -3258,7 +3196,6 @@ static inline __init void of_unittest_overlay_high_level(void) {}
->  static int __init of_unittest(void)
->  {
->  	struct device_node *np;
-> -	int res;
->  
->  	pr_info("start of unittest - you will see error messages\n");
->  
-> @@ -3267,9 +3204,6 @@ static int __init of_unittest(void)
->  	if (IS_ENABLED(CONFIG_UML))
->  		unittest_unflatten_overlay_base();
->  
-> -	res = unittest_data_add();
-> -	if (res)
-> -		return res;
->  	if (!of_aliases)
->  		of_aliases = of_find_node_by_path("/aliases");
->  
-> -- 
-> 2.27.0
+>=20
+> On 2021/12/25 20:06, Kefeng Wang wrote:
+>> When run ethtool eth0, the BUG occurred,
+>>
+>>    usercopy: Kernel memory exposure attempt detected from SLUB object no=
+t in SLUB page?! (offset 0, size 1048)!
+>>    kernel BUG at mm/usercopy.c:99
+>>    ...
+>>    usercopy_abort+0x64/0xa0 (unreliable)
+>>    __check_heap_object+0x168/0x190
+>>    __check_object_size+0x1a0/0x200
+>>    dev_ethtool+0x2494/0x2b20
+>>    dev_ioctl+0x5d0/0x770
+>>    sock_do_ioctl+0xf0/0x1d0
+>>    sock_ioctl+0x3ec/0x5a0
+>>    __se_sys_ioctl+0xf0/0x160
+>>    system_call_exception+0xfc/0x1f0
+>>    system_call_common+0xf8/0x200
+>>
+>> The code shows below,
+>>
+>>    data =3D vzalloc(array_size(gstrings.len, ETH_GSTRING_LEN));
+>>    copy_to_user(useraddr, data, gstrings.len * ETH_GSTRING_LEN))
+>>
+>> The data is alloced by vmalloc(), virt_addr_valid(ptr) will return true
+>> on PowerPC64, which leads to the panic.
+>>
+>> As commit 4dd7554a6456 ("powerpc/64: Add VIRTUAL_BUG_ON checks for __va
+>> and __pa addresses") does, make sure the virt addr above PAGE_OFFSET in
+>> the virt_addr_valid().
+>>
+>> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+>> ---
+>>   arch/powerpc/include/asm/page.h | 5 ++++-
+>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/arch/powerpc/include/asm/page.h b/arch/powerpc/include/asm/=
+page.h
+>> index 254687258f42..300d4c105a3a 100644
+>> --- a/arch/powerpc/include/asm/page.h
+>> +++ b/arch/powerpc/include/asm/page.h
+>> @@ -132,7 +132,10 @@ static inline bool pfn_valid(unsigned long pfn)
+>>   #define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+>>   #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
+>>  =20
+>> -#define virt_addr_valid(kaddr)	pfn_valid(virt_to_pfn(kaddr))
+>> +#define virt_addr_valid(vaddr)	({						\
+>> +	unsigned long _addr =3D (unsigned long)vaddr;				\
+>> +	(unsigned long)(_addr) >=3D PAGE_OFFSET && pfn_valid(virt_to_pfn(_addr=
+));	\
+>> +})
+>>  =20
+>>   /*
+>>    * On Book-E parts we need __va to parse the device tree and we can't
+>=20
