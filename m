@@ -2,313 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA82BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349077AbiAKIwi (ORCPT
+        id S1349040AbiAKIwq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:52:38 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31087 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349040AbiAKIwe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:52:34 -0500
-Received: from dggeme758-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JY49j49n7z1FCbl;
-        Tue, 11 Jan 2022 16:48:57 +0800 (CST)
-Received: from [10.67.110.136] (10.67.110.136) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.20; Tue, 11 Jan 2022 16:52:32 +0800
-Subject: Re: [PATCH] arm64: Make CONFIG_ARM64_PSEUDO_NMI macro wrap all the
- pseudo-NMI code
-To:     Mark Rutland <mark.rutland@arm.com>
-CC:     <catalin.marinas@arm.com>, <will@kernel.org>, <marcan@marcan.st>,
-        <maz@kernel.org>, <joey.gouly@arm.com>, <pcc@google.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220107085536.214501-1-heying24@huawei.com>
- <Ydg939btY/bzEAe4@FVFF77S0Q05N>
- <bd82d240-34d7-4df9-650b-c039555f05e3@huawei.com>
- <YdwX5RTVbw8veM98@FVFF77S0Q05N>
-From:   He Ying <heying24@huawei.com>
-Message-ID: <168f7e83-e815-f10e-3a43-8529aab77f1e@huawei.com>
-Date:   Tue, 11 Jan 2022 16:52:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 11 Jan 2022 03:52:46 -0500
+Received: from mail-eopbgr70052.outbound.protection.outlook.com ([40.107.7.52]:51888
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236391AbiAKIwp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 03:52:45 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TzVKl7BeDyn7Oh8pkinbnc/3/B1Nmec+3pgz+/2Ll+WRr0xrbaWHtKqXvP2+T6u+T5eXyQ/j1jpvHPKDhziGyYu2e/WkYcarjuA/VIMHeCknWhNoZ2DDswy6wRwl60hzu311JZOC3v5YPTG+wWB+Dr717hEbv26s22rcgKsN8RLVyhKqJHztgORu0aoAdAYYoVM+ddtMQKMvTVUC5CtK+wOeZ0AQFopJseNXP+6mR+mhLNtPmdFxwzoqIoQ8LYQCiuVMVk2+sIMN6syA7IEWgNupLqWA/F8fejgJvVfpvwXLBjccWsNortnv2yxheFCbeRQ+5LDrnyyI/fI2d+HkMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3r6f7VvDqJShCKadP8ZnX0jOYgxe0UFJy37YJImdMws=;
+ b=B5PhJsALjitWDDfS5m5jjRw8Jw1TA1uYMvmTv0AM+KJGtMbHUIOzYj9aRApJzWhO8oP1L5bRWCpIwF1ksROyIHthiSuNjtHFrjYTKA3Q3cVdrhj5YOl6TBOiKJYqERmWPvoCKGg9HEXmeNI/zBkmQ1oV6gbU2eD1o4/NT3dw0tblFdOc9wie9y4pn1BX6z8A8bP06G7XFc0t/hBcJa+h+arf6GX5SAC9EXRJKYx+vdZe57nTc0/IMBQ1xHE4k0vZ3wNHFtz7dDGHCUTnsTz1d/I5gWkI3wrvkM/icbeTj3uCPfAvylE12gNCNmwcynfcIEybWJ57ErFBFA/YafQBag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3r6f7VvDqJShCKadP8ZnX0jOYgxe0UFJy37YJImdMws=;
+ b=d6zqrwwPujbTY0mNtZaTjCaVIe+RLTp/EaefpNcZ7BAiVDssjEpadG6CwRrokAgaq9U1AngXUdPTOVIbFHDmkJRbiPljVgsyoNiEN7mFCOVWG3rLT3N3/ZKeIVU8J1zbGVKNxJCRq8tnw5oO4ELbcS+A3MdNpWJhcCKm3UvwEDw=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by AM6PR04MB4469.eurprd04.prod.outlook.com (2603:10a6:20b:22::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.10; Tue, 11 Jan
+ 2022 08:52:42 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::903a:e49c:dd60:75f7]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::903a:e49c:dd60:75f7%8]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
+ 08:52:42 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH V3] tty: serial: fsl_lpuart: count tty buffer overruns
+Date:   Tue, 11 Jan 2022 16:51:30 +0800
+Message-Id: <20220111085130.5817-1-sherry.sun@nxp.com>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR01CA0039.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:193::16) To AS8PR04MB8404.eurprd04.prod.outlook.com
+ (2603:10a6:20b:3f8::7)
 MIME-Version: 1.0
-In-Reply-To: <YdwX5RTVbw8veM98@FVFF77S0Q05N>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.136]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: db2b1b68-4bde-449d-3539-08d9d4dfbacc
+X-MS-TrafficTypeDiagnostic: AM6PR04MB4469:EE_
+X-Microsoft-Antispam-PRVS: <AM6PR04MB4469F82DFD3EE90369BBA35D92519@AM6PR04MB4469.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FKRCo/8g6bO25s7H3eKiHTcXhGkd3hdG+k0y96n6E0E6A49L4AVkcj3z287YjY/Rk+/IqGXmmnoub31WzCf+fz64jbY7ODp9YefM2JCgUxSSBDwTTZfvnLqgZHxvVirnahzLdHGYnQgRvnv40/FFnkjZ6TUkEWPN5GTIOSiIPtJqssgEP/2AcENSmaNWPYhVzs82YPLQS1ltGu/tJBbipI4xWDLOoTZ5s7Ouq2PXpfmmWYN6Psjocmcvm0M7LSpcCCLxVnBN00yYZO4Sn/FyFI5pIDERvBA4PxUyy0WpFD+7ZldVMTArT8njY7Xt7umhIFNBmay5as+ZEZohJmuDFtC1oYIVX6abzTlMiya7vJT/Vui121btjwEY22v5ttcoBGE98SiEgbBNBMXOT3QokB9gP7Wrq5x+sPek4gR/DQqXyqMXHZe0PqVaN3UREa9H1uUqCmIY89f+eD2FfY0cDBly/gsoPUq+rtSaF0kyrRjzYkBbUKqZDjnn2D+Dq4eUaACFlos7QWGx7fVKLYse9GS6Ilun0ZISLtShpmHMwjifOphgGz2QbQXMidqzCMIrPPWOZEpy1UAZLqYd5JGxskyrtUZBRKC/KwmcWwr3W1wZrkat/9XF+RnF7Ro24GUyq3WpmjUPjpwNRQ+4Z0/Osemx2XD4cuidIza5ot3zjRQYP36vigA1whXPIVS1qrLocbC6/uh683LAiMNGDwe7UQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(6506007)(38350700002)(52116002)(316002)(38100700002)(8936002)(86362001)(8676002)(6666004)(66476007)(6486002)(66556008)(83380400001)(2616005)(44832011)(36756003)(1076003)(5660300002)(508600001)(4326008)(6512007)(66946007)(2906002)(26005)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TirNMCpAdT0pjz5mfR/zN1OJMrnAOxZqjWBji1DAXh2j2C7tlnIV/thbyEln?=
+ =?us-ascii?Q?SqNgn14bvX9XPFcJbp3AAS/CLTGahIESoh5jt3UUtJGzl3Qu3a+AW8I+Av6x?=
+ =?us-ascii?Q?VH+piJr27xEo7qKLM4WXSYnEPq+lIlHJPHbSHO6/m6FldMtWx/6ND3i8NVqM?=
+ =?us-ascii?Q?sTD+38sGd9wQYvT1R2Yes2M2xanh/qpIEHTiLQpB1Ot1G/5QkuiPqTTXnvM0?=
+ =?us-ascii?Q?4G5UXLpcHuTs2QcsLeDWlB0X4yJuHHoR1Vhxz/OF3Z3UDVDV/1he4wOr1pQH?=
+ =?us-ascii?Q?Ogxl1jrPVBVUnnXrpzM7fHneuLlWZoR9VIK/r+dvaibTYzX+pqmO7pDLzD5h?=
+ =?us-ascii?Q?9lKYgm+Sj8NObkFcqif9Wnrp/Jtz4/zkGBE7nyciOcuFsm076XKPbyj1a/PY?=
+ =?us-ascii?Q?c8Kg73IfgNnC1K6UJBFqYsegBpkkdZfevyhb9yiZSAge/dDPQfvaO7+b9RQ2?=
+ =?us-ascii?Q?Ducs9ewjqm6kS3mxyhkuAOdqcn2WOCKOqcGibWZDrfT6kyWGVH8+DMqNSu4G?=
+ =?us-ascii?Q?yu7aJJA6IW42cINtIbCo/LklbW4e/NltCU+tNADXynmHXsMj8DkbGc7TSzU0?=
+ =?us-ascii?Q?bGgbWL+HsarXe/axQ5+m7N6eScHkMm3BNHigVArYTKBqPWCqnkWrwxL20qw5?=
+ =?us-ascii?Q?lOHVsT0pf/Ijc9SgFhC6127oC7QXFbNvOtVbPJ2V+Dg+mQWAxzhWEJKbVI3A?=
+ =?us-ascii?Q?GMwJJyULVycigEOOjwwJltL8EjEuSEDkLZhEIGq3BoVYo0JQPyZzBb5G0T3c?=
+ =?us-ascii?Q?+Ns+Hq+4+6gwlmY66gFPtZacBPwuNzZkYT1O3ASLEOoUEiz6U5far+VQmCu9?=
+ =?us-ascii?Q?hs1cLvZ0p5tVJsc0lj3nvADl8isWWPJzGYwCB5WGjp+P2WJu5UzW9al9VGi6?=
+ =?us-ascii?Q?eWvhjMyT8qUWCoRipAY7DTQc0Fnjx36k+S2X5M/Dcx/STPH9+JARuRytatp0?=
+ =?us-ascii?Q?CPZQH4MPjayTd8DqJ4jzOwPYdgJlctHZOT7jmdSgf3NfteEF1crg+RxKUrAn?=
+ =?us-ascii?Q?dUaNelNMiPpqOLdvVTxJYWctShQkppyaBk5msqn1TXCo5ypPjYHRkyoVkStQ?=
+ =?us-ascii?Q?sTOPX6l0J6gt3ue+RKvDA8wxSk5neBbwIeKhcNjOR+NFS7seN59C3GjZuUnh?=
+ =?us-ascii?Q?SQ4qGxXj6IZeLPu3JGe0oSqnKNj6FMT4YDX/EVx/Q6R4H8iY8zxCRCmCzjKo?=
+ =?us-ascii?Q?KzlUL9w8B8QvO+sGiBf+Y9hUy4EqTdAnT+LQN8F5EkLjnY2Px6EfFbXLmLkB?=
+ =?us-ascii?Q?j1a3Tvy9Umw170+MB1RU9tAQAw+ZzSrc/fkxt8+j+PuugekFZoWDeAFsa+PR?=
+ =?us-ascii?Q?WqHG8u7ro67Pb/CqmyUfCkwt4I3M22q9lEWDKTE2ANR6GBA/eKq8OxYQGtHV?=
+ =?us-ascii?Q?k+MhZOVKIgahaGWq4cRzFCTC6AA2hcf7QukECG+gniQv/Ew1Zb36iZNItSv0?=
+ =?us-ascii?Q?sLHUVQxYXg57yqi4rWO73AkkRY3HK0jKdV31TKRSTnnOXrEKaWsfZ+BWXgVb?=
+ =?us-ascii?Q?H2HHav7kToN7VGr7MAtpLlsCliYYcEMYEGtG3ZYGTR/EirD9PyJKk+onidOY?=
+ =?us-ascii?Q?QYsswHjLGCe4Y3YnN9ZC19YHCHTDYL90zrm6ZrYOuIbRcDPytTJy/xxGyzAt?=
+ =?us-ascii?Q?KJ4/juwfk/Ea1idXeeQobMs=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: db2b1b68-4bde-449d-3539-08d9d4dfbacc
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2022 08:52:42.8403
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: F+MGgt/IPwJyDOMRZqJlCg3M5YKRJ6/CqgLiYLc5ow73B+7XDJTL9HAOHakClpFmjs8zEPKgnSCwYyKvSGqUCQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4469
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
+Added support for counting the tty buffer overruns in fsl_lpuart driver
+like other uart drivers.
 
-在 2022/1/10 19:26, Mark Rutland 写道:
-> On Mon, Jan 10, 2022 at 11:00:43AM +0800, He Ying wrote:
->> Hi Mark,
->>
->> I'm just back from the weekend and sorry for the delayed reply.
->>
->>
->> 在 2022/1/7 21:19, Mark Rutland 写道:
->>> On Fri, Jan 07, 2022 at 03:55:36AM -0500, He Ying wrote:
->>>> Our product has been updating its kernel from 4.4 to 5.10 recently and
->>>> found a performance issue. We do a bussiness test called ARP test, which
->>>> tests the latency for a ping-pong packets traffic with a certain payload.
->>>> The result is as following.
->>>>
->>>>    - 4.4 kernel: avg = ~20s
->>>>    - 5.10 kernel (CONFIG_ARM64_PSEUDO_NMI is not set): avg = ~40s
->>> Have you tested with a recent mainline kernel, e.g. v5.15?
->> Actuallly no, that's because this test is only available for the product
->> environment and
->>
->> we don't have an available 5.15 kernel for it yet.
-> Ok; do you see anything comparable with any tests available to upstream
-> developers? e.g. hackbench or `perf bench sched` ?
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+---
+changes in V3
 
-I'm not sure. The test is some kind of network test. And I don't know which
+1. Remove the initialization for copied as it is not necessary.
+---
+ drivers/tty/serial/fsl_lpuart.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-bench test is comparable.
+diff --git a/drivers/tty/serial/fsl_lpuart.c b/drivers/tty/serial/fsl_lpuart.c
+index ce3e26144689..7d90c5a530ee 100644
+--- a/drivers/tty/serial/fsl_lpuart.c
++++ b/drivers/tty/serial/fsl_lpuart.c
+@@ -931,7 +931,8 @@ static void lpuart_rxint(struct lpuart_port *sport)
+ 			sport->port.sysrq = 0;
+ 		}
+ 
+-		tty_insert_flip_char(port, rx, flg);
++		if (tty_insert_flip_char(port, rx, flg) == 0)
++			sport->port.icount.buf_overrun++;
+ 	}
+ 
+ out:
+@@ -1024,7 +1025,8 @@ static void lpuart32_rxint(struct lpuart_port *sport)
+ 				flg = TTY_OVERRUN;
+ 		}
+ 
+-		tty_insert_flip_char(port, rx, flg);
++		if (tty_insert_flip_char(port, rx, flg) == 0)
++			sport->port.icount.buf_overrun++;
+ 	}
+ 
+ out:
+@@ -1116,7 +1118,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 	struct dma_chan *chan = sport->dma_rx_chan;
+ 	struct circ_buf *ring = &sport->rx_ring;
+ 	unsigned long flags;
+-	int count = 0;
++	int count = 0, copied;
+ 
+ 	if (lpuart_is_32(sport)) {
+ 		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
+@@ -1218,20 +1220,24 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
+ 	if (ring->head < ring->tail) {
+ 		count = sport->rx_sgl.length - ring->tail;
+ 
+-		tty_insert_flip_string(port, ring->buf + ring->tail, count);
++		copied = tty_insert_flip_string(port, ring->buf + ring->tail, count);
++		if (copied != count)
++			sport->port.icount.buf_overrun++;
+ 		ring->tail = 0;
+-		sport->port.icount.rx += count;
++		sport->port.icount.rx += copied;
+ 	}
+ 
+ 	/* Finally we read data from tail to head */
+ 	if (ring->tail < ring->head) {
+ 		count = ring->head - ring->tail;
+-		tty_insert_flip_string(port, ring->buf + ring->tail, count);
++		copied = tty_insert_flip_string(port, ring->buf + ring->tail, count);
++		if (copied != count)
++			sport->port.icount.buf_overrun++;
+ 		/* Wrap ring->head if needed */
+ 		if (ring->head >= sport->rx_sgl.length)
+ 			ring->head = 0;
+ 		ring->tail = ring->head;
+-		sport->port.icount.rx += count;
++		sport->port.icount.rx += copied;
+ 	}
+ 
+ exit:
+-- 
+2.17.1
 
->
->>> Is this test publicly available, and can you say which hardrware (e.g. which
->>> CPU implementation) you're testing with?
->> Actually no. The test is only available for our product environment now. We
->> are testing
->>
->> with hisilicon 1213 (4 ARM Cortex-A72 cores).
-> Thanks for the CPU info; there are a number of other Cortex-A72 platforms out
-> there, so it might be possible to reproduce the behaviour elsewhere.
-
-I asked our collegues how they did the test. Actually it's a private 
-test and
-
-difficult to be reproduced elsewhere. But I got another important 
-information.
-
-See below.
-
->
->>>> I have been just learning arm64 pseudo-NMI code and have a question,
->>>> why is the related code not wrapped by CONFIG_ARM64_PSEUDO_NMI?
->>> The code in question is all patched via alternatives, and when
->>> CONFIG_ARM64_PSEUDO_NMI is not selected, the code was expected to only have the
->>> overhead of the regular DAIF manipulation.
->> I don't understand alernatives very well and I'll apreciate it if you can
->> explain it a bit more.
-> Code using alternatives is patched at runtime, so for:
->
-> 	ALTERNATIVE(x, y, cap)
->
-> ... the `x` instructions will be inline in the code, and the `y` instructions
-> will be placed in a separate linker section. If the `cap` capability is
-> detected, the `y` instructions will be copied over the `x` instructions.
->
-> So for:
->
-> | asm volatile(ALTERNATIVE(
-> |         "msr    daifclr, #3             // arch_local_irq_enable",
-> |         __msr_s(SYS_ICC_PMR_EL1, "%0"),
-> |         ARM64_HAS_IRQ_PRIO_MASKING)
-> |         :
-> |         : "r" ((unsigned long) GIC_PRIO_IRQON)
-> |         : "memory");
->
-> ... where ARM64_HAS_IRQ_PRIO_MASKING is not detected, the inline instructions
-> will be:
->
-> | msr    daifclr, #3             // arch_local_irq_enable
->
-> A separate linker section will contain:
-> ... and a separate linker section will contain:
->
-> | __msr_s(SYS_ICC_PMR_EL1, "%0"
->
-> ... and some metadata will be recorded in a `struct alt_instr`, which will be
-> unused and will take some space, but should have no runtime overhead -- the
-> runtime cost should only be the `msr daifclr, #3` instruction.
-
-Thank you very much for the detailed explanation. I think I understand 
-it better.
-
-I agree that these ALERNATIVEs might only bring some additional space but no
-
-runtime overhead.
-
->
->>>> I wonder if this brings some performance regression.
->>>>
->>>> First, I make this patch and then do the test again. Here's the result.
->>>>
->>>>    - 5.10 kernel with this patch not applied: avg = ~40s
->>>>    - 5.10 kernel with this patch applied: avg = ~23s
->>>>
->>>> Amazing! Note that all kernel is built with CONFIG_ARM64_PSEUDO_NMI not
->>>> set. It seems the pseudo-NMI feature actually brings some overhead to
->>>> performance event if CONFIG_ARM64_PSEUDO_NMI is not set.
->>> I'm surprised the overhead is so significant; as above this is all patched in
->>> and so the overhead when this is disabled is expected to be *extremely* small.
->>>
->>> For example, wjen CONFIG_ARM64_PSEUDO_NMI, in arch_local_irq_enable():
->>>
->>> * The portion under the system_has_prio_mask_debugging() test will be removed
->>>     entirely by the compiler, as this internally checks
->>>     IS_ENABLED(CONFIG_ARM64_PSEUDO_NMI).
->>>
->>> * The assembly will be left as a write to DAIFClr. The only additional cost
->>>     should be that of generating GIC_PRIO_IRQON into a register.
->>>
->>> * The pmr_sync() will be removed entirely by the compiler as is defined
->>>     conditionally dependent on CONFIG_ARM64_PSEUDO_NMI.
->>>
->>> I can't spot an obvious issue with that or ther other cases. In the common case
->>> those add no new instructions, and in the worst case they only add NOPs.
->> Thanks for your detailed explaination! Actually I can't understand the
->> result exactly.
->>
->> I build two 5.10 kernel images with this patch applied or not and objdump
->> them. Indeed, the disassembles of 'arch_local_irq_restore' are the same. Do
->> you have any ideas how we can find the root cause why this patch improves the
->> performance so much?
->>
->> However, the test result is trustworthy because we do it many times and the
->> result is always repeatable.
-> Due to the large numbers, I suspect this must be due to a specific fast-path,
-> and it's possible that this is due to secondary factors (e.g. alignment of
-> code) rather than the pseudo-NMK code itself.
->
-> We need to narrow down *where* time is being spent. Since it appears that this
-> is related to the local IRQ state management, it isn't likely that we can
-> determine that reliably with the PMU. Given that, I think the first step is to
-> reproduce the result elsewhere, for which we will need some plublicly available
-> test-case.
-
-As said before, I asked our collegues how they did the ARP test. In one 
-word,
-
-a very small performance regression may bring the big change to the test 
-result.
-
-I feel very sorry for missing this important information. So, this patch may
-
-improve the performance a little and then lead to the big change to the
-
-test result.
-
->
->>>> Furthermore, I find the feature also brings some overhead to vmlinux size.
->>>> I build 5.10 kernel with this patch applied or not while
->>>> CONFIG_ARM64_PSEUDO_NMI is not set.
->>>>
->>>>    - 5.10 kernel with this patch not applied: vmlinux size is 384060600 Bytes.
->>>>    - 5.10 kernel with this patch applied: vmlinux size is 383842936 Bytes.
->>>>
->>>> That means arm64 pseudo-NMI feature may bring ~200KB overhead to
->>>> vmlinux size.
->>> I suspect that's just the (unused) alternatives, and we could improve that by
->>> passing the config into the alternative blocks.
->> Do you mean the sections generated by the alternatives? I don't understand
->> alernatives very well and I'll apreciate it if you can explain it a bit
->> more.
-> Yes; I meant the sections generated to hold the alternatives code and the
-> alternatives metadata.
-I got it. Thanks.
->
->
->>>> Above all, arm64 pseudo-NMI feature brings some overhead to vmlinux size
->>>> and performance even if config is not set. To avoid it, add macro control
->>>> all around the related code.
->>>>
->>>> Signed-off-by: He Ying <heying24@huawei.com>
->>>> ---
->>>>    arch/arm64/include/asm/irqflags.h | 38 +++++++++++++++++++++++++++++--
->>>>    arch/arm64/kernel/entry.S         |  4 ++++
->>>>    2 files changed, 40 insertions(+), 2 deletions(-)
->>>>
->>>> diff --git a/arch/arm64/include/asm/irqflags.h b/arch/arm64/include/asm/irqflags.h
->>>> index b57b9b1e4344..82f771b41cf5 100644
->>>> --- a/arch/arm64/include/asm/irqflags.h
->>>> +++ b/arch/arm64/include/asm/irqflags.h
->>>> @@ -26,6 +26,7 @@
->>>>     */
->>>>    static inline void arch_local_irq_enable(void)
->>>>    {
->>>> +#ifdef CONFIG_ARM64_PSEUDO_NMI
->>>>    	if (system_has_prio_mask_debugging()) {
->>>>    		u32 pmr = read_sysreg_s(SYS_ICC_PMR_EL1);
->>>> @@ -41,10 +42,18 @@ static inline void arch_local_irq_enable(void)
->>>>    		: "memory");
->>>>    	pmr_sync();
->>>> +#else
->>>> +	asm volatile(
->>>> +		"msr	daifclr, #3		// arch_local_irq_enable"
->>>> +		:
->>>> +		:
->>>> +		: "memory");
->>>> +#endif
->>> I'm happy to rework this to improve matters, but I am very much not happy with
->>> duplicating the logic for the !PSEUDO_NMI case. Adding more ifdeffery and
->>> copies of that is not acceptable.
->> I agree. Adding these ifdeffery is a bit ugly. Let's see if there are some
->> better ways.
->>> Instead, can you please try changing the alternative to also take the config,
->>> e.g. here have:
->>>
->>> |       asm volatile(ALTERNATIVE(
->>> |               "msr    daifclr, #3             // arch_local_irq_enable",
->>> |               __msr_s(SYS_ICC_PMR_EL1, "%0"),
->>> |               ARM64_HAS_IRQ_PRIO_MASKING,
->>> |               CONFIG_ARM64_PSEUDO_NMI)
->>> |               :
->>> |               : "r" ((unsigned long) GIC_PRIO_IRQON)
->>> |               : "memory");
->>>
->>> ... and see if that makes a significant difference?
->>>
->>> Likewise for the other casees.
->> OK, I'll try it. But I have some questions. Here's the comment of
->> ALERNATIVE:
->>
->> /*
->>   * Usage: asm(ALTERNATIVE(oldinstr, newinstr, feature));
->>   *
->>   * Usage: asm(ALTERNATIVE(oldinstr, newinstr, feature, CONFIG_FOO));
->>   * N.B. If CONFIG_FOO is specified, but not selected, the whole block
->>   *      will be omitted, including oldinstr.
->>   */
->>
->> If CONFIG_FOO is not selected, the whole block will be omitted including
->> oldinstr.
->>
->> But we still want the oldinstr in this situation. Do I misunderstand
->> something?
-> Sorry; you are right, and my suggestion was broken.
->
-> I'll need to have a think about this; we might be able to rework this to use a
-> static key instead, but IIRC last time I tried there were issues with that
-> approach. I have some (old) work-in-progress patches at:
->
->    https://git.kernel.org/pub/scm/linux/kernel/git/mark/linux.git/log/?h=arm64/daif-rework
->
-> I suspect I won't have time to renew that in the near future, but an approach
-> like that might be worthwhile.
-
-OK, I see. What do you think if I send a v2 patch that only adds 
-ifdeffery to
-
-arch/arm64/kernel/entry.S and leave the rework to ALERNATIVE behind?
-
-I think these modifications can save some NOPs definitely.
-
->
-> Thanks,
-> Mark.
-> .
