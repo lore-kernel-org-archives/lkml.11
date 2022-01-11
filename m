@@ -2,122 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FD1AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 23:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6387BC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 23:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346821AbiAKX1V (ORCPT
+        id S1346838AbiAKXcG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 18:27:21 -0500
-Received: from mailout.easymail.ca ([64.68.200.34]:49580 "EHLO
-        mailout.easymail.ca" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233873AbiAKX1T (ORCPT
+        Tue, 11 Jan 2022 18:32:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43188 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233873AbiAKXcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 18:27:19 -0500
-X-Greylist: delayed 554 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 18:27:18 EST
-Received: from localhost (localhost [127.0.0.1])
-        by mailout.easymail.ca (Postfix) with ESMTP id C7921731A6;
-        Tue, 11 Jan 2022 23:18:03 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at emo05-pco.easydns.vpn
-Received: from mailout.easymail.ca ([127.0.0.1])
-        by localhost (emo05-pco.easydns.vpn [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id T9wjiQLbkDR3; Tue, 11 Jan 2022 23:18:03 +0000 (UTC)
-Received: from [10.90.1.74] (c-24-9-64-241.hsd1.co.comcast.net [24.9.64.241])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 11 Jan 2022 18:32:02 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC41C06173F;
+        Tue, 11 Jan 2022 15:32:01 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mailout.easymail.ca (Postfix) with ESMTPSA id BCA0B73191;
-        Tue, 11 Jan 2022 23:18:02 +0000 (UTC)
-Message-ID: <5cee9a36-b094-37a0-e961-d7404b3dafe2@gonehiking.org>
-Date:   Tue, 11 Jan 2022 16:17:32 -0700
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JYRmM5gZ5z4xmx;
+        Wed, 12 Jan 2022 10:31:47 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641943919;
+        bh=4Z3sqpGIFVL84J+SH3/JqcsCmk3/t539vZt80mjQAn0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CAL+VhB7tnGuerjBXg+KBrIXNM5L47Grr2Z7MctVembeA/rhXP/4Qlff+eCDzsasV
+         m07b4UblcBcm43Gt6g+CJaaPiTBASmT/8BpIYuXG0NheZif123+Jx3mSG4ghjD5Bnr
+         vKKAPvQRgL6gxoRfQc3w+t52HyU2Os/2DuZKOZTS1fOqFAoDtgP7C2312g4o2oCT9E
+         ERz+u6FsuLxtJw9CYnZASZbrKyZ1A31xsC+V69GzuN44Trb8RVnjGBHrbSpTbGiYjQ
+         FJEC1IE7aJxnO2oJnV8uNmJItDD1jVnRm6IH/ot9+21m/9tIAwlSSUqFWNTrs1TqXI
+         8mSVssM+Jlbjw==
+Date:   Wed, 12 Jan 2022 10:31:46 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Daire Byrne <daire@dneg.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Omar Sandoval <osandov@osandov.com>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
+        ceph-devel@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] fscache, cachefiles: Rewrite
+Message-ID: <20220112103146.03c88319@canb.auug.org.au>
+In-Reply-To: <510611.1641942444@warthog.procyon.org.uk>
+References: <510611.1641942444@warthog.procyon.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Content-Language: en-US
-To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        shayne.chen@mediatek.com, sean.wang@mediatek.com, kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-From:   Khalid Aziz <khalid@gonehiking.org>
-Subject: [Bug] mt7921e driver in 5.16 causes kernel panic
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; boundary="Sig_/TSD_6X.o4QL4mtle5E/6NvU";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I am seeing an intermittent bug in mt7921e driver. When the driver module is loaded
-and is being initialized, almost every other time it seems to write to some wild
-memory location. This results in driver failing to initialize with message
-"Timeout for driver own" and at the same time I start to see "Bad page state" messages
-for random processes. Here is the relevant part of dmesg:
+--Sig_/TSD_6X.o4QL4mtle5E/6NvU
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-[OK] Found device SAMSUNG MZVLB1T0HBLR-000L7 6.
-[OK ]Found device SAMSUNG MZVLB1T0HBLR-000L7 SYSTEM.
-[OK] Listening on Load/Save RF Kill Switch Status /dev/rfkill Watch.
-Starting Cryptography Setup for nvme8n1p6_crypt...
-[  5.687489] mt7921e 0000:03:00.0: ASIC revision: 79610010
-Starting File System Check on /dev/disk/by-uuid/CCSA-8086...
-Please enter passphrase for disk SAMSUNG MZVLB1T0HBLR-000L7 (nvme8n1p6_crypt) on /home
-[  7.798962] mt7921e 0000:03:00.0: Timeout for driver own
-[  8.874863] mt7921e 0000:03:00.0: Timeout for driver own
-[  8.876266] BUG: Bad page state in process systemd-udevd  pfn:123848
-[  8.877953] BUG: Bad page state in process napi/phy8-8194  pfn:10a4a8
-[  9.958899] mt7921e 0000:03:00.0: Timeout for driver own
-[  9.961595] BUG: Bad page state in process systemd-udevd  pfn:1037e8
-[ 11.843129] mt7921e 0000:03:00.0: Timeout for driver own
-[ 11.845823] BUG: Bad page state in process systemd-udevd  pfn:104380
-[ 12.126922] mt7921e 0000:03:00.0: Timeout for driver own
-[ 12.128788] BUG: Bad page state in process systemd-udevd  pfn:10a050
-[ 13.287898] mt7921e 0000:03:00.0: Timeout for driver own
-[ 14.287827] mt7921e 0000:03:00.0: Timeout for driver own
-[ 14.288968] BUG: Bad page state in process systemd-udevd  pfn:109f51
-[ 14.298599] BUG: Bad page state in process systemd-udevd  pfn:105f60
-[ 14.292162] BUG: Bad page state in process systemd-udevd  pfn:10ac07
-[ 15.372501] mt7921e 0000:03:00.0: Timeout for driver own
-[ 16.454773] mt7921e 0000:03:00.0: Timeout for driver own
-[ 16.456238] BUG: Bad page state in process systemd-udevd pfn:1a0c00
-[ 16.515869) mt7921e 0000:03:00.0: hardware init failed
+Hi David,
 
-These "Bad page state" messages continue until kernel finally panics with a page
-fault in a seemingly random place:
+On Tue, 11 Jan 2022 23:07:24 +0000 David Howells <dhowells@redhat.com> wrot=
+e:
+>
+>     I think also that a conflict[10] spotted by Stephen Rothwell between =
+my
+>     series and some changes that went in since the branching point
+>     shouldn't be an issue with this removed.
 
-[  17.544222] BUG: Bad page state in process apparmor_parser  pfn:1116f8
-[  OK  ] Finished Create Volatile Files and Directories
-          Starting Network Name Resolution...
-          Starting Network Time Synchronization...
-          Starting Update UTMP about System Boot/Shutdown...
-[  17.677144] BUG: unable to handle page fault for address: 0000396eb08090ec
-[  17.680395] #PF: supervisor read access in kernel mode
-[  17.681086] #PF: error code(0x0000) - not-present page
-[  17.681086] PGD 0 P4D 0
-[  17.681006] Opps: 0000 [#1] PREEMPT SMP NOPTI
-[  17.681006] CPU: 8 PID: 63 Con: ksoftirgd/8 Tainted: G  B  W        5.16.0 #3
-[  17.681606] Hardware name: LENOVO 20XF004WUS/20XF004WUS, BIOS R1NET44W (1.14) 11/08/2821
+There is also this conflict against the pifdf tree (which may or may
+not be merged before this):
 
-Rest of the kernel stack trace is in form of a picture which I can send if it helps. Kernel
-is compiled from git tag "v5.16". Details of mediatek controller:
+https://lore.kernel.org/all/20211206090755.3c6f6fe4@canb.auug.org.au/
 
-$ lspci -v -s 03:00.0
-03:00.0 Network controller: MEDIATEK Corp. Device 7961
-	Subsystem: Lenovo Device e0bc
-	Physical Slot: 0
-	Flags: bus master, fast devsel, latency 0, IRQ 85, IOMMU group 11
-	Memory at 870200000 (64-bit, prefetchable) [size=1M]
-	Memory at 870300000 (64-bit, prefetchable) [size=16K]
-	Memory at 870304000 (64-bit, prefetchable) [size=4K]
-	Capabilities: [80] Express Endpoint, MSI 00
-	Capabilities: [e0] MSI: Enable+ Count=1/32 Maskable+ 64bit+
-	Capabilities: [f8] Power Management version 3
-	Capabilities: [100] Vendor Specific Information: ID=1556 Rev=1 Len=008 <?>
-	Capabilities: [108] Latency Tolerance Reporting
-	Capabilities: [110] L1 PM Substates
-	Capabilities: [200] Advanced Error Reporting
-	Kernel driver in use: mt7921e
-	Kernel modules: mt7921e
+--=20
+Cheers,
+Stephen Rothwell
 
-This is an intermittent problem and I did not see this with 5.16-rc6 kernel.
-Please let me know if you need more information.
+--Sig_/TSD_6X.o4QL4mtle5E/6NvU
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Thanks,
-Khalid
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHeE2IACgkQAVBC80lX
+0GykKgf+LY4OWHMyvWj+UkQIEcaKG5r9OhPcLyt0zfDe0PRZQmlxXnY3gTri4emO
+7Fj3IMkvEOSOP3VZlIRTpYauhwuCpB+yQDB/8X303z+a2aF9f/K1wrt0wvfGAqUY
+qlGXd0zwWB9XPkGCkYEMi5oVP6TbMKajCMkq5rFhZcQS7YfHrWS/uJhpcmeVU0gn
+BYKtZyQ5RBY8RImGGBnhGjQLxhXBn90mi729iNaFVPzeonasUxYQzZaiWSMGxWov
+a2RcKHhg+dwlj1BTgB3lEnny9EM57priTBX8HnJwconRDhrWaGBv+k973nnHHZq0
+x1fteziRSjCPvg4mlWtvA8XrBSjL1g==
+=alke
+-----END PGP SIGNATURE-----
+
+--Sig_/TSD_6X.o4QL4mtle5E/6NvU--
