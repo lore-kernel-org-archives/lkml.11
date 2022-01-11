@@ -2,187 +2,379 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E476EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 08:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348858AbiAKIRt (ORCPT
+        id S1348869AbiAKIVf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 03:17:49 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54426 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348845AbiAKIRs (ORCPT
+        Tue, 11 Jan 2022 03:21:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348854AbiAKIVd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 03:17:48 -0500
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20B6M6fI006533;
-        Tue, 11 Jan 2022 08:16:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=WW4nRJCrp2O0gmlqArh2zi0Ono1qZ4cRDB/3IMS2aU4=;
- b=F91MrIljTuD+yqE/J7rLSUXlYJwR7FjT3DJp4v2gHxrlIm5kVFBGDb4Zdx83RZmsuSRG
- SF8s2D5vGLnzgC1EbXeO9zlLNBw7zXOYmZdZD06OLGzUThZjesb8R8NAKBgeNV6zIvzL
- X0bnkO+COXh/g5U5oT5bI5Lhg2rSJQYaqRUoqImwhLu4i1wZOXRrjkeMhsuViWkro7yS
- D07OADMNqsa9UJQuGANUGBEwyzFt3QnsafhRDdqortHtAY6bOeVs7AdIFEpEeNk11Gg2
- TohqEsi+pNkSFx4JhTlU9pmT6ts/zKc6jTe0yYdHF6a2pSOl2LFTGwVu5XEm6+DA2TJM mg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dh4jdan2t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 08:16:39 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20B860hQ016146;
-        Tue, 11 Jan 2022 08:16:38 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dh4jdan2f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 08:16:38 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20B8CJPZ018038;
-        Tue, 11 Jan 2022 08:16:37 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma01dal.us.ibm.com with ESMTP id 3df28a9jb6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 11 Jan 2022 08:16:37 +0000
-Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20B8GaIp5767784
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 08:16:36 GMT
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 44FAFAE064;
-        Tue, 11 Jan 2022 08:16:36 +0000 (GMT)
-Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DF998AE066;
-        Tue, 11 Jan 2022 08:16:27 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.43.112.216])
-        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 11 Jan 2022 08:16:27 +0000 (GMT)
-X-Mailer: emacs 28.0.90 (via feedmail 11-beta-1 I)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     Yu Zhao <yuzhao@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Yu Zhao <yuzhao@google.com>,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Subject: Re: [PATCH v6 4/9] mm: multigenerational lru: groundwork
-In-Reply-To: <20220104202227.2903605-5-yuzhao@google.com>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <20220104202227.2903605-5-yuzhao@google.com>
-Date:   Tue, 11 Jan 2022 13:46:24 +0530
-Message-ID: <878rvm661z.fsf@linux.ibm.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: viEjU2U4v_MgGJbxkWFac0_jQpUME9Y3
-X-Proofpoint-ORIG-GUID: ycq6qDeljNjiG_kVdl1MGjZTm8vdgF-2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-11_03,2022-01-10_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 impostorscore=0
- mlxscore=0 adultscore=0 clxscore=1011 mlxlogscore=999 lowpriorityscore=0
- priorityscore=1501 suspectscore=0 phishscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201110044
+        Tue, 11 Jan 2022 03:21:33 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A83C06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 00:21:33 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id q14so16010212plx.4
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 00:21:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:from:date:subject:to:cc;
+        bh=4rgqjIr0fp0ZpooxWdjgQePlEAijJqx3Po9zqgyLnN0=;
+        b=1IeZeJt5+YiICwmtq0IQDBsDy3N3xMPK0ctGulubNVtbwIulNnyhYvL0jNUjQywgCh
+         7H0WJxyCQw0xZTacVn7szfyZ10QZnzXRQdfKBm9eJG0W+erl5Ntym3eCpQfRcGCJrq0m
+         WiWu3ksYYKjUn7DYm/PMdkJjBckTWshfExw9x+o3BjaZyHgU1NcpJG536UDyBvxkndlV
+         sh/ct/LnRM/vow2tbi3Cu9SUbKsqHRV35hxFH7Cpu6b4H9FdymcIRBAB3aAyFcEbavzc
+         Fs6VGqXOi1USwrXmMTzvgX62MZ5Cg5I71iiFrpFknW3RLIh9twD0eZeVDtJsLhJSTnsu
+         RIpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:from:date:subject:to:cc;
+        bh=4rgqjIr0fp0ZpooxWdjgQePlEAijJqx3Po9zqgyLnN0=;
+        b=NWkj+mqPv2KM6JhSxIv5w2eTHIoPcgDvWKyuSeVL6kPkJueenaL2qKD4h/W/+1ec21
+         LO/GsY2kLJaJFRQoLAPlrR9bS29eaZWxWN94UpEqOFvLnjwz2xLdey3VVBq82/Im5cR9
+         bT7gpGNKCjzBj49x/7Rcbi6s6yAOKfEdWq6dDZx7z2mCa92KDEjTRWTjwo9u7FuHV1Oe
+         Zksotj/iiFnjnjJ71vbmoIQhbwbBRLtt4dPvDQERc43NHwPomk9oc4uplygofi8j09/1
+         o3RWRcrjF8BhMcpi0iwt1N05ivycOzSh24hXdTCRtXmh02QxKGY8C71IEyo2F7CKdEdf
+         K2Vg==
+X-Gm-Message-State: AOAM533JwVkTnSlkTErslJ9/m8mcGDuuioV231VwfGkdxhpQKzA1Ikkm
+        xt63uCvDHgeWstk5ysiIi7w+3HUmkl0HX0P1
+X-Google-Smtp-Source: ABdhPJzCf4R8NG/Y+20Mw98oB3d8amHejANAgPtDWQcdDkQU09jELNxNRdYldkHYRVE2Sxyx/q8p7w==
+X-Received: by 2002:a17:90b:4c05:: with SMTP id na5mr1935709pjb.94.1641889293172;
+        Tue, 11 Jan 2022 00:21:33 -0800 (PST)
+Received: from localhost ([121.99.145.49])
+        by smtp.gmail.com with ESMTPSA id t1sm3451722pfg.29.2022.01.11.00.21.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 00:21:32 -0800 (PST)
+Message-ID: <61dd3e0c.1c69fb81.cea15.8d98@mx.google.com>
+From:   Daniel Beer <daniel.beer@igorinstitute.com>
+Date:   Tue, 11 Jan 2022 21:07:47 +1300
+Subject: [PATCH] iio: adc: ad_sigma_delta: IRQ sharing mechanism.
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Daniel Beer <daniel.beer@igorinstitute.com>,
+        Derek Simkowiak <derek.simkowiak@igorinstitute.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yu Zhao <yuzhao@google.com> writes:
+This patch allows for multiple Analog Devices ADCs to be placed on the
+same SPI bus. While it's not possible for them to share interrupts
+arbitrarily, a special restricted form of sharing for this special case
+is implemented here.
 
-.....
+The first instance of an ADC using a given interrupt will acquire the
+IRQ and register an object in a global list. Any subsequent instances
+will increment a reference count on this object.
 
- +
-> +/*
-> + * Evictable pages are divided into multiple generations. The youngest and the
-> + * oldest generation numbers, max_seq and min_seq, are monotonically increasing.
-> + * They form a sliding window of a variable size [MIN_NR_GENS, MAX_NR_GENS]. An
-> + * offset within MAX_NR_GENS, gen, indexes the lru list of the corresponding
-> + * generation. The gen counter in folio->flags stores gen+1 while a page is on
-> + * lrugen->lists[]. Otherwise, it stores 0.
-> + *
-> + * A page is added to the youngest generation on faulting. The aging needs to
-> + * check the accessed bit at least twice before handing this page over to the
-> + * eviction. The first check takes care of the accessed bit set on the initial
-> + * fault; the second check makes sure this page hasn't been used since then.
-> + * This process, AKA second chance, requires a minimum of two generations,
-> + * hence MIN_NR_GENS. And to be compatible with the active/inactive lru, these
-> + * two generations are mapped to the active; the rest of generations, if they
-> + * exist, are mapped to the inactive. PG_active is always cleared while a page
-> + * is on lrugen->lists[] so that demotion, which happens consequently when the
-> + * aging creates a new generation, needs not to worry about it.
-> + */
+During a conversion, the active instance indicates that it is the
+recipient of the interrupt by setting a pointer on the object shared
+among it and the other instances.
 
-Where do we clear PG_active in the code? Is this the reason we endup
-with
+The existing CS locking mechanism guarantees that no more than one
+instance per bus will be expecting the interrupt at any time.
 
-  void deactivate_page(struct page *page)
-  {
- -	if (PageLRU(page) && PageActive(page) && !PageUnevictable(page)) {
- +	if (PageLRU(page) && !PageUnevictable(page) && (PageActive(page) || lru_gen_enabled())) {
+Signed-off-by: Daniel Beer <daniel.beer@igorinstitute.com>
+---
+ drivers/iio/adc/ad_sigma_delta.c       | 191 +++++++++++++++++++++++--
+ include/linux/iio/adc/ad_sigma_delta.h |   4 +
+ 2 files changed, 181 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index cd418bd8bd87..cd593af6ef3a 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -13,6 +13,7 @@
+ #include <linux/spi/spi.h>
+ #include <linux/err.h>
+ #include <linux/module.h>
++#include <linux/list.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -24,6 +25,161 @@
+ 
+ #include <asm/unaligned.h>
+ 
++static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private);
++
++struct ad_sigma_delta_interrupt {
++	/* Constant from time of creation */
++	int			irq;
++	struct spi_master	*master;
++
++	/* Protected by global lock */
++	struct list_head	list;
++	int			refcnt;
++
++	/* Protected by lock on corresponding SPI bus */
++	struct ad_sigma_delta	*active;
++};
++
++static DEFINE_MUTEX(interrupt_lock);
++static LIST_HEAD(interrupt_list);
++
++static void adsdi_enable(struct ad_sigma_delta *a)
++{
++	struct ad_sigma_delta_interrupt *intr = a->interrupt;
++
++	WARN_ON(intr->active);
++	intr->active = a;
++	pr_debug("ad_sigma_delta: enable %d for %p\n", intr->irq, a);
++	enable_irq(intr->irq);
++}
++
++static void adsdi_disable(struct ad_sigma_delta *a, int nosync)
++{
++	struct ad_sigma_delta_interrupt *intr = a->interrupt;
++
++	if (nosync)
++		disable_irq_nosync(intr->irq);
++	else
++		disable_irq(intr->irq);
++
++	pr_debug("ad_sigma_delta: disable %d for %p\n", intr->irq, intr->active);
++
++	/* In the case of a timeout, it's possible for adsdi_disable to
++	 * be called twice by the same instance (if the interrupt runs
++	 * between the call to check and the call to disable).
++	 *
++	 * We still need to disable first before checking intr->active.
++	 * Then we can roll back if we've done it twice.
++	 */
++	if (intr->active != a) {
++		WARN_ON(intr->active);
++		pr_debug("ad_sigma_delta: double-disable\n");
++		enable_irq(intr->irq);
++	}
++
++	intr->active = NULL;
++}
++
++static int adsdi_get(struct ad_sigma_delta_interrupt **intr_ret,
++		     int irq, struct spi_master *master,
++		     int flags)
++{
++	struct ad_sigma_delta_interrupt *intr = NULL;
++	struct list_head *ptr;
++	int ret = 0;
++
++	mutex_lock(&interrupt_lock);
++
++	/* Try to find an existing instance */
++	list_for_each(ptr, &interrupt_list) {
++		struct ad_sigma_delta_interrupt *i = list_entry(ptr,
++			struct ad_sigma_delta_interrupt, list);
++
++		if (i->irq == irq) {
++			/* No instance will attempt to wait for the
++			 * interrupt without the SPI bus locked, which
++			 * we can rely on to ensure correct operation.
++			 * However, we would like to detect
++			 * misconfiguration that would lead to unsafe
++			 * access.
++			 */
++			if (i->master != master) {
++				pr_err(
++				    "ad_sigma_delta: SPI master mismatch on IRQ %d\n",
++				    irq);
++				ret = -EINVAL;
++				goto fail_search;
++			}
++
++			intr = i;
++			break;
++		}
++	}
++
++	/* Allocate a new one if necessary */
++	if (!intr) {
++		intr = kmalloc(sizeof(*intr), GFP_KERNEL);
++		if (!intr) {
++			ret = -ENOMEM;
++			pr_err("ad_sigma_delta: can't allocate memory\n");
++			goto fail_search;
++		}
++
++		intr->irq = irq;
++		intr->refcnt = 0;
++		intr->active = NULL;
++		intr->master = master;
++
++		ret = request_irq(irq,
++				  ad_sd_data_rdy_trig_poll,
++				  flags | IRQF_NO_AUTOEN,
++				  "ad_sigma_delta",
++				  intr);
++		if (ret)
++			goto fail_search;
++
++		pr_debug("ad_sigma_delta: sharing interrupt %d\n", irq);
++		list_add(&intr->list, &interrupt_list);
++	}
++
++	intr->refcnt++;
++	*intr_ret = intr;
++
++fail_search:
++	mutex_unlock(&interrupt_lock);
++	return ret;
++}
++
++static void adsdi_put(struct ad_sigma_delta_interrupt *intr)
++{
++	mutex_lock(&interrupt_lock);
++	if (!--intr->refcnt) {
++		pr_debug("ad_sigma_delta: interrupt %d deallocated\n",
++			intr->irq);
++		free_irq(intr->irq, intr);
++		list_del(&intr->list);
++		kfree(intr);
++	}
++	mutex_unlock(&interrupt_lock);
++}
++
++static void devm_adsdi_release(void *arg)
++{
++	adsdi_put(arg);
++}
++
++static int devm_adsdi_get(struct device *dev,
++			  struct ad_sigma_delta_interrupt **intr_ret,
++			  int irq, struct spi_master *master,
++			  int flags)
++{
++	const int ret = adsdi_get(intr_ret, irq, master, flags);
++
++	if (ret < 0)
++		return ret;
++
++	return devm_add_action_or_reset(dev, devm_adsdi_release, *intr_ret);
++}
+ 
+ #define AD_SD_COMM_CHAN_MASK	0x3
+ 
+@@ -221,11 +377,11 @@ int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
+ 		goto out;
+ 
+ 	sigma_delta->irq_dis = false;
+-	enable_irq(sigma_delta->spi->irq);
++	adsdi_enable(sigma_delta);
+ 	timeout = wait_for_completion_timeout(&sigma_delta->completion, 2 * HZ);
+ 	if (timeout == 0) {
+ 		sigma_delta->irq_dis = true;
+-		disable_irq_nosync(sigma_delta->spi->irq);
++		adsdi_disable(sigma_delta, 0);
+ 		ret = -EIO;
+ 	} else {
+ 		ret = 0;
+@@ -294,7 +450,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_SINGLE);
+ 
+ 	sigma_delta->irq_dis = false;
+-	enable_irq(sigma_delta->spi->irq);
++	adsdi_enable(sigma_delta);
+ 	ret = wait_for_completion_interruptible_timeout(
+ 			&sigma_delta->completion, HZ);
+ 
+@@ -314,7 +470,7 @@ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 
+ out:
+ 	if (!sigma_delta->irq_dis) {
+-		disable_irq_nosync(sigma_delta->spi->irq);
++		adsdi_disable(sigma_delta, 0);
+ 		sigma_delta->irq_dis = true;
+ 	}
+ 
+@@ -361,7 +517,7 @@ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
+ 		goto err_unlock;
+ 
+ 	sigma_delta->irq_dis = false;
+-	enable_irq(sigma_delta->spi->irq);
++	adsdi_enable(sigma_delta);
+ 
+ 	return 0;
+ 
+@@ -379,7 +535,7 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
+ 	wait_for_completion_timeout(&sigma_delta->completion, HZ);
+ 
+ 	if (!sigma_delta->irq_dis) {
+-		disable_irq_nosync(sigma_delta->spi->irq);
++		adsdi_disable(sigma_delta, 0);
+ 		sigma_delta->irq_dis = true;
+ 	}
+ 
+@@ -425,7 +581,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	sigma_delta->irq_dis = false;
+-	enable_irq(sigma_delta->spi->irq);
++	adsdi_enable(sigma_delta);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -438,10 +594,17 @@ static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+ 
+ static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
+ {
+-	struct ad_sigma_delta *sigma_delta = private;
++	struct ad_sigma_delta_interrupt *intr = private;
++	struct ad_sigma_delta *sigma_delta = intr->active;
++
++	WARN_ON(!sigma_delta);
++	if (!sigma_delta)
++		return IRQ_NONE;
+ 
++	pr_debug("ad_sigma_delta: interrupt %d fired for %p\n",
++		intr->irq, sigma_delta);
+ 	complete(&sigma_delta->completion);
+-	disable_irq_nosync(irq);
++	adsdi_disable(sigma_delta, 1);
+ 	sigma_delta->irq_dis = true;
+ 	iio_trigger_poll(sigma_delta->trig);
+ 
+@@ -486,11 +649,11 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
+ 	init_completion(&sigma_delta->completion);
+ 
+ 	sigma_delta->irq_dis = true;
+-	ret = devm_request_irq(dev, sigma_delta->spi->irq,
+-			       ad_sd_data_rdy_trig_poll,
+-			       sigma_delta->info->irq_flags | IRQF_NO_AUTOEN,
+-			       indio_dev->name,
+-			       sigma_delta);
++	ret = devm_adsdi_get(dev,
++			&sigma_delta->interrupt,
++			sigma_delta->spi->irq,
++			sigma_delta->spi->master,
++			sigma_delta->info->irq_flags);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index c525fd51652f..62f38cfe807b 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -54,6 +54,9 @@ struct ad_sigma_delta_info {
+ 	unsigned long irq_flags;
+ };
+ 
++/* Data relating to interrupt sharing */
++struct ad_sigma_delta_interrupt;
++
+ /**
+  * struct ad_sigma_delta - Sigma Delta device struct
+  * @spi: The spi device associated with the Sigma Delta device.
+@@ -76,6 +79,7 @@ struct ad_sigma_delta {
+ 	uint8_t			comm;
+ 
+ 	const struct ad_sigma_delta_info *info;
++	struct ad_sigma_delta_interrupt *interrupt;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+-- 
+2.30.2
 
-
-
-> +#define MIN_NR_GENS		2U
-> +#define MAX_NR_GENS		((unsigned int)CONFIG_NR_LRU_GENS)
-> +
-> +struct lru_gen_struct {
-> +	/* the aging increments the youngest generation number */
-> +	unsigned long max_seq;
-> +	/* the eviction increments the oldest generation numbers */
-> +	unsigned long min_seq[ANON_AND_FILE];
-> +	/* the birth time of each generation in jiffies */
-> +	unsigned long timestamps[MAX_NR_GENS];
-> +	/* the multigenerational lru lists */
-> +	struct list_head lists[MAX_NR_GENS][ANON_AND_FILE][MAX_NR_ZONES];
-> +	/* the sizes of the above lists */
-> +	unsigned long nr_pages[MAX_NR_GENS][ANON_AND_FILE][MAX_NR_ZONES];
-> +	/* whether the multigenerational lru is enabled */
-> +	bool enabled;
-> +};
-> +
-
-....
-
->  static void __meminit zone_init_internals(struct zone *zone, enum zone_type idx, int nid,
-> diff --git a/mm/swap.c b/mm/swap.c
-> index e8c9dc6d0377..d7dde3b7d4b5 100644
-> --- a/mm/swap.c
-> +++ b/mm/swap.c
-> @@ -462,6 +462,11 @@ void folio_add_lru(struct folio *folio)
->  	VM_BUG_ON_FOLIO(folio_test_active(folio) && folio_test_unevictable(folio), folio);
->  	VM_BUG_ON_FOLIO(folio_test_lru(folio), folio);
->  
-> +	/* see the comment in lru_gen_add_folio() */
-> +	if (lru_gen_enabled() && !folio_test_unevictable(folio) &&
-> +	    task_in_lru_fault() && !(current->flags & PF_MEMALLOC))
-> +		folio_set_active(folio);
-> +
-
-
-Can you explain this better? What is the significance of marking the
-folio active here. Do we need to differentiate parallel page faults (across
-different vmas) w.r.t task_in_lru_fault()?
-
-
->  	folio_get(folio);
->  	local_lock(&lru_pvecs.lock);
->  	pvec = this_cpu_ptr(&lru_pvecs.lru_add);
-> @@ -563,7 +568,7 @@ static void lru_deactivate_file_fn(struct page *page, struct lruvec *lruvec)
->  
