@@ -2,115 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D143C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 23:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D778CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 23:40:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243293AbiAKXig (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 18:38:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243941AbiAKXic (ORCPT
+        id S244071AbiAKXkg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 18:40:36 -0500
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:54834 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243308AbiAKXke (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 18:38:32 -0500
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 672A3C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 15:38:32 -0800 (PST)
-Received: by mail-yb1-xb29.google.com with SMTP id e198so1503210ybf.7
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 15:38:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=95SGhqOm0RccSxJd03GJ+P09jT1muY8YMjYut8pvtqA=;
-        b=oh8SsVjgy0iZTdFo6YzyNVUqT1q/qdQHbxYWVkHGO7CG64yrC1aFcOfJBL7xrSAlY+
-         RVtvIjA/p2bWEp6apmi/M0sDnT83FLIUvq78MpV8sZy9vtQVY5tqeJrpJDEedtQvx9OZ
-         MPw4nuikifUlivgQBD+7FjtvuZo7nc2CwEX8orNj2/Slu0GJ9e+69x01Jxsz2wlPaobq
-         U/dF8X2zhedHCjjLSMl/qZhQ3HFa55fhGCf8qofKVe0BQLTWNijS9GIv/O/GHgBhOrHJ
-         SgzyS93ujsrXUWxfD97cq7se0IRa35hwt980hfCuYJyr39pl1Jc8wlvTcVIIk5iE4kLR
-         eGCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=95SGhqOm0RccSxJd03GJ+P09jT1muY8YMjYut8pvtqA=;
-        b=DbbbiFxsIpbgAyNcS0PDgsk89WsURugqcuDS6EjUzaWS9DhWZrcBsZebJvE+6lK/Ld
-         ii3G88CVpQIZnAdd00aY4Ohtv9D5tf0pStppmVgno4O2Eovqn69/9gVM/5ehw2bCDPO0
-         8k4vAZ+sMuIvEevVzKsfROoH2PWERWOS/BUMZsR2sx4XGxYnkVp+XgVVBywCU5ypSNoP
-         VswS1kGXihZR81F/3EKZUEQFF0l9tHHyeomtpAqEd7LaQ1EtjJAS+QlYbUbtmNliGL+V
-         /vHs4Ng99x0pm091F9K+tYTHElXs93Czck0E3bnqd5+ZCj+JYNTAG78NQ48pXVpO8I6q
-         wAvA==
-X-Gm-Message-State: AOAM531efpJ5EgTh9drouZ18vfDSQDJZGfCAdk7gkLajv8L/fKNwMWIq
-        tt1e4BNPz69l5V1SmEC73xgrQp+RrH/tAfHAvfveyA==
-X-Google-Smtp-Source: ABdhPJymtneO7XZ322JsP6ScH1vz+nxafPzDb/8P3vFGru+YCwIQAx2X7BIG31eVsRLKMY8+ovsKJfxSCiVJ37kJwjg=
-X-Received: by 2002:a25:fc27:: with SMTP id v39mr10217685ybd.9.1641944311344;
- Tue, 11 Jan 2022 15:38:31 -0800 (PST)
+        Tue, 11 Jan 2022 18:40:34 -0500
+X-Greylist: delayed 548 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 18:40:34 EST
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id AC4FD224E7A
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 23:31:28 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.7.67.122])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B3DCD1C007E;
+        Tue, 11 Jan 2022 23:31:25 +0000 (UTC)
+Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id D0A6540073;
+        Tue, 11 Jan 2022 23:31:24 +0000 (UTC)
+Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail3.candelatech.com (Postfix) with ESMTPSA id 0D18A13C2B0;
+        Tue, 11 Jan 2022 15:31:24 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 0D18A13C2B0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
+        s=default; t=1641943884;
+        bh=Cjva8Ua9mKRM9CDkoS1tPMFTEcoAovDoxh2PNKu05/w=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=fvtmz02TvQHDUK+UJHIjvfJVMYY/A6JoSmMEaQgAijPgFPpclk78n/5CEbVfxkax5
+         rpIfMWcU44E2WR6+2FocEfzLV6r8ojFu2ThHSJ9VIEdVsoiOpnj3hL8m3MZCP0DPAU
+         0gFhyB3JJkjT3bHbfKACmWovs8waE+4IoCFc3WU8=
+Subject: Re: [Bug] mt7921e driver in 5.16 causes kernel panic
+To:     Khalid Aziz <khalid@gonehiking.org>, nbd@nbd.name,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        shayne.chen@mediatek.com, sean.wang@mediatek.com, kvalo@kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <5cee9a36-b094-37a0-e961-d7404b3dafe2@gonehiking.org>
+From:   Ben Greear <greearb@candelatech.com>
+Organization: Candela Technologies
+Message-ID: <7b15fa7c-9130-db8c-875e-8c0eb1dcc530@candelatech.com>
+Date:   Tue, 11 Jan 2022 15:31:23 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20220107234138.1765668-1-joshdon@google.com> <Yd189wHB2LJcK1Pv@hirez.programming.kicks-ass.net>
-In-Reply-To: <Yd189wHB2LJcK1Pv@hirez.programming.kicks-ass.net>
-From:   Josh Don <joshdon@google.com>
-Date:   Tue, 11 Jan 2022 15:38:20 -0800
-Message-ID: <CABk29NuGs_9uxgbv678W=BGGinZNiUHO5T57FHGbOG+HP-FT2g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] cgroup: add cpu.stat_percpu
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        cgroups@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <5cee9a36-b094-37a0-e961-d7404b3dafe2@gonehiking.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-MDID: 1641943886-ush-JagAYBMd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 4:50 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Fri, Jan 07, 2022 at 03:41:37PM -0800, Josh Don wrote:
->
-> > +     seq_puts(seq, "usage_usec");
-> > +     for_each_possible_cpu(cpu) {
-> > +             cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
-> > +             val = cached_bstat->cputime.sum_exec_runtime;
-> > +             do_div(val, NSEC_PER_USEC);
-> > +             seq_printf(seq, " %llu", val);
-> > +     }
-> > +     seq_puts(seq, "\n");
-> > +
-> > +     seq_puts(seq, "user_usec");
-> > +     for_each_possible_cpu(cpu) {
-> > +             cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
-> > +             val = cached_bstat->cputime.utime;
-> > +             do_div(val, NSEC_PER_USEC);
-> > +             seq_printf(seq, " %llu", val);
-> > +     }
-> > +     seq_puts(seq, "\n");
-> > +
-> > +     seq_puts(seq, "system_usec");
-> > +     for_each_possible_cpu(cpu) {
-> > +             cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
-> > +             val = cached_bstat->cputime.stime;
-> > +             do_div(val, NSEC_PER_USEC);
-> > +             seq_printf(seq, " %llu", val);
-> > +     }
-> > +     seq_puts(seq, "\n");
->
-> This is an anti-pattern; given enough CPUs (easy) this will trivially
-> overflow the 1 page seq buffer.
->
-> People are already struggling to fix existing ABI, lets not make the
-> problem worse.
+On 1/11/22 3:17 PM, Khalid Aziz wrote:
+> I am seeing an intermittent bug in mt7921e driver. When the driver module is loaded
+> and is being initialized, almost every other time it seems to write to some wild
+> memory location. This results in driver failing to initialize with message
+> "Timeout for driver own" and at the same time I start to see "Bad page state" messages
+> for random processes. Here is the relevant part of dmesg:
 
-Is the concern there just the extra overhead from making multiple
-trips into this handler and re-allocating the buffer until it is large
-enough to take all the output? In that case, we could pre-allocate
-with a size of the right order of magnitude, similar to /proc/stat.
+Please see if this helps?
 
-Lack of per-cpu stats is a gap between cgroup v1 and v2, for which v2
-can easily support this interface given that it already tracks the
-stats percpu internally. I opted to dump them all in a single file
-here, to match the consolidation that occurred from cpuacct->cpu.stat.
+From: Ben Greear <greearb@candelatech.com>
+
+If the nic fails to start, it is possible that the
+reset_work has already been scheduled.  Ensure the
+work item is canceled so we do not have use-after-free
+crash in case cleanup is called before the work item
+is executed.
+
+This fixes crash on my x86_64 apu2 when mt7921k radio
+fails to work.  Radio still fails, but OS does not
+crash.
+
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+---
+  drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
+  1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index 6073bedaa1c08..9b33002dcba4a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -272,6 +272,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
+
+  	cancel_delayed_work_sync(&dev->pm.ps_work);
+  	cancel_work_sync(&dev->pm.wake_work);
++	cancel_work_sync(&dev->reset_work);
+  	mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
+
+  	mt7921_mutex_acquire(dev);
+-- 
+2.26.3
+
+
+Thanks,
+Ben
+
+
+-- 
+Ben Greear <greearb@candelatech.com>
+Candela Technologies Inc  http://www.candelatech.com
+
