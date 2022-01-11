@@ -2,66 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2107C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10254C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 18:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350115AbiAKSEF (ORCPT
+        id S1345230AbiAKSEH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 13:04:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344727AbiAKSDj (ORCPT
+        Tue, 11 Jan 2022 13:04:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60144 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242688AbiAKSDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 13:03:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D396C061748;
-        Tue, 11 Jan 2022 10:03:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1863B81CB7;
-        Tue, 11 Jan 2022 18:03:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9F903C36AEF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A9FCB81CBA;
+        Tue, 11 Jan 2022 18:03:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E87A6C36AF3;
         Tue, 11 Jan 2022 18:03:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641924216;
-        bh=RIEvO+lu/c6byH6TbiqIk/TJbZa6trUs7uHuTuSBNCE=;
+        bh=a8ZdgOoVnAJg43Pu0YCO9W9SuHlRvCPzUvPjWPpw6HY=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=tKQAIRmDvWar8KwwqT3Zt/mK7WApvcBX/130EjGQUq7XAkUbLSdvaakyVIDsPS6rc
-         oZKj2gg7mYQUAtDHmAgA2FOAeJjqX5Y0oDRB7JoWM2X4FRBeMo4xuAH5OCXf/7FerF
-         NWO0TE7c3ndQqWnLzQvLPiyBke3jDrKcA5DUSz9xCwfJAWErFp7qdYnjTRuuDJu+Od
-         GDnlW2jDvULAK2gP/P4hCZIkN+xzU4d7BBOn9FkhX0lw8eG51ki0eDzlA6CIgGwQAJ
-         cfLUxTzv+bV8QKsvA5hEVnFgfZyaZgT6lTKdBSdKyV7+/Q4B+rXWQD/QiPO8ytEPC8
-         qnpAtwksTz0Pw==
+        b=PYw4DXWE5KPyQGiJBK6auAVB6o0B+YRfxCVIt1SLuIKgR6yof//BmnnfETxHIUfU0
+         UzQKcomjwGbpICgT2LSkD3yfnSHDjVGgXX/Wck5YoZdq2sdDwtfwKdOG4Z2x3beoy3
+         k0V1dECDzOJHRKr9KA2NC6PbYgJUY1Tr4qTzBuvqy4mPyMbPvIvNdEb0eAjcmUBKJG
+         1lCbpyZqVUME4pqHrVuzaCLW6nguhsKGtdItFOPR87IzYQRbUEYr0C0Pg256NG7B7o
+         ch2xSurzumuCY0Aj21SUP9ptxRPAyJoeSQPx7Kmm+iU4MBG0ovq+8/XWiJc1do5QwP
+         uupoKO8edo62w==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8E436F6078E;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D4FAEF6078A;
         Tue, 11 Jan 2022 18:03:36 +0000 (UTC)
-Subject: Re: [GIT PULL] cgroup changes for v5.17-rc1
+Subject: Re: [GIT PULL] RCU changes for v5.17
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Ydxw+LLhEmi5B/Re@slm.duckdns.org>
-References: <Ydxw+LLhEmi5B/Re@slm.duckdns.org>
+In-Reply-To: <20220110183529.GA1012375@paulmck-ThinkPad-P17-Gen-1>
+References: <20220110183529.GA1012375@paulmck-ThinkPad-P17-Gen-1>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Ydxw+LLhEmi5B/Re@slm.duckdns.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.17
-X-PR-Tracked-Commit-Id: d4296faebd337e5f76c0fddb815de33d2b0ad118
+X-PR-Tracked-Message-Id: <20220110183529.GA1012375@paulmck-ThinkPad-P17-Gen-1>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/rcu.2022.01.09a
+X-PR-Tracked-Commit-Id: f80fe66c38d561a006fb4f514b0ee5d11cbe2673
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ea1ca66d3cc07b00241fcee82328f387359f32f5
-Message-Id: <164192421656.4972.10327505878896077725.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: e7d38f16c20bf2a9b2502bb1d7407360d09a836a
+Message-Id: <164192421686.4972.12741871143081982972.pr-tracker-bot@kernel.org>
 Date:   Tue, 11 Jan 2022 18:03:36 +0000
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     torvalds@linux-foundation.org, mingo@kernel.org,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de,
+        rcu@vger.kernel.org, kernel-team@fb.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 10 Jan 2022 07:46:32 -1000:
+The pull request you sent on Mon, 10 Jan 2022 10:35:29 -0800:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git for-5.17
+> git://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git tags/rcu.2022.01.09a
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ea1ca66d3cc07b00241fcee82328f387359f32f5
+https://git.kernel.org/torvalds/c/e7d38f16c20bf2a9b2502bb1d7407360d09a836a
 
 Thank you!
 
