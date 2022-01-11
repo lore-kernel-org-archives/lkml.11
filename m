@@ -2,118 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3256BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3009C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 21:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244632AbiAKVXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 16:23:20 -0500
-Received: from ixit.cz ([94.230.151.217]:55930 "EHLO ixit.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229775AbiAKVXS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 16:23:18 -0500
-Received: from localhost.localdomain (ip-89-176-96-70.net.upcbroadband.cz [89.176.96.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S244876AbiAKVYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 16:24:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244811AbiAKVYu (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 16:24:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68935C06173F;
+        Tue, 11 Jan 2022 13:24:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id 198F12243C;
-        Tue, 11 Jan 2022 22:23:14 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
-        t=1641936194;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ZimlnBQpBEisj8Iz4EeSG9ExZsV338uX9MeSY0WUgrM=;
-        b=1qiy1xm9LL+9dZjjuZOdAgq0LGZZO49alk9ErLCK3alBYAa2PwExVq9VD9P+9TtGgjMSwv
-        smqFAVbCcJIaqANTsVIqjPMf+VBXsj3z8DgQxd40pWqC0PFeaXOAOtvYmIjWxwjY3qOJPM
-        +kXBEJl/6o7THqVVB/RQpgCVW5mBAk4=
-From:   David Heidelberg <david@ixit.cz>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Cc:     ~okias/devicetree@lists.sr.ht, David Heidelberg <david@ixit.cz>,
-        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dt-bindings: watchdog: improve QCOM compatible parsing for modern chips
-Date:   Tue, 11 Jan 2022 22:23:10 +0100
-Message-Id: <20220111212310.97566-1-david@ixit.cz>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90A0661778;
+        Tue, 11 Jan 2022 21:24:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F352FC36AEF;
+        Tue, 11 Jan 2022 21:24:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641936289;
+        bh=wyGgYCXRHCxpe66UzXa/dRUFuZdMrnjcvVwY6fmwsWo=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=gkzvqVT7ibC4B1ZUFNFmU2SdZvEfvpUyfIFQjpoHXS9KbzyKPepffD2Oet2OtP4ci
+         D1Vo2LkqKWhumYKX0WVaha43AnB4E7yE6EdmDecuEYgXrylU0ZYSsNUkXD4tOsJzHx
+         IOvR1O44yRmMsulgJygWmVzmzIdU12IagqUBOdlfHke5EJpPWwnX9lrjYg1I97bWTJ
+         nBiHoWD7XVkGrWFhrNWE6G2HfJXftb5/5SaGGdtsX+Bp4Q63EABg1QkF9s/RjpwU+c
+         kecAf1XF3+msgUTSdTOUTBZflFv06zGbyxj6RfqEtKQNgEKqo5QQ2vuy8WXGTnWm9D
+         pKjJkcWIVwgwg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DCDB4F6078A;
+        Tue, 11 Jan 2022 21:24:48 +0000 (UTC)
+Subject: Re: [GIT PULL] TPM DEVICE DRIVER updates for v5.17 (fixed)
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YdzhGWLSIbc4muBZ@iki.fi>
+References: <YdzhGWLSIbc4muBZ@iki.fi>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YdzhGWLSIbc4muBZ@iki.fi>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.17-fixed
+X-PR-Tracked-Commit-Id: d99a8af48a3de727173415ccb17f6b6ba60d5573
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: dabd40ecaf693a18afd4c59c8d7280610d95b66e
+Message-Id: <164193628889.30592.9863042920180678465.pr-tracker-bot@kernel.org>
+Date:   Tue, 11 Jan 2022 21:24:48 +0000
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        keyrings@vger.kernel.org, James Morris <jmorris@namei.org>,
+        David Howells <dhowells@redhat.com>,
+        Peter Huewe <peterhuewe@gmx.de>, Jason Gunthorpe <jgg@ziepe.ca>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Parse compatible as expected for modern QCOMs.
+The pull request you sent on Tue, 11 Jan 2022 03:44:57 +0200:
 
-Fixes warnings as:
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: watchdog@17980000: compatible: ['qcom,apss-wdt-sdm845', 'qcom,kpss-wdt'] is too long
-        From schema: Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-arch/arm64/boot/dts/qcom/sdm845-oneplus-fajita.dt.yaml: watchdog@17980000: compatible: Additional items are not allowed ('qcom,kpss-wdt' was unexpected)
-        From schema: Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
+> git://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/ tags/tpmdd-next-v5.17-fixed
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: David Heidelberg <david@ixit.cz>
----
-v2:
- - updated compatible list as two compatibles has been added upstream
- -> resolve merge conflict
----
- .../bindings/watchdog/qcom-wdt.yaml           | 37 +++++++++++--------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/dabd40ecaf693a18afd4c59c8d7280610d95b66e
 
-diff --git a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-index 16c6f82a13ca..4ff8c59c59ab 100644
---- a/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-+++ b/Documentation/devicetree/bindings/watchdog/qcom-wdt.yaml
-@@ -14,22 +14,27 @@ allOf:
- 
- properties:
-   compatible:
--    enum:
--      - qcom,apss-wdt-qcs404
--      - qcom,apss-wdt-sc7180
--      - qcom,apss-wdt-sc7280
--      - qcom,apss-wdt-sdm845
--      - qcom,apss-wdt-sdx55
--      - qcom,apss-wdt-sm6350
--      - qcom,apss-wdt-sm8150
--      - qcom,apss-wdt-sm8250
--      - qcom,kpss-timer
--      - qcom,kpss-wdt
--      - qcom,kpss-wdt-apq8064
--      - qcom,kpss-wdt-ipq4019
--      - qcom,kpss-wdt-ipq8064
--      - qcom,kpss-wdt-msm8960
--      - qcom,scss-timer
-+    oneOf:
-+      - items:
-+          - enum:
-+              - qcom,apss-wdt-qcs404
-+              - qcom,apss-wdt-sc7180
-+              - qcom,apss-wdt-sc7280
-+              - qcom,apss-wdt-sdm845
-+              - qcom,apss-wdt-sdx55
-+              - qcom,apss-wdt-sm6350
-+              - qcom,apss-wdt-sm8150
-+              - qcom,apss-wdt-sm8250
-+          - const: qcom,kpss-wdt
-+      - items:
-+          - enum:
-+              - qcom,kpss-wdt
-+              - qcom,kpss-timer
-+              - qcom,kpss-wdt-apq8064
-+              - qcom,kpss-wdt-ipq4019
-+              - qcom,kpss-wdt-ipq8064
-+              - qcom,kpss-wdt-msm8960
-+              - qcom,scss-timer
- 
-   reg:
-     maxItems: 1
+Thank you!
+
 -- 
-2.34.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
