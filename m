@@ -2,183 +2,304 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2403C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CA0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 16:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350072AbiAKQim (ORCPT
+        id S1350080AbiAKQix (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 11:38:42 -0500
-Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:19082 "EHLO
-        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1349958AbiAKQi1 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 11:38:27 -0500
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20BFEbSe004634;
-        Tue, 11 Jan 2022 16:38:24 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-id : content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=05YCD857VzU+Iobip9W7zAvt6Dk9pOxzIGYKDBNxFtY=;
- b=TEdXWoYg/Mgz6FJEGQOWEyY4mOtGyqnk11fjv08UFhF1vl5WtgWCArW5AUIpNsoIneOo
- VisXtebHPDbNaS0ycJAnrdsvlinNtp/5Is7LF/11UsgnTEBCXY9DdT1S5bJGw9HkgJqK
- XOVy81cy4p3h+4oqjVIEkxruUCxZpU0ovK5c+9m3oUBrJ7QoKWZe7PdTCb3LN/FV/K1T
- GS9W2CMrqat0CLCjD+yQHV8s+xT8R10Tld6prdMAOQIAIQtmjxxfScsDrR3agsSZK9gG
- SRK+Epa5OU/D4Ble4ctM7Jn931Hi3TvM5LVvvTPda0L4FsHUSnm5RKCD3sCW0OTMaIOo tw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dgjdbuxbn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 16:38:23 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20BGU9uk057454;
-        Tue, 11 Jan 2022 16:38:22 GMT
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam08lp2172.outbound.protection.outlook.com [104.47.73.172])
-        by userp3030.oracle.com with ESMTP id 3deyqxef4n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 11 Jan 2022 16:38:22 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lAWJk+buxJ8olOP2nwNfX1cP+B98dFEqwSIVWkXixfT+BumaKaRPHmltoENWswdjUPewW+ktGXk3rMkEhidi+g8WtOwcWkbqhP3IULfj+6Os/0d6oov9PgG3qO+1n7fOX4HHcBzNI2nasGh2MhVKqu6fsvhO6TN2fYLqGEtUvRCYo4E6Fr7K6oCxyKlh+t2a671RVo/RxjJ4j6b/C8IHvdHv+9qMJC8y4Empx2zEyaUHXQNYoYbi4QEYAPWGRz6yiN7U9yktJp2DcxEnYHLN07Cz2BVrI1jAfO9n7xMxL/TSy51i9mJSZTfTOwgm36/gZ8JKYfU0D8OJpQFY6VagAg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=05YCD857VzU+Iobip9W7zAvt6Dk9pOxzIGYKDBNxFtY=;
- b=ZH+YnkVcjSvLjcifhwUdxqSMB51fMHO3gspxIX2ktevkHv2dhl4WIF/9cd2GVFiHw9/W7ac/vsC83dNGLxx0o1+2+XSjCkV6xAuHjhpgvsPzUtfgy+QDPTOTL0Qg19ed5LItZW+Ldd5pMExBr9jaU/urLBFBi3gNH1EypFu8FEpp/rES7Jp6KlqtuxgKaHCoGRFWEMcfLoL9nsnPVymgQar6I/OMGFtQuw6AIe/w4p0dJfdddbP0CZ3L8BQfqJFzmXEs5z4kK6mhK87dFbEzHO5mCewdtLbECe6CffkMxkYZ03qLayKodjiS4YO4SXWSg4bDYtik0u7/1fCqxyyIYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=05YCD857VzU+Iobip9W7zAvt6Dk9pOxzIGYKDBNxFtY=;
- b=uSWObUPEMRW/Iwr8wXb92D7X41jmcWFjTnsi58H2u03IRrhL3YFmkt6NgPUtkwFvPKuHp+PIbSC+xfwiZZ754grNPODA6V5TyQiMnrD7BKsKf1SDYvS5pS3IBqZ8c8SKldtfYZG1S7IHZ9pk0qR02zmzSURIbCxj0rIYskINjrM=
-Received: from SN4PR10MB5590.namprd10.prod.outlook.com (2603:10b6:806:205::5)
- by SN6PR10MB2591.namprd10.prod.outlook.com (2603:10b6:805:49::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.7; Tue, 11 Jan
- 2022 16:38:20 +0000
-Received: from SN4PR10MB5590.namprd10.prod.outlook.com
- ([fe80::54fa:f1f7:d24b:e1b0]) by SN4PR10MB5590.namprd10.prod.outlook.com
- ([fe80::54fa:f1f7:d24b:e1b0%4]) with mapi id 15.20.4867.012; Tue, 11 Jan 2022
- 16:38:19 +0000
-From:   Haakon Bugge <haakon.bugge@oracle.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>,
-        Or Gerlitz <ogerlitz@mellanox.com>
-CC:     OFED mailing list <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC for-rc] IB/mlx4: Fix the fix for reading flow-counters
-Thread-Topic: [RFC for-rc] IB/mlx4: Fix the fix for reading flow-counters
-Thread-Index: AQHYBwlQCvRoMTPPuEKfYe0lhfeCNaxeBTSA
-Date:   Tue, 11 Jan 2022 16:38:19 +0000
-Message-ID: <5106B29C-9978-454D-9D25-84C29B110105@oracle.com>
-References: <1641918938-10011-1-git-send-email-haakon.bugge@oracle.com>
-In-Reply-To: <1641918938-10011-1-git-send-email-haakon.bugge@oracle.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3693.40.0.1.81)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e7d01feb-eb86-473b-e42b-08d9d520c6be
-x-ms-traffictypediagnostic: SN6PR10MB2591:EE_
-x-microsoft-antispam-prvs: <SN6PR10MB25915B72E22405E99C9192CEFD519@SN6PR10MB2591.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O5fV3qm7wyW3xod6dAomCt6hgctYpnRqfLG0KBPEBmP6dIOojLl/UpvgRHsoTjeRcB89CncnS0y4KiAbFdSIlHMXPqf7p+WcjD+WL7PC0iA7m3+7cYyF1cuZPunPeK21B6zKg860s+HXw/eVBsj6UQ+B6xzEtBKhXJ+v6Jzi/i7/7YDqTsUeE39HjY2LNm9ttajtSVbBKekAYmEWq+mQnVnHwugAPN2/dNsB1/JnRLvIVzJMz5oRngsEKThu3Qbm/fbSFawo2nbklTJcFkK6jvaHu5PRsasaKf/SV6808ci2Z3+wm+GaKA2jUPCIo/lv74659syBI6DPjH9AAjPCEM6q0e+uNHcqpZyURqchKnBouZAaAQK1CGe9sqswdzEJOXreiVW4pphDTAh7e7BEWZiZEn1zikKUNpK4RdBECMfla+C6xkACHRpXAB4/8wjc9KN0DHllyc0S1xTTLGAEk6Yb94pYl7YcSNUWDxXZ4Ng+9yKgQy+7E8qBAzNle5Aqgv8FGujIV+UVZtxQHaHJWyRe5SWQSkttCNIGJ5qy0Tu2sr7Boe/2Bw7djad5W1w/P8Un7X2fUMhmdBr9OSfsYy7ZYqnJkEoNCWHtYeiAeKUNJN+cUhDElpwT/A35/2SjQqph3k2ruKgUyqykbNSb8YEv/uD/V/PbcQHwoBbSKFZ1VyDHJSKTENcU25kKkkYtZpuvDmo/Y9A1YB3jCWEMnRAM7wCkGJEfhguuHxA/fhKFexel9ve5OY+e84U2HTyT
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN4PR10MB5590.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(66446008)(91956017)(2906002)(86362001)(66556008)(64756008)(26005)(6506007)(53546011)(8676002)(66476007)(316002)(76116006)(110136005)(71200400001)(38070700005)(4326008)(2616005)(5660300002)(54906003)(186003)(44832011)(6486002)(8936002)(33656002)(66946007)(122000001)(36756003)(38100700002)(83380400001)(6512007)(508600001)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZU1LNDF6L1ZHbDQvYm1xUlJjM1NHMVJUcWVPb0JsUWp6OFQzYnN0Smd5R3Vz?=
- =?utf-8?B?MlUxVzk5SXlveUUzOWNZYndGWmU2ZW1CR1p0ZGl2cmVDN1dUTVppOGF1eVRL?=
- =?utf-8?B?QTdFQUVNWUV6WlBZeVYvN1R5SUQwclZpdWhyNmJBNityejZubzdSY3U0Mk9Q?=
- =?utf-8?B?SFRnM1NDdDdkYzZQQlBweXVZSVk3djNDSnRuMW1PNzlTVFo1dGhIdnQ2b3gy?=
- =?utf-8?B?Ymh5UFhMSStiUGlFNE9KUU1HbEpmTmlDY09kU2tacGxxQUoxSkpETHJkTW4z?=
- =?utf-8?B?S3hzcVNXUjhJanp3L1dOamYxOS8vSUtiOXovUG4wZ1hGWVFuOEFlQWFlS0Fz?=
- =?utf-8?B?Yi9CVUZjNkxabU53cFZUZE55UHhUN04vQ3FBeWJTRU9KeEl5U3NNNDhpOTU3?=
- =?utf-8?B?eWtsdDRmOTg2NzZBR1Fkay9rOGtWN3hUcDhoSEM5K1E1V2NsYmx3NFJWSGJ3?=
- =?utf-8?B?OWNIeFRvMmxoODBqWlNoQnhqVElRdVdUZHpnd0dYQjFDNTBpd1MxZnVRc0Vp?=
- =?utf-8?B?TWdWSnF2cGU4dGNacXhiTE83c2xTSHkzazVleXNxRG96Rm9CWjRuaHJLaStp?=
- =?utf-8?B?TG1zMHE5eURMWmE0cGRnT1pNbUNMQlZncnlUNGhzRVpEcTBKbTJCUHloZlNH?=
- =?utf-8?B?OTkrRzdmUTcvYXVvMzEvVnRJNjZaRTJtMmJsQ01NQVNlTnN2K1dSYm5GdjhV?=
- =?utf-8?B?L2RjcUlxSk9BZkZsLzhJU3B5QklUMUFJVXJpTXRJSDFSUUEvbXJwNWhoeENN?=
- =?utf-8?B?bGFrcFJ3dWRGanBrbnhQSDZDUk04b2RMRitCZUpwOFNqOWxmOTJ4MEFtVGhQ?=
- =?utf-8?B?K2JxNFhpbG41RHpHUjJPMmp3SmY2RG92MmYxZ21VN0k0UXBhaWduQ01oTTNS?=
- =?utf-8?B?dEFDU1NBSDJPQ0J0VlpoY29oNFlQaCtRNkszci9PZ0poRkJDMEhFUlpmOXlr?=
- =?utf-8?B?MllmUStVTTVuMzg5Zk12aGVHTW1SckpFMTJsNHpUei9OV2pndXJwcGoycyt4?=
- =?utf-8?B?bWhVeWFIRDk4MzRxcVl5aXZWTmhIdDJoSE9vYittVi9MbzZlMnhlQUplZXE3?=
- =?utf-8?B?bjRjYlUxL3F4aEdwblZNdWgzNWZjSlBxenRlcU45WERXaUtMTHgxK3llbGs0?=
- =?utf-8?B?K0tkNExNc2NVVVJlQW8xWG1tS2FuSmZ0eENGTUR1U0dhU3JFd3NXUFBJbnl5?=
- =?utf-8?B?K2N4WTJDU3BzU2NyQzU1WEV5aCtWQVlLenNhZGZ2ZWEra0IzNDhDTklla1VD?=
- =?utf-8?B?QnEzSzFRVGhUenpqQnZMZzNpZ0EwcEEzNDhpNitKZ1kvSnVBVEhmTU5LTHhR?=
- =?utf-8?B?OEJMK3hrM0lJb0N4RlZpYytudEcyYXlNYVRwTjlBS1JPWHBkdnc1MzVzQitq?=
- =?utf-8?B?dFdNYjJwOEkvSkVuUGV5c0dwVDZFNnVwdy9kNnNCNThydWo2eUtaSmlWdmps?=
- =?utf-8?B?NFNBMW5pZFkwd2J5dVU1YVlqWUFEQmFrWWM1WFRLZWJRd3ZEOU5VbmdCK005?=
- =?utf-8?B?UHZaS0tSdkxrZFpkQWsxR2FFT0RwdzI5OFBPMUdNejVzYnRUQmIrY3ZUOFEy?=
- =?utf-8?B?QjRGS3R2cUdqN2dseTQ1bUJtSkphY2ZseFRSZUFDYlFDV1BKeHoxc1pPMzFh?=
- =?utf-8?B?SmVFeGlHMmxzaXpQUkdoMkFTVTZENENNYWdYckJtYm9ldTNNcC9YYy9FcjV1?=
- =?utf-8?B?UjQ1OTYyMXZtZVA1SFBsQ0lGVW90SFBTTDNnWnc1TjR0c2NpS2dCWFlmc1Z2?=
- =?utf-8?B?Z1NIaGFZb3NpbjJVVXBRWkxmUzloVXBFQ0M0cXVEd1hWRjJsdzV2VHozMEVP?=
- =?utf-8?B?ZVhiM2h5MDFFOENJRGY2VkpCbWhSV2IySUpLUHZNSFhNMCt0UHBGWWNLcW9X?=
- =?utf-8?B?YWhXaHEwOFhsUlVxSHAwZTVmRTh2NVIxSzgwK0I5blArditLUG9EUnAxVFZy?=
- =?utf-8?B?RDVZL0lad2lGNldXOTVxTW4zaTd3U1Jzc0lVVEprU1kvQVYrTTZJVFBRQU9U?=
- =?utf-8?B?UzRrRSsrOUNVcTFZWE56NlV5UEg5a2RhOEJSUnFZYng4cjV0Q2JUSVBmNkNz?=
- =?utf-8?B?ZkdNclNUU0Y0NElNWk9uaCtPN0VhanJxWWpER09VVDN5NkwyeXdwd0p6NGpi?=
- =?utf-8?B?b2dXSXY0blB4UEVrZ1hOeVRRbXdSU09sRkoyd1RPTXJ3TURSS1dNZm9pcURL?=
- =?utf-8?Q?n9Cbi/uvYs4YaoG0T5QKjVw=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <68D7DDEE3DE42C4CAE847943EDA05241@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Tue, 11 Jan 2022 11:38:53 -0500
+Received: from mga03.intel.com ([134.134.136.65]:6370 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349910AbiAKQiw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 11:38:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641919132; x=1673455132;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=GEwuWc9dchjVM7Bim0sjiOnsXnE27MDga3RRhHzBnQ0=;
+  b=M4jjzlFGSPDTQZ9KfBtsgMDU0hk+w9nsMrofrU/zojMRfUji9ZxneCg6
+   C1q9Ka7rdaFaN41GlBrdMMU7zzo61jKO9FDHmlfWUXMGBIf3VoQXm17Wq
+   2OBKzwy1ziM64lIJrrzjtcgiNOx1xEDI+9NA4MCwVWZ1UqECs18C7ik/m
+   um7pp6w2qfTpLA5vMpqJ5d/1AJkOWTUxmI9N85Hd3sujSyZ8LP6ZSJjSZ
+   SkBdvAm5/jezq2YW48u4DeW22dLODzJ6bYZNnShYoUr7FtI2c670+t+76
+   Qu//kf0gTYYfFWikhS/fg9dOKf+gysdilZeVF/eSH3nQHlGX2GlSmNb1z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="243484402"
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="243484402"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 08:38:27 -0800
+X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
+   d="scan'208";a="515150387"
+Received: from dchandr2-mobl.amr.corp.intel.com ([10.212.157.65])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 08:38:26 -0800
+Message-ID: <49026b58c92f418e6def0ef1bba609bdaecd368c.camel@linux.intel.com>
+Subject: Re: [PATCH] platform/x86: ISST: do not hold lock
+ punit_misc_dev_lock when register misc
+From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     Liwei Song <liwei.song@windriver.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        MarkGross <markgross@kernel.org>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 11 Jan 2022 08:38:26 -0800
+In-Reply-To: <8809e11c-191e-036a-9066-90cc316f83b9@windriver.com>
+References: <20220111103122.32362-1-liwei.song@windriver.com>
+         <9e5fd9f2-dda7-73ef-00a8-203da3827e9d@redhat.com>
+         <8809e11c-191e-036a-9066-90cc316f83b9@windriver.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN4PR10MB5590.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7d01feb-eb86-473b-e42b-08d9d520c6be
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jan 2022 16:38:19.8454
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xnwLqdW+LIJkjym7mmxY87wzLsMqep65VQnuuKLFvo1UMcJfTAs0BSkzPLCHc/LsAUCvwaZgAwq+xpTBEUgR6w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB2591
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10223 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 spamscore=0
- mlxlogscore=999 adultscore=0 phishscore=0 malwarescore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201110093
-X-Proofpoint-GUID: uamqyBtl1QUlKDDkXkFZ5yR7mfZvMLnb
-X-Proofpoint-ORIG-GUID: uamqyBtl1QUlKDDkXkFZ5yR7mfZvMLnb
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DQoNCj4gT24gMTEgSmFuIDIwMjIsIGF0IDE3OjM1LCBIw6Vrb24gQnVnZ2UgPGhhYWtvbi5idWdn
-ZUBvcmFjbGUuY29tPiB3cm90ZToNCj4gDQo+IEl0IGlzIG5vdCBsb2dpY2FsIHRvIGNhbGwgaWJv
-ZV9wcm9jZXNzX21hZCgpIHdoZW4gdGhlIGxpbmstbGF5ZXIgaXMNCj4gSW5maW5pYmFuZC4gTmV2
-ZXJ0aGVsZXNzLCB0aGUgY29tbWl0IG1lc3NhZ2UgaW4gY29tbWl0IDQzYmZiOTcyOWVhOA0KPiAo
-IklCL21seDQ6IEZpeCB1c2Ugb2YgZmxvdy1jb3VudGVycyBmb3IgcHJvY2Vzc19tYWQiKSBleHBs
-aWNpdGx5IHN0YXRlDQo+IHRoYXQgaWJvZV9wcm9jZXNzX21hZCgpIHNoYWxsIGJlIGNhbGxlZC4N
-Cj4gDQo+IFdpdGhvdXQgdGhpcyBmaXgsIHJlYWRpbmc6DQoNCiAjIGNhdCAvc3lzL2NsYXNzL2lu
-ZmluaWJhbmQvbWx4NF8wL3BvcnRzLzIvY291bnRlcnNfZXh0L3BvcnRfeG1pdF9kYXRhXzY0DQoN
-Cihzb3JyeSwgdGhpcyBsaW5lIHdhcyBvZiBjb3Vyc2UgdGFrZW4gYXMgY29tbWVudCBhbmQgd2Fz
-IHJlbW92ZWQpLg0KDQoNClRoeHMsIEjDpWtvbg0KDQoNCj4gDQo+IHlpZWxkcyAiSW52YWxpZCBh
-cmd1bWVudCIsIHdoZXJlYXMgd2l0aCB0aGlzIGNvbW1pdCwgc2FpZCBjb3VudGVyIGNhbg0KPiBi
-ZSByZWFkLg0KPiANCj4gUGxlYXNlIG5vdGUgdGhhdCBtbHg0XzEgaXMgYSBWRi4NCj4gDQo+IEZp
-eGVzOiA0M2JmYjk3MjllYTggKCJJQi9tbHg0OiBGaXggdXNlIG9mIGZsb3ctY291bnRlcnMgZm9y
-IHByb2Nlc3NfbWFkIikNCj4gU2lnbmVkLW9mZi1ieTogSMOla29uIEJ1Z2dlIDxoYWFrb24uYnVn
-Z2VAb3JhY2xlLmNvbT4NCj4gLS0tDQo+IGRyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg0L21hZC5j
-IHwgNCArKy0tDQo+IDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25z
-KC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L21seDQvbWFkLmMg
-Yi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NC9tYWQuYw0KPiBpbmRleCBkMTNlY2JkLi5jYzgz
-NzgyIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NC9tYWQuYw0KPiAr
-KysgYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NC9tYWQuYw0KPiBAQCAtOTk4LDggKzk5OCw4
-IEBAIGludCBtbHg0X2liX3Byb2Nlc3NfbWFkKHN0cnVjdCBpYl9kZXZpY2UgKmliZGV2LCBpbnQg
-bWFkX2ZsYWdzLCB1MzIgcG9ydF9udW0sDQo+IAkJICAgICAoaW4tPm1hZF9oZHIuYXR0cl9pZCA9
-PSBJQl9QTUFfUE9SVF9DT1VOVEVSUyB8fA0KPiAJCSAgICAgIGluLT5tYWRfaGRyLmF0dHJfaWQg
-PT0gSUJfUE1BX1BPUlRfQ09VTlRFUlNfRVhUIHx8DQo+IAkJICAgICAgaW4tPm1hZF9oZHIuYXR0
-cl9pZCA9PSBJQl9QTUFfQ0xBU1NfUE9SVF9JTkZPKSkpDQo+IC0JCQlyZXR1cm4gaWJvZV9wcm9j
-ZXNzX21hZChpYmRldiwgbWFkX2ZsYWdzLCBwb3J0X251bSwNCj4gLQkJCQkJCWluX3djLCBpbl9n
-cmgsIGluLCBvdXQpOw0KPiArCQkJcmV0dXJuIGliX3Byb2Nlc3NfbWFkKGliZGV2LCBtYWRfZmxh
-Z3MsIHBvcnRfbnVtLA0KPiArCQkJCQkgICAgICBpbl93YywgaW5fZ3JoLCBpbiwgb3V0KTsNCj4g
-DQo+IAkJcmV0dXJuIGliX3Byb2Nlc3NfbWFkKGliZGV2LCBtYWRfZmxhZ3MsIHBvcnRfbnVtLCBp
-bl93YywgaW5fZ3JoLA0KPiAJCQkJICAgICAgaW4sIG91dCk7DQo+IC0tIA0KPiAxLjguMy4xDQo+
-IA0KDQo=
+Hi Song,
+On Tue, 2022-01-11 at 19:57 +0800, Liwei Song wrote:
+> 
+> On 1/11/22 18:39, Hans de Goede wrote:
+> > Hi,
+> > 
+> > On 1/11/22 11:31, Liwei Song wrote:
+> > > exist the below call sequences may cause deadlock:
+> > > 
+> > > isst_if_probe()
+> > >    --> isst_if_cdev_register()
+> > >       --> mutex_lock(&punit_misc_dev_lock)
+> > >    --> misc_register()
+> > >       --> mutex_lock(&misc_mtx)
+> > > 
+> > > misc_open()
+> > >    --> mutex_lock(&misc_mtx)
+> > >    --> isst_if_open()
+> > >       --> mutex_lock(&punit_misc_dev_lock)
+> > > 
+> > > to fix this do not hold punit_misc_dev_lock when call
+> > > misc_register
+> > > since it has misc_mtx lock for sync.
+> > 
+> > I agree that the punit_misc_dev_lock should not be hold during
+> > (un)registration, but this fix looks wrong with unlocking +
+> > relocking it.
+> > 
+> > Normally things like this are done by setting up everything which
+> > needs
+> > to be setup before calling misc_register() and in that case the
+> > setup code does not need to lock the punit_misc_dev_lock at all
+> > since
+> > none of the misc_dev callbacks can be called before everything is
+> > setup (and the same in reverse for unregister, unregister the misc-
+> > dev
+> > before doing any teardown, then there is no need for the lock).
+> > 
+> > Note the above assumes that the punit_misc_dev_lock is only used
+> > from misc-dev callbacks based on its name, I did not check this is
+> > true.
+> 
+> Hi Hans,
+> 
+> Thanks for your input, in my case there are two devices on my board
+> will trigger the probe routine(isst_if_probe and isst_if_mbox_probe),
+> both of them will call misc_register(), punit_misc_dev_lock is also
+> used by the probe.
+To check how to get to that scenario:
+I guess you have some application which opens isst device during system
+startup, correct?
+
+Thanks,
+Srinivas
+
+> 
+> Thanks,
+> Liwei.
+> 
+> 
+> > Srinivas, can you take a look please ? And see if you can come up
+> > with a better fix ?
+> > 
+> > Regards,
+> > 
+> > Hans
+> > 
+> > 
+> > 
+> > 
+> > > [  256.104522]
+> > > ======================================================
+> > > [  256.113783] WARNING: possible circular locking dependency
+> > > detected
+> > > [  256.120093] 5.16.0-rc6-yocto-standard+ #99 Not tainted
+> > > [  256.125362] --------------------------------------------------
+> > > ----
+> > > [  256.131673] intel-speed-sel/844 is trying to acquire lock:
+> > > [  256.137290] ffffffffc036f0d0 (punit_misc_dev_lock){+.+.}-
+> > > {3:3}, at: isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.147171]
+> > > [  256.147171] but task is already holding lock:
+> > > [  256.153135] ffffffff8ee7cb50 (misc_mtx){+.+.}-{3:3}, at:
+> > > misc_open+0x2a/0x170
+> > > [  256.160407]
+> > > [  256.160407] which lock already depends on the new lock.
+> > > [  256.160407]
+> > > [  256.168712]
+> > > [  256.168712] the existing dependency chain (in reverse order)
+> > > is:
+> > > [  256.176327]
+> > > [  256.176327] -> #1 (misc_mtx){+.+.}-{3:3}:
+> > > [  256.181946]        lock_acquire+0x1e6/0x330
+> > > [  256.186265]        __mutex_lock+0x9b/0x9b0
+> > > [  256.190497]        mutex_lock_nested+0x1b/0x20
+> > > [  256.195075]        misc_register+0x32/0x1a0
+> > > [  256.199390]        isst_if_cdev_register+0x65/0x180
+> > > [isst_if_common]
+> > > [  256.205878]        isst_if_probe+0x144/0x16e [isst_if_mmio]
+> > > [  256.209991] hrtimer: interrupt took 10370 ns
+> > > [  256.211582]        local_pci_probe+0x47/0xa0
+> > > [  256.220384]        work_for_cpu_fn+0x17/0x30
+> > > [  256.224790]        process_one_work+0x26a/0x650
+> > > [  256.229456]        worker_thread+0x1dd/0x3b0
+> > > [  256.233861]        kthread+0x191/0x1c0
+> > > [  256.237745]        ret_from_fork+0x1f/0x30
+> > > [  256.241976]
+> > > [  256.241976] -> #0 (punit_misc_dev_lock){+.+.}-{3:3}:
+> > > [  256.248552]        validate_chain+0xbc6/0x1750
+> > > [  256.253131]        __lock_acquire+0x88c/0xc10
+> > > [  256.257618]        lock_acquire+0x1e6/0x330
+> > > [  256.261933]        __mutex_lock+0x9b/0x9b0
+> > > [  256.266165]        mutex_lock_nested+0x1b/0x20
+> > > [  256.270739]        isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.276356]        misc_open+0x100/0x170
+> > > [  256.280409]        chrdev_open+0xa5/0x1e0
+> > > [  256.284550]        do_dentry_open+0x23d/0x3c0
+> > > [  256.289039]        vfs_open+0x2f/0x40
+> > > [  256.292836]        path_openat+0x87a/0x940
+> > > [  256.297064]        do_filp_open+0xc5/0x140
+> > > [  256.301295]        do_sys_openat2+0x23d/0x320
+> > > [  256.305782]        do_sys_open+0x59/0x80
+> > > [  256.309836]        __x64_sys_openat+0x20/0x30
+> > > [  256.314324]        do_syscall_64+0x3f/0x90
+> > > [  256.318552]        entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > [  256.324259]
+> > > [  256.324259] other info that might help us debug this:
+> > > [  256.324259]
+> > > [  256.332394]  Possible unsafe locking scenario:
+> > > [  256.332394]
+> > > [  256.338444]        CPU0                    CPU1
+> > > [  256.343105]        ----                    ----
+> > > [  256.347768]   lock(misc_mtx);
+> > > [  256.350870]                                lock(punit_misc_dev
+> > > _lock);
+> > > [  256.357441]                                lock(misc_mtx);
+> > > [  256.363058]   lock(punit_misc_dev_lock);
+> > > [  256.367110]
+> > > [  256.367110]  *** DEADLOCK ***
+> > > [  256.367110]
+> > > [  256.373162] 1 lock held by intel-speed-sel/844:
+> > > [  256.377824]  #0: ffffffff8ee7cb50 (misc_mtx){+.+.}-{3:3}, at:
+> > > misc_open+0x2a/0x170
+> > > [  256.385531]
+> > > [  256.385531] stack backtrace:
+> > > [  256.390021] CPU: 12 PID: 844 Comm: intel-speed-sel Not tainted
+> > > 5.16.0-rc6-yocto-standard+ #99
+> > > [  256.398678] Hardware name: ACCTON MOROCITY/MOROCITY, BIOS
+> > > IDVLCRB1.86B.0021.D09.2111010103 11/01/2021
+> > > [  256.408028] Call Trace:
+> > > [  256.410605]  <TASK>
+> > > [  256.412837]  dump_stack_lvl+0x5b/0x82
+> > > [  256.416635]  dump_stack+0x10/0x12
+> > > [  256.420085]  print_circular_bug.isra.43+0x261/0x2c0
+> > > [  256.425095]  check_noncircular+0x126/0x140
+> > > [  256.429326]  ? __this_cpu_preempt_check+0x13/0x20
+> > > [  256.434167]  validate_chain+0xbc6/0x1750
+> > > [  256.438223]  ? validate_chain+0xbc6/0x1750
+> > > [  256.442451]  ? validate_chain+0x236/0x1750
+> > > [  256.446687]  __lock_acquire+0x88c/0xc10
+> > > [  256.450658]  lock_acquire+0x1e6/0x330
+> > > [  256.454452]  ? isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.459726]  ? __mutex_lock+0x79/0x9b0
+> > > [  256.463610]  ? __mutex_lock+0x79/0x9b0
+> > > [  256.467493]  ? isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.472764]  ? isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.478038]  __mutex_lock+0x9b/0x9b0
+> > > [  256.481748]  ? isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.487021]  ? __mutex_lock+0x102/0x9b0
+> > > [  256.490993]  ? __this_cpu_preempt_check+0x13/0x20
+> > > [  256.495837]  mutex_lock_nested+0x1b/0x20
+> > > [  256.499893]  ? mutex_lock_nested+0x1b/0x20
+> > > [  256.504121]  isst_if_open+0x18/0x90 [isst_if_common]
+> > > [  256.509222]  misc_open+0x100/0x170
+> > > [  256.512759]  chrdev_open+0xa5/0x1e0
+> > > [  256.516386]  ? cdev_put.part.1+0x20/0x20
+> > > [  256.520441]  do_dentry_open+0x23d/0x3c0
+> > > [  256.524414]  vfs_open+0x2f/0x40
+> > > [  256.527689]  path_openat+0x87a/0x940
+> > > [  256.531399]  do_filp_open+0xc5/0x140
+> > > [  256.535112]  ? trace_preempt_on+0x28/0xd0
+> > > [  256.539255]  ? alloc_fd+0x152/0x230
+> > > [  256.542880]  ? preempt_count_sub+0x9b/0x100
+> > > [  256.547200]  ? _raw_spin_unlock+0x2c/0x50
+> > > [  256.551348]  do_sys_openat2+0x23d/0x320
+> > > [  256.555320]  ? do_sys_openat2+0x23d/0x320
+> > > [  256.559467]  do_sys_open+0x59/0x80
+> > > [  256.563003]  __x64_sys_openat+0x20/0x30
+> > > [  256.566972]  do_syscall_64+0x3f/0x90
+> > > [  256.570680]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > > [  256.575866] RIP: 0033:0x7f9be4b97c27
+> > > [  256.579576] Code: 25 00 00 41 00 3d 00 00 41 00 74 37 64 8b 04
+> > > 25 18 00 00 00 85 c0 75 5b 44 89 e2 48 89 ee bf 9c ff ff ff b8 01
+> > > 01 00 00 0f 05 <48> 3d 00 f0 ff ff 0f 87 85 00 00 00 48 83 c4 68
+> > > 5d 41 5c c3 0f 1f
+> > > [  256.598474] RSP: 002b:00007ffd8fc01b70 EFLAGS: 00000246
+> > > ORIG_RAX: 0000000000000101
+> > > [  256.606177] RAX: ffffffffffffffda RBX: 00005572f20332b0 RCX:
+> > > 00007f9be4b97c27
+> > > [  256.613443] RDX: 0000000000000000 RSI: 00005572f202936a RDI:
+> > > 00000000ffffff9c
+> > > [  256.620709] RBP: 00005572f202936a R08: 0000000000000008 R09:
+> > > 0000000000000001
+> > > [  256.627974] R10: 0000000000000000 R11: 0000000000000246 R12:
+> > > 0000000000000000
+> > > [  256.635241] R13: 00005572f20332b0 R14: 0000000000000001 R15:
+> > > 0000000000000000
+> > > [  256.642513]  </TASK>
+> > > 
+> > > Signed-off-by: Liwei Song <liwei.song@windriver.com>
+> > > ---
+> > >  drivers/platform/x86/intel/speed_select_if/isst_if_common.c | 6
+> > > +++++-
+> > >  1 file changed, 5 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git
+> > > a/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
+> > > b/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
+> > > index c9a85eb2e860..bcbc0d508ec4 100644
+> > > --- a/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
+> > > +++ b/drivers/platform/x86/intel/speed_select_if/isst_if_common.c
+> > > @@ -693,10 +693,12 @@ int isst_if_cdev_register(int device_type,
+> > > struct isst_if_cmd_cb *cb)
+> > >  	if (!misc_usage_count) {
+> > >  		int ret;
+> > >  
+> > > +		mutex_unlock(&punit_misc_dev_lock);
+> > >  		misc_device_ret = misc_register(&isst_if_char_driver);
+> > >  		if (misc_device_ret)
+> > > -			goto unlock_exit;
+> > > +			return misc_device_ret;
+> > >  
+> > > +		mutex_lock(&punit_misc_dev_lock);
+> > >  		ret = isst_if_cpu_info_init();
+> > >  		if (ret) {
+> > >  			misc_deregister(&isst_if_char_driver);
+> > > @@ -731,7 +733,9 @@ void isst_if_cdev_unregister(int device_type)
+> > >  	if (device_type == ISST_IF_DEV_MBOX)
+> > >  		isst_delete_hash();
+> > >  	if (!misc_usage_count && !misc_device_ret) {
+> > > +		mutex_unlock(&punit_misc_dev_lock);
+> > >  		misc_deregister(&isst_if_char_driver);
+> > > +		mutex_lock(&punit_misc_dev_lock);
+> > >  		isst_if_cpu_info_exit();
+> > >  	}
+> > >  	mutex_unlock(&punit_misc_dev_lock);
+> > > 
+
