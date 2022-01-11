@@ -2,219 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 07:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348740AbiAKHyh (ORCPT
+        id S1348759AbiAKH5W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 02:54:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
+        Tue, 11 Jan 2022 02:57:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348754AbiAKHyc (ORCPT
+        with ESMTP id S235827AbiAKH5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 02:54:32 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E41C06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 23:54:31 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id x6so53233663lfa.5
-        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 23:54:31 -0800 (PST)
+        Tue, 11 Jan 2022 02:57:19 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B5EC061748;
+        Mon, 10 Jan 2022 23:57:18 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id s30so25453515lfo.7;
+        Mon, 10 Jan 2022 23:57:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mVkx1LI+zPocvRrKE2R4cG9ZBr7aaInh7cFXNgORfho=;
-        b=LN0juXaxA9tVwJXZRuY9egGBTmaSUYrCHgO27ujgdpnJR4V1Yviw5JKAysLSEukThd
-         cdTrmijULzElk6t9Y8LQKiJOEhnEcIXIBUo1nxrFo3cqcyE8nDfLnV0W3HQMZioNb9aC
-         XsYyscifecQTpZ/zelqIIGGk4FZvzV9I8c5tZUzGR36X0Liklpa/mYWWzSEQZaQoYlL6
-         paAqbAVll02qifRcxHutVItDy7A75ZfqWitfUl0TyUvIG2KP2Yp3BEap4BXQzmdeogEz
-         KYXRfz0n5bu1KaWCUSSDTPiBoL/s9PGUhJKpxv/1WyS87l7j8iWbxtKrsR/o2hE+oB5c
-         WL8A==
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=LWyZT2KfS7vn2dLo/4rK0hRIU1bTIB9BhSt1xTZyjfs=;
+        b=o816YNn0CIDbCy7uwUkg0QIssuplfNYZWg1E7+kMoiU09fEhi1ExzqEDKdXYCKWai9
+         qL9GIVzs3SGnxKwGJEOsSM3dx9RhiXQOO+ArNyWLk+C6CEkyik9J0oiqnGoR0d0pIAj9
+         53smI6i/pfdhdE0TtmtHvyvhbPCgckL8+ELBFQn7KfvHLFewJSBKJEg5/OYThOUaKs30
+         YfS/REggk0oGjchlK3DJSLwWFv3g0lGM/Rxm4G3MobhsE5sy8EV2tAxeU17tchxilpyJ
+         Cm1nk2GkD8C8mwFhmX8oxyCwbcyhBHAvQH1mhnlt/pBPXM0S0279pLMAkDnMH4r8aI8U
+         4vGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mVkx1LI+zPocvRrKE2R4cG9ZBr7aaInh7cFXNgORfho=;
-        b=if+LMTjS+TX9scJMqzHLR0Bwg7gBLYwtFo989OWHPZLVhx0DY5CVp3b6xFmnTCeryD
-         fO2+rfxZV0RJvf5k8gGsVXFmjF2YWE6MZDMJWWx7AIqdr7hNMmAZow9iPNdivWG8zBmX
-         JBzuKqGPninPppf2/cusEo2k7CdXRjdjRB+98uXGo39MlrTAplLcXyYY6q11Tdp77L4t
-         9cqxTQ4k0ReszPrCl/nkTA5YaehVhHNEm1XuSjU2kNsOHa0aLju70juMcPBmjKhB5IZq
-         KP7qFdsccyiVsch9ZoWd2vWZcDvivFdrmzE45yKcLGQPXO+7XJfj8BQkvvowFwh1lSeK
-         qShg==
-X-Gm-Message-State: AOAM531MzkJWIUb5ZCGipfhvzR/UrZ0BgsYBW5qY+0LUDYMNtqfKCuvU
-        z+DHRTdac7onjZk1VKMqexzEABbJg5gytBSI53bCbQ==
-X-Google-Smtp-Source: ABdhPJz1/rb+3w2JrqZCiqQv07Gem85CX8i7vfbfVikfoqKAFTBhHBDaxADXrOJtNjoRgddqGe4NvlFOBCWd4g6RCF0=
-X-Received: by 2002:a2e:968a:: with SMTP id q10mr2045001lji.381.1641887669835;
- Mon, 10 Jan 2022 23:54:29 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=LWyZT2KfS7vn2dLo/4rK0hRIU1bTIB9BhSt1xTZyjfs=;
+        b=WYIrbhWAC3gGrifEArtJGhYA3s00sCcyqYqiwH40w8lx3/C53v75dQN33oha+i95zn
+         GuewEqgMz0j8wuUGktv7X9scCpVOIgA3kzq6iXJqz8WnV56BaslcvUd2eYBMrznnG3Ln
+         2V5Xiv81/3GZy1P9WDWuIva1rMV/ptz571Y+df4g427qenjkA03jhGSS4ITZobHbpPtQ
+         ZpUEYvYVSivecCD5y+ix4Dkbrc/sj+/NAvrdWx/Vk2osM7mLonzzDxw/WlBXX4CuVae/
+         ucALdh6l1d4gTJ5BFTuBmHFcVjScTD/dQnvOu6kAIqXY+5EmO7cUzoxFt+OfJtgvhWaq
+         LrCg==
+X-Gm-Message-State: AOAM5324Z+uZwPt/blGoQASwOdFKw9eY8H1YQDeB4Gu7YZaSFm5eiw2/
+        L6DwHlSdJ+aVMCKBoxEW4TSKTVMFwvY=
+X-Google-Smtp-Source: ABdhPJwj4SWIivJF19fC8reHgAOesHmr0N4ouSyiTwjUsKFxuFFgsPk/HMJ5T5WGAATZ9pKSch9NEg==
+X-Received: by 2002:a05:651c:49a:: with SMTP id s26mr2063487ljc.109.1641887836867;
+        Mon, 10 Jan 2022 23:57:16 -0800 (PST)
+Received: from ?IPv6:2a00:1370:810c:714f:a10:76ff:fe69:21b6? ([2a00:1370:810c:714f:a10:76ff:fe69:21b6])
+        by smtp.googlemail.com with ESMTPSA id x14sm1206180ljd.76.2022.01.10.23.57.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 10 Jan 2022 23:57:16 -0800 (PST)
+Subject: Re: [PATCH v5 04/21] kernel: Add combined power-off+restart handler
+ call chain API
+To:     =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Joshua Thompson <funaho@jurai.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>, alankao@andestech.com,
+        "K . C . Kuen-Chern Lin" <kclin@andestech.com>,
+        linux-kernel@vger.kernel.org, linux-csky@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-sh@vger.kernel.org, xen-devel@lists.xenproject.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+References: <20211212210309.9851-1-digetx@gmail.com>
+ <20211212210309.9851-5-digetx@gmail.com> <Ydofs2CIfA+r5KAz@qmqm.qmqm.pl>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <80f5a739-0850-a8db-7493-e8c387109ce0@gmail.com>
+Date:   Tue, 11 Jan 2022 10:57:13 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20211222093802.22357-1-vincent.guittot@linaro.org>
- <20211222093802.22357-2-vincent.guittot@linaro.org> <9e526482-905c-e759-8aa6-1ff84bb5b2a3@arm.com>
- <CAKfTPtBR3BWCwEaJe0Cq6K5__zNxfU7FFo2f0bpOPkvzxKdiww@mail.gmail.com>
- <8f39d837-2589-4f7b-5232-1ed134fb1ad7@arm.com> <CAKfTPtCVD40GiDEG0pnU+k-nwMAh2PSu_OXq4w3k0A0zR4cLpw@mail.gmail.com>
- <f1549032-50f6-e9fc-a7ae-24373352576b@arm.com> <CAKfTPtAREuJtj8AuZPwfe_=W7v8J-UOXDWeyBL0-VcKGaTSr5Q@mail.gmail.com>
-In-Reply-To: <CAKfTPtAREuJtj8AuZPwfe_=W7v8J-UOXDWeyBL0-VcKGaTSr5Q@mail.gmail.com>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Tue, 11 Jan 2022 08:54:18 +0100
-Message-ID: <CAKfTPtCgxwK6tYxKK69nBuGwNjsFBbE+WuohmhWJRo++pPKqog@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] sched/pelt: Don't sync hardly util_sum with uti_avg
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        rickyiu@google.com, odin@uged.al, sachinp@linux.vnet.ibm.com,
-        naresh.kamboju@linaro.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <Ydofs2CIfA+r5KAz@qmqm.qmqm.pl>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 7 Jan 2022 at 16:21, Vincent Guittot <vincent.guittot@linaro.org> wrote:
->
-> On Fri, 7 Jan 2022 at 12:43, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
-> >
-> > On 05/01/2022 14:57, Vincent Guittot wrote:
-> > > On Wed, 5 Jan 2022 at 14:15, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
-> > >>
-> > >> On 04/01/2022 14:42, Vincent Guittot wrote:
-> > >>> On Tue, 4 Jan 2022 at 12:47, Dietmar Eggemann <dietmar.eggemann@arm.com> wrote:
-> > >>>>
-> > >>>> On 22/12/2021 10:38, Vincent Guittot wrote:
-> > >>
-> > >> [...]
-> > >>
-> > >>>> I still wonder whether the regression only comes from the changes in
-> > >>>> update_cfs_rq_load_avg(), introduced by 1c35b07e6d39.
-> > >>>> And could be fixed only by this part of the patch-set (A):
-> > >>>
-> > >>> I have been able to trigger the warning even with (A) though It took
-> > >>> much more time.
-> > >>> And I have been able to catch wrong situations  (with additional
-> > >>> traces) in the 3 places A, B and C
-> > >>
-> > >> OK. By wrong situation you mean '_sum < _avg * MIN_DIVIDER' ?
-> > >
-> > > not only.
-> > > also util_sum == 0 but util_avg !=0 in different places although these
-> >
-> > Ah OK, I saw this one as part of '_sum < _avg * MIN_DIVIDER'.
-> >
-> > > situation didn't trigger sched_warn because some other sync happened
-> > > before the periodic call of __update_blocked_fair
-> > > or if nr_running == 1 and  and task's util_avg/sum > cfs' util_avg/sum
-> > > just before removing the task
-> >
-> > I see.
-> >
-> > >>>> @@ -3677,15 +3706,22 @@ update_cfs_rq_load_avg(u64 now, struct cfs_rq
-> > >>>> *cfs_rq)
-> > >>>>
-> > >>>>     r = removed_load;
-> > >>>>     sub_positive(&sa->load_avg, r);
-> > >>>> -   sa->load_sum = sa->load_avg * divider;
-> > >>>> +   sub_positive(&sa->load_sum, r * divider);
-> > >>>> +   sa->load_sum = max_t(u32, sa->load_sum, sa->load_avg * MIN_DIVIDER);
-> > >>>>
-> > >>>>     r = removed_util;
-> > >>>>     sub_positive(&sa->util_avg, r);
-> > >>>> -   sa->util_sum = sa->util_avg * divider;
-> > >>>> +   sub_positive(&sa->util_sum, r * divider);
-> > >>>> +   sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * MIN_DIVIDER);
-> > >>>>
-> > >>>>     r = removed_runnable;
-> > >>>>     sub_positive(&sa->runnable_avg, r);
-> > >>>> -   sa->runnable_sum = sa->runnable_avg * divider;
-> > >>>> +   sub_positive(&sa->runnable_sum, r * divider);
-> > >>>> +   sa->runnable_sum = max_t(u32, sa->runnable_sum,
-> > >>>> +                                 sa->runnable_avg * MIN_DIVIDER);
-> > >>>>
-> > >>>> i.e. w/o changing update_tg_cfs_X() (and
-> > >>>> detach_entity_load_avg()/dequeue_load_avg()).
-> > >>>>
-> > >>>> update_load_avg()
-> > >>>>   update_cfs_rq_load_avg()    <---
-> > >>>>   propagate_entity_load_avg()
-> > >>>>     update_tg_cfs_X()         <---
-> > >>>>
-> > >>>>
-> > >>>> I didn't see the SCHED_WARN_ON() [cfs_rq_is_decayed()] when looping on
-> > >>>> hackbench in several different sched group levels on
-> > >>>> [Hikey620 (Arm64, 8 CPUs, SMP, 4 taskgroups: A/B C/D E/F G/H), >12h uptime].
-> > >>>
-> > >>> IIRC, it was with hikey960 with cgroup v1
-> > >>> As a side note, I never trigger the problem with dragonboard845 and cgroup v2
-> > >>
-> > >> OK, just started a test on hikey960 cgroupv1. Let's see if I can catch it.
-> >
-> > Still no sign of the issue (hikey960, cgroupv1,  4 taskgroups: A/B C/D
-> > E/F G/H > 45h uptime
-> >
-> > >>>>> @@ -3780,7 +3799,11 @@ static void detach_entity_load_avg(struct cfs_rq *cfs_rq, struct sched_entity *s
-> > >>>>>
-> > >>>>>       dequeue_load_avg(cfs_rq, se);
-> > >>>>>       sub_positive(&cfs_rq->avg.util_avg, se->avg.util_avg);
-> > >>>>> -     cfs_rq->avg.util_sum = cfs_rq->avg.util_avg * divider;
-> > >>>>> +     sub_positive(&cfs_rq->avg.util_sum, se->avg.util_sum);
-> > >>>>> +     /* See update_tg_cfs_util() */
-> > >>>>> +     cfs_rq->avg.util_sum = max_t(u32, cfs_rq->avg.util_sum,
-> > >>>>> +                                       cfs_rq->avg.util_avg * MIN_DIVIDER);
-> > >>>>> +
-> > >>>>
-> > >>>> Maybe add a:
-> > >>>>
-> > >>>> Fixes: fcf6631f3736 ("sched/pelt: Ensure that *_sum is always synced
-> > >>>> with *_avg")
-> > >>>
-> > >>> I spent time thinking about adding fixes tag. There is no crash/warn
-> > >>> so far so should we propagate it back in LTS for better performance ?
-> > >>
-> > >> Not sure I understand. What do you mean by 'should we propagate it back
-> > >> in LTS'?
-> > >
-> > > Sorry I had any stables in mind and not only LTS.
-> > >
-> > > Some of the changes done in PELT signal propagation that replace
-> > > subtracting util_sum  by using util_avg * divider instead, are related
-> > > to other problems with sched group hierarchy and
-> > > throttling/unthrottling. I'm not 100% confident that using fixes tag
-> > > to backport this on stables doesn't need to backport more patches on
-> > > other areas in order to not resurrect old problems. So I wonder if
-> > > it's worth  backporting this on stables
-> >
-> > OK, I see. So only 1c35b07e6d39 (i.e. the util _sum/_avg change in
-> > update_cfs_rq_load_avg() (1)) caused the CPU frequency regression. That
-> > was the reason why I initially suggested to split the patch-set
-> > differently. But you said that you saw the issue also when (1) is fixed.
->
-> Ok, I think that we were not speaking about the same setup. I wrongly
-> read that you were saying that
-> sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * MIN_DIVIDER);
-> was only needed in update_cfs_rq_load_avg() but not in the other places.
->
-> But what you said is that we only need the below to fix the perf
-> regression raised by rick ?
->      r = removed_util;
->      sub_positive(&sa->util_avg, r);
->  -   sa->util_sum = sa->util_avg * divider;
->  +   sub_positive(&sa->util_sum, r * divider);
->  +   sa->util_sum = max_t(u32, sa->util_sum, sa->util_avg * MIN_DIVIDER);
+09.01.2022 02:35, Michał Mirosław пишет:
+> On Mon, Dec 13, 2021 at 12:02:52AM +0300, Dmitry Osipenko wrote:
+> [...]
+>> +/**
+>> + * struct power_off_data - Power-off callback argument
+>> + *
+>> + * @cb_data: Callback data.
+>> + */
+>> +struct power_off_data {
+>> +	void *cb_data;
+>> +};
+>> +
+>> +/**
+>> + * struct power_off_prep_data - Power-off preparation callback argument
+>> + *
+>> + * @cb_data: Callback data.
+>> + */
+>> +struct power_off_prep_data {
+>> +	void *cb_data;
+>> +};
+> 
+> Why two exactly same structures? Why only a single pointer instead? If
+> it just to enable type-checking callbacks, then thouse could be opaque
+> or zero-sized structs that would be embedded or casted away in
+> respective callbacks.
 
-The test with the code above doesn't trigger any SCHEd_WARN over the
-weekend so it's probably ok to make a dedicated patch for this with
-tag.
-I'm going to prepare a v2
+Preparation and final execution are two different operations, it's much
+cleaner from a user's perspective to have same separated, IMO. In the
+future we may would want to extend one of the structs, and not the
+other. Type-checking is another benefit, of course.
 
->
-> The WARN that I mentioned in my previous email was about not adding
-> the max_t in all 3 places. I rerun some test today and I triggered the
-> WARN after a detach without the max_t line.
->
-> I can probably isolate the code above in a dedicated patch for the
-> regression raised by Rick and we could consider adding a fixes tag; I
-> will run more tests with only this part during the weekend.
-> That being said, we need to stay consistent in all 3 places where we
-> move or propagate some *_avg. In particular, using  "sa->util_sum =
-> sa->util_avg * divider" has the drawback of filtering the contribution
-> not already accounted for in util_avg and the impact is much larger
-> than expected. It means that  although fixing only
-> update_cfs_rq_load_avg() seems enough for rick's case, some other
-> cases could be impacted by the 2 other places and we need to fixed
-> them now that we have a better view of the root cause
+The single callback pointer is what is utilized by all current kernel
+users. This may change in the future and then it won't be a problem to
+extend the power-off API without disrupting whole kernel.
+
+>> +
+>> +/**
+>> + * struct restart_data - Restart callback argument
+>> + *
+>> + * @cb_data: Callback data.
+>> + * @cmd: Restart command string.
+>> + * @stop_chain: Further lower priority callbacks won't be executed if set to
+>> + *		true. Can be changed within callback. Default is false.
+>> + * @mode: Reboot mode ID.
+>> + */
+>> +struct restart_data {
+>> +	void *cb_data;
+>> +	const char *cmd;
+>> +	bool stop_chain;
+>> +	enum reboot_mode mode;
+>> +};
+>> +
+>> +/**
+>> + * struct reboot_prep_data - Reboot and shutdown preparation callback argument
+>> + *
+>> + * @cb_data: Callback data.
+>> + * @cmd: Restart command string.
+>> + * @stop_chain: Further lower priority callbacks won't be executed if set to
+>> + *		true. Can be changed within callback. Default is false.
+> 
+> Why would we want to stop power-off or erboot chain? If the callback
+> succeded, then further calls won't be made. If it doesn't succeed, but
+> possibly breaks the system somehow, it shouldn't return. Then the only
+> case left would be to just try the next method of shutting down.
+
+This is what some of the API users were doing for years. I don't know
+for sure why they want to stop the chain, it indeed looks like an
+incorrect behaviour, but that's up to developers to decide. I only
+retained the old behaviour for those users.
+
+>> + * @mode: Preparation mode ID.
+>> + */
+>> +struct reboot_prep_data {
+>> +	void *cb_data;
+>> +	const char *cmd;
+>> +	bool stop_chain;
+>> +	enum reboot_prepare_mode mode;
+>> +};
+>> +
+>> +struct sys_off_handler_private_data {
+>> +	struct notifier_block power_off_nb;
+>> +	struct notifier_block restart_nb;
+>> +	struct notifier_block reboot_nb;
+> 
+> What's the difference between restart and reboot?
+
+Reboot is always executed before restart and power-off callbacks. This
+is explained in the doc-comment of the struct sys_off_handler.
+
++ * @reboot_prepare_cb: Reboot/shutdown preparation callback. All reboot
++ * preparation callbacks are invoked before @restart_cb or @power_off_cb,
++ * depending on the mode. It's registered with register_reboot_notifier().
++ * The point is to remove boilerplate code from drivers which use this
++ * callback in conjunction with the restart/power-off callbacks.
++ *
+
+This reboot callback usually performs early preparations that are need
+to be done before machine is placed into reset state, please see [1] for
+the examples.
+
+[1] https://elixir.bootlin.com/linux/v5.16/A/ident/register_reboot_notifier
+
+I agree that "reboot" sounds like a misnomer. This name was coined long
+time ago, perhaps not worth to rename it at this point. I'm also not
+sure what could be a better name.
+
+>> +	void (*platform_power_off_cb)(void);
+>> +	void (*simple_power_off_cb)(void *data);
+>> +	void *simple_power_off_cb_data;
+>> +	bool registered;
+>> +};
+> 
+> BTW, I couldn't find a right description of my idea of unifying the
+> chains before, so let me sketch it now.
+> 
+> The idea is to have a single system-off chain in which the callback
+> gets a mode ({QUERY_*, PREP_*, DO_*} for each of {*_REBOOT, *_POWEROFF, ...?).
+> The QUERY_* calls would be made in can_kernel_reboot/poweroff(): all
+> would be called, and if at least one returned true, then the shutdown
+> mode would continue. All of PREP_* would be called then. After that
+> all DO_* would be tried until one doesn't return (succeeded or broke
+> the system hard). Classic for(;;); could be a final fallback for the
+> case where arch/machine (lowest priority) call would return instead
+> of halting the system in machine-dependent way. The QUERY and PREP
+> stages could be combined, but I haven't thought about it enough to
+> see what conditions would need to be imposed on the callbacks in
+> that case (maybe it's not worth the trouble, since it isn't a fast
+> path anyway?). The goal here is to have less (duplicated) code in
+> kernel, but otherwise it seems equivalent to your API proposal.
+
+Michał, thank you for the review and suggestions! I'll take another look
+at yours proposal during this merge window, in a preparation to v6.
