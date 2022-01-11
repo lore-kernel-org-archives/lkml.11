@@ -2,330 +2,309 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC6E9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:20:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EBF5C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 17:20:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344117AbiAKRUI (ORCPT
+        id S1344169AbiAKRUK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 12:20:08 -0500
-Received: from mga07.intel.com ([134.134.136.100]:1390 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344432AbiAKRTn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 12:19:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641921583; x=1673457583;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=RGhmLRA+Ko+65nLFSDiANiovr+79v13U5lKGY955p7U=;
-  b=SVauQPBQ13LaUEdLkgiSycCqio8QPRI714/k7dT6Vx6SKLEDN7GfLHxy
-   uiIxLPWEg2TnZUwUhvFzHJPt06m+5B1MlJJjzjGOf/BPaVnOlLU7OBJNJ
-   xgzlfx96k8lYgv233UzSObaZ6GbuIEc7ufz1TeB0xnZnX6i4kC0h2N4w+
-   j8NjFh3tbc7GYBvDb7yKJ0Nj/wBMhUbUhS3wCDDsD1FRl3wAl/cBJQlH1
-   JwsZMEl60DtGvXwaQ26l3EzeMKHarTwsnSu4I4sn3OzZu7h1ShV7iE0De
-   y4vDYHGRpxYorm1tWGl83+c3Y89URymGzmPK62lpCo0F0wHhz+UVQFKTR
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="306892303"
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="306892303"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 09:17:26 -0800
-X-IronPort-AV: E=Sophos;i="5.88,279,1635231600"; 
-   d="scan'208";a="613284688"
-Received: from padhika1-mobl.amr.corp.intel.com (HELO [10.209.13.65]) ([10.209.13.65])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 09:17:25 -0800
-Message-ID: <b3348430-1b91-4b8b-b70c-76d48f8737f7@intel.com>
-Date:   Tue, 11 Jan 2022 09:17:19 -0800
+        Tue, 11 Jan 2022 12:20:10 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:52288
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344464AbiAKRTx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 11 Jan 2022 12:19:53 -0500
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 48920402EB
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:19:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641921592;
+        bh=tMk/EODLwapagAZ+KOB7czHiIxd7367rZZ5fV9nlNS8=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=gN8NQDkXbI7OYMq1zeW07uihHwXNDGDm64YRhoUwDa4+qLGzYTbCFpN3leexsHJag
+         L+nndL0banlNZmSKv8IE2ftjf0E8D3Q2IjUycgplOMaWz6XnU1nZp9qjignarsbHs7
+         cBK65BSs1UbVDW1gcPlUqCFaYAvjkp3OifbZj1ve79lByncuFT9UAucIZjx4aKx6TP
+         ae1ivUwge7VNq5A1Z1A4G5diUgg7WJKLTnmKio2BzPmE5q5q2oGiCt5NanDM3lWXNJ
+         xpv9uw4hewH5I62vvhpe5v65kwu5OXQKlhDNAFDsiqSssNfyreAdVZnYAjbxfZgzzw
+         QxyTdo7IYjHsw==
+Received: by mail-ed1-f71.google.com with SMTP id c8-20020a05640227c800b003fdc1684cdeso5910070ede.12
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 09:19:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tMk/EODLwapagAZ+KOB7czHiIxd7367rZZ5fV9nlNS8=;
+        b=L60/Am5teJWtW//v0xJH4XzyCsJoSAGUKj11EwLG5p1LQ2tWLZLOpJaz7hsrLA3Uld
+         9yPhG8ati1fl/wzD6aDpKKOoPYHlhAlX8sr/kalLYdCFJahS4h3cVGTo6fvHNcnMNvxm
+         8iOZbXf5abvSCe/fZqs7KZtsfkTm4u1+JQwFyQ2/AXaNanmZ9w6lGWGu56kEC6aN7pOp
+         NEBmIQ82LWj+JXDUsDFW4gJUbcrmT9ZQhFijYpmkRoNMg66lN0lnVAcZPcrFkVsoUo4z
+         ngSZwy8elDYGHOhacrAZQnOjHNkMggF/moHESKZQRfHQjypO8dLSUwl0X4SDbk/vT5XL
+         jIXg==
+X-Gm-Message-State: AOAM531uJNCah/k8GvWhp27fjdcbhiWCqzzPh+jrwoh+lPLSEweftjic
+        nC0MCmMJ4bP60HcvkF9s/Ca2IzY+xX/YMt0PR2/8B4bgbQkumLXD5WliaC3JS/o23v7/XJlCc8R
+        dVbMumoInzAfI6lPO2a1wbZ0wyn9SBaUhOJ//K2SMIA==
+X-Received: by 2002:a05:6402:50cf:: with SMTP id h15mr5210339edb.318.1641921591708;
+        Tue, 11 Jan 2022 09:19:51 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxVuUt4/8KGFqaKtdFM8TbZ8vr/UIvGQ8UctKpKbW9rlOGiZwh6uKpZaZepGYntI6wpKZ2Hlg==
+X-Received: by 2002:a05:6402:50cf:: with SMTP id h15mr5210323edb.318.1641921591470;
+        Tue, 11 Jan 2022 09:19:51 -0800 (PST)
+Received: from [192.168.0.25] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id p11sm3757995ejo.136.2022.01.11.09.19.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 11 Jan 2022 09:19:51 -0800 (PST)
+Message-ID: <64649172-e32c-2d1a-9c12-aed562071876@canonical.com>
+Date:   Tue, 11 Jan 2022 18:19:50 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCHv2 3/7] efi/x86: Implement support for unaccepted memory
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 4/4] dt-bindings: mfd: maxim,max14577: convert to dtschema
 Content-Language: en-US
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220111113314.27173-1-kirill.shutemov@linux.intel.com>
- <20220111113314.27173-4-kirill.shutemov@linux.intel.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-In-Reply-To: <20220111113314.27173-4-kirill.shutemov@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Rob Herring <robh@kernel.org>
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+References: <20211229141524.34174-1-krzysztof.kozlowski@canonical.com>
+ <20211229141524.34174-5-krzysztof.kozlowski@canonical.com>
+ <YdyMiHcyKNHipYCE@robh.at.kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <YdyMiHcyKNHipYCE@robh.at.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 03:33, Kirill A. Shutemov wrote:
-...
-> +void mark_unaccepted(struct boot_params *params, u64 start, u64 end)
-> +{
-> +	/*
-> +	 * The accepted memory bitmap only works at PMD_SIZE granularity.
-> +	 * If a request comes in to mark memory as unaccepted which is not
-> +	 * PMD_SIZE-aligned, simply accept the memory now since it can not be
-> +	 * *marked* as unaccepted.
-> +	 */
-> +
-> +	/* Immediately accept whole range if it is within a PMD_SIZE block: */
-> +	if ((start & PMD_MASK) == (end & PMD_MASK)) {
-> +		npages = (end - start) / PAGE_SIZE;
-> +		__accept_memory(start, start + npages * PAGE_SIZE);
-> +		return;
-> +	}
+On 10/01/2022 20:44, Rob Herring wrote:
+> On Wed, Dec 29, 2021 at 03:15:24PM +0100, Krzysztof Kozlowski wrote:
+>> Convert the MFD part of Maxim MAX14577/MAX77836 MUIC to DT schema
+>> format.  The example DTS was copied from existing DTS
+>> (exynos3250-rinato.dts), so keep the license as GPL-2.0-only.
+>>
+>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>> ---
+>>  .../devicetree/bindings/mfd/max14577.txt      | 147 -------------
+>>  .../bindings/mfd/maxim,max14577.yaml          | 195 ++++++++++++++++++
+>>  MAINTAINERS                                   |   2 +-
+>>  3 files changed, 196 insertions(+), 148 deletions(-)
+>>  delete mode 100644 Documentation/devicetree/bindings/mfd/max14577.txt
+>>  create mode 100644 Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/mfd/max14577.txt b/Documentation/devicetree/bindings/mfd/max14577.txt
+>> deleted file mode 100644
+>> index be11943a0560..000000000000
+>> --- a/Documentation/devicetree/bindings/mfd/max14577.txt
+>> +++ /dev/null
+>> @@ -1,147 +0,0 @@
+>> -Maxim MAX14577/77836 Multi-Function Device
+>> -
+>> -MAX14577 is a Multi-Function Device with Micro-USB Interface Circuit, Li+
+>> -Battery Charger and SFOUT LDO output for powering USB devices. It is
+>> -interfaced to host controller using I2C.
+>> -
+>> -MAX77836 additionally contains PMIC (with two LDO regulators) and Fuel Gauge.
+>> -For the description of Fuel Gauge low SOC alert interrupt see:
+>> -../power/supply/max17040_battery.txt
+>> -
+>> -
+>> -Required properties:
+>> -- compatible : Must be "maxim,max14577" or "maxim,max77836".
+>> -- reg : I2C slave address for the max14577 chip (0x25 for max14577/max77836)
+>> -- interrupts : IRQ line for the chip.
+>> -
+>> -
+>> -Required nodes:
+>> - - charger :
+>> -	Node for configuring the charger driver.
+>> -	Required properties:
+>> -		- compatible : "maxim,max14577-charger"
+>> -			or "maxim,max77836-charger"
+>> -		- maxim,fast-charge-uamp : Current in uA for Fast Charge;
+>> -			Valid values:
+>> -			- for max14577: 90000 - 950000;
+>> -			- for max77836: 45000 - 475000;
+>> -		- maxim,eoc-uamp : Current in uA for End-Of-Charge mode;
+>> -			Valid values:
+>> -			- for max14577: 50000 - 200000;
+>> -			- for max77836: 5000 - 100000;
+>> -		- maxim,ovp-uvolt : OverVoltage Protection Threshold in uV;
+>> -			In an overvoltage condition, INT asserts and charging
+>> -			stops. Valid values:
+>> -			- 6000000, 6500000, 7000000, 7500000;
+>> -		- maxim,constant-uvolt : Battery Constant Voltage in uV;
+>> -			Valid values:
+>> -			- 4000000 - 4280000 (step by 20000);
+>> -			- 4350000;
+>> -
+>> -
+>> -Optional nodes:
+>> -- max14577-muic/max77836-muic :
+>> -	Node used only by extcon consumers.
+>> -	Required properties:
+>> -		- compatible : "maxim,max14577-muic" or "maxim,max77836-muic"
+>> -
+>> -- regulators :
+>> -	Required properties:
+>> -		- compatible : "maxim,max14577-regulator"
+>> -			or "maxim,max77836-regulator"
+>> -
+>> -	May contain a sub-node per regulator from the list below. Each
+>> -	sub-node should contain the constraints and initialization information
+>> -	for that regulator. See regulator.txt for a description of standard
+>> -	properties for these sub-nodes.
+>> -
+>> -	List of valid regulator names:
+>> -	- for max14577: CHARGER, SAFEOUT.
+>> -	- for max77836: CHARGER, SAFEOUT, LDO1, LDO2.
+>> -
+>> -	The SAFEOUT is a fixed voltage regulator so there is no need to specify
+>> -	voltages for it.
+>> -
+>> -
+>> -Example:
+>> -
+>> -#include <dt-bindings/interrupt-controller/irq.h>
+>> -
+>> -max14577@25 {
+>> -	compatible = "maxim,max14577";
+>> -	reg = <0x25>;
+>> -	interrupt-parent = <&gpx1>;
+>> -	interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+>> -
+>> -	muic: max14577-muic {
+>> -		compatible = "maxim,max14577-muic";
+>> -	};
+>> -
+>> -	regulators {
+>> -		compatible = "maxim,max14577-regulator";
+>> -
+>> -		SAFEOUT {
+>> -			regulator-name = "SAFEOUT";
+>> -		};
+>> -		CHARGER {
+>> -			regulator-name = "CHARGER";
+>> -			regulator-min-microamp = <90000>;
+>> -			regulator-max-microamp = <950000>;
+>> -			regulator-boot-on;
+>> -		};
+>> -	};
+>> -
+>> -	charger {
+>> -		compatible = "maxim,max14577-charger";
+>> -
+>> -		maxim,constant-uvolt = <4350000>;
+>> -		maxim,fast-charge-uamp = <450000>;
+>> -		maxim,eoc-uamp = <50000>;
+>> -		maxim,ovp-uvolt = <6500000>;
+>> -	};
+>> -};
+>> -
+>> -
+>> -max77836@25 {
+>> -	compatible = "maxim,max77836";
+>> -	reg = <0x25>;
+>> -	interrupt-parent = <&gpx1>;
+>> -	interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+>> -
+>> -	muic: max77836-muic {
+>> -		compatible = "maxim,max77836-muic";
+>> -	};
+>> -
+>> -	regulators {
+>> -		compatible = "maxim,max77836-regulator";
+>> -
+>> -		SAFEOUT {
+>> -			regulator-name = "SAFEOUT";
+>> -		};
+>> -		CHARGER {
+>> -			regulator-name = "CHARGER";
+>> -			regulator-min-microamp = <90000>;
+>> -			regulator-max-microamp = <950000>;
+>> -			regulator-boot-on;
+>> -		};
+>> -		LDO1 {
+>> -			regulator-name = "LDO1";
+>> -			regulator-min-microvolt = <2700000>;
+>> -			regulator-max-microvolt = <2700000>;
+>> -		};
+>> -		LDO2 {
+>> -			regulator-name = "LDO2";
+>> -			regulator-min-microvolt = <800000>;
+>> -			regulator-max-microvolt = <3950000>;
+>> -		};
+>> -	};
+>> -
+>> -	charger {
+>> -		compatible = "maxim,max77836-charger";
+>> -
+>> -		maxim,constant-uvolt = <4350000>;
+>> -		maxim,fast-charge-uamp = <225000>;
+>> -		maxim,eoc-uamp = <7500>;
+>> -		maxim,ovp-uvolt = <6500000>;
+>> -	};
+>> -};
+>> diff --git a/Documentation/devicetree/bindings/mfd/maxim,max14577.yaml b/Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
+>> new file mode 100644
+>> index 000000000000..512fd671595c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/mfd/maxim,max14577.yaml
+>> @@ -0,0 +1,195 @@
+>> +# SPDX-License-Identifier: GPL-2.0-only
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/mfd/maxim,max14577.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Maxim MAX14577/MAX77836 MicroUSB and Companion Power Management IC
+>> +
+>> +maintainers:
+>> +  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+>> +
+>> +description: |
+>> +  This is a part of device tree bindings for Maxim MAX14577/MAX77836 MicroUSB
+>> +  Integrated Circuit (MUIC).
+>> +
+>> +  The Maxim MAX14577 is a MicroUSB and Companion Power Management IC which
+>> +  includes voltage safeout regulators, charger and MicroUSB management IC.
+>> +
+>> +  The Maxim MAX77836 is a MicroUSB and Companion Power Management IC which
+>> +  includes voltage safeout and LDO regulators, charger, fuel-gauge and MicroUSB
+>> +  management IC.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - maxim,max14577
+>> +      - maxim,max77836
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  wakeup-source: true
+>> +
+>> +  charger:
+>> +    $ref: ../power/supply/maxim,max14577.yaml
+> 
+> /schemas/power/...
+> 
+> With those fixed,
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-I still don't quite like how this turned out.  It's still a bit unclear 
-to the reader that this has covered all the corner cases.  I think this 
-needs a better comment:
-
-	/*
-	 * Handle <PMD_SIZE blocks that do not end at a PMD boundary.
-	 *
-	 * Immediately accept the whole block.  This handles the case
-	 * where the below round_{up,down}() would "lose" a small,
-	 * <PMD_SIZE block.
-	 */
-	if ((start & PMD_MASK) == (end & PMD_MASK)) {
-		...
-		return;
-	}
-
-	/*
-	 * There is at least one more block to accept.  Both 'start'
-	 * and 'end' may not be PMD-aligned.
-	 */
+Thanks, fixed also regulator reference below and the regulator bindings
+as in my other Maxim patches.
 
 
-> +	/* Immediately accept a <PMD_SIZE piece at the start: */
-> +	if (start & ~PMD_MASK) {
-> +		__accept_memory(start, round_up(start, PMD_SIZE));
-> +		start = round_up(start, PMD_SIZE);
-> +	}
-> +
-> +	/* Immediately accept a <PMD_SIZE piece at the end: */
-> +	if (end & ~PMD_MASK) {
-> +		__accept_memory(round_down(end, PMD_SIZE), end);
-> +		end = round_down(end, PMD_SIZE);
-> +	}
-
-	/*
-	 * 'start' and 'end' are now both PMD-aligned.
-	 * Record the range as being unaccepted:
-	 */
-
-> +	if (start == end)
-> +		return;
-
-Does bitmap_set()not accept zero-sized 'len' arguments?
-
-> +	bitmap_set((unsigned long *)params->unaccepted_memory,
-> +		   start / PMD_SIZE, (end - start) / PMD_SIZE);
-> +}
-
-The code you have there is _precise_.  It will never eagerly accept any 
-area that _can_ be represented in the bitmap.  But, that's kinda hard to 
-describe.  Maybe we should be a bit more sloppy about accepting things 
-up front to make it easier to describe:
-
-	/*
-	 * Accept small regions that might not be
-	 * able to be represented in the bitmap:
-	 */
-	if (end - start < PMD_SIZE*2) {
-		npages = (end - start) / PAGE_SIZE;
-		__accept_memory(start, start + npages * PAGE_SIZE);
-		return;
-	}
-
-	/*
-	 * No matter how the start and end are aligned, at
-	 * least one unaccepted PMD_SIZE area will remain.
-	 */
-
-	... now do the start/end rounding
-
-That has the downside of accepting a few things that it doesn't *HAVE* 
-to accept.  But, its behavior is very easy to describe.
-
-> diff --git a/arch/x86/include/asm/unaccepted_memory.h b/arch/x86/include/asm/unaccepted_memory.h
-> new file mode 100644
-> index 000000000000..cbc24040b853
-> --- /dev/null
-> +++ b/arch/x86/include/asm/unaccepted_memory.h
-> @@ -0,0 +1,12 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright (C) 2020 Intel Corporation */
-> +#ifndef _ASM_X86_UNACCEPTED_MEMORY_H
-> +#define _ASM_X86_UNACCEPTED_MEMORY_H
-> +
-> +#include <linux/types.h>
-> +
-> +struct boot_params;
-> +
-> +void mark_unaccepted(struct boot_params *params, u64 start, u64 num);
-> +
-> +#endif
-> diff --git a/arch/x86/include/uapi/asm/bootparam.h b/arch/x86/include/uapi/asm/bootparam.h
-> index b25d3f82c2f3..16bc686a198d 100644
-> --- a/arch/x86/include/uapi/asm/bootparam.h
-> +++ b/arch/x86/include/uapi/asm/bootparam.h
-> @@ -217,7 +217,8 @@ struct boot_params {
->   	struct boot_e820_entry e820_table[E820_MAX_ENTRIES_ZEROPAGE]; /* 0x2d0 */
->   	__u8  _pad8[48];				/* 0xcd0 */
->   	struct edd_info eddbuf[EDDMAXNR];		/* 0xd00 */
-> -	__u8  _pad9[276];				/* 0xeec */
-> +	__u64 unaccepted_memory;			/* 0xeec */
-> +	__u8  _pad9[268];				/* 0xef4 */
->   } __attribute__((packed));
->   
->   /**
-> diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-> index 2c3dac5ecb36..36c1bf33f112 100644
-> --- a/drivers/firmware/efi/Kconfig
-> +++ b/drivers/firmware/efi/Kconfig
-> @@ -243,6 +243,20 @@ config EFI_DISABLE_PCI_DMA
->   	  options "efi=disable_early_pci_dma" or "efi=no_disable_early_pci_dma"
->   	  may be used to override this option.
->   
-> +config UNACCEPTED_MEMORY
-> +	bool
-> +	depends on EFI_STUB
-> +	help
-> +	   Some Virtual Machine platforms, such as Intel TDX, introduce
-> +	   the concept of memory acceptance, requiring memory to be accepted
-> +	   before it can be used by the guest. This protects against a class of
-> +	   attacks by the virtual machine platform.
-
-	Some Virtual Machine platforms, such as Intel TDX, require
-	some memory to be "accepted" by the guest before it can be used.
-	This requirement protects against a class of attacks by the
-	virtual machine platform.
-
-Can we make this "class of attacks" a bit more concrete?  Maybe:
-
-	This mechanism helps prevent malicious hosts from making changes
-	to guest memory.
-
-??
-
-> +	   UEFI specification v2.9 introduced EFI_UNACCEPTED_MEMORY memory type.
-> +
-> +	   This option adds support for unaccepted memory and makes such memory
-> +	   usable by kernel.
-> +
->   endmenu
->   
->   config EFI_EMBEDDED_FIRMWARE
-> diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-> index ae79c3300129..abe862c381b6 100644
-> --- a/drivers/firmware/efi/efi.c
-> +++ b/drivers/firmware/efi/efi.c
-> @@ -740,6 +740,7 @@ static __initdata char memory_type_name[][13] = {
->   	"MMIO Port",
->   	"PAL Code",
->   	"Persistent",
-> +	"Unaccepted",
->   };
->   
->   char * __init efi_md_typeattr_format(char *buf, size_t size,
-> diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
-> index a0b946182b5e..346b12d6f1b2 100644
-> --- a/drivers/firmware/efi/libstub/x86-stub.c
-> +++ b/drivers/firmware/efi/libstub/x86-stub.c
-> @@ -9,12 +9,14 @@
->   #include <linux/efi.h>
->   #include <linux/pci.h>
->   #include <linux/stddef.h>
-> +#include <linux/bitmap.h>
->   
->   #include <asm/efi.h>
->   #include <asm/e820/types.h>
->   #include <asm/setup.h>
->   #include <asm/desc.h>
->   #include <asm/boot.h>
-> +#include <asm/unaccepted_memory.h>
->   
->   #include "efistub.h"
->   
-> @@ -504,6 +506,13 @@ setup_e820(struct boot_params *params, struct setup_data *e820ext, u32 e820ext_s
->   			e820_type = E820_TYPE_PMEM;
->   			break;
->   
-> +		case EFI_UNACCEPTED_MEMORY:
-> +			if (!IS_ENABLED(CONFIG_UNACCEPTED_MEMORY))
-> +				continue;
-> +			e820_type = E820_TYPE_RAM;
-> +			mark_unaccepted(params, d->phys_addr,
-> +					d->phys_addr + PAGE_SIZE * d->num_pages);
-> +			break;
->   		default:
->   			continue;
->   		}
-> @@ -575,6 +584,9 @@ static efi_status_t allocate_e820(struct boot_params *params,
->   {
->   	efi_status_t status;
->   	__u32 nr_desc;
-> +	bool unaccepted_memory_present = false;
-> +	u64 max_addr = 0;
-> +	int i;
->   
->   	status = efi_get_memory_map(map);
->   	if (status != EFI_SUCCESS)
-> @@ -589,9 +601,55 @@ static efi_status_t allocate_e820(struct boot_params *params,
->   		if (status != EFI_SUCCESS)
->   			goto out;
->   	}
-> +
-> +	if (!IS_ENABLED(CONFIG_UNACCEPTED_MEMORY))
-> +		goto out;
-> +
-> +	/* Check if there's any unaccepted memory and find the max address */
-> +	for (i = 0; i < nr_desc; i++) {
-> +		efi_memory_desc_t *d;
-> +
-> +		d = efi_early_memdesc_ptr(*map->map, *map->desc_size, i);
-> +		if (d->type == EFI_UNACCEPTED_MEMORY)
-> +			unaccepted_memory_present = true;
-> +		if (d->phys_addr + d->num_pages * PAGE_SIZE > max_addr)
-> +			max_addr = d->phys_addr + d->num_pages * PAGE_SIZE;
-> +	}
-> +
-> +	/*
-> +	 * If unaccepted memory present allocate a bitmap to track what memory
-
-			       ^ is
-
-> +	 * has to be accepted before access.
-> +	 *
-> +	 * One bit in the bitmap represents 2MiB in the address space: one 4k
-> +	 * page is enough to track 64GiB or physical address space.
-
-That's a bit awkward and needs a "or->of".  Perhaps:
-
-	* One bit in the bitmap represents 2MiB in the address space:
-	* A 4k bitmap can track 64GiB of physical address space.
-
-> +	 * In the worst case scenario -- a huge hole in the middle of the
-> +	 * address space -- It needs 256MiB to handle 4PiB of the address
-> +	 * space.
-> +	 *
-> +	 * TODO: handle situation if params->unaccepted_memory has already set.
-> +	 * It's required to deal with kexec.
-
-What happens today with kexec() since its not dealt with?
+Best regards,
+Krzysztof
