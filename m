@@ -2,179 +2,341 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F07BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 00:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AF7DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 11 Jan 2022 00:00:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345808AbiAKAAH (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 10 Jan 2022 19:00:07 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34534 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345773AbiAKAAG (ORCPT
+        id S243251AbiAKAAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 10 Jan 2022 19:00:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242625AbiAKAAe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 10 Jan 2022 19:00:06 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA4D1B8172C;
-        Tue, 11 Jan 2022 00:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C27C36AF3;
-        Tue, 11 Jan 2022 00:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641859203;
-        bh=pADzQ3uH7mcl/zzkI+lzAz4AejYG8SBgS2Wlf9QLcxA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tDnSEhULEb5IImxI3c+Zq1WjN+jvkruseYPBB+u5lx6R7XOjYNEnpuSvikvuPdncg
-         NOpfCHxLDq3CNELNd89yBha4MzSJIlEj39gqg+D9qbxeLhV7Funm6Cr/dmdWuqnM3W
-         FLHFcpCXw2eAwp7bZzsNawCGM1WTBnBUcMYZzDffANJ6T5IYINUBlCVimP4oErjSRJ
-         6w/zsSvvLmfTRZRjSxYomBLWx5R/k4REjo0B0WEoPRGsN5VYJDZJnqBz10yV8OTId/
-         KhgEzaIfp4ahwQVdIOOW0MbA1qV56ntywtdqpy6vj++8kjmENkRa6JObP06aUolLkm
-         1eFsnXnrG99kA==
-From:   Jeff Layton <jlayton@kernel.org>
-To:     smfrench@gmail.com
-Cc:     linux-cifs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] cifs: move superblock magic defitions to magic.h
-Date:   Mon, 10 Jan 2022 19:00:02 -0500
-Message-Id: <20220111000002.139789-1-jlayton@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Mon, 10 Jan 2022 19:00:34 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDE1C061748
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 16:00:33 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id z3so14540010plg.8
+        for <linux-kernel@vger.kernel.org>; Mon, 10 Jan 2022 16:00:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=zuq3NXRWllFEinxDVSxSn6g55pIWnkmVxTKgeR8Rvso=;
+        b=wK3kJ8twvyqAdlIet7Bftfc3sJdLQooxkdrhGyBdNfyEtl40wHZO0HrWRug7XvBnLf
+         4IDPJbPOvCihEAIFLkJkNPzySy8EGL7254MLvO0HAf0XK1xaGzvNn8cs7grrN87iq/JP
+         MQLpdcGjm4UGrLL2CFpsYN/Oy7GMpXx1b9cb3siu7chrfeG27fqy1JYpKIhLcEqNkonX
+         oRzqBrllAsG8XiUmfTC0+gI+WNY9ua2c0pyAkY4cULPvdxWYAoA4AJp8hETX5ldWrlel
+         SLEUl2hDlpcpcMPYg+GngkuyxY8cAi5haoYpDHtOACZlIp76SxVkCw78u+qP2Piz82g3
+         hJvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=zuq3NXRWllFEinxDVSxSn6g55pIWnkmVxTKgeR8Rvso=;
+        b=mGy1khU4ysRjrYZXC2mVmQdkZ9JuU8TtHnHUPozcrNhrAKf8kmX6Z8yYeI4bEhUjmU
+         kR6F6OezYJEas1ESHjE/YuHjGIMxwesONySGBk3URD2uPPRryHwV2LcAJx2tbHXOMsae
+         BCu+2XKHSCfJSyLfUVHViL9XwZv9oHivPNuJvjPS4baokZRM3pEXwP6ZjUXg+M2f5y8V
+         1NLuB2NJTr4Glr5PGy353zjp+LfK0dxFDulnFE5yah469VeKyT9HYZmUMnEMtEYuyPYz
+         aKgc0jeZCPJmA/fOgCHyO7x2atYlQpfLlNB0+iHhB/L1TfNmz489r4XYCMWkOrYVxDA3
+         j3Yw==
+X-Gm-Message-State: AOAM531soER4EQSrH1oAtqExjzrV33eM21REumzsXyjjgr6tCQ3qd31Z
+        fvANFz8oNuorSOTLTOWL4IL19HOOEBI+gbfWKO9C2Q==
+X-Google-Smtp-Source: ABdhPJwT03HQS2JGvNVaddNqSHmcxSEOVZzwNIZztfB8jJ2rTbKuFz6Gk3SMdi7Xf/qpN6HWnOs/jCmCKwbnKyCb/iw=
+X-Received: by 2002:aa7:9543:0:b0:4bf:2a07:5bc7 with SMTP id
+ w3-20020aa79543000000b004bf2a075bc7mr1995022pfq.73.1641859232915; Mon, 10 Jan
+ 2022 16:00:32 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211214213630.14819-1-tharvey@gateworks.com>
+In-Reply-To: <20211214213630.14819-1-tharvey@gateworks.com>
+From:   Tim Harvey <tharvey@gateworks.com>
+Date:   Mon, 10 Jan 2022 16:00:21 -0800
+Message-ID: <CAJ+vNU0U7HknAZcnua39r9to+kJBea6Fg3NiJ9ybZ1xygKoF4g@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: imx8mm-venice-gw73xx-0x: add dt overlays for
+ serial modes
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Device Tree Mailing List <devicetree@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Help userland apps to identify cifs and smb2 mounts.
+On Tue, Dec 14, 2021 at 1:36 PM Tim Harvey <tharvey@gateworks.com> wrote:
+>
+> The imx8mm-venice-gw73xx-0x som+baseboard combination has a multi-protocol
+> RS-232/RS-485/RS-422 transceiver to an off-board connector which
+> can be configured in a number of ways via UART and GPIO configuration.
+>
+> The default configuration per the imx8mm-venice-gw73xx-0x dts is for
+> UART2 TX/RX and UART4 TX/RX to be available as RS-232:
+>  J15.1 UART2 TX out
+>  J15.2 UART2 RX in
+>  J15.3 UART4 TX out
+>  J15.4 UART4 RX in
+>  J15.5 GND
+>
+> Add dt overlays to allow additional the modes of operation:
+>
+> rs232-rts (UART2 RS-232 with RTS/CTS hardware flow control)
+>  J15.1 TX out
+>  J15.2 RX in
+>  J15.3 RTS out
+>  J15.4 CTS in
+>  J15.5 GND
+>
+> rs485 (UART2 RS-485 half duplex)
+>  J15.1 TXRX-
+>  J15.2 N/C
+>  J15.3 TXRX+
+>  J15.4 N/C
+>  J15.5 GND
+>
+> rs422 (UART2 RS-422 full duplex)
+>  J15.1 TX-
+>  J15.2 RX+
+>  J15.3 TX+
+>  J15.4 RX-
+>  J15.5 GND
+>
+> Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+> ---
+>  arch/arm64/boot/dts/freescale/Makefile        |  3 +
+>  .../imx8mm-venice-gw73xx-0x-rs232-rts.dts     | 53 ++++++++++++++++
+>  .../imx8mm-venice-gw73xx-0x-rs422.dts         | 61 +++++++++++++++++++
+>  .../imx8mm-venice-gw73xx-0x-rs485.dts         | 61 +++++++++++++++++++
+>  4 files changed, 178 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts
+>  create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts
+>  create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts
+>
+> diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+> index a14a6173b765..5ec8d59347b6 100644
+> --- a/arch/arm64/boot/dts/freescale/Makefile
+> +++ b/arch/arm64/boot/dts/freescale/Makefile
+> @@ -44,6 +44,9 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-var-som-symphony.dtb
+>  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw71xx-0x.dtb
+>  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x.dtb
+>  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x.dtb
+> +dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs232-rts.dtbo
+> +dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs422.dtbo
+> +dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs485.dtbo
+>  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7901.dtb
+>  dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7902.dtb
+>  dtb-$(CONFIG_ARCH_MXC) += imx8mn-beacon-kit.dtb
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts
+> new file mode 100644
+> index 000000000000..c184cf4aea4e
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts
+> @@ -0,0 +1,53 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Copyright 2021 Gateworks Corporation
+> + *
+> + * GW73xx RS232 with RTS/CTS hardware flow control:
+> + *  - GPIO4_0 rs485_en needs to be driven low (in-active)
+> + *  - UART4_TX becomes RTS
+> + *  - UART4_RX becomes CTS
+> + */
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+> +
+> +#include "imx8mm-pinfunc.h"
+> +
+> +/dts-v1/;
+> +/plugin/;
+> +
+> +&{/} {
+> +       compatible = "gw,imx8mm-gw73xx-0x";
+> +};
+> +
+> +&gpio4 {
+> +       rs485_en {
+> +               gpio-hog;
+> +               gpios = <0 GPIO_ACTIVE_HIGH>;
+> +               output-low;
+> +               line-name = "rs485_en";
+> +       };
+> +};
+> +
+> +&uart2 {
+> +       pinctrl-names = "default";
+> +       pinctrl-0 = <&pinctrl_uart2>;
+> +       rts-gpios = <&gpio5 29 GPIO_ACTIVE_LOW>;
+> +       cts-gpios = <&gpio5 28 GPIO_ACTIVE_LOW>;
+> +       uart-has-rtscts;
+> +       status = "okay";
+> +};
+> +
+> +&uart4 {
+> +       status = "disabled";
+> +};
+> +
+> +&iomuxc {
+> +       pinctrl_uart2: uart2grp {
+> +               fsl,pins = <
+> +                       MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX     0x140
+> +                       MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX     0x140
+> +                       MX8MM_IOMUXC_UART4_TXD_GPIO5_IO29       0x140
+> +                       MX8MM_IOMUXC_UART4_RXD_GPIO5_IO28       0x140
+> +               >;
+> +       };
+> +};
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts
+> new file mode 100644
+> index 000000000000..3e6404340d52
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts
+> @@ -0,0 +1,61 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Copyright 2021 Gateworks Corporation
+> + *
+> + * GW73xx RS422 (RS485 full duplex):
+> + *  - GPIO1_0 rs485_term selects on-chip termination
+> + *  - GPIO4_0 rs485_en needs to be driven high (active)
+> + *  - GPIO4_2 rs485_hd needs to be driven low (in-active)
+> + *  - UART4_TX is DE for RS485 transmitter
+> + *  - RS485_EN needs to be pulled high
+> + *  - RS485_HALF needs to be low
+> + */
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+> +
+> +#include "imx8mm-pinfunc.h"
+> +
+> +/dts-v1/;
+> +/plugin/;
+> +
+> +&{/} {
+> +       compatible = "gw,imx8mm-gw73xx-0x";
+> +};
+> +
+> +&gpio4 {
+> +       rs485_en {
+> +               gpio-hog;
+> +               gpios = <0 GPIO_ACTIVE_HIGH>;
+> +               output-high;
+> +               line-name = "rs485_en";
+> +       };
+> +
+> +       rs485_hd {
+> +               gpio-hog;
+> +               gpios = <2 GPIO_ACTIVE_HIGH>;
+> +               output-low;
+> +               line-name = "rs485_hd";
+> +       };
+> +};
+> +
+> +&uart2 {
+> +       pinctrl-names = "default";
+> +       pinctrl-0 = <&pinctrl_uart2>;
+> +       rts-gpios = <&gpio5 29 GPIO_ACTIVE_HIGH>;
+> +       linux,rs485-enabled-at-boot-time;
+> +       status = "okay";
+> +};
+> +
+> +&uart4 {
+> +       status = "disabled";
+> +};
+> +
+> +&iomuxc {
+> +       pinctrl_uart2: uart2grp {
+> +               fsl,pins = <
+> +                       MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX     0x140
+> +                       MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX     0x140
+> +                       MX8MM_IOMUXC_UART4_TXD_GPIO5_IO29       0x140
+> +               >;
+> +       };
+> +};
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts
+> new file mode 100644
+> index 000000000000..97f19c15c3d0
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts
+> @@ -0,0 +1,61 @@
+> +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> +/*
+> + * Copyright 2021 Gateworks Corporation
+> + *
+> + * GW73xx RS485 HD:
+> + *  - GPIO1_0 rs485_term selects on-chip termination
+> + *  - GPIO4_0 rs485_en needs to be driven high (active)
+> + *  - GPIO4_2 rs485_hd needs to be driven high (active)
+> + *  - UART4_TX is DE for RS485 transmitter
+> + *  - RS485_EN needs to be pulled high
+> + *  - RS485_HALF needs to be pulled high
+> + */
+> +
+> +#include <dt-bindings/gpio/gpio.h>
+> +
+> +#include "imx8mm-pinfunc.h"
+> +
+> +/dts-v1/;
+> +/plugin/;
+> +
+> +&{/} {
+> +       compatible = "gw,imx8mm-gw73xx-0x";
+> +};
+> +
+> +&gpio4 {
+> +       rs485_en {
+> +               gpio-hog;
+> +               gpios = <0 GPIO_ACTIVE_HIGH>;
+> +               output-high;
+> +               line-name = "rs485_en";
+> +       };
+> +
+> +       rs485_hd {
+> +               gpio-hog;
+> +               gpios = <2 GPIO_ACTIVE_HIGH>;
+> +               output-high;
+> +               line-name = "rs485_hd";
+> +       };
+> +};
+> +
+> +&uart2 {
+> +       pinctrl-names = "default";
+> +       pinctrl-0 = <&pinctrl_uart2>;
+> +       rts-gpios = <&gpio5 29 GPIO_ACTIVE_HIGH>;
+> +       linux,rs485-enabled-at-boot-time;
+> +       status = "okay";
+> +};
+> +
+> +&uart4 {
+> +       status = "disabled";
+> +};
+> +
+> +&iomuxc {
+> +       pinctrl_uart2: uast2grp {
+> +               fsl,pins = <
+> +                       MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX     0x140
+> +                       MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX     0x140
+> +                       MX8MM_IOMUXC_UART4_TXD_GPIO5_IO29       0x140
+> +               >;
+> +       };
+> +};
+> --
+> 2.17.1
+>
 
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
----
- fs/cifs/cifsfs.c           | 3 ++-
- fs/cifs/cifsglob.h         | 2 --
- fs/cifs/smb1ops.c          | 3 ++-
- fs/cifs/smb2glob.h         | 2 --
- fs/cifs/smb2ops.c          | 5 +++--
- include/uapi/linux/magic.h | 4 ++++
- 6 files changed, 11 insertions(+), 8 deletions(-)
+gentle ping.
 
-diff --git a/fs/cifs/cifsfs.c b/fs/cifs/cifsfs.c
-index dca42aa87d30..5a4d56622d2b 100644
---- a/fs/cifs/cifsfs.c
-+++ b/fs/cifs/cifsfs.c
-@@ -26,6 +26,7 @@
- #include <linux/random.h>
- #include <linux/uuid.h>
- #include <linux/xattr.h>
-+#include <uapi/linux/magic.h>
- #include <net/ipv6.h>
- #include "cifsfs.h"
- #include "cifspdu.h"
-@@ -202,7 +203,7 @@ cifs_read_super(struct super_block *sb)
- 		sb->s_time_max = ts.tv_sec;
- 	}
- 
--	sb->s_magic = CIFS_MAGIC_NUMBER;
-+	sb->s_magic = CIFS_SUPER_MAGIC;
- 	sb->s_op = &cifs_super_ops;
- 	sb->s_xattr = cifs_xattr_handlers;
- 	rc = super_setup_bdi(sb);
-diff --git a/fs/cifs/cifsglob.h b/fs/cifs/cifsglob.h
-index be74606724c7..50e857e0a311 100644
---- a/fs/cifs/cifsglob.h
-+++ b/fs/cifs/cifsglob.h
-@@ -24,8 +24,6 @@
- #include "../smbfs_common/smb2pdu.h"
- #include "smb2pdu.h"
- 
--#define CIFS_MAGIC_NUMBER 0xFF534D42      /* the first four bytes of SMB PDUs */
--
- #define SMB_PATH_MAX 260
- #define CIFS_PORT 445
- #define RFC1001_PORT 139
-diff --git a/fs/cifs/smb1ops.c b/fs/cifs/smb1ops.c
-index 3b83839fc2c2..dcc8b97e2bbf 100644
---- a/fs/cifs/smb1ops.c
-+++ b/fs/cifs/smb1ops.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/pagemap.h>
- #include <linux/vfs.h>
-+#include <uapi/linux/magic.h>
- #include "cifsglob.h"
- #include "cifsproto.h"
- #include "cifs_debug.h"
-@@ -878,7 +879,7 @@ cifs_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
- {
- 	int rc = -EOPNOTSUPP;
- 
--	buf->f_type = CIFS_MAGIC_NUMBER;
-+	buf->f_type = CIFS_SUPER_MAGIC;
- 
- 	/*
- 	 * We could add a second check for a QFS Unix capability bit
-diff --git a/fs/cifs/smb2glob.h b/fs/cifs/smb2glob.h
-index ca692b2283cd..4125fd113cfb 100644
---- a/fs/cifs/smb2glob.h
-+++ b/fs/cifs/smb2glob.h
-@@ -13,8 +13,6 @@
- #ifndef _SMB2_GLOB_H
- #define _SMB2_GLOB_H
- 
--#define SMB2_MAGIC_NUMBER 0xFE534D42
--
- /*
-  *****************************************************************
-  * Constants go here
-diff --git a/fs/cifs/smb2ops.c b/fs/cifs/smb2ops.c
-index c5b1dea54ebc..57e856c195b5 100644
---- a/fs/cifs/smb2ops.c
-+++ b/fs/cifs/smb2ops.c
-@@ -13,6 +13,7 @@
- #include <linux/sort.h>
- #include <crypto/aead.h>
- #include <linux/fiemap.h>
-+#include <uapi/linux/magic.h>
- #include "cifsfs.h"
- #include "cifsglob.h"
- #include "smb2pdu.h"
-@@ -2747,7 +2748,7 @@ smb2_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
- 		goto qfs_exit;
- 
- 	rsp = (struct smb2_query_info_rsp *)rsp_iov.iov_base;
--	buf->f_type = SMB2_MAGIC_NUMBER;
-+	buf->f_type = SMB2_SUPER_MAGIC;
- 	info = (struct smb2_fs_full_size_info *)(
- 		le16_to_cpu(rsp->OutputBufferOffset) + (char *)rsp);
- 	rc = smb2_validate_iov(le16_to_cpu(rsp->OutputBufferOffset),
-@@ -2789,7 +2790,7 @@ smb311_queryfs(const unsigned int xid, struct cifs_tcon *tcon,
- 
- 	rc = SMB311_posix_qfs_info(xid, tcon, fid.persistent_fid,
- 				   fid.volatile_fid, buf);
--	buf->f_type = SMB2_MAGIC_NUMBER;
-+	buf->f_type = SMB2_SUPER_MAGIC;
- 	SMB2_close(xid, tcon, fid.persistent_fid, fid.volatile_fid);
- 	return rc;
- }
-diff --git a/include/uapi/linux/magic.h b/include/uapi/linux/magic.h
-index a3034558b018..9438fd4a79c9 100644
---- a/include/uapi/linux/magic.h
-+++ b/include/uapi/linux/magic.h
-@@ -53,6 +53,7 @@
- #define QNX6_SUPER_MAGIC	0x68191122	/* qnx6 fs detection */
- #define AFS_FS_MAGIC		0x6B414653
- 
-+
- #define REISERFS_SUPER_MAGIC	0x52654973	/* used by gcc */
- 					/* used by file system utilities that
- 	                                   look at the superblock, etc.  */
-@@ -61,6 +62,9 @@
- #define REISER2FS_JR_SUPER_MAGIC_STRING	"ReIsEr3Fs"
- 
- #define SMB_SUPER_MAGIC		0x517B
-+#define CIFS_SUPER_MAGIC	0xFF534D42      /* the first four bytes of SMB PDUs */
-+#define SMB2_SUPER_MAGIC	0xFE534D42
-+
- #define CGROUP_SUPER_MAGIC	0x27e0eb
- #define CGROUP2_SUPER_MAGIC	0x63677270
- 
--- 
-2.34.1
+I'm mostly interested to see if my approach to dt fragments here and
+the naming of the files makes sense to others.
 
+This patch causes the kernel to build dtbo files for:
+arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dtbo
+arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dtbo
+arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dtbo
+
+The intention is that these files are used by boot firmware (U-Boot)
+to adjust the dtb before passing it to the kernel.
+
+Best regards,
+
+Tim
