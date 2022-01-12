@@ -2,123 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90A4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:49:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1784C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352616AbiALKtN (ORCPT
+        id S1352626AbiALKvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:49:13 -0500
-Received: from mga03.intel.com ([134.134.136.65]:11364 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239535AbiALKtM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:49:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641984552; x=1673520552;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=/Ap0QBU3t/R1DSPsppRpZ66Vza8HREIl/QzjQ9in2CA=;
-  b=F852mrDD6MaVoebHZtss0jgBH+EoROfTSFlO1IsSKy09nuqnFGbydNQr
-   S4qspQGp9/rFSEmuDWlDvM/V1URMVDJFSu23mKLiKTsVf7XPKIAOviE18
-   07vhGIlI1VVHKvrpDx5ZUW8Gc+H9vpXHeI39gtluIl2dy12+ousH3M+rL
-   KX6rmxb+Xo87zk8NYBRAfX1dpxF/c1/qUKgGa9aZT6Qpr5IrIYZjAQqXk
-   6meyVTKyBU7Cyf7PErAXzp32ewbkHWi4Q6GxTYlQZVGMdl4wyOZRqlHfA
-   7NGNDFssOwulknnUowlqAR41e7cdN1Ay4tZeg/vaKjWO4AIKq0cHIJk6w
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="243663661"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="243663661"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 02:49:11 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="515442067"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 02:49:07 -0800
-Date:   Wed, 12 Jan 2022 19:00:01 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     "Tian, Kevin" <kevin.tian@intel.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 5/6] KVM: x86: Remove WARN_ON in
- kvm_arch_check_processor_compat
-Message-ID: <20220112110000.GA10249@gao-cwp>
-References: <20211227081515.2088920-1-chao.gao@intel.com>
- <20211227081515.2088920-6-chao.gao@intel.com>
- <Ydy6aIyI3jFQvF0O@google.com>
- <BN9PR11MB5276DEA925C72AF585E7472C8C519@BN9PR11MB5276.namprd11.prod.outlook.com>
- <Yd3fFxg3IjWPUIqH@google.com>
+        Wed, 12 Jan 2022 05:51:18 -0500
+Received: from mout.kundenserver.de ([212.227.126.134]:41065 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352617AbiALKvN (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 05:51:13 -0500
+Received: from mail-oi1-f177.google.com ([209.85.167.177]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mkn8B-1mdSvf0ao3-00mJXK for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022
+ 11:51:12 +0100
+Received: by mail-oi1-f177.google.com with SMTP id r138so2838721oie.3
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:51:11 -0800 (PST)
+X-Gm-Message-State: AOAM531MklMigwk2lgNP8sGv1kDNnpkSskNS/0TNfdRxFDz0mPw29TyS
+        fq55nTDlqWQvD63XZZTZ7YLh2wQHHpc9wbVcevg=
+X-Google-Smtp-Source: ABdhPJxbehyJ+UKG3ve0S1BMZRUcfxENmtnL2Wld4IkBqEWRgysmAU7BrnfjMesY0V41P6v5dm0xcpJrqvKWnlaq/Lg=
+X-Received: by 2002:a05:6808:2327:: with SMTP id bn39mr4773607oib.108.1641984670830;
+ Wed, 12 Jan 2022 02:51:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yd3fFxg3IjWPUIqH@google.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <1641980099-20315-1-git-send-email-anshuman.khandual@arm.com> <1641980099-20315-2-git-send-email-anshuman.khandual@arm.com>
+In-Reply-To: <1641980099-20315-2-git-send-email-anshuman.khandual@arm.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 12 Jan 2022 11:50:54 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1cDF=jEVGchU8LNBdjdtROmHHHpebOASreR=WOuZ4Z1A@mail.gmail.com>
+Message-ID: <CAK8P3a1cDF=jEVGchU8LNBdjdtROmHHHpebOASreR=WOuZ4Z1A@mail.gmail.com>
+Subject: Re: [PATCH 1/2] arm64: Add Cortex-X2 CPU part definition
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:kcn6oH7FUcH/VHf7rMji7ishbRQbtgkyMxy07qI5It4WAzkHXPe
+ a7pDK3FcRirPiJMnFer/hmiRDkr722vHv5Mv8nbGEk3XjVAhXkQdd8AbXuGAvW1KD4TMZp2
+ yKJaQNvUuS3/Z26AzDXrLI5tlm5CjX8f3gzNuzbUO+83y4H40F2INtPHXqmEn9376Grgfwu
+ dgBOEaL5z0U7OywXtJfYw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TRZwugt47t0=:9V3FSTa/ANnAkUJm5nTovO
+ 5rqeGPtVYnIN9qdDf29llc1cnvA9lqyYHEgEDY/NT6ihDMkyt8arbHaT7CRADSOzZ+Z/aMuqq
+ YVIKqjdQTwkjq5I+SuYHIDpS8hDXCUiQ9oisk5fks8K8HeVtqpq2HkTvln8U0pBUQ/d+Ho81E
+ HFDn9UGFtUuIvcmJxCkyKCu7jB87W9/keTPk6D9O0ahZ0Uh/vBqelyGt+RhctSWQljpTT/d0x
+ 9lfynibsIwyn6sZE881P6inKiMVt1yj0nC9zYjdhOoh0897JqkjBoLqB90QqkByRTyFKYvs8Q
+ 1wv4Es/GVp0B9BSh42AaMODpJqdn52qfqAzVTTJJxwZGPP6aGsBPTb+Jc3aqQtt24jbYdcN4B
+ UHF38e2p6w8ZOlQp2iIdpa5pZgi/mWGP0TMVgtbmKpHSaV9t63R5byJ40XP9wng6LlHXLJsv2
+ +4zh8NlYe4ClO2ke1IXqopqtNMnHuPWLCejb+H2AiiaZS1AUZs6NkWCLLIdKtdQvQq8ecJlSi
+ K+AMNGvSCnjVyfTAle6ooRur3esZCe1IVv6XFnDJNZhjXczQv5LYpAkWZYii04GIV39QSfkPp
+ db/SqgvPPI5mBQk4AqmbpFirAjJ3dpSYByCQm5/p/+zzsRBKrIVb5c1mwCnz0jyneDKiUcPLW
+ YJbr+oGWU7ut2m/tKI5sECr70hPAnbjfj7XFXhS8g1O0dTakm8B6SktHwpF62/ImGe0faiOLJ
+ jVhpa1GjJduRbHRRPo/UNLEA7qSREZjAtkyBnahF/s6Z0BHzMyjSexlQtd0lpgcRDTJ5WYmzH
+ jE7rkqtW4DKFnZbA4AoHRrvVi5XlaDum4IGSWweDnOKvh3Nyno=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 07:48:39PM +0000, Sean Christopherson wrote:
->On Tue, Jan 11, 2022, Tian, Kevin wrote:
->> > From: Sean Christopherson <seanjc@google.com>
->> > Sent: Tuesday, January 11, 2022 7:00 AM
->> > 
->> > On Mon, Dec 27, 2021, Chao Gao wrote:
->> > > kvm_arch_check_processor_compat() needn't be called with interrupt
->> > > disabled, as it only reads some CRs/MSRs which won't be clobbered
->> > > by interrupt handlers or softirq.
->> > >
->> > > What really needed is disabling preemption. No additional check is
->> > > added because if CONFIG_DEBUG_PREEMPT is enabled, smp_processor_id()
->> > > (right above the WARN_ON()) can help to detect any violation.
->> > 
->> > Hrm, IIRC, the assertion that IRQs are disabled was more about detecting
->> > improper usage with respect to KVM doing hardware enabling than it was
->> > about ensuring the current task isn't migrated.  E.g. as exhibited by patch
->> > 06, extra protections (disabling of hotplug in that case) are needed if
->> > this helper is called outside of the core KVM hardware enabling flow since
->> > hardware_enable_all() does its thing via SMP function call.
->> 
->> Looks the WARN_ON() was added by you. 😊
+On Wed, Jan 12, 2022 at 10:34 AM Anshuman Khandual
+<anshuman.khandual@arm.com> wrote:
 >
->Yeah, past me owes current me a beer.
+> Add the CPU Partnumbers for the new Arm designs.
 >
->> commit f1cdecf5807b1a91829a2dc4f254bfe6bafd4776
->> Author: Sean Christopherson <sean.j.christopherson@intel.com>
->> Date:   Tue Dec 10 14:44:14 2019 -0800
->> 
->>     KVM: x86: Ensure all logical CPUs have consistent reserved cr4 bits
->> 
->>     Check the current CPU's reserved cr4 bits against the mask calculated
->>     for the boot CPU to ensure consistent behavior across all CPUs.
->> 
->>     Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
->>     Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
->> 
->> But it's unclear to me how this WARN_ON() is related to what the commit
->> msg tries to explain.
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> ---
+>  arch/arm64/include/asm/cputype.h | 2 ++
+>  1 file changed, 2 insertions(+)
 >
->Ya, the changelog and lack of a comment is awful.
->
->> When I read this code it's more like a sanity check on the assumption that it
->> is currently called in SMP function call which runs the said function with
->> interrupt disabled.
->
->Yes, and as above, that assertion was more about the helper not really being safe
->for general usage as opposed to wanting to detect use from preemptible context.
->If we end up keeping the WARN_ON, I'll happily write a comment explaining the
->point of the assertion.
+> diff --git a/arch/arm64/include/asm/cputype.h b/arch/arm64/include/asm/cputype.h
+> index 19b8441aa8f2..657eeb06c784 100644
+> --- a/arch/arm64/include/asm/cputype.h
+> +++ b/arch/arm64/include/asm/cputype.h
+> @@ -74,6 +74,7 @@
+>  #define ARM_CPU_PART_NEOVERSE_N1       0xD0C
+>  #define ARM_CPU_PART_CORTEX_A77                0xD0D
+>  #define ARM_CPU_PART_CORTEX_A710       0xD47
+> +#define ARM_CPU_PART_CORTEX_X2         0xD48
+>  #define ARM_CPU_PART_NEOVERSE_N2       0xD49
 
-OK. I will do following changes to keep the WARN_ON():
-1. drop this patch
-2. disable interrupt before the call site in patch 6.
+No objections to the patch, but would it be possible to just add all the missing
+ones here to the degree that they are known already? I don't see any entries for
+Cortex-A34, Cortex-A65AE, Cortex-A78, Cortex-A78C, Cortex-A78AE,
+Neoverse-E1, Neoverse-V1, Cortex-X1, Cortex-X2, Cortex-A510, Cortex-A710
+and Cortex-R82 among the Arm-designed cores that can run Linux, and there
+are probably others that I missed going through the list.
+
+        Arnd
