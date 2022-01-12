@@ -2,77 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D36C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352935AbiALLkq (ORCPT
+        id S1352951AbiALLni (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:40:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239705AbiALLko (ORCPT
+        Wed, 12 Jan 2022 06:43:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57320 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239294AbiALLng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:40:44 -0500
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6012DC06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 03:40:44 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:76d0:2bff:fec8:549])
-        by laurent.telenet-ops.be with bizsmtp
-        id hngg2600A0kcUhD01nggAt; Wed, 12 Jan 2022 12:40:41 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1n7bzb-009FhI-V2; Wed, 12 Jan 2022 12:40:39 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1n7bzb-000S4m-Go; Wed, 12 Jan 2022 12:40:39 +0100
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, Li Jun <jun.li@nxp.com>,
-        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>
-Cc:     Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org,
+        Wed, 12 Jan 2022 06:43:36 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D466A6164C;
+        Wed, 12 Jan 2022 11:43:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C3E9C36AE9;
+        Wed, 12 Jan 2022 11:43:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641987815;
+        bh=nNZvPmLCj5hUY/EAI5dVhxfi/PBGWTo2PlQBAzZcUlo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DQMxxxnMGBy6NVEsiApsuYJBAUBJcIKybBu8A/KI9r+NnkFEzT8nLBqev2dR7t6PU
+         FHzCaqUwApBvErP/Kwh9/Nh0vYxKUdVEywsTsxCJlmC6AIWzQuDOPnUVf+MUsc/dHs
+         5OMJ7R6ucqR6jmV5GargzvvkdW+ZWPz0W5ksFxlqB8q5HIF6ZSWnEAAy30d1uTLXhe
+         /RsA4Idg/f69O5iCf67aYoj6Px8mf/9h80vETZUjfBpTfEAwTIoGonqXRBa3AoBQlN
+         O6qJBnSGAhs743Y1SmfwVgltsjL6ZVkizQOPlSW+juG4T8Z6WsC8waCLm75Ckvtx8L
+         u5PuHNHhgZubg==
+Received: by pali.im (Postfix)
+        id ADF7E768; Wed, 12 Jan 2022 12:43:32 +0100 (CET)
+Date:   Wed, 12 Jan 2022 12:43:32 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] phy: freescale: i.MX8 PHYs should depend on ARCH_MXC && ARM64
-Date:   Wed, 12 Jan 2022 12:40:38 +0100
-Message-Id: <393868affd830016d35f0d9aba32ccd7098c8073.1641987369.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
+Message-ID: <20220112114332.jadw527pe7r2j4vv@pali>
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
+ <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
+ <20220112105859.u4j76o7cpsr4znmb@pali>
+ <42104281.b1Mx7tgHyx@pc-42>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <42104281.b1Mx7tgHyx@pc-42>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The Freescale/NXP i.MX8 USB3, MIPI DSI, and PCIE PHYs are only present
-on the NXP i.MX8 family of SoCs.  Hence wrap the config symbols for
-these PHYs inside a check for ARCH_MXC && ARM64, to prevent asking the
-user about these drivers when configuring a kernel without NXP i.MX SoC
-family support.
+On Wednesday 12 January 2022 12:18:58 Jérôme Pouiller wrote:
+> On Wednesday 12 January 2022 11:58:59 CET Pali Rohár wrote:
+> > On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
+> > > +static const struct sdio_device_id wfx_sdio_ids[] = {
+> > > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200) },
+> > > +     { },
+> > > +};
+> > 
+> > Hello! Is this table still required?
+> 
+> As far as I understand, if the driver does not provide an id_table, the
+> probe function won't be never called (see sdio_match_device()).
+> 
+> Since, we rely on the device tree, we could replace SDIO_VENDOR_ID_SILABS
+> and SDIO_DEVICE_ID_SILABS_WF200 by SDIO_ANY_ID. However, it does not hurt
+> to add an extra filter here.
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/phy/freescale/Kconfig | 5 +++++
- 1 file changed, 5 insertions(+)
+Now when this particular id is not required, I'm thinking if it is still
+required and it is a good idea to define these SDIO_VENDOR_ID_SILABS
+macros into kernel include files. As it would mean that other broken
+SDIO devices could define these bogus numbers too... And having them in
+common kernel includes files can cause issues... e.g. other developers
+could think that it is correct to use them as they are defined in common
+header files. But as these numbers are not reliable (other broken cards
+may have same ids as wf200) and their usage may cause issues in future.
 
-diff --git a/drivers/phy/freescale/Kconfig b/drivers/phy/freescale/Kconfig
-index c3669c28ea9fe83a..856cbec7057d9e54 100644
---- a/drivers/phy/freescale/Kconfig
-+++ b/drivers/phy/freescale/Kconfig
-@@ -1,4 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+
-+if (ARCH_MXC && ARM64) || COMPILE_TEST
-+
- config PHY_FSL_IMX8MQ_USB
- 	tristate "Freescale i.MX8M USB3 PHY"
- 	depends on OF && HAS_IOMEM
-@@ -22,3 +25,5 @@ config PHY_FSL_IMX8M_PCIE
- 	help
- 	  Enable this to add support for the PCIE PHY as found on
- 	  i.MX8M family of SOCs.
-+
-+endif
--- 
-2.25.1
+Ulf, any opinion?
 
+Btw, is there any project which maintains SDIO ids, like there is
+pci-ids.ucw.cz for PCI or www.linux-usb.org/usb-ids.html for USB?
+
+> > > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> > > +
+> > > +struct sdio_driver wfx_sdio_driver = {
+> > > +     .name = "wfx-sdio",
+> > > +     .id_table = wfx_sdio_ids,
+> > > +     .probe = wfx_sdio_probe,
+> > > +     .remove = wfx_sdio_remove,
+> > > +     .drv = {
+> > > +             .owner = THIS_MODULE,
+> > > +             .of_match_table = wfx_sdio_of_match,
+> > > +     }
+> > > +};
+> > > --
+> > > 2.34.1
+> > >
+> > 
+> 
+> 
+> -- 
+> Jérôme Pouiller
+> 
+> 
+> 
