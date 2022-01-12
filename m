@@ -2,86 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:15:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB2DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:15:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355003AbiALQPM (ORCPT
+        id S1355085AbiALQPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:15:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354996AbiALQOY (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:14:24 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0177C061751
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 08:14:23 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id p14so4751237plf.3
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 08:14:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QzWQq20E27Vzi9uGpH2lyjhZH6GcnE726DILtQYXDnE=;
-        b=G/Epxa6o/cF1a+I2JjaNLnOmIgaTpu1NN8e6Ri5Wjq+agl3MQR9pjQl/ks7k/66qfV
-         SojtVBThpbU8yW4XtKCwhkZa7kap4QshbtWtv96Q/JCUofc35laLQIPTsEOY8xJhLiJe
-         B046CcEAaOrOKfeqMermxm1+ML9L4IcB16l4E5L3I9Z788mreifsY8Mv+xXf3NQIkZGB
-         jY03lWKPW4dXq0oAIXlb0OnXHg150iPp+Bph/88YX4Ri9e2+7SDq6PSECqfIPaxVg1gh
-         QdNyJMbT23/WNcRsVhM/BkA2YC5X41DbAi6H7pkRCFSgWVyAk7w9o0vAyssrn01ypmlq
-         +6kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QzWQq20E27Vzi9uGpH2lyjhZH6GcnE726DILtQYXDnE=;
-        b=22svBP8RKrTBCuBLkNucMgHbpPYvWyIZN2kdWXee7OzI3IRE5Qx7cHoYDhxiiiaRgk
-         QrAl2Yyl8F3kKqrDStZsgQpXfIwcAJChbBV1UjeWHYef2XRtd8ieN0yxrDEN8jWdOhvh
-         dRKilAPNaHuvCuX5cSYODUQddJnc3bi74T1igOtVkzl/tj7fBDQnPj9o1G8tzv3VSrlW
-         yLxxQeU4858r3U8UfsvaSESdfuiz9W7o8DSmsH1uvDWUzgCBDzdL+7lzIgr7bJSutr+v
-         VRbmxz6qedETU5LZLLQesZBgY43+qqgXTR6I5q657C2AsRol/+2qqIaVTkZKwn2KFUu0
-         wzpw==
-X-Gm-Message-State: AOAM531oosxoNn5NtRMIRZutjukvNAnnHxPlJBgLZ2AwqqsgPFq0MSjx
-        eLGwLhnbIiH8GtMy1DFWaBXllg==
-X-Google-Smtp-Source: ABdhPJyilz9gDJSj+JPNs0NJORi1Cw+A9gLTls0R5lSDAL+XwGTrZERgTMg+z12MUL1iCuICvb2Tng==
-X-Received: by 2002:a17:903:41c1:b0:14a:695a:f372 with SMTP id u1-20020a17090341c100b0014a695af372mr354767ple.166.1642004063214;
-        Wed, 12 Jan 2022 08:14:23 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id g22sm104235pfc.130.2022.01.12.08.14.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 08:14:22 -0800 (PST)
-Date:   Wed, 12 Jan 2022 16:14:19 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        lkp@lists.01.org, lkp@intel.com
-Subject: Re: [x86/entry_32]  aa93e2ad74:
- BUG:soft_lockup-CPU##stuck_for#s![systemd-logind:#]
-Message-ID: <Yd7+W1gFbkBs5Lkd@google.com>
-References: <20220106083523.GB32167@xsang-OptiPlex-9020>
- <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
- <Yd4u2rVVSdpEpwwM@google.com>
- <Yd6ssarpDknV1r9z@hirez.programming.kicks-ass.net>
+        Wed, 12 Jan 2022 11:15:22 -0500
+Received: from foss.arm.com ([217.140.110.172]:32944 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355035AbiALQOo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 11:14:44 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 87EFB1FB;
+        Wed, 12 Jan 2022 08:14:44 -0800 (PST)
+Received: from localhost.localdomain (unknown [10.57.10.212])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E9A403F774;
+        Wed, 12 Jan 2022 08:14:42 -0800 (PST)
+From:   Vincent Donnefort <vincent.donnefort@arm.com>
+To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
+Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        valentin.schneider@arm.com, morten.rasmussen@arm.com,
+        chris.redpath@arm.com, qperret@google.com, lukasz.luba@arm.com,
+        Vincent Donnefort <vincent.donnefort@arm.com>
+Subject: [PATCH v2 0/7] feec() energy margin removal
+Date:   Wed, 12 Jan 2022 16:12:23 +0000
+Message-Id: <20220112161230.836326-1-vincent.donnefort@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yd6ssarpDknV1r9z@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022, Peter Zijlstra wrote:
-> On Wed, Jan 12, 2022 at 01:28:58AM +0000, Sean Christopherson wrote:
-> > The issue is that PARANOID_EXIT_TO_KERNEL_MODE in the handle_exception_return
-> > path overwrites the entry stack data with the task stack data, restoring the "bad"
-> > segment value.
-> 
-> Oh gawd... that's terrible, and yes, that now makes perfect sense.
-> 
-> However did you find that?
+find_energy_efficient() (feec()) will migrate a task to save energy only
+if it saves at least 6% of the total energy consumed by the system. This
+conservative approach is a problem on a system where a lot of small tasks
+create a huge load on the overall: very few of them will be allowed to migrate
+to a smaller CPU, wasting a lot of energy. Instead of trying to determine yet
+another margin, let's try to remove it.
 
-printf and running under QEMU, which has a interactive "monitor" that lets you
-read/write guest memory and can also do VA=>PA translations.  Code inspection
-once I realized the value on the stack was being restored between the exception
-fixup and the POP.
+The first elements of this patch-set are various fixes and improvement that
+stabilizes task_util and ensures energy comparison fairness across all CPUs of
+the topology. Only once those fixed, we can completely remove the margin and
+let feec() aggressively place task and save energy.
+
+This has been validated by two different ways:
+
+First using LISA's eas_behaviour test suite. This is composed of a set of
+scenario and verify if the task placement is optimum. No failure have been
+observed and it also improved some tests such as Ramp-Down (as the placement
+is now more energy oriented) and *ThreeSmall (as no bouncing between clusters
+happen anymore).
+
+  * Hikey960: 100% PASSED
+  * DB-845C:  100% PASSED
+  * RB5:      100% PASSED
+
+Second, using an Android benchmark: PCMark2 on a Pixel4, with a lot of
+backports to have a scheduler as close as we can from mainline. 
+
+  +------------+-----------------+-----------------+
+  |    Test    |      Perf       |    Energy [1]   |
+  +------------+-----------------+-----------------+
+  | Web2       | -0.3% pval 0.03 | -1.8% pval 0.00 |
+  | Video2     | -0.3% pval 0.13 | -5.6% pval 0.00 |
+  | Photo2 [2] | -3.8% pval 0.00 | -1%   pval 0.00 |
+  | Writing2   |  0%   pval 0.13 | -1%   pval 0.00 |
+  | Data2      |  0%   pval 0.8  | -0.43 pval 0.00 |
+  +------------+-----------------+-----------------+ 
+
+The margin removal let the kernel make the best use of the Energy Model,
+tasks are more likely to be placed where they fit and this saves a 
+substantial amount of energy, while having a limited impact on performances.
+
+[1] This is an energy estimation based on the CPU activity and the Energy Model
+for this device. "All models are wrong but some are useful"; yes, this is an
+imperfect estimation that doesn't take into account some idle states and shared
+power rails. Nonetheless this is based on the information the kernel has during
+runtime and it proves the scheduler can take better decisions based solely on
+those data.
+
+[2] This is the only performance impact observed. The debugging of this test
+showed no issue with task placement. The better score was solely due to some
+
+v1 -> v2:
+  - Fix PELT migration last_update_time (previously root cfs_rq's).
+  - Add Dietmar's patches to refactor feec()'s CPU loop.
+  - feec(): renaming busy time functions get_{pd,tsk}_busy_time()
+  - feec(): pd_cap computation in the first for_each_cpu loop.
+  - feec(): create get_pd_max_util() function (previously within compute_energy())
+  - feec(): rename base_energy_pd to base_energy.
+
+Dietmar Eggemann (3):
+  sched, drivers: Remove max param from effective_cpu_util()/sched_cpu_util()
+  sched/fair: Rename select_idle_mask to select_rq_mask
+  sched/fair: Use the same cpumask per-PD throughout find_energy_efficient_cpu()
+
+Vincent Donnefort (4):
+  sched/fair: Provide u64 read for 32-bits arch helper
+  sched/fair: Decay task PELT values during migration
+  sched/fair: Remove task_util from effective utilization in feec()
+  sched/fair: Remove the energy margin in feec()
+
+ drivers/powercap/dtpm_cpu.c       |  33 +---
+ drivers/thermal/cpufreq_cooling.c |   6 +-
+ include/linux/sched.h             |   2 +-
+ kernel/sched/core.c               |  22 ++-
+ kernel/sched/cpufreq_schedutil.c  |   5 +-
+ kernel/sched/fair.c               | 313 ++++++++++++++++--------------
+ kernel/sched/sched.h              |  48 ++++-
+ 7 files changed, 238 insertions(+), 191 deletions(-)
+
+-- 
+2.25.1
+
