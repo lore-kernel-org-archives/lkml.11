@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8917C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42EE8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239490AbiALKAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:00:53 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:55436
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239371AbiALKAv (ORCPT
+        id S239651AbiALKBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 05:01:14 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:58338
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239524AbiALKAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:00:51 -0500
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        Wed, 12 Jan 2022 05:00:55 -0500
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D65DF3F1EE
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:00:50 +0000 (UTC)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6F9443F1EE
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:00:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1641981650;
-        bh=W175jQsAVD8hOk96CzYOc00tw1PfuOzVPDQUy/HubXs=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=k9glYrqJDMl8kv5sNFpGs6wjrcIHjovV0BxJSeEXbwEbnLIyUweJG58G8RVLCK+ck
-         ee1U6ffQkrMP6KhNRzvHW7vz6aqlV/B98HkMavP0JiqsD/Kcv9MbrPDhLlwt+HoGaj
-         GvAL8T4X7vSN7a8eUmUZ6ZGIxJ8Pe1Ynyn8UngOlhVMMLmWkVjruMdjT+8W+Y8qIy7
-         26WtZbH4Wtc4MR8GdIL0l9pMt9UlbPDSLO81UC21IsLPo4TttWg26BQ44WaIVHd9Kt
-         BYptFg7ahsQB29eevU2YCmtXTlToliduMS5t4aEmdKYqRLtgvnkJBYk/3rKE9q09Di
-         nl5JOANWznopQ==
-Received: by mail-ed1-f71.google.com with SMTP id m16-20020a056402431000b003fb60bbe0e2so1820919edc.3
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:00:50 -0800 (PST)
+        s=20210705; t=1641981654;
+        bh=sxpoeazVKfRv/TTxlIPcEu0VInhZebJSCyyifiEPVW0=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=QZUYb41T2r0gJfdj/JmDwla5q8wYEtI9NUG9iQdPMhA0U0eXvqP8G0mA3astSE+vI
+         FUIBSv15HA131v5blSaslsxmFsSnm7J1jz1A82Y0ircmq4DaeBUt0XCtYSaVwJlllQ
+         F+fuL08NAZz093cOHoav4Y2w+Dqt5TQ12lAg8ZrQcs10zAQf3FB5Xv8Lx08qPWaBqA
+         f3t4fwZYvrqr0dRI87CpyfyRVcFmVVwbdS7DhOVXqobVtDHOoFt1irdOOzeoUereyr
+         FPCYroFeRq/qJVjnavE4rIIkn1u4PG/PJP2BPebaBNpp4I66qQoyyxR8ROHChuvvCl
+         ChjA46oUZG4HQ==
+Received: by mail-ed1-f72.google.com with SMTP id q15-20020a056402518f00b003f87abf9c37so1786808edd.15
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:00:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W175jQsAVD8hOk96CzYOc00tw1PfuOzVPDQUy/HubXs=;
-        b=fkygVV6IA9ixOVSrMLTS0cb2vIOXl5bE4Ub6eNSZ/upgvTSOHybPcOhWQwL5ytwwyE
-         8nqgks8HOvufxN8B1MfHjseBJmVMrXhL4ZaRvHOe5h+UsV3DDqCjP1aCasOaFRlHxn0R
-         A1mfYtJDmL00YcUdIR4eO/M1KDHs6rMa4oDq/AklP4TzueQJ/xyZGLdShkHncYcsJ1cw
-         rUY4AOYWwNH+/b77wsIaFrpr8IFRB0PHPb2/1BTRipHEwh7RUrqFTaIQ8YuMJ5g0xw4u
-         F/Aaj9Kl8tkbW03TTGyNH8tCkkcBiPGWtYp+R41YomuanJxKmbRULyBYfGR5gZguOpNm
-         631A==
-X-Gm-Message-State: AOAM531E8EJCaEf5Gt05RNefqyKGTf2oeofH4/1T1zgn2oMKB/bbsoqj
-        Y6OhNQHC0PvegG37dBGhAnfFJOhG627AFjrrKLhKRUyEvxP75ryNyfR9A2yG7D+hns3btiKQw4X
-        e+z8hBE0Zo/Ako7QUTssT5vCYmw4WiDfzGYAOAZg1dw==
-X-Received: by 2002:aa7:c584:: with SMTP id g4mr220260edq.78.1641981650587;
-        Wed, 12 Jan 2022 02:00:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyPwXb8C8jwC0AeCFbhlzmt3R55DzsEBM3z+QQv07WnckbiFJGdXv4Kanz5OlMs7VuMIKn9xw==
-X-Received: by 2002:aa7:c584:: with SMTP id g4mr220236edq.78.1641981650275;
-        Wed, 12 Jan 2022 02:00:50 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sxpoeazVKfRv/TTxlIPcEu0VInhZebJSCyyifiEPVW0=;
+        b=mPBAtVT/q4yQ0F7DOEw7Z52LMZOqcfCBcm7iXJJOXWI5IBlvILvAU+Aj0MuN9bQ8gV
+         uDIMgKXKUQi74QC8I4Oe7yygijCIUnOijdRVG0YEOleGoUYv+q8/oJbrwxTjAwPj4nJE
+         Ie0GQb8xmn4+oQhjDPpFkbVlfjSX1UYt8FGJJfkRuCq6qnl2ACadPqr3y8o5RaacPwzQ
+         o4/u3SXGOVr8knGBTH1TmDV7PbUSOrcyTX9msKIMFUaRyccEG/YOw+f8zwzAWicAx9pO
+         CsP/rfsbEoKrmQ7fQews0/4m2WuUeZ4Fb4xqxj0Di6YCe9f9EuyY+WaSPx77MOnpNclu
+         og6g==
+X-Gm-Message-State: AOAM533AsVzRgw6hvDNHHRGRhUxIoaaSN15SkB+jrio3m026o0Y9BaIp
+        /Itrsc6mrOZOVW7U0+YB1quVWzsx4S45dfXH6ME1NtkKYRyloejsJdL7zAfetUURqdfMZO1+Wso
+        AMtODcHdD+UW8OGsw5dop7RnHOuIy6wEAua8LKwzIdg==
+X-Received: by 2002:a17:907:7d8a:: with SMTP id oz10mr2375257ejc.320.1641981653521;
+        Wed, 12 Jan 2022 02:00:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzzzXqkrKxbgq5mvkmGUzVcTyBUQLnw1MTu9OyibOn3Q74mOavVnNmdXwrnaGEsFJ/VZr09+g==
+X-Received: by 2002:a17:907:7d8a:: with SMTP id oz10mr2375244ejc.320.1641981653311;
+        Wed, 12 Jan 2022 02:00:53 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id hb11sm4311083ejc.33.2022.01.12.02.00.49
+        by smtp.gmail.com with ESMTPSA id hb11sm4311083ejc.33.2022.01.12.02.00.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 02:00:49 -0800 (PST)
+        Wed, 12 Jan 2022 02:00:52 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
@@ -60,50 +61,43 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Pratyush Yadav <p.yadav@ti.com>, linux-spi@vger.kernel.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Sam Protsenko <semen.protsenko@linaro.org>
-Subject: [PATCH v3 0/4] spi: dt-bindings: samsung: convert to dtschema
-Date:   Wed, 12 Jan 2022 11:00:42 +0100
-Message-Id: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 3/4] spi: dt-bindings: samsung: allow controller-data to be optional
+Date:   Wed, 12 Jan 2022 11:00:45 +0100
+Message-Id: <20220112100046.68068-4-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
+References: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+The Samsung SoC SPI bindings requires to provide controller-data node
+for each of SPI peripheral device nodes.  Make this controller-data node
+optional, so DTS could be simpler.
 
-Changes since v2
-================
-1. Patch 2: drop child device schema, as Rob suggested.
+Suggested-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/spi/samsung,spi-peripheral-props.yaml    | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes since v1
-================
-1. Patch 2: describe devices matching compatible, correct issues pointed out by
-   Rob, add reviewed-by tag.
-2. New patches 3 and 4.
-
-Best regards,
-Krzysztof
-
-Krzysztof Kozlowski (4):
-  ARM: dts: exynos: split dmas into array of phandles in Exynos5250
-  spi: dt-bindings: samsung: convert to dtschema
-  spi: dt-bindings: samsung: allow controller-data to be optional
-  spi: s3c64xx: allow controller-data to be optional
-
- .../spi/samsung,spi-peripheral-props.yaml     |  36 ++++
- .../devicetree/bindings/spi/samsung,spi.yaml  | 187 ++++++++++++++++++
- .../bindings/spi/spi-peripheral-props.yaml    |   1 +
- .../devicetree/bindings/spi/spi-samsung.txt   | 122 ------------
- MAINTAINERS                                   |   2 +-
- arch/arm/boot/dts/exynos5250.dtsi             |   9 +-
- drivers/spi/spi-s3c64xx.c                     |  14 +-
- 7 files changed, 234 insertions(+), 137 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-samsung.txt
-
+diff --git a/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+index aa5a1f48494b..cadc8a5f061f 100644
+--- a/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
++++ b/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+@@ -28,6 +28,7 @@ properties:
+            - 3: 270 degree phase shift sampling.
+         $ref: /schemas/types.yaml#/definitions/uint32
+         enum: [0, 1, 2, 3]
++        default: 0
+ 
+     required:
+       - samsung,spi-feedback-delay
 -- 
 2.32.0
 
