@@ -2,103 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA870C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49C5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352572AbiALKja (ORCPT
+        id S1352597AbiALKmw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:39:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
+        Wed, 12 Jan 2022 05:42:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238736AbiALKj0 (ORCPT
+        with ESMTP id S239535AbiALKmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:39:26 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7C2C06173F;
-        Wed, 12 Jan 2022 02:39:26 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id y16-20020a17090a6c9000b001b13ffaa625so11113063pjj.2;
-        Wed, 12 Jan 2022 02:39:26 -0800 (PST)
+        Wed, 12 Jan 2022 05:42:50 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B347C06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:42:49 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id g11so6626537lfu.2
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:42:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=K0NIo8G/E2+/V1jL9Lj5TwJL8NcpWczVrZhrPFDYFZA=;
-        b=HkWSohSwSyaJD7xgaRXAJJE2pMxoDYXEB58fUFFN8Ek103V6Tx+BMKUMko5Vx7mF7T
-         rKCqsM349KcmQUit0eT/8/ME/kagr/ngTMZsPJqga7Pl5meFy+xyYPk7QBNCFC9NSY9t
-         vXeAdE6WW7tiMtHgz4vifeTelArgoXHD3FvoqyXeAxrCC4kmxgj7PxNyfrZy2vrzojsX
-         fCcJBvqBs3cw+A/7XZ4/HO0VdWtuKre6F6nLncCb9PbRBcga94/Am2ePcvXvi4ZeCTSd
-         DSCk8CF8CXD2fLbAY6iHQ2nrL9j8m8tauFNo0hD3cW497NO2jWMFD5w79Z9ZXaW5CK1C
-         ve7Q==
+        h=date:from:to:cc:subject:message-id:user-agent:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3j1Wm1WQHCFUig/uDRHfmIv5SpKzeQw7chJmfSgR5q4=;
+        b=p6aMaiUfS2aFhdIKJPAp2V+Fqmt1X+rIAr9B+Tw4cAQ4NP8x/Zj5ahuADz0UcFv0hP
+         oq2c9SNmQC7m6l64shXc+g4y4P8vo7bPa6k/ZcjdN+c1Rvt2BfNrtPRdWPo+0NMBSVFw
+         /siyfCx6ycstGXvnNgUw2BdK7jtXToYPEXpVpYmiBwDXvp0Oi4T/Y34Q+hiblZ6n7s5N
+         B255jnSuCK76xNMMNWVTROkQ9RVT05pZmf6wM9a97+UwkESi5aVwdl3QIm4l2p5Uh+Mt
+         W7lczBqwp0ifCOR/QdpdKYlMRVu1++T+dPXB+VPkQfU94vsND7zDkkTq63qN7qbNYo8l
+         Odiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=K0NIo8G/E2+/V1jL9Lj5TwJL8NcpWczVrZhrPFDYFZA=;
-        b=g1llqE5VylPK8Z8PsO2YmJX9n9g79JjjgN1Hh8xKmBd2PcljlopAUnPFevnP+XWkk/
-         3S6qbRFczrJqql53n3UxzZ6ZKqYTw/VWIw+q4Vt331MEEwhy3PH/52p1nXR6YuoKLZPI
-         5gZW4nqeF5+FhDEPG6azL33rN6ecWKHa8OLCcigL2pbWLj3Cx9hHwnAYFoeUyvmcfcRt
-         utMcF8lwpmzl7gy+FDZf3mhhExgBN2g3IxBEQONCWiivEUY/PQGqUzQd6xvNnoawwOTY
-         OxYDjuMlFm4TazSCS8YP0HOfaOFv25fEAoqO3V0xN7qLicufW0PKMnBZibecHEo248t7
-         ByFw==
-X-Gm-Message-State: AOAM5317prR9lxsVkhqkO4QvLzbKv6Hf7nPxSbk1GRCUzlcZ0/TT22cI
-        R4Ps/fejQcS1stvLsSsOOqpk7HG4oc+IxdI50SQ=
-X-Google-Smtp-Source: ABdhPJyeujfw+oZxx87prKcw2MKmxB6OtZ0Gilakf5vZ9fMukxrpAWqqKJMIYF1ztwqLJb1uMo8OyQ==
-X-Received: by 2002:a17:90b:388d:: with SMTP id mu13mr8131343pjb.86.1641983965894;
-        Wed, 12 Jan 2022 02:39:25 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id q9sm4960097pjg.1.2022.01.12.02.39.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 02:39:25 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, linmq006@gmail.com,
-        linux-kernel@vger.kernel.org, lipeng321@huawei.com,
-        liuyonglong@huawei.com, mbrugger@suse.com, netdev@vger.kernel.org,
-        salil.mehta@huawei.com, shenyang39@huawei.com,
-        yisen.zhuang@huawei.com
-Subject: [PATCH v2] net: hns: Fix missing put_device() call in hns_mac_register_phy
-Date:   Wed, 12 Jan 2022 10:39:19 +0000
-Message-Id: <20220112103919.28894-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220111203333.507ec4f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20220111203333.507ec4f5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=3j1Wm1WQHCFUig/uDRHfmIv5SpKzeQw7chJmfSgR5q4=;
+        b=ZgqohMY6dnd4THcLRnMSTN+fomrrjP42LhirTHsz5XeqjyrBRjnSeRcnBC974PKDkm
+         H3uMzZ+OIW/CQ6x497F53TVb4n+xZdrxTJJ3G+KbA3TTfJDU7Nxy11wmIcxD+9650Fkk
+         AdOfAAsHsc9XhIwkKsTsScLTqH11tZfjJdhevMGP9/UvIoxqozVCOi2CzkYcIYzMOTtW
+         4BKgrKTBO6MWk47DXN3j5roGINCQDEYCVp82FhZyBcg3rWPTOlxg2DNYF7PA8ORzfrbE
+         fT/txXZKF4PTcNcOT6z3vERLTtcN57lDTRWFineiBxNptFYuHFm588MtmP64BsHtHD7f
+         L2AQ==
+X-Gm-Message-State: AOAM5326wO76o4pEMT6SWRyPuW4EI2UCNhzKJslEPfgFJQo0eljT+MJL
+        yjVBaD6k9H+MMFRB2E6nlyo=
+X-Google-Smtp-Source: ABdhPJzuABYWWIrH4rMkTpYkDL8tqn5CpBW1tgufB/0QrijxkPTAcuh6r5G5g8hpT6v3go9dhN08Ig==
+X-Received: by 2002:a2e:9245:: with SMTP id v5mr6203793ljg.149.1641984168048;
+        Wed, 12 Jan 2022 02:42:48 -0800 (PST)
+Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
+        by smtp.gmail.com with ESMTPSA id r6sm1604322lfm.114.2022.01.12.02.42.47
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Wed, 12 Jan 2022 02:42:47 -0800 (PST)
+Date:   Wed, 12 Jan 2022 13:48:27 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
+ G8
+Message-ID: <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
+User-Agent: mtt
+References: <20210519170357.58410-1-jeremy.szu@canonical.com>
+ <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
+ <s5ho84h9tit.wl-tiwai@suse.de>
+ <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
+ <s5hilup9s87.wl-tiwai@suse.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <s5hilup9s87.wl-tiwai@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We need to drop the reference taken by hns_dsaf_find_platform_device
-Missing put_device() may cause refcount leak.
+On Wed, Jan 12, 2022 at 11:13:44AM +0100, Takashi Iwai wrote:
+>Sounds like some timing issue, then. It's pretty hard to debug, unfortunately.
 
-Fixes: 804ffe5c6197 ("net: hns: support deferred probe when no mdio")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-Changes in v2:
-- add put_device when hns_mac_register_phydev fails.
----
- drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+I can imagine. Is it possible that initcall_debug logs could help? Or is it 
+timing issues within the same module?
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
-index 7edf8569514c..cba9d92e057e 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_dsaf_mac.c
-@@ -764,13 +764,16 @@ static int hns_mac_register_phy(struct hns_mac_cb *mac_cb)
- 		dev_err(mac_cb->dev,
- 			"mac%d mdio is NULL, dsaf will probe again later\n",
- 			mac_cb->mac_id);
-+		put_device(&pdev->dev);
- 		return -EPROBE_DEFER;
- 	}
- 
- 	rc = hns_mac_register_phydev(mii_bus, mac_cb, addr);
--	if (!rc)
-+	if (!rc) {
- 		dev_dbg(mac_cb->dev, "mac%d register phy addr:%d\n",
- 			mac_cb->mac_id, addr);
-+		put_device(&pdev->dev);
-+	}
- 
- 	return rc;
- }
--- 
-2.17.1
+>You may try to get the codec proc dump with COEF by passing 
+>snd_hda_codec.dump_coef=1 module option for both working and non-working 
+>cases.
+>You can unbind and re-bind the PCI (HD-audio controller) device via sysfs.
 
+I'll try both options later today when able, thank you!
