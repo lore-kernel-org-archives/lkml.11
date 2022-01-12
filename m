@@ -2,183 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEBEC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354061AbiALOPF (ORCPT
+        id S1354079AbiALOPO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:15:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354058AbiALOOy (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:14:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A6DC06173F;
-        Wed, 12 Jan 2022 06:14:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EB11B81EF9;
-        Wed, 12 Jan 2022 14:14:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0866DC36AEA;
-        Wed, 12 Jan 2022 14:14:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641996891;
-        bh=MJWG4PTjYE1YSqTh+RXeyE3FCgIA4K3gXGEhnm3hU/s=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=D9lqJTIx4MHbnb34dH5zrpGC9BU7W2xrgNdsl7DWzzva8B8lHvA6r2TyD087YCXCs
-         YKITyeKIUgmcUio72kjx0V0x0kjRyrmNPSZdtQNHkzceLPURTJ/hVMSPGq1Pf0Nvy8
-         Lry8SDge9Z3sXtBqZB1971Eq/hj6pOpWcfg2wY/mKGuBZQ+DpRBvc5/z1d2oGuXGG3
-         D1Y1ey2DMg7qXK7GDPH/8OKKNEfipCrbj/vFF/f6LxL3vnMXTi/8UYqOhjvnLtsPn5
-         rjppL0Y7KPBWfX/LYjMm0L0IGKpX2kh4OSWXQ9PAu4E13/8RafHElu6MGD8RWnROn5
-         Jv1bVCx/vXyoQ==
-Date:   Wed, 12 Jan 2022 15:14:45 +0100
-From:   Alexey Gladkov <legion@kernel.org>
-To:     Christian Brauner <christian.brauner@ubuntu.com>
-Cc:     Anders Roxell <anders.roxell@linaro.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, LTP List <ltp@lists.linux.it>,
-        linux-fsdevel@vger.kernel.org, regressions@lists.linux.dev,
-        containers@lists.linux.dev, Sven Schnelle <svens@linux.ibm.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [next]: LTP: getxattr05.c:97: TFAIL: unshare(CLONE_NEWUSER)
- failed: ENOSPC (28)
-Message-ID: <20220112141445.txgrdlycvfkiwsv5@example.org>
-References: <CA+G9fYsMHhXJCgO-ykR0oO1kVdusGnthgj6ifxEKaGPHZJ-ZCw@mail.gmail.com>
- <20220112131837.igsjkkttqskw4eix@wittgenstein>
- <CADYN=9Lvm-1etZS817eZK91NUyxkFBmsu=5-q_8Ei-1eV8DuZQ@mail.gmail.com>
- <20220112140254.cvngcwggeevwaazw@wittgenstein>
+        Wed, 12 Jan 2022 09:15:14 -0500
+Received: from mail-dm6nam12on2058.outbound.protection.outlook.com ([40.107.243.58]:29301
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1354068AbiALOPH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 09:15:07 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gHkMl+YyY/34m5VdRPvIEAvu6kMjYHtxo/uny+ixr7CaDS6Hj4zwbg7ps0lZo8kTMBeY4rTiCjtO+C2fUKyK7AxPaKypHNRyvvjozt9XDWuz3rt8vD3TiOIk6wpneqXhjskkPZv5e5pqUK0ws4NRfoxBTWf9dJ5PI97wixTIZQiLn9uyYh70fTPeAo2P4MjYI3od20fu/RmBwWcNMPC9y0g/1ThBqz+tceCFNs16Utt5kjTI4eO3obEVkF07bYfTXV2JUhErwvEoPJF+45JWM78B7PTNfTk3AclKZgl4QMl0Kk3ucfS4Gl6FZ10jDNWfKAjsP/L/26sNLf74jMPNkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Mi6A724na9xjHiGhNnbFWd2LYQzLM5H8jWqHYMX/dV4=;
+ b=JRHI5p9AX8hw3+zulUfIyeyob/HVlBairJdqVEpLuMK0xbBtzfXJGwwxLcgvYtvbEc5+ZPH4ElCssvu7AVlytM8ThlpsSqZQwXf1yxaaxGHese4c5C1fMDJumZ7+Z2O/xr6Qej0b4suDZ2lICu85k8vmUH60lxKHPdbpfQ2yq4gKhH4FulT0ATMK00dRRVF/azuatwP/uEcgXJlT8gyl4I51G7mtXf/+0YW1QpHTd5hQT7JiX0cO0P99nl6Q+gRrGImVAy4L7pZzvuAmosfwI5Ty3aA+RfJqv1G0Mba/r+IzsFspi6xsiNEosXsDuvFSNz/b4X6VFDe9GslRSKYyIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Mi6A724na9xjHiGhNnbFWd2LYQzLM5H8jWqHYMX/dV4=;
+ b=C4gjJl1HMKiYorGm3sJRZUCmz9ThfT1JjDcfzdARxGft8K1wbCBaJ2cxWCJKTVcqj92LBBJ00tXc6QV5r2xwdDVRPcV9fAbGfWm0Su70qODrwCYUoBi/Ug47ODlSqFhv8aI7L9d5W2WQNVCWQeL08n02o4UualwUQZgKHJcaMCJshDUcK7l5Mzrjor8Lw16f3GagXnyJaRc1FCB48YVtETThlGm8mmMfRdMokrJLG/8+8z1u+LZblmZj0GR6p6qtx9I/x3/jZmcqLWKEYx2JOk9E+2/7uLQ3EXbLTA8Wq7bTtPVDeGw500R4gb9u0Co6XsWTHcc6B1lHdtxycsxuhQ==
+Received: from BN9PR03CA0727.namprd03.prod.outlook.com (2603:10b6:408:110::12)
+ by DM5PR1201MB2554.namprd12.prod.outlook.com (2603:10b6:3:ec::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Wed, 12 Jan
+ 2022 14:15:04 +0000
+Received: from BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:110:cafe::c5) by BN9PR03CA0727.outlook.office365.com
+ (2603:10b6:408:110::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9 via Frontend
+ Transport; Wed, 12 Jan 2022 14:15:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT033.mail.protection.outlook.com (10.13.177.149) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4888.9 via Frontend Transport; Wed, 12 Jan 2022 14:15:04 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 12 Jan
+ 2022 14:15:03 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 12 Jan
+ 2022 06:15:02 -0800
+Received: from kyarlagadda-linux.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Wed, 12 Jan 2022 06:14:58 -0800
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <andy.shevchenko@gmail.com>, <christian.koenig@amd.com>,
+        <digetx@gmail.com>, <gregkh@linuxfoundation.org>,
+        <jonathanh@nvidia.com>, <ldewangan@nvidia.com>,
+        <linux-i2c@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <rafael@kernel.org>,
+        <sumit.semwal@linaro.org>, <thierry.reding@gmail.com>,
+        <wsa@kernel.org>, <lenb@kernel.org>, <linux-acpi@vger.kernel.org>
+CC:     <akhilrajeev@nvidia.com>
+Subject: [PATCH v2 2/3] docs: firmware-guide: ACPI: Add named interrupt doc
+Date:   Wed, 12 Jan 2022 19:44:21 +0530
+Message-ID: <1641996862-26960-3-git-send-email-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1641996862-26960-1-git-send-email-akhilrajeev@nvidia.com>
+References: <1641996862-26960-1-git-send-email-akhilrajeev@nvidia.com>
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112140254.cvngcwggeevwaazw@wittgenstein>
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 93495c88-7866-4e8f-7d2d-08d9d5d5edba
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB2554:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR1201MB25540AC1BF35FA9992A3095EC0529@DM5PR1201MB2554.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: L2e04kYsUEOrg80ty5cj9/L0aF+2OEZx/1kezUv7BQ7t+ZhrYqTQcVov092T94TNrLBnuubNW4savC4ehcRgAD8oPoOTmRo4EVy+xYDIR0hpRbNgaH3p+u6q/9Lilx5uOVdPfRrcAzww1cy5YltEk5xZygnoonGd3Ubq1V+mguYJD87l1RqMfkUTyiD4wk7r0tZxHZzczgFW95xzfAPz57AjAhL1VXGUIXp3e03AerxIFlmMkGrKFjG4u4qUgDuHY/CJCCYPR+HPvIMVpBRWQJVJY3NBR3njGix0j3dZqtjznH5Gvtw3olEXz9QI1u5HP4ZVKy7Qw6zRuoklL3gMgiZiGZkJetB64B3X4yMhFhZaQyEpblGXOkUi2esY4TD1kaNjF8i3wrpnkT8PLTvB18TvpU/QJVol82wbSCo8BdB79ByqwFacdFLhQV2yQWbDcLK/Xcdr3TBrhWTNw/4RHInXMfRTHheyHB/TgGBt4tem98QYqLppEJkJA2oTA2Ei3BcIQgdqxvQM1Vg+HDG9aymmhhinJ0lGvtYmGluIiaPJydyASDZtRaK4VP43+f1z2qkJjlS5DyhrP/MnTEp2bQsllFGVqDPrlAiDak+U+INEIXTVBOF2fFpxpR7SvXeo6Zlk0YoyJU1jpc8AVylu5P1Oo3YpZSpTu38cS3Mi7+FpbIP2xoQW+T223+pbBq3HNO7Yq72fIi25tSojRxVbbud2SIW4A+lQ8H9YTVoFIip4gFvZ8zPQEOLM+nKBkI7mHozV8ygmjQNKR7znyBELHXUPXsdBdEb77iabMQDmqdyj3vqJF63gs0gOY3PTavoUlrsam4fE+RbS7bM0ZoJsiG4HeHzyPDQ3LBn0bAenCTY=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(81166007)(356005)(4326008)(2616005)(107886003)(70586007)(82310400004)(508600001)(70206006)(2906002)(47076005)(40460700001)(36756003)(110136005)(36860700001)(921005)(86362001)(7416002)(83380400001)(8676002)(186003)(5660300002)(6666004)(336012)(26005)(7696005)(8936002)(316002)(426003)(83996005)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 14:15:04.1089
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93495c88-7866-4e8f-7d2d-08d9d5d5edba
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB2554
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 03:02:54PM +0100, Christian Brauner wrote:
-> On Wed, Jan 12, 2022 at 02:22:42PM +0100, Anders Roxell wrote:
-> > On Wed, 12 Jan 2022 at 14:18, Christian Brauner
-> > <christian.brauner@ubuntu.com> wrote:
-> > >
-> > > On Wed, Jan 12, 2022 at 05:15:37PM +0530, Naresh Kamboju wrote:
-> > > > While testing LTP syscalls with Linux next 20220110 (and till date 20220112)
-> > > > on x86_64, i386, arm and arm64 the following tests failed.
-> > > >
-> > > > tst_test.c:1365: TINFO: Timeout per run is 0h 15m 00s
-> > > > getxattr05.c:87: TPASS: Got same data when acquiring the value of
-> > > > system.posix_acl_access twice
-> > > > getxattr05.c:97: TFAIL: unshare(CLONE_NEWUSER) failed: ENOSPC (28)
-> > > > tst_test.c:391: TBROK: Invalid child (13545) exit value 1
-> > > >
-> > > > fanotify17.c:176: TINFO: Test #1: Global groups limit in privileged user ns
-> > > > fanotify17.c:155: TFAIL: unshare(CLONE_NEWUSER) failed: ENOSPC (28)
-> > > > tst_test.c:391: TBROK: Invalid child (14739) exit value 1
-> > > >
-> > > > sendto03.c:48: TBROK: unshare(268435456) failed: ENOSPC (28)
-> > > >
-> > > > setsockopt05.c:45: TBROK: unshare(268435456) failed: ENOSPC (28)
-> > > >
-> > > > strace output:
-> > > > --------------
-> > > > [pid   481] wait4(-1, 0x7fff52f5ae8c, 0, NULL) = -1 ECHILD (No child processes)
-> > > > [pid   481] clone(child_stack=NULL,
-> > > > flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD,
-> > > > child_tidptr=0x7f3af0fa7a10) = 483
-> > > > strace: Process 483 attached
-> > > > [pid   481] wait4(-1,  <unfinished ...>
-> > > > [pid   483] unshare(CLONE_NEWUSER)      = -1 ENOSPC (No space left on device)
-> > >
-> > > This looks like another regression in the ucount code. Reverting the
-> > > following commit fixes it and makes the getxattr05 test work again:
-> > >
-> > > commit 0315b634f933b0f12cfa82660322f6186c1aa0f4
-> > > Author: Alexey Gladkov <legion@kernel.org>
-> > > Date:   Fri Dec 17 15:48:23 2021 +0100
-> > >
-> > >     ucounts: Split rlimit and ucount values and max values
-> > >
-> > >     Since the semantics of maximum rlimit values are different, it would be
-> > >     better not to mix ucount and rlimit values. This will prevent the error
-> > >     of using inc_count/dec_ucount for rlimit parameters.
-> > >
-> > >     This patch also renames the functions to emphasize the lack of
-> > >     connection between rlimit and ucount.
-> > >
-> > >     v2:
-> > >     - Fix the array-index-out-of-bounds that was found by the lkp project.
-> > >
-> > >     Reported-by: kernel test robot <oliver.sang@intel.com>
-> > >     Signed-off-by: Alexey Gladkov <legion@kernel.org>
-> > >     Link: https://lkml.kernel.org/r/73ea569042babda5cee2092423da85027ceb471f.1639752364.git.legion@kernel.org
-> > >     Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
-> > >
-> > > The issue only surfaces if /proc/sys/user/max_user_namespaces is
-> > > actually written to.
-> > 
-> > I did a git bisect and that pointed me to this patch too.
-> 
-> Uhm, doesn't this want to be:
+Added details and example for named interrupts in the ACPI Table
 
-Yes. I miss it. I tried not to mix the logic, but I myself stepped on this
-problem.
+Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+---
+ Documentation/firmware-guide/acpi/enumeration.rst | 38 +++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-> 
-> diff --git a/kernel/ucount.c b/kernel/ucount.c
-> index 22070f004e97..108c6a879cd8 100644
-> --- a/kernel/ucount.c
-> +++ b/kernel/ucount.c
-> @@ -264,7 +264,7 @@ long inc_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type type, long v)
->         long ret = 0;
-> 
->         for (iter = ucounts; iter; iter = iter->ns->ucounts) {
-> -               long new = atomic_long_add_return(v, &iter->ucount[type]);
-> +               long new = atomic_long_add_return(v, &iter->rlimit[type]);
->                 if (new < 0 || new > max)
->                         ret = LONG_MAX;
->                 else if (iter == ucounts)
-> @@ -279,7 +279,7 @@ bool dec_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type type, long v)
->         struct ucounts *iter;
->         long new = -1; /* Silence compiler warning */
->         for (iter = ucounts; iter; iter = iter->ns->ucounts) {
-> -               long dec = atomic_long_sub_return(v, &iter->ucount[type]);
-> +               long dec = atomic_long_sub_return(v, &iter->rlimit[type]);
->                 WARN_ON_ONCE(dec < 0);
->                 if (iter == ucounts)
->                         new = dec;
-> 
-> 
-> otherwise,
-> 
-> inc_rlimit_ucounts(ucounts, UCOUNT_RLIMIT_NPROC, 1)
-> 
-> means
-> 
-> long inc_rlimit_ucounts(struct ucounts *ucounts, UCOUNT_RLIMIT_NPROC, long v)
-> {
-> 	struct ucounts *iter;
-> 	long max = LONG_MAX;
-> 	long ret = 0;
-> 
-> 	for (iter = ucounts; iter; iter = iter->ns->ucounts) {
-> 		long new = atomic_long_add_return(v, &iter->ucount[UCOUNT_RLIMIT_NPROC]);
-> 		if (new < 0 || new > max)
-> 			ret = LONG_MAX;
-> 		else if (iter == ucounts)
-> 			ret = new;
-> 		max = get_userns_rlimit_max(iter->ns, UCOUNT_RLIMIT_NPROC);
-> 	}
-> 	return ret;
-> }
-> 
-> which means that UCOUNT_RLIMIT_NPROC overwrites ucount[UCOUNT_RLIMIT_NPROC]?
-> 
-
+diff --git a/Documentation/firmware-guide/acpi/enumeration.rst b/Documentation/firmware-guide/acpi/enumeration.rst
+index 74b830b2..30ae41c 100644
+--- a/Documentation/firmware-guide/acpi/enumeration.rst
++++ b/Documentation/firmware-guide/acpi/enumeration.rst
+@@ -143,6 +143,44 @@ In robust cases the client unfortunately needs to call
+ acpi_dma_request_slave_chan_by_index() directly and therefore choose the
+ specific FixedDMA resource by its index.
+ 
++Named Interrupts
++================
++
++Drivers with ACPI node can have names to interrupts in ACPI table which
++can be used to get the irq number in the driver.
++
++The interrupt name can be listed in _DSD as 'interrupt-names'. The names
++should be listed as an array of strings which will map to the Interrupt
++property in ACPI table corresponding to its index.
++
++The table below shows an example of its usage::
++
++	Device (DEV0) {
++		...
++		Name (_CRS, ResourceTemplate() {
++			...
++			Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) {
++				0x20,
++				0x24
++			}
++		})
++
++		Name (_DSD, Package () {
++			ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
++			Package () {
++				Package () {"interrupt-names",
++					Package (2) {"default", "alert"}},
++			}
++			...
++		})
++	}
++
++The interrupt name 'default' will correspond to 0x20 in Interrupt property
++and 'alert' to 0x24.
++
++The driver can call the function - device_irq_get_byname with the device
++and interrupt name as arguments to get the corresponding irq number.
++
+ SPI serial bus support
+ ======================
+ 
 -- 
-Rgrds, legion
+2.7.4
 
