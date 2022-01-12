@@ -2,36 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E78BC43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C472FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345773AbiALTw0 (ORCPT
+        id S1357393AbiALTwn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:52:26 -0500
-Received: from mail.z3ntu.xyz ([128.199.32.197]:33204 "EHLO mail.z3ntu.xyz"
+        Wed, 12 Jan 2022 14:52:43 -0500
+Received: from mail.z3ntu.xyz ([128.199.32.197]:33206 "EHLO mail.z3ntu.xyz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350092AbiALTvZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:51:25 -0500
+        id S1350090AbiALTvh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 14:51:37 -0500
 Received: from localhost.localdomain (ip-213-127-106-2.ip.prioritytelecom.net [213.127.106.2])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id CD62CCDFED;
-        Wed, 12 Jan 2022 19:42:42 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id BC877CDFE1;
+        Wed, 12 Jan 2022 19:42:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1642016563; bh=6F81iIhw6L3fR9xstLRfDEkQg3uu6FeMQbZUHrqGro0=;
+        t=1642016550; bh=DeLCdue2jr0aGDKdHCFhzqKn14pLJxKzej3Le9UUF+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=D42ky5nDMCA7/HQq7c01+S7T+TPsZiVXAvbs+965NqsrkbA+N2MPUcx8G/SdC2zDX
-         Br8H26e6pFB0/epmgScNs+CfovalPN7UkURJGi0RzQiYc9Lqx5fm/mqJlZTzAV6KHN
-         uQ9RQM9ZzSEyBd2VGkjXVpFTA5ZgvGRuP/+BJlEA=
+        b=nAbOBBdDzGQfTOCScoe/7NrwiSihF6jH4P/jtIbCbjEI6WEMpYhJxN9BUJYMX0pBC
+         vbVntNjKPaRGlUaYAzNybbOPWoOXkaau3EdTcD3Xg6kqSV/m1A6ziNFAs8ydqW4OfJ
+         Ne8eu+ZRTA5aYKbY9V2tRcLBNlURjUwN33+yeAhI=
 From:   Luca Weiss <luca@z3ntu.xyz>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
+        Luca Weiss <luca@z3ntu.xyz>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 14/15] dt-bindings: arm: qcom: Document sdm632 and fairphone,fp3 board
-Date:   Wed, 12 Jan 2022 20:41:03 +0100
-Message-Id: <20220112194118.178026-15-luca@z3ntu.xyz>
+        Manu Gautam <mgautam@codeaurora.org>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 07/15] dt-bindings: usb: qcom,dwc3: Add msm8953 compatible
+Date:   Wed, 12 Jan 2022 20:40:56 +0100
+Message-Id: <20220112194118.178026-8-luca@z3ntu.xyz>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220112194118.178026-1-luca@z3ntu.xyz>
 References: <20220112194118.178026-1-luca@z3ntu.xyz>
@@ -41,38 +45,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add binding documentation for Fairphone 3 smartphone which is based on
-Snapdragon 632 (sm632).
+Document the compatible string for the DWC3 controller in msm8953.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/devicetree/bindings/usb/qcom,dwc3.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index c8808e0f9e64..d3755bc8c28f 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -42,6 +42,7 @@ description: |
-         sc7180
-         sc7280
-         sdm630
-+        sdm632
-         sdm660
-         sdm845
-         sdx55
-@@ -207,6 +208,11 @@ properties:
-               - google,senor
-           - const: qcom,sc7280
- 
-+      - items:
-+          - enum:
-+              - fairphone,fp3
-+          - const: qcom,sdm632
-+
-       - items:
-           - enum:
-               - xiaomi,lavender
+diff --git a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
+index 2bdaba023c01..d6a71711a182 100644
+--- a/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
++++ b/Documentation/devicetree/bindings/usb/qcom,dwc3.yaml
+@@ -14,6 +14,7 @@ properties:
+     items:
+       - enum:
+           - qcom,ipq6018-dwc3
++          - qcom,msm8953-dwc3
+           - qcom,msm8996-dwc3
+           - qcom,msm8998-dwc3
+           - qcom,sc7180-dwc3
 -- 
 2.34.1
 
