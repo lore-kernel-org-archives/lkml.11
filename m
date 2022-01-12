@@ -2,107 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F942C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 05:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 717DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 05:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229905AbiALFAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 00:00:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59900 "EHLO
+        id S231225AbiALFCx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 00:02:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiALFAm (ORCPT
+        with ESMTP id S229561AbiALFCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 00:00:42 -0500
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073A9C061751
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 21:00:41 -0800 (PST)
-Received: by mail-qt1-x82c.google.com with SMTP id h4so1748167qth.11
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 21:00:41 -0800 (PST)
+        Wed, 12 Jan 2022 00:02:50 -0500
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1EBC06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 21:02:49 -0800 (PST)
+Received: by mail-qv1-xf2a.google.com with SMTP id kl12so1736626qvb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 21:02:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FaSxb8/3tW75RqpNkToSLtyGS0/ACpk6hM1Y1IVBwz8=;
-        b=iUc6xc9cLZAhNuyr74C1urrqVrbmKHode2rHCcMBGdFahBIed/yscTDzmfb7BybmWN
-         3M/w693Q1531YGcunSLW6fiYF9SdPYM3GN5A0LR1ufmRApve4tD2+eM842YW/HqhOJs4
-         6wQVx516Vp3FcvjIDl63t0/GWt5xBT4AKMsRpwVHjBixMOp2oy276eC+28YFLhQqPFPr
-         qXcIR28O7w4vAv7zfxjCo42orTdzI711hOnUmbJLnnNmNKBoPKrjqQdp5kh5DAgQKRoQ
-         TNLGN35bVXkeEinrGP0O8aDTEkDBn9+KKiLwnJpO3+wait3cwGBe9ht9R5Ga9Gkh90qn
-         1qzg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=KFpreeJOa09J1P7gf+hNJT3B4ZftF/zoJ3KRQCsPlho=;
+        b=dIiVlGHbDok+X9s/PRCVB6Le+sratTCI0QwBWS7FwNTnNfSoNx0QZey6wtG+BXwY/E
+         QczVy3mCSI0piwZShY3ZcVUZsGtLOgqfprfGfpAwuHjpUJ3HiqJzYSLzgnoK5c8DV7WS
+         2khZAllAvWZZCsp5iqxGCyY52JF9rq8w0JqfrXzISpHgdNH8tmE+2nW7R4NQwkNZe1Ma
+         XPUcex/WCTOYh/CHASd2HwnGnaj1QMSQ3safUVTnxKfuI5bOQ+OoyXPqh05zzeMu2Jqd
+         i6ivLGrmtTeNmcunngr8vOsOYCKw4rT7NE8SQxhwaq9VQqmzgki53ehdzUc1PQmqzByE
+         IcXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FaSxb8/3tW75RqpNkToSLtyGS0/ACpk6hM1Y1IVBwz8=;
-        b=Zpuv3TVBFYfLdR9gzqqMp4jvxMyoL4yBpOPWOztn6t5X+1Q9rOxM+sXftGkoU96ufM
-         jbQMsElsqVv3X65WZR/ri36KfRDnUK3J2v6fg1KmNb1pHY0z6ZQqV+q/14mmNzb97pHX
-         mSiXr/4xJy+nIETpVJ1O55hDAZ7149KA0JyLsNogcc9MqW1VETAJqymEjCCrziivR7mo
-         mJL11u5rCndUflXY0TQgLdvR91pOArcRyCp1QTuwDytJGi5RiYuzgxQyI5aE+QNleidh
-         7PNkrs4DSDGGqpKg6wiL1LKTtKq3DCWiDQNIi1tHD9L+fMd4Fn4AYmsamHgtfLzqKXav
-         8KTg==
-X-Gm-Message-State: AOAM532TGNBD6rqPe9MPV3OkMFuTfstkyiHK9qbnSc/RAUtJEaDkU3cB
-        AgSn7HBsaMzOTK5edPjzQv2Drbqhe+vclp/vj2hhYw==
-X-Google-Smtp-Source: ABdhPJw71vvuyjYb0/5S7EXojGfVFgYipbf0DqycEv7zw/Oy1vM7FdEbt27AtkIHB+xYCuZg+Ne3YYQd5XU551OEvpA=
-X-Received: by 2002:a05:622a:134c:: with SMTP id w12mr6394524qtk.370.1641963640916;
- Tue, 11 Jan 2022 21:00:40 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=KFpreeJOa09J1P7gf+hNJT3B4ZftF/zoJ3KRQCsPlho=;
+        b=PwZ1lUuTrGhgF2C9EdygpNdFq737FAmD1lrylG2OWYJUWSgA65PDtnvc13KZ/g+hP+
+         oMrLW2wCwxKL8IKxQ/eA8zrJzBootZbxBk8aLeaRMQ77LWNuilY4SkQU18W1nTsNQBEq
+         5UyjLLwKlw0cF2MWloauO3xIWYuQZU+h2DZ5q91b9BC81dpr+MdCYS6ERr1V8l74RL5R
+         lrYKFLQ1RLLPDi+Vk4xWidxKexilNIorSCy7beD9lZWyoUlaioNyy3G7YPtADH82fYHc
+         +avRz6HvAIGzzlidVfGzqLgXKV6SNksdm4eg7Wnod6ju3wiVLjBA6jyM5x/kKvcnE2P3
+         JHDg==
+X-Gm-Message-State: AOAM5330+y7blOqL1iPauwr/hd45SuafgVfa/o72stKwZZ6EZURHb0ev
+        ihVSQWV8rYMZG5A2jcwwoz6aig==
+X-Google-Smtp-Source: ABdhPJwDc/NA9+I44clTwhOqDnbPfHIMXSZmMJ123HgmVJsI8rz3BzUH6xKNeXXt/7sENuW0Twf4Ww==
+X-Received: by 2002:a05:6214:d45:: with SMTP id 5mr6663620qvr.66.1641963767989;
+        Tue, 11 Jan 2022 21:02:47 -0800 (PST)
+Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
+        by smtp.gmail.com with ESMTPSA id t6sm7967728qkj.33.2022.01.11.21.02.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 21:02:47 -0800 (PST)
+Date:   Tue, 11 Jan 2022 21:02:45 -0800 (PST)
+From:   Hugh Dickins <hughd@google.com>
+X-X-Sender: hugh@ripple.anvils
+To:     Yang Shi <shy828301@gmail.com>
+cc:     Hugh Dickins <hughd@google.com>,
+        Peng Liang <liangpeng10@huawei.com>,
+        David Hildenbrand <david@redhat.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        xiexiangyou@huawei.com, zhengchuan@huawei.com,
+        wanghao232@huawei.com
+Subject: Re: [RFC 0/1] memfd: Support mapping to zero page on reading
+In-Reply-To: <CAHbLzkrt_3vA7h=jYf-RjPv3Myh-Duz62WqsjHmR30csM8MQzQ@mail.gmail.com>
+Message-ID: <9e96fc57-6810-9efd-c1fc-4c8a54b125@google.com>
+References: <20211222123400.1659635-1-liangpeng10@huawei.com> <4b1885b8-eb95-c50-2965-11e7c8efbf36@google.com> <CAHbLzkrt_3vA7h=jYf-RjPv3Myh-Duz62WqsjHmR30csM8MQzQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220112035556.5108-1-manivannan.sadhasivam@linaro.org>
-In-Reply-To: <20220112035556.5108-1-manivannan.sadhasivam@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 12 Jan 2022 08:00:29 +0300
-Message-ID: <CAA8EJpqqEVWS5SuUY6vBWUBnoJdazXqWkMfQbnHRPNL1Fv3XKQ@mail.gmail.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sm8250: Fix MSI IRQ for PCIe1 and PCIe2
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Jordan Crouse <jordan@cosmicpenguin.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 at 06:56, Manivannan Sadhasivam
-<manivannan.sadhasivam@linaro.org> wrote:
->
-> Fix the MSI IRQ used for PCIe instances 1 and 2.
->
-> Cc: stable@vger.kernel.org
-> Fixes: e53bdfc00977 ("arm64: dts: qcom: sm8250: Add PCIe support")
-> Reported-by: Jordan Crouse <jordan@cosmicpenguin.net>
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+On Tue, 11 Jan 2022, Yang Shi wrote:
+> On Tue, Jan 11, 2022 at 6:30 PM Hugh Dickins <hughd@google.com> wrote:
+> >
+> > But I have to say that use of ZERO_PAGE for shmem/memfd/tmpfs read-fault
+> > might (potentially) be very welcome.  Not as some MFD_ZEROPAGE special
+> > case, but as how it would always work.  Deleting the shmem_recalc_inode()
+> > cruft, which is there to correct accounting for the unmodified read-only
+> > pages, after page reclaim has got around to freeing them later.
+> 
+> I'm wondering if we could use ZERO_PAGE for shmem_getpage() too so
+> that we have simpler return value? Currently shmem_getpage() returns:
+> #1. errno and NULL *pagep
+> #2. 0 and valid *pagep
+> #3. 0 and NULL *pagep if SGP_READ
+> 
+> Using ZERO_PAGE should be able to consolidate #2 and #3 so that we
+> know there must be valid *pagep if 0 is returned.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+At an earlier stage of mm/shmem.c's life, shmem_getpage() did return
+ZERO_PAGE rather than NULL for that case; but I found it works out
+better the way it is now (despite I'm not a fan of *pagep generally).
 
-> ---
->  arch/arm64/boot/dts/qcom/sm8250.dtsi | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/qcom/sm8250.dtsi b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-> index 6f6129b39c9c..8a3373c110fc 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8250.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8250.dtsi
-> @@ -1487,7 +1487,7 @@ pcie1: pci@1c08000 {
->                         ranges = <0x01000000 0x0 0x40200000 0x0 0x40200000 0x0 0x100000>,
->                                  <0x02000000 0x0 0x40300000 0x0 0x40300000 0x0 0x1fd00000>;
->
-> -                       interrupts = <GIC_SPI 306 IRQ_TYPE_EDGE_RISING>;
-> +                       interrupts = <GIC_SPI 307 IRQ_TYPE_LEVEL_HIGH>;
->                         interrupt-names = "msi";
->                         #interrupt-cells = <1>;
->                         interrupt-map-mask = <0 0 0 0x7>;
-> @@ -1593,7 +1593,7 @@ pcie2: pci@1c10000 {
->                         ranges = <0x01000000 0x0 0x64200000 0x0 0x64200000 0x0 0x100000>,
->                                  <0x02000000 0x0 0x64300000 0x0 0x64300000 0x0 0x3d00000>;
->
-> -                       interrupts = <GIC_SPI 236 IRQ_TYPE_EDGE_RISING>;
-> +                       interrupts = <GIC_SPI 243 IRQ_TYPE_LEVEL_HIGH>;
->                         interrupt-names = "msi";
->                         #interrupt-cells = <1>;
->                         interrupt-map-mask = <0 0 0 0x7>;
-> --
-> 2.25.1
->
+So I've no zest for messing with that now - though it's possible that
+if we did extend the use of ZERO_PAGE, I'd look again and decide that
+your change is then the best.
 
+One reason for NULL rather than ZERO_PAGE was actually to help avoid
+the cache-dirtying get_page/put_page on the thing; but that appears
+to have gone missing at some point.  I have a patch in my tree which
+fixes that, but held back from sending it in because it also used
+iov_iter_zero() instead of copy_page_to_iter().  Obviously a good
+improvement... except that whenever I timed it I found the opposite.
+So, set aside on a shelf, to look into some other time.
 
--- 
-With best wishes
-Dmitry
+> This should make read-fault use ZERO_PAGE automatically.
+
+But I don't want to make read-fault use ZERO_PAGE automatically:
+I want to be rather careful about that change!
+
+Hugh
