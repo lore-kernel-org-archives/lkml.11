@@ -2,124 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC4BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55C69C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240681AbiALNNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:13:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353453AbiALNMo (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:12:44 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D474C06175D
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:12:44 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id g21so2771281qtk.4
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:12:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5AixT1u0DFbgGLsjAIQY4As80hr22iv0pFnHw3t2ouQ=;
-        b=JylVxGEZ9RahFuhQ8+qXMf8FutoJor3hOfEsgDMD/zv3tehovHJrGRL8YIBIafsYYU
-         3NchQ5Fgw7oxSfJ48AP8uOFExtARK+8zlGW5kjK3u9cOgslXRQknHd7Us5O7n92fYVhQ
-         /8x3JAFFIPssT7+VQPYIQPFkmxoE7Uc1Qbb7O2kUPkbQ/wYW/jNQz7IV/UHG1H2beYLy
-         BS7DXJhSeOJk6QCAnR4zbJg3wCp0YcuGeJHwfzFx6qAQq9h7fmkmERWdYbP9pezNhOA7
-         Lm7K75wkuBhryjbhxultvi+RAaVT5Idq9M2C8FpqbyIKbYFLfRLmlbIVkDJ6UDA1M9SR
-         Y+bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5AixT1u0DFbgGLsjAIQY4As80hr22iv0pFnHw3t2ouQ=;
-        b=RbV/LOuxLSKr4/flswdoqXNQdnj3h47sGk2zRHIpThvZY6K+AdNHFQw2CW2zjNb69h
-         xFdPUwqRngHrbdVAzaByRGLmlJB22ZPbMoG9I1cGXAU0EabkcJ4GUH00MJLHPmznRmzo
-         zHOtFd7+/S+IemKdVUlQoTw9+0He+tNPC35cS5LurHapMHkMJmVdys4GVjktot4Mjnlf
-         xgmnQ8WxK6HOqoUtjdNA6ijooL83wH+CHpMABIvJsYhTrk3u2ftdmn7elwLXHWHSBuGT
-         EA8kiPJg5Yya945EmyZXRi6afm0s3naYb/9t827CpWsnbISkA/1E5fqi7MDOJf1onLUW
-         ztkg==
-X-Gm-Message-State: AOAM532EK5R1dm+jdkujnOzYQJol0PD2YCSwoXfbdfL1dWWUGGo3z1kN
-        5BZd6vuuFU7vjx7dBObmN4YPIA==
-X-Google-Smtp-Source: ABdhPJw9AM5y2mHvX9TMDhFjQIFE16cy7sHvlQa1GsGTg8oO4XKLig5keQ9bfGyvel/eu0AdnKHDig==
-X-Received: by 2002:ac8:5cc1:: with SMTP id s1mr7611444qta.220.1641993163618;
-        Wed, 12 Jan 2022 05:12:43 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id h1sm8567920qta.54.2022.01.12.05.12.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 05:12:42 -0800 (PST)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1n7dQg-00F1pc-Bb; Wed, 12 Jan 2022 09:12:42 -0400
-Date:   Wed, 12 Jan 2022 09:12:42 -0400
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "lizhijian@fujitsu.com" <lizhijian@fujitsu.com>
-Cc:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "zyjzyj2000@gmail.com" <zyjzyj2000@gmail.com>,
-        "aharonl@nvidia.com" <aharonl@nvidia.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mbloch@nvidia.com" <mbloch@nvidia.com>,
-        "liangwenpeng@huawei.com" <liangwenpeng@huawei.com>,
-        "yangx.jy@fujitsu.com" <yangx.jy@fujitsu.com>,
-        "rpearsonhpe@gmail.com" <rpearsonhpe@gmail.com>,
-        "y-goto@fujitsu.com" <y-goto@fujitsu.com>
-Subject: Re: [RFC PATCH rdma-next 08/10] RDMA/rxe: Implement flush execution
- in responder side
-Message-ID: <20220112131242.GL6467@ziepe.ca>
-References: <20211228080717.10666-1-lizhijian@cn.fujitsu.com>
- <20211228080717.10666-9-lizhijian@cn.fujitsu.com>
- <20220106002804.GS6467@ziepe.ca>
- <347eb51d-6b0c-75fb-e27f-6bf4969125fe@fujitsu.com>
- <20220106173346.GU6467@ziepe.ca>
- <daa77a81-a518-0ba1-650c-faaaef33c1ea@fujitsu.com>
- <20220110143419.GF6467@ziepe.ca>
- <56234596-cb7d-bdb2-fcfd-f1fe0f25c3e3@fujitsu.com>
- <20220111204826.GK6467@ziepe.ca>
- <f980d32d-85b7-87b5-750f-aaa728d811c8@fujitsu.com>
+        id S1353460AbiALNNk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 08:13:40 -0500
+Received: from mail-ma1ind01olkn0147.outbound.protection.outlook.com ([104.47.100.147]:19106
+        "EHLO IND01-MA1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1353504AbiALNNF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 08:13:05 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NpRGnzq1vRkjFRPbmnAj5h5QakxOYMGVc75OSssnkZMBK3fXvL9MhlPEtJMD/hRRuVIGKi1iknHN0QXScWN+pjgdyDcyp2Q+XKhW8RzT/GTCZdMsmarYERSD1rvEukXMH4ds4sJmDkbC/sObWqbIk96FJnEks8I86ICb8jRqiVwcs8iNumVWRWEOinSpRFUkMcxDDhJUEw8z+oqUg8GBDS40zaIcwJ1xMawYAOQufHRcUykYi7VeqK5yFx3ARh1O73uLjHZUH9fFUwrS0fKv+SLa8VRbK5E+vuSllDtHACMkUZJZF5cBcILRzUvZE/puNBXEmopkbslp6SYWhw4wHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=V/kMTFG8OMmTFpRBz5T9Ud641V/Oq/od8Ewz9EOvGic=;
+ b=NORvbuBa8xKNy0RX9oGhWF/C60xnnEHs66Q4kllWkI/txR7Rh3yESVOhnrc1w24M2NHkrL+PrxPWPZaLtD7sWdmlz6URJ07S/ZEqx9cTcs3kC47bOJJC1ACa1YtwgJwmGUYipmGYDqaonSirZiuqbEuVpXzULxKd/dbOUfX6/o92qRtoBYD6sPfIiURLLxPFU0ygGPbLXsF0zonaLRaMVm2Ut0/geV8ymudeqJ+LU7ptp8uwcqj7/M0/v2aZIzGhqHN46UBvN4pgLiXWYNv1vrtSfuAFnz7XLeT5nQU95B2BSM6Ewg975p1fspjgRmHqZJQPO+ATXWgB5g6sF0RCwg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=live.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=V/kMTFG8OMmTFpRBz5T9Ud641V/Oq/od8Ewz9EOvGic=;
+ b=fkvEQ02QIKcGd5czTtufPdMfN4PEBnDTGPj2TBYiJTV84VDGaiNMyxwOjxVknsr9S6O9S6moOieF8J2iDqX/fRHhm0Y+iyOXQlzcYAqP16XwCAYJmWEmz/5yxQCME/1fetQ+71B6v1lE/90nWTR08Djg3LgGRVN1Ypng/KrOhe5zFIBWorfPYDTNWIQzbV/vxeFkEUxMDqDiHYPHqXIc28z/qiZevnqduSv4NayXbS2j+T1IZsj/I4NiQsYD44n9hDGA7oMz9Gd8he2t/sY9Up268KUbXpRdzg7aeJ/h2ufZf9Vdd/8FtCwXH96K4YedQlGMhgfw5DdulntDFjQbsQ==
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:1b::13)
+ by PNXPR01MB7201.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c01:c5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Wed, 12 Jan
+ 2022 13:13:01 +0000
+Received: from PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::7ca6:9165:19ec:4cd7]) by PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+ ([fe80::7ca6:9165:19ec:4cd7%8]) with mapi id 15.20.4867.012; Wed, 12 Jan 2022
+ 13:13:01 +0000
+From:   Aditya Garg <gargaditya08@live.com>
+To:     "laurent.pinchart@ideasonboard.com" 
+        <laurent.pinchart@ideasonboard.com>
+CC:     "linux-uvc-devel@lists.sourceforge.net" 
+        <linux-uvc-devel@lists.sourceforge.net>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "paul@mrarm.io" <paul@mrarm.io>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Aun-Ali Zaidi <admin@kodeit.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [PATCH] media: uvcvideo: Add support for Apple T2-attached FaceTime
+ HD Camera
+Thread-Topic: [PATCH] media: uvcvideo: Add support for Apple T2-attached
+ FaceTime HD Camera
+Thread-Index: AQHYB7YgubwvQq98m02ITNscTMkEuA==
+Date:   Wed, 12 Jan 2022 13:13:01 +0000
+Message-ID: <F8030678-1AA2-4601-A1F0-CA8618CFD969@live.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tmn:  [BliPOO75yCj/a6OWulJbc3FbLTV43x5zuxSYclQ/4iFmFNqsv3Y5Vp9egd1Q4JPh]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bb21d0a3-ecf7-4297-0a71-08d9d5cd42ba
+x-ms-traffictypediagnostic: PNXPR01MB7201:EE_
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TJpbId1Mgzq4WxkZrLVw2qkgfqMo+Cg+gl0zzq3gQc4MKWYgkVD9MA2Wdsf2g/0xrWULjq1JeyR1tYumWgr4a8busPT9akp5buuNRBqwJWFXtSzGkO8MMTcjI40oHoABOobcCFINq2l9d366f+u2yz8NjSpNwRfRCUdLnGD2R4mlVraQVYjBmJFgiW0MV+EnJWchWHyXJu4DRytTUIPlUFj1a3B8ogXVhlZ32GjaNZoLuZLwrjlph9DHwPVq4291ivQez4Mk9rvTZbTHGzSaK/nsf5po0QyNDMaxWq18vJJ7kENe7mYMb/ZJ8OvU018IgH1KW0n+HcrJYrd8aKhOxtfc7e+z02GBhpSYsotuZ3Wafk+6yg3FoQ03K3aT+3V8/RODROtiClQv0Ym3qiV3vPCDrdqSVHNdmQ0KxlW/4eQjPv19JAAVPJ+EkVbTPAjSAVZ9y1YcPouCaYca8jIUvzgj71pH1GYrEsx0/zLoSZT8Pyf0mmtPHr8mDESo53SaH+sH4vIokOGvkjZ7Up8QNbrr+itzkLEQRAo91o6/8UKjehzP84HDXlXGwGq2HT4Ckso8K9IovNHYAQB7vEVWHg==
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?N0DhxizGenG+rp6+wM7kGTiHNxMpduYLXSZL4GPQnoDqQbg/gLk+5cuX8gwk?=
+ =?us-ascii?Q?MzP31BH0j8JtmpI7LN7dy7qU3cG/QxlAnbuJ9lwKkMNNnq0olgGkUOrTtQou?=
+ =?us-ascii?Q?8XEYeKwKq/pcda8rCDALc9Hsekfkz0nKtqGnZzQ+ZFK/2OV3wG+ut/CCMTr8?=
+ =?us-ascii?Q?Vr5xZ4KDI0E1kPXOw4s8eNLht8+PR1waw2rpTgvfzED5cJdV+sLK1cOtT07S?=
+ =?us-ascii?Q?kvjWffMFOZdbC/hfvZK9o0pXzBPHP3BlIiRZX7blMmE+2xxQjkq45R6SnFTs?=
+ =?us-ascii?Q?xUR29B+4F/La57zcuHv3FsiXNwUljUW/Ig5+i23hohCfkysauVow+XKjCOWV?=
+ =?us-ascii?Q?AhNfBMUOitcDWmznV8WtdkeU7sneNSzxD0jgqAudtKRICqvRq//X1GZW6rCs?=
+ =?us-ascii?Q?SO8ON+pOJHE2YO3HlD/F8HITLEkxHrRmaYCLp2O3bvr4Kw3SWWJ4uGoq6QNh?=
+ =?us-ascii?Q?Hf/gT+x1Un4skDRKN/8fnOIDj6pQEGSoz2dshOHmsnZJCWUM6BlKFghjYd0L?=
+ =?us-ascii?Q?LCtpXp4KLuCaRsRGlT7vhmO/nlOWZBDZ4TEY4BLDnWX5g5nlqy2KX2hDycZs?=
+ =?us-ascii?Q?ENOM7KCfOwLTNQpTqnNAoczGbk9/6px2EF1clkZCy/FQuUxSNWgX9RrZ5Cor?=
+ =?us-ascii?Q?hLFq3PZHYAhQw07+o1TwGbM8Bn2BJgMV6STiQZwwVnaU/053o+20IkmDGrjZ?=
+ =?us-ascii?Q?8blXvP4uwS6CyWGZpCr8pxeORJBuXfc9q3uJfQo2xb2HaGl/10IwRNECHbJt?=
+ =?us-ascii?Q?/xYZlJ5n5qO7AfKv7dNYkD8OI5mrfy1U4xA8iVS/L4tU9Sw82B17xXL38816?=
+ =?us-ascii?Q?nU80tUg+79HrKX9xmFa7U6GHeQmiao88+68zeKYlSbpT0bVDSTSuyW4Ulopt?=
+ =?us-ascii?Q?7+YiRmRcrw9VbnprbjVyhdxeXWTHvnowS4MTBM80D1GaYFbnYLDp0PsGkRLw?=
+ =?us-ascii?Q?C81qkDbsta8Jot5UzshO1OjLX4InBsbEknwtfKvQTO91LEnag3vgBE55zQhk?=
+ =?us-ascii?Q?EFNDR9PNMwa35SWl+F3K7abBKg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <E0923E64D64D254598A7724A67846A75@INDPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f980d32d-85b7-87b5-750f-aaa728d811c8@fujitsu.com>
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-42ed3.templateTenant
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PNZPR01MB4415.INDPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: bb21d0a3-ecf7-4297-0a71-08d9d5cd42ba
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2022 13:13:01.3509
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PNXPR01MB7201
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 09:50:38AM +0000, lizhijian@fujitsu.com wrote:
-> 
-> 
-> On 12/01/2022 04:48, Jason Gunthorpe wrote:
-> > On Tue, Jan 11, 2022 at 05:34:36AM +0000, lizhijian@fujitsu.com wrote:
-> >
-> >> Yes, that's true. that's because only pmem has ability to persist data.
-> >> So do you mean we don't need to prevent user to create/register a persistent
-> >> access flag to a non-pmem MR? it would be a bit confusing if so.
-> > Since these extensions seem to have a mode that is unrelated to
-> > persistent memory,
-> I can only agree with part of them, since the extensions also say that:
-> 
-> oA19-1: Responder shall successfully respond on FLUSH operation only
-> after providing the placement guarantees, as specified in the packet, of
-> preceding memory updates (for example: RDMA WRITE, Atomics and
-> ATOMIC WRITE) towards the memory region.
-> 
-> it mentions *shall successfully respond on FLUSH operation only
-> after providing the placement guarantees*. If users request a
-> persistent placement to a non-pmem MR without errors,  from view
-> of the users, they will think of their request had been *successfully responded*
-> that doesn't reflect the true(data was persisted).
+From: Paul Pawlowski <paul@mrarm.io>
 
-The "placement guarentees" should obviously be variable depending on
-the type of memory being targeted.
+Adds the requisite device id to support detection of the Apple FaceTime
+HD webcam exposed over the T2 BCE VHCI interface.
 
-> Further more, If we have a checking during the new MR creating/registering,
-> user who registers this MR can know if the target MR supports persistent access flag.
-> Then they can tell this information to the request side so that request side can
-> request a valid placement type later. that is similar behavior with current librpma.
+Tested-by: Aun-Ali Zaidi <admin@kodeit.net>
+Signed-off-by: Paul Pawlowski <paul@mrarm.io>
+Signed-off-by: Aun-Ali Zaidi <admin@kodeit.net>
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+---
+ drivers/media/usb/uvc/uvc_driver.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Then you can't use ATOMIC_WRITE with non-nvdimm memory, which is
-nonsense
+diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc=
+_driver.c
+index 7c007426e..88dc9e7aa 100644
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -2848,6 +2848,15 @@ static const struct usb_device_id uvc_ids[] =3D {
+ 	  .bInterfaceProtocol	=3D 0,
+ 	  .driver_info		=3D UVC_INFO_QUIRK(UVC_QUIRK_PROBE_MINMAX
+ 					| UVC_QUIRK_BUILTIN_ISIGHT) },
++	/* Apple FaceTime HD Camera (Built-In) */
++	{ .match_flags		=3D USB_DEVICE_ID_MATCH_DEVICE
++				| USB_DEVICE_ID_MATCH_INT_INFO,
++	  .idVendor		=3D 0x05ac,
++	  .idProduct		=3D 0x8514,
++	  .bInterfaceClass	=3D USB_CLASS_VIDEO,
++	  .bInterfaceSubClass	=3D 1,
++	  .bInterfaceProtocol	=3D 0,
++	  .driver_info		=3D (kernel_ulong_t)&uvc_quirk_probe_def },
+ 	/* Apple Built-In iSight via iBridge */
+ 	{ .match_flags		=3D USB_DEVICE_ID_MATCH_DEVICE
+ 				| USB_DEVICE_ID_MATCH_INT_INFO,
+--=20
+2.25.1
 
-Jason
+
