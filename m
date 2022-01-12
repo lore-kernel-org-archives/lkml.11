@@ -2,67 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF8CC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7057FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:16:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353464AbiALNOb (ORCPT
+        id S1353437AbiALNQs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:14:31 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:33902 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353425AbiALNO0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:14:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=cHTgT2Tsu9i2gMXF7K0U4WJiSWBvuW3RSg4hgZPVSoA=; b=mBOJkwcfvFprApA/v2pXsEbx7n
-        MzHtGnG04I0ssWZycG4hGl9gGJVN/VlTrIiD1ExRmxa8OB5N5ZFYF5MWbZv8/N34Mbzd1JboPQPwA
-        VtVZsf1WWAG0ny4p0gSpKtjZwcybJRW4+1XJupxjCqPQY42/3OTxILaQVuzLNJV8oo0E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1n7dS1-001C6T-Ba; Wed, 12 Jan 2022 14:14:05 +0100
-Date:   Wed, 12 Jan 2022 14:14:05 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Schiller <ms@dev.tdt.de>
-Cc:     Tim Harvey <tharvey@gateworks.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
- delay configuration
-Message-ID: <Yd7UHYeAl3wigMmr@lunn.ch>
-References: <20210719082756.15733-1-ms@dev.tdt.de>
- <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
- <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
- <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
- <7fe5e3b3ff8fe9375fef409521b93102@dev.tdt.de>
+        Wed, 12 Jan 2022 08:16:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37648 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241124AbiALNQr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 08:16:47 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 956EBB81DFF;
+        Wed, 12 Jan 2022 13:16:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12826C36AEF;
+        Wed, 12 Jan 2022 13:16:43 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FDlbmO1b"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1641993401;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+ERN5rRsPm0rpLZ8AUFAgKWDNZpuOr1YxLTNsM2DPHs=;
+        b=FDlbmO1b2/VLSTE1GNuo7C38PFeDkNXxNThTVIYZF0zv/Ap1ViVU8MNih5dLfvQrgmxnBp
+        wG9I8IvOdyWPi4IDm6T4Or/04g2EJYv5AgYi3lsavPmOFMX4BRfUS8DkVauubwoIcZ3zBM
+        B2GAs+Jh9A0ZCxB4oSEnVhKE+Td9Iu0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f283f56e (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 12 Jan 2022 13:16:41 +0000 (UTC)
+Received: by mail-yb1-f170.google.com with SMTP id d7so6264444ybo.5;
+        Wed, 12 Jan 2022 05:16:40 -0800 (PST)
+X-Gm-Message-State: AOAM533kPNdRKU8huwF4Kv2AbR+Wey2wkNIxwgUEJBHZZNQhBBaVODhE
+        8MJP5Y3e/C0G8t24CYjJyMquHKiQOKGGy1VZrR8=
+X-Google-Smtp-Source: ABdhPJyOtRheGa3Nv5mPsxCc30bLc7gtenqAvHgaogN7DEA3AXXEPV/CTk5I92jjUNifY5K090QgZZp4Vh/SZ8imjew=
+X-Received: by 2002:a25:854f:: with SMTP id f15mr12274112ybn.121.1641993399315;
+ Wed, 12 Jan 2022 05:16:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7fe5e3b3ff8fe9375fef409521b93102@dev.tdt.de>
+References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
+ <20220111134934.324663-1-Jason@zx2c4.com> <20220111134934.324663-2-Jason@zx2c4.com>
+ <CAMuHMdWOheM0WsHNTA2dS=wJA8kXEYx6G78bnZ51T1X8HWdzNg@mail.gmail.com>
+In-Reply-To: <CAMuHMdWOheM0WsHNTA2dS=wJA8kXEYx6G78bnZ51T1X8HWdzNg@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 12 Jan 2022 14:16:28 +0100
+X-Gmail-Original-Message-ID: <CAHmME9q1Fm+m7JsGQWYY4qLApdaiqWHz-OYRE4qWjN1uA+HL9Q@mail.gmail.com>
+Message-ID: <CAHmME9q1Fm+m7JsGQWYY4qLApdaiqWHz-OYRE4qWjN1uA+HL9Q@mail.gmail.com>
+Subject: Re: [PATCH crypto 1/2] lib/crypto: blake2s-generic: reduce code size
+ on small systems
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Theodore Tso <tytso@mit.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > If I add a 'genphy_soft_reset(phydev);' at the top of
-> > xway_gphy_rgmii_init before the write to XWAY_MDIO_MIICTRL the values
-> > do take effect so perhaps that's the proper fix.
-> 
-> OK, I see that we have to change something here.
-> But I would like to avoid a complete reset (BMCR_RESET) if possible.
+Hi Geert,
 
-What does the datasheet say about BMCR_RESET? Some PHYs, like Marvell,
-it only resets the internal state machines. Register values are not
-changed back to defaults or anything like that. Also for many register
-writes in Marvell PHYs the write does not take effect until the next
-reset.
+Thanks for testing this. However, I've *abandoned* this patch, due to
+unacceptable performance hits, and figuring out that we can accomplish
+basically the same thing without as large of a hit by modifying the
+obsolete sha1 implementation.
 
-So a BMCR_RESET can be the correct thing to do.
+Herbert - please do not apply this patch. Instead, later versions of
+this patchset (e.g. v3 [1] and potentially later if it comes to that)
+are what should be applied.
 
-   Andrew
+Jason
+
+[1] https://lore.kernel.org/linux-crypto/20220111220506.742067-1-Jason@zx2c4.com/
