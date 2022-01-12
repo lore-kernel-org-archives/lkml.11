@@ -2,167 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3189DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 06:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F46C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 06:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350960AbiALGHd (ORCPT
+        id S1350968AbiALGRD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 01:07:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        Wed, 12 Jan 2022 01:17:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348112AbiALGHc (ORCPT
+        with ESMTP id S1348303AbiALGRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 01:07:32 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922A0C061748
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 22:07:31 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id k15so5386261edk.13
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 22:07:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edi.works; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7Uim4PQO9GRX6Ml1nDaTb+DvyJmBeJ+eZYwrgMJj3yI=;
-        b=1LNNzA/ve9YQhIzt6mswt+L1KOC7ztP+uZRonN3zpQtMe8zsMGUM76zV3r09+Y4RDv
-         TCs/ixX6b8fHXxQWGqNp1NkolJFZ1dW/YUwuOpBQBnEgl+Mq/UP31vw5LgqtwuygtItT
-         jItgFp2TVagFEfu1tEUBVZMjK2qXEsOyob2zweFygDPXCEnB14Vd3M+QvPy4A2jvHfW0
-         mghcntQKfhuX8jClj88njP798Shb9uY70Zrz9uZoS9XhStHeqw5E5Vl4+zlbmPiCZuYD
-         05yGJ+4GOPENbEW3Ma6B4PMLMH0BUoJkXGvqtejqQGkq6/FBQftP3qz+axHBcUCvenL3
-         uw6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7Uim4PQO9GRX6Ml1nDaTb+DvyJmBeJ+eZYwrgMJj3yI=;
-        b=joKetaVyGDVHFntOpRNQWapFM7VKCRbweJg5O5x6mO00ioU7bsAWuOgkx8vBKX/lmt
-         iZwXzXopfxs88QcSVvZGN5eJcbY/6Oqj2bxYQOcLe6rnRiC6tlfXyIVMTBcLrWfJDkin
-         pKn6614A53cFN18fVjnknaQxeGOjFyr0f/VhINwwleaLjhv9X4cc+ec4cXrSiTBfzZeb
-         c16h0DmIEFLQAWyox+CHHxOe/jDIB4eQdrfjVXIbXi51iaJPvjEgBsy+ei1I7rJhR0Uv
-         37jhhgLI9V3azOxa53HmjM1wmqc5T0rXIGATSfki3TElBlXSoQx45WW+ai46GBO+S1qx
-         1B9A==
-X-Gm-Message-State: AOAM530MN0vCUkvhl4ljoWaUNJM5XlBg8/MyX70XCPjGEQrf/0v7XiWd
-        AGw8owrUwoWeg2fgldAIotBjqgMVOD9uDHa9mIVZ2Q==
-X-Google-Smtp-Source: ABdhPJw5cTsO1kWiUiVqpgI3OeCcBg5JTs4BMkeLBxLQDWWc+i6xh5tf47WN9LuD12xfZNO/D9j9J7A3wl/25P/c31s=
-X-Received: by 2002:aa7:c7cf:: with SMTP id o15mr7598673eds.176.1641967650078;
- Tue, 11 Jan 2022 22:07:30 -0800 (PST)
+        Wed, 12 Jan 2022 01:17:02 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6D6C06173F;
+        Tue, 11 Jan 2022 22:17:01 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JYclv6r89z4xtf;
+        Wed, 12 Jan 2022 17:16:59 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1641968220;
+        bh=yFi+3KXhMq7UG+Oe03QV8m3EOvDsRHxHoOi6GM6dX30=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=V14is3/hiYMJkQeGu/t+nG5lJGMIZHG2KO4CwoVvIjs3T2/cRc1D2wha8ilUmu36n
+         gNnxQudDtE8BsR7VlM4adDXeWA5ZyFVkawjY3fvav+LRUyuBuUsrCKOuaDRB0OlDH4
+         oYRYVlIG1fAma6h4cUhbO85/H2ivveUkIuU5qNAm2hXYv5nvJxgiRcO163D3zVcbed
+         T7Y1VeAC9xrUyYuUntw+h/O50cvWHglW2pVxIASZMwl6dfn/XglBZkMn2ELQ/1s/Ld
+         X43tXPP6ajT9dtTpSxcwDJOOvQH2GypCLPWcXiqMXMTrjeMAwhNXf4hLMZqnetbF24
+         W02kgYej+uv9A==
+Date:   Wed, 12 Jan 2022 17:16:59 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
+        kajoljain <kjain@linux.ibm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the perf tree
+Message-ID: <20220112171659.531d22ce@canb.auug.org.au>
+In-Reply-To: <Yd3+M+efH6bTEpP9@kernel.org>
+References: <20220106091921.3fa617bc@canb.auug.org.au>
+        <6623bc13-d99c-74c1-29c8-b4ae7a570d99@linux.ibm.com>
+        <20220112084553.2aa71f08@canb.auug.org.au>
+        <Yd3+M+efH6bTEpP9@kernel.org>
 MIME-Version: 1.0
-References: <20220104202227.2903605-1-yuzhao@google.com> <YdSuSHa/Vjl6bPkg@google.com>
- <Yd1Css8+jsspeZHh@google.com>
-In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
-From:   Sofia Trinh <sofia.trinh@edi.works>
-Date:   Tue, 11 Jan 2022 22:07:19 -0800
-Message-ID: <CAMwLHrZi0ZGFsuc74Yj3DErT1zyG2DEudS3ZgPEsexj0XfZJyA@mail.gmail.com>
-Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Alexandre Frade <kernel@xanmod.org>,
-        Brian Geffon <bgeffon@google.com>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/T3JOs1KmPuGJiVn25L_X9u1";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 12:41 AM Yu Zhao <yuzhao@google.com> wrote:
->
-> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
-> > On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
-> > > TLDR
-> > > ====
-> > > The current page reclaim is too expensive in terms of CPU usage and it
-> > > often makes poor choices about what to evict. This patchset offers an
-> > > alternative solution that is performant, versatile and
-> > > straightforward.
-> >
-> > <snipped>
-> >
-> > > Summery
-> > > =======
-> > > The facts are:
-> > > 1. The independent lab results and the real-world applications
-> > >    indicate substantial improvements; there are no known regressions.
-> > > 2. Thrashing prevention, working set estimation and proactive reclaim
-> > >    work out of the box; there are no equivalent solutions.
-> > > 3. There is a lot of new code; nobody has demonstrated smaller changes
-> > >    with similar effects.
-> > >
-> > > Our options, accordingly, are:
-> > > 1. Given the amount of evidence, the reported improvements will likely
-> > >    materialize for a wide range of workloads.
-> > > 2. Gauging the interest from the past discussions [14][15][16], the
-> > >    new features will likely be put to use for both personal computers
-> > >    and data centers.
-> > > 3. Based on Google's track record, the new code will likely be well
-> > >    maintained in the long term. It'd be more difficult if not
-> > >    impossible to achieve similar effects on top of the existing
-> > >    design.
-> >
-> > Hi Andrew, Linus,
-> >
-> > Can you please take a look at this patchset and let me know if it's
-> > 5.17 material?
-> >
-> > My goal is to get it merged asap so that users can reap the benefits
-> > and I can push the sequels. Please examine the data provided -- I
-> > think the unprecedented coverage and the magnitude of the improvements
-> > warrant a green light.
->
-> Downstream kernel maintainers who have been carrying MGLRU for more than
-> 3 versions, can you please provide your Acked-by tags?
->
-> Having this patchset in the mainline will make your job easier :)
->
->    Alexandre - the XanMod Kernel maintainer
->                https://xanmod.org
->
->    Brian     - the Chrome OS kernel memory maintainer
->                https://www.chromium.org
->
->    Jan       - the Arch Linux Zen kernel maintainer
->                https://archlinux.org
->
->    Steven    - the Liquorix kernel maintainer
->                https://liquorix.net
->
->    Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
->                https://chromium.googlesource.com/chromiumos/third_party/kernel
->
-> Also my gratitude to those who have helped test MGLRU:
->
->    Daniel - researcher at Michigan Tech
->             benchmarked memcached
->
->    Holger - who has been testing/patching/contributing to various
->             subsystems since ~2008
->
->    Shuang - researcher at University of Rochester
->             benchmarked fio and provided a report
->
->    Sofia  - EDI https://www.edi.works
->             benchmarked the top eight memory hogs and provided reports
+--Sig_/T3JOs1KmPuGJiVn25L_X9u1
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Sofia Trinh <sofia.trinh@edi.works>
+Hi Arnaldo,
+
+On Tue, 11 Jan 2022 19:01:23 -0300 Arnaldo Carvalho de Melo <acme@kernel.or=
+g> wrote:
+>
+> Yeah, this patch shouldn't have been merged thru the perf _tools_ tree,
+> my bad, it should have gone thru Michael PPC kernel tree.
+>=20
+> It was a single series mixing up tools/ with kernel bits, I thought I
+> had picked just the tools part but made a mistake.
+>=20
+> This should get resolved when the rest of the kernel bits go via
+> Michael's powerpc tree, right?
+
+I just re merged the perf tree on top of the reste of linux-next and it
+builds fine.  So I guess you need to wait until after the powerpc tree
+has been merged before sending your pull request (or revert the
+offending commit(s)).
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/T3JOs1KmPuGJiVn25L_X9u1
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEyBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHeclsACgkQAVBC80lX
+0GzXkQf1EdG0TaroyZNyzbSgam1A7k8ERp13NZSY5Alpr06WhD+0kyAMXTIDEhXx
+Hgl4Eep5tLg9AWv9rpgF3vHqQZGCuQ1kRBJfY1viNaXzq+p0T1Q+Elne3uvaF6+g
+BiURYXeYViW6zWPk4QvKIwBZIH6zCdqummAtH059rOnr4yoqOnqq4NVeo1rG1l1D
+ybO7ZNNoxn5TVh7ieSMO+cQCJ4YOOZM5zobKzQUODWg9Gl9245S/Xj0/qNEpKXRs
+LmuXBuFEuWx1jydc6Do3NhP+koEbIpmWhMvNkr5lOz+ia87ynIEpUzhv93YGMkv1
+M2J9CtfJGdH9xSDT+HjxDXl+fRrS
+=cVRW
+-----END PGP SIGNATURE-----
+
+--Sig_/T3JOs1KmPuGJiVn25L_X9u1--
