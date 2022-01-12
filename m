@@ -2,109 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA20C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 256A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352803AbiALLPo (ORCPT
+        id S1352811AbiALLSM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:15:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237932AbiALLPj (ORCPT
+        Wed, 12 Jan 2022 06:18:12 -0500
+Received: from mxout70.expurgate.net ([91.198.224.70]:17863 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352796AbiALLSK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:15:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B46C06173F;
-        Wed, 12 Jan 2022 03:15:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C09EB81DC0;
-        Wed, 12 Jan 2022 11:15:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B19C36AEA;
-        Wed, 12 Jan 2022 11:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641986136;
-        bh=RTTu6nWijk2G34RQ8PR1ea0narp9zXHqxMjZSrcL0co=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Hq5LE8KaLV3xNlfl8hONGT11QmqFJgF5ZZ53zgnsdO9DYAJ3B8+wjU1jSIWeFQ3/D
-         CaFHUcDIXoppDdArCINBydMDN3XpiApt2gXzo3WfUQ9EosZsIz+fETbj6cGaJgODcQ
-         RZjbF9LA/EWCKAuGks8VTqUhgG/KYGeeO094JHFcgGFdZ+k6BgYzvYRyQgp0IWuabE
-         6Amw158NYWiJ4GIMYCwvGg+6cm48+dwbs/dP2cMG/t24qKzlZsJcARwnFtoH8cDJjI
-         ORDJ0PD0+aoOGK4FPG7XBpY4YizNUp6zImN53U/p5QaZfcKlKu0EVwLvcYWDLCGCVV
-         ObzsbCCfB0d5Q==
-Message-ID: <f86483fca8b0dc68ce243ba47998ff3296a3b6f8.camel@kernel.org>
-Subject: Re: [PATCH 4/5] uapi: always define F_GETLK64/F_SETLK64/F_SETLKW64
- in fcntl.h
-From:   Jeff Layton <jlayton@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>
-Cc:     Guo Ren <guoren@kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Parisc List <linux-parisc@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        "J. Bruce Fields" <bfields@fieldses.org>
-Date:   Wed, 12 Jan 2022 06:15:33 -0500
-In-Reply-To: <CAK8P3a1ONn=FiPU3669MjBMntS-1K5bgX4pHforUsYJ7yhwZ-g@mail.gmail.com>
-References: <20220111083515.502308-1-hch@lst.de>
-         <20220111083515.502308-5-hch@lst.de>
-         <CAK8P3a0mHC5=OOGV=sGnC9JqZWxzsJyZbTefnCtryQU3o3PY_g@mail.gmail.com>
-         <20220112075609.GA4854@lst.de>
-         <CAK8P3a1ONn=FiPU3669MjBMntS-1K5bgX4pHforUsYJ7yhwZ-g@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
+        Wed, 12 Jan 2022 06:18:10 -0500
+X-Greylist: delayed 586 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 06:18:09 EST
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1n7bTz-0009Bh-QS; Wed, 12 Jan 2022 12:07:59 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1n7bTy-000ItO-JC; Wed, 12 Jan 2022 12:07:58 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id 3579924004F;
+        Wed, 12 Jan 2022 12:07:58 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 89E16240049;
+        Wed, 12 Jan 2022 12:07:57 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id BB9A720676;
+        Wed, 12 Jan 2022 12:07:53 +0100 (CET)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Wed, 12 Jan 2022 12:07:53 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Tim Harvey <tharvey@gateworks.com>
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        martin.blumenstingl@googlemail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
+ delay configuration
+Organization: TDT AG
+In-Reply-To: <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
+References: <20210719082756.15733-1-ms@dev.tdt.de>
+ <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
+ <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
+ <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
+Message-ID: <7fe5e3b3ff8fe9375fef409521b93102@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.17
+X-purgate-type: clean
+X-purgate: clean
+X-purgate-ID: 151534::1641985679-00000DA7-8C2B954F/0/0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-01-12 at 09:28 +0100, Arnd Bergmann wrote:
-> On Wed, Jan 12, 2022 at 8:56 AM Christoph Hellwig <hch@lst.de> wrote:
-> > 
-> > On Tue, Jan 11, 2022 at 04:33:30PM +0100, Arnd Bergmann wrote:
-> > > This is a very subtle change to the exported UAPI header contents:
-> > > On 64-bit architectures, the three unusable numbers are now always
-> > > shown, rather than depending on a user-controlled symbol.
-> > 
-> > Well, the change is bigger and less subtle.  Before this change the
-> > constants were never visible to userspace at all (except on mips),
-> > because the #ifdef CONFIG_64BIT it never set for userspace builds.
+On 2022-01-11 20:12, Tim Harvey wrote:
+> On Mon, Jan 10, 2022 at 11:44 PM Martin Schiller <ms@dev.tdt.de> wrote:
+>> 
+>> On 2022-01-11 00:12, Tim Harvey wrote:
+>> > On Mon, Jul 19, 2021 at 2:07 AM Martin Schiller <ms@dev.tdt.de> wrote:
+>> >>
+>> >> This adds the possibility to configure the RGMII RX/TX clock skew via
+>> >> devicetree.
+>> >>
+>> >> Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and
+>> >> add
+>> >> the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
+>> >> devicetree.
+>> >>
+>> >> Furthermore, a warning is now issued if the phy mode is configured to
+>> >> "rgmii" and an internal delay is set in the phy (e.g. by
+>> >> pin-strapping),
+>> >> as in the dp83867 driver.
+>> >>
+>> >> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+>> >> ---
+>> >>
+>> >> Changes to v5:
+>> >> o remove #if IS_ENABLED(CONFIG_OF_MDIO) check
+>> >> o rename new function to xway_gphy_rgmii_init()
+>> >>
+>> >> Changes to v4:
+>> >> o Fix Alignment to match open parenthesis
+>> >>
+>> >> Changes to v3:
+>> >> o Fix typo in commit message
+>> >> o use FIELD_PREP() and FIELD_GET() macros
+>> >> o further code cleanups
+>> >> o always mask rxskew AND txskew value in the register value
+>> >>
+>> >> Changes to v2:
+>> >> o Fix missing whitespace in warning.
+>> >>
+>> >> Changes to v1:
+>> >> o code cleanup and use phy_modify().
+>> >> o use default of 2.0ns if delay property is absent instead of
+>> >> returning
+>> >>   an error.
+>> >>
+>> >> ---
+>> >>  drivers/net/phy/intel-xway.c | 78
+>> >> ++++++++++++++++++++++++++++++++++++
+>> >>  1 file changed, 78 insertions(+)
+>> >>
+>> >> diff --git a/drivers/net/phy/intel-xway.c
+>> >> b/drivers/net/phy/intel-xway.c
+>> >> index d453ec016168..fd7da2eeb963 100644
+>> >> --- a/drivers/net/phy/intel-xway.c
+>> >> +++ b/drivers/net/phy/intel-xway.c
+>> >> @@ -8,11 +8,16 @@
+>> >>  #include <linux/module.h>
+>> >>  #include <linux/phy.h>
+>> >>  #include <linux/of.h>
+>> >> +#include <linux/bitfield.h>
+>> >>
+>> >> +#define XWAY_MDIO_MIICTRL              0x17    /* mii control */
+>> >>  #define XWAY_MDIO_IMASK                        0x19    /* interrupt
+>> >> mask */
+>> >>  #define XWAY_MDIO_ISTAT                        0x1A    /* interrupt
+>> >> status */
+>> >>  #define XWAY_MDIO_LED                  0x1B    /* led control */
+>> >>
+>> >> +#define XWAY_MDIO_MIICTRL_RXSKEW_MASK  GENMASK(14, 12)
+>> >> +#define XWAY_MDIO_MIICTRL_TXSKEW_MASK  GENMASK(10, 8)
+>> >> +
+>> >>  /* bit 15:12 are reserved */
+>> >>  #define XWAY_MDIO_LED_LED3_EN          BIT(11) /* Enable the
+>> >> integrated function of LED3 */
+>> >>  #define XWAY_MDIO_LED_LED2_EN          BIT(10) /* Enable the
+>> >> integrated function of LED2 */
+>> >> @@ -157,6 +162,75 @@
+>> >>  #define PHY_ID_PHY11G_VR9_1_2          0xD565A409
+>> >>  #define PHY_ID_PHY22F_VR9_1_2          0xD565A419
+>> >>
+>> >> +static const int xway_internal_delay[] = {0, 500, 1000, 1500, 2000,
+>> >> 2500,
+>> >> +                                        3000, 3500};
+>> >> +
+>> >> +static int xway_gphy_rgmii_init(struct phy_device *phydev)
+>> >> +{
+>> >> +       struct device *dev = &phydev->mdio.dev;
+>> >> +       unsigned int delay_size = ARRAY_SIZE(xway_internal_delay);
+>> >> +       s32 int_delay;
+>> >> +       int val = 0;
+>> >> +
+>> >> +       if (!phy_interface_is_rgmii(phydev))
+>> >> +               return 0;
+>> >> +
+>> >> +       /* Existing behavior was to use default pin strapping delay in
+>> >> rgmii
+>> >> +        * mode, but rgmii should have meant no delay.  Warn existing
+>> >> users,
+>> >> +        * but do not change anything at the moment.
+>> >> +        */
+>> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
+>> >> +               u16 txskew, rxskew;
+>> >> +
+>> >> +               val = phy_read(phydev, XWAY_MDIO_MIICTRL);
+>> >> +               if (val < 0)
+>> >> +                       return val;
+>> >> +
+>> >> +               txskew = FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK,
+>> >> val);
+>> >> +               rxskew = FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK,
+>> >> val);
+>> >> +
+>> >> +               if (txskew > 0 || rxskew > 0)
+>> >> +                       phydev_warn(phydev,
+>> >> +                                   "PHY has delays (e.g. via pin
+>> >> strapping), but phy-mode = 'rgmii'\n"
+>> >> +                                   "Should be 'rgmii-id' to use
+>> >> internal delays txskew:%d ps rxskew:%d ps\n",
+>> >> +                                   xway_internal_delay[txskew],
+>> >> +                                   xway_internal_delay[rxskew]);
+>> >> +               return 0;
+>> >> +       }
+>> >> +
+>> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> >> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
+>> >> +               int_delay = phy_get_internal_delay(phydev, dev,
+>> >> +
+>> >> xway_internal_delay,
+>> >> +                                                  delay_size, true);
+>> >> +
+>> >> +               if (int_delay < 0) {
+>> >> +                       phydev_warn(phydev, "rx-internal-delay-ps is
+>> >> missing, use default of 2.0 ns\n");
+>> >> +                       int_delay = 4; /* 2000 ps */
+>> >> +               }
+>> >> +
+>> >> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK,
+>> >> int_delay);
+>> >> +       }
+>> >> +
+>> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
+>> >> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
+>> >> +               int_delay = phy_get_internal_delay(phydev, dev,
+>> >> +
+>> >> xway_internal_delay,
+>> >> +                                                  delay_size, false);
+>> >> +
+>> >> +               if (int_delay < 0) {
+>> >> +                       phydev_warn(phydev, "tx-internal-delay-ps is
+>> >> missing, use default of 2.0 ns\n");
+>> >> +                       int_delay = 4; /* 2000 ps */
+>> >> +               }
+>> >> +
+>> >> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK,
+>> >> int_delay);
+>> >> +       }
+>> >> +
+>> >> +       return phy_modify(phydev, XWAY_MDIO_MIICTRL,
+>> >> +                         XWAY_MDIO_MIICTRL_RXSKEW_MASK |
+>> >> +                         XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
+>> >> +}
+>> >> +
+>> >>  static int xway_gphy_config_init(struct phy_device *phydev)
+>> >>  {
+>> >>         int err;
+>> >> @@ -204,6 +278,10 @@ static int xway_gphy_config_init(struct
+>> >> phy_device *phydev)
+>> >>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
+>> >>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
+>> >>
+>> >> +       err = xway_gphy_rgmii_init(phydev);
+>> >> +       if (err)
+>> >> +               return err;
+>> >> +
+>> >>         return 0;
+>> >>  }
+>> >>
+>> >> --
+>> >> 2.20.1
+>> >>
+>> >
+>> > Martin,
+>> >
+>> > I've got some boards with the GPY111 phy on them and I'm finding that
+>> > modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless I
+>> > do a soft reset (BCMR_RESET) first. I don't see anything in the
+>> > datasheet which specifies this to be the case so I'm interested it
+>> > what you have found. Are you sure adjusting the skews like this
+>> > without a soft (or hard pin based) reset actually works?
+>> >
+>> > Best regards,
+>> >
+>> > Tim
+>> 
+>> Hello Tim,
+>> 
+>> yes, you are right. It is not applied immediately. The link needs to 
+>> be
+>> toggled to get this settings active. But my experience shows that this
+>> would be done in the further boot process anyway e.g. by restarting 
+>> the
+>> autonegotiation etc.
+>> 
 > 
-> I suppose you mean /always/ visible here, with that ifndef.
+> Martin,
 > 
-> > > This is probably what we want here for compatibility reasons, but I think
-> > > it should be explained in the changelog text, and I'd like Jeff or Bruce
-> > > to comment on it as well: the alternative here would be to make the
-> > > uapi definition depend on __BITS_PER_LONG==32, which is
-> > > technically the right thing to do but more a of a change.
-> > 
-> > I can change this to #if __BITS_PER_LONG==32 || defined(__KERNEL__),
-> > but it will still be change in what userspace sees.
+> I added a debug statement in xway_gphy_rgmii_init and here you can see
+> it gets called 'before' the link comes up from the NIC on a board that
+> has a cable plugged in at power-on. I can tell from testing that the
+> rx_delay/tx_delay set in xway_gphy_rgmii_init does not actually take
+> effect unless I then bring the link down and up again manually as you
+> indicate.
 > 
-> Exactly, that is the tradeoff, which is why I'd like the flock maintainers
-> to say which way they prefer. We can either do it more correctly (hiding
-> the constants from user space when they are not usable), or with less
-> change (removing the incorrect #ifdef). Either way sounds reasonable
-> to me, I mainly care that this is explained in the changelog and that the
-> maintainers are aware of the two options.
+> # dmesg | egrep "xway|nicvf"
+> [    6.855971] xway_gphy_rgmii_init mdio_thunder MDI_MIICTRL:0xb100
+> rx_delay=1500 tx_delay=500
+> [    6.999651] nicvf, ver 1.0
+> [    7.002478] nicvf 0000:05:00.1: Adding to iommu group 7
+> [    7.007785] nicvf 0000:05:00.1: enabling device (0004 -> 0006)
+> [    7.053189] nicvf 0000:05:00.2: Adding to iommu group 8
+> [    7.058511] nicvf 0000:05:00.2: enabling device (0004 -> 0006)
+> [   11.044616] nicvf 0000:05:00.2 eth1: Link is Up 1000 Mbps Full 
+> duplex
 > 
+> If I add a 'genphy_soft_reset(phydev);' at the top of
+> xway_gphy_rgmii_init before the write to XWAY_MDIO_MIICTRL the values
+> do take effect so perhaps that's the proper fix.
 
-I don't have a strong opinion here. If we were taking symbols away that
-were previously visible to userland it would be one thing, but since
-we're just adding symbols that may not have been there before, this
-seems less likely to break anything.
+OK, I see that we have to change something here.
+But I would like to avoid a complete reset (BMCR_RESET) if possible.
+How about this:
+Before configuring the skews set BMCR_PDOWN using genphy_suspend(phydev)
+and when we are done let's call genphy_resume(phydev).
 
-I probably lean toward Christoph's original solution instead of keeping
-the conditional definitions. It's hard to imagine there are many
-programs that care whether these other symbols are defined or not.
+> 
+> I'm not fond of even using this phy driver either as it blatantly
+> forces LED configuration which may not agree with what boot firmware
+> does. I've noticed phy drivers starting to configure LED behavior more
+> and more but it seems like there should be dt bindings for that or
+> maybe an option to preserve the configuration that is set from boot
+> firmware.
 
-You can add this to the original patch:
+There is already an approach which is used in openwrt [1] and which
+Hauke tried to get into the kernel [2].
 
-Acked-by: Jeff Layton <jlayton@kernel.org>
+Interesting would be also a solution like this approach here [3].
 
+But this is rather off-topic now.
+
+[1] 
+https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/lantiq/patches-5.10/0023-NET-PHY-add-led-support-for-intel-xway.patch;h=fb8d97511066bd7e20f8cd298401e81f74e02ae9;hb=d337731f85c880acc96e8a6b99b62aeb57b8253f
+[2] https://www.spinics.net/lists/devicetree/msg129574.html
+[3] https://www.spinics.net/lists/linux-leds/msg17241.html
