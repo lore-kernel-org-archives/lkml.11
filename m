@@ -2,116 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F62C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D93C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352694AbiALLAE (ORCPT
+        id S1352706AbiALLBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:00:04 -0500
-Received: from mail-ua1-f41.google.com ([209.85.222.41]:44714 "EHLO
-        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352683AbiALLAB (ORCPT
+        Wed, 12 Jan 2022 06:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56168 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239583AbiALLB2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:00:01 -0500
-Received: by mail-ua1-f41.google.com with SMTP id l15so3905321uai.11;
-        Wed, 12 Jan 2022 03:00:01 -0800 (PST)
+        Wed, 12 Jan 2022 06:01:28 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B3CC06173F;
+        Wed, 12 Jan 2022 03:01:26 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id d3so6599047lfv.13;
+        Wed, 12 Jan 2022 03:01:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JDKpbVvncXZg+dhS5GwOnEl7CbpOlY80mhDgDjysBHQ=;
+        b=nzy3J6DQUoamzkSBls6Pv1aEhtT5GXx2J+BARKTcC0dHOymkoyUR+h82smpMD6URP2
+         qHCWRbYWyCVoUZqzyk5DfksiZcN+3XzRXoxWHChgj+EJUwtzRuwNAjhxWOd2TRypQyGQ
+         //Z//MBYWCeHCYjqE5J6YXjfU2Lidv6zyXdlBbr91Iz6fflNwhp9dhNeINSpggPejHSH
+         JKqyAi3N4px8P5pWxbB30wVV/Rsfwsnjk19YGotXNyScb6BxopNFts2G33TjWs+K0ng+
+         tfraakLmcn4wlHF+YN316DEr5l2mJ6TaJRB7KNh0Ai6Wygh1RW7nCLdr6k3mqEkeif18
+         d8Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P9xJBN5Sf81yronEcRpMEORUChn2S5aTbHnwQ7uOvsM=;
-        b=5ePKShnpQ0O/a+y0L9hopufbzVh93pHELQUkrFa1U1FuQiackfjcmHhtXbdok4fG84
-         YcknPxWjCHOveDBqFC06CsBJptPIx9xhAGHGSkPDTAoqz1IwAQJdcPkBDmuRU42e4o2U
-         XMvXWeVO/JDzA921ubhnKhE029fefgaC+0eRI8CIhYtXK2WwALJGWxgqw4RLlOzwCF19
-         Wa7aeyydaacOQmW6F/mvXs+9N++7yKYhT6zLLSMMVU/RdvgyixwRIiee17kxiw8uoCMa
-         vTIYlxatDySwhbP1OpbDBy89U8Zjr3XkOEcKTaZwatX6jdgCqTXAfZIOK2qq1l/l6Vgz
-         nP0g==
-X-Gm-Message-State: AOAM533mKjb6AfrzgAj0zBnML4LlEreWLo7UODkjFUw+pq44sroeGRAW
-        v1iv5aWAgQGFkGHA1V8baMMya5b5eM5qVUP6
-X-Google-Smtp-Source: ABdhPJyzrfxkgE+7legUtMTTceWLgI4buGjw+odKdGY5Ga5+3Lrb9GUl9uDNe1ZeVwosCI40bW2MdA==
-X-Received: by 2002:a05:6102:956:: with SMTP id a22mr2515050vsi.49.1641985200899;
-        Wed, 12 Jan 2022 03:00:00 -0800 (PST)
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com. [209.85.221.177])
-        by smtp.gmail.com with ESMTPSA id i53sm3449490vkr.29.2022.01.12.02.59.59
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JDKpbVvncXZg+dhS5GwOnEl7CbpOlY80mhDgDjysBHQ=;
+        b=2kKJVCQLFS5EOVvkkzeYjj/h+LJDvv/tvMx2AEznRewWpK2xueG7UMtPo1R30zfu10
+         eGsex/4a5LisbJzWmuUZJRwvcKlPzUtwzvr/XQCRmJ7Q1rmaegABbZV4XdqQYr8fymVL
+         0yTq7YlbEAinysQiwfWFFHQ+lIJyncH+V1HeN4a7RXAl/m7IET1LYL7amWN9bwcJ9geV
+         k1d5nmF5hCqCpUeEJlRBOqV8nTDQG20Y1VOXuMKVBS0BYRuJn1pkJTyFRzhEXM5fdrCW
+         6pHtfv81uKV9gchpJDt4KGYjtEYIiN2NXF3X6IeZrPQu/TxTd7/rI3HBDxSu4lcUFMuC
+         kkSg==
+X-Gm-Message-State: AOAM532yjsXn9aj0l8+VzwSnB/VNQValgkMh0PxMTbUSvZ/IhR2R47OM
+        R8yKmccamfIcZsUdrl2aRTk=
+X-Google-Smtp-Source: ABdhPJxLXmyjrpw57NQ8We0Hd905K3dTHP1k+kD9HH5Clmmr0HXM5eP+lDgF48rYW/aMgYrZ4kTPTw==
+X-Received: by 2002:a05:6512:3c88:: with SMTP id h8mr6813345lfv.256.1641985285347;
+        Wed, 12 Jan 2022 03:01:25 -0800 (PST)
+Received: from [192.168.2.145] (94-29-62-108.dynamic.spd-mgts.ru. [94.29.62.108])
+        by smtp.googlemail.com with ESMTPSA id p9sm1601519lfg.287.2022.01.12.03.01.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 03:00:00 -0800 (PST)
-Received: by mail-vk1-f177.google.com with SMTP id 191so1401768vkc.1;
-        Wed, 12 Jan 2022 02:59:59 -0800 (PST)
-X-Received: by 2002:a1f:384b:: with SMTP id f72mr4324936vka.0.1641985199694;
- Wed, 12 Jan 2022 02:59:59 -0800 (PST)
+        Wed, 12 Jan 2022 03:01:24 -0800 (PST)
+Subject: Re: [Patch V1 3/4] memory: tegra: add mc-err support for T186
+To:     Ashish Mhetre <amhetre@nvidia.com>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+        krzysztof.kozlowski@canonical.com, linux-kernel@vger.kernel.org
+Cc:     Snikam@nvidia.com, vdumpa@nvidia.com
+References: <1641926750-27544-1-git-send-email-amhetre@nvidia.com>
+ <1641926750-27544-4-git-send-email-amhetre@nvidia.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <f9ca5794-55ac-803f-8606-f0b48e826eb7@gmail.com>
+Date:   Wed, 12 Jan 2022 14:01:21 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220111181037.632969-1-Jason@zx2c4.com> <20220111220506.742067-1-Jason@zx2c4.com>
-In-Reply-To: <20220111220506.742067-1-Jason@zx2c4.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 12 Jan 2022 11:59:48 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUcJN_ZZLnx8TuhoXYV1DAKK9NsXjH2M0xAdn9JTS16wA@mail.gmail.com>
-Message-ID: <CAMuHMdUcJN_ZZLnx8TuhoXYV1DAKK9NsXjH2M0xAdn9JTS16wA@mail.gmail.com>
-Subject: Re: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
- other small platforms
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Theodore Tso <tytso@mit.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        jeanphilippe.aumasson@gmail.com, Ard Biesheuvel <ardb@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1641926750-27544-4-git-send-email-amhetre@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+11.01.2022 21:45, Ashish Mhetre пишет:
+> Add all mc-errors supported by T186.
+> Implement mc interrupt handling routine for T186.
+> 
+> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+> ---
+>  drivers/memory/tegra/mc.h       |  17 +++++++
+>  drivers/memory/tegra/tegra186.c | 100 ++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 117 insertions(+)
+> 
+> diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
+> index 2d4f495..7817492 100644
+> --- a/drivers/memory/tegra/mc.h
+> +++ b/drivers/memory/tegra/mc.h
+> @@ -44,6 +44,15 @@
+>  #define MC_TIMING_CONTROL_DBG				0xf8
+>  #define MC_TIMING_CONTROL				0xfc
+>  
 
-On Tue, Jan 11, 2022 at 11:05 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> Geert emailed me this afternoon concerned about blake2s codesize on m68k
-> and other small systems. We identified two effective ways of chopping
-> down the size. One of them moves some wireguard-specific things into
-> wireguard proper. The other one adds a slower codepath for small
-> machines to blake2s. This worked, and was v1 of this patchset, but I
-> wasn't so much of a fan. Then someone pointed out that the generic C
-> SHA-1 implementation is still unrolled, which is a *lot* of extra code.
-> Simply rerolling that saves about as much as v1 did. So, we instead do
-> that in this patchset. SHA-1 is being phased out, and soon it won't
-> be included at all (hopefully). And nothing performance-oriented has
-> anything to do with it anyway.
->
-> The result of these two patches mitigates Geert's feared code size
-> increase for 5.17.
->
-> v3 improves on v2 by making the re-rolling of SHA-1 much simpler,
-> resulting in even larger code size reduction and much better
-> performance. The reason I'm sending yet a third version in such a short
-> amount of time is because the trick here feels obvious and substantial
-> enough that I'd hate for Geert to waste time measuring the impact of the
-> previous commit.
->
-> Thanks,
-> Jason
->
-> Jason A. Donenfeld (2):
->   lib/crypto: blake2s: move hmac construction into wireguard
->   lib/crypto: sha1: re-roll loops to reduce code size
+this empty line is unnecessary
 
-Thanks for the series!
+> +#define MC_ERR_VPR_STATUS				0x654
+> +#define MC_ERR_VPR_ADR					0x658
+> +#define MC_ERR_SEC_STATUS				0x67c
+> +#define MC_ERR_SEC_ADR					0x680
+> +#define MC_ERR_MTS_STATUS				0x9b0
+> +#define MC_ERR_MTS_ADR					0x9b4
+> +#define MC_ERR_GENERALIZED_CARVEOUT_STATUS		0xc00
+> +#define MC_ERR_GENERALIZED_CARVEOUT_ADR			0xc04
+> +
+>  #define MC_INT_DECERR_ROUTE_SANITY			BIT(20)
+>  #define MC_INT_WCAM_ERR					BIT(19)
+>  #define MC_INT_SCRUB_ECC_WR_ACK				BIT(18)
+> @@ -159,6 +168,14 @@ extern const struct tegra_mc_ops tegra186_mc_ops;
+>  extern const char * const tegra_mc_status_names[32];
+>  extern const char * const tegra_mc_error_names[8];
+>  
+> +struct tegra_mc_error {
+> +	u32 int_bit;
+> +	const char *msg;
+> +	u32 status_reg;
+> +	u32 addr_reg;
+> +	u32 addr_reg_hi;
+> +};
+> +
+>  /*
+>   * These IDs are for internal use of Tegra ICC drivers. The ID numbers are
+>   * chosen such that they don't conflict with the device-tree ICC node IDs.
+> diff --git a/drivers/memory/tegra/tegra186.c b/drivers/memory/tegra/tegra186.c
+> index 6766cc4..4f3ae71 100644
+> --- a/drivers/memory/tegra/tegra186.c
+> +++ b/drivers/memory/tegra/tegra186.c
+> @@ -146,8 +146,107 @@ static void tegra186_mc_clear_interrupt(struct tegra_mc *mc)
+>  	mc_writel(mc, MC_INTSTATUS_CLEAR, MC_INTSTATUS);
+>  }
+>  
+> +static const struct tegra_mc_error int_mc_errors[] = {
+> +	{
+> +		.int_bit = MC_INT_DECERR_EMEM,
+> +		.msg = "EMEM address decode error",
+> +		.status_reg = MC_ERR_STATUS,
+> +		.addr_reg = MC_ERR_ADR,
+> +	},
+> +	{
+> +		.int_bit = MC_INT_SECURITY_VIOLATION,
+> +		.msg = "non secure access to secure region",
+> +		.status_reg = MC_ERR_STATUS,
+> +		.addr_reg = MC_ERR_ADR,
+> +	},
+> +	{
+> +		.int_bit = MC_INT_DECERR_VPR,
+> +		.msg = "MC request violates VPR requirements",
+> +		.status_reg = MC_ERR_VPR_STATUS,
+> +		.addr_reg = MC_ERR_VPR_ADR,
+> +	},
 
-On m68k:
-add/remove: 1/4 grow/shrink: 0/1 up/down: 4/-4232 (-4228)
-Function                                     old     new   delta
-__ksymtab_blake2s256_hmac                     12       -     -12
-blake2s_init.constprop                        94       -     -94
-blake2s256_hmac                              302       -    -302
-sha1_transform                              4402     582   -3820
-Total: Before=4230537, After=4226309, chg -0.10%
+I see that these VPR registers present on all SoCs starting with T124.
+It doesn't look like you need the separate IRQ handlers at all, instead
+please extend the common T30 handler. For example, you may add a
+switch-case statements to handle those T124+ specific bits differently.
 
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+static irqreturn_t tegra30_mc_handle_irq(int irq, void *data)
+{
+...
+	switch (bit) {
+	case MC_INT_DECERR_VPR:
+		status_reg = MC_ERR_VPR_STATUS;
+		addr_reg   = MC_ERR_VPR_ADR;
+		break;
+	...
+	default:
+		status_reg = MC_ERR_STATUS;
+		addr_reg   = MC_ERR_ADR;
+	}
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+	value = mc_readl(mc, status_reg);
+	...
+	
+	value = mc_readl(mc, addr_reg);
