@@ -2,63 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D18FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF213C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347572AbiALAOk (ORCPT
+        id S1347121AbiALAOw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 19:14:40 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:50048 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347343AbiALANu (ORCPT
+        Tue, 11 Jan 2022 19:14:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347360AbiALANu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 11 Jan 2022 19:13:50 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34820C061748
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 16:13:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CB170CE1BC0;
-        Wed, 12 Jan 2022 00:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 25D21C36AF2;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 81B85CE1BC4
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:13:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C9793C36AF7;
         Wed, 12 Jan 2022 00:13:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1641946426;
-        bh=EBvMjxnpCZF35twFGLPobRtxt8N39W8LmEgBwmjUEUk=;
+        bh=qhX2xjZPOnkovTNT3pAqKCmQ0qegNrFZZqQzrqUF+GQ=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=fnbWa5eJEqgSrFrx6fqYj8mf4rohBUdHZmTIr7LKE3UzA88PHPLslc2CsvNbyetag
-         Zpi16pqnEbaOgEfyIQEOrpylLvLqX6bwG6XL+Do2VM9aQ9DgF0DJeONsU2ZdX+yuWP
-         3VAjJdMN7YXt5Q7dmQFAFYdLiD9ULU+rC1+hEEwWugqt1xW8KTzFEHbT7nbnnmsDCY
-         p6T9MUupSHXyw7ZhyxrPwVoHD03TNK8ww+a1uKBaYbzlpKXJihlFXifVyw9zN7SkC8
-         1sBvVZjJj6hREjZEaYhW3//ODfdvzRPXzCWPqReuyZyc+vtJX0uur/haIwodBKx3EZ
-         tBtU76NL84cMw==
+        b=qTvVcFn0E18/yTwUUfXfuFX/tq+d4ydfwbNJB/L+cmBsFBd/UsuCbrWXlNVLfOSHf
+         JoWglTjdNPr5hn5gHdi7M7pEERQ/kiNRmu/TVsioji3rhBnt/BKZQpFjRQpDyGdFrn
+         VwuG/jl0KuORcnokTUjFQ4FrNHXpGXd3SRooyNX028+X2pB1g7nWIY9+z6BmJK536G
+         d16tnf+mwxSg5kvLShI0LVjg0GYF+0Eyx1FylN3PK8C1HEorqEoSo8Ay5i15oXMHsw
+         oqFY0qO3QTKBRmfQgwpdbHZD3G4wh6ehT1dn58v8fHyLiWnnTqCZYtR8/dZEPBkTZN
+         GTeE/IbieAcTw==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1348BF60795;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B6C89F60793;
         Wed, 12 Jan 2022 00:13:46 +0000 (UTC)
-Subject: Re: [GIT PULL] ext4 updates for 5.17
+Subject: Re: [GIT PULL] Various minor gfs2 cleanups and fixes for 5.17
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YdyxjTFaLWif6BCM@mit.edu>
-References: <YdyxjTFaLWif6BCM@mit.edu>
+In-Reply-To: <20220111172215.1149791-1-agruenba@redhat.com>
+References: <20220111172215.1149791-1-agruenba@redhat.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YdyxjTFaLWif6BCM@mit.edu>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git tags/ext4_for_linus
-X-PR-Tracked-Commit-Id: 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055
+X-PR-Tracked-Message-Id: <20220111172215.1149791-1-agruenba@redhat.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git tags/gfs2-v5.16-rc3-fixes
+X-PR-Tracked-Commit-Id: 74382e277ae97b4bcfac6f8b61df7a500d392500
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1dbfae0113f1423b42c304989a3cc8a7dd0ea53e
-Message-Id: <164194642607.21161.11547739761346629485.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 8481c323e4ea0a65f0578107a3e668c1c69cf474
+Message-Id: <164194642674.21161.15806950616568910059.pr-tracker-bot@kernel.org>
 Date:   Wed, 12 Jan 2022 00:13:46 +0000
-To:     Theodore Ts'o <tytso@mit.edu>
+To:     Andreas Gruenbacher <agruenba@redhat.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org
+        Andreas Gruenbacher <agruenba@redhat.com>,
+        cluster-devel@redhat.com, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 10 Jan 2022 17:22:05 -0500:
+The pull request you sent on Tue, 11 Jan 2022 18:22:15 +0100:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tytso/ext4.git tags/ext4_for_linus
+> https://git.kernel.org/pub/scm/linux/kernel/git/gfs2/linux-gfs2.git tags/gfs2-v5.16-rc3-fixes
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1dbfae0113f1423b42c304989a3cc8a7dd0ea53e
+https://git.kernel.org/torvalds/c/8481c323e4ea0a65f0578107a3e668c1c69cf474
 
 Thank you!
 
