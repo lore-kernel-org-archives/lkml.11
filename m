@@ -2,161 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70BE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 23:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 23:04:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235076AbiALXE1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 18:04:27 -0500
-Received: from mga02.intel.com ([134.134.136.20]:20822 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234993AbiALXEO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S235202AbiALXEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 18:04:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235007AbiALXEO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 12 Jan 2022 18:04:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642028654; x=1673564654;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=WYDoKxLxRjZ7HqNhNFg14V/WsU2wyS41U6hNDWUzGIw=;
-  b=XTH9zEMrXEVOfkK8t9LHRhKYKNWI9owDmHTEhykB5x4TVDHCVTOn+BKc
-   TJV3MceTb5jxKKx5Y8OvmzSDpxsO6AfkPNpO+t3EXtDG1e0fCwS7MEJ96
-   20gDJUo15l9qlc2n5JOrpjeLKPpBxSoGaZTOg1u2pMy5klLy1S2tYQdTG
-   83Tutp1leUWO7zr0TCn5IojOP3KJnOtE4lZ46KXBhqAd2yDXXanL3fbDf
-   a4JC5QvLpkxNahuBWZ8su7c6vqYJfTLY01ZX+5sUbRVug7AenygBv0Nnc
-   Z7ghJPXSmdhwfXFI+g2QFfyUmghKhqa/cOWD2tMTAmqFCxT0mOjoRCq/R
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="231214616"
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="231214616"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 15:04:12 -0800
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="528808443"
-Received: from kstefans-mobl.ger.corp.intel.com (HELO localhost) ([10.249.154.174])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 15:04:04 -0800
-From:   Iwona Winiarska <iwona.winiarska@intel.com>
-To:     linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-doc@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Zev Weiss <zweiss@equinix.com>,
-        David Muller <d.mueller@elsoft.ch>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Billy Tsai <billy_tsai@aspeedtech.com>,
-        Iwona Winiarska <iwona.winiarska@intel.com>,
-        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-Subject: [PATCH v5 02/13] dt-bindings: Add bindings for peci-aspeed
-Date:   Thu, 13 Jan 2022 00:02:36 +0100
-Message-Id: <20220112230247.982212-3-iwona.winiarska@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220112230247.982212-1-iwona.winiarska@intel.com>
-References: <20220112230247.982212-1-iwona.winiarska@intel.com>
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57580C06173F;
+        Wed, 12 Jan 2022 15:04:14 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id k30so6893326wrd.9;
+        Wed, 12 Jan 2022 15:04:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JPJblGojv68qXHEOlkKW58+4JrhFqdhCrhqhESY/HD8=;
+        b=SNg2sho5IfNYgbCB1xjM7OU0QW/XXzdGkG91d1s3K8i/BZdXb/7ynPl0xsu8gc5Fze
+         OsOs3f0ljlyOF8CKxhZEJGTP8tw6cFiYkLDJkHd9o8QtMM6wKIvwCLMeKLk5RbW7hqF1
+         vwtc8H0ZiX50S+ydlSu3wqtd+8iYRmItAhrXoM/huli9jx6Pe8HD80VQ8FZloXOJ1aas
+         KVga/aKcn0i+V80DoR/aQIeLiIoqS9wEtyUgkl2XLdvR4KLrF6+F/EvNdPF1Yudu2iWu
+         sNVk9efUgltg7Gtc7FwQkGOO1+RmyF/NWeeSgdx78q7QPGZo3vAvxCw6jayQk/cltldR
+         iLKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JPJblGojv68qXHEOlkKW58+4JrhFqdhCrhqhESY/HD8=;
+        b=XYxFbydNVRXJCi+kSMT6sFXwP+EqdxA3+z5Vfby5LwJsYdZuiRLcnbiEnEFLI5ZPtN
+         UB2NF8vHUrrKtISfQk/U0FIDvtop35sQR6KX76bCdh8KKXjsA4soSGXUjyC40ODNmT87
+         +BkrWwQ6svvwr+P7J/eZ7Q2SEEqOFHbiJTAfz4JRB895KGTQ4DrQUc6YuwamEmDBuyBR
+         nGli1ruJ6sz3rfSALsELmL0uSsTNLwwQPTSlS3C/840eI4U+8aoKcAskHFz88/Om60cE
+         KKaIMzkg/3t35AzRQ2VHx/rpj8o/ldWsaq3aFrDTI03bc8kOpRaa2+wqbchmjFBo3i8I
+         p02A==
+X-Gm-Message-State: AOAM533Jpq8++ZtTBrn05w1VB6dOHopW+cBRMyxLzRNeW3VpqTKVk5jU
+        k4icrxPvCw1GOxYMj2oIYOrWNfizb+7EK9cn
+X-Google-Smtp-Source: ABdhPJwLUWRwU/yurVO2wcN8frae9XRxsB3mD9pZLrIi6BlQpko2UABoU6oUiG1e2dzTUOGkQ78erA==
+X-Received: by 2002:a05:6000:18cd:: with SMTP id w13mr1604727wrq.199.1642028652961;
+        Wed, 12 Jan 2022 15:04:12 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id c7sm1294974wri.21.2022.01.12.15.04.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 15:04:12 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Mark Fasheh <mark@fasheh.com>, Joel Becker <jlbec@evilplan.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        ocfs2-devel@oss.oracle.com
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ocfs2: remove redundant assignment to variable free_space
+Date:   Wed, 12 Jan 2022 23:04:11 +0000
+Message-Id: <20220112230411.1090761-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the peci-aspeed controller driver.
+Variable free_space is being initialized with a value that is not read,
+it is being re-assigned later in the two paths of an if statement. The
+early initialization is redundant and can be removed.
 
-Co-developed-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- .../devicetree/bindings/peci/peci-aspeed.yaml | 72 +++++++++++++++++++
- 1 file changed, 72 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/peci/peci-aspeed.yaml
+ fs/ocfs2/dir.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/peci/peci-aspeed.yaml b/Documentation/devicetree/bindings/peci/peci-aspeed.yaml
-new file mode 100644
-index 000000000000..1e68a801a92a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/peci/peci-aspeed.yaml
-@@ -0,0 +1,72 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/peci/peci-aspeed.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Aspeed PECI Bus Device Tree Bindings
-+
-+maintainers:
-+  - Iwona Winiarska <iwona.winiarska@intel.com>
-+  - Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
-+
-+allOf:
-+  - $ref: peci-controller.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - aspeed,ast2400-peci
-+      - aspeed,ast2500-peci
-+      - aspeed,ast2600-peci
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    description:
-+      Clock source for PECI controller. Should reference the external
-+      oscillator clock.
-+    maxItems: 1
-+
-+  resets:
-+    maxItems: 1
-+
-+  cmd-timeout-ms:
-+    minimum: 1
-+    maximum: 1000
-+    default: 1000
-+
-+  clock-frequency:
-+    description:
-+      The desired operation frequency of PECI controller in Hz.
-+    minimum: 2000
-+    maximum: 2000000
-+    default: 1000000
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - resets
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/ast2600-clock.h>
-+    peci-controller@1e78b000 {
-+      compatible = "aspeed,ast2600-peci";
-+      reg = <0x1e78b000 0x100>;
-+      interrupts = <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-+      clocks = <&syscon ASPEED_CLK_GATE_REF0CLK>;
-+      resets = <&syscon ASPEED_RESET_PECI>;
-+      cmd-timeout-ms = <1000>;
-+      clock-frequency = <1000000>;
-+    };
-+...
+diff --git a/fs/ocfs2/dir.c b/fs/ocfs2/dir.c
+index bd8d534f11cb..f2cc1ff29e6d 100644
+--- a/fs/ocfs2/dir.c
++++ b/fs/ocfs2/dir.c
+@@ -3343,7 +3343,7 @@ static int ocfs2_find_dir_space_id(struct inode *dir, struct buffer_head *di_bh,
+ 	struct ocfs2_dir_entry *de, *last_de = NULL;
+ 	char *de_buf, *limit;
+ 	unsigned long offset = 0;
+-	unsigned int rec_len, new_rec_len, free_space = dir->i_sb->s_blocksize;
++	unsigned int rec_len, new_rec_len, free_space;
+ 
+ 	/*
+ 	 * This calculates how many free bytes we'd have in block zero, should
 -- 
-2.31.1
+2.33.1
 
