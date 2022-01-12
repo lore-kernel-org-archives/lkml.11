@@ -2,90 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5730BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AF8C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354098AbiALO0q (ORCPT
+        id S1354107AbiALO1I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:26:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239105AbiALO0j (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:26:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26053C06173F;
-        Wed, 12 Jan 2022 06:26:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5B7CB81F0F;
-        Wed, 12 Jan 2022 14:26:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40ABFC36AEA;
-        Wed, 12 Jan 2022 14:26:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641997594;
-        bh=Of9s1U/c/4ZrioTqbXt+GoX9s9yd9C0ccT69AJL5N8k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=JdOHYls9XkLlsnubveVe4Eh0BPHJKcwPYLHjcHFYISqIwhpdWV2bDrx6XiRqMvO0a
-         uWps9L74aQoq16lO45eyYuEknbIjqSHj0TWPAk8HwVLMIW+HqD8+d9q74BIRPiEhku
-         DN+cpcETPeozEofVk6CXlZJW+93cZlGMhDwG/4lv5YKzihdX78OkJ6RVEBFBj/GENv
-         kdj4kQd+zjea1+y/WPTaHxz7of6SbN8ua8tIqkVBw4a3sQEEsOjbl0C2aqAuE7wpP2
-         zxWnL5r1lGLHi2WqxOEGmGQX4azprFQk8jUAeq1VD+P50DweqidJmy1TNgb/Rgbkyg
-         coZt1R4UAbsOQ==
-Date:   Wed, 12 Jan 2022 08:26:32 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     kys@microsoft.com, sunilmut@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        lorenzo.pieralisi@arm.com, robh@kernel.org, kw@linux.com,
-        bhelgaas@google.com, mikelley@microsoft.com, maz@kernel.org,
-        linux-hyperv@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH -next v2] PCI: hv: Fix an ignored error return from
- bitmap_find_free_region()
-Message-ID: <20220112142632.GA252208@bhelgaas>
+        Wed, 12 Jan 2022 09:27:08 -0500
+Received: from honk.sigxcpu.org ([24.134.29.49]:40592 "EHLO honk.sigxcpu.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239105AbiALO1F (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 09:27:05 -0500
+X-Greylist: delayed 386 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 09:27:05 EST
+Received: from localhost (localhost [127.0.0.1])
+        by honk.sigxcpu.org (Postfix) with ESMTP id AF483FB03;
+        Wed, 12 Jan 2022 15:20:36 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
+Received: from honk.sigxcpu.org ([127.0.0.1])
+        by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id a970IfYtB6-K; Wed, 12 Jan 2022 15:20:35 +0100 (CET)
+Date:   Wed, 12 Jan 2022 15:20:27 +0100
+From:   Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Richard Zhu <hongxing.zhu@nxp.com>, Li Jun <jun.li@nxp.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] phy: freescale: i.MX8 PHYs should depend on ARCH_MXC &&
+ ARM64
+Message-ID: <Yd7jqwG/qmkSXfPz@qwark.sigxcpu.org>
+References: <393868affd830016d35f0d9aba32ccd7098c8073.1641987369.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220112003324.62755-1-yang.lee@linux.alibaba.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <393868affd830016d35f0d9aba32ccd7098c8073.1641987369.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 08:33:24AM +0800, Yang Li wrote:
-> An error return from bitmap_find_free_region() is currently ignored 
-> and we instead return a completely bogus *hwirq from 
-> hv_pci_vec_alloc_device_irq().
+Hi,
+On Wed, Jan 12, 2022 at 12:40:38PM +0100, Geert Uytterhoeven wrote:
+> The Freescale/NXP i.MX8 USB3, MIPI DSI, and PCIE PHYs are only present
+> on the NXP i.MX8 family of SoCs.  Hence wrap the config symbols for
+> these PHYs inside a check for ARCH_MXC && ARM64, to prevent asking the
+> user about these drivers when configuring a kernel without NXP i.MX SoC
+> family support.
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Fixes: c10bdb758ca4 ("PCI: hv: Add arm64 Hyper-V vPCI support")
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Thanks, I squashed this into c10bdb758ca4.
+Sounds good to me:
+
+Reviewed-by: Guido Günther <agx@sigxcpu.org>
+
+Cheers,
+ -- Guido
 
 > ---
+>  drivers/phy/freescale/Kconfig | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> Change in v2:
-> --According to Bjorn's suggestion, the corresponding changes were made.
->   https://lore.kernel.org/lkml/20220111155412.GA142851@bhelgaas/
-> 
->  drivers/pci/controller/pci-hyperv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/controller/pci-hyperv.c b/drivers/pci/controller/pci-hyperv.c
-> index 26c9c8ec0989..20ea2ee330b8 100644
-> --- a/drivers/pci/controller/pci-hyperv.c
-> +++ b/drivers/pci/controller/pci-hyperv.c
-> @@ -701,7 +701,7 @@ static int hv_pci_vec_alloc_device_irq(struct irq_domain *domain,
->  				       irq_hw_number_t *hwirq)
->  {
->  	struct hv_pci_chip_data *chip_data = domain->host_data;
-> -	unsigned int index;
-> +	int index;
->  
->  	/* Find and allocate region from the SPI bitmap */
->  	mutex_lock(&chip_data->map_lock);
+> diff --git a/drivers/phy/freescale/Kconfig b/drivers/phy/freescale/Kconfig
+> index c3669c28ea9fe83a..856cbec7057d9e54 100644
+> --- a/drivers/phy/freescale/Kconfig
+> +++ b/drivers/phy/freescale/Kconfig
+> @@ -1,4 +1,7 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+> +
+> +if (ARCH_MXC && ARM64) || COMPILE_TEST
+> +
+>  config PHY_FSL_IMX8MQ_USB
+>  	tristate "Freescale i.MX8M USB3 PHY"
+>  	depends on OF && HAS_IOMEM
+> @@ -22,3 +25,5 @@ config PHY_FSL_IMX8M_PCIE
+>  	help
+>  	  Enable this to add support for the PCIE PHY as found on
+>  	  i.MX8M family of SOCs.
+> +
+> +endif
 > -- 
-> 2.20.1.7.g153144c
+> 2.25.1
 > 
