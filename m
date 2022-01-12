@@ -2,102 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D28C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63789C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:55:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354841AbiALPzF (ORCPT
+        id S1354856AbiALPzm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 10:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        Wed, 12 Jan 2022 10:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354847AbiALPyo (ORCPT
+        with ESMTP id S1354850AbiALPze (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 10:54:44 -0500
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAD8C06173F;
-        Wed, 12 Jan 2022 07:54:44 -0800 (PST)
-Received: by mail-io1-xd34.google.com with SMTP id v1so4215116ioj.10;
-        Wed, 12 Jan 2022 07:54:44 -0800 (PST)
+        Wed, 12 Jan 2022 10:55:34 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425FBC061748;
+        Wed, 12 Jan 2022 07:55:34 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id q25so11813843edb.2;
+        Wed, 12 Jan 2022 07:55:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=pFJ/5YX2hKQMWWd4jbVdAiQQ3E9iCyV59fKnRpe2rjE=;
-        b=AeyaDt32H7QGfKGP7f1XnQSjfL1GC1itGsgMnC3MtpGpnjCf/39HnH9CDDGZNfBErq
-         oBTl5kiT5CKBdLZK11Kt59aDugyecduZrgL+KDNGzah3NBqFJHDSjFZ9NhYjrKyXLoCt
-         O2KqPkAuqVO6sJTSxx4binn3lmJvDjBiVlsHfibT3hEeDoxDlYaaw9XhkV8KRkmTVQ/P
-         p6b2WscKVwHeDo+cWLguuuf5h2Cfcxwl7S1xreFqmil+tmYYWbPnfjj+aX8ja/OYFakh
-         +NGQxZ/O3Tz1hfpCAo44oRzqUZh8nXPQzf/gMlxaKd/qkmCb3WXf5bQQQu6HGD2KjUEy
-         mQZw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7sr5SESFFMB446XWLFZjyV/pitsS2bsWKxu5hETTxNM=;
+        b=Z2DtGmZd15CFngreVTZS0S8eF7cgf7qNpMDbsRgyUrblkJjHI85j+s6mkaq75JZm5o
+         wEHEL2I0wXsvGpLtxUUV3rqwVXnDb9feupL/z2lSXJsWxcZChRN/j/W939f9yB725iag
+         qwklSKX1aENX/c5ItiOJhEtnVOmv+ZUs847RBU4EICM221XSsQ3t3XhFirGFoFl6TQbN
+         TCPPw7eTuOSJ22n3HaBTIAhTJFOURowETCLAj3qkYfN6YBf3S8zSBpj2BXJ3DvOXUxWZ
+         DRwAEny9Wdzxhgu3ndh5BcOqPEmvCa78a6+JiO7U/ZskfFkwVW4k9gxFhducOkDqRLwH
+         1jUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=pFJ/5YX2hKQMWWd4jbVdAiQQ3E9iCyV59fKnRpe2rjE=;
-        b=EJe9kzq7QAyk/aEfeI55a7sLkMhsmUgerFhAwaxnteoW43SOVdO4M+Xb5E0c3tiSgq
-         jiolCmHSCTywmBoVUGl3P/t3i/YSh313kXELYWVgI2INDysOw/FrxsanFRtrwziztiq5
-         wF1/7UcLce+joEX0JzcmxeSOEgtsD9SILZ+6L3bbeBuD2ipFDwHfXt2YuSxci9cQUXnL
-         0OuYdhCQoSNYXd2zlWHH0CLapkPeWZa49p7zNYelJF5pk++SepU72pf+8KA94lV13N1z
-         awWaCwkJpDjWUks/XrcsHOFw1FFtC+fjdcvDnL1Ljfcz3Mxs/QI37YRJSclrd0Mmz2mw
-         SCDg==
-X-Gm-Message-State: AOAM5328KLDr7fFkHxuXoigPD4GSjDam4JR3KUkFdDNf4carfztJH4Eh
-        x9nvyR+8FkgOwWFlYa0NaKk=
-X-Google-Smtp-Source: ABdhPJwI+dhtW0LgtXpTKLjpztLTIjus7FlvV/KgUFLadovNp27M9fbNP+IS0zeAzZ/HhsWpjnByrg==
-X-Received: by 2002:a02:6f13:: with SMTP id x19mr152979jab.35.1642002883650;
-        Wed, 12 Jan 2022 07:54:43 -0800 (PST)
-Received: from [172.16.0.2] ([8.48.134.58])
-        by smtp.googlemail.com with ESMTPSA id a8sm74318ilt.42.2022.01.12.07.54.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 07:54:42 -0800 (PST)
-Message-ID: <33308db2-a583-165c-cae0-b055c7976f33@gmail.com>
-Date:   Wed, 12 Jan 2022 08:54:41 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7sr5SESFFMB446XWLFZjyV/pitsS2bsWKxu5hETTxNM=;
+        b=CBApm3Yb4z6wThdpfKHk4VlQhPo1Abhrcy/hzHu//qHjFaBijfQGsZV7XYtckNvIId
+         YFfBYNtyzJ5eOpFzKbNPgMiOi7pR9nb4HvzxTQKa6aUrk618Wm6NBqFVu4juOPzGhVLP
+         OqGqTVDf10NYR0pCJzrDzx/kAXRg+/2gVKqBgbQgXGA3UplchEUSCyu7rstzmZlOam8i
+         APLaosKmoeWZCj6AzxelIqV5fa8e5lndtvLp5ocOjMYFZgnoA0VpxM4Jl7NGeJZAbIIg
+         3I8QcvWBVSW+v/LS/jIBuIEb+9Wmrwkrr81tJkn8/NmYhD2i0THsjXL3N+zUCm9Zxg3P
+         O9Cg==
+X-Gm-Message-State: AOAM5330Afd96KBXUwp4yAFUfNxUcCtlipqnFfQuqFnWhYxYJlDxeEAE
+        K23tysQ82SPEJqkat+eSt53rhtBSQlfuY6m+8Ow=
+X-Google-Smtp-Source: ABdhPJzJXO9xzC/S0TQ24Y7YhDy0ls0vhKKyoj7GKS7LG+kDSY0DZTNtnzQnsn3WgzH7kNxAQFLNTr838SaKfW72fS4=
+X-Received: by 2002:a05:6402:2696:: with SMTP id w22mr270559edd.296.1642002932831;
+ Wed, 12 Jan 2022 07:55:32 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.1
-Subject: Re: [PATCH] net/ipv6: remove redundant err variable
-Content-Language: en-US
-To:     cgel.zte@gmail.com, davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-References: <20220112082655.667680-1-chi.minghao@zte.com.cn>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220112082655.667680-1-chi.minghao@zte.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1641996862-26960-1-git-send-email-akhilrajeev@nvidia.com> <1641996862-26960-2-git-send-email-akhilrajeev@nvidia.com>
+In-Reply-To: <1641996862-26960-2-git-send-email-akhilrajeev@nvidia.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 12 Jan 2022 17:53:45 +0200
+Message-ID: <CAHp75Vc+uN8MTM4cSMQ5gk7GvgkZwJ7aoKwnFiNjQVM4QTqPVg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] device property: Add device_irq_get_byname
+To:     Akhil R <akhilrajeev@nvidia.com>
+Cc:     Christian Koenig <christian.koenig@amd.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/12/22 1:26 AM, cgel.zte@gmail.com wrote:
-> diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-> index fe786df4f849..897194eb3b89 100644
-> --- a/net/ipv6/ip6_tunnel.c
-> +++ b/net/ipv6/ip6_tunnel.c
-> @@ -698,13 +698,12 @@ mplsip6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
->  	    u8 type, u8 code, int offset, __be32 info)
->  {
->  	__u32 rel_info = ntohl(info);
-> -	int err, rel_msg = 0;
-> +	int rel_msg = 0;
+On Wed, Jan 12, 2022 at 4:14 PM Akhil R <akhilrajeev@nvidia.com> wrote:
 
-this line needs to be moved down to maintain reverse xmas tree ordering.
+In the subject line: device_irq_get_byname()
 
-You need to make the subject
-'[PATCH net-next] net/ipv6: remove redundant err variable'
+> Get interrupt by name from ACPI table as well.
 
-and since net-next is closed you will need to resubmit when it is open.
+an interrupt
+the ACPI
 
->  	u8 rel_type = type;
->  	u8 rel_code = code;
->  
-> -	err = ip6_tnl_err(skb, IPPROTO_MPLS, opt, &rel_type, &rel_code,
-> +	return ip6_tnl_err(skb, IPPROTO_MPLS, opt, &rel_type, &rel_code,
->  			  &rel_msg, &rel_info, offset);
-> -	return err;
->  }
->  
->  static int ip4ip6_dscp_ecn_decapsulate(const struct ip6_tnl *t,
+> Add option to use 'interrupt-names' in _DSD which can map to interrupt by
 
+can be mapped
+Interrupt() resource
+
+(The last one is very important to point out this is only about
+Interrupt() resources for now).
+
+> index. The implementation is similar to 'interrupt-names' in devicetree.
+
+the Device Tree
+
+> Also add a common routine to get irq by name from devicetree and ACPI
+
+IRQ
+Device Tree
+
+> table.
+
+...
+
+>  /**
+> + * fwnode_irq_get_byname - Get IRQ from a fwnode using its name
+> + * @fwnode:    Pointer to the firmware node
+> + * @name:      IRQ name in interrupt-names property in fwnode
+> + *
+> + * Returns Linux IRQ number on success, errno otherwise.
+
+negative errno
+
+> + */
+> +int fwnode_irq_get_byname(const struct fwnode_handle *fwnode, const char *name)
+> +{
+> +       int index;
+
+> +       if (unlikely(!name))
+
+Don't use unlikely() here.
+
+> +               return -EINVAL;
+> +
+> +       index = fwnode_property_match_string(fwnode, "interrupt-names",  name);
+> +       if (index < 0)
+> +               return index;
+> +
+> +       return fwnode_irq_get(fwnode, index);
+> +}
+
+-- 
+With Best Regards,
+Andy Shevchenko
