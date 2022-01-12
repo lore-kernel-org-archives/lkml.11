@@ -2,79 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4521C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:07:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2EF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:08:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357560AbiALUHQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 15:07:16 -0500
-Received: from neo-zeon.de ([70.229.12.130]:38110 "EHLO neo-zeon.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235331AbiALUGt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 15:06:49 -0500
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 15:06:49 EST
-Received: from neo-zeon.de (localhost [127.0.0.1])
-        by neo-zeon.de (OpenSMTPD) with ESMTP id 9f1b631d;
-        Wed, 12 Jan 2022 12:00:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=neo-zeon.de; h=message-id
-        :date:mime-version:subject:to:cc:references:from:in-reply-to
-        :content-type:content-transfer-encoding; s=1; bh=LsQgZUAtXz/CTWd
-        vR+KQLZhrZLQ=; b=wsOGnqtYjqstNcf7G/2jAkEC5VZEL5+9SHA5IVcodgyQTje
-        X676QXMnB6oKzRNX6sOBC//iyw3Le/JUTIZ2cMtnaCBm7gvWBQ8/Z4cGOpvShGxf
-        p/1OYtuujlRWI93qlm8afXMHk6gt5kgsIM9ARZEjWKXQ+m3IagHUILEZ80Rc=
-Received: by neo-zeon.de (OpenSMTPD) with ESMTPSA id 04d3b972 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 12 Jan 2022 12:00:07 -0800 (PST)
-Message-ID: <3f042293-05de-d472-dd6e-ce5ca3a8331b@neo-zeon.de>
-Date:   Wed, 12 Jan 2022 12:00:06 -0800
+        id S242167AbiALUI6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 15:08:58 -0500
+Received: from mxout02.lancloud.ru ([45.84.86.82]:43256 "EHLO
+        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236213AbiALUI5 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 15:08:57 -0500
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 104C0209B125
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH] platform: finally disallow IRQ0 in platform_get_irq() and
+ its ilk
+To:     Marc Zyngier <maz@kernel.org>
+CC:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <5e001ec1-d3f1-bcb8-7f30-a6301fd9930c@omp.ru>
+ <87pmp7volh.wl-maz@kernel.org> <9c3f9a6e-89b6-b73b-032f-e4b4ee6f72ac@omp.ru>
+ <58caf8b54828bcc25cfc65220d29b68f@kernel.org>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <c20818ab-9ed8-a26f-3298-9e5648b633ec@omp.ru>
+Date:   Wed, 12 Jan 2022 23:08:53 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v6 08/10] ACPI / scan: Create platform device for CLSA0100
- and CSC3551 ACPI nodes
+In-Reply-To: <58caf8b54828bcc25cfc65220d29b68f@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Lucas tanure <tanureal@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>,
-        'Hans de Goede' <hdegoede@redhat.com>,
-        "'Rafael J. Wysocki'" <rafael@kernel.org>
-Cc:     "'moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM...'" 
-        <alsa-devel@alsa-project.org>,
-        'Liam Girdwood' <lgirdwood@gmail.com>,
-        patches@opensource.cirrus.com, 'Takashi Iwai' <tiwai@suse.com>,
-        'Mark Gross' <markgross@kernel.org>,
-        'ACPI Devel Maling List' <linux-acpi@vger.kernel.org>,
-        'Mark Brown' <broonie@kernel.org>,
-        'Platform Driver' <platform-driver-x86@vger.kernel.org>,
-        'Linux Kernel Mailing List' <linux-kernel@vger.kernel.org>,
-        'Len Brown' <lenb@kernel.org>
-References: <20211217115708.882525-1-tanureal@opensource.cirrus.com>
- <20211217115708.882525-9-tanureal@opensource.cirrus.com>
- <CAJZ5v0jTELqFeO6q6w_mYNo_yf1R9SX66RrEz0ZSe27w7E6kog@mail.gmail.com>
- <4b5506b1-20c6-3983-d541-86dc2388b2a7@redhat.com>
- <004001d7f5c6$7329d4d0$597d7e70$@opensource.cirrus.com>
- <e2d39d52-c139-a94a-94cc-88841d3638e3@opensource.cirrus.com>
-From:   Cameron Berkenpas <cam@neo-zeon.de>
-In-Reply-To: <e2d39d52-c139-a94a-94cc-88841d3638e3@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 1/12/22 9:08 PM, Marc Zyngier wrote:
 
-Will this also include adding support for ID's matching CLSA0101?
+[...]
+>>>> The commit a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is
+>>>> invalid") only calls WARN() when IRQ0 is about to be returned, however
+>>>> using IRQ0 is considered invalid (according to Linus) outside the arch/
+>>>> code where it's used by the i8253 drivers. Many driver subsystems treat
+>>>> 0 specially (e.g. as an indication of the polling mode by libata), so
+>>>> the users of platform_get_irq[_byname]() in them would have to filter
+>>>> out IRQ0 explicitly and this (quite obviously) doesn't scale...
+>>>> Let's finally get this straight and return -EINVAL instead of IRQ0!
+>>>>
+>>>> Fixes: a85a6c86c25b ("driver core: platform: Clarify that IRQ 0 is invalid")
+>>>> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+>>>>
+>>>> ---
+>>>> The patch is against the 'driver-core-linus' branch of Greg Kroah-Hartman's
+>>>> 'driver-core.git' repo.
+>>>>
+>>>>  drivers/base/platform.c |    6 ++++--
+>>>>  1 file changed, 4 insertions(+), 2 deletions(-)
+>>>>
+>>>> Index: driver-core/drivers/base/platform.c
+>>>> ===================================================================
+>>>> --- driver-core.orig/drivers/base/platform.c
+>>>> +++ driver-core/drivers/base/platform.c
+>>>> @@ -231,7 +231,8 @@ int platform_get_irq_optional(struct pla
+>>>>  out_not_found:
+>>>>      ret = -ENXIO;
+>>>>  out:
+>>>> -    WARN(ret == 0, "0 is an invalid IRQ number\n");
+>>>> +    if (WARN(!ret, "0 is an invalid IRQ number\n"))
+>>>> +        return -EINVAL;
+>>>>      return ret;
+>>>>  }
+>>>>  EXPORT_SYMBOL_GPL(platform_get_irq_optional);
+>>>> @@ -445,7 +446,8 @@ static int __platform_get_irq_byname(str
+>>>>
+>>>>      r = platform_get_resource_byname(dev, IORESOURCE_IRQ, name);
+>>>>      if (r) {
+>>>> -        WARN(r->start == 0, "0 is an invalid IRQ number\n");
+>>>> +        if (WARN(!r->start, "0 is an invalid IRQ number\n"))
+>>>> +            return -EINVAL;
+>>>>          return r->start;
+>>>>      }
+>>>
+>>> Geert recently mentioned that a few architectures (such as sh?) still
+>>> use IRQ0 as something valid in limited cases.
+>>>
+>>> From my PoV, this patch is fine, but please be prepared to fix things
+>>> in a couple of years when someone decides to boot a recent kernel on
+>>> their pet dinosaur. With that in mind:
+>>>
+>>> Acked-by: Marc Zyngier <maz@kernel.org>
+>>
+>>    Greg, so would that ACK be enough? Is there a chance this patch
+>> gets finally included
+>> into 5.17-rc1? Or should I look into fixing the recently found
+>> arch/sh/ issue 1st (as you
+>> can see, just WARN()'ing about IRQ0 wasn't enough to get this fixed)?
+> 
+> Fixing SH would be a good thing.
 
-Thanks,
+   Who argues with that? :-)
+   However, I don't think it should be a pre-requisite for this patch,
+so that we have extra time until 5.17 final... actually, I had couple
+quick workarounds in mind; the problem however is that we don't seem to
+have  the targets for testing... :-(
 
--Cameron
-
-On 1/12/22 05:05, Lucas tanure wrote:
-> As the ic2-multi-instantiate patch chain is still being worked out, we 
-> would like to submit a new chain for CLSA0100 id and a few fixes for 
-> the HDA cs35l41 driver.
-> And to avoid conflicts the ic2-multi-instantiate patch chain will wait 
-> for this new patch chain to be merged.
->
 > Thanks,
-> Lucas Tanure 
+> 
+>         M.
 
+MBR, Sergey
