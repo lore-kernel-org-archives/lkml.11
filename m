@@ -2,97 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91503C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344485AbiALRwP (ORCPT
+        id S1355780AbiALRxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:52:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344144AbiALRwN (ORCPT
+        Wed, 12 Jan 2022 12:53:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46002 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344090AbiALRxp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:52:13 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72FD6C061748
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:52:13 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id pj2so6523752pjb.2
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:52:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4lOr0cO3MtfPjxOReqWS5LWG9cMBTSgs7rdN+koXOwM=;
-        b=X74Qu9X/Fwr3SmVCD7qP2n9dWtLD6j7cD+7ia6lCkMQfgGTrzwjvG68ZxyCsEcD+Pd
-         effSJTMx8/h8k/XLP00W0L12Uy/6Bp8YD0WvJBQwrzw1Qdh03hLZLMYASGNCAV6QSN6W
-         Z+Yi00tEq+iraj0PX2/AH8XZ7TQk00ZGnoG2MUmE/UctqFp22VIpQNFP1hfroTD0EmWo
-         Rk5frZk/ckQljI/6XBCljvo97zfYX6J70/muKiYVfG0XGHxxzGnmmIOxKEiUwDaki+Te
-         6D6ja7NEWxoxjg3VwoaVNafs8B20Bfq+RrG0s+THZAL+aIM9RS82Gfz6Br/mzdkVRKJ5
-         TDvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4lOr0cO3MtfPjxOReqWS5LWG9cMBTSgs7rdN+koXOwM=;
-        b=a4UVmWQ1I5twDZUMZmsnNSgXe8fNUn/06ImgNLkvSoNe1uC6F/cRrrbx6TnL43n8H/
-         BiJio32MoX1BKVR8JFo4mgaMNleePVrp3gDMPqAq2Eppz65Lfgqn4PE0xqUia9qmRzjv
-         1YrL3QghP4ejkUcSWzOHp292nordYEp/MEYVCZraH10PyN1s68ir0JGomlqhWfSH8K+s
-         08igbk1tqK3EsvNFfYgLAI5tE/4DcTnWp7zUiBjv/sZ8TZOJvNrst/cY1UEylxVutlW0
-         tI+1MTEtP7RryKs2uidTtuQuEdbnv5tM+EOEfCouMyX9GSKZ7lL0Cy0+oySW8iaDBee/
-         jmZQ==
-X-Gm-Message-State: AOAM532cZCnzdrGbgycTmhejsv52r8ooALFqDrxvzz35HJMH1/3dCRml
-        byOiIhy+uqP8xBZDlW2BoFLD8g==
-X-Google-Smtp-Source: ABdhPJzmVHtXXCExxXrlD6q6+Z8uAPfHE4FtJOgWfW1egZvlp1s9OzJP8s/SDJqyHmwU/foKpjTpGg==
-X-Received: by 2002:a63:350c:: with SMTP id c12mr681310pga.568.1642009932842;
-        Wed, 12 Jan 2022 09:52:12 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id s7sm253374pfu.133.2022.01.12.09.52.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 09:52:12 -0800 (PST)
-Date:   Wed, 12 Jan 2022 17:52:08 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
-        tglx@linutronix.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/6] KVM: Do compatibility checks on hotplugged CPUs
-Message-ID: <Yd8VSCghD3OvuGJ7@google.com>
-References: <20211227081515.2088920-1-chao.gao@intel.com>
- <20211227081515.2088920-7-chao.gao@intel.com>
- <YdzTfIEZ727L4g2R@google.com>
- <20220111053205.GD2175@gao-cwp>
+        Wed, 12 Jan 2022 12:53:45 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E95DB61965;
+        Wed, 12 Jan 2022 17:53:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32C53C36AEA;
+        Wed, 12 Jan 2022 17:53:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642010024;
+        bh=bB0F4ynqROi7/Nr6NboWLFBR9m4kGwynIwBytKGuibA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Xcp1KJyUyKpOaR0EnEg27qifBO5NUx4sVS7z+cPHJpAli/a9twmHfHmikJAhalU5M
+         Av+GWOq2/I4LjMueagmuxDE3lGJ/n5QTigrg941YTPwvF9i6xGnt1NauZGuydwYbn2
+         UwoiUccAcky8LJ+k1a0kwH6WFW33UAlH5gIK1VlmJv/8ASX0uzik13NvgvFRTqIVG7
+         5dW1o2KXwLu7bCePRZSIrsU6cIxKnL64iuh0KeqQtIlKc2CjQXRyEcPfZ9u42fVGi4
+         dlFDFYZctOM+0aADSFl3QdFUCJ8PYj/piJJqmrPt22OUzw4hPaQfbeeE2iPfGneYKZ
+         jaHC9kSaV0YbA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 5BBD440714; Wed, 12 Jan 2022 14:53:42 -0300 (-03)
+Date:   Wed, 12 Jan 2022 14:53:42 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        eranian@google.com
+Subject: Re: [RFC PATCH] perf pmu-events: Don't lower case MetricExpr
+Message-ID: <Yd8Vpo/I7LiMyfI6@kernel.org>
+References: <20211126071305.3733878-1-irogers@google.com>
+ <CAP-5=fU2kEq3T8UCpX0tAmwcGhZ+1h92uRPbzyuLDNpeCD7ffQ@mail.gmail.com>
+ <Yd8To1ASO73135LK@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220111053205.GD2175@gao-cwp>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yd8To1ASO73135LK@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022, Chao Gao wrote:
-> On Tue, Jan 11, 2022 at 12:46:52AM +0000, Sean Christopherson wrote:
-> >This has a fairly big flaw in that it prevents KVM from creating VMs even if the
-> >offending CPU is offlined.  That seems like a very reasonable thing to do, e.g.
-> >admin sees that hotplugging a CPU broke KVM and removes the CPU to remedy the
-> >problem.  And if KVM is built-in, reloading KVM to wipe hardware_incompatible
-> >after offlining the CPU isn't an option.
-
-...
-
-> >That said, I'm not convinced that continuing with the hotplug in this scenario
-> >is ever the right thing to do.  Either the CPU being hotplugged really is a different
-> >CPU, or it's literally broken.  In both cases, odds are very, very good that running
-> >on the dodgy CPU will hose the kernel sooner or later, i.e. KVM's compatibility checks
-> >are just the canary in the coal mine.
+Em Wed, Jan 12, 2022 at 02:45:07PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Wed, Jan 12, 2022 at 09:22:51AM -0800, Ian Rogers escreveu:
+> > On Thu, Nov 25, 2021 at 11:13 PM Ian Rogers <irogers@google.com> wrote:
+> > >
+> > > This patch changes MetricExpr to be written out in the same case. This
+> > > enables events in metrics to use modifiers like 'G' which currently
+> > > yield parse errors when made lower case. To keep tests passing the
+> > > literal #smt_on is compared in a non-case sensitive way - #SMT_on is
+> > > present in at least SkylakeX metrics.
+> > 
+> > Ping.
 > 
-> Ok. Then here are two options:
-> 1. KVM always prevents incompatible CPUs from being brought up regardless of running VMs
-> 2. make "disabling KVM on incompatible CPUs" an opt-in feature.
+> I tried applying 20211124001231.3277836-1-irogers@google.com on top of
+> your perf_cpu series, it failed, will check.
 > 
-> Which one do you think is better?
+> BTW, I got the two other patches in that series:
+> 
+> ⬢[acme@toolbox perf]$ git log --oneline -2
+> 6dd8646939a770e4 (HEAD -> perf/core) perf tools: Probe non-deprecated sysfs path 1st
+> 0ce05781f4905fcf perf tools: Fix SMT fallback with large core counts
+> ⬢[acme@toolbox perf]$
 
-IMO, #1.  It's simpler to implement and document, and is less likely to surprise
-the user.  We can always pivot to #2 _if_ anyone requests the ability to dynamically
-disable KVM in order to bring up heterogenous CPUs and has a reasonable, sane use
-case for doing so.  But that's a big "if" as I would be very surprised if it's even
-possible to encounter such a setup without a hardware bug, firmware bug, and/or user
-error.
+Ok, I have that one now on, but could Andi or somebody else that works
+more frequently with that code provide an Acked-by or Reviewed-by?
+
+- Arnaldo
+ 
+> - Arnaldo
+>  
+> > Thanks,
+> > Ian
+> > 
+> > > This patch is on top of:
+> > > https://lore.kernel.org/lkml/20211124001231.3277836-1-irogers@google.com/
+> > >
+> > > Signed-off-by: Ian Rogers <irogers@google.com>
+> > > ---
+> > >  tools/perf/pmu-events/jevents.c | 2 --
+> > >  tools/perf/util/expr.c          | 2 +-
+> > >  2 files changed, 1 insertion(+), 3 deletions(-)
+> > >
+> > > diff --git a/tools/perf/pmu-events/jevents.c b/tools/perf/pmu-events/jevents.c
+> > > index 2e7c4153875b..1a57c3f81dd4 100644
+> > > --- a/tools/perf/pmu-events/jevents.c
+> > > +++ b/tools/perf/pmu-events/jevents.c
+> > > @@ -672,8 +672,6 @@ static int json_events(const char *fn,
+> > >                                 addfield(map, &je.metric_constraint, "", "", val);
+> > >                         } else if (json_streq(map, field, "MetricExpr")) {
+> > >                                 addfield(map, &je.metric_expr, "", "", val);
+> > > -                               for (s = je.metric_expr; *s; s++)
+> > > -                                       *s = tolower(*s);
+> > >                         } else if (json_streq(map, field, "ArchStdEvent")) {
+> > >                                 addfield(map, &arch_std, "", "", val);
+> > >                                 for (s = arch_std; *s; s++)
+> > > diff --git a/tools/perf/util/expr.c b/tools/perf/util/expr.c
+> > > index cdbab4f959fe..5cd6b9ff2489 100644
+> > > --- a/tools/perf/util/expr.c
+> > > +++ b/tools/perf/util/expr.c
+> > > @@ -397,7 +397,7 @@ double expr__get_literal(const char *literal)
+> > >         static struct cpu_topology *topology;
+> > >         double result = NAN;
+> > >
+> > > -       if (!strcmp("#smt_on", literal)) {
+> > > +       if (!strcasecmp("#smt_on", literal)) {
+> > >                 result =  smt_on() > 0 ? 1.0 : 0.0;
+> > >                 goto out;
+> > >         }
+> > > --
+> > > 2.34.0.rc2.393.gf8c9666880-goog
+> > >
+> 
+> -- 
+> 
+> - Arnaldo
+
+-- 
+
+- Arnaldo
