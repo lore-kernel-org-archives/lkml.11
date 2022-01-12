@@ -2,104 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:04:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42128C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240046AbiALLEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:04:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:24522 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239350AbiALLEf (ORCPT
+        id S1352725AbiALLGD (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 06:06:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239350AbiALLGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:04:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641985474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eQRmWQJO7h35wGy22fa7tdbvt7nutmZtPTdgCQaUOQQ=;
-        b=ZMk023g4XJaPW8MzWRFaY/W4dbmo8E8VbCjA82gkRaSzkJ++v615edZJOdGW4DKgPsdNi9
-        VgPnQFFPJW8/qkSALIodu0874lSzDny5suxIobURJGDWHDO9tD2kDvRCJnJf47djP24wAw
-        uwZkrw25mi/q989dSJuuzLR7GPpFhJI=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-663-yFlQCGPVP2alIVAGwweVMw-1; Wed, 12 Jan 2022 06:04:32 -0500
-X-MC-Unique: yFlQCGPVP2alIVAGwweVMw-1
-Received: by mail-ed1-f72.google.com with SMTP id ec25-20020a0564020d5900b003fc074c5d21so1902903edb.19
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 03:04:32 -0800 (PST)
+        Wed, 12 Jan 2022 06:06:00 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307D6C06173F;
+        Wed, 12 Jan 2022 03:06:00 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id pf13so4175734pjb.0;
+        Wed, 12 Jan 2022 03:06:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=efnCwJ4wgzV+ae0TxSAq8p0i4hZZzCH5LWLiMt2dAJE=;
+        b=f/1n3avpzsj/EuXCiZYRr48U0S3OM7RPnCSuk27DXVwMQM7Ju+p8IUkhwDhgg6Ml4j
+         Gj5IFn5u3bC9FduiQO+qhtHpneaxd4WstAIuj6KV58CNEiN5gfaF5m/WY6fCmSE8iwKg
+         o8C/HzigxznDVMQ8XvaWb0N/dvbVUMcsaMBsKYc+UQ924jXYs2guYlYwlcBsOn9GVmW4
+         3txrEZ3xiOb8TrziW5OO/M04KJsTURXSMIcsdodIobGfi6KrooqAgqhUJ651FECGBhRQ
+         P4Wb+ccLav2WUBa6T92m39vulNuoLCkLyj43bK2Yekkmby/5xiTmXVmkw8FxZCv9qjvf
+         bv2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=eQRmWQJO7h35wGy22fa7tdbvt7nutmZtPTdgCQaUOQQ=;
-        b=DyLrYXKkIzvw5Af/LY/3Tq4Rg5YpKMBBw4T74DX7bnrx7tcONRRrgf2ykr3TeHfgPr
-         caSdLcSEhUM+cgsQg3L7dgeC7Jgi0k2jZoJcIY+149zvSclxSxl/UhP+FmW31FME9+xI
-         1ETqtXQ8Y3X975gYh+kvjAr7QN5TyUE0D1Kr27jxx3/xhQvso1qO1ubewHn7w9HPldTg
-         RBnnyDuJnjCypfDBCKTuNwZxcVkwzmKd4BEbAVe7/Ml61DFJse+iqlkrtljDlORoHq1h
-         QoiQBIskT3RgrD/ycf0CKi+PdqdV1O7CfzA1neHAdGMeyOAq4sJs8MTbCoIRrOpjZOzl
-         3R6g==
-X-Gm-Message-State: AOAM533Y+KtHKYycR8YXvisgvF7AtFHVrqliBsLN1rTqKcySc1JtGq3e
-        DQuocO83H3fxNR+ZKKY0RL/kkOedztgxzYFwwBKr8fJIrCDr7n7drP9V5zRXvYSSHuGWDMet12v
-        Fd2DVlAtrhqtbShDXhd6EVUAS
-X-Received: by 2002:a05:6402:486:: with SMTP id k6mr8580288edv.330.1641985471847;
-        Wed, 12 Jan 2022 03:04:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyLu6iWsDVwPl07dmV9nmwCMbbplxs+ZFDOgPiX/VhbSWFK2LAa03DeMHirncilimRMIa9S6A==
-X-Received: by 2002:a05:6402:486:: with SMTP id k6mr8580274edv.330.1641985471689;
-        Wed, 12 Jan 2022 03:04:31 -0800 (PST)
-Received: from ?IPV6:2003:cb:c702:4700:e25f:39eb:3cb8:1dec? (p200300cbc7024700e25f39eb3cb81dec.dip0.t-ipconnect.de. [2003:cb:c702:4700:e25f:39eb:3cb8:1dec])
-        by smtp.gmail.com with ESMTPSA id qw4sm4413621ejc.55.2022.01.12.03.04.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 03:04:31 -0800 (PST)
-Message-ID: <970ca2a4-416d-7e8f-37c7-510c5b050f4b@redhat.com>
-Date:   Wed, 12 Jan 2022 12:04:30 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC PATCH v3 3/8] mm: migrate: allocate the right size of non
- hugetlb or THP compound pages.
-Content-Language: en-US
-To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>
-References: <20220105214756.91065-1-zi.yan@sent.com>
- <20220105214756.91065-4-zi.yan@sent.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220105214756.91065-4-zi.yan@sent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=efnCwJ4wgzV+ae0TxSAq8p0i4hZZzCH5LWLiMt2dAJE=;
+        b=yL7z+6ZpCYKMPTAR/ut3iVY0FM4Ydvlqt0gZUgdgq7Xd7og/Ry+TySvKgfVpAGIIMr
+         liURm9wvhdvCCn9Csre5neeiH7YddBFDyqhx/He6tvsdZpuyljFOHpzApDtH4tMSPvVF
+         nZYPK0ACcWzzokXKfEBDZUlTUqgEVMczRw/JsbDEFxG0+unC5AG4MqUIC18OeRbj52Cm
+         cLR+S1qO+b5B0Rh0lNewFJscF+8atzEZ6np5cTJNS2tCe9U+ymMvCJC2LfNnk+i2WPcJ
+         97wnTF5udeJo8QgxFKWvJ7GBbO3PTOYXcPYQ359B5SWo73rcra77OKEzBwxiyK7b9but
+         IflQ==
+X-Gm-Message-State: AOAM533f/C6BL3Rw5DH8MQrPf5qS8P3g9dJy7WZoWQ7l0TtiO2zmiDUQ
+        ozkOyQURzxhfasY0j2eUhaA=
+X-Google-Smtp-Source: ABdhPJwZ7JmlpvrmkxPo12gxEGrApToWsgG2LYg4nmFl+Su9WKF1tD+v6QwVtUq2UJN2XeJ7stIizA==
+X-Received: by 2002:a05:6a00:8cc:b0:4a8:262:49e1 with SMTP id s12-20020a056a0008cc00b004a8026249e1mr8715366pfu.28.1641985559757;
+        Wed, 12 Jan 2022 03:05:59 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id l3sm2291605pgs.74.2022.01.12.03.05.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 03:05:59 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     hverkuil@xs4all.nl
+Cc:     hans.verkuil@cisco.com, linmq006@gmail.com,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+        m.tretter@pengutronix.de, mchehab@kernel.org,
+        p.zabel@pengutronix.de
+Subject: [PATCH v2] media: coda: Fix missing put_device() call in coda_get_vdoa_data
+Date:   Wed, 12 Jan 2022 11:05:54 +0000
+Message-Id: <20220112110554.1862-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <5454a150-7b11-dbce-02c4-d300c6629b1e@xs4all.nl>
+References: <5454a150-7b11-dbce-02c4-d300c6629b1e@xs4all.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05.01.22 22:47, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> alloc_migration_target() is used by alloc_contig_range() and non-LRU
-> movable compound pages can be migrated. Current code does not allocate the
-> right page size for such pages. Check THP precisely using
-> is_transparent_huge() and add allocation support for non-LRU compound
-> pages.
+The reference taken by 'of_find_device_by_node()' must be released when
+not needed anymore.
+Add the corresponding 'put_device()' in the error handling path.
 
-IIRC, we don't have any non-lru migratable pages that are coumpound
-pages. Read: not used and not supported :)
+Fixes: e7f3c5481035 ("[media] coda: use VDOA for un-tiling custom macroblock format")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+Changes in v2:
+- remove the goto and unused label.
+---
+ drivers/media/platform/coda/coda-common.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Why is this required in the context of this series?
-
-
+diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
+index 0e312b0842d7..c3942b0abb00 100644
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -408,6 +408,7 @@ static struct vdoa_data *coda_get_vdoa_data(void)
+ 	if (!vdoa_data)
+ 		vdoa_data = ERR_PTR(-EPROBE_DEFER);
+ 
++	put_device(&vdoa_pdev->dev);
+ out:
+ 	of_node_put(vdoa_node);
+ 
 -- 
-Thanks,
-
-David / dhildenb
+2.17.1
 
