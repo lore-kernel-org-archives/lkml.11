@@ -2,97 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 350C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A41ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357911AbiALUDb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 15:03:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243255AbiALUAq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 15:00:46 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4778C061756;
-        Wed, 12 Jan 2022 12:00:45 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id 30so14469312edv.3;
-        Wed, 12 Jan 2022 12:00:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=T4aJvth/j/tURi7i+5z+htKe8ISAimHDCbWnrVNR53g=;
-        b=q5oQSKJc6vaYkwN+B4EjLF+BLRWuIK9Fad6ZhT816+rVjbaZrwADtHhR/nJPtHKw/K
-         xwUypYEqqARevPtfgMan5U3d6b1EcVY2wiaIf/ORlub+N+9tg3VK4xFCUizaWWmx0mxF
-         673wyAfRzl7KZPCw1sp24Jvq4UVdzlAb0+5/VCfZ/VHCbKI53KMBChItm0NUpdGCcY7g
-         C8XRO+xUXGqKtoYuGA/t9gDIUioohabLGraJzZHxEhxv+tcz54Gvd1q8MzvHLNcymX7t
-         VmbiCOLtfCAySHyR0uxwXOx+s4P8U7Dygo/4iXCdiL8ke+AukzRBnWTKMVtInGGol33Y
-         KVjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=T4aJvth/j/tURi7i+5z+htKe8ISAimHDCbWnrVNR53g=;
-        b=0wkNyOAuYAB7Neeu7f/dELdhciGOdBuFed3gGxOK2j+X+tGnCK4sMWl1cPzGr9Tsc6
-         +YS6zCAPSkrmDWLlREttyUBsiTO53GfIF3jiz81FyUqghfAKSW97ZfU/b/Xv4e93hKg3
-         QUM/+cMX2pv4uxRnBejRcxzpSk6DNY3rWf1xvO2z32F8xZBdK25L5oI6QHhF97Pxzjks
-         GqzkhHenNNXo1r8/aNCeGT+8rmmORNjHixNDbrIeukx4O56UxLhPq85NRLC9Vl8O6Ppg
-         sdVziMTpkRFU0g9X6lcznFGPP62zZfwuUb+9nv3Eyo1g0v8Koq3sNi5EfoaqLgMgzk6K
-         lUPA==
-X-Gm-Message-State: AOAM532kSWQCjlE6BfmKWFrVJjK5mECFTZTJMRfRsftPcXusbYwYq2qK
-        r0OHx+3YOf0jF7/+IdoHpwM=
-X-Google-Smtp-Source: ABdhPJy71x22M8XAPtO8aFRlNcNzSxs1A97LUar9f5vBhM1REJmMTQLe30+TJ6VtN3yWdauDrL+5+w==
-X-Received: by 2002:a17:907:7ea6:: with SMTP id qb38mr1045303ejc.59.1642017644566;
-        Wed, 12 Jan 2022 12:00:44 -0800 (PST)
-Received: from demon-pc.localdomain ([79.119.107.253])
-        by smtp.gmail.com with ESMTPSA id rp17sm169566ejb.113.2022.01.12.12.00.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 12:00:44 -0800 (PST)
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: ad7124: fix mask used for setting AIN_BUFP & AIN_BUFM bits
-Date:   Wed, 12 Jan 2022 22:00:36 +0200
-Message-Id: <20220112200036.694490-1-cosmin.tanislav@analog.com>
-X-Mailer: git-send-email 2.34.1
+        id S236115AbiALUGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 15:06:54 -0500
+Received: from mga17.intel.com ([192.55.52.151]:55196 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1357289AbiALUGt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 15:06:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642018009; x=1673554009;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=RPjwaqN1NK/KnSeTr6fLaDsnH7HkZg/G64JzzF8F/AY=;
+  b=jflL6kAG7xY+Twd9BTi7fYGZyRpFMAHvfP0CsQ+3orCXLp3AV/iCMaM5
+   sqIS34T/9pfqCZB9ok6Ysw1lFKdtLiufA34eoJk/Lo0oEaz2Kqvg9P4aS
+   hrHvtVL/FdCvwdZRE7yLCv53TvQid/C/o2+hSQ8ZDfs1KbaUl1tL6nkK2
+   xsagItgKh6ULnHN2cYexgvGBNgiRcYaQvUBK5Xzza01nxE2ye3YjdNOJ1
+   ePiKms27q7BSF9qxc4GGB89L1Gd8lfGJA9X3s9LxgwlEAGUVW+6O/z6Cs
+   z15mSYC+HNfX1IjGD6fy+0P1BsO8Z6orJ4RSE8fbhCwI741VpFNh42aaP
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="224535854"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="224535854"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 12:06:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="623595595"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 12 Jan 2022 12:06:11 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n7jso-0006Kq-9Z; Wed, 12 Jan 2022 20:06:10 +0000
+Date:   Thu, 13 Jan 2022 04:05:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     kbuild-all@lists.01.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>
+Subject: Re: [PATCH V4 3/5] tty: serial: meson: The UART baud rate
+Message-ID: <202201130331.dzluDr3h-lkp@intel.com>
+References: <20220110085604.18042-4-yu.tu@amlogic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220110085604.18042-4-yu.tu@amlogic.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
-AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
+Hi Yu,
 
-Fix the mask used for setting these bits.
+Thank you for the patch! Yet something to improve:
 
-[1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
+[auto build test ERROR on tty/tty-testing]
+[also build test ERROR on next-20220112]
+[cannot apply to robh/for-next soc/for-next clk/clk-next v5.16]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+url:    https://github.com/0day-ci/linux/commits/Yu-Tu/the-UART-driver-compatible-with/20220110-170020
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
+config: powerpc-randconfig-s031-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130331.dzluDr3h-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/6d55159e6626326d9001d4c8f20b914a69c2c40b
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Yu-Tu/the-UART-driver-compatible-with/20220110-170020
+        git checkout 6d55159e6626326d9001d4c8f20b914a69c2c40b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=powerpc SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   powerpc-linux-ld: drivers/tty/serial/meson_uart.o: in function `meson_uart_probe_clocks':
+   meson_uart.c:(.text+0x464): undefined reference to `__clk_get_name'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x4bc): undefined reference to `__devm_clk_hw_register_divider'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x4fc): undefined reference to `__clk_get_name'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x518): undefined reference to `devm_clk_hw_register_fixed_factor'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x5a8): undefined reference to `__devm_clk_hw_register_mux'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x5c0): undefined reference to `clk_hw_get_rate'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x5f8): undefined reference to `clk_hw_get_name'
+   powerpc-linux-ld: meson_uart.c:(.text+0x640): undefined reference to `__devm_clk_hw_register_divider'
+>> powerpc-linux-ld: meson_uart.c:(.text+0x65c): undefined reference to `clk_hw_get_clk'
+
 ---
- drivers/iio/adc/ad7124.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-index e45c600fccc0..18c154afbd7a 100644
---- a/drivers/iio/adc/ad7124.c
-+++ b/drivers/iio/adc/ad7124.c
-@@ -76,7 +76,7 @@
- #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
- #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
- #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
--#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
-+#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
- #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
- 
- /* AD7124_FILTER_X */
--- 
-2.34.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
