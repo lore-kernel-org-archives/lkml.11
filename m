@@ -2,136 +2,460 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4B2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE9D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241189AbiALN5L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:57:11 -0500
-Received: from mail-sn1anam02on2049.outbound.protection.outlook.com ([40.107.96.49]:45894
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1353790AbiALN5B (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:57:01 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RXvihsBctMKhEgToy4MIG5khuOY4uixuZu2V/6pmnapomvvaPiwz+TayvksGCCayP9h027l/Yxk27lcyr4rbBaKJNkXJBLtDZQy/Xv1cqB/Y1g50F04Mm27PKn82nJm/7lPaSU7LF6Ag5Rn6sUD/An8wVXJcZuO2gDw8NfNUtDUN7CuJPsndfkS5ZcEP1KOGXq8wE1bsalLBn56jK3oajW/i5yXAR/IDcSoXA62YUhE0psDlkF+sGslHyrSpGVAevXvvK3YknPvGSAZpiGfTJ95NMbCFDrGUL45i2EdRPJAM1A2fD/H+zan7Dx7YYCwYPUshblThKH+bKtm8+RkIAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hwKoqySPkmm92p7j1sj/oCLbqIYXFNP6utVZR+6lZG4=;
- b=YEVqX+46Sg4UBrKfYiOCmNqDJALmy2lguv81t9V1RnokMaSMY7zwh5Cn0r06cwgEN1M9iKjIbloyK2MtCNUARMtg7Stx+ZNoo+QPfR3koJYfdCIF8vfeW5TyVAflsjQwDgBWGup89mMa1YNaDl55ttjPxPO02QOqxcQQ5bMkLa8Hp7NZPv3L+CEOcQPmaT93AkLPBjfcvjdf43lBOEJQriDkeBtlxoiYedKjO1u5XoM91w9cppu+rdSTEpyD12zFTOnAmMOsUbODDGDz52cmv4+3lfFv9GreIjvkeQHFKEYRQLpUKeGUBmtgk5P90ZWzvHDsawWdHAin275mcU2GYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=pengutronix.de smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hwKoqySPkmm92p7j1sj/oCLbqIYXFNP6utVZR+6lZG4=;
- b=qCmVJiyP6XzWQXR6JssWUdrTwcrVc/yClmdSGnSz644y17wMvI4NwQrhEMJc2q0q+WAvuHJUanFtcmcRRdbH6i2RJxoqs4aQ5bVcWeLRWOGFiFjCudUzDSapa/vRDjyKZMx+ebP5JD3ksxdVOKf0fDqW/1QuKdqMXE9HXcBJWYQovF3PHqPDdHqQm5YqfCWEZTVdMs4TC6QMzus2dOoXJJV8gVzdHyi9b9td7S1mbDnop93YvdO1nLeBjw7/pgcsLNab56sGwd809nkNwDhU0v4w2umObA1UMbbK94MMDjm4OM7eCqv8Izb6khoe0FOqSJUQ4wu7kT4hiuMi3jllrA==
-Received: from DM6PR01CA0029.prod.exchangelabs.com (2603:10b6:5:296::34) by
- BYAPR12MB2790.namprd12.prod.outlook.com (2603:10b6:a03:69::28) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4867.9; Wed, 12 Jan 2022 13:56:59 +0000
-Received: from DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:296:cafe::bd) by DM6PR01CA0029.outlook.office365.com
- (2603:10b6:5:296::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9 via Frontend
- Transport; Wed, 12 Jan 2022 13:56:58 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT020.mail.protection.outlook.com (10.13.172.224) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4888.9 via Frontend Transport; Wed, 12 Jan 2022 13:56:58 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 12 Jan
- 2022 13:56:57 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 12 Jan
- 2022 13:56:57 +0000
-Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Wed, 12 Jan 2022 05:56:55 -0800
-From:   Sameer Pujar <spujar@nvidia.com>
-To:     <p.zabel@pengutronix.de>, <thierry.reding@gmail.com>,
-        <jonathanh@nvidia.com>, <mperttunen@nvidia.com>
-CC:     <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Sameer Pujar" <spujar@nvidia.com>
-Subject: [PATCH] reset: tegra-bpmp: Restore Handle errors in BPMP response
-Date:   Wed, 12 Jan 2022 19:26:46 +0530
-Message-ID: <1641995806-15245-1-git-send-email-spujar@nvidia.com>
-X-Mailer: git-send-email 2.7.4
+        id S241655AbiALN61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 08:58:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49044 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236849AbiALN60 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 08:58:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641995905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=u92yA883SjiA8RmcsqvmgxkfZYspTwlEn6ow9YD5DEM=;
+        b=Wt2a4mqNBokJuVhpVwChdixFBtclZD1bNT5/kmxyvSeWYrNfk7Jp32+t5Nej/+toNtxVBE
+        kX7i+1MhDMtpc1sUuSxt/8hzZ7PxQRg/9LF0JPRCYhy77Qb8XTz1xDsUa1LxAPDl4/WpLE
+        obt1zhN0G8qOS6JyvVo1R3QDw4NrP1g=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-582-i4LAS5_FO2eTNBi2ibjMuQ-1; Wed, 12 Jan 2022 08:58:23 -0500
+X-MC-Unique: i4LAS5_FO2eTNBi2ibjMuQ-1
+Received: by mail-ed1-f70.google.com with SMTP id m8-20020a056402510800b003f9d22c4d48so2286584edd.21
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:58:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=u92yA883SjiA8RmcsqvmgxkfZYspTwlEn6ow9YD5DEM=;
+        b=YAla6jjWIbQOwb9LSKJhXvKVWvXxf9xDxsykeo59XV66qCMd4U/+kzXJFR2p5AxkMe
+         vBhr4Oo55AE+Sn83BEnHGkFl/6+bey+EhbnD8J8qmW7idh1/A4b7DCHB6cx5RVjFI5Xu
+         JujyC0LWVaiUsdr8zFAwr0sFCvFwDT/CjJXTgZkBw8ZIM2Sv2hurhaGAg7bBjUBX3tKs
+         VRvSYgY/HlOnoCnjtahjYmA0qkg8+7JkMUM/KKQPINv9FavWvMbc0zba0jSwCMLXtPYJ
+         5j//+enmxbCe4dmRwIXJnXJhKLou3+5ZAAi0aqzvEtCWQC3JSfV1Krio+bqowKin5xLy
+         PhWQ==
+X-Gm-Message-State: AOAM530ksV474X5Sb5HAKgJn2QC2Do7dWzobkDBLqBfGtGZJo+++yOyG
+        KsNZCHzqMQiLpPeLffWR0sWT+ItC47fhdLVhzbFI/Jdp94nrRn+22qxx3NnpQwSA8GyrLQUrEfA
+        tmpjCISXxfTsx2QMzp52HqG9F
+X-Received: by 2002:a17:906:478a:: with SMTP id cw10mr7547998ejc.39.1641995902106;
+        Wed, 12 Jan 2022 05:58:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxQWCCq3M0i6JXw8e8/d6zE68bpCKlO/E128Sxu1xmkY7DvL2COwCFZkw0bskJ47bnhDkzIrQ==
+X-Received: by 2002:a17:906:478a:: with SMTP id cw10mr7547984ejc.39.1641995901935;
+        Wed, 12 Jan 2022 05:58:21 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id kw14sm4525869ejc.68.2022.01.12.05.58.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 05:58:20 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Igor Mammedov <imammedo@redhat.com>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+In-Reply-To: <20220111090022.1125ffb5@redhat.com>
+References: <20211122175818.608220-1-vkuznets@redhat.com>
+ <20211122175818.608220-3-vkuznets@redhat.com>
+ <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
+ <20211227183253.45a03ca2@redhat.com>
+ <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com>
+ <87mtkdqm7m.fsf@redhat.com> <20220103104057.4dcf7948@redhat.com>
+ <875yr1q8oa.fsf@redhat.com>
+ <ceb63787-b057-13db-4624-b430c51625f1@redhat.com>
+ <87o84qpk7d.fsf@redhat.com> <877dbbq5om.fsf@redhat.com>
+ <5505d731-cf87-9662-33f3-08844d92877c@redhat.com>
+ <20220111090022.1125ffb5@redhat.com>
+Date:   Wed, 12 Jan 2022 14:58:19 +0100
+Message-ID: <87fsptnjic.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 73d1371c-9349-4241-0028-08d9d5d366a3
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2790:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR12MB27905918ED19BE4F729E2092A7529@BYAPR12MB2790.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:308;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0SUNNwDToedPfwF+SVNGyx1yvLIvcUAyuIQPnwVnz2aRyMTX/XJk+1zeJPzSWcdu9Vn+oBD5+Nqlm0Si7YnSqPxjfVFhP0WRK8aSbV4kuJ/+tj+kWTJSwj7F2edxV61kZHeZZ2u2bvP5GrVDY8xzqn3rIGfzkgb3xwdvIQ40QHyqk1r8el3cqz8ESa6OUAA19wMJlIxr+vmcEp3H+RYjDCu87gi2XUdR4gvb3EQRuTSjjJm839BwOhNOplWNYJw9I0t9f8Z7lGQOC0+CtO/7ZGZ6KmfBqb7NtUPIF8fmmkib+0f+DhtyXIv6JGSGKYTu/dR4Mw8wL3621QnVyZPsHSfNCzzzuPlsVyBcj67GtRgpktvbbM4Kvv16OlWWJoXSVIzTtEFuY2vzI/+VPQgvP8Cvk2GSNJqNd5K5386MCVkAKPt/ZczNBvrRAIRHNAQQyGdEkiMfeB/os+Z3prj0KRwqHrcho92cPJ/X6HD92wNo80BaJXLg1APcgUbYbkmZcVQ1OR5N/klss2kL05f5e7QZpouqUefpUy7MCEC/9r15IjzAd1lgIrAE7AXvw+uObIn4EA9l27HwgnyJs/dRCPwv59o08uEF5BSohVyVUR9qxwqk7yyfgsJkxGTtGmrY/ihjAPhE95nRN63onJ3vXRcdfNlfrkrIQp3ygJH+9y4HqSC9bFq2+8+IdJuejqWNeD/uOTfnC7Tf71m38+PJQXxnMriouvkl5f+buPWv03S6yxcc+NMsaOcQnpRkAnD7qBsaVkZV+0OG/+TShp+Pu5c/XGg6+0ybXHlXpVBqUss=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(40470700002)(36840700001)(7696005)(6636002)(86362001)(8936002)(107886003)(36860700001)(83380400001)(336012)(70586007)(508600001)(6666004)(70206006)(40460700001)(2906002)(47076005)(5660300002)(36756003)(426003)(54906003)(81166007)(110136005)(2616005)(8676002)(316002)(82310400004)(26005)(4326008)(186003)(356005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 13:56:58.5160
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73d1371c-9349-4241-0028-08d9d5d366a3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2790
+Content-Type: multipart/mixed; boundary="=-=-="
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts following commit 69125b4b9440 ("reset: tegra-bpmp: Revert
-Handle errors in BPMP response").
+--=-=-=
+Content-Type: text/plain
 
-The Tegra194 HDA reset failure is fixed by commit d278dc9151a0 ("ALSA:
-hda/tegra: Fix Tegra194 HDA reset failure"). The temporary revert of
-original commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-response") can be removed now.
+Igor Mammedov <imammedo@redhat.com> writes:
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+> On Fri, 7 Jan 2022 19:15:43 +0100
+> Paolo Bonzini <pbonzini@redhat.com> wrote:
+>
+>> On 1/7/22 10:02, Vitaly Kuznetsov wrote:
+>> > 
+>> > I'm again leaning towards an allowlist and currently I see only two
+>> > candidates:
+>> > 
+>> > CPUID.01H.EBX bits 31:24 (initial LAPIC id)
+>> > CPUID.0BH.EDX (x2APIC id)
+>> > 
+>> > Anything else I'm missing?  
+>> 
+>> I would also ignore completely CPUID leaves 03H, 04H, 0BH, 80000005h, 
+>> 80000006h, 8000001Dh, 8000001Eh (cache and processor topology), just to 
+>> err on the safe side.
+>
+> on top of that,
+>
+> 1Fh
+>
+
+The implementation turned out to be a bit more complex as kvm also
+mangles CPUIDs so we need to account for that. Could you give the
+attached series a spin to see if it works?
+
+-- 
+Vitaly
+
+
+--=-=-=
+Content-Type: text/x-patch
+Content-Disposition: inline;
+ filename=0001-KVM-x86-Fix-indentation-in-kvm_set_cpuid.patch
+
+From 9b7d89c0a86f52e404278a5dfd86521bff278d17 Mon Sep 17 00:00:00 2001
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
+Date: Wed, 12 Jan 2022 14:41:24 +0100
+Subject: [PATCH RFC 1/3] KVM: x86: Fix indentation in kvm_set_cpuid()
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/reset/tegra/reset-bpmp.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ arch/x86/kvm/cpuid.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/reset/tegra/reset-bpmp.c b/drivers/reset/tegra/reset-bpmp.c
-index 24d3395..4c5bba5 100644
---- a/drivers/reset/tegra/reset-bpmp.c
-+++ b/drivers/reset/tegra/reset-bpmp.c
-@@ -20,6 +20,7 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	struct tegra_bpmp *bpmp = to_tegra_bpmp(rstc);
- 	struct mrq_reset_request request;
- 	struct tegra_bpmp_message msg;
-+	int err;
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 07e9215e911d..89af3c7390d3 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -276,21 +276,21 @@ u64 kvm_vcpu_reserved_gpa_bits_raw(struct kvm_vcpu *vcpu)
+ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+                         int nent)
+ {
+-    int r;
++	int r;
  
- 	memset(&request, 0, sizeof(request));
- 	request.cmd = command;
-@@ -30,7 +31,13 @@ static int tegra_bpmp_reset_common(struct reset_controller_dev *rstc,
- 	msg.tx.data = &request;
- 	msg.tx.size = sizeof(request);
+-    r = kvm_check_cpuid(e2, nent);
+-    if (r)
+-        return r;
++	r = kvm_check_cpuid(e2, nent);
++	if (r)
++		return r;
  
--	return tegra_bpmp_transfer(bpmp, &msg);
-+	err = tegra_bpmp_transfer(bpmp, &msg);
-+	if (err)
-+		return err;
-+	if (msg.rx.ret)
-+		return -EINVAL;
-+
+-    kvfree(vcpu->arch.cpuid_entries);
+-    vcpu->arch.cpuid_entries = e2;
+-    vcpu->arch.cpuid_nent = nent;
++	kvfree(vcpu->arch.cpuid_entries);
++	vcpu->arch.cpuid_entries = e2;
++	vcpu->arch.cpuid_nent = nent;
+ 
+-    kvm_update_kvm_cpuid_base(vcpu);
+-    kvm_update_cpuid_runtime(vcpu);
+-    kvm_vcpu_after_set_cpuid(vcpu);
++	kvm_update_kvm_cpuid_base(vcpu);
++	kvm_update_cpuid_runtime(vcpu);
++	kvm_vcpu_after_set_cpuid(vcpu);
+ 
+-    return 0;
 +	return 0;
  }
  
- static int tegra_bpmp_reset_module(struct reset_controller_dev *rstc,
+ /* when an old userspace process fills a new kernel module */
 -- 
-2.7.4
+2.34.1
+
+
+--=-=-=
+Content-Type: text/x-patch
+Content-Disposition: inline;
+ filename=0002-KVM-x86-Do-runtime-CPUID-update-before-updating-vcpu.patch
+
+From c735aa9b4375d37dbd61c7c655d6b007d7d1962c Mon Sep 17 00:00:00 2001
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
+Date: Wed, 12 Jan 2022 14:27:54 +0100
+Subject: [PATCH RFC 2/3] KVM: x86: Do runtime CPUID update before updating
+ vcpu->arch.cpuid_entries
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/cpuid.c | 35 +++++++++++++++++++++++++----------
+ 1 file changed, 25 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 89af3c7390d3..16f4083edeeb 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -125,14 +125,21 @@ static void kvm_update_kvm_cpuid_base(struct kvm_vcpu *vcpu)
+ 	}
+ }
+ 
+-static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
++static struct kvm_cpuid_entry2 *__kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu,
++					      struct kvm_cpuid_entry2 *entries, int nent)
+ {
+ 	u32 base = vcpu->arch.kvm_cpuid_base;
+ 
+ 	if (!base)
+ 		return NULL;
+ 
+-	return kvm_find_cpuid_entry(vcpu, base | KVM_CPUID_FEATURES, 0);
++	return cpuid_entry2_find(entries, nent, base | KVM_CPUID_FEATURES, 0);
++}
++
++static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
++{
++	return __kvm_find_kvm_cpuid_features(vcpu, vcpu->arch.cpuid_entries,
++					     vcpu->arch.cpuid_nent);
+ }
+ 
+ void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
+@@ -147,11 +154,12 @@ void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
+ 		vcpu->arch.pv_cpuid.features = best->eax;
+ }
+ 
+-void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
++static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
++				       int nent)
+ {
+ 	struct kvm_cpuid_entry2 *best;
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 1, 0);
++	best = cpuid_entry2_find(entries, nent, 1, 0);
+ 	if (best) {
+ 		/* Update OSXSAVE bit */
+ 		if (boot_cpu_has(X86_FEATURE_XSAVE))
+@@ -162,33 +170,39 @@ void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
+ 			   vcpu->arch.apic_base & MSR_IA32_APICBASE_ENABLE);
+ 	}
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 7, 0);
++	best = cpuid_entry2_find(entries, nent, 7, 0);
+ 	if (best && boot_cpu_has(X86_FEATURE_PKU) && best->function == 0x7)
+ 		cpuid_entry_change(best, X86_FEATURE_OSPKE,
+ 				   kvm_read_cr4_bits(vcpu, X86_CR4_PKE));
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 0xD, 0);
++	best = cpuid_entry2_find(entries, nent, 0xD, 0);
+ 	if (best)
+ 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 0xD, 1);
++	best = cpuid_entry2_find(entries, nent, 0xD, 1);
+ 	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
+ 		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
+ 		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
+ 
+-	best = kvm_find_kvm_cpuid_features(vcpu);
++	best = __kvm_find_kvm_cpuid_features(vcpu, vcpu->arch.cpuid_entries,
++					     vcpu->arch.cpuid_nent);
+ 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
+ 		(best->eax & (1 << KVM_FEATURE_PV_UNHALT)))
+ 		best->eax &= ~(1 << KVM_FEATURE_PV_UNHALT);
+ 
+ 	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT)) {
+-		best = kvm_find_cpuid_entry(vcpu, 0x1, 0);
++		best = cpuid_entry2_find(entries, nent, 0x1, 0);
+ 		if (best)
+ 			cpuid_entry_change(best, X86_FEATURE_MWAIT,
+ 					   vcpu->arch.ia32_misc_enable_msr &
+ 					   MSR_IA32_MISC_ENABLE_MWAIT);
+ 	}
+ }
++
++void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
++{
++	__kvm_update_cpuid_runtime(vcpu, vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
++}
+ EXPORT_SYMBOL_GPL(kvm_update_cpuid_runtime);
+ 
+ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+@@ -278,6 +292,8 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+ {
+ 	int r;
+ 
++	__kvm_update_cpuid_runtime(vcpu, e2, nent);
++
+ 	r = kvm_check_cpuid(e2, nent);
+ 	if (r)
+ 		return r;
+@@ -287,7 +303,6 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+ 	vcpu->arch.cpuid_nent = nent;
+ 
+ 	kvm_update_kvm_cpuid_base(vcpu);
+-	kvm_update_cpuid_runtime(vcpu);
+ 	kvm_vcpu_after_set_cpuid(vcpu);
+ 
+ 	return 0;
+-- 
+2.34.1
+
+
+--=-=-=
+Content-Type: text/x-patch
+Content-Disposition: inline;
+ filename=0003-KVM-x86-Partially-allow-KVM_SET_CPUID-2-after-KVM_RU.patch
+
+From f29f2c4e48540f3e1214a6ecdd49510465d2d234 Mon Sep 17 00:00:00 2001
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
+Date: Wed, 12 Jan 2022 12:51:01 +0100
+Subject: [PATCH RFC 3/3] KVM: x86: Partially allow KVM_SET_CPUID{,2} after
+ KVM_RUN for CPU hotplug
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/cpuid.c | 69 +++++++++++++++++++++++++++++++++++++++++---
+ arch/x86/kvm/x86.c   | 19 ------------
+ 2 files changed, 65 insertions(+), 23 deletions(-)
+
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 16f4083edeeb..0f130d686323 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -80,9 +80,11 @@ static inline struct kvm_cpuid_entry2 *cpuid_entry2_find(
+ 	return NULL;
+ }
+ 
+-static int kvm_check_cpuid(struct kvm_cpuid_entry2 *entries, int nent)
++static int kvm_check_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
++			   int nent, bool is_update)
+ {
+-	struct kvm_cpuid_entry2 *best;
++	struct kvm_cpuid_entry2 *best, *e;
++	int i;
+ 
+ 	/*
+ 	 * The existing code assumes virtual address is 48-bit or 57-bit in the
+@@ -96,6 +98,58 @@ static int kvm_check_cpuid(struct kvm_cpuid_entry2 *entries, int nent)
+ 			return -EINVAL;
+ 	}
+ 
++	if (!is_update)
++		return 0;
++
++	/*
++	 * KVM does not correctly handle changing guest CPUID after KVM_RUN, as
++	 * MAXPHYADDR, GBPAGES support, AMD reserved bit behavior, etc.. aren't
++	 * tracked in kvm_mmu_page_role.  As a result, KVM may miss guest page
++	 * faults due to reusing SPs/SPTEs. In practice no sane VMM mucks with
++	 * the core vCPU model on the fly. It would've been better to forbid any
++	 * KVM_SET_CPUID{,2} calls after KVM_RUN altogether but unfortunately
++	 * some VMMs (e.g. QEMU) reuse vCPU fds for CPU hotplug/unplug and they
++	 * need to set CPUID to e.g. change [x2]APIC id. Implement an allowlist
++	 * of CPUIDs which are allowed to change.
++	 */
++	for (i = 0; i < nent; i++) {
++		e = &entries[i];
++
++		best = kvm_find_cpuid_entry(vcpu, e->function, e->index);
++		if (!best)
++			return -EINVAL;
++
++		switch (e->function) {
++		case 0x1:
++			/* Only initial LAPIC id is allowed to change */
++			if (e->eax ^ best->eax || ((e->ebx ^ best->ebx) >> 24) ||
++			    e->ecx ^ best->ecx || e->edx ^ best->edx)
++				return -EINVAL;
++			break;
++		case 0x3:
++			/* processor serial number */
++		case 0x4:
++			/* cache parameters */
++		case 0xb:
++		case 0x1f:
++			/* x2APIC id and CPU topology */
++		case 0x80000005:
++			/* AMD l1 cache information */
++		case 0x80000006:
++			/* l2 cache information */
++		case 0x8000001d:
++			/* AMD cache topology */
++		case 0x8000001e:
++			/* AMD processor topology */
++			break;
++		default:
++			if (e->eax ^ best->eax || e->ebx ^ best->ebx ||
++			    e->ecx ^ best->ecx || e->edx ^ best->edx)
++				return -EINVAL;
++			break;
++		}
++	}
++
+ 	return 0;
+ }
+ 
+@@ -291,10 +345,11 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+                         int nent)
+ {
+ 	int r;
++	bool is_update = vcpu->arch.last_vmentry_cpu != -1;
+ 
+ 	__kvm_update_cpuid_runtime(vcpu, e2, nent);
+ 
+-	r = kvm_check_cpuid(e2, nent);
++	r = kvm_check_cpuid(vcpu, e2, nent, is_update);
+ 	if (r)
+ 		return r;
+ 
+@@ -303,7 +358,13 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+ 	vcpu->arch.cpuid_nent = nent;
+ 
+ 	kvm_update_kvm_cpuid_base(vcpu);
+-	kvm_vcpu_after_set_cpuid(vcpu);
++
++	/*
++	 * KVM_SET_CPUID{,2} after KVM_RUN is not allowed to change vCPU features, see
++	 * kvm_check_cpuid().
++	 */
++	if (!is_update)
++		kvm_vcpu_after_set_cpuid(vcpu);
+ 
+ 	return 0;
+ }
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index e50e97ac4408..285d563af856 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -5148,17 +5148,6 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
+ 		struct kvm_cpuid __user *cpuid_arg = argp;
+ 		struct kvm_cpuid cpuid;
+ 
+-		/*
+-		 * KVM does not correctly handle changing guest CPUID after KVM_RUN, as
+-		 * MAXPHYADDR, GBPAGES support, AMD reserved bit behavior, etc.. aren't
+-		 * tracked in kvm_mmu_page_role.  As a result, KVM may miss guest page
+-		 * faults due to reusing SPs/SPTEs.  In practice no sane VMM mucks with
+-		 * the core vCPU model on the fly, so fail.
+-		 */
+-		r = -EINVAL;
+-		if (vcpu->arch.last_vmentry_cpu != -1)
+-			goto out;
+-
+ 		r = -EFAULT;
+ 		if (copy_from_user(&cpuid, cpuid_arg, sizeof(cpuid)))
+ 			goto out;
+@@ -5169,14 +5158,6 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
+ 		struct kvm_cpuid2 __user *cpuid_arg = argp;
+ 		struct kvm_cpuid2 cpuid;
+ 
+-		/*
+-		 * KVM_SET_CPUID{,2} after KVM_RUN is forbidded, see the comment in
+-		 * KVM_SET_CPUID case above.
+-		 */
+-		r = -EINVAL;
+-		if (vcpu->arch.last_vmentry_cpu != -1)
+-			goto out;
+-
+ 		r = -EFAULT;
+ 		if (copy_from_user(&cpuid, cpuid_arg, sizeof(cpuid)))
+ 			goto out;
+-- 
+2.34.1
+
+
+--=-=-=--
 
