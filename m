@@ -2,196 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8D3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3260DC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355787AbiALRtT (ORCPT
+        id S1344275AbiALRuJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:49:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37476 "EHLO
+        Wed, 12 Jan 2022 12:50:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344086AbiALRtN (ORCPT
+        with ESMTP id S1344044AbiALRuH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:49:13 -0500
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE365C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:49:12 -0800 (PST)
-Received: by mail-qk1-x730.google.com with SMTP id c190so2409383qkg.9
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:49:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FGEfHWlf9UMI6v4enCzCD7r7seKvBt4wr+xOvzAydtg=;
-        b=WbGG70yB5ix1xJm1WZIdyIccnKWNDVsMGBobYnUvRJtVGwRDFABrhR3HRodaO2H2gT
-         o+mvzdaj9LW0ogQ/fZRLZ/G14ELweRvxby5HD2yygkGanrwyi0saa1PLA/b2HANEP9wP
-         uVBQAarQx5wX6tUlOrtGMc8zeFxL6B2vOiWjnaC9BUVZle/bRqhOpgFK7qozPGiliRpF
-         KQaDAmpG3GhdrpqiN7KljC2pW8M/Z/6NhEvocoQhtnW+0wIJ3qYItndrv8QOCrbR/Jxa
-         UB+N+Y+r+k/dW13lG7nxHXxFVvAgkFh1FoS5a/O9Z9S/tPGYbuQ9WwEOG5hY/jGGrlg2
-         U5EA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FGEfHWlf9UMI6v4enCzCD7r7seKvBt4wr+xOvzAydtg=;
-        b=eapshznX/pS5/nG5UeFeCh0qKmI9i66NFj6redO+M676R3HOHy/7WDjsOhw4MCvUym
-         23qCYuvTs8/nLOj4oSqDVW0VbYmwT+qwELofcmcC9uDv9id45wmIA24j1gCLPfG2cN5h
-         ESdJ3xptwa/vXWeu9U2N3OT9iZ0LWyu0pe4Tx89H0JR2y66E0X5P1NzybFmUtGP/hd3i
-         huuF+X5+iOvJUfyWK80I/9zzKg8G3guTbfaWdhJdqCUW1utigWYymBjJ/SByysc3uYDR
-         DollXBq1FqqggRX17ziMZgtiLjCYzBHI2tg1HzXEObdZhSr9zOJKmsuyN2X3QVMQIx6s
-         yZmg==
-X-Gm-Message-State: AOAM532wXej0o69fYHPjJ/XlInqylN744VGJYcRdi3bLo5nXmi++gpA8
-        YhqQMvKNIwDzIn77a5hWUyv6sNYOk3WqZjphIju+kQ==
-X-Google-Smtp-Source: ABdhPJxfN2XJ4LOiyU4hogddx6yOZvk/BIWqCAvRPuDRWYY6wyEn2p4yI9Sa7X55t3Lg1CYmOJU4b8GfjXSbXBZJY5g=
-X-Received: by 2002:a25:7807:: with SMTP id t7mr1066672ybc.488.1642009751595;
- Wed, 12 Jan 2022 09:49:11 -0800 (PST)
-MIME-Version: 1.0
-References: <20220111232309.1786347-1-surenb@google.com> <Yd7oPlxCpnzNmFzc@cmpxchg.org>
- <CAJuCfpGHLXDvMU1GLMcgK_K72_ErPhbcFh1ZvEeHg025yinNuw@mail.gmail.com>
-In-Reply-To: <CAJuCfpGHLXDvMU1GLMcgK_K72_ErPhbcFh1ZvEeHg025yinNuw@mail.gmail.com>
-From:   Suren Baghdasaryan <surenb@google.com>
-Date:   Wed, 12 Jan 2022 09:49:00 -0800
-Message-ID: <CAJuCfpEaM3KoPy3MUG7HW2yzcT6oJ5gdceyHPNpHrqTErq27eQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] psi: Fix uaf issue when psi trigger is destroyed
- while being polled
-To:     Johannes Weiner <hannes@cmpxchg.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Eric Biggers <ebiggers@kernel.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Ingo Molnar <mingo@redhat.com>,
+        Wed, 12 Jan 2022 12:50:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F80C06173F;
+        Wed, 12 Jan 2022 09:50:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A2FCB82025;
+        Wed, 12 Jan 2022 17:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 978DAC36AEA;
+        Wed, 12 Jan 2022 17:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642009803;
+        bh=Z0Rl1UoN9N17xgQ6MEb+B6+A/2Qrjg74rAJxXxT4OT8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=P0XleWHkyMR/4cxnd/lE5N9yckMOtMzpOYqJLwTwS5ZecdNl1fYAanfjJIAP9frdI
+         KmZznXmtAvdBXPmvXfHu2S7U6RhvYnbrNAnWhDXBAcx32N+S5oY48TR3ateaHQ3p6E
+         H7UJ++2s/fAL+HpTOr83A3y8tQLxjTG4TjRHbjHgPyZwuIsQP1JaFZbEBcD6VKz44z
+         4RSXRUWPJZiY/qW6/+OfZNtGHi7/t7Pg757R+sHvLuU5sdMVqFfsI3Iqr/zRrmkjk/
+         5tuhyKhB3aDx2s9pFxnqUJpqv9BStl2tquE+FqWTlMC4AMx1NhERdcOJxbShP7jA8q
+         sVfkYinUCXqhQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id DDADB40714; Wed, 12 Jan 2022 14:50:01 -0300 (-03)
+Date:   Wed, 12 Jan 2022 14:50:01 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        "Paul A . Clarke" <pc@us.ibm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
         Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Benjamin Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        cgroups mailinglist <cgroups@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        kernel-team <kernel-team@android.com>,
-        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        eranian@google.com
+Subject: Re: [RFC PATCH] perf pmu-events: Don't lower case MetricExpr
+Message-ID: <Yd8UySEClsWdzKF5@kernel.org>
+References: <20211126071305.3733878-1-irogers@google.com>
+ <CAP-5=fU2kEq3T8UCpX0tAmwcGhZ+1h92uRPbzyuLDNpeCD7ffQ@mail.gmail.com>
+ <Yd8To1ASO73135LK@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yd8To1ASO73135LK@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 9:43 AM Suren Baghdasaryan <surenb@google.com> wrote:
->
-> )
->
-> On Wed, Jan 12, 2022 at 6:40 AM Johannes Weiner <hannes@cmpxchg.org> wrote:
-> >
-> > On Tue, Jan 11, 2022 at 03:23:09PM -0800, Suren Baghdasaryan wrote:
-> > > With write operation on psi files replacing old trigger with a new one,
-> > > the lifetime of its waitqueue is totally arbitrary. Overwriting an
-> > > existing trigger causes its waitqueue to be freed and pending poll()
-> > > will stumble on trigger->event_wait which was destroyed.
-> > > Fix this by disallowing to redefine an existing psi trigger. If a write
-> > > operation is used on a file descriptor with an already existing psi
-> > > trigger, the operation will fail with EBUSY error.
-> > > Also bypass a check for psi_disabled in the psi_trigger_destroy as the
-> > > flag can be flipped after the trigger is created, leading to a memory
-> > > leak.
+Em Wed, Jan 12, 2022 at 02:45:07PM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Wed, Jan 12, 2022 at 09:22:51AM -0800, Ian Rogers escreveu:
+> > On Thu, Nov 25, 2021 at 11:13 PM Ian Rogers <irogers@google.com> wrote:
 > > >
-> > > Fixes: 0e94682b73bf ("psi: introduce psi monitor")
-> > > Cc: stable@vger.kernel.org
-> > > Reported-by: syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
-> > > Analyzed-by: Eric Biggers <ebiggers@kernel.org>
-> > > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> >
-> > Acked-by: Johannes Weiner <hannes@cmpxchg.org>
->
-> Hmm. kernel test robot notified me of new (which are not really new)
-> warnings but I don't think this patch specifically introduced them:
->
-> kernel/sched/psi.c:1112:21: warning: no previous prototype for
-> function 'psi_trigger_create' [-Wmissing-prototypes]
->    struct psi_trigger *psi_trigger_create(struct psi_group *group,
->                        ^
->    kernel/sched/psi.c:1112:1: note: declare 'static' if the function
-> is not intended to be used outside of this translation unit
->    struct psi_trigger *psi_trigger_create(struct psi_group *group,
->    ^
->    static
-> >> kernel/sched/psi.c:1182:6: warning: no previous prototype for function 'psi_trigger_destroy' [-Wmissing-prototypes]
->    void psi_trigger_destroy(struct psi_trigger *t)
->         ^
->    kernel/sched/psi.c:1182:1: note: declare 'static' if the function
-> is not intended to be used outside of this translation unit
->    void psi_trigger_destroy(struct psi_trigger *t)
->    ^
->    static
->    kernel/sched/psi.c:1249:10: warning: no previous prototype for
-> function 'psi_trigger_poll' [-Wmissing-prototypes]
->    __poll_t psi_trigger_poll(void **trigger_ptr,
->             ^
->    kernel/sched/psi.c:1249:1: note: declare 'static' if the function
-> is not intended to be used outside of this translation unit
->    __poll_t psi_trigger_poll(void **trigger_ptr,
->    ^
->
-> This happens with the following config:
->
-> CONFIG_CGROUPS=n
-> CONFIG_PSI=y
->
-> With cgroups disabled these functions are defined as non-static but
-> are not defined in the header
-> (https://elixir.bootlin.com/linux/latest/source/include/linux/psi.h#L28)
-> since the only external user cgroup.c is disabled. The cleanest way to
-> fix these I think is by doing smth like this in psi.c:
->
-> struct psi_trigger *_psi_trigger_create(struct psi_group *group, char
-> *buf, size_t nbytes, enum psi_res res)
-> {
->   // original psi_trigger_create code
-> }
->
-> #ifdef CONFIG_CGROUPS
->
-> struct psi_trigger *psi_trigger_create(struct psi_group *group, char
-> *buf, size_t nbytes, enum psi_res res)
-> {
->     return _psi_trigger_create(group, buf, nbytes, res);
-> }
->
-> #else
->
-> static struct psi_trigger *psi_trigger_create(struct psi_group *group,
-> char *buf, size_t nbytes, enum psi_res res)
-> {
->     return _psi_trigger_create(group, buf, nbytes, res);
-> }
->
-> #endif
+> > > This patch changes MetricExpr to be written out in the same case. This
+> > > enables events in metrics to use modifiers like 'G' which currently
+> > > yield parse errors when made lower case. To keep tests passing the
+> > > literal #smt_on is compared in a non-case sensitive way - #SMT_on is
+> > > present in at least SkylakeX metrics.
+> > 
+> > Ping.
+> 
+> I tried applying 20211124001231.3277836-1-irogers@google.com on top of
+> your perf_cpu series, it failed, will check.
+> 
+> BTW, I got the two other patches in that series:
+> 
+> ⬢[acme@toolbox perf]$ git log --oneline -2
+> 6dd8646939a770e4 (HEAD -> perf/core) perf tools: Probe non-deprecated sysfs path 1st
+> 0ce05781f4905fcf perf tools: Fix SMT fallback with large core counts
+> ⬢[acme@toolbox perf]$
 
-Actually this would be enough:
+It was due to that cpu__max_present_cpu().cpu;
 
-static struct psi_trigger *_psi_trigger_create(struct psi_group
-*group, char *buf, size_t nbytes, enum psi_res res)
-{
-   // original psi_trigger_create code
-}
+Fixed, applied.
 
-#ifdef CONFIG_CGROUPS
- struct psi_trigger *psi_trigger_create(struct psi_group *group, char
-*buf, size_t nbytes, enum psi_res res)
+- Arnaldo
+
+diff --git a/tools/perf/util/expr.c b/tools/perf/util/expr.c
+index e808738493e219fd..c94fb9bef919f5cb 100644
+--- a/tools/perf/util/expr.c
++++ b/tools/perf/util/expr.c
+@@ -405,12 +405,17 @@ double expr_id_data__source_count(const struct expr_id_data *data)
+ double expr__get_literal(const char *literal)
  {
-     return _psi_trigger_create(group, buf, nbytes, res);
+ 	static struct cpu_topology *topology;
++	double result = NAN;
+ 
+-	if (!strcmp("#smt_on", literal))
+-		return smt_on() > 0 ? 1.0 : 0.0;
++	if (!strcmp("#smt_on", literal)) {
++		result = smt_on() > 0 ? 1.0 : 0.0;
++		goto out;
++	}
+ 
+-	if (!strcmp("#num_cpus", literal))
+-		return cpu__max_present_cpu().cpu;
++	if (!strcmp("#num_cpus", literal)) {
++		result = cpu__max_present_cpu().cpu;
++		goto out;
++	}
+ 
+ 	/*
+ 	 * Assume that topology strings are consistent, such as CPUs "0-1"
+@@ -422,16 +427,24 @@ double expr__get_literal(const char *literal)
+ 		topology = cpu_topology__new();
+ 		if (!topology) {
+ 			pr_err("Error creating CPU topology");
+-			return NAN;
++			goto out;
+ 		}
+ 	}
+-	if (!strcmp("#num_packages", literal))
+-		return topology->package_cpus_lists;
+-	if (!strcmp("#num_dies", literal))
+-		return topology->die_cpus_lists;
+-	if (!strcmp("#num_cores", literal))
+-		return topology->core_cpus_lists;
++	if (!strcmp("#num_packages", literal)) {
++		result = topology->package_cpus_lists;
++		goto out;
++	}
++	if (!strcmp("#num_dies", literal)) {
++		result = topology->die_cpus_lists;
++		goto out;
++	}
++	if (!strcmp("#num_cores", literal)) {
++		result = topology->core_cpus_lists;
++		goto out;
++	}
+ 
+ 	pr_err("Unrecognized literal '%s'", literal);
+-	return NAN;
++out:
++	pr_debug2("literal: %s = %f\n", literal, result);
++	return result;
  }
-#endif
-
-and locally we use _psi_trigger_create().
-
->
-> Two questions:
-> 1. Is this even worth fixing?
-> 2. If so, I would like to do that as a separate patch (these warnings
-> are unrelated to the changes in this patch). Would that be ok?
-> Thanks,
-> Suren.
