@@ -2,204 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC864C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB47C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:52:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238917AbiALJvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:51:43 -0500
-Received: from mail-dm6nam12on2041.outbound.protection.outlook.com ([40.107.243.41]:41918
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238931AbiALJvO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:51:14 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y4tLZMosm7JsCM0jthqek01l+sisFK+ztFlo9lAvJ6YI0OjXPymPRcZV4U4I2HQjpIDOy+ycarRxs2M3O9F16LABzfagXeYjO3HvUsL2CkiBkoTQc159V1mznVAOHw30je2ArWA2Oym3zCiEc66KuyBB1/8YrS/mhFwGueI2NBpv4fDu2hlb99IGrjH3poZLT9dRWt0G21nCiMkcR23kYvemVvkndjsS2V6MH0/omGr2qx2dqgnQghl+KyVqXa83WYOHq5mJVIYDh4hMC9oEJEOwphJZN+DN1LcO/jA9BEkwUCeiulGtw4jUTbq1VLSXs2FZQg6If2Zv+ecl/Cp/GA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p8/Rcj7qksWxc80QpPxaFJ/P3yLApCmbm0qMbv9mKiE=;
- b=kmqoI7dDYLcSoIurAivwbFd/eZxWNXbZluQn1n/rYuLZuZPRnis2CtcDmjIi2arShNgxuhH5rxH+I1USSWxCwy2jg7E5HuDLoYZkLXIDQXRhcCTXHGdfLKddOYD19WR3oGDUPAvpDiuAswBQVanprQVSU766aURjS50bm/6pqyEj06lwkpbJN3YS7AEXRWwWwRzIHeWH/N5bDgcSEV+asPRPkWxhdlkmfiErFBu9KJbl/mJh6adyNvvjwL9AswBUYZJj7E9wq1+0Mh9CXaIS1QQ8oKe1ruJDaBhoaDFwA0TBMm/TzCFetlCTaYLU0KB1grYYGAjLgO6UJzH5iqfViw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S238843AbiALJwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 04:52:23 -0500
+Received: from ewsoutbound.kpnmail.nl ([195.121.94.170]:44016 "EHLO
+        ewsoutbound.kpnmail.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238628AbiALJwT (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 04:52:19 -0500
+X-KPN-MessageId: 25afc66f-738d-11ec-8a6e-005056ab378f
+Received: from smtp.kpnmail.nl (unknown [10.31.155.40])
+        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
+        id 25afc66f-738d-11ec-8a6e-005056ab378f;
+        Wed, 12 Jan 2022 10:51:00 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p8/Rcj7qksWxc80QpPxaFJ/P3yLApCmbm0qMbv9mKiE=;
- b=VWXSRwbeW2d9DOIIK4j+wASNSSlhxUI+vesBJkDOKNxxaizR28BWQv6NRBy6MMflADAul7b8ihzNvJ/cP69ZH6mnllQPoh7KBP+2UOn1S7sK6q3U537XqgpXTW5XB6UdtgWLBbLqUdb/sToTLzP9I8YAMHQLpGiviCQGT4PO9yU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silabs.com;
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
- by PH0PR11MB5594.namprd11.prod.outlook.com (2603:10b6:510:e4::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Wed, 12 Jan
- 2022 09:51:12 +0000
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::d031:da9e:71a:73e4%6]) with mapi id 15.20.4867.012; Wed, 12 Jan 2022
- 09:51:12 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v9 02/24] dt-bindings: introduce silabs,wfx.yaml
-Date:   Wed, 12 Jan 2022 10:51:04 +0100
-Message-ID: <12255658.RqvdlaKrbL@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <Yd4CjAM+3/PmLSyY@robh.at.kernel.org>
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-3-Jerome.Pouiller@silabs.com> <Yd4CjAM+3/PmLSyY@robh.at.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-ClientProxiedBy: PR3P192CA0017.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:102:56::22) To PH0PR11MB5657.namprd11.prod.outlook.com
- (2603:10b6:510:ee::19)
+        d=xs4all.nl; s=xs4all01;
+        h=content-type:from:to:subject:mime-version:date:message-id;
+        bh=JWV9gpnOFZc5xqMt+Kp1anWOuCekvScaCFHfyCKDtJ4=;
+        b=aKmLJTiY/rzEC8L6ExjRdR9TmpFTd+HlQrLDLWRiFI7ckQwyn9zPH0oFNGg9/P4GhbKZGojBaQ89U
+         A4/pPJRNcgjtS4nV298zVqq09YwJHjHV4Iz3iC3VKBycBzcY11t7RhqqYQowwmwKr6X1i+LdCJoOlK
+         LT0Axb8NYnyFL3kcLcD6n2HLHp0cK4tFchrlOWZkwLH9A97cba29cVuLf70fMKX3ZCS8JPAPUop8Oe
+         HudyOpuoYqKCUjtaapqYHUrmtBixpiuSsOqLOuh2Wo3jMPtBY3NNPmzaeHrAXgO2E+ZHm/Nvmo1x2P
+         OQk0Cjzku1Pqdvhl0VPGgS9OsgezGcQ==
+X-KPN-VerifiedSender: Yes
+X-CMASSUN: 33|RLFpkIQPsU3qAFZRoqXIb9KHg5nVlp/BoYgvbV+K8SrPJ2k9g7x+BVKOIX7aW3X
+ CqRvmVOypiPVvIeAstMxE9g==
+X-Originating-IP: 193.91.129.219
+Received: from [192.168.2.10] (cdb815bc1.dhcp.as2116.net [193.91.129.219])
+        by smtp.xs4all.nl (Halon) with ESMTPSA
+        id 5352fe80-738d-11ec-b76f-005056ab7584;
+        Wed, 12 Jan 2022 10:52:17 +0100 (CET)
+Message-ID: <aaa692f7-174a-83a9-8aae-64cda91044cb@xs4all.nl>
+Date:   Wed, 12 Jan 2022 10:52:16 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d0b5add0-8b28-4bfc-b5c1-08d9d5b11104
-X-MS-TrafficTypeDiagnostic: PH0PR11MB5594:EE_
-X-Microsoft-Antispam-PRVS: <PH0PR11MB5594C645C44A5121B208B66793529@PH0PR11MB5594.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5nR2V7HdTMc15dHBoj2O9L4q0+2PPwVKBgFrMoqkenKhaWhddJ079RwTtUgxWoKdSPZ7i50mGO58he3UAbRWsfiZrpkOgxFzcUBSXNys0wbivtatb5fbz0q7f7FNXOaC5RvN2UFNfYsOx+ORBPZPOhAKbKUxQcxOAZFeeIq+mEa/ouLcqUpqmzorAB8foBBTuwBwXioWKRn/JyZK1h0oxHN5P6gvQsI1AvoU8S8YUjQrIrYzQMVUIXmgbRdbl10HgVh3OCJEaRrIU9Sh3NGctYQxaWaimiW0Ol9lakMem1Uj7SyFtf44/w+udsXJfe6B3qLxACG5HHW8VYzhPSLbvtMCRRQ2QYnbw5Qu5zRE6BuGa7qO2P7hxmmCu9rFqfugRSEKowyzjBf+OKXSc//ZxbAi15XqNy/dT6FAmUlRALIg3aGS3kzqVOfkROWD1j8FIFNRSKjhG3JL5bi+s1natDtcyqcOxO9tTnx5AGHus2Zlp1h4Xn+npAPCboWiBY1spjpSNK/dV1IiMrzNWDV1kHlmUmLe8RN2SpZhe1CJH1r8pRr9Xi18z4tnb6JVx82hDedOZV8m3k4jgUDP1NzbJICnoO4cdTvaT9KUz3sMPd00wnAuYWCPMGeeuqItkzoDohEjd4YQAHBm/hhdtw9vFg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(508600001)(9686003)(6512007)(186003)(8936002)(66946007)(38100700002)(8676002)(6486002)(66556008)(4326008)(66476007)(36916002)(5660300002)(6666004)(52116002)(6506007)(33716001)(54906003)(66574015)(7416002)(2906002)(86362001)(6916009)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?1GZXGRrQLRCMPKJWhsHBXgIxf4NoDASfWEZiDvIe3dJG9dcoRKMxkqgUzH?=
- =?iso-8859-1?Q?J6xpmYpj6oXx7RHYJNHqGGNKi879FfZ4ZGtfICnmIhgPuRSr61p3cePoN7?=
- =?iso-8859-1?Q?MidA6jUTGiO+3NL8WKgv11kth3OLaF1qLVtJT3TM68hPcbwIPrxYdkKZzr?=
- =?iso-8859-1?Q?rcuuZmZBypZj15BN7LvcZJ3EUblMeKVa14ZbZ9VgRfa1duOMZFtJPjB+CD?=
- =?iso-8859-1?Q?BynV/vaAcCFkp41QXiKeShpwuU8+b3Uy6zoF+EVbYg0GYN2pbLAMvUTBDV?=
- =?iso-8859-1?Q?o3ionqvt7/FPNvO8vepz1Ht3pLM6MrIQBXcv1H4ovF9Y6DU0P5JCQpmVUV?=
- =?iso-8859-1?Q?+yCSIY01DY2ew2J1f5z4yDG3SBRCZ5hm+93jz9qDO+r2W2POeLW3SkhCmH?=
- =?iso-8859-1?Q?BalFmzcmJc2o192kh758nVZGdKAjWWqhqRSpj0ys7q5B9yBoCeec+Zdcn0?=
- =?iso-8859-1?Q?5xw2yohRHfvxNpwxyMO4+4lAOgwvBThYXwXMuQiYOXvesNTXN/xHjo6YoO?=
- =?iso-8859-1?Q?vELiXf5hRfOPQLAznR/G8J5U5Nt2YCAm5DbyUW42/nbT3gbJnKKJpyNHSc?=
- =?iso-8859-1?Q?TWKZdrUWi0UfwRUd96/6Mx44UQHuhX+ZU6xL2dwqxbQx6cW5/OUvw6pKsj?=
- =?iso-8859-1?Q?cu8LdWW5QK7NkO58nd+YEWtzNxzk2srq+hUvfk4zzxuB656E4FirsiQLeG?=
- =?iso-8859-1?Q?UyJhvuUMASHIN1RMs25gIRB8BRh2jsSbBx5y+KGoMU5e6mE1UfVAWytLmP?=
- =?iso-8859-1?Q?LfeqVkbU/qXXVh+9kYC8fcQTR1BOZQ+h4yrbqlsrntA2/xUuCy15ywiQYr?=
- =?iso-8859-1?Q?Zq9NgMKCrVoHF/+IF4AG4HYfaIvvgo9+7ORmQRha02+v3sEHsd81fDK7Mx?=
- =?iso-8859-1?Q?nTVQKXsU1TGLeBokgfWY3+KTlRqtFpLCtp82B0e2lJxWfosw+ThHa2+8v+?=
- =?iso-8859-1?Q?lvACBL0dWyvYpWlZkK3WcFCVZmwDvs43dre4ZCoZtQbXVRjlq1B4TvwDYZ?=
- =?iso-8859-1?Q?5FqVGURBUGat0r/UN21yWDOwZF9PPiYHYqcNnOmQYatXdGVpK9uj8BYjFR?=
- =?iso-8859-1?Q?OtWVfVpDqBH9kV+N8VA7xDyKOp5KlIpUVtpNb3pMEyvcloth+GdsFblUao?=
- =?iso-8859-1?Q?UL2JSABUh/dLm5JJAf9Uc2bhNKUsKE1teeMk8nziO14cedAbuzQOasa7wT?=
- =?iso-8859-1?Q?eomcNysWGdxKcf1GS6TTfrsdJdCVp/cNMDc/lG6/+tOJVaX+gQsrKGhFr/?=
- =?iso-8859-1?Q?gNnF1aSD+R49I0xoWXDSKS91YItB9NErOEX3E1XgdkZIzoeCwqQQdOr1dz?=
- =?iso-8859-1?Q?1fKURc7AQujWISlrePfPH9gWKjmqIcg76lzzq9WNc0xwABplDSHwO9f9Q3?=
- =?iso-8859-1?Q?KbJR8Z8c67c6tm9SBvtMV5L9sbhFGClILKB3vMT9S2vyT+aJ1oW2sOK+Db?=
- =?iso-8859-1?Q?0oc1bjbQIzm2ZD/h180aGUaIM/BFuzNlML4UnuKYRfdYwYqAmaXK0/K4K9?=
- =?iso-8859-1?Q?zg7JavTD6yPTPyMvombEnBJ0TFCjzkaRtjhz8EKy78mbwgC9FiSDKcHRSR?=
- =?iso-8859-1?Q?zTM+B3YsmZQcPeg4uWD8TZSIwWEHEf9Nwr2uL+Wkoxhq7Wi/j5La9/mFf+?=
- =?iso-8859-1?Q?sPMVd4V/UMI4XgEJwKPgEI9s+pAkW1kXgjnpRlV0Nnj357ly6bNfJsDaBZ?=
- =?iso-8859-1?Q?F1GIFie9giw7mlKk/90A1r3BIoFsfj2NXv8DepyEil6r+TpyXfM+oO/BoV?=
- =?iso-8859-1?Q?qQAlT1CMwl5DoiL7b1/Ubiv2s=3D?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0b5add0-8b28-4bfc-b5c1-08d9d5b11104
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 09:51:12.6083
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8bT9vkrQEQZknBRhVJF8DrgUa4KQcuBBJ3/wqM2ZVHHa8Weytg7j+NOdUAcOxuFWnZtPBy1UB/yNZkopKDCjhQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5594
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.4.1
+Subject: Re: [PATCH v3 07/23] media: atmel: atmel-isc-base: use streaming
+ status when queueing buffers
+Content-Language: en-US
+To:     Eugen.Hristev@microchip.com, jacopo@jmondi.org,
+        laurent.pinchart@ideasonboard.com
+Cc:     linux-media@vger.kernel.org, robh+dt@kernel.org,
+        sakari.ailus@iki.fi, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, Nicolas.Ferre@microchip.com
+References: <20211213134940.324266-1-eugen.hristev@microchip.com>
+ <20211213134940.324266-8-eugen.hristev@microchip.com>
+ <c6adb59e-4554-dc08-3772-148eb22c29ba@xs4all.nl>
+ <5e4f591b-9105-9de0-5067-2bd82dc04983@microchip.com>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+In-Reply-To: <5e4f591b-9105-9de0-5067-2bd82dc04983@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tuesday 11 January 2022 23:19:56 CET Rob Herring wrote:
-> On Tue, Jan 11, 2022 at 06:14:02PM +0100, Jerome Pouiller wrote:
-> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
-> >
-> > Prepare the inclusion of the wfx driver in the kernel.
-> >
-> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
-> > ---
-> >  .../bindings/net/wireless/silabs,wfx.yaml     | 138 ++++++++++++++++++
-> >  1 file changed, 138 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/wireless/sila=
-bs,wfx.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.=
-yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-> > new file mode 100644
-> > index 000000000000..d12f262868cf
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+On 11/01/2022 17:38, Eugen.Hristev@microchip.com wrote:
+> On 1/11/22 5:53 PM, Hans Verkuil wrote:
+>> On 13/12/2021 14:49, Eugen Hristev wrote:
+>>> During experiments with libcamera, it looks like vb2_is_streaming returns
+>>> true before our start streaming is called.
+>>> Order of operations is streamon -> queue -> start_streaming
+>>> ISC would have started the DMA immediately when a buffer is being added
+>>> to the vbqueue if the queue is streaming.
+>>> It is more safe to start the DMA after the start streaming of the driver is
+>>> called.
+>>> Thus, even if vb2queue is streaming, add the buffer to the dma queue of the
+>>> driver instead of actually starting the DMA process, if the start streaming
+>>> has not been called yet.
+>>>
+>>> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+>>> ---
+>>>   drivers/media/platform/atmel/atmel-isc-base.c | 17 ++++++++++-------
+>>>   1 file changed, 10 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/media/platform/atmel/atmel-isc-base.c b/drivers/media/platform/atmel/atmel-isc-base.c
+>>> index 26a6090f056c..e6c9071c04f0 100644
+>>> --- a/drivers/media/platform/atmel/atmel-isc-base.c
+>>> +++ b/drivers/media/platform/atmel/atmel-isc-base.c
+>>> @@ -441,12 +441,14 @@ static void isc_buffer_queue(struct vb2_buffer *vb)
+>>>        unsigned long flags;
+>>>
+>>>        spin_lock_irqsave(&isc->dma_queue_lock, flags);
+>>> -     if (!isc->cur_frm && list_empty(&isc->dma_queue) &&
+>>> -             vb2_is_streaming(vb->vb2_queue)) {
+>>> +
+>>> +     if (!isc->cur_frm && list_empty(&isc->dma_queue) && !isc->stop) {
+>>>                isc->cur_frm = buf;
+>>>                isc_start_dma(isc);
+>>> -     } else
+>>> +     } else {
+>>>                list_add_tail(&buf->list, &isc->dma_queue);
+>>> +     }
+>>> +
+>>>        spin_unlock_irqrestore(&isc->dma_queue_lock, flags);
+>>>   }
+>>
+>> Both the old and new code doesn't make a lot of sense.
+> 
+> Hello Hans,
+> 
+> I debated this a bit with Laurent when I initially wrote the patch.
+> 
+> The problem with the current code, or the current way things are 
+> working, is the fact that vb2_is_streaming returns true from the moment 
+> of streamon.
+> The DMA engine of the ISC is being started at the moment of 
+> start_streaming, and if buffers are being sent earlier/later, they are 
+> just added to the queue and DMA engine is restarted if it finished 
+> previously.
+> However if frames are added beforehand, like, first streamon, then add 
 
-[...]
+beforehand -> afterwards?
 
-> > +properties:
-> > +  compatible:
-> > +    anyOf:
-> > +      - const: silabs,wf200    # Chip alone without antenna
-> > +      - const: silabs,brd4001a # WGM160P Evaluation Board
-> > +      - const: silabs,brd8022a # WF200 Evaluation Board
-> > +      - const: silabs,brd8023a # WFM200 Evaluation Board
->=20
-> This still defines that compatible is a single entry. You need something
-> like:
->=20
-> items:
->   - enum:
->       - silabs,brd4001a
->       - silabs,brd8022a
->       - silabs,brd8023a
->   - const: silabs,wf200
->=20
-> You need a separate 'items' list for different number of compatible
-> entries (e.g. if a single string is valid) and that is when you need to
-> use 'oneOf'. Plenty of examples in the tree.
+> some frames, and then later call the start_streaming, ISC will crash. 
+> (as I said, DMA engine is prepared at start_streaming).
+> To avoid this, I changed the vb2_is_streaming calls to keeping an 
+> internal state of the streaming.
+> Do you think I should try another different approach to solve this ?
+> Perhaps do not prepare the ISC dma engine at start_streaming, but at 
+> another place ?
+> 
+> Laurent do you remember the talk we had about this problem a while back ?
+> 
+>>
+>> buf_queue is only called by vb2 if start_streaming has already been called or is
+>> about to be called.
+> 
+> That's a huge difference for ISC driver as it is today. start_streaming 
+> being called afterwards, means the ISC DMA engine is not started (not 
+> started streaming), hence a crash.
 
-Ok.
+The start_streaming op is called when streamon is called and if there are
+sufficient buffers (>= q->min_buffers_needed). If there are insufficient
+buffers at streamon time, then start_streaming is only called when the number
+of queued buffers reaches the minimum.
 
-[...]
+vb2 has three different state checks that you can use:
 
-> > +  interrupts:
-> > +    description: The interrupt line. Triggers IRQ_TYPE_LEVEL_HIGH and
-> > +      IRQ_TYPE_EDGE_RISING are both supported by the chip and the driv=
-er. When
->=20
-> Unless there is a mode you can configure, supporting both is wrong even
-> though edge will mostly work for a device that is really level.
->=20
-> What a driver supports is not relevant to the binding.
+vb2_is_busy() is true if buffers are allocated. Typically this means that you
+can no longer do format changes or anything that might change the buffer
+sizes or layout.
 
-hmm... right.
+vb2_is_streaming() is true if streamon was called. If this is true, then vb2_is_busy()
+is also true.
 
-> > +      SPI is used, this property is required. When SDIO is used, the "=
-in-band"
-> > +      interrupt provided by the SDIO bus is used unless an interrupt i=
-s defined
-> > +      in the Device Tree.
-> > +    maxItems: 1
-> > +
-> > +  reset-gpios:
-> > +    description: (SPI only) Phandle of gpio that will be used to reset=
- chip
-> > +      during probe. Without this property, you may encounter issues wi=
-th warm
-> > +      boot. (For legacy purpose, the gpio in inverted when compatible =
-=3D=3D
-> > +      "silabs,wfx-spi")
->=20
-> What legacy? This is a new binding.
+And finally vb2_start_streaming_called() is true if the start_streaming op
+was called (i.e. DMA is in progress). If this is true, then vb2_is_streaming is
+also true.
 
-This driver already exist in staging/. But, it is probably the right moment
-to drop this legacy binding.
+Basically vb2_is_streaming() reports the streaming state that userspace sees,
+while vb2_start_streaming_called() reports the internal DMA streaming state.
 
-[...]
+The confusion is probably that you were using vb2_is_streaming instead of
+vb2_start_streaming_called.
 
---=20
-J=E9r=F4me Pouiller
+> 
+>>
+>> Typically all that the buf_queue op does is to call list_add_tail(&buf->list, &isc->dma_queue);
+>> inside the spinlock.
+>>
+>>>
+>>> @@ -1014,7 +1016,7 @@ static int isc_s_fmt_vid_cap(struct file *file, void *priv,
+>>>   {
+>>>        struct isc_device *isc = video_drvdata(file);
+>>>
+>>> -     if (vb2_is_streaming(&isc->vb2_vidq))
+>>> +     if (!isc->stop)
+>>
+>> This is weird as well. Normally this calls vb2_is_busy to check if the
+>> queue is busy (that really means that buffers are already allocated, so
+>> changing the format isn't allowed anymore).
+> 
+> You think the query to the streaming status makes no sense here hence it 
+> should be removed completely ?
 
+Right. And instead check vb2_is_busy().
+
+I actually think that this is something that would fail with v4l2-compliance.
+
+Do you still run v4l2-compliance?
+
+> I can do that with a prequel patch if it's the case.
+
+Probably wise.
+
+Regards,
+
+	Hans
+
+> 
+> Thanks for reviewing,
+> 
+> Eugen
+> 
+>>
+>>>                return -EBUSY;
+>>>
+>>>        return isc_set_fmt(isc, f);
+>>> @@ -1536,7 +1538,7 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
+>>>
+>>>                isc_update_awb_ctrls(isc);
+>>>
+>>> -             if (vb2_is_streaming(&isc->vb2_vidq)) {
+>>> +             if (!isc->stop) {
+>>
+>> Ditto.
+>>
+>>>                        /*
+>>>                         * If we are streaming, we can update profile to
+>>>                         * have the new settings in place.
+>>> @@ -1552,8 +1554,7 @@ static int isc_s_awb_ctrl(struct v4l2_ctrl *ctrl)
+>>>                }
+>>>
+>>>                /* if we have autowhitebalance on, start histogram procedure */
+>>> -             if (ctrls->awb == ISC_WB_AUTO &&
+>>> -                 vb2_is_streaming(&isc->vb2_vidq) &&
+>>> +             if (ctrls->awb == ISC_WB_AUTO && !isc->stop &&
+>>>                    ISC_IS_FORMAT_RAW(isc->config.sd_format->mbus_code))
+>>>                        isc_set_histogram(isc, true);
+>>>
+>>> @@ -1829,6 +1830,8 @@ static int isc_async_complete(struct v4l2_async_notifier *notifier)
+>>>        struct vb2_queue *q = &isc->vb2_vidq;
+>>>        int ret = 0;
+>>>
+>>> +     isc->stop = true;
+>>> +
+>>
+>> I'm really not sure that you need the stop bool at all.
+>>
+>>>        INIT_WORK(&isc->awb_work, isc_awb_work);
+>>>
+>>>        ret = v4l2_device_register_subdev_nodes(&isc->v4l2_dev);
+>>
+>> Regards,
+>>
+>>          Hans
+>>
+> 
 
