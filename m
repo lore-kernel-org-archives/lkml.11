@@ -2,225 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E66DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A44EC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239755AbiALOFD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:05:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56512 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242273AbiALOE2 (ORCPT
+        id S1353897AbiALOFL (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 09:05:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242148AbiALOFJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:04:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C207CB81EF5;
-        Wed, 12 Jan 2022 14:04:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C72EDC36AEA;
-        Wed, 12 Jan 2022 14:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641996265;
-        bh=OlhRkWarq2RHlk3uHOGFYdiuiqRk58njvjxQ42ZY9TU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jJCFv1dUffxBIV/xLifBA4mJgvr7Z25LztkEtalF7iUNkLK6VHJG0FEz2tfnoL0Hv
-         zwc2RTvaWneot0VR95TrQcyB8XB3SiYtPJMQKDPwk8aNFyNe2PlID7kcafDMK+c+OX
-         ys6pI4ae2e7ymJUnBM7adwouoa7swHgAf6lUzjm9a+peUIrSgooyPZfAV0FBXc3UnY
-         yhthtphMdeQRVl4Ari2FZFn3dQhWjJSQmw/vPSUaIsBoZt649cMWzP09dCS66YHnfI
-         NBrZlU3W87jb3Oben9wegx6+fLoVEcirhYS3CaEzeGLAa6oob/7JAe4sF9I7Szzu1p
-         5fVt6B10MG+hA==
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [RFC PATCH v2 8/8] [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
-Date:   Wed, 12 Jan 2022 23:04:19 +0900
-Message-Id: <164199625932.1247129.8866493903208911902.stgit@devnote2>
+        Wed, 12 Jan 2022 09:05:09 -0500
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF229C061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 06:05:08 -0800 (PST)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:76d0:2bff:fec8:549])
+        by baptiste.telenet-ops.be with bizsmtp
+        id hq56260030kcUhD01q56ZF; Wed, 12 Jan 2022 15:05:06 +0100
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1n7eFN-009GXL-Iq; Wed, 12 Jan 2022 15:05:05 +0100
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1n7eFM-000Vs0-KO; Wed, 12 Jan 2022 15:05:04 +0100
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Ananth Jasty <Ananth.Jasty@cavium.com>,
+        Omer Khaliq <okhaliq@caviumnetworks.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] hwrng: cavium - HW_RANDOM_CAVIUM should depend on ARCH_THUNDER
+Date:   Wed, 12 Jan 2022 15:05:03 +0100
+Message-Id: <1c4148e1aaa4d89754ff810386dee8c22bcce4b1.1641996225.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <164199616622.1247129.783024987490980883.stgit@devnote2>
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
-User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is not intended to be merged to upstream code (since this
-expose some kernel internal functions just for an example.)
+The Cavium ThunderX Random Number Generator is only present on Cavium
+ThunderX SoCs, and not available as an independent PCIe endpoint.  Hence
+add a dependency on ARCH_THUNDER, to prevent asking the user about this
+driver when configuring a kernel without Cavium Thunder SoC  support.
 
-But this is good to show how the fprobe is time-efficient
-for registering a probe on thousands of functions.
-
- # time insmod fprobe_example.ko symbol='btrfs_*'
-[   36.130947] fprobe_init: 1028 symbols found
-[   36.177901] fprobe_init: Planted fprobe at btrfs_*
-real	0m 0.08s
-user	0m 0.00s
-sys	0m 0.07s
-
-Signed-off-by: Masami Hiramatsu <mhiramat@kernel.org>
+Fixes: cc2f1908c6b8f625 ("hwrng: cavium - Add Cavium HWRNG driver for ThunderX SoC.")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- kernel/kallsyms.c               |    1 +
- kernel/trace/ftrace.c           |    1 +
- samples/fprobe/fprobe_example.c |   69 ++++++++++++++++++++++++++++++++++-----
- 3 files changed, 62 insertions(+), 9 deletions(-)
+ drivers/char/hw_random/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/kallsyms.c b/kernel/kallsyms.c
-index 3011bc33a5ba..d0c4073acbfd 100644
---- a/kernel/kallsyms.c
-+++ b/kernel/kallsyms.c
-@@ -246,6 +246,7 @@ int kallsyms_on_each_symbol(int (*fn)(void *, const char *, struct module *,
- 	}
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(kallsyms_on_each_symbol);
- #endif /* CONFIG_LIVEPATCH */
+diff --git a/drivers/char/hw_random/Kconfig b/drivers/char/hw_random/Kconfig
+index b33c01e9935336f7..263861c88fcc7e98 100644
+--- a/drivers/char/hw_random/Kconfig
++++ b/drivers/char/hw_random/Kconfig
+@@ -414,7 +414,7 @@ config HW_RANDOM_MESON
  
- static unsigned long get_symbol_pos(unsigned long addr,
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index d38ae5063be3..feb69ecc5d2c 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1580,6 +1580,7 @@ unsigned long ftrace_location(unsigned long ip)
- {
- 	return ftrace_location_range(ip, ip);
- }
-+EXPORT_SYMBOL_GPL(ftrace_location);
- 
- /**
-  * ftrace_text_reserved - return true if range contains an ftrace location
-diff --git a/samples/fprobe/fprobe_example.c b/samples/fprobe/fprobe_example.c
-index c28320537f98..df034e00661e 100644
---- a/samples/fprobe/fprobe_example.c
-+++ b/samples/fprobe/fprobe_example.c
-@@ -12,6 +12,7 @@
- 
- #define pr_fmt(fmt) "%s: " fmt, __func__
- 
-+#include <linux/glob.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/fprobe.h>
-@@ -37,16 +38,51 @@ static void sample_exit_handler(struct fprobe *fp, unsigned long ip, struct pt_r
- 
- static char *symbuf;
- 
-+struct sym_search_param {
-+	unsigned long *addrs;
-+	const char *pat;
-+	int cnt;
-+};
-+
-+#define MAX_FPROBE_ENTS	(16 * 1024)
-+
-+static int wildcard_match(void *data, const char *symbol, struct module *mod,
-+			  unsigned long addr)
-+{
-+	struct sym_search_param *param = (struct sym_search_param *)data;
-+
-+	if (glob_match(param->pat, symbol)) {
-+		if (!ftrace_location(addr))
-+			return 0;
-+
-+		if (param->addrs)
-+			param->addrs[param->cnt] = addr;
-+		param->cnt++;
-+		if (param->cnt >= MAX_FPROBE_ENTS)
-+			return -E2BIG;
-+	}
-+	return 0;
-+}
-+
- static int __init fprobe_init(void)
- {
--	const char **syms;
-+	struct sym_search_param param = {.pat = symbol, .addrs = NULL, .cnt = 0};
-+	unsigned long *addrs = NULL;
-+	const char **syms = NULL;
- 	char *p;
- 	int ret, count, i;
-+	bool wildcard = false;
- 
- 	sample_probe.entry_handler = sample_entry_handler;
- 	sample_probe.exit_handler = sample_exit_handler;
- 
--	if (strchr(symbol, ',')) {
-+	if (strchr(symbol, '*')) {
-+		kallsyms_on_each_symbol(wildcard_match, &param);
-+		count = param.cnt;
-+		if (!count)
-+			return -ENOENT;
-+		wildcard = true;
-+	} else if (strchr(symbol, ',')) {
- 		symbuf = kstrdup(symbol, GFP_KERNEL);
- 		if (!symbuf)
- 			return -ENOMEM;
-@@ -58,19 +94,31 @@ static int __init fprobe_init(void)
- 		count = 1;
- 		symbuf = symbol;
- 	}
--	pr_info("%d symbols found\n", count);
- 
--	syms = kcalloc(count, sizeof(char *), GFP_KERNEL);
--	if (!syms) {
-+	if (wildcard)
-+		addrs = kcalloc(count, sizeof(unsigned long), GFP_KERNEL);
-+	else
-+		syms = kcalloc(count, sizeof(char *), GFP_KERNEL);
-+	if (!syms && !addrs) {
- 		ret = -ENOMEM;
- 		goto error;
- 	}
- 
--	p = symbuf;
--	for (i = 0; i < count; i++)
--		syms[i] = strsep(&p, ",");
-+	if (wildcard) {
-+		param.addrs = addrs;
-+		param.cnt = 0;
-+
-+		kallsyms_on_each_symbol(wildcard_match, &param);
-+		count = param.cnt;
-+		sample_probe.addrs = addrs;
-+	} else {
-+		p = symbuf;
-+		for (i = 0; i < count; i++)
-+			syms[i] = strsep(&p, ",");
-+		sample_probe.syms = syms;
-+	}
-+	pr_info("%d symbols found\n", count);
- 
--	sample_probe.syms = syms;
- 	sample_probe.nentry = count;
- 
- 	ret = register_fprobe(&sample_probe);
-@@ -82,6 +130,8 @@ static int __init fprobe_init(void)
- 	return 0;
- 
- error:
-+	kfree(addrs);
-+	kfree(syms);
- 	if (symbuf != symbol)
- 		kfree(symbuf);
- 	return ret;
-@@ -92,6 +142,7 @@ static void __exit fprobe_exit(void)
- 	unregister_fprobe(&sample_probe);
- 
- 	kfree(sample_probe.syms);
-+	kfree(sample_probe.addrs);
- 	if (symbuf != symbol)
- 		kfree(symbuf);
- 
+ config HW_RANDOM_CAVIUM
+ 	tristate "Cavium ThunderX Random Number Generator support"
+-	depends on HW_RANDOM && PCI && ARM64
++	depends on HW_RANDOM && PCI && ARCH_THUNDER
+ 	default HW_RANDOM
+ 	help
+ 	  This driver provides kernel-side support for the Random Number
+-- 
+2.25.1
 
