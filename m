@@ -2,126 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 362C6C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:55:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:56:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351800AbiALIzA (ORCPT
+        id S1351811AbiALI4V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 03:55:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351771AbiALIy5 (ORCPT
+        Wed, 12 Jan 2022 03:56:21 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:54540 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351771AbiALI4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 03:54:57 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434E4C06173F;
-        Wed, 12 Jan 2022 00:54:57 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1n7ZPD-0004z1-6n; Wed, 12 Jan 2022 09:54:55 +0100
-Message-ID: <0a79a9be-eddc-fa2b-d7d9-8a2680ed370a@leemhuis.info>
-Date:   Wed, 12 Jan 2022 09:54:54 +0100
+        Wed, 12 Jan 2022 03:56:19 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id E746B1F3C0;
+        Wed, 12 Jan 2022 08:56:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1641977777; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uBzH2mVPP3ctB/WRYSae7RVF7fvvNk6lw/YieWT7XoY=;
+        b=emOHqq2ajf3XQKAtY6MDJLTTxLdgpdZuzRzgsgUybOUXZau2wtcPEN+0xr/6g9XFLCUxaN
+        gbR5sH+syOJ7AMleiVDT3t5vtqUQQUBLBKTGlufLw6GethRo+KdXM0yImTJbsHGn4+F+En
+        ITLplvGE0N3IntYNvADruyzhJCyB1uc=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 9722AA3B85;
+        Wed, 12 Jan 2022 08:56:16 +0000 (UTC)
+Date:   Wed, 12 Jan 2022 09:56:15 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Wei Yang <richard.weiyang@gmail.com>
+Cc:     hannes@cmpxchg.org, vdavydov.dev@gmail.com,
+        akpm@linux-foundation.org, shakeelb@google.com, guro@fb.com,
+        vbabka@suse.cz, willy@infradead.org, songmuchun@bytedance.com,
+        shy828301@gmail.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-mm@kvack.org
+Subject: Re: [PATCH 1/4] mm/memcg: use NUMA_NO_NODE to indicate allocation
+ from unspecified node
+Message-ID: <Yd6Xr7K9bKGVgGtI@dhcp22.suse.cz>
+References: <20220111010302.8864-1-richard.weiyang@gmail.com>
+ <Yd1CdJA5NelzoK1D@dhcp22.suse.cz>
+ <20220112004634.dc5suwei4ymyxaxg@master>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-BS
-To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-References: <51654a51-4264-c333-40d5-4f755e69d54b@leemhuis.info>
- <20220111145031.cfkyxffmps3swakv@meerkat.local>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: Add a few more FAQs to the [kernel.org] releases page
-In-Reply-To: <20220111145031.cfkyxffmps3swakv@meerkat.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1641977697;ad489ecd;
-X-HE-SMSGID: 1n7ZPD-0004z1-6n
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220112004634.dc5suwei4ymyxaxg@master>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11.01.22 15:50, Konstantin Ryabitsev wrote:
-> On Tue, Jan 11, 2022 at 07:32:46AM +0100, Thorsten Leemhuis wrote:
->> * you added two sections that use the term "LTS", which is not explained
->> on that page and wasn't used on it earlier. I wonder if it might be
->> better to use "Longterm series" or something like that instead, as that
->> it the term used on the page (and the official one afaics).
-> Thanks for the feedback, I switched to using "longterm" uniformly on that
-> page.
-
-Ahh, nice, thx.
-
->> This was also added:
->>
->>> Does the odd-even number still mean anything?
->>>
->>> Not since 2.5 days.
->>
->> I guess a lot of users won't known how long ago that was, so how about
->> using an answer like this instead:
->>
->> "Not since December 2003, when Linux 2.6 got released."
+On Wed 12-01-22 00:46:34, Wei Yang wrote:
+> On Tue, Jan 11, 2022 at 09:40:20AM +0100, Michal Hocko wrote:
+> >On Tue 11-01-22 01:02:59, Wei Yang wrote:
+> >> Instead of use "-1", let's use NUMA_NO_NODE for consistency.
+> >> 
+> >> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+> >
+> >I am not really sure this is worth it. After the merge window I plan to
+> >post http://lkml.kernel.org/r/20211214100732.26335-1-mhocko@kernel.org.
 > 
-> I've expanded a bit more on that topic, just to avoid confusion.
+> Give me some time to understand it :-)
 
-Great.
+Just for the record, here is what I have put on top of that series:
+--- 
+From b7195eba02fe6308a6927450f4630057c05e808e Mon Sep 17 00:00:00 2001
+From: Wei Yang <richard.weiyang@gmail.com>
+Date: Tue, 11 Jan 2022 09:45:25 +0100
+Subject: [PATCH] memcg: do not tweak node in alloc_mem_cgroup_per_node_info
 
-BTW, also a big "thank you" from my side for linking "reporting issues".
+alloc_mem_cgroup_per_node_info is allocated for each possible node and
+this used to be a problem because not !node_online nodes didn't have
+appropriate data structure allocated. This has changed by "mm: handle
+uninitialized numa nodes gracefully" so we can drop the special casing
+here.
 
-I looked a little more at the two pages you changed. Most of what
-follows is nitpicking, feel free to ignore it. Quotes from here on are
-from the linked pages, not from the mail I'm replying to:
+Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+Signed-off-by: Michal Hocko <mhocko@suse.com>
+---
+ mm/memcontrol.c | 14 ++------------
+ 1 file changed, 2 insertions(+), 12 deletions(-)
+
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 781605e92015..ed19a21ee14e 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -5044,18 +5044,8 @@ struct mem_cgroup *mem_cgroup_from_id(unsigned short id)
+ static int alloc_mem_cgroup_per_node_info(struct mem_cgroup *memcg, int node)
+ {
+ 	struct mem_cgroup_per_node *pn;
+-	int tmp = node;
+-	/*
+-	 * This routine is called against possible nodes.
+-	 * But it's BUG to call kmalloc() against offline node.
+-	 *
+-	 * TODO: this routine can waste much memory for nodes which will
+-	 *       never be onlined. It's better to use memory hotplug callback
+-	 *       function.
+-	 */
+-	if (!node_state(node, N_NORMAL_MEMORY))
+-		tmp = -1;
+-	pn = kzalloc_node(sizeof(*pn), GFP_KERNEL, tmp);
++
++	pn = kzalloc_node(sizeof(*pn), GFP_KERNEL, node);
+ 	if (!pn)
+ 		return 1;
+ 
+-- 
+2.30.2
 
 
-# https://www.kernel.org/category/releases.html
-
-> What is the next longterm release going to be?
->
-> Longterm kernels are picked based on various factors -- major new
-> features, popular commercial distribution needs, device manufacturer
-> demand, maintainer workload and availability, etc. You can roughly
-> estimate when the new longterm version will become available based on
-> how much time has elapsed since the last longterm version was
-> chosen.
-
-This is not true anymore afaics (or is it vague on purpose?). Greg (now
-CCed) since a few years always makes the last mainline release of a year
-the next longterm kernel. He said that a few times, for example here:
-https://twitter.com/kernellogger/status/1321081399730970626
-
-So something like this maybe?
-"""
-What is the next longterm release going to be?
-
-The last Linux mainline version released in a year becomes a longterm
-kernel.
-"""
-
-# https://www.kernel.org/category/faq.html
-
-> Why is an LTS kernel marked as "stable" on the front page?
->  
-> Long-term support ("LTS") kernels announced on the Releases page […]
-
-Maybe get rid of the LTS here, too?
-
-"""
-Why is a longterm kernel described as "stable" on the front page?
-
-Longterm kernels announced on the Releases page […]
-"""
-
-FWIW, in reporting issues I did it like this: "Longterm kernels
-(sometimes called 'LTS kernels') are […]"
-
-> How do I report a problem with the kernel?
-
-I'd sort the list of distribution bug trackers alphabetically to avoid
-people thinking things like "why is x listed earlier than my favourite
-distro, which is way better".
-
-Ohh, and I guess you make some people happy if you do
-s/OpenSUSE/openSUSE/ :-D
-
-Ciao, Thorsten
+-- 
+Michal Hocko
+SUSE Labs
