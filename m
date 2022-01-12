@@ -2,114 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4081BC43217
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D580C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356047AbiALSK3 (ORCPT
+        id S1356014AbiALSK1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:10:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
+        Wed, 12 Jan 2022 13:10:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356094AbiALSJi (ORCPT
+        with ESMTP id S1356070AbiALSJ1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:09:38 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C69C029828;
-        Wed, 12 Jan 2022 10:08:50 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id j11so11050853lfg.3;
-        Wed, 12 Jan 2022 10:08:49 -0800 (PST)
+        Wed, 12 Jan 2022 13:09:27 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C96BC061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:08:44 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id g14so7897843ybs.8
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:08:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=fbQ4MfMPQ01c4yNnE9/3ElS8nA8KssfGISIkQPEdFsY=;
-        b=ObdGosYwJtK5OzDLqayzPD3/LnC1M9Fs8nnT4OJc+qYHHhCOprhDhARWt30UeY3xTW
-         s9MEwc0HRT46OenG6uONG9oyMWCbpTMr3Jewfnfcqt21XpnyYtRLdvEyJhXvINBaKone
-         05r449M4Yf8EauPzkmqujmJaHpcRP1uJEI8rynH6Qinna3YwY474XFjZ8//bGL0lO+Jm
-         eM8B3qAFBtol8VqiYaPu+0SLy5qlei0R4Jc8z8gHvu95Xc23jt0wM5pJH0qPfYJ47gBp
-         gWd1zcPRo7jKhnHkcCvrisbigMP3nuRl2jOFGFVUvKuqEnZoBQVF0lj0MxhbH2ZeddfR
-         1FQg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eLoe+yCOLX8twUoVnJSmKEThBpM9HQQFjJ/YCsOmEqo=;
+        b=sM2pOGw+VpV9fEIP1NjSY4EwV7AcQhlq5kQpevs1vpJUY1/wqvZGO14UsjVSIGi4KO
+         0xFyyWnKF8RnRiQ9QTjCBqspBtCwUaJMbb1JnyobjHfOw7HAOB45fyPrbx6ULMES3QfA
+         1K+5NVv6/9/HPmtYoPxk7tPP+UAka3Gns3nyHc7K3xrpJHSngSgARkxqZMQ47npXn644
+         DE9+7odqYt8BstnTgUifJbQ7/R9av7njwqtwSCbDdmjN753efTawRlUW5KocyfCemjeW
+         pPHXtnlznKcgGaSD30YnQph+Ju3ocJHis1S1NlIQFcHPcVRynTbi1J386LRNrmp+S+zE
+         ukWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=fbQ4MfMPQ01c4yNnE9/3ElS8nA8KssfGISIkQPEdFsY=;
-        b=bOh8DGl0H8UWpJXlKqeZLq9TJVgm/Mmf9U/ww2tu4b5q6T6lCujHvitTxMSotqHTVA
-         yMd7mAvSCbml9HFAV7Z9TAnMsVwZHzf3z7luN7rA4kWgIdwAkO8Nt/act/SRT+vrL9vT
-         Vg7zRfdN71vlROw/b/mK6QQfzOuBc/THwi9yOB86aQNJVsYG/ylNNWSwLhs/Iet5B/Ui
-         DkxDIwaBpdCbjPpQ+wdUNeZpue5yXBY/y3yHCZ0rMICCCM2dm9wfcx+AXWvgt4IAR6Uk
-         SQOfmyI2EALE6JAUkV8KRtzAO4MnD/s98ZKQseVhgOZgYBuuK6GHby8A8tjhJr+cpd3v
-         YMqg==
-X-Gm-Message-State: AOAM531q/9s/j4z8DYlPUA0ra5p7E/TNQBtTq9BkRLQJ8XA4kOt1V2xM
-        YAyBpJAx38AvY74Ej5LWcfY=
-X-Google-Smtp-Source: ABdhPJwWHoWpLtRiuzfDkCm8Un7F1KU6ZGRTRVKv7RiEHbBNH2URTuRSDL07MZF7+km6mW6qppQ6ag==
-X-Received: by 2002:a05:6512:3f16:: with SMTP id y22mr621580lfa.61.1642010928255;
-        Wed, 12 Jan 2022 10:08:48 -0800 (PST)
-Received: from [192.168.1.11] ([217.117.245.67])
-        by smtp.gmail.com with ESMTPSA id k29sm35460ljc.44.2022.01.12.10.08.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 10:08:47 -0800 (PST)
-Message-ID: <c5ae2a68-070f-884c-c82a-2d3f4b8e06b1@gmail.com>
-Date:   Wed, 12 Jan 2022 21:08:46 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eLoe+yCOLX8twUoVnJSmKEThBpM9HQQFjJ/YCsOmEqo=;
+        b=nu6PV8dM3Ds7DEqXzj/Y0v71+wgMtoozifLU8wsUlFFqypwgDJ/5x7xFkvI9jwBXdn
+         aupYLY2V2TncJYMSCjkJzmufJvAu22F/0TUkQoII8QfKjXwUXvsrPy6b/7J68aw4Rv3n
+         QJUnxNBM2LnqsFQVioCrWMTO8bj4wA80EQ1QErBzQYqd8guj6vzMaQ8O/Z0JFOH/z1Mh
+         UVw/8CF3UnPrJpDvgLINirX/BQA369gPIowe5xguVk8d1Ubi4bUvmBvbvyuzxJk8YjNv
+         Wsl8zP2jkgzfNyKi64UIamhvEPjsv/gwheRWA5wfxRp3kVWZVWjzuXPpmp3m6Q1x0f7b
+         RkWQ==
+X-Gm-Message-State: AOAM531bDenzH/WLa4mpuB68vgWu8W5DDo3ZNoBhBxLWBH1ZIIWJFd7D
+        KVwNZQMtMil4m2bOqy64K4remoi31odpXn5OGOgQ1A==
+X-Google-Smtp-Source: ABdhPJyOENQ36F72MCUSVYL6GkdmncC92a9wV1s6msf5ZpTvvHnphmMhSYKEkA/XtQw4bc2lP+lyOA6otSG7YAZ1iDM=
+X-Received: by 2002:a25:d750:: with SMTP id o77mr1052699ybg.543.1642010923523;
+ Wed, 12 Jan 2022 10:08:43 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] udmabuf: validate ubuf->pagecount
-Content-Language: en-US
-To:     kraxel@redhat.com, sumit.semwal@linaro.org,
-        christian.koenig@amd.com, daniel.vetter@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        syzbot+2c56b725ec547fa9cb29@syzkaller.appspotmail.com
-References: <20211230142649.23022-1-paskripkin@gmail.com>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <20211230142649.23022-1-paskripkin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220104194918.373612-1-rananta@google.com> <20220104194918.373612-2-rananta@google.com>
+ <Ydjje8qBOP3zDOZi@google.com> <CAJHc60ziKv6P4ZmpLXrv+s4DrrDtOwuQRAc4bKcrbR3aNAK5mQ@mail.gmail.com>
+ <Yd3AGRtkBgWSmGf2@google.com> <CAJHc60w7vfHkg+9XkPw+38nZBWLLhETJj310ekM1HpQQTL_O0Q@mail.gmail.com>
+ <Yd3UymPg++JW98/2@google.com>
+In-Reply-To: <Yd3UymPg++JW98/2@google.com>
+From:   Raghavendra Rao Ananta <rananta@google.com>
+Date:   Wed, 12 Jan 2022 10:08:32 -0800
+Message-ID: <CAJHc60yPmdyonJESHPHvXJR+ekugZev4XzsZc2YV2mnfBdy-bw@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 01/11] KVM: Capture VM start
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Marc Zyngier <maz@kernel.org>, Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        kvm@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+        Peter Shier <pshier@google.com>, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/30/21 17:26, Pavel Skripkin wrote:
-> Syzbot has reported GPF in sg_alloc_append_table_from_pages(). The
-> problem was in ubuf->pages == ZERO_PTR.
-> 
-> ubuf->pagecount is calculated from arguments passed from user-space. If
-> user creates udmabuf with list.size == 0 then ubuf->pagecount will be
-> also equal to zero; it causes kmalloc_array() to return ZERO_PTR.
-> 
-> Fix it by validating ubuf->pagecount before passing it to
-> kmalloc_array().
-> 
-> Fixes: fbb0de795078 ("Add udmabuf misc device")
-> Reported-and-tested-by: syzbot+2c56b725ec547fa9cb29@syzkaller.appspotmail.com
-> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> ---
-> 
+On Tue, Jan 11, 2022 at 11:04 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Tue, Jan 11, 2022, Raghavendra Rao Ananta wrote:
+> > On Tue, Jan 11, 2022 at 9:36 AM Sean Christopherson <seanjc@google.com> wrote:
+> > > In your proposed patch, KVM_RUN will take kvm->lock _every_ time.  That introduces
+> > > unnecessary contention as it will serialize this bit of code if multiple vCPUs
+> > > are attempting KVM_RUN.  By checking !vm_started, only the "first" KVM_RUN for a
+> > > VM will acquire kvm->lock and thus avoid contention once the VM is up and running.
+> > > There's still a possibility that multiple vCPUs will contend for kvm->lock on their
+> > > first KVM_RUN, hence the quotes.  I called it "naive" because it's possible there's
+> > > a more elegant solution depending on the use case, e.g. a lockless approach might
+> > > work (or it might not).
+> > >
+> > But is it safe to read kvm->vm_started without grabbing the lock in
+> > the first place?
+>
+> Don't know, but that's my point.  Without a consumer in generic KVM and due to
+> my lack of arm64 knowledge, without a high-level description of how the flag will
+> be used by arm64, it's really difficult to determine what's safe and what's not.
+> For other architectures, it's an impossible question to answer because we don't
+> know how the flag might be used.
+>
+> > use atomic_t maybe for this?
+>
+> No.  An atomic_t is generally useful only if there are multiple writers that can
+> possibly write different values.  It's highly unlikely that simply switching to an
+> atomic address the needs of arm64.
+>
+> > > > > > +                     kvm->vm_started = true;
+> > > > > > +                     mutex_unlock(&kvm->lock);
+> > > > >
+> > > > > Lastly, why is this in generic KVM?
+> > > > >
+> > > > The v1 of the series originally had it in the arm specific code.
+> > > > However, I was suggested to move it to the generic code since the book
+> > > > keeping is not arch specific and could be helpful to others too [1].
+> > >
+> > > I'm definitely in favor of moving/adding thing to generic KVM when it makes sense,
+> > > but I'm skeptical in this particular case.  The code _is_ arch specific in that
+> > > arm64 apparently needs to acquire kvm->lock when checking if a vCPU has run, e.g.
+> > > versus a hypothetical x86 use case that might be completely ok with a lockless
+> > > implementation.  And it's not obvious that there's a plausible, safe use case
+> > > outside of arm64, e.g. on x86, there is very, very little that is truly shared
+> > > across the entire VM/system, most things are per-thread/core/package in some way,
+> > > shape, or form.  In other words, I'm a wary of providing something like this for
+> > > x86 because odds are good that any use will be functionally incorrect.
+> > I've been going back and forth on this. I've seen a couple of
+> > variables declared in the generic struct and used only in the arch
+> > code. vcpu->valid_wakeup for instance, which is used only by s390
+> > arch. Maybe I'm looking at it the wrong way as to what can and can't
+> > go in the generic kvm code.
+>
+> Ya, valid_wakeup is an oddball, I don't know why it's in kvm_vcpu instead of
+> arch code that's wrapped with e.g. kvm_arch_vcpu_valid_wakeup().
+>
+> That said, valid_wakeup is consumed by generic KVM, i.e. has well defined semantics
+> for how it is used, so it's purely a "this code is rather odd" issue.  vm_started
+> on the other hand is only produced by generic KVM, and so its required semantics are
+> unclear.
 
-Gentle ping :)
+Understood. I'll move it to arm64 and we can refactor it if there's a
+need for any other arch(s).
 
-> 
-> ---
->   drivers/dma-buf/udmabuf.c | 4 ++++
->   1 file changed, 4 insertions(+)
-> 
-> diff --git a/drivers/dma-buf/udmabuf.c b/drivers/dma-buf/udmabuf.c
-> index c57a609db75b..e7330684d3b8 100644
-> --- a/drivers/dma-buf/udmabuf.c
-> +++ b/drivers/dma-buf/udmabuf.c
-> @@ -190,6 +190,10 @@ static long udmabuf_create(struct miscdevice *device,
->   		if (ubuf->pagecount > pglimit)
->   			goto err;
->   	}
-> +
-> +	if (!ubuf->pagecount)
-> +		goto err;
-> +
->   	ubuf->pages = kmalloc_array(ubuf->pagecount, sizeof(*ubuf->pages),
->   				    GFP_KERNEL);
->   	if (!ubuf->pages) {
-
-With regards,
-Pavel Skripkin
+Thanks,
+Raghavendra
