@@ -2,106 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B23C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:59:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A978DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:59:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348090AbiALB7D (ORCPT
+        id S1348103AbiALB7b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 20:59:03 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:56474 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348072AbiALB7A (ORCPT
+        Tue, 11 Jan 2022 20:59:31 -0500
+Received: from mail-oi1-f178.google.com ([209.85.167.178]:42933 "EHLO
+        mail-oi1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244071AbiALB73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:59:00 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: krisman)
-        with ESMTPSA id 41AB61F44896
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1641952739;
-        bh=PF3ZlHbSf6Aq8JxiqzqbyxWalp7fsDDicZK8qmN8P8E=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bxtPlOI2O8fiNwobm6Uw7SqhUN3uGufkvzXzy81i/UbTq1R2/nodo9PX3bv/5U8+7
-         2JdK2yFLRe2ipy10Yw3D+T4yAWedzWKfV8naSEf5qE1L3ysgyinRE1ZBp3gG6HQU9H
-         woJX0h4r7gH+vd89YietJNlCoBRB6VX1wLwOtpQLjezlcWj53N8NXjmtebQ8Uq1T+5
-         Mwoq8hTmaKHGAdMCg7C1yWZjCuybzHtiQBKjuOO/pgvwcg7rtUUA/F3BYRaPsIy5XZ
-         ojgCvyfy2vG68u6HJ6LpzVYNmiutgVbWj/sJOdFb5aRzLTnQwmquFHqu67SInN681V
-         mkcEfTH4A/tOQ==
-From:   Gabriel Krisman Bertazi <krisman@collabora.com>
-To:     "Linus Torvalds" <torvalds@linux-foundation.org>
-Cc:     hch@lst.de, chao@kernel.org, tytso@mit.edu,
-        linux-kernel@vger.kernel.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>
-Subject: [GIT PULL] unicode patches for 5.17
-Date:   Tue, 11 Jan 2022 20:58:54 -0500
-Message-ID: <87a6g11zq9.fsf@collabora.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 11 Jan 2022 20:59:29 -0500
+Received: by mail-oi1-f178.google.com with SMTP id y14so1526879oia.9;
+        Tue, 11 Jan 2022 17:59:29 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SY7Nt3LIYS+ee95IOS2lYNehaYFihAIPxIiHoAlBkr0=;
+        b=GMheOFW2O67tS0IVR9zAlAeST4u5gr5Sw/EXCDAM8bEGPnugQNnPiCuqiFEYbAKfBC
+         rZfw9sB1jDocGjmlY3NhRkdmxjVpQlvMbo465Ki5nKp/ObwFG1F1go6n+I11KGprWUOI
+         wBfJ/jGdO+AWXR5l4+AcHzwgztYtTAbGdcHxTcGsiPqLSleXhJiwENzTPw9lcYQMPF/Z
+         PCf5eRaanli4iKURkditrMKErM7YsFU+JK3Muba1nREV78V7LpDVB5ocTkfRiVaxkukl
+         uD8+iaLivIqCc78bsa0ZtrX0PMocg66iSAU02MQn/qIlPbJ1krHr7VfOEKafoBi4/jBW
+         Lgog==
+X-Gm-Message-State: AOAM532OsRRgXCmTIOAvfTfqocFj2+dHZh6jzHCkjAjQwoUgxjiFR592
+        /HRNTjbTfSbcO7OxpJykbCLwKs/7qA==
+X-Google-Smtp-Source: ABdhPJyhji8EPb5FuVMZbGyJHgSzUgoThoUKc/7Ld8ukWHPII1dRpzHjuB3StkNE/TYAj81PwYIOnQ==
+X-Received: by 2002:aca:3014:: with SMTP id w20mr2685105oiw.69.1641952768993;
+        Tue, 11 Jan 2022 17:59:28 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id w19sm406835oiw.29.2022.01.11.17.59.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 17:59:28 -0800 (PST)
+Received: (nullmailer pid 3912227 invoked by uid 1000);
+        Wed, 12 Jan 2022 01:59:27 -0000
+Date:   Tue, 11 Jan 2022 19:59:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Kyungmin Park <kyungmin.park@samsung.com>,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        Heiko Stuebner <heiko@sntech.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Lin Huang <hl@rock-chips.com>,
+        Derek Basehore <dbasehore@chromium.org>,
+        linux-rockchip@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>
+Subject: Re: [PATCH 02/10] dt-bindings: devfreq: rk3399_dmc: Deprecate
+ unused/redundant properties
+Message-ID: <Yd41/06PvO7DDGlO@robh.at.kernel.org>
+References: <20220107235320.965497-1-briannorris@chromium.org>
+ <20220107155215.2.I5ba582cd678d34c03d647e5500db8e33b7524d66@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107155215.2.I5ba582cd678d34c03d647e5500db8e33b7524d66@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 9e1ff307c779ce1f0f810c7ecce3d95bbae40896:
+On Fri, 07 Jan 2022 15:53:12 -0800, Brian Norris wrote:
+> These DRAM configuration properties are all handled in ARM Trusted
+> Firmware (and have been since the early days of this SoC), and there are
+> no in-tree users of the DMC binding yet. It's better to just defer to
+> firmware instead of maintaining this large list of properties.
+> 
+> There's also some confusion about units: many of these are specified in
+> MHz, but the downstream users and driver code are treating them as Hz, I
+> believe. Rather than straighten all that out, I just drop them.
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+> 
+>  .../bindings/devfreq/rk3399_dmc.yaml          | 42 +++++++++----------
+>  1 file changed, 21 insertions(+), 21 deletions(-)
+> 
 
-  Linux 5.15-rc4 (2021-10-03 14:08:47 -0700)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/krisman/unicode.git tags/unicode-for-next-5.17
-
-for you to fetch changes up to e2a58d2d3416aceeae63dfc7bf680dd390ff331d:
-
-  unicode: only export internal symbols for the selftests (2021-10-12 11:41:39 -0300)
-
-----------------------------------------------------------------
-This branch has patches from Christoph Hellwig to split the large data
-tables of the unicode subsystem into a loadable module, which allow
-users to not have them around if case-insensitive filesystems are not to
-be used.  It also includes minor code fixes to unicode and its users,
-from the same author.
-
-There is a trivial conflict in the function encoding_show in
-fs/f2fs/sysfs.c reported by linux-next between commit
-
-84eab2a899f2 ("f2fs: replace snprintf in show functions with sysfs_emit")
-
-and commit a440943e68cd ("unicode: remove the charset field from struct
-unicode_map") from my tree.
-
-I left an example of how I would solve it on the branch
-unicode-f2fs-mergeconflict of my tree.
-
-All the patches here have been on linux-next releases for the past
-months.
-
-Signed-off-by: Gabriel Krisman Bertazi <krisman@collabora.com>
-
-----------------------------------------------------------------
-Christoph Hellwig (11):
-      ext4: simplify ext4_sb_read_encoding
-      f2fs: simplify f2fs_sb_read_encoding
-      unicode: remove the charset field from struct unicode_map
-      unicode: mark the version field in struct unicode_map unsigned
-      unicode: pass a UNICODE_AGE() tripple to utf8_load
-      unicode: remove the unused utf8{,n}age{min,max} functions
-      unicode: simplify utf8len
-      unicode: move utf8cursor to utf8-selftest.c
-      unicode: cache the normalization tables in struct unicode_map
-      unicode: Add utf8-data module
-      unicode: only export internal symbols for the selftests
-
- fs/ext4/super.c                                    |  39 ++-
- fs/f2fs/super.c                                    |  38 +--
- fs/f2fs/sysfs.c                                    |   3 +-
- fs/unicode/Kconfig                                 |  13 +-
- fs/unicode/Makefile                                |  13 +-
- fs/unicode/mkutf8data.c                            |  24 +-
- fs/unicode/utf8-core.c                             | 109 ++++-----
- fs/unicode/utf8-norm.c                             | 262 +++------------------
- fs/unicode/utf8-selftest.c                         |  94 ++++----
- .../{utf8data.h_shipped => utf8data.c_shipped}     |  22 +-
- fs/unicode/utf8n.h                                 |  81 +++----
- include/linux/unicode.h                            |  49 +++-
- 12 files changed, 291 insertions(+), 456 deletions(-)
- rename fs/unicode/{utf8data.h_shipped => utf8data.c_shipped} (99%)
-
+Reviewed-by: Rob Herring <robh@kernel.org>
