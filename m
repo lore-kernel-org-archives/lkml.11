@@ -2,75 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83EDDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:15:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DA20C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:15:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352788AbiALLPL (ORCPT
+        id S1352803AbiALLPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:15:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22510 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237932AbiALLPH (ORCPT
+        Wed, 12 Jan 2022 06:15:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237932AbiALLPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:15:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641986106;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/O6VUSuDrBCGXjIOjB+lCz/TDMc6L1BfrxoUSl2WMqg=;
-        b=aGibjgzr8vSsqUTeUNO4UlQgIpykX45L9lmdJjyGGtjmpGB4Wbn8SfiuPYYch6dV6LKMd2
-        oYUlQ2JMJPXjd8IcDAcnin/KxI5r4p4fZHPRitbyEkt/4qVswPfGGLpSx39qJ38TfYCSJL
-        MxsWr5/6VBatkHYP4FoLwqCSHuTU/IA=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-390-8A80HG8nNfaIos3c_evOhg-1; Wed, 12 Jan 2022 06:15:05 -0500
-X-MC-Unique: 8A80HG8nNfaIos3c_evOhg-1
-Received: by mail-qv1-f70.google.com with SMTP id 6-20020ad45b86000000b0041a32b5b1c4so599466qvp.8
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 03:15:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=/O6VUSuDrBCGXjIOjB+lCz/TDMc6L1BfrxoUSl2WMqg=;
-        b=em53vddM1kf5WWxxYDkoCTi2w63JEVLofWvxl4QlJW4Eps1PHjD3HGYf0pRtLDFVqX
-         L5lLETAAZ1oiICzoKvH8qJcYkFpkoY4nuy5T1VY78DLtOEXw68AOUqwuyw32iG3eJib/
-         BCYeQ4kS6r3Cbo6a41aKYT+NpZKgjFIDn7KRYhESrBCNr5+4UWtrUJph0nHzRCRBjL8G
-         /FVE0TmjCve4sLoc4ijq5K9nI0wOlyz3BruNwHgyGu0sPe4kvFZ887Hvn2hr0r28J91m
-         zEOzA2lPyEK1iEFlrI/D0TFP20jx+ziKnHeuT1KJ8OIHinhKmB1gBh1SrQmy7HqLLGjw
-         VAiw==
-X-Gm-Message-State: AOAM5314cpjRsrfCvz2mnqLJ0TLpZQQM2jofofVM2n37w1Q3a9UMtds4
-        8vKGM+PSP0GAQ/UACMSMTNqI9Flo8PexoD4Wq+w6NpiMEhR07q1PNC5Nyc4c/Zv89WkKnD9us6I
-        m5WoLXnUzsGuClNgOs+DbmmIl
-X-Received: by 2002:a05:622a:1c5:: with SMTP id t5mr7159795qtw.311.1641986105465;
-        Wed, 12 Jan 2022 03:15:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJytfENyhCNljtiDCzXK7f0hQt2E1jJGbk4pwZSAZeomnRI3JR8zM0bsNr9/Do/Yp2K6SzERzg==
-X-Received: by 2002:a05:622a:1c5:: with SMTP id t5mr7159783qtw.311.1641986105264;
-        Wed, 12 Jan 2022 03:15:05 -0800 (PST)
-Received: from gerbillo.redhat.com (146-241-96-254.dyn.eolo.it. [146.241.96.254])
-        by smtp.gmail.com with ESMTPSA id y17sm1361497qkp.134.2022.01.12.03.15.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 03:15:04 -0800 (PST)
-Message-ID: <3520c1e1609d8bef103766ad03508d0060824b98.camel@redhat.com>
-Subject: Re: [PATCH 09/14] ipv6: hand dst refs to cork setup
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Pavel Begunkov <asml.silence@gmail.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 12 Jan 2022 12:15:01 +0100
-In-Reply-To: <9e3bb558-ecb1-a6aa-35e4-a2771136b3fe@gmail.com>
-References: <cover.1641863490.git.asml.silence@gmail.com>
-         <07031c43d3e5c005fbfc76b60a58e30c66d7c620.1641863490.git.asml.silence@gmail.com>
-         <48293134f179d643e9ec7bcbd7bca895df7611ac.camel@redhat.com>
-         <9e3bb558-ecb1-a6aa-35e4-a2771136b3fe@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 12 Jan 2022 06:15:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B46C06173F;
+        Wed, 12 Jan 2022 03:15:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C09EB81DC0;
+        Wed, 12 Jan 2022 11:15:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20B19C36AEA;
+        Wed, 12 Jan 2022 11:15:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641986136;
+        bh=RTTu6nWijk2G34RQ8PR1ea0narp9zXHqxMjZSrcL0co=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Hq5LE8KaLV3xNlfl8hONGT11QmqFJgF5ZZ53zgnsdO9DYAJ3B8+wjU1jSIWeFQ3/D
+         CaFHUcDIXoppDdArCINBydMDN3XpiApt2gXzo3WfUQ9EosZsIz+fETbj6cGaJgODcQ
+         RZjbF9LA/EWCKAuGks8VTqUhgG/KYGeeO094JHFcgGFdZ+k6BgYzvYRyQgp0IWuabE
+         6Amw158NYWiJ4GIMYCwvGg+6cm48+dwbs/dP2cMG/t24qKzlZsJcARwnFtoH8cDJjI
+         ORDJ0PD0+aoOGK4FPG7XBpY4YizNUp6zImN53U/p5QaZfcKlKu0EVwLvcYWDLCGCVV
+         ObzsbCCfB0d5Q==
+Message-ID: <f86483fca8b0dc68ce243ba47998ff3296a3b6f8.camel@kernel.org>
+Subject: Re: [PATCH 4/5] uapi: always define F_GETLK64/F_SETLK64/F_SETLKW64
+ in fcntl.h
+From:   Jeff Layton <jlayton@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>
+Cc:     Guo Ren <guoren@kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>
+Date:   Wed, 12 Jan 2022 06:15:33 -0500
+In-Reply-To: <CAK8P3a1ONn=FiPU3669MjBMntS-1K5bgX4pHforUsYJ7yhwZ-g@mail.gmail.com>
+References: <20220111083515.502308-1-hch@lst.de>
+         <20220111083515.502308-5-hch@lst.de>
+         <CAK8P3a0mHC5=OOGV=sGnC9JqZWxzsJyZbTefnCtryQU3o3PY_g@mail.gmail.com>
+         <20220112075609.GA4854@lst.de>
+         <CAK8P3a1ONn=FiPU3669MjBMntS-1K5bgX4pHforUsYJ7yhwZ-g@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-15"
 User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -78,41 +64,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-01-11 at 20:39 +0000, Pavel Begunkov wrote:
-> On 1/11/22 17:11, Paolo Abeni wrote:
-> > On Tue, 2022-01-11 at 01:21 +0000, Pavel Begunkov wrote:
-> > > During cork->dst setup, ip6_make_skb() gets an additional reference to
-> > > a passed in dst. However, udpv6_sendmsg() doesn't need dst after calling
-> > > ip6_make_skb(), and so we can save two additional atomics by passing
-> > > dst references to ip6_make_skb(). udpv6_sendmsg() is the only caller, so
-> > > it's enough to make sure it doesn't use dst afterwards.
+On Wed, 2022-01-12 at 09:28 +0100, Arnd Bergmann wrote:
+> On Wed, Jan 12, 2022 at 8:56 AM Christoph Hellwig <hch@lst.de> wrote:
 > > 
-> > What about the corked path in udp6_sendmsg()? I mean:
+> > On Tue, Jan 11, 2022 at 04:33:30PM +0100, Arnd Bergmann wrote:
+> > > This is a very subtle change to the exported UAPI header contents:
+> > > On 64-bit architectures, the three unusable numbers are now always
+> > > shown, rather than depending on a user-controlled symbol.
+> > 
+> > Well, the change is bigger and less subtle.  Before this change the
+> > constants were never visible to userspace at all (except on mips),
+> > because the #ifdef CONFIG_64BIT it never set for userspace builds.
 > 
-> It doesn't change it for callers, so the ref stays with udp6_sendmsg() when
-> corking. To compensate for ip6_setup_cork() there is an explicit dst_hold()
-> in ip6_append_data, should be fine.
-
-Whoops, I underlooked that chunk, thanks for pointing it out!
-
-Yes, it looks fine.
-
-> @@ -1784,6 +1784,7 @@ int ip6_append_data(struct sock *sk,
->   		/*
->   		 * setup for corking
->   		 */
-> +		dst_hold(&rt->dst);
->   		err = ip6_setup_cork(sk, &inet->cork, &np->cork,
->   				     ipc6, rt);
+> I suppose you mean /always/ visible here, with that ifndef.
 > 
+> > > This is probably what we want here for compatibility reasons, but I think
+> > > it should be explained in the changelog text, and I'd like Jeff or Bruce
+> > > to comment on it as well: the alternative here would be to make the
+> > > uapi definition depend on __BITS_PER_LONG==32, which is
+> > > technically the right thing to do but more a of a change.
+> > 
+> > I can change this to #if __BITS_PER_LONG==32 || defined(__KERNEL__),
+> > but it will still be change in what userspace sees.
 > 
-> I don't care much about corking perf, but might be better to implement
-> this "handing away" for ip6_append_data() as well to be more consistent
-> with ip6_make_skb().
+> Exactly, that is the tradeoff, which is why I'd like the flock maintainers
+> to say which way they prefer. We can either do it more correctly (hiding
+> the constants from user space when they are not usable), or with less
+> change (removing the incorrect #ifdef). Either way sounds reasonable
+> to me, I mainly care that this is explained in the changelog and that the
+> maintainers are aware of the two options.
+> 
 
-I'm personally fine with the the added dst_hold() in ip6_append_data()
+I don't have a strong opinion here. If we were taking symbols away that
+were previously visible to userland it would be one thing, but since
+we're just adding symbols that may not have been there before, this
+seems less likely to break anything.
 
-Thanks!
+I probably lean toward Christoph's original solution instead of keeping
+the conditional definitions. It's hard to imagine there are many
+programs that care whether these other symbols are defined or not.
 
-Paolo
+You can add this to the original patch:
+
+Acked-by: Jeff Layton <jlayton@kernel.org>
 
