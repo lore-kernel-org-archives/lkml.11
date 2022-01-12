@@ -2,103 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CECD7C43219
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 07:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F277EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 07:40:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351311AbiALHjn (ORCPT
+        id S1351295AbiALHkl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 02:39:43 -0500
-Received: from mail-vk1-f179.google.com ([209.85.221.179]:33685 "EHLO
-        mail-vk1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351328AbiALHjj (ORCPT
+        Wed, 12 Jan 2022 02:40:41 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:33672 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1351299AbiALHjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 02:39:39 -0500
-Received: by mail-vk1-f179.google.com with SMTP id g5so1133998vkg.0;
-        Tue, 11 Jan 2022 23:39:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MHfD03WmQisvwQlA0yVYr+t2tOrW8sr+EcU6Wg5KSck=;
-        b=1YMG+rRXfwavl134UZ73NS6rtboS3cxSjqHMnAkxxJbZOptDl9DzPUZbmjyGfXXksp
-         1kD9F3qW2KgAVydvfflcLxIHIix4CsvUxMb4bZMeegeICcRQJzRP5bpu99edyQxvbnsM
-         twyYG1hLfhElGdqknfmIV2qLSm4pSYjtjOWJL82iHHidOD1pOu36NsFf5d8VsMJ83G3J
-         YaVWQW6aot349tc1eLDzjBEa+tRt6JC2vZL5FfykUZcr+pyj92PpLvkh2xUGRKLN7G+U
-         5n96x8tgZA6WLCKBRo/6oxsO8HIs/SL512JtkzP3MDbSZtt7GlzssmJr9uQLWZJuLWDV
-         yqmA==
-X-Gm-Message-State: AOAM532MuuqpFexqY2FicgdHavTTWFcgAlxY9AjS3+Hi38qM6ATOx2Z+
-        wyNmkBNFbF0vVbwp2JdCbdP/v64mWA9zbQ==
-X-Google-Smtp-Source: ABdhPJzuxtsPnI37YIYK5BxpU/cRukaZdYXc3zFpmpzwFNlkrcvFJA/MFm52jHebuMxsnSbo8Nc/xA==
-X-Received: by 2002:a1f:3490:: with SMTP id b138mr3856785vka.31.1641973178972;
-        Tue, 11 Jan 2022 23:39:38 -0800 (PST)
-Received: from mail-vk1-f178.google.com (mail-vk1-f178.google.com. [209.85.221.178])
-        by smtp.gmail.com with ESMTPSA id s47sm2201128uad.17.2022.01.11.23.39.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 11 Jan 2022 23:39:38 -0800 (PST)
-Received: by mail-vk1-f178.google.com with SMTP id n12so1073619vkc.12;
-        Tue, 11 Jan 2022 23:39:38 -0800 (PST)
-X-Received: by 2002:a1f:384b:: with SMTP id f72mr4068168vka.0.1641973178116;
- Tue, 11 Jan 2022 23:39:38 -0800 (PST)
+        Wed, 12 Jan 2022 02:39:36 -0500
+X-UUID: 2e40ab6a741e481b81514266684dba5b-20220112
+X-UUID: 2e40ab6a741e481b81514266684dba5b-20220112
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <sean.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1835634332; Wed, 12 Jan 2022 15:39:33 +0800
+Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 12 Jan 2022 15:39:32 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
+ (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 12 Jan
+ 2022 15:39:26 +0800
+Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 12 Jan 2022 15:39:25 +0800
+From:   <sean.wang@mediatek.com>
+To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>
+CC:     <Mark-YW.Chen@mediatek.com>, <sean.wang@mediatek.com>,
+        <Soul.Huang@mediatek.com>, <YN.Chen@mediatek.com>,
+        <Leon.Yen@mediatek.com>, <Eric-SY.Chang@mediatek.com>,
+        <Deren.Wu@mediatek.com>, <km.lin@mediatek.com>,
+        <robin.chiu@mediatek.com>, <Eddie.Chen@mediatek.com>,
+        <ch.yeh@mediatek.com>, <posh.sun@mediatek.com>,
+        <ted.huang@mediatek.com>, <Eric.Liang@mediatek.com>,
+        <Stella.Chang@mediatek.com>, <Tom.Chou@mediatek.com>,
+        <steve.lee@mediatek.com>, <jsiuda@google.com>,
+        <frankgor@google.com>, <jemele@google.com>,
+        <abhishekpandit@google.com>, <michaelfsun@google.com>,
+        <mcchou@chromium.org>, <shawnku@google.com>,
+        <linux-bluetooth@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 5/7] Bluetooth: btmtksdio: lower log level in btmtksdio_runtime_[resume|suspend]()
+Date:   Wed, 12 Jan 2022 15:39:15 +0800
+Message-ID: <c355cd94eee37a15a17a0ad51e82def6c922cd89.1641972745.git.objelf@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
+In-Reply-To: <bddfacd096b6fe927d08e48ad6993c17c9954028.1641972745.git.objelf@gmail.com>
+References: <bddfacd096b6fe927d08e48ad6993c17c9954028.1641972745.git.objelf@gmail.com>
 MIME-Version: 1.0
-References: <20211202191630.12450-1-jaschultz@microsoft.com> <20211202191630.12450-3-jaschultz@microsoft.com>
-In-Reply-To: <20211202191630.12450-3-jaschultz@microsoft.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 12 Jan 2022 08:39:27 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUPwo7pCSwY8_9xTaDruTHt6d=wHiNHvRmE71k8hWeLBw@mail.gmail.com>
-Message-ID: <CAMuHMdUPwo7pCSwY8_9xTaDruTHt6d=wHiNHvRmE71k8hWeLBw@mail.gmail.com>
-Subject: Re: [PATCH 2/5] platform: surface: Propagate ACPI Dependency
-To:     Jarrett Schultz <jaschultzms@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
-        Jarrett Schultz <jaschultz@microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarrett,
+From: Sean Wang <sean.wang@mediatek.com>
 
-On Mon, Dec 6, 2021 at 4:03 PM Jarrett Schultz <jaschultzms@gmail.com> wrote:
-> Since the Surface XBL Driver does not depend on ACPI, the
-> platform/surface directory as a whole no longer depends on ACPI. With
-> respect to this, the ACPI dependency is moved into each config that depends
-> on ACPI individually.
->
-> Signed-off-by: Jarrett Schultz <jaschultz@microsoft.com>
+Lower its log level from INFO to DEBUG prior to we enable runtime pm for
+mt7921s with the smaller idle time as default.
 
-Thanks for your patch, which is now commit 272479928172edf0 ("platform:
-surface: Propagate ACPI Dependency").
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+---
+ drivers/bluetooth/btmtksdio.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> --- a/drivers/platform/surface/Kconfig
-> +++ b/drivers/platform/surface/Kconfig
-> @@ -5,7 +5,6 @@
->
->  menuconfig SURFACE_PLATFORMS
->         bool "Microsoft Surface Platform-Specific Device Drivers"
-> -       depends on ACPI
->         default y
->         help
->           Say Y here to get to see options for platform-specific device drivers
+diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
+index b0aae4143037..3e8f19556e2c 100644
+--- a/drivers/bluetooth/btmtksdio.c
++++ b/drivers/bluetooth/btmtksdio.c
+@@ -1253,7 +1253,7 @@ static int btmtksdio_runtime_suspend(struct device *dev)
+ 
+ 	err = btmtksdio_fw_pmctrl(bdev);
+ 
+-	bt_dev_info(bdev->hdev, "status (%d) return ownership to device", err);
++	bt_dev_dbg(bdev->hdev, "status (%d) return ownership to device", err);
+ 
+ 	return err;
+ }
+@@ -1273,7 +1273,7 @@ static int btmtksdio_runtime_resume(struct device *dev)
+ 
+ 	err = btmtksdio_drv_pmctrl(bdev);
+ 
+-	bt_dev_info(bdev->hdev, "status (%d) get ownership from device", err);
++	bt_dev_dbg(bdev->hdev, "status (%d) get ownership from device", err);
+ 
+ 	return err;
+ }
+-- 
+2.25.1
 
-Without any dependency, all users configuring a kernel are now asked
-about this. Is there any other platform dependency that can be used
-instead?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
