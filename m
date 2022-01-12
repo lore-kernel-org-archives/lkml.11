@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D205FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 23:47:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C40AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 23:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235635AbiALXrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 18:47:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235590AbiALXro (ORCPT
+        id S235978AbiALXuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 18:50:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44162 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235853AbiALXtY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 18:47:44 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59D7C06173F;
-        Wed, 12 Jan 2022 15:47:43 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id f141-20020a1c1f93000000b003497aec3f86so2596352wmf.3;
-        Wed, 12 Jan 2022 15:47:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aJ+t5KPBHmObAXEucp1lDxWIckLxKNo3ipApmjpHFS8=;
-        b=FoHKvy8jOXROJPA/BKAAFbGezF6+Ysz69F/HtVV1vyaKKwc5zkG9kPCbIkdTIiSqC3
-         InQwrQ/ZuIBngh+RJCnw9SL3dcWgv3QfezIYVF45/N1Zl98/LSbrxrm2/uyR2/ESz+lY
-         F22HBnCGfyh+zAFU5ZqzxpfluKvjhxTavKvyaUVU1EvkYMA2s8bXlXMcuu3R3lYfmA90
-         J+wSBlWEVzoSscSzjbQe6vAfAtXqTE8yEk4LEgZIOhGw7z8gN/9M0wDzk7upFInCgdKm
-         +FiAr75dq+PvaWo0pTxSpy0KM/eTlv/WrZMwtxiTySuKkduqXyVUpme9qs6YpSJSSrNf
-         AvnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aJ+t5KPBHmObAXEucp1lDxWIckLxKNo3ipApmjpHFS8=;
-        b=wqd+XIPKZmLtzQBfijkKL7B+uhJ+jAME50fsH1zVe/f2/LvKVktFByv7xyNV+WmF1h
-         rSAOjNtml3W3fwWC2bO1qkeWnS37grIraFbGyFGq1ubST8tskLpyDki3uV68cialCoha
-         buJqhafxQnchRhjhb7GdngcDSoClFVBLJZHKREykXi1vMSsuaW0b96EsgM3s9oBqJX2h
-         06dhLhRyjvDdZKq6AMmEESMJs7DyEwHxF7rOwWPCeb/9qxrOsdyKnLAp9hj7Z2Q5LRKx
-         M2L81h/z7jFuyWhi1hOu4nS57f7ypKcQ4PTn5fXpJ5Aoj1IYuqDMvy7eyqyd0WOjnoBx
-         QLig==
-X-Gm-Message-State: AOAM533Od9M/lG8lGRalbEnMhrIFq+1rsz8VLgRPEOb2pNa7l9Pd+p4D
-        xQimioNJzAoJ3BQZG8g7q8dP26RTuGISfg==
-X-Google-Smtp-Source: ABdhPJyeOMPQZMVd+rSnSZLcDVDIAEXJEqv6bt22UWvapDnuA+0wOSfrEODnidchAY4Z60MZbcRdzA==
-X-Received: by 2002:a05:600c:4991:: with SMTP id h17mr1533052wmp.14.1642031262336;
-        Wed, 12 Jan 2022 15:47:42 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id u3sm1321186wrs.0.2022.01.12.15.47.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 15:47:41 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        linux-ide@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ata: pata_ali: remove redundant return statement
-Date:   Wed, 12 Jan 2022 23:47:41 +0000
-Message-Id: <20220112234741.1232858-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+        Wed, 12 Jan 2022 18:49:24 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BFD5EB8218A;
+        Wed, 12 Jan 2022 23:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FD83C36AE9;
+        Wed, 12 Jan 2022 23:49:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642031361;
+        bh=Qjw7uIULxio5olTOZmxu6IZozjzdZ862HeZ0UaChgTs=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=UYCZPydkqGg2Q3URUB6YZgIG8Y1yuYWukIzeRx8kkPNkfJa/Ut9/B6XoStJh+WQ22
+         KoIQQAaRwNFvfexDI9doe0pd5Gh6011qLhi+TDzi4e5mvByUGknKza9V2jhZrzZSmT
+         lkVRuWJAgbPsniqudOk05myl8fK2WCFHJV6SF1zgpGJiDv7jeKaNEV/dnFqiIzFrRd
+         lqRmsd1k5QKoGHPuXjX7gfejpl/n2k3rfmMwnChTjV/sxkTkqNL6ok6u3322r+WHbU
+         OsBsUiFqP3ykzRfG1vtpJpzsXgOBPlwo+Np0G0hnkXlvxBFM0gLtYfBLGBXntL1lrf
+         k2J9lt1fys7DQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7D798F60795;
+        Wed, 12 Jan 2022 23:49:21 +0000 (UTC)
+Subject: Re: [GIT PULL] fscache, cachefiles: Rewrite
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <510611.1641942444@warthog.procyon.org.uk>
+References: <510611.1641942444@warthog.procyon.org.uk>
+X-PR-Tracked-List-Id: <linux-nfs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <510611.1641942444@warthog.procyon.org.uk>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/fscache-rewrite-20220111
+X-PR-Tracked-Commit-Id: d7bdba1c81f7e7bad12c7c7ce55afa3c7b0821ef
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8834147f9505661859ce44549bf601e2a06bba7c
+Message-Id: <164203136150.22460.7562866194670259510.pr-tracker-bot@kernel.org>
+Date:   Wed, 12 Jan 2022 23:49:21 +0000
+To:     David Howells <dhowells@redhat.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        dhowells@redhat.com, Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Daire Byrne <daire@dneg.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Omar Sandoval <osandov@osandov.com>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
+        ceph-devel@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-cachefs@redhat.com, linux-cifs@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A return statement is unnecessarily complicated, currently value
-in variable mask is bitwise-masked and the variable is being
-updated and then returned. Just updating the mask is all that is
-required as the following statement is a return.
+The pull request you sent on Tue, 11 Jan 2022 23:07:24 +0000:
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/ata/pata_ali.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/fscache-rewrite-20220111
 
-diff --git a/drivers/ata/pata_ali.c b/drivers/ata/pata_ali.c
-index ab28a6707b94..1b90cda27246 100644
---- a/drivers/ata/pata_ali.c
-+++ b/drivers/ata/pata_ali.c
-@@ -123,7 +123,7 @@ static unsigned long ali_20_filter(struct ata_device *adev, unsigned long mask)
- 		mask &= ~(ATA_MASK_MWDMA | ATA_MASK_UDMA);
- 	ata_id_c_string(adev->id, model_num, ATA_ID_PROD, sizeof(model_num));
- 	if (strstr(model_num, "WDC"))
--		return mask &= ~ATA_MASK_UDMA;
-+		mask &= ~ATA_MASK_UDMA;
- 	return mask;
- }
- 
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8834147f9505661859ce44549bf601e2a06bba7c
+
+Thank you!
+
 -- 
-2.33.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
