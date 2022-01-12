@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FC2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F65FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352352AbiALKBW (ORCPT
+        id S1352403AbiALKBp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:01:22 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:58378
+        Wed, 12 Jan 2022 05:01:45 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:58422
         "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239613AbiALKA4 (ORCPT
+        by vger.kernel.org with ESMTP id S239501AbiALKBH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:00:56 -0500
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        Wed, 12 Jan 2022 05:01:07 -0500
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 083DE40317
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4105D4031B
         for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:00:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
         s=20210705; t=1641981655;
-        bh=QVrXucYojgYJ3MvsfMwPKw5wo2fuH+ML9mi4xwVkLOQ=;
+        bh=vkZ3shAsrts82aZQTD9Odzm7oGr7rqF0WKQDjTKTwd8=;
         h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=kjsHl/gaf1PG3XsuQBlc1y/giifAKd4nVO/sr5vU3HB66JOprokzzZlenJ5RXPDnM
-         9K6FCxS40XhMAYVH1JbBhcQtNWBn0YamybDEIoL36sBzpj+TkBszremaHslzdtuZAf
-         RjMvkLPgPUfPkJlchrsFUxM1ZYjw53/o7F1UvBsqhSnW9QhUTsbeHUiOsztF43WN3U
-         NyK95S7keU3aSXeLNCcYzmixwddY9sD7nRc1+YRUl7k7QGJQUFu8SsT6zj5kGkir58
-         E6gS2JRORiCZ7wcS0UumfZOyo81IJ5Smuutqx293dZkN+K29ieFjxCvGqh0T92PkE+
-         ZMC4n+fu7a6rg==
-Received: by mail-ed1-f70.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso1769989edt.20
+        b=S7HG6Oi3Xdgd9IQ6IB9xO4/FlOuXdwlL8p1wzr9IojJNAoPTeYo67CeiQ4Mm/5j0d
+         msHHEZ4yo7CPwhZd5krDR22Iw0HHyfhXOiqZvcEQoEJWkxQzKTcFci4W94vJy+H51p
+         eoxvOHwkhT74ZwkxvVVoS+W6bPbrzwkiU4Dnwak0G7EJhoUZw36e7W6i91NpR4vcCD
+         8E5bfO1LETYSLd2qNVh7GM9ye3rrzf+JfQYguNy5W8gr2o3SK2o4nlhxYQuPjd/YVI
+         y2vjmevgk2iPzNt3rm2YzD/Y/sWoMdNvgHKDni/q0BqdlQOehu/wKWqsCIhyQBfspA
+         4dCcUxe13IWkg==
+Received: by mail-ed1-f72.google.com with SMTP id m8-20020a056402510800b003f9d22c4d48so1766949edd.21
         for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:00:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QVrXucYojgYJ3MvsfMwPKw5wo2fuH+ML9mi4xwVkLOQ=;
-        b=xsrtiTGrt6J30iCSD3DA/G+gD0iAdwGxbI19OIlC8mQLUResPjJDqwbxd6XPH/MYRW
-         Og53QN/c5vOsFVMTu0Q55p9A8+q0m+JYX/9yDGBANugPpQ+wcmt3BMCQebLZ5ZX+e/08
-         Vyaru4GuM+tuABRRiy7Uk24ksx06PrqEaBHkPLd/XULqsRsCay+lTtRfonkhXX3Vwtyr
-         Gxxo9LAQl08/sm6f+pNTKxw3TOG5TyhQReUwx6bHk1HBxDXyReyZ51/vk23QHmNmRO0k
-         zKj0uHC5gUwV1ZldT7DInlvTUftRtmF9q4pbiGZ3hK/R3tQqW71OY7PEt8JQIrgMueCR
-         u5qg==
-X-Gm-Message-State: AOAM533hi2yUo0RR3KCwrRgIg42ThwFDTeV6IqIpNqaA/KB35BWJF+bE
-        VRhYiDGvi2dEArwv9Y3LUnIFF0fDPMPn7TCgzMkgf+10qZi+bHZf1Z1SukRzWuzEG+PDPAkZhJq
-        FCGTjBT22niHqDJ8yp6qmLjVXCuMK0kcx0aKFOsw83w==
-X-Received: by 2002:aa7:c1d7:: with SMTP id d23mr8007134edp.25.1641981653222;
-        Wed, 12 Jan 2022 02:00:53 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzKiVju5BY5SKliX0Vazs/LyzcIPx+Xnn1NeOt/kXgzB98trXRihJhGZ2eu1WJFRzbKvyKDGw==
-X-Received: by 2002:aa7:c1d7:: with SMTP id d23mr8007050edp.25.1641981651551;
-        Wed, 12 Jan 2022 02:00:51 -0800 (PST)
+        bh=vkZ3shAsrts82aZQTD9Odzm7oGr7rqF0WKQDjTKTwd8=;
+        b=0eMT0CCbXONNlihETBJ4Nbz3VoZGZoGdMhwCmrL19hcAEFXsKid4CYsru+Nsvhmxf5
+         JhfxlVj0J2ng7G21G1tLQQL9RKasMVeaG1PDWlLRGFW/nCcc8QUiDjIIe9RHIGSriV1c
+         F6vBrXIQzOk4CpE9Y5Y9tTcy1rsI7O0gT5D2xaa7KKCcn/uFeTnPxMXML8uvwcGZFCwh
+         2BAqA2jfrdIf8UvW33+3AFRfISu7sJKOGJVksv7AMuLgR5VTM5kMOflZrAw/4ua6xhSL
+         k7uN7FEiaVThQMNAkkCdyDBIatFTWkswb628Zk4NwDmXb9WuediX2ZvJwy9Wein1CHlK
+         X73g==
+X-Gm-Message-State: AOAM530tj7xuysxTVLs3JKGb/egVwvmh/obqYlIRMPHevJrpaKTuwfJ7
+        C2uKlOM5Inek8koGp9RzCD5WYWOm9bY5qv5yquOy9umDaiVMKoURN93ssTEx8H6tgFHYRLXI2Ik
+        Qb5jzLYm+DlKoemF9/j8nOHwbIxuMJ8dOQMepNUmMGw==
+X-Received: by 2002:a17:907:7295:: with SMTP id dt21mr6749935ejc.453.1641981654827;
+        Wed, 12 Jan 2022 02:00:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxr7AHmnhL8e6o/jXCWgESvLqrOYDTSQTTXkoaFmOMriyvAZ3QFfDrNia5S1pL4Lx8Q/Cv4WQ==
+X-Received: by 2002:a17:907:7295:: with SMTP id dt21mr6749917ejc.453.1641981654645;
+        Wed, 12 Jan 2022 02:00:54 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id hb11sm4311083ejc.33.2022.01.12.02.00.50
+        by smtp.gmail.com with ESMTPSA id hb11sm4311083ejc.33.2022.01.12.02.00.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 02:00:50 -0800 (PST)
+        Wed, 12 Jan 2022 02:00:53 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
@@ -62,10 +62,11 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Pratyush Yadav <p.yadav@ti.com>, linux-spi@vger.kernel.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     Sam Protsenko <semen.protsenko@linaro.org>
-Subject: [PATCH v3 1/4] ARM: dts: exynos: split dmas into array of phandles in Exynos5250
-Date:   Wed, 12 Jan 2022 11:00:43 +0100
-Message-Id: <20220112100046.68068-2-krzysztof.kozlowski@canonical.com>
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 4/4] spi: s3c64xx: allow controller-data to be optional
+Date:   Wed, 12 Jan 2022 11:00:46 +0100
+Message-Id: <20220112100046.68068-5-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
 References: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
@@ -75,49 +76,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"dmas" property should be rather an array of phandles, as dtschema
-points.
+The Samsung SoC SPI driver requires to provide controller-data node
+for each of SPI peripheral device nodes.  Make this controller-data node
+optional, so DTS could be simpler.
 
+Suggested-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Reviewed-by: Andi Shyti <andi@etezian.org>
 ---
- arch/arm/boot/dts/exynos5250.dtsi | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+ drivers/spi/spi-s3c64xx.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/exynos5250.dtsi b/arch/arm/boot/dts/exynos5250.dtsi
-index 139778928b93..102bb57bf704 100644
---- a/arch/arm/boot/dts/exynos5250.dtsi
-+++ b/arch/arm/boot/dts/exynos5250.dtsi
-@@ -496,8 +496,7 @@ spi_0: spi@12d20000 {
- 			status = "disabled";
- 			reg = <0x12d20000 0x100>;
- 			interrupts = <GIC_SPI 66 IRQ_TYPE_LEVEL_HIGH>;
--			dmas = <&pdma0 5
--				&pdma0 4>;
-+			dmas = <&pdma0 5>, <&pdma0 4>;
- 			dma-names = "tx", "rx";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -512,8 +511,7 @@ spi_1: spi@12d30000 {
- 			status = "disabled";
- 			reg = <0x12d30000 0x100>;
- 			interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
--			dmas = <&pdma1 5
--				&pdma1 4>;
-+			dmas = <&pdma1 5>, <&pdma1 4>;
- 			dma-names = "tx", "rx";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
-@@ -528,8 +526,7 @@ spi_2: spi@12d40000 {
- 			status = "disabled";
- 			reg = <0x12d40000 0x100>;
- 			interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
--			dmas = <&pdma0 7
--				&pdma0 6>;
-+			dmas = <&pdma0 7>, <&pdma0 6>;
- 			dma-names = "tx", "rx";
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/drivers/spi/spi-s3c64xx.c b/drivers/spi/spi-s3c64xx.c
+index 8755cd85e83c..769d958a2f86 100644
+--- a/drivers/spi/spi-s3c64xx.c
++++ b/drivers/spi/spi-s3c64xx.c
+@@ -796,16 +796,14 @@ static struct s3c64xx_spi_csinfo *s3c64xx_get_slave_ctrldata(
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
+-	data_np = of_get_child_by_name(slave_np, "controller-data");
+-	if (!data_np) {
+-		dev_err(&spi->dev, "child node 'controller-data' not found\n");
+-		return ERR_PTR(-EINVAL);
+-	}
+-
+ 	cs = kzalloc(sizeof(*cs), GFP_KERNEL);
+-	if (!cs) {
+-		of_node_put(data_np);
++	if (!cs)
+ 		return ERR_PTR(-ENOMEM);
++
++	data_np = of_get_child_by_name(slave_np, "controller-data");
++	if (!data_np) {
++		dev_info(&spi->dev, "child node 'controller-data' not found, using defaults\n");
++		return cs;
+ 	}
+ 
+ 	of_property_read_u32(data_np, "samsung,spi-feedback-delay", &fb_delay);
 -- 
 2.32.0
 
