@@ -2,77 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46374C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66A12C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242187AbiALOUK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:20:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50774 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238981AbiALOUJ (ORCPT
+        id S1354014AbiALOUo (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 09:20:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45376 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242224AbiALOUm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:20:09 -0500
+        Wed, 12 Jan 2022 09:20:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFED4C06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 06:20:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8E69616C6;
-        Wed, 12 Jan 2022 14:20:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 501A0C36AE5;
-        Wed, 12 Jan 2022 14:20:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 58413615CE
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 14:20:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8FC0C36AEA;
+        Wed, 12 Jan 2022 14:20:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641997208;
-        bh=d2KS11k5Yjjj+nDTx0R2wRrTlCpdlCZktiY5Q59oXNY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=BgdAI7gN5enr4n57ic1pM6PwIuBlYmdXZeSEv62yy+zF6ZU+2CQwUH0HjARRLcoWm
-         Y4Ns/VROMn56/RejR1SLKcbHuJZIJCW51stJoacT4m5HTg9Wsk7Xfb7xZQzNfQQ4UV
-         cA4Iw7zxCS946UFpUBwu+ljFX9ftOLN4mSNQa9Po4b8d9nBf3C3m+/+8AqDY0IM00Z
-         85AmsTgvoScDflPdFBEpEqjb5GWNhuYDQQq0aaTN8cDwHxV1pSj1lAALHd03JaPYjJ
-         N+HF1xwCDW+1gK0MoyFqs2wYUkZ1Tm3lj6kufaEU1O67vS0/z5mJBCRSs3/WrKb5R6
-         3ln8M0zKiKexg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3738AF6079A;
-        Wed, 12 Jan 2022 14:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1641997239;
+        bh=RRhmaQsH91uHTw71wtOmZx3VIMdk1PxtBkkRzyfrfzc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UYbz0uXPInouIEqplR6A9hPjOld8c0c8CYH/JiMN8KLMHaYRs4infv05/HmmzSBsy
+         po1SBDs4Pxh/Tem2uVpLaqdB+XSMuN3j897nqD6TrJB0RVGkYFuUuwalRHGeUKQ0So
+         bjJBmjTJmQ4STq2PAc3Fg4IvyphLvTiYNP2en6adwMnGieQjlaGHkNIxfEt46IOUhU
+         9n6lbhkk0ogGDrF8e/9Q5pcJc5ZNd4Ko+iXCLcdK2ffHB/zVPIpBcTLHcaqLeK/YKW
+         wtFkTJ58wtE+xizv7mbdfSsttoumIjIb1k31dsGm67fz5Fn9gcM+sz+7562dE8kwP6
+         sUH/coXQjLCQQ==
+Date:   Wed, 12 Jan 2022 14:20:34 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     cezary.rojewski@intel.com, srinivas.kandagatla@linaro.org,
+        bgoswami@codeaurora.org, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ASoC: codecs: Check for error pointer after calling
+ devm_regmap_init_mmio
+Message-ID: <Yd7jsoTqhdzldOHT@sirena.org.uk>
+References: <20220111013215.494516-1-jiasheng@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] Revert "of: net: support NVMEM cells with MAC in
- text format"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164199720822.30844.4377196587092278837.git-patchwork-notify@kernel.org>
-Date:   Wed, 12 Jan 2022 14:20:08 +0000
-References: <20220111081206.2393560-1-michael@walle.cc>
-In-Reply-To: <20220111081206.2393560-1-michael@walle.cc>
-To:     Michael Walle <michael@walle.cc>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rafal@milecki.pl, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="yFTNbuUxyqjoLy6G"
+Content-Disposition: inline
+In-Reply-To: <20220111013215.494516-1-jiasheng@iscas.ac.cn>
+X-Cookie: //GO.SYSIN DD *, DOODAH, DOODAH
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+--yFTNbuUxyqjoLy6G
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Tue, 11 Jan 2022 09:12:06 +0100 you wrote:
-> This reverts commit 9ed319e411915e882bb4ed99be3ae78667a70022.
-> 
-> We can already post process a nvmem cell value in a particular driver.
-> Instead of having yet another place to convert the values, the post
-> processing hook of the nvmem provider should be used in this case.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> 
-> [...]
+On Tue, Jan 11, 2022 at 09:32:15AM +0800, Jiasheng Jiang wrote:
+> The devm_regmap_init_mmio() may return error pointer under certain
+> circumstances, for example the possible failure of the kzalloc() in
+> regmap_mmio_gen_context(), which is called by devm_regmap_init_mmio().
 
-Here is the summary with links:
-  - [net-next] Revert "of: net: support NVMEM cells with MAC in text format"
-    https://git.kernel.org/netdev/net/c/3486eb774f9d
+This doesn't apply against current code, please check and resend.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+--yFTNbuUxyqjoLy6G
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHe47EACgkQJNaLcl1U
+h9Dt+gf9Eb/xv7Ke6BmtuB7TbiXVjloQqaMz+eAF1LXUtO/K/ChdrowhQSMHLeRa
+wkiUVm8zh/+rAiN9g/ZcaCECI4/yv7VIyWbgSUAEy6GCZfCsYuSAO1b0KpyQTWDd
+Nb6Gd/QNEDrOOXQN6utAWk2X0SYY5B1kaJAKjBtGDFEoRCDJ8XgD2LFjJQkjZi7O
+aHMISkOB8//AWGXkz3z9xeB3uMLmama8Chc1gV34Knvl3l3f5TJAEnJ5RnWjk5GQ
+pKFkNJ5HFCeYjHAY/+pEnHsvRwp+Nspot1O+gK3DNfbKFRMMmm+BJt6ON0dnxQtb
+0TWOLm+pZDyERLLtLl7TeYDSQwaN9g==
+=635e
+-----END PGP SIGNATURE-----
+
+--yFTNbuUxyqjoLy6G--
