@@ -2,94 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0957EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:56:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02CC1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355404AbiALQ4R (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:56:17 -0500
-Received: from gateway23.websitewelcome.com ([192.185.50.108]:49049 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355389AbiALQ4K (ORCPT
+        id S233758AbiALQ5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 11:57:37 -0500
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:60381 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229532AbiALQ5b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:56:10 -0500
-X-Greylist: delayed 1429 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 11:56:10 EST
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 62E75142DB
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:32:21 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id 7gXtnJI6LXvvJ7gXtnP3ZQ; Wed, 12 Jan 2022 10:32:21 -0600
-X-Authority-Reason: nr=8
-Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:48570 helo=[10.0.0.88])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1n7gXr-003OI0-MF; Wed, 12 Jan 2022 10:32:19 -0600
-Message-ID: <e07e5812-e78c-63a4-99e0-aab24fd95779@kernel.org>
-Date:   Wed, 12 Jan 2022 17:32:11 +0100
+        Wed, 12 Jan 2022 11:57:31 -0500
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id C85C3240003;
+        Wed, 12 Jan 2022 16:57:25 +0000 (UTC)
+Date:   Wed, 12 Jan 2022 17:57:25 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     =?iso-8859-1?Q?N=EDcolas_F=2E_R=2E_A=2E?= Prado 
+        <nfraprado@collabora.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rtc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH] selftests: rtc: Increase test timeout so that all tests
+ run
+Message-ID: <Yd8IdbGybWBOa5qe@piout.net>
+References: <20220112165359.3206047-1-nfraprado@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [for-next][PATCH 16/31] rtla: Real-Time Linux Analysis tool
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        John Kacur <jkacur@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111173030.999527342@goodmis.org>
- <20220111173116.190327559@goodmis.org>
- <5f04540c-273a-c4f2-692d-9de2f1495ba9@kernel.org>
- <20220112112159.742d258c@rorschach.local.home>
- <20220112113054.1be08f6c@rorschach.local.home>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220112113054.1be08f6c@rorschach.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 79.47.126.144
-X-Source-L: No
-X-Exim-ID: 1n7gXr-003OI0-MF
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.88]) [79.47.126.144]:48570
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 1
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220112165359.3206047-1-nfraprado@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/12/22 17:30, Steven Rostedt wrote:
-> On Wed, 12 Jan 2022 11:21:59 -0500
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
->> Strange. I should have picked it up from Patchwork.
->>
->> https://patchwork.kernel.org/project/linux-trace-devel/list/?series=604588
-> The above is the wrong v9 :-p (Now I see how this could have happened!)
-> 
-> Should have been:
-> 
->   https://patchwork.kernel.org/project/linux-trace-devel/list/?series=593861
+On 12/01/2022 11:53:59-0500, Nícolas F. R. A. Prado wrote:
+> The timeout setting for the rtc kselftest is currently 90 seconds.
+> However, two of the tests set alarms, which take one minute to complete
+> each. So the timeout should be at least 120. Set it to 180, so that all
+> tests are able to complete and still have some slack.
 
-That is it, thanks Steve!
+Hum, I don't get the logic from that, a test takes up to 60 seconds and
+the timeout is 90s per test so we already have plenty of slack there.
 
--- Daniel
+> 
+> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+> ---
+> 
+> This issue was discovered as part of adding the rtc kselftest to run on KernelCI
+> for the rk3399-gru-kevin device, which uses rtc-cros-ec as the RTC driver.
+> 
+> The output log with the current timeout is shown in [1]. As can be seen, the
+> whole test times out before the alarm_wkalm_set_minute test has had a chance to
+> complete:
+> 
+> 	# #  RUN           rtc.alarm_wkalm_set_minute ...
+> 	# # rtctest.c:294:alarm_wkalm_set_minute:Alarm time now set to 11/01/2022 23:03:00.
+> 	#
+> 	not ok 1 selftests: rtc: rtctest # TIMEOUT 90 seconds
+> 
+> With the increased timeout, as shown in [2], the alarm_wkalm_set_minute test
+> does complete its run:
+> 
+> 	# #  RUN           rtc.alarm_wkalm_set_minute ...
+> 	# # rtctest.c:294:alarm_wkalm_set_minute:Alarm time now set to 12/01/2022 15:54:00.
+> 	# #            OK  rtc.alarm_wkalm_set_minute
+> 	# ok 7 rtc.alarm_wkalm_set_minute
+> 	# # FAILED: 6 / 7 tests passed.
+> 
+> The fact that the alarm_alm_set_minute test times out on its own is probably an
+> issue with the rtc-cros-ec driver. Still, since the tests are independent, all
+> of them should be able to run regardless of how long each one takes (so,
+> assuming the worst case scenario).
+> 
+> [1] https://lava.collabora.co.uk/scheduler/job/5409783
+> [2] https://lava.collabora.co.uk/scheduler/job/5415176
+> 
+>  tools/testing/selftests/rtc/settings | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
+> index ba4d85f74cd6..a953c96aa16e 100644
+> --- a/tools/testing/selftests/rtc/settings
+> +++ b/tools/testing/selftests/rtc/settings
+> @@ -1 +1 @@
+> -timeout=90
+> +timeout=180
+> -- 
+> 2.34.1
+> 
+
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
