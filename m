@@ -2,88 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1186C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 05:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E08EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 05:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350934AbiALFrU (ORCPT
+        id S1350941AbiALFtS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 00:47:20 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:57120 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350916AbiALFrT (ORCPT
+        Wed, 12 Jan 2022 00:49:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350927AbiALFtR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 00:47:19 -0500
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id E8D78201337;
-        Wed, 12 Jan 2022 05:47:16 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id C11558066A; Wed, 12 Jan 2022 05:56:20 +0100 (CET)
-Date:   Wed, 12 Jan 2022 05:56:20 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Cai Huoqing <caihuoqing@baidu.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pcmcia: Guard yenta_dev_{resume,suspend}_noirq() on
- CONFIG_PM_SLEEP
-Message-ID: <Yd5fdBudm+vpmpRe@owl.dominikbrodowski.net>
-References: <20220111165004.1764190-1-nathan@kernel.org>
+        Wed, 12 Jan 2022 00:49:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D348AC06173F;
+        Tue, 11 Jan 2022 21:49:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2AD6B81DFE;
+        Wed, 12 Jan 2022 05:49:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4504AC36AEA;
+        Wed, 12 Jan 2022 05:49:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641966553;
+        bh=uEJemrohi9OZgKT8giEq5i49SQYJ5x2Oe5rbsLhaKfo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qZre6pX3PtZzEKaVahfUMAOtV2rxHJxS4xzCXNZeKoLdF2n48qAT9XVJhej0BfTZa
+         my2p4SFrtW4Aur7Dng06oXmC0LX2uRgIoBU6Eb7gR9FuBt8pCXvR4MJnGeszws80AV
+         bohwh3ZYAJ4KsjtV5pXjpYzBUxZM+kRvMPZmzmy9g/7hW07Y0kEz38SNro+dUHft6J
+         oVdMfXfzQmPGQpo2nUYq8GgnXYLe0lptTfTomD++VOf1bioFPMlGS2agFCgP6CCLOs
+         TA9d1wJtGUWHCroiKGY06Wu1h8Pbfh0+C/yVhtrjmdTuqS9FTehDOleagecDNr15tE
+         PEbry204kfK6w==
+Date:   Wed, 12 Jan 2022 06:49:09 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL for v5.17-rc1] media fixes
+Message-ID: <20220112064909.1ec47504@coco.lan>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220111165004.1764190-1-nathan@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Tue, Jan 11, 2022 at 09:50:04AM -0700 schrieb Nathan Chancellor:
-> When building without CONFIG_PM_SLEEP:
-> 
-> drivers/pcmcia/yenta_socket.c:1322:12: error: ‘yenta_dev_resume_noirq’ defined but not used [-Werror=unused-function]
->  1322 | static int yenta_dev_resume_noirq(struct device *dev)
->       |            ^~~~~~~~~~~~~~~~~~~~~~
-> drivers/pcmcia/yenta_socket.c:1303:12: error: ‘yenta_dev_suspend_noirq’ defined but not used [-Werror=unused-function]
->  1303 | static int yenta_dev_suspend_noirq(struct device *dev)
->       |            ^~~~~~~~~~~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
-> 
-> SET_NOIRQ_SYSTEM_SLEEP_PM_OPS evaluates to an empty macro when
-> CONFIG_PM_SLEEP is not set. Every callback in yenta_pm_ops depends on
-> CONFIG_PM_SLEEP to work properly so just guard this whole block on
-> CONFIG_PM_SLEEP, rather than CONFIG_PM, which CONFIG_PM_SLEEP will
-> select.
-> 
-> Fixes: 3daaf2c7aae8 ("pcmcia: Make use of the helper macro SET_NOIRQ_SYSTEM_SLEEP_PM_OPS()")
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Hi Linus,
 
-Thanks! An equivalent patch by Paul E. McKenney was hand-picked by Linus in
-the meantime:
-	https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=579f3a6d32a9c3d1cf5c2b1bd66817a2db31a968
+Please pull from:
+  git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media tags/media/v5.17-2
 
-Thanks again,
-	Dominik
+For:
+  - some fixes at si2157 tuning logic;
+  - a warning fix on atomisp when used with clang.
 
-> ---
->  drivers/pcmcia/yenta_socket.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pcmcia/yenta_socket.c b/drivers/pcmcia/yenta_socket.c
-> index 837877daed62..3966a6ceb1ac 100644
-> --- a/drivers/pcmcia/yenta_socket.c
-> +++ b/drivers/pcmcia/yenta_socket.c
-> @@ -1299,7 +1299,7 @@ static int yenta_probe(struct pci_dev *dev, const struct pci_device_id *id)
->  	return ret;
->  }
->  
-> -#ifdef CONFIG_PM
-> +#ifdef CONFIG_PM_SLEEP
->  static int yenta_dev_suspend_noirq(struct device *dev)
->  {
->  	struct pci_dev *pdev = to_pci_dev(dev);
-> 
-> base-commit: fbb3485f1f931102d8ba606f1c28123f5b48afa3
-> -- 
-> 2.34.1
-> 
+Thanks,
+Mauro
+
+The following changes since commit 68b9bcc8a534cd11fe55f8bc82f948aae7d81b3c:
+
+  media: ipu3-cio2: Add support for instantiating i2c-clients for VCMs (2021-12-16 20:58:56 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media tags/media/v5.17-2
+
+for you to fetch changes up to 8d4ff8187bb2b0c9025269f0da42ed16c878cb18:
+
+  media: si2157: add support for DVB-C Annex C (2022-01-10 15:56:50 +0100)
+
+----------------------------------------------------------------
+media updates for v5.17-rc1
+
+----------------------------------------------------------------
+Nathan Chancellor (1):
+      media: atomisp: Do not define input_system_cfg2400_t twice
+
+Robert Schlabbach (3):
+      media: si2157: fix 6MHz & 6.1MHz bandwidth setting
+      media: si2157: fix bandwidth stored in dev
+      media: si2157: add support for DVB-C Annex C
+
+ drivers/media/tuners/si2157.c                      | 34 +++++++++++++---------
+ .../media/atomisp/pci/isp2400_input_system_local.h |  2 --
+ 2 files changed, 20 insertions(+), 16 deletions(-)
+
