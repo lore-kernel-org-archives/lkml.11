@@ -2,96 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353133AbiALMZZ (ORCPT
+        id S1353124AbiALM2M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 07:25:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
+        Wed, 12 Jan 2022 07:28:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353124AbiALMZO (ORCPT
+        with ESMTP id S239509AbiALM2J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 07:25:14 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F2FFC061748
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 04:25:14 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id i82so3340412ioa.8
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 04:25:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=r0Ed94N6PJ1HQvpwsTDcBAz1gPfqabvU1XtB9N89ivo=;
-        b=i9YELGkPrF9QildKnEB0Dl461a8mPFeJ9M7JKTP5U2yLPD5Qyis0LkkhVGUzbd0RpI
-         /P9zvBLoXiB15zji+qwH/xUWw+pRZlU1+I1m4SRLHwC6H8/GEBbhK+sL4dz43TxBPrHP
-         fdSDxAOsL7O3hf1tG/sWVsfWRSmoMvMLYA4Dw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=r0Ed94N6PJ1HQvpwsTDcBAz1gPfqabvU1XtB9N89ivo=;
-        b=kRlm9RZ6eCKaWn/hvwSfbgfaKWIQHRXPUf2wYVpc847qNptzBJ7rcJH/1XU9ULQ6v9
-         Q05towokwQUqmEHjztbKUXvZxTstHIJ6KNtqLvjH0CYb9pFV7Yz5osVDYzBvhv6BKOGO
-         jAnw5ujYKpeZXSVktEIxeNNA1b4jb+yEkKlYm0qY/5Ozhuw2cXU9KVoliL1xRAX/6e2J
-         nw9nENmDhSkyEllmqidf13Vq2UO/eqIlwhfaUNEYe4QkbbvQ7lYizsSRtIFfp0+vxTVp
-         iD9T0BUnSx9QAB+jfkuvYZcx2YtLuul1a3wcyh4ozrgffMPOE9hsP7S96QhpY7LllNtg
-         JsAg==
-X-Gm-Message-State: AOAM532aROAz4GE226DTYIZUuM75GspNXG8PbpTh7a1/IN+Qq2rT+EmW
-        XvGERsdDqpeQw4Nevy5MwJQ27FsH9DPxJ8PwUiujMA==
-X-Google-Smtp-Source: ABdhPJz3aWTJ6YHXl+DNpQfRBduYGsa3dA2FrH3qublefl99BTefVU7PwBsvrZTCfAWITEprI8dsA0VWgDMC1jSTU/M=
-X-Received: by 2002:a05:6602:17d0:: with SMTP id z16mr4259571iox.204.1641990313893;
- Wed, 12 Jan 2022 04:25:13 -0800 (PST)
+        Wed, 12 Jan 2022 07:28:09 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50050C06173F;
+        Wed, 12 Jan 2022 04:28:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=aJdQ3WfBr8szpr2DYItlqsfb9rRoIL3kxZXhJL3L8aU=; b=bjjePTTHviZfIwg1tJnjLcwgzq
+        xwRs1BQRnIuvC9fEfyAbETRcppiCmDzGfV4S3UpUf5YKhDqZeEdbflYzTx9efKxCuDuf1xVvfV3KZ
+        IMT6nxP55MioxAOHwZ68Ie1+TQRP68nc2jy9Ur9RoDlAX5IxBJPhipI2cUpaSMzrq75VVik6YEY0c
+        3ltXPVRvJ8JSYw2XTljbUt26BDi0gZFGns1P+tGSSfyAVjGKVpe+lhoH/YzNUdRwsnGHhDRZBeiC+
+        xxTMbLUmKAu6NSftSa+T8zGRAUA3xmyAm3GXAHCx72setLknaxvqasqnV6MlGn0cXFlnJpNmZafjh
+        HeWKFCxQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n7cjA-0045sZ-JE; Wed, 12 Jan 2022 12:27:45 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B25D2300079;
+        Wed, 12 Jan 2022 13:27:41 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7CEB82B34539D; Wed, 12 Jan 2022 13:27:39 +0100 (CET)
+Date:   Wed, 12 Jan 2022 13:27:39 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Cruz Zhao <CruzZhao@linux.alibaba.com>
+Cc:     tj@kernel.org, lizefan.x@bytedance.com, hannes@cmpxchg.org,
+        mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, joshdon@google.com, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] sched/core: Forced idle accounting per-cpu
+Message-ID: <Yd7JO1UYlRXR0dWE@hirez.programming.kicks-ass.net>
+References: <1641894961-9241-1-git-send-email-CruzZhao@linux.alibaba.com>
+ <1641894961-9241-3-git-send-email-CruzZhao@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220106122452.18719-1-wsa@kernel.org> <Yd6gRR0jtqhRLwtB@ninjato>
- <98ed8d6d16a3d472d9432eb169aa2da44b66b5cc.camel@yandex.ru>
- <4dfbee97-14c2-718b-9cbd-fdeeace96f59@yahoo.com> <CAJMQK-h38XdN=QD6ozVNk+wxmpp1DKj21pkFZ+kY31+Lb8ot6Q@mail.gmail.com>
-In-Reply-To: <CAJMQK-h38XdN=QD6ozVNk+wxmpp1DKj21pkFZ+kY31+Lb8ot6Q@mail.gmail.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Wed, 12 Jan 2022 20:24:48 +0800
-Message-ID: <CAJMQK-g1pqg05K+ZL0R3i67gitEVoZQ2jbOuL=Q2djBr45soAg@mail.gmail.com>
-Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in adapter"
-To:     Tareque Md Hanif <tarequemd.hanif@yahoo.com>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1641894961-9241-3-git-send-email-CruzZhao@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 6:58 PM Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->
-> hi Konstantin and Tareque,
->
-> Can you help provide logs if we apply
-> 5a7b95fb993ec399c8a685552aa6a8fc995c40bd but revert
-> 8d35a2596164c1c9d34d4656fd42b445cd1e247f?
->
-Another thing might be helpful to test with:
+On Tue, Jan 11, 2022 at 05:56:00PM +0800, Cruz Zhao wrote:
 
-after apply 5a7b95fb993ec399c8a685552aa6a8fc995c40bd
-1. delete SET_LATE_SYSTEM_SLEEP_PM_OPS(i2c_suspend_late,
-i2c_resume_early) and function i2c_suspend_late() and
-i2c_resume_early().
-2. delete SET_RUNTIME_PM_OPS(i2c_runtime_suspend, i2c_runtime_resume,
-NULL) and function i2c_runtime_suspend() and i2c_runtime_resume().
+> @@ -1115,6 +1118,7 @@ struct rq {
+>  	unsigned int		core_forceidle_seq;
+>  	unsigned int		core_forceidle_occupation;
+>  	u64			core_forceidle_start;
+> +	bool			in_forcedidle;
 
-Does it still fail if we do 1 or 2?
+naming is wrong
 
-Sorry that we don't have a platform with intel CPU and amd GPU
-combination to test with.
+>  #endif
+>  };
+>  
+> diff --git a/kernel/sched/stats.c b/kernel/sched/stats.c
+> index 07dde29..ea22a8c 100644
+> --- a/kernel/sched/stats.c
+> +++ b/kernel/sched/stats.c
+> @@ -108,6 +108,16 @@ void __update_stats_enqueue_sleeper(struct rq *rq, struct task_struct *p,
+>  	}
+>  }
+>  
+> +#ifdef CONFIG_SCHED_CORE
+> +static inline u64 get_rq_forceidle_time(struct rq *rq) {
+> +	return rq->rq_forceidle_time;
+> +}
+> +#else
+> +static inline u64 get_rq_forceidle_time(struct rq *rq) {
+> +	return 0;
+> +}
+> +#endif
 
-
-> Thanks
->
-> On Wed, Jan 12, 2022 at 6:02 PM Tareque Md Hanif
-> <tarequemd.hanif@yahoo.com> wrote:
-> >
-> >
-> > On 1/12/22 15:51, Wolfram Sang wrote:
-> > > would the reporters of the
-> > > regression be available for further testing?
-> > Sure. I am available.
+indent is wrong, and if you put the #ifdef inside the function it'll be
+smaller.
