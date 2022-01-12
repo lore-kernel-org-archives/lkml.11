@@ -2,66 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A36C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354936AbiALQIL (ORCPT
+        id S1354947AbiALQJo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:08:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343557AbiALQIH (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:08:07 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E62C06173F;
-        Wed, 12 Jan 2022 08:08:07 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id A239C37B;
-        Wed, 12 Jan 2022 16:08:06 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net A239C37B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1642003686; bh=DPkFpdepY3Xq7hZkHRQrmZI4H683BGoTUeNeCtekHXw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=LkKlvPgtuvCUGj1J9qdf6fmizE5nxd5eUS3yUtvSnc3ZcFeOc4SeU8if+4KNgJASG
-         eJ/yLBUG8MEHwq1+DbrsdA9w5/xnI+o9ks/iOVubS4n++1O/CTvw7xFEEkXtMsugDt
-         eZJn+m+LJXKziSn6hFzkMoOiwkFzqPCGgzf+tyyLawxgEwQ8lgVigieTo3ePgpMKhG
-         j9TRXyiDppflG5Hlcc69V1awbnCZGy4KSmMZPtAx72rsTtKKd4cvhwA+bksbq/yD7P
-         xGXabiNXGp2d+MC5wgYZZLAnUPen4j0OOJtJaldyPTGU+4li0AetYIl/fxFovceLff
-         mbYDV+WEKhQrw==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     teng sterling <sterlingteng@gmail.com>, CGEL <cgel.zte@gmail.com>
-Cc:     Alex Shi <alexs@kernel.org>, xu.xin16@zte.com.cn,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH 1/4] Add zh_CN/admin-guide/mm/ksm.rst
-In-Reply-To: <CAMU9jJqY5Ty-w3_tf+zxotE5CB+VdM5ZprMiZ5KbNinbDJ1F2w@mail.gmail.com>
-References: <20220110122929.647573-1-xu.xin16@zte.com.cn>
- <20220110123144.647635-1-xu.xin16@zte.com.cn>
- <CAMU9jJqY5Ty-w3_tf+zxotE5CB+VdM5ZprMiZ5KbNinbDJ1F2w@mail.gmail.com>
-Date:   Wed, 12 Jan 2022 09:08:19 -0700
-Message-ID: <87v8ypey30.fsf@meer.lwn.net>
+        Wed, 12 Jan 2022 11:09:44 -0500
+Received: from verein.lst.de ([213.95.11.211]:46710 "EHLO verein.lst.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1354957AbiALQJk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 11:09:40 -0500
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id 3EE0868AFE; Wed, 12 Jan 2022 17:09:36 +0100 (CET)
+Date:   Wed, 12 Jan 2022 17:09:35 +0100
+From:   Christoph Hellwig <hch@lst.de>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Jeff Layton <jlayton@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Guo Ren <guoren@kernel.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Parisc List <linux-parisc@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        "J. Bruce Fields" <bfields@fieldses.org>
+Subject: Re: [PATCH 4/5] uapi: always define F_GETLK64/F_SETLK64/F_SETLKW64
+ in fcntl.h
+Message-ID: <20220112160935.GA3684@lst.de>
+References: <20220111083515.502308-1-hch@lst.de> <20220111083515.502308-5-hch@lst.de> <CAK8P3a0mHC5=OOGV=sGnC9JqZWxzsJyZbTefnCtryQU3o3PY_g@mail.gmail.com> <20220112075609.GA4854@lst.de> <CAK8P3a1ONn=FiPU3669MjBMntS-1K5bgX4pHforUsYJ7yhwZ-g@mail.gmail.com> <f86483fca8b0dc68ce243ba47998ff3296a3b6f8.camel@kernel.org> <CAK8P3a3FgHQ+w+Sj00yOERRLWfVhx7NYsGJ1NBAXQ0=is3G=Kg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a3FgHQ+w+Sj00yOERRLWfVhx7NYsGJ1NBAXQ0=is3G=Kg@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-teng sterling <sterlingteng@gmail.com> writes:
+On Wed, Jan 12, 2022 at 01:08:24PM +0100, Arnd Bergmann wrote:
+> > I don't have a strong opinion here. If we were taking symbols away that
+> > were previously visible to userland it would be one thing, but since
+> > we're just adding symbols that may not have been there before, this
+> > seems less likely to break anything.
+> 
+> Changing
+> 
+> #ifndef CONFIG_64BIT
+> 
+> to
+> 
+> #if __BITS_PER_LONG==32 || defined(__KERNEL__),
+> 
+> would take symbols away, since the CONFIG_64BIT macro is never
+> set in user space.
 
-> <cgel.zte@gmail.com> =E4=BA=8E2022=E5=B9=B41=E6=9C=8811=E6=97=A5=E5=91=A8=
-=E4=BA=8C 11:07=E5=86=99=E9=81=93=EF=BC=9A
->> +.. _ksm_sysfs:
-> Too many tags will cause a compilation warning, because an identical
-> one already exists for the Origin document.
+Yes.
 
-They are also simply pointless clutter in the text files.  Unless you
-need to explicitly refer to a label somewhere, please don't add it to
-the text.
+> > I probably lean toward Christoph's original solution instead of keeping
+> > the conditional definitions. It's hard to imagine there are many
+> > programs that care whether these other symbols are defined or not.
+> >
+> > You can add this to the original patch:
+> >
+> > Acked-by: Jeff Layton <jlayton@kernel.org>
+> 
+> Sounds good, thanks
 
-Thanks,
-
-jon
+So should we go ahead with the series as-is?  Or respin it?  Or add
+the above change ontop?
