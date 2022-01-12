@@ -2,97 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBBBEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:24:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47256C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355564AbiALRYY (ORCPT
+        id S1348501AbiALRZ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:24:24 -0500
-Received: from gateway24.websitewelcome.com ([192.185.51.253]:27111 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355577AbiALRYC (ORCPT
+        Wed, 12 Jan 2022 12:25:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348497AbiALRZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:24:02 -0500
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 0393A3B8B3
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:24:00 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id 7hJvn5W2PRnrr7hJvnsSRj; Wed, 12 Jan 2022 11:21:59 -0600
-X-Authority-Reason: nr=8
-Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:48572 helo=[10.0.0.88])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1n7hJu-004Oi8-Ht; Wed, 12 Jan 2022 11:21:58 -0600
-Message-ID: <76028ce8-b46b-b164-60b2-4a40f3872775@kernel.org>
-Date:   Wed, 12 Jan 2022 18:21:49 +0100
+        Wed, 12 Jan 2022 12:25:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905F0C06173F;
+        Wed, 12 Jan 2022 09:25:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0B5F616C7;
+        Wed, 12 Jan 2022 17:25:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32F2C36AE5;
+        Wed, 12 Jan 2022 17:25:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642008348;
+        bh=Xb9eSbJ+w0lYWuqYLvqMJ18zAt6d91dVqHMXgt+dJUw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=H0Q1MnNUopwB3OzDNrbTHHfbjkJuca28UtYDhxtXNflpEXkZu5x7qwZATtzIthryc
+         avlzTbzftwnNC/G87TW1gFwili85n/JQYU6YwRsyRd6qSEarW83aTGDszoR1OLLeYl
+         Vkcw8B05pUzp9zIdrMj0LmBk5kJ8wkzVHJPeIEnhZQbEPCISRKn71arS+L7uESurZg
+         ThDM6y6+7142XJ73Hj4RWK3iDVWU2rPdWrFzWHQyjW883g+0T/fSUpxkyg3GOavEgu
+         w38UKVmNV/5ZqqEev1RPMuENdYm2qk9AFN+fHs6dDLtdxaP7R493LgO6KDAdgKgVih
+         7xFvpZHk3Am/g==
+Date:   Wed, 12 Jan 2022 09:25:46 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Jordy Zomer <jordy@pwning.systems>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3] nfc: st21nfca: Fix potential buffer overflows in
+ EVT_TRANSACTION
+Message-ID: <20220112092546.300c9b56@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <b47eba60-9d02-2901-2759-b2230087193c@canonical.com>
+References: <20211117171706.2731410-1-jordy@pwning.systems>
+        <20220111164451.3232987-1-jordy@pwning.systems>
+        <b47eba60-9d02-2901-2759-b2230087193c@canonical.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [for-next][PATCH 16/31] rtla: Real-Time Linux Analysis tool
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        John Kacur <jkacur@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111173030.999527342@goodmis.org>
- <20220111173116.190327559@goodmis.org>
- <5f04540c-273a-c4f2-692d-9de2f1495ba9@kernel.org>
- <20220112112159.742d258c@rorschach.local.home>
- <20220112113054.1be08f6c@rorschach.local.home>
- <20220112121426.2dde33c2@rorschach.local.home>
- <20220112121623.5b989f83@rorschach.local.home>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220112121623.5b989f83@rorschach.local.home>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 79.47.126.144
-X-Source-L: No
-X-Exim-ID: 1n7hJu-004Oi8-Ht
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.88]) [79.47.126.144]:48572
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 1
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/12/22 18:16, Steven Rostedt wrote:
-> On Wed, 12 Jan 2022 12:14:26 -0500
-> Steven Rostedt <rostedt@goodmis.org> wrote:
+On Wed, 12 Jan 2022 11:07:34 +0100 Krzysztof Kozlowski wrote:
+> On 11/01/2022 17:44, Jordy Zomer wrote:
+> > It appears that there are some buffer overflows in EVT_TRANSACTION.
+> > This happens because the length parameters that are passed to memcpy
+> > come directly from skb->data and are not guarded in any way.
+> > 
+> > Signed-off-by: Jordy Zomer <jordy@pwning.systems>
 > 
->> And by making this mistake, I noticed something in doing the diff. You
->> put rtla into Documentation/tools. It should be in tools/ itself, not
->> the Documentation directory.
-> At least it use to be in tools/tracing/rtla, but this series has code
-> in Documentation/tools/rtla, was it not fully moved over?
+> Looks ok.
+> 
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-The code is in tools/tracing/rtla/. The documentation is in
-Documentation/tools/rtla. It  was requested by Corbet in the v3 [1].
-
-Am I missing something?
-
-[1] https://lore.kernel.org/lkml/87tuhcsu0h.fsf@meer.lwn.net/
-
--- Daniel
+Thanks! I believe this is commit 4fbcc1a4cb20 ("nfc: st21nfca: Fix
+potential buffer overflows in EVT_TRANSACTION") in net.
