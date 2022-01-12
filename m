@@ -2,92 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3842C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350039AbiALQjw (ORCPT
+        id S1355265AbiALQmK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:39:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343550AbiALQjr (ORCPT
+        Wed, 12 Jan 2022 11:42:10 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:47412 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343550AbiALQmJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:39:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 438AFC06173F;
-        Wed, 12 Jan 2022 08:39:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 12 Jan 2022 11:42:09 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D636DB81F75;
-        Wed, 12 Jan 2022 16:39:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48F44C36AE5;
-        Wed, 12 Jan 2022 16:39:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642005583;
-        bh=wUo/+nqgdUiUY4rY7vEkB/M00vbVdbARQJ+Has9TCo8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=K2j5Sv1AF1pp41OnuUVwEd58KqRvo7gOXUbJ2wbbLVM7yLu12IzChZR1jy/qpzAKx
-         EpioUmD+Gr5lrX3Pa4/IPcLPyj8yf9MkbdqX8aDqNeyC44Ta8bO24Oj6odOIVWNvl9
-         zskBRMXQTsbwDRFZGDVYD8Ru3wr4N4UWcVRYlTnCWavqn9/bB3cbT1UjEUOWQ0ofYT
-         rOll+KrPHooPfPeenw1kDd7w6E0SyB5/g+7H4smWzH8S0vazuxG9WKjRXU9btDAB7z
-         csvNUcCUNlq7acfl+UUTFZM9Y+yJhM6kjW5WVq/Ux+4YQOo22ZtykR9sII5X9SqeQ3
-         KHg/wsnfCWOIw==
-Date:   Wed, 12 Jan 2022 08:39:42 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     cgel.zte@gmail.com, davem@davemloft.net, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] net/ipv6: remove redundant err variable
-Message-ID: <20220112083942.391fd0d7@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <33308db2-a583-165c-cae0-b055c7976f33@gmail.com>
-References: <20220112082655.667680-1-chi.minghao@zte.com.cn>
-        <33308db2-a583-165c-cae0-b055c7976f33@gmail.com>
+        by smtp-out1.suse.de (Postfix) with ESMTPS id F35C12111A;
+        Wed, 12 Jan 2022 16:42:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642005728; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iPj77zfOxRCcPyyK297Nw8fAGEmReWAwmZRBcfRDDwI=;
+        b=Lbem7p69GLWKSbIxnPTzAQw4r9cVFVUDjIJyfVJEhj5PIH3JLRLQSbg4qKu3AIaxAjIeEz
+        NV4/PpwDGlgnZgjO/gmGuvYUas2cfoKiTz+xaRNofe3h6jPGpzTqn/BDtM0Ki55G22d8+8
+        k07G644Dmvi2BZH9IEGOiNzBIVUGD+I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642005728;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iPj77zfOxRCcPyyK297Nw8fAGEmReWAwmZRBcfRDDwI=;
+        b=SizK2zmP+zoXfYhgsaqQYwmKHnfGeHkTQPdKoh6MZWiBN4KZMmA8i+UNYc3s308oMqg28r
+        XwgWtuI5gN20YOAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A419113BE6;
+        Wed, 12 Jan 2022 16:42:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id GbRIJ98E32H8TAAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 12 Jan 2022 16:42:07 +0000
+Message-ID: <4f0c30d7-fd10-84c7-4e7f-6d103e4ba9c1@suse.cz>
+Date:   Wed, 12 Jan 2022 17:42:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v4 20/66] mm/khugepaged: Optimize
+ collapse_pte_mapped_thp() by using vma_lookup()
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Rik van Riel <riel@surriel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michel Lespinasse <walken.cr@gmail.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Minchan Kim <minchan@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        Rom Lemarchand <romlem@google.com>
+References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
+ <20211201142918.921493-21-Liam.Howlett@oracle.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20211201142918.921493-21-Liam.Howlett@oracle.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 08:54:41 -0700 David Ahern wrote:
-> On 1/12/22 1:26 AM, cgel.zte@gmail.com wrote:
-> > diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-> > index fe786df4f849..897194eb3b89 100644
-> > --- a/net/ipv6/ip6_tunnel.c
-> > +++ b/net/ipv6/ip6_tunnel.c
-> > @@ -698,13 +698,12 @@ mplsip6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
-> >  	    u8 type, u8 code, int offset, __be32 info)
-> >  {
-> >  	__u32 rel_info = ntohl(info);
-> > -	int err, rel_msg = 0;
-> > +	int rel_msg = 0;  
+On 12/1/21 15:29, Liam Howlett wrote:
+> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 > 
-> this line needs to be moved down to maintain reverse xmas tree ordering.
+> vma_lookup() will walk the vma tree once and not continue to look for
+> the next vma.  Since the exact vma is checked below, this is a more
+> optimal way of searching.
 > 
-> You need to make the subject
-> '[PATCH net-next] net/ipv6: remove redundant err variable'
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+
+> ---
+>  mm/khugepaged.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> and since net-next is closed you will need to resubmit when it is open.
+> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
+> index e99101162f1a..0ff7d72cdd1d 100644
+> --- a/mm/khugepaged.c
+> +++ b/mm/khugepaged.c
+> @@ -1433,7 +1433,7 @@ static int khugepaged_add_pte_mapped_thp(struct mm_struct *mm,
+>  void collapse_pte_mapped_thp(struct mm_struct *mm, unsigned long addr)
+>  {
+>  	unsigned long haddr = addr & HPAGE_PMD_MASK;
+> -	struct vm_area_struct *vma = find_vma(mm, haddr);
+> +	struct vm_area_struct *vma = vma_lookup(mm, haddr);
+>  	struct page *hpage;
+>  	pte_t *start_pte, *pte;
+>  	pmd_t *pmd, _pmd;
 
-Frankly I'm not sure these type of patches make sense.
-
-Minghao how many instances of this pattern are there in the tree today?
-
-What tools can we use to ensure the pattern does not get added back in
-new patches?
-
-> >  	u8 rel_type = type;
-> >  	u8 rel_code = code;
-> >  
-> > -	err = ip6_tnl_err(skb, IPPROTO_MPLS, opt, &rel_type, &rel_code,
-> > +	return ip6_tnl_err(skb, IPPROTO_MPLS, opt, &rel_type, &rel_code,
-> >  			  &rel_msg, &rel_info, offset);
-
-You should re-align continuation lines when you move the opening
-bracket.
-
-> > -	return err;
-> >  }
