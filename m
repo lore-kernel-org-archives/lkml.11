@@ -2,69 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B89BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CBBEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347922AbiALBpw (ORCPT
+        id S1347940AbiALBqZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 20:45:52 -0500
-Received: from mail-ot1-f42.google.com ([209.85.210.42]:37467 "EHLO
-        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346754AbiALBpt (ORCPT
+        Tue, 11 Jan 2022 20:46:25 -0500
+Received: from mail-oi1-f173.google.com ([209.85.167.173]:39764 "EHLO
+        mail-oi1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235152AbiALBqW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:45:49 -0500
-Received: by mail-ot1-f42.google.com with SMTP id h20-20020a9d6f94000000b0059100e01744so906374otq.4;
-        Tue, 11 Jan 2022 17:45:49 -0800 (PST)
+        Tue, 11 Jan 2022 20:46:22 -0500
+Received: by mail-oi1-f173.google.com with SMTP id e81so1515006oia.6;
+        Tue, 11 Jan 2022 17:46:22 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=auPBZIGqkRu4jbT6MtHpI7dAZqPiNO/igFKYp+QNdq8=;
-        b=ptYmCEdxujiva5qa8HQzfCfaszIuJeEwPnjlxeMwZQuZh91xXq1aC71Hi3uYmhSOdY
-         HWq9cB7wcwrq8ymFOylKuIZECgTM2hV9QnaQGKtsUGVMZsekwA2a+j2wZVtpQWAXxtdw
-         3JGxfBKOFeeKjTfCp1vQcAq9Ww/TQQOjHMq5Eo2qGwLHd9iAJgvhibTznY3eT4LtCDkf
-         f3QmvsAEUQGpynB+QWF3jbtd6JVPXt2F1Kj4jSyeEEscAEZvxpOoJZZMcV/Qyg5eJUHs
-         mQ0a8s3Sh+mh8RLP67aTX49VpVGP7fEsIco7qs4IQ3STr1znOzgF2w18abV2jqF1bYAD
-         ippA==
-X-Gm-Message-State: AOAM532uYiv1DJO70dK+lj/9sTS/QCOQRIcjZt7ou1ch600LvLjiFMKd
-        Hzqjy2/ZbseJ6lsn8g5+4/CbB8jMQg==
-X-Google-Smtp-Source: ABdhPJzMDVWOj9+lKA02JctrkIDbu8daIh0sw3J8ORBid5N5iLpuPv97D7EQ3IVri4nmi7yrt9UgRA==
-X-Received: by 2002:a9d:7f82:: with SMTP id t2mr5350884otp.87.1641951949381;
-        Tue, 11 Jan 2022 17:45:49 -0800 (PST)
+        bh=gs8xWuveXn7bek9RP+w+SzHBa+2HYsVGqR/3SPTjlKg=;
+        b=XN8q0Q/eV6k5f/hnLy/RGb0LruDuKobtVH7STaZiMuSqugO5sMffbitkJl94SS71vO
+         HJvrs+d6amwEwjpC43tqLiqP1lHYn48UwSTCK8inldLSPmLvyJARP3VMbh4MmtZ8ISYC
+         rRofWJKXKEYKG0JUyHmLtrClNmIEMjy/CzI2Da3zbQiQbTwKlYpEACfJ2mjrT0ynkOD2
+         PotRT1XnhQbup4tD6RGaP4ZBcGClIq24VoeuuI8BzuyEM2H4633CRj3xRzRmyE3CaVlr
+         vz2hALjT6EISvWquRjh6ZI/hF43ifvhWv0cKzRQhLo/f2b5kpUVeLRd93Rte8KtyhaWv
+         +dHQ==
+X-Gm-Message-State: AOAM53145fgrZYZRgzuVHf0vSRYF1taQ6qzOj9npkrJOnFD/dF/gcV0r
+        RVfPPsidt28N187+8blqXw==
+X-Google-Smtp-Source: ABdhPJxSReNo5hHRY0WY5gNt86MSN8WxHEQrNXHifnykt2jl3R+v4k9VKoUf2RROgrKds8RWKR0LYg==
+X-Received: by 2002:a05:6808:215:: with SMTP id l21mr3588331oie.42.1641951982054;
+        Tue, 11 Jan 2022 17:46:22 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id w15sm642991ott.49.2022.01.11.17.45.48
+        by smtp.gmail.com with ESMTPSA id f123sm375583oob.28.2022.01.11.17.46.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 17:45:48 -0800 (PST)
-Received: (nullmailer pid 3891376 invoked by uid 1000);
-        Wed, 12 Jan 2022 01:45:47 -0000
-Date:   Tue, 11 Jan 2022 19:45:47 -0600
+        Tue, 11 Jan 2022 17:46:21 -0800 (PST)
+Received: (nullmailer pid 3892237 invoked by uid 1000);
+        Wed, 12 Jan 2022 01:46:20 -0000
+Date:   Tue, 11 Jan 2022 19:46:20 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Johnson Wang <johnson.wang@mediatek.com>
-Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, broonie@kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        lee.jones@linaro.org
-Subject: Re: [PATCH 4/4] dt-bindings: regulator: Add MT6358 regulators
-Message-ID: <Yd4yy2emxSSh80UW@robh.at.kernel.org>
-References: <20220106065407.16036-1-johnson.wang@mediatek.com>
- <20220106065407.16036-5-johnson.wang@mediatek.com>
+To:     Nikita Travkin <nikita@trvn.ru>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        phone-devel@vger.kernel.org, linus.walleij@linaro.org,
+        broonie@kernel.org, robh+dt@kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, linux-input@vger.kernel.org,
+        luca@z3ntu.xyz, Michael.Srba@seznam.cz, dmitry.torokhov@gmail.com
+Subject: Re: [PATCH v3 5/6] dt-bindings: input: zinitix: Document touch-keys
+ support
+Message-ID: <Yd4y7GB1QRYEVEbc@robh.at.kernel.org>
+References: <20220106072840.36851-1-nikita@trvn.ru>
+ <20220106072840.36851-6-nikita@trvn.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220106065407.16036-5-johnson.wang@mediatek.com>
+In-Reply-To: <20220106072840.36851-6-nikita@trvn.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 06 Jan 2022 14:54:07 +0800, Johnson Wang wrote:
-> Add buck_vcore_sshub and ldo_vsram_others_sshub
-> regulators to binding document for MT6358 and MT6366.
+On Thu, 06 Jan 2022 12:28:39 +0500, Nikita Travkin wrote:
+> In some configurations the touch controller can support the touch-keys.
+> Document the linux,keycodes property that enables those keys and
+> specifies the keycodes that should be used to report the key events.
 > 
-> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
 > ---
->  .../bindings/regulator/mt6358-regulator.txt   | 22 ++++++++++++++-----
->  1 file changed, 17 insertions(+), 5 deletions(-)
+> Changes in v2:
+>  - Include input.yaml schema at the top level instead of at the
+>    property. (Seems like I still can't think of the schema as device
+>    and not implementation-specific thing...)
+>  - Reword the description to be more informative.
+> ---
+>  .../bindings/input/touchscreen/zinitix,bt400.yaml      | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
