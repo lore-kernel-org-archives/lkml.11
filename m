@@ -2,105 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E44FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A25C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355786AbiALRjN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:39:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38100 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355758AbiALRjA (ORCPT
+        id S242416AbiALRkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 12:40:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238188AbiALRkK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:39:00 -0500
+        Wed, 12 Jan 2022 12:40:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D95BC06173F;
+        Wed, 12 Jan 2022 09:40:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8C761912;
-        Wed, 12 Jan 2022 17:38:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F64CC36AEA;
-        Wed, 12 Jan 2022 17:38:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642009139;
-        bh=WgSDsvFQ7gn+YpLk25HuiZ2Pi3djY+iPCKxFKlfE+FI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1AJQlcSu1Df3SWiSAeIOVcUqPJ05eu/1DK8VMn5pDVNjC04TcHZWMnSlZBE71LPjz
-         /0HeXOLwGJB5O87PmZpUY4wKUCfYwe3se5kaIV3RDLWjNChwh2tlBHJ86++Ukc8Aye
-         hWUKXsanImo0eBLrIHig+iseWztsd3kvvqnPaC00=
-Date:   Wed, 12 Jan 2022 18:38:55 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     bp@suse.de, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v2] firmware_loader: simplfy builtin or module check
-Message-ID: <Yd8SL0WmIQhunU/F@kroah.com>
-References: <20220112160053.723795-1-mcgrof@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF59A618BC;
+        Wed, 12 Jan 2022 17:40:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5D0C4C36AEB;
+        Wed, 12 Jan 2022 17:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642009209;
+        bh=dH3Rgfg0dmfN/ANUSizcRBkaWwQy95/1radkCDdUdYw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TgN6Qva+8OTqQcmmNsbCTGrHGONgFAUPqC10S2ozE5nyfouOeCeRCoICSBddxQhyF
+         LnFMoUkg3U6Anwqfh9x0/zNmeCJg0a5ZbM5kEpnSGLEzpHUNPix7Ga0XC/X+JkkBKD
+         IImI2H/p8i2zXtv+ai/gb+vcOi4AYxb/xREwJ3/ELk81N+DWx9ny5SGCV495AxMggC
+         YbGm3x61e6QahSi1Apaz+IB0oY8i+xaoAWOBuAtReeahMXu3STVGTmymXwA9Z2aqcq
+         VHA2uTHyRnUPCS6yd/eMRXbVUpWyNHRPigvZGR0MFpPMhgC80Kqin9rsbHU0fvUHqg
+         q3Nvgbl+jhVAg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 43128F60792;
+        Wed, 12 Jan 2022 17:40:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112160053.723795-1-mcgrof@kernel.org>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next v4] iplink_can: add ctrlmode_{supported,_static}
+ to the "--details --json" output
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164200920926.13100.6359567854126946569.git-patchwork-notify@kernel.org>
+Date:   Wed, 12 Jan 2022 17:40:09 +0000
+References: <20220109153040.521632-1-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20220109153040.521632-1-mailhol.vincent@wanadoo.fr>
+To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 08:00:53AM -0800, Luis Chamberlain wrote:
-> The existing check is outdated and confuses developers. Use the
-> already existing IS_REACHABLE() defined on kconfig.h which makes
-> the intention much clearer.
+Hello:
+
+This patch was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
+
+On Mon, 10 Jan 2022 00:30:40 +0900 you wrote:
+> This patch is the userland counterpart of [1]. Indeed, [1] enables the
+> can netlink interface to report the CAN controller capabilities.
 > 
-> Reported-by: Borislav Petkov <bp@alien8.de>
-> Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Suggested-by: Masahiro Yamada <masahiroy@kernel.org>
-> Cc: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Masahiro Yamada <masahiroy@kernel.org>
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  include/linux/firmware.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Previously, only the options which were switched on were reported
+> (i.e. can_priv::ctrlmode). Here, we add two additional pieces of
+> information to the json report:
 > 
-> diff --git a/include/linux/firmware.h b/include/linux/firmware.h
-> index 3b057dfc8284..ec2ccfebef65 100644
-> --- a/include/linux/firmware.h
-> +++ b/include/linux/firmware.h
-> @@ -34,7 +34,7 @@ static inline bool firmware_request_builtin(struct firmware *fw,
->  }
->  #endif
->  
-> -#if defined(CONFIG_FW_LOADER) || (defined(CONFIG_FW_LOADER_MODULE) && defined(MODULE))
-> +#if IS_REACHABLE(CONFIG_FW_LOADER)
->  int request_firmware(const struct firmware **fw, const char *name,
->  		     struct device *device);
->  int firmware_request_nowarn(const struct firmware **fw, const char *name,
-> -- 
-> 2.34.1
-> 
+> [...]
 
-Hi,
+Here is the summary with links:
+  - [iproute2-next,v4] iplink_can: add ctrlmode_{supported,_static} to the "--details --json" output
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=db5305290c2f
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-You are receiving this message because of the following common error(s)
-as indicated below:
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
