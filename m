@@ -2,123 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CB65C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E3C4C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:46:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354243AbiALOqQ (ORCPT
+        id S1354262AbiALOqg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:46:16 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:52930 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241952AbiALOqO (ORCPT
+        Wed, 12 Jan 2022 09:46:36 -0500
+Received: from mr85p00im-zteg06011501.me.com ([17.58.23.182]:47738 "EHLO
+        mr85p00im-zteg06011501.me.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354254AbiALOqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:46:14 -0500
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CBMfZx006161;
-        Wed, 12 Jan 2022 15:45:59 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=selector1;
- bh=PFOJ1LsMAP6bXSULAimH2RrG6EWZ3R86IFqcQserM2E=;
- b=gR3mTW6VGxbAGQblc9l7ZUntrUiuq9cBQ4wZSPIUXNpOhUhmxROiRk10SdemD2U8+YQ/
- l2TOpzRt+HfBe7vkS4GaoaF7mnsyoOLNc7e7gvSSTBvaWCQRQwJo3ZkiywC8JLZVfVh+
- XWUWeaclTc9i+D9zICQ7lZbh0E4GJvgqgVQHKVyatBZJEXQWQgeo3pKEVl+g7N8eele/
- JFZ+R3JErvjE6ZH5wm5KHOpimjmKGur/O0iZnKk0IPTwzeJH6jTvWgVZf4jwJ5z4FLe4
- zE0KMmkLmcsqafb7GJLkWgleHlaDRU8LUpd8VVVr/ndU0PJzZ7dHhSP2rleA+G2eU0je 1Q== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dhtft2jvj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 15:45:59 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D6BB410002A;
-        Wed, 12 Jan 2022 15:45:58 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CB61123C6A2;
-        Wed, 12 Jan 2022 15:45:58 +0100 (CET)
-Received: from localhost (10.75.127.46) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 12 Jan 2022 15:45:58
- +0100
-From:   <patrice.chotard@foss.st.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <patrice.chotard@foss.st.com>, <stable@vger.kernel.org>
-Subject: [PATCH v2] spi: stm32-qspi: Update spi registering
-Date:   Wed, 12 Jan 2022 15:44:24 +0100
-Message-ID: <20220112144424.5278-1-patrice.chotard@foss.st.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 12 Jan 2022 09:46:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
+        t=1641998199; bh=J8I1NMVpmtmxYOzkUXhKs7c0idUTGDpRCI8xL5DNgZY=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=GafK0KHp7PLgmiiaPBS4vqdd+jk1oZhYM1EyhZqEZ8urPXuTY/hxrt0t2b9cYfrsI
+         6k73Jn7DXYfOx5w2TO+M1664IDA3yNJF6AkV2Z+4hygO6LowndI1vo9wMaq0Baxfa1
+         hMB8Yxz+z56ut7ipUxrg6LdicrUJw9ogBM7poeyjWqeEs9BX53ONfGWRAUWAY05Uoj
+         obAZ3mgOsRD2epz67cIjVlvg/+qkiz1VT8Tbg8IQNuJZMeiZbBXNtN7G/5pW6lnvsJ
+         WXM6Z427Lq9qjZGc8BGVPreQHjouLAqvRBu6q9KiyaA1eJ7EZ074CljQrQHDUPp+oq
+         y+wnLInHtuysA==
+Received: from xiongwei.. (unknown [120.245.2.88])
+        by mr85p00im-zteg06011501.me.com (Postfix) with ESMTPSA id 680ED480EE0;
+        Wed, 12 Jan 2022 14:36:13 +0000 (UTC)
+From:   sxwjean@me.com
+To:     akpm@linux-foundation.org, david@redhat.com, mhocko@suse.com,
+        dan.j.williams@intel.com, osalvador@suse.de,
+        naoya.horiguchi@nec.com, thunder.leizhen@huawei.com
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>
+Subject: [PATCH v3 1/2] mm/memremap.c: Add pfn_to_devmap_page() to get page in ZONE_DEVICE
+Date:   Wed, 12 Jan 2022 22:35:16 +0800
+Message-Id: <20220112143517.262143-2-sxwjean@me.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220112143517.262143-1-sxwjean@me.com>
+References: <20220112143517.262143-1-sxwjean@me.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-12_04,2022-01-11_01,2021-12-02_01
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.790,17.0.607.475.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-01-12=5F04:2022-01-11=5F01,2022-01-12=5F04,2020-04-07?=
+ =?UTF-8?Q?=5F01_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0
+ malwarescore=0 mlxscore=0 adultscore=0 clxscore=1015 suspectscore=0
+ phishscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2201120095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrice Chotard <patrice.chotard@foss.st.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-Some device driver need to communicate to qspi device during the remove
-process, qspi controller must be functional when spi_unregister_master()
-is called.
+when requesting page information by /proc/kpage*, the pages in ZONE_DEVICE
+were ignored . We need a function to help on this.
 
-To ensure this, replace devm_spi_register_master() by spi_register_master()
-and spi_unregister_master() is called directly in .remove callback before
-stopping the qspi controller.
+The pfn_to_devmap_page() function like pfn_to_online_page(), but only
+concerns the pages in ZONE_DEVICE.
 
-This issue was put in evidence using kernel v5.11 and later
-with a spi-nor which supports the software reset feature introduced
-by commit d73ee7534cc5 ("mtd: spi-nor: core: perform a Soft Reset on
-shutdown")
-
-Fixes: c530cd1d9d5e ("spi: spi-mem: add stm32 qspi controller")
-
-Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: <stable@vger.kernel.org> # 5.8.x
+Suggested-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
 ---
+v3: Before returning page pointer, check validity of page by 
+    pgmap_pfn_valid().
+v2: Simplify pfn_to_devmap_page() as David suggested.
+---
+ include/linux/memremap.h |  8 ++++++++
+ mm/memremap.c            | 19 +++++++++++++++++++
+ 2 files changed, 27 insertions(+)
 
-v2: 
-  _ update commit message
-  _ make usage of devm_spi_alloc_master() instead of spi_alloc_master()
-
- drivers/spi/spi-stm32-qspi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
-index 514337c86d2c..09839a3dbb26 100644
---- a/drivers/spi/spi-stm32-qspi.c
-+++ b/drivers/spi/spi-stm32-qspi.c
-@@ -688,7 +688,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	int ret, irq;
+diff --git a/include/linux/memremap.h b/include/linux/memremap.h
+index c0e9d35889e8..621723e9c4a5 100644
+--- a/include/linux/memremap.h
++++ b/include/linux/memremap.h
+@@ -137,6 +137,8 @@ void *devm_memremap_pages(struct device *dev, struct dev_pagemap *pgmap);
+ void devm_memunmap_pages(struct device *dev, struct dev_pagemap *pgmap);
+ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
+ 		struct dev_pagemap *pgmap);
++struct page *pfn_to_devmap_page(unsigned long pfn,
++		struct dev_pagemap **pgmap);
+ bool pgmap_pfn_valid(struct dev_pagemap *pgmap, unsigned long pfn);
  
--	ctrl = spi_alloc_master(dev, sizeof(*qspi));
-+	ctrl = devm_spi_alloc_master(dev, sizeof(*qspi));
- 	if (!ctrl)
- 		return -ENOMEM;
+ unsigned long vmem_altmap_offset(struct vmem_altmap *altmap);
+@@ -166,6 +168,12 @@ static inline struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
+ 	return NULL;
+ }
  
-@@ -784,7 +784,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
- 	pm_runtime_enable(dev);
- 	pm_runtime_get_noresume(dev);
++static inline struct page *pfn_to_devmap_page(unsigned long pfn,
++		struct dev_pagemap **pgmap)
++{
++	return NULL;
++}
++
+ static inline bool pgmap_pfn_valid(struct dev_pagemap *pgmap, unsigned long pfn)
+ {
+ 	return false;
+diff --git a/mm/memremap.c b/mm/memremap.c
+index 5a66a71ab591..782309b74d71 100644
+--- a/mm/memremap.c
++++ b/mm/memremap.c
+@@ -494,6 +494,25 @@ struct dev_pagemap *get_dev_pagemap(unsigned long pfn,
+ }
+ EXPORT_SYMBOL_GPL(get_dev_pagemap);
  
--	ret = devm_spi_register_master(dev, ctrl);
-+	ret = spi_register_master(ctrl);
- 	if (ret)
- 		goto err_pm_runtime_free;
- 
-@@ -817,6 +817,7 @@ static int stm32_qspi_remove(struct platform_device *pdev)
- 	struct stm32_qspi *qspi = platform_get_drvdata(pdev);
- 
- 	pm_runtime_get_sync(qspi->dev);
-+	spi_unregister_master(qspi->ctrl);
- 	/* disable qspi */
- 	writel_relaxed(0, qspi->io_base + QSPI_CR);
- 	stm32_qspi_dma_free(qspi);
++/**
++ * pfn_to_devmap_page - get page pointer which belongs to dev_pagemap by @pfn
++ * @pfn: page frame number to lookup page_map
++ * @pgmap: to save pgmap address which is for putting reference
++ *
++ * If @pgmap is non-NULL, then pfn is on ZONE_DEVICE. Meanwhile check if
++ * pfn is valid in @pgmap, if yes return page pointer.
++ */
++struct page *pfn_to_devmap_page(unsigned long pfn, struct dev_pagemap **pgmap)
++{
++	if (pfn_valid(pfn)) {
++		*pgmap = get_dev_pagemap(pfn, NULL);
++		if (*pgmap && pgmap_pfn_valid(*pgmap, pfn))
++			return pfn_to_page(pfn);
++	}
++
++	return NULL;
++}
++
+ #ifdef CONFIG_DEV_PAGEMAP_OPS
+ void free_devmap_managed_page(struct page *page)
+ {
 -- 
-2.17.1
+2.30.2
 
