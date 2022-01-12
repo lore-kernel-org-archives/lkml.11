@@ -2,138 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9185EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66444C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352191AbiALJsR (ORCPT
+        id S1352194AbiALJtO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:48:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349532AbiALJsP (ORCPT
+        Wed, 12 Jan 2022 04:49:14 -0500
+Received: from esa5.hgst.iphmx.com ([216.71.153.144]:23039 "EHLO
+        esa5.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349488AbiALJtN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:48:15 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC41C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 01:48:15 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id a5so3121053wrh.5
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 01:48:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZvNdPw4A75PyvJZJhJ+BPOLK9/MSxsg60VQkLM65tgg=;
-        b=qPgICBIwsAuQ1mjh5JgLh0eGoMrUhQKrlo4MV2YdySlBeeHB+POQad1H7CiUqxuS8O
-         U+1Kajkl33THx+j+VFNYgF0NTzwxJfYSKfWZ19JKQLygMlJGY52ETkqGYKGTgS+DSG+d
-         HKX7mMWAQ0rt45qMKIuof/rJnYn3z1SYaMoqS4K1QXEKg4LcXx9UV/VQrOYFB6JvOmO5
-         VF1biEL6X5LiKhNgv3hcQ3C1VWy0FCenj+CQzgt3r3Ii3MMNIJGZhG6VZ2YSRmLq2z4a
-         iVbZ/YMrmf3ThWxhjErjR2fCeYAOJ5hi3XXAW0knA3QMLeTtEYt3o2lPtt/2EgDIZgmW
-         Bang==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZvNdPw4A75PyvJZJhJ+BPOLK9/MSxsg60VQkLM65tgg=;
-        b=VhdEHjAXZhQNcLP2AvpFiV4unu9LOe355OlcyDVY0/o4/mHOz5cbEKMBJDzL83x/5K
-         RDdRLU7wUGD2ydfEt/IDtl25iDeTvTBveW1+h0wfAjAtrke4ETOceFs13nUrY3m/3IdG
-         CJ286p7zhPRHUuElra2B4eBOq1vFUTwBay0KGJ1A0ngs4MaDhhWe/8jVLYJ77ELRK4x1
-         M4DOHhbFTFFP1kk+mOw6WJNXB6Vua4uQP8V5nO49pvrbft+7MhcPJj6AYWAwNN/to+fO
-         fRFl2cGtkVrXmOBY21gUsk8r2cAV0bUyT/rs3ubMynMU4Rc7qDqgf6YE9GnKKTlNr3lw
-         fRIQ==
-X-Gm-Message-State: AOAM531hm6wciMNrRPPE7krqwdE/v+3izd01mOqlSo+7gE/lw5J/lV1c
-        P68eymQ3cvbMzivQ+ShUdG4EirTgLyCXIA==
-X-Google-Smtp-Source: ABdhPJwxxZwVdV43gKiB2TyUPoD+VU3fvQnEiXCfMxT94G6fGkWA+CDZt+6ONQEfiW/WQTdGzINeEA==
-X-Received: by 2002:adf:8023:: with SMTP id 32mr6168506wrk.136.1641980893667;
-        Wed, 12 Jan 2022 01:48:13 -0800 (PST)
-Received: from [192.168.86.34] (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
-        by smtp.googlemail.com with ESMTPSA id o13sm12390642wrc.111.2022.01.12.01.48.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 01:48:13 -0800 (PST)
-Subject: Re: [PATCH] ASoC: codecs: Check for error pointer after calling
- devm_regmap_init_mmio
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, cezary.rojewski@intel.com,
-        bgoswami@codeaurora.org, lgirdwood@gmail.com, broonie@kernel.org,
-        perex@perex.cz, tiwai@suse.com
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-References: <20220111013215.494516-1-jiasheng@iscas.ac.cn>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Message-ID: <8be9a48c-6b61-9272-a2e4-0bd483e0544c@linaro.org>
-Date:   Wed, 12 Jan 2022 09:48:11 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 12 Jan 2022 04:49:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1641980951; x=1673516951;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=JQDGrSW+eyxzTUel+uhuRcG3nVZP4C61sljAPMCmUZQ=;
+  b=aAo3a0t3Iwg+qSYPr45Algp5oHolnR0xKXE4Wg6G9jjvNCDyZFjVTNR+
+   lbzhRDIW1JUp7PM+uDLgTg3xpo8EgG4BDa7yA5qVm4CRamnVAEKocXroE
+   x3T1q5GPHMNiV9zHyIIiUgdLPGYPVI6GJkqsZOrEzFRdmqdrwiLa2wtKi
+   h6FIj1cJqJ+wgg2dm5QrCO9kzqlMHPCw9uZ+WC18QsxoG5hSUIL5zSTs9
+   VKgWSRtP867QbU12D/JsjREJIpIdC4HjOyrNZyAoSX+SNGxDzaUQOOKTW
+   DYFMRoTICJtLshun+Lf1pyw7sKWgihOyjpJVzxAVTWsTh1/DRabfhGJTP
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,282,1635177600"; 
+   d="scan'208";a="190269246"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 12 Jan 2022 17:49:11 +0800
+IronPort-SDR: ga2JIToS4S5Gj6r4SntUCqYfWD+pKawTT2iJfyZbewTbd7070ZgcGRBPRh2H/SzeRC9DVX+E8G
+ T+Wx5heN1VQhwyKwJSCQy673Fc3LH1FjQbjuZXrfM04gS485ZMf6ZZ1obRfqagP15l6wnnja2D
+ VIPxtPwa/pJan1VE1FW6+/qK/SEwvy1AGmIxIEH+qvRvcjVuqmeFHGleRDJtO2OeTpNJaU3sIe
+ TZcuTw34uexIr+dfZtpEco7h5VQQlrKESmuXHsYRkQXG9w2MtGPafTWDG0Sdi98w9hWX2L3liw
+ m2hhkvYhIBBCguWulXovyT+p
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 01:21:35 -0800
+IronPort-SDR: Dv1KpxTe9WOEhSyolrYJwN38bkW1hNPBgjVpnbU3RRetpkMlokcOPg+XMvWIAEz3dyIEY9O/0n
+ spfVcupV83lNbwxDnl9CM/AXFVai9ozEwrjFfAY9OcOrEYY7nWFRVI1ZPLPcJUlEfRSm0/osPe
+ VAod931CQYHOSbms4XihbNeecXpJp5QXhd7xaDTcP9NIUlL2JFvotIDk4we+vNWh57CWpr9TS4
+ M6dptwFTH6NgEn/B+d5wWKcHSuZ3QoZB5vet+okod/+rnHcbt+ZCdJdMmhvR3e0ku1L6rLLX2m
+ rnE=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 01:49:14 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JYjSn0Vqpz1VSkX
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 01:49:13 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1641980952; x=1644572953; bh=JQDGrSW+eyxzTUel+uhuRcG3nVZP4C61slj
+        APMCmUZQ=; b=IxIt4AgvJtD9i2g/3w07Kbv9WkwW4lfVaZwW2Olx4RVHSCFbIPp
+        E8dTY3Kzin5gnrcSSS3QrOjBtHP0EXNWabhN7OL8l2mHFjctCCSJUG+e7sxz3u2O
+        +n38NKvkUSwCPFCQjDnclanynxKojQHXYr4h1GQGzlFNXp/DFGEKQ6pl6AFSSzi1
+        7k/XY5FmS56Rm/gYdvdwlp1rL0tq6ra6GrXtoThUVUwlnL2OyfclXMMJESlCQxWa
+        5+9UNF867qm14MYXpVAmxkaeRqxboyUXqmw3KWTNbMsy7r7LxajACAQkVH8WWK1i
+        ckVvW1IRpYBK/QllvWddsyO+odKwlCqRHfQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id HtHN1INKCb1l for <linux-kernel@vger.kernel.org>;
+        Wed, 12 Jan 2022 01:49:12 -0800 (PST)
+Received: from [10.225.163.46] (unknown [10.225.163.46])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JYjSm10nQz1VSkV;
+        Wed, 12 Jan 2022 01:49:11 -0800 (PST)
+Message-ID: <77ce7860-4857-a4e4-e7b3-08f56312cf87@opensource.wdc.com>
+Date:   Wed, 12 Jan 2022 18:49:10 +0900
 MIME-Version: 1.0
-In-Reply-To: <20220111013215.494516-1-jiasheng@iscas.ac.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v4 1/2] ahci: Rename flag `ATA_LFLAG_NO_DB_DELAY` to
+ `ATA_LFLAG_NO_DEBOUNCE_DELAY`
 Content-Language: en-US
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     linux-ide@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220105153618.2395-1-pmenzel@molgen.mpg.de>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220105153618.2395-1-pmenzel@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 11/01/2022 01:32, Jiasheng Jiang wrote:
-> The devm_regmap_init_mmio() may return error pointer under certain
-> circumstances, for example the possible failure of the kzalloc() in
-> regmap_mmio_gen_context(), which is called by devm_regmap_init_mmio().
-> Then the error pointer will be dereferenced.
-> For example rx->regmap will be used in rx_macro_mclk_enable().
-> Therefore, it should be better to check it.
+On 1/6/22 00:36, Paul Menzel wrote:
+> The new name is longer, but clearer.
 > 
-> Fixes: af3d54b99764 ("ASoC: codecs: lpass-rx-macro: add support for lpass rx macro")
-> Fixes: c39667ddcfc5 ("ASoC: codecs: lpass-tx-macro: add support for lpass tx macro")
-> Fixes: 809bcbcecebf ("ASoC: codecs: lpass-wsa-macro: Add support to WSA Macro")
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Thanks for the patch,
-
-LGTM,
-
-Reviewed-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-
+> Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 > ---
->   sound/soc/codecs/lpass-rx-macro.c  | 2 ++
->   sound/soc/codecs/lpass-tx-macro.c  | 2 ++
->   sound/soc/codecs/lpass-wsa-macro.c | 2 ++
->   3 files changed, 6 insertions(+)
+>  drivers/ata/ahci_brcm.c   | 2 +-
+>  drivers/ata/libata-sata.c | 2 +-
+>  include/linux/libata.h    | 2 +-
+>  3 files changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
-> index 07894ec5e7a6..2adbf2e2697f 100644
-> --- a/sound/soc/codecs/lpass-rx-macro.c
-> +++ b/sound/soc/codecs/lpass-rx-macro.c
-> @@ -3542,6 +3542,8 @@ static int rx_macro_probe(struct platform_device *pdev)
->   		return PTR_ERR(base);
->   
->   	rx->regmap = devm_regmap_init_mmio(dev, base, &rx_regmap_config);
-> +	if (IS_ERR(rx->regmap))
-> +		return PTR_ERR(rx->regmap);
->   
->   	dev_set_drvdata(dev, rx);
->   
-> diff --git a/sound/soc/codecs/lpass-tx-macro.c b/sound/soc/codecs/lpass-tx-macro.c
-> index 27a0d5defd27..e4bbc6bd4925 100644
-> --- a/sound/soc/codecs/lpass-tx-macro.c
-> +++ b/sound/soc/codecs/lpass-tx-macro.c
-> @@ -1803,6 +1803,8 @@ static int tx_macro_probe(struct platform_device *pdev)
->   		return PTR_ERR(base);
->   
->   	tx->regmap = devm_regmap_init_mmio(dev, base, &tx_regmap_config);
-> +	if (IS_ERR(tx->regmap))
-> +		return PTR_ERR(tx->regmap);
->   
->   	dev_set_drvdata(dev, tx);
->   
-> diff --git a/sound/soc/codecs/lpass-wsa-macro.c b/sound/soc/codecs/lpass-wsa-macro.c
-> index d3ac318fd6b6..dd1a8b7bc794 100644
-> --- a/sound/soc/codecs/lpass-wsa-macro.c
-> +++ b/sound/soc/codecs/lpass-wsa-macro.c
-> @@ -2405,6 +2405,8 @@ static int wsa_macro_probe(struct platform_device *pdev)
->   		return PTR_ERR(base);
->   
->   	wsa->regmap = devm_regmap_init_mmio(dev, base, &wsa_regmap_config);
-> +	if (IS_ERR(wsa->regmap))
-> +		return PTR_ERR(wsa->regmap);
->   
->   	dev_set_drvdata(dev, wsa);
->   
-> 
+> diff --git a/drivers/ata/ahci_brcm.c b/drivers/ata/ahci_brcm.c
+> index 6e9c5ade4c2ea..649815c196ed0 100644
+> --- a/drivers/ata/ahci_brcm.c
+> +++ b/drivers/ata/ahci_brcm.c
+> @@ -333,7 +333,7 @@ static struct ata_port_operations ahci_brcm_platform_ops = {
+>  
+>  static const struct ata_port_info ahci_brcm_port_info = {
+>  	.flags		= AHCI_FLAG_COMMON | ATA_FLAG_NO_DIPM,
+> -	.link_flags	= ATA_LFLAG_NO_DB_DELAY,
+> +	.link_flags	= ATA_LFLAG_NO_DEBOUNCE_DELAY,
+>  	.pio_mask	= ATA_PIO4,
+>  	.udma_mask	= ATA_UDMA6,
+>  	.port_ops	= &ahci_brcm_platform_ops,
+> diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+> index b9c77885b8726..67b2e7cf3cc4e 100644
+> --- a/drivers/ata/libata-sata.c
+> +++ b/drivers/ata/libata-sata.c
+> @@ -317,7 +317,7 @@ int sata_link_resume(struct ata_link *link, const unsigned long *params,
+>  		 * immediately after resuming.  Delay 200ms before
+>  		 * debouncing.
+>  		 */
+> -		if (!(link->flags & ATA_LFLAG_NO_DB_DELAY))
+> +		if (!(link->flags & ATA_LFLAG_NO_DEBOUNCE_DELAY))
+>  			ata_msleep(link->ap, 200);
+>  
+>  		/* is SControl restored correctly? */
+> diff --git a/include/linux/libata.h b/include/linux/libata.h
+> index 2a8404b26083c..15802e644962d 100644
+> --- a/include/linux/libata.h
+> +++ b/include/linux/libata.h
+> @@ -191,7 +191,7 @@ enum {
+>  	ATA_LFLAG_NO_LPM	= (1 << 8), /* disable LPM on this link */
+>  	ATA_LFLAG_RST_ONCE	= (1 << 9), /* limit recovery to one reset */
+>  	ATA_LFLAG_CHANGED	= (1 << 10), /* LPM state changed on this link */
+> -	ATA_LFLAG_NO_DB_DELAY	= (1 << 11), /* no debounce delay on link resume */
+> +	ATA_LFLAG_NO_DEBOUNCE_DELAY = (1 << 11), /* no debounce delay on link resume */
+>  
+>  	/* struct ata_port flags */
+>  	ATA_FLAG_SLAVE_POSS	= (1 << 0), /* host supports slave dev */
+
+I applied both patches to for-5.17 (sorry, I am late, this fell through
+the cracks...).
+
+I simplified the commit messages though, especially patch 2, since the
+main point of that patch is to introduce support for a new controller
+rather than discussing the debounce delay thingy.
+
+If you are OK with it, I will reuse your well written commit message for
+a patch removing the debounce delay though :) Working on it now, I will
+post something by week end after testing.
+
+
+-- 
+Damien Le Moal
+Western Digital Research
