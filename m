@@ -2,25 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70621C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356976AbiALTwE (ORCPT
+        id S1357140AbiALTwG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:52:04 -0500
-Received: from mail.z3ntu.xyz ([128.199.32.197]:33202 "EHLO mail.z3ntu.xyz"
+        Wed, 12 Jan 2022 14:52:06 -0500
+Received: from mail.z3ntu.xyz ([128.199.32.197]:33214 "EHLO mail.z3ntu.xyz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1346449AbiALTvV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S1356567AbiALTvV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 12 Jan 2022 14:51:21 -0500
 Received: from localhost.localdomain (ip-213-127-106-2.ip.prioritytelecom.net [213.127.106.2])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 4DDE1CDFC9;
-        Wed, 12 Jan 2022 19:42:26 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 93EFCCDFB7;
+        Wed, 12 Jan 2022 19:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1642016546; bh=ohieyEzXNmPDcc0FGZkXrfv8PmkK+p86gnZQ/VhgRlQ=;
+        t=1642016545; bh=MNjITzwZLGiO65HqfkpFso4zWkx/alLclG/PQK0PQm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=eukxzcKOhqFstQXxtp7goRrxhZv0KKcM5tDZ/mO9pAEpgdlRAZTE6keTbq2vG98wW
-         qmZJTo2xLZkq4SjOjZbVcCaD62PHkJlWEIr6AFOScqM746pdK/GNcBFuGEj2/rELVJ
-         lSxcN8VIpzJCfUZHD1mVjJKB1PZcV6qBgq1yLEC8=
+        b=hpi5fWHim/KbZeecfjBrNP/fnt4BJVqEgy/2Amju4H3JrWNoWQHMOEWUe0uVK0DpK
+         HwgbMVI9dSkUeoX4C9GQphaSrrla6DNvDYWEqvboULxqhfIFr3wR3F263Fs3bNcTgL
+         v+Ub74yLKPyHq+PYZVVsw8IFwjyDCtLA7yaR2DhE=
 From:   Luca Weiss <luca@z3ntu.xyz>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -28,12 +28,12 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Konrad Dybcio <konrad.dybcio@somainline.org>,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>, linux-phy@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 03/15] dt-bindings: mfd: qcom,tcsr: Document msm8953 compatible
-Date:   Wed, 12 Jan 2022 20:40:52 +0100
-Message-Id: <20220112194118.178026-4-luca@z3ntu.xyz>
+Subject: [PATCH 02/15] phy: qcom-qusb2: Add compatible for MSM8953
+Date:   Wed, 12 Jan 2022 20:40:51 +0100
+Message-Id: <20220112194118.178026-3-luca@z3ntu.xyz>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220112194118.178026-1-luca@z3ntu.xyz>
 References: <20220112194118.178026-1-luca@z3ntu.xyz>
@@ -43,26 +43,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the compatible for tcsr found in msm8953.
+Add compatible for MSM8953 QUSB2 device which reuses MSM8996
+configuration.
 
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- Documentation/devicetree/bindings/mfd/qcom,tcsr.txt | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/phy/qualcomm/phy-qcom-qusb2.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt b/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt
-index c5f4f0ddfcc3..add61bcc3c74 100644
---- a/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt
-+++ b/Documentation/devicetree/bindings/mfd/qcom,tcsr.txt
-@@ -10,6 +10,7 @@ Required properties:
- 		"qcom,tcsr-ipq8064", "syscon" for IPQ8064
- 		"qcom,tcsr-apq8064", "syscon" for APQ8064
- 		"qcom,tcsr-msm8660", "syscon" for MSM8660
-+		"qcom,tcsr-msm8953", "syscon" for MSM8953
- 		"qcom,tcsr-msm8960", "syscon" for MSM8960
- 		"qcom,tcsr-msm8974", "syscon" for MSM8974
- 		"qcom,tcsr-apq8084", "syscon" for APQ8084
+diff --git a/drivers/phy/qualcomm/phy-qcom-qusb2.c b/drivers/phy/qualcomm/phy-qcom-qusb2.c
+index 032d02bf50c5..7529a7e6e5df 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qusb2.c
++++ b/drivers/phy/qualcomm/phy-qcom-qusb2.c
+@@ -911,6 +911,9 @@ static const struct of_device_id qusb2_phy_of_match_table[] = {
+ 	}, {
+ 		.compatible	= "qcom,ipq8074-qusb2-phy",
+ 		.data		= &msm8996_phy_cfg,
++	}, {
++		.compatible	= "qcom,msm8953-qusb2-phy",
++		.data		= &msm8996_phy_cfg,
+ 	}, {
+ 		.compatible	= "qcom,msm8996-qusb2-phy",
+ 		.data		= &msm8996_phy_cfg,
 -- 
 2.34.1
 
