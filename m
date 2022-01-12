@@ -2,221 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F28D8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352501AbiALKZP (ORCPT
+        id S1352504AbiALK0N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:25:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48034 "EHLO
+        Wed, 12 Jan 2022 05:26:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352493AbiALKZN (ORCPT
+        with ESMTP id S1346668AbiALK0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:25:13 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2EB6C061748
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:25:12 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id x6so6441730lfa.5
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:25:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xhrM6Xen3w5qUruPad5ixHkqDWpBwQZqIzJeR1EkW4E=;
-        b=RrVI1hzaVukuM5jtpwWPW6kvbDwe97qGvtj8c6Kkh4uL25y89y1eaw4SgLu10ZyFnt
-         t59ET0KgYfpVvBwCrIzadJrU99X9i1l2UebcR6QOgdZTvtql7y8pHKh1ZTAm2y7PRZat
-         RC+E/JcyRya3YR2Y3FrTzYYmW+EB4PbKmqLtZmWcF9QDqhz1RzY6G+KzJ+Cwiz/jver1
-         kSIEZ5PEekwjccgRbPsJRxCojbEoFAmYA5F6UPU2YJKxfgIfQtkNciJPVPoyADPxwQu1
-         87HhyXzWf2xjB9fqqkuZwdKuDWcVFc3e9cGVRPH05U5F9h7G/nycnTDCAR7v6PVTHM/u
-         Nw5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xhrM6Xen3w5qUruPad5ixHkqDWpBwQZqIzJeR1EkW4E=;
-        b=FuqfUzetZ3D9nea/4slkgVwrXecwHXJHICOCgevjBqfktjpQ8NK7GnTJnDS5U1rNvB
-         q00UKCJVxBkOBR/u7boQhF3UPjoy4WQ87pvb6PCpRZnZfloJurHYHAOqzYY2b/ovRJ3J
-         YWQqaLqqlWxL/k5Cx89Qfxt5rT/Jwjh4xANNj+1AtShm6NCO5FKTMo5ld7aWEOzxl+mW
-         4CAD4TNuXLa6v/FjJmUXeHjtdAK2FfwFGVHK9QCAJdlUkpbXll6lmQXupYRmePiKNp76
-         fEqPK4rCGtHOuaQlniXeXFkTeFor4xru6I2SLIkdtvav6TQvsHDFjkA/ReRsXDcqj6YS
-         fQtw==
-X-Gm-Message-State: AOAM532kVuSHPjKcqqH2BCOVKx8UB4L2HlI1DiOfAR8+mkcE5aW5uy44
-        xwV3Xrruu+MKVhoiSaQMTsV0CY0sFtgKWhuZ0MyfuQ==
-X-Google-Smtp-Source: ABdhPJzoW2RQRNQJQZl+DxH2f6NELnVGEYgf+jGNvBCSTIRuWkvMAKnEMBSiHeW7eK9vFeSqeaEVLgBU/N//RxMxMUA=
-X-Received: by 2002:a2e:947:: with SMTP id 68mr2958964ljj.300.1641983111123;
- Wed, 12 Jan 2022 02:25:11 -0800 (PST)
+        Wed, 12 Jan 2022 05:26:04 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950A9C06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:26:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=bY2JSU8rJ+dPp80OKJVHcdzdjlnRjYlHBejREtlB6zg=; b=a7KRul1JWTSh1kjSCPmtTe5u3x
+        3NtK1XHXoiLuedeRkuwMaZT7uV/6wQN1JVbBjQM51QhE0PMKgctbeoMyeJGuGYlvfOKHU/fK+Zzlu
+        S/waPaWdgFrpwpSNDpQ78iSoaUkoHDOc+Qam2i+dZM6XdLqkDpBp2s2FU8mDjXHPJq+0CtAiG8pmm
+        kRab8T6kSl4D0OXhEeQsom6jEGaNgz7zzp8ueS1uORxsC6Ks52OAQaNABiw0ZGGwP5Lk/9doKatES
+        UXdoBOIJpdei9FGD7f753v8o/FBzvHPl0Av4vebquNV++o4fdxpcwlvg++3zVC1pfo8qg3eb+srVp
+        uhrMURdA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n7apF-00413M-SV; Wed, 12 Jan 2022 10:25:54 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9B1E8300222;
+        Wed, 12 Jan 2022 11:25:53 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7752E20DD2CE1; Wed, 12 Jan 2022 11:25:53 +0100 (CET)
+Date:   Wed, 12 Jan 2022 11:25:53 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kernel test robot <oliver.sang@intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        lkp@lists.01.org, lkp@intel.com
+Subject: Re: [x86/entry_32]  aa93e2ad74:
+ BUG:soft_lockup-CPU##stuck_for#s![systemd-logind:#]
+Message-ID: <Yd6ssarpDknV1r9z@hirez.programming.kicks-ass.net>
+References: <20220106083523.GB32167@xsang-OptiPlex-9020>
+ <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
+ <Yd4u2rVVSdpEpwwM@google.com>
 MIME-Version: 1.0
-References: <20211215130711.111186-1-gsomlo@gmail.com> <20211215130711.111186-4-gsomlo@gmail.com>
- <CAPDyKFqo5sZy8aVbOcfS_cxT9T5r214GKCL-FKRg_0P0yQJTFQ@mail.gmail.com>
- <YdOUbYpGFNyxz3iD@errol.ini.cmu.edu> <CAPDyKFohOHYu_bdXsAYvDmMLqnGUW=9pG+yJDwP5-db1B6F1Dw@mail.gmail.com>
- <Yd4JdBArPn9rBj5b@errol.ini.cmu.edu>
-In-Reply-To: <Yd4JdBArPn9rBj5b@errol.ini.cmu.edu>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Wed, 12 Jan 2022 11:24:34 +0100
-Message-ID: <CAPDyKFq18AWsaWHcEkU6H1Sh4NsqRfUeQhbRz9MorGfnKzxHwQ@mail.gmail.com>
-Subject: Re: [PATCH v5 3/3] mmc: Add driver for LiteX's LiteSDCard interface
-To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
-        kgugala@antmicro.com, mholenko@antmicro.com, krakoczy@antmicro.com,
-        mdudek@internships.antmicro.com, paulus@ozlabs.org, joel@jms.id.au,
-        shorne@gmail.com, geert@linux-m68k.org,
-        david.abdurachmanov@sifive.com, florent@enjoy-digital.fr,
-        rdunlap@infradead.org, andy.shevchenko@gmail.com, hdanton@sina.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yd4u2rVVSdpEpwwM@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[...]
+On Wed, Jan 12, 2022 at 01:28:58AM +0000, Sean Christopherson wrote:
+> On Tue, Jan 11, 2022, Peter Zijlstra wrote:
+> > On Thu, Jan 06, 2022 at 04:35:23PM +0800, kernel test robot wrote:
+> > > 
+> > > 
+> > > Greeting,
+> > > 
+> > > FYI, we noticed the following commit (built with clang-14):
+> > > 
+> > > commit: aa93e2ad7464ffb90155a5ffdde963816f86d5dc ("x86/entry_32: Remove .fixup usage")
+> > > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/core
+> > > 
+> > > in testcase: kernel-selftests
+> > > version: 
+> > > with following parameters:
+> > > 
+> > > 	group: x86
+> > > 
+> > 
+> > It would be very useful if this thing would also say which of the many
+> > x86 selftests fails... it appears to be: ldt_gdt_32.
+> > 
+> > The below fixes it, but I'm still not entirely sure what the actual
+> > problem is, although Andy did find a bug in that the exception handler
+> > should do: *(ss:esp) = 0, adding ss-base (using insn_get_seg_base())
+> > doesn't seem to cure things.
+> 
+> Because I was curious...
+> 
+> The issue is that PARANOID_EXIT_TO_KERNEL_MODE in the handle_exception_return
+> path overwrites the entry stack data with the task stack data, restoring the "bad"
+> segment value.
 
-> > > > [...]
-> > > >
-> > > > > +
-> > > > > +       mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
-> > > >
-> > > > I noticed that you use these hard coded values and don't really care
-> > > > to manage voltage changes via ->set_ios().
-> > > >
-> > > > Rather than doing it like this, I would prefer if you can hook up a
-> > > > fixed vmmc regulator in the DTS. Then call mmc_regulator_get_supply()
-> > > > to fetch it from here, which will let the mmc core create the
-> > > > mmc->ocr_avail mask, based upon the voltage level the regulator
-> > > > supports.
-> > > >
-> > > > This becomes more generic and allows more flexibility for the platform
-> > > > configuration.
-> > >
-> > > The LiteSDCard "hardware" (i.e., *gateware*) does not allow modification
-> > > or selection of voltage from the software side. When a CMD8 is issued,
-> > > the "voltage supplied" bit pattern is expected to be '0001b', which per
-> > > the spec means "2.7-3.6V".
-> >
-> > If you provide a range (2.7-3.6V), that means that your hardware
-> > supports the entire range, not just one single part of it.
->
-> The "gateware" (open source migen/verilog at
-> https://github.com/enjoy-digital/litesdcard)
-> supports any value provided by the underlying FPGA dev board
-> (typically 3.3v) -- by not attempting to manage it in any way.
->
-> SD media presumably doesn't care as long as voltage is somewhere
-> within 2.7-3.6V (at least that's how I read the spec, there's only
-> one register value representing anything within that range).
->
-> > >
-> > > I tried adding this to the overall DTS:
-> > >
-> > >         vreg_mmc: vreg_mmc_3v {
-> > >                 compatible = "regulator-fixed";
-> > >                 regulator-min-microvolt = <3300000>;
-> > >                 regulator-max-microvolt = <3300000>;
-> > >         };
-> > >
-> > > and then added a reference to it to the LiteSDCard "mmc0" node in DTS,
-> > > like so:
-> > >
-> > >         mmc0: mmc@12005000 {
-> > >                 compatible = "litex,mmc";
-> > >                 reg = <0x12005000 0x100>,
-> > >                         <0x12003800 0x100>,
-> > >                         <0x12003000 0x100>,
-> > >                         <0x12004800 0x100>,
-> > >                         <0x12004000 0x100>;
-> > >                 reg-names = "phy", "core", "reader", "writer", "irq";
-> > >                 clocks = <&sys_clk>;
-> > >                 vmmc-supply = <&vreg_mmc>; /* <-------- HERE !!! */
-> > >                 interrupt-parent = <&L1>;
-> > >                 interrupts = <4>;
-> > >         };
-> > >
-> > > Finally, I replaced the hardcoded setting of `mmc->ocr_avail` with a
-> > > call to `mmc_regulator_get_supply(mmc)`. Now, I get a bunch of timeouts
-> > > during attempts to send e.g., CMD8 and CMD55.
-> > > (going for 3200000 and 3400000 for min- and max-microvolt, respectively,
-> > >  -- or anything else in the allowed 2.7-3.6 range -- doesn't help either).
-> > >
-> > > I might be doing something subtly wrong in the way I set things up
-> > > above, but it feels a bit overengineered, and IMHO fragile.
-> >
-> > At a quick glance, the above looks correct to me. Maybe there is
-> > something wrong with the code in the driver instead?
->
-> After some more hacking, I learned that:
->
->         - an additional `regulator-name` line
->           (e.g. `regulator-name = "vreg_mmc";`) is required
->
->         - setting `regulator-always-on;` seems to help reduce attempts
->           by the kernel to "manage" the regulator, but does not appear
->           to be required
->
-> In other words:
->
->         ...
->         vreg_mmc: vreg_mmc {
->                 compatible = "regulator-fixed";
->                 regulator-name = "vreg_mmc";
->                 regulator-min-microvolt = <3300000>;
->                 regulator-max-microvolt = <3300000>;
->                 regulator-always-on;
->         };
->         ...
->
-> Additionally, CONFIG_REGULATOR=y and CONFIG_REGULATOR_FIXED_VOLTAGE=y
-> *MUST* be enabled in the kernel's .config file, to prevent either
-> litex_mmc_probe() from being deferred, or mmc_regulator_get_supply()
-> from simply returning 0 without having set mmc->ocr_avail to anything
-> at all!
->
-> Presumably this would also mean either `select REGULATOR_FIXED_VOLTAGE`
-> or `depends on REGULATOR_FIXED_VOLTAGE` in the mmc driver's Kconfig
-> entry.
+Oh gawd... that's terrible, and yes, that now makes perfect sense.
 
-Yep, that's correct.
-
-If you don't like to manage that dependency in the Kconfig, an option
-is to check if mmc->ocr_avail is zero and if so, we could log a
-message *and* assign mmc->ocr_avail a default value.
-
->
-> Predictably, the "regulator-[min|max]-microvolt = <3300000>" setting
-> gets us
->
->         ocr_avail == MMC_VDD_32_33 | MMC_VDD_33_34
->
-> > >
-> > > OTOH, going all out and setting:
-> > >
-> > >         /* allow for generic 2.7-3.6V range, no software tuning available */
-> > >         mmc->ocr_avail = MMC_VDD_27_28 | MMC_VDD_28_29 | MMC_VDD_29_30 |
-> > >                          MMC_VDD_30_31 | MMC_VDD_31_32 | MMC_VDD_32_33 |
-> > >                          MMC_VDD_33_34 | MMC_VDD_34_35 | MMC_VDD_35_36;
-> > >
-> > > seems to work just fine... :) Please do let me know what you think!
-> >
-> > No, this isn't the way we want it to work. That's because it means
-> > that we would lie to the card about what voltage range the HW actually
-> > supports.
-> >
-> > It's better to let the DTS file give that information about the HW.
->
-> I may be needlessly concerned, but it feels a bit weird to me to drag
-> in CONFIG_REGULATOR_FIXED_VOLTAGE as an added dependency for what is
-> ultimately a roundabout way of setting a constant... :)
-
-The point is, it shouldn't really be a constant set by the driver,
-because it would mean initialising a card under potentially wrong
-conditions.
-
-However, I am fine assigning it a default value as a fallback and best
-effort, if it turns out that DT didn't provide us information about
-what the HW is capable of.
-
->
-> Thanks in advance for any additional clue!
-
-Looks like there are two options, just pick one of them, then I am happy. :-)
-
-Kind regards
-Uffe
+However did you find that?
