@@ -2,142 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F8DC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 03:01:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 400D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 03:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349035AbiALDBi (ORCPT
+        id S1349053AbiALDGI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 22:01:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52901 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348722AbiALDBf (ORCPT
+        Tue, 11 Jan 2022 22:06:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347731AbiALDGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 22:01:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641956495;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Px8A9P7U9czmho9d1U1W2Flg3AM5I9Spb1vc2Lsv4b8=;
-        b=D/XaYiqoAbSoL6at18+Z9+m227z0SrSPthfd3iNn/lfo7JGquPEzKCLdLz5Qsk4s8L6JGJ
-        lIu6jVgi9t7WdpR/j3Km2QiptlYBhL3MUxLc6/Wv1Mcsyr81m9pVOoev3rAUPvZsXWbfXe
-        xL0vhE3tB+Rk2/G6MquFbMsXBklk0/A=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-584-hG2yBNBbNHSJnnSOLMFK2w-1; Tue, 11 Jan 2022 22:01:32 -0500
-X-MC-Unique: hG2yBNBbNHSJnnSOLMFK2w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Tue, 11 Jan 2022 22:06:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97B2C06173F;
+        Tue, 11 Jan 2022 19:06:06 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DEEBA8042E1;
-        Wed, 12 Jan 2022 03:01:30 +0000 (UTC)
-Received: from [10.72.12.29] (ovpn-12-29.pek2.redhat.com [10.72.12.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4283E5BE27;
-        Wed, 12 Jan 2022 03:01:24 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v4 12/21] KVM: arm64: Support SDEI_{PRIVATE, SHARED}_RESET
- hypercall
-To:     Eric Auger <eauger@redhat.com>, kvmarm@lists.cs.columbia.edu
-Cc:     maz@kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan.Cameron@huawei.com, pbonzini@redhat.com, will@kernel.org
-References: <20210815001352.81927-1-gshan@redhat.com>
- <20210815001352.81927-13-gshan@redhat.com>
- <a4b91fa5-12b0-afeb-4449-c2acb59e8cd7@redhat.com>
-From:   Gavin Shan <gshan@redhat.com>
-Message-ID: <d163631c-6e66-f7a1-6eea-3bc000e771ca@redhat.com>
-Date:   Wed, 12 Jan 2022 11:01:21 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D821B81DA5;
+        Wed, 12 Jan 2022 03:06:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17569C36AEB;
+        Wed, 12 Jan 2022 03:06:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641956764;
+        bh=zki247rmLODdkQj3pLKnVdNIAgFXqIuIAfHlqbqgraM=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=WhMoy39pDXaQ2/HKJSbTsmar8xEUWNNUr5gUrnczMg84ByrkAPnV9RpgNHvDS2qQt
+         WKeDSj5FGrPUPFMdUavpB3gUTpyn53U0gKwTDmjm8UwzAiXxnaXs8OQRh7xxQ20EVh
+         A6odeRn4fjcr1pMuiq8qhbrlt3EyAM4pvB4Gu9ZPla/QsBiAdnTylq/Agv4X1ylhls
+         WPnj+kC7759Sba5XOnAxIkoSG0cYlTvKes8wDdl3/dFMdwPiG3fbQ2ciJfsiYiqzRb
+         MnAlnqlqLtvrDaKgnQIFY6FEkdN54aJ9retauZATrHkUGJHPLpUc+Umt1BLfNDIrVp
+         B+C5LFm0vhJlg==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <a4b91fa5-12b0-afeb-4449-c2acb59e8cd7@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <YbwMoIybSUAteBzV@yoga>
+References: <20211203035601.3505780-1-bjorn.andersson@linaro.org> <20211216015136.96AD3C36AE1@smtp.kernel.org> <Ybqo+wUv6lNT75tJ@ripper> <20211216185856.27406C36AE2@smtp.kernel.org> <YbvMkIhdsGdCfvFV@ripper> <20211217014521.55CD4C36AE0@smtp.kernel.org> <YbwMoIybSUAteBzV@yoga>
+Subject: Re: [PATCH] clk: qcom: rcg2: Cache rate changes for parked RCGs
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Amit Nischal <anischal@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Taniya Das <tdas@codeaurora.org>, dmitry.baryshkov@linaro.org,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Date:   Tue, 11 Jan 2022 19:06:02 -0800
+User-Agent: alot/0.9.1
+Message-Id: <20220112030604.17569C36AEB@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eric,
+Quoting Bjorn Andersson (2021-12-16 20:05:52)
+> On Thu 16 Dec 19:45 CST 2021, Stephen Boyd wrote:
+> > > >=20
+> > > > >=20
+> > > > > > So instead of saving the current_rate can we save the cfg regis=
+ter value
+> > > > > > (or however many registers we need) to put back the frequency o=
+f the clk
+> > > > > > to what we want on enable? The other thing is that we made reca=
+lc_rate()
+> > > > > > work "seamlessly" here by stashing the frequency into the regis=
+ter but
+> > > > > > leaving it uncommitted until enable. We may need to now look at=
+ the
+> > > > > > software copy of the registers in the shared rcg recalc rate op=
+eration
+> > > > > > to figure out what the frequency is.
+> > > > > >=20
+> > > > >=20
+> > > > > I made an attempt at this, the problem I had was to come up within
+> > > > > something sane for how to deal with set_rate on parked clocks; be=
+cause
+> > > > > we need to re-generate the register contents, without writing out=
+ the
+> > > > > value - and that got messy.
+> > > >=20
+> > > > Looking back on the introduction of this code[1] I see that it's not
+> > > > about the rate but more about the parent. i.e. we park the clk on t=
+he XO
+> > > > parent but don't care about the m/n values or pre divider because it
+> > > > doesn't really matter if the clk is running slowly. So nothing need=
+s to
+> > > > be saved except for the cfg register, and we can do that in software
+> > > > with a single u32 instead of using a rate and looking it up and then
+> > > > reprogramming the other values. We should be able to cache the regi=
+ster
+> > > > content with an init clk_op.
+> > > >=20
+> > >=20
+> > > So you're suggesting that, in clk_rcg2_shared_set_rate(), when the RCG
+> > > is found to be disabled, I should write out M, N, D and calculate a n=
+ew
+> > > cfg value which I stash until the next enable?
+> > >=20
+> > > Looks a little bit messy, but I will give it a try.
+> >=20
+> > No. I don't see where clk_rcg2_shared_set_rate() needs to change.
+> >=20
+> > I'm suggesting we cache the config register on disable so it can be
+> > restored on enable. Basically everything is the same except now we don't
+> > write the cfg register and leave it dirty in the hardware. We need a
+> > shared rcg version of recalc rate that looks at the shadow cfg register
+> > instead of reading the hardware because we've changed the parent behind
+> > the back of the framework and we want to make it look like nothing has
+> > changed.=20
+> >=20
+>=20
+> I see, that was my first attempt of an implementation as well.
+>=20
+> The problem I ran into right away was that i had something that did
+> disable(), set_rate(), enable() and I would restore the wrong settings.
+>=20
+> So clk_rcg2_shared_set_rate() needs to update the stashed cfg value -
+> and it needs to write out M, N and D if we're not caching those.
+>=20
+> > This is all based on my understanding that the problem is the RCG is
+> > changing rate due to the gdsc turning on the clk for us. So we can't
+> > leave anything dirty in the hardware and have to keep it in software.
+> > I hope the change is minimal.
+>=20
+> That's my understanding as well.
+>=20
+>=20
+> Looking more at the code I think it's possible that we get disable(),
+> set_parent(), enable() as well; which if that's the case would result
+> in the same problem, so I assume I need to tend to that as well.
 
-On 11/10/21 4:37 AM, Eric Auger wrote:
-> On 8/15/21 2:13 AM, Gavin Shan wrote:
->> This supports SDEI_{PRIVATE, SHARED}_RESET. They are used by the
->> guest to purge the private or shared SDEI events, which are registered
-> to reset all private SDEI event registrations of the calling PE (resp.
-> PRIVATE or SHARED)
-
-Ok.
-
->> previously.
->>
->> Signed-off-by: Gavin Shan <gshan@redhat.com>
->> ---
->>   arch/arm64/kvm/sdei.c | 29 +++++++++++++++++++++++++++++
->>   1 file changed, 29 insertions(+)
->>
->> diff --git a/arch/arm64/kvm/sdei.c b/arch/arm64/kvm/sdei.c
->> index 3fb33258b494..62efee2b67b8 100644
->> --- a/arch/arm64/kvm/sdei.c
->> +++ b/arch/arm64/kvm/sdei.c
->> @@ -582,6 +582,29 @@ static unsigned long kvm_sdei_hypercall_mask(struct kvm_vcpu *vcpu,
->>   	return ret;
->>   }
->>   
->> +static unsigned long kvm_sdei_hypercall_reset(struct kvm_vcpu *vcpu,
->> +					      bool private)
->> +{
->> +	struct kvm *kvm = vcpu->kvm;
->> +	struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
->> +	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
->> +	unsigned int mask = private ? (1 << SDEI_EVENT_TYPE_PRIVATE) :
->> +				      (1 << SDEI_EVENT_TYPE_SHARED);
->> +	unsigned long ret = SDEI_SUCCESS;
->> +
->> +	/* Sanity check */
->> +	if (!(ksdei && vsdei)) {
->> +		ret = SDEI_NOT_SUPPORTED;
->> +		goto out;
->> +	}
->> +
->> +	spin_lock(&ksdei->lock);
->> +	kvm_sdei_remove_kvm_events(kvm, mask, false);
-> With kvm_sdei_remove_kvm_events() implementation, why do you make sure
-> that events which have a running handler get unregistered once the
-> handler completes? I just see the refcount check that prevents the "KVM
-> event object" from being removed.
-
-Good point. I think here we need enhancement to cancel the pending
-events prior to destroying them. I will think about it :)
-
->> +	spin_unlock(&ksdei->lock);
->> +out:
->> +	return ret;
->> +}
->> +
->>   int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
->>   {
->>   	u32 func = smccc_get_function(vcpu);
->> @@ -626,8 +649,14 @@ int kvm_sdei_hypercall(struct kvm_vcpu *vcpu)
->>   		break;
->>   	case SDEI_1_0_FN_SDEI_INTERRUPT_BIND:
->>   	case SDEI_1_0_FN_SDEI_INTERRUPT_RELEASE:
->> +		ret = SDEI_NOT_SUPPORTED;
->> +		break;
->>   	case SDEI_1_0_FN_SDEI_PRIVATE_RESET:
->> +		ret = kvm_sdei_hypercall_reset(vcpu, true);
->> +		break;
->>   	case SDEI_1_0_FN_SDEI_SHARED_RESET:
->> +		ret = kvm_sdei_hypercall_reset(vcpu, false);
->> +		break;
->>   	default:
->>   		ret = SDEI_NOT_SUPPORTED;
->>   	}
->>
-
-Thanks,
-Gavin
-
+Hopefully we can write the M, N, D and pre-divier values all the time
+and avoid writing the parent selection register (the cfg one) when the
+clk is off. It would mean that the "safe parent" of XO is getting
+divided pretty heavily sometimes but I suspect it doesn't matter in
+practice. When the clk is enabled in the kernel, we'll move the parent
+over by making the cfg register have the right parent selectoin and then
+the mnd and divider would already be what they're supposed to be in the
+hardware. Does that work?
