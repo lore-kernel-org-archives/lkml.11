@@ -2,124 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 579A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:25:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353116AbiALMZA (ORCPT
+        id S1353130AbiALMZT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 07:25:00 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4404 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238177AbiALMYy (ORCPT
+        Wed, 12 Jan 2022 07:25:19 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21888 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1353117AbiALMZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 07:24:54 -0500
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JYms641BNz67wql;
-        Wed, 12 Jan 2022 20:22:02 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 12 Jan 2022 13:24:50 +0100
-Received: from [10.47.88.157] (10.47.88.157) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 12 Jan
- 2022 12:24:50 +0000
-Subject: Re: [PATCH v3 1/2] perf test: Workload test of metric and
- metricgroups
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Ian Rogers <irogers@google.com>
-CC:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <eranian@google.com>
-References: <20210917184240.2181186-1-irogers@google.com>
- <YU4iVcVc6uYAWft4@kernel.org>
-From:   John Garry <john.garry@huawei.com>
-Message-ID: <158a1451-9d69-d67d-3fad-9e947112f9e6@huawei.com>
-Date:   Wed, 12 Jan 2022 12:24:29 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        Wed, 12 Jan 2022 07:25:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641990308;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xWgksL6bFpGhiY8GnHIJjFsUKx5kfO64Lt2XcltxSMk=;
+        b=VU3pzOsZlSghR5YqTMTJ/hHs6a4HCKa0aHpYAvB5rGLEQia0H2LlkS6Citruw2fgDCI7//
+        MOwpexEErT+9yUTwB6n2qn/Tv1sdfj7q/FvOW+fLEyp1v9nDJGwO/gSNYVG7tkQxfj8uBf
+        XY9CjbmRbpZLyd7RcxQz6CVAsqp2WlE=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-170-mJW0YoquNTGGY5Jc3wOF0A-1; Wed, 12 Jan 2022 07:25:07 -0500
+X-MC-Unique: mJW0YoquNTGGY5Jc3wOF0A-1
+Received: by mail-ed1-f71.google.com with SMTP id j10-20020a05640211ca00b003ff0e234fdfso2170673edw.0
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 04:25:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=xWgksL6bFpGhiY8GnHIJjFsUKx5kfO64Lt2XcltxSMk=;
+        b=YB7mSFzJX0DuEH6Nd044/FZCB8EM3JTJLXOFHNruhRLOeZEHRRCn2lPRkrjBsPALUD
+         LyUMLiJRL1++HjfHrq/ZCbIMt9y0QHAeecqgrkE2yuEJGZ3mVR+RIqCFHsprRCy1LXyy
+         hTAi6GRp5+EmAW3G6Fg8pvWhVoJUsbhhVuNBcfAwfvwxMLsMnexj8jEYrWzcPrHvfeHX
+         tki3Ldc+zjozJOS2u5nbX7+4HwMZLltbGAFJM29lXPTO4OOZRLkij0gCPdAvYjmWauNR
+         mZiffXe3lfeA4lh+yuv7kgzlukSshQnbVn0H13YbTJ2Pcpq5kB6yXig1pFyoOY1/LUvm
+         J1/w==
+X-Gm-Message-State: AOAM5303bw2rLFNLVk0WANI3q7UI7RHTZCneXynz+UUTqeUSDxzOZYAj
+        dNckSl0t1g0WKc17BTOWhd9cKerPylDoB7LOcbmmz0JkSVB0KST5AJkyPRrZrb5vk0ZUakwzSjL
+        M3buRd6K1N/su0ZdgtnE6BuE9
+X-Received: by 2002:a17:907:720f:: with SMTP id dr15mr7339376ejc.729.1641990306553;
+        Wed, 12 Jan 2022 04:25:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyqxWZY7TfzuBRT62moR2hjCiDFrckpFbnSxgt2c5ujzQ6k4qnDmvre7ffxzfYevGV/CcTIwg==
+X-Received: by 2002:a17:907:720f:: with SMTP id dr15mr7339357ejc.729.1641990306254;
+        Wed, 12 Jan 2022 04:25:06 -0800 (PST)
+Received: from ?IPV6:2003:cb:c702:4700:e25f:39eb:3cb8:1dec? (p200300cbc7024700e25f39eb3cb81dec.dip0.t-ipconnect.de. [2003:cb:c702:4700:e25f:39eb:3cb8:1dec])
+        by smtp.gmail.com with ESMTPSA id gn36sm2897744ejc.29.2022.01.12.04.25.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 04:25:05 -0800 (PST)
+Message-ID: <cf596fdc-6599-7c53-26e8-1524c5f214f7@redhat.com>
+Date:   Wed, 12 Jan 2022 13:25:04 +0100
 MIME-Version: 1.0
-In-Reply-To: <YU4iVcVc6uYAWft4@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
 Content-Language: en-US
+To:     Minchan Kim <minchan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Michal Hocko <mhocko@suse.com>, linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        John Dias <joaodias@google.com>, huww98@outlook.com,
+        John Hubbard <jhubbard@nvidia.com>
+References: <20211228175904.3739751-1-minchan@kernel.org>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC v2] mm: introduce page pin owner
+In-Reply-To: <20211228175904.3739751-1-minchan@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.88.157]
-X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/09/2021 20:09, Arnaldo Carvalho de Melo wrote:
-> Em Fri, Sep 17, 2021 at 11:42:39AM -0700, Ian Rogers escreveu:
->> Test every metric and metricgroup with 'true' as a workload. For
->> metrics, check that we see the metric printed or get unsupported. If the
->> 'true' workload executes too quickly retry with 'perf bench internals
->> synthesize'.
->>
->> v3. Fix test condition (thanks to Paul A. Clarke<pc@us.ibm.com>). Add a
->>      fallback case of a larger workload so that we don't ignore "<not
->>      counted>".
->> v2. Switched the workload to something faster.
+On 28.12.21 18:59, Minchan Kim wrote:
+> A Contiguous Memory Allocator(CMA) allocation can fail if any page
+> within the requested range has an elevated refcount(a pinned page).
+> 
+> Debugging such failures is difficult, because the struct pages only
+> show a combined refcount, and do not show the callstacks or
+> backtraces of the code that acquired each refcount. So the source
+> of the page pins remains a mystery, at the time of CMA failure.
+> 
+> In order to solve this without adding too much overhead, just do
+> nothing most of the time, which is pretty low overhead. However,
+> once a CMA failure occurs, then mark the page (this requires a
+> pointer's worth of space in struct page, but it uses page extensions
+> to get that), and start tracing the subsequent put_page() calls.
+> As the program finishes up, each page pin will be undone, and
+> traced with a backtrace. The programmer reads the trace output and
+> sees the list of all page pinning code paths.
+> 
 
-Hi Ian,
-
-I just noticed that this test fails on my broadwell machine.
-
-I am using acme perf/core @ 09dd3c22daaf
-
-metricgroup Memory_Bw fails, and it seems because of the "true" argument 
-to "perf stat" (or any argument, like sleep 1):
-
-john@localhost:~/kernel-dev9/tools/perf> sudo ./perf stat -M Memory_BW
-^C
-  Performance counter stats for 'system wide':
-
-              2,184      arb/event=0x84,umask=0x1/ #     0.26 
-DRAM_BW_Use
-          2,954,938      arb/event=0x81,umask=0x1/ 
-
-        736,368,852 ns   duration_time 
-
-         58,202,980      l1d_pend_miss.pending_cycles #     2.34 MLP 
-                  (80.11%)
-        136,293,194      l1d_pend_miss.pending 
-               (19.89%)
-        736,368,852 ns   duration_time 
-
-          1,065,656      longest_lat_cache.miss    #     0.09 
-L3_Cache_Fill_BW         (39.71%)
-        736,368,852 ns   duration_time 
-
-          5,365,477      l2_lines_in.all           #     0.47 
-L2_Cache_Fill_BW         (59.80%)
-        736,368,852 ns   duration_time 
-
-          3,557,362      l1d.replacement           #     0.31 
-L1D_Cache_Fill_BW        (79.90%)
-        736,368,852 ns   duration_time 
+It's worth noting that this is a pure debug feature, right?
 
 
-        0.736368852 seconds time elapsed
+I like the general approach, however, IMHO the current naming is a bit
+sub-optimal and misleading. All you're doing is flagging pages that
+should result in a tracepoint when unref'ed.
+
+"page pinners" makes it somewhat sound like you're targeting FOLL_PIN,
+not simply any references.
+
+"owner" is misleading IMHO as well.
 
 
-john@localhost:~/kernel-dev9/tools/perf> sudo ./perf stat -M Memory_BW true
-Error:
-The sys_perf_event_open() syscall returned with 22 (Invalid argument) 
-for event (arb/event=0x84,umask=0x1/).
-/bin/dmesg | grep -i perf may provide additional information.
+What about something like:
 
-john@localhost:~/kernel-dev9/tools/perf>
+"mm: selective tracing of page reference holders on unref"
 
-Anyone any idea on this before I start digging?
+PAGE_EXT_PIN_OWNER -> PAGE_EXT_TRACE_UNREF
 
+$whatever feature/user can then set the bit, for example, when migration
+fails.
+
+I somewhat dislike that it's implicitly activated by failed page
+migration. At least the current naming doesn't reflect that.
+
+
+> This will consume an additional 8 bytes per 4KB page, or an
+> additional 0.2% of RAM. In addition to the storage space, it will
+> have some performance cost, due to increasing the size of struct
+> page so that it is greater than the cacheline size (or multiples
+> thereof) of popular (x86, ...) CPUs.
+
+I think I might be missing something. Aren't you simply reusing
+&page_ext->flags ? I mean, the "overhead" is just ordinary page_ext
+overhead ... and whee exactly are you changing "struct page" layout? Is
+this description outdated?
+
+> 
+> The idea can apply every user of migrate_pages as well as CMA to
+> know the reason why the page migration failed. To support it,
+> the implementation takes "enum migrate_reason" string as filter
+> of the tracepoint(see below).
+> 
+
+I wonder if we could achieve the same thing for debugging by
+
+a) Tracing the PFN when migration fails
+b) Tracing any unref of any PFN
+
+User space can then combine both information to achieve the same result.
+I assume one would need a big trace buffer, but maybe for a debug
+feature good enough?
+
+
+-- 
 Thanks,
-John
+
+David / dhildenb
+
