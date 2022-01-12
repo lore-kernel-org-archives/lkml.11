@@ -2,68 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C9C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC33DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357514AbiALTlf (ORCPT
+        id S1344751AbiALToB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:41:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33996 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357383AbiALTkJ (ORCPT
+        Wed, 12 Jan 2022 14:44:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344616AbiALTl7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:40:09 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6ADEB820E0;
-        Wed, 12 Jan 2022 19:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9DB0EC36AEF;
-        Wed, 12 Jan 2022 19:40:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642016406;
-        bh=wSBLToXmBu1q0nRiptB0lPv7GNJ6wue0y7kQ2DaH7JI=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=tNys5s5KENOCrczkCYEUb4uX2F0mMkybUpL/+SfLG2D/M+t1hbFKi4j50j7x5a9CU
-         Ef8uckMlEQY1z1jzk3vX9sAL4AzOdQE5TNZl9bKksEPcmnK4ZWg3TJtJFp7t1oiCmo
-         Uzc+9PWH2FZ0Ojw0jJvv+AqDFRjPIlx8OzOAbD9TOSeziHDQfIRFw7EPuPXgKh9LF6
-         6ZEI1agWzQBSoRe7mD67v9PXbsaT/FByqdmaiyZFj2jdLuvZSrIrPvcUb/LdDjiNae
-         h/zdnRjLei8hgz2Q3WhVe9j/iHc/TSYHdqK3AaQt2afRV2eeIDNU0B52pH/ObK1hxP
-         y/1+zW1zNUNBg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C202F60796;
-        Wed, 12 Jan 2022 19:40:06 +0000 (UTC)
-Subject: Re: [GIT PULL] SPDX update for 5.17-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yd7etLWYHrtjFRdq@kroah.com>
-References: <Yd7etLWYHrtjFRdq@kroah.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yd7etLWYHrtjFRdq@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/spdx.git tags/spdx-5.17-rc1
-X-PR-Tracked-Commit-Id: bc128349588d571b55bfec471a773e29cfcd2d73
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 81ff0be4b9e3bcfee022d71cf89d72f7e2ed41ba
-Message-Id: <164201640656.24328.9407358004484514665.pr-tracker-bot@kernel.org>
-Date:   Wed, 12 Jan 2022 19:40:06 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-spdx@vger.kernel.org
+        Wed, 12 Jan 2022 14:41:59 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DBC7C034001;
+        Wed, 12 Jan 2022 11:41:58 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id E97761F45477
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642016516;
+        bh=j1WfXZUz+wC9kqhM1EXQE7wmwlkIqg3xZKNoHdE+zsc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UViVjohB8AQZ8CMFZdINzd6tR3m1h7AeoyD7I0YxkLwdrHmERgMWet1kVbNkTJ7Wt
+         HLS+HWBKVI0ah60gKk98VimUnWC6P4PxwLexIG65A+iIZjX5Iz1bTULR21/DV5xaWr
+         tH/kUjaCo5jtsxW6/4oR0XSlQc4fDO3QZUfIDFDbTqQIZz5dUaemT91YSSm9/qjdqT
+         DvKdAXJorG0Rga2briDUW48ymqMB25JTjQncFUiPLMjPOoRhKfw4mMFn0qw8dMjsHM
+         C68H8HZe4hGSljKUl2DloCQePSejdpQnuVnkrKWDC+rSMxAGMDXkFjJprt7qnofEjb
+         8LpANljyChipQ==
+From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+To:     Shuah Khan <shuah@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>
+Cc:     linux-rtc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+Subject: [PATCH v2] selftests: rtc: Increase test timeout so that all tests run
+Date:   Wed, 12 Jan 2022 14:41:42 -0500
+Message-Id: <20220112194142.3276385-1-nfraprado@collabora.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 12 Jan 2022 14:59:16 +0100:
+The timeout setting for the rtc kselftest is currently 90 seconds. This
+setting is used by the kselftest runner to stop running a test if it
+takes longer than the assigned value.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/spdx.git tags/spdx-5.17-rc1
+However, two of the test cases inside rtc set alarms. These alarms are
+set to the next beginning of the minute, so each of these test cases may
+take up to, in the worst case, 60 seconds.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/81ff0be4b9e3bcfee022d71cf89d72f7e2ed41ba
+In order to allow for all test cases in rtc to run, even in the worst
+case, when using the kselftest runner, the timeout value should be
+increased to at least 120. Set it to 180, so there's some additional
+slack.
 
-Thank you!
+Correct operation can be tested by running the following command right
+after the start of a minute (low second count), and checking that all
+test cases run:
 
+	./run_kselftest.sh -c rtc
+
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+---
+
+Changes in v2:
+- Expanded commit message to make the issue, and how to test the fix, clearer
+
+v1: https://lore.kernel.org/all/20220112165359.3206047-1-nfraprado@collabora.com/
+
+ tools/testing/selftests/rtc/settings | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/rtc/settings b/tools/testing/selftests/rtc/settings
+index ba4d85f74cd6..a953c96aa16e 100644
+--- a/tools/testing/selftests/rtc/settings
++++ b/tools/testing/selftests/rtc/settings
+@@ -1 +1 @@
+-timeout=90
++timeout=180
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.34.1
+
