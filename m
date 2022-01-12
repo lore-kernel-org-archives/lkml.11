@@ -2,81 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8936C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:32:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD18C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353157AbiALMcp (ORCPT
+        id S1353175AbiALMde (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 07:32:45 -0500
-Received: from mga17.intel.com ([192.55.52.151]:12209 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240219AbiALMco (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 07:32:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641990764; x=1673526764;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=17feNRCWxaaCotEaxWchhHxpKB2++aseGYBTFYm3A1E=;
-  b=f0WcNd0Ntzfy2JSRxx59uutoPn0041jOsv4R0J5EYpwyFyKnWz4Rro6Y
-   Rqj6TOZXRIlEOptwwymqBuMMnzwJW+scTNlxey4AF8jyOTbEHoa1y9Ima
-   +gf8YTPVJjT0CxeyJ+/fl2nLFfIy3KWGY+UbM2zoY6OQ/OaZo9bdE4/YE
-   59LVQVSB9lbjbnt8Ypbk3Zs/9Oxj7iRasuQvqLCJHYSlzMCRcJ5Ewcz9x
-   osFdM+5EU2DXyoWbri8iWrftotMnx9bhW7pTQULo9NK4UVVGA/mvWTFzz
-   Xi2e4Nrcb1nbeJtW+o4AB7XHx4qH41SB8IOZ4de0G4hYpr9I6sgfqqvZy
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="224418034"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="224418034"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 04:32:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="592990198"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 12 Jan 2022 04:32:42 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7cny-0005mi-6L; Wed, 12 Jan 2022 12:32:42 +0000
-Date:   Wed, 12 Jan 2022 20:32:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Olga Kornievskaia <kolga@netapp.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Anna Schumaker <Anna.Schumaker@Netapp.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH linux-next] nfs4_discover_trunking() can be static
-Message-ID: <20220112123218.GA25976@65a275238185>
-References: <202201122012.9sn7Q8EF-lkp@intel.com>
+        Wed, 12 Jan 2022 07:33:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23514 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240219AbiALMdc (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 07:33:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641990811;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=86h8CwPQPMIrhzzEiKJNUVRKLUq1ncybMybMxirp2aU=;
+        b=C3uxInoB5UJD5yv5Ocy+GtQvzUmc4DPa3fo/Jr+ujmzhJav94T7FlewecHNa22ICj9Gysd
+        l8rtqFicZxfBou8CcbJeiOaulitOQ9jgEVy1KzxrFd4VEkN+duojc4X7IdJLtRljsm3isL
+        h7tummHmfR6/UtM/1ZLAdVHdmg1TzOc=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-584-ThvQdb5VMdi8f3C1R_-v_A-1; Wed, 12 Jan 2022 07:33:30 -0500
+X-MC-Unique: ThvQdb5VMdi8f3C1R_-v_A-1
+Received: by mail-ed1-f70.google.com with SMTP id g11-20020a056402090b00b003f8fd1ac475so2162790edz.1
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 04:33:30 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=86h8CwPQPMIrhzzEiKJNUVRKLUq1ncybMybMxirp2aU=;
+        b=Joju2XNjIKE47sUp82etsstdtS5CrbVwuR3FaTwrTcdxyGEz9aSFyMv7AsnAgszMpS
+         RcjvgfOlPPZZ/6+nP7LgRDvKZNWEKNThzwl9l2kXTGEQyCKla3YRdBCyAZwSK32lIt2y
+         d+VX9TYWmgg5rQwe5Hw9NTdOyshDVqt0szJPCn6EQxuV5qu2wjZ7ThkCUKgloud1l5w8
+         pvvIdaF88nPSEQRiKWoiYe4u7gtZDGansA43gqanB0bh85hDBj2DiUSbjHIlCq5gkO4B
+         qtQPnmHq10qg2SstGE47UH5JqTnn9ifZbwqMvXGrrCTUziZvSRHSKrfyNSm4HZAHVaG+
+         fY9w==
+X-Gm-Message-State: AOAM531ZYlTen8VK2FSTSx2pT+DW+oIGSsShby5wDrHj9PRG+53fey4b
+        Gty2ywzZZP8RrJJJAthSSCslrKPMUlQXo3Zwr+NJcidH16O5VMAtN8SLJS+y7vDO2G94wiPgtQP
+        aKUlto3wLCmYpVDZtt3rsINA9
+X-Received: by 2002:a17:906:9f06:: with SMTP id fy6mr4739829ejc.38.1641990809092;
+        Wed, 12 Jan 2022 04:33:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzUFdB9Pa3Ubqwb8xawYhNP+GITG9uWRJ1R+Hx1+LprehkzN7Pb+68pKWDGU2VrqYPQfNhKuA==
+X-Received: by 2002:a17:906:9f06:: with SMTP id fy6mr4739820ejc.38.1641990808904;
+        Wed, 12 Jan 2022 04:33:28 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id z11sm6089208edr.72.2022.01.12.04.33.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 04:33:28 -0800 (PST)
+Message-ID: <7e897fe1-10ba-85ca-dfda-183454177730@redhat.com>
+Date:   Wed, 12 Jan 2022 13:33:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202201122012.9sn7Q8EF-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v1 0/3] ACPI: scan: acpi_scan_init() updates
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>
+References: <11903300.O9o76ZdvQC@kreacher>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <11903300.O9o76ZdvQC@kreacher>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-fs/nfs/nfs4proc.c:4008:5: warning: symbol 'nfs4_discover_trunking' was not declared. Should it be static?
+Hi,
 
-Fixes: 82ebfb0d6333 ("NFSv4.1 query for fs_location attr on a new file system")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
- nfs4proc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 1/11/22 17:45, Rafael J. Wysocki wrote:
+> Hi All,
+> 
+> There are some minor defects in acpi_scan_init() and because recent changes
+> cause static checkers to catch them, it is better to address them right away.
+> 
+> Please see patch changelogs for the details.
 
-diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
-index a93deeca0c86f..7a59ec2d7dacc 100644
---- a/fs/nfs/nfs4proc.c
-+++ b/fs/nfs/nfs4proc.c
-@@ -4005,7 +4005,7 @@ static int _nfs4_discover_trunking(struct nfs_server *server,
- 	return status;
- }
- 
--int nfs4_discover_trunking(struct nfs_server *server, struct nfs_fh *fhandle)
-+static int nfs4_discover_trunking(struct nfs_server *server, struct nfs_fh *fhandle)
- {
- 	struct nfs4_exception exception = {
- 		.interruptible = true,
+The entire series looks good to me:
+
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+
+for the series.
+
+Regards,
+
+Hans
+
