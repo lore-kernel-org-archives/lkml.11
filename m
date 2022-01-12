@@ -2,65 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF79C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04517C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 12:33:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353181AbiALMdm (ORCPT
+        id S1353210AbiALMdw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 07:33:42 -0500
-Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:46217 "EHLO
-        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353180AbiALMdj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 07:33:39 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0V1elThZ_1641990816;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0V1elThZ_1641990816)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 12 Jan 2022 20:33:37 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-To:     robdclark@gmail.com, sean@poorly.run, airlied@linux.ie,
-        daniel@ffwll.ch, sumit.semwal@linaro.org, christian.koenig@amd.com
-Cc:     linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [PATCH] drm/msm: Fix wrong size calculation
-Date:   Wed, 12 Jan 2022 20:33:34 +0800
-Message-Id: <20220112123334.749776-1-xianting.tian@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 12 Jan 2022 07:33:52 -0500
+Received: from mga17.intel.com ([192.55.52.151]:12290 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240219AbiALMdp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 07:33:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641990825; x=1673526825;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Vvh6IIGBSYSmjaCnGq3TAQf6swL7PGPQ3vOcYGZvUw0=;
+  b=KnQe3wyXZrzRChBsPmX7VqCeOfw4if3O654MUqBuZxl8NsvGbUBoztcE
+   QYQtbtKltM7Co5IpUb7NoK3635t/ZAdDMiKMBAcSo7OoFdlswgvph9TW/
+   pgafY8n2nWNIah+QyafWdektuGt7a30TjDQex0emxSylIm4/a6zB2JKpq
+   HYUhtuVrL5IHBlAxhNQU6wmFLJiW2cROYTRX+VLNzwd2rCHClVtr9s/D7
+   Umy8u6CtiCqWQVAFyAHIQGK/j1u8BL3LseYNbyJtG78uRZ9ITm7Yw0fPf
+   VYi4NfLJ/XRIGZiKGxxDJlLqqtis9ULFXQLS/aaS1HvqMXLku43MoJUvo
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="224418168"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="224418168"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 04:33:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="529156514"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 12 Jan 2022 04:33:42 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n7cow-0005mw-9L; Wed, 12 Jan 2022 12:33:42 +0000
+Date:   Wed, 12 Jan 2022 20:33:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Olga Kornievskaia <kolga@netapp.com>
+Cc:     kbuild-all@lists.01.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [linux-next:master 11662/12034] fs/nfs/nfs4proc.c:4008:5: sparse:
+ sparse: symbol 'nfs4_discover_trunking' was not declared. Should it be
+ static?
+Message-ID: <202201122012.9sn7Q8EF-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For example, memory-region in .dts as below,
-	reg = <0x0 0x50000000 0x0 0x20000000>
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+head:   32ce2abb03cfae17a9eb42bd6b1b619b72f23f20
+commit: 82ebfb0d633383ee00156e2b5bfa9ddf8c550b65 [11662/12034] NFSv4.1 query for fs_location attr on a new file system
+config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220112/202201122012.9sn7Q8EF-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=82ebfb0d633383ee00156e2b5bfa9ddf8c550b65
+        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+        git fetch --no-tags linux-next master
+        git checkout 82ebfb0d633383ee00156e2b5bfa9ddf8c550b65
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/nfs/
 
-We can get below values,
-struct resource r;
-r.start = 0x50000000;
-r.end	= 0x6fffffff;
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-So the size should be:
-size = r.end - r.start + 1 = 0x20000000
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+sparse warnings: (new ones prefixed by >>)
+>> fs/nfs/nfs4proc.c:4008:5: sparse: sparse: symbol 'nfs4_discover_trunking' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
 ---
- drivers/gpu/drm/msm/msm_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index 892c04365..f04a2337d 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -466,7 +466,7 @@ static int msm_init_vram(struct drm_device *dev)
- 		of_node_put(node);
- 		if (ret)
- 			return ret;
--		size = r.end - r.start;
-+		size = r.end - r.start + 1;
- 		DRM_INFO("using VRAM carveout: %lx@%pa\n", size, &r.start);
- 
- 		/* if we have no IOMMU, then we need to use carveout allocator.
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
