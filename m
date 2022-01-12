@@ -2,147 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68839C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:59:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B0DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239352AbiALJ7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42242 "EHLO
+        id S239362AbiALKAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 05:00:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352317AbiALJ7k (ORCPT
+        with ESMTP id S239359AbiALKAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:59:40 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0804C06173F;
-        Wed, 12 Jan 2022 01:59:39 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id k30so3147224wrd.9;
-        Wed, 12 Jan 2022 01:59:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ut4XOU7A/03qnRMeHsMB3uFSgPcs5evwpF8EjvHosi8=;
-        b=dNp8JYbEWnmIYGrO7X9jxS6njJPxOC+R7VskhDd5eqwmBjlPkv8cBfNTwgYuKv4Nkq
-         ROJMfg4PM7nHbwgqcUECmLcA3lNUfw6+45gFWXBqG3n52LG36ORu915Fs4gvjcSKEMNR
-         WLIT61EOD4QuRGCaPqGQn1FFIQh6CUfS/SSADKLVEAb9DTq+XAxbWk5FuXHF2vQzHIU7
-         Gcyr9WlDHd/3kxLTUpyOSspcP/F66IEGHRbUqYgEDz7NubRpUOdM1p8Rlk7lpKuaupTI
-         DCPY81WwW/bYQZ1uGkstByYZjuBHmXBj9matdgWCRzvQMgyLCHmokC9utxygTIBcVusC
-         EAtg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ut4XOU7A/03qnRMeHsMB3uFSgPcs5evwpF8EjvHosi8=;
-        b=WVf8H9P/w/hfuLS38M+RNx1LLwOBIoKXbssbDvkIEW/Di9JOwPhhFpFiGngeUB+2cx
-         LnRBkACGi1qEx+ABbpKCTCdQTI0RDMTQPlnOU2vJMA1I2DqU85f4O7t35ciH7qllj7kP
-         HmGGNP7+ANO0J+6k2G0nMq0ZDA/Uiry8nIxbtGIH+EuPJcSZJyOwV1FQWdLEfCaOaouU
-         YRmNkBQhk0Uwk4tz1I36Y2RV8qRKIPNlrmpmz08P5ylx4WLLptCgiPno3CQJlSvb+Wdr
-         RmtqkMaVGIVq/k6fur8naoJFS/fHEDZR9/ixQvpg+fRKsNk3e7oeeB9hM+ypP30DKRJ+
-         cBYA==
-X-Gm-Message-State: AOAM530d3PsffkWACAxUhKgiby2gs+l2RPFZFLV3pbzZ5Yh8boBdXYb+
-        naVD2EJwwiau8tUdDOZhxow=
-X-Google-Smtp-Source: ABdhPJykJDPMEXOibXX6KVqykVjgMXjjzUz08whjSlSO0lZzpMIdPiQvLX5gB1bV7mEX3e5EPvfuqg==
-X-Received: by 2002:a05:6000:1548:: with SMTP id 8mr6980634wry.489.1641981578289;
-        Wed, 12 Jan 2022 01:59:38 -0800 (PST)
-Received: from [10.0.0.5] ([37.165.119.129])
-        by smtp.gmail.com with ESMTPSA id c3sm3851637wrd.54.2022.01.12.01.59.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 01:59:37 -0800 (PST)
-Message-ID: <571c72e8-2111-6aa0-1bd7-e0af7fc50539@gmail.com>
-Date:   Wed, 12 Jan 2022 01:59:36 -0800
+        Wed, 12 Jan 2022 05:00:04 -0500
+X-Greylist: delayed 416 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 12 Jan 2022 02:00:03 PST
+Received: from forward500o.mail.yandex.net (forward500o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::610])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734A6C06173F;
+        Wed, 12 Jan 2022 02:00:03 -0800 (PST)
+Received: from vla1-b85deedef156.qloud-c.yandex.net (vla1-b85deedef156.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:89c:0:640:b85d:eede])
+        by forward500o.mail.yandex.net (Yandex) with ESMTP id 018989427F9;
+        Wed, 12 Jan 2022 12:53:04 +0300 (MSK)
+Received: from vla3-23c3b031fed5.qloud-c.yandex.net (vla3-23c3b031fed5.qloud-c.yandex.net [2a02:6b8:c15:2582:0:640:23c3:b031])
+        by vla1-b85deedef156.qloud-c.yandex.net (mxback/Yandex) with ESMTP id YKgBHTejNI-r3fa0jiw;
+        Wed, 12 Jan 2022 12:53:03 +0300
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1641981183;
+        bh=GBvPYx5xlO7r/in7vKblwwrgfU2MCoognfarC7rdbak=;
+        h=In-Reply-To:To:From:Subject:Message-ID:Cc:References:Date;
+        b=Uyp2Osp97srb3rUFOzCKjMYP5R2DOaxljSfrW8/Ojcp7zjeQ0OpRwWiaBxbz3sYod
+         ku77jABkKYRqFa2ZfKkTRUtzLBkqjn6mah06d/1YhPzVPmyipL3PxyvpG86xgIVwj3
+         z4cI38USXEAszEPFexrJrkmB9PehIyjMSgQMdtd8=
+Authentication-Results: vla1-b85deedef156.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
+Received: by vla3-23c3b031fed5.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id PaDBeQX1JP-r2QqdOrT;
+        Wed, 12 Jan 2022 12:53:02 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+Message-ID: <98ed8d6d16a3d472d9432eb169aa2da44b66b5cc.camel@yandex.ru>
+Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in
+ adapter"
+From:   Konstantin Kharlamov <hi-angel@yandex.ru>
+To:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org
+Cc:     "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
+        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        Bibby Hsieh <bibby.hsieh@mediatek.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Date:   Wed, 12 Jan 2022 12:51:31 +0300
+In-Reply-To: <Yd6gRR0jtqhRLwtB@ninjato>
+References: <20220106122452.18719-1-wsa@kernel.org>
+         <Yd6gRR0jtqhRLwtB@ninjato>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH net] ax25: use after free in ax25_connect
-Content-Language: en-US
-To:     Hangyu Hua <hbh25y@gmail.com>, jreuter@yaina.de,
-        ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111042048.43532-1-hbh25y@gmail.com>
- <f35292c0-621f-3f07-87ed-2533bfd1496e@gmail.com>
- <f48850cb-8e26-afa0-576c-691bb4be5587@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <f48850cb-8e26-afa0-576c-691bb4be5587@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 2022-01-12 at 10:32 +0100, Wolfram Sang wrote:
+> Hi everyone,
+> 
+> On Thu, Jan 06, 2022 at 01:24:52PM +0100, Wolfram Sang wrote:
+> > This largely reverts commit 5a7b95fb993ec399c8a685552aa6a8fc995c40bd. It
+> > breaks suspend with AMD GPUs, and we couldn't incrementally fix it. So,
+> > let's remove the code and go back to the drawing board. We keep the
+> > header extension to not break drivers already populating the regulator.
+> > We expect to re-add the code handling it soon.
+> > 
+> > Reported-by: "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
+> > Link:
+> > https://lore.kernel.org/r/1295184560.182511.1639075777725@mail.yahoo.com
+> > Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
+> > Link:
+> > https://lore.kernel.org/r/7143a7147978f4104171072d9f5225d2ce355ec1.camel@yandex.ru
+> > BugLink: https://gitlab.freedesktop.org/drm/amd/-/issues/1850
+> > Signed-off-by: Wolfram Sang <wsa@kernel.org>
+> 
+> So, it has been reverted now. Is someone of the original patch
+> submitters interested in re-adding it? And would the reporters of the
+> regression be available for further testing?
 
-On 1/11/22 18:13, Hangyu Hua wrote:
-> I try to use ax25_release to trigger this bug like this:
-> ax25_release                 ax25_connect
-> lock_sock(sk);
-> -----------------------------sk = sock->sk;
-> -----------------------------ax25 = sk_to_ax25(sk);
-> ax25_destroy_socket(ax25);
-> release_sock(sk);
-> -----------------------------lock_sock(sk);
-> -----------------------------use ax25 again
->
-> But i failed beacause their have large speed difference. And i
-> don't have a physical device to test other function in ax25.
-> Anyway, i still think there will have a function to trigger this
-> race condition like ax25_destroy_timer. Beacause Any ohter
-> functions in ax25_proto_ops like ax25_bind protect ax25_sock by 
-> lock_sock(sk).
+I am available for further testing.
 
+> Thanks and happy hacking,
+> 
+>    Wolfram
+> 
 
-For a given sk pointer, sk_to_ax25(sk) is always returning the same value,
-
-regardless of sk lock being held or not.
-
-ax25_sk(sk)->cb  is set only from ax25_create() or ax25_make_new()
-
-ax25_connect can not be called until these operations have completed ?
-
-
-
->
-> Thanks.
->
->
->
->
-> On 2022/1/12 上午4:56, Eric Dumazet wrote:
->>
->> On 1/10/22 20:20, Hangyu Hua wrote:
->>> sk_to_ax25(sk) needs to be called after lock_sock(sk) to avoid UAF
->>> caused by a race condition.
->>
->> Can you describe what race condition you have found exactly ?
->>
->> sk pointer can not change.
->>
->>
->>> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->>> ---
->>>   net/ax25/af_ax25.c | 4 +++-
->>>   1 file changed, 3 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
->>> index cfca99e295b8..c5d62420a2a8 100644
->>> --- a/net/ax25/af_ax25.c
->>> +++ b/net/ax25/af_ax25.c
->>> @@ -1127,7 +1127,7 @@ static int __must_check ax25_connect(struct 
->>> socket *sock,
->>>       struct sockaddr *uaddr, int addr_len, int flags)
->>>   {
->>>       struct sock *sk = sock->sk;
->>> -    ax25_cb *ax25 = sk_to_ax25(sk), *ax25t;
->>> +    ax25_cb *ax25, *ax25t;
->>>       struct full_sockaddr_ax25 *fsa = (struct full_sockaddr_ax25 
->>> *)uaddr;
->>>       ax25_digi *digi = NULL;
->>>       int ct = 0, err = 0;
->>> @@ -1155,6 +1155,8 @@ static int __must_check ax25_connect(struct 
->>> socket *sock,
->>>       lock_sock(sk);
->>> +    ax25 = sk_to_ax25(sk);
->>> +
->>>       /* deal with restarts */
->>>       if (sock->state == SS_CONNECTING) {
->>>           switch (sk->sk_state) {
