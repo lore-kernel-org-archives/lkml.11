@@ -2,103 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85960C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96972C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:59:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352649AbiALK6E (ORCPT
+        id S1352669AbiALK7G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:58:04 -0500
-Received: from mail-ua1-f46.google.com ([209.85.222.46]:43648 "EHLO
-        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238370AbiALK6D (ORCPT
+        Wed, 12 Jan 2022 05:59:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42992 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238370AbiALK7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:58:03 -0500
-Received: by mail-ua1-f46.google.com with SMTP id i5so3902352uaq.10;
-        Wed, 12 Jan 2022 02:58:02 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sqfqmGnWErblTuhOUr48ULJ3GhOyu+Z25jTNW9S2YJk=;
-        b=FWLMI5bBOVpZdyV5XoLEQEPHbScoAd25NOJKXslUmwsdI4JNnqCd9wP6fkvS2OcQZA
-         ELMsurQDTPeHK7WlRYex4r9IgI5DaI+b9nTrjXfLTPvZfMhAy7B8dqhh6+4SPppi12nL
-         Ed7O+69O6cH12dEKDhgySBTyBKFgY9EszyqQfRQnT4ODp7/sSZuUsDRtEVHimt+aFDCC
-         Kdz15zUEqNsh9L9N1+LwlqcBW/anFAI6ozLg05Z3ezKbkEOIRdwwu2pYR2H2lXn8tJ//
-         h93VM+8i2m4qjacZGuddXZG71/Ph6hehZSXtknnmSLYxLv9gK7D84hJU0fCFqgoybMZF
-         Mxmw==
-X-Gm-Message-State: AOAM5313d++tqQe9KNk8uIjB1LP46j1Hh6Dhp6Jmm1xIISLOF3rhbEbY
-        qdtk2Ib3tJhH6yrlr2EHo5xf/GePrP91vry2
-X-Google-Smtp-Source: ABdhPJzhe4W765gRBfKwtHARcs2LhOTzVbGiBQJy2gdtCbMUqbGF2ufdHAQDivWCCDwVn/IeAUMjiw==
-X-Received: by 2002:ab0:25d7:: with SMTP id y23mr3719332uan.116.1641985082435;
-        Wed, 12 Jan 2022 02:58:02 -0800 (PST)
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com. [209.85.222.54])
-        by smtp.gmail.com with ESMTPSA id l27sm4892564vko.17.2022.01.12.02.58.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 02:58:01 -0800 (PST)
-Received: by mail-ua1-f54.google.com with SMTP id y4so3990872uad.1;
-        Wed, 12 Jan 2022 02:58:00 -0800 (PST)
-X-Received: by 2002:ab0:4d5a:: with SMTP id k26mr3942936uag.122.1641985080812;
- Wed, 12 Jan 2022 02:58:00 -0800 (PST)
+        Wed, 12 Jan 2022 05:59:04 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32049B81D6E;
+        Wed, 12 Jan 2022 10:59:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE218C36AEA;
+        Wed, 12 Jan 2022 10:59:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641985141;
+        bh=CCz9TaBhzlxAUXt2zsk2hkuFbg2xBTs8dNBs1B2KDk0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UznS4jwQpkrbFrZEuqaNLNNh/z0lhS02+fspB5UeJo49CjIt5Zck676z2fYlkQ/AT
+         Z727URmzejxLbhgeT+MDTHS5+22oxYVEyAHrdvlI+LoSR9LIsaRDkrStrcT8fMRbjh
+         hfWs0s77bzL0lAjcCFyeLLeqV7fY9C18d/z4bTOrK1o3BgQ9ZeO4I2eeMwvqLYj/+1
+         +OW5THTBkefTeC4PeorM+TW6bDHQspdXvbcqDEJPMBcQ0uds1ttAQtntC/wpnk0VDP
+         mlDWQApr0xVwXJr9O2HxGYP/xLcEAKnRJNOeauChgPNKksyNVdGqBYGABZLtxXdbHE
+         FUlckO/TEucgA==
+Received: by pali.im (Postfix)
+        id 71E3E768; Wed, 12 Jan 2022 11:58:59 +0100 (CET)
+Date:   Wed, 12 Jan 2022 11:58:59 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
+Message-ID: <20220112105859.u4j76o7cpsr4znmb@pali>
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
+ <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
 MIME-Version: 1.0
-References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
- <20220111134934.324663-1-Jason@zx2c4.com> <20220111134934.324663-2-Jason@zx2c4.com>
-In-Reply-To: <20220111134934.324663-2-Jason@zx2c4.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 12 Jan 2022 11:57:49 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWOheM0WsHNTA2dS=wJA8kXEYx6G78bnZ51T1X8HWdzNg@mail.gmail.com>
-Message-ID: <CAMuHMdWOheM0WsHNTA2dS=wJA8kXEYx6G78bnZ51T1X8HWdzNg@mail.gmail.com>
-Subject: Re: [PATCH crypto 1/2] lib/crypto: blake2s-generic: reduce code size
- on small systems
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, wireguard@lists.zx2c4.com,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Theodore Tso <tytso@mit.edu>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        jeanphilippe.aumasson@gmail.com, Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111171424.862764-9-Jerome.Pouiller@silabs.com>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jason,
+On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
+> +static const struct sdio_device_id wfx_sdio_ids[] = {
+> +	{ SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200) },
+> +	{ },
+> +};
 
-On Tue, Jan 11, 2022 at 2:49 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> Re-wind the loops entirely on kernels optimized for code size. This is
-> really not good at all performance-wise. But on m68k, it shaves off 4k
-> of code size, which is apparently important.
+Hello! Is this table still required?
 
-On arm32:
-
-add/remove: 1/0 grow/shrink: 0/1 up/down: 160/-4212 (-4052)
-Function                                     old     new   delta
-blake2s_sigma                                  -     160    +160
-blake2s_compress_generic                    4872     660   -4212
-Total: Before=9846148, After=9842096, chg -0.04%
-
-On arm64:
-
-add/remove: 1/2 grow/shrink: 0/1 up/down: 160/-4584 (-4424)
-Function                                     old     new   delta
-blake2s_sigma                                  -     160    +160
-e843419@0710_00007634_e8a0                     8       -      -8
-e843419@0441_0000423a_178c                     8       -      -8
-blake2s_compress_generic                    5088     520   -4568
-Total: Before=32800278, After=32795854, chg -0.01%
-
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-
-For the size reduction:
-Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> +
+> +struct sdio_driver wfx_sdio_driver = {
+> +	.name = "wfx-sdio",
+> +	.id_table = wfx_sdio_ids,
+> +	.probe = wfx_sdio_probe,
+> +	.remove = wfx_sdio_remove,
+> +	.drv = {
+> +		.owner = THIS_MODULE,
+> +		.of_match_table = wfx_sdio_of_match,
+> +	}
+> +};
+> -- 
+> 2.34.1
+> 
