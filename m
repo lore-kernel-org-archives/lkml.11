@@ -2,144 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BCFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7945AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:50:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356512AbiALStj (ORCPT
+        id S1356524AbiALSuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:49:39 -0500
-Received: from mga11.intel.com ([192.55.52.93]:32836 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356492AbiALStS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:49:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642013358; x=1673549358;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=P8rim4q0I6ulB+Ywv2t0GgbvDOgoQUtrXFzLeGezyTs=;
-  b=htc1WEJca4KmONw/vvXfg0fre6y/XVoTmnIn4Bg+IK/8drx4f1+N7fhc
-   9d3o/+Hwws1aBR5qVw1e5D1Rl98meOFFiPobeQFaJgnJ4ReUVqCT/V1oL
-   ArFdFs1dlZ9N4G3Il7T2aNkpwSUkGeZVmKEcFZaw8AcZ7djUVcMWTlAnh
-   wFuaM2douecBcOkqAVhTRevH6+p0y5flNR0tOTUSrLbxJF4l6bfaDx4ps
-   ZCpjbsn1t+UFHLcfjNqLGmjSJ2ssw5JrVsg0TYG4v6kM2w/UzEGHBN2Z4
-   YXtzf6JaVAdQwzzmZR58X6knlHout+QXlLI+vHJ+zoGJJaB2nBhzclqBB
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="241375345"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="241375345"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 10:43:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="515611386"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jan 2022 10:43:08 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7iaR-0006Et-Ab; Wed, 12 Jan 2022 18:43:07 +0000
-Date:   Thu, 13 Jan 2022 02:42:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Seevalamuthu Mariappan <quic_seevalam@quicinc.com>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [ammarfaizi2-block:kvalo/ath/pending 255/273]
- drivers/net/wireless/ath/ath11k/wmi.c:7833:39: error: 'struct ath11k' has no
- member named 'debug'
-Message-ID: <202201130245.W7Ps705H-lkp@intel.com>
+        Wed, 12 Jan 2022 13:50:25 -0500
+Received: from mail-eopbgr140089.outbound.protection.outlook.com ([40.107.14.89]:61268
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1344266AbiALSuP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 13:50:15 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hzAjSejkubqMFb6p1jg6QxuQtuPAOIqfIDMSMY7DbxGOinVdQRpcIE3B3onecZoomuGOCmmm3KD8IZOHeFSFZF8qskKHqn8VMJpjJkrOIQmIwmyRi5fNUMuRsb5UR+cTP3Wc1vLe1L71sidRTdQX3YGPKbEkLzAFSHlzKVZdetaueNZqadssQ01xKmrasnvD5h3sL1CGML8eezR3UJilbt00Rb7PKiK5QUTM4K6Rgmo0BLnAL75D56Iga3LGzIF6WVSHOwgmvJl7MJqdvOhZBnT9qa58reaypBnN19HWhzbUs1eCT0DjKj08Pyf56G9gzt5+zHag6A3NkorBaHwmrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=W2yHzROI6UYxP0UDeqstPApfK3kbLs8Ke5H81at1z8o=;
+ b=JmH4NiHsSin/nWj+KUZY4u4CtI3PwyOThlG/evwcmxwujdSQRIEs1NSIFoTxIeKHI/Ni4bz2C6+nrNiQuD4AENraXMDHb4GMW/Nx7k7x0DUmDD8fQk53s/OU7NEnAYSYLZKIrUayzbJ3ac7nhhDPe75oeV4LTLlE0MWbkNmE1bIoRnrDmlclZszzYDnm1tVC0c2NBAbAF6kX4JqzTwnJjZb9/afg/Ts3V28BJNRfHACqtZPbxtxBsNbIsKBcvplW8L/zIE0lmX37dUdlpP7GrQOUpu50Xb9qO/XIrF5W+Ci6HGFLU/Oh4SZLYJ2R8w0iMjFtcx5BEkrbOgrdhGuZrw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=W2yHzROI6UYxP0UDeqstPApfK3kbLs8Ke5H81at1z8o=;
+ b=PGZt5QpIoBZ1LHl/VArNPlTiL9vAZHUplpFcb+JnpQGCs/X7Q9l4jjArBSRsThs3oDkpOFH4aiAO4Llp6pXmhltB5lMZdPdrXzOrDJWrO1qRNVlvNt73SP7ZOO+BkbfWYQNKZQlb8P0hjWZZKZJbc7jyC1KXLQrpG2P4pBH+d+A=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3550.eurprd04.prod.outlook.com (2603:10a6:803:3::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.11; Wed, 12 Jan
+ 2022 18:50:11 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::c84:1f0b:cc79:9226%3]) with mapi id 15.20.4867.012; Wed, 12 Jan 2022
+ 18:50:11 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Maxim <bigunclemax@gmail.com>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "benh@kernel.crashing.org" <benh@kernel.crashing.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "fido_max@inbox.ru" <fido_max@inbox.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "mpe@ellerman.id.au" <mpe@ellerman.id.au>,
+        "paulus@samba.org" <paulus@samba.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+Subject: Re: [PATCH v2] powerpc: dts: t1040rdb: fix ports names for Seville
+ Ethernet switch
+Thread-Topic: [PATCH v2] powerpc: dts: t1040rdb: fix ports names for Seville
+ Ethernet switch
+Thread-Index: AQHYBxIPym2G7xq+TE+bIvwtYjnm9qxfvE4A
+Date:   Wed, 12 Jan 2022 18:50:11 +0000
+Message-ID: <20220112185010.onk35fvuho6qldea@skbuf>
+References: <20220111152947.6zvt7j7366wsg6o2@skbuf>
+ <20220111173723.26212-1-bigunclemax@gmail.com>
+In-Reply-To: <20220111173723.26212-1-bigunclemax@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 74bac946-cf90-4daf-e2f4-08d9d5fc5ce8
+x-ms-traffictypediagnostic: VI1PR0402MB3550:EE_
+x-microsoft-antispam-prvs: <VI1PR0402MB355087CF90BDF18C5F5B872CE0529@VI1PR0402MB3550.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WnlYlo8FLOX2CLLwN+38PlrDjFp7AWhfrYtRi5S/Jcs9Id78f/O7ZquAqGVbYquZlhsUWHaxwTMBf6LlTSqNRj8P45VOnGMyqJ9uCavpeXiPuRGe6COX9JvTMvkdUjPG4xMNt2cqvKGAqcgxO7pYmMz567gMHipaBUwXon+Rk0oSmL2rnWlxr9zWjpd9lqNewMXvxEAWxglhod3TVtSzl+xKzSFk5WB4JBjTK5ecIb4AiMCwDwJAvpX+zZkR16ta3cpt8G5VSIS/E2oGfmDZ/Urg9Uic4Grxwi8RYotHff6zHl1xMfsOfZhvbfVFe/3t3iDHodJ3vu0mHA4GtfKISM5kUY/z+y4tUPRPUgWTPpIHd83G+lDl2RD6ZMJaYmAdzwR7lPo9B3To43Mdw67y3taDc8dlds1qtdpRoKYA2lHzobF/eLnwGz/ATpSWtDYHV5F5TWb0wk35UbotDOlRt3eKr+UmGnb5Xkx9t1a4dtAOHWowye0AKPIrYwNisZfm3hZgrXdIusl5M3gsmwFj8Tr+xZWbPPXWFBMpY3cuuim0swtQfLQfLVTDE/S8dSG7pu1DRkoNc6xm3Z8S1mvG21F8kI6RTsm5Q1coWnsx1gpAxuf1+WslB24PVo9xCmge/FPWM1rpxPCPH2h9eNRqNWcnQaZPxDSIFWvh54cBvG5LGBtbUDh54vE60OLYbU1H
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(366004)(5660300002)(66476007)(508600001)(26005)(66446008)(122000001)(38100700002)(4326008)(316002)(8936002)(76116006)(54906003)(186003)(91956017)(66946007)(1076003)(64756008)(33716001)(7416002)(6486002)(66556008)(6916009)(6506007)(8676002)(4744005)(9686003)(71200400001)(6512007)(38070700005)(44832011)(86362001)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Ta4LXGMjI1xEK9e83Z0Q6otbMmjOMNvIMEABTy3kaFfA2oufuieDbloNrSf1?=
+ =?us-ascii?Q?KxYu4JCAFNvL9nCvoJe7YdFmnDY4fKc7H5jbDwMRfld5oUQGsyAvZX4H6IVq?=
+ =?us-ascii?Q?cfANjIc1DlFiMVsYwe0WZhr+ikZ7ofDH6B6GRq6yRpLMItZ32vZGLmEAJveW?=
+ =?us-ascii?Q?/5FSfw2Yn5PbirB5FORgrfHYDWOtV2yBheJJM3sfh+Q9l2n631zJ9HGf4I+3?=
+ =?us-ascii?Q?goDjOa3PAXFzskuKj8pu50MeIzLkONWIw+gMRZ4iNaANA3YDzbB5ux+til85?=
+ =?us-ascii?Q?SGejtirvGiH4gln7fp6Zhivk5krt3Th+XuVb61/3vhDVq8LDfmm0NqME1seL?=
+ =?us-ascii?Q?UsZXBt8qLbhNoBBCEFzGF9Dlc79UT6emyCUSbguIuDwgjV+5y27gr8yMyEaY?=
+ =?us-ascii?Q?Sx/B/O7AJwQfQ6NDqHozjIfj9K6ywuv2WJKMMJuf0CS4rrQmOfjeYRJgnIKW?=
+ =?us-ascii?Q?P2CxJFWtP9rvqd+LJ+IFZJ/lynIPXfmrfNYHD1DnZ16VUBnj8aQDGV/35O/Q?=
+ =?us-ascii?Q?V/Tr5kmrWjDOxVN1nGe90fimKQpd1fIjxzxilPBZErUqP1WLS/uPo27wjWhe?=
+ =?us-ascii?Q?7y1IqoB7XJVl4ZNioVbRL7gaVAdT2Z/XWeaXHZT5ojj/sNSIZqW27MEwVxjZ?=
+ =?us-ascii?Q?EiveDcWTftCh0cSlfVWT2pOSoc1gwJo5cae8rJ6FhCUD5kLwfxkw95UdxW70?=
+ =?us-ascii?Q?OsIGF7ggGNmdALeYg7pexd8MZ6V2y8AvyMouU2jJ37TdzXrQKvEm8XMSLK4W?=
+ =?us-ascii?Q?s9FkbLnfO5fpQGdiVR6wFz7cL5p+9QQ/JVc7PdGLNQwZ8HNGw7XViyINZTJn?=
+ =?us-ascii?Q?qRAT76z0Op+i6lBsjQ7EloRfiZ6h28i5ATV4tibLAbAP4CfJVW9zrpXDT9HF?=
+ =?us-ascii?Q?mM2Emzp/YPp7tMot5ysoGOYDm/hi7Oz2jOY8rs5N/8PRKsV0yMDtQNo3m6P7?=
+ =?us-ascii?Q?nQZFxIhWMUg0Y2gakoN2V/iALXU5R5bGmxdwrmweppjGxXp+1FnYR0IbKIUw?=
+ =?us-ascii?Q?16XqF0/oEtOJ/Nbz2v4Kfs5hzM2H/0mj6BUqh5ei3QAUEb67h6pUPGeJftFX?=
+ =?us-ascii?Q?86AAV3FHltqxUlZfPmngQ0JSlUyXtqA5IECFeJM1lke7HQ6anHAQxFmAkw0k?=
+ =?us-ascii?Q?6gxMv3/T3h3K4GHl/QnunavllHO0R6yvL8oD1/p02kgwOR9jnCFOM6m8kLBg?=
+ =?us-ascii?Q?8hxvPNEMqnP4K521IySQi1H6EzwPjk662lQx0TfsMhBmXyIJ2SWzhh4FeUEl?=
+ =?us-ascii?Q?dij3EUmBtgC6E/g2GOkKCpW73kbNv2OIEHFLYyiOtupx+Zaf26cYPS+U8fM4?=
+ =?us-ascii?Q?zHoZWJy5mM+TpSErpInvxU2rJHwr+1GhUyApKmT9Zq8V1AloKwcLxhZ/3upc?=
+ =?us-ascii?Q?zmOR97hyWMiusrzAITV/V6zcrPPha575xgpMW3lPbUSYqzdRuHvhrLWKVM6N?=
+ =?us-ascii?Q?XoakVjTNbjSxdM7EdSrXkgyjaiyi1p+EnQEtCeGNj3dNpr09Tqu44poY8ZKy?=
+ =?us-ascii?Q?N26BB20S3a+3pcC4OLm6QX5i+9T/GmNI8ZglpttUqzGMDoap38IbljGfZ9xh?=
+ =?us-ascii?Q?fiJGV7N3nz5PeUgs+rbYefMI1doV0djLl/WKum9zND8/+zcOxVTTb/pLsfOE?=
+ =?us-ascii?Q?biS+BrKwSmWGknRLfPuQh50=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <BAD58E329BB59B44BDAAC8AF177595D2@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74bac946-cf90-4daf-e2f4-08d9d5fc5ce8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2022 18:50:11.6252
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OkmioZiFAIeLItgQ3cwgbnKP8EiYN80/cZQUbylkK9uL/mhO2E3Uengcmk8nBO3xamOtgdD8VAclVMNIcrSWhA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3550
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
-head:   061c4062835233faef6961a898155015fc5e0631
-commit: 3af45eb104584443956572fa9d2a332123816b37 [255/273] ath11k: Add debugfs interface to configure firmware debug log level
-config: xtensa-randconfig-r024-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130245.W7Ps705H-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/3af45eb104584443956572fa9d2a332123816b37
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block kvalo/ath/pending
-        git checkout 3af45eb104584443956572fa9d2a332123816b37
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash drivers/net/wireless/ath/ath11k/
+On Tue, Jan 11, 2022 at 08:37:23PM +0300, Maxim wrote:
+> From: Maxim Kiselev <bigunclemax@gmail.com>
+>=20
+> On board rev A, the network interface labels for the switch ports
+> written on the front panel are different than on rev B and later.
+>=20
+> This patch fixes network interface names for the switch ports according
+> to labels that are written on the front panel of the board rev B.
+> They start from ETH3 and end at ETH10.
+>=20
+> This patch also introduces a separate device tree for rev A.
+> The main device tree is supposed to cover rev B and later.
+>=20
+> Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+> Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+> ---
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   drivers/net/wireless/ath/ath11k/wmi.c: In function 'ath11k_wmi_fw_dbglog_cfg':
->> drivers/net/wireless/ath/ath11k/wmi.c:7833:39: error: 'struct ath11k' has no member named 'debug'
-    7833 |                 memcpy(tlv->value, &ar->debug.module_id_bitmap,
-         |                                       ^~
-   drivers/net/wireless/ath/ath11k/wmi.c:7836:27: error: 'struct ath11k' has no member named 'debug'
-    7836 |                 memset(&ar->debug.module_id_bitmap, 0,
-         |                           ^~
-
-
-vim +7833 drivers/net/wireless/ath/ath11k/wmi.c
-
-  7800	
-  7801	int ath11k_wmi_fw_dbglog_cfg(struct ath11k *ar, struct ath11k_fw_dbglog *dbglog)
-  7802	{
-  7803		struct ath11k_pdev_wmi *wmi = ar->wmi;
-  7804		struct wmi_debug_log_config_cmd_fixed_param *cmd;
-  7805		struct sk_buff *skb;
-  7806		struct wmi_tlv *tlv;
-  7807		int ret, len;
-  7808	
-  7809		len = sizeof(*cmd) + TLV_HDR_SIZE + (MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
-  7810		skb = ath11k_wmi_alloc_skb(wmi->wmi_ab, len);
-  7811		if (!skb)
-  7812			return -ENOMEM;
-  7813	
-  7814		cmd = (struct wmi_debug_log_config_cmd_fixed_param *)skb->data;
-  7815		cmd->tlv_header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_DEBUG_LOG_CONFIG_CMD) |
-  7816				  FIELD_PREP(WMI_TLV_LEN, sizeof(*cmd) - TLV_HDR_SIZE);
-  7817		cmd->dbg_log_param = dbglog->param;
-  7818	
-  7819		tlv = (struct wmi_tlv *)((u8 *)cmd + sizeof(*cmd));
-  7820		tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_UINT32) |
-  7821			      FIELD_PREP(WMI_TLV_LEN, MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
-  7822	
-  7823		switch (dbglog->param) {
-  7824		case WMI_DEBUG_LOG_PARAM_LOG_LEVEL:
-  7825		case WMI_DEBUG_LOG_PARAM_VDEV_ENABLE:
-  7826		case WMI_DEBUG_LOG_PARAM_VDEV_DISABLE:
-  7827		case WMI_DEBUG_LOG_PARAM_VDEV_ENABLE_BITMAP:
-  7828			cmd->value = dbglog->value;
-  7829			break;
-  7830		case WMI_DEBUG_LOG_PARAM_MOD_ENABLE_BITMAP:
-  7831		case WMI_DEBUG_LOG_PARAM_WOW_MOD_ENABLE_BITMAP:
-  7832			cmd->value = dbglog->value;
-> 7833			memcpy(tlv->value, &ar->debug.module_id_bitmap,
-  7834			       MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
-  7835			/* clear current config to be used for next user config */
-  7836			memset(&ar->debug.module_id_bitmap, 0,
-  7837			       MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
-  7838			break;
-  7839		default:
-  7840			dev_kfree_skb(skb);
-  7841			return -EINVAL;
-  7842		}
-  7843	
-  7844		ret = ath11k_wmi_cmd_send(wmi, skb, WMI_DBGLOG_CFG_CMDID);
-  7845		if (ret) {
-  7846			ath11k_warn(ar->ab,
-  7847				    "failed to send WMI_DBGLOG_CFG_CMDID\n");
-  7848			dev_kfree_skb(skb);
-  7849		}
-  7850		return ret;
-  7851	}
-  7852	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Fixes: e69eb0824d8c ("powerpc: dts: t1040rdb: add ports for Seville Etherne=
+t switch")
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
