@@ -2,119 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D45C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353541AbiALNVM (ORCPT
+        id S1353563AbiALNW4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:21:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45333 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233171AbiALNVL (ORCPT
+        Wed, 12 Jan 2022 08:22:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353538AbiALNWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:21:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641993670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Z7HUhTMlbXY8IkiDpmh6rY91adlsE5cm+HaqeJ7xc6w=;
-        b=QcWkJFjifqY4dVVtAs6lT+5WVF1sXZf78xuaJZoR5hAzx3Fh4v8ecT9Hs3mJegQbHX7E6h
-        tqsvIaHRa0APrmhhVgJ44q/i4tncEVE2spwHb2FYsiMWbQ1kfe/3Wol+oIxQI+Odmsz9Tf
-        p+Z8Yvn2oapZ+R25vGnumRLM6zyZ1jM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-574-Y_qB0p4OM7WSJbeqWtnHkA-1; Wed, 12 Jan 2022 08:21:07 -0500
-X-MC-Unique: Y_qB0p4OM7WSJbeqWtnHkA-1
-Received: by mail-wm1-f70.google.com with SMTP id c5-20020a1c3505000000b00345c92c27c6so3684866wma.2
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:21:07 -0800 (PST)
+        Wed, 12 Jan 2022 08:22:54 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8198EC061751
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:22:54 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id 30so9986428edv.3
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:22:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MfZ/bQyc8Ol4TQ5HaN2khWewBoM9cI1PUzi7/CIfS6I=;
+        b=Lsipx6XKx1x6e4uetXaiE2GztJ4AGV6fzRo4TY2NE2SduXUPlNhdbeLCtufRKCwwnC
+         0SPpqEeAGedRwJ5A3cFuz+Fx8X+/99cdT8FkqL59AenhPixEDypHH2cxR0hfPpkdJRWL
+         3JvI6T/LyCTCLZuaDgcUBHouUXc9It24q4dlN1kjlwLfcM/g4EbP22GfPDk2rbn0ZnTE
+         zMXyKDy7LqM19xT86V7+wYsIyDPRZtmoHpEpQZRX4lX8AWYnKPxnZagvhAeBzuBXUUDa
+         DtwE0zSmSKkYjMLLWx73/IhVuQzZsYYgMYNR0qZzGhYW+nWTdsCOHzUDX6UNTX3VT46H
+         Yt5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Z7HUhTMlbXY8IkiDpmh6rY91adlsE5cm+HaqeJ7xc6w=;
-        b=mnZYoGJ8t1udiKSLDWiJjAhgviNXIlm/Ws8JjNxWyQyb+fXvoMoIoMvue6RdKCN0gS
-         LeYD2dyBfgPRcpAoZUYEE1UhIYmFsOLQ6BG5ZkdjwDZZ3n7rarJWG7Gx5neDSyUg3K3m
-         vCLiHOC22hSg12UNydB2HL9BlcO+wuASHqkzQoFwQLjDz/ZgOkz66RaERaIdpwJ3xShT
-         eaGphTcy3VN0l7d5EuwC/nN8rwr4pi7XogyUhpZfF/qc8Ia2X06HuUwt1Kr/WIHrwteG
-         cfkSQ+xLmSGcgb3cwgRUO5JHqa2w9rTF7VWq+OOWrMeFc/Od3wQC5CLQ4/IuzMwGCEpI
-         DpwQ==
-X-Gm-Message-State: AOAM5331YBQJWVknbqBEeO8rYn44xH0efiIQGrfrnizpT8ufHQ/TVOKp
-        2YvZ3aBxKpHB0pYY4c11Va1/AkqwxL1PtviEXcB5jE72YrlgF/0hHisG7/xKsPoawSCuOl3nVv1
-        IDglIJK7O1hULaeak5u7IOxc=
-X-Received: by 2002:adf:8b50:: with SMTP id v16mr5647091wra.44.1641993666417;
-        Wed, 12 Jan 2022 05:21:06 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwanSxI4qVidY2mX5BJOgQL83lB5Nh6uTW/AYob5zmC0ZddXVW3+Lc7mz+ajohYj/ntkM3eCg==
-X-Received: by 2002:adf:8b50:: with SMTP id v16mr5647071wra.44.1641993666212;
-        Wed, 12 Jan 2022 05:21:06 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id o38sm5271904wms.11.2022.01.12.05.21.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 05:21:05 -0800 (PST)
-Date:   Wed, 12 Jan 2022 13:21:04 +0000
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Allen <allen.lkml@gmail.com>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com
-Subject: Re: [RFC PATCH v2 00/13] module: core code clean up
-Message-ID: <20220112132104.7emyelwuv3jmmhdt@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220106234319.2067842-1-atomlin@redhat.com>
- <CAOMdWSJHm9bRAcrB6U+FsRiK6Fg2bbtbUH82w54VD7kbFmnVsA@mail.gmail.com>
- <CAOMdWS+Sn1sZJt8ocig5U7d7qG3N8oJBW-D1ey0qbZ3AXF-JWg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MfZ/bQyc8Ol4TQ5HaN2khWewBoM9cI1PUzi7/CIfS6I=;
+        b=hsfzv74KWkjVBgHen5XLA21Feb3GnGrZ3FTJt7mRooBEoTUsWD8fR+IGS7Rp5urTeI
+         TjfGetsspWp6YQZRZqMu5ax2cRwL6APYbihFpOeqKJwH8SaSHlY1waeyifyLHQPmu294
+         fiNwx6lkPhfPmujSzlqC4OLZFOXj5W7YS9ygY9XPN/T9DofUxoAavIt0OXXcjGzhxE8s
+         OpXgdAevxIZrccPZOjAAixUKsrUw7LLb6q+BSQ4Tt0gh6alyXmhwshnj2vc0+7wBLrXa
+         NpQjPL3qijyOHD4S7liORp7/x9rkZcHRMN+AXeVTFpFZ7IS8/FYO2wN1f79hCOKCDWHU
+         gW+w==
+X-Gm-Message-State: AOAM5314bPnI72cWHUp0tSrmr7N+x4APgoc3sQApGJ7/4C+K5tQBE3pO
+        AKOV12vFR2Jkz85/+mcQG7TnIdq8shUTkPmqvLsbRg==
+X-Google-Smtp-Source: ABdhPJz5Wrm0HbctZgKlE4IIfTnFY0GNvyi3qy++ibXIKY6TXHt+qWqe1wMvjNYh3xmQ1f9ikobQGUS2W1drqcKJSp4=
+X-Received: by 2002:a17:907:3f92:: with SMTP id hr18mr7524933ejc.693.1641993772970;
+ Wed, 12 Jan 2022 05:22:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAOMdWS+Sn1sZJt8ocig5U7d7qG3N8oJBW-D1ey0qbZ3AXF-JWg@mail.gmail.com>
+References: <CA+G9fYsMHhXJCgO-ykR0oO1kVdusGnthgj6ifxEKaGPHZJ-ZCw@mail.gmail.com>
+ <20220112131837.igsjkkttqskw4eix@wittgenstein>
+In-Reply-To: <20220112131837.igsjkkttqskw4eix@wittgenstein>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Wed, 12 Jan 2022 14:22:42 +0100
+Message-ID: <CADYN=9Lvm-1etZS817eZK91NUyxkFBmsu=5-q_8Ei-1eV8DuZQ@mail.gmail.com>
+Subject: Re: [next]: LTP: getxattr05.c:97: TFAIL: unshare(CLONE_NEWUSER)
+ failed: ENOSPC (28)
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, LTP List <ltp@lists.linux.it>,
+        linux-fsdevel@vger.kernel.org, regressions@lists.linux.dev,
+        containers@lists.linux.dev, Alexey Gladkov <legion@kernel.org>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 2022-01-11 17:16 -0800, Allen wrote:
-> Hi Aaron,
+On Wed, 12 Jan 2022 at 14:18, Christian Brauner
+<christian.brauner@ubuntu.com> wrote:
+>
+> On Wed, Jan 12, 2022 at 05:15:37PM +0530, Naresh Kamboju wrote:
+> > While testing LTP syscalls with Linux next 20220110 (and till date 20220112)
+> > on x86_64, i386, arm and arm64 the following tests failed.
+> >
+> > tst_test.c:1365: TINFO: Timeout per run is 0h 15m 00s
+> > getxattr05.c:87: TPASS: Got same data when acquiring the value of
+> > system.posix_acl_access twice
+> > getxattr05.c:97: TFAIL: unshare(CLONE_NEWUSER) failed: ENOSPC (28)
+> > tst_test.c:391: TBROK: Invalid child (13545) exit value 1
+> >
+> > fanotify17.c:176: TINFO: Test #1: Global groups limit in privileged user ns
+> > fanotify17.c:155: TFAIL: unshare(CLONE_NEWUSER) failed: ENOSPC (28)
+> > tst_test.c:391: TBROK: Invalid child (14739) exit value 1
+> >
+> > sendto03.c:48: TBROK: unshare(268435456) failed: ENOSPC (28)
+> >
+> > setsockopt05.c:45: TBROK: unshare(268435456) failed: ENOSPC (28)
+> >
+> > strace output:
+> > --------------
+> > [pid   481] wait4(-1, 0x7fff52f5ae8c, 0, NULL) = -1 ECHILD (No child processes)
+> > [pid   481] clone(child_stack=NULL,
+> > flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD,
+> > child_tidptr=0x7f3af0fa7a10) = 483
+> > strace: Process 483 attached
+> > [pid   481] wait4(-1,  <unfinished ...>
+> > [pid   483] unshare(CLONE_NEWUSER)      = -1 ENOSPC (No space left on device)
+>
+> This looks like another regression in the ucount code. Reverting the
+> following commit fixes it and makes the getxattr05 test work again:
+>
+> commit 0315b634f933b0f12cfa82660322f6186c1aa0f4
+> Author: Alexey Gladkov <legion@kernel.org>
+> Date:   Fri Dec 17 15:48:23 2021 +0100
+>
+>     ucounts: Split rlimit and ucount values and max values
+>
+>     Since the semantics of maximum rlimit values are different, it would be
+>     better not to mix ucount and rlimit values. This will prevent the error
+>     of using inc_count/dec_ucount for rlimit parameters.
+>
+>     This patch also renames the functions to emphasize the lack of
+>     connection between rlimit and ucount.
+>
+>     v2:
+>     - Fix the array-index-out-of-bounds that was found by the lkp project.
+>
+>     Reported-by: kernel test robot <oliver.sang@intel.com>
+>     Signed-off-by: Alexey Gladkov <legion@kernel.org>
+>     Link: https://lkml.kernel.org/r/73ea569042babda5cee2092423da85027ceb471f.1639752364.git.legion@kernel.org
+>     Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+>
+> The issue only surfaces if /proc/sys/user/max_user_namespaces is
+> actually written to.
 
-Hi Allen,
+I did a git bisect and that pointed me to this patch too.
 
->   Was the code compile tested?
-
-Not entirely i.e. not the whole of kernel/module/Makefile, unfortunately.
-Furthermore, only x86-64 was compiled tested. At the moment, I felt the
-need to share the concept/or approach thus far to simply obtain some
-overall feedback before further modifications.
-
->   Unfortunately, I could not apply the series cleanly on top of the
-> latest 5.17-rc1.
-
-Sorry about that: this work was based on Linus' commit 81361b837a34 ("Merge
-tag 'kbuild-v5.14' of
-git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild.").
-
->   I did rebase the patches and fixed minor compile time failures as
-> well a few small checkpatch errors.
->   I have pushed the series to
-> https://github.com/allenpais/Linux/commits/refactor_module_v3
->   [The series now is based on
->    84bfcc0b6994 2022-01-11 Merge tag 'integrity-v5.17' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity]
-
-Thanks for that. I'll have a look shortly to incorporate into RFC PATCH v3.
-
->   So far I could only manage to compile test the patches. Will test it
-> on BM(x86/arm) in a day or two.
-
-Much appreciated.
-
-
-Kind regards,
-
--- 
-Aaron Tomlin
-
+Cheers,
+Anders
