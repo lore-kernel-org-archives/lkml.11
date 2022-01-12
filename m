@@ -2,58 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF0B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:22:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E8AC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236299AbiALAWB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 19:22:01 -0500
-Received: from ec2-13-52-33-57.us-west-1.compute.amazonaws.com ([13.52.33.57]:45012
-        "EHLO aurora.tech" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236095AbiALAV6 (ORCPT
+        id S236570AbiALAY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 11 Jan 2022 19:24:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234921AbiALAYY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 19:21:58 -0500
-X-Greylist: delayed 2567 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 19:21:58 EST
-Received: by aurora.tech (Postfix, from userid 1001)
-        id 9814516402F9; Tue, 11 Jan 2022 15:33:23 -0800 (PST)
-From:   Alison Chaiken <achaiken@aurora.tech>
-To:     tglx@linutronix.de
-Cc:     peterz@infradead.org, paulmck@kernel.org,
-        valentin.schneider@arm.com, frederic@kernel.org,
-        linux-kernel@vger.kernel.org, glenn@aurora.tech,
-        alison@she-devel.com, Alison Chaiken <achaiken@aurora.tech>
-Subject: [PATCH 4/4] RCU: update documentation regarding kthread_prio cmdline parameter
-Date:   Tue, 11 Jan 2022 15:32:53 -0800
-Message-Id: <20220111233253.21692-5-achaiken@aurora.tech>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220111233253.21692-1-achaiken@aurora.tech>
-References: <20220111233253.21692-1-achaiken@aurora.tech>
+        Tue, 11 Jan 2022 19:24:24 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DFAC06173F;
+        Tue, 11 Jan 2022 16:24:24 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id u21so3076626edd.5;
+        Tue, 11 Jan 2022 16:24:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:reply-to:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=dFpazlv+lywoGwl9/cFSYAAABBv6zxWMmcLpH0m+3/M=;
+        b=Jvwa9TaIcLtrQXSCOZEpvt5o4j62C2t3W/QMQ/KHJ/fiv10OoW6JKvXj5KBsR6XAd9
+         YTJX3yMs+oReKUEusB6HXOycLwagLJUD3wZlEY4LzzdZZk2UhbnmiM2kmyYYwY3bXcry
+         I5k+BCombR71JSn6bX3+5Knoym/PI1ut2Mzwc/VjfVDq/AqE04o8xf4fXQz5FmaHuweo
+         JkXPznZqOnmSwakVWgUKEGUyT9xIufjGXDTNb8kX1g956DAXLnicAHPkoZITy9/nV74M
+         TdhGyqIuaWMDnKnhm95W6/P6RSpUBTjyJ0EQAGayOmRlDg58JOSj8qZKnbD+IR6TiQkT
+         Fhdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+         :references:mime-version:content-disposition:in-reply-to:user-agent;
+        bh=dFpazlv+lywoGwl9/cFSYAAABBv6zxWMmcLpH0m+3/M=;
+        b=G/jHIhwY2QJz/iM/z5KIfT2569IgvybYzHhliT2r/TU3elKOSOMZT5f4/Bo5EicCdL
+         25ttgA19YAuRpYnZZ253K9e1OPUGNYEreETryAjuspUuHvye/nPB4+jGEwdU3vMyS+c+
+         Z8ghKHbsJdyudSjGW+anmyxGMto1fn3gOi8smG+prQhkHuSKPjf/WbGsDt1Xlkmjhc8R
+         zpSQNxq6NLQiCtImpKYvQZQ5BOPIWgiD0q3chewd8knqmHuyRcEpt7b8aWFbw8Pl54r+
+         Wk2/R1sVJPi6s+1WsoHmE0tzg9imcYQ1Y3mWOsu3AiRucytev6W7DwGQi1IStyJrvGGI
+         lGbQ==
+X-Gm-Message-State: AOAM530SBq9Gc+Ny3kwm304gHfgojkfX29KJXJMxEO3B7pDwZiEhrver
+        Ai75uDbHGqq4YWq8jy/DqP8=
+X-Google-Smtp-Source: ABdhPJxbp1jqOMEDjz32OniUVIm0N2DkA9bp6QjRfoPbyPBgiQ99JQe7N3wdX7/klyg2U5f09KGbYA==
+X-Received: by 2002:a05:6402:1764:: with SMTP id da4mr6500959edb.324.1641947062977;
+        Tue, 11 Jan 2022 16:24:22 -0800 (PST)
+Received: from localhost ([185.92.221.13])
+        by smtp.gmail.com with ESMTPSA id w17sm183314edr.68.2022.01.11.16.24.22
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 11 Jan 2022 16:24:22 -0800 (PST)
+Date:   Wed, 12 Jan 2022 00:24:21 +0000
+From:   Wei Yang <richard.weiyang@gmail.com>
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Wei Yang <richard.weiyang@gmail.com>, hannes@cmpxchg.org,
+        mhocko@kernel.org, vdavydov.dev@gmail.com,
+        akpm@linux-foundation.org, shakeelb@google.com, vbabka@suse.cz,
+        willy@infradead.org, songmuchun@bytedance.com, shy828301@gmail.com,
+        surenb@google.com, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 3/4] mm/memcg: retrieve parent memcg from css.parent
+Message-ID: <20220112002421.m3fyktkkz55fup3v@master>
+Reply-To: Wei Yang <richard.weiyang@gmail.com>
+References: <20220111010302.8864-1-richard.weiyang@gmail.com>
+ <20220111010302.8864-3-richard.weiyang@gmail.com>
+ <Yd3H8Hea6dBlkzeW@carbon.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yd3H8Hea6dBlkzeW@carbon.dhcp.thefacebook.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Inform readers that the priority of RCU no-callback threads will also
-be boosted.
+On Tue, Jan 11, 2022 at 10:09:52AM -0800, Roman Gushchin wrote:
+>On Tue, Jan 11, 2022 at 01:03:01AM +0000, Wei Yang wrote:
+>> The parent we get from page_counter is correct, while this is two
+>> different hierarchy.
+>> 
+>> Let's retrieve the parent memcg from css.parent just like parent_cs(),
+>> blkcg_parent(), etc.
+>
+>Does it bring any benefits except consistency?
+>
 
-Signed-off-by: Alison Chaiken <achaiken@aurora.tech>
----
- Documentation/admin-guide/kernel-parameters.txt | 2 ++
- 1 file changed, 2 insertions(+)
+I am afraid no.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 1396fd2d9031..b844978e1bdf 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4439,6 +4439,8 @@
- 			(the least-favored priority).  Otherwise, when
- 			RCU_BOOST is not set, valid values are 0-99 and
- 			the default is zero (non-realtime operation).
-+			When RCU_NOCB_CPU is set, also adjust the
-+			priority of NOCB callback kthreads.
- 
- 	rcutree.rcu_nocb_gp_stride= [KNL]
- 			Set the number of NOCB callback kthreads in
+>> 
+>> Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+>
+>Reviewed-by: Roman Gushchin <guro@fb.com>
+>
+>Thanks!
+
 -- 
-2.32.0
-
+Wei Yang
+Help you, Help me
