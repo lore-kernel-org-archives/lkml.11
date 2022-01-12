@@ -2,86 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:27:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D52E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:28:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356163AbiALS13 (ORCPT
+        id S1356209AbiALS2M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:27:29 -0500
-Received: from mga06.intel.com ([134.134.136.31]:44810 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241342AbiALS1Y (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:27:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642012044; x=1673548044;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0+NkWW6qywvtFgaGsVQbspWDwmhowFhe7mqGDdfAd/g=;
-  b=iSSEZhv8LygiSjLAX8G9C0Ig2oLd9g7EUnne67/x4zYuyVpx3U2uXFQx
-   g9F6++lopuBDlN460/V7nWLTWgkgwWJzGL3ejY1LjFzkaJKihpWJ24miz
-   oG2meqfkWaSb6tMYBOUrzGiaeXblbmkQh/lGw+6Xu8vyoRp12qh8S+fDW
-   lJR/7JBpn3Qkdpr3HUP0vlgUmcUVHJIU9URMuKc2SQ5TWk3l6kBw/pP8G
-   OOfeHR2392/ol/tvVnOW0BN5hfuGMwWmiEbZwiw88d1fsmGoJQPvWS9b5
-   wTr8NwaPdH3K8fP8iFGzVdJx0i4OFWb7Ba6RQxV8tpA1wrHfJZE628OMv
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="304548546"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="304548546"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 10:12:08 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="474998077"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 12 Jan 2022 10:12:06 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7i6Q-0006Cy-6l; Wed, 12 Jan 2022 18:12:06 +0000
-Date:   Thu, 13 Jan 2022 02:11:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Peter Stuge <peter@stuge.se>
-Subject: ERROR: modpost: "__divsi3_table" [lib/lz4/lz4_compress.ko] undefined!
-Message-ID: <202201130256.3TGIbq70-lkp@intel.com>
+        Wed, 12 Jan 2022 13:28:12 -0500
+Received: from cloudserver094114.home.pl ([79.96.170.134]:43766 "EHLO
+        cloudserver094114.home.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241342AbiALS2D (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 13:28:03 -0500
+Received: from localhost (127.0.0.1) (HELO v370.home.net.pl)
+ by /usr/run/smtp (/usr/run/postfix/private/idea_relay_lmtp) via UNIX with SMTP (IdeaSmtpServer 4.0.0)
+ id 4e0ec7d74a8bc4ac; Wed, 12 Jan 2022 19:28:01 +0100
+Received: from kreacher.localnet (unknown [213.134.181.123])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by v370.home.net.pl (Postfix) with ESMTPSA id 71A5566B132;
+        Wed, 12 Jan 2022 19:28:00 +0100 (CET)
+From:   "Rafael J. Wysocki" <rjw@rjwysocki.net>
+To:     Linux ACPI <linux-acpi@vger.kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Steven Noonan <steven@valvesoftware.com>,
+        Huang Rui <ray.huang@amd.com>
+Subject: [PATCH v1 2/2] ACPI: CPPC: Drop redundant local variable from cpc_read()
+Date:   Wed, 12 Jan 2022 19:27:22 +0100
+Message-ID: <4374346.LvFx2qVVIh@kreacher>
+In-Reply-To: <11905930.O9o76ZdvQC@kreacher>
+References: <11905930.O9o76ZdvQC@kreacher>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="UTF-8"
+X-CLIENT-IP: 213.134.181.123
+X-CLIENT-HOSTNAME: 213.134.181.123
+X-VADE-SPAMSTATE: clean
+X-VADE-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvvddrtddugdekkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfjqffogffrnfdpggftiffpkfenuceurghilhhouhhtmecuudehtdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvufffkfgjfhgggfgtsehtufertddttdejnecuhfhrohhmpedftfgrfhgrvghlucflrdcuhgihshhotghkihdfuceorhhjfiesrhhjfiihshhotghkihdrnhgvtheqnecuggftrfgrthhtvghrnhepvdejlefghfeiudektdelkeekvddugfeghffggeejgfeukeejleevgffgvdeluddtnecukfhppedvudefrddufeegrddukedurdduvdefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddufedrudefgedrudekuddruddvfedphhgvlhhopehkrhgvrggthhgvrhdrlhhotggrlhhnvghtpdhmrghilhhfrhhomhepfdftrghfrggvlhculfdrucghhihsohgtkhhifdcuoehrjhifsehrjhifhihsohgtkhhirdhnvghtqedpnhgspghrtghpthhtohephedprhgtphhtthhopehlihhnuhigqdgrtghpihesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopegurghnrdgtrghrphgvnhhtvghrsehorhgrtghlvgdrtghomhdprhgtphhtthhopehsthgvvhgvnhesvhgrlhhvvghsohhfthifrghrvgdrtghomhdprhgt
+ phhtthhopehrrgihrdhhuhgrnhhgsegrmhgurdgtohhm
+X-DCC--Metrics: v370.home.net.pl 1024; Body=5 Fuz1=5 Fuz2=5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   daadb3bd0e8d3e317e36bc2c1542e86c528665e5
-commit: 40e1a70b4aedf2859a1829991b48ef0ebe650bf2 drm: Add GUD USB Display driver
-date:   10 months ago
-config: nios2-randconfig-r031-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130256.3TGIbq70-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=40e1a70b4aedf2859a1829991b48ef0ebe650bf2
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 40e1a70b4aedf2859a1829991b48ef0ebe650bf2
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The ret_val local variable in cpc_read() is not necessary, so
+eliminate it.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+No functional impact.
 
->> ERROR: modpost: "__divsi3_table" [lib/lz4/lz4_compress.ko] undefined!
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for SERIAL_CORE_CONSOLE
-   Depends on TTY && HAS_IOMEM
-   Selected by
-   - EARLY_PRINTK
-
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/acpi/cppc_acpi.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+Index: linux-pm/drivers/acpi/cppc_acpi.c
+===================================================================
+--- linux-pm.orig/drivers/acpi/cppc_acpi.c
++++ linux-pm/drivers/acpi/cppc_acpi.c
+@@ -915,14 +915,13 @@ int __weak cpc_write_ffh(int cpunum, str
+ 
+ static int cpc_read(int cpu, struct cpc_register_resource *reg_res, u64 *val)
+ {
+-	int ret_val = 0;
+ 	void __iomem *vaddr = NULL;
+ 	int pcc_ss_id = per_cpu(cpu_pcc_subspace_idx, cpu);
+ 	struct cpc_reg *reg = &reg_res->cpc_entry.reg;
+ 
+ 	if (reg_res->type == ACPI_TYPE_INTEGER) {
+ 		*val = reg_res->cpc_entry.int_value;
+-		return ret_val;
++		return 0;
+ 	}
+ 
+ 	*val = 0;
+@@ -968,10 +967,10 @@ static int cpc_read(int cpu, struct cpc_
+ 	default:
+ 		pr_debug("Error: Cannot read %u bit width from PCC for ss: %d\n",
+ 			 reg->bit_width, pcc_ss_id);
+-		ret_val = -EFAULT;
++		return -EFAULT;
+ 	}
+ 
+-	return ret_val;
++	return 0;
+ }
+ 
+ static int cpc_write(int cpu, struct cpc_register_resource *reg_res, u64 val)
+
+
+
