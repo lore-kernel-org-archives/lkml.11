@@ -2,153 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F5EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 22:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B188C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 22:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233575AbiALWHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 17:07:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233681AbiALWHD (ORCPT
+        id S234112AbiALWMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 17:12:33 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41174 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233541AbiALWM0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 17:07:03 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD918C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 14:07:03 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id d14so3811092ila.1
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 14:07:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y1JyjUsSG/tC90anes6eSOJnWR9Q3etKeOSBPf+5wCQ=;
-        b=Q3y6vBc/2NoSipdG9xyq0Hn/hNADh8AEXVhgOMQK06NhjCdW1rIcWXpcNkhXQKqyEt
-         ZdYpL80INGC9DMb/IM/itKk+qU9l1w1s7Fd4Q6v0kcv3GHmgalpZs1sdFwo6a/E6BW1I
-         /QySbH2GlxKD88Xoyzpn3FLPbrZqa2rBY+1D7UjSXuPAfKrhRDH0iJWTjGLQNauTO3Ny
-         kOX0GuQ4qr2KxUFN56k9Vhqob66k39+P0581P06QniPREVAlZAqq/Q/NdEPrmzsUY1vN
-         NFlHGqeL6yqwteFmhknMLi/XS9a5ewQQcl4PAuOGAWF1InMqSnDZIV4Quoee681tp8MJ
-         SFOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y1JyjUsSG/tC90anes6eSOJnWR9Q3etKeOSBPf+5wCQ=;
-        b=8P55BP4GPi8xHoQkEDtNAo9raGoz6HA14d7p/E4iaH7594lypF1oW5r7h8Z8g1EtQu
-         cSCpCYrHvkbR6mDmIIWUrb5DcNq42nPHpNmmfq6Qn4dlz57dQiCMG7NxHZtdY+GqebXF
-         xR0e7/Zknr2uU57twtv4QtQwhcgWp7Ru+sU0iE7DYUse0rkdmpbtO+ggG9FD9tSprhq4
-         pjeqiK89SzO/0oa+aYWvm/IHfssG0y6jGuSaPST1VU6d228NdrFnZ8uslma6rvbmUp4a
-         8nSjgcHY+R1YGaAF3h3bW033dQpQxEfL8E+dAz7kjy8gt/YuxZ6fkbnrz4HoTkxTKHii
-         kZCQ==
-X-Gm-Message-State: AOAM531mZzt5mtUhJ8ZLxeapQY44BMwuNCRd6h4lnNc1M2Uv6PBSW06e
-        M7hJzE67CA0IYKRpauK4HhRCjc4LCcmIrtowfjp+sr7BGos=
-X-Google-Smtp-Source: ABdhPJwtTKZa+3RSsHFzPVEwy1zhEcEH0RO3KzgBl2q6/1ObHwMzOZF5Yf/htiNz+TMmVc3xP/rjSBCQR/QIR4Eqp2c=
-X-Received: by 2002:a05:6e02:d08:: with SMTP id g8mr858200ilj.115.1642025222909;
- Wed, 12 Jan 2022 14:07:02 -0800 (PST)
+        Wed, 12 Jan 2022 17:12:26 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D9C0B82141;
+        Wed, 12 Jan 2022 22:12:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8944DC36AE9;
+        Wed, 12 Jan 2022 22:12:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642025544;
+        bh=hAf2PcLanwj0F/dZiWzZLbbtJcj8SpTNj0lZihhMYWo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=U0VSKdIAExQt6DdF/SVXkAF1WMMHt4ZAHaV4TaD0mcbsrJ2BVakVWKnQW+xgAeJQO
+         6CL/E+SWdZoTNRED2apGFyuK0CpJVomBwIOYOs1NUeligfauInKoA4TpNd2NLvLyHd
+         jomzNEpMLdwOc7HgrweANx8W2umvraIj8Ekg7c+PYQPiCCGmvMxH9S+WXMkYbz6oa5
+         jGQuEBS3tHYePtY/OJ9XBSK7FA/eN89XT2xJpb27RNbIkZIedu1UdEP2wWkIAZNsB3
+         jNKizA9Vd1mdcFICAnbQUqrJDUboZOiQa1B+360SQGxNp4XGjkAokELsTOaEcwDxKB
+         XNSH0m5fBmc5w==
+Date:   Wed, 12 Jan 2022 15:12:19 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Iouri Tarassov <iourit@linux.microsoft.com>
+Cc:     kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, spronovo@microsoft.com,
+        gregkh@linuxfoundation.org
+Subject: Re: [PATCH v1 0/9] drivers: hv: dxgkrnl: Driver overview
+Message-ID: <Yd9SQxTznfHGjuDD@archlinux-ax161>
+References: <cover.1641937419.git.iourit@linux.microsoft.com>
 MIME-Version: 1.0
-References: <20220108164617.3130175-1-jaegeuk@kernel.org> <YdvoxkAAquI17UbX@infradead.org>
- <a23a3226-95d9-9835-c1c7-2d13f4a1ee16@redhat.com> <CAEe=SxnWeK0pSfijPKJSTxBiMgD1Ev69fV3qSTCgWASk0b3vhA@mail.gmail.com>
- <Yd7gVLdHW11TQUAi@hirez.programming.kicks-ass.net>
-In-Reply-To: <Yd7gVLdHW11TQUAi@hirez.programming.kicks-ass.net>
-From:   Tim Murray <timmurray@google.com>
-Date:   Wed, 12 Jan 2022 14:06:50 -0800
-Message-ID: <CAEe=Sx=6FCvrp_6x2Bqp3YTzep2s=aWdCmP29g7+sGCWkpNvkg@mail.gmail.com>
-Subject: Re: [PATCH] f2fs: move f2fs to use reader-unfair rwsems
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Waiman Long <longman@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-f2fs-devel@lists.sourceforge.net,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Boqun Feng <boqun.feng@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1641937419.git.iourit@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 6:06 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> *urgh*... so you're making the worst case less likely but fundamentally
-> you don't change anything.
->
-> If one of those low prio threads manages to block while holding
-> cp_rwsem your checkpoint thread will still block for a very long time.
->
-> So while you improve the average case, the worst case doesn't improve
-> much I think.
+Hi Iouri,
 
-You're right about the worst case latency, but I think a lock
-optimization is still useful. If I understand the rwsem implementation
-correctly, if there's one pending reader while a writer holds the
-rwsem and the reader is sleeping when the writer releases the lock,
-the writer will mark the rwsem as reader-owned by incrementing the
-reader count then wake the reader in rwsem_mark_wake(). Assuming
-that's correct, hitting this case guarantees the lowest possible
-latency of a second write lock is the sum of reader's scheduling
-delay, the reader's critical section duration, and the writer's
-scheduling delay. What we see here is that the reader's scheduling
-delay is orders of magnitude larger than the read lock duration when
-the readers are low priority (tens of milliseconds of scheduling delay
-when the device is heavily loaded vs tens of microseconds of holding
-the read lock). The scheduling delay of f2fs-ckpt seems insignificant
-compared to the scheduling delay of the reader (and is easily
-addressed because it's a kthread vs arbitrary userspace code).
+On Wed, Jan 12, 2022 at 11:55:05AM -0800, Iouri Tarassov wrote:
+> This is a follow-up on the changes we sent a few months back[1].
+> 
+> [1] https://lore.kernel.org/lkml/20200814123856.3880009-1-sashal@kernel.org/
+> 
+> The patches address the feedback, given by Greg KH and other reviewers, contain
+> bug fixes, the implementation of asynchronous VM bus messages to the host
+> and contain the remaining implementation of our vGPU / Compute hardware
+> virtualization support that powers the Windows Subsystem for Linux (WSL) and
+> will soon power the Windows Subsystem for Android (WSA).
 
-If the stalls were due to preemption of a low-priority reader that
-holds the cp_rwsem read lock, I would expect to see some traces like:
+<snip>
 
-1. low-prio userspace thread is running
-2. low-prio userspace thread grabs cp_rwsem read lock, is preempted,
-switches back to runnable
-3. f2fs-ckpt wakes up, blocks on cp_rwsem write lock
-4. low-prio userspace thread switches to running and unblocks f2fs-ckpt
+> We're looking forward additional feedback.
 
-Specifically, the low-prio userspace thread would need to wake up
-f2fs-ckpt without the userspace thread ending up in uninterruptible
-sleep around that period. To my knowledge, we've never seen that in a
-trace. The bad behavior we see always comes after the low-prio thread
-was blocked acquiring the read lock and switches back to runnable from
-uninterruptible sleep. I think the patches that Waiman mentioned don't
-address the case we're seeing; I think they fix different patterns of
-new readers preventing a writer from becoming runnable vs a long
-scheduling delay of a reader awakened by a writer that in turn makes a
-writer runnable once the reader finally runs.
+I have been including this patch set into my downstream WSL2 kernel that
+I build with clang and I noticed an instance of -Wenum-conversion that
+is still present in this revision:
 
-With the existing rwsem usage in f2fs, f2fs-ckpt is guaranteed to wait
-for the reader's scheduling delay plus the read lock time every time
-there's a pending reader, which is the common case with f2fs-ckpt
-(because the write lock is held for milliseconds of IO ops vs
-microseconds for readers) and why we often see hundreds of 10-100ms
-checkpoints in a row. By moving to a reader-unfair rwsem, f2fs-ckpt
-would only pay the latency of the reader's scheduling delay if the
-reader is preempted while holding the lock. I'm sure that preemption
-does happen and that the max latency is about the same as a result,
-but given how short the read locks are held vs the write lock and the
-relative likelihood of a preempted reader vs any reader arriving at
-the lock while the writer is doing IO, the reader-unfair approach
-should be a dramatic improvement in 99th percentile (and greater) f2fs
-checkpoint latency.
+In file included from drivers/hv/dxgkrnl/dxgsyncfile.c:21:
+drivers/hv/dxgkrnl/dxgvmbus.h:894:26: warning: implicit conversion from enumeration type 'enum dxgkvmb_commandtype' to different enumeration type 'enum dxgkvmb_commandtype_global' [-Wenum-conversion]
+        command->command_type   = DXGK_VMBCOMMAND_INVALID;
+                                ~ ^~~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
+In file included from drivers/hv/dxgkrnl/dxgvmbus.c:23:
+drivers/hv/dxgkrnl/dxgvmbus.h:894:26: warning: implicit conversion from enumeration type 'enum dxgkvmb_commandtype' to different enumeration type 'enum dxgkvmb_commandtype_global' [-Wenum-conversion]
+        command->command_type   = DXGK_VMBCOMMAND_INVALID;
+                                ~ ^~~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
+In file included from drivers/hv/dxgkrnl/ioctl.c:21:
+drivers/hv/dxgkrnl/dxgvmbus.h:894:26: warning: implicit conversion from enumeration type 'enum dxgkvmb_commandtype' to different enumeration type 'enum dxgkvmb_commandtype_global' [-Wenum-conversion]
+        command->command_type   = DXGK_VMBCOMMAND_INVALID;
+                                ~ ^~~~~~~~~~~~~~~~~~~~~~~
+1 warning generated.
 
-> Also, given that this is a system wide rwsem, would percpu-rwsem not be
-> 'better' ? Arguably with the same hack cgroups uses for it (see
-> cgroup_init()) to lower the cost of percpu_down_write().
+This comes from command_vgpu_to_host_init0(), which does not actually
+appear to be used anywhere:
 
-Funny you should mention this--the next thing on my todo list is to
-root causing stalls around cgroup_threadgroup_rwsem (mostly in
-cgroup_css_set_fork() hit from pthread_create in userspace).
+$ rg command_vgpu_to_host_init0
+drivers/hv/dxgkrnl/dxgvmbus.h
+891:static inline void command_vgpu_to_host_init0(struct dxgkvmb_command_vm_to_host
 
-If I'm reading percpu-rwsem.c correctly, it's not fair to readers in
-the same way that this patch is. It's probably okay to switch to
-percpu_rwsem in f2fs given the distribution of readers to writers, but
-I am concerned about giving up spin-on-owner given how often these
-locks will be hit from different processes at very different
-priorities. Does that seem overly paranoid?
+Please consider cleaning this up in a future revision so that clang
+builds stay clean :)
 
-> Now, I'm not a filesystem developer and I'm not much familiar with the
-> problem space, but this locking reads like a fairly big problem. I'm not
-> sure optimizing the lock is the answer.
+I happened to notice there was another function that looks very similar
+to command_vgpu_to_host_init0(), command_vm_to_host_init0(), which is
+also unused.  This was hidden because it is marked as "static inline" in
+a .c file, which should generally be avoided; I would recommend
+replacing all instances of "static inline" with just "static". The
+compiler will still inline it if it feels it is worthwhile. Doing this
+reveals one other unused function, is_empty():
 
-I'm not a filesystem developer either, but rewriting the locking was
-my first suggestion too. It seems much harder than tweaking the lock.
-Rewriting the locking might still be necessary if we see regular
-preemption while the cp_rwsem read lock is held, but I don't have any
-data showing that preemption is happening regularly right now.
+$ sed -i 's/static inline /static /g' drivers/hv/dxgkrnl/*.c
+
+$ make -skj"$(nproc)" LLVM=1 drivers/hv/dxgkrnl/
+drivers/hv/dxgkrnl/hmgr.c:167:13: warning: unused function 'is_empty' [-Wunused-function]
+static bool is_empty(struct hmgrtable *table)
+            ^
+1 warning generated.
+drivers/hv/dxgkrnl/dxgvmbus.c:234:13: warning: unused function 'command_vm_to_host_init0' [-Wunused-function]
+static void command_vm_to_host_init0(struct dxgkvmb_command_vm_to_host
+            ^
+1 warning generated.
+
+Cheers,
+Nathan
