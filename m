@@ -2,115 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1675C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D96C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 21:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357839AbiALU5o (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 15:57:44 -0500
-Received: from mga09.intel.com ([134.134.136.24]:63575 "EHLO mga09.intel.com"
+        id S229612AbiALVBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 16:01:17 -0500
+Received: from albireo.enyo.de ([37.24.231.21]:37268 "EHLO albireo.enyo.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1357832AbiALU5b (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 15:57:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642021051; x=1673557051;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TIrMR31Gxy/LkW656Oj/2kCSFeWLOvsdWeqh/DqRJ9U=;
-  b=fbk47w7Z1J7QWZFUxtuJge0+lUIkKdq1k4O4Jo2fHVlFgFk/koQjdrS0
-   4xHViwrVNycTldetdag9RHNCbInDn9IylaRG7AnhwWhlE8sdP9/Wt03DL
-   UitaPrEVmwE3OMQDvdWlqIfNU0RWzIECSugwhphfc8aamVVynlF3Q7aZ0
-   wIhFNmNnosz4fi6z/rnsEdNAqKKYZ1sQ/efOlu1Twsxj5tEFz4K9tp/7Z
-   1PqYO7UrRDybM+l+0eFjBUXxI2elLvWw0vSW/MyoQ+AiN0ZdxkkfbD6qo
-   fMDfyqbuYXnAjEOz4WmsP26JFr0iVV3gj8mWFQLyh3oAGKXlWNTCfuHZN
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="243647762"
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="243647762"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 12:57:29 -0800
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="613714379"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 12:57:26 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n7kfF-009vQq-28;
-        Wed, 12 Jan 2022 22:56:13 +0200
-Date:   Wed, 12 Jan 2022 22:56:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        id S229436AbiALVA5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 16:00:57 -0500
+Received: from [172.17.203.2] (port=33343 helo=deneb.enyo.de)
+        by albireo.enyo.de ([172.17.140.2]) with esmtps (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        id 1n7kjV-00GoGu-Dj; Wed, 12 Jan 2022 21:00:37 +0000
+Received: from fw by deneb.enyo.de with local (Exim 4.94.2)
+        (envelope-from <fw@deneb.enyo.de>)
+        id 1n7kjV-003dn8-32; Wed, 12 Jan 2022 22:00:37 +0100
+From:   Florian Weimer <fw@deneb.enyo.de>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "D, Lakshmi Sowjanya" <lakshmi.sowjanya.d@intel.com>
-Subject: Re: [GIT PULL] pin control changes for v5.17
-Message-ID: <Yd9AbO+Id7y1+IY+@smile.fi.intel.com>
-References: <CACRpkdaVGwu=Bo5bxVQYZXD-k+x++SuOTApGoK2a_S-1M4Q+nQ@mail.gmail.com>
- <CAHk-=whcTsfaQWjNKP+DUSqfo+3rf1o8-N9CpjpogMhAxiJZ=Q@mail.gmail.com>
- <Yd88UBp9uaDSc2qW@smile.fi.intel.com>
+        Thomas Gleixner <tglx@linutronix.de>,
+        paulmck <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api <linux-api@vger.kernel.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        carlos <carlos@redhat.com>
+Subject: Re: [RFC PATCH] rseq: x86: implement abort-at-ip extension
+References: <20220107170302.8325-1-mathieu.desnoyers@efficios.com>
+        <87a6g7ny0j.fsf@mid.deneb.enyo.de>
+        <1968088162.13310.1641584935813.JavaMail.zimbra@efficios.com>
+        <87y23l6l2j.fsf@mid.deneb.enyo.de>
+        <Yd71+Da44h9Ge0+s@hirez.programming.kicks-ass.net>
+        <87sftt6j0u.fsf@mid.deneb.enyo.de>
+        <396330808.24806.1642005485899.JavaMail.zimbra@efficios.com>
+Date:   Wed, 12 Jan 2022 22:00:37 +0100
+In-Reply-To: <396330808.24806.1642005485899.JavaMail.zimbra@efficios.com>
+        (Mathieu Desnoyers's message of "Wed, 12 Jan 2022 11:38:05 -0500
+        (EST)")
+Message-ID: <87h7a87jpm.fsf@mid.deneb.enyo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yd88UBp9uaDSc2qW@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 10:38:40PM +0200, Andy Shevchenko wrote:
-> On Wed, Jan 12, 2022 at 11:09:23AM -0800, Linus Torvalds wrote:
-> > On Wed, Jan 12, 2022 at 3:23 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> > >
-> > > - There will be conflicts! Kconfig and Makefile conflicts due to
-> > >   some RISC-V Starfive patches getting merged through the
-> > >   SoC tree while we were tidying up the Kconfig and Makefile
-> > >   (to avoid merge conflicts, heh) there is a resolution in linux-next
-> > >   which was discussed and reviewed to be correct.
-> > 
-> > Whoever sorted the Makefile entries (yeah, it was Andy) isn't very good at it.
-> 
-> Indeed. Sorry for that, I will send an update for next cycle.
-> 
-> > The broken sorting put CONFIG_PINCTRL_STMFX before CONFIG_PINCTRL_ST,
-> > and I have no idea how you can sort that way.
-> > 
-> > I left the broken sorting in place, because changing the sort order in
-> > the merge would just be even *more* confusing.
-> > 
-> > There may be other cases of that kind of oddity, I just happened to
-> > notice that one because the 'starfive' thing ended up having that same
-> > 'st' beginning, and I went D'Oh when trying to make sure my merge kept
-> > the ordering.
+* Mathieu Desnoyers:
 
+> ----- On Jan 12, 2022, at 11:00 AM, Florian Weimer fw@deneb.enyo.de wrote:
+>
+>> * Peter Zijlstra:
+>> 
+>>> On Wed, Jan 12, 2022 at 04:16:36PM +0100, Florian Weimer wrote:
+>>>
+>>>> You could perhaps push a signal frame onto the stack.  It's going to
+>>>> be expensive, but it's already in the context switch path, so maybe it
+>>>> does not matter.
+>>>
+>>> Please no! Signals are a trainwreck that need change (see the whole
+>>> AVX-512 / AMX saga), we shouldn't use more of that just cause.
+>> 
+>> If it's a signal, it should be modeled as such.  I think it's pretty
+>> close to a synchronous signal.
 
-I setup a little experiment, since I'm using vim, there are two possibilities
-to sort the selection, i.e. using internal sort and calling external !sort.
+(an asynchronous signal)
 
-Using internal gives:
+> Florian, just to validate here: is your argument about AVX-512/AMX or about
+> rseq abort-at-ip ?
 
--obj-$(CONFIG_PINCTRL_STMFX)    += pinctrl-stmfx.o
- obj-$(CONFIG_PINCTRL_ST)       += pinctrl-st.o
- obj-$(CONFIG_PINCTRL_STARFIVE) += pinctrl-starfive.o
-+obj-$(CONFIG_PINCTRL_STMFX)    += pinctrl-stmfx.o
-
-
-Using external gives:
-
-+obj-$(CONFIG_PINCTRL_STARFIVE) += pinctrl-starfive.o
- obj-$(CONFIG_PINCTRL_STMFX)    += pinctrl-stmfx.o
- obj-$(CONFIG_PINCTRL_ST)       += pinctrl-st.o
--obj-$(CONFIG_PINCTRL_STARFIVE) += pinctrl-starfive.o
-
-
-Now you may easily see what happened.
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+rseq abort-at-ip.  I wonder if it is possible to use regular stack
+unwinding (through the signal frame) to figure out where the abort
+happened, and use the existing cleanup handler functionality in GCC.
+(Although -fnon-call-exceptions is not quite up to this, but in theory
+we would have to fix this for POSIX asynchronous cancellation/Ada
+asynchronous transfer of control support anyway.)
