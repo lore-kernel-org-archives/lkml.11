@@ -2,138 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D77C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF455C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355203AbiALQ2T (ORCPT
+        id S1355199AbiALQaK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:28:19 -0500
-Received: from foss.arm.com ([217.140.110.172]:33158 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355193AbiALQ2P (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:28:15 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1EF5A1FB;
-        Wed, 12 Jan 2022 08:28:15 -0800 (PST)
-Received: from [10.57.36.149] (unknown [10.57.36.149])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B4743F774;
-        Wed, 12 Jan 2022 08:28:13 -0800 (PST)
-Subject: Re: [PATCH 2/2] drm/panfrost: Merge some feature lists
-To:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        dri-devel@lists.freedesktop.org
-Cc:     Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org
-References: <20220109170920.2921-1-alyssa.rosenzweig@collabora.com>
- <20220109170920.2921-3-alyssa.rosenzweig@collabora.com>
-From:   Steven Price <steven.price@arm.com>
-Message-ID: <c34845c7-481b-91c1-d2ae-e239324f8364@arm.com>
-Date:   Wed, 12 Jan 2022 16:28:12 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 12 Jan 2022 11:30:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47386 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240969AbiALQaG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 11:30:06 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FBEC06173F;
+        Wed, 12 Jan 2022 08:30:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=LedAk+GSW1w62gjO8Ys+jc28oKPlr3LVVvS4k8VmYa8=; b=KwPcY8c1shI3PSOnNiN2d+lqKr
+        qA8y64I81CVuR8g0ut5JWe4UJQxF39yAFG6d1SqkZHZ7/taOEZcegcCGOV40i3I90nLObJiHlNTxJ
+        nDfQ9x77eescnuGrZeOdZI/D7ERklsIRjN2hBt/QEF8qGsbrC4Q4Yn2rnv/SPFShhA1v67dc8PMC8
+        h2rFLzlNnTLoXbaq3qe3TdHBoiGANge/KCXq/pHLft9YXlCOPJQSnVu0lNVZNj00ePOw2hZ6/zxn/
+        wHctQ2YuVheY+tvmJ1BbRxUBXiAIhx2c3xrI53x+nbQBJVbEkzIPyRUPJG21JHh+7kJn/mkVMgfuA
+        4JTNrCCQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n7gVg-0035wI-JY; Wed, 12 Jan 2022 16:30:04 +0000
+Date:   Wed, 12 Jan 2022 08:30:04 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Nick Alcock <nick.alcock@oracle.com>
+Cc:     jeyu@kernel.org, masahiroy@kernel.org,
+        linux-modules@vger.kernel.org, linux-kernel@vger.kernel.org,
+        arnd@arndb.de, akpm@linux-foundation.org, eugene.loh@oracle.com,
+        kris.van.hees@oracle.com
+Subject: Re: [PING PATCH v7] kallsyms: new /proc/kallmodsyms with builtin
+ modules
+Message-ID: <Yd8CDJA0dy0VaXrB@bombadil.infradead.org>
+References: <20211216201919.234994-1-nick.alcock@oracle.com>
 MIME-Version: 1.0
-In-Reply-To: <20220109170920.2921-3-alyssa.rosenzweig@collabora.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211216201919.234994-1-nick.alcock@oracle.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/01/2022 17:09, Alyssa Rosenzweig wrote:
-> Now that we only list features of interest to kernel space, lots of GPUs
-> have the same feature bits. To cut down on the repetition in the file,
-> merge feature lists that are identical between similar GPUs.
+On Thu, Dec 16, 2021 at 08:19:12PM +0000, Nick Alcock wrote:
+> /proc/kallsyms is very useful for tracers and other tools that need to
+> map kernel symbols to addresses.
 > 
-> Note that this leaves some unmerged identical Bifrost feature lists, as
-> there are more features affecting Bifrost kernel space that we do not
-> yet hanlde.
+> It would be useful
 
-NIT: s/hanlde/handle/ ;)
+It took me digging on archives to see to *who* this is useful to.
+The short answer seeme to be dtrace. Can you work on getting use
+of this for something (I don't know, maybe kernelshark?) that does
+not taint the kernel? Last I checked using dtrace on linux taints the
+kernel.
 
-Do you have any features in mind that we're missing? The list looks very
-similar to the kbase one. And anyway it is simple enough to split again
-if we need to.
+Without valid upstream users I see no need to add more complexity to the
+kernel. And complexity added by tainting modules or not upstream modules
+just implies maintaining something for someone who is not working
+upstream. I don't want to add more code or "features" to create a
+maintenance burden for code not upstream or code that taints the kernel.
+module.c is already the second largest file on the kernel/ directory and
+I want to ensure we keep it clean, not add fluff for speculated features
+which no proper non-taining Linux tool is using.
 
-Thanks,
+Without a valid non-taining user being made very clear with a value-add,
+I will have to ignore this.
 
-Steve
-
-> 
-> Signed-off-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
-> ---
->  drivers/gpu/drm/panfrost/panfrost_features.h | 40 ++++----------------
->  1 file changed, 7 insertions(+), 33 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_features.h b/drivers/gpu/drm/panfrost/panfrost_features.h
-> index f557fad5d5ff..34f2bae1ec8c 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_features.h
-> +++ b/drivers/gpu/drm/panfrost/panfrost_features.h
-> @@ -27,14 +27,9 @@ enum panfrost_hw_feature {
->  	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT) | \
->  	BIT_ULL(HW_FEATURE_V4))
->  
-> -#define hw_features_t620 (\
-> -	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT) | \
-> -	BIT_ULL(HW_FEATURE_V4))
-> -
-> -#define hw_features_t720 (\
-> -	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT) | \
-> -	BIT_ULL(HW_FEATURE_V4))
-> +#define hw_features_t620 hw_features_t600
->  
-> +#define hw_features_t720 hw_features_t600
->  
->  #define hw_features_t760 (\
->  	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> @@ -42,26 +37,13 @@ enum panfrost_hw_feature {
->  	BIT_ULL(HW_FEATURE_XAFFINITY) | \
->  	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT))
->  
-> -// T860
-> -#define hw_features_t860 (\
-> -	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> -	BIT_ULL(HW_FEATURE_PWRON_DURING_PWROFF_TRANS) | \
-> -	BIT_ULL(HW_FEATURE_XAFFINITY) | \
-> -	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT))
-> +#define hw_features_t860 hw_features_t760
->  
-> -#define hw_features_t880 hw_features_t860
-> +#define hw_features_t880 hw_features_t760
->  
-> -#define hw_features_t830 (\
-> -	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> -	BIT_ULL(HW_FEATURE_PWRON_DURING_PWROFF_TRANS) | \
-> -	BIT_ULL(HW_FEATURE_XAFFINITY) | \
-> -	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT))
-> +#define hw_features_t830 hw_features_t760
->  
-> -#define hw_features_t820 (\
-> -	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> -	BIT_ULL(HW_FEATURE_PWRON_DURING_PWROFF_TRANS) | \
-> -	BIT_ULL(HW_FEATURE_XAFFINITY) | \
-> -	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT))
-> +#define hw_features_t820 hw_features_t760
->  
->  #define hw_features_g71 (\
->  	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> @@ -82,15 +64,7 @@ enum panfrost_hw_feature {
->  	BIT_ULL(HW_FEATURE_PROTECTED_DEBUG_MODE) | \
->  	BIT_ULL(HW_FEATURE_COHERENCY_REG))
->  
-> -#define hw_features_g51 (\
-> -	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> -	BIT_ULL(HW_FEATURE_PWRON_DURING_PWROFF_TRANS) | \
-> -	BIT_ULL(HW_FEATURE_XAFFINITY) | \
-> -	BIT_ULL(HW_FEATURE_THREAD_GROUP_SPLIT) | \
-> -	BIT_ULL(HW_FEATURE_FLUSH_REDUCTION) | \
-> -	BIT_ULL(HW_FEATURE_PROTECTED_MODE) | \
-> -	BIT_ULL(HW_FEATURE_PROTECTED_DEBUG_MODE) | \
-> -	BIT_ULL(HW_FEATURE_COHERENCY_REG))
-> +#define hw_features_g51 hw_features_g72
->  
->  #define hw_features_g52 (\
->  	BIT_ULL(HW_FEATURE_JOBCHAIN_DISAMBIGUATION) | \
-> 
-
+  Luis
