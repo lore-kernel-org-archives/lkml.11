@@ -2,102 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB626C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:35:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E06C43219
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:35:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349973AbiALQfD (ORCPT
+        id S1349944AbiALQfa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:35:03 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:45758 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1355293AbiALQel (ORCPT
+        Wed, 12 Jan 2022 11:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349956AbiALQfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:34:41 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CBKUEj019149;
-        Wed, 12 Jan 2022 17:34:23 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=DqtAlVRDu0BZInLnFAxQBxKeCywomHPZOqjBJ4wBQps=;
- b=bckOkcdafCLRvlXsUEZSFeYEAfThADJaTHhx00cNybPDIuel0BhCU/oAInNR8Bpv459C
- 11VIzE+wO7ckSNE5Mz24angGtFJEQKMNNuGjv1XSakh1ykuisJdygWyibOKSvsBHnE06
- 8DWdnyNAtGgxaPURaTdmN7RBm2Jm+KF2Fm/8BM7HKtF79hnQfx/zwXZJoMmHnhafw8l3
- QDBIdawEpzCnZ9zJp3A1A0HxAI1EgmrEFwZolcVpT7bBZABrq7++d4hFd9yXl5hjc+8D
- Pw5SvsxVj2NQelu2OZk3FNOk48iQPv7lOgs3TQCfbNljxHqjkPiEd8lfzRKudB6dCGyJ tg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dhtg9u8bu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Jan 2022 17:34:23 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AF86D10002A;
-        Wed, 12 Jan 2022 17:34:22 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A7E9524B8BA;
-        Wed, 12 Jan 2022 17:34:22 +0100 (CET)
-Received: from localhost (10.75.127.48) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 12 Jan 2022 17:34:22
- +0100
-From:   Yann Gautier <yann.gautier@foss.st.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
-        Yann Gautier <yann.gautier@foss.st.com>
-Subject: [PATCH 09/10] ARM: dts: stm32: add SDMMC2 in STM32MP13 DT
-Date:   Wed, 12 Jan 2022 17:33:55 +0100
-Message-ID: <20220112163356.25634-10-yann.gautier@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220112163356.25634-9-yann.gautier@foss.st.com>
-References: <20220112163356.25634-9-yann.gautier@foss.st.com>
+        Wed, 12 Jan 2022 11:35:22 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8EEC061756
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 08:35:21 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id pj2so6058785pjb.2
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 08:35:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C2ATetSQeCBjwBw69F25qh0n06pkEvEtYk9VzNxKLpc=;
+        b=LbYHzRltxYA4tlro9NkFQjGzP039x21ljVgaJvNIqKphNgZdSW6UdB8cMcpvbBn28W
+         mVC8QnQ5h6Tu1sC2swvQT2ArqMCbZlyAq6ZK76jV+7/IxTwH1wsUh240lozdmfr4IQaT
+         kGSkcETwDoPdxf8skp4n24X6vYcT2itdBZLDY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C2ATetSQeCBjwBw69F25qh0n06pkEvEtYk9VzNxKLpc=;
+        b=P5GyPZ10pRAvsCBAJ9WOduZUfbLwVM87EAO0tQxmuoyYsiurVcy+Fsn+YWWkOvm0n6
+         EHyKMcwEXmEEeByzXfrMivEAfO448gv/Jep86UHKvJf1G77RWlgbmKERTWmCLn4+DONl
+         GmZDlCwjA8DY6hBayVu+qUE3I0V/5zqEEIhn4+cNjbSnE4cbfHs8wsEAqQ92xOmIjfB0
+         b4iP6ts60NbvSkEOe69pTLjGYY7ma8B0fk5etOk8vdnrc8Xyc6/OkymPiUa41zYE27qU
+         En4vWj6SayiA8jnLSn/nYZfEiRoSbkzOoCk0uILmJYni4U1Aqf3xV6TegLlJkj4LBJ9i
+         ExnA==
+X-Gm-Message-State: AOAM533c7fphBkwSbs594VRhxdAKPLqnSZlCc5tXBqIzcOl2Vd2GwUOa
+        rAgmX6XgND/SHY4iCnK2SMpJcA==
+X-Google-Smtp-Source: ABdhPJwUaYxvzdF9tgxGK9s4aTS7bd/GVjH0ud60ykGGvxiM3Bzj4h+Uw2ttOyCEqJQ/r+zbCOTKRA==
+X-Received: by 2002:a17:90b:1d11:: with SMTP id on17mr338444pjb.234.1642005321438;
+        Wed, 12 Jan 2022 08:35:21 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:f6eb:5b26:28c:1ca5])
+        by smtp.gmail.com with UTF8SMTPSA id x26sm129920pfh.192.2022.01.12.08.35.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 08:35:21 -0800 (PST)
+Date:   Wed, 12 Jan 2022 08:35:19 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: pinctrl: drive-strength doesn't default to
+ 2 if unspecified
+Message-ID: <Yd8DR8fEbCJNasiw@google.com>
+References: <20220111140519.1.Ie2662d6289af1e9758b14b37149703c846d5f509@changeid>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-12_04,2022-01-11_01,2021-12-02_01
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220111140519.1.Ie2662d6289af1e9758b14b37149703c846d5f509@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-STM32MP13 embeds 2 instances of SDMMC peripheral.
-Add the required information in SoC device tree file.
+On Tue, Jan 11, 2022 at 02:05:21PM -0800, Douglas Anderson wrote:
+> If the drive-strength isn't specified in the device tree then it
+> doesn't actually default to 2. Instead, it defaults to whatever the
+> heck the BIOS left it at. If the BIOS doesn't touch it then that means
+> it's whatever the heck the initial state of the pin was when the SoC
+> booted.
+> 
+> Reported-by: Matthias Kaehlcke <mka@chromium.org>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
----
- arch/arm/boot/dts/stm32mp131.dtsi | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index 7189cba6b256..a1efb545ca3d 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -135,6 +135,20 @@
- 			status = "disabled";
- 		};
- 
-+		sdmmc2: mmc@58007000 {
-+			compatible = "st,stm32-sdmmc2", "arm,pl18x", "arm,primecell";
-+			arm,primecell-periphid = <0x20253180>;
-+			reg = <0x58007000 0x1000>, <0x58008000 0x1000>;
-+			interrupts = <GIC_SPI 108 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "cmd_irq";
-+			clocks = <&clk_pll4_p>;
-+			clock-names = "apb_pclk";
-+			cap-sd-highspeed;
-+			cap-mmc-highspeed;
-+			max-frequency = <130000000>;
-+			status = "disabled";
-+		};
-+
- 		iwdg2: watchdog@5a002000 {
- 			compatible = "st,stm32mp1-iwdg";
- 			reg = <0x5a002000 0x400>;
--- 
-2.17.1
-
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
