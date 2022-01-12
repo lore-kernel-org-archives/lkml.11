@@ -2,86 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19547C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 03:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F763C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 03:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349097AbiALDPI (ORCPT
+        id S1349107AbiALDPK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 22:15:08 -0500
-Received: from out162-62-57-210.mail.qq.com ([162.62.57.210]:49939 "EHLO
+        Tue, 11 Jan 2022 22:15:10 -0500
+Received: from out162-62-57-210.mail.qq.com ([162.62.57.210]:42933 "EHLO
         out162-62-57-210.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348760AbiALDPH (ORCPT
+        by vger.kernel.org with ESMTP id S1345682AbiALDPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 22:15:07 -0500
+        Tue, 11 Jan 2022 22:15:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
         s=s201512; t=1641957304;
-        bh=hhNaH8odzLNq7RNDxak807iAKwajzU422otvRpMcvBw=;
+        bh=yD1+HnweGuASmWcBMTr/tuOJ+2830tkElTWGis7dnco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=h7zcvlMxZpFbm2wNCFWHkYQ2te8zETI89wOUWZF4MLns6/ZsAWbEAshF7NeXg4ktc
-         XGONRVEAERAIOI8T8FPq/X8HewChbEAAqTSvu8/cwrZOkJWXqtPBcOQpCEYBfdjScf
-         +PLZU16pb1GGE8XS5Ks9u2jkoPEytSMjvNbwPcEY=
+        b=ZWlAp/xyaFhQe8YgV4u2SCwjsApcuIaYoTAfm9F5PC9PMFbbvxmEhVQ7IHhvfzqRW
+         FrH/GUndns8ONqyEIFznHNHh4YboZaF0ywfG5LAlifaxg057ObfExWcrif5OeWw/7o
+         yH+1DkyfR0Srh+7eFdqs97+Awt5eEI9eE08VUWF8=
 Received: from fedora.. ([119.32.47.91])
         by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
         id 3711B294; Wed, 12 Jan 2022 11:13:49 +0800
-X-QQ-mid: xmsmtpt1641957229tcgd10n3e
-Message-ID: <tencent_FDDA0568A55F5BBE4D20055A6C2D1E34EF08@qq.com>
-X-QQ-XMAILINFO: M1xqn9pGP6LNsumNHUMccUTwhindkdGtA0yvLRReWzwQdccqwYCkdZelcFjHKE
-         kVjinoAULlUJ43M3QOHwlZpcH4GddSlVyESziKj2x1jx3zqg09RF027QOiKFGDvEEw7BCp3b3hcA
-         qceWhAweTGzzvsWtxiThupNKJZav/TkGzoHJRmmkT/NX09ogTS4a5ndb21E1UjquCy6BUabAz/o1
-         uRnNbBw0XUGQewLACD3tNJrxypruP2WMypR2zLD1THW+6J8HgPS9r+9w4E0ffBfMuiQxCorqY6fM
-         G2nVR/POtYru4fEtWeKgPhASWLxPGPKZbWA/HqPB/iKhQZQKzDdhrDKOvFfN7Hr1zETjDSdsn8XM
-         We/3fcHhxt/uFbVPHNOtkqIAL1+rtWtAY0QQECp+MJOnkSWELyOaSsTi3Yh6PeHFSkPPtLV6s+Bj
-         D7jpohxM5H5f3XfAYS/wfe51QO1FTzfeeZDrGQauKk4dicJXfv6E3meNFljUFOmXjn5j9Ac1s8ko
-         e5Mx5n+okNnsaETyzwqQYXMQymVdthsug2b01kLArTs1+vk7YSYnP1uvaSwdPgRyD9UrP31oEBVz
-         oENYG0TQu0bPjoURVt7mAFtIcuxzzWQN/qFdbSq76KzOcgXXJjJXdw5RsyWjamChKKJvJiOUYRSf
-         uURHYrN0zb9K4yZ/+N3Jk7b2A3VgjPr1vBasT6pBoDrIjvSzRIRRtXutBq2UZcNbzQWLYPrn5Wmz
-         IeHi8h3NIoocT8VSMxB3sI7L1lZN0VI8ZGoujdY5UBvZ3MGwoXsoVKchE7tSDLm/IIkhRAfx2Fe/
-         yJml9aOU0eYwSKvKLZyYiivTFuAh2X0DhEG0QhdSYTuP+o0NQbMAJq5IAT8980yxf/XDulL7s2Fd
-         L+EsRemKy8V5jUEEs94AhuveTVVA1CJbheJuL1Q8veRQKznzuqyOM=
+X-QQ-mid: xmsmtpt1641957233t4gn71klx
+Message-ID: <tencent_A92DC943F79DB360AE14672BB749BFE08A05@qq.com>
+X-QQ-XMAILINFO: Nn+88S7+9wlcKPHjr17hA4IryKRVfFFdIl4J/dQgzAR928cTS85t7LVkbZBZpe
+         MPyKdLNe2s8ki1cjpjJEHN8LgOlfx9kzJmlGWuZQ7rZ7xXFsQ82fGi5+wYYQI7qSL7JSbhh5O0VH
+         HA30dzKay8hNXsEMc6Ht57HwY5q4zqwwthwaLTU0PldvjIj29KxYHzwxbGtQMiftVMvoMCuc8hv8
+         eg11XjsVstzN+yOpSKcItZ1UqDUJ0fML1HntoB3mLx6xiXwGheMfjoE6LfAh81KREx20a0pUTjj9
+         V/jC0aolwFzZ5frC43/vdyuytFRC6WBWJb7nMBzU97Ubm/BJZbNuvUvBxGH3RNVIud0lWv08xiVO
+         ojfB0tozJHFIe51pJYlhdHgrXOANN7CKSoQuqB6Rr8gs6te9233nv6H1tfZw/aBjRRaqjY62zr1U
+         D0juHTGsieLh6KmCXmqubzh9m+aVNgqDPheN1RokcVSLvZpnfrlDqlDd58IvEPRL1yR5VkGfvKEc
+         2zSVw2+6hVs4Au3HlamuNtqi3itpipFx5fv7dW1G20GBR5JGXKAcof7mT0u388p66ZRwibbce2+S
+         mnES+g8dIIx/+nrI42GuBZdNGrIpzAK/wfjCfnK9pxG8mE2LYLyac6+T4xiKFAZpor9cNGrIm1xl
+         bS3q49wvwDenV8IoJFRkYHzfw1EdNwdUqSUeOd/ZTU81NwGYw4Pa7lGAzd2UVvOF94nb392EubaM
+         rc8Box4W0YYZ2mvlwDJw3SSrAt3W38eLHe2ZuX874kriEInfc3S/ElEyy74MXRey/b1SCvkiOTPB
+         K/2TY+fBWZiBePyXgrGOE5WKEivoC7jz/x+QtjhZf1CKkgBOLj8t4oBkMfzQeV4h1uGIpUhJzQ1j
+         DhkFCW4Yo0
 From:   Conley Lee <conleylee@foxmail.com>
 To:     mripard@kernel.org, wens@csie.org
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, Conley Lee <conleylee@foxmail.com>
-Subject: [PATCH v3 0/2] dt-bindings: arm: allwinner: add marsboard A20
-Date:   Wed, 12 Jan 2022 11:13:45 +0800
-X-OQ-MSGID: <20220112031347.2492813-1-conleylee@foxmail.com>
+Subject: [PATCH v3 2/2] sunxi.yaml: add HAOYU Electronics Marsboard A20
+Date:   Wed, 12 Jan 2022 11:13:47 +0800
+X-OQ-MSGID: <20220112031347.2492813-3-conleylee@foxmail.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <tencent_DC7B4D416B69D6D6789356010B5B9647C606@qq.com>
+In-Reply-To: <20220112031347.2492813-1-conleylee@foxmail.com>
 References: <tencent_DC7B4D416B69D6D6789356010B5B9647C606@qq.com>
+ <20220112031347.2492813-1-conleylee@foxmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ARM dts: sun7i: Add Marsboard A20 board
+add haoyu,a20-marsboard bindings
 
-This patch add support for Marsboard A20 board, patch 1 is for the
-dts file and patch 2 is for the biddings
+Signed-off-by: Conley Lee <conleylee@foxmail.com>
+---
+ Documentation/devicetree/bindings/arm/sunxi.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-The Marsboard A20 is a A20 based SBC with 1G RAM, 8G Flash, micro SD
-card slot , SATA socketm 10/100 ethernet, HDMI port, 4 USB2.0 ports, 2
-USB2.0 OTG, USB WIFI(RTL8188EU) with antenna.
-
-Change since v1.
-  - Spearate biddings and dts as two patches.
-  - use SPDX tag
-
-Change since v2.
-  - reformat patch
-  - dual-license with GPL and MIT
-  - rename dts filename to sun7i-a20-haoyu-marsboard.dts
-
-Conley Lee (2):
-  sun7i-a20-haoyu-marsboard.dts: add marsboard-a20 support
-  sunxi.yaml: add HAOYU Electronics Marsboard A20
-
- .../devicetree/bindings/arm/sunxi.yaml        |   5 +
- arch/arm/boot/dts/Makefile                    |   1 +
- .../boot/dts/sun7i-a20-haoyu-marsboard.dts    | 183 ++++++++++++++++++
- 3 files changed, 189 insertions(+)
- create mode 100644 arch/arm/boot/dts/sun7i-a20-haoyu-marsboard.dts
-
+diff --git a/Documentation/devicetree/bindings/arm/sunxi.yaml b/Documentation/devicetree/bindings/arm/sunxi.yaml
+index 889128acf49a..4bd93ae26bd1 100644
+--- a/Documentation/devicetree/bindings/arm/sunxi.yaml
++++ b/Documentation/devicetree/bindings/arm/sunxi.yaml
+@@ -444,6 +444,11 @@ properties:
+           - const: haoyu,a10-marsboard
+           - const: allwinner,sun4i-a10
+ 
++      - description: HAOYU Electronics Marsboard A20
++        items:
++          - const: haoyu,a20-marsboard
++          - const: allwinner,sun7i-a20
++
+       - description: MapleBoard MP130
+         items:
+           - const: mapleboard,mp130
 -- 
 2.31.1
 
