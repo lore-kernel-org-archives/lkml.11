@@ -2,612 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E529C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC864C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352390AbiALJvA (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:51:00 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:46088 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1352219AbiALJtk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:49:40 -0500
-X-UUID: 79791b81483a4f9e87ca2172db1fe009-20220112
-X-UUID: 79791b81483a4f9e87ca2172db1fe009-20220112
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1394066399; Wed, 12 Jan 2022 17:49:37 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 12 Jan 2022 17:49:36 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 12 Jan
- 2022 17:49:35 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 12 Jan 2022 17:49:33 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        "Tzung-Bi Shih" <tzungbi@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v18, 06/19] media: mtk-vcodec: Add to support multi hardware decode
-Date:   Wed, 12 Jan 2022 17:49:10 +0800
-Message-ID: <20220112094923.16839-7-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220112094923.16839-1-yunfei.dong@mediatek.com>
-References: <20220112094923.16839-1-yunfei.dong@mediatek.com>
+        id S238917AbiALJvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 04:51:43 -0500
+Received: from mail-dm6nam12on2041.outbound.protection.outlook.com ([40.107.243.41]:41918
+        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238931AbiALJvO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 04:51:14 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y4tLZMosm7JsCM0jthqek01l+sisFK+ztFlo9lAvJ6YI0OjXPymPRcZV4U4I2HQjpIDOy+ycarRxs2M3O9F16LABzfagXeYjO3HvUsL2CkiBkoTQc159V1mznVAOHw30je2ArWA2Oym3zCiEc66KuyBB1/8YrS/mhFwGueI2NBpv4fDu2hlb99IGrjH3poZLT9dRWt0G21nCiMkcR23kYvemVvkndjsS2V6MH0/omGr2qx2dqgnQghl+KyVqXa83WYOHq5mJVIYDh4hMC9oEJEOwphJZN+DN1LcO/jA9BEkwUCeiulGtw4jUTbq1VLSXs2FZQg6If2Zv+ecl/Cp/GA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=p8/Rcj7qksWxc80QpPxaFJ/P3yLApCmbm0qMbv9mKiE=;
+ b=kmqoI7dDYLcSoIurAivwbFd/eZxWNXbZluQn1n/rYuLZuZPRnis2CtcDmjIi2arShNgxuhH5rxH+I1USSWxCwy2jg7E5HuDLoYZkLXIDQXRhcCTXHGdfLKddOYD19WR3oGDUPAvpDiuAswBQVanprQVSU766aURjS50bm/6pqyEj06lwkpbJN3YS7AEXRWwWwRzIHeWH/N5bDgcSEV+asPRPkWxhdlkmfiErFBu9KJbl/mJh6adyNvvjwL9AswBUYZJj7E9wq1+0Mh9CXaIS1QQ8oKe1ruJDaBhoaDFwA0TBMm/TzCFetlCTaYLU0KB1grYYGAjLgO6UJzH5iqfViw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p8/Rcj7qksWxc80QpPxaFJ/P3yLApCmbm0qMbv9mKiE=;
+ b=VWXSRwbeW2d9DOIIK4j+wASNSSlhxUI+vesBJkDOKNxxaizR28BWQv6NRBy6MMflADAul7b8ihzNvJ/cP69ZH6mnllQPoh7KBP+2UOn1S7sK6q3U537XqgpXTW5XB6UdtgWLBbLqUdb/sToTLzP9I8YAMHQLpGiviCQGT4PO9yU=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by PH0PR11MB5594.namprd11.prod.outlook.com (2603:10b6:510:e4::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Wed, 12 Jan
+ 2022 09:51:12 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4%6]) with mapi id 15.20.4867.012; Wed, 12 Jan 2022
+ 09:51:12 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v9 02/24] dt-bindings: introduce silabs,wfx.yaml
+Date:   Wed, 12 Jan 2022 10:51:04 +0100
+Message-ID: <12255658.RqvdlaKrbL@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <Yd4CjAM+3/PmLSyY@robh.at.kernel.org>
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-3-Jerome.Pouiller@silabs.com> <Yd4CjAM+3/PmLSyY@robh.at.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: PR3P192CA0017.EURP192.PROD.OUTLOOK.COM
+ (2603:10a6:102:56::22) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d0b5add0-8b28-4bfc-b5c1-08d9d5b11104
+X-MS-TrafficTypeDiagnostic: PH0PR11MB5594:EE_
+X-Microsoft-Antispam-PRVS: <PH0PR11MB5594C645C44A5121B208B66793529@PH0PR11MB5594.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5nR2V7HdTMc15dHBoj2O9L4q0+2PPwVKBgFrMoqkenKhaWhddJ079RwTtUgxWoKdSPZ7i50mGO58he3UAbRWsfiZrpkOgxFzcUBSXNys0wbivtatb5fbz0q7f7FNXOaC5RvN2UFNfYsOx+ORBPZPOhAKbKUxQcxOAZFeeIq+mEa/ouLcqUpqmzorAB8foBBTuwBwXioWKRn/JyZK1h0oxHN5P6gvQsI1AvoU8S8YUjQrIrYzQMVUIXmgbRdbl10HgVh3OCJEaRrIU9Sh3NGctYQxaWaimiW0Ol9lakMem1Uj7SyFtf44/w+udsXJfe6B3qLxACG5HHW8VYzhPSLbvtMCRRQ2QYnbw5Qu5zRE6BuGa7qO2P7hxmmCu9rFqfugRSEKowyzjBf+OKXSc//ZxbAi15XqNy/dT6FAmUlRALIg3aGS3kzqVOfkROWD1j8FIFNRSKjhG3JL5bi+s1natDtcyqcOxO9tTnx5AGHus2Zlp1h4Xn+npAPCboWiBY1spjpSNK/dV1IiMrzNWDV1kHlmUmLe8RN2SpZhe1CJH1r8pRr9Xi18z4tnb6JVx82hDedOZV8m3k4jgUDP1NzbJICnoO4cdTvaT9KUz3sMPd00wnAuYWCPMGeeuqItkzoDohEjd4YQAHBm/hhdtw9vFg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(508600001)(9686003)(6512007)(186003)(8936002)(66946007)(38100700002)(8676002)(6486002)(66556008)(4326008)(66476007)(36916002)(5660300002)(6666004)(52116002)(6506007)(33716001)(54906003)(66574015)(7416002)(2906002)(86362001)(6916009)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?1GZXGRrQLRCMPKJWhsHBXgIxf4NoDASfWEZiDvIe3dJG9dcoRKMxkqgUzH?=
+ =?iso-8859-1?Q?J6xpmYpj6oXx7RHYJNHqGGNKi879FfZ4ZGtfICnmIhgPuRSr61p3cePoN7?=
+ =?iso-8859-1?Q?MidA6jUTGiO+3NL8WKgv11kth3OLaF1qLVtJT3TM68hPcbwIPrxYdkKZzr?=
+ =?iso-8859-1?Q?rcuuZmZBypZj15BN7LvcZJ3EUblMeKVa14ZbZ9VgRfa1duOMZFtJPjB+CD?=
+ =?iso-8859-1?Q?BynV/vaAcCFkp41QXiKeShpwuU8+b3Uy6zoF+EVbYg0GYN2pbLAMvUTBDV?=
+ =?iso-8859-1?Q?o3ionqvt7/FPNvO8vepz1Ht3pLM6MrIQBXcv1H4ovF9Y6DU0P5JCQpmVUV?=
+ =?iso-8859-1?Q?+yCSIY01DY2ew2J1f5z4yDG3SBRCZ5hm+93jz9qDO+r2W2POeLW3SkhCmH?=
+ =?iso-8859-1?Q?BalFmzcmJc2o192kh758nVZGdKAjWWqhqRSpj0ys7q5B9yBoCeec+Zdcn0?=
+ =?iso-8859-1?Q?5xw2yohRHfvxNpwxyMO4+4lAOgwvBThYXwXMuQiYOXvesNTXN/xHjo6YoO?=
+ =?iso-8859-1?Q?vELiXf5hRfOPQLAznR/G8J5U5Nt2YCAm5DbyUW42/nbT3gbJnKKJpyNHSc?=
+ =?iso-8859-1?Q?TWKZdrUWi0UfwRUd96/6Mx44UQHuhX+ZU6xL2dwqxbQx6cW5/OUvw6pKsj?=
+ =?iso-8859-1?Q?cu8LdWW5QK7NkO58nd+YEWtzNxzk2srq+hUvfk4zzxuB656E4FirsiQLeG?=
+ =?iso-8859-1?Q?UyJhvuUMASHIN1RMs25gIRB8BRh2jsSbBx5y+KGoMU5e6mE1UfVAWytLmP?=
+ =?iso-8859-1?Q?LfeqVkbU/qXXVh+9kYC8fcQTR1BOZQ+h4yrbqlsrntA2/xUuCy15ywiQYr?=
+ =?iso-8859-1?Q?Zq9NgMKCrVoHF/+IF4AG4HYfaIvvgo9+7ORmQRha02+v3sEHsd81fDK7Mx?=
+ =?iso-8859-1?Q?nTVQKXsU1TGLeBokgfWY3+KTlRqtFpLCtp82B0e2lJxWfosw+ThHa2+8v+?=
+ =?iso-8859-1?Q?lvACBL0dWyvYpWlZkK3WcFCVZmwDvs43dre4ZCoZtQbXVRjlq1B4TvwDYZ?=
+ =?iso-8859-1?Q?5FqVGURBUGat0r/UN21yWDOwZF9PPiYHYqcNnOmQYatXdGVpK9uj8BYjFR?=
+ =?iso-8859-1?Q?OtWVfVpDqBH9kV+N8VA7xDyKOp5KlIpUVtpNb3pMEyvcloth+GdsFblUao?=
+ =?iso-8859-1?Q?UL2JSABUh/dLm5JJAf9Uc2bhNKUsKE1teeMk8nziO14cedAbuzQOasa7wT?=
+ =?iso-8859-1?Q?eomcNysWGdxKcf1GS6TTfrsdJdCVp/cNMDc/lG6/+tOJVaX+gQsrKGhFr/?=
+ =?iso-8859-1?Q?gNnF1aSD+R49I0xoWXDSKS91YItB9NErOEX3E1XgdkZIzoeCwqQQdOr1dz?=
+ =?iso-8859-1?Q?1fKURc7AQujWISlrePfPH9gWKjmqIcg76lzzq9WNc0xwABplDSHwO9f9Q3?=
+ =?iso-8859-1?Q?KbJR8Z8c67c6tm9SBvtMV5L9sbhFGClILKB3vMT9S2vyT+aJ1oW2sOK+Db?=
+ =?iso-8859-1?Q?0oc1bjbQIzm2ZD/h180aGUaIM/BFuzNlML4UnuKYRfdYwYqAmaXK0/K4K9?=
+ =?iso-8859-1?Q?zg7JavTD6yPTPyMvombEnBJ0TFCjzkaRtjhz8EKy78mbwgC9FiSDKcHRSR?=
+ =?iso-8859-1?Q?zTM+B3YsmZQcPeg4uWD8TZSIwWEHEf9Nwr2uL+Wkoxhq7Wi/j5La9/mFf+?=
+ =?iso-8859-1?Q?sPMVd4V/UMI4XgEJwKPgEI9s+pAkW1kXgjnpRlV0Nnj357ly6bNfJsDaBZ?=
+ =?iso-8859-1?Q?F1GIFie9giw7mlKk/90A1r3BIoFsfj2NXv8DepyEil6r+TpyXfM+oO/BoV?=
+ =?iso-8859-1?Q?qQAlT1CMwl5DoiL7b1/Ubiv2s=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0b5add0-8b28-4bfc-b5c1-08d9d5b11104
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 09:51:12.6083
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8bT9vkrQEQZknBRhVJF8DrgUa4KQcuBBJ3/wqM2ZVHHa8Weytg7j+NOdUAcOxuFWnZtPBy1UB/yNZkopKDCjhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5594
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are more than two hardwares for decoder: LAT0, LAT1 and CORE. In
-order to manage these hardwares, register each hardware as independent
-platform device for the larbs are different.
+On Tuesday 11 January 2022 23:19:56 CET Rob Herring wrote:
+> On Tue, Jan 11, 2022 at 06:14:02PM +0100, Jerome Pouiller wrote:
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Prepare the inclusion of the wfx driver in the kernel.
+> >
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  .../bindings/net/wireless/silabs,wfx.yaml     | 138 ++++++++++++++++++
+> >  1 file changed, 138 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/net/wireless/sila=
+bs,wfx.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.=
+yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+> > new file mode 100644
+> > index 000000000000..d12f262868cf
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
 
-Each hardware module controls its own information which includes
-interrupt/power/clocks/registers.
+[...]
 
-Calling of_platform_populate in parent device, and use subdev_bitmap to
-record whether the hardwares are registered.
+> > +properties:
+> > +  compatible:
+> > +    anyOf:
+> > +      - const: silabs,wf200    # Chip alone without antenna
+> > +      - const: silabs,brd4001a # WGM160P Evaluation Board
+> > +      - const: silabs,brd8022a # WF200 Evaluation Board
+> > +      - const: silabs,brd8023a # WFM200 Evaluation Board
+>=20
+> This still defines that compatible is a single entry. You need something
+> like:
+>=20
+> items:
+>   - enum:
+>       - silabs,brd4001a
+>       - silabs,brd8022a
+>       - silabs,brd8023a
+>   - const: silabs,wf200
+>=20
+> You need a separate 'items' list for different number of compatible
+> entries (e.g. if a single string is valid) and that is when you need to
+> use 'oneOf'. Plenty of examples in the tree.
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Steve Cho <stevecho@chromium.org>
----
- drivers/media/platform/mtk-vcodec/Makefile    |   5 +-
- .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  |  85 +++++---
- .../platform/mtk-vcodec/mtk_vcodec_dec_hw.c   | 198 ++++++++++++++++++
- .../platform/mtk-vcodec/mtk_vcodec_dec_hw.h   |  52 +++++
- .../mtk-vcodec/mtk_vcodec_dec_stateful.c      |   1 +
- .../mtk-vcodec/mtk_vcodec_dec_stateless.c     |   3 +
- .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  21 ++
- 7 files changed, 333 insertions(+), 32 deletions(-)
- create mode 100644 drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
- create mode 100644 drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.h
+Ok.
 
-diff --git a/drivers/media/platform/mtk-vcodec/Makefile b/drivers/media/platform/mtk-vcodec/Makefile
-index ca8e9e7a9c4e..c61bfb179bcc 100644
---- a/drivers/media/platform/mtk-vcodec/Makefile
-+++ b/drivers/media/platform/mtk-vcodec/Makefile
-@@ -2,7 +2,8 @@
- 
- obj-$(CONFIG_VIDEO_MEDIATEK_VCODEC) += mtk-vcodec-dec.o \
- 				       mtk-vcodec-enc.o \
--				       mtk-vcodec-common.o
-+				       mtk-vcodec-common.o \
-+				       mtk-vcodec-dec-hw.o
- 
- mtk-vcodec-dec-y := vdec/vdec_h264_if.o \
- 		vdec/vdec_vp8_if.o \
-@@ -16,6 +17,8 @@ mtk-vcodec-dec-y := vdec/vdec_h264_if.o \
- 		mtk_vcodec_dec_stateless.o \
- 		mtk_vcodec_dec_pm.o \
- 
-+mtk-vcodec-dec-hw-y := mtk_vcodec_dec_hw.o
-+
- mtk-vcodec-enc-y := venc/venc_vp8_if.o \
- 		venc/venc_h264_if.o \
- 		mtk_vcodec_enc.o \
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-index c17927f79e22..f03f99108929 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-@@ -18,16 +18,12 @@
- 
- #include "mtk_vcodec_drv.h"
- #include "mtk_vcodec_dec.h"
-+#include "mtk_vcodec_dec_hw.h"
- #include "mtk_vcodec_dec_pm.h"
- #include "mtk_vcodec_intr.h"
- #include "mtk_vcodec_util.h"
- #include "mtk_vcodec_fw.h"
- 
--#define VDEC_HW_ACTIVE	0x10
--#define VDEC_IRQ_CFG	0x11
--#define VDEC_IRQ_CLR	0x10
--#define VDEC_IRQ_CFG_REG	0xa4
--
- static irqreturn_t mtk_vcodec_dec_irq_handler(int irq, void *priv)
- {
- 	struct mtk_vcodec_dev *dev = priv;
-@@ -92,6 +88,42 @@ static int mtk_vcodec_get_reg_bases(struct mtk_vcodec_dev *dev)
- 	return 0;
- }
- 
-+static int mtk_vcodec_init_dec_resources(struct mtk_vcodec_dev *dev)
-+{
-+	struct platform_device *pdev = dev->plat_dev;
-+	int ret;
-+
-+	ret = mtk_vcodec_get_reg_bases(dev);
-+	if (ret)
-+		return ret;
-+
-+	if (dev->vdec_pdata->is_subdev_supported)
-+		return 0;
-+
-+	dev->dec_irq = platform_get_irq(pdev, 0);
-+	if (dev->dec_irq < 0) {
-+		dev_err(&pdev->dev, "failed to get irq number");
-+		return dev->dec_irq;
-+	}
-+
-+	irq_set_status_flags(dev->dec_irq, IRQ_NOAUTOEN);
-+	ret = devm_request_irq(&pdev->dev, dev->dec_irq,
-+		mtk_vcodec_dec_irq_handler, 0, pdev->name, dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "failed to install dev->dec_irq %d (%d)",
-+			dev->dec_irq, ret);
-+		return ret;
-+	}
-+
-+	ret = mtk_vcodec_init_dec_pm(pdev, &dev->pm);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get mt vcodec clock source");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int fops_vcodec_open(struct file *file)
- {
- 	struct mtk_vcodec_dev *dev = video_drvdata(file);
-@@ -113,6 +145,11 @@ static int fops_vcodec_open(struct file *file)
- 	init_waitqueue_head(&ctx->queue);
- 	mutex_init(&ctx->lock);
- 
-+	if (dev->vdec_pdata->is_subdev_supported && dev->subdev_prob_done) {
-+		ret = dev->subdev_prob_done(dev);
-+		if (ret)
-+			goto err_ctrls_setup;
-+	}
- 	ctx->type = MTK_INST_DECODER;
- 	ret = dev->vdec_pdata->ctrls_setup(ctx);
- 	if (ret) {
-@@ -217,7 +254,6 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- {
- 	struct mtk_vcodec_dev *dev;
- 	struct video_device *vfd_dec;
--	struct resource *res;
- 	phandle rproc_phandle;
- 	enum mtk_vcodec_fw_type fw_type;
- 	int ret;
-@@ -246,32 +282,10 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 	if (IS_ERR(dev->fw_handler))
- 		return PTR_ERR(dev->fw_handler);
- 
--	ret = mtk_vcodec_init_dec_pm(dev->plat_dev, &dev->pm);
--	if (ret < 0) {
--		dev_err(&pdev->dev, "Failed to get mt vcodec clock source");
--		goto err_dec_pm;
--	}
--
--	ret = mtk_vcodec_get_reg_bases(dev);
--	if (ret)
--		goto err_res;
--
--	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
--	if (res == NULL) {
--		dev_err(&pdev->dev, "failed to get irq resource");
--		ret = -ENOENT;
--		goto err_res;
--	}
--
--	dev->dec_irq = platform_get_irq(pdev, 0);
--	irq_set_status_flags(dev->dec_irq, IRQ_NOAUTOEN);
--	ret = devm_request_irq(&pdev->dev, dev->dec_irq,
--			mtk_vcodec_dec_irq_handler, 0, pdev->name, dev);
-+	ret = mtk_vcodec_init_dec_resources(dev);
- 	if (ret) {
--		dev_err(&pdev->dev, "Failed to install dev->dec_irq %d (%d)",
--			dev->dec_irq,
--			ret);
--		goto err_res;
-+		dev_err(&pdev->dev, "Failed to init dec resources");
-+		goto err_dec_pm;
- 	}
- 
- 	mutex_init(&dev->dec_mutex);
-@@ -326,6 +340,15 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 		goto err_event_workq;
- 	}
- 
-+	if (dev->vdec_pdata->is_subdev_supported) {
-+		ret = of_platform_populate(pdev->dev.of_node, NULL, NULL,
-+			&pdev->dev);
-+		if (ret) {
-+			mtk_v4l2_err("Main device of_platform_populate failed.");
-+			goto err_event_workq;
-+		}
-+	}
-+
- 	if (dev->vdec_pdata->uses_stateless_api) {
- 		dev->mdev_dec.dev = &pdev->dev;
- 		strscpy(dev->mdev_dec.model, MTK_VCODEC_DEC_NAME,
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
-new file mode 100644
-index 000000000000..dbcb65dae01f
---- /dev/null
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
-@@ -0,0 +1,198 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2021 MediaTek Inc.
-+ * Author: Yunfei Dong <yunfei.dong@mediatek.com>
-+ */
-+
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/slab.h>
-+
-+#include "mtk_vcodec_drv.h"
-+#include "mtk_vcodec_dec.h"
-+#include "mtk_vcodec_dec_hw.h"
-+#include "mtk_vcodec_dec_pm.h"
-+#include "mtk_vcodec_intr.h"
-+#include "mtk_vcodec_util.h"
-+
-+static const struct of_device_id mtk_vdec_hw_match[] = {
-+	{
-+		.compatible = "mediatek,mtk-vcodec-lat",
-+		.data = (void *)MTK_VDEC_LAT0,
-+	},
-+	{
-+		.compatible = "mediatek,mtk-vcodec-core",
-+		.data = (void *)MTK_VDEC_CORE,
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, mtk_vdec_hw_match);
-+
-+static int mtk_vdec_hw_prob_done(struct mtk_vcodec_dev *vdec_dev)
-+{
-+	struct platform_device *pdev = vdec_dev->plat_dev;
-+	struct device_node *subdev_node;
-+	enum mtk_vdec_hw_id hw_idx;
-+	const struct of_device_id *of_id;
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(mtk_vdec_hw_match); i++) {
-+		of_id = &mtk_vdec_hw_match[i];
-+		subdev_node = of_find_compatible_node(NULL, NULL,
-+			of_id->compatible);
-+		if (!subdev_node)
-+			continue;
-+
-+		hw_idx = (enum mtk_vdec_hw_id)(uintptr_t)of_id->data;
-+		if (!test_bit(hw_idx, vdec_dev->subdev_bitmap)) {
-+			dev_err(&pdev->dev, "vdec %d is not ready", hw_idx);
-+			return -EAGAIN;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static irqreturn_t mtk_vdec_hw_irq_handler(int irq, void *priv)
-+{
-+	struct mtk_vdec_hw_dev *dev = priv;
-+	struct mtk_vcodec_ctx *ctx;
-+	u32 cg_status;
-+	unsigned int dec_done_status;
-+	void __iomem *vdec_misc_addr = dev->reg_base[VDEC_HW_MISC] +
-+					VDEC_IRQ_CFG_REG;
-+
-+	ctx = mtk_vcodec_get_curr_ctx(dev->main_dev);
-+
-+	/* check if HW active or not */
-+	cg_status = readl(dev->reg_base[VDEC_HW_SYS]);
-+	if (cg_status & VDEC_HW_ACTIVE) {
-+		mtk_v4l2_err("vdec active is not 0x0 (0x%08x)",
-+			cg_status);
-+		return IRQ_HANDLED;
-+	}
-+
-+	dec_done_status = readl(vdec_misc_addr);
-+	if ((dec_done_status & MTK_VDEC_IRQ_STATUS_DEC_SUCCESS) !=
-+	    MTK_VDEC_IRQ_STATUS_DEC_SUCCESS)
-+		return IRQ_HANDLED;
-+
-+	/* clear interrupt */
-+	writel(dec_done_status | VDEC_IRQ_CFG, vdec_misc_addr);
-+	writel(dec_done_status & ~VDEC_IRQ_CLR, vdec_misc_addr);
-+
-+	wake_up_ctx(ctx, MTK_INST_IRQ_RECEIVED);
-+
-+	mtk_v4l2_debug(3, "wake up ctx %d, dec_done_status=%x",
-+		ctx->id, dec_done_status);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int mtk_vdec_hw_init_irq(struct mtk_vdec_hw_dev *dev)
-+{
-+	struct platform_device *pdev = dev->plat_dev;
-+	int ret;
-+
-+	dev->dec_irq = platform_get_irq(pdev, 0);
-+	if (dev->dec_irq < 0) {
-+		dev_err(&pdev->dev, "Failed to get irq resource");
-+		return dev->dec_irq;
-+	}
-+
-+	irq_set_status_flags(dev->dec_irq, IRQ_NOAUTOEN);
-+	ret = devm_request_irq(&pdev->dev, dev->dec_irq,
-+				mtk_vdec_hw_irq_handler, 0, pdev->name, dev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to install dev->dec_irq %d (%d)",
-+			dev->dec_irq, ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mtk_vdec_hw_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct mtk_vdec_hw_dev *subdev_dev;
-+	struct mtk_vcodec_dev *main_dev;
-+	const struct of_device_id *of_id;
-+	int hw_idx;
-+	int ret;
-+
-+	if (!dev->parent) {
-+		dev_err(dev, "no parent for hardware devices.\n");
-+		return -ENODEV;
-+	}
-+
-+	main_dev = dev_get_drvdata(dev->parent);
-+	if (!main_dev) {
-+		dev_err(dev, "failed to get parent driver data");
-+		return -EINVAL;
-+	}
-+
-+	subdev_dev = devm_kzalloc(dev, sizeof(*subdev_dev), GFP_KERNEL);
-+	if (!subdev_dev)
-+		return -ENOMEM;
-+
-+	subdev_dev->plat_dev = pdev;
-+	ret = mtk_vcodec_init_dec_pm(pdev, &subdev_dev->pm);
-+	if (ret)
-+		return ret;
-+
-+	of_id = of_match_device(mtk_vdec_hw_match, dev);
-+	if (!of_id) {
-+		dev_err(dev, "Can't get vdec subdev id.\n");
-+		ret = -EINVAL;
-+		goto err;
-+	}
-+
-+	hw_idx = (enum mtk_vdec_hw_id)(uintptr_t)of_id->data;
-+	if (hw_idx >= MTK_VDEC_HW_MAX) {
-+		dev_err(dev, "Hardware index %d not correct.\n", hw_idx);
-+		ret = -EINVAL;
-+		goto err;
-+	}
-+
-+	main_dev->subdev_dev[hw_idx] = subdev_dev;
-+	subdev_dev->hw_idx = hw_idx;
-+	subdev_dev->main_dev = main_dev;
-+	subdev_dev->reg_base[VDEC_HW_SYS] = main_dev->reg_base[VDEC_HW_SYS];
-+	set_bit(subdev_dev->hw_idx, main_dev->subdev_bitmap);
-+
-+	ret = mtk_vdec_hw_init_irq(subdev_dev);
-+	if (ret)
-+		goto err;
-+
-+	subdev_dev->reg_base[VDEC_HW_MISC] =
-+		devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR((__force void *)subdev_dev->reg_base[VDEC_HW_MISC])) {
-+		ret = PTR_ERR((__force void *)subdev_dev->reg_base[VDEC_HW_MISC]);
-+		goto err;
-+	}
-+
-+	if (!main_dev->subdev_prob_done)
-+		main_dev->subdev_prob_done = mtk_vdec_hw_prob_done;
-+
-+	platform_set_drvdata(pdev, subdev_dev);
-+	return 0;
-+err:
-+	mtk_vcodec_release_dec_pm(&subdev_dev->pm);
-+	return ret;
-+}
-+
-+static struct platform_driver mtk_vdec_driver = {
-+	.probe	= mtk_vdec_hw_probe,
-+	.driver	= {
-+		.name	= "mtk-vdec-comp",
-+		.of_match_table = mtk_vdec_hw_match,
-+	},
-+};
-+module_platform_driver(mtk_vdec_driver);
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_DESCRIPTION("Mediatek video decoder hardware driver");
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.h
-new file mode 100644
-index 000000000000..5c2cfeaa9d9f
---- /dev/null
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.h
-@@ -0,0 +1,52 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2021 MediaTek Inc.
-+ * Author: Yunfei Dong <yunfei.dong@mediatek.com>
-+ */
-+
-+#ifndef _MTK_VCODEC_DEC_HW_H_
-+#define _MTK_VCODEC_DEC_HW_H_
-+
-+#include <linux/io.h>
-+#include <linux/platform_device.h>
-+
-+#include "mtk_vcodec_drv.h"
-+
-+#define VDEC_HW_ACTIVE 0x10
-+#define VDEC_IRQ_CFG 0x11
-+#define VDEC_IRQ_CLR 0x10
-+#define VDEC_IRQ_CFG_REG 0xa4
-+
-+/**
-+ * enum mtk_vdec_hw_reg_idx - subdev hardware register base index
-+ * @VDEC_HW_SYS : vdec soc register index
-+ * @VDEC_HW_MISC: vdec misc register index
-+ * @VDEC_HW_MAX : vdec supported max register index
-+ */
-+enum mtk_vdec_hw_reg_idx {
-+	VDEC_HW_SYS,
-+	VDEC_HW_MISC,
-+	VDEC_HW_MAX
-+};
-+
-+/**
-+ * struct mtk_vdec_hw_dev - vdec hardware driver data
-+ * @plat_dev: platform device
-+ * @main_dev: main device
-+ * @reg_base: mapped address of MTK Vcodec registers.
-+ *
-+ * @dec_irq : decoder irq resource
-+ * @pm      : power management control
-+ * @hw_idx  : each hardware index
-+ */
-+struct mtk_vdec_hw_dev {
-+	struct platform_device *plat_dev;
-+	struct mtk_vcodec_dev *main_dev;
-+	void __iomem *reg_base[VDEC_HW_MAX];
-+
-+	int dec_irq;
-+	struct mtk_vcodec_pm pm;
-+	int hw_idx;
-+};
-+
-+#endif /* _MTK_VCODEC_DEC_HW_H_ */
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateful.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateful.c
-index bef49244e61b..c7f9259ad094 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateful.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateful.c
-@@ -625,4 +625,5 @@ const struct mtk_vcodec_dec_pdata mtk_vdec_8173_pdata = {
- 	.num_framesizes = NUM_SUPPORTED_FRAMESIZE,
- 	.worker = mtk_vdec_worker,
- 	.flush_decoder = mtk_vdec_flush_decoder,
-+	.is_subdev_supported = false,
- };
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
-index 183cd67a334a..3294c8957ae5 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
-@@ -356,8 +356,10 @@ const struct mtk_vcodec_dec_pdata mtk_vdec_8183_pdata = {
- 	.uses_stateless_api = true,
- 	.worker = mtk_vdec_worker,
- 	.flush_decoder = mtk_vdec_flush_decoder,
-+	.is_subdev_supported = false,
- };
- 
-+/* This platform data is used for one lat and one core architecture. */
- const struct mtk_vcodec_dec_pdata mtk_lat_sig_core_pdata = {
- 	.chip = MTK_MT8192,
- 	.init_vdec_params = mtk_init_vdec_params,
-@@ -372,4 +374,5 @@ const struct mtk_vcodec_dec_pdata mtk_lat_sig_core_pdata = {
- 	.uses_stateless_api = true,
- 	.worker = mtk_vdec_worker,
- 	.flush_decoder = mtk_vdec_flush_decoder,
-+	.is_subdev_supported = true,
- };
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-index 0fa9d85114b9..ab2004242c43 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-@@ -93,6 +93,17 @@ enum mtk_fmt_type {
- 	MTK_FMT_FRAME = 2,
- };
- 
-+/*
-+ * enum mtk_vdec_hw_id - Hardware index used to separate
-+ *                         different hardware
-+ */
-+enum mtk_vdec_hw_id {
-+	MTK_VDEC_CORE,
-+	MTK_VDEC_LAT0,
-+	MTK_VDEC_LAT1,
-+	MTK_VDEC_HW_MAX,
-+};
-+
- /*
-  * struct mtk_video_fmt - Structure used to store information about pixelformats
-  */
-@@ -332,6 +343,7 @@ enum mtk_chip {
-  *
-  * @chip: chip this decoder is compatible with
-  *
-+ * @is_subdev_supported: whether support parent-node architecture(subdev)
-  * @uses_stateless_api: whether the decoder uses the stateless API with requests
-  */
- 
-@@ -353,6 +365,7 @@ struct mtk_vcodec_dec_pdata {
- 
- 	enum mtk_chip chip;
- 
-+	bool is_subdev_supported;
- 	bool uses_stateless_api;
- };
- 
-@@ -423,6 +436,10 @@ struct mtk_vcodec_enc_pdata {
-  * @pm: power management control
-  * @dec_capability: used to identify decode capability, ex: 4k
-  * @enc_capability: used to identify encode capability
-+ *
-+ * @subdev_dev: subdev hardware device
-+ * @subdev_prob_done: check whether all used hw device is prob done
-+ * @subdev_bitmap: used to record hardware is ready or not
-  */
- struct mtk_vcodec_dev {
- 	struct v4l2_device v4l2_dev;
-@@ -460,6 +477,10 @@ struct mtk_vcodec_dev {
- 	struct mtk_vcodec_pm pm;
- 	unsigned int dec_capability;
- 	unsigned int enc_capability;
-+
-+	void *subdev_dev[MTK_VDEC_HW_MAX];
-+	int (*subdev_prob_done)(struct mtk_vcodec_dev *vdec_dev);
-+	DECLARE_BITMAP(subdev_bitmap, MTK_VDEC_HW_MAX);
- };
- 
- static inline struct mtk_vcodec_ctx *fh_to_ctx(struct v4l2_fh *fh)
--- 
-2.25.1
+[...]
+
+> > +  interrupts:
+> > +    description: The interrupt line. Triggers IRQ_TYPE_LEVEL_HIGH and
+> > +      IRQ_TYPE_EDGE_RISING are both supported by the chip and the driv=
+er. When
+>=20
+> Unless there is a mode you can configure, supporting both is wrong even
+> though edge will mostly work for a device that is really level.
+>=20
+> What a driver supports is not relevant to the binding.
+
+hmm... right.
+
+> > +      SPI is used, this property is required. When SDIO is used, the "=
+in-band"
+> > +      interrupt provided by the SDIO bus is used unless an interrupt i=
+s defined
+> > +      in the Device Tree.
+> > +    maxItems: 1
+> > +
+> > +  reset-gpios:
+> > +    description: (SPI only) Phandle of gpio that will be used to reset=
+ chip
+> > +      during probe. Without this property, you may encounter issues wi=
+th warm
+> > +      boot. (For legacy purpose, the gpio in inverted when compatible =
+=3D=3D
+> > +      "silabs,wfx-spi")
+>=20
+> What legacy? This is a new binding.
+
+This driver already exist in staging/. But, it is probably the right moment
+to drop this legacy binding.
+
+[...]
+
+--=20
+J=E9r=F4me Pouiller
+
 
