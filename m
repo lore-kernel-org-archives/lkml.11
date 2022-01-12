@@ -2,124 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B0FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9415C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:12:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353387AbiALNL7 (ORCPT
+        id S1353418AbiALNMc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:11:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240733AbiALNLw (ORCPT
+        Wed, 12 Jan 2022 08:12:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44440 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240733AbiALNMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:11:52 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4873DC06173F;
-        Wed, 12 Jan 2022 05:11:51 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id d19so4267995wrb.0;
-        Wed, 12 Jan 2022 05:11:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7f+ic8TxlFUKFnOCkZFKPq8TQyP8w+H9m7F2OJNGJIU=;
-        b=RVMUTjFa2UESa2BHtCcnl158JFKhuK2xO1kpBSTZ0X0bo61yvjOQY44KawcWNL8w0M
-         nNZwpYIaDYS0HoTBxoLPTjfZcHOKfsSuuUbbaD0bGx9VpnpuQT+a1g+GgHuFPhnLtaO5
-         D/Tk0P1D3ZnOUFToCEqm4X0zOXu0fjbFJ7bb1GJuib0N6GPonyLT8pJxmkvaOz/GMhq8
-         YmY4y5+ozBBzlcxFLeRqOZjEHRpUFokRSzOIwrNDMGBfg8q7m6/2y5Sj+HgQ6EC5Y92q
-         RED3KO1imjeMSnf4WEiwDT9l/rIxcDYz0/9kJOG9DEb2yDhv9XWCIu4Gn3Eh9DM9vKSb
-         hr8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7f+ic8TxlFUKFnOCkZFKPq8TQyP8w+H9m7F2OJNGJIU=;
-        b=XplpaBffydWeHB/BXJTticVxX/nO9ldkz1EUrKKYuUCfE2n3+i8Yy00wJPvsaRmgm6
-         mSwBJ9N14d9HpoKWK9yL2jKK2n8I5EiJ4LwA1dSbFlb9Bsl1m+vRFe/WNmQU4Bz8P1JA
-         rX9oTaikwbMV9pAWD6IO9oM/Brln4MWY1KOuAcgQGcz1FkP2EIyPpwNvaiC0cjNqNNlt
-         5RwY9xCJttsZvf+gooEduDXKYFKx/ivOW9OvYuxi33SQgRZeJA2n6mOEdiT4IuVONZ/4
-         m/d7tvwP6WOHRofVa2P1sA6f88C6LQm5oC13K9DCNRGqbdPXncWloXJyk031QJ3pgH3C
-         w5Mw==
-X-Gm-Message-State: AOAM533bT+4JJOS+q89J9AAwVw76//0sCnYGcESULQl9p+RrAigEoOC6
-        K7fGJhoArQGsj9bbSeuwH7A=
-X-Google-Smtp-Source: ABdhPJyAmRIUsejPaQWvBKGx7Z/IESGUrX9XZF+BHeFnFeTxc+qlqbVlguYwFdSdKkBuTyGtqoDwHA==
-X-Received: by 2002:a5d:6881:: with SMTP id h1mr7871866wru.250.1641993109742;
-        Wed, 12 Jan 2022 05:11:49 -0800 (PST)
-Received: from orome ([193.209.96.43])
-        by smtp.gmail.com with ESMTPSA id z7sm10125751wrm.117.2022.01.12.05.11.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 05:11:48 -0800 (PST)
-Date:   Wed, 12 Jan 2022 14:11:45 +0100
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thierry Reding <treding@nvidia.com>,
-        linux-gpio@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
-        Jonathan Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH v1 1/1] gpio: tegra: Get rid of duplicate of_node
- assignment
-Message-ID: <Yd7TkUKo2g2Asbna@orome>
-References: <20211223122639.86923-1-andriy.shevchenko@linux.intel.com>
+        Wed, 12 Jan 2022 08:12:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C35161900;
+        Wed, 12 Jan 2022 13:12:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17432C36AEC;
+        Wed, 12 Jan 2022 13:12:20 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="RO0j5js+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1641993139;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EZeEOsQzp7A9Xxz0RniXuFFSOX71sbni/W3rqZZSC8k=;
+        b=RO0j5js+KTkccvR2BacDyDyuCKDTszFR+JAzmNODT/IoOkv3tjBia9v+SKmI5sDWu8NFxh
+        ypSIIz5lmksmdIIJTUPKaYfGCAM4lKM9XmUD2DsohuztEGjnmfbJ1UWarm2OaLHXfqZiqV
+        MHXTpWclNI8UrWxUT0y0AeyhOaaqNls=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 32ecdc37 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 12 Jan 2022 13:12:19 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
+Date:   Wed, 12 Jan 2022 14:12:02 +0100
+Message-Id: <20220112131204.800307-2-Jason@zx2c4.com>
+In-Reply-To: <20220112131204.800307-1-Jason@zx2c4.com>
+References: <20220112131204.800307-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="eS9Bqgo09E4YMHL2"
-Content-Disposition: inline
-In-Reply-To: <20211223122639.86923-1-andriy.shevchenko@linux.intel.com>
-User-Agent: Mutt/2.1.5 (31b18ae9) (2021-12-30)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+BLAKE2s is faster and more secure. SHA-1 has been broken for a long time
+now. This also removes quite a bit of code, and lets us potentially
+remove sha1 from lib, which would further reduce vmlinux size.
 
---eS9Bqgo09E4YMHL2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
+Cc: linux-crypto@vger.kernel.org
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ kernel/bpf/core.c | 39 ++++-----------------------------------
+ 1 file changed, 4 insertions(+), 35 deletions(-)
 
-On Thu, Dec 23, 2021 at 02:26:39PM +0200, Andy Shevchenko wrote:
-> GPIO library does copy the of_node from the parent device of
-> the GPIO chip, there is no need to repeat this in the individual
-> drivers. Remove these assignment all at once.
->=20
-> For the details one may look into the of_gpio_dev_init() implementation.
->=20
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/gpio/gpio-tegra.c | 1 -
->  1 file changed, 1 deletion(-)
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 2405e39d800f..d01976749467 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -33,6 +33,7 @@
+ #include <linux/extable.h>
+ #include <linux/log2.h>
+ #include <linux/bpf_verifier.h>
++#include <crypto/blake2s.h>
+ 
+ #include <asm/barrier.h>
+ #include <asm/unaligned.h>
+@@ -265,24 +266,16 @@ void __bpf_prog_free(struct bpf_prog *fp)
+ 
+ int bpf_prog_calc_tag(struct bpf_prog *fp)
+ {
+-	const u32 bits_offset = SHA1_BLOCK_SIZE - sizeof(__be64);
+ 	u32 raw_size = bpf_prog_tag_scratch_size(fp);
+-	u32 digest[SHA1_DIGEST_WORDS];
+-	u32 ws[SHA1_WORKSPACE_WORDS];
+-	u32 i, bsize, psize, blocks;
+ 	struct bpf_insn *dst;
+ 	bool was_ld_map;
+-	u8 *raw, *todo;
+-	__be32 *result;
+-	__be64 *bits;
++	u8 *raw;
++	int i;
+ 
+ 	raw = vmalloc(raw_size);
+ 	if (!raw)
+ 		return -ENOMEM;
+ 
+-	sha1_init(digest);
+-	memset(ws, 0, sizeof(ws));
+-
+ 	/* We need to take out the map fd for the digest calculation
+ 	 * since they are unstable from user space side.
+ 	 */
+@@ -307,31 +300,7 @@ int bpf_prog_calc_tag(struct bpf_prog *fp)
+ 		}
+ 	}
+ 
+-	psize = bpf_prog_insn_size(fp);
+-	memset(&raw[psize], 0, raw_size - psize);
+-	raw[psize++] = 0x80;
+-
+-	bsize  = round_up(psize, SHA1_BLOCK_SIZE);
+-	blocks = bsize / SHA1_BLOCK_SIZE;
+-	todo   = raw;
+-	if (bsize - psize >= sizeof(__be64)) {
+-		bits = (__be64 *)(todo + bsize - sizeof(__be64));
+-	} else {
+-		bits = (__be64 *)(todo + bsize + bits_offset);
+-		blocks++;
+-	}
+-	*bits = cpu_to_be64((psize - 1) << 3);
+-
+-	while (blocks--) {
+-		sha1_transform(digest, todo, ws);
+-		todo += SHA1_BLOCK_SIZE;
+-	}
+-
+-	result = (__force __be32 *)digest;
+-	for (i = 0; i < SHA1_DIGEST_WORDS; i++)
+-		result[i] = cpu_to_be32(digest[i]);
+-	memcpy(fp->tag, result, sizeof(fp->tag));
+-
++	blake2s(fp->tag, raw, NULL, sizeof(fp->tag), bpf_prog_insn_size(fp), 0);
+ 	vfree(raw);
+ 	return 0;
+ }
+-- 
+2.34.1
 
-Yep, this is indeed not necessary (anymore), so:
-
-Reviewed-by: Thierry Reding <treding@nvidia.com>
-
-I've also given this a quick spin on a Tegra124 device (Venice 2) and
-everything seems to be working fine, so also:
-
-Tested-by: Thierry Reding <treding@nvidia.com>
-
-Thanks,
-Thierry
-
---eS9Bqgo09E4YMHL2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmHe05EACgkQ3SOs138+
-s6FIEBAAjnCefZf/TmXMbRK8YKO2zooLOhkybC1j9ERVbbd/smfeyQoyKxCqIm5M
-hejWChgrfuYDoiWv+Mi1BnTZOz0vTRNo9Dbnsi7izpin+IQAufYosObqf/AMn8E0
-dKrEOZLgyIT9fBla17Y8mXTgt9RPoVFst4aKI3oPibWBc1TJQa02967JSbVzm4FZ
-13U02UIg7JYeb5MKjAl2bz0INiU+t3Solc4t3NZelsbOwMgOCA7Kntg9LZAYXkfJ
-hg4TNLxOQZuK6wIoDXxsW60p+RRsrbwjJuuYwF13Dj/JOX8SDH0JGThEM7RwDpyk
-SWvm2UMB1UVlSi6Rxk8RRoZ1BW0WYDdQdKKHZJWtXZP2xsVXQopL0rLx74U97hwW
-d/zm5prIcM4fDU03g8Z0KCFUbjKmrc3Hk7mG9Yc0KF4uL/bYcNCt/9DxGVxV9PWY
-MJasmjFaGrt9Xox6ZPOQxgFez6uaEIN1b9rYEiKa2yK50od5JKsqAqtSVynZPmwY
-22apy+LvILhB4vchrOwWTMkgQNXDwqqC3DEFswl2uLMLfH9h5iNa6yX6nW157aGp
-tpg1viE44QXtHz/+mby3JY6VAJO46ged+gG92kj1WTJqOZxiCwQG8t4OY687fkkJ
-wNQvAbiRMPZPn5SMpNxT4l/O7hNEzBDRxtUwmVHjz1lLZSOUlQ8=
-=v1tj
------END PGP SIGNATURE-----
-
---eS9Bqgo09E4YMHL2--
