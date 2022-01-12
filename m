@@ -2,318 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E82C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352811AbiALLSM (ORCPT
+        id S1352817AbiALLTP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:18:12 -0500
-Received: from mxout70.expurgate.net ([91.198.224.70]:17863 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352796AbiALLSK (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:18:10 -0500
-X-Greylist: delayed 586 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 06:18:09 EST
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1n7bTz-0009Bh-QS; Wed, 12 Jan 2022 12:07:59 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1n7bTy-000ItO-JC; Wed, 12 Jan 2022 12:07:58 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id 3579924004F;
-        Wed, 12 Jan 2022 12:07:58 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 89E16240049;
-        Wed, 12 Jan 2022 12:07:57 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id BB9A720676;
-        Wed, 12 Jan 2022 12:07:53 +0100 (CET)
+        Wed, 12 Jan 2022 06:19:15 -0500
+Received: from mail-bn8nam11on2064.outbound.protection.outlook.com ([40.107.236.64]:47424
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239752AbiALLTK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 06:19:10 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K4Vsgi9bLfvHuVZwe/jNJgM0Z0/ctF3AFOo5VtNXkJ+NrgTvs0tdwjA5wCXl7c/2qIhGLy3NcviB0IEcK4ssHJETTSJti8jkMxIy4DASWC+MI3Wd6mbGDal5ICTCeUDd2ewDU6Kv63sp0un6U2N9/ZDQMTKXuYvklIxW1EylbflxZ46yp8j9fDqq0sxRc6Uyb6T0KlTy3cy57pMFHEV0tu6rPdgj5KF5zWesieHgWo5HLdB9uvydoRAyCIE53rfbl81KKr/TBIN4rVm75MW+p2c00I7ESJk27DtQ3RvYbfb5pRRiMKYwH1x/SPowvz4g/CF5u4Qs+1OC/bFVrf3h2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2jifdYK1/h7Q2K4AxJkSjVwIGSjtseKBg7mOfTn8sf4=;
+ b=az4N9gzvO6A5gNqmikQkfAmTJ471gH5tq2UAPmO37sGjktVmqOrQ6CaEDnbacHUz/4+6BrLicpw4p3RaFU6vLTA35ylu1xRje9ulDAzYtTostxTmQ7ey6Mh+wk5hoVw6Hd8k+HGr+tV4tYeEM+R9cLIybGPStJYNf9bB/aWsIVUo9ngNvgblFFPCmQtCHK51mYAuZP8WiThleLxMP9I+hbPDwdKorMHboTOSbxh0wkSXGHFCrZSUggXL8AmWbMGlBBddmFUw1ZDeN0tfmlaY44/krS7iXmLJMwkIA//SkvEHHhYiFSXfuE8KrQNrBP5gSKO+S7y0UmID6LbbM+l+Xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2jifdYK1/h7Q2K4AxJkSjVwIGSjtseKBg7mOfTn8sf4=;
+ b=gApMu4//nij1QBmFFLndCiiwUm1W0T4Kj9zIAM+OLFnbc+f+tyag7uv+0EoS8/37Zoni+bPQEjw5c5vi4kXfUmigYXDnQn15iuIPy3vKmx1JfMuGSDDWZFWfg6YHvVBGsyIWhDJHCUnpxE381z1Ft6BlgP8IKUq5AEiwbc7TB/I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com (2603:10b6:5:35a::9) by
+ DM4PR11MB5278.namprd11.prod.outlook.com (2603:10b6:5:389::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4888.10; Wed, 12 Jan 2022 11:19:07 +0000
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::584b:bb3f:c96a:b0b]) by CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::584b:bb3f:c96a:b0b%6]) with mapi id 15.20.4888.010; Wed, 12 Jan 2022
+ 11:19:07 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
+Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
+Date:   Wed, 12 Jan 2022 12:18:58 +0100
+Message-ID: <42104281.b1Mx7tgHyx@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <20220112105859.u4j76o7cpsr4znmb@pali>
+References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com> <20220111171424.862764-9-Jerome.Pouiller@silabs.com> <20220112105859.u4j76o7cpsr4znmb@pali>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: PR3P251CA0012.EURP251.PROD.OUTLOOK.COM
+ (2603:10a6:102:b5::27) To CO6PR11MB5650.namprd11.prod.outlook.com
+ (2603:10b6:5:35a::9)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 12 Jan 2022 12:07:53 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Tim Harvey <tharvey@gateworks.com>
-Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
-        martin.blumenstingl@googlemail.com,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, hkallweit1@gmail.com,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next v6] net: phy: intel-xway: Add RGMII internal
- delay configuration
-Organization: TDT AG
-In-Reply-To: <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
-References: <20210719082756.15733-1-ms@dev.tdt.de>
- <CAJ+vNU3_8Gk8Mj_uCudMz0=MdN3B9T9pUOvYtP7H_B0fnTfZmg@mail.gmail.com>
- <94120968908a8ab073fa2fc0dd56b17d@dev.tdt.de>
- <CAJ+vNU2Bn_eks03g191KKLx5uuuekdqovx000aqcT5=f_6Zq=w@mail.gmail.com>
-Message-ID: <7fe5e3b3ff8fe9375fef409521b93102@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.17
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-ID: 151534::1641985679-00000DA7-8C2B954F/0/0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cf507a75-cb5d-45c9-0be6-08d9d5bd5919
+X-MS-TrafficTypeDiagnostic: DM4PR11MB5278:EE_
+X-Microsoft-Antispam-PRVS: <DM4PR11MB52786F51127D6D735B67342093529@DM4PR11MB5278.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kNa5+0lM5k7695qKHFCvObFHna4d7tQV0AmENkPJW8TtMoI8RRiK3924LxeLN30TKCaFvBcM1ZrFEvifq9LTHchVlYl2rlQYuOiLaBLaONnsYsKY6wzN8+axzyqLYMlf+KiYLwPKhCU0AQajUK9VfWiYJL6/D1yzpG4dEQFu9C44opGNU1j2K09UVnrOat700vpfk2np44ipzaDrOSvFnQRm2Sq89JPuNw+dYjaUnNa1buiao/nhVz0YbqOuMoxfftkO8bHzjZV1Ri/gOpTxC1HAZjs2LAaXUNudDF8uXdnvEu/4PyMpseiUVmxHraN0F2Cx0jKscIpUp0mixojTaYNgPWulEN76vXUQVIiY83ohZCxV2jbAi/PzA406zQ05HH9RbLxaUASBfoYTmR8oOqW3g5F2pXo/fxYXesx7O0JmrD/+xkb2PHKLtveJddch0BqBX+22y2oS3NMwthhr44h8RdP7ItkejaCmg5m1ZHf3ndBTCYnOSw1t4Sm/cpIf6dP+ubwOF6RVPPxBXNJ2EheV6fpbLlvOHPfNrdtXOcZD+5gkrPHMgEbwU4eMSVlxBbX1LXER61fGjimVUUywVeUKqk3pskLWcHIC8lJB6yQcTIQ3coJSdim92sVFfmKx6xsn7ZPmhoWHF4jYs0lF1xJimL+a3RsxJc1Y7fstmz3Gf4yMrpEE34hsjK5Q2zUsmKcfKY0YXvzIl6h/y953BA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5650.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(66946007)(7416002)(66556008)(66476007)(54906003)(5660300002)(38100700002)(86362001)(316002)(6666004)(2906002)(9686003)(6512007)(33716001)(6916009)(4744005)(6506007)(4326008)(508600001)(36916002)(52116002)(8936002)(6486002)(186003)(8676002)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?oXltm3vX/4bodzeI6Kq8Bwn+QTJmmWTfQveByhYCVY6QngWRj7w8uNGQS1?=
+ =?iso-8859-1?Q?e9hpC7s72OXKqEjFOXix+UaT9KsG37xVqSdcl9JFZJka4ZKgxXcscwxeYO?=
+ =?iso-8859-1?Q?Bj1EgUd4nADM92cUP4TZin3BjIRlMhLCyBauVZfWlo903Gqs+FJwCSKGw1?=
+ =?iso-8859-1?Q?ARe+DnClV3AsG2a1uaRR/L98qrZoyHu6hluCe+VtXLlLhJaEvNMeSvqSi1?=
+ =?iso-8859-1?Q?mxJe/aQrHzNOAekSJ/WpFmdDDGvZNfq4j09AkLiwG1VW7i1dkp26hNWTKG?=
+ =?iso-8859-1?Q?++zjIB7mCcRHHETvl5EJWh70AUid65bmz1U3so+AsfHyAH+RJoyDs/5uW7?=
+ =?iso-8859-1?Q?FW22pe4Yb9fRbpK1povqKzqF7GrAZG+A3Q8yYl0kF+DNWijTVZrLtO4eNZ?=
+ =?iso-8859-1?Q?BuHtE4hOPvVBIv6NT0GRtXUSFds8V9j0/NOoRAK1hufvmN93NhsTcVMrQm?=
+ =?iso-8859-1?Q?2B61TdFcpKZzAcrMTF9EaNVmBZcykUhNgvAl6+C4LU8zcsZ/6QnoRd6rk2?=
+ =?iso-8859-1?Q?pePnVKRSOOOEiSyHD/AopXkSWO0jvz4VEW7vGdJlF5XeoiDQG/9hEoQqv5?=
+ =?iso-8859-1?Q?E4A2FwVwTgqwni+ASAHtGPoPztI4i9YMWzCtxVAhYH7IL8yFANGJNjTavS?=
+ =?iso-8859-1?Q?WE1s6BzTDDo2sCGxBYaG9Za58XxVH4s+imJRAmnE2b4XEtcJx41VZt+T65?=
+ =?iso-8859-1?Q?Gxbjx0sfE6sXvxNVJfRhGcH+rOp44H4YmEBvbJ92pS+EoR5gDMZSFRODvF?=
+ =?iso-8859-1?Q?ecmDv/rPR8XlKCASHtXy30mRbnzO/rhiCwLW6ypIMl5CpXPgB+lD1prgO5?=
+ =?iso-8859-1?Q?lAOID2BfqkJYS6eBitg7LyaGKWg0A3tv9AhHRQM+pQ1SscBBoMasqqSAlv?=
+ =?iso-8859-1?Q?R6gOphlB+RQNfBefwG7m1ua+sFydxkALE0m/coxj+3b4za823EUfKdp2AQ?=
+ =?iso-8859-1?Q?otgEDnGUk/+tLvyhl+t7U9oGR0qpOu+MD4R7ydlKbLsVJ9wP2nlBbVG75U?=
+ =?iso-8859-1?Q?DNeIldozZxlFP1DaFe5LOI2fzFa9c05ixLuRvbqssDvRmexbtYogtXkG9l?=
+ =?iso-8859-1?Q?Nz8/xUF+a6AtKEcHbhRuih9hb/n+/oFmmQVFnJtRfnQpBE6Bm/9w0lkOgC?=
+ =?iso-8859-1?Q?XtVeMmvEMlpWEP9VuxOS6cKJICSmFKCYH+/lgnVd6YIAN/yVOaYOrBRdqr?=
+ =?iso-8859-1?Q?bvUi9c7R+/+wAaiteNXEhkbLmO2aWMlxQrkl/bRKVDDtRrFSiGP7+YbSEE?=
+ =?iso-8859-1?Q?u/K7c0y9ddJ6dsmIObNGCr0QHNNjRTXQbm2VMhpul8547KMxMH6sRd8Oua?=
+ =?iso-8859-1?Q?xorv2fBHQ6IDFGt7L+bfRhfOKK2k0/Zi47QIm94QGjx4mAwwJKvMU6cKV2?=
+ =?iso-8859-1?Q?sfY7ePcMMIKkTnpuV523x9X88nfghfEpvQI1SvmMF3p0mImSjfNo23xPRe?=
+ =?iso-8859-1?Q?BWH6n4Z/4JMp9tDZ7rebdXFnXVjeqL4+WdPzgZRfYJoTFqvuVvmORCHben?=
+ =?iso-8859-1?Q?m961L3ZshMUjDWPfVHdel4k0aHugee/jKs02bar7ref2KZnz8avK1gpDNu?=
+ =?iso-8859-1?Q?bRWw7vQ0IArbHW305WvJfbReux4TzIIRqOLU3yFWlJbm3vjnZvirG9w9h7?=
+ =?iso-8859-1?Q?4EwJtKcIYCkDcPs5pToSZRZHQ3fobMFM+ZYYzl2lsXu0ZD4JaLTy6dQNG9?=
+ =?iso-8859-1?Q?OKyl5Su+LCb+3nCSPY2bGkDRSvozH2teTMN0OuoL6ZV3zIYP/QIlTF0goL?=
+ =?iso-8859-1?Q?Rby3Ragvz0KEs43kh6mfpsV1E=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf507a75-cb5d-45c9-0be6-08d9d5bd5919
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5650.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2022 11:19:07.3265
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1yL8J5cheTH/Wv7aAZk8NCxtrqJ/E5zKwEWHg7EirJ2OLWWHty3YCJnbQeDSo5yWEqZ9OB++UIK77Z410B815w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB5278
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-11 20:12, Tim Harvey wrote:
-> On Mon, Jan 10, 2022 at 11:44 PM Martin Schiller <ms@dev.tdt.de> wrote:
->> 
->> On 2022-01-11 00:12, Tim Harvey wrote:
->> > On Mon, Jul 19, 2021 at 2:07 AM Martin Schiller <ms@dev.tdt.de> wrote:
->> >>
->> >> This adds the possibility to configure the RGMII RX/TX clock skew via
->> >> devicetree.
->> >>
->> >> Simply set phy mode to "rgmii-id", "rgmii-rxid" or "rgmii-txid" and
->> >> add
->> >> the "rx-internal-delay-ps" or "tx-internal-delay-ps" property to the
->> >> devicetree.
->> >>
->> >> Furthermore, a warning is now issued if the phy mode is configured to
->> >> "rgmii" and an internal delay is set in the phy (e.g. by
->> >> pin-strapping),
->> >> as in the dp83867 driver.
->> >>
->> >> Signed-off-by: Martin Schiller <ms@dev.tdt.de>
->> >> ---
->> >>
->> >> Changes to v5:
->> >> o remove #if IS_ENABLED(CONFIG_OF_MDIO) check
->> >> o rename new function to xway_gphy_rgmii_init()
->> >>
->> >> Changes to v4:
->> >> o Fix Alignment to match open parenthesis
->> >>
->> >> Changes to v3:
->> >> o Fix typo in commit message
->> >> o use FIELD_PREP() and FIELD_GET() macros
->> >> o further code cleanups
->> >> o always mask rxskew AND txskew value in the register value
->> >>
->> >> Changes to v2:
->> >> o Fix missing whitespace in warning.
->> >>
->> >> Changes to v1:
->> >> o code cleanup and use phy_modify().
->> >> o use default of 2.0ns if delay property is absent instead of
->> >> returning
->> >>   an error.
->> >>
->> >> ---
->> >>  drivers/net/phy/intel-xway.c | 78
->> >> ++++++++++++++++++++++++++++++++++++
->> >>  1 file changed, 78 insertions(+)
->> >>
->> >> diff --git a/drivers/net/phy/intel-xway.c
->> >> b/drivers/net/phy/intel-xway.c
->> >> index d453ec016168..fd7da2eeb963 100644
->> >> --- a/drivers/net/phy/intel-xway.c
->> >> +++ b/drivers/net/phy/intel-xway.c
->> >> @@ -8,11 +8,16 @@
->> >>  #include <linux/module.h>
->> >>  #include <linux/phy.h>
->> >>  #include <linux/of.h>
->> >> +#include <linux/bitfield.h>
->> >>
->> >> +#define XWAY_MDIO_MIICTRL              0x17    /* mii control */
->> >>  #define XWAY_MDIO_IMASK                        0x19    /* interrupt
->> >> mask */
->> >>  #define XWAY_MDIO_ISTAT                        0x1A    /* interrupt
->> >> status */
->> >>  #define XWAY_MDIO_LED                  0x1B    /* led control */
->> >>
->> >> +#define XWAY_MDIO_MIICTRL_RXSKEW_MASK  GENMASK(14, 12)
->> >> +#define XWAY_MDIO_MIICTRL_TXSKEW_MASK  GENMASK(10, 8)
->> >> +
->> >>  /* bit 15:12 are reserved */
->> >>  #define XWAY_MDIO_LED_LED3_EN          BIT(11) /* Enable the
->> >> integrated function of LED3 */
->> >>  #define XWAY_MDIO_LED_LED2_EN          BIT(10) /* Enable the
->> >> integrated function of LED2 */
->> >> @@ -157,6 +162,75 @@
->> >>  #define PHY_ID_PHY11G_VR9_1_2          0xD565A409
->> >>  #define PHY_ID_PHY22F_VR9_1_2          0xD565A419
->> >>
->> >> +static const int xway_internal_delay[] = {0, 500, 1000, 1500, 2000,
->> >> 2500,
->> >> +                                        3000, 3500};
->> >> +
->> >> +static int xway_gphy_rgmii_init(struct phy_device *phydev)
->> >> +{
->> >> +       struct device *dev = &phydev->mdio.dev;
->> >> +       unsigned int delay_size = ARRAY_SIZE(xway_internal_delay);
->> >> +       s32 int_delay;
->> >> +       int val = 0;
->> >> +
->> >> +       if (!phy_interface_is_rgmii(phydev))
->> >> +               return 0;
->> >> +
->> >> +       /* Existing behavior was to use default pin strapping delay in
->> >> rgmii
->> >> +        * mode, but rgmii should have meant no delay.  Warn existing
->> >> users,
->> >> +        * but do not change anything at the moment.
->> >> +        */
->> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII) {
->> >> +               u16 txskew, rxskew;
->> >> +
->> >> +               val = phy_read(phydev, XWAY_MDIO_MIICTRL);
->> >> +               if (val < 0)
->> >> +                       return val;
->> >> +
->> >> +               txskew = FIELD_GET(XWAY_MDIO_MIICTRL_TXSKEW_MASK,
->> >> val);
->> >> +               rxskew = FIELD_GET(XWAY_MDIO_MIICTRL_RXSKEW_MASK,
->> >> val);
->> >> +
->> >> +               if (txskew > 0 || rxskew > 0)
->> >> +                       phydev_warn(phydev,
->> >> +                                   "PHY has delays (e.g. via pin
->> >> strapping), but phy-mode = 'rgmii'\n"
->> >> +                                   "Should be 'rgmii-id' to use
->> >> internal delays txskew:%d ps rxskew:%d ps\n",
->> >> +                                   xway_internal_delay[txskew],
->> >> +                                   xway_internal_delay[rxskew]);
->> >> +               return 0;
->> >> +       }
->> >> +
->> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> >> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID) {
->> >> +               int_delay = phy_get_internal_delay(phydev, dev,
->> >> +
->> >> xway_internal_delay,
->> >> +                                                  delay_size, true);
->> >> +
->> >> +               if (int_delay < 0) {
->> >> +                       phydev_warn(phydev, "rx-internal-delay-ps is
->> >> missing, use default of 2.0 ns\n");
->> >> +                       int_delay = 4; /* 2000 ps */
->> >> +               }
->> >> +
->> >> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_RXSKEW_MASK,
->> >> int_delay);
->> >> +       }
->> >> +
->> >> +       if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
->> >> +           phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID) {
->> >> +               int_delay = phy_get_internal_delay(phydev, dev,
->> >> +
->> >> xway_internal_delay,
->> >> +                                                  delay_size, false);
->> >> +
->> >> +               if (int_delay < 0) {
->> >> +                       phydev_warn(phydev, "tx-internal-delay-ps is
->> >> missing, use default of 2.0 ns\n");
->> >> +                       int_delay = 4; /* 2000 ps */
->> >> +               }
->> >> +
->> >> +               val |= FIELD_PREP(XWAY_MDIO_MIICTRL_TXSKEW_MASK,
->> >> int_delay);
->> >> +       }
->> >> +
->> >> +       return phy_modify(phydev, XWAY_MDIO_MIICTRL,
->> >> +                         XWAY_MDIO_MIICTRL_RXSKEW_MASK |
->> >> +                         XWAY_MDIO_MIICTRL_TXSKEW_MASK, val);
->> >> +}
->> >> +
->> >>  static int xway_gphy_config_init(struct phy_device *phydev)
->> >>  {
->> >>         int err;
->> >> @@ -204,6 +278,10 @@ static int xway_gphy_config_init(struct
->> >> phy_device *phydev)
->> >>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2H, ledxh);
->> >>         phy_write_mmd(phydev, MDIO_MMD_VEND2, XWAY_MMD_LED2L, ledxl);
->> >>
->> >> +       err = xway_gphy_rgmii_init(phydev);
->> >> +       if (err)
->> >> +               return err;
->> >> +
->> >>         return 0;
->> >>  }
->> >>
->> >> --
->> >> 2.20.1
->> >>
->> >
->> > Martin,
->> >
->> > I've got some boards with the GPY111 phy on them and I'm finding that
->> > modifying XWAY_MDIO_MIICTRL to change the skew has no effect unless I
->> > do a soft reset (BCMR_RESET) first. I don't see anything in the
->> > datasheet which specifies this to be the case so I'm interested it
->> > what you have found. Are you sure adjusting the skews like this
->> > without a soft (or hard pin based) reset actually works?
->> >
->> > Best regards,
->> >
->> > Tim
->> 
->> Hello Tim,
->> 
->> yes, you are right. It is not applied immediately. The link needs to 
->> be
->> toggled to get this settings active. But my experience shows that this
->> would be done in the further boot process anyway e.g. by restarting 
->> the
->> autonegotiation etc.
->> 
-> 
-> Martin,
-> 
-> I added a debug statement in xway_gphy_rgmii_init and here you can see
-> it gets called 'before' the link comes up from the NIC on a board that
-> has a cable plugged in at power-on. I can tell from testing that the
-> rx_delay/tx_delay set in xway_gphy_rgmii_init does not actually take
-> effect unless I then bring the link down and up again manually as you
-> indicate.
-> 
-> # dmesg | egrep "xway|nicvf"
-> [    6.855971] xway_gphy_rgmii_init mdio_thunder MDI_MIICTRL:0xb100
-> rx_delay=1500 tx_delay=500
-> [    6.999651] nicvf, ver 1.0
-> [    7.002478] nicvf 0000:05:00.1: Adding to iommu group 7
-> [    7.007785] nicvf 0000:05:00.1: enabling device (0004 -> 0006)
-> [    7.053189] nicvf 0000:05:00.2: Adding to iommu group 8
-> [    7.058511] nicvf 0000:05:00.2: enabling device (0004 -> 0006)
-> [   11.044616] nicvf 0000:05:00.2 eth1: Link is Up 1000 Mbps Full 
-> duplex
-> 
-> If I add a 'genphy_soft_reset(phydev);' at the top of
-> xway_gphy_rgmii_init before the write to XWAY_MDIO_MIICTRL the values
-> do take effect so perhaps that's the proper fix.
+On Wednesday 12 January 2022 11:58:59 CET Pali Roh=E1r wrote:
+> On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
+> > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200)=
+ },
+> > +     { },
+> > +};
+>=20
+> Hello! Is this table still required?
 
-OK, I see that we have to change something here.
-But I would like to avoid a complete reset (BMCR_RESET) if possible.
-How about this:
-Before configuring the skews set BMCR_PDOWN using genphy_suspend(phydev)
-and when we are done let's call genphy_resume(phydev).
+As far as I understand, if the driver does not provide an id_table, the
+probe function won't be never called (see sdio_match_device()).
 
-> 
-> I'm not fond of even using this phy driver either as it blatantly
-> forces LED configuration which may not agree with what boot firmware
-> does. I've noticed phy drivers starting to configure LED behavior more
-> and more but it seems like there should be dt bindings for that or
-> maybe an option to preserve the configuration that is set from boot
-> firmware.
+Since, we rely on the device tree, we could replace SDIO_VENDOR_ID_SILABS
+and SDIO_DEVICE_ID_SILABS_WF200 by SDIO_ANY_ID. However, it does not hurt
+to add an extra filter here.
 
-There is already an approach which is used in openwrt [1] and which
-Hauke tried to get into the kernel [2].
+> > +MODULE_DEVICE_TABLE(sdio, wfx_sdio_ids);
+> > +
+> > +struct sdio_driver wfx_sdio_driver =3D {
+> > +     .name =3D "wfx-sdio",
+> > +     .id_table =3D wfx_sdio_ids,
+> > +     .probe =3D wfx_sdio_probe,
+> > +     .remove =3D wfx_sdio_remove,
+> > +     .drv =3D {
+> > +             .owner =3D THIS_MODULE,
+> > +             .of_match_table =3D wfx_sdio_of_match,
+> > +     }
+> > +};
+> > --
+> > 2.34.1
+> >
+>=20
 
-Interesting would be also a solution like this approach here [3].
 
-But this is rather off-topic now.
+--=20
+J=E9r=F4me Pouiller
 
-[1] 
-https://git.openwrt.org/?p=openwrt/openwrt.git;a=blob;f=target/linux/lantiq/patches-5.10/0023-NET-PHY-add-led-support-for-intel-xway.patch;h=fb8d97511066bd7e20f8cd298401e81f74e02ae9;hb=d337731f85c880acc96e8a6b99b62aeb57b8253f
-[2] https://www.spinics.net/lists/devicetree/msg129574.html
-[3] https://www.spinics.net/lists/linux-leds/msg17241.html
+
+
