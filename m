@@ -2,99 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31616C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F4AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:43:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354734AbiALPnB (ORCPT
+        id S1354750AbiALPn1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 10:43:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242234AbiALPm4 (ORCPT
+        Wed, 12 Jan 2022 10:43:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44234 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242234AbiALPnO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 10:42:56 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A194C06173F;
-        Wed, 12 Jan 2022 07:42:56 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id u21so11596431edd.5;
-        Wed, 12 Jan 2022 07:42:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pk9G/dsg1PMyd6CzhEC9GX6NcblEd21mpPVthjg3MLs=;
-        b=Vxd19zFFtTEat1uiYtqlhQV7EaP6I8hVYcJnMd6D1rH51e/Ti5Y4O+/H7dyC5bVm3Y
-         MtlzMck/g1LqI0dQZegrpQlgtSf08vQ2FBlUpESv19pTYWvUKqFJHD7yO/0yCTABBBGC
-         jf8jFuLUdZZmKQImTUg3P4iNXLynJkrf5KX3c2Pf6kmRYNVIkcXIcsozCRWziaG7A4xW
-         A7uPseDeLHARbb1byJRfcOncgnDCo8c5VEyFfel+Id6d0/ioSlmQaZdff3FNGKTnyTsi
-         JlSrzrJCOjlTeaxwQYsQhogf0cdhJdvy1/wczXL2A6OmSygHaE8267RTt7YVNqLioB3p
-         dKyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pk9G/dsg1PMyd6CzhEC9GX6NcblEd21mpPVthjg3MLs=;
-        b=n5F/0MkReA/e84uudtaEKs01Iqwb9R0rARrcm0yA8SB1MpmL+Ek+QgD8tmm4wLnTCt
-         9mzLFVeZy3You3+A5q74Gq6BbRoBxzSXMxfCRBau2414yad+2MlYY890JkPhZzafAdHR
-         qgBk9g2SFUdc+W7QuFbobrWo96C3HStGwA8Mkp8OE60usUc46jjBE9O61/cTmw3HtpAl
-         0Qb3Z8A3GGVzJdqnApfq4aISRxnfX5QwkkmywoNqwT6Fl5ueJMj45SEzLiNr3sXJVvoy
-         0gS4wAcxKtRHueLbckty1DCvXjqxxB0KKnZ42WctdUJeqO3Ug1w0+6iWY7WCjd9RsALd
-         acuw==
-X-Gm-Message-State: AOAM531h4Fs4uqM8xIYI7IuV9EGgDbH/jznE0U6LZUNEG6OzuNrVPoQP
-        FkHQy5mw5VC5Opoju9lIf9+WVosJBS9Xg3w8zDY=
-X-Google-Smtp-Source: ABdhPJxKMGIxMdkdnYrPXoFEYoZXbMBp/Rzeh6pyOJszu097bd5j2k2qv6ZQGDXeWxHMQCHfzfb6AoGzHs0MIIZgIVo=
-X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr222895ejc.497.1642002174794;
- Wed, 12 Jan 2022 07:42:54 -0800 (PST)
+        Wed, 12 Jan 2022 10:43:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9EAFB81F68;
+        Wed, 12 Jan 2022 15:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 170D6C36AE5;
+        Wed, 12 Jan 2022 15:43:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642002192;
+        bh=Zg7ygGz6sOLlajsI3tjCRIWEiEwQ+qlt2jgeme43mro=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=a/4hVBsxpAOcJv+atUaGlJNYXSbgn93sjNGu4mtwH2sATr9mEbgWoYeH7Jo+8A2vt
+         pDOrNTzTjquuuQh26/TKbaDqmVekQHzAnkC9NjlrsOwqVLxrisSNLsE3enZQbg6RH7
+         eUW27COvQai1RQ9UR+qgU0zdXjulxU2XIHLqBI8W8m16v9KqnFd3PwwQffLl+snpkw
+         0tPXsRdOYNZuNVbEHl6RdBk+/GRqnveGEMw+f9zLn3iZNq8dxFWOa2FTP4R4Ncht0N
+         zcQjdBok8gXbaHz346NK4GgdbGPkXlOk6xXPQXmwfExQbkNohEk6D92p5Gjz5XVXJv
+         kAVez7FWOqRFQ==
+Date:   Wed, 12 Jan 2022 09:43:10 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc:     bhelgaas@google.com, zhangliguang@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH] PCI: Add "pci=reassign_all_bus" boot parameter
+Message-ID: <20220112154310.GA259954@bhelgaas>
 MIME-Version: 1.0
-References: <1641996862-26960-1-git-send-email-akhilrajeev@nvidia.com> <1641996862-26960-4-git-send-email-akhilrajeev@nvidia.com>
-In-Reply-To: <1641996862-26960-4-git-send-email-akhilrajeev@nvidia.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 12 Jan 2022 17:41:08 +0200
-Message-ID: <CAHp75Vd=gxF9jFMvRw3qM9rfsxxCsO8qYXKVheuhjOV7ypU9og@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] i2c: smbus: Use device_*() functions instead of of_*()
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     Christian Koenig <christian.koenig@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1640856613-101412-1-git-send-email-yaohongbo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 4:15 PM Akhil R <akhilrajeev@nvidia.com> wrote:
->
-> Change of_*() functions to device_*() for firmware agnostic usage.
-> This allows to have smbus_alert interrupt without any changes
+On Thu, Dec 30, 2021 at 05:30:13PM +0800, Yao Hongbo wrote:
+> PCI bridges may be misconfigured by te system BIOS, and then the OS
+> scan the bridges that need to be reconfigured.
+> However, the PCI bus topology configured by the bios may be wrong:
+> 
+> [   19.376273] pci 0000:40:00.0: bridge configuration invalid ([bus
+> 00-00]), reconfiguring
+> [   19.384443] pci_bus 0000:47: busn_res: can not insert [bus 47-46]
+> under [bus 40-46] (conflicts with (null) [bus 40-46])
+> 
+> The primary bus number and subordinate bus number written by the bios
+> were wrong, and the OS continues to add bridges on the wrong bus
+> topology.
+> 
+> In order to avoid such problems, a kernel cmdline needs to be
+> added to support the os to fully configure the pci bus.
 
-the smbus_alert
+Why can't we make Linux smart enough to fix this by itself, without
+forcing the user to boot with "pci=reassign_all_bus"?
 
-> in the controller drivers using ACPI table.
-
-the ACPI
-
-...
-
-This change reveals potential issue:
-
-> -               irq = of_irq_get_byname(adapter->dev.of_node, "smbus_alert");
-> +               irq = device_irq_get_byname(adapter->dev.parent, "smbus_alert");
-
->                 if (irq <= 0)
-
-I guess this '= 0' part should be fixed first.
-
->                         return irq;
-
--- 
-With Best Regards,
-Andy Shevchenko
+> Signed-off-by: Yao Hongbo <yaohongbo@linux.alibaba.com>
+> ---
+>  Documentation/admin-guide/kernel-parameters.txt | 1 +
+>  drivers/acpi/pci_root.c                         | 3 +++
+>  drivers/pci/pci.c                               | 5 +++++
+>  include/linux/pci.h                             | 2 ++
+>  4 files changed, 11 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index 2fba824..c83a2e5 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -4084,6 +4084,7 @@
+>  		nomio		[S390] Do not use MIO instructions.
+>  		norid		[S390] ignore the RID field and force use of
+>  				one PCI domain per PCI function
+> +		reassign_all_bus	The OS fully configure the PCI bus.
+>  
+>  	pcie_aspm=	[PCIE] Forcibly enable or disable PCIe Active State Power
+>  			Management.
+> diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+> index ab2f7df..e21ac25 100644
+> --- a/drivers/acpi/pci_root.c
+> +++ b/drivers/acpi/pci_root.c
+> @@ -592,6 +592,9 @@ static int acpi_pci_root_add(struct acpi_device *device,
+>  	is_pcie = strcmp(acpi_device_hid(device), "PNP0A08") == 0;
+>  	negotiate_os_control(root, &no_aspm, is_pcie);
+>  
+> +	if (pci_reassign_all_bus)
+> +		pci_add_flags(PCI_REASSIGN_ALL_BUS);
+> +
+>  	/*
+>  	 * TBD: Need PCI interface for enumeration/configuration of roots.
+>  	 */
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 3d2fb39..5746e88 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -142,6 +142,9 @@ bool pci_reset_supported(struct pci_dev *dev)
+>  /* If set, the PCI config space of each device is printed during boot. */
+>  bool pci_early_dump;
+>  
+> +/* If set, the pci will reassign resources*/
+> +bool pci_reassign_all_bus;
+> +
+>  bool pci_ats_disabled(void)
+>  {
+>  	return pcie_ats_disabled;
+> @@ -6846,6 +6849,8 @@ static int __init pci_setup(char *str)
+>  				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
+>  			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
+>  				disable_acs_redir_param = str + 18;
+> +			} else if (!strncmp(str, "reassign_all_bus", 16)) {
+> +				pci_reassign_all_bus = true;
+>  			} else {
+>  				pr_err("PCI: Unknown option `%s'\n", str);
+>  			}
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 18a75c8e..ad0e3e9 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -2119,6 +2119,8 @@ int pcim_iomap_regions_request_all(struct pci_dev *pdev, int mask,
+>  extern u8 pci_dfl_cache_line_size;
+>  extern u8 pci_cache_line_size;
+>  
+> +extern bool pci_reassign_all_bus;
+> +
+>  /* Architecture-specific versions may override these (weak) */
+>  void pcibios_disable_device(struct pci_dev *dev);
+>  void pcibios_set_master(struct pci_dev *dev);
+> -- 
+> 1.8.3.1
+> 
