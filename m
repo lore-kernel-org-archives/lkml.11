@@ -2,155 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:47:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44490C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351748AbiALIrM (ORCPT
+        id S1349506AbiALIvB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 03:47:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351737AbiALIrH (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 03:47:07 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E71C06173F;
-        Wed, 12 Jan 2022 00:47:07 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id w19-20020a056830061300b0058f1dd48932so1740035oti.11;
-        Wed, 12 Jan 2022 00:47:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=s9uju5lktsl2BkeSmx7+Ucw5N0WQwmtf63EDu0Y/kqo=;
-        b=njpeRzdd707CcSA9IsThlEC7roEZp7FrGsogWyW2y9Ok8bMD2iuN733qt7/QDI0DMr
-         r+hVn9iTuE/eRvtVzYVR7x6xYj3YCxHVZI/oEw5feGVKCH8xTwsReVC2VzvTTRlVhW8+
-         F1Q8BuWvTPpOo5IiRf3O2yfNPUmHBkiFnqWGgPwaGojpVVyCgNvu/X+eCYjFE5z3WQDo
-         HfaUW8f+PzhQFzopdUyp5MjNWsPWP0FnByeJ8KQTcZhprfdJcGwqeoHgMCu0rA3kD9Ag
-         VKkOw6XKUbQ8jayOC47toLh2MfiInEHOa7jTMN6vXmgPcchHcsQwtGgWzUk1sMtGeNhN
-         hzoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=s9uju5lktsl2BkeSmx7+Ucw5N0WQwmtf63EDu0Y/kqo=;
-        b=iUQi89sLGbRaBesBVNB4vlvoxP9PYpfppi88tabh/sPE/bN+lQMMu4+VrNEqApOy+4
-         M/9ys/JRH7c1UjsRgBt70AcX44G9E0mYWsiV95W9ximhXstoBahvBBgY0lbH8C/vd9cx
-         krPhHM7Huoc9uQ/MvdSPreh+IYfomAypYwKFcpJ28FhY8Z95daVR8nyXQCRiXXMvnUjt
-         AKQ5ZoGIu3jBUCG4Egc+BQS1BAI1rSHWF6lbitfcz1RNQUKrKj+Vsccec3ydbMxZyGpw
-         djuMoSFxrTl6VokFX9IbL30T8tID2FZ/sVdCvNzlQS6ONDMsj1Wm8EouixpJINaSpjes
-         z1Lg==
-X-Gm-Message-State: AOAM533BmDjBIdDLLW+ugIH1Sts/ktMSydNKBXSrIeGjfrUHI6KOQ2LP
-        rPMrdXsOA1yh271HrDZVJ9GQUuICahJXWtN/bvHqbEB6
-X-Google-Smtp-Source: ABdhPJynnDNRHIEDntsC5XjuiwZCFNN+RWK5Wp/x6GpTKDHklJAXFCGgujYR1FRxcQADeQd2BjHO7RIxf/V6x4KlXPE=
-X-Received: by 2002:a9d:37a2:: with SMTP id x31mr1420675otb.51.1641977226796;
- Wed, 12 Jan 2022 00:47:06 -0800 (PST)
+        Wed, 12 Jan 2022 03:51:01 -0500
+Received: from mga09.intel.com ([134.134.136.24]:1134 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237959AbiALIvA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 03:51:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641977460; x=1673513460;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=3BkFAFfHwy4jrIGT9bGeUQf8kxHlsUWji9HfgEYUk0A=;
+  b=OuaZJaO9qHMB0/dM4veZKKEoTZxCeWYxBtKz4JqOhBLYiC9KAujPkWni
+   FLtttaghy+i6v8Bj+mxoDbIJ4VgqfvtTUbLmPz3t06hLg4lYTTPr/CU7/
+   iwuPiKbNFSHzjH2hc/WU3B6z4QqRBv3OuH4EgPyJpThLe/f/+46ocFOPb
+   fCuI3Q9LpwzI6zWDbB16w/k4/OWUONrW/yzzPmSCFWFr3fIh73z9ucQFd
+   R6CIHRQRQlkM3bYhnTYI2D6W1WDmd59j/ZCgEhDzC699SZoAEviZyAkI9
+   5vwLvYZr3rbQp7gHZlltyrng7mssf34EKRDnRtD4DPDt65cKE2401N95u
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="243488473"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="243488473"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 00:50:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="515409394"
+Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
+  by orsmga007.jf.intel.com with ESMTP; 12 Jan 2022 00:50:58 -0800
+From:   Adrian Hunter <adrian.hunter@intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] perf script: Fix hex dump character output
+Date:   Wed, 12 Jan 2022 10:50:57 +0200
+Message-Id: <20220112085057.277205-1-adrian.hunter@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211124214418.GA1094@raspberrypi>
-In-Reply-To: <20211124214418.GA1094@raspberrypi>
-From:   Austin Kim <austinkernel.kim@gmail.com>
-Date:   Wed, 12 Jan 2022 17:46:56 +0900
-Message-ID: <CAOoBcBWHi+UJENsfNzG2NMAjBj0RjsKSWNDaQ+++F-uL0ubAYQ@mail.gmail.com>
-Subject: Re: [PATCH] ima: Fix trivial typos in the comments
-To:     Austin Kim <austindh.kim@gmail.com>
-Cc:     zohar@linux.ibm.com, dmitry.kasatkin@gmail.com,
-        linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Using grep -C with perf script -D can give erroneous results as grep loses
+lines due to non-printable characters, for example, below the 0020, 0060
+and 0070 lines are missing:
 
-Would you take a look at this patch?
-It won't take long.
+ $ perf script -D | grep -C10 AUX | head
+ .  0010:  08 00 00 00 00 00 00 00 1f 00 00 00 00 00 00 00  ................
+ .  0030:  01 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00  ................
+ .  0040:  00 08 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0050:  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+ .  0080:  02 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 00  ................
+ .  0090:  00 00 00 00 00 00 00 00                          ........
 
-BR,
-Austin Kim
+ 0 0 0x450 [0x98]: PERF_RECORD_AUXTRACE_INFO type: 1
+   PMU Type            8
+   Time Shift          31
 
-2021=EB=85=84 11=EC=9B=94 26=EC=9D=BC (=EA=B8=88) =EC=98=A4=EC=A0=84 11:34,=
- Austin Kim <austindh.kim@gmail.com>=EB=8B=98=EC=9D=B4 =EC=9E=91=EC=84=B1:
->
-> There are a few minor typos in the comments. Fix these.
->
-> Signed-off-by: Austin Kim <austindh.kim@gmail.com>
-> ---
->  security/integrity/ima/ima_api.c          | 2 +-
->  security/integrity/ima/ima_main.c         | 2 +-
->  security/integrity/ima/ima_policy.c       | 2 +-
->  security/integrity/ima/ima_template_lib.c | 2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/security/integrity/ima/ima_api.c b/security/integrity/ima/im=
-a_api.c
-> index a64fb0130b01..5b220a2fe573 100644
-> --- a/security/integrity/ima/ima_api.c
-> +++ b/security/integrity/ima/ima_api.c
-> @@ -238,7 +238,7 @@ int ima_collect_measurement(struct integrity_iint_cac=
-he *iint,
->                 goto out;
->
->         /*
-> -        * Dectecting file change is based on i_version. On filesystems
-> +        * Detecting file change is based on i_version. On filesystems
->          * which do not support i_version, support is limited to an initi=
-al
->          * measurement/appraisal/audit.
->          */
-> diff --git a/security/integrity/ima/ima_main.c b/security/integrity/ima/i=
-ma_main.c
-> index 8c6e4514d494..8ed6da428328 100644
-> --- a/security/integrity/ima/ima_main.c
-> +++ b/security/integrity/ima/ima_main.c
-> @@ -764,7 +764,7 @@ int ima_post_read_file(struct file *file, void *buf, =
-loff_t size,
->   *           call to ima_post_load_data().
->   *
->   * Callers of this LSM hook can not measure, appraise, or audit the
-> - * data provided by userspace.  Enforce policy rules requring a file
-> + * data provided by userspace.  Enforce policy rules requiring a file
->   * signature (eg. kexec'ed kernel image).
->   *
->   * For permission return 0, otherwise return -EACCES.
-> diff --git a/security/integrity/ima/ima_policy.c b/security/integrity/ima=
-/ima_policy.c
-> index 320ca80aacab..ad7e19208a69 100644
-> --- a/security/integrity/ima/ima_policy.c
-> +++ b/security/integrity/ima/ima_policy.c
-> @@ -429,7 +429,7 @@ static int ima_lsm_update_rule(struct ima_rule_entry =
-*entry)
->         /*
->          * ima_lsm_copy_rule() shallow copied all references, except for =
-the
->          * LSM references, from entry to nentry so we only want to free t=
-he LSM
-> -        * references and the entry itself. All other memory refrences wi=
-ll now
-> +        * references and the entry itself. All other memory references w=
-ill now
->          * be owned by nentry.
->          */
->         ima_lsm_free_rule(entry);
-> diff --git a/security/integrity/ima/ima_template_lib.c b/security/integri=
-ty/ima/ima_template_lib.c
-> index ca017cae73eb..5a5d462ab36d 100644
-> --- a/security/integrity/ima/ima_template_lib.c
-> +++ b/security/integrity/ima/ima_template_lib.c
-> @@ -272,7 +272,7 @@ static int ima_eventdigest_init_common(const u8 *dige=
-st, u32 digestsize,
->          * digest formats:
->          *  - DATA_FMT_DIGEST: digest
->          *  - DATA_FMT_DIGEST_WITH_ALGO: [<hash algo>] + ':' + '\0' + dig=
-est,
-> -        *    where <hash algo> is provided if the hash algoritm is not
-> +        *    where <hash algo> is provided if the hash algorithm is not
->          *    SHA1 or MD5
->          */
->         u8 buffer[CRYPTO_MAX_ALG_NAME + 2 + IMA_MAX_DIGEST_SIZE] =3D { 0 =
-};
-> --
-> 2.20.1
->
+perf's isprint() is a custom implementation from the kernel, but the
+kernel's _ctype appears to include characters from Latin-1 Supplement which
+is not compatible with, for example, UTF-8. Fix by checking also isascii().
+
+After:
+
+ $ tools/perf/perf script -D | grep -C10 AUX | head
+ .  0010:  08 00 00 00 00 00 00 00 1f 00 00 00 00 00 00 00  ................
+ .  0020:  03 84 32 2f 00 00 00 00 63 7c 4f d2 fa ff ff ff  ..2/....c|O.....
+ .  0030:  01 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00  ................
+ .  0040:  00 08 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0050:  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+ .  0060:  00 02 00 00 00 00 00 00 00 c0 03 00 00 00 00 00  ................
+ .  0070:  e2 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0080:  02 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 00  ................
+ .  0090:  00 00 00 00 00 00 00 00                          ........
+
+Fixes: 3052ba56bcb589 ("tools perf: Move from sane_ctype.h obtained from git to the Linux's original")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+---
+ tools/perf/util/debug.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/perf/util/debug.c b/tools/perf/util/debug.c
+index c7a9fa0ffae9..7b5eec300d66 100644
+--- a/tools/perf/util/debug.c
++++ b/tools/perf/util/debug.c
+@@ -189,7 +189,7 @@ static int trace_event_printer(enum binary_printer_ops op,
+ 		break;
+ 	case BINARY_PRINT_CHAR_DATA:
+ 		printed += color_fprintf(fp, color, "%c",
+-			      isprint(ch) ? ch : '.');
++			      isprint(ch) && isascii(ch) ? ch : '.');
+ 		break;
+ 	case BINARY_PRINT_CHAR_PAD:
+ 		printed += color_fprintf(fp, color, " ");
+-- 
+2.25.1
+
