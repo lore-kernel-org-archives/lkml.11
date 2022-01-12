@@ -2,100 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4625C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03952C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:53:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346225AbiALTxP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:53:15 -0500
-Received: from mail.z3ntu.xyz ([128.199.32.197]:33198 "EHLO mail.z3ntu.xyz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1356987AbiALTv6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:51:58 -0500
-Received: from localhost.localdomain (ip-213-127-106-2.ip.prioritytelecom.net [213.127.106.2])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 99ECDCDF9F;
-        Wed, 12 Jan 2022 19:42:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1642016544; bh=0kWYHyQ+FdQZVfHCIbfLblrDXNannTFucaCQYt2r6LQ=;
-        h=From:To:Cc:Subject:Date;
-        b=miax10sWCxLcvuPulMRI9I8OxkGClnhZ7on8fnVVyuxu3eLoIzlmYgDUW+CcsPSnK
-         Cz95AHMYXfk4vBg0yIPTahxcsi7xikZlNOJK59DxWJKpylDH8bAjfHzKVFpB2OfNoy
-         ookhq+C83s4UtZgJGkb6zXdZKvG7GFw/47b1tpAI=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     linux-arm-msm@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca@z3ntu.xyz>, Amit Kucheria <amitk@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Manu Gautam <mgautam@codeaurora.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Zhang Rui <rui.zhang@intel.com>, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: [PATCH 00/15] Initial MSM8953 & Fairphone 3 support
-Date:   Wed, 12 Jan 2022 20:40:49 +0100
-Message-Id: <20220112194118.178026-1-luca@z3ntu.xyz>
-X-Mailer: git-send-email 2.34.1
+        id S245403AbiALTxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 14:53:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38430 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350393AbiALTwj (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 14:52:39 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B18C06118A
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:52:35 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o15so11847725lfo.11
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:52:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=He7BjM6dCMMuZ+d1PaptWEfTiiaWHjufRifL/qaqDNQ=;
+        b=NCgDByj6hejwY7MuOGvvvTVFdE0SIutf2M2dNIqTnLWvTYZrGZcHThTDRYKIyu0+1a
+         v9LpidK7TVBhU34aEpmdnnkJ0neebUciWxItaGoons6aj1nBdDkqm59faz57DZlHdAWi
+         LPIyKtOTp3ok2nd2Jmr9r68FSIQcIybhJZBVkeoeiwoVX52xpNi8jiWudtU4Rn0v5Vy4
+         8DFPJi+9FV/6Y9fmLfT/OaaS+p9/y3rZQ9nG8x/au6mEU9hDtKvNeSt4FVZD88FDnGGC
+         lKUrV7JjzA4vV7c4xyOMrkgZtcCrKwwSFUyDXpWRqtpDfS1CU0A0cS5aJZY/mLd5/imR
+         1kYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=He7BjM6dCMMuZ+d1PaptWEfTiiaWHjufRifL/qaqDNQ=;
+        b=E58F7psqBmae8yjGhBEBKZx/bBB6S4zHVeyTM4aD44qZHjIqiVx4+Gbno/02XuPvs8
+         QWFxfu/XXOU3Fqr2h7T9HJeJta9TXfa/59JoO22ulyCUEBViqx9izdCkaUKkmY4hqb/B
+         O1UKuHjEITxzOYos4F6hBWcHgKf+xBBvCbaUXLRbJxhEEsAjTjWyxxOwqu9WxSDy9qbH
+         SY+xWPgVLiRQPpG8sTfPAofuOJU8aj2TCi9CgPpKkZDgb8doD6X008bBfh88nlx1LHqC
+         RBW9b8PKJGz7bHz9+H9Ur+pkUy2i9u2tgfnLKQihLIaJHPpVhpbfQRInpKfbgB1B3kZ7
+         JhmA==
+X-Gm-Message-State: AOAM530lIJHrNa8NYwrHDCnntfV0lbNhvFvqU9Z3JOktRBYcHrkzjdhZ
+        rsk/Ic8WVAgCfDpuzH6Qm7U=
+X-Google-Smtp-Source: ABdhPJzk+NRGmXVUet+lyHm2CN5FnEA2iJ4erteSkUXSDA2UFv+FYnd+7IGa8JwGGNOUHUesuS051w==
+X-Received: by 2002:ac2:4c56:: with SMTP id o22mr945861lfk.558.1642017153504;
+        Wed, 12 Jan 2022 11:52:33 -0800 (PST)
+Received: from localhost.localdomain (94-29-62-108.dynamic.spd-mgts.ru. [94.29.62.108])
+        by smtp.gmail.com with ESMTPSA id k7sm75860lfu.141.2022.01.12.11.52.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 11:52:33 -0800 (PST)
+From:   Dmitry Osipenko <digetx@gmail.com>
+To:     Mark Brown <broonie@kernel.org>, Takashi Iwai <tiwai@suse.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1] ASoC: hdmi-codec: Fix OOB memory accesses
+Date:   Wed, 12 Jan 2022 22:50:39 +0300
+Message-Id: <20220112195039.1329-1-digetx@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds initial support for MSM8953 (and SDM632 which is based
-on MSM8953) and the Fairphone 3 smartphone.
+Correct size of iec_status array by changing it to the size of status
+array of the struct snd_aes_iec958. This fixes out-of-bounds slab
+read accesses made by memcpy() of the hdmi-codec driver. This problem
+is reported by KASAN.
 
-Only relatively basic functionality is supported like storage, volume
-keys and USB.
+Cc: stable@vger.kernel.org
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+---
+ include/uapi/sound/asound.h   | 4 +++-
+ sound/soc/codecs/hdmi-codec.c | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-There is currently close-to-mainline support for other components for
-this SoC including GPU, WiFi and audio, this series adds only basic
-support so that the other components can start getting upstreamed
-easier.
-
-Luca Weiss (10):
-  dt-bindings: phy: qcom,qusb2: Document msm8953 compatible
-  phy: qcom-qusb2: Add compatible for MSM8953
-  dt-bindings: mfd: qcom,tcsr: Document msm8953 compatible
-  mfd: qcom-spmi-pmic: Add pm8953 compatible
-  dt-bindings: mmc: sdhci-msm: Add msm8953 compatible
-  dt-bindings: thermal: tsens: Add msm8953 compatible
-  dt-bindings: usb: qcom,dwc3: Add msm8953 compatible
-  dt-bindings: pinctrl: qcom: msm8953: allow gpio-reserved-ranges
-  dt-bindings: arm: qcom: Document sdm632 and fairphone,fp3 board
-  arm64: dts: qcom: sdm632: Add device tree for Fairphone 3
-
-Vladimir Lypak (5):
-  rpmsg: smd: Drop unnecessary condition for channel creation
-  arm64: dts: qcom: Add MSM8953 device tree
-  arm64: dts: qcom: Add PM8953 PMIC
-  arm64: dts: qcom: Add SDM632 device tree
-  arm64: dts: qcom: Add MSM8953+PM8953 device tree
-
- .../devicetree/bindings/arm/qcom.yaml         |    6 +
- .../bindings/mfd/qcom,spmi-pmic.txt           |    1 +
- .../devicetree/bindings/mfd/qcom,tcsr.txt     |    1 +
- .../devicetree/bindings/mmc/sdhci-msm.txt     |    1 +
- .../bindings/phy/qcom,qusb2-phy.yaml          |    1 +
- .../pinctrl/qcom,msm8953-pinctrl.yaml         |    2 +
- .../bindings/thermal/qcom-tsens.yaml          |    1 +
- .../devicetree/bindings/usb/qcom,dwc3.yaml    |    1 +
- arch/arm64/boot/dts/qcom/Makefile             |    1 +
- arch/arm64/boot/dts/qcom/msm8953-pm8953.dtsi  |   50 +
- arch/arm64/boot/dts/qcom/msm8953.dtsi         | 1337 +++++++++++++++++
- arch/arm64/boot/dts/qcom/pm8953.dtsi          |   90 ++
- .../boot/dts/qcom/sdm632-fairphone-fp3.dts    |  189 +++
- arch/arm64/boot/dts/qcom/sdm632.dtsi          |  125 ++
- drivers/phy/qualcomm/phy-qcom-qusb2.c         |    3 +
- drivers/rpmsg/qcom_smd.c                      |    8 +-
- 16 files changed, 1810 insertions(+), 7 deletions(-)
- create mode 100644 arch/arm64/boot/dts/qcom/msm8953-pm8953.dtsi
- create mode 100644 arch/arm64/boot/dts/qcom/msm8953.dtsi
- create mode 100644 arch/arm64/boot/dts/qcom/pm8953.dtsi
- create mode 100644 arch/arm64/boot/dts/qcom/sdm632-fairphone-fp3.dts
- create mode 100644 arch/arm64/boot/dts/qcom/sdm632.dtsi
-
+diff --git a/include/uapi/sound/asound.h b/include/uapi/sound/asound.h
+index ef0cafe295b2..2d3e5df39a59 100644
+--- a/include/uapi/sound/asound.h
++++ b/include/uapi/sound/asound.h
+@@ -56,8 +56,10 @@
+  *                                                                          *
+  ****************************************************************************/
+ 
++#define AES_IEC958_STATUS_SIZE		24
++
+ struct snd_aes_iec958 {
+-	unsigned char status[24];	/* AES/IEC958 channel status bits */
++	unsigned char status[AES_IEC958_STATUS_SIZE]; /* AES/IEC958 channel status bits */
+ 	unsigned char subcode[147];	/* AES/IEC958 subcode bits */
+ 	unsigned char pad;		/* nothing */
+ 	unsigned char dig_subframe[4];	/* AES/IEC958 subframe bits */
+diff --git a/sound/soc/codecs/hdmi-codec.c b/sound/soc/codecs/hdmi-codec.c
+index b61f980cabdc..b07607a9ecea 100644
+--- a/sound/soc/codecs/hdmi-codec.c
++++ b/sound/soc/codecs/hdmi-codec.c
+@@ -277,7 +277,7 @@ struct hdmi_codec_priv {
+ 	bool busy;
+ 	struct snd_soc_jack *jack;
+ 	unsigned int jack_status;
+-	u8 iec_status[5];
++	u8 iec_status[AES_IEC958_STATUS_SIZE];
+ };
+ 
+ static const struct snd_soc_dapm_widget hdmi_widgets[] = {
 -- 
-2.34.1
+2.33.1
 
