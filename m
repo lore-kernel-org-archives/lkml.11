@@ -2,108 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6221C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 062CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:49:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344069AbiALRs6 (ORCPT
+        id S1344211AbiALRtI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:48:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45578 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240668AbiALRsx (ORCPT
+        Wed, 12 Jan 2022 12:49:08 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:58954 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344086AbiALRtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:48:53 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E36BCB81EA6;
-        Wed, 12 Jan 2022 17:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8ADA2C36AE5;
-        Wed, 12 Jan 2022 17:48:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642009730;
-        bh=v5HVJMOt7K5cfz9ChUmoP+h6WJ8BSd2gVzVjKi67/bs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=I5IBb8wMr1OFJJp1W4xiBKrGiLlzko0I4nZKxuwBG2kwloTU3de7Oz94htQwZBPr8
-         midFS13nAQX6Fs4UhOwPEDWTfK3m//xboWTelsPoUzvmjVnw9K46ZScJcMUUQytTur
-         7BunIoxoYHeHz3gAtPMyPmjMdrnivJ/PN5GYKIYXs6s6USAb1V/37faYc+sPS2afL5
-         CqFVDc8M5gI7eCI2dRDH7JnnKzHJTXdSGAokYiV0Zo58OAa8yhIaoDyWhDmGiNgESi
-         6OU0gIiFdHdDPRihZPjIdDbuzH9Rru5AYGe8XFWwDECAlPy1P1bWERHxc8HWk2dJEO
-         9TKEzmzEjOrAw==
-Received: by pali.im (Postfix)
-        id 2CEB5768; Wed, 12 Jan 2022 18:48:48 +0100 (CET)
-Date:   Wed, 12 Jan 2022 18:48:48 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v9 08/24] wfx: add bus_sdio.c
-Message-ID: <20220112174848.db5osolurllpc7du@pali>
-References: <20220111171424.862764-1-Jerome.Pouiller@silabs.com>
- <42104281.b1Mx7tgHyx@pc-42>
- <20220112114332.jadw527pe7r2j4vv@pali>
- <2680707.qJCEgCfB62@pc-42>
+        Wed, 12 Jan 2022 12:49:06 -0500
+Date:   Wed, 12 Jan 2022 18:49:03 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1642009744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HKPb/OgUpnzZpZ4ZaPFda8NZxcSKTOmxke8zHueMxac=;
+        b=1hQCpQQQ+jHY+D72ntC/E5Js8/B0BNdQPukf/gTE1gtTWD0umpu8zk8kmazRtUhScf/+C4
+        H3w+uALRaDkNI2HWGdJ/+yVrV2D54yzOl8DjmlfpvVsP5t8yJcOIhdHeldDcY8Ho4fpAHW
+        mvF6JrOBBWUmNz0qslncNKeMrjg6KuwoonPWpzskyfGOv368bLIynnxIa3ducHX0dXoaPj
+        5LQ60lUY8JICr0xXvcqBMcyXZTUeGR+Iz/f5Mr4cHvWYo6JK3u/2XQF7U2ip2xP/pqspaP
+        bjrVuwexhm0EGiQNDfpF5H7lzJRSQ4nHD5KMdI9XEHjNgmrn0OXYRf+nUeTtmA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1642009744;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HKPb/OgUpnzZpZ4ZaPFda8NZxcSKTOmxke8zHueMxac=;
+        b=IV0GB3BaIALcRkDSiM2M6ufawjT2zJkwDW0wms3ZNdsZ2piidnOHqn7fJLsWdOxnc6/NX9
+        IF8rBbUmblwOdIAQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Theodore Ts'o <tytso@mit.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: Re: [PATCH 5/5] random: Defer processing of randomness on PREEMPT_RT.
+Message-ID: <Yd8Ujw4t8DKYuhZK@linutronix.de>
+References: <20211207121737.2347312-1-bigeasy@linutronix.de>
+ <20211207121737.2347312-6-bigeasy@linutronix.de>
+ <CAHmME9q2Yid56ZZ9sBQWjEWEK2B06g3H9KYRwWqExXRoCdbPdA@mail.gmail.com>
+ <20211207201037.h46573oa5nfj33xq@linutronix.de>
+ <CAHmME9pzdXyD0oRYyCoVUSqqsA9h03-oR7kcNhJuPEcEMTJYgw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2680707.qJCEgCfB62@pc-42>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAHmME9pzdXyD0oRYyCoVUSqqsA9h03-oR7kcNhJuPEcEMTJYgw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wednesday 12 January 2022 17:45:45 Jérôme Pouiller wrote:
-> On Wednesday 12 January 2022 12:43:32 CET Pali Rohár wrote:
-> > 
-> > On Wednesday 12 January 2022 12:18:58 Jérôme Pouiller wrote:
-> > > On Wednesday 12 January 2022 11:58:59 CET Pali Rohár wrote:
-> > > > On Tuesday 11 January 2022 18:14:08 Jerome Pouiller wrote:
-> > > > > +static const struct sdio_device_id wfx_sdio_ids[] = {
-> > > > > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200) },
-> > > > > +     { },
-> > > > > +};
-> > > >
-> > > > Hello! Is this table still required?
-> > >
-> > > As far as I understand, if the driver does not provide an id_table, the
-> > > probe function won't be never called (see sdio_match_device()).
-> > >
-> > > Since, we rely on the device tree, we could replace SDIO_VENDOR_ID_SILABS
-> > > and SDIO_DEVICE_ID_SILABS_WF200 by SDIO_ANY_ID. However, it does not hurt
-> > > to add an extra filter here.
-> > 
-> > Now when this particular id is not required, I'm thinking if it is still
-> > required and it is a good idea to define these SDIO_VENDOR_ID_SILABS
-> > macros into kernel include files. As it would mean that other broken
-> > SDIO devices could define these bogus numbers too... And having them in
-> > common kernel includes files can cause issues... e.g. other developers
-> > could think that it is correct to use them as they are defined in common
-> > header files. But as these numbers are not reliable (other broken cards
-> > may have same ids as wf200) and their usage may cause issues in future.
-> 
-> In order to make SDIO_VENDOR_ID_SILABS less official, do you prefer to
-> define it in wfx/bus_sdio.c instead of mmc/sdio_ids.h?
-> 
-> Or even not defined at all like:
-> 
->     static const struct sdio_device_id wfx_sdio_ids[] = {
->          /* WF200 does not have official VID/PID */
->          { SDIO_DEVICE(0x0000, 0x1000) },
->          { },
->     };
+On 2021-12-20 15:38:58 [+0100], Jason A. Donenfeld wrote:
+> Hey Sebastian,
+Hi Jason,
 
-This has advantage that it is explicitly visible that this device does
-not use any officially assigned ids.
+> I think I understand the motivation for this patchset, and maybe it'll
+> turn out to be the only way of accomplishing what RT needs. But I
+> really don't like complicating the irq ingestion flow like that,
+> splitting the captured state into two pieces, and having multiple
+> entry points. It makes the whole thing more difficult to analyze and
+> maintain. Again, maybe we'll *have* to do this ultimately, but I want
+> to make sure we at least explore the alternatives fully.
 
-> 
-> 
-> -- 
-> Jérôme Pouiller
-> 
-> 
+Sure.
+
+> One thing you brought up is that the place where a spinlock becomes
+> problematic for RT is if userspace goes completely nuts with
+> RNDRESEEDCRNG. If that's really the only place where contention might
+> be harmful, can't we employ other techniques there instead? For
+> example, just ratelimiting the frequency at which RNDRESEEDCRNG can be
+> called _before_ taking that lock, using the usual ratelimit.h
+> structure?
+
+ratelimit. Didn't think about it.
+There is RNDRESEEDCRNG and RNDADDENTROPY from the user API and lets
+ignore the kernel users for the moment.
+With the DEFAULT_RATELIMIT_BURST we would allow 10 "concurrent"
+operations. This isn't as bad as previously but still not perfect (the
+latency number jumped up to 50us in a smoke test).
+Also in the !__ratelimit() case we would have to return an error. This
+in turn breaks the usecase where one invokes 11 times
+ioctl(,RNDADDENTROPY,) with a smaller buffer instead once with a big
+buffer. Not sure how bad this is but it creates corner cases=E2=80=A6
+We could also sleep & loop until __ratelimit() allows but it looks odd.
+
+>            Or, alternatively, what about a lock that very heavily
+> prioritizes acquisitions from the irq path rather than from the
+> userspace path? I think Herbert might have had a suggestion there
+> related to the net stack's sock lock?
+
+Using a semaphore might work. down_trylock() can be invoked from
+hard-irq context while the preemptible context would use down() and
+sleep if needed. add_interrupt_randomness() has already a trylock. We
+have add_disk_randomness() which is invoked from IRQ-context (on !RT) so
+we would have to use trylock there, too (for its mix_pool_bytes()
+invocation).
+The sock-lock is either always invoked from preemptible context or has a
+plan B in the contended case if invoked from atomic context. I'm not
+sure what plan B could be here in atomic context. I *think* we need to
+do these things and can't delay them.
+Now that I think about it, we could add a mutex_t which is acquired
+first for the user-API part to ensure that there is only one at a time
+(instead of using ratelimit). Assuming that there is nothing else in the
+kernel that can hammer on the lock (getrandom() is kind of rate
+limited). If we really want to go that road, I would have to retest and
+see how long extract_buf() holds the lock acquired.
+
+Either way, we still need to split out the possible crng_reseed()
+invocations (if (crng_init < 2)) due to crng_state::lock which must not
+be acquired on PREEMPT_RT in hard-irq context
+(add_interrupt_randomness() -> credit_entropy_bits()). I *think* the
+other places were fine.
+
+> Jason
+
+Sebastian
