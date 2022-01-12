@@ -2,93 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEF8C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347642AbiALBRE (ORCPT
+        id S1347649AbiALBSP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 20:17:04 -0500
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:37767 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347624AbiALBRC (ORCPT
+        Tue, 11 Jan 2022 20:18:15 -0500
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:38726 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347624AbiALBSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:17:02 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V1c8Chh_1641950209;
-Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V1c8Chh_1641950209)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 12 Jan 2022 09:16:50 +0800
-From:   Yang Li <yang.lee@linux.alibaba.com>
-To:     sathya.prakash@broadcom.com
-Cc:     sreekanth.reddy@broadcom.com,
-        suganath-prabu.subramani@broadcom.com,
-        MPT-FusionLinux.pdl@broadcom.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH -next] scsi: message: fusion: Fix returned errno code
-Date:   Wed, 12 Jan 2022 09:16:48 +0800
-Message-Id: <20220112011648.110287-1-yang.lee@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        Tue, 11 Jan 2022 20:18:13 -0500
+Received: by mail-oi1-f175.google.com with SMTP id g205so1458208oif.5;
+        Tue, 11 Jan 2022 17:18:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nVB/LbZ1J1wXE1Ii7isZsxNxi0pCiy7X8EJYggCNLlQ=;
+        b=vJ3WcaYZ/hsd01LRyoyvBHvVowP4hYi0zpRGqrCQSPGojD0J35L5sAwlCk5HiqHB1o
+         W3zcpYd+UZWqc8axaScY08e52P+VmKsGf04eOlNnLQfkGUL8tdzBK2hxUpphYlH6LiJq
+         gnnGLEWpv3VO9Avt3q1SghPCwygNBt+r/JqjG8NTEMfEGnA6edcu5mtv4p96E7CqhEDk
+         MIfcsOPFRvY11RZegELOl7v1pbojK/FiEpnPnwH7lWjWb7XFZjXyg3pK19tF8uatf3H9
+         FfJiEiqcMRetmd1OBgUv+LIR3MfjWPJw6O0cb9Xbo/AuzWZpoJ9Sr/MHgK8ax7eFE2ib
+         MOEQ==
+X-Gm-Message-State: AOAM531kiXFsHa4w08zIAsHZ2ieBaQy+Sbj2746ODLm/7gjJBI2eiDyM
+        zhvTDyft4nfiWGVZLlGG7A==
+X-Google-Smtp-Source: ABdhPJx6mGfS5+9C7D0U2P0swDthn7OrA6qrQoWt0cx5oB5/GfiM3kkjHoeXE3QkHv9gVOBbERy6HQ==
+X-Received: by 2002:a05:6808:f13:: with SMTP id m19mr3675906oiw.125.1641950293228;
+        Tue, 11 Jan 2022 17:18:13 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id v26sm2278862oos.13.2022.01.11.17.18.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 17:18:12 -0800 (PST)
+Received: (nullmailer pid 3851632 invoked by uid 1000);
+        Wed, 12 Jan 2022 01:18:11 -0000
+Date:   Tue, 11 Jan 2022 19:18:11 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Yassine Oudjana <y.oudjana@protonmail.com>
+Cc:     Nishanth Menon <nm@ti.com>, Niklas Cassel <nks@flawful.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Ilia Lin <ilia.lin@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        devicetree@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Subject: Re: [PATCH 7/7] dt-bindings: power: avs: qcom,cpr: Convert to DT
+ schema
+Message-ID: <Yd4sU6xS0A7Suvcv@robh.at.kernel.org>
+References: <20220104132618.391799-1-y.oudjana@protonmail.com>
+ <20220104132618.391799-8-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220104132618.391799-8-y.oudjana@protonmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The callers of initChainBuffers() and PrimeIocFifos() only
-cares about gross success/failure, but we still might as well
-resolve the following smatch warnings and fix the other error
-paths as well:
+On Tue, 04 Jan 2022 13:30:03 +0000, Yassine Oudjana wrote:
+> Convert qcom,cpr.txt to DT schema format.
+> 
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+> ---
+> Changes since v1:
+>  - Remove allOf from compatible.
+> 
+>  .../bindings/power/avs/qcom,cpr.txt           | 130 --------------
+>  .../bindings/power/avs/qcom,cpr.yaml          | 160 ++++++++++++++++++
+>  MAINTAINERS                                   |   2 +-
+>  3 files changed, 161 insertions(+), 131 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/power/avs/qcom,cpr.txt
+>  create mode 100644 Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml
+> 
 
-drivers/message/fusion/mptbase.c:4330 initChainBuffers() warn: returning
--1 instead of -ENOMEM is sloppy
-drivers/message/fusion/mptbase.c:4404 initChainBuffers() warn: returning
--1 instead of -ENOMEM is sloppy
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
----
- drivers/message/fusion/mptbase.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/message/fusion/mptbase.c b/drivers/message/fusion/mptbase.c
-index e90adfa57950..2c6ebc324bf8 100644
---- a/drivers/message/fusion/mptbase.c
-+++ b/drivers/message/fusion/mptbase.c
-@@ -4327,14 +4327,14 @@ initChainBuffers(MPT_ADAPTER *ioc)
- 		sz = ioc->req_depth * sizeof(int);
- 		mem = kmalloc(sz, GFP_ATOMIC);
- 		if (mem == NULL)
--			return -1;
-+			return -ENOMEM;
- 
- 		ioc->ReqToChain = (int *) mem;
- 		dinitprintk(ioc, printk(MYIOC_s_DEBUG_FMT "ReqToChain alloc  @ %p, sz=%d bytes\n",
- 			 	ioc->name, mem, sz));
- 		mem = kmalloc(sz, GFP_ATOMIC);
- 		if (mem == NULL)
--			return -1;
-+			return -ENOMEM;
- 
- 		ioc->RequestNB = (int *) mem;
- 		dinitprintk(ioc, printk(MYIOC_s_DEBUG_FMT "RequestNB alloc  @ %p, sz=%d bytes\n",
-@@ -4401,7 +4401,7 @@ initChainBuffers(MPT_ADAPTER *ioc)
- 	if (ioc->ChainToChain == NULL) {
- 		mem = kmalloc(sz, GFP_ATOMIC);
- 		if (mem == NULL)
--			return -1;
-+			return -ENOMEM;
- 
- 		ioc->ChainToChain = (int *) mem;
- 		dinitprintk(ioc, printk(MYIOC_s_DEBUG_FMT "ChainToChain alloc @ %p, sz=%d bytes\n",
-@@ -4440,7 +4440,7 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
- 
- 	if (ioc->reply_frames == NULL) {
- 		if ( (num_chain = initChainBuffers(ioc)) < 0)
--			return -1;
-+			return -ENOMEM;
- 		/*
- 		 * 1078 errata workaround for the 36GB limitation
- 		 */
--- 
-2.20.1.7.g153144c
-
+Reviewed-by: Rob Herring <robh@kernel.org>
