@@ -2,101 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 883C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B910C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:29:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347735AbiALB3E (ORCPT
+        id S1347746AbiALB34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 20:29:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347481AbiALB3D (ORCPT
+        Tue, 11 Jan 2022 20:29:56 -0500
+Received: from mail-oi1-f175.google.com ([209.85.167.175]:38895 "EHLO
+        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347481AbiALB3z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:29:03 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9765AC06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:29:03 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id t18so1665697plg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:29:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3Z+Ei60w2ioktXiC7mAi86WXP0yiOanAEQdnAPdW938=;
-        b=g96MK+3C1r7VhzMPJIHEH+x1e94MnCWzwtZP7Ov4d8ol0ihQ39NJrUFauJSn1EM3x/
-         bcAxQ3ssaDf+YU4jpOILUop3Ah0i/FtN9D3PqSUSfYTbAzgPTcMVmQnRHMxywUd6AJUR
-         d9BTzd23XMhhYNMIwIjloqkpJJskeSrvAQAI6bkzM9BXAmKF1QbZWLiZ8QK7wifg7UDK
-         jleqEV/m18QURVRcmzJFd83KZhvWezj6Kvs05xPP8plJzjnxPA6Z8LEurLPQPo/r4NV2
-         7jhxl6p7j7N4YvqCdHxRllszxvK6wIE8okv26dDFOr/DYf1HytgqPzUa3fAO4pxkQvw5
-         6UsQ==
+        Tue, 11 Jan 2022 20:29:55 -0500
+Received: by mail-oi1-f175.google.com with SMTP id g205so1484356oif.5;
+        Tue, 11 Jan 2022 17:29:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3Z+Ei60w2ioktXiC7mAi86WXP0yiOanAEQdnAPdW938=;
-        b=FSwd1p2XjKNSiM4YD3sz+Wt22/JYBZVa/tCdCK6M/tIDdbaYOX1FSC5uhcSX7X9RHr
-         efMzjCaiayBxU7j7BX0cjOQmw0liaWTJbW/jSbR9huX4UzDQvAREgRtHZA+8SdJbjNif
-         E8UsIxNBc+Zz1A0ah1DLTllXKoLsZ2D1j8ai4xJxy0CBDZns3gF+/GrdDFmQGwbrvPCR
-         5eD0XXNnakxfaLgaJUkjYqBhmGmbNYi9rjF8qtNpPgMB/k+LOULAiSN3fUCV9g9ck5nQ
-         d0QNMhFDtp4rP52kk13erHwsDhAHjy/qnCvFgfULIRq+agL6Q5VDg2qLNLIOD33NY042
-         UAmw==
-X-Gm-Message-State: AOAM530e4e+EAc0GqFw/wP8uKdHTYh5nUyNRCpUm6IHuO38rxTTIrkP7
-        onToaUJlhlfCybnJ75gScuv/nA==
-X-Google-Smtp-Source: ABdhPJxwdALuACZdnBHuvH6YRa65O5LGXz6cdHNbKd3Ed9cXftu4h5W2A/V0xtTiUXL3THcaE+b7RQ==
-X-Received: by 2002:a63:461c:: with SMTP id t28mr6388540pga.547.1641950942978;
-        Tue, 11 Jan 2022 17:29:02 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id o186sm11044974pfb.187.2022.01.11.17.29.02
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=JQUjCC5RsS3V1MvvzDzPIF+rIzFXHuMqepYoCDJMKc0=;
+        b=jRTyvuVU4VM/wQU1fqJvxJsPLA7gdW1l5koalYA3ufwNDsFKudB442XckwcMsN69UK
+         fcJVQ9A+wPO2Lzv7+H0ZgekkgVelnlm/dU3VIlh2wCQQJXPi5B9EtGMtq3oQFeqwnFWo
+         B1Nlot886xbcwS6pas57YGXg4qHSaNYaXWJLprVPhsZ3cGkMKuIsnPteaDjktvKDQWiG
+         uhtn0SrKHYEZMKZ1wm9YTe2y4ZuUjOXNdY0drDvvmTSwqpYv8LAc8wYQ/f8Ci7o9QMHS
+         5bemGiz5orwotvUK8wq2kQsDLvRYNZZ6ak8vGSgvHO/GS1xqky563FG6mgkU/JAIprow
+         /HVA==
+X-Gm-Message-State: AOAM533Sqx/YgC+E7lq3fgoOKp9QE3lbDmsNWIIAUgeZhFg28+wpJKID
+        EWr8nRhGx448AxgFaszvog==
+X-Google-Smtp-Source: ABdhPJw7M1Fxl218+YI4X4u9dzoXOt0BGQ6nVgaaR3bUUGQy8x5inZnOqNlFZjKfipCheLMl8JH4fQ==
+X-Received: by 2002:a05:6808:219e:: with SMTP id be30mr3836347oib.80.1641950995238;
+        Tue, 11 Jan 2022 17:29:55 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id j16sm2321107otn.30.2022.01.11.17.29.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Jan 2022 17:29:02 -0800 (PST)
-Date:   Wed, 12 Jan 2022 01:28:58 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     kernel test robot <oliver.sang@intel.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
-        lkp@lists.01.org, lkp@intel.com
-Subject: Re: [x86/entry_32]  aa93e2ad74:
- BUG:soft_lockup-CPU##stuck_for#s![systemd-logind:#]
-Message-ID: <Yd4u2rVVSdpEpwwM@google.com>
-References: <20220106083523.GB32167@xsang-OptiPlex-9020>
- <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
+        Tue, 11 Jan 2022 17:29:54 -0800 (PST)
+Received: (nullmailer pid 3868556 invoked by uid 1000);
+        Wed, 12 Jan 2022 01:29:53 -0000
+Date:   Tue, 11 Jan 2022 19:29:53 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: Re: [PATCH 04/11] dt-bindings: PCI: mvebu: Add num-lanes property
+Message-ID: <Yd4vESC55qFruR/6@robh.at.kernel.org>
+References: <20220105150239.9628-1-pali@kernel.org>
+ <20220105150239.9628-5-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220105150239.9628-5-pali@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022, Peter Zijlstra wrote:
-> On Thu, Jan 06, 2022 at 04:35:23PM +0800, kernel test robot wrote:
-> > 
-> > 
-> > Greeting,
-> > 
-> > FYI, we noticed the following commit (built with clang-14):
-> > 
-> > commit: aa93e2ad7464ffb90155a5ffdde963816f86d5dc ("x86/entry_32: Remove .fixup usage")
-> > https://git.kernel.org/cgit/linux/kernel/git/tip/tip.git x86/core
-> > 
-> > in testcase: kernel-selftests
-> > version: 
-> > with following parameters:
-> > 
-> > 	group: x86
-> > 
+On Wed, 05 Jan 2022 16:02:32 +0100, Pali Rohár wrote:
+> Controller driver needs to correctly configure PCIe link if it contains 1
+> or 4 SerDes PCIe lanes. Therefore add a new 'num-lanes' DT property for
+> mvebu PCIe controller. Property 'num-lanes' seems to be de-facto standard
+> way how number of lanes is specified in other PCIe controllers.
 > 
-> It would be very useful if this thing would also say which of the many
-> x86 selftests fails... it appears to be: ldt_gdt_32.
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/pci/mvebu-pci.txt | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
-> The below fixes it, but I'm still not entirely sure what the actual
-> problem is, although Andy did find a bug in that the exception handler
-> should do: *(ss:esp) = 0, adding ss-base (using insn_get_seg_base())
-> doesn't seem to cure things.
 
-Because I was curious...
-
-The issue is that PARANOID_EXIT_TO_KERNEL_MODE in the handle_exception_return
-path overwrites the entry stack data with the task stack data, restoring the "bad"
-segment value.
+Acked-by: Rob Herring <robh@kernel.org>
