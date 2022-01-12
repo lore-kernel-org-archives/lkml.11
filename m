@@ -2,71 +2,219 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B925C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3457C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355962AbiALSB0 (ORCPT
+        id S1350082AbiALSCM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:01:26 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4408 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355854AbiALSBC (ORCPT
+        Wed, 12 Jan 2022 13:02:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49964 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348660AbiALSBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:01:02 -0500
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JYwJy5Ymnz67M49;
-        Thu, 13 Jan 2022 01:58:10 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 12 Jan 2022 19:00:59 +0100
-Received: from [10.47.88.157] (10.47.88.157) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Wed, 12 Jan
- 2022 18:00:58 +0000
-Subject: Re: [PATCH v3 1/2] perf test: Workload test of metric and
- metricgroups
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-CC:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        "Namhyung Kim" <namhyung@kernel.org>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        "Paul A . Clarke" <pc@us.ibm.com>,
-        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <eranian@google.com>
-References: <20210917184240.2181186-1-irogers@google.com>
- <YU4iVcVc6uYAWft4@kernel.org>
- <158a1451-9d69-d67d-3fad-9e947112f9e6@huawei.com>
- <BD3A5CA5-B566-4FD9-9409-0329CC322060@gmail.com>
- <e7b20497-e2bb-0c63-3cea-b6f541e2361f@huawei.com>
- <Yd8XEhgN/RCO8Q4l@kernel.org>
-From:   John Garry <john.garry@huawei.com>
-Message-ID: <66c852d8-2120-ef0a-b451-7c453764399e@huawei.com>
-Date:   Wed, 12 Jan 2022 18:00:37 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        Wed, 12 Jan 2022 13:01:37 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E615A61919;
+        Wed, 12 Jan 2022 18:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F21A3C36AEA;
+        Wed, 12 Jan 2022 18:01:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642010496;
+        bh=RObMG0dHmdYn2QMJjA3U/N3geP2MYfxGzJCaDrQK4zk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=ZlTWqV6kXo1SbH9Rz38GYh/LQ8TqMoGyl/c2Yslw1STcKn08ObxjJuJGaKHckUIb5
+         FnLzotD9/zVlEPAsxa6CUBhJsCYP/QPqXKB426mEtfwFXULvjTbBDRro9yZmKkzsam
+         rpU/YnXEPpuPNUQ6EWOU3fGfq4d1MOSZml04sibMTAAB9gBh2tpXk/zXjz+oGwDH4I
+         BTx2mhUhN5w38aF6SOI0+uUKWkQNQE/h4jTE/XvAS9MNBDizypiKVs1qU1PlV6EJXP
+         5ptzgBDeoUrxocy+bHcW4wyATwlWd+Gk3AC1jT8oM6ABYc7i+lH3NE5rf3rJzhFfZ3
+         8Ubh4SHm4qeXw==
+Date:   Wed, 12 Jan 2022 12:01:34 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc:     bhelgaas@google.com, lukas@wunner.de,
+        zhangliguang@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [RFC PATCH v2] PCI: Waiting command completed in
+ get_port_device_capability()
+Message-ID: <20220112180134.GA251670@bhelgaas>
 MIME-Version: 1.0
-In-Reply-To: <Yd8XEhgN/RCO8Q4l@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.88.157]
-X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8ecf5265-2059-1149-3f7f-916c61b20cef@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/01/2022 17:59, Arnaldo Carvalho de Melo wrote:
->>> There's a patch there that maybe fixes this.
->> Yeah, that (metricgroups) test passes on that branch. I assume it's the test
->> script -a change...
-> Can I get  that as a Tested-by: you tag?
+On Wed, Jan 12, 2022 at 03:33:25PM +0800, Yao Hongbo wrote:
+> 
+> 
+> 在 2022/1/12 上午2:55, Bjorn Helgaas 写道:
+> > [+cc Lukas, Rafael (in case you have any recollection of 2bd50dd800b5)]
+> > 
+> > On Fri, Jan 07, 2022 at 11:22:49AM +0800, Yao Hongbo wrote:
+> >> According to the PCIe specification Revision 5.0, section
+> >> 7.5.3.11 (slot Status Register), if Command Complete notification
+> >> is supported,  a write to the slot control register needs to set
+> >> the command completed bit, which can indicate the controller is
+> >> ready to receive the next command.
+> >>
+> >> However, before probing the pcie hotplug service, there needs to set
+> >> HPIE bit in the slot ctrl register to disable hotplug interrupts,
+> >> and there is no wait currently.
+> >>
+> >> The interval between the two functions get_port_device_capability() and
+> >> pcie_disable_notification() is not long, which may cause the latter to
+> >> be interfered by the former.
+> >>
+> >> The command complete event received by pcie_disable_notification() may
+> >> belong to the operation of get_port_device_capability().
+> > 
+> > Yes, looks like a potential problem.
+> > 
+> >> Signed-off-by: Liguang Zhang <zhangliguang@linux.alibaba.com>
+> >> Signed-off-by: Yao Hongbo <yaohongbo@linux.alibaba.com>
+> >> ---
+> >>  drivers/pci/pcie/portdrv_core.c | 40 ++++++++++++++++++++++++++++++++++++++--
+> >>  1 file changed, 38 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+> >> index bda6308..ec2088b6e 100644
+> >> --- a/drivers/pci/pcie/portdrv_core.c
+> >> +++ b/drivers/pci/pcie/portdrv_core.c
+> >> @@ -15,6 +15,7 @@
+> >>  #include <linux/string.h>
+> >>  #include <linux/slab.h>
+> >>  #include <linux/aer.h>
+> >> +#include <linux/delay.h>
+> >>  
+> >>  #include "../pci.h"
+> >>  #include "portdrv.h"
+> >> @@ -190,6 +191,42 @@ static int pcie_init_service_irqs(struct pci_dev *dev, int *irqs, int mask)
+> >>  	return 0;
+> >>  }
+> >>  
+> >> +static void pcie_port_disable_hp_interrupt(struct pci_dev *dev)
+> >> +{
+> >> +	u16 slot_status;
+> >> +	u32 slot_cap;
+> >> +	int timeout = 1000;
+> >> +
+> >> +	pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+> >> +			PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+> >> +
+> >> +	/*
+> >> +	 * If the command completed notification is not supported,
+> >> +	 * we don't need to wait after writing to the slot ctrl register.
+> >> +	 */
+> >> +	pcie_capability_read_dword(dev, PCI_EXP_SLTCAP, &slot_cap);
+> >> +	if (slot_cap & PCI_EXP_SLTCAP_NCCS)
+> >> +		return;
+> >> +
+> >> +	do {
+> >> +		pcie_capability_read_word(dev, PCI_EXP_SLTSTA, &slot_status);
+> >> +		if (slot_status == (u16) ~0) {
+> >> +			pci_info(dev, "%s: no response from device\n",  __func__);
+> >> +			return;
+> >> +		}
+> >> +
+> >> +		if (slot_status & PCI_EXP_SLTSTA_CC) {
+> >> +			pcie_capability_write_word(dev, PCI_EXP_SLTSTA, PCI_EXP_SLTSTA_CC);
+> >> +			return;
+> >> +		}
+> >> +
+> >> +		msleep(10);
+> >> +		timeout -= 10;
+> >> +	} while (timeout >= 0);
+> >> +
+> >> +	pci_info(dev, "Timeout on hotplug disable interrupt!\n");
+> >> +}
+> >> +
+> >>  /**
+> >>   * get_port_device_capability - discover capabilities of a PCI Express port
+> >>   * @dev: PCI Express port to examine
+> >> @@ -213,8 +250,7 @@ static int get_port_device_capability(struct pci_dev *dev)
+> >>  		 * Disable hot-plug interrupts in case they have been enabled
+> >>  		 * by the BIOS and the hot-plug service driver is not loaded.
+> >>  		 */
+> >> -		pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+> >> -			  PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+> >> +		pcie_port_disable_hp_interrupt(dev);
+> > 
+> > This originally came from 2bd50dd800b5 ("PCI: PCIe: Disable PCIe port
+> > services during port initialization"), where we disable hotplug
+> > interrupts in case the hotplug driver is not available.
+> > 
+> > In general, I think the OS should not be responsible for disabling
+> > interrupts for feature X.  The OS may predate feature X and may not
+> > know anything about X at all.  The power-on default for interrupts
+> > related to X should be "disabled" (as it is for HPIE and CCIE), and if
+> > firmware enables them, it should disable them or arrange to handle
+> > them itself before handing off to the OS.
+> > 
+> > I don't know whether 2bd50dd800b5 was prompted by spurious hotplug
+> > interrupts or not.  If it was, I think we were seeing a firmware
+> > defect or possibly a pciehp initialization issue.
+> > 
+> > At the time of 2bd50dd800b5, we always cleared HPIE and CCIE here.
+> > 
+> > But now, on ACPI systems, we only clear HPIE and CCIE here if we *do*
+> > have the hotplug driver (because host->native_pcie_hotplug only
+> > remains set if we have been granted control via _OSC, and we only
+> > request control when CONFIG_HOTPLUG_PCI_PCIE is enabled).  On these
+> > systems, we should be able to remove this disable code because pciehp
+> > will do whatever it needs.
+> > 
+> > For non-ACPI systems, bridge->native_pcie_hotplug will always be set,
+> > so we will clear HPIE and CCIE here and then (if
+> > CONFIG_HOTPLUG_PCI_PCIE is enabled) initialize pciehp soon after,
+> > which may be a problem as you describe.
+> > 
+> > What kind of system are you seeing the problem on?  It seems like it
+> > should be safe to drop the HPIE and CCIE disable here for ACPI
+> > systems.  And *likely* we could do the same for non-ACPI systems,
+> > though I have no experience there.
+> 
+> Hi, Bjorn
+> Thanks for your comments.
+> 
+> The problem occurs on ACPI systems.
+> 
+>  acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI EDR HPX-Type3]
+>  acpi PNP0A08:00: _OSC: platform does not support [SHPCHotplug AER LTR DPC]
+>  acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME PCIeCapability]
+> 
+> We clear HPIE and CCIE here because the firmware doesn't control
+> Hotplug via __OSC.
+> 
+> And on ACPI systems, we can also set pcie_ports=native, which will
+> also encounter such problems.
 
-Tested-by: John Garry <john.garry@huawei.com>
+What happens if you just drop that call like the patch below?
+
+If that avoids the problem, then we can talk about whether we need to
+worry about broken firmware in the non-ACPI or "pcie_ports=native"
+cases.
+
+diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+index bda630889f95..76a3bd237bf9 100644
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -208,13 +208,6 @@ static int get_port_device_capability(struct pci_dev *dev)
+ 	if (dev->is_hotplug_bridge &&
+ 	    (pcie_ports_native || host->native_pcie_hotplug)) {
+ 		services |= PCIE_PORT_SERVICE_HP;
+-
+-		/*
+-		 * Disable hot-plug interrupts in case they have been enabled
+-		 * by the BIOS and the hot-plug service driver is not loaded.
+-		 */
+-		pcie_capability_clear_word(dev, PCI_EXP_SLTCTL,
+-			  PCI_EXP_SLTCTL_CCIE | PCI_EXP_SLTCTL_HPIE);
+ 	}
+ 
+ #ifdef CONFIG_PCIEAER
