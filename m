@@ -2,119 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E7AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 07:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE207C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 07:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351096AbiALHDx (ORCPT
+        id S1351103AbiALHGj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 02:03:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232181AbiALHDw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 02:03:52 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0B3AC06173F;
-        Tue, 11 Jan 2022 23:03:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=B7oR5l7h0xuDP9JkX9UDFLPOyakW7jPGUaFIedqZLKM=; b=ALPDjET2IPPnr29smamizRIwBR
-        MWLZ7saJYUtW5+15kJkTnMhfYXVh2fhKAmh8368gqR/G/8+oY/51j4QzGpE/TGxslgvC/OUVfTa8b
-        sme1cQBHlG6P8ik1cH9uNbueJLsd9FPAzKfUcnavdIo4pz1dnM24GG28AuWihddIdcBe19XTlspV5
-        78GlkHzWt/PlrvrJt+TjNyHj/9RjB0wezmSZrrSGnJWKvstGg0Ur5Ao9YojceyFghaVF/vnZ1Q9Ap
-        oWib4BV6bYLujt7cMleA2MACmgN2iT1JKL7M4r4DRZatw2l9p5KGGm8WFmQRK+ul7OVkZqg5nYrLq
-        ku3LD3lQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7Xfe-000kn9-PH; Wed, 12 Jan 2022 07:03:47 +0000
-Message-ID: <da39d895-61fc-5ca2-64e0-e31e20e98245@infradead.org>
-Date:   Tue, 11 Jan 2022 23:03:41 -0800
+        Wed, 12 Jan 2022 02:06:39 -0500
+Received: from mga05.intel.com ([192.55.52.43]:33619 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237328AbiALHGi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 02:06:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641971198; x=1673507198;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=w1S6Ea3urNn5/maW8twjQA1LVYjr4EJNP9bamJwc15Y=;
+  b=UuPxU7y8SQi8k7vdZ/zTXb01ntsy0BYrKWC7CBKrBZmmQ+W8LvPXf+tK
+   gRRIubLn2HVrdHGxnvm/hv19GOin+GUA06umEeeoN+yfYwNsoIdgYvhbx
+   hAATAyDtNug0ZBRX0cNc6Vt8QqELIzAYWRe8ksnMku0ZHSjeTjsMWezPZ
+   nMCPzL6GE0q6FjFapNh35okJypgFJLjGvqUw19KLti/9TCDIzA2fIyUDs
+   szHFnn3aRw/vwcjL2EdNRe5bZddpKIF7453jhu73iy2iRhfdayp4jqRWf
+   tgIwLEz7NYUcS9j4sDDqGS84cfRCXXnVLiOraVp68JMYJXhae26MKzmxe
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="330022111"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="330022111"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2022 23:06:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="472736893"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.92]) ([10.237.72.92])
+  by orsmga003.jf.intel.com with ESMTP; 11 Jan 2022 23:06:36 -0800
+Subject: Re: [PATCH] mmc: sdhci-of-esdhc: Check for error num after setting
+ mask
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>, ulf.hansson@linaro.org
+Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220106021638.2527426-1-jiasheng@iscas.ac.cn>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Message-ID: <ae5373d2-372a-5eb6-1b2a-7b1dae888355@intel.com>
+Date:   Wed, 12 Jan 2022 09:06:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] firmware_loader: simplfy builtin or module check
+In-Reply-To: <20220106021638.2527426-1-jiasheng@iscas.ac.cn>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Borislav Petkov <bp@suse.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        Borislav Petkov <bp@alien8.de>
-References: <20220112023416.215644-1-mcgrof@kernel.org>
- <3e721c69-afa9-6634-2e52-e9a9c2a89372@infradead.org>
- <CAK7LNARiDFpphJrhk5q00d5sSPWAQ2mMLu8Z2YP0Xwk=3WGt3w@mail.gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <CAK7LNARiDFpphJrhk5q00d5sSPWAQ2mMLu8Z2YP0Xwk=3WGt3w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 06/01/2022 04:16, Jiasheng Jiang wrote:
+> Because of the possible failure of the dma_supported(), the
+> dma_set_mask_and_coherent() may return error num.
+> Therefore, it should be better to check it and return the error if
+> fails.
+> Also, the caller, esdhc_of_resume(), should deal with the return value.
+> Moreover, as the sdhci_esdhc_driver has not been used, it does not need to
+> be considered.
 
-
-On 1/11/22 22:56, Masahiro Yamada wrote:
-> On Wed, Jan 12, 2022 at 3:37 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->>
->>
->>
->> On 1/11/22 18:34, Luis Chamberlain wrote:
->>> The existing check is outdated and confuses developers. Use the
->>> already existing IS_ENABLED() defined on kconfig.h which makes
->>> the intention much clearer.
->>>
->>> Reported-by: Borislav Petkov <bp@alien8.de>
->>> Reported-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
->>
->> Acked-by: Randy Dunlap <rdunlap@infradead.org>
->>
->> Thanks.
->>
->>> ---
->>>  include/linux/firmware.h | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/include/linux/firmware.h b/include/linux/firmware.h
->>> index 3b057dfc8284..fa3493dbe84a 100644
->>> --- a/include/linux/firmware.h
->>> +++ b/include/linux/firmware.h
->>> @@ -34,7 +34,7 @@ static inline bool firmware_request_builtin(struct firmware *fw,
->>>  }
->>>  #endif
->>>
->>> -#if defined(CONFIG_FW_LOADER) || (defined(CONFIG_FW_LOADER_MODULE) && defined(MODULE))
->>
->> The "defined(MODULE)" part wasn't needed here. :)
-> 
-> 
-> 
-> It _is_ needed.
-> 
-> This seems to be equivalent to IS_REACHABLE(CONFIG_FW_LOADER),
-> not IS_ENABLE(CONFIG_FW_LOADER).
-> 
-
-Hm, /me confused.
-
-How can CONFIG_FW_LOADER_MODULE be =y when MODULE is not defined?
+Apologies, but that last sentence I don't understand.  Can you clarify it a bit.
+What doesn't need to be considered and why?
 
 > 
+> Fixes: 5552d7ad596c ("mmc: sdhci-of-esdhc: set proper dma mask for ls104x chips")
+> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+> ---
+>  drivers/mmc/host/sdhci-of-esdhc.c | 13 ++++++++++---
+>  1 file changed, 10 insertions(+), 3 deletions(-)
 > 
->>
->>> +#if IS_ENABLED(CONFIG_FW_LOADER)
->>>  int request_firmware(const struct firmware **fw, const char *name,
->>>                    struct device *device);
->>>  int firmware_request_nowarn(const struct firmware **fw, const char *name,
->>
->> --
->> ~Randy
-> 
-> 
+> diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
+> index a593b1fbd69e..bedfc7bb5174 100644
+> --- a/drivers/mmc/host/sdhci-of-esdhc.c
+> +++ b/drivers/mmc/host/sdhci-of-esdhc.c
+> @@ -524,12 +524,16 @@ static void esdhc_of_adma_workaround(struct sdhci_host *host, u32 intmask)
+>  
+>  static int esdhc_of_enable_dma(struct sdhci_host *host)
+>  {
+> +	int ret;
+>  	u32 value;
+>  	struct device *dev = mmc_dev(host->mmc);
+>  
+>  	if (of_device_is_compatible(dev->of_node, "fsl,ls1043a-esdhc") ||
+> -	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc"))
+> -		dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
+> +	    of_device_is_compatible(dev->of_node, "fsl,ls1046a-esdhc")) {
+> +		ret = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(40));
+> +		if (ret)
+> +			return ret;
+> +	}
+>  
+>  	value = sdhci_readl(host, ESDHC_DMA_SYSCTL);
+>  
+> @@ -1245,7 +1249,10 @@ static int esdhc_of_resume(struct device *dev)
+>  
+>  	if (ret == 0) {
+>  		/* Isn't this already done by sdhci_resume_host() ? --rmk */
+> -		esdhc_of_enable_dma(host);
+> +		ret = esdhc_of_enable_dma(host);
+> +		if (ret)
+> +			return ret;
+> +
+
+This is already done by sdhci_resume_host(), which assumes there can be no
+error if DMA has been enabled previously i.e. -> enable_dma() is called
+at setup and the return value checked then.  If it is possible that DMA
+support can disappear later, then it would be better to address that in
+SDHCI so that all SDHCI drivers get the benefit.
+
+>  		sdhci_writel(host, esdhc_proctl, SDHCI_HOST_CONTROL);
+>  	}
+>  	return ret;
 > 
 
--- 
-~Randy
