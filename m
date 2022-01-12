@@ -2,95 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1CB0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:07:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349613AbiALKHO (ORCPT
+        id S1352246AbiALKHb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239196AbiALKHM (ORCPT
+        Wed, 12 Jan 2022 05:07:31 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:55836
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349646AbiALKHa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:07:12 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68348C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:07:11 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id k21so6453711lfu.0
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:07:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GerQkM1D1/dtyEjqZ2IhcUhmklKFjm+Rp3i7RHnixt4=;
-        b=g51pKtYy3n2X3cjA0vkZhWSvlnGSr9kigKTQ7qDEnhQho7zpS/e8HgntFCIy1VpWs5
-         pphSrcDFAZnc/+UE9nFNJOQnDKVl+QEq/u9+7V5knHCzY1/elsE3sF789w8px7d5vPGj
-         ef7BWooEl5EftaecqIhFZndwc6OSyIwh6plZcoQLBqmLDiyMTy8zJD18+fUX8F83POez
-         z45rvIjiiEkss8wAI+EBNbnDLN53jZq4WmX1oyqawvVdL9vt0kzza+i247MTNyz2yep0
-         H15V/GeT+ko4K2V+beHSWAZZ+F3s86XpPAgLk9F3TgXt5fEDIOcSquKzK0GPocRCJMnO
-         bI5g==
+        Wed, 12 Jan 2022 05:07:30 -0500
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7D2233FFDE
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:07:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641982049;
+        bh=AFoEvp5eWcTOKPSE4vqU4Dm4wZS4JP2i5S4paCY8zig=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=DhPTLHtslM1nJL0+yJHCfEFe167fbm6XtOOvmUCTXWng6ZtSIx96BC3FHJ3hlpKwb
+         JfwQd/MW4UBe6OyZYCKR1jbDp4BpIq+u50s436RHDP5prJGprVjw7+TtG5xJP2pI5K
+         irA3G+aIdx0ltLgQAWHfp+Dwmc3Ddp508Zv4RW6HL6nH+3Otq6Zi7w+PgZz8WqqfFj
+         4nYJHy3S2ccEdmjc9EzLt8CvV20S43L/7DvA+1gDKOdyr2DTl1++ZCqr/yMC5wHnna
+         2E68zIvXQSCe9GdBZ1NUKTf+g5utqQPEd5xlbT97e9tFlnqofF/5QgPWDvLfXKZ3X+
+         ezD40Hk2+TPWw==
+Received: by mail-ed1-f71.google.com with SMTP id j10-20020a05640211ca00b003ff0e234fdfso1879533edw.0
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:07:29 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=GerQkM1D1/dtyEjqZ2IhcUhmklKFjm+Rp3i7RHnixt4=;
-        b=Qaf2JErniENGPGQ1pqLrZkUTi3ssURBAYp5pu4CclJnT/HxCuQ3K/WYeSX4USWlpm5
-         OdqyfDSB1qTqX8DvLy9BwQ7qwfmmnhKt1dZNMEFIsb/sza1Wv2eOlF4ORH7YcoMWCCMS
-         3GEHhysLjGfqE0366axpeXo718C0Ss3a2Rtbgi3+eFcJ9z0NgJCWC8hhSeMxo+TPb0Eg
-         cp3ElnXS/JdisqsqGKLii5qgux+Ea0Sx3qMRiYpzm0trbPXSD50250ECrdhuUesFGqPn
-         JOGZKhEtIvYH6feizSLoCHiDLAIxRE4CMAf5ygOhj4YHdtk7G9iYic4l1brE9oWTr66u
-         EnEg==
-X-Gm-Message-State: AOAM530406K3h/+iMKuo0gRH+5el6T5v+peEX4GBOBAxvo25yc/Ntjmd
-        +F2fqOVmypWlX5WsPBu6q6o=
-X-Google-Smtp-Source: ABdhPJxVOClSrkFNSsDrkgnpv3GX6Jm5wp4/8uESYtlYdOwFu5Gi1NwJ6uTENYE6lOF4O+As6PzVdw==
-X-Received: by 2002:a05:6512:114e:: with SMTP id m14mr6662011lfg.414.1641982029764;
-        Wed, 12 Jan 2022 02:07:09 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id y9sm1597964lfl.235.2022.01.12.02.07.08
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Wed, 12 Jan 2022 02:07:09 -0800 (PST)
-Date:   Wed, 12 Jan 2022 13:12:49 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
-User-Agent: mtt
-References: <20210519170357.58410-1-jeremy.szu@canonical.com>
- <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
- <s5ho84h9tit.wl-tiwai@suse.de>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=AFoEvp5eWcTOKPSE4vqU4Dm4wZS4JP2i5S4paCY8zig=;
+        b=1V4S0ttwEAXOWpvzLVa8mhk5sKqS7fqK6gTDnNBLYWcKypQBFR8WesG7xa5jk3c5v7
+         dtlmgx5qt98WrCKRj0kedM1ofA0Pa5YlX6FdFWwYVC5d58YGoDSwyx8iQjTUdauelEn1
+         CCh1L+U2SDP09rY1yq+CVzoPzO41UlocrI5m+iVUexMi/ZcIGWEbuxDwN1mLswwK9XAU
+         z91Xgq/Vwj7YTUxViMVzyrZA9jN/w5mo+bflWARIc/l7ZO16iSjf8ufja8glA4Fon/45
+         WXqqV9K2KXrpbl4YYNcwYE1mFbXn9XjH/FLZ93wRnrqODqqguH5iNGbjgz5ovT+s6hx7
+         hwsw==
+X-Gm-Message-State: AOAM531ct5/PJb4gw8voNeo7lUMJQBzdz4G+EZms7N2ejL+/ljyZikFd
+        Uw0/sFAGTa2RCXOwSu8dB1g2cuKb9PX3VHVd3gbw0BJJKasWA4AOFy6FddOCoy2XlaoIN0uqwLs
+        olfAlnSld81zqo07Uy232kj1STXDt0lbmGtnG0MVgwg==
+X-Received: by 2002:a17:906:2bc3:: with SMTP id n3mr7252232ejg.332.1641982049156;
+        Wed, 12 Jan 2022 02:07:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyb/NuTKevzN07lPwyurPSJI67fCctIz9rq4OSgNTLHT/x3rRMME7Elc/Be6y3vkmR9tseimQ==
+X-Received: by 2002:a17:906:2bc3:: with SMTP id n3mr7252215ejg.332.1641982048986;
+        Wed, 12 Jan 2022 02:07:28 -0800 (PST)
+Received: from [192.168.0.29] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id qf18sm2471944ejc.124.2022.01.12.02.07.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 02:07:28 -0800 (PST)
+Message-ID: <38217570-9f19-2b04-6ed0-89f365e29d5f@canonical.com>
+Date:   Wed, 12 Jan 2022 11:07:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <s5ho84h9tit.wl-tiwai@suse.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v3] nfc: st-nci: Fix potential buffer overflows in
+ EVT_TRANSACTION
+Content-Language: en-US
+To:     Jordy Zomer <jordy@pwning.systems>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, wengjianfeng@yulong.com
+References: <20211117171554.2731340-1-jordy@pwning.systems>
+ <20220111164543.3233040-1-jordy@pwning.systems>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220111164543.3233040-1-jordy@pwning.systems>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 10:45:46AM +0100, Takashi Iwai wrote:
->The problem is about the built-in drivers, or do you see the very same 
->problem even with modules?
+On 11/01/2022 17:45, Jordy Zomer wrote:
+> It appears that there are some buffer overflows in EVT_TRANSACTION.
+> This happens because the length parameters that are passed to memcpy
+> come directly from skb->data and are not guarded in any way.
+> 
+> Signed-off-by: Jordy Zomer <jordy@pwning.systems>
+> ---
+>  drivers/nfc/st-nci/se.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
 
-The problem is definitely there for the built-in drivers which I've tested 
-quite a lot. It's the primary usecase for me, as I tend to build minimal 
-device-specific and self-contained kernels in Gentoo.
+Looks ok.
 
-For builds with modules things are not very consistent. Live Ubuntu with an 
-older (and probably vendor-patched) kernel works just fine, but when I pull 
-Ubuntu kernel sources and build it with the mostly same config (including 
-modules) it boots with no sound in Gentoo. Mostly same -- because I need nvme 
-drivers to be built-in as I don't use initrd.
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
->AFAIK, quite a few AMD platforms tend to have some issues with various devices 
->showing initialization problems at the early boot. Just reloading / rebinding 
->the device later often helps.
 
-Is it possible to do with the built-in drivers?
+Best regards,
+Krzysztof
