@@ -2,115 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A57EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:34:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3B1FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355327AbiALQe4 (ORCPT
+        id S1355351AbiALQe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:34:56 -0500
-Received: from mga03.intel.com ([134.134.136.65]:39139 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349883AbiALQea (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:34:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642005270; x=1673541270;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=aod0rESj2tmUNh9cIi6+7c8/Hjx+ItwzShrZRDcswhk=;
-  b=EQGuLpQZGM30CypeAZ8hVJdNwOHFiOrPNRC1FvE/djJyXT1l4/IwBkSF
-   OOt4589V3gI4l2WKHdaVG7we8naNA+qgKyvMJ9xBfFqqI7MextbxghmVf
-   AESIu8BrB2g6+AekJSXSgRk0mQpbWyzPFq11+bRv96BdNuQQmCg0+iCPV
-   RydFjUf6Bnch4xe8WIwjyzWb0PtVXp/+81z9czi7i1ASNMf+6prz0uGay
-   kbLOEM8Z/lR60V8opjHd5qW2RBRPWOdcuiUuhj4ZWB1lQzki9uzFfpcVy
-   xzKuJTWgKb79+7PjO9a5lWIbAtemVMPk3VmUGej1J/6iOxA38jbjN7BvI
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="243731263"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="243731263"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 08:30:44 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="558757670"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 08:30:42 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n7gV6-009lDe-RR;
-        Wed, 12 Jan 2022 18:29:28 +0200
-Date:   Wed, 12 Jan 2022 18:29:28 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     John Garry <john.garry@huawei.com>,
-        QiuLaibin <qiulaibin@huawei.com>, ming.lei@redhat.com,
-        martin.petersen@oracle.com, hare@suse.de,
-        johannes.thumshirn@wdc.com, bvanassche@acm.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next v4] blk-mq: fix tag_get wait task can't be awakened
-Message-ID: <Yd8B6F/6fW5DqxOl@smile.fi.intel.com>
-References: <20220111140216.1858823-1-qiulaibin@huawei.com>
- <Yd2Q6LyJUDAU54Dt@smile.fi.intel.com>
- <d7f51067-f5a8-e78c-5ece-c1ef132b9b9a@huawei.com>
- <Yd7J4XbkdIm52bVw@smile.fi.intel.com>
- <3d386998-d810-5036-a87e-50aba9f56639@huawei.com>
- <Yd7n7xA9ecF1/0DK@smile.fi.intel.com>
- <03a3bece-12d7-6732-9b80-a008a86320ba@kernel.dk>
+        Wed, 12 Jan 2022 11:34:58 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:38038 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1355291AbiALQel (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 11:34:41 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20CAjf5I018214;
+        Wed, 12 Jan 2022 17:34:25 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=selector1;
+ bh=tsZZYByhBt3iMrVmHEOmuez8eGtVX2YnJRTRXajIhto=;
+ b=23JDogZfQLRE+QI9XfydsgVWdlqKnI39iHWp0SDb2i7E+RITFfZ6w30kwnJm4HnnLJrp
+ /w2PPtPq4s+V/1/MLOZv3gaCojb1+OWTL82FlSAYjOERHIEit6oOBMehbrxySU4bH7DZ
+ bMEjVGpcQr6ISvoJuZpoYNf3qgUsDVeSWcRlp0bfQ6DGDrzplExQwCMBKEW9i19+9rTw
+ VsAJlpCTvI0n0u+fI1bCi4whVYYItWaOe7TeebCQkyr3c25RICPK+zZIC72jHEZAu9Qa
+ Kjp0sQVzA8Pyn4ozljZvB6DYkEKntrPRuqzfioCxpMJY0Srn9/a+YVLt6V8S3rJ1hVK/ sw== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dhssdugv6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 12 Jan 2022 17:34:25 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7A0A410002A;
+        Wed, 12 Jan 2022 17:34:24 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 718E424B8BB;
+        Wed, 12 Jan 2022 17:34:24 +0100 (CET)
+Received: from localhost (10.75.127.48) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 12 Jan 2022 17:34:24
+ +0100
+From:   Yann Gautier <yann.gautier@foss.st.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-mmc@vger.kernel.org>,
+        Yann Gautier <yann.gautier@foss.st.com>
+Subject: [PATCH 10/10] ARM: dts: stm32: add sdmmc2 pins for STM32MP13
+Date:   Wed, 12 Jan 2022 17:33:56 +0100
+Message-ID: <20220112163356.25634-11-yann.gautier@foss.st.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220112163356.25634-9-yann.gautier@foss.st.com>
+References: <20220112163356.25634-9-yann.gautier@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <03a3bece-12d7-6732-9b80-a008a86320ba@kernel.dk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-12_04,2022-01-11_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 08:37:34AM -0700, Jens Axboe wrote:
-> On 1/12/22 7:38 AM, Andy Shevchenko wrote:
-> > On Wed, Jan 12, 2022 at 12:51:13PM +0000, John Garry wrote:
-> >> On 12/01/2022 12:30, Andy Shevchenko wrote:
-> >>>>>> +		if (test_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags) ||
-> >>>>>> +		    test_and_set_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags)) {
-> >>>>> Whoever wrote this code did too much defensive programming, because the first
-> >>>>> conditional doesn't make much sense here. Am I right?
-> >>>>>
-> >>>> I think because this judgement is in the general IO process, there are also
-> >>>> some performance considerations here.
-> >>> I didn't buy this. Is there any better argument why you need redundant
-> >>> test_bit() call?
-> >>
-> >> I think that the idea is that test_bit() is fast and test_and_set_bit() is
-> >> slow; as such, if we generally expect the bit to be set, then there is no
-> >> need to do the slower test_and_set_bit() always.
-> > 
-> > It doesn't sound thought through solution, the bit can be flipped in
-> > between, so what is this all about? Maybe missing proper serialization
-> > somewhere else?
-> 
-> You need to work on your communication a bit - if there's a piece of
-> code you don't understand, maybe try being a bit less aggressive about
-> it? Otherwise people tend to just ignore you rather than explain it.
+Those pins are used for SDIO on STM32MP135F-DK board.
 
-Sure. Thanks for below explanations, btw.
+Signed-off-by: Yann Gautier <yann.gautier@foss.st.com>
+---
+ arch/arm/boot/dts/stm32mp13-pinctrl.dtsi | 51 ++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-> test_bit() is a lot faster than a test_and_set_bit(), and there's no
-> need to run the latter if the former returns true. This is a pretty
-> common optimization, particularly if the majority of the calls end up
-> having the bit set already.
-
-I don't see how it may give optimization here generally speaking.
-If we know that bit is _often_ is set, than of course it sounds
-like opportunistic win. Otherwise, it may have the opposite effect.
-
-I.o.w. without knowing the statistics of the bit being set/clear it's
-hard to say if it's optimization or waste of the (CPU) resources.
-
-> Can the bit be flipped right after? Certainly! Can that happen if just
-> test_and_set_bit() is used? Of course! This isn't a critical section
-> with a lock, it's a piece of state. And guarding the RMW operation with
-> a test first doesn't change that one bit.
-
+diff --git a/arch/arm/boot/dts/stm32mp13-pinctrl.dtsi b/arch/arm/boot/dts/stm32mp13-pinctrl.dtsi
+index c6f78eef3698..d2472cd8f1d0 100644
+--- a/arch/arm/boot/dts/stm32mp13-pinctrl.dtsi
++++ b/arch/arm/boot/dts/stm32mp13-pinctrl.dtsi
+@@ -57,6 +57,57 @@
+ 		};
+ 	};
+ 
++	sdmmc2_b4_pins_a: sdmmc2-b4-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 14, AF10)>, /* SDMMC2_D0 */
++				 <STM32_PINMUX('B', 15, AF10)>, /* SDMMC2_D1 */
++				 <STM32_PINMUX('B', 3, AF10)>, /* SDMMC2_D2 */
++				 <STM32_PINMUX('B', 4, AF10)>, /* SDMMC2_D3 */
++				 <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
++			slew-rate = <1>;
++			drive-push-pull;
++			bias-pull-up;
++		};
++	};
++
++	sdmmc2_b4_od_pins_a: sdmmc2-b4-od-0 {
++		pins1 {
++			pinmux = <STM32_PINMUX('B', 14, AF10)>, /* SDMMC2_D0 */
++				 <STM32_PINMUX('B', 15, AF10)>, /* SDMMC2_D1 */
++				 <STM32_PINMUX('B', 3, AF10)>, /* SDMMC2_D2 */
++				 <STM32_PINMUX('B', 4, AF10)>; /* SDMMC2_D3 */
++			slew-rate = <1>;
++			drive-push-pull;
++			bias-pull-up;
++		};
++		pins2 {
++			pinmux = <STM32_PINMUX('G', 6, AF10)>; /* SDMMC2_CMD */
++			slew-rate = <1>;
++			drive-open-drain;
++			bias-pull-up;
++		};
++	};
++
++	sdmmc2_b4_sleep_pins_a: sdmmc2-b4-sleep-0 {
++		pins {
++			pinmux = <STM32_PINMUX('B', 14, ANALOG)>, /* SDMMC2_D0 */
++				 <STM32_PINMUX('B', 15, ANALOG)>, /* SDMMC2_D1 */
++				 <STM32_PINMUX('B', 3, ANALOG)>, /* SDMMC2_D2 */
++				 <STM32_PINMUX('B', 4, ANALOG)>, /* SDMMC2_D3 */
++				 <STM32_PINMUX('E', 3, ANALOG)>, /* SDMMC2_CK */
++				 <STM32_PINMUX('G', 6, ANALOG)>; /* SDMMC2_CMD */
++		};
++	};
++
++	sdmmc2_clk_pins_a: sdmmc2-clk-0 {
++		pins {
++			pinmux = <STM32_PINMUX('E', 3, AF10)>; /* SDMMC2_CK */
++			slew-rate = <1>;
++			drive-push-pull;
++			bias-pull-up;
++		};
++	};
++
+ 	uart4_pins_a: uart4-0 {
+ 		pins1 {
+ 			pinmux = <STM32_PINMUX('D', 6, AF8)>; /* UART4_TX */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
