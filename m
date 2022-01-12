@@ -2,95 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F43C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1314C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:01:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357209AbiALUBQ (ORCPT
+        id S1357373AbiALUB1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 15:01:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357168AbiALUAf (ORCPT
+        Wed, 12 Jan 2022 15:01:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33258 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357188AbiALUAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 15:00:35 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A2EC034003
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 12:00:35 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id j1so5332230iob.1
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 12:00:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Cl1FUyfdprGONZXPglxSDKBSmEWDkw6VkfF16x5mxXo=;
-        b=QVJEehF7WPyvGeEiM5KzQqPIBMMXGEV3R+wLe8PkJGDeACISPmV4QHm+bqRf3ctMii
-         e9A7XOez7BgUJWpIS85K3eqDw9O/LP5gRWCD7MDNpgnuqpnoM7y4SqV96P1MzAz4QbkZ
-         6dTMEEMsxLx1RvNmJhKDjS7fzc3PdRvc8pQIM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Cl1FUyfdprGONZXPglxSDKBSmEWDkw6VkfF16x5mxXo=;
-        b=Uqn0eig2rGvEPJ3jmporPYB6dPQs9Spvjq4t6pXvHboxkAD6QbALuIJVVJ1or1CnRS
-         qewV6tloOjXVk4LwZdT2zqbr0Q35Dc2zSIwkNmx4TDIzLu8+bEkUAgr48jH3xgE82JpE
-         1PhPQ+YEXU9zI0AQ6d9lWhvJAZHh/Zfgr6h4H5KZguw0ShaXbHzP6mf0ZAxw0LkQyIdx
-         FDzdDkBrnPF2FDpAfmG98+ETrL3IheBjpNilmriIQtoVN/s3VqEQREpXh3RBC4sqMTAu
-         hQCPQWZx8NH9qDlBD1m/JzA4Ad8/+rltcyo5c9LlbfMeXu96WbrLRpRKDV5dMrOD58nh
-         Hvkw==
-X-Gm-Message-State: AOAM533xVdSyhu1nd28Ttj+8tOkvBxoH69HMuYFS3MNEfxqy7B96tiph
-        fRh/SYoEycjKGfhMHP3y3QaXeQ==
-X-Google-Smtp-Source: ABdhPJyqfTMBuJuxUvt68Bs1IVabNVrDXN9rilZ2BQG+2TZJXMJyou7YfZBE20+jh9R7SNMFYnATlw==
-X-Received: by 2002:a5d:8a0a:: with SMTP id w10mr692518iod.90.1642017634562;
-        Wed, 12 Jan 2022 12:00:34 -0800 (PST)
-Received: from [192.168.1.128] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id h4sm412552ilh.1.2022.01.12.12.00.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 12:00:34 -0800 (PST)
-Subject: Re: [PATCH v3] tools/power/cpupower/{ToDo => TODO}: Rename the todo
- file
-To:     Onur Ozkan <onurozkan.dev@gmail.com>, trenn@suse.com
-Cc:     shuah@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Onur Ozkan <work@onurozkan.dev>,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20211224104343.33331-1-work@onurozkan.dev>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <9fdc2f8e-8c76-ad3b-1ca5-39fae07d37de@linuxfoundation.org>
-Date:   Wed, 12 Jan 2022 13:00:31 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20211224104343.33331-1-work@onurozkan.dev>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Wed, 12 Jan 2022 15:00:36 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57F8360B01
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 20:00:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5993C36AE9;
+        Wed, 12 Jan 2022 20:00:34 +0000 (UTC)
+Received: from rostedt by gandalf.local.home with local (Exim 4.95)
+        (envelope-from <rostedt@goodmis.org>)
+        id 1n7jnN-003EMS-9g;
+        Wed, 12 Jan 2022 15:00:33 -0500
+Message-ID: <20220112195843.098894945@goodmis.org>
+User-Agent: quilt/0.66
+Date:   Wed, 12 Jan 2022 14:58:43 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>
+Subject: [for-next][PATCH 00/14] tracing: Rebase for update of v9 of RTLA tool
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/24/21 3:43 AM, Onur Ozkan wrote:
-> Renamed the to-do file to 'TODO' instead of 'ToDo' to
-> comply with the naming standard.
-> 
+Since I pulled in version 8 of the rtla tool instead of the most recent
+v9 (which was the one I last reviewed, but somehow pulled in the older
+version), I'm rebasing to v9. This is not an issue as none of the
+patches actually touch kernel code. Only tools and Documentation.
 
-I get it now. I didn't pick up on the "ToDo" vs. "TODO"
-difference. No need to add the list.
+  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
+for-next
 
-> Signed-off-by: Onur Ozkan <work@onurozkan.dev>
+Head SHA1: fa7e5a516e8ca0740ad1563b33d24b430dc31f77
 
-Your from doesn't match the Signed-off-by - please match them
-and send v4 - no need to add the TODO file list this time.
 
-> ---
->   tools/power/cpupower/{ToDo => TODO} | 0
->   1 file changed, 0 insertions(+), 0 deletions(-)
->   rename tools/power/cpupower/{ToDo => TODO} (100%)
-> 
-> diff --git a/tools/power/cpupower/ToDo b/tools/power/cpupower/TODO
-> similarity index 100%
-> rename from tools/power/cpupower/ToDo
-> rename to tools/power/cpupower/TODO
-> 
+Daniel Bristot de Oliveira (14):
+      rtla: Real-Time Linux Analysis tool
+      rtla: Helper functions for rtla
+      rtla: Add osnoise tool
+      rtla/osnoise: Add osnoise top mode
+      rtla/osnoise: Add the hist mode
+      rtla: Add timerlat tool and timelart top mode
+      rtla/timerlat: Add timerlat hist mode
+      rtla: Add Documentation
+      rtla: Add rtla osnoise man page
+      rtla: Add rtla osnoise top documentation
+      rtla: Add rtla osnoise hist documentation
+      rtla: Add rtla timerlat documentation
+      rtla: Add rtla timerlat top documentation
+      rtla: Add rtla timerlat hist documentation
 
-thanks,
--- Shuah
+----
+ Documentation/tools/rtla/Makefile                  |  41 +
+ Documentation/tools/rtla/common_appendix.rst       |  12 +
+ Documentation/tools/rtla/common_hist_options.rst   |  23 +
+ Documentation/tools/rtla/common_options.rst        |  28 +
+ .../tools/rtla/common_osnoise_description.rst      |   8 +
+ .../tools/rtla/common_osnoise_options.rst          |  17 +
+ .../tools/rtla/common_timerlat_description.rst     |  10 +
+ .../tools/rtla/common_timerlat_options.rst         |  16 +
+ Documentation/tools/rtla/common_top_options.rst    |   3 +
+ Documentation/tools/rtla/rtla-osnoise-hist.rst     |  66 ++
+ Documentation/tools/rtla/rtla-osnoise-top.rst      |  61 ++
+ Documentation/tools/rtla/rtla-osnoise.rst          |  59 ++
+ Documentation/tools/rtla/rtla-timerlat-hist.rst    | 106 +++
+ Documentation/tools/rtla/rtla-timerlat-top.rst     | 145 ++++
+ Documentation/tools/rtla/rtla-timerlat.rst         |  57 ++
+ Documentation/tools/rtla/rtla.rst                  |  48 ++
+ tools/tracing/rtla/Makefile                        | 102 +++
+ tools/tracing/rtla/README.txt                      |  36 +
+ tools/tracing/rtla/src/osnoise.c                   | 875 +++++++++++++++++++++
+ tools/tracing/rtla/src/osnoise.h                   |  91 +++
+ tools/tracing/rtla/src/osnoise_hist.c              | 801 +++++++++++++++++++
+ tools/tracing/rtla/src/osnoise_top.c               | 579 ++++++++++++++
+ tools/tracing/rtla/src/rtla.c                      |  87 ++
+ tools/tracing/rtla/src/timerlat.c                  |  72 ++
+ tools/tracing/rtla/src/timerlat.h                  |   4 +
+ tools/tracing/rtla/src/timerlat_hist.c             | 822 +++++++++++++++++++
+ tools/tracing/rtla/src/timerlat_top.c              | 618 +++++++++++++++
+ tools/tracing/rtla/src/trace.c                     | 192 +++++
+ tools/tracing/rtla/src/trace.h                     |  27 +
+ tools/tracing/rtla/src/utils.c                     | 433 ++++++++++
+ tools/tracing/rtla/src/utils.h                     |  56 ++
+ 31 files changed, 5495 insertions(+)
+ create mode 100644 Documentation/tools/rtla/Makefile
+ create mode 100644 Documentation/tools/rtla/common_appendix.rst
+ create mode 100644 Documentation/tools/rtla/common_hist_options.rst
+ create mode 100644 Documentation/tools/rtla/common_options.rst
+ create mode 100644 Documentation/tools/rtla/common_osnoise_description.rst
+ create mode 100644 Documentation/tools/rtla/common_osnoise_options.rst
+ create mode 100644 Documentation/tools/rtla/common_timerlat_description.rst
+ create mode 100644 Documentation/tools/rtla/common_timerlat_options.rst
+ create mode 100644 Documentation/tools/rtla/common_top_options.rst
+ create mode 100644 Documentation/tools/rtla/rtla-osnoise-hist.rst
+ create mode 100644 Documentation/tools/rtla/rtla-osnoise-top.rst
+ create mode 100644 Documentation/tools/rtla/rtla-osnoise.rst
+ create mode 100644 Documentation/tools/rtla/rtla-timerlat-hist.rst
+ create mode 100644 Documentation/tools/rtla/rtla-timerlat-top.rst
+ create mode 100644 Documentation/tools/rtla/rtla-timerlat.rst
+ create mode 100644 Documentation/tools/rtla/rtla.rst
+ create mode 100644 tools/tracing/rtla/Makefile
+ create mode 100644 tools/tracing/rtla/README.txt
+ create mode 100644 tools/tracing/rtla/src/osnoise.c
+ create mode 100644 tools/tracing/rtla/src/osnoise.h
+ create mode 100644 tools/tracing/rtla/src/osnoise_hist.c
+ create mode 100644 tools/tracing/rtla/src/osnoise_top.c
+ create mode 100644 tools/tracing/rtla/src/rtla.c
+ create mode 100644 tools/tracing/rtla/src/timerlat.c
+ create mode 100644 tools/tracing/rtla/src/timerlat.h
+ create mode 100644 tools/tracing/rtla/src/timerlat_hist.c
+ create mode 100644 tools/tracing/rtla/src/timerlat_top.c
+ create mode 100644 tools/tracing/rtla/src/trace.c
+ create mode 100644 tools/tracing/rtla/src/trace.h
+ create mode 100644 tools/tracing/rtla/src/utils.c
+ create mode 100644 tools/tracing/rtla/src/utils.h
