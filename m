@@ -2,69 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52BB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E221C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:14:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347113AbiALAOf (ORCPT
+        id S1347514AbiALAOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 19:14:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36388 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347332AbiALANr (ORCPT
+        Tue, 11 Jan 2022 19:14:38 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:50038 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234583AbiALANs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 19:13:47 -0500
+        Tue, 11 Jan 2022 19:13:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 36D1461637;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 24D49CE1BBB;
         Wed, 12 Jan 2022 00:13:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A0DCCC36AF6;
-        Wed, 12 Jan 2022 00:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 97AF6C36AE9;
+        Wed, 12 Jan 2022 00:13:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641946426;
-        bh=idPmRD3vDDYJQLa+CtrngNkb7v8wUZgsDGQVv7fun7k=;
+        s=k20201202; t=1641946425;
+        bh=yaqZ7ZkdvZqSamupusB0ez1vekurvW326ryWZO1cb9I=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=aneDntADCU5oIm9Jz1ER/J6n1xyBRq1rCQONjwpg2Q5+B8yvhb1ubo9bJXYXsSlef
-         cGAj0W8ph3ESxJsNGnplfDptD32eoiK++DPW5yRZ+iMg4nkQMuQjUX6X0AMr4Kk8UZ
-         XtE780HVPAQImoG+25JitnPUCi2aM24YU3mT/2v6PsP3VWWaPlqpkq923zbYwEb2Rp
-         Vn/njv2VtP44VTcYnGj8zMzSvrgR2bDfe0bm2REC2luGQxkCGvrtXZPCtkKp7JULTe
-         P22/0/KH4Y2TgD1kS9XQQlG41AruydSoQ1l0nroh6sJyAw6/HlLdr9EQMQ1etLpbmA
-         vPLXyq9s1aXkw==
+        b=S/B7U8hKfJ/mCve5KCOXPl+PT/YUVrNLRyABvNdLdB8MrYgIgL1Z7/OCZDTaHqfz+
+         TCxhJNjSm9xcjEDyfMMY8I/3D0hxTFVW3RH53lKkMelkN9f9wj0pUqCczLp1NDHRIw
+         7D27rt8kS+ZVda2l9vF+/BoOv6FaRdCclJ8URcwtd9HqpW3GZ5N1MdAHWKGoxZSoAX
+         RIXHbO79XrdXHaryCRxNXWbuW7ROv9rRi5p+/nFuJZIAm29AOlr1rLfkL+rqZRJK8h
+         253h9tVMEA9Qamiv+j4C7UZNutrkoM8jh8S9Vtxn5qJL6XUMEWwleuAqDDMZgZJeKQ
+         7j1MP2IwW6hMQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C76BF60793;
-        Wed, 12 Jan 2022 00:13:46 +0000 (UTC)
-Subject: Re: [GIT PULL] parisc architecture updates v5.17-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 87770F60794;
+        Wed, 12 Jan 2022 00:13:45 +0000 (UTC)
+Subject: Re: [GIT PULL] Btrfs updates for 5.17
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yd1up5g3mSzj7eHL@ls3530>
-References: <Yd1up5g3mSzj7eHL@ls3530>
+In-Reply-To: <cover.1641841093.git.dsterba@suse.com>
+References: <cover.1641841093.git.dsterba@suse.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yd1up5g3mSzj7eHL@ls3530>
-X-PR-Tracked-Remote: http://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/for-5.17/parisc-1
-X-PR-Tracked-Commit-Id: 68d247ad38b1ef46bd945a5220fa6d28c901c2f2
+X-PR-Tracked-Message-Id: <cover.1641841093.git.dsterba@suse.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.17-tag
+X-PR-Tracked-Commit-Id: 36c86a9e1be3b29f9f075a946df55dfe1d818019
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c1eb8f6cff3442b0b7eff5b801c9745ea9abcb14
-Message-Id: <164194642657.21161.3159844271949198469.pr-tracker-bot@kernel.org>
-Date:   Wed, 12 Jan 2022 00:13:46 +0000
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        John David Anglin <dave.anglin@bell.net>,
-        Sven Schnelle <svens@stackframe.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
+X-PR-Merge-Commit-Id: d601e58c5f2901783428bc1181e83ff783592b6b
+Message-Id: <164194642555.21161.17952361717310328392.pr-tracker-bot@kernel.org>
+Date:   Wed, 12 Jan 2022 00:13:45 +0000
+To:     David Sterba <dsterba@suse.com>
+Cc:     torvalds@linux-foundation.org, David Sterba <dsterba@suse.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 11 Jan 2022 12:48:55 +0100:
+The pull request you sent on Mon, 10 Jan 2022 20:11:44 +0100:
 
-> http://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git tags/for-5.17/parisc-1
+> git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.17-tag
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c1eb8f6cff3442b0b7eff5b801c9745ea9abcb14
+https://git.kernel.org/torvalds/c/d601e58c5f2901783428bc1181e83ff783592b6b
 
 Thank you!
 
