@@ -2,178 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A736EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A19F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356961AbiALTMU (ORCPT
+        id S1356972AbiALTM2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:12:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356630AbiALTLF (ORCPT
+        Wed, 12 Jan 2022 14:12:28 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:37160 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356618AbiALTLD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:11:05 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67136C03401F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:10:55 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id c14-20020a17090a674e00b001b31e16749cso14173813pjm.4
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:10:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=BGP24qVZTEpaBQ1xv9moCmCJQ917JXiSUjVHHrmVp/E=;
-        b=PVG7VTvqlLNGORnwYw9j1OMg3+3ZTPcoOj7kAksry9PLrHcTCLejULVii9l67Eb/Yb
-         OyWS2q9EPoXcwoFq2f9ykMMa51KEQobaL9AdrHlljItrFlLb84qUPypxl7NeIFM2gYfP
-         F73jNvzEHeYQkxbqSRA7deWpXLcHHVQuVGgD4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=BGP24qVZTEpaBQ1xv9moCmCJQ917JXiSUjVHHrmVp/E=;
-        b=QvT2Xgb3+pigixJzuMADcX3Rhx7JAAqhr7EbC8GK1011BHOmlRlrzJGjepSrR3d+3d
-         RHzKMYhTrT1MSc3PCUFrQHRBSjFrkrzdZ6CHr53gqx4gLtQtGyWsGYBpiyYex94lXbUC
-         rWsNCyIiItRSxH3ZX88Rrh/JJr9rSfJT6ys0bHRNXmxNLtUE43+8C7h7yn9Msu+7ueoy
-         +fjdVsDvETpptrUvGYFJJ5tF0yoSejaQzibWVcxf6y9diPSFyaDLeDHpjeLiuPiF0zjX
-         cM88vlCyy2YnoX58w4g6o+vQovltgk9mgZISaxXlwE9otpOfCQ31JJI28nsaqauB4W3V
-         zlWg==
-X-Gm-Message-State: AOAM5308V3vXimhr0qYpkj9gNkwmNhfQKFcLbE60OQ7WRokL9OmvcFKT
-        DzoJGo35UCa2Xq4U+8rgfRkTRg==
-X-Google-Smtp-Source: ABdhPJw0V7BAx/B4MLxvQ6u03zIBW4izudN2SvaqvG2oZbVic37IkfQmBRwmo4ewdqAYV59wyZCiPw==
-X-Received: by 2002:a63:a74d:: with SMTP id w13mr904351pgo.7.1642014654994;
-        Wed, 12 Jan 2022 11:10:54 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:f6eb:5b26:28c:1ca5])
-        by smtp.gmail.com with UTF8SMTPSA id n8sm356040pgh.94.2022.01.12.11.10.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 11:10:54 -0800 (PST)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Bastien Nocera <hadess@hadess.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Peter Chen <peter.chen@kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        linux-usb@vger.kernel.org, Roger Quadros <rogerq@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        devicetree@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v19 1/5] of/platform: Add stubs for of_platform_device_create/destroy()
-Date:   Wed, 12 Jan 2022 11:10:44 -0800
-Message-Id: <20220112111028.v19.1.I08fd2e1c775af04f663730e9fb4d00e6bbb38541@changeid>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
-In-Reply-To: <20220112191048.837236-1-mka@chromium.org>
-References: <20220112191048.837236-1-mka@chromium.org>
+        Wed, 12 Jan 2022 14:11:03 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: nfraprado)
+        with ESMTPSA id D22501F453B1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642014661;
+        bh=ubIbtXQ1srjhhZkCWaAUTsQRTCKpUd7QlzP6ZpRxxWQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HL1786ePLgEJgkDu6ZP9kU8MNf6z3KGXPVwIKqN5n30Yrw2G3yjX6CHt0ujeGgkBV
+         i+GKHB8jta7NizChnpKgyzma4mbnTgtjdRwp8GPRnp9SsEFM4RWk8AeNLyTgW79fxD
+         1cT1L6O6e89GWWI2bKx2YKELelr0DhQiZNbc0fTc+VmzdamVDqX21QvfSA18M+fFIj
+         0vDchsoRcSJuQsym7AdLl6wACLuDXBeEecbXkrMMyiWZFTyuO0rHNFPMvDSHRX+KKQ
+         2gc3OwRJRkBUDCCnjvbE6DINCYK+ddD6VMOx33rZTw/UCHHOP2sd+/syyTyP4Roq5N
+         GhYjF8wZqg4HA==
+Date:   Wed, 12 Jan 2022 14:10:56 -0500
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-rtc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com
+Subject: Re: [PATCH] selftests: rtc: Increase test timeout so that all tests
+ run
+Message-ID: <20220112191056.c7gflbokgm2pispg@notapiano>
+References: <20220112165359.3206047-1-nfraprado@collabora.com>
+ <Yd8IdbGybWBOa5qe@piout.net>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <Yd8IdbGybWBOa5qe@piout.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Code for platform_device_create() and of_platform_device_destroy() is
-only generated if CONFIG_OF_ADDRESS=y. Add stubs to avoid unresolved
-symbols when CONFIG_OF_ADDRESS is not set.
+On Wed, Jan 12, 2022 at 05:57:25PM +0100, Alexandre Belloni wrote:
+> On 12/01/2022 11:53:59-0500, Nícolas F. R. A. Prado wrote:
+> > The timeout setting for the rtc kselftest is currently 90 seconds.
+> > However, two of the tests set alarms, which take one minute to complete
+> > each. So the timeout should be at least 120. Set it to 180, so that all
+> > tests are able to complete and still have some slack.
+> 
+> Hum, I don't get the logic from that, a test takes up to 60 seconds and
+> the timeout is 90s per test so we already have plenty of slack there.
 
-Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-Acked-by: Rob Herring <robh@kernel.org>
----
+Actually I did re-test locally and it is an issue since the 90s timeout is not
+per-test, but to the whole rtc test suite. Also it requires running the test
+through the selftest runner, and since the alarm is set to the next top of the
+minute, you might get lucky and it might all take less than 90 seconds.
 
-Changes in v19:
-- still no changes ...
+However none of this was clear in my original commit message, so I'll send a v2
+with a better explanation.
 
-Changes in v18:
-- still no changes ...
-
-Changes in v17:
-- none
-
-Changes in v16:
-- none
-
-Changes in v15:
-- none
-
-Changes in v14:
-- none
-
-Changes in v13:
-- none
-
-Changes in v12:
-- none
-
-Changes in v11:
-- none
-
-Changes in v10:
-- none
-
-Changes in v9:
-- added Rob's 'Acked-by' tag
-
-Changes in v8:
-- fixed C&P error in commit message
-
-Changes in v7:
-- none
-
-Changes in v6:
-- patch added to the series
-
- include/linux/of_platform.h | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
-
-diff --git a/include/linux/of_platform.h b/include/linux/of_platform.h
-index 84a966623e78..d15b6cd5e1c3 100644
---- a/include/linux/of_platform.h
-+++ b/include/linux/of_platform.h
-@@ -61,16 +61,18 @@ static inline struct platform_device *of_find_device_by_node(struct device_node
- }
- #endif
- 
-+extern int of_platform_bus_probe(struct device_node *root,
-+				 const struct of_device_id *matches,
-+				 struct device *parent);
-+
-+#ifdef CONFIG_OF_ADDRESS
- /* Platform devices and busses creation */
- extern struct platform_device *of_platform_device_create(struct device_node *np,
- 						   const char *bus_id,
- 						   struct device *parent);
- 
- extern int of_platform_device_destroy(struct device *dev, void *data);
--extern int of_platform_bus_probe(struct device_node *root,
--				 const struct of_device_id *matches,
--				 struct device *parent);
--#ifdef CONFIG_OF_ADDRESS
-+
- extern int of_platform_populate(struct device_node *root,
- 				const struct of_device_id *matches,
- 				const struct of_dev_auxdata *lookup,
-@@ -84,6 +86,18 @@ extern int devm_of_platform_populate(struct device *dev);
- 
- extern void devm_of_platform_depopulate(struct device *dev);
- #else
-+/* Platform devices and busses creation */
-+static inline struct platform_device *of_platform_device_create(struct device_node *np,
-+								const char *bus_id,
-+								struct device *parent)
-+{
-+	return NULL;
-+}
-+static inline int of_platform_device_destroy(struct device *dev, void *data)
-+{
-+	return -ENODEV;
-+}
-+
- static inline int of_platform_populate(struct device_node *root,
- 					const struct of_device_id *matches,
- 					const struct of_dev_auxdata *lookup,
--- 
-2.34.1.575.g55b058a8bb-goog
-
+Thanks,
+Nícolas
