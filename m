@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 764F3C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFABC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353610AbiALNaZ (ORCPT
+        id S1353619AbiALNa0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:30:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
+        Wed, 12 Jan 2022 08:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353587AbiALNaS (ORCPT
+        with ESMTP id S1353593AbiALNaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:30:18 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C0EC061757
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:30:18 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id h23so3559220iol.11
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:30:18 -0800 (PST)
+        Wed, 12 Jan 2022 08:30:22 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7975C061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:30:20 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id d3so2310683ilr.10
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:30:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AdGgiTy1ca6E6R0J8IpPObnb+JKCw9LjIV8LaznMuzA=;
-        b=VKRT5X/jiDsFfuzHXPgUMwAmChmh1p/Ck2bbOw2901tW0QBuV729R8eO7mlzdhdL8Q
-         S32ua0PFiDyJoQBsMwsskiWPJt+WJ3WYWVPDnzX02eg2esSAOhizPT6kDO+fnOQAbCBu
-         AaA5G+Tpbs1J9EFcg5Uzs8vddwGnrzQcZ3ubaf4tb3nSdq5ou0NrJXSaCcwMJvjMEWBc
-         8QGF/cExVY0eISWPpfz2OsbO5oW5HjCU8ZvvQ1zMcCNeSUEVae7/GjkLtN+DxaesNh43
-         /Bsf6PgdGqyjN25zYxrcgNXGDpfyBkbTJfPTlvrLkdF2iRlx3JvukTJfojQSjHVNhWfZ
-         Wfqg==
+        bh=bSv0Q4TNteJbdpvC1uUIQLPNd+EooxVM4yLrKrNBrSY=;
+        b=yPTp7WrPSZWd17+619zhF2bIra/Bg8qaWNq3CQ89koAo+LXXt3jYvGKaWPwUuhP2Mg
+         +w3wEa6pn85t9HMWMUtxCYRL4WoFO+BfCsY81dtvDNSk8jP2uxVtdlpw/Ey5sNVjQySO
+         5LetC/yFgkOLu/Qrupz8bPT64A4YLKBougmB6gAAZbZF/F0rLSpZRWVYM/mKGx79XLit
+         7lvMPhKp9+XKZo884W4bVe2f+uR2gv6K2jY10AUgOuA94T7KadDK8rJ0PuS+4CAllodP
+         OXuQU9DSpXRR1qXfu7qDahHyKY2Xe2ZAkAP6FcOKv5IFOWk+FJEc7Xq+TZqyXciqU29g
+         Q4dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AdGgiTy1ca6E6R0J8IpPObnb+JKCw9LjIV8LaznMuzA=;
-        b=OGUX29o5eYUb2ZmlzQKZT+V8DrI7Ydxw4jJk9yweIx6bXhRpIwvFgXxN2aOOXY7lVG
-         DaP4CpFOo/5U1KyKf3s1uNO8zorrNC9D8c5QgZebIYoNGKxZp8zlft5Zu/AVQlY3Hddx
-         BX0PcPOhCgaDbyqjWvKx6T1Sg913Ek34iwL94x4CES4Rx0wDzPSGA1VKhLEUGyKfYtgd
-         kGMHd4lpmRjt0D4EuHHazYdCNjKaxTGt4c62rgBdeQLaZpZncVsJ/cHYZ1/u2hcTNGpt
-         UMpVckuWUXM7arGzg5CxFL9Zlll/1sYJk9UCppJxagl0ZPrRA5Dgvk6ifpokWb//LncI
-         +yoQ==
-X-Gm-Message-State: AOAM531crge2nbr6ra5mulCdKRvGIwdEef+7eIUszgY7z+6iat8ag9Gh
-        DTFzEH9W4tOHH6LtNZBViDQA9g==
-X-Google-Smtp-Source: ABdhPJz7xAyhxz6eV25bqIWOiN4DD72PnUZDNw7Qd17sfeUEzdu9R8OSm4LBaClPke6BvVtzGSPf9A==
-X-Received: by 2002:a5d:9da8:: with SMTP id ay40mr4396562iob.38.1641994217773;
-        Wed, 12 Jan 2022 05:30:17 -0800 (PST)
+        bh=bSv0Q4TNteJbdpvC1uUIQLPNd+EooxVM4yLrKrNBrSY=;
+        b=wJjGiUWQIDFebqx+3CIaY0C+b43Nly4ZGnkkVcasPXC0fn58BUqn+MgAdJD9VPhHQn
+         QiiQHNCUQsx+f2TCiZHkqbeDb7AsPuEVKaga9KoDJ1AyHvc5FJ29En9X5dCW327FlRhx
+         8+RSxPAHtEAanDSTQDIAu2EAd6KjUGug9fN/QJEBi5HfTFvneHi8mxz/mc92qFV3ij5b
+         nfBwqd8tAkVVe+6PGtjADJz8CcbYgWgEmNNFJGXCgWfWYHXT5mYSUl5bwRw390Kkh1ft
+         taXrst6kz0YU2ypvCUO6M4Ha3J6BWoHCa9AcfhLMWaToC+0SVxdxME5uzNvOh4lS5F6e
+         bznA==
+X-Gm-Message-State: AOAM5313gTOLPUQi2bKdyr2gFwD4THPziKRAStpFXdcy+HMIDegPp9ie
+        SuUQkAtmLbpeDxJNGFfGEGzPQQ==
+X-Google-Smtp-Source: ABdhPJwbf4kWzn7assSpm2KapJOFwddjfiK1G84tBr9UXZO4CVWfs+s8O399GZ9Z9GmQ1lfgmivQZw==
+X-Received: by 2002:a05:6e02:1b84:: with SMTP id h4mr4575927ili.12.1641994220145;
+        Wed, 12 Jan 2022 05:30:20 -0800 (PST)
 Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e17sm7476742iow.30.2022.01.12.05.30.16
+        by smtp.gmail.com with ESMTPSA id e17sm7476742iow.30.2022.01.12.05.30.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 05:30:17 -0800 (PST)
+        Wed, 12 Jan 2022 05:30:19 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     jponduru@codeaurora.org, avuyyuru@codeaurora.org,
@@ -56,9 +56,9 @@ Cc:     jponduru@codeaurora.org, avuyyuru@codeaurora.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org, mka@chromium.org,
         evgreen@chromium.org, elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 1/3] net: ipa: fix atomic update in ipa_endpoint_replenish()
-Date:   Wed, 12 Jan 2022 07:30:10 -0600
-Message-Id: <20220112133012.778148-2-elder@linaro.org>
+Subject: [PATCH net v2 3/3] net: ipa: prevent concurrent replenish
+Date:   Wed, 12 Jan 2022 07:30:12 -0600
+Message-Id: <20220112133012.778148-4-elder@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220112133012.778148-1-elder@linaro.org>
 References: <20220112133012.778148-1-elder@linaro.org>
@@ -68,51 +68,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ipa_endpoint_replenish(), if an error occurs when attempting to
-replenish a receive buffer, we just quit and try again later.  In
-that case we increment the backlog count to reflect that the attempt
-was unsuccessful.  Then, if the add_one flag was true we increment
-the backlog again.
+We have seen cases where an endpoint RX completion interrupt arrives
+while replenishing for the endpoint is underway.  This causes another
+instance of replenishing to begin as part of completing the receive
+transaction.  If this occurs it can lead to transaction corruption.
 
-This second increment is not included in the backlog local variable
-though, and its value determines whether delayed work should be
-scheduled.  This is a bug.
+Use a new flag to ensure only one replenish instance for an endpoint
+executes at a time.
 
-Fix this by determining whether 1 or 2 should be added to the
-backlog before adding it in a atomic_add_return() call.
-
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_endpoint.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+v2: Use test_and_set_bit() and clear_bit(), as Jakub suggested
+
+ drivers/net/ipa/ipa_endpoint.c | 13 +++++++++++++
+ drivers/net/ipa/ipa_endpoint.h |  2 ++
+ 2 files changed, 15 insertions(+)
 
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 49d9a077d0375..8b055885cf3cf 100644
+index cddddcedaf72b..68291a3efd040 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1080,6 +1080,7 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, bool add_one)
- {
- 	struct gsi *gsi;
- 	u32 backlog;
-+	int delta;
+@@ -1088,15 +1088,27 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, bool add_one)
+ 		return;
+ 	}
  
- 	if (!endpoint->replenish_enabled) {
- 		if (add_one)
-@@ -1097,10 +1098,8 @@ static void ipa_endpoint_replenish(struct ipa_endpoint *endpoint, bool add_one)
++	/* If already active, just update the backlog */
++	if (test_and_set_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags)) {
++		if (add_one)
++			atomic_inc(&endpoint->replenish_backlog);
++		return;
++	}
++
+ 	while (atomic_dec_not_zero(&endpoint->replenish_backlog))
+ 		if (ipa_endpoint_replenish_one(endpoint))
+ 			goto try_again_later;
++
++	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
++
+ 	if (add_one)
+ 		atomic_inc(&endpoint->replenish_backlog);
+ 
+ 	return;
  
  try_again_later:
++	clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
++
  	/* The last one didn't succeed, so fix the backlog */
--	backlog = atomic_inc_return(&endpoint->replenish_backlog);
--
--	if (add_one)
--		atomic_inc(&endpoint->replenish_backlog);
-+	delta = add_one ? 2 : 1;
-+	backlog = atomic_add_return(delta, &endpoint->replenish_backlog);
+ 	delta = add_one ? 2 : 1;
+ 	backlog = atomic_add_return(delta, &endpoint->replenish_backlog);
+@@ -1691,6 +1703,7 @@ static void ipa_endpoint_setup_one(struct ipa_endpoint *endpoint)
+ 		 * backlog is the same as the maximum outstanding TREs.
+ 		 */
+ 		clear_bit(IPA_REPLENISH_ENABLED, endpoint->replenish_flags);
++		clear_bit(IPA_REPLENISH_ACTIVE, endpoint->replenish_flags);
+ 		atomic_set(&endpoint->replenish_saved,
+ 			   gsi_channel_tre_max(gsi, endpoint->channel_id));
+ 		atomic_set(&endpoint->replenish_backlog, 0);
+diff --git a/drivers/net/ipa/ipa_endpoint.h b/drivers/net/ipa/ipa_endpoint.h
+index 07d5c20e5f000..0313cdc607de3 100644
+--- a/drivers/net/ipa/ipa_endpoint.h
++++ b/drivers/net/ipa/ipa_endpoint.h
+@@ -44,10 +44,12 @@ enum ipa_endpoint_name {
+  * enum ipa_replenish_flag:	RX buffer replenish flags
+  *
+  * @IPA_REPLENISH_ENABLED:	Whether receive buffer replenishing is enabled
++ * @IPA_REPLENISH_ACTIVE:	Whether replenishing is underway
+  * @IPA_REPLENISH_COUNT:	Number of defined replenish flags
+  */
+ enum ipa_replenish_flag {
+ 	IPA_REPLENISH_ENABLED,
++	IPA_REPLENISH_ACTIVE,
+ 	IPA_REPLENISH_COUNT,	/* Number of flags (must be last) */
+ };
  
- 	/* Whenever a receive buffer transaction completes we'll try to
- 	 * replenish again.  It's unlikely, but if we fail to supply even
 -- 
 2.32.0
 
