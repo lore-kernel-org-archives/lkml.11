@@ -2,119 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A08E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3669CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349462AbiALIau (ORCPT
+        id S1351621AbiALIa6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 03:30:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50094 "EHLO
+        Wed, 12 Jan 2022 03:30:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349393AbiALIas (ORCPT
+        with ESMTP id S1349434AbiALIa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 03:30:48 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C3EBC06173F;
-        Wed, 12 Jan 2022 00:30:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=13bfDwC4Q9dgAZpU/RAeEl2vEaor8KDQuawgF7gUxzo=; b=u4J/qAfmQnxgC0O1RunRdY0Voc
-        hgGawk8rMe8I6Z8rdGysGN3Ulzh2Culzl7aB2cSzmp3/sc4Szea2bwv14BiDsqBPtUPHgaGV1JlLY
-        L44pdHm06jhzUq14uktN/t+5PHqUiUisq0PNllMY2ZQz7k4Ku+FzQvkxQOzrA6TzYsW05NZMXn+24
-        DzRlKhW0CkAU8vAU3QzWP7s+bwzXP57mG/KATB+CmnKNUP/CkdKJJuBejUX/9GINss86dy0PmKrtO
-        87gu3XffXlZBy4jPwBjm0QGNQBuAoKj0Z6xVLFzqyw959q5XaCYiehWYitGzI7ig0WbFVQojsAyP2
-        N1IAEzjQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7Z1X-003wtl-NJ; Wed, 12 Jan 2022 08:30:28 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B3F5B3001FD;
-        Wed, 12 Jan 2022 09:30:23 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8E8562B34C7D3; Wed, 12 Jan 2022 09:30:23 +0100 (CET)
-Date:   Wed, 12 Jan 2022 09:30:23 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Josh Don <joshdon@google.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        cgroups@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/2] cgroup: add cpu.stat_percpu
-Message-ID: <Yd6Rn63Rha5NDd1I@hirez.programming.kicks-ass.net>
-References: <20220107234138.1765668-1-joshdon@google.com>
- <Yd189wHB2LJcK1Pv@hirez.programming.kicks-ass.net>
- <CABk29NuGs_9uxgbv678W=BGGinZNiUHO5T57FHGbOG+HP-FT2g@mail.gmail.com>
+        Wed, 12 Jan 2022 03:30:57 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F349DC061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:30:56 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id d187-20020a1c1dc4000000b003474b4b7ebcso1046969wmd.5
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:30:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vJ+w22PTxUPaJcKWhY/UceXma5p+nqWWd0Bsmebx8pQ=;
+        b=IeeX2Is5svan06jOKIvq/96afdKfJzhzUKgHhQ0u3wtF46c8hjl3h1OBkqD4qXrQm0
+         /KbWT6JaUOGhdO0C+JbtgZonOP1rb8bp1Jt6GiSUz0jpJ23IbDPBZ9CTtyY/rzrMBR+B
+         aCOFCWREcEAk27MX53Tnv0n4CVIEuvSpIzMigVMQglVkTxGoC0xN138aXE6J8fSBJjqI
+         pKpcMP/FQhH1tlN82stvigaOWpKwkwzF6BUYLwqlgv7HCTrGv6zRllLN/MC/WWt+X0gl
+         xjw44EEjrXtd4Dl9g3SLB2LSTF8BfR3cOcFnzbTHLq3yoJE++xNvbhq15kZrZi2iMBI2
+         umOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=vJ+w22PTxUPaJcKWhY/UceXma5p+nqWWd0Bsmebx8pQ=;
+        b=QjE9S5TlqEv8ZMEuPm4q5YqZGWTJ7PLXS5JR8qtDDjuQmc/OuO0ouSLCDR9nstTVUw
+         QInTR+zj+t8fDYxkG40I1VIXYXxDXJGZTaAvXTtMvzVGbe4BwDl1GVV15dUTE8pea0QK
+         lZ868RlLBNnnWcFa5rMikUWLXTuhXwBeIWJNz8tfW1vChBpCS5qHEet4F4gPAN0qCbkK
+         oNBOFv0R2jd9RatTCDPSn52wkZioJS9mSZZMWgQLWPJvUlwIXdj0FzPzPsg1lGFJZBrP
+         jMJh7/0Ibp6MNhIvmIibTrsXsVY7ifdqxGtXIEnixZW/1NrQSWGa/Yvl5dlhLM7p0b/Z
+         CBvQ==
+X-Gm-Message-State: AOAM531aei4FbV/RWdGG2InYkDw7IXXlha9ofRYJJ+UlNlmSyXiqyZTy
+        WtdgszX2CDk3K0XD9Jr7cf6W+sE51P3d2A==
+X-Google-Smtp-Source: ABdhPJxLOO/vJS+ah4oOFATT6onrl/OkLjwtx4tPEXlqChpCptI4FLbhrbta4n/T6Sb+KXZ8/ItwFQ==
+X-Received: by 2002:a05:600c:4ec7:: with SMTP id g7mr5616827wmq.152.1641976255095;
+        Wed, 12 Jan 2022 00:30:55 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:381b:6e50:a892:5269? ([2001:861:44c0:66c0:381b:6e50:a892:5269])
+        by smtp.gmail.com with ESMTPSA id q206sm3981739wme.8.2022.01.12.00.30.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 00:30:54 -0800 (PST)
+Subject: Re: [PATCH 2/3] arm64: dts: meson-g12-common: add more pwm_f options
+To:     Gary Bisson <gary.bisson@boundarydevices.com>,
+        linux-amlogic@lists.infradead.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220103154616.308376-1-gary.bisson@boundarydevices.com>
+ <20220103154616.308376-3-gary.bisson@boundarydevices.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <a4282cb9-3ebd-0c95-7a47-522eb1bbb770@baylibre.com>
+Date:   Wed, 12 Jan 2022 09:30:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABk29NuGs_9uxgbv678W=BGGinZNiUHO5T57FHGbOG+HP-FT2g@mail.gmail.com>
+In-Reply-To: <20220103154616.308376-3-gary.bisson@boundarydevices.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 03:38:20PM -0800, Josh Don wrote:
-> On Tue, Jan 11, 2022 at 4:50 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Fri, Jan 07, 2022 at 03:41:37PM -0800, Josh Don wrote:
-> >
-> > > +     seq_puts(seq, "usage_usec");
-> > > +     for_each_possible_cpu(cpu) {
-> > > +             cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
-> > > +             val = cached_bstat->cputime.sum_exec_runtime;
-> > > +             do_div(val, NSEC_PER_USEC);
-> > > +             seq_printf(seq, " %llu", val);
-> > > +     }
-> > > +     seq_puts(seq, "\n");
-> > > +
-> > > +     seq_puts(seq, "user_usec");
-> > > +     for_each_possible_cpu(cpu) {
-> > > +             cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
-> > > +             val = cached_bstat->cputime.utime;
-> > > +             do_div(val, NSEC_PER_USEC);
-> > > +             seq_printf(seq, " %llu", val);
-> > > +     }
-> > > +     seq_puts(seq, "\n");
-> > > +
-> > > +     seq_puts(seq, "system_usec");
-> > > +     for_each_possible_cpu(cpu) {
-> > > +             cached_bstat = per_cpu_ptr(&cached_percpu_stats, cpu);
-> > > +             val = cached_bstat->cputime.stime;
-> > > +             do_div(val, NSEC_PER_USEC);
-> > > +             seq_printf(seq, " %llu", val);
-> > > +     }
-> > > +     seq_puts(seq, "\n");
-> >
-> > This is an anti-pattern; given enough CPUs (easy) this will trivially
-> > overflow the 1 page seq buffer.
-> >
-> > People are already struggling to fix existing ABI, lets not make the
-> > problem worse.
+On 03/01/2022 16:46, Gary Bisson wrote:
+> Add missing PWM_F pin muxing for GPIOA_11 and GPIOZ_12.
 > 
-> Is the concern there just the extra overhead from making multiple
-> trips into this handler and re-allocating the buffer until it is large
-> enough to take all the output? In that case, we could pre-allocate
-> with a size of the right order of magnitude, similar to /proc/stat.
+> Signed-off-by: Gary Bisson <gary.bisson@boundarydevices.com>
+> ---
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Neil Armstrong <narmstrong@baylibre.com>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Jerome Brunet <jbrunet@baylibre.com>
+> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  .../arm64/boot/dts/amlogic/meson-g12-common.dtsi | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
 > 
-> Lack of per-cpu stats is a gap between cgroup v1 and v2, for which v2
-> can easily support this interface given that it already tracks the
-> stats percpu internally. I opted to dump them all in a single file
-> here, to match the consolidation that occurred from cpuacct->cpu.stat.
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+> index 00c6f53290d4..af1357c48bee 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+> +++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+> @@ -894,6 +894,22 @@ mux {
+>  						};
+>  					};
+>  
+> +					pwm_f_z_pins: pwm-f-z {
+> +						mux {
+> +							groups = "pwm_f_z";
+> +							function = "pwm_f";
+> +							bias-disable;
+> +						};
+> +					};
+> +
+> +					pwm_f_a_pins: pwm-f-a {
+> +						mux {
+> +							groups = "pwm_f_a";
+> +							function = "pwm_f";
+> +							bias-disable;
+> +						};
+> +					};
+> +
+>  					pwm_f_x_pins: pwm-f-x {
+>  						mux {
+>  							groups = "pwm_f_x";
+> 
 
-Hmm.. fancy new stuff there :-) Yes, I think that would aleviate the
-immediate problem. I suppose /proc/interrupts ought to get some of that
-too.
-
-Still, I'm not sure having so much data in a single file is wise. But
-I've not really kept up with the discussions around this problem much.
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
