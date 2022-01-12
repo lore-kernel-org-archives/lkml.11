@@ -2,275 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17537C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345063AbiALT1Q (ORCPT
+        id S1345135AbiALT1Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:27:16 -0500
-Received: from mail-qt1-f179.google.com ([209.85.160.179]:46896 "EHLO
-        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345003AbiALT0L (ORCPT
+        Wed, 12 Jan 2022 14:27:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345148AbiALT0a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:26:11 -0500
-Received: by mail-qt1-f179.google.com with SMTP id v7so4200362qtw.13;
-        Wed, 12 Jan 2022 11:26:11 -0800 (PST)
+        Wed, 12 Jan 2022 14:26:30 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB68C06175E
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:26:05 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id y10-20020a2586ca000000b006116aaeeee6so6228651ybm.21
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:26:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=bFDryb9jb8NTEZANKT/JVNtftTgumdYcR8KASxgiLpk=;
+        b=ZGXT1UObup073swIqmO5+1QRXtl9hmA/6NTt0hfO179rFjFvCw8fqGDyKY+tb7Fvja
+         Aa2bVZRYiHFHSDw9aLiHJfvYqKowJfz7NyG28e7krCflCqlayrV475tQlF+tqyXyQBf7
+         uCUSYpL6/BK5oT4iRcVeMB2QEm4FksCN3L7obXYzpe8xUjvicHFkhatArw5O/MrHjeHl
+         CNuVabGmHM6mvE/pkR/tFg3cAqrUnvhsW3qdv+UB0l20//61MyAwswJjujSG7mVLDxGR
+         vDo98OFhtrlwOXwQdsBRJ8Q5gm5fGBPzehZCeIW5LxHZSL8Qiz9h3blFu84b6S2V9bvp
+         n9gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2OdLpMkE2Acb+qyy0VLgKmSLDMsqxL4iDRMnwTvWvo4=;
-        b=Df+XV2aRp4lprTsUyOnO5eHLEPye13FpHlQ+kiHMFdbRuoafzWAUPX/QcmfXFJeDGg
-         k0YdRpkXSfugmORDM5e2OE9GyZpFzVHlZREYnK3+L46vpzBcJ1bti2VhsfYSCFkOYdxB
-         3nPgwD16WR7KeYydmH3BGSxpZkr1pwXCNusI+hgqU4TiJ4jqSVS4uqwYHwtaO0Dh73ME
-         GlQrOFeqxXD8//MNvAg1hFTqhEEJokx59X7b8r6T+M2s+ghKuCw7DNPpwDfpelOKHENn
-         Q5eaa8+ll+txetBBDV5sovo3iztMuHgy0J5YCHZJj7LZKRdNLfM9qYKEEaObYhQHPm50
-         fwUQ==
-X-Gm-Message-State: AOAM531Wf8FIPXo84pSeKBlpOZhQJR0PrpDmUZAvf8F/WJoRMidHJBzV
-        ku7VbPzCCPkrrVt2Xgj5tBbWcnuXiIp41XwgpuA=
-X-Google-Smtp-Source: ABdhPJx1aWGsGy+DZCQpo3w29Z+cZ5A3P9bcxtWN7LIJdJrayKGtcTlLBLeJhDQioFdlyGdiwS9VToSEXBXcEca3Y5Y=
-X-Received: by 2002:a05:622a:44e:: with SMTP id o14mr901295qtx.369.1642015569811;
- Wed, 12 Jan 2022 11:26:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20220106025059.25847-1-ricardo.neri-calderon@linux.intel.com> <20220106025059.25847-7-ricardo.neri-calderon@linux.intel.com>
-In-Reply-To: <20220106025059.25847-7-ricardo.neri-calderon@linux.intel.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 12 Jan 2022 20:25:59 +0100
-Message-ID: <CAJZ5v0ioQ7UQt58NraPAG=M8k-joSy5pmszFjp=NcS6z==6RQg@mail.gmail.com>
-Subject: Re: [PATCH v3 6/7] thermal: netlink: Add a new event to notify CPU
- capabilities change
-To:     Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Len Brown <len.brown@intel.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Aubrey Li <aubrey.li@linux.intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Lukasz Luba <lukasz.luba@arm.com>,
-        "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
-        Ricardo Neri <ricardo.neri@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=bFDryb9jb8NTEZANKT/JVNtftTgumdYcR8KASxgiLpk=;
+        b=qHc0517wd0iV8GFS7QnCyRSt8N8ur5g3Y6D9Hqlfu/Llona0c4e8lVUJZyQPNy1quk
+         21tkSdoxII7fzl7H16c8tk4IAlF5ic5Bcyo2xW9OqMTw7GJ3lIl1h3tX+dyGvpLDILyN
+         wb7b5TUdrv1SkxY92Y5XjIdOq+Xgsu3ctj1fgqqyNftZCwJKsxOpLPsNPRKJ9SfnDYzt
+         6q9Ve/zBd/eJE/C3lmCnVGAwpM3hKw8xTJU2gWe1tKlHF1nH4jpSy4MWlNzvvWXjSQHT
+         zWGBt052RTIfcut7QXcaeTxaDjOC2+6TiRHXVVGJgMEcmF6BPJgIGnUkQH2IthVw9F82
+         ja8w==
+X-Gm-Message-State: AOAM530tNuyb/Le4bfsKRqCqjUDaR8QFMe8W/o1FC9Qt7yBuNYHj8+Uy
+        K7NJyLHY37/ua/6Gv/gYynpYI4eviZA=
+X-Google-Smtp-Source: ABdhPJyMMvFLrHlA70ZdzGQYlaAvxkUsxzB1wsmsKlFxF+l/nhGDrTOdSFvhYWSKqtZGin3dFOLepDLpF2g=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2cd:202:ddf2:9aea:6994:df79])
+ (user=haoluo job=sendgmr) by 2002:a5b:352:: with SMTP id q18mr1490351ybp.23.1642015564256;
+ Wed, 12 Jan 2022 11:26:04 -0800 (PST)
+Date:   Wed, 12 Jan 2022 11:25:45 -0800
+In-Reply-To: <20220112192547.3054575-1-haoluo@google.com>
+Message-Id: <20220112192547.3054575-7-haoluo@google.com>
+Mime-Version: 1.0
+References: <20220112192547.3054575-1-haoluo@google.com>
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+Subject: [PATCH RESEND RFC bpf-next v1 6/8] libbpf: Support of bpf_view prog type.
+From:   Hao Luo <haoluo@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, KP Singh <kpsingh@kernel.org>,
+        Shakeel Butt <shakeelb@google.com>, Joe@google.com,
+        Burton@google.com, jevburton.kernel@gmail.com,
+        Tejun Heo <tj@kernel.org>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hao Luo <haoluo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 3:49 AM Ricardo Neri
-<ricardo.neri-calderon@linux.intel.com> wrote:
->
-> From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
->
-> Add a new netlink event to notify change in CPU capabilities in terms of
-> performance and efficiency.
->
-> Firmware may change CPU capabilities as a result of thermal events in the
-> system or to account for changes in the TDP (thermal design power) level.
->
-> This notification type will allow user space to avoid running workloads
-> on certain CPUs or proactively adjust power limits to avoid future events.
->
-> The netlink message consists of a nested attribute
-> (THERMAL_GENL_ATTR_CPU_CAPABILITY) with three attributes:
->
->  * THERMAL_GENL_ATTR_CPU_CAPABILITY_ID (type u32):
->    -- logical CPU number
->  * THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE (type u32):
->    -- Scaled performance from 0-1023
->  * THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY (type u32):
->    -- Scaled efficiency from 0-1023
->
-> Cc: Andi Kleen <ak@linux.intel.com>
-> Cc: Aubrey Li <aubrey.li@linux.intel.com>
-> Cc: Lukasz Luba <lukasz.luba@arm.com>
-> Cc: Tim Chen <tim.c.chen@linux.intel.com>
-> Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
-> Reviewed-by: Len Brown <len.brown@intel.com>
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+The previous patch introdued a new program type bpf_view. This
+patch adds support for bpf_view in libbpf.
 
-Of course, I need to know if Daniel and Lukasz agree with this patch.
+Signed-off-by: Hao Luo <haoluo@google.com>
+---
+ tools/lib/bpf/libbpf.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-> ---
-> Changes since v2:
->   * None
->
-> Changes since v1:
->   * Reworded commit message.
->   * Reworded the members of struct cpu_capacity for clarity. (Lukasz)
->   * Defined the CPU capability attributes to be scaled in the [0, 1023]
->     interval. (Lukasz)
-> ---
->  drivers/thermal/thermal_netlink.c | 55 +++++++++++++++++++++++++++++++
->  drivers/thermal/thermal_netlink.h | 13 ++++++++
->  include/uapi/linux/thermal.h      |  6 +++-
->  3 files changed, 73 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/thermal/thermal_netlink.c b/drivers/thermal/thermal_netlink.c
-> index a16dd4d5d710..38e6c20f460c 100644
-> --- a/drivers/thermal/thermal_netlink.c
-> +++ b/drivers/thermal/thermal_netlink.c
-> @@ -43,6 +43,11 @@ static const struct nla_policy thermal_genl_policy[THERMAL_GENL_ATTR_MAX + 1] =
->         [THERMAL_GENL_ATTR_CDEV_MAX_STATE]      = { .type = NLA_U32 },
->         [THERMAL_GENL_ATTR_CDEV_NAME]           = { .type = NLA_STRING,
->                                                     .len = THERMAL_NAME_LENGTH },
-> +       /* CPU capabilities */
-> +       [THERMAL_GENL_ATTR_CPU_CAPABILITY]              = { .type = NLA_NESTED },
-> +       [THERMAL_GENL_ATTR_CPU_CAPABILITY_ID]           = { .type = NLA_U32 },
-> +       [THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE]  = { .type = NLA_U32 },
-> +       [THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY]   = { .type = NLA_U32 },
->  };
->
->  struct param {
-> @@ -58,6 +63,8 @@ struct param {
->         int temp;
->         int cdev_state;
->         int cdev_max_state;
-> +       struct cpu_capability *cpu_capabilities;
-> +       int cpu_capabilities_count;
->  };
->
->  typedef int (*cb_t)(struct param *);
-> @@ -190,6 +197,45 @@ static int thermal_genl_event_gov_change(struct param *p)
->         return 0;
->  }
->
-> +static int thermal_genl_event_cpu_capability_change(struct param *p)
-> +{
-> +       struct cpu_capability *cpu_cap = p->cpu_capabilities;
-> +       struct sk_buff *msg = p->msg;
-> +       struct nlattr *start_cap;
-> +       int i, ret;
-> +
-> +       start_cap = nla_nest_start(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY);
-> +       if (!start_cap)
-> +               return -EMSGSIZE;
-> +
-> +       for (i = 0; i < p->cpu_capabilities_count; ++i) {
-> +               if (nla_put_u32(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY_ID,
-> +                               cpu_cap->cpu)) {
-> +                       ret = -EMSGSIZE;
-> +                       goto out_cancel_nest;
-> +               }
-> +               if (nla_put_u32(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE,
-> +                               cpu_cap->performance)) {
-> +                       ret = -EMSGSIZE;
-> +                       goto out_cancel_nest;
-> +               }
-> +               if (nla_put_u32(msg, THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY,
-> +                               cpu_cap->efficiency)) {
-> +                       ret = -EMSGSIZE;
-> +                       goto out_cancel_nest;
-> +               }
-> +               ++cpu_cap;
-> +       }
-> +
-> +       nla_nest_end(msg, start_cap);
-> +
-> +       return 0;
-> +out_cancel_nest:
-> +       nla_nest_cancel(msg, start_cap);
-> +
-> +       return ret;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7f10dd501a52..0d458e34d82c 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8570,6 +8570,7 @@ static struct bpf_link *attach_raw_tp(const struct bpf_program *prog, long cooki
+ static struct bpf_link *attach_trace(const struct bpf_program *prog, long cookie);
+ static struct bpf_link *attach_lsm(const struct bpf_program *prog, long cookie);
+ static struct bpf_link *attach_iter(const struct bpf_program *prog, long cookie);
++static struct bpf_link *attach_view(const struct bpf_program *prog, long cookie);
+ 
+ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("socket",		SOCKET_FILTER, 0, SEC_NONE | SEC_SLOPPY_PFX),
+@@ -8599,6 +8600,7 @@ static const struct bpf_sec_def section_defs[] = {
+ 	SEC_DEF("lsm/",			LSM, BPF_LSM_MAC, SEC_ATTACH_BTF, attach_lsm),
+ 	SEC_DEF("lsm.s/",		LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
+ 	SEC_DEF("iter/",		TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
++	SEC_DEF("view/",		TRACING, BPF_TRACE_VIEW, SEC_ATTACH_BTF, attach_view),
+ 	SEC_DEF("syscall",		SYSCALL, 0, SEC_SLEEPABLE),
+ 	SEC_DEF("xdp_devmap/",		XDP, BPF_XDP_DEVMAP, SEC_ATTACHABLE),
+ 	SEC_DEF("xdp_cpumap/",		XDP, BPF_XDP_CPUMAP, SEC_ATTACHABLE),
+@@ -8896,6 +8898,7 @@ static int bpf_object__collect_st_ops_relos(struct bpf_object *obj,
+ #define BTF_TRACE_PREFIX "btf_trace_"
+ #define BTF_LSM_PREFIX "bpf_lsm_"
+ #define BTF_ITER_PREFIX "bpf_iter_"
++#define BTF_VIEW_PREFIX "bpf_view_"
+ #define BTF_MAX_NAME_SIZE 128
+ 
+ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+@@ -8914,6 +8917,10 @@ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+ 		*prefix = BTF_ITER_PREFIX;
+ 		*kind = BTF_KIND_FUNC;
+ 		break;
++	case BPF_TRACE_VIEW:
++		*prefix = BTF_VIEW_PREFIX;
++		*kind = BTF_KIND_FUNC;
++		break;
+ 	default:
+ 		*prefix = "";
+ 		*kind = BTF_KIND_FUNC;
+@@ -10575,6 +10582,20 @@ struct bpf_link *bpf_program__attach_freplace(const struct bpf_program *prog,
+ 	}
+ }
+ 
++static struct bpf_link *attach_view(const struct bpf_program *prog, long cookie)
++{
++	const char *target_name;
++	const char *prefix = "view/";
++	int btf_id;
++
++	target_name = prog->sec_name + strlen(prefix);
++	btf_id = libbpf_find_vmlinux_btf_id(target_name, BPF_TRACE_VIEW);
++	if (btf_id < 0)
++		return libbpf_err_ptr(btf_id);
++
++	return bpf_program__attach_fd(prog, 0, btf_id, "view");
++}
++
+ struct bpf_link *
+ bpf_program__attach_iter(const struct bpf_program *prog,
+ 			 const struct bpf_iter_attach_opts *opts)
+-- 
+2.34.1.448.ga2b2bfdf31-goog
 
-It looks like ret is never different from -EMSGSIZE here, so I'd just
-return that error and drop the ret variable.
-
-> +}
-> +
->  int thermal_genl_event_tz_delete(struct param *p)
->         __attribute__((alias("thermal_genl_event_tz")));
->
-> @@ -219,6 +265,7 @@ static cb_t event_cb[] = {
->         [THERMAL_GENL_EVENT_CDEV_DELETE]        = thermal_genl_event_cdev_delete,
->         [THERMAL_GENL_EVENT_CDEV_STATE_UPDATE]  = thermal_genl_event_cdev_state_update,
->         [THERMAL_GENL_EVENT_TZ_GOV_CHANGE]      = thermal_genl_event_gov_change,
-> +       [THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE] = thermal_genl_event_cpu_capability_change,
->  };
->
->  /*
-> @@ -356,6 +403,14 @@ int thermal_notify_tz_gov_change(int tz_id, const char *name)
->         return thermal_genl_send_event(THERMAL_GENL_EVENT_TZ_GOV_CHANGE, &p);
->  }
->
-> +int thermal_genl_cpu_capability_event(int count, struct cpu_capability *caps)
-> +{
-> +       struct param p = { .cpu_capabilities_count = count, .cpu_capabilities = caps };
-> +
-> +       return thermal_genl_send_event(THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE, &p);
-> +}
-> +EXPORT_SYMBOL_GPL(thermal_genl_cpu_capability_event);
-> +
->  /*************************** Command encoding ********************************/
->
->  static int __thermal_genl_cmd_tz_get_id(struct thermal_zone_device *tz,
-> diff --git a/drivers/thermal/thermal_netlink.h b/drivers/thermal/thermal_netlink.h
-> index e554f76291f4..44bc3dec5568 100644
-> --- a/drivers/thermal/thermal_netlink.h
-> +++ b/drivers/thermal/thermal_netlink.h
-> @@ -4,6 +4,12 @@
->   *  Author: Daniel Lezcano <daniel.lezcano@linaro.org>
->   */
->
-> +struct cpu_capability {
-
-I'm wondering if the struct name is not too generic as the purpose it
-is used for is rather narrow and specific.
-
-> +       int cpu;
-> +       int performance;
-> +       int efficiency;
-> +};
-> +
->  /* Netlink notification function */
->  #ifdef CONFIG_THERMAL_NETLINK
->  int __init thermal_netlink_init(void);
-> @@ -23,6 +29,7 @@ int thermal_notify_cdev_add(int cdev_id, const char *name, int max_state);
->  int thermal_notify_cdev_delete(int cdev_id);
->  int thermal_notify_tz_gov_change(int tz_id, const char *name);
->  int thermal_genl_sampling_temp(int id, int temp);
-> +int thermal_genl_cpu_capability_event(int count, struct cpu_capability *caps);
->  #else
->  static inline int thermal_netlink_init(void)
->  {
-> @@ -101,4 +108,10 @@ static inline int thermal_genl_sampling_temp(int id, int temp)
->  {
->         return 0;
->  }
-> +
-> +static inline int thermal_genl_cpu_capability_event(int count, struct cpu_capability *caps)
-> +{
-> +       return 0;
-> +}
-> +
->  #endif /* CONFIG_THERMAL_NETLINK */
-> diff --git a/include/uapi/linux/thermal.h b/include/uapi/linux/thermal.h
-> index 9aa2fedfa309..fc78bf3aead7 100644
-> --- a/include/uapi/linux/thermal.h
-> +++ b/include/uapi/linux/thermal.h
-> @@ -44,7 +44,10 @@ enum thermal_genl_attr {
->         THERMAL_GENL_ATTR_CDEV_MAX_STATE,
->         THERMAL_GENL_ATTR_CDEV_NAME,
->         THERMAL_GENL_ATTR_GOV_NAME,
-> -
-> +       THERMAL_GENL_ATTR_CPU_CAPABILITY,
-> +       THERMAL_GENL_ATTR_CPU_CAPABILITY_ID,
-> +       THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE,
-> +       THERMAL_GENL_ATTR_CPU_CAPABILITY_EFFICIENCY,
->         __THERMAL_GENL_ATTR_MAX,
->  };
->  #define THERMAL_GENL_ATTR_MAX (__THERMAL_GENL_ATTR_MAX - 1)
-> @@ -71,6 +74,7 @@ enum thermal_genl_event {
->         THERMAL_GENL_EVENT_CDEV_DELETE,         /* Cdev unbound */
->         THERMAL_GENL_EVENT_CDEV_STATE_UPDATE,   /* Cdev state updated */
->         THERMAL_GENL_EVENT_TZ_GOV_CHANGE,       /* Governor policy changed  */
-> +       THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE,       /* CPU capability changed */
->         __THERMAL_GENL_EVENT_MAX,
->  };
->  #define THERMAL_GENL_EVENT_MAX (__THERMAL_GENL_EVENT_MAX - 1)
-> --
-> 2.17.1
->
