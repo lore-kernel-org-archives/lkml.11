@@ -2,98 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2B3C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CADC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352918AbiALLiJ (ORCPT
+        id S1352913AbiALLiI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:38:09 -0500
-Received: from gateway20.websitewelcome.com ([192.185.59.4]:31406 "EHLO
-        gateway20.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352904AbiALLiH (ORCPT
+        Wed, 12 Jan 2022 06:38:08 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28979 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352903AbiALLiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:38:07 -0500
-X-Greylist: delayed 1241 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 06:38:06 EST
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway20.websitewelcome.com (Postfix) with ESMTP id E90FD4018ED72
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:17:21 -0600 (CST)
-Received: from gator4132.hostgator.com ([192.185.4.144])
-        by cmsmtp with SMTP
-        id 7bb6nll43INxB7bb6nJrDx; Wed, 12 Jan 2022 05:15:20 -0600
-X-Authority-Reason: nr=8
-Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:48568 helo=[10.0.0.88])
-        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <bristot@kernel.org>)
-        id 1n7bb4-001QEl-Su; Wed, 12 Jan 2022 05:15:19 -0600
-Message-ID: <5f04540c-273a-c4f2-692d-9de2f1495ba9@kernel.org>
-Date:   Wed, 12 Jan 2022 12:15:13 +0100
+        Wed, 12 Jan 2022 06:38:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641987485;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RZ/OOdpAGgV62HtjD3bMC3/ezB1HxaLvh507CGIQyfE=;
+        b=TAbxfQ34m3WVYWhMzXVM+6iXRiVc17q+xmVtrFoLlhAnOGLBvusMCYtuHEX9PZGxSKskiv
+        dWhndhIYuaw3OdPPm4yuwsVcao3LZu8fRQh3Zp84V811hoxFmHRHepT9y5FupJHRlL2rIJ
+        aUFyIN4S4WIEPpkfR5PD8yxd9TVkywc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-504-Sb9XDJvCM52PuWAtlMMb6w-1; Wed, 12 Jan 2022 06:38:04 -0500
+X-MC-Unique: Sb9XDJvCM52PuWAtlMMb6w-1
+Received: by mail-wm1-f71.google.com with SMTP id bg32-20020a05600c3ca000b00349f2aca1beso1422730wmb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 03:38:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=RZ/OOdpAGgV62HtjD3bMC3/ezB1HxaLvh507CGIQyfE=;
+        b=f6Eqo2FSjuqvnGsw02iQqK0j2AqbvZ8lLgnoDx0kATnBg7z0NSA/Qt9vRE64hazTxB
+         +9N+jfFdNe38N8GU7VSF20h5TK7dIwmCOHfdaDlwSZYUdEpMdw8HdwqQwwxhTQuBi+8y
+         GxKxxUamuEOqWaKtFrpSQz+ug0a2gGwY29pmsEWvFMFEr0XS1yxWeUlhvofF+ckLBEZQ
+         o7v/f2lhFxzrAqHvbCDjzJb0GIVGnlj5IfaRf/UQfjlmPl3OIUdfb9SiJ+so5RKe+fe7
+         Zy58bGamvaB6e1yGXtWcFCbtrxqmsWuZctTMcsaHKACFUUuh6beadVDTwWjV+k9pzzPH
+         lMBQ==
+X-Gm-Message-State: AOAM533wjR2xXUFpSF2pBfSaZJLMcdUP8jg0AfibhMqdVofuVrCRj1Oz
+        IyphVDPkDHgqZR7SRJEYHpSmphTr7lhU21ySzkcSnz7Xdh18nrPbgRKPWHoY6bwNKgiuYr+Ybk1
+        JXxf8q2bCg65PqzYyP5HG7zPs
+X-Received: by 2002:a05:600c:3b19:: with SMTP id m25mr6332968wms.100.1641987482741;
+        Wed, 12 Jan 2022 03:38:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyCMtCBYnaCQK1iXFn85zR/lqJOVMZxN9oUrlR9Ead1HQenjTkkrnQCGumLIh+enmiNou0HhQ==
+X-Received: by 2002:a05:600c:3b19:: with SMTP id m25mr6332946wms.100.1641987482542;
+        Wed, 12 Jan 2022 03:38:02 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id d16sm8380854wrq.27.2022.01.12.03.38.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 03:38:02 -0800 (PST)
+Message-ID: <2155e11e-beec-f896-0ab5-d48bb860f335@redhat.com>
+Date:   Wed, 12 Jan 2022 12:38:01 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [for-next][PATCH 16/31] rtla: Real-Time Linux Analysis tool
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 0/2] video: A couple of fixes for the vga16fb driver
 Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        John Kacur <jkacur@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220111173030.999527342@goodmis.org>
- <20220111173116.190327559@goodmis.org>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <20220111173116.190327559@goodmis.org>
+To:     "Kris Karas (Bug reporting)" <bugs-a21@moonlit-rail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Robinson <pbrobinson@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Borislav Petkov <bp@suse.de>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+References: <20220110095625.278836-1-javierm@redhat.com>
+ <65a13d92-93fc-25d2-0009-b7e60f3392c4@moonlit-rail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <65a13d92-93fc-25d2-0009-b7e60f3392c4@moonlit-rail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - kernel.org
-X-BWhitelist: no
-X-Source-IP: 79.47.126.144
-X-Source-L: No
-X-Exim-ID: 1n7bb4-001QEl-Su
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.88]) [79.47.126.144]:48568
-X-Source-Auth: kernel@bristot.me
-X-Email-Count: 1
-X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
-X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Steven!
+Hello Kris,
 
-On 1/11/22 18:30, Steven Rostedt wrote:
-> From: Daniel Bristot de Oliveira <bristot@kernel.org>
+On 1/12/22 03:19, Kris Karas (Bug reporting) wrote:
+> Hi Javier, Geert, et al,
 > 
-> The rtla is a meta-tool that includes a set of commands that aims
-> to analyze the real-time properties of Linux. But instead of testing
-> Linux as a black box, rtla leverages kernel tracing capabilities to
-> provide precise information about the properties and root causes of
-> unexpected results.
+> Javier Martinez Canillas wrote:
+>> Changes in v2:
+>> - Make the change only for x86 (Geert Uytterhoeven)
+>> - Only check the suppported video mode for x86 (Geert Uytterhoeven).
 > 
-> rtla --help works and provide information about the available options.
+> I just updated Bug 215001 to reflect that I have tested this new, V2 
+> patch against 4 systems, one more than last time - 2 BIOS/VGAC and 2 
+> UEFI - and it works perfectly on all four.
 > 
-> This is just the "main" and the Makefile, no function yet.
+> Thanks, Javier, for the excellent work!
+> I didn't test with non-X86, but the code appears to bypass the patch on 
+> non-X86, so should work fine for Geert.
 > 
-> Link: https://lkml.kernel.org/r/f59acda8bc513c4a6c279a9bc3ad112a20690e68.1638182284.git.bristot@kernel.org
+> Kris
+> 
+> Tested-By: Kris Karas <bugs-a21@moonlit-rail.com>
+>
 
-Thanks for picking RTLA!
+Thanks a lot for testing again!
 
-Just one problem, you are picking the V8, but we actually had a V9:
-  https://lore.kernel.org/lkml/cover.1639158831.git.bristot@kernel.org/
+I've applied patch #1 to drm-misc-next and #2 to drm-misc-fixes.
 
--- Daniel
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
