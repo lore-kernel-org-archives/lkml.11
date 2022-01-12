@@ -2,88 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8917C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:00:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239362AbiALKAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:00:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239359AbiALKAE (ORCPT
+        id S239490AbiALKAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 05:00:53 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:55436
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239371AbiALKAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:00:04 -0500
-X-Greylist: delayed 416 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 12 Jan 2022 02:00:03 PST
-Received: from forward500o.mail.yandex.net (forward500o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::610])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734A6C06173F;
-        Wed, 12 Jan 2022 02:00:03 -0800 (PST)
-Received: from vla1-b85deedef156.qloud-c.yandex.net (vla1-b85deedef156.qloud-c.yandex.net [IPv6:2a02:6b8:c0d:89c:0:640:b85d:eede])
-        by forward500o.mail.yandex.net (Yandex) with ESMTP id 018989427F9;
-        Wed, 12 Jan 2022 12:53:04 +0300 (MSK)
-Received: from vla3-23c3b031fed5.qloud-c.yandex.net (vla3-23c3b031fed5.qloud-c.yandex.net [2a02:6b8:c15:2582:0:640:23c3:b031])
-        by vla1-b85deedef156.qloud-c.yandex.net (mxback/Yandex) with ESMTP id YKgBHTejNI-r3fa0jiw;
-        Wed, 12 Jan 2022 12:53:03 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1641981183;
-        bh=GBvPYx5xlO7r/in7vKblwwrgfU2MCoognfarC7rdbak=;
-        h=In-Reply-To:To:From:Subject:Message-ID:Cc:References:Date;
-        b=Uyp2Osp97srb3rUFOzCKjMYP5R2DOaxljSfrW8/Ojcp7zjeQ0OpRwWiaBxbz3sYod
-         ku77jABkKYRqFa2ZfKkTRUtzLBkqjn6mah06d/1YhPzVPmyipL3PxyvpG86xgIVwj3
-         z4cI38USXEAszEPFexrJrkmB9PehIyjMSgQMdtd8=
-Authentication-Results: vla1-b85deedef156.qloud-c.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by vla3-23c3b031fed5.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id PaDBeQX1JP-r2QqdOrT;
-        Wed, 12 Jan 2022 12:53:02 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 2
-Message-ID: <98ed8d6d16a3d472d9432eb169aa2da44b66b5cc.camel@yandex.ru>
-Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in
- adapter"
-From:   Konstantin Kharlamov <hi-angel@yandex.ru>
-To:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org
-Cc:     "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Date:   Wed, 12 Jan 2022 12:51:31 +0300
-In-Reply-To: <Yd6gRR0jtqhRLwtB@ninjato>
-References: <20220106122452.18719-1-wsa@kernel.org>
-         <Yd6gRR0jtqhRLwtB@ninjato>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 
+        Wed, 12 Jan 2022 05:00:51 -0500
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D65DF3F1EE
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1641981650;
+        bh=W175jQsAVD8hOk96CzYOc00tw1PfuOzVPDQUy/HubXs=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=k9glYrqJDMl8kv5sNFpGs6wjrcIHjovV0BxJSeEXbwEbnLIyUweJG58G8RVLCK+ck
+         ee1U6ffQkrMP6KhNRzvHW7vz6aqlV/B98HkMavP0JiqsD/Kcv9MbrPDhLlwt+HoGaj
+         GvAL8T4X7vSN7a8eUmUZ6ZGIxJ8Pe1Ynyn8UngOlhVMMLmWkVjruMdjT+8W+Y8qIy7
+         26WtZbH4Wtc4MR8GdIL0l9pMt9UlbPDSLO81UC21IsLPo4TttWg26BQ44WaIVHd9Kt
+         BYptFg7ahsQB29eevU2YCmtXTlToliduMS5t4aEmdKYqRLtgvnkJBYk/3rKE9q09Di
+         nl5JOANWznopQ==
+Received: by mail-ed1-f71.google.com with SMTP id m16-20020a056402431000b003fb60bbe0e2so1820919edc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:00:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W175jQsAVD8hOk96CzYOc00tw1PfuOzVPDQUy/HubXs=;
+        b=fkygVV6IA9ixOVSrMLTS0cb2vIOXl5bE4Ub6eNSZ/upgvTSOHybPcOhWQwL5ytwwyE
+         8nqgks8HOvufxN8B1MfHjseBJmVMrXhL4ZaRvHOe5h+UsV3DDqCjP1aCasOaFRlHxn0R
+         A1mfYtJDmL00YcUdIR4eO/M1KDHs6rMa4oDq/AklP4TzueQJ/xyZGLdShkHncYcsJ1cw
+         rUY4AOYWwNH+/b77wsIaFrpr8IFRB0PHPb2/1BTRipHEwh7RUrqFTaIQ8YuMJ5g0xw4u
+         F/Aaj9Kl8tkbW03TTGyNH8tCkkcBiPGWtYp+R41YomuanJxKmbRULyBYfGR5gZguOpNm
+         631A==
+X-Gm-Message-State: AOAM531E8EJCaEf5Gt05RNefqyKGTf2oeofH4/1T1zgn2oMKB/bbsoqj
+        Y6OhNQHC0PvegG37dBGhAnfFJOhG627AFjrrKLhKRUyEvxP75ryNyfR9A2yG7D+hns3btiKQw4X
+        e+z8hBE0Zo/Ako7QUTssT5vCYmw4WiDfzGYAOAZg1dw==
+X-Received: by 2002:aa7:c584:: with SMTP id g4mr220260edq.78.1641981650587;
+        Wed, 12 Jan 2022 02:00:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyPwXb8C8jwC0AeCFbhlzmt3R55DzsEBM3z+QQv07WnckbiFJGdXv4Kanz5OlMs7VuMIKn9xw==
+X-Received: by 2002:aa7:c584:: with SMTP id g4mr220236edq.78.1641981650275;
+        Wed, 12 Jan 2022 02:00:50 -0800 (PST)
+Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id hb11sm4311083ejc.33.2022.01.12.02.00.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 02:00:49 -0800 (PST)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Pratyush Yadav <p.yadav@ti.com>, linux-spi@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>
+Subject: [PATCH v3 0/4] spi: dt-bindings: samsung: convert to dtschema
+Date:   Wed, 12 Jan 2022 11:00:42 +0100
+Message-Id: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-01-12 at 10:32 +0100, Wolfram Sang wrote:
-> Hi everyone,
-> 
-> On Thu, Jan 06, 2022 at 01:24:52PM +0100, Wolfram Sang wrote:
-> > This largely reverts commit 5a7b95fb993ec399c8a685552aa6a8fc995c40bd. It
-> > breaks suspend with AMD GPUs, and we couldn't incrementally fix it. So,
-> > let's remove the code and go back to the drawing board. We keep the
-> > header extension to not break drivers already populating the regulator.
-> > We expect to re-add the code handling it soon.
-> > 
-> > Reported-by: "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
-> > Link:
-> > https://lore.kernel.org/r/1295184560.182511.1639075777725@mail.yahoo.com
-> > Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
-> > Link:
-> > https://lore.kernel.org/r/7143a7147978f4104171072d9f5225d2ce355ec1.camel@yandex.ru
-> > BugLink: https://gitlab.freedesktop.org/drm/amd/-/issues/1850
-> > Signed-off-by: Wolfram Sang <wsa@kernel.org>
-> 
-> So, it has been reverted now. Is someone of the original patch
-> submitters interested in re-adding it? And would the reporters of the
-> regression be available for further testing?
+Hi,
 
-I am available for further testing.
+Changes since v2
+================
+1. Patch 2: drop child device schema, as Rob suggested.
 
-> Thanks and happy hacking,
-> 
->    Wolfram
-> 
+Changes since v1
+================
+1. Patch 2: describe devices matching compatible, correct issues pointed out by
+   Rob, add reviewed-by tag.
+2. New patches 3 and 4.
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (4):
+  ARM: dts: exynos: split dmas into array of phandles in Exynos5250
+  spi: dt-bindings: samsung: convert to dtschema
+  spi: dt-bindings: samsung: allow controller-data to be optional
+  spi: s3c64xx: allow controller-data to be optional
+
+ .../spi/samsung,spi-peripheral-props.yaml     |  36 ++++
+ .../devicetree/bindings/spi/samsung,spi.yaml  | 187 ++++++++++++++++++
+ .../bindings/spi/spi-peripheral-props.yaml    |   1 +
+ .../devicetree/bindings/spi/spi-samsung.txt   | 122 ------------
+ MAINTAINERS                                   |   2 +-
+ arch/arm/boot/dts/exynos5250.dtsi             |   9 +-
+ drivers/spi/spi-s3c64xx.c                     |  14 +-
+ 7 files changed, 234 insertions(+), 137 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi-samsung.txt
+
+-- 
+2.32.0
 
