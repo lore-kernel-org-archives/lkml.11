@@ -2,99 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD6EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4383DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354140AbiALOhP (ORCPT
+        id S1354163AbiALOj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:37:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344321AbiALOhN (ORCPT
+        Wed, 12 Jan 2022 09:39:57 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:15587 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344321AbiALOj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:37:13 -0500
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032A4C061756
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 06:37:12 -0800 (PST)
-Received: by mail-qv1-xf2e.google.com with SMTP id kc16so3119299qvb.3
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 06:37:12 -0800 (PST)
+        Wed, 12 Jan 2022 09:39:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gN6nYxQ+pi+EX1rhDvVBrSftakRyc+dgBWa+b+GYGOw=;
-        b=mUYM4mY5CMZFdZf8LoZxSmr2HrBtGWy/OuRuqq61O/YzMtji9cyv80GCzVs3+/yBQM
-         ea8h1TgnQuxezzPUpv+dYIPkHwYXJi8s8RLc3/qoVBJIdyMcJhSjmxQmUkiMYq3Ma/mk
-         FCYSRjNlYgSsNDINKB5/QzVJm37I8VUcYMKVK1npArHn3Q6M8h3+azxH7i00hNJ3x5GH
-         /MOIqnam32dgIasH341bE3XTjvVfDKCVLNSfwExXT1QlmErmH+Ao3P6BgqP5XnvYn4WD
-         4jkB6eQQ2fqopSlJvC4a/kF34giBDtsHPoVyc1PJ8OLUBC1+AAZopBx4/zXrVog6uTYo
-         wZRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gN6nYxQ+pi+EX1rhDvVBrSftakRyc+dgBWa+b+GYGOw=;
-        b=etT7UWovQPwtxz9s4ZaJdnwhw4NaugQ3zqPOz3Q0vBaZCAJWa59Kf++pSQhumlQxn4
-         J7DvGjzUwDjloEwxZBF2EXI10tqXcIZvEVe2XiPvWRym4obgfEKLRniCssWr2t/QibPR
-         jCVpBrO0e1dOrhRnNeGExcpnUFoPgCUFbHbg1J6hKtN1h0K9fUqqvuzkyZNqOjCFmJjI
-         l50REJ9PROi8uT185wThSwtm5LY8hnYo5Lg93Y32X2fhkfs2CmBoHkDEsPXvj3gHLKl7
-         ns5AFtK9KdeHeBAb1lrVHRJLAthFhGqvrUbijeiItn9SRvC0LLWokJB8oxo69oqye+th
-         Zg7w==
-X-Gm-Message-State: AOAM533XA1eWxJ62/xrBzPJYkUy/bNTJQ04Zw4YW0FUrROV6F5+5QBqg
-        MiA/xudasyfo2LGUw7faAp8IJw==
-X-Google-Smtp-Source: ABdhPJxY1HshUCe33M5fQkNV7QxIC9vh6OAlDMc4ZVnOi5TLVs7F8THYxcCWfsxToe3z3GOWAGLkKg==
-X-Received: by 2002:a05:6214:300a:: with SMTP id ke10mr8262318qvb.98.1641998232082;
-        Wed, 12 Jan 2022 06:37:12 -0800 (PST)
-Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id c17sm8211262qkl.90.2022.01.12.06.37.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 06:37:11 -0800 (PST)
-Date:   Wed, 12 Jan 2022 09:37:10 -0500
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     torvalds@linux-foundation.org, ebiggers@kernel.org, tj@kernel.org,
-        lizefan.x@bytedance.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        mgorman@suse.de, bristot@redhat.com, corbet@lwn.net,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org, stable@vger.kernel.org,
-        kernel-team@android.com,
-        syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2 1/1] psi: Fix uaf issue when psi trigger is destroyed
- while being polled
-Message-ID: <Yd7nlpb5C1asdT9p@cmpxchg.org>
-References: <20220111071212.1210124-1-surenb@google.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1641998396; x=1673534396;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=iCgUxcPRWgRfarCkwn197Zs65Kz++fhiEjcJLIhUBEM=;
+  b=FTw4liqS6ZgGKLKw+7/tiIfNIeplPky+rR05ZIArR2ijS9xlyXlFUGqD
+   FwQFksm+vOHBrw01bA1XI7a+oJqCE4m144kbUBAJjSLCL846doOwO+gTL
+   oZglCZsQt8wloDQfrg6Efr3pPc/SezKAXndswPd8p/nMV37idixeejAti
+   Y=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 12 Jan 2022 06:39:55 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 06:39:55 -0800
+Received: from hu-ctheegal-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Wed, 12 Jan 2022 06:39:51 -0800
+From:   Chitti Babu Theegala <quic_ctheegal@quicinc.com>
+To:     <mingo@redhat.com>, <peterz@infradead.org>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
+        <joel@joelfernandes.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <quic_lingutla@quicinc.com>,
+        <linux-kernel@vger.kernel.org>, <quic_rjendra@quicinc.com>,
+        "Chitti Babu Theegala" <quic_ctheegal@quicinc.com>
+Subject: [PATCH] sched/fair: Prefer small idle cores for forkees
+Date:   Wed, 12 Jan 2022 20:09:02 +0530
+Message-ID: <20220112143902.13239-1-quic_ctheegal@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220111071212.1210124-1-surenb@google.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 11:12:12PM -0800, Suren Baghdasaryan wrote:
-> With write operation on psi files replacing old trigger with a new one,
-> the lifetime of its waitqueue is totally arbitrary. Overwriting an
-> existing trigger causes its waitqueue to be freed and pending poll()
-> will stumble on trigger->event_wait which was destroyed.
-> Fix this by disallowing to redefine an existing psi trigger. If a write
-> operation is used on a file descriptor with an already existing psi
-> trigger, the operation will fail with EBUSY error.
-> Also bypass a check for psi_disabled in the psi_trigger_destroy as the
-> flag can be flipped after the trigger is created, leading to a memory
-> leak.
-> 
-> Fixes: 0e94682b73bf ("psi: introduce psi monitor")
-> Cc: stable@vger.kernel.org
-> Reported-by: syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com
-> Analyzed-by: Eric Biggers <ebiggers@kernel.org>
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Newly forked threads don't have any useful utilization data yet and
+it's not possible to forecast their impact on energy consumption.
+These forkees (though very small, most times) end up waking big
+cores from deep sleep for that very small durations.
 
-That looks good to me, thanks Suren.
+Bias all forkees to small cores to prevent waking big cores from deep
+sleep to save power.
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Signed-off-by: Chitti Babu Theegala <quic_ctheegal@quicinc.com>
+---
+ kernel/sched/fair.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-Peter, would you mind picking this up and routing this to Linus
-through the sched tree, please?
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 6e476f6..d407bbc 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5976,7 +5976,7 @@ static int wake_affine(struct sched_domain *sd, struct task_struct *p,
+ }
+ 
+ static struct sched_group *
+-find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu);
++find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu, int sd_flag);
+ 
+ /*
+  * find_idlest_group_cpu - find the idlest CPU among the CPUs in the group.
+@@ -6063,7 +6063,7 @@ static inline int find_idlest_cpu(struct sched_domain *sd, struct task_struct *p
+ 			continue;
+ 		}
+ 
+-		group = find_idlest_group(sd, p, cpu);
++		group = find_idlest_group(sd, p, cpu, sd_flag);
+ 		if (!group) {
+ 			sd = sd->child;
+ 			continue;
+@@ -8997,7 +8997,8 @@ static inline void update_sg_wakeup_stats(struct sched_domain *sd,
+ static bool update_pick_idlest(struct sched_group *idlest,
+ 			       struct sg_lb_stats *idlest_sgs,
+ 			       struct sched_group *group,
+-			       struct sg_lb_stats *sgs)
++			       struct sg_lb_stats *sgs,
++			       int sd_flag)
+ {
+ 	if (sgs->group_type < idlest_sgs->group_type)
+ 		return true;
+@@ -9034,6 +9035,11 @@ static bool update_pick_idlest(struct sched_group *idlest,
+ 		if (idlest_sgs->idle_cpus > sgs->idle_cpus)
+ 			return false;
+ 
++		/* Select smaller cpu group for newly woken up forkees */
++		if ((sd_flag & SD_BALANCE_FORK) && (idlest_sgs->idle_cpus &&
++			!capacity_greater(idlest->sgc->max_capacity, group->sgc->max_capacity)))
++			return false;
++
+ 		/* Select group with lowest group_util */
+ 		if (idlest_sgs->idle_cpus == sgs->idle_cpus &&
+ 			idlest_sgs->group_util <= sgs->group_util)
+@@ -9062,7 +9068,7 @@ static inline bool allow_numa_imbalance(int dst_running, int dst_weight)
+  * Assumes p is allowed on at least one CPU in sd.
+  */
+ static struct sched_group *
+-find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
++find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu, int sd_flag)
+ {
+ 	struct sched_group *idlest = NULL, *local = NULL, *group = sd->groups;
+ 	struct sg_lb_stats local_sgs, tmp_sgs;
+@@ -9097,7 +9103,7 @@ find_idlest_group(struct sched_domain *sd, struct task_struct *p, int this_cpu)
+ 
+ 		update_sg_wakeup_stats(sd, group, sgs, p);
+ 
+-		if (!local_group && update_pick_idlest(idlest, &idlest_sgs, group, sgs)) {
++		if (!local_group && update_pick_idlest(idlest, &idlest_sgs, group, sgs, sd_flag)) {
+ 			idlest = group;
+ 			idlest_sgs = *sgs;
+ 		}
+-- 
+2.7.4
+
