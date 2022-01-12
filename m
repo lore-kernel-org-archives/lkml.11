@@ -2,39 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB601C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C798EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352557AbiALKgT (ORCPT
+        id S1352578AbiALKgW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:36:19 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:37818 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S239182AbiALKgR (ORCPT
+        Wed, 12 Jan 2022 05:36:22 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:51654 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1352558AbiALKgU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:36:17 -0500
-X-UUID: b554ec6ef6404c5795770831d7ffbe03-20220112
-X-UUID: b554ec6ef6404c5795770831d7ffbe03-20220112
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        Wed, 12 Jan 2022 05:36:20 -0500
+X-UUID: 28411680451f42f8bf13100797512439-20220112
+X-UUID: 28411680451f42f8bf13100797512439-20220112
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
         (envelope-from <leilk.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1435407271; Wed, 12 Jan 2022 18:36:15 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 12 Jan 2022 18:36:14 +0800
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 138524309; Wed, 12 Jan 2022 18:36:17 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 12 Jan 2022 18:36:16 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 12 Jan
+ 2022 18:36:16 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 12 Jan 2022 18:36:13 +0800
+ Transport; Wed, 12 Jan 2022 18:36:15 +0800
 From:   Leilk Liu <leilk.liu@mediatek.com>
 To:     Mark Brown <broonie@kernel.org>, Rob Herring <robh+dt@kernel.org>
 CC:     Matthias Brugger <matthias.bgg@gmail.com>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH V2 0/3] Add compatible for Mediatek MT8186
-Date:   Wed, 12 Jan 2022 18:36:06 +0800
-Message-ID: <20220112103609.17421-1-leilk.liu@mediatek.com>
+        <linux-spi@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Leilk Liu <leilk.liu@mediatek.com>
+Subject: [PATCH V2 3/3] dt-bindings: spi: Add compatible for Mediatek MT8186
+Date:   Wed, 12 Jan 2022 18:36:09 +0800
+Message-ID: <20220112103609.17421-4-leilk.liu@mediatek.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220112103609.17421-1-leilk.liu@mediatek.com>
+References: <20220112103609.17421-1-leilk.liu@mediatek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -43,29 +50,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Subject: [PATCH V2 0/3] Add compatible for Mediatek MT8186
+This commit adds dt-binding documentation of spi bus for Mediatek MT8186 SoC
+Platform.
 
-v2:
-1. Fix Rob review comment.
-2. split spi-mt65xx & spi-slave-mt27xx to 2 patches.
+Signed-off-by: Leilk Liu <leilk.liu@mediatek.com>
+---
+ Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Leilk Liu (3):
-  dt-bindings: spi: Convert spi-slave-mt27xx to json-schema
-  dt-bindings: spi: Convert spi-mt65xx to json-schema
-  dt-bindings: spi: Add compatible for Mediatek MT8186
-
- .../bindings/spi/mediatek,spi-mt65xx.yaml     | 100 ++++++++++++++++++
- .../spi/mediatek,spi-slave-mt27xx.yaml        |  73 +++++++++++++
- .../devicetree/bindings/spi/spi-mt65xx.txt    |  68 ------------
- .../bindings/spi/spi-slave-mt27xx.txt         |  33 ------
- 4 files changed, 173 insertions(+), 101 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
- create mode 100644 Documentation/devicetree/bindings/spi/mediatek,spi-slave-mt27xx.yaml
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-mt65xx.txt
- delete mode 100644 Documentation/devicetree/bindings/spi/spi-slave-mt27xx.txt
-
---
+diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+index 71f0cf6e5d70..9a6fb8ecb752 100644
+--- a/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
++++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mt65xx.yaml
+@@ -26,6 +26,7 @@ properties:
+       - items:
+           - enum:
+               - mediatek,mt6779-spi
++              - mediatek,mt8186-spi
+               - mediatek,mt8192-spi
+               - mediatek,mt8195-spi
+           - const: mediatek,mt6765-spi
+-- 
 2.25.1
-
-
 
