@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12974C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E14FC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357539AbiALTxB (ORCPT
+        id S1357545AbiALTxF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:53:01 -0500
-Received: from mail.z3ntu.xyz ([128.199.32.197]:33212 "EHLO mail.z3ntu.xyz"
+        Wed, 12 Jan 2022 14:53:05 -0500
+Received: from mail.z3ntu.xyz ([128.199.32.197]:33196 "EHLO mail.z3ntu.xyz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350131AbiALTvf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:51:35 -0500
+        id S1346237AbiALTva (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 14:51:30 -0500
+X-Greylist: delayed 494 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 14:51:13 EST
 Received: from localhost.localdomain (ip-213-127-106-2.ip.prioritytelecom.net [213.127.106.2])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 9047ECDFE3;
-        Wed, 12 Jan 2022 19:42:31 +0000 (UTC)
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id AC868CDFD0;
+        Wed, 12 Jan 2022 19:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1642016551; bh=KHKsuBYKTLwjzwl37Vjo6Spn4g3BjgzCI/1uv5wCKtE=;
+        t=1642016549; bh=oBvuU3VqQkYcw9uSjVDb8s2wp/xMUDGkpFNKnx+nga4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=vqgbmIfBjzTmS9j88MhxcVUg7KrL+THBwT+K7MQNpqWWVeu9ZD3B1g1jwRxYo7as9
-         ADJlAp0E+jlRS+7L5SeJPweO2x8ZfYgvkhzu2x/WnWs5wfdvRCb4s99yKWCvFJfPKc
-         4InPeBvkwUoSdreY6cmLxudCng+G4JqGi1Q0cTcA=
+        b=R9HxoNvY08f/GO6p7vNCMVx8AOdse/Md4FA8Yb2F0f+b/RRk0hXYul+Np8QNo9Ry8
+         n4dkx0rp2mJ6cS+NHlB6N1HMJlSyVDXhzLNIQwXRsFRD0OAVzZ791scjWFRHjc/TKx
+         U4ULIpp2PM5tRYwfmQJ2kymSZkiMKdxikI5POzX8=
 From:   Luca Weiss <luca@z3ntu.xyz>
 To:     linux-arm-msm@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
         Luca Weiss <luca@z3ntu.xyz>,
         Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 09/15] rpmsg: smd: Drop unnecessary condition for channel creation
-Date:   Wed, 12 Jan 2022 20:40:58 +0100
-Message-Id: <20220112194118.178026-10-luca@z3ntu.xyz>
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 06/15] dt-bindings: thermal: tsens: Add msm8953 compatible
+Date:   Wed, 12 Jan 2022 20:40:55 +0100
+Message-Id: <20220112194118.178026-7-luca@z3ntu.xyz>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220112194118.178026-1-luca@z3ntu.xyz>
 References: <20220112194118.178026-1-luca@z3ntu.xyz>
@@ -44,46 +48,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Lypak <vladimir.lypak@gmail.com>
+Document the compatible string for tsens found in msm8953.
 
-RPM Firmware on variety of newer SoCs such as MSM8917 (also likely
-MSM8937, MSM8940, MSM8952), MSM8953 and on some MSM8916 devices) doesn't
-initiate opening of the SMD channel if it was previously opened by
-bootloader. This doesn't allow probing of smd-rpm driver on such devices
-because there is a check that requires RPM this behaviour.
-
-Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
 Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Acked-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- drivers/rpmsg/qcom_smd.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ Documentation/devicetree/bindings/thermal/qcom-tsens.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-index 8da1b5cb31b3..6a01ef932b01 100644
---- a/drivers/rpmsg/qcom_smd.c
-+++ b/drivers/rpmsg/qcom_smd.c
-@@ -1280,19 +1280,13 @@ static void qcom_channel_state_worker(struct work_struct *work)
- 	unsigned long flags;
- 
- 	/*
--	 * Register a device for any closed channel where the remote processor
--	 * is showing interest in opening the channel.
-+	 * Register a device for any closed channel.
- 	 */
- 	spin_lock_irqsave(&edge->channels_lock, flags);
- 	list_for_each_entry(channel, &edge->channels, list) {
- 		if (channel->state != SMD_CHANNEL_CLOSED)
- 			continue;
- 
--		remote_state = GET_RX_CHANNEL_INFO(channel, state);
--		if (remote_state != SMD_CHANNEL_OPENING &&
--		    remote_state != SMD_CHANNEL_OPENED)
--			continue;
--
- 		if (channel->registered)
- 			continue;
- 
+diff --git a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+index d3b9e9b600a2..b6406bcc683f 100644
+--- a/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
++++ b/Documentation/devicetree/bindings/thermal/qcom-tsens.yaml
+@@ -43,6 +43,7 @@ properties:
+       - description: v2 of TSENS
+         items:
+           - enum:
++              - qcom,msm8953-tsens
+               - qcom,msm8996-tsens
+               - qcom,msm8998-tsens
+               - qcom,sc7180-tsens
 -- 
 2.34.1
 
