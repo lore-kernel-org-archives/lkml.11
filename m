@@ -2,86 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17311C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3206DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 14:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354171AbiALOkF (ORCPT
+        id S1354192AbiALOlh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 09:40:05 -0500
-Received: from mga14.intel.com ([192.55.52.115]:62406 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344321AbiALOj6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 09:39:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641998398; x=1673534398;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=t9GZHV7SchHN++tiNyzKfQqOdxyRHDm0qiBtCg+J5Dc=;
-  b=YzGPXmTh5y63jY0fJ81NORS5St3/zjgE+DfW2loB5Iv17znMJin0aoSi
-   aF2NWspYtNRm3mN+0EfNFnwGRu1CcatYdEwKBu6t2qKLfddaDj1oW+1wu
-   AjzAHTINV8KWLdL6Ot/QlJAPid0P6vx1JZuZzGG43Iv6NLGgFor1jj03s
-   jO1ro5ykbPpf7TXQxUr+N0Qb5Rh6BHgShS9YKm4bR+OEZSBENni8xDfTb
-   QKw21m2bXEkd4gYU1Xo40P3h7D/UhHmHq+ejp9a5J+eeou744y9VVcJcl
-   FZBRxdOYo1gJ0i3ZoMDRDDsmrxHGl/+7s0I2NzxU2jRFPqzLq2q7Razsf
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="243948919"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="243948919"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 06:39:57 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="490753046"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 06:39:55 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n7elr-009ixQ-Te;
-        Wed, 12 Jan 2022 16:38:39 +0200
-Date:   Wed, 12 Jan 2022 16:38:39 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     John Garry <john.garry@huawei.com>
-Cc:     QiuLaibin <qiulaibin@huawei.com>, axboe@kernel.dk,
-        ming.lei@redhat.com, martin.petersen@oracle.com, hare@suse.de,
-        johannes.thumshirn@wdc.com, bvanassche@acm.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next v4] blk-mq: fix tag_get wait task can't be awakened
-Message-ID: <Yd7n7xA9ecF1/0DK@smile.fi.intel.com>
-References: <20220111140216.1858823-1-qiulaibin@huawei.com>
- <Yd2Q6LyJUDAU54Dt@smile.fi.intel.com>
- <d7f51067-f5a8-e78c-5ece-c1ef132b9b9a@huawei.com>
- <Yd7J4XbkdIm52bVw@smile.fi.intel.com>
- <3d386998-d810-5036-a87e-50aba9f56639@huawei.com>
+        Wed, 12 Jan 2022 09:41:37 -0500
+Received: from mr85p00im-zteg06011501.me.com ([17.58.23.182]:38904 "EHLO
+        mr85p00im-zteg06011501.me.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354167AbiALOl3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 09:41:29 -0500
+X-Greylist: delayed 328 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 09:41:29 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=me.com; s=1a1hai;
+        t=1641998159; bh=EWWKfVgilmC0dqI8sxvVo3je/AQaM8kMo+v7DmfXU00=;
+        h=From:To:Subject:Date:Message-Id:MIME-Version;
+        b=Je5Lm8EjmqsJhqCI++fd103kq7VPZDZ+YPDbDkSjVlZSt749VicwpgwcX4l+UmXPK
+         xb1uWvZ791Egu3O7WXd/688yZd7hcMaKvG/tBMkxxmljYt3ZBB+l/hMXLERDdlTt8C
+         5PiCZ214TdXRtPN37VMguGsmk67PXMG2qEiXGD+33sTzuJBBbwxAjlVfbLGwUYMMIt
+         nX0sdAoSrgZUuB/uPnwI0iSgGYELEv9YAJaPPI57Uq5GcIl9dLu/CSK+XwtcZqGuTo
+         zdGWanQ/AbNKox2JWhHyyfWhO60zdhTnVZA237upp0G7w6WZflVZOt4lZZ0MapNjbp
+         ciSGIHHOYW3ZQ==
+Received: from xiongwei.. (unknown [120.245.2.88])
+        by mr85p00im-zteg06011501.me.com (Postfix) with ESMTPSA id BE46E480EFF;
+        Wed, 12 Jan 2022 14:35:40 +0000 (UTC)
+From:   sxwjean@me.com
+To:     akpm@linux-foundation.org, david@redhat.com, mhocko@suse.com,
+        dan.j.williams@intel.com, osalvador@suse.de,
+        naoya.horiguchi@nec.com, thunder.leizhen@huawei.com
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>
+Subject: [PATCH v3 0/2] Add support for getting page info of ZONE_DEVICE by /proc/kpage*
+Date:   Wed, 12 Jan 2022 22:35:15 +0800
+Message-Id: <20220112143517.262143-1-sxwjean@me.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3d386998-d810-5036-a87e-50aba9f56639@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: =?UTF-8?Q?vendor=3Dfsecure_engine=3D1.1.170-22c6f66c430a71ce266a39bfe25bc?=
+ =?UTF-8?Q?2903e8d5c8f:6.0.425,18.0.790,17.0.607.475.0000000_definitions?=
+ =?UTF-8?Q?=3D2022-01-12=5F04:2022-01-11=5F01,2022-01-12=5F04,2020-04-07?=
+ =?UTF-8?Q?=5F01_signatures=3D0?=
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=528 bulkscore=0
+ malwarescore=0 mlxscore=0 adultscore=0 clxscore=1015 suspectscore=0
+ phishscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2201120095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 12:51:13PM +0000, John Garry wrote:
-> On 12/01/2022 12:30, Andy Shevchenko wrote:
-> > > > > +		if (test_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags) ||
-> > > > > +		    test_and_set_bit(QUEUE_FLAG_HCTX_ACTIVE, &q->queue_flags)) {
-> > > > Whoever wrote this code did too much defensive programming, because the first
-> > > > conditional doesn't make much sense here. Am I right?
-> > > > 
-> > > I think because this judgement is in the general IO process, there are also
-> > > some performance considerations here.
-> > I didn't buy this. Is there any better argument why you need redundant
-> > test_bit() call?
-> 
-> I think that the idea is that test_bit() is fast and test_and_set_bit() is
-> slow; as such, if we generally expect the bit to be set, then there is no
-> need to do the slower test_and_set_bit() always.
+From: Xiongwei Song <sxwjean@gmail.com>
 
-It doesn't sound thought through solution, the bit can be flipped in between,
-so what is this all about? Maybe missing proper serialization somewhere else?
+Patch 1 is adding pfn_to_devmap_page() function to get page of ZONE_DEVICE
+by pfn. It checks if dev_pagemap is valid, if yes, return page pointer.
+
+Patch 2 is finishing supporting /proc/kpage* in exposing pages info of
+ZONE_DEVICE to userspace.
+
+The unit test has been done by "page-types -r", which ran in qemu with the
+below arguments:
+    -object memory-backend-file,id=mem2,share,mem-path=./virtio_pmem.img,size=2G
+    -device virtio-pmem-pci,memdev=mem2,id=nv1
+, which is used to emulate pmem device with 2G memory space.
+
+As we know, the pages in ZONE_DEVICE are only set PG_reserved flag. So
+before the serires,
+	run "page-types -r", the result is:
+	             flags      page-count       MB  symbolic-flags                     long-symbolic-flags
+	0x0000000100000000           24377       95  ___________________________r________________       reserved
+	, which means the only PG_reserved set of pages in system wide have 24377.
+	
+	run "cat /proc/zoneinfo" to get the ZONE_DEVICE info:
+	Node 1, zone   Device
+	    pages free     0
+	    boost    0
+	    min      0
+	    low      0
+	    high     0
+	    spanned  0
+	    present  0
+	    managed  0
+	    cma      0
+	    protection: (0, 0, 0, 0, 0)
+
+After this series,
+	run "page-types -r", the result is:
+	             flags      page-count       MB  symbolic-flags                     long-symbolic-flags
+	0x0000000100000000          548665     2143  ___________________________r________________       reserved
+	, which means the only PG_reserved set of pages in system wide have 548665.
+	
+	Run "cat /proc/zoneinfo" to get the ZONE_DEVICE info:
+	Node 1, zone   Device
+	pages free     0
+	    boost    0
+	    min      0
+	    low      0
+	    high     0
+	    spanned  524288
+	    present  0
+	    managed  0
+	    cma      0
+	    protection: (0, 0, 0, 0, 0)
+
+, these added pages number is 524288 in ZONE_DEVICE as spanned field
+showed. Meanwhile, we can do 548665 - 24377 = 524288 that is increment
+of the reserved pages, it equals to the spanned field of ZONE_DEVICE.
+Hence it looks like the patchset works well.
+
+v2 -> v3:
+  * Before returning page pointer, check validity of page by
+    pgmap_pfn_valid(). https://lkml.org/lkml/2022/1/10/853 .
+
+v1 -> v2:
+  * Take David's suggestion to simplify the implementation of
+    pfn_to_devmap_page(). Please take a look at
+    https://lkml.org/lkml/2022/1/10/320 .
+
+Xiongwei Song (2):
+  mm/memremap.c: Add pfn_to_devmap_page() to get page in ZONE_DEVICE
+  proc: Add getting pages info of ZONE_DEVICE support
+
+ fs/proc/page.c           | 35 ++++++++++++++++++++-------------
+ include/linux/memremap.h |  8 ++++++++
+ mm/memremap.c            | 42 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 72 insertions(+), 13 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.2
 
