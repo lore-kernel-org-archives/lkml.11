@@ -2,181 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D05C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 01:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347609AbiALBQt (ORCPT
+        id S1347628AbiALBRA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 20:16:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38434 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiALBQs (ORCPT
+        Tue, 11 Jan 2022 20:17:00 -0500
+Received: from mail-oo1-f52.google.com ([209.85.161.52]:42513 "EHLO
+        mail-oo1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347610AbiALBQ6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:16:48 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD924C06173F;
-        Tue, 11 Jan 2022 17:16:47 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id v6so1361103wra.8;
-        Tue, 11 Jan 2022 17:16:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2WFaQHwGYemgRuoryNl/kDaYw3Pbbcx3NJK2rTFSTn4=;
-        b=UaAfRHVGXaaaZp7ZnoOH8MAWPITqzOg6FEaIlht9bOWQ/hHUT2Ag8V+Cxm0eL6d7+k
-         YRcF/celrxW7rTbu89gi8QVA37GV6CWMcYdk7T+bzu6LPzX9lpFDuCqHjrnbqpDvZQ+C
-         2jLKygskhuCJgZ1y1+o4Sf0uG33sS1BwNnti5z4Y4sY5K/127mxplSblfNGjhqb7Wk2k
-         2Z/1cyJTaXbniGREbFJUTCrW5sn1j9FJ06txRGyjj+f2Oq3xAcZfTuKuF4rd5qRB0eJj
-         CrLqF/JVbSCa+1mbBUO9mGC1WQG2kaZR5jaUHDFsux7stnZQYJ9BW8J4fCPh/zILAO5+
-         Yc9w==
+        Tue, 11 Jan 2022 20:16:58 -0500
+Received: by mail-oo1-f52.google.com with SMTP id q16-20020a4a3010000000b002dde2463e66so99147oof.9;
+        Tue, 11 Jan 2022 17:16:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2WFaQHwGYemgRuoryNl/kDaYw3Pbbcx3NJK2rTFSTn4=;
-        b=aGXPC0pl2me+xpDHlLax0P5SHCwozNNqcfuRZObAZ4Jeb4RSvkfMDznR6ctRgZNRUb
-         8pROY3fq43vLqQWGW+7EZme46nvACmgFK4cc4nDzBlMgQRYN5lcNGoj31m1VMYnS5xHP
-         KHVr3A9PeUHfF2YbRlDoERLYDBDl6ucsTntMKjXz55NFCXFJiWhn0LHyWajZaGeHpviE
-         4AXTlfavZraL7FwzEyxM4fYjm3uGnzyVO4GRBJ9gnOe7QZ9oqLZ3pPomZYEbdGii1CJB
-         gJli/CZ61MH25yP7KzI4Bfwdb93VZq4bIrlY/hoLxTiFtkE16QX9tuVMz0hG+XLdl6Yu
-         h3Xg==
-X-Gm-Message-State: AOAM531IE3FhIyYsjCoQL9GrmDbtqbi+ySwcMjiBR1gWYjppQ+k72EbJ
-        aeDzM2vsdXzEP/3yyUcH4A6hQM9My8qFTvegJNLGKyjzxSo=
-X-Google-Smtp-Source: ABdhPJzKaDqrVJKj7598b+iGgM6svfycVAV0gRSaBb6VyM8xzLuCS4Hx8MOXrvPfzF+VVo8Y43tgi5VJah/Zxx+v5PI=
-X-Received: by 2002:a5d:5987:: with SMTP id n7mr5855481wri.1.1641950206316;
- Tue, 11 Jan 2022 17:16:46 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=MlDw3i8kdjl9wX1RFfl4cUNh8M1HeAl2+QgHjiytboc=;
+        b=oXjh9HPHWpxyK3twS9YE/ut9L294OUcGN7WSoxtliFX54f21FXMaDCVr21tItKcmMU
+         kZpFxBYnB4KSwb8wkuj6FXcS8ySq4HRxEI7sN45Nl8y5820F00fDytgoQY1OLFTw1Zx5
+         RAcBfekTlJV+y5hSjVPUIR2JCrqohqXfFLm4x+qrrR9AIQoVkyo5G9zvKjM1f3vitP+x
+         BJyxrr+5cXMxbywo6Pu+GkNEjxTPo6/RMwXeAsPOHp1GxPrYG+RavKvJW0lTPaNAxXrk
+         GTF23QCUMHcc4424On2Q62FMDJG9SNcUFHP/GXy4Z6ajZF/tWPpWfWpkRyerQSsM0GHx
+         CCrw==
+X-Gm-Message-State: AOAM532KT9pM/6YwmrVh+sUo/tx2bfOSJVQV/JvQKSY5Rj0x8t0qs20J
+        6gqE8dcWSeo+SklzKqP6XQ==
+X-Google-Smtp-Source: ABdhPJwnqQ+I0Fv7SWKbP5NywS9MDe0YkIAqjgO8YNUxqtyWrEsANPd86lCTs2JitUuYDusVDfo8HA==
+X-Received: by 2002:a4a:304b:: with SMTP id z11mr4778919ooz.74.1641950217868;
+        Tue, 11 Jan 2022 17:16:57 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id w5sm2381059otp.38.2022.01.11.17.16.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 17:16:57 -0800 (PST)
+Received: (nullmailer pid 3849865 invoked by uid 1000);
+        Wed, 12 Jan 2022 01:16:56 -0000
+Date:   Tue, 11 Jan 2022 19:16:56 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Yassine Oudjana <y.oudjana@protonmail.com>
+Cc:     Nishanth Menon <nm@ti.com>, devicetree@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Niklas Cassel <nks@flawful.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Ilia Lin <ilia.lin@kernel.org>
+Subject: Re: [PATCH v2 4/7] dt-bindings: opp: Convert qcom-nvmem-cpufreq to
+ DT schema
+Message-ID: <Yd4sCHPbkivYFibE@robh.at.kernel.org>
+References: <20220104132618.391799-1-y.oudjana@protonmail.com>
+ <20220104132618.391799-5-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-References: <20220106234319.2067842-1-atomlin@redhat.com> <CAOMdWSJHm9bRAcrB6U+FsRiK6Fg2bbtbUH82w54VD7kbFmnVsA@mail.gmail.com>
-In-Reply-To: <CAOMdWSJHm9bRAcrB6U+FsRiK6Fg2bbtbUH82w54VD7kbFmnVsA@mail.gmail.com>
-From:   Allen <allen.lkml@gmail.com>
-Date:   Tue, 11 Jan 2022 17:16:35 -0800
-Message-ID: <CAOMdWS+Sn1sZJt8ocig5U7d7qG3N8oJBW-D1ey0qbZ3AXF-JWg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 00/13] module: core code clean up
-To:     Aaron Tomlin <atomlin@redhat.com>
-Cc:     Luis Chamberlain <mcgrof@kernel.org>,
-        Christoph Lameter <cl@linux.com>,
-        Petr Mladek <pmladek@suse.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>, jeyu@kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-modules@vger.kernel.org, atomlin@atomlin.com,
-        ghalat@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220104132618.391799-5-y.oudjana@protonmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Aaron,
+On Tue, 04 Jan 2022 13:28:59 +0000, Yassine Oudjana wrote:
+> Convert qcom-nvmem-cpufreq to DT schema format, splitting it into
+> an OPP schema and a CPUFreq schema in the process.
+> 
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+> ---
+> Changes since v1:
+>  - Split the schema into an OPP schema and a CPUFreq schema.
+> 
+>  .../bindings/cpufreq/qcom-cpufreq-nvmem.yaml  | 166 ++++
+>  .../bindings/opp/opp-v2-kryo-cpu.yaml         | 257 ++++++
+>  .../bindings/opp/qcom-nvmem-cpufreq.txt       | 796 ------------------
+>  MAINTAINERS                                   |   3 +-
+>  4 files changed, 425 insertions(+), 797 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.yaml
+>  create mode 100644 Documentation/devicetree/bindings/opp/opp-v2-kryo-cpu.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/opp/qcom-nvmem-cpufreq.txt
+> 
 
-  Was the code compile tested?
-
-  Unfortunately, I could not apply the series cleanly on top of the
-latest 5.17-rc1.
-  I did rebase the patches and fixed minor compile time failures as
-well a few small checkpatch errors.
-  I have pushed the series to
-https://github.com/allenpais/Linux/commits/refactor_module_v3
-  [The series now is based on
-   84bfcc0b6994 2022-01-11 Merge tag 'integrity-v5.17' of
-git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity]
-
-  So far I could only manage to compile test the patches. Will test it
-on BM(x86/arm) in a day or two.
-
-Thanks,
-- Allen
-
-
-On Tue, Jan 11, 2022 at 6:55 AM Allen <allen.lkml@gmail.com> wrote:
->
-> Hi Aaron,
->
->   My apologies for not replying earlier.
->
->   Thank you so much for doing this. I had a very similar approach, to
-> move code out based on the
->   flags. I will am in the process of reviewing and testing the changes
-> you have posted.
->
-> Thanks.
->
-> On Thu, Jan 6, 2022 at 3:43 PM Aaron Tomlin <atomlin@redhat.com> wrote:
-> >
-> > Hi Luis,
-> >
-> > As per your suggestion [1], this is an attempt to refactor and split
-> > optional code out of core module support code into separate components.
-> > Unfortunately, nothing has been thoroughly tested yet. Please let me know
-> > your thoughts.
-> >
-> > Changes since v1 [2]:
-> >
-> >   - Moved module version support code into a new file
-> >
-> > [1]: https://lore.kernel.org/lkml/YbEZ4HgSYQEPuRmS@bombadil.infradead.org/
-> > [2]: https://lore.kernel.org/lkml/20211228213041.1356334-1-atomlin@redhat.com/
-> >
-> > Aaron Tomlin (13):
-> >   module: Move all into module/
-> >   module: Simple refactor in preparation for split
-> >   module: Move livepatch support to a separate file
-> >   module: Move latched RB-tree support to a separate file
-> >   module: Move arch strict rwx support to a separate file
-> >   module: Move strict rwx support to a separate file
-> >   module: Move extra signature support out of core code
-> >   module: Move kmemleak support to a separate file
-> >   module: Move kallsyms support into a separate file
-> >   module: Move procfs support into a separate file
-> >   module: Move sysfs support into a separate file
-> >   module: Move kdb_modules list out of core code
-> >   module: Move version support into a separate file
-> >
-> >  include/linux/module.h                        |   76 +-
-> >  kernel/Makefile                               |    4 +-
-> >  kernel/debug/kdb/kdb_main.c                   |    5 +
-> >  kernel/module-internal.h                      |   31 -
-> >  kernel/module/Makefile                        |   17 +
-> >  kernel/module/arch_strict_rwx.c               |   44 +
-> >  kernel/module/debug_kmemleak.c                |   30 +
-> >  kernel/module/internal.h                      |  169 ++
-> >  kernel/module/kallsyms.c                      |  506 +++++
-> >  kernel/module/livepatch.c                     |   75 +
-> >  kernel/{module.c => module/main.c}            | 1872 +----------------
-> >  kernel/module/procfs.c                        |  111 +
-> >  .../signature.c}                              |    0
-> >  kernel/module/signing.c                       |  120 ++
-> >  kernel/module/strict_rwx.c                    |   83 +
-> >  kernel/module/sysfs.c                         |  426 ++++
-> >  kernel/module/tree_lookup.c                   |  108 +
-> >  kernel/module/version.c                       |  113 +
-> >  kernel/module_signing.c                       |   45 -
-> >  19 files changed, 1968 insertions(+), 1867 deletions(-)
-> >  delete mode 100644 kernel/module-internal.h
-> >  create mode 100644 kernel/module/Makefile
-> >  create mode 100644 kernel/module/arch_strict_rwx.c
-> >  create mode 100644 kernel/module/debug_kmemleak.c
-> >  create mode 100644 kernel/module/internal.h
-> >  create mode 100644 kernel/module/kallsyms.c
-> >  create mode 100644 kernel/module/livepatch.c
-> >  rename kernel/{module.c => module/main.c} (63%)
-> >  create mode 100644 kernel/module/procfs.c
-> >  rename kernel/{module_signature.c => module/signature.c} (100%)
-> >  create mode 100644 kernel/module/signing.c
-> >  create mode 100644 kernel/module/strict_rwx.c
-> >  create mode 100644 kernel/module/sysfs.c
-> >  create mode 100644 kernel/module/tree_lookup.c
-> >  create mode 100644 kernel/module/version.c
-> >  delete mode 100644 kernel/module_signing.c
-> >
-> > --
-> > 2.31.1
-> >
->
->
-> --
->        - Allen
-
-
-
--- 
-       - Allen
+Reviewed-by: Rob Herring <robh@kernel.org>
