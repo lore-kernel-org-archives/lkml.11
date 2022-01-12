@@ -2,152 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D97C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:35:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A2B3C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:38:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352892AbiALLfP (ORCPT
+        id S1352918AbiALLiJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:35:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240155AbiALLfK (ORCPT
+        Wed, 12 Jan 2022 06:38:09 -0500
+Received: from gateway20.websitewelcome.com ([192.185.59.4]:31406 "EHLO
+        gateway20.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352904AbiALLiH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:35:10 -0500
-Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 535BEC06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 03:35:10 -0800 (PST)
-Received: by mail-vk1-xa33.google.com with SMTP id 19so1453346vkl.2
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 03:35:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9fTJTS7bqQi/yIpHQJpi+4PrBqmFnBRpYezv+IVLW9I=;
-        b=PJMZnFO3s5Vo9SbANIVxOvoQeetaMi9gbFjbdqqF4JSRyWYh+1M91PRfMqEmTQ78e5
-         OnKctDFWn1mpr89a3TweLsKvM3kV9qxcepvL3I4uqq6a/OBFbH2giL/R1IKgJr+g2kto
-         4SH+6WRJWSvwhJHBKPSDg0GM+kPh7JIixDJSJZ0K11PSe42JaW31WoEZHELzoqt3y7K0
-         yi7geIUn7EcZKWJLr1IWrhGp1aPEne8wzRAo6PNpR6KmGwzepSPADJxidiHep8Td/T5O
-         cyxYmUVJcja6dsjLnGSszJGaVbeGdhSB1pTzXp89DpMYx9qfwOlnCh9RWrZs+hA7ddQf
-         m4iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9fTJTS7bqQi/yIpHQJpi+4PrBqmFnBRpYezv+IVLW9I=;
-        b=5xZbrjt8W7kzo5SlaleCtvZcK98oO2wL8I43Qw0yGhKrZETspLEhJDB8wR3O0ZQ0OW
-         C9ZOBUdctXpLolILntrQDUdGmPRxSqN6CwHztZhZxUk7W9w91NerOLGNUxKMh6mT6Z1F
-         XEPO12EOCQhDS8OfaBA0keiAwcfmfvV4FEiaoBCdJ1fsVkcTXVcGWd1A+qtZ1xX/6Btf
-         BLPym1+xEjk5T+g1Uytc7q2cUilzLgoEeqlQ8ChIMuIOdnFq+p2LP+pou35msSJcSMnK
-         q+VzsBIjdt7lBLOkPLo+ReuWJ4kuEIQblCBDm5aimEhAqAZuf0yuwK6JIbUUi8WI83Zv
-         XWvQ==
-X-Gm-Message-State: AOAM531HzkefN2oipnXhuTw0i93R/HSEGknpSbNmd5veTcjMsecyWydY
-        BBkGH3An4IHwewj0oW61MiUeOHlc80R0vJWNPCM=
-X-Google-Smtp-Source: ABdhPJz/bwCv+8MKvrlj91tEjjDwA9AJb+uzqY+ZGTKpvabwgJ2a1V7vqHWmYdL/yvJe0UT5JAPtwNim/8kwef6uymU=
-X-Received: by 2002:a05:6122:130e:: with SMTP id e14mr4494396vkp.41.1641987309469;
- Wed, 12 Jan 2022 03:35:09 -0800 (PST)
+        Wed, 12 Jan 2022 06:38:07 -0500
+X-Greylist: delayed 1241 seconds by postgrey-1.27 at vger.kernel.org; Wed, 12 Jan 2022 06:38:06 EST
+Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
+        by gateway20.websitewelcome.com (Postfix) with ESMTP id E90FD4018ED72
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 05:17:21 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id 7bb6nll43INxB7bb6nJrDx; Wed, 12 Jan 2022 05:15:20 -0600
+X-Authority-Reason: nr=8
+Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:48568 helo=[10.0.0.88])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1n7bb4-001QEl-Su; Wed, 12 Jan 2022 05:15:19 -0600
+Message-ID: <5f04540c-273a-c4f2-692d-9de2f1495ba9@kernel.org>
+Date:   Wed, 12 Jan 2022 12:15:13 +0100
 MIME-Version: 1.0
-References: <1641488717-13865-1-git-send-email-quic_charante@quicinc.com>
- <CANe_+UipVZRZeWqzXezacPaVb9UeC6a_ZhQp8GkrvftbRktotg@mail.gmail.com>
- <2c66ba2e-1c65-3bdd-b91e-eb8391ec6dbf@quicinc.com> <61212ffd-3505-04d7-5403-932a10d676e7@quicinc.com>
-In-Reply-To: <61212ffd-3505-04d7-5403-932a10d676e7@quicinc.com>
-From:   Mark Hemment <markhemm@googlemail.com>
-Date:   Wed, 12 Jan 2022 11:34:58 +0000
-Message-ID: <CANe_+UiX=MDSudBrfpboRoywWNnpyOwOMNETB6rjvm4cadqzTA@mail.gmail.com>
-Subject: Re: [PATCH v3 RESEND] mm: shmem: implement POSIX_FADV_[WILL|DONT]NEED
- for shmem
-To:     Charan Teja Kalla <quic_charante@quicinc.com>
-Cc:     Hugh Dickins <hughd@google.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [for-next][PATCH 16/31] rtla: Real-Time Linux Analysis tool
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>, vbabka@suse.cz,
-        rientjes@google.com, mhocko@suse.com,
-        Suren Baghdasaryan <surenb@google.com>,
-        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Charan Teja Reddy <charante@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        John Kacur <jkacur@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220111173030.999527342@goodmis.org>
+ <20220111173116.190327559@goodmis.org>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <20220111173116.190327559@goodmis.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 79.47.126.144
+X-Source-L: No
+X-Exim-ID: 1n7bb4-001QEl-Su
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.88]) [79.47.126.144]:48568
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 1
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 at 08:22, Charan Teja Kalla
-<quic_charante@quicinc.com> wrote:
->
-> Hello Mark,
->
-> On 1/10/2022 3:51 PM, Charan Teja Kalla wrote:
-> >>> +static int shmem_fadvise_willneed(struct address_space *mapping,
-> >>> +                                pgoff_t start, pgoff_t long end)
-> >>> +{
-> >>> +       XA_STATE(xas, &mapping->i_pages, start);
-> >>> +       struct page *page;
-> >>> +
-> >>> +       rcu_read_lock();
-> >>> +       xas_for_each(&xas, page, end) {
-> >>> +               if (!xa_is_value(page))
-> >>> +                       continue;
-> >>> +               xas_pause(&xas);
-> >>> +               rcu_read_unlock();
-> >>> +
-> >>> +               page = shmem_read_mapping_page(mapping, xas.xa_index);
-> >>> +               if (!IS_ERR(page))
-> >>> +                       put_page(page);
-> >>> +
-> >>> +               rcu_read_lock();
-> >>> +               if (need_resched()) {
-> >>> +                       xas_pause(&xas);
-> >>> +                       cond_resched_rcu();
-> >>> +               }
-> >>> +       }
-> >>> +       rcu_read_unlock();
-> >>> +
-> >>> +       return 0;
-> >> I have a doubt on referencing xa_index after calling xas_pause().
-> >> xas_pause() walks xa_index forward, so will not be the value expected
-> >> for the current page.
-> > Agree here. I should have the better test case to verify my changes.
-> >
-> >> Also, not necessary to re-call xas_pause() before cond_resched (it is
-> >> a no-op).
-> > In the event when CONFIG_DEBUG_ATOMIC_SLEEP is enabled users may still
-> > need to call the xas_pause(), as we are dropping the rcu lock. NO?
-> >
-> > static inline void cond_resched_rcu(void)
-> > {
-> > #if defined(CONFIG_DEBUG_ATOMIC_SLEEP) || !defined(CONFIG_PREEMPT_RCU)
-> >         rcu_read_unlock();
-> >         cond_resched();
-> >         rcu_read_lock();
-> > #endif
-> > }
-> >
-> >> Would be better to check need_resched() before
-> >> rcu_read_lock().
-> > Okay, I can directly use cond_resched() if used before rcu_read_lock().
-> >
-> >> As this loop may call xas_pause() for most iterations, should consider
-> >> using xa_for_each() instead (I *think* - still getting up to speed
-> >> with XArray).
-> > Even the xarray documentation says that: If most entries found during a
-> > walk require you to call xas_pause(), the xa_for_each() iterator may be
-> > more appropriate.
-> >
-> > Since every value entry found in the xarray requires me to do the
-> > xas_pause(), I do agree that xa_for_each() is the appropriate call here.
-> > Will switch to this in the next spin. Waiting for further review
-> > comments on this patch.
->
-> I also found the below documentation:
-> xa_for_each() will spin if it hits a retry entry; if you intend to see
-> retry entries, you should use the xas_for_each() iterator instead.
->
-> Since retry entries are expected, I should be using the xas_for_each()
-> with the corrections you had pointed out. Isn't it?
->
+Hi Steven!
 
-Ah, you've hit a barrier on my Xarray knowledge.
-The current shmem code simply does a 'continue' on xas_retry().  Is
-this different from Xarray looping internally for xas_retry()?  I
-assume not, but cannot give an definite answer (sorry).
+On 1/11/22 18:30, Steven Rostedt wrote:
+> From: Daniel Bristot de Oliveira <bristot@kernel.org>
+> 
+> The rtla is a meta-tool that includes a set of commands that aims
+> to analyze the real-time properties of Linux. But instead of testing
+> Linux as a black box, rtla leverages kernel tracing capabilities to
+> provide precise information about the properties and root causes of
+> unexpected results.
+> 
+> rtla --help works and provide information about the available options.
+> 
+> This is just the "main" and the Makefile, no function yet.
+> 
+> Link: https://lkml.kernel.org/r/f59acda8bc513c4a6c279a9bc3ad112a20690e68.1638182284.git.bristot@kernel.org
 
-Cheers,
-Mark
+Thanks for picking RTLA!
+
+Just one problem, you are picking the V8, but we actually had a V9:
+  https://lore.kernel.org/lkml/cover.1639158831.git.bristot@kernel.org/
+
+-- Daniel
