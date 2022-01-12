@@ -2,115 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C390FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:13:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355077AbiALQLp (ORCPT
+        id S1349678AbiALQNX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:11:45 -0500
-Received: from mga04.intel.com ([192.55.52.120]:37552 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355006AbiALQK5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:10:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642003857; x=1673539857;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ipD9hbJokTRSTGdDIxN+I8+vGqTQwY5g/3aB1hWi24M=;
-  b=NHk219ySu1HAkne0K0Mo3vvvVeyW78AJZFnmvNLk3gOVaOTgdlJX/xWY
-   CMyO+qJI65mux5DIM5UTSPYJJVeBc7HXZgebNQQ02OsumFNtDLHOvirDz
-   IZB+i6ystGyZMV2QInoKHSP5vkD+OPD/VBbwWI0NYG5QTh562jyoZ3boP
-   wqRfE0ks2XlzRjQXCbuKazmcbYmFIgUSVojyVNxrw0w+quxFUVEXI/XyF
-   9d8q7VqdHZC+Fgen/HeU8UoStfASDkcCOUhF7UyoXAY04ExM41unPREgN
-   SO6Yue5CY2kRc406I1Puos3sOMLu5R3oPsQMnYtf9C0on17yPC6RD9YOb
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="242586675"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="242586675"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 08:09:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="623492490"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 12 Jan 2022 08:09:02 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7gBK-00065i-4O; Wed, 12 Jan 2022 16:09:02 +0000
-Date:   Thu, 13 Jan 2022 00:08:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     kbuild-all@lists.01.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>
-Subject: Re: [PATCH V4 3/5] tty: serial: meson: The UART baud rate
-Message-ID: <202201130013.KVlPG5Gj-lkp@intel.com>
-References: <20220110085604.18042-4-yu.tu@amlogic.com>
+        Wed, 12 Jan 2022 11:13:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343653AbiALQNH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 11:13:07 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F40C06173F;
+        Wed, 12 Jan 2022 08:13:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=G0+WM0j98iObaA9C7TB5WzjB/BZTanMfNLE+zZav7gk=; b=LvPWxY6RdYB2uGvehEABOnwH3G
+        DMNa1G+Bil83ZQjIqfcBE/s4+fE4tpBcq4D+5IK5nbi2PSrSHPlRVDROEFEnTNoj/zyri+yPJix6T
+        8avq3mHKdyILVkSVQHS2ij59er1/AHdJOycBxXrELJesDiBxSnrWBHQ+0iZwhULiHf2lvRmZPVnOj
+        49Rtaqp6pqUP2EL6gF+sbGkVVxxCTMRGs7qL8O6Nt+lZ+0zBVyuVS9y3SOIYK+vEDn4W2ndL4y5Gj
+        1+LBowBq97htMc1YuQohT8FrwUub1AM51MAF/Bw4qSxcEjuNBWEca9hY7dcdeTU35bgRLjzfnu1t2
+        GTXLavZQ==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n7gFC-0033rD-QY; Wed, 12 Jan 2022 16:13:02 +0000
+Date:   Wed, 12 Jan 2022 08:13:02 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Aaron Tomlin <atomlin@redhat.com>
+Cc:     cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
+        akpm@linux-foundation.org, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        atomlin@atomlin.com, ghalat@redhat.com
+Subject: Re: [RFC PATCH 05/12] module: Move arch strict rwx support to a
+ separate file
+Message-ID: <Yd7+DnFiuklVScmI@bombadil.infradead.org>
+References: <YbKUUJUtjBk/n913@bombadil.infradead.org>
+ <20211228213041.1356334-1-atomlin@redhat.com>
+ <20211228213041.1356334-6-atomlin@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220110085604.18042-4-yu.tu@amlogic.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20211228213041.1356334-6-atomlin@redhat.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Yu,
+On Tue, Dec 28, 2021 at 09:30:34PM +0000, Aaron Tomlin wrote:
+> diff --git a/kernel/module/Makefile b/kernel/module/Makefile
+> index 9d593362156d..95fad95a0549 100644
+> --- a/kernel/module/Makefile
+> +++ b/kernel/module/Makefile
+> @@ -8,3 +8,4 @@ obj-$(CONFIG_MODULE_SIG) += signing.o
+>  obj-$(CONFIG_MODULE_SIG_FORMAT) += signature.o
+>  obj-$(CONFIG_LIVEPATCH) += livepatch.o
+>  obj-$(CONFIG_MODULES_TREE_LOOKUP) += tree_lookup.o
+> +obj-$(CONFIG_ARCH_HAS_STRICT_MODULE_RWX) += arch_strict_rwx.o
+> diff --git a/kernel/module/arch_strict_rwx.c b/kernel/module/arch_strict_rwx.c
+> new file mode 100644
+> index 000000000000..68e970671ec5
+> --- /dev/null
+> +++ b/kernel/module/arch_strict_rwx.c
+> @@ -0,0 +1,44 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/*
+> + * kernel/module/arch_strict_rwx.c - module arch strict rwx
 
-Thank you for the patch! Yet something to improve:
+No need to repeat the name of the file, a simple:
 
-[auto build test ERROR on tty/tty-testing]
-[also build test ERROR on next-20220112]
-[cannot apply to robh/for-next soc/for-next clk/clk-next v5.16]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
++ * module arch strict rwx
 
-url:    https://github.com/0day-ci/linux/commits/Yu-Tu/the-UART-driver-compatible-with/20220110-170020
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tty-testing
-config: m68k-randconfig-m031-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130013.KVlPG5Gj-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/6d55159e6626326d9001d4c8f20b914a69c2c40b
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Yu-Tu/the-UART-driver-compatible-with/20220110-170020
-        git checkout 6d55159e6626326d9001d4c8f20b914a69c2c40b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash
+Would do it.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Please get 0day to test your git tree as you work on it, and before
+posting patches ensure they get tested by 0day, so we run into less
+issues once merged into modules-next.
 
-All errors (new ones prefixed by >>):
-
-   m68k-linux-ld: arch/m68k/kernel/machine_kexec.o: in function `machine_kexec':
-   machine_kexec.c:(.text+0x6a): undefined reference to `m68k_mmutype'
-   m68k-linux-ld: machine_kexec.c:(.text+0x72): undefined reference to `m68k_cputype'
-   m68k-linux-ld: arch/m68k/kernel/relocate_kernel.o:(.m68k_fixup+0x0): undefined reference to `M68K_FIXUP_MEMOFFSET'
-   m68k-linux-ld: arch/m68k/kernel/relocate_kernel.o:(.m68k_fixup+0x8): undefined reference to `M68K_FIXUP_MEMOFFSET'
-   m68k-linux-ld: arch/m68k/kernel/uboot.o: in function `process_uboot_commandline':
-   uboot.c:(.init.text+0x32): undefined reference to `_init_sp'
-   m68k-linux-ld: drivers/tty/serial/meson_uart.o: in function `meson_uart_probe_clocks':
-   meson_uart.c:(.text+0x4de): undefined reference to `__clk_get_name'
->> m68k-linux-ld: meson_uart.c:(.text+0x53c): undefined reference to `__devm_clk_hw_register_divider'
->> m68k-linux-ld: meson_uart.c:(.text+0x5a8): undefined reference to `__devm_clk_hw_register_mux'
->> m68k-linux-ld: meson_uart.c:(.text+0x5c0): undefined reference to `clk_hw_get_rate'
->> m68k-linux-ld: meson_uart.c:(.text+0x5d2): undefined reference to `clk_hw_get_name'
-   m68k-linux-ld: meson_uart.c:(.text+0x622): undefined reference to `__devm_clk_hw_register_divider'
->> m68k-linux-ld: meson_uart.c:(.text+0x63c): undefined reference to `clk_hw_get_clk'
->> m68k-linux-ld: meson_uart.c:(.text+0x666): undefined reference to `__clk_get_name'
->> m68k-linux-ld: meson_uart.c:(.text+0x6ae): undefined reference to `devm_clk_hw_register_fixed_factor'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+  Luis
