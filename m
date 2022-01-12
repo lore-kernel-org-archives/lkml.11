@@ -2,94 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22962C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:36:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2338C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354629AbiALPgn (ORCPT
+        id S1354639AbiALPgx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 10:36:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33490 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349515AbiALPgh (ORCPT
+        Wed, 12 Jan 2022 10:36:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354631AbiALPgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 10:36:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E656193B;
-        Wed, 12 Jan 2022 15:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AA45C36AE5;
-        Wed, 12 Jan 2022 15:36:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642001796;
-        bh=uTJTttzqqqZPjkI09aLeLUGr5DSV9ce4+aCAyJpdblg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ciqaKSgWS61sGO2OnlkX7fx3671UexqzZ4lde/1MqfCw1iI993dDInBqtdsCXa+4M
-         7TPX6Rm3fX4DN6fPAoCtsxjp1vC2kn9JygQvJekjHEvEz2nr8+5ZzDbOT2S3OQSe3c
-         a68ALXvVY/3rUSM+ZaKNoRpMWiaV5keEYodwMNhrEd79PpPCWcKmK4Zz6Qz88Jr2mg
-         QRckd5LUZGxhtuSsH2e19G1QRuQxI20df10iVx2eD19TYiXJMBVqM/v0x6MQ0XM6Ys
-         3qfye7VZ+xByWF7p/JkMCN5xXjzYCfKw6VMw3SNpmdOxD+mKwl1sxfIDO6R/09UmOD
-         ojL06gyv6hllw==
-Date:   Wed, 12 Jan 2022 16:36:27 +0100
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
-Cc:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Krzysztof =?UTF-8?B?V2lsY3p5xYRza2k=?= <kw@linux.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 09/11] dt-bindings: PCI: mvebu: Update information
- about intx interrupts
-Message-ID: <20220112163627.4e975d24@thinkpad>
-In-Reply-To: <20220112151814.24361-10-pali@kernel.org>
-References: <20220105150239.9628-1-pali@kernel.org>
-        <20220112151814.24361-1-pali@kernel.org>
-        <20220112151814.24361-10-pali@kernel.org>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Wed, 12 Jan 2022 10:36:53 -0500
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970BDC061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 07:36:52 -0800 (PST)
+Received: by mail-ed1-x541.google.com with SMTP id c71so11527333edf.6
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 07:36:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=pFQlRwVs64l+mhGnFgsqy5BuLBon+B2tD/h1013B7pA=;
+        b=QzqyPaQ29wk/535/mqu2iWnjEbZEvV5DPaoeeXxkQ+LF4iriofj5ZloKOQPaEo8mq1
+         4Ok2uSRIvsJ1dpLerR+PqrvemFbeiGCdrtYeRlA8w2gc80/B5dKsMyNMY4KhXc5tp2cR
+         znG9K0aUnnYZJlWFanPSZuUIfaCNvZzvhe8Ss=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=pFQlRwVs64l+mhGnFgsqy5BuLBon+B2tD/h1013B7pA=;
+        b=bIswPo6R1DAV0e8XNa4zvY91lGVtSo1ICcYPS37usOS1MXg0osR44fECoaQtIPQCAI
+         Mh5vROX+Eh3f/eKA7BAWSAtZrrV0DJDNgStKnRZyxGSIZHaW1dVUgl0VP9n82SUTZN4J
+         WlQr1lspER1nQoivSDnooBWgFYD3Rrv0v5YnkYBanXFI/JS6hGtr+Fp5o04z7coZinRF
+         mq42G8RZURVd5so30W52Y232oqluec6YVWZC1laiuWFJvo1aVG/PBmZBPAceA28R6FPS
+         PNNz2eLx1v2E7K5aJdmk04qdnrAj2ZTCA6sdm5t5xGEjkGRgTZrYAnnjrBodyTMwON07
+         Oltw==
+X-Gm-Message-State: AOAM5301rHc81DCqQycWJNwW3Mh5+O15TtaJCspYd1C5m8SoD+mFZIga
+        op5x2E1hLtLHEb41X4jOmWRpSw==
+X-Google-Smtp-Source: ABdhPJyhR2ASi9+GtKBfKy+OT8soYwXQEidXwNi5BGuIk/eoLc5gqe3YWIlj8uA/tAbZc4ODk8QK9Q==
+X-Received: by 2002:a05:6402:51cc:: with SMTP id r12mr172836edd.239.1642001811228;
+        Wed, 12 Jan 2022 07:36:51 -0800 (PST)
+Received: from miu.piliscsaba.redhat.com (catv-178-48-189-3.catv.broadband.hu. [178.48.189.3])
+        by smtp.gmail.com with ESMTPSA id l10sm18542ejh.102.2022.01.12.07.36.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 07:36:50 -0800 (PST)
+Date:   Wed, 12 Jan 2022 16:36:43 +0100
+From:   Miklos Szeredi <miklos@szeredi.hu>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
+Subject: [GIT PULL] fuse update for 5.17
+Message-ID: <Yd71i1Yul3rPO2Lp@miu.piliscsaba.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 16:18:12 +0100
-Pali Roh=C3=A1r <pali@kernel.org> wrote:
+Hi Linus,
 
-> Signed-off-by: Pali Roh=C3=A1r <pali@kernel.org>
-> Acked-by: Rob Herring <robh@kernel.org>
-> ---
->  Documentation/devicetree/bindings/pci/mvebu-pci.txt | 5 +++++
->  1 file changed, 5 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/pci/mvebu-pci.txt b/Docume=
-ntation/devicetree/bindings/pci/mvebu-pci.txt
-> index 24225852bce0..6d022a9d36ee 100644
-> --- a/Documentation/devicetree/bindings/pci/mvebu-pci.txt
-> +++ b/Documentation/devicetree/bindings/pci/mvebu-pci.txt
-> @@ -81,6 +81,11 @@ and the following optional properties:
->  - reset-gpios: optional GPIO to PERST#
->  - reset-delay-us: delay in us to wait after reset de-assertion, if not
->    specified will default to 100ms, as required by the PCIe specification.
-> +- interrupt-names: list of interrupt names, supported are:
-> +   - "intx" - interrupt line triggered by one of the legacy interrupt
-> +- interrupts or interrupts-extended: List of the interrupt sources which
-> +  corresponding to the "interrupt-names". If non-empty then also additio=
-nal
-> +  'interrupt-controller' subnode must be defined.
-> =20
->  Example:
-> =20
+Please pull from:
 
-Empty commit message. At least add something like this:
+  git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/fuse.git tags/fuse-update-5.17
 
-Document the following additional properties in the mvebu-pci DT
-binding:
-- interrupt-names
-- interrupts / interrupts-extended
+- Fix a regression introduced in 5.15.
 
+- Extend the size of the FUSE_INIT request to accommodate for more flags.
+  There's a slight possibility of a regression for obscure fuse servers; if
+  this happens, then more complexity will need to be added to the protocol.
 
-Marek
+- Allow the DAX property to be controlled by the server on a per-inode
+  basis in virtiofs.
+
+- Allow sending security context to the server when creating a file or
+  directory.
+
+Thanks,
+Miklos
+
+---
+Jeffle Xu (7):
+      fuse: add fuse_should_enable_dax() helper
+      fuse: make DAX mount option a tri-state
+      fuse: support per inode DAX in fuse protocol
+      fuse: enable per inode DAX
+      fuse: negotiate per inode DAX in FUSE_INIT
+      fuse: mark inode DONT_CACHE when per inode DAX hint changes
+      Documentation/filesystem/dax: DAX on virtiofs
+
+Miklos Szeredi (1):
+      fuse: extend init flags
+
+Vivek Goyal (1):
+      fuse: send security context of inode on file
+
+Xie Yongji (1):
+      fuse: Pass correct lend value to filemap_write_and_wait_range()
+
+---
+ Documentation/filesystems/dax.rst | 20 ++++++++-
+ fs/fuse/dax.c                     | 36 +++++++++++++++-
+ fs/fuse/dir.c                     | 91 +++++++++++++++++++++++++++++++++++++++
+ fs/fuse/file.c                    |  6 +--
+ fs/fuse/fuse_i.h                  | 31 +++++++++++--
+ fs/fuse/inode.c                   | 89 +++++++++++++++++++++++---------------
+ fs/fuse/virtio_fs.c               | 18 ++++++--
+ include/uapi/linux/fuse.h         | 55 +++++++++++++++++++++--
+ 8 files changed, 294 insertions(+), 52 deletions(-)
