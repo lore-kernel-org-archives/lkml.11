@@ -2,95 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADBBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4BCFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356506AbiALSrv (ORCPT
+        id S1356512AbiALStj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:47:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356481AbiALSrb (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:47:31 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3954FC061756
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:47:31 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso13913151pjo.5
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:47:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Ej6+dzQXYBNYBghW2L5wnTD1qTCyFwEQze4u8PLMM8c=;
-        b=k9T3MzlCu7qh8lbrZMe83Xi2hfmMkadDB+O1cBHpL7WOorRnSxHeHwXL9Ssk3f0wmd
-         hS+rh67RzV4VyThVS7uI3PzlZ5Y2TQ+CssEiAKxtGvTQP1rpm7OeHzduw3rRGnB8GzcO
-         cxzrrXYYYTYI32kxY3ywU9+MVbZP2M5NSd0pnY/1X3so+evKJxUfw6oBj1V+eYOEhofk
-         bWDDeZHW1s5meAJywrAU407L/RM6zu81HK8CzU6LdABFlX1qZXRAK6S9mG5Nx2t8cu9l
-         CLf772yfZwKv6neNpkSbSCyYLzTdrIAOv9dH8ag8PZiISwSSi6PU6uWLR1JH0y3xmxjM
-         0rHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Ej6+dzQXYBNYBghW2L5wnTD1qTCyFwEQze4u8PLMM8c=;
-        b=flUw7HJiy+CtZetqM80cgtmCEsu9KisNJGLvhbK8nFtQBNb1YIvwsrCnT5PMXe2KXM
-         hfSox8ylFp43yBoyObEMFY4jDDfS5q8IiTMY/Ue7qkcVOtTd0GZmwnG8fogO23rw6ap9
-         8l+qxZQzy2OwvC0RhBH1TLuISTylyah1RQTnxUpACZxhckGEGf25MoezQN9WYUWVY1mQ
-         6gzcSHcUIeNME0sUG+aB5g0MTTk6B3Z7yS2y3xSQ3qF3JXCKAdghgwfjXB9rrMdV+raT
-         P6xdyS9HZcsx8zLPR92gLdyXFx95CqVo/C8merJrjU9n2/s9a26bm+VeIjqO1Sqccr5k
-         2iag==
-X-Gm-Message-State: AOAM531pvhqziReMwGjq5YM6cTFiOf6iN7rJT8A/54U3PtgtdmDZSwcv
-        j9MPEjzJzli0/2zX4e998N6V5g==
-X-Google-Smtp-Source: ABdhPJzFpL8XksOuR6w6J5ddL6p8mmeC1OPP8IFYeXebroqx48h3ogwBFXpq6MS1gdcueN+4pULAKA==
-X-Received: by 2002:a17:90b:3910:: with SMTP id ob16mr10314729pjb.181.1642013250654;
-        Wed, 12 Jan 2022 10:47:30 -0800 (PST)
-Received: from [192.168.254.17] ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id gt22sm367722pjb.35.2022.01.12.10.47.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 10:47:30 -0800 (PST)
-Message-ID: <3c2eeee7-0d3e-8000-67ad-3054f229cbe0@linaro.org>
-Date:   Wed, 12 Jan 2022 10:47:29 -0800
+        Wed, 12 Jan 2022 13:49:39 -0500
+Received: from mga11.intel.com ([192.55.52.93]:32836 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1356492AbiALStS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 13:49:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642013358; x=1673549358;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=P8rim4q0I6ulB+Ywv2t0GgbvDOgoQUtrXFzLeGezyTs=;
+  b=htc1WEJca4KmONw/vvXfg0fre6y/XVoTmnIn4Bg+IK/8drx4f1+N7fhc
+   9d3o/+Hwws1aBR5qVw1e5D1Rl98meOFFiPobeQFaJgnJ4ReUVqCT/V1oL
+   ArFdFs1dlZ9N4G3Il7T2aNkpwSUkGeZVmKEcFZaw8AcZ7djUVcMWTlAnh
+   wFuaM2douecBcOkqAVhTRevH6+p0y5flNR0tOTUSrLbxJF4l6bfaDx4ps
+   ZCpjbsn1t+UFHLcfjNqLGmjSJ2ssw5JrVsg0TYG4v6kM2w/UzEGHBN2Z4
+   YXtzf6JaVAdQwzzmZR58X6knlHout+QXlLI+vHJ+zoGJJaB2nBhzclqBB
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="241375345"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="241375345"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 10:43:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="515611386"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 12 Jan 2022 10:43:08 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n7iaR-0006Et-Ab; Wed, 12 Jan 2022 18:43:07 +0000
+Date:   Thu, 13 Jan 2022 02:42:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Seevalamuthu Mariappan <quic_seevalam@quicinc.com>
+Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [ammarfaizi2-block:kvalo/ath/pending 255/273]
+ drivers/net/wireless/ath/ath11k/wmi.c:7833:39: error: 'struct ath11k' has no
+ member named 'debug'
+Message-ID: <202201130245.W7Ps705H-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH v3 1/2] tpm: Fix error handling in async work
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Tadeusz Struk <tstruk@gmail.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, linux-integrity@vger.kernel.org,
-        stable@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220111055228.1830-1-tstruk@gmail.com> <Yd8fY/wixkXhXEFH@iki.fi>
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-In-Reply-To: <Yd8fY/wixkXhXEFH@iki.fi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/12/22 10:35, Jarkko Sakkinen wrote:
-> These look good to me! Thank you. I'm in process of compiling a test
-> kernel.
+tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
+head:   061c4062835233faef6961a898155015fc5e0631
+commit: 3af45eb104584443956572fa9d2a332123816b37 [255/273] ath11k: Add debugfs interface to configure firmware debug log level
+config: xtensa-randconfig-r024-20220112 (https://download.01.org/0day-ci/archive/20220113/202201130245.W7Ps705H-lkp@intel.com/config)
+compiler: xtensa-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/3af45eb104584443956572fa9d2a332123816b37
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block kvalo/ath/pending
+        git checkout 3af45eb104584443956572fa9d2a332123816b37
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash drivers/net/wireless/ath/ath11k/
 
-Thanks Jarkko,
-You can run the new test before and after applying the change and see
-how it behaves. Also just noticed a mistake in the comment, sorry but
-it was quite late when I sent it.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-+	/*
-+	 * If ret is > 0 then tpm_dev_transmit returned the size of the
-+	 * response. If ret is < 0 then tpm_dev_transmit failed and
-+	 * returned a return code.
-+	 */
+All errors (new ones prefixed by >>):
 
-In the above could you please replace:
+   drivers/net/wireless/ath/ath11k/wmi.c: In function 'ath11k_wmi_fw_dbglog_cfg':
+>> drivers/net/wireless/ath/ath11k/wmi.c:7833:39: error: 'struct ath11k' has no member named 'debug'
+    7833 |                 memcpy(tlv->value, &ar->debug.module_id_bitmap,
+         |                                       ^~
+   drivers/net/wireless/ath/ath11k/wmi.c:7836:27: error: 'struct ath11k' has no member named 'debug'
+    7836 |                 memset(&ar->debug.module_id_bitmap, 0,
+         |                           ^~
 
-s/returned a return code/returned an error code/
 
-before applying the patch. I would appreciate that.
+vim +7833 drivers/net/wireless/ath/ath11k/wmi.c
 
--- 
-Thanks,
-Tadeusz
+  7800	
+  7801	int ath11k_wmi_fw_dbglog_cfg(struct ath11k *ar, struct ath11k_fw_dbglog *dbglog)
+  7802	{
+  7803		struct ath11k_pdev_wmi *wmi = ar->wmi;
+  7804		struct wmi_debug_log_config_cmd_fixed_param *cmd;
+  7805		struct sk_buff *skb;
+  7806		struct wmi_tlv *tlv;
+  7807		int ret, len;
+  7808	
+  7809		len = sizeof(*cmd) + TLV_HDR_SIZE + (MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
+  7810		skb = ath11k_wmi_alloc_skb(wmi->wmi_ab, len);
+  7811		if (!skb)
+  7812			return -ENOMEM;
+  7813	
+  7814		cmd = (struct wmi_debug_log_config_cmd_fixed_param *)skb->data;
+  7815		cmd->tlv_header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_DEBUG_LOG_CONFIG_CMD) |
+  7816				  FIELD_PREP(WMI_TLV_LEN, sizeof(*cmd) - TLV_HDR_SIZE);
+  7817		cmd->dbg_log_param = dbglog->param;
+  7818	
+  7819		tlv = (struct wmi_tlv *)((u8 *)cmd + sizeof(*cmd));
+  7820		tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_UINT32) |
+  7821			      FIELD_PREP(WMI_TLV_LEN, MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
+  7822	
+  7823		switch (dbglog->param) {
+  7824		case WMI_DEBUG_LOG_PARAM_LOG_LEVEL:
+  7825		case WMI_DEBUG_LOG_PARAM_VDEV_ENABLE:
+  7826		case WMI_DEBUG_LOG_PARAM_VDEV_DISABLE:
+  7827		case WMI_DEBUG_LOG_PARAM_VDEV_ENABLE_BITMAP:
+  7828			cmd->value = dbglog->value;
+  7829			break;
+  7830		case WMI_DEBUG_LOG_PARAM_MOD_ENABLE_BITMAP:
+  7831		case WMI_DEBUG_LOG_PARAM_WOW_MOD_ENABLE_BITMAP:
+  7832			cmd->value = dbglog->value;
+> 7833			memcpy(tlv->value, &ar->debug.module_id_bitmap,
+  7834			       MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
+  7835			/* clear current config to be used for next user config */
+  7836			memset(&ar->debug.module_id_bitmap, 0,
+  7837			       MAX_MODULE_ID_BITMAP_WORDS * sizeof(u32));
+  7838			break;
+  7839		default:
+  7840			dev_kfree_skb(skb);
+  7841			return -EINVAL;
+  7842		}
+  7843	
+  7844		ret = ath11k_wmi_cmd_send(wmi, skb, WMI_DBGLOG_CFG_CMDID);
+  7845		if (ret) {
+  7846			ath11k_warn(ar->ab,
+  7847				    "failed to send WMI_DBGLOG_CFG_CMDID\n");
+  7848			dev_kfree_skb(skb);
+  7849		}
+  7850		return ret;
+  7851	}
+  7852	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
