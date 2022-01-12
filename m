@@ -2,102 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02CA6C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 02:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2FDAC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 02:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348114AbiALCAe (ORCPT
+        id S1348124AbiALCBV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 21:00:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348122AbiALB7e (ORCPT
+        Tue, 11 Jan 2022 21:01:21 -0500
+Received: from mail-ot1-f43.google.com ([209.85.210.43]:37886 "EHLO
+        mail-ot1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348035AbiALCBT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 20:59:34 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF01C06173F
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:59:34 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id m6so2192978ybc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 17:59:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cVxEczww7H9SKUQS4bM3hqv/i/BHfSqFjaglAC6lVKQ=;
-        b=Ts2boQ0OQ6dUg+Q1bgi1eRic89TubkUE0VQ2NPiyhgnU3O0OzuHrNsR/aYTnxham6j
-         QkFUVZHsgmjs/3IJLRiePUPt2SyMyFnLJAjc+jITIcvu+aD44BkdZK20a5pA5ojpVZjz
-         aOvkgkwHgYrqe31l/rstBihzrSuX6cCEeJOTCrj9q4I/BeqQFvPfpTlLSoJoJmqH6J3V
-         yuAgSyr6Z0SbVWOFs00A9/fwH4X5uc6aBbvOAdytDX6Tn7l/PeZz0eXeYkvh9LgU2UoE
-         lWPQDZt03th6mEf0Qj5U2yfEOk7ebdD/9B8nEoucVNGOBtU98dqeVrDKcGwN/HY+e6yu
-         CB8A==
+        Tue, 11 Jan 2022 21:01:19 -0500
+Received: by mail-ot1-f43.google.com with SMTP id h20-20020a9d6f94000000b0059100e01744so936537otq.4;
+        Tue, 11 Jan 2022 18:01:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cVxEczww7H9SKUQS4bM3hqv/i/BHfSqFjaglAC6lVKQ=;
-        b=GUNmxynq0AMmWksnyZyg4EL8X1vr+BpvF95ktWmpWJmNH04sQSele7VrXCknRdXqTt
-         TeW2j2ImhYheBvlxGud0AVSm7f6yChFcgHASLs0W49To3F+svewf2XMGNFnAL0Udrpen
-         5BqdX1x8HClR1tPdn4DLW37inqZfYlkv2rSUvVuOl54MvLe5GVLxsJkd5poJS08VJ/TY
-         zXRz1euRG+P5wRoJ6VlURWTnqN6irNByvMdfp0QHoPt/uz2TbPcNS67u4EOejHfSWhSH
-         I4FC2YgvA2CfWtBt4A00rUTQXHhaIvLTBycv+73DCUoHWcf2WKyV3B2Bmy0XzAHdzOCw
-         f4xQ==
-X-Gm-Message-State: AOAM530mD3ZF7lvG7eGoqrO3DJdRZmFQkBGSQYdMJUkPdzdiVy9ToWaj
-        5+Jw6+67RGdknkMzI5Ugu3HfsVChOfWYGI6vxAFL5Q==
-X-Google-Smtp-Source: ABdhPJwN4hwcuKzBzJtr7wGTU0xnt0KS8/Uq8aK0aVyxSAu3ccYgg66CQmlwyhXOT6fWIigjAUWgjHVnsEGldOBZvgI=
-X-Received: by 2002:a25:2383:: with SMTP id j125mr9713381ybj.430.1641952773384;
- Tue, 11 Jan 2022 17:59:33 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Qk2OQ/ws2ks++rPbFgmN3BZmamKFSn87De142ZHrSBo=;
+        b=mm3IOCg7BE1RUDaNWUP5MzmaanQJ93Tk9NqNoF79W0OkrmDAbRazDW8ksYz+0gaN4/
+         jZnN3Tx4Jvl2bbuuzkxb0dlNwRJcj12Xj989obAT5Hi37NrhH2URi9b9dBq3SNPHNppn
+         TwsKlSPqlpgYj6k2vELHHp17qVDrUWW1+KxTtAsA3d4My7lm/28UBovoxyAR03t2IDdC
+         j3DkH9w2mNRBfZ/N7WVp1AHvqoWE7lCotZEkecBfUlStnAT1l6YA7gQOVpO9QY0hTfBi
+         leLilUA98KZiaqBNqZw1wKxw+htkbQQs6FFvXO07GRMSP7WPK6UiJxnltUUjE41nA94G
+         KVWQ==
+X-Gm-Message-State: AOAM531WJ4E9rX3uIb5rCud2gg9m0odCXy1J+otAb/fdvOeHDahk9tqE
+        xxLMv/mURWcuiivhY2HP5A==
+X-Google-Smtp-Source: ABdhPJzqarYaUXTAPE1/+tVVkQSjhrV2udoe9wYR0feu1OlMihqzlS2aPOfLf1LHnoecfVXpdiso7Q==
+X-Received: by 2002:a05:6830:2705:: with SMTP id j5mr5399966otu.204.1641952879291;
+        Tue, 11 Jan 2022 18:01:19 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u14sm2369656ote.62.2022.01.11.18.01.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 18:01:18 -0800 (PST)
+Received: (nullmailer pid 3915021 invoked by uid 1000);
+        Wed, 12 Jan 2022 02:01:17 -0000
+Date:   Tue, 11 Jan 2022 20:01:17 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Brian Norris <briannorris@chromium.org>
+Cc:     Kyungmin Park <kyungmin.park@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+        Lin Huang <hl@rock-chips.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Derek Basehore <dbasehore@chromium.org>,
+        devicetree@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+        linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH 03/10] dt-bindings: devfreq: rk3399_dmc: Fix Hz units
+Message-ID: <Yd42bfH5skA+TZup@robh.at.kernel.org>
+References: <20220107235320.965497-1-briannorris@chromium.org>
+ <20220107155215.3.I9341269171c114d0e04e41d48037fd32816e2d8c@changeid>
 MIME-Version: 1.0
-References: <1641894961-9241-1-git-send-email-CruzZhao@linux.alibaba.com> <1641894961-9241-3-git-send-email-CruzZhao@linux.alibaba.com>
-In-Reply-To: <1641894961-9241-3-git-send-email-CruzZhao@linux.alibaba.com>
-From:   Josh Don <joshdon@google.com>
-Date:   Tue, 11 Jan 2022 17:59:22 -0800
-Message-ID: <CABk29NtonxXS53J-+3w_GTLTVurf8HS4v35T9evoGyERB0uDqA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] sched/core: Forced idle accounting per-cpu
-To:     Cruz Zhao <CruzZhao@linux.alibaba.com>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Benjamin Segall <bsegall@google.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        cgroups@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220107155215.3.I9341269171c114d0e04e41d48037fd32816e2d8c@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 1:56 AM Cruz Zhao <CruzZhao@linux.alibaba.com> wrote:
->
-> Accounting for "forced idle" time per cpu, which is the time a cpu is
-> forced to idle by its SMT sibling.
->
-> As it's not accurate to measure the capacity loss only by cookie'd forced
-> idle time, and it's hard to trace the forced idle time caused by all the
-> uncookie'd tasks, we account the forced idle time from the perspective of
-> the cpu.
->
-> Forced idle time per cpu is displayed via /proc/schedstat, we can get the
-> forced idle time of cpu x from the 10th column of the row for cpu x. The
-> unit is ns. It also requires that schedstats is enabled.
->
-> Signed-off-by: Cruz Zhao <CruzZhao@linux.alibaba.com>
+On Fri, 07 Jan 2022 15:53:13 -0800, Brian Norris wrote:
+> The driver and all downstream device trees [1] are using Hz units, but
+> the document claims MHz. DRAM frequency for these systems can't possibly
+> exceed 2^32-1 Hz, so the choice of unit doesn't really matter than much.
+> 
+> Rather than add unnecessary risk in getting the units wrong, let's just
+> go with the unofficial convention and make the docs match reality.
+> 
+> A sub-1MHz frequency is extremely unlikely, so include a minimum in the
+> schema, to help catch anybody who might have believed this was MHz.
+> 
+> [1] And notably, also those trying to upstream them:
+> https://lore.kernel.org/lkml/20210308233858.24741-3-daniel.lezcano@linaro.org/
+> 
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
 > ---
+> 
+>  .../bindings/devfreq/rk3399_dmc.yaml          | 24 +++++++++----------
+>  1 file changed, 12 insertions(+), 12 deletions(-)
+> 
 
-Two quick followup questions:
-
-1) From your v1, I still wasn't quite sure if the per-cpu time was
-useful or not for you versus a single overall sum (ie. I think other
-metrics could be more useful for analyzing steal_cookie if that's what
-you're specifically interested in). Do you definitely want the per-cpu
-totals?
-
-2) If your cgroup accounting patch is merged, do you still want this
-patch? You can grab the global values from the root cgroup (assuming
-you have cgroups enabled). The only potential gap is if you need
-per-cpu totals, though I'm working to add percpu stats to cgroup-v2:
-https://lkml.kernel.org/r/%3C20220107234138.1765668-1-joshdon@google.com%3E
+Reviewed-by: Rob Herring <robh@kernel.org>
