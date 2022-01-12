@@ -2,190 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 595E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F82CC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355869AbiALR7i (ORCPT
+        id S1355901AbiALR7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:59:38 -0500
-Received: from mga17.intel.com ([192.55.52.151]:43707 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348659AbiALR7c (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:59:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642010371; x=1673546371;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=d/LjtuAyqmkFIWB4hNh60XmaO1IJi5r5eKvYN+nL3Gg=;
-  b=gagC5pe6ScfsHZwRemt3eoF6K1mnvhL1Zl0navoKa/BlPYpPOERRaY4l
-   E9ggK3/sF6eYHsxxEd55D8Sqvb7A0z4RiAuFHeCIAeeB6rcjk0eEb7znZ
-   t11TQHGyo5g+308Efmw+Z3bbJt8sU2H6CqyX7ccqg1UeMfSKuVmFjBUeV
-   VtqXXl5Ode/kwG+marAd0FEnXrPhdcAMWy3wzzi3Dl7nEnOKyJT5TGuUK
-   0Y5yZ5vMKJC5L4C/7MMCTyuOxOx2yPUOtZCUnKWkJ2Eo2gRX5oMNbrivc
-   xp8eMhbWhnWyfZi5PKu2xYAI1iszk1YHw8UDX766ZTm7WaZl13/y8wBo3
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="224491841"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="224491841"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 09:59:30 -0800
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="623541892"
-Received: from jons-linux-dev-box.fm.intel.com (HELO jons-linux-dev-box) ([10.1.27.20])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 09:59:29 -0800
-Date:   Wed, 12 Jan 2022 09:53:38 -0800
-From:   Matthew Brost <matthew.brost@intel.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Andi Shyti <andi.shyti@intel.com>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] drm/i915/selftests: Fix NULL vs IS_ERR checking for
- kernel_context
-Message-ID: <20220112175338.GA12463@jons-linux-dev-box>
-References: <20211222075832.1732-1-linmq006@gmail.com>
+        Wed, 12 Jan 2022 12:59:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348664AbiALR7d (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 12:59:33 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 703F4C061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:59:33 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id n30-20020a17090a5aa100b001b2b6509685so6330127pji.3
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:59:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=lxclRLr31RsJ2S0clQHvNH9FSmldpFyw3vzSNMFjSFI=;
+        b=CAWdvjx4EIviY6PjoqmwBfiBTEBiP2yCL1Zhg1c+jTo0nQbaSdZ7cavQNNpQJlxUOa
+         MqJW+H+95+zTC4n2JrC5v8O37hr5S8tJF85taoqIrK4G9YZ9aDYGfIQeLnLgxaozofVN
+         WukIDUkb/3u9HHaHemlszAkSG7/6T10REeYRLwBg/msN/qTb+dvBSWbMRXYkc21S2Tj9
+         U3B0oEeAq3fWixc1gFqo2/APlTeIlvhOtjULsGPFFm4H5mM5F4eJeoiKeLajXtjWlXtX
+         MrPe3nToRSgtNJkf0SzzB8nn88VsDDcH6YyF0rScyBlaaDb7B//tsNm540FV9QRLGm+z
+         t5RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=lxclRLr31RsJ2S0clQHvNH9FSmldpFyw3vzSNMFjSFI=;
+        b=x9tu3dvtCXgEkycEQ8UqSIrDu1BZ96B5QR2+RZKyS6QxPrK97ytD9H/YoAIP3ENqYX
+         6eaRGM8/OjzDmfAxv4eIqu7BMmJ4hpUE4zKzEMEmRL0AVeX7iPDTfR9G9Yk8Ans95Bn1
+         mqlJFFpDB3rYFESY7IWV0cmlXtH2AJXnHEQd4kFfpsdqUPrmoHS1rcm3Yqr4Mi3ZDmH3
+         1meYU0suWLk7UZJRtvOqOmweIIfQKV5MBtU5ZmdSdmc5ryn8j6CLcgGiyJt7Ba+/SMUE
+         OxIDg1k51J9GxgCweZAD+NUYpwkPffRSdhstO1+y1t4a0LhDxHj1+SIFgYn+BeWMsKAC
+         I0ig==
+X-Gm-Message-State: AOAM532+IkRlHRDg0XO79LDXvteQp7TsSnAg18NCWOzuX7SK1qwy1bCT
+        2SdaTJlZLWjAZx8QewQ1SD8zJA==
+X-Google-Smtp-Source: ABdhPJyX3xmDpuVIwP3Tj2o04khmgeJrxi1LlFZLssvNNNqiBbIVjqyCDijaR55cpWlGdkK1yamSLQ==
+X-Received: by 2002:a63:35cd:: with SMTP id c196mr667720pga.623.1642010372774;
+        Wed, 12 Jan 2022 09:59:32 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id u27sm275481pfg.45.2022.01.12.09.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 09:59:32 -0800 (PST)
+Date:   Wed, 12 Jan 2022 17:59:28 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
+        tglx@linutronix.de, Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/6] KVM: x86: Move check_processor_compatibility from
+ init ops to runtime ops
+Message-ID: <Yd8XAI7G4sEab9Nh@google.com>
+References: <20211227081515.2088920-1-chao.gao@intel.com>
+ <20211227081515.2088920-2-chao.gao@intel.com>
+ <YdzAzT5AqO0aCsHk@google.com>
+ <20220111033629.GC2175@gao-cwp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211222075832.1732-1-linmq006@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220111033629.GC2175@gao-cwp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 07:58:29AM +0000, Miaoqian Lin wrote:
-> Since i915_gem_create_context() function return error pointers,
-> the kernel_context() function does not return null, It returns error
-> pointers too. Using IS_ERR() to check the return value to fix this.
+On Tue, Jan 11, 2022, Chao Gao wrote:
+> On Mon, Jan 10, 2022 at 11:27:09PM +0000, Sean Christopherson wrote:
+> >On Mon, Dec 27, 2021, Chao Gao wrote:
+> >> so that KVM can do compatibility checks on hotplugged CPUs. Drop __init
+> >> from check_processor_compatibility() and its callees.
+> >
+> >Losing the __init annotation on all these helpers makes me a bit sad, more from a
+> >documentation perspective than a "but we could shave a few bytes" perspective.
 > 
-
-Just a nit, err is initialized to -ENOMEM in a bunch of these tests
-which isn't needed anymore. If you want to clean that up too, feel free.
-
-With that:
-Reviewed-by: Matthew Brost <matthew.brost@intel.com> 
-
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/gpu/drm/i915/gt/selftest_execlists.c | 41 ++++++++++++++------
->  1 file changed, 29 insertions(+), 12 deletions(-)
+> This makes sense.
 > 
-> diff --git a/drivers/gpu/drm/i915/gt/selftest_execlists.c b/drivers/gpu/drm/i915/gt/selftest_execlists.c
-> index b367ecfa42de..eacfe920afed 100644
-> --- a/drivers/gpu/drm/i915/gt/selftest_execlists.c
-> +++ b/drivers/gpu/drm/i915/gt/selftest_execlists.c
-> @@ -1540,13 +1540,16 @@ static int live_busywait_preempt(void *arg)
->  	 */
->  
->  	ctx_hi = kernel_context(gt->i915, NULL);
-> -	if (!ctx_hi)
-> -		return -ENOMEM;
-> +	if (IS_ERR(ctx_hi))
-> +		return IS_ERR(ctx_hi);
-> +
->  	ctx_hi->sched.priority = I915_CONTEXT_MAX_USER_PRIORITY;
->  
->  	ctx_lo = kernel_context(gt->i915, NULL);
-> -	if (!ctx_lo)
-> +	if (IS_ERR(ctx_lo)) {
-> +		err = PTR_ERR(ctx_lo);
->  		goto err_ctx_hi;
-> +	}
->  	ctx_lo->sched.priority = I915_CONTEXT_MIN_USER_PRIORITY;
->  
->  	obj = i915_gem_object_create_internal(gt->i915, PAGE_SIZE);
-> @@ -1742,13 +1745,17 @@ static int live_preempt(void *arg)
->  		goto err_spin_hi;
->  
->  	ctx_hi = kernel_context(gt->i915, NULL);
-> -	if (!ctx_hi)
-> +	if (IS_ERR(ctx_hi)) {
-> +		err = PTR_ERR(ctx_hi);
->  		goto err_spin_lo;
-> +	}
->  	ctx_hi->sched.priority = I915_CONTEXT_MAX_USER_PRIORITY;
->  
->  	ctx_lo = kernel_context(gt->i915, NULL);
-> -	if (!ctx_lo)
-> +	if (IS_ERR(ctx_lo)) {
-> +		err = PTR_ERR(ctx_lo);
->  		goto err_ctx_hi;
-> +	}
->  	ctx_lo->sched.priority = I915_CONTEXT_MIN_USER_PRIORITY;
->  
->  	for_each_engine(engine, gt, id) {
-> @@ -1834,12 +1841,16 @@ static int live_late_preempt(void *arg)
->  		goto err_spin_hi;
->  
->  	ctx_hi = kernel_context(gt->i915, NULL);
-> -	if (!ctx_hi)
-> +	if (IS_ERR(ctx_hi)) {
-> +		err = PTR_ERR(ctx_hi);
->  		goto err_spin_lo;
-> +	}
->  
->  	ctx_lo = kernel_context(gt->i915, NULL);
-> -	if (!ctx_lo)
-> +	if (IS_ERR(ctx_lo)) {
-> +		err = PTR_ERR(ctx_lo);
->  		goto err_ctx_hi;
-> +	}
->  
->  	/* Make sure ctx_lo stays before ctx_hi until we trigger preemption. */
->  	ctx_lo->sched.priority = 1;
-> @@ -1928,8 +1939,8 @@ struct preempt_client {
->  static int preempt_client_init(struct intel_gt *gt, struct preempt_client *c)
->  {
->  	c->ctx = kernel_context(gt->i915, NULL);
-> -	if (!c->ctx)
-> -		return -ENOMEM;
-> +	if (IS_ERR(c->ctx))
-> +		return PTR_ERR(c->ctx);
->  
->  	if (igt_spinner_init(&c->spin, gt))
->  		goto err_ctx;
-> @@ -3385,13 +3396,17 @@ static int live_preempt_timeout(void *arg)
->  		return -ENOMEM;
->  
->  	ctx_hi = kernel_context(gt->i915, NULL);
-> -	if (!ctx_hi)
-> +	if (IS_ERR(ctx_hi)) {
-> +		err = PTR_ERR(ctx_hi);
->  		goto err_spin_lo;
-> +	}
->  	ctx_hi->sched.priority = I915_CONTEXT_MAX_USER_PRIORITY;
->  
->  	ctx_lo = kernel_context(gt->i915, NULL);
-> -	if (!ctx_lo)
-> +	if (IS_ERR(ctx_lo)) {
-> +		err = PTR_ERR(ctx_lo);
->  		goto err_ctx_hi;
-> +	}
->  	ctx_lo->sched.priority = I915_CONTEXT_MIN_USER_PRIORITY;
->  
->  	for_each_engine(engine, gt, id) {
-> @@ -3683,8 +3698,10 @@ static int live_preempt_smoke(void *arg)
->  
->  	for (n = 0; n < smoke.ncontext; n++) {
->  		smoke.contexts[n] = kernel_context(smoke.gt->i915, NULL);
-> -		if (!smoke.contexts[n])
-> +		if (IS_ERR(smoke.contexts[n])) {
-> +			err = PTR_ERR(smoke.contexts[n]);
->  			goto err_ctx;
-> +		}
->  	}
->  
->  	for (n = 0; n < ARRAY_SIZE(phase); n++) {
-> -- 
-> 2.17.1
+> >More than once I've wondered why some bit of code isn't __init, only to realize
+> >its used for hotplug.
 > 
+> Same problem to some global data structures which can be __initdata if hotplug
+> isn't supported.
+> 
+> >
+> >What if we added an __init_or_hotplug annotation that is a nop if HOTPLUG_CPU=y?
+> 
+> Personally __init_or_hotplug is a little long as an annotation. How about
+> __hotplug?
+> 
+> One concern is: is it acceptable to introduce a new annotation and use it in
+> new code but not fix all places that should use it in existing code.
+> 
+> I think the right process is
+> 1. introduce a new annotation
+> 2. fix existing code to use this annotation
+> 3. add new code.
+> 
+> There is no doubt that #2 would take great effort. I'm not sure if it is really
+> worth it.
+> 
+> >At a glance, KVM could use that if the guts of kvm_online_cpu() were #idef'd out
+> >on !CONFIG_HOTPLUG_CPU.  That also give us a bit of test coverage for bots that
+> >build with SMP=n.
+> 
+> Will do with your suggested-by.
+
+I don't think you should try to add a new annotation in this series.  My question
+really was just that, a question to others if there would be value in adding an
+annotation to identify symbols that are !__init only because of hotplug.  Such new
+functionality is certainly not required for fixing KVM's mishandling of hotplug,
+and trying to cram it in here will bloat and slow down this series.
