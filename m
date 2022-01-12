@@ -2,130 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:20:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87675C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:21:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355547AbiALRT7 (ORCPT
+        id S1355560AbiALRVE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:19:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58804 "EHLO
+        Wed, 12 Jan 2022 12:21:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355539AbiALRTv (ORCPT
+        with ESMTP id S1355549AbiALRUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:19:51 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7318C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:19:48 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id u25so12791298edf.1
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:19:48 -0800 (PST)
+        Wed, 12 Jan 2022 12:20:51 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4FA9C061756
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:20:49 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id l8so4950194plt.6
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 09:20:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=65QBkl5auowwKruiCd5ekhebx9aA5QGzBldNP4dKx3o=;
-        b=dR9/pPQ3umiUBcOlQtP4NkG7UVl+VgSiD6Gj4ESG3BI5Rd7eU3PraGGHCWjtGvJoJ4
-         kWur2vjIEaqWlFGcRkft+wiCc3zVto+ZCKuCJcJVfVrlmU3v1Q8N3QxyRGY0HFiFKokK
-         rncMBQNjJs29Bp4qYGukrpNEgf1BoZIYNZVYdThJ2vbve7yQPf5RZXm9G8wXtg83mOqf
-         SzED2QYbQYhQowA9le+O2WzhI2joFFcqNVh0VnMuPZTBusvIHA4szTzmuLcTbnnLrYew
-         ONN7nPhum87e3WIZ9Jac30F2kq0Lu+/K0Z0qSTHRZGVjyjZzODhzhKRoEeFYOQ0LbAvN
-         90zw==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=QRCI1RlLdVZvt5lKUzeK60PXJ4E91izm9CxbrCuYWiw=;
+        b=iD4ax0W/ZQejkpiTV+wC/BTGkgvydCG1+oy9k4x41xcYsxdOIrYBD3Jg5pNLFotLn3
+         4lS1DP/A5h5rWv9t8jIgjAfIWRHyWSXlvlM7IaIgxX7hDAUmIgxXIoU5b+8CgT0R9dt0
+         iCbsvCcrQj4kpbl/NpitUUKIbg7rTypIFxqdxfB2feMrGc8niiEgwy4Jncc/4d2meNQg
+         hKQ5yFTrProqxoFW6AG+GqRq3CQHFwiDeSswlB6x17ayzfA94e4NsXmAcxNN0/DUQR5b
+         DQXQiXIgM3bNMe/5PUo8aj95UIBHAUjKy79FkjU/HbhRpV61hkglUgnEV5dHn1QxLypF
+         YTdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=65QBkl5auowwKruiCd5ekhebx9aA5QGzBldNP4dKx3o=;
-        b=Vr/3ogbYw+yUJFFy5vcotOkks/CttRieh7Oz4TdMJHeC6b7PSTQldlnGM6mL5aljW5
-         1hUYXhlzQ5uJGiRrseMETI3hHgS6qXiroGAfP2feSAP//QZa0/kFBbH7n3YO5K3CiVLx
-         2jRO8f5O44pXz43Gtt2xO6GyFJ7XSGoO9nqhz8YMlisQh+Se8WKsLOfxnAxRI1/vYgBB
-         e69ZoRBr2J0Wze0FAz5fQS8RRTJqVBgNmbaKGeG1pv46un7unLL6dasyMu2yO/74dCRf
-         JGB+jWLpTYAarEp9XldrVt42uVKfhrtiotiq4UDiDTpN5ctQepb4xCk6WIwNHJmfdqlc
-         dMhg==
-X-Gm-Message-State: AOAM531r2usCXF2JfVjqac3HlaCiYjARb0HNNAveLNDD3OxiJg+Vw8W+
-        XdxC2WaEpfujVb4WN85fp2MFNw2gUf7SpmTJWXCD
-X-Google-Smtp-Source: ABdhPJwGYiCNrfdiEoAyumDRSQUhGOk5sh0PJ0caxAP6QVabEe2bblxKkriHKYt2iErce9Oc+wD+9RhZ2X3N1F2eWts=
-X-Received: by 2002:a17:907:1b0d:: with SMTP id mp13mr552754ejc.29.1642007987184;
- Wed, 12 Jan 2022 09:19:47 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QRCI1RlLdVZvt5lKUzeK60PXJ4E91izm9CxbrCuYWiw=;
+        b=Biny6LMUaRZsHVtarkRROaXH8Pf/x+c5otYY2ALF92MTse1zj8D5JnxPePld83tCVV
+         EcbiuzS8/sCpVOpBHDyxBi4bx0vn7ebc1kEBIWwVdsNNOAd4YWC2FyFSkVOZv8TUpfMs
+         nFA46lhoEINava0L6C/iXjIm4nRZzvQy+HBjxfUup1sSz9Fs2Zusjqk9pCfQhKKyXT0u
+         IMdVbHtTcnaiuE0R4/lDI6E5ewX8yhXbKqyyaqyjxnELQfkC0h1MrVaj4OAIqXyQ1dKy
+         57sp6RqASqVhzh4Y83WlmAlcI6e2eD0JJZgvYGneltqIyU5r5T/xqBiJFe/2b6pE9BKE
+         sjXw==
+X-Gm-Message-State: AOAM531oBjww+UejJg9h5BrOYlqtTLs5l9KTHwmjtHYYzSMuMdNHqCPa
+        2MnmEAzf3xh4eLAsrboSW/Jt1Q==
+X-Google-Smtp-Source: ABdhPJzSQE5HuAs9ufGKv8GVZpWcgq8Jooiv84LWQSj+pdxhdpdaB4H7DHBA1IqNFc1FS00InVj1vA==
+X-Received: by 2002:a05:6a00:2442:b0:4bc:e7ac:b5aa with SMTP id d2-20020a056a00244200b004bce7acb5aamr553091pfj.56.1642008049112;
+        Wed, 12 Jan 2022 09:20:49 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id kb1sm266614pjb.45.2022.01.12.09.20.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 09:20:48 -0800 (PST)
+Date:   Wed, 12 Jan 2022 17:20:44 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Gao <chao.gao@intel.com>
+Cc:     kvm@vger.kernel.org, pbonzini@redhat.com, kevin.tian@intel.com,
+        tglx@linutronix.de, Marc Zyngier <maz@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anup Patel <anup.patel@wdc.com>,
+        Atish Patra <atish.patra@wdc.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        =?iso-8859-1?Q?C=E9dric?= Le Goater <clg@kaod.org>,
+        Bharata B Rao <bharata@linux.ibm.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, kvm-riscv@lists.infradead.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH 3/6] KVM: Remove opaque from
+ kvm_arch_check_processor_compat
+Message-ID: <Yd8N7PFqZbACzh2r@google.com>
+References: <20211227081515.2088920-1-chao.gao@intel.com>
+ <20211227081515.2088920-4-chao.gao@intel.com>
+ <Ydy8BCfE0jhJd5uE@google.com>
+ <20220111031933.GB2175@gao-cwp>
 MIME-Version: 1.0
-References: <20211026133147.35d19e00@canb.auug.org.au> <87k0i0awdl.fsf@mpe.ellerman.id.au>
- <CAHC9VhTj7gn3iAOYctVRKvv_Bk1iQMrmkA8FVJtYzdvBjqFmvg@mail.gmail.com>
- <87tuh2aepp.fsf@mpe.ellerman.id.au> <2012df5e-62ec-06fb-9f4d-e27dde184a3f@csgroup.eu>
- <CAHC9VhRHs8Lx8+v+LHmJByxO_m330sfLWRsGDsFtQxyQ1860eg@mail.gmail.com>
- <dc5705cf-d47a-57b0-65da-2a2af8d71b19@csgroup.eu> <CAHC9VhQPizVLkr2+sqRCS0gS4+ZSw-AMkJM5V64-ku8AQe+QQg@mail.gmail.com>
- <1a78709f-162e-0d78-0550-4e9ef213f9c6@csgroup.eu> <102e59ba-fcf0-dd85-9338-75b7ce5fbd83@kaod.org>
- <5f83d1fe-4e6e-1d08-b0c2-aec8ee852065@csgroup.eu> <CAHC9VhTcV6jn4z7uGXZb=RZ5k7W4KW1vnoAUMHN6Zhkxsw1Xpg@mail.gmail.com>
- <23e9c126-d167-254f-2f4b-391e9f01396c@csgroup.eu>
-In-Reply-To: <23e9c126-d167-254f-2f4b-391e9f01396c@csgroup.eu>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 12 Jan 2022 12:19:36 -0500
-Message-ID: <CAHC9VhTHZ-Brr4OrQJ3VLS_zXx1fcAMZ-32sz2=GonmWOgfbDg@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the audit tree with the powerpc tree
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        PowerPC <linuxppc-dev@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220111031933.GB2175@gao-cwp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 17, 2021 at 9:11 AM Christophe Leroy
-<christophe.leroy@csgroup.eu> wrote:
-> Le 17/12/2021 =C3=A0 00:04, Paul Moore a =C3=A9crit :
-> > On Thu, Dec 16, 2021 at 4:08 AM Christophe Leroy
-> > <christophe.leroy@csgroup.eu> wrote:
-> >> Thanks C=C3=A9dric, I've now been able to install debian PPC32 port of=
- DEBIAN
-> >> 11 on QEMU and run the tests.
-> >>
-> >> I followed instructions in file README.md provided in the test suite.
-> >> I also modified tests/Makefile to force MODE :=3D 32
-> >>
-> >> I've got a lot of failures, am I missing some options in the kernel or
-> >> something ?
-> >>
-> >> Running as   user    root
-> >>           with context root:::
-> >>           on   system
+On Tue, Jan 11, 2022, Chao Gao wrote:
+> On Mon, Jan 10, 2022 at 11:06:44PM +0000, Sean Christopherson wrote:
+> >On Mon, Dec 27, 2021, Chao Gao wrote:
+> >> No arch implementation uses this opaque now.
 > >
-> > While SELinux is not required for audit, I don't think I've ever run
-> > it on system without SELinux.  In theory the audit-testsuite shouldn't
-> > rely on SELinux being present (other than the SELinux specific tests
-> > of course), but I'm not confident enough to say that the test suite
-> > will run without problem without SELinux.
-> >
-> > If it isn't too difficult, I would suggest enabling SELinux in your
-> > kernel build and ensuring the necessary userspace, policy, etc. is
-> > installed.  You don't need to worry about getting it all running
-> > correctly; the audit-testsuite should pass with SELinux in permissive
-> > mode.
-> >
-> > If you're still seeing all these failures after trying that let us know=
-.
-> >
->
-> Still the same it seems:
->
-> Running as   user    root
->          with context unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c10=
-23
->          on   system
->
-> # Test 3 got: "256" (backlog_wait_time_actual_reset/test at line 151)
-> #   Expected: "0"
-> #  backlog_wait_time_actual_reset/test line 151 is: ok( $result, 0 );
->   # Was an event found?
+> >Except for the RISC-V part, this can be a pure revert of commit b99040853738 ("KVM:
+> >Pass kvm_init()'s opaque param to additional arch funcs").  I think it makes sense
+> >to process it as a revert, with a short blurb in the changelog to note that RISC-V
+> >is manually modified as RISC-V support came along in the interim.
+> 
+> commit b99040853738 adds opaque param to kvm_arch_hardware_setup(), which isn't
+> reverted in this patch. I.e., this patch is a partial revert of b99040853738
+> plus manual changes to RISC-V. Given that, "process it as a revert" means
+> clearly say in changelog that this commit contains a partial revert of commit
+> b99040853738 ("KVM: Pass kvm_init()'s opaque param to additional arch funcs").
+> 
+> Right?
 
-My apologies, this thread was lost in the end-of-year holidays.
+What I meant is literally do
 
-At this point, and with that many failures, I think you'll need to
-spend some time debugging the test failures to see what is wrong.  I
-don't have a PPC32 system/VM and I don't have the time right now to
-build up a PPC32 test environment.
+  git revert -s b99040853738
 
---=20
-paul moore
-www.paul-moore.com
+and then manually handle RISC-V.
