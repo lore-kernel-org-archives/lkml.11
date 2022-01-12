@@ -2,150 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B8BC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:34:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B486BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352104AbiALJeq (ORCPT
+        id S1352109AbiALJfI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:34:46 -0500
-Received: from mga06.intel.com ([134.134.136.31]:61179 "EHLO mga06.intel.com"
+        Wed, 12 Jan 2022 04:35:08 -0500
+Received: from foss.arm.com ([217.140.110.172]:57310 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238079AbiALJee (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:34:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641980074; x=1673516074;
-  h=from:to:cc:subject:date:message-id;
-  bh=7Ihay+nY/RB67tVnwCfgoiyLdn5DEIMTvTTTafjGIF8=;
-  b=RCxI39Noj70U/2xGxKx340ojDl+c+2vMgf1RET7nbqSlGPbh6/cEzKY8
-   9JAwR16ZTpe5z6Qmm8zJHc8MUKqlgVtwdUlf/O9tWrB2OYkgEa6RlN7vb
-   UANW4GGC3KfwQTX6DvCI8ql0XxwJw+FoD6+fmsOKGqMyD5RiRNXkiC49a
-   pmpkAcGYgMRT7Ds6OYcVTC71o5BuniZpVKo6oCNXceWUVYxKuozLTGPPf
-   C64cWNam2tr6dJXUSMCn0RLvFIOQ5XEU/V5FkBPv7cM41qV3n4kLLRAab
-   gFpP9YbhQ0pmJQEiHLpMvz84KNGRobKf5Svky6j0RTL53ZEu0lMg3Aipj
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="304436339"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="304436339"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 01:34:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="474852142"
-Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.13])
-  by orsmga006.jf.intel.com with ESMTP; 12 Jan 2022 01:34:31 -0800
-From:   Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mohammad.athari.ismail@intel.com, stable@vger.kernel.org
-Subject: [PATCH net v2] net: phy: marvell: add Marvell specific PHY loopback
-Date:   Wed, 12 Jan 2022 17:33:44 +0800
-Message-Id: <20220112093344.27894-1-mohammad.athari.ismail@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S238079AbiALJfG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 04:35:06 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F0B90D6E;
+        Wed, 12 Jan 2022 01:35:05 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.66.26])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 246D23F766;
+        Wed, 12 Jan 2022 01:35:02 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] coresight: trbe: Update existing errata for Cortex-X2
+Date:   Wed, 12 Jan 2022 15:04:57 +0530
+Message-Id: <1641980099-20315-1-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Existing genphy_loopback() is not applicable for Marvell PHY. Besides
-configuring bit-6 and bit-13 in Page 0 Register 0 (Copper Control
-Register), it is also required to configure same bits  in Page 2
-Register 21 (MAC Specific Control Register 2) according to speed of
-the loopback is operating.
+Errata ARM64_ERRATUM_[2119858|2224489] also affect some Cortex-X2 ranges as
+well. This series updates the errata definition and detection as required.
+This series applies on v5.16.
 
-Tested working on Marvell88E1510 PHY for all speeds (1000/100/10Mbps).
+Relevant identification document can be found here.
 
-FIXME: Based on trial and error test, it seem 1G need to have delay between
-soft reset and loopback enablement.
+https://developer.arm.com/documentation/101803/0200/AArch64-system-registers/
+AArch64-identification-register-summary/MIDR-EL1--Main-ID-Register
 
-Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
-Cc: <stable@vger.kernel.org> # 5.15.x
-Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
----
-v2 changelog:
-- For loopback enabled, add bit-6 and bit-13 configuration in both Page
-  0 Register 0 and Page 2 Register 21. Commented by Heiner Kallweit
-<hkallweit1@gmail.com>.
-- For loopback disabled, follow genphy_loopback() implementation. 
----
- drivers/net/phy/marvell.c | 46 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 45 insertions(+), 1 deletion(-)
+Relevant errata document can be found here.
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 4fcfca4e1702..51ca2cc05e10 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -189,6 +189,8 @@
- #define MII_88E1510_GEN_CTRL_REG_1_MODE_RGMII_SGMII	0x4
- #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
- 
-+#define MII_88E1510_MSCR_2		0x15
-+
- #define MII_VCT5_TX_RX_MDI0_COUPLING	0x10
- #define MII_VCT5_TX_RX_MDI1_COUPLING	0x11
- #define MII_VCT5_TX_RX_MDI2_COUPLING	0x12
-@@ -1932,6 +1934,48 @@ static void marvell_get_stats(struct phy_device *phydev,
- 		data[i] = marvell_get_stat(phydev, i);
- }
- 
-+static int marvell_loopback(struct phy_device *phydev, bool enable)
-+{
-+	if (enable) {
-+		u16 bmcr_ctl = 0, mscr2_ctl = 0;
-+
-+		if (phydev->speed == SPEED_1000)
-+			bmcr_ctl = BMCR_SPEED1000;
-+		else if (phydev->speed == SPEED_100)
-+			bmcr_ctl = BMCR_SPEED100;
-+
-+		if (phydev->duplex == DUPLEX_FULL)
-+			bmcr_ctl |= BMCR_FULLDPLX;
-+
-+		phy_modify(phydev, MII_BMCR, ~0, bmcr_ctl);
-+
-+		if (phydev->speed == SPEED_1000)
-+			mscr2_ctl = BMCR_SPEED1000;
-+		else if (phydev->speed == SPEED_100)
-+			mscr2_ctl = BMCR_SPEED100;
-+
-+		phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
-+				 MII_88E1510_MSCR_2, BMCR_SPEED1000 |
-+				 BMCR_SPEED100, mscr2_ctl);
-+
-+		/* Need soft reset to have speed configuration takes effect */
-+		genphy_soft_reset(phydev);
-+
-+		/* FIXME: Based on trial and error test, it seem 1G need to have
-+		 * delay between soft reset and loopback enablement.
-+		 */
-+		if (phydev->speed == SPEED_1000)
-+			msleep(1000);
-+
-+		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
-+				  BMCR_LOOPBACK);
-+	} else {
-+		phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
-+
-+		return phy_config_aneg(phydev);
-+	}
-+}
-+
- static int marvell_vct5_wait_complete(struct phy_device *phydev)
- {
- 	int i;
-@@ -3078,7 +3122,7 @@ static struct phy_driver marvell_drivers[] = {
- 		.get_sset_count = marvell_get_sset_count,
- 		.get_strings = marvell_get_strings,
- 		.get_stats = marvell_get_stats,
--		.set_loopback = genphy_loopback,
-+		.set_loopback = marvell_loopback,
- 		.get_tunable = m88e1011_get_tunable,
- 		.set_tunable = m88e1011_set_tunable,
- 		.cable_test_start = marvell_vct7_cable_test_start,
+https://developer.arm.com/documentation/SDEN1775100
+
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Suzuki Poulose <suzuki.poulose@arm.com>
+Cc: coresight@lists.linaro.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+
+Anshuman Khandual (2):
+  arm64: Add Cortex-X2 CPU part definition
+  arm64: errata: Update ARM64_ERRATUM_[2119858|2224489] with Cortex-X2 ranges
+
+ arch/arm64/Kconfig               | 12 ++++++------
+ arch/arm64/include/asm/cputype.h |  2 ++
+ arch/arm64/kernel/cpu_errata.c   |  2 ++
+ 3 files changed, 10 insertions(+), 6 deletions(-)
+
 -- 
-2.17.1
+2.20.1
 
