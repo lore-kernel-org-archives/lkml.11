@@ -2,164 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E10C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355481AbiALRCD (ORCPT
+        id S1355507AbiALRDv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:02:03 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27260 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355435AbiALRBy (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:01:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642006913;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZgYej9XbZ+Xa/X6Uh7UhuWNezHk2QG3G7eDzov+zY+E=;
-        b=Hm48/Hgqx7gk4XU1yTc7c0Ex5yDysVAxZDNqEgmwBKzIHE3NoOew6GD/afpzOAclSvOeQF
-        ceowJUEX/QTu5rM+yckZtQsGsTlklS3oNmMFhqD6XUFUmcez96aabd87ywJLKDhVBIxCbM
-        rXFFPUWTfC3N9jbW7AXmVm3A6FehzyE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-590-J_5RRZwaN8maCVNhxIMYww-1; Wed, 12 Jan 2022 12:01:50 -0500
-X-MC-Unique: J_5RRZwaN8maCVNhxIMYww-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 031F780574C;
-        Wed, 12 Jan 2022 17:01:48 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E5C5A2B45F;
-        Wed, 12 Jan 2022 17:01:45 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 4/5] KVM: nVMX: Implement evmcs_field_offset() suitable for handle_vmread()
-Date:   Wed, 12 Jan 2022 18:01:33 +0100
-Message-Id: <20220112170134.1904308-5-vkuznets@redhat.com>
-In-Reply-To: <20220112170134.1904308-1-vkuznets@redhat.com>
-References: <20220112170134.1904308-1-vkuznets@redhat.com>
+        Wed, 12 Jan 2022 12:03:51 -0500
+Received: from 8bytes.org ([81.169.241.247]:37486 "EHLO theia.8bytes.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355540AbiALRC3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 12:02:29 -0500
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+        id 67A4525F; Wed, 12 Jan 2022 18:02:24 +0100 (CET)
+Date:   Wed, 12 Jan 2022 18:02:23 +0100
+From:   Joerg Roedel <joro@8bytes.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        iommu@lists.linux-foundation.org
+Subject: [git pull] IOMMU Updates for Linux v5.17
+Message-ID: <Yd8Jn2aUqblPfRvF@8bytes.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="d8vwtHnKPut+5Js9"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to allowing reads from Enlightened VMCS from
-handle_vmread(), implement evmcs_field_offset() to get the correct
-read offset. get_evmcs_offset(), which is being used by KVM-on-Hyper-V,
-is almost what's needed but a few things need to be adjusted. First,
-WARN_ON() is unacceptable for handle_vmread() as any field can (in
-theory) be supplied by the guest and not all fields are defined in
-eVMCS v1. Second, we need to handle 'holes' in eVMCS (missing fields).
-It also sounds like a good idea to WARN_ON() if such fields are ever
-accessed by KVM-on-Hyper-V.
 
-Implement dedicated evmcs_field_offset() helper.
+--d8vwtHnKPut+5Js9
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-No functional change intended.
+Hi Linus,
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/vmx/evmcs.c |  3 +--
- arch/x86/kvm/vmx/evmcs.h | 32 ++++++++++++++++++++++++--------
- 2 files changed, 25 insertions(+), 10 deletions(-)
+The following changes since commit c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
 
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index a7ed30d5647a..87e3dc10edf4 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -12,8 +12,6 @@
- 
- DEFINE_STATIC_KEY_FALSE(enable_evmcs);
- 
--#if IS_ENABLED(CONFIG_HYPERV)
--
- #define EVMCS1_OFFSET(x) offsetof(struct hv_enlightened_vmcs, x)
- #define EVMCS1_FIELD(number, name, clean_field)[ROL16(number, 6)] = \
- 		{EVMCS1_OFFSET(name), clean_field}
-@@ -296,6 +294,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
- };
- const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
- 
-+#if IS_ENABLED(CONFIG_HYPERV)
- __init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
- {
- 	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index 3a461a32128b..9bc2521b159e 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -65,8 +65,6 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
- #define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
- #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
- 
--#if IS_ENABLED(CONFIG_HYPERV)
--
- struct evmcs_field {
- 	u16 offset;
- 	u16 clean_field;
-@@ -75,26 +73,44 @@ struct evmcs_field {
- extern const struct evmcs_field vmcs_field_to_evmcs_1[];
- extern const unsigned int nr_evmcs_1_fields;
- 
--static __always_inline int get_evmcs_offset(unsigned long field,
--					    u16 *clean_field)
-+static __always_inline int evmcs_field_offset(unsigned long field,
-+					      u16 *clean_field)
- {
- 	unsigned int index = ROL16(field, 6);
- 	const struct evmcs_field *evmcs_field;
- 
--	if (unlikely(index >= nr_evmcs_1_fields)) {
--		WARN_ONCE(1, "KVM: accessing unsupported EVMCS field %lx\n",
--			  field);
-+	if (unlikely(index >= nr_evmcs_1_fields))
- 		return -ENOENT;
--	}
- 
- 	evmcs_field = &vmcs_field_to_evmcs_1[index];
- 
-+	/*
-+	 * Use offset=0 to detect holes in eVMCS. This offset belongs to
-+	 * 'revision_id' but this field has no encoding and is supposed to
-+	 * be accessed directly.
-+	 */
-+	if (unlikely(!evmcs_field->offset))
-+		return -ENOENT;
-+
- 	if (clean_field)
- 		*clean_field = evmcs_field->clean_field;
- 
- 	return evmcs_field->offset;
- }
- 
-+#if IS_ENABLED(CONFIG_HYPERV)
-+
-+static __always_inline int get_evmcs_offset(unsigned long field,
-+					    u16 *clean_field)
-+{
-+	int offset = evmcs_field_offset(field, clean_field);
-+
-+	WARN_ONCE(offset < 0, "KVM: accessing unsupported EVMCS field %lx\n",
-+		  field);
-+
-+	return offset;
-+}
-+
- static __always_inline void evmcs_write64(unsigned long field, u64 value)
- {
- 	u16 clean_field;
--- 
-2.34.1
+  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git iommu-update=
+s-v5.17
+
+for you to fetch changes up to 66dc1b791c5839d64d261c8b40250a33e6da050b:
+
+  Merge branches 'arm/smmu', 'virtio', 'x86/amd', 'x86/vt-d' and 'core' int=
+o next (2022-01-04 10:33:45 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v5.17
+
+Including:
+
+	- Identity domain support for virtio-iommu
+
+	- Move flush queue code into iommu-dma
+
+	- Some fixes for AMD IOMMU suspend/resume support when x2apic
+	  is used
+
+	- Arm SMMU Updates from Will Deacon:
+	  - Revert evtq and priq back to their former sizes
+	  - Return early on short-descriptor page-table allocation failure
+	  - Fix page fault reporting for Adreno GPU on SMMUv2
+	  - Make SMMUv3 MMU notifier ops 'const'
+	  - Numerous new compatible strings for Qualcomm SMMUv2 implementations
+
+	- Various smaller fixes and cleanups
+
+----------------------------------------------------------------
+Christophe JAILLET (1):
+      iommu/vt-d: Use bitmap_zalloc() when applicable
+
+Dafna Hirschfeld (1):
+      iommu: Log iova range in map/unmap trace events
+
+David Heidelberg (1):
+      dt-bindings: arm-smmu: Add compatible for the SDX55 SoC
+
+Hector Martin (1):
+      iommu/io-pgtable-arm: Fix table descriptor paddr formatting
+
+Jean-Philippe Brucker (5):
+      iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
+      iommu/virtio: Support bypass domains
+      iommu/virtio: Sort reserved regions
+      iommu/virtio: Pass end address to viommu_add_mapping()
+      iommu/virtio: Support identity-mapped domains
+
+Joerg Roedel (3):
+      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/ke=
+rnel/git/will/linux into arm/smmu
+      iommu/iova: Temporarily include dma-mapping.h from iova.h
+      Merge branches 'arm/smmu', 'virtio', 'x86/amd', 'x86/vt-d' and 'core'=
+ into next
+
+John Garry via iommu (1):
+      iommu/iova: Move fast alloc size roundup into alloc_iova_fast()
+
+Kees Cook (1):
+      iommu/vt-d: Use correctly sized arguments for bit field
+
+Kefeng Wang (1):
+      iommu/vt-d: Drop duplicate check in dma_pte_free_pagetable()
+
+Lu Baolu (2):
+      iommu: Extend mutex lock scope in iommu_probe_device()
+      iommu/vt-d: Remove unused macros
+
+Matthew Wilcox (Oracle) (2):
+      iommu/amd: Use put_pages_list
+      iommu/vt-d: Use put_pages_list
+
+Maxim Levitsky (5):
+      iommu/amd: Restore GA log/tail pointer on host resume
+      iommu/amd: X2apic mode: re-enable after resume
+      iommu/amd: X2apic mode: setup the INTX registers on mask/unmask
+      iommu/amd: X2apic mode: mask/unmask interrupts on suspend/resume
+      iommu/amd: Remove useless irq affinity notifier
+
+Ma=C3=ADra Canal (1):
+      iommu/vt-d: Remove unused dma_to_mm_pfn function
+
+Paul Menzel (1):
+      iommu/amd: Fix typo in *glues =E2=80=A6 together* in comment
+
+Rikard Falkeborn (1):
+      iommu/arm-smmu-v3: Constify arm_smmu_mmu_notifier_ops
+
+Rob Clark (1):
+      iommu/arm-smmu-qcom: Fix TTBR0 read
+
+Robin Murphy (6):
+      iommu/iova: Squash entry_dtor abstraction
+      iommu/iova: Squash flush_cb abstraction
+      iommu/amd: Simplify pagetable freeing
+      iommu/iova: Consolidate flush queue code
+      iommu/iova: Move flush queue code to iommu-dma
+      iommu: Move flush queue data into iommu_dma_cookie
+
+Vinod Koul (2):
+      dt-bindings: arm-smmu: Add compatible for SM8450 SoC
+      iommu: arm-smmu-impl: Add SM8450 qcom iommu implementation
+
+Xiang wangx (1):
+      iommu/virtio: Fix typo in a comment
+
+Xiongfeng Wang (1):
+      iommu/iova: Fix race between FQ timeout and teardown
+
+Yunfei Wang (1):
+      iommu/io-pgtable-arm-v7s: Add error handle for page table allocation =
+failure
+
+Zhou Wang (1):
+      Revert "iommu/arm-smmu-v3: Decrease the queue size of evtq and priq"
+
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   2 +
+ drivers/iommu/amd/amd_iommu_types.h                |   2 -
+ drivers/iommu/amd/init.c                           | 109 ++++----
+ drivers/iommu/amd/io_pgtable.c                     | 110 +++------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |   2 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |   5 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   3 +-
+ drivers/iommu/dma-iommu.c                          | 274 ++++++++++++++++-=
+----
+ drivers/iommu/intel/iommu.c                        | 111 +++------
+ drivers/iommu/io-pgtable-arm-v7s.c                 |   6 +-
+ drivers/iommu/io-pgtable-arm.c                     |   9 +-
+ drivers/iommu/iommu.c                              |   3 +-
+ drivers/iommu/iova.c                               | 209 +---------------
+ drivers/iommu/virtio-iommu.c                       | 115 +++++++--
+ drivers/vdpa/vdpa_user/iova_domain.c               |   8 -
+ include/linux/intel-svm.h                          |   6 -
+ include/linux/iommu.h                              |   3 +-
+ include/linux/iova.h                               |  68 +----
+ include/trace/events/iommu.h                       |  10 +-
+ include/uapi/linux/virtio_iommu.h                  |   8 +-
+ 20 files changed, 493 insertions(+), 570 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--d8vwtHnKPut+5Js9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmHfCZcACgkQK/BELZcB
+GuPYbA/8DJ3UDORB+m9PPRo59QhfMsTtrJVMNxPUYan3Nfoz+l6K8QZc8lMVG6xY
+TN7I9ptXi0TdZHbGUA/1YKgZlkXqQj60K9YK/0TBkwB/MwN2utQigbjZSRQPT3Zd
+2D6y+mnMSX+j+mCWtwpttJkgriUPtk7eDkK2ur3Ex2QocfBnH1ObuL0ufQrj5XN8
+A68YMLfl3bhn6X9RAuxBh15RZXHYyk7AK1NIFOxY4tKFiSk18QRl1y3in8o39kV2
+lkDs4ggjh+TgE65+1Rrx1Cl9FV3kbwrkAkBVCKtyQjuPsYRZpw38bg1JWOg4imSY
+sp9AXkJdmmFPECdEcE82++CCDp00S89Hh3NgoAhuhLD75h4zV2puYUdv6FgFOBif
+bSZq3/Q7psQ9cjsamkjv8fq7gfqQHGS6P3g5Wtm/MGV4Ksv/dE9MnUcdszqpVVdr
+9Hq1Fd/OvRDaqnuDIPRRTvzD5EbrnVBAEsXHXQEkZWNvlmPRnyfAnCgC5F4/6pw5
+U2w8acAk9sFZHgtEEJK/GqvMGsmZ+Z9P58EXWpZz9/ovwQNpg/LtZp9bLG7cA8vM
+xHe+HpJoEBMjZhaqVrngLBUjntZGac9aq35JRCd7/VlBD3qlEvLiQaAV6uWfomJG
+FweCzpso0Q18sxH+bqOx0b2tFXYTsCylbvygZJqLSbMiU2Jfrio=
+=gWcn
+-----END PGP SIGNATURE-----
+
+--d8vwtHnKPut+5Js9--
