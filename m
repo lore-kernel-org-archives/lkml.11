@@ -2,85 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F34C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F45C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352751AbiALLGc (ORCPT
+        id S1352763AbiALLIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 06:06:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352738AbiALLGa (ORCPT
+        Wed, 12 Jan 2022 06:08:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41442 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237651AbiALLIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 06:06:30 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97823C06173F;
-        Wed, 12 Jan 2022 03:06:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=nv9oEebndkSiqv8pTcj7NImvDdA6KxSCBwjzUgND6Ac=; b=taEKJ6bDdHze7bETZnYl9/7wDa
-        i1PB5dTa9T6SL6KmLnXcEdUBEYRvwYZrthrA3g0T1QrqulikClYv9M9HvbNDcUVJb2H7n7NdLliLW
-        IjvOI145W5idiyDI878zCLuASw1nGZxjQgo3mBCuEYVAOyyT3v4NjAfBpVvre+S50zbLfIN+ncqLF
-        EdYH9w6eiC1i03M8nm/At/P5M5zsSY6mqDCtZhyXCJ6G8EtJh7hiXfnaujw8dwc5bThZeAgfc8RhL
-        bl2P43CB+lVqBXcekr+4SfEOyavXzuvyo6bi97AI529TiCHN3jeX+vfa5JU/RHAEW/P2OWsK8Zi94
-        z5mbKIDA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7bSA-0042n8-MV; Wed, 12 Jan 2022 11:06:07 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 4C2FB3001CD;
-        Wed, 12 Jan 2022 12:06:04 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2C9542B33EC0E; Wed, 12 Jan 2022 12:06:04 +0100 (CET)
-Date:   Wed, 12 Jan 2022 12:06:04 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Eric Biggers <ebiggers@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Wed, 12 Jan 2022 06:08:48 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 416AF61744;
+        Wed, 12 Jan 2022 11:08:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2423C36AE9;
+        Wed, 12 Jan 2022 11:08:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641985727;
+        bh=g4TvSOUEifbHDFsfuXP1XTIJ9SHq2ApknF9J8gPzf1w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NT9pKrhc7d9PNADi6t1tdi/jU0XXRogTOhGVezq27DEkxXmBJQkYdIpb/CyVbpdRh
+         9DVNj8MIjdNkzb04r5CzjqArJBLq1WKRDVYnFWmD7zno52jR5sQIiBzR/dQJN1jjUX
+         F92BrQZwI0y7yaZDuS32qEjiULQ39YdL47xKTOOpYRKMgW9AAm11ZQ1grY7rrgmwF5
+         yxy50LD28I92l/TXa9KQTwwBhkbVr6BncE5SVt0408gFnjUhUELE6WBUFalbhBGyck
+         LEOzt0voGuBVRoerR5M4CXl8a3CUNewUUUP3XTg3tjLNP94D3zh1DmvzbBMCHUWDT0
+         P9AZxeuNiAgog==
+Date:   Wed, 12 Jan 2022 20:08:40 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        syzbot <syzbot+cdb5dd11c97cc532efad@syzkaller.appspotmail.com>
-Subject: Re: [PATCH v2 1/1] psi: Fix uaf issue when psi trigger is destroyed
- while being polled
-Message-ID: <Yd62HBixfq6jn6jR@hirez.programming.kicks-ass.net>
-References: <20220111071212.1210124-1-surenb@google.com>
- <Yd3RClhoz24rrU04@sol.localdomain>
- <CAHk-=wgwb6pJjvHYmOMT-yp5RYvw0pbv810Wcxdm5S7dWc-s0g@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wgwb6pJjvHYmOMT-yp5RYvw0pbv810Wcxdm5S7dWc-s0g@mail.gmail.com>
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH 0/6] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-Id: <20220112200840.a035b3b001d2e207e6a2d885@kernel.org>
+In-Reply-To: <20220112163353.4da6a6b9c6eef69dbda50324@kernel.org>
+References: <20220104080943.113249-1-jolsa@kernel.org>
+        <164191321766.806991.7930388561276940676.stgit@devnote2>
+        <20220111223944.jbi3mxedwifxwyz5@ast-mbp.lan>
+        <20220112163353.4da6a6b9c6eef69dbda50324@kernel.org>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 11:11:32AM -0800, Linus Torvalds wrote:
+On Wed, 12 Jan 2022 16:33:53 +0900
+Masami Hiramatsu <mhiramat@kernel.org> wrote:
 
-> Of course, in practice, for pointers, the whole "dereference off a
-> pointer" on the read side *does* imply a barrier in all relevant
-> situations. So yes, a smp_store_release() -> READ_ONCE() does work in
-> practice, although it's technically wrong (in particular, it's wrong
-> on alpha, because of the completely broken memory ordering that alpha
-> has that doesn't even honor data dependencies as read-side orderings)
+> Hi Alexei,
+> 
+> On Tue, 11 Jan 2022 14:39:44 -0800
+> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> 
+> > On Wed, Jan 12, 2022 at 12:00:17AM +0900, Masami Hiramatsu wrote:
+> > > Hi Jiri,
+> > > 
+> > > Here is a short series of patches, which shows what I replied
+> > > to your series.
+> > > 
+> > > This introduces the fprobe, the function entry/exit probe with
+> > > multiple probe point support. This also introduces the rethook
+> > > for hooking function return, which I cloned from kretprobe.
+> > > 
+> > > I also rewrite your [08/13] bpf patch to use this fprobe instead
+> > > of kprobes. I didn't tested that one, but the sample module seems
+> > > to work. Please test bpf part with your libbpf updates.
+> > > 
+> > > BTW, while implementing the fprobe, I introduced the per-probe
+> > > point private data, but I'm not sure why you need it. It seems
+> > > that data is not used from bpf...
+> > > 
+> > > If this is good for you, I would like to proceed this with
+> > > the rethook and rewrite the kretprobe to use the rethook to
+> > > hook the functions. That should be much cleaner (and easy to
+> > > prepare for the fgraph tracer integration)
+> > 
+> > What is the speed of attach/detach of thousands fprobes?
+> 
+> I've treaked my example module and it shows below result;
+> 
+> /lib/modules/5.16.0-rc4+/kernel/samples/fprobe # time insmod ./fprobe_example.ko
+>  symbol='btrfs_*'
+> [  187.095925] fprobe_init: 1028 symbols found
+> [  188.521694] fprobe_init: Planted fprobe at btrfs_*
+> real	0m 1.47s
+> user	0m 0.00s
+> sys	0m 1.36s
+> 
+> I think using ftrace_set_filter_ips() can make it faster.
+> (maybe it needs to drop per-probe point private data, that
+> prevents fprobe to use that interface)
 
-On a tangent, that actually works, even on Alpha, see commit
-d646285885154 ("alpha: Override READ_ONCE() with barriered
-implementation").
+OK, I've updated fprobes to use the ftrace_set_filter_ips()
+and got below result.
+
+/lib/modules/5.16.0-rc4+/kernel/samples/fprobe # time insmod fprobe_example.ko s
+ymbol='btrfs_*' 
+[   36.130947] fprobe_init: 1028 symbols found
+[   36.177901] fprobe_init: Planted fprobe at btrfs_*
+real	0m 0.08s
+user	0m 0.00s
+sys	0m 0.07s
+
+Let me update the series :)
+
+Thank you,
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
