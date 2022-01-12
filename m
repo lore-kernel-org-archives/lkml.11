@@ -2,170 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8742C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 16:16:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355018AbiALQQ2 (ORCPT
+        id S1355097AbiALQQu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 11:16:28 -0500
-Received: from foss.arm.com ([217.140.110.172]:33030 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355064AbiALQO6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 11:14:58 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7A7EA1FB;
-        Wed, 12 Jan 2022 08:14:57 -0800 (PST)
-Received: from localhost.localdomain (unknown [10.57.10.212])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D8DE63F774;
-        Wed, 12 Jan 2022 08:14:55 -0800 (PST)
-From:   Vincent Donnefort <vincent.donnefort@arm.com>
-To:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org
-Cc:     linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        valentin.schneider@arm.com, morten.rasmussen@arm.com,
-        chris.redpath@arm.com, qperret@google.com, lukasz.luba@arm.com,
-        Vincent Donnefort <vincent.donnefort@arm.com>
-Subject: [PATCH v2 7/7] sched/fair: Remove the energy margin in feec()
-Date:   Wed, 12 Jan 2022 16:12:30 +0000
-Message-Id: <20220112161230.836326-8-vincent.donnefort@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220112161230.836326-1-vincent.donnefort@arm.com>
-References: <20220112161230.836326-1-vincent.donnefort@arm.com>
+        Wed, 12 Jan 2022 11:16:50 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:44692 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349703AbiALQQQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 11:16:16 -0500
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 706B9340;
+        Wed, 12 Jan 2022 17:16:14 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1642004174;
+        bh=OdCAYVxPGlGzBjJAZfdEDoFg3tAUV2S7TAulIDIH1/4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Cq6UNLnQQofhxWavfthLkNvC9nq+hh0uoxJZUKyGNb0mjrgMMzXkzRt2fAFtspjcU
+         Afki/DBJOkfSJMgF5RhAMmJ2+uwvZ6hA33BnJX9WW6+CMoPcQzk6oGfeVkIvvoP1U0
+         fpcgnCXztW+Dug2i+lQ0nZRHAyORqG2XbbIWV7kI=
+Date:   Wed, 12 Jan 2022 18:16:03 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Cc:     linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mchehab@kernel.org, dave.stevenson@raspberrypi.com
+Subject: Re: [PATCH 1/3] media: doc: pixfmt-yuv: Fix V4L2-PIX-FMT-Y10P format
+Message-ID: <Yd7+wz4tMDppKRro@pendragon.ideasonboard.com>
+References: <20220112161014.972076-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220112161014.972076-2-jeanmichel.hautbois@ideasonboard.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220112161014.972076-2-jeanmichel.hautbois@ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-find_energy_efficient_cpu() integrates a margin to protect tasks from
-bouncing back and forth from a CPU to another. This margin is set as being
-6% of the total current energy estimated on the system. This however does
-not work for two reasons:
+Hi Jean-Michel,
 
-1. The energy estimation is not a good absolute value:
+Thank you for the patch.
 
-The function, compute_energy() used in feec() is a good estimation for
-task placement as it allows to compare the energy with and without a task.
-The computed delta will give a good overview of the cost for a certain
-task placement. It, however, doesn't work as an absolute estimation for
-the total energy of the system. First it adds the contribution to idle
-CPUs into the energy, second it mixes util_avg with util_est values.
-util_avg represents integrates the near history for a CPU usage,
-it doesn't tell at all what the current utilization is. A system that has
-been quite busy in the near past will hold a very high energy and then a
-high margin preventing any task migration to a lower capacity CPU, wasting
-energy. It even creates a negative feedback loop: by holding the tasks on
-a less efficient CPU, the margin contributes in keeping the energy high.
+On Wed, Jan 12, 2022 at 05:10:12PM +0100, Jean-Michel Hautbois wrote:
+> This packed grey-scale image format has a depth of 10 bits per pixel.
+> Every four consecutive pixels are packed into 5 bytes. Each of the first
+> 4 bytes contain the 8 high order bits of the pixels, and the 5th byte
+> contains the 2 least significants bits of each pixel, in the same order.
+> 
+> The first two bytes are not corresponding to this description, fix it.
+> 
+> Fixes: af4f45057695 ("media: doc: pixfmt-yuv: Move all luma-only YUV formats to common file")
+> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
 
-2. The margin handicaps small tasks:
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-On a system where the workload is composed mostly of small tasks (which is
-often the case on Android), the overall energy will be high enough to
-create a margin none of those tasks can cross. e.g. On a Pixel4, a small
-utilization of 5% on all the CPUs creates a global estimated energy of 140
-joules, as per the Energy Model declaration of that same device. This
-means, after applying the 6% margin that any migration must save more than
-8 joules to happen. No task with a utilization lower than 40 would then be
-able to migrate away from the biggest CPU of the system.
+> ---
+>  Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst
+> index 91942c4f0967..8ebd58c3588f 100644
+> --- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst
+> +++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-luma.rst
+> @@ -75,8 +75,8 @@ are often referred to as greyscale formats.
+>        - ``V4L2_PIX_FMT_Y10P``
+>        - 'Y10P'
+>  
+> -      - Y'\ :sub:`0`\ [7:0]
+> -      - Y'\ :sub:`1`\ [9:8]
+> +      - Y'\ :sub:`0`\ [9:2]
+> +      - Y'\ :sub:`1`\ [9:2]
+>        - Y'\ :sub:`2`\ [9:2]
+>        - Y'\ :sub:`3`\ [9:2]
+>        - Y'\ :sub:`3`\ [1:0] Y'\ :sub:`2`\ [1:0] Y'\ :sub:`1`\ [1:0] Y'\ :sub:`0`\ [1:0]
 
-The 6% of the overall system energy was brought by the following patch:
-
- (eb92692b2544 sched/fair: Speed-up energy-aware wake-ups)
-
-It was previously 6% of the prev_cpu energy. Also, the following one
-made this margin value conditional on the clusters where the task fits:
-
- (8d4c97c105ca sched/fair: Only compute base_energy_pd if necessary)
-
-We could simply revert that margin change to what it was, but the original
-version didn't have strong grounds neither and as demonstrated in (1.) the
-estimated energy isn't a good absolute value. Instead, removing it
-completely. It is indeed, made possible by recent changes that improved
-energy estimation comparison fairness (sched/fair: Remove task_util from
-effective utilization in feec()) (PM: EM: Increase energy calculation
-precision) and task utilization stabilization (sched/fair: Decay task
-util_avg during migration)
-
-Without a margin, we could have feared bouncing between CPUs. But running
-LISA's eas_behaviour test coverage on three different platforms (Hikey960,
-RB-5 and DB-845) showed no issue and even fixed previously known failures.
-
-Removing the energy margin enables more energy-optimized placements for a
-more energy efficient system.
-
-Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index efb2e0739015..c8d100decbae 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6694,7 +6694,6 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	struct root_domain *rd = cpu_rq(smp_processor_id())->rd;
- 	int cpu, best_energy_cpu = prev_cpu, target = -1;
- 	unsigned long cpu_cap, cpu_thermal_cap, util;
--	unsigned long base_energy = 0;
- 	struct sched_domain *sd;
- 	struct perf_domain *pd;
- 
-@@ -6724,8 +6723,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	for (; pd; pd = pd->next) {
- 		unsigned long cur_delta, spare_cap, max_spare_cap = 0;
- 		bool compute_prev_delta = false;
--		unsigned long base_energy_pd;
- 		int max_spare_cap_cpu = -1;
-+		unsigned long base_energy;
- 
- 		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
- 
-@@ -6778,9 +6777,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 		/* Compute the 'base' energy of the pd, without @p */
- 		busy_time = get_pd_busy_time(p, cpus, pd_cap);
- 		max_util = get_pd_max_util(p, -1, cpus, cpu_thermal_cap);
--		base_energy_pd = compute_energy(pd, max_util, busy_time,
--						cpu_thermal_cap);
--		base_energy += base_energy_pd;
-+		base_energy = compute_energy(pd, max_util, busy_time,
-+					     cpu_thermal_cap);
- 
- 		/* Take task into account for the next energy computations */
- 		busy_time = min(pd_cap, busy_time + tsk_busy_time);
-@@ -6791,9 +6789,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 						   cpu_thermal_cap);
- 			prev_delta = compute_energy(pd, max_util, busy_time,
- 						    cpu_thermal_cap);
--			if (prev_delta < base_energy_pd)
-+			if (prev_delta < base_energy)
- 				goto unlock;
--			prev_delta -= base_energy_pd;
-+			prev_delta -= base_energy;
- 			best_delta = min(best_delta, prev_delta);
- 		}
- 
-@@ -6803,9 +6801,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 						   cpu_thermal_cap);
- 			cur_delta = compute_energy(pd, max_util, busy_time,
- 						   cpu_thermal_cap);
--			if (cur_delta < base_energy_pd)
-+			if (cur_delta < base_energy)
- 				goto unlock;
--			cur_delta -= base_energy_pd;
-+			cur_delta -= base_energy;
- 			if (cur_delta < best_delta) {
- 				best_delta = cur_delta;
- 				best_energy_cpu = max_spare_cap_cpu;
-@@ -6814,12 +6812,7 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
- 	}
- 	rcu_read_unlock();
- 
--	/*
--	 * Pick the best CPU if prev_cpu cannot be used, or if it saves at
--	 * least 6% of the energy used by prev_cpu.
--	 */
--	if ((prev_delta == ULONG_MAX) ||
--	    (prev_delta - best_delta) > ((prev_delta + base_energy) >> 4))
-+	if (best_delta < prev_delta)
- 		target = best_energy_cpu;
- 
- 	return target;
 -- 
-2.25.1
+Regards,
 
+Laurent Pinchart
