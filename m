@@ -2,195 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 03:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE7BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 03:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349059AbiALDGf (ORCPT
+        id S1345659AbiALDNW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 22:06:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45142 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1347731AbiALDGe (ORCPT
+        Tue, 11 Jan 2022 22:13:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344747AbiALDNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 22:06:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1641956794;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=hLUxMC+s0pjFSC8kaV/VAZ/OjH+3iQwtRfE6QrexVRQ=;
-        b=CbTvkKSwsGdKG6kpTLJugZ4XuOeJRudt5m7p30PWh49X2QCCdY1VplQLLGURauvcEkTCDv
-        RZ+Ooy8AfZl9Hrst5UzgFmJFDdMJGSLVp0pJY2VZrpsFwwrYjd8tVWnQECWUE6O0ptjm7k
-        HhWt2f9IjShz8JcRf8EBoRDkaIiawEA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-BVlO2JIgPpuRso4p7ARE6A-1; Tue, 11 Jan 2022 22:06:31 -0500
-X-MC-Unique: BVlO2JIgPpuRso4p7ARE6A-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97F321853028;
-        Wed, 12 Jan 2022 03:06:29 +0000 (UTC)
-Received: from T590 (ovpn-8-16.pek2.redhat.com [10.72.8.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7C73E5E24E;
-        Wed, 12 Jan 2022 03:05:58 +0000 (UTC)
-Date:   Wed, 12 Jan 2022 11:05:54 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Yu Kuai <yukuai3@huawei.com>
-Cc:     mkoutny@suse.com, paulmck@kernel.org, tj@kernel.org,
-        axboe@kernel.dk, cgroups@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yi.zhang@huawei.com
-Subject: Re: [PATCH v6 2/2] block: cancel all throttled bios in del_gendisk()
-Message-ID: <Yd5FkuhYX9YcgQkZ@T590>
-References: <20220110134758.2233758-1-yukuai3@huawei.com>
- <20220110134758.2233758-3-yukuai3@huawei.com>
+        Tue, 11 Jan 2022 22:13:20 -0500
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 730BCC06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 19:13:20 -0800 (PST)
+Received: by mail-pj1-x102e.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso9097667pjo.5
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 19:13:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lMp0AuFrBq5xGQqZoI/ZrkPZbEyEn6AhnpJj2DbBjCM=;
+        b=GQniuv9oc4KtjDonXPrUSbIKvv8NMf6WFS+VcKz2WAHgB/6RVHUWXVi6xg3Pw0RKHG
+         Ebf0a+QqcsTsaVOh5dS0Ng8DlsuExFsuSwwJBmyvSauGJIJYEe3F4NT7X/1F3bMil+zN
+         oQ6gBd1TrsRImoaakAuT6fRCs5nIYw6rRMiPuwMlYUR8jFlopraQLao2KLe2v+rs7mL7
+         Y4PEoiEHc/a5z35DRD5+gTCu62w2SPOKwLamxV+evNp9Hr/qMCDPIHH2LJ10mgX34DMP
+         Se87/iO01J8LrDJNoIx6ZqXa8Dmwb2jeJrCxymHya3Pe40JG5VVpi7yWWWjbXGyG5wL5
+         EtBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lMp0AuFrBq5xGQqZoI/ZrkPZbEyEn6AhnpJj2DbBjCM=;
+        b=KYqJZNP9bGotm9FgWFVYEy0lAmSgXhMzkxonMhlm2MnGzA2/efSiPF9GXFHgpac8oh
+         QvkaTRH0Fmf/Vc7D+XwgYyGwe2CQ+TmYMENRYmu4bgk0rbHn0FKd0CdcJhfDwNuGV5+h
+         NLL0NlFF3+yKBbw9G0Xtw2o6xAioPrW7xcQtHKiDqQcp18tvE/I6ub5jr6D/4VeASGG+
+         Ay/HfxYbi65QWGsXMOj0ZSpj/pz3pJbD0ZPBO9iNAnInyooCcDfbqjim77SZEE9ZHF7Z
+         +eYob9bD1M51JBu7rFOE7WF8QqfrIkQUQs+TpXpvx4LYL1WczZqc6zZaJFvS2Z4prs31
+         n76w==
+X-Gm-Message-State: AOAM532zBVCAr6sWVy3juHwaROnR1d7bKwJSytwd9wFNZoOrbrbfZtnv
+        Hme7EWHLEF7Zl61SWZFoASaCm81HRPdPDFkIJpo=
+X-Google-Smtp-Source: ABdhPJxBHaM2ADWHiLcbn0AwuEkmmSyxSY4gA361sgkVgEqpE9S7UIZMvYwAfeKyIriTNj+5T7szv6BdAgT6a183YRU=
+X-Received: by 2002:a63:7f55:: with SMTP id p21mr5736397pgn.338.1641957199936;
+ Tue, 11 Jan 2022 19:13:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110134758.2233758-3-yukuai3@huawei.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+References: <20211101044955.2295495-1-goldstein.w.n@gmail.com>
+ <20211117210245.843374-1-goldstein.w.n@gmail.com> <bc0297a1b97a4b129fa3ea1b155f6062@AcuMS.aculab.com>
+ <CAFUsyfJTuFjVXHMgYi0uggVNW=1WW1uVYa7avVjW5VBb2cmAkQ@mail.gmail.com>
+ <e41913010e61429bbd2980a5c5ccfb39@AcuMS.aculab.com> <CAFUsyfLUQLj5py1AQ+4NptM6htWxV5i0qxkeXDUdFPfAnqRY2w@mail.gmail.com>
+ <CAFUsyfKrGhTHoC+MXiA3zFY-dT0wqPRxoJwMY=+uPbj0p0dDAg@mail.gmail.com>
+In-Reply-To: <CAFUsyfKrGhTHoC+MXiA3zFY-dT0wqPRxoJwMY=+uPbj0p0dDAg@mail.gmail.com>
+From:   Noah Goldstein <goldstein.w.n@gmail.com>
+Date:   Tue, 11 Jan 2022 21:13:09 -0600
+Message-ID: <CAFUsyfJQq5n12L-fCsagk5LOqLYXL+3BAORHDCXY-Ud1t2CVDg@mail.gmail.com>
+Subject: Re: [PATCH v4] arch/x86: Improve 'rep movs{b|q}' usage in memmove_64.S
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "tglx@linutronix.de" <tglx@linutronix.de>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org" <x86@kernel.org>,
+        "hpa@zytor.com" <hpa@zytor.com>,
+        "luto@kernel.org" <luto@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Yu Kuai,
-
-On Mon, Jan 10, 2022 at 09:47:58PM +0800, Yu Kuai wrote:
-> Throttled bios can't be issued after del_gendisk() is done, thus
-> it's better to cancel them immediately rather than waiting for
-> throttle is done.
-> 
-> For example, if user thread is throttled with low bps while it's
-> issuing large io, and the device is deleted. The user thread will
-> wait for a long time for io to return.
-> 
-> Noted this patch is mainly from revertion of commit 32e3374304c7
-> ("blk-throttle: remove tg_drain_bios") and commit b77412372b68
-> ("blk-throttle: remove blk_throtl_drain").
-> 
-> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
-> ---
->  block/blk-throttle.c | 77 ++++++++++++++++++++++++++++++++++++++++++++
->  block/blk-throttle.h |  2 ++
->  block/genhd.c        |  2 ++
->  3 files changed, 81 insertions(+)
-
-Just wondering why not take the built-in way in throtl_upgrade_state() for
-canceling throttled bios? Something like the following, then we can avoid
-to re-invent the wheel.
-
- block/blk-throttle.c | 38 +++++++++++++++++++++++++++++++-------
- block/blk-throttle.h |  2 ++
- block/genhd.c        |  3 +++
- 3 files changed, 36 insertions(+), 7 deletions(-)
-
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index cf7e20804f1b..17e56b2e44c4 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -1816,16 +1816,11 @@ static void throtl_upgrade_check(struct throtl_grp *tg)
- 		throtl_upgrade_state(tg->td);
- }
- 
--static void throtl_upgrade_state(struct throtl_data *td)
-+static void __throtl_cancel_bios(struct throtl_data *td)
- {
- 	struct cgroup_subsys_state *pos_css;
- 	struct blkcg_gq *blkg;
- 
--	throtl_log(&td->service_queue, "upgrade to max");
--	td->limit_index = LIMIT_MAX;
--	td->low_upgrade_time = jiffies;
--	td->scale = 0;
--	rcu_read_lock();
- 	blkg_for_each_descendant_post(blkg, pos_css, td->queue->root_blkg) {
- 		struct throtl_grp *tg = blkg_to_tg(blkg);
- 		struct throtl_service_queue *sq = &tg->service_queue;
-@@ -1834,12 +1829,41 @@ static void throtl_upgrade_state(struct throtl_data *td)
- 		throtl_select_dispatch(sq);
- 		throtl_schedule_next_dispatch(sq, true);
- 	}
--	rcu_read_unlock();
- 	throtl_select_dispatch(&td->service_queue);
- 	throtl_schedule_next_dispatch(&td->service_queue, true);
- 	queue_work(kthrotld_workqueue, &td->dispatch_work);
- }
- 
-+void blk_throtl_cancel_bios(struct request_queue *q)
-+{
-+	struct cgroup_subsys_state *pos_css;
-+	struct blkcg_gq *blkg;
-+
-+	rcu_read_lock();
-+	spin_lock_irq(&q->queue_lock);
-+	__throtl_cancel_bios(q->td);
-+	spin_unlock_irq(&q->queue_lock);
-+	rcu_read_unlock();
-+
-+	blkg_for_each_descendant_post(blkg, pos_css, q->root_blkg)
-+		del_timer_sync(&blkg_to_tg(blkg)->service_queue.pending_timer);
-+	del_timer_sync(&q->td->service_queue.pending_timer);
-+
-+	throtl_shutdown_wq(q);
-+}
-+
-+static void throtl_upgrade_state(struct throtl_data *td)
-+{
-+	throtl_log(&td->service_queue, "upgrade to max");
-+	td->limit_index = LIMIT_MAX;
-+	td->low_upgrade_time = jiffies;
-+	td->scale = 0;
-+
-+	rcu_read_lock();
-+	__throtl_cancel_bios(td);
-+	rcu_read_unlock();
-+}
-+
- static void throtl_downgrade_state(struct throtl_data *td)
- {
- 	td->scale /= 2;
-diff --git a/block/blk-throttle.h b/block/blk-throttle.h
-index b23a9f3abb82..525ac607c518 100644
---- a/block/blk-throttle.h
-+++ b/block/blk-throttle.h
-@@ -162,11 +162,13 @@ static inline int blk_throtl_init(struct request_queue *q) { return 0; }
- static inline void blk_throtl_exit(struct request_queue *q) { }
- static inline void blk_throtl_register_queue(struct request_queue *q) { }
- static inline bool blk_throtl_bio(struct bio *bio) { return false; }
-+static inline void blk_throtl_cancel_bios(struct request_queue *q) {}
- #else /* CONFIG_BLK_DEV_THROTTLING */
- int blk_throtl_init(struct request_queue *q);
- void blk_throtl_exit(struct request_queue *q);
- void blk_throtl_register_queue(struct request_queue *q);
- bool __blk_throtl_bio(struct bio *bio);
-+void blk_throtl_cancel_bios(struct request_queue *q);
- static inline bool blk_throtl_bio(struct bio *bio)
- {
- 	struct throtl_grp *tg = blkg_to_tg(bio->bi_blkg);
-diff --git a/block/genhd.c b/block/genhd.c
-index 626c8406f21a..1395cbd8eacf 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -30,6 +30,7 @@
- #include "blk.h"
- #include "blk-mq-sched.h"
- #include "blk-rq-qos.h"
-+#include "blk-throttle.h"
- 
- static struct kobject *block_depr;
- 
-@@ -622,6 +623,8 @@ void del_gendisk(struct gendisk *disk)
- 
- 	blk_mq_freeze_queue_wait(q);
- 
-+	blk_throtl_cancel_bios(q);
-+
- 	rq_qos_exit(q);
- 	blk_sync_queue(q);
- 	blk_flush_integrity();
-
-Thanks,
-Ming
-
+On Fri, Dec 10, 2021 at 12:35 PM Noah Goldstein <goldstein.w.n@gmail.com> wrote:
+>
+> On Fri, Nov 19, 2021 at 6:05 PM Noah Goldstein <goldstein.w.n@gmail.com> wrote:
+> >
+> > On Fri, Nov 19, 2021 at 4:31 PM David Laight <David.Laight@aculab.com> wrote:
+> > >
+> > > From: Noah Goldstein
+> > > > Sent: 17 November 2021 22:45
+> > > >
+> > > > On Wed, Nov 17, 2021 at 4:31 PM David Laight <David.Laight@aculab.com> wrote:
+> > > > >
+> > > > > From: Noah Goldstein
+> > > > > > Sent: 17 November 2021 21:03
+> > > > > >
+> > > > > > Add check for "short distance movsb" for forwards FSRM usage and
+> > > > > > entirely remove backwards 'rep movsq'. Both of these usages hit "slow
+> > > > > > modes" that are an order of magnitude slower than usual.
+> > > > > >
+> > > > > > 'rep movsb' has some noticeable VERY slow modes that the current
+> > > > > > implementation is either 1) not checking for or 2) intentionally
+> > > > > > using.
+> > > > >
+> > > > > How does this relate to the decision that glibc made a few years
+> > > > > ago to use backwards 'rep movs' for non-overlapping copies?
+> > > >
+> > > > GLIBC doesn't use backwards `rep movs`.  Since the regions are
+> > > > non-overlapping it just uses forward copy. Backwards `rep movs` is
+> > > > from setting the direction flag (`std`) and is a very slow byte
+> > > > copy. For overlapping regions where backwards copy is necessary GLIBC
+> > > > uses 4x vec copy loop.
+> > >
+> > > Try to find this commit 6fb8cbcb58a29fff73eb2101b34caa19a7f88eba
+> > >
+> > > Or follow links from https://www.win.tue.nl/~aeb/linux/misc/gcc-semibug.html
+> > > But I can't find the actual patch.
+> > >
+> > > The claims were a massive performance increase for the reverse copy.
+> > >
+> >
+> > I don't think that's referring to optimizations around `rep movs`. It
+> > appears to be referring to fallout from this patch:
+> > https://sourceware.org/git/?p=glibc.git;a=commit;h=6fb8cbcb58a29fff73eb2101b34caa19a7f88eba
+> >
+> > which broken programs misusing `memcpy` with overlapping regions
+> > resulting in this fix:
+> > https://sourceware.org/git/?p=glibc.git;a=commit;h=0354e355014b7bfda32622e0255399d859862fcd
+> >
+> > AFAICT support for ERMS was only added around:
+> > https://sourceware.org/git/?p=glibc.git;a=commit;h=13efa86ece61bf84daca50cab30db1b0902fe2db
+> >
+> > Either way GLIBC memcpy/memmove moment most certainly does not
+> > use backwards `rep movs`:
+> > https://sourceware.org/git/?p=glibc.git;a=blob;f=sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S;hb=HEAD#l655
+> >
+> > as it is very slow.
+> >
+> > > The pdf from www.agner.org/optimize may well indicate why some
+> > > copies are unexpectedly slow due to cache access aliasing.
+> >
+> > Even in the `4k` aliasing case `rep movsb` seems to stay within a
+> > factor of 2 of optimal whereas the `std` backwards `rep movs` loses
+> > by a factor of 10.
+> >
+> > Either way, `4k` aliasing detection is mostly a concern of `memcpy` as
+> > the direction of copy for `memmove` is a correctness question, not
+> > an optimization.
+> >
+> >
+> > >
+> > > I'm pretty sure that Intel cpu (possibly from Ivy bridge onwards)
+> > > can be persuaded to copy 8 bytes/clock for in-cache data with
+> > > a fairly simple loop that contains 2 reads (maybe misaligned)
+> > > and two writes (so 16 bytes per iteration).
+> > > Extra unrolling just adds extra code top and bottom.
+> > >
+> > > You might want a loop like:
+> > >         1:      mov     0(%rsi, %rcx),%rax
+> > >                 mov     8(%rsi, %rcx),%rdx
+> > >                 mov     %rax, 0(%rdi, %rcx)
+> > >                 mov     %rdx, 8(%rdi, %rcx)
+> > >                 add     $16, %rcx
+> > >                 jnz     1b
+> > >
+> > >         David
+> >
+> > The backwards loop already has 4x unrolled `movq` loop.
+> ping.
+ping.
+> >
+> > >
+> > > -
+> > > Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> > > Registration No: 1397386 (Wales)
