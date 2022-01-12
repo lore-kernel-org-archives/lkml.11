@@ -2,215 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BAEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA344C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 19:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357000AbiALTMn (ORCPT
+        id S1356730AbiALTOB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 14:12:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56570 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356580AbiALTLD (ORCPT
+        Wed, 12 Jan 2022 14:14:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59478 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356931AbiALTMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 14:11:03 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56091C034006
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:10:53 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id pf13so7157324pjb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:10:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qd5a2B0ip3fULpJ1DZrsnaBBb6FqNJMWcCoIY/W/VSc=;
-        b=D6BUJOkmtpJJhZuLChTEtOEAGIQGcpfgsHJTHL80dan/59ohTceka14COtqTY1St3i
-         CoVanYvfa/KB03pkaVjUtl7j3Z36u9z7FOP3PO087ZqzkvJJzdRWYULTjFfzkj+azySt
-         1Be5E41sXlpPQ8QqeHbdzvQ77aT0bfINqWW38=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Qd5a2B0ip3fULpJ1DZrsnaBBb6FqNJMWcCoIY/W/VSc=;
-        b=fugHs+qGs+LjYJhQc2yX16ssESiy66Wc7dLjcEGbklUCrll6Nirb3kEICBvdYHtjHd
-         gaxmF8Fm1iZF7VMDys6w0ZCqXnAs1pNSCNwilCWHsE4t4wY6vwzdx0GlQwagJS0hoDWv
-         UUPNKfEQr5sYvLGNj5WBXv45E+txnjtwbR0oQa3ot7tZzsu0wghLmMiMlikO65MSgJnJ
-         WprVR9iccqk/xY50kAlGJ/Qe/CNLa0q/7MKY1+FgEcntfhoHC5u+J818DbPKmffN3Rol
-         Irbp1KaBCQKtYyKy35ks47va9yJrFAzAIoPMKZY5lXDbqRREYLCVXrPrjjvrQKaaKyaN
-         WH8g==
-X-Gm-Message-State: AOAM5333x8pHMSjMhKWxtp7GQwAdJnDJAtRzEOsZJtbxDPwOIjRVW4WI
-        1hCq+IMxiAmxpZf94kWUqgmkGA==
-X-Google-Smtp-Source: ABdhPJw/GrcChoGhBaCQx+Ejq7T+8K5OKw0iuBjEUZ1mnskY93Haj2+l5G2DexCj3NeQS9aAmdkVcw==
-X-Received: by 2002:a63:491a:: with SMTP id w26mr973314pga.110.1642014652812;
-        Wed, 12 Jan 2022 11:10:52 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:f6eb:5b26:28c:1ca5])
-        by smtp.gmail.com with UTF8SMTPSA id l22sm340340pfc.167.2022.01.12.11.10.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 12 Jan 2022 11:10:52 -0800 (PST)
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Bastien Nocera <hadess@hadess.net>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Peter Chen <peter.chen@kernel.org>,
-        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
-        linux-usb@vger.kernel.org, Roger Quadros <rogerq@kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-        devicetree@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Li Jun <jun.li@nxp.com>, Peter Chen <peter.chen@nxp.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v19 0/5] usb: misc: Add onboard_usb_hub driver
-Date:   Wed, 12 Jan 2022 11:10:43 -0800
-Message-Id: <20220112191048.837236-1-mka@chromium.org>
-X-Mailer: git-send-email 2.34.1.575.g55b058a8bb-goog
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Wed, 12 Jan 2022 14:12:09 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6317861AA6;
+        Wed, 12 Jan 2022 19:12:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C5487C36AEB;
+        Wed, 12 Jan 2022 19:12:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642014728;
+        bh=cnU0gIdY6hPc5Anmye1dTWYDGnl3aYfh+If0vkHMkS8=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=X49FAF7GyKRcHfbPVeHrg1pWI7P9T5zlprAUSbQvTHIQZhPn7NRHOGq5jkdgdpB8f
+         vBSsVc9nAw/lMqHYXB9MKXuaoTNEF8HoIlJYHplBWSJnfYuZtpf6E2nNOjOgUjzIFm
+         3nQaNM9uZaksR6dW9JKmV+ornkALRqBVinStEecZtzzyPuq+Lp2WFtZ7JTC6SPsJSg
+         WXAf/A9+dQl5oe/1JzLMW6S61gC13ccVbYw2UvsuP6Am5GTXQMTvOuGv+WmGZ0RlYR
+         66nJJ+K7hAkP0cCLmTlw6XutLCZpSIZ/Yf2rY2xRYwXmIlb9lRkgvRe3fbxXpOxQEy
+         MFCXwvtQCRnbQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B39A7F60796;
+        Wed, 12 Jan 2022 19:12:08 +0000 (UTC)
+Subject: Re: [GIT PULL for v5.17-rc1] media fixes
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220112064909.1ec47504@coco.lan>
+References: <20220112064909.1ec47504@coco.lan>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220112064909.1ec47504@coco.lan>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media tags/media/v5.17-2
+X-PR-Tracked-Commit-Id: 8d4ff8187bb2b0c9025269f0da42ed16c878cb18
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 2ab9c9675fe892e7fe9fa8c0a6125e2b40d2889d
+Message-Id: <164201472872.2601.7802897882857989938.pr-tracker-bot@kernel.org>
+Date:   Wed, 12 Jan 2022 19:12:08 +0000
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds:
-- the onboard_usb_hub_driver
-- glue in the generic HCD code to create and destroy the
-  onboard_usb_hub platform devices if needed
-- device tree changes that add RTS5411 entries for the QCA SC7180
-  based boards trogdor and lazor
-- a couple of stubs for platform device functions to avoid
-  unresolved symbols with certain kernel configs
+The pull request you sent on Wed, 12 Jan 2022 06:49:09 +0100:
 
-The main issue the driver addresses is that a USB hub needs to be
-powered before it can be discovered. For discrete onboard hubs (an
-example for such a hub is the Realtek RTS5411) this is often solved
-by supplying the hub with an 'always-on' regulator, which is kind
-of a hack. Some onboard hubs may require further initialization
-steps, like changing the state of a GPIO or enabling a clock, which
-requires even more hacks. This driver creates a platform device
-representing the hub which performs the necessary initialization.
-Currently it only supports switching on a single regulator, support
-for multiple regulators or other actions can be added as needed.
-Different initialization sequences can be supported based on the
-compatible string.
+> git://git.kernel.org/pub/scm/linux/kernel/git/mchehab/linux-media tags/media/v5.17-2
 
-Besides performing the initialization the driver can be configured
-to power the hub off during system suspend. This can help to extend
-battery life on battery powered devices which have no requirements
-to keep the hub powered during suspend. The driver can also be
-configured to leave the hub powered when a wakeup capable USB device
-is connected when suspending, and power it off otherwise.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/2ab9c9675fe892e7fe9fa8c0a6125e2b40d2889d
 
-Changes in v19:
-- added VID:PID pairs and compatible strings for RTS5414 hub
-- updated comments with RTS5411 USB versions to reflect those
-  reported/supported by the hub
-- rebased series on v5.16
-
-Changes in v18:
-- introduced hidden Kconfig option to align module vs. builtin
-  choice with CONFIG_USB (thanks Doug!)
-- added patch 'driver core: Export device_is_bound()'
-- also adjust device tree of pompom rev1
-- dropped the following patches, which aren't needed anymore by this
-  series (though they might still be useful on their own):
-  - usb: Specify dependencies on USB_XHCI_PLATFORM with 'depends on'
-  - arm64: defconfig: Explicitly enable USB_XHCI_PLATFORM
-  - ARM: configs: Explicitly enable USB_XHCI_PLATFORM where needed
-
-Changes in v17:
-- rebased on top of v5.16-rc1
-- moved creation of onboard_hub platform devices from xhci_platform
-  to the generic HCD code
-- addressed review comments for the onboard_hub driver
-- moved Kconfig/defconfig changes to the end of the series. The
-  onboard_hub driver doesn't depend on XHCI_PLATFORM anymore,
-  hence these changes aren't really required for the driver, but
-  they still seem to be a worthwhile improvement
-
-Changes in v16:
-- added patch 'ARM: configs: Explicitly enable USB_XHCI_PLATFORM
-  where needed' to keep arm32 defconfigs effectively unchanged
-
-Changes in v15:
-- adjusted dependencies of USB_DWC3_CORE to make sure it can only
-  be enabled when at least one of USB_DWC3_HOST, USB_DWC3_GADGET
-  or USB_DWC3_DUAL_ROLE is selectable
-
-Changes in v14:
-- rebased on top of v5.14-rc1
-- dropped DT binding patch which landed in v5.13
-
-Changes in v13:
-- added patch "usb: Specify dependency on USB_XHCI_PLATFORM with
-  'depends on'" to the series to avoid Kconfig conflicts
-- added patch "arm64: defconfig: Explicitly enable USB_XHCI_PLATFORM"
-  to the series to keep effective defconfig unchanged
-
-Changes in v12:
-- onboard_hub driver: use IS_ENABLED(CONFIG_USB_ONBOARD_HUB_MODULE)
-  in onboard_hub.h to also check for the driver built as module
-- onboard_hub_driver: include onboard_hub.h again to make sure there
-  are prototype declarations for the public functions
-
-Changes in v11:
-- support multiple onboard hubs connected to the same parent
-- don't include ‘onboard_hub.h’ from the onboard hub driver
-
-Changes in v10:
-- always use of_is_onboard_usb_hub() stub unless ONBOARD_USB_HUB=y/m
-- keep 'regulator-boot-on' property for pp3300_hub
-
-Changes in v9:
-- added dependency on ONBOARD_USB_HUB (or !ONBOARD_USB_HUB) to
-  USB_PLATFORM_XHCI
-
-Changes in v7:
-- updated DT binding
-- series rebased on qcom/arm64-for-5.13
-
-Changes in v6:
-- updated summary
-
-Changes in v5:
-- cover letter added
-
-Matthias Kaehlcke (5):
-  of/platform: Add stubs for of_platform_device_create/destroy()
-  driver core: Export device_is_bound()
-  usb: misc: Add onboard_usb_hub driver
-  usb: core: hcd: Create platform devices for onboard hubs in probe()
-  arm64: dts: qcom: sc7180-trogdor: Add nodes for onboard USB hub
-
- .../sysfs-bus-platform-onboard-usb-hub        |   8 +
- MAINTAINERS                                   |   7 +
- .../boot/dts/qcom/sc7180-trogdor-lazor-r0.dts |  19 +-
- .../boot/dts/qcom/sc7180-trogdor-lazor-r1.dts |  12 +-
- .../dts/qcom/sc7180-trogdor-pompom-r1.dts     |  11 +-
- .../arm64/boot/dts/qcom/sc7180-trogdor-r1.dts |  19 +-
- arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi  |  19 +-
- drivers/base/dd.c                             |   1 +
- drivers/usb/core/hcd.c                        |   6 +
- drivers/usb/misc/Kconfig                      |  23 +
- drivers/usb/misc/Makefile                     |   1 +
- drivers/usb/misc/onboard_usb_hub.c            | 494 ++++++++++++++++++
- include/linux/of_platform.h                   |  22 +-
- include/linux/usb/hcd.h                       |   1 +
- include/linux/usb/onboard_hub.h               |  18 +
- 15 files changed, 620 insertions(+), 41 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-platform-onboard-usb-hub
- create mode 100644 drivers/usb/misc/onboard_usb_hub.c
- create mode 100644 include/linux/usb/onboard_hub.h
+Thank you!
 
 -- 
-2.34.1.575.g55b058a8bb-goog
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
