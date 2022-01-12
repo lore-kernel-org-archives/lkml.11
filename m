@@ -2,112 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B605C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A2A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:34:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356233AbiALScs (ORCPT
+        id S1356285AbiALSea (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:32:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356295AbiALScJ (ORCPT
+        Wed, 12 Jan 2022 13:34:30 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:48366 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348741AbiALSe2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:32:09 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927C2C061759;
-        Wed, 12 Jan 2022 10:32:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8C12CCE1E21;
-        Wed, 12 Jan 2022 18:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC72AC36AE5;
-        Wed, 12 Jan 2022 18:31:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642012319;
-        bh=SIOFpKrKnQowDOnmtxefi+bybl5zeZB6n3VbvATVFBY=;
+        Wed, 12 Jan 2022 13:34:28 -0500
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 2032F340;
+        Wed, 12 Jan 2022 19:34:25 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1642012465;
+        bh=r0JlbAYka/rfL4R9AwfiOnTQOM0NQ/mYi/0TwwUzfuE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V4aeHa5QLi8d5BOg6sv0gr+x+PgLEzDphY5W9nRxsHjh6z4a/6EMHng9D75BAM6Ct
-         zNP0R2wv/Frb46fN9k47C2rGg5Z4eRDU45dl2liVB9tycOqrsJLcjnR1ET4JSX14sV
-         ANVlYcpU4KpPTW8Ymr0tMG7NqGErK0wEyelLvM92Qj10ktOFFrm8RAOAbdIoplI3mk
-         5SdR7b+RMwmWXQwkKn7vvl7Qib4xy9W29MrbwtCBeWkkLk+v/Vn32DaMTggmUi7aAw
-         1B5awF8+2fvKHU7F8hodfx9vInNNVpOFRAyWQMfoK0NaB6tdknpS3MpGI4/vknMPsV
-         aIgS2bSCn6J+Q==
-Date:   Wed, 12 Jan 2022 10:31:57 -0800
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, netdev@vger.kernel.org,
-        wireguard@lists.zx2c4.com, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, geert@linux-m68k.org, tytso@mit.edu,
-        gregkh@linuxfoundation.org, jeanphilippe.aumasson@gmail.com,
-        ardb@kernel.org, Herbert Xu <herbert@gondor.apana.org.au>
-Subject: Re: [PATCH crypto 1/2] lib/crypto: blake2s-generic: reduce code size
- on small systems
-Message-ID: <Yd8enQTocuCSQVkT@gmail.com>
-References: <CAHmME9qbnYmhvsuarButi6s=58=FPiti0Z-QnGMJ=OsMzy1eOg@mail.gmail.com>
- <20220111134934.324663-1-Jason@zx2c4.com>
- <20220111134934.324663-2-Jason@zx2c4.com>
+        b=Q6ibHjl0CEbwGjQqAlh/Ct+/eQTsXadkNhaaZcHF3g4/Tl+/zAoXXHrDLOMA3uCE6
+         fDyQNuE8mBD32JGW+ohEkPt0TIj/88wTBETJonWza1+YKF+bMRbnKa271iDF5tjNTO
+         /R4pK3EEZktgvQ6Py/WimWengz5xPVTKip0tHttA=
+Date:   Wed, 12 Jan 2022 20:34:13 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+Cc:     linux-media@vger.kernel.org, kernel-list@raspberrypi.com,
+        mchehab@kernel.org, dave.stevenson@raspberrypi.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        naush@raspberrypi.com, lukasz@jany.st, devicetree@vger.kernel.org
+Subject: Re: [RFC PATCH 1/3] media: dt-bindings: media: Add bindings for
+ bcm2835-unicam
+Message-ID: <Yd8fJd2SASGkhOjm@pendragon.ideasonboard.com>
+References: <20220112172719.1178446-1-jeanmichel.hautbois@ideasonboard.com>
+ <20220112172719.1178446-2-jeanmichel.hautbois@ideasonboard.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220111134934.324663-2-Jason@zx2c4.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220112172719.1178446-2-jeanmichel.hautbois@ideasonboard.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 02:49:33PM +0100, Jason A. Donenfeld wrote:
-> Re-wind the loops entirely on kernels optimized for code size. This is
-> really not good at all performance-wise. But on m68k, it shaves off 4k
-> of code size, which is apparently important.
+Hi Jean-Michel,
+
+Thank you for the patch.
+
+On Wed, Jan 12, 2022 at 06:27:18PM +0100, Jean-Michel Hautbois wrote:
+> Introduce the dt-bindinds documentation for bcm2835 CCP2/CSI2 camera
+> interface. Also add a MAINTAINERS entry for it.
 > 
-> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> Cc: Herbert Xu <herbert@gondor.apana.org.au>
-> Cc: Ard Biesheuvel <ardb@kernel.org>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+> Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
 > ---
->  lib/crypto/blake2s-generic.c | 30 ++++++++++++++++++------------
->  1 file changed, 18 insertions(+), 12 deletions(-)
+> Dave: I assumed you were the maintainer for this file, as I based it on the
+> bcm2835-unicam.txt file. Are  you happy to be added directly as the
+> maintainer, or should this be specified as "Raspberry Pi Kernel
+> Maintenance <kernel-list@raspberrypi.com>"
+> ---
+>  .../bindings/media/brcm,bcm2835-unicam.yaml   | 103 ++++++++++++++++++
+>  MAINTAINERS                                   |   6 +
+>  2 files changed, 109 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
 > 
-> diff --git a/lib/crypto/blake2s-generic.c b/lib/crypto/blake2s-generic.c
-> index 75ccb3e633e6..990f000e22ee 100644
-> --- a/lib/crypto/blake2s-generic.c
-> +++ b/lib/crypto/blake2s-generic.c
-> @@ -46,7 +46,7 @@ void blake2s_compress_generic(struct blake2s_state *state, const u8 *block,
->  {
->  	u32 m[16];
->  	u32 v[16];
-> -	int i;
-> +	int i, j;
+> diff --git a/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> new file mode 100644
+> index 000000000000..1427514142cf
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> @@ -0,0 +1,103 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/media/brcm,bcm2835-unicam.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Broadcom BCM283x Camera Interface (Unicam)
+> +
+> +maintainers:
+> +  - Dave Stevenson <dave.stevenson@raspberrypi.com>
+> +
+> +description: |-
+> +  The Unicam block on BCM283x SoCs is the receiver for either
+> +  CSI-2 or CCP2 data from image sensors or similar devices.
+> +
+> +  The main platform using this SoC is the Raspberry Pi family of boards.
+> +  On the Pi the VideoCore firmware can also control this hardware block,
+> +  and driving it from two different processors will cause issues.
+> +  To avoid this, the firmware checks the device tree configuration
+> +  during boot. If it finds device tree nodes called csi0 or csi1 then
+> +  it will stop the firmware accessing the block, and it can then
+> +  safely be used via the device tree binding.
+> +
+> +properties:
+> +  compatible:
+> +    const: brcm,bcm2835-unicam
+> +
+> +  reg:
+> +    description:
+> +      physical base address and length of the register sets for the device.
+
+You can drop the description, that's the default for the reg property.
+
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: the IRQ line for this Unicam instance.
+
+Same here.
+
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    description: |-
+> +      list of clock specifiers, corresponding to entries in clock-names
+> +      property.
+
+Same here, but a description of each entry would be useful.
+
+  clocks:
+    items:
+      - description: Clock for foo.
+      - description: Clock for bar.
+
+> +
+> +  clock-names:
+> +    items:
+> +      - const: lp
+> +      - const: vpu
+> +
+> +  port:
+> +    $ref: /schemas/graph.yaml#/properties/port
+
+You need to use port-base and list the valid endpoint properties.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - port
+> +
+> +additionalProperties: False
+
+s/False/false/
+
+> +
+> +examples:
+> +  - |
+
+Does this validate without #include'ing headers that define the
+BCM2835_CLOCK_CAM1 macro ?
+
+> +    csi1: csi1@7e801000 {
+
+You can drop the label.
+
+> +        compatible = "brcm,bcm2835-unicam";
+> +        reg = <0x7e801000 0x800>,
+> +              <0x7e802004 0x4>;
+
+That's two items, while the bindings document one item only. Please run
+the DT bindings validation, it will validate the examples.
+
+> +        interrupts = <2 7>;
+
+On RPi 4 don't we need 3 interrupt cells ?
+
+> +        clocks = <&clocks BCM2835_CLOCK_CAM1>,
+> +                 <&firmware_clocks 4>;
+> +        clock-names = "lp", "vpu";
+
+A blank line would be good here.
+
+> +        port {
+> +                csi1_ep: endpoint {
+
+Inconsistent indentation. Same below.
+
+> +                        remote-endpoint = <&tc358743_0>;
+> +                        data-lanes = <1 2>;
+> +                };
+> +        };
+> +    };
+> +
+> +    i2c0: i2c@7e205000 {
+> +        tc358743: csi-hdmi-bridge@0f {
+
+You can drop those two labels.
+
+> +            compatible = "toshiba,tc358743";
+
+This isn't documented upstream in yaml. How about using an imx219 sensor
+instead ?
+
+> +            reg = <0x0f>;
+> +            clocks = <&tc358743_clk>;
+> +            clock-names = "refclk";
+> +
+> +            tc358743_clk: bridge-clk {
+> +                    compatible = "fixed-clock";
+> +                    #clock-cells = <0>;
+> +                    clock-frequency = <27000000>;
+> +            };
+
+You can drop this, there's no need to declare the clock in the example.
+
+> +
+> +            port {
+> +                    tc358743_0: endpoint {
+> +                            remote-endpoint = <&csi1_ep>;
+> +                            clock-lanes = <0>;
+> +                            data-lanes = <1 2>;
+> +                            clock-noncontinuous;
+> +                            link-frequencies =
+> +                                /bits/ 64 <297000000>;
+> +                    };
+> +            };
+> +        };
+> +    };
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 269aa4d6b94a..7484255cad31 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3653,6 +3653,12 @@ N:	bcm113*
+>  N:	bcm216*
+>  N:	kona
 >  
->  	WARN_ON(IS_ENABLED(DEBUG) &&
->  		(nblocks > 1 && inc != BLAKE2S_BLOCK_SIZE));
-> @@ -86,17 +86,23 @@ void blake2s_compress_generic(struct blake2s_state *state, const u8 *block,
->  	G(r, 6, v[2], v[ 7], v[ 8], v[13]); \
->  	G(r, 7, v[3], v[ 4], v[ 9], v[14]); \
->  } while (0)
-> -		ROUND(0);
-> -		ROUND(1);
-> -		ROUND(2);
-> -		ROUND(3);
-> -		ROUND(4);
-> -		ROUND(5);
-> -		ROUND(6);
-> -		ROUND(7);
-> -		ROUND(8);
-> -		ROUND(9);
-> -
-> +		if (IS_ENABLED(CONFIG_CC_OPTIMIZE_FOR_SIZE)) {
-> +			for (i = 0; i < 10; ++i) {
-> +				for (j = 0; j < 8; ++j)
-> +					G(i, j, v[j % 4], v[((j + (j / 4)) % 4) + 4], v[((j + 2 * (j / 4)) % 4) + 8], v[((j + 3 * (j / 4)) % 4) + 12]);
-> +			}
+> +BROADCOM BCM2835 CAMERA DRIVER
+> +M:	Raspberry Pi Kernel Maintenance <kernel-list@raspberrypi.com>
+> +L:	linux-media@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/media/brcm,bcm2835-unicam.yaml
+> +
+>  BROADCOM BCM47XX MIPS ARCHITECTURE
+>  M:	Hauke Mehrtens <hauke@hauke-m.de>
+>  M:	Rafał Miłecki <zajec5@gmail.com>
 
-How about unrolling the inner loop but not the outer one?  Wouldn't that give
-most of the benefit, without hurting performance as much?
+-- 
+Regards,
 
-If you stay with this approach and don't unroll either loop, can you use 'r' and
-'i' instead of 'i' and 'j', to match the naming in G()?
-
-Also, please wrap lines at 80 columns.
-
-- Eric
+Laurent Pinchart
