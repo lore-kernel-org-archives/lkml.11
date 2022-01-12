@@ -2,194 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A606C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:13:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC62C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 13:14:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241020AbiALNNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 08:13:48 -0500
-Received: from so254-9.mailgun.net ([198.61.254.9]:50106 "EHLO
-        so254-9.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353437AbiALNNZ (ORCPT
+        id S240962AbiALNN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 08:13:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353439AbiALNN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 08:13:25 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1641993204; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=t8UcX5N7QmTU7XeUfa4gdrtpln6WbR8NBAKQ1OyJ86A=; b=REpByCKepLNeWkOYGK6DvtEw8CpduWKWwL8jls4yDPboeQUWf7/+Bp3Bd+evRGm/by/6w5CX
- HZ/OeVP/C3MK5Ac6VCljpdwFfry0ZuUKvo2+IRfMprjlbn/QRus/D2hfgHbCXblRWzcyz9X1
- 4mkYrUqxuvW+bdg4IYy3DbnwKLw=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI0MWYwYSIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 61ded3f369943108c5b544bf (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 12 Jan 2022 13:13:23
- GMT
-Sender: quic_vjitta=quicinc.com@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B988FC4360D; Wed, 12 Jan 2022 13:13:23 +0000 (UTC)
-Received: from vjitta-linux.qualcomm.com (unknown [202.46.22.19])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: vjitta)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1113DC4338F;
-        Wed, 12 Jan 2022 13:13:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 1113DC4338F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=quicinc.com
-From:   Vijayanand Jitta <quic_vjitta@quicinc.com>
-To:     joro@8bytes.org, will@kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Cc:     kernel-team@android.com, vjitta@codeaurora.org,
-        Vijayanand Jitta <quic_vjitta@quicinc.com>
-Subject: [PATCH v3] iommu: Fix potential use-after-free during probe
-Date:   Wed, 12 Jan 2022 18:43:04 +0530
-Message-Id: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Wed, 12 Jan 2022 08:13:26 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6F21C034002;
+        Wed, 12 Jan 2022 05:13:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=K9qYdakio6i6nSysS/doW2LJOLUcCtqKh6YyRSh0/jE=; b=caQD6UaeVgCHokXJSxvWrX9Qt3
+        phEFylhKv3Ve77PlrZgeu0SaXe3N5hGI6+w8pSnsy0NUkv1nwCpVbCY3er5fKoBuQeQWBneucwMyA
+        8sl+uTpvFgJgY9RYPZqa8kBpYzPWgB4TgwSVUIjHqITAa2cLfOqXv7z4ibePr+ImhHWoldEb+AakH
+        4k0feyiJEoLkuD/jQUqtpcAF9epeRBuGh3ayZ+jr/TeZGLVpzg0dA98dnzM2NqUDkBIclKSGF8Spe
+        cTfsdEXXLCZq42b2hd1p6cQsuc8rqfns2eE2mrkbDCCUeMKLFm1dv7sTA7s1isiiBiuoKn6yyh07c
+        fnpMabNA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56672)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1n7dQu-000617-Ss; Wed, 12 Jan 2022 13:12:56 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1n7dQr-0006vZ-UR; Wed, 12 Jan 2022 13:12:53 +0000
+Date:   Wed, 12 Jan 2022 13:12:53 +0000
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH net v2] net: phy: marvell: add Marvell specific PHY
+ loopback
+Message-ID: <Yd7T1e/R9jGWMK2B@shell.armlinux.org.uk>
+References: <20220112093344.27894-1-mohammad.athari.ismail@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220112093344.27894-1-mohammad.athari.ismail@intel.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Kasan has reported the following use after free on dev->iommu.
-when a device probe fails and it is in process of freeing dev->iommu
-in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-causing use after free.
+On Wed, Jan 12, 2022 at 05:33:44PM +0800, Mohammad Athari Bin Ismail wrote:
+> +static int marvell_loopback(struct phy_device *phydev, bool enable)
+> +{
+> +	if (enable) {
+> +		u16 bmcr_ctl = 0, mscr2_ctl = 0;
+> +
+> +		if (phydev->speed == SPEED_1000)
+> +			bmcr_ctl = BMCR_SPEED1000;
+> +		else if (phydev->speed == SPEED_100)
+> +			bmcr_ctl = BMCR_SPEED100;
+> +
+> +		if (phydev->duplex == DUPLEX_FULL)
+> +			bmcr_ctl |= BMCR_FULLDPLX;
+> +
+> +		phy_modify(phydev, MII_BMCR, ~0, bmcr_ctl);
 
-BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
+Is there any point in doing a read-modify-write here if you're just
+setting all bits in the register? Wouldn't phy_write() be more
+appropriate? What about error handing?
 
-Workqueue: events_unbound deferred_probe_work_func
-Call trace:
- dump_backtrace+0x0/0x33c
- show_stack+0x18/0x24
- dump_stack_lvl+0x16c/0x1e0
- print_address_description+0x84/0x39c
- __kasan_report+0x184/0x308
- kasan_report+0x50/0x78
- __asan_load8+0xc0/0xc4
- of_iommu_configure+0xb4/0x4a4
- of_dma_configure_id+0x2fc/0x4d4
- platform_dma_configure+0x40/0x5c
- really_probe+0x1b4/0xb74
- driver_probe_device+0x11c/0x228
- __device_attach_driver+0x14c/0x304
- bus_for_each_drv+0x124/0x1b0
- __device_attach+0x25c/0x334
- device_initial_probe+0x24/0x34
- bus_probe_device+0x78/0x134
- deferred_probe_work_func+0x130/0x1a8
- process_one_work+0x4c8/0x970
- worker_thread+0x5c8/0xaec
- kthread+0x1f8/0x220
- ret_from_fork+0x10/0x18
+> +
+> +		if (phydev->speed == SPEED_1000)
+> +			mscr2_ctl = BMCR_SPEED1000;
+> +		else if (phydev->speed == SPEED_100)
+> +			mscr2_ctl = BMCR_SPEED100;
+> +
+> +		phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
+> +				 MII_88E1510_MSCR_2, BMCR_SPEED1000 |
+> +				 BMCR_SPEED100, mscr2_ctl);
+> +
+> +		/* Need soft reset to have speed configuration takes effect */
+> +		genphy_soft_reset(phydev);
+> +
+> +		/* FIXME: Based on trial and error test, it seem 1G need to have
+> +		 * delay between soft reset and loopback enablement.
+> +		 */
+> +		if (phydev->speed == SPEED_1000)
+> +			msleep(1000);
+> +
+> +		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
+> +				  BMCR_LOOPBACK);
+> +	} else {
+> +		phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
 
-Allocated by task 1:
- ____kasan_kmalloc+0xd4/0x114
- __kasan_kmalloc+0x10/0x1c
- kmem_cache_alloc_trace+0xe4/0x3d4
- __iommu_probe_device+0x90/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
+Error handling?
 
-Freed by task 1:
- kasan_set_track+0x4c/0x84
- kasan_set_free_info+0x28/0x4c
- ____kasan_slab_free+0x120/0x15c
- __kasan_slab_free+0x18/0x28
- slab_free_freelist_hook+0x204/0x2fc
- kfree+0xfc/0x3a4
- __iommu_probe_device+0x284/0x394
- probe_iommu_group+0x70/0x9c
- bus_for_each_dev+0x11c/0x19c
- bus_iommu_probe+0xb8/0x7d4
- bus_set_iommu+0xcc/0x13c
- arm_smmu_bus_init+0x44/0x130 [arm_smmu]
- arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
- platform_drv_probe+0xe4/0x13c
- really_probe+0x2c8/0xb74
- driver_probe_device+0x11c/0x228
- device_driver_attach+0xf0/0x16c
- __driver_attach+0x80/0x320
- bus_for_each_dev+0x11c/0x19c
- driver_attach+0x38/0x48
- bus_add_driver+0x1dc/0x3a4
- driver_register+0x18c/0x244
- __platform_driver_register+0x88/0x9c
- init_module+0x64/0xff4 [arm_smmu]
- do_one_initcall+0x17c/0x2f0
- do_init_module+0xe8/0x378
- load_module+0x3f80/0x4a40
- __se_sys_finit_module+0x1a0/0x1e4
- __arm64_sys_finit_module+0x44/0x58
- el0_svc_common+0x100/0x264
- do_el0_svc+0x38/0xa4
- el0_svc+0x20/0x30
- el0_sync_handler+0x68/0xac
- el0_sync+0x160/0x180
+Thanks.
 
-Fix this by taking device_lock during probe_iommu_group.
-
-Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
----
- drivers/iommu/iommu.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e..261792d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1617,7 +1617,7 @@ static int probe_iommu_group(struct device *dev, void *data)
- {
- 	struct list_head *group_list = data;
- 	struct iommu_group *group;
--	int ret;
-+	int ret = 0;
- 
- 	/* Device is probed already if in a group */
- 	group = iommu_group_get(dev);
-@@ -1626,9 +1626,13 @@ static int probe_iommu_group(struct device *dev, void *data)
- 		return 0;
- 	}
- 
--	ret = __iommu_probe_device(dev, group_list);
--	if (ret == -ENODEV)
--		ret = 0;
-+	ret = device_trylock(dev);
-+	if (ret) {
-+		ret = __iommu_probe_device(dev, group_list);
-+		if (ret == -ENODEV)
-+			ret = 0;
-+		device_unlock(dev);
-+	}
- 
- 	return ret;
- }
 -- 
-2.7.4
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
