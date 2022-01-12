@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C889FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8ACEC43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352214AbiALJtf (ORCPT
+        id S1352262AbiALJtp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:49:35 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:54812 "EHLO
+        Wed, 12 Jan 2022 04:49:45 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:54974 "EHLO
         mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1352222AbiALJtd (ORCPT
+        with ESMTP id S1352215AbiALJtg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:49:33 -0500
-X-UUID: 61afca45df21478296a306becffc5a33-20220112
-X-UUID: 61afca45df21478296a306becffc5a33-20220112
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        Wed, 12 Jan 2022 04:49:36 -0500
+X-UUID: 94a591d6b0384566a8485e3a73659569-20220112
+X-UUID: 94a591d6b0384566a8485e3a73659569-20220112
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
         (envelope-from <yunfei.dong@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 521981296; Wed, 12 Jan 2022 17:49:29 +0800
+        with ESMTP id 1085060179; Wed, 12 Jan 2022 17:49:32 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 12 Jan 2022 17:49:27 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 12 Jan 2022 17:49:32 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 12 Jan 2022 17:49:26 +0800
+ Transport; Wed, 12 Jan 2022 17:49:30 +0800
 From:   Yunfei Dong <yunfei.dong@mediatek.com>
 To:     Yunfei Dong <yunfei.dong@mediatek.com>,
         Alexandre Courbot <acourbot@chromium.org>,
@@ -54,9 +54,9 @@ CC:     George Sun <george.sun@mediatek.com>,
         <srv_heupstream@mediatek.com>,
         <linux-mediatek@lists.infradead.org>,
         <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v18, 01/19] media: mtk-vcodec: Get numbers of register bases from DT
-Date:   Wed, 12 Jan 2022 17:49:05 +0800
-Message-ID: <20220112094923.16839-2-yunfei.dong@mediatek.com>
+Subject: [PATCH v18, 04/19] media: mtk-vcodec: export decoder pm functions
+Date:   Wed, 12 Jan 2022 17:49:08 +0800
+Message-ID: <20220112094923.16839-5-yunfei.dong@mediatek.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220112094923.16839-1-yunfei.dong@mediatek.com>
 References: <20220112094923.16839-1-yunfei.dong@mediatek.com>
@@ -68,77 +68,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Different platforms may have different numbers of register bases. Gets the
-numbers of register bases from dts (sizeof(u32) * 4 bytes for each).
+When mtk vcodec decoder is build as a module, we need to export
+mtk-vcodec-dec pm functions to make them visible by the other components.
 
 Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Reviewed-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 ---
- .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  | 37 ++++++++++++++-----
- 1 file changed, 28 insertions(+), 9 deletions(-)
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-index 40c39e1e596b..e1a82e233971 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-@@ -75,6 +75,30 @@ static irqreturn_t mtk_vcodec_dec_irq_handler(int irq, void *priv)
- 	return IRQ_HANDLED;
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
+index ba96e62c6bb1..1fc2a4b2a137 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
+@@ -77,12 +77,14 @@ int mtk_vcodec_init_dec_pm(struct platform_device *pdev,
+ 	put_device(pm->larbvdec);
+ 	return ret;
  }
++EXPORT_SYMBOL_GPL(mtk_vcodec_init_dec_pm);
  
-+static int mtk_vcodec_get_reg_bases(struct mtk_vcodec_dev *dev)
-+{
-+	struct platform_device *pdev = dev->plat_dev;
-+	int reg_num, i;
-+
-+	/* Sizeof(u32) * 4 bytes for each register base. */
-+	reg_num = of_property_count_elems_of_size(pdev->dev.of_node, "reg",
-+		sizeof(u32) * 4);
-+	if (reg_num <= 0 || reg_num > NUM_MAX_VDEC_REG_BASE) {
-+		dev_err(&pdev->dev, "Invalid register property size: %d\n", reg_num);
-+		return -EINVAL;
-+	}
-+
-+	for (i = 0; i < reg_num; i++) {
-+		dev->reg_base[i] = devm_platform_ioremap_resource(pdev, i);
-+		if (IS_ERR(dev->reg_base[i]))
-+			return PTR_ERR(dev->reg_base[i]);
-+
-+		mtk_v4l2_debug(2, "reg[%d] base=%p", i, dev->reg_base[i]);
-+	}
-+
-+	return 0;
-+}
-+
- static int fops_vcodec_open(struct file *file)
+ void mtk_vcodec_release_dec_pm(struct mtk_vcodec_pm *pm)
  {
- 	struct mtk_vcodec_dev *dev = video_drvdata(file);
-@@ -203,7 +227,7 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	phandle rproc_phandle;
- 	enum mtk_vcodec_fw_type fw_type;
--	int i, ret;
-+	int ret;
+ 	pm_runtime_disable(pm->dev);
+ 	put_device(pm->larbvdec);
+ }
++EXPORT_SYMBOL_GPL(mtk_vcodec_release_dec_pm);
  
- 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
- 	if (!dev)
-@@ -235,14 +259,9 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 		goto err_dec_pm;
- 	}
+ int mtk_vcodec_dec_pw_on(struct mtk_vcodec_pm *pm)
+ {
+@@ -94,6 +96,7 @@ int mtk_vcodec_dec_pw_on(struct mtk_vcodec_pm *pm)
  
--	for (i = 0; i < NUM_MAX_VDEC_REG_BASE; i++) {
--		dev->reg_base[i] = devm_platform_ioremap_resource(pdev, i);
--		if (IS_ERR((__force void *)dev->reg_base[i])) {
--			ret = PTR_ERR((__force void *)dev->reg_base[i]);
--			goto err_res;
--		}
--		mtk_v4l2_debug(2, "reg[%d] base=%p", i, dev->reg_base[i]);
--	}
-+	ret = mtk_vcodec_get_reg_bases(dev);
-+	if (ret)
-+		goto err_res;
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(mtk_vcodec_dec_pw_on);
  
- 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
- 	if (res == NULL) {
+ void mtk_vcodec_dec_pw_off(struct mtk_vcodec_pm *pm)
+ {
+@@ -103,6 +106,7 @@ void mtk_vcodec_dec_pw_off(struct mtk_vcodec_pm *pm)
+ 	if (ret)
+ 		mtk_v4l2_err("pm_runtime_put_sync fail %d", ret);
+ }
++EXPORT_SYMBOL_GPL(mtk_vcodec_dec_pw_off);
+ 
+ void mtk_vcodec_dec_clock_on(struct mtk_vcodec_pm *pm)
+ {
+@@ -129,6 +133,7 @@ void mtk_vcodec_dec_clock_on(struct mtk_vcodec_pm *pm)
+ 	for (i -= 1; i >= 0; i--)
+ 		clk_disable_unprepare(dec_clk->clk_info[i].vcodec_clk);
+ }
++EXPORT_SYMBOL_GPL(mtk_vcodec_dec_clock_on);
+ 
+ void mtk_vcodec_dec_clock_off(struct mtk_vcodec_pm *pm)
+ {
+@@ -139,3 +144,4 @@ void mtk_vcodec_dec_clock_off(struct mtk_vcodec_pm *pm)
+ 	for (i = dec_clk->clk_num - 1; i >= 0; i--)
+ 		clk_disable_unprepare(dec_clk->clk_info[i].vcodec_clk);
+ }
++EXPORT_SYMBOL_GPL(mtk_vcodec_dec_clock_off);
 -- 
 2.25.1
 
