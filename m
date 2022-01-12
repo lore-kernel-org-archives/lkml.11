@@ -2,93 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 625BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3159C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351593AbiALI2h (ORCPT
+        id S1351608AbiALI2p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 03:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351595AbiALI2b (ORCPT
+        Wed, 12 Jan 2022 03:28:45 -0500
+Received: from mail-ua1-f44.google.com ([209.85.222.44]:37413 "EHLO
+        mail-ua1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351628AbiALI2l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 03:28:31 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D34C061748
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:28:30 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id q9-20020a7bce89000000b00349e697f2fbso2328121wmj.0
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:28:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rNOuAcwNuDHxBvtMyyjJQMqiXIXS4T/5jqGLQkkMpuQ=;
-        b=s+v9/098gsrdVTljt+5QzW9V1NPMHTbPtDgclKahM+vq9G1BEw610BrHv9evjZXf2f
-         JnWmzUalccfJXAbQior7YoU/ozWAFfQgwGflBphtcINF9XjGKocasvXfWPBzJqVYbuJ2
-         +RfWKnOtk4FIGS1ywsL5mL445ewcgsJtniT9FmbJEyBSNlA3qUffLhjQQieIGox2+xJ+
-         6BO7wxMJoMpw8R60VVme2KxLVmqEIgHy6hJrE4aPKfN1jJMFhU9lldBjNX2VSKl7JWZX
-         y6yPmdiWAzrEtFQlleihXj6Wtk+z51iYgqRcm1Oxu4ortyFLfKGaa47sPqX3dhpU91nL
-         9c6w==
+        Wed, 12 Jan 2022 03:28:41 -0500
+Received: by mail-ua1-f44.google.com with SMTP id o1so3332800uap.4;
+        Wed, 12 Jan 2022 00:28:40 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rNOuAcwNuDHxBvtMyyjJQMqiXIXS4T/5jqGLQkkMpuQ=;
-        b=gTvu1P3VbmLVnekQXjFbJs3dXbhFrtP1b6+un1ivvxojteA96EVW68CkyG/fWPAppy
-         +So+dw5N2a5us08BkzZxgWlgOhf3y1ln9n7CA4FxQQBWQrtat9Cjs+dsOL5XwnZNelRP
-         a9LDwhsRxD3Ot0TDtPE2AzFtqzCe5BI4t+zssM7iN+2KKfXr1JdnYe/fZ3ezQ2+SBgvL
-         HlA0GDu9X2Hb32GruYjztjwDmSMCyZ0LqpfkWMb3o9uN+zS1fqFKED3VnQ/ItAOPuOvx
-         0sQTrTURBBukUWHHplVUh3NDlOzRFOEqWpmgK41jmMJMD4XRXjiH4lpqhKZHYIa/tvlx
-         yMYA==
-X-Gm-Message-State: AOAM533nQoQSsl0va2R2N+0k3cEOlQt+m+M/h5/sLU0oYc4I155JhLEM
-        xNBCS509jC/vubqmB+G4ttzTQA==
-X-Google-Smtp-Source: ABdhPJwNpciLzIeYCvtRMHHFH5XaT1yQy0DngWu1Fc1E6DGL2A47DnOCrNKY5gbBMH+hiZbqjkezYw==
-X-Received: by 2002:a05:600c:4f13:: with SMTP id l19mr5682629wmq.152.1641976109447;
-        Wed, 12 Jan 2022 00:28:29 -0800 (PST)
-Received: from localhost.localdomain ([2001:861:44c0:66c0:381b:6e50:a892:5269])
-        by smtp.gmail.com with ESMTPSA id v129sm254846wme.29.2022.01.12.00.28.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 00:28:28 -0800 (PST)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Xianwei Zhao <xianwei.zhao@amlogic.com>,
-        linux-amlogic@lists.infradead.org
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        Vyacheslav Bocharov <adeep@lexina.in>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>, kelvin.zhang@amlogic.com,
-        Christian Hewitt <christianshewitt@gmail.com>
-Subject: Re: [PATCH V3] dt-bindings: arm: amlogic: add S4 based AQ222 bindings
-Date:   Wed, 12 Jan 2022 09:28:24 +0100
-Message-Id: <164197609473.825600.4070247492095618792.b4-ty@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211221030014.434-1-xianwei.zhao@amlogic.com>
-References: <20211221030014.434-1-xianwei.zhao@amlogic.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ICGbwIc6WQlKE/ioYvNigSD06lESIz/s7WepMycFiZo=;
+        b=YhEAl30wNcHFyH1+7O1DETP3Av7qbfD+WnsLM8hO1vitAW2g9n+InwUKJoXbWadKy0
+         9JATbFKZI5jE+JefVHSqi7bPqExvVVR8tX6/YEMAwFPW9iWWTit3w6zhyhS6dP+BLoie
+         pOZVF/ykuEDkkqDcfSHpElbXJ4VIhTfVwQoyTY8S+QZEou+iiffhLl0rgDoQLQiyJ1Oi
+         qXXwzIaRG6c+AmFe5OMGKKmeawQkzk19ueZWA+jrelIk5CQoEvRp8/JDAlfaQOPhQJ48
+         u/hpfFkg2p/f1zbouAzJuiVV4SPE69+HHfUU/rydOyqadR1qAyA1QIAbN0N/1kX0maYy
+         BHFQ==
+X-Gm-Message-State: AOAM531jneUJv9YWx2zzNzN+Tum6Ky6bdGM9fcIv4bl34Wvh7Sq9Tnum
+        CXSpQcFmqdX3UBsHPbySnR6oLMEhfeA1Fg==
+X-Google-Smtp-Source: ABdhPJwRWO0gQ7dsBbyZyegdRgDMCFwxwXtWiRODwE+JyRIBB9C7UKZYyalC1z28i9qPm8qgghuvfA==
+X-Received: by 2002:a67:b807:: with SMTP id i7mr3495512vsf.52.1641976120115;
+        Wed, 12 Jan 2022 00:28:40 -0800 (PST)
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
+        by smtp.gmail.com with ESMTPSA id c25sm8147583vsk.32.2022.01.12.00.28.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 00:28:39 -0800 (PST)
+Received: by mail-ua1-f51.google.com with SMTP id x33so3264101uad.12;
+        Wed, 12 Jan 2022 00:28:39 -0800 (PST)
+X-Received: by 2002:a05:6102:21dc:: with SMTP id r28mr3660457vsg.57.1641976118915;
+ Wed, 12 Jan 2022 00:28:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <cover.1641890718.git.zong.li@sifive.com> <78cfa00a02cbd10202040058af22a73caa9c5ae8.1641890718.git.zong.li@sifive.com>
+In-Reply-To: <78cfa00a02cbd10202040058af22a73caa9c5ae8.1641890718.git.zong.li@sifive.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 12 Jan 2022 09:28:27 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUogbyjU=vBuvocxofGFCwzdQndk9OTnVdP+RNA8HEFZQ@mail.gmail.com>
+Message-ID: <CAMuHMdUogbyjU=vBuvocxofGFCwzdQndk9OTnVdP+RNA8HEFZQ@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] dmaengine: sf-pdma: Get number of channel by
+ device tree
+To:     Zong Li <zong.li@sifive.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Bin Meng <bin.meng@windriver.com>, green.wan@sifive.com,
+        Vinod <vkoul@kernel.org>, dmaengine <dmaengine@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Zong,
 
-On Tue, 21 Dec 2021 11:00:14 +0800, Xianwei Zhao wrote:
-> Add bindings for the new Amlogic S4 SoC family,
-> and add binds the compatible for the Amlogic S4 Based AQ222 board.
-> 
-> S4 is an application processor designed for hybrid OTT/IP Set To
-> Box(STB) and high-end media box applications, with quad core Cortex-A35.
-> 
-> 
-> [...]
+On Tue, Jan 11, 2022 at 9:51 AM Zong Li <zong.li@sifive.com> wrote:
+> It currently assumes that there are always four channels, it would
+> cause the error if there is actually less than four channels. Change
+> that by getting number of channel from device tree.
+>
+> For backwards-compatible, it uses the default value (i.e. 4) when there
+> is no 'dma-channels' information in dts.
+>
+> Signed-off-by: Zong Li <zong.li@sifive.com>
 
-Thanks, Applied to https://git.kernel.org/pub/scm/linux/kernel/git/amlogic/linux.git (v5.18/dt64)
+Thanks for your patch!
 
-[1/1] dt-bindings: arm: amlogic: add S4 based AQ222 bindings
-      https://git.kernel.org/amlogic/c/fc32ca1ea6f74c1be7abf9d21b0bac8bce11bec3
+> --- a/drivers/dma/sf-pdma/sf-pdma.c
+> +++ b/drivers/dma/sf-pdma/sf-pdma.c
+> @@ -484,21 +484,24 @@ static int sf_pdma_probe(struct platform_device *pdev)
+>         struct sf_pdma *pdma;
+>         struct sf_pdma_chan *chan;
+>         struct resource *res;
+> -       int len, chans;
+> -       int ret;
+> +       int len, ret;
+>         const enum dma_slave_buswidth widths =
+>                 DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
+>                 DMA_SLAVE_BUSWIDTH_4_BYTES | DMA_SLAVE_BUSWIDTH_8_BYTES |
+>                 DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
+>                 DMA_SLAVE_BUSWIDTH_64_BYTES;
+>
+> -       chans = PDMA_NR_CH;
+> -       len = sizeof(*pdma) + sizeof(*chan) * chans;
+> +       len = sizeof(*pdma) + sizeof(*chan) * PDMA_MAX_NR_CH;
 
--- 
-Neil
+Why is the last part added (yes, this is a pre-existing issue)?
+struct sf_pdma already contains space for chans[PDMA_MAX_NR_CH].
+Either drop the last part, or change sf_pdma.chans[] to a flexible
+array member.
+
+BTW, you can use the struct_size() or flex_array_size() helper
+to calculate len.
+
+>         pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
+>         if (!pdma)
+>                 return -ENOMEM;
+>
+> -       pdma->n_chans = chans;
+> +       ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
+> +                                  &pdma->n_chans);
+> +       if (ret) {
+> +               dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
+> +               pdma->n_chans = PDMA_MAX_NR_CH;
+> +       }
+>
+>         res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>         pdma->membase = devm_ioremap_resource(&pdev->dev, res);
+> @@ -556,7 +559,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
+>         struct sf_pdma_chan *ch;
+>         int i;
+>
+> -       for (i = 0; i < PDMA_NR_CH; i++) {
+> +       for (i = 0; i < pdma->n_chans; i++) {
+>                 ch = &pdma->chans[i];
+
+If dma-channels in DT > PDMA_NR_CH, this becomes an out-of-bound
+access.
+
+>
+>                 devm_free_irq(&pdev->dev, ch->txirq, ch);
+> diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
+> index 0c20167b097d..8127d792f639 100644
+> --- a/drivers/dma/sf-pdma/sf-pdma.h
+> +++ b/drivers/dma/sf-pdma/sf-pdma.h
+> @@ -22,11 +22,7 @@
+>  #include "../dmaengine.h"
+>  #include "../virt-dma.h"
+>
+> -#define PDMA_NR_CH                                     4
+> -
+> -#if (PDMA_NR_CH != 4)
+> -#error "Please define PDMA_NR_CH to 4"
+> -#endif
+> +#define PDMA_MAX_NR_CH                                 4
+>
+>  #define PDMA_BASE_ADDR                                 0x3000000
+>  #define PDMA_CHAN_OFFSET                               0x1000
+> @@ -118,7 +114,7 @@ struct sf_pdma {
+>         void __iomem            *membase;
+>         void __iomem            *mappedbase;
+>         u32                     n_chans;
+> -       struct sf_pdma_chan     chans[PDMA_NR_CH];
+> +       struct sf_pdma_chan     chans[PDMA_MAX_NR_CH];
+>  };
+>
+>  #endif /* _SF_PDMA_H */
+-
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
