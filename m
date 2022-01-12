@@ -2,163 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2DF0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EDEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:22:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352005AbiALJU7 (ORCPT
+        id S1352007AbiALJWH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:20:59 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:47765 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238292AbiALJU5 (ORCPT
+        Wed, 12 Jan 2022 04:22:07 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:46577 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238292AbiALJWF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:20:57 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2BCC15C0079;
-        Wed, 12 Jan 2022 04:20:57 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 12 Jan 2022 04:20:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=V+GbNSPBdICaZKehO+PC4kEUsaB
-        EXQDl4qLU+2VgtCk=; b=B+onJ4TC5FsYfNdGlXGkmB7EI/LR4jr+5mMGyKN+SNg
-        lztvN0zNHoVIq5q2cZoDS6tBGBQJKQ+Bs4fZvcSytUTiO3p4BLYPmEgSkM/wDSyY
-        8Mx1KoWsCRzwjBMyN3uNhjJptxc2oAzp7Nkw747Ojz6rgo8Fgv7r/lZbuJ+7ADvy
-        aZuFEaqIlAAuzDUWlZr/c1jkfymyOkYjCg8Uu3ViQMf1WlqT6Hi7uADfedcXwsEY
-        9txzMYNzigtUwY13wNQvT7Fw2/T8QJLV+4ZCYeSlB5dWTlAD/oA+knhidpdALEqJ
-        Hg0WCUlnGyv/dJH7c+x+BYk75YUwIF+wA+oCSvGgICQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=V+GbNS
-        PBdICaZKehO+PC4kEUsaBEXQDl4qLU+2VgtCk=; b=Vn8EuFshYYWqDRfu8bbAVb
-        4P8KYMLNyFv+CQ0zJ24q1f5Xgr315b2l1S/MAGyijhM9B7CP1PEoPG80Fpy0yPLq
-        KsuCs9XLKmSjbRgRGgPFMPLTGrBITTitAOLDgmnYSmQC8HoROlV0Oq6IT0T+Az2c
-        bR/t7eEH2wfvSeffjXX4IBeVuV3Gnug60Fq4pQy9C/o3h83Tcwq5IC9vR5AhYVrP
-        bn/hYYuWXDhrinZv+ODmYCvoKsoEDXtyZAYcuIWPKsBhwQgrSYE2j95HZFWRJnhA
-        1Wyldluxag40wPsizr3t2EyKLkfpHnv08lrSVH3ZRQ9VEksyZ/QsmkGmmb7n4fWQ
-        ==
-X-ME-Sender: <xms:eJ3eYVtLivXks0Lo1j1X3k40KaYs9UH4AfWuOOs2ZX2D-ywkCNX3vg>
-    <xme:eJ3eYefzb3WNeaWUyRJ6maBE9fkBO_bHqhFocP3BLDzFcThax0HjZ31B5Ee5-xoqG
-    O0umP0piN84psVqvJQ>
-X-ME-Received: <xmr:eJ3eYYy7ILhrB4KQTNA1LWuD3LTY8S37TH60Ai5qHoDZeHlWjsVyQ_gQdRIUUD9USHkXSCjWhvb9Nsd9j2lubww0RaZu2--KsWC35Rc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrudehhedgtdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
-    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
-    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
-    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
-    grgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:eJ3eYcMOY2Brwe45QOyu9PtKPzGPP2E_lUpTIA5LZvwmFfYinSQ7wQ>
-    <xmx:eJ3eYV8_ePtoPGIjt_2n_vm4lK44NpI53XFF3LuUb5VzO9MrQx7H_w>
-    <xmx:eJ3eYcXxnGmEHkt8YL7oBx8vR1k5xKJ_S86-Z30G_RfgwZCSYDLgyA>
-    <xmx:eZ3eYRSf5bQozSvczJvW58RTM7y15QEiyclZ3HrGsbXqwPyCUkM6UQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 12 Jan 2022 04:20:55 -0500 (EST)
-Date:   Wed, 12 Jan 2022 10:20:54 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Michael Wu <michael@allwinnertech.com>
-Cc:     ulf.hansson@linaro.org, wens@csie.org, samuel@sholland.org,
-        andre.przywara@arm.com, jernej.skrabec@gmail.com,
-        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] mmc:sunxi-mmc:fix clock division for timing mode
-Message-ID: <20220112092054.4agh3lydvibea5wh@houat>
-References: <20211222031521.34170-1-michael@allwinnertech.com>
+        Wed, 12 Jan 2022 04:22:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641979324;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZkMJP6Kct1rran15fCHGX0wTP5ePzlWHQDky7Omxb9c=;
+        b=WSkcuCbpKr2Yq92XTW/iizhDEQzxNgSJdoLgS3Zh9CgzLH2004vsUKE4lb8Xn+Yga6RnXE
+        Puz20qff351aq+tLhWSORkMPLCILWbjFR7t/J5dSCD5Uc5kWM5uncwrvVMqwOAiBDl5P+q
+        qGuDzfLFX8KXexnJkQihP0XuX9zrkhw=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-657-WLIuCpP8Mx6Fqg2mGt-JHQ-1; Wed, 12 Jan 2022 04:22:03 -0500
+X-MC-Unique: WLIuCpP8Mx6Fqg2mGt-JHQ-1
+Received: by mail-ed1-f70.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso1682211edt.20
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 01:22:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=ZkMJP6Kct1rran15fCHGX0wTP5ePzlWHQDky7Omxb9c=;
+        b=YY1dJYjofZ/LAHxeOQi1Nt3B7fFaHGyE6fpVFhtPJ29jnMSMiDEls+BrNf9FcOnvzQ
+         kyeH8rSLJP8eHyTtsxo7r2WuMe+mEAcGk0FzTsEKlAT7FGJv4HaZjsIQnQK1BXgUeGiw
+         1kLQkQxagz/NLDIJu8vHQVcVkT6IbdUxXDRUwtZyBUz4bKTKn7vE15MAvRadHHMoPXDF
+         lfnddCzxoVSsm3q/I8gD/GllMVCnqQFDLnYs/KbPgn0dnmEt8+ANIN03JpBCLmxqhMvP
+         tud9PSkzF80f1uhZ97Eyf6ZETUEYsqD62/YAL59KracF3Elrim9DPr5lqPQdOlp/DgbK
+         mFgg==
+X-Gm-Message-State: AOAM531vtFiCwEGEJN/T82ppKSWkHvtpHo+O3GB0T3G3Oh60aaToCvGR
+        LFjqS6frcTc8T2nNvsZHN1wBJG3aMD6hMnfhI6DpB92ZqCGlGoKfZt3QvdkPpxlkBbpOgS5xeWl
+        p5bKhNVGrgtfZa1ZjObFtIZNj
+X-Received: by 2002:a17:906:9754:: with SMTP id o20mr5550566ejy.452.1641979322230;
+        Wed, 12 Jan 2022 01:22:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyPDWe8+Rv8mGKTnrR5wrymtNU5ulfIG8wkZ/6tOwfne+hNzNx7U1tUD1XD7lB+6xV4pw95CA==
+X-Received: by 2002:a17:906:9754:: with SMTP id o20mr5550550ejy.452.1641979321997;
+        Wed, 12 Jan 2022 01:22:01 -0800 (PST)
+Received: from ?IPV6:2003:cb:c702:4700:e25f:39eb:3cb8:1dec? (p200300cbc7024700e25f39eb3cb81dec.dip0.t-ipconnect.de. [2003:cb:c702:4700:e25f:39eb:3cb8:1dec])
+        by smtp.gmail.com with ESMTPSA id d24sm4286245ejd.182.2022.01.12.01.22.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 01:22:01 -0800 (PST)
+Message-ID: <4cbe2f51-0654-dcfa-cd9c-1b5096cc5394@redhat.com>
+Date:   Wed, 12 Jan 2022 10:22:01 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="fymmmzrzovlh7ofo"
-Content-Disposition: inline
-In-Reply-To: <20211222031521.34170-1-michael@allwinnertech.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 2/2] Fix assgining cma_area_count
+Content-Language: en-US
+To:     Ercan Ersoy <ercanersoy@ercanersoy.net>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org
+References: <775ae3ba4f7034a78769559fa1a3542a@ercanersoy.net>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <775ae3ba4f7034a78769559fa1a3542a@ercanersoy.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 09.01.22 08:39, Ercan Ersoy wrote:
+> 
+> I have patched "Contiguous Memory Allocator" of Linux kernel.
+> 
+> This fix of patch is for cma_init_reserved_mem function in
+> mm/cma.c source file as creating area without specific name.
+> 
+> Without fix may be a problem a lot of cma as next cma2147483647 naming.
+> Without fix may be a problem huge memory systems.
+> 
+> I think after "cma2147483647" naming is "cma-2147483648".
+> 
+> Thanks for interesting,
+> Ercan
+> 
+> --- START PATCH ---
+>  From 5d3d01a3a0f7339617d1df945c0bd0ec1ab91ae3 Mon Sep 17 00:00:00 2001
+>  From: Ercan Ersoy <ercanersoy@ercanersoy.net>
+> Date: Sun, 9 Jan 2022 10:01:14 +0300
+> Subject: [PATCH 2/2] Fix assgining cma_area_count
+> 
+> Fix assigning to cma->name in cma_init_reserved_mem function
+> in mm/cma.c source file.
+> 
 
---fymmmzrzovlh7ofo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Honestly, how on earth are we supposed to have that many CMA areas?
 
-Hi Michael,
+It's limited by MAX_CMA_AREAS, which is usually ... 7 or 19.
 
-Thanks for your patch
+Calling this a fix is a bit though. This is a cleanup we might not care
+too much about.
 
-On Wed, Dec 22, 2021 at 11:15:21AM +0800, Michael Wu wrote:
-> When use new timings,all speed mode requires a doubled module clock
-> if speed mode is ddr,requires a four times module clock
-> When use old timings,only 8 bit ddr requires a doubled module clock
->=20
-> Signed-off-by: Michael Wu <michael@allwinnertech.com>
+> Signed-off-by: Ercan Ersoy <ercanersoy@ercanersoy.net>
 > ---
->  drivers/mmc/host/sunxi-mmc.c | 27 +++++++++++++++------------
->  1 file changed, 15 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/mmc/host/sunxi-mmc.c b/drivers/mmc/host/sunxi-mmc.c
-> index afeefead6501..7b47ec453fb6 100644
-> --- a/drivers/mmc/host/sunxi-mmc.c
-> +++ b/drivers/mmc/host/sunxi-mmc.c
-> @@ -774,20 +774,23 @@ static int sunxi_mmc_clk_set_rate(struct sunxi_mmc_=
-host *host,
->  	if (!ios->clock)
->  		return 0;
-> =20
-> -	/*
-> -	 * Under the old timing mode, 8 bit DDR requires the module
-> -	 * clock to be double the card clock. Under the new timing
-> -	 * mode, all DDR modes require a doubled module clock.
-> -	 *
-> -	 * We currently only support the standard MMC DDR52 mode.
-> -	 * This block should be updated once support for other DDR
-> -	 * modes is added.
-> +	/**
-> +	 * When use new timings, all speed mode requires a doubled module clock.
-> +	 * if speed mode is ddr, requires a four times module clock.
-> +	 * When use old timings, only 8 bit ddr requires a doubled module clock.
->  	 */
+>   mm/cma.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/mm/cma.c b/mm/cma.c
+> index bc9ca8f3c487..03f01d1f1b57 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -199,7 +199,7 @@ int __init cma_init_reserved_mem(phys_addr_t base, 
+> phys_addr_t size,
+>   	if (name)
+>   		snprintf(cma->name, CMA_MAX_NAME, name);
+>   	else
+> -		snprintf(cma->name, CMA_MAX_NAME,  "cma%d\n", cma_area_count);
+> +		snprintf(cma->name, CMA_MAX_NAME,  "cma%u\n", cma_area_count);
+> 
+>   	cma->base_pfn = PFN_DOWN(base);
+>   	cma->count = size >> PAGE_SHIFT;
 
-I found the original comment to be clearer, maybe we can change it to
-something like:
 
-    /*
-     * Under the old timing mode, 8 bit DDR requires the module
-     * clock to be double the card clock. Under the new timing
-     * mode, all modes require a doubled module clock, and DDR modes
-     * require a quadrupled module clock.
-     *
-     * ...
+-- 
+Thanks,
 
-> -	if (ios->timing =3D=3D MMC_TIMING_MMC_DDR52 &&
-> -	    (host->use_new_timings ||
-> -	     ios->bus_width =3D=3D MMC_BUS_WIDTH_8)) {
-> -		div =3D 2;
-> +	if (host->use_new_timings) {
->  		clock <<=3D 1;
-> +		if (ios->timing =3D=3D MMC_TIMING_MMC_DDR52) {
-> +			div =3D 2;
+David / dhildenb
 
-Shouldn't that be 4?
-
-> +			clock <<=3D 1;
-> +		}
-> +	} else {
-> +		if (ios->timing =3D=3D MMC_TIMING_MMC_DDR52 &&
-> +				(ios->bus_width =3D=3D MMC_BUS_WIDTH_8)) {
-
-This creates some checkpatch.pl --strict warnings
-
-Maxime
-
---fymmmzrzovlh7ofo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYd6ddgAKCRDj7w1vZxhR
-xaLiAP47v9sW+jH0z6DXKRDumXm1PSSMgqdjfsjbfy1lddD97gD9FGv36UyHu+Do
-VjNu5T34Utzn7S9mZeT4p/pUA5ic/wY=
-=F8YC
------END PGP SIGNATURE-----
-
---fymmmzrzovlh7ofo--
