@@ -2,104 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F956C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:42:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354707AbiALPkn (ORCPT
+        id S1354711AbiALPmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 10:40:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50709 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1354748AbiALPki (ORCPT
+        Wed, 12 Jan 2022 10:42:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243806AbiALPm1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 10:40:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642002037;
+        Wed, 12 Jan 2022 10:42:27 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2237DC06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 07:42:27 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 28EBD1EC02B9;
+        Wed, 12 Jan 2022 16:42:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642002141;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gJmHbv9SCbjdwt82aanZM10+dOvSdHukj6nnuz8zRSw=;
-        b=UWwAtnDzDTwQpsR+5BG6U65uqeERP0iAnJsU8ErE1n89OIfmxm6z3hpe8Y8zYk/anR+Kyd
-        ChojIrDGyrLq6sPKZ6/F+ZNffos/ohgBiJ4gz3YHugtHc0Axs/4pX+baVzOia7af35Uwqo
-        5ZQbmvzU1d1St/XNuvIXjOlCDxOjIOk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-2_ciwF2DNHmPaaptMl4MsQ-1; Wed, 12 Jan 2022 10:40:34 -0500
-X-MC-Unique: 2_ciwF2DNHmPaaptMl4MsQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EA38710168C0;
-        Wed, 12 Jan 2022 15:40:31 +0000 (UTC)
-Received: from [10.22.10.195] (unknown [10.22.10.195])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3420E87942;
-        Wed, 12 Jan 2022 15:40:02 +0000 (UTC)
-Message-ID: <0cf37ac0-69c7-2da4-22a6-58e78dc35cef@redhat.com>
-Date:   Wed, 12 Jan 2022 10:40:01 -0500
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v9 4/7] cgroup/cpuset: Add a new isolated cpus.partition
- type
-Content-Language: en-US
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=n7aI5Rcz6Vke8FIjQCVrNeGW9V44Jlub6zktdVeEpcA=;
+        b=J0VwABANyrVBGRTOva3eH4H6UPFdaYDS2C1EEWK8uiOG4e8fd6qitpicTBbiJ3aQaOhcgp
+        suspqcKWj4HZLPbpjFI1LTgBBMy2eGwd9rhtpjUHxh7wqK6zCTFpx4rN3xvUYbO4L+8xEp
+        xpj8EnoxL7fZsZoppLVlyinHPNBWIvI=
+Date:   Wed, 12 Jan 2022 16:42:25 +0100
+From:   Borislav Petkov <bp@alien8.de>
 To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Shuah Khan <shuah@kernel.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kselftest@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <guro@fb.com>, Phil Auld <pauld@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-References: <20211205183220.818872-1-longman@redhat.com>
- <20211205183220.818872-5-longman@redhat.com>
- <Yd7x3P+wGCVfYtza@hirez.programming.kicks-ass.net>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <Yd7x3P+wGCVfYtza@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Cc:     Sean Christopherson <seanjc@google.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, x86@kernel.org,
+        lkp@lists.01.org, lkp@intel.com
+Subject: Re: [PATCH] x86/entry_32: Fix segment exceptions
+Message-ID: <Yd724f1Uv1GTZ+46@zn.tnic>
+References: <20220106083523.GB32167@xsang-OptiPlex-9020>
+ <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
+ <Yd4u2rVVSdpEpwwM@google.com>
+ <Yd6zrbFBzSn3ducx@hirez.programming.kicks-ass.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yd6zrbFBzSn3ducx@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jan 12, 2022 at 11:55:41AM +0100, Peter Zijlstra wrote:
+> Full and proper patch below. Boris, if you could merge in x86/core that
+> branch should then be ready for a pull req.
 
-On 1/12/22 10:21, Peter Zijlstra wrote:
-> On Sun, Dec 05, 2021 at 01:32:17PM -0500, Waiman Long wrote:
->> Cpuset v1 uses the sched_load_balance control file to determine if load
->> balancing should be enabled.  Cpuset v2 gets rid of sched_load_balance
->> as its use may require disabling load balancing at cgroup root.
->>
->> For workloads that require very low latency like DPDK, the latency
->> jitters caused by periodic load balancing may exceed the desired
->> latency limit.
->>
->> When cpuset v2 is in use, the only way to avoid this latency cost is to
->> use the "isolcpus=" kernel boot option to isolate a set of CPUs. After
->> the kernel boot, however, there is no way to add or remove CPUs from
->> this isolated set. For workloads that are more dynamic in nature, that
->> means users have to provision enough CPUs for the worst case situation
->> resulting in excess idle CPUs.
->>
->> To address this issue for cpuset v2, a new cpuset.cpus.partition type
->> "isolated" is added which allows the creation of a cpuset partition
->> without load balancing. This will allow system administrators to
->> dynamically adjust the size of isolated partition to the current need
->> of the workload without rebooting the system.
-> you can, ofcourse, create lots of 1 cpu partitions, which is effectively
-> what you're doing, except there was a problem with that which you also
-> forgot to mention.
+I've got this as the final version. Scream if something's wrong.
 
-Yes, that is a possible workaround. However, it makes cgroup management 
-much harder especially in the cgroup v2 environment where multiple 
-controllers are likely to be enabled in the same cgroup.
+---
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Tue, 11 Jan 2022 12:11:14 +0100
+Subject: [PATCH] x86/entry_32: Fix segment exceptions
 
-Cheers,
-Longman
+The LKP robot reported that commit in Fixes: caused a failure. Turns out
+the ldt_gdt_32 selftest turns into an infinite loop trying to clear the
+segment.
 
+As discovered by Sean, what happens is that PARANOID_EXIT_TO_KERNEL_MODE
+in the handle_exception_return path overwrites the entry stack data with
+the task stack data, restoring the "bad" segment value.
+
+Instead of having the exception retry the instruction, have it emulate
+the full instruction. Replace EX_TYPE_POP_ZERO with EX_TYPE_POP_REG
+which will do the equivalent of: POP %reg; MOV $imm, %reg.
+
+In order to encode the segment registers, add them as registers 8-11 for
+32-bit.
+
+By setting regs->[defg]s the (nested) RESTORE_REGS will pop this value
+at the end of the exception handler and by increasing regs->sp, it will
+have skipped the stack slot.
+
+This was debugged by Sean Christopherson <seanjc@google.com>.
+
+ [ bp: Add EX_REG_GS too. ]
+
+Fixes: aa93e2ad7464 ("x86/entry_32: Remove .fixup usage")
+Reported-by: kernel test robot <oliver.sang@intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net
+---
+ arch/x86/entry/entry_32.S                  | 13 +++++++++----
+ arch/x86/include/asm/extable_fixup_types.h | 11 ++++++++++-
+ arch/x86/lib/insn-eval.c                   |  5 +++++
+ arch/x86/mm/extable.c                      | 17 +++--------------
+ 4 files changed, 27 insertions(+), 19 deletions(-)
+
+diff --git a/arch/x86/entry/entry_32.S b/arch/x86/entry/entry_32.S
+index e0a95d8a6553..a7ec22b1d06c 100644
+--- a/arch/x86/entry/entry_32.S
++++ b/arch/x86/entry/entry_32.S
+@@ -268,11 +268,16 @@
+ 1:	popl	%ds
+ 2:	popl	%es
+ 3:	popl	%fs
+-	addl	$(4 + \pop), %esp	/* pop the unused "gs" slot */
++4:	addl	$(4 + \pop), %esp	/* pop the unused "gs" slot */
+ 	IRET_FRAME
+-	_ASM_EXTABLE_TYPE(1b, 1b, EX_TYPE_POP_ZERO)
+-	_ASM_EXTABLE_TYPE(2b, 2b, EX_TYPE_POP_ZERO)
+-	_ASM_EXTABLE_TYPE(3b, 3b, EX_TYPE_POP_ZERO)
++
++	/*
++	 * There is no _ASM_EXTABLE_TYPE_REG() for ASM, however since this is
++	 * ASM the registers are known and we can trivially hard-code them.
++	 */
++	_ASM_EXTABLE_TYPE(1b, 2b, EX_TYPE_POP_ZERO|EX_REG_DS)
++	_ASM_EXTABLE_TYPE(2b, 3b, EX_TYPE_POP_ZERO|EX_REG_ES)
++	_ASM_EXTABLE_TYPE(3b, 4b, EX_TYPE_POP_ZERO|EX_REG_FS)
+ .endm
+ 
+ .macro RESTORE_ALL_NMI cr3_reg:req pop=0
+diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/asm/extable_fixup_types.h
+index b5ab333e064a..503622627400 100644
+--- a/arch/x86/include/asm/extable_fixup_types.h
++++ b/arch/x86/include/asm/extable_fixup_types.h
+@@ -16,9 +16,16 @@
+ #define EX_DATA_FLAG_SHIFT		12
+ #define EX_DATA_IMM_SHIFT		16
+ 
++#define EX_DATA_REG(reg)		((reg) << EX_DATA_REG_SHIFT)
+ #define EX_DATA_FLAG(flag)		((flag) << EX_DATA_FLAG_SHIFT)
+ #define EX_DATA_IMM(imm)		((imm) << EX_DATA_IMM_SHIFT)
+ 
++/* segment regs */
++#define EX_REG_DS			EX_DATA_REG(8)
++#define EX_REG_ES			EX_DATA_REG(9)
++#define EX_REG_FS			EX_DATA_REG(10)
++#define EX_REG_GS			EX_DATA_REG(11)
++
+ /* flags */
+ #define EX_FLAG_CLEAR_AX		EX_DATA_FLAG(1)
+ #define EX_FLAG_CLEAR_DX		EX_DATA_FLAG(2)
+@@ -41,7 +48,9 @@
+ #define	EX_TYPE_RDMSR_IN_MCE		13
+ #define	EX_TYPE_DEFAULT_MCE_SAFE	14
+ #define	EX_TYPE_FAULT_MCE_SAFE		15
+-#define	EX_TYPE_POP_ZERO		16
++
++#define	EX_TYPE_POP_REG			16 /* sp += sizeof(long) */
++#define EX_TYPE_POP_ZERO		(EX_TYPE_POP_REG | EX_DATA_IMM(0))
+ 
+ #define	EX_TYPE_IMM_REG			17 /* reg := (long)imm */
+ #define	EX_TYPE_EFAULT_REG		(EX_TYPE_IMM_REG | EX_DATA_IMM(-EFAULT))
+diff --git a/arch/x86/lib/insn-eval.c b/arch/x86/lib/insn-eval.c
+index 7760d228041b..c8a962c2e653 100644
+--- a/arch/x86/lib/insn-eval.c
++++ b/arch/x86/lib/insn-eval.c
+@@ -430,6 +430,11 @@ static const int pt_regoff[] = {
+ 	offsetof(struct pt_regs, r13),
+ 	offsetof(struct pt_regs, r14),
+ 	offsetof(struct pt_regs, r15),
++#else
++	offsetof(struct pt_regs, ds),
++	offsetof(struct pt_regs, es),
++	offsetof(struct pt_regs, fs),
++	offsetof(struct pt_regs, gs),
+ #endif
+ };
+ 
+diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
+index 41eaa648349e..dba2197c05c3 100644
+--- a/arch/x86/mm/extable.c
++++ b/arch/x86/mm/extable.c
+@@ -126,18 +126,6 @@ static bool ex_handler_clear_fs(const struct exception_table_entry *fixup,
+ 	return ex_handler_default(fixup, regs);
+ }
+ 
+-static bool ex_handler_pop_zero(const struct exception_table_entry *fixup,
+-				struct pt_regs *regs)
+-{
+-	/*
+-	 * Typically used for when "pop %seg" traps, in which case we'll clear
+-	 * the stack slot and re-try the instruction, which will then succeed
+-	 * to pop zero.
+-	 */
+-	*((unsigned long *)regs->sp) = 0;
+-	return ex_handler_default(fixup, regs);
+-}
+-
+ static bool ex_handler_imm_reg(const struct exception_table_entry *fixup,
+ 			       struct pt_regs *regs, int reg, int imm)
+ {
+@@ -218,8 +206,9 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
+ 	case EX_TYPE_RDMSR_IN_MCE:
+ 		ex_handler_msr_mce(regs, false);
+ 		break;
+-	case EX_TYPE_POP_ZERO:
+-		return ex_handler_pop_zero(e, regs);
++	case EX_TYPE_POP_REG:
++		regs->sp += sizeof(long);
++		fallthrough;
+ 	case EX_TYPE_IMM_REG:
+ 		return ex_handler_imm_reg(e, regs, reg, imm);
+ 	case EX_TYPE_FAULT_SGX:
+-- 
+2.29.2
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
