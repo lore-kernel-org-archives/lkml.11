@@ -2,146 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D16C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:19:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357457AbiALUSU (ORCPT
+        id S1357497AbiALUTN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 15:18:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
+        Wed, 12 Jan 2022 15:19:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357421AbiALUST (ORCPT
+        with ESMTP id S1357486AbiALUTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 15:18:19 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0EB7C06173F;
-        Wed, 12 Jan 2022 12:18:18 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id pf13so7437233pjb.0;
-        Wed, 12 Jan 2022 12:18:18 -0800 (PST)
+        Wed, 12 Jan 2022 15:19:01 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA168C06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 12:18:59 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id r16-20020a17090a0ad000b001b276aa3aabso14648841pje.0
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 12:18:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=2RtAa5Tk2Vk+PL4X9zkXj+Jm0en8y5bHa3POmWQqDmY=;
-        b=PGiOz4Pn3lfF5kZT/ZxEgKKs4SxzIuVKwFsMbVvEFlCHq54QtehYcYAKcRhwYnUjNa
-         Uq9Rqag7jay8Wt/XY6n0xDmI8z+20UV6Y2CJWTzHrjyxcyHEAFZg8iUhJDCO2NlpH+2j
-         MmUtBDe6rc9rbX/ajjV3vaXnwYpEuYmdOQ0RtKjHPkmf7dgQBNhTjVuhOYM+MFU1ZKlv
-         kv3XNWJCFwcOdOWJ5S2ox+4pAvezLj4cYMMdf1W5QXLq8Df/UrzNs7wp7bh+u0FHVh35
-         7wLZPNOg9Sua/QvMQaRP3XnaWOVvKoh1Ep+csm19ZhTXVF//uat3XMYFdaGRO/1YedO7
-         1BXQ==
+        bh=cWg9oGmX5VjzwBIpzlyYG0aMpDjKGVxhDdmjr+TTfSE=;
+        b=Wvl5veJvVOxAEEqXRfAlq3EFmvwi1k+5HEmL903UUIkAXm0sRZlwm/KBWwfxggotD9
+         nSE2A51iCWC2SwhO0m7e4BYIOh/W7C/TOBh1bCV/0MEuwdfnL0c2cAijoGKgBa+t9wYA
+         3zA/m12UZ+/zfgcxV00ab7JXCYBA8/HQXZKN4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=2RtAa5Tk2Vk+PL4X9zkXj+Jm0en8y5bHa3POmWQqDmY=;
-        b=Y7K7h8cvAKi/tY1SmY8CV7yDOG6wa48qcQa4v2XBNASlVsu5TgBzp8U9jrZDIQvwM/
-         3kI7Ee1t5ULVwRKVFAmDyZPeWtB5gqgcO6YINI5tE1ym961ALuEtTvKPlJIGvo4jzY6k
-         9bvvM9niCPYHt//xtZSxKi2NGcTtuF/bpmcaUDhIjsd86fJYi26nKoYHxR+xLFcGL7DA
-         OZ7sofRc7eV0kKAMTIO//rJcKIFxx5Gt+4AFatbal/2qCNA0Wy7XXzTSX1/KxEJczbd9
-         pblurcySnxPTC0XZ17T2D+NRQR1ZjkEAZXE1YVPmcwwBSxnMuYeWU2m2TyQHRtm5WqYP
-         eYwQ==
-X-Gm-Message-State: AOAM53336WNnn37H+cU3mgYkanwMhmdY2qrjT0VOjce/X/eehgaPVdxo
-        h+1o9KzX5zYhYPUL/qXHHdg=
-X-Google-Smtp-Source: ABdhPJwGdSwQ6EmqzwAY4C0hc5kulNjebeiiOGYrfa1wkEy/9k+WhTGk13xQcx5lUvKicBdEFuDfPQ==
-X-Received: by 2002:a17:90b:390b:: with SMTP id ob11mr10592937pjb.66.1642018698316;
-        Wed, 12 Jan 2022 12:18:18 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id j22sm425668pfj.102.2022.01.12.12.18.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cWg9oGmX5VjzwBIpzlyYG0aMpDjKGVxhDdmjr+TTfSE=;
+        b=Tmah/fsq+z1UxgyDVqn4csTiR1En5nX6KOG2537tIMZgvRUcLCMSDv9+BxXapIPkdM
+         Kv8PmoWgMxys5RP8ZznJGizWc2PFx8zg/R3aO5vQml32y8hfBChcpzXQOSbhIilIelbr
+         HpNarE5eA9EDA/T6ZC1CAtOG1vQCtKfw5BfZLhphcV4h75GEagYjvIY65wnmqGGNvtob
+         F7MtasJXNVdHCjl2HrwcA8RGfgrOApPZbn9p3RIa8ccBS5nmvM6KUSJMeOVRXu2M4nZC
+         7zhH1mGqhJLu39DOxZWhDSBjBPb334ZlR89g7VUUkK2GEdkuNbebIl7fphydEdh9Y1SU
+         C4Qw==
+X-Gm-Message-State: AOAM533rW5Xr9CI8DrvHmTV6gi/j7YprcCCwmM6N1cgpbLDO4H8MN1O7
+        eOwiajsgT9fmxB2yybuKKgIgkQ==
+X-Google-Smtp-Source: ABdhPJxO2Q9IGXVDG75qeMUDFvdczT7RHBGhaxNrz76IxGxWNBohSOWl8G2Wtv7gTZPEKYr34aTyVA==
+X-Received: by 2002:aa7:8592:0:b0:4be:2691:bb88 with SMTP id w18-20020aa78592000000b004be2691bb88mr1214917pfn.20.1642018739352;
+        Wed, 12 Jan 2022 12:18:59 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id x25sm422555pfu.113.2022.01.12.12.18.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 12:18:17 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Wed, 12 Jan 2022 10:18:16 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Daniel Jordan <daniel.m.jordan@oracle.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Ben Segall <bsegall@google.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Michal Hocko <mhocko@suse.com>, Nico Pache <npache@redhat.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Steve Sistare <steven.sistare@oracle.com>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-mm@kvack.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [RFC 15/16] sched/fair: Account kthread runtime debt for CFS
- bandwidth
-Message-ID: <Yd83iDzoUOWPB6yH@slm.duckdns.org>
-References: <20220106004656.126790-1-daniel.m.jordan@oracle.com>
- <20220106004656.126790-16-daniel.m.jordan@oracle.com>
- <Yd1w/TxTcGk5Ht53@hirez.programming.kicks-ass.net>
- <20220111162950.jk3edkm3nh5apviq@oracle.com>
+        Wed, 12 Jan 2022 12:18:59 -0800 (PST)
+Date:   Wed, 12 Jan 2022 12:18:58 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: Re: [PATCH] arm64: atomics: Dereference matching size
+Message-ID: <202201121217.FB408C2362@keescook>
+References: <20220107232746.1540130-1-keescook@chromium.org>
+ <YdwKLwvDRfc59c8U@FVFF77S0Q05N>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220111162950.jk3edkm3nh5apviq@oracle.com>
+In-Reply-To: <YdwKLwvDRfc59c8U@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, Jan 10, 2022 at 10:27:59AM +0000, Mark Rutland wrote:
+> Hi Kees,
+> 
+> On Fri, Jan 07, 2022 at 03:27:46PM -0800, Kees Cook wrote:
+> > When building with -Warray-bounds (which is desired to be enabled
+> > globally), the following warning is generated:
+> > 
+> > In file included from ./arch/arm64/include/asm/lse.h:16,
+> >                  from ./arch/arm64/include/asm/cmpxchg.h:14,
+> >                  from ./arch/arm64/include/asm/atomic.h:16,
+> >                  from ./include/linux/atomic.h:7,
+> >                  from ./include/asm-generic/bitops/atomic.h:5,
+> >                  from ./arch/arm64/include/asm/bitops.h:25,
+> >                  from ./include/linux/bitops.h:33,
+> >                  from ./include/linux/kernel.h:22,
+> >                  from kernel/printk/printk.c:22:
+> > ./arch/arm64/include/asm/atomic_lse.h:247:9: warning: array subscript 'long unsigned int[0]' is partly outside array bounds of 'atomic_t[1]' [-Warray-bounds]
+> >   247 |         asm volatile(                                                   \
+> >       |         ^~~
+> > ./arch/arm64/include/asm/atomic_lse.h:266:1: note: in expansion of macro '__CMPXCHG_CASE'
+> >   266 | __CMPXCHG_CASE(w,  , acq_, 32,  a, "memory")
+> >       | ^~~~~~~~~~~~~~
+> > kernel/printk/printk.c:3606:17: note: while referencing 'printk_cpulock_owner'
+> >  3606 | static atomic_t printk_cpulock_owner = ATOMIC_INIT(-1);
+> >       |                 ^~~~~~~~~~~~~~~~~~~~
+> > 
+> > This is due to the compiler seeing an unsigned long * cast against
+> > something (atomic_t) that is int sized. Replace the cast with the
+> > matching size cast. This results in no change in binary output.
+> 
+> Just to check, I assume both GCC and Clang are happy with this applied?
+> 
+> I recall that (historically at least) clang would warn about size mismatches
+> for inline assembly and would sometimes require more care. I don't see anythign
+> for which that would matter, but I just want to check.
 
-On Tue, Jan 11, 2022 at 11:29:50AM -0500, Daniel Jordan wrote:
-...
-> This problem arises with multithreaded jobs, but is also an issue in other
-> places.  CPU activity from async memory reclaim (kswapd, cswapd?[5]) should be
-> accounted to the cgroup that the memory belongs to, and similarly CPU activity
-> from net rx should be accounted to the task groups that correspond to the
-> packets being received.  There are also vague complaints from Android[6].
+Yup, Clang is happy with this AFAICT.
 
-These are pretty big holes in CPU cycle accounting right now and I think
-spend-first-and-backcharge is the right solution for most of them given
-experiences from other controllers. That said,
+> 
+> > Cc: Will Deacon <will@kernel.org>
+> > Cc: Peter Zijlstra <peterz@infradead.org>
+> > Cc: Boqun Feng <boqun.feng@gmail.com>
+> > Cc: Catalin Marinas <catalin.marinas@arm.com>
+> > Cc: linux-arm-kernel@lists.infradead.org
+> > Signed-off-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  arch/arm64/include/asm/atomic_lse.h | 2 +-
+> >  arch/arm64/include/asm/cmpxchg.h    | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/arm64/include/asm/atomic_lse.h b/arch/arm64/include/asm/atomic_lse.h
+> > index d955ade5df7c..5d460f6b7675 100644
+> > --- a/arch/arm64/include/asm/atomic_lse.h
+> > +++ b/arch/arm64/include/asm/atomic_lse.h
+> > @@ -249,7 +249,7 @@ __lse__cmpxchg_case_##name##sz(volatile void *ptr,			\
+> >  	"	mov	%" #w "[tmp], %" #w "[old]\n"			\
+> >  	"	cas" #mb #sfx "\t%" #w "[tmp], %" #w "[new], %[v]\n"	\
+> >  	"	mov	%" #w "[ret], %" #w "[tmp]"			\
+> > -	: [ret] "+r" (x0), [v] "+Q" (*(unsigned long *)ptr),		\
+> > +	: [ret] "+r" (x0), [v] "+Q" (*(u##sz *)ptr),			\
+> >  	  [tmp] "=&r" (tmp)						\
+> >  	: [old] "r" (x1), [new] "r" (x2)				\
+> >  	: cl);								\
+> 
+> It might be worth nothing that __ll_sc__cmpxchg_case_##name##sz already uses
+> the same constraint:
+> 
+> 	[v] "+Q" (*(u##sz *)ptr
+> 
+> ... since that explains why we only need to update the LSE form and not the
+> LL/SC form, and indicates that this is unlikely to be problematic.
 
-> Each use case has its own requirements[7].  In padata and reclaim, the task
-> group to account to is known ahead of time, but net rx has to spend cycles
-> processing a packet before its destination task group is known, so any solution
-> should be able to work without knowing the task group in advance.  Furthermore,
-> the CPU controller shouldn't throttle reclaim or net rx in real time since both
-> are doing high priority work.  These make approaches that run kthreads directly
-> in a task group, like cgroup-aware workqueues[8] or a kernel path for
-> CLONE_INTO_CGROUP, infeasible.  Running kthreads directly in cgroups also has a
-> downside for padata because helpers' MAX_NICE priority is "shadowed" by the
-> priority of the group entities they're running under.
-> 
-> The proposed solution of remote charging can accrue debt to a task group to be
-> paid off or forgiven later, addressing all these issues.  A kthread calls the
-> interface
-> 
->     void cpu_cgroup_remote_begin(struct task_struct *p,
->                                  struct cgroup_subsys_state *css);
-> 
-> to begin remote charging to @css, causing @p's current sum_exec_runtime to be
-> updated and saved.  The @css arg isn't required and can be removed later to
-> facilitate the unknown cgroup case mentioned above.  Then the kthread calls
-> another interface
-> 
->     void cpu_cgroup_remote_charge(struct task_struct *p,
->                                   struct cgroup_subsys_state *css);
-> 
-> to account the sum_exec_runtime that @p has used since the first call.
-> Internally, a new field cfs_bandwidth::debt is added to keep track of unpaid
-> debt that's only used when the debt exceeds the quota in the current period.
-> 
-> Weight-based control isn't implemented for now since padata helpers run at
-> MAX_NICE and so always yield to anything higher priority, meaning they would
-> rarely compete with other task groups.
+Good idea, I'll note that in a v2.
 
-If we're gonna do this, let's please do it right and make weight based
-control work too. Otherwise, its usefulness is pretty limited.
+> 
+> Either way:
+> 
+> Acked-by: Mark Rutland <mark.rutland@arm.com>
 
-Thanks.
+Thanks!
+
+-Kees
+
+> 
+> Thanks,
+> Mark.
+> 
+> > diff --git a/arch/arm64/include/asm/cmpxchg.h b/arch/arm64/include/asm/cmpxchg.h
+> > index f9bef42c1411..497acf134d99 100644
+> > --- a/arch/arm64/include/asm/cmpxchg.h
+> > +++ b/arch/arm64/include/asm/cmpxchg.h
+> > @@ -243,7 +243,7 @@ static inline void __cmpwait_case_##sz(volatile void *ptr,		\
+> >  	"	cbnz	%" #w "[tmp], 1f\n"				\
+> >  	"	wfe\n"							\
+> >  	"1:"								\
+> > -	: [tmp] "=&r" (tmp), [v] "+Q" (*(unsigned long *)ptr)		\
+> > +	: [tmp] "=&r" (tmp), [v] "+Q" (*(u##sz *)ptr)			\
+> >  	: [val] "r" (val));						\
+> >  }
+> >  
+> > -- 
+> > 2.30.2
+> > 
 
 -- 
-tejun
+Kees Cook
