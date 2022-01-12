@@ -2,141 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72B0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:23:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBBBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 17:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350012AbiALRX3 (ORCPT
+        id S1355564AbiALRYY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 12:23:29 -0500
-Received: from mga04.intel.com ([192.55.52.120]:45290 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350009AbiALRX1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 12:23:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642008207; x=1673544207;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9XhBsTlbflZR5cFj2Ctv0MUAiEdS3gEqY5TeMTTEcbo=;
-  b=EoJ/kW5vRzLz6Odk9jLcsreDtRKcdGQpgCuMoHR3lBKpfrrlW0ESwM1r
-   w93QS5rcBZkxkUzPg/dk8Ef3TVapUn9+kianOK2fb2AhHctx4GDX9SD1i
-   hLxWJE+ARhww9WrKwwrcV7DRj1WCXUe2FP2k4ciDJWZbxDe9UEXpw6HgL
-   hw6tWwIsKNOU3/L5B0vgN1N6Q0FCsPu6L0dZ036R3PADQmKaRuCLiWbQn
-   Owo6OfbqESi7fIwFTNZk6C66Zl+2x4nIecJJe5nIy4bofyzV+D/5ioPrX
-   HsMYZw2SzqrA9GQ8G6G9z/eQttSmOwn0mBhsADvAZDlqmxEcU6iZWDXdD
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="242607556"
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="242607556"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 09:21:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
-   d="scan'208";a="515570153"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jan 2022 09:21:04 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7hJ1-00069q-RU; Wed, 12 Jan 2022 17:21:03 +0000
-Date:   Thu, 13 Jan 2022 01:20:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: arch/arm/mach-ixp4xx/common-pci.c:143:5: warning: no previous
- prototype for function 'ixp4xx_pci_write'
-Message-ID: <202201130136.7675O5xx-lkp@intel.com>
+        Wed, 12 Jan 2022 12:24:24 -0500
+Received: from gateway24.websitewelcome.com ([192.185.51.253]:27111 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1355577AbiALRYC (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 12:24:02 -0500
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 0393A3B8B3
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 11:24:00 -0600 (CST)
+Received: from gator4132.hostgator.com ([192.185.4.144])
+        by cmsmtp with SMTP
+        id 7hJvn5W2PRnrr7hJvnsSRj; Wed, 12 Jan 2022 11:21:59 -0600
+X-Authority-Reason: nr=8
+Received: from host-79-47-126-144.retail.telecomitalia.it ([79.47.126.144]:48572 helo=[10.0.0.88])
+        by gator4132.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <bristot@kernel.org>)
+        id 1n7hJu-004Oi8-Ht; Wed, 12 Jan 2022 11:21:58 -0600
+Message-ID: <76028ce8-b46b-b164-60b2-4a40f3872775@kernel.org>
+Date:   Wed, 12 Jan 2022 18:21:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [for-next][PATCH 16/31] rtla: Real-Time Linux Analysis tool
+Content-Language: en-US
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tao Zhou <tao.zhou@linux.dev>, Ingo Molnar <mingo@redhat.com>,
+        Tom Zanussi <zanussi@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        John Kacur <jkacur@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        linux-rt-users@vger.kernel.org, linux-trace-devel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220111173030.999527342@goodmis.org>
+ <20220111173116.190327559@goodmis.org>
+ <5f04540c-273a-c4f2-692d-9de2f1495ba9@kernel.org>
+ <20220112112159.742d258c@rorschach.local.home>
+ <20220112113054.1be08f6c@rorschach.local.home>
+ <20220112121426.2dde33c2@rorschach.local.home>
+ <20220112121623.5b989f83@rorschach.local.home>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <20220112121623.5b989f83@rorschach.local.home>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4132.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - kernel.org
+X-BWhitelist: no
+X-Source-IP: 79.47.126.144
+X-Source-L: No
+X-Exim-ID: 1n7hJu-004Oi8-Ht
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: host-79-47-126-144.retail.telecomitalia.it ([10.0.0.88]) [79.47.126.144]:48572
+X-Source-Auth: kernel@bristot.me
+X-Email-Count: 1
+X-Source-Cap: YnJpc3RvdG1lO2JyaXN0b3RtZTtnYXRvcjQxMzIuaG9zdGdhdG9yLmNvbQ==
+X-Local-Domain: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On 1/12/22 18:16, Steven Rostedt wrote:
+> On Wed, 12 Jan 2022 12:14:26 -0500
+> Steven Rostedt <rostedt@goodmis.org> wrote:
+> 
+>> And by making this mistake, I noticed something in doing the diff. You
+>> put rtla into Documentation/tools. It should be in tools/ itself, not
+>> the Documentation directory.
+> At least it use to be in tools/tracing/rtla, but this series has code
+> in Documentation/tools/rtla, was it not fully moved over?
 
-FYI, the error/warning still remains.
+The code is in tools/tracing/rtla/. The documentation is in
+Documentation/tools/rtla. It  was requested by Corbet in the v3 [1].
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   daadb3bd0e8d3e317e36bc2c1542e86c528665e5
-commit: d5d9f7ac58ea1041375a028f143ca5784693ea86 ARM/ixp4xx: Make NEED_MACH_IO_H optional
-date:   7 months ago
-config: arm-ixp4xx_defconfig (https://download.01.org/0day-ci/archive/20220113/202201130136.7675O5xx-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 244dd2913a43a200f5a6544d424cdc37b771028b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d5d9f7ac58ea1041375a028f143ca5784693ea86
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d5d9f7ac58ea1041375a028f143ca5784693ea86
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Am I missing something?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[1] https://lore.kernel.org/lkml/87tuhcsu0h.fsf@meer.lwn.net/
 
-All warnings (new ones prefixed by >>):
-
-   arch/arm/mach-ixp4xx/common-pci.c:94:5: warning: no previous prototype for function 'ixp4xx_pci_read_errata' [-Wmissing-prototypes]
-   int ixp4xx_pci_read_errata(u32 addr, u32 cmd, u32* data)
-       ^
-   arch/arm/mach-ixp4xx/common-pci.c:94:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int ixp4xx_pci_read_errata(u32 addr, u32 cmd, u32* data)
-   ^
-   static 
-   arch/arm/mach-ixp4xx/common-pci.c:121:5: warning: no previous prototype for function 'ixp4xx_pci_read_no_errata' [-Wmissing-prototypes]
-   int ixp4xx_pci_read_no_errata(u32 addr, u32 cmd, u32* data)
-       ^
-   arch/arm/mach-ixp4xx/common-pci.c:121:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int ixp4xx_pci_read_no_errata(u32 addr, u32 cmd, u32* data)
-   ^
-   static 
->> arch/arm/mach-ixp4xx/common-pci.c:143:5: warning: no previous prototype for function 'ixp4xx_pci_write' [-Wmissing-prototypes]
-   int ixp4xx_pci_write(u32 addr, u32 cmd, u32 data)
-       ^
-   arch/arm/mach-ixp4xx/common-pci.c:143:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int ixp4xx_pci_write(u32 addr, u32 cmd, u32 data)
-   ^
-   static 
-   3 warnings generated.
-
-
-vim +/ixp4xx_pci_write +143 arch/arm/mach-ixp4xx/common-pci.c
-
-^1da177e4c3f41 Linus Torvalds  2005-04-16  142  
-^1da177e4c3f41 Linus Torvalds  2005-04-16 @143  int ixp4xx_pci_write(u32 addr, u32 cmd, u32 data)
-^1da177e4c3f41 Linus Torvalds  2005-04-16  144  {    
-^1da177e4c3f41 Linus Torvalds  2005-04-16  145  	unsigned long flags;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  146  	int retval = 0;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  147  
-bd31b85960a7fc Thomas Gleixner 2009-07-03  148  	raw_spin_lock_irqsave(&ixp4xx_pci_lock, flags);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  149  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  150  	*PCI_NP_AD = addr;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  151  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  152  	/* set up the write */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  153  	*PCI_NP_CBE = cmd;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  154  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  155  	/* execute the write by writing to NP_WDATA */
-^1da177e4c3f41 Linus Torvalds  2005-04-16  156  	*PCI_NP_WDATA = data;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  157  
-^1da177e4c3f41 Linus Torvalds  2005-04-16  158  	if(check_master_abort())
-^1da177e4c3f41 Linus Torvalds  2005-04-16  159  		retval = 1;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  160  
-bd31b85960a7fc Thomas Gleixner 2009-07-03  161  	raw_spin_unlock_irqrestore(&ixp4xx_pci_lock, flags);
-^1da177e4c3f41 Linus Torvalds  2005-04-16  162  	return retval;
-^1da177e4c3f41 Linus Torvalds  2005-04-16  163  }
-^1da177e4c3f41 Linus Torvalds  2005-04-16  164  
-
-:::::: The code at line 143 was first introduced by commit
-:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
-
-:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
-:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- Daniel
