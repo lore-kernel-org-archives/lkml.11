@@ -2,172 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29709C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 20:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357579AbiALUM6 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 15:12:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43274 "EHLO
+        id S233856AbiALUOR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 15:14:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357535AbiALUMr (ORCPT
+        with ESMTP id S1357325AbiALUNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 15:12:47 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4311C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 12:12:46 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id x6so12125003lfa.5
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 12:12:46 -0800 (PST)
+        Wed, 12 Jan 2022 15:13:43 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0498C061751;
+        Wed, 12 Jan 2022 12:13:42 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id oa15so7297303pjb.4;
+        Wed, 12 Jan 2022 12:13:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/MdyQCuTcmQZqE+0791YYCUS0LB/aIHQflB+8ipEfxo=;
-        b=NZQo87j8v1cftqxrl7HiCR/QllRlXw4Uk5Y0ApjkKFb0iLItW0Gx/KAnUfwtvf2aYZ
-         qCZaZj3R6UieyUO5dgVB49pMo8+FthMtnSWFPn4Mp6xbEzDlADS49gFCaK0vzAjQ9SJv
-         Ox212NFV6UTsmEflWWtNXTU3sERfa9to570JDBpsm7VWUcBZQuJzJW5YSi9vjEpP1GcO
-         Okn3N9zAugZUtQZv5VSnWNM615w1CCdjsIIcYaUZG6MuFuL6V1QWSkUBRa6RayRGYoMM
-         xEnHq+GWA8cMmpAV5KCYokFWbR6Mfp/b+TZdTH7Zks2SprfBDFmK0E9n8+q1HnpDN4RO
-         125A==
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XMI3dbv7S6q2jB5/NVdmh3pFl60FzTgbFc2uAC8p4kQ=;
+        b=WNdGX4sWq7OTOq6tvGxIIKvH3UBlRIANC2Pv4V6m0hc0ZZLdjqFY8Jtl6Q23Qq5e2G
+         jHU+I5ciqJ8LhYAJBYBZuT6b5/cWT6ZC9iGb/q37U7Jm1bfZmKdOCueEdeUfZTqxLFVi
+         rOEmnW3bKlifhvohIlJ7VTKFccteIR9AUKP4ya1gVpsyQdE8S0EWkzp82S86jZnNSIsx
+         LtkyBbCL702Bh6BO/GgYdaEYZ9C0pvMefrKGrnGhy2SJ+Odk6MGjWfabSPV9rkGvO5RJ
+         t04P/EXDhXVjBMC+VOKTjiVetCpaDxS3nrBJQOAc6apK322tGTdZFhlhWYF+XUUhoFTJ
+         hK1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
          :references:mime-version:content-disposition:in-reply-to;
-        bh=/MdyQCuTcmQZqE+0791YYCUS0LB/aIHQflB+8ipEfxo=;
-        b=P3lRlkZ9TXqD/IrTfUTNxNYktCWwW62ohUgO3L6hhYKGMjxDPcOqao9OdH9mu7qrZZ
-         QPZ3afrWnt2RlfN7WC9WQxGePf4M8gjlAa0I3DcQp9oOfNpYQ9y1db+1782pJgaoIeY7
-         EfMFr4nMzV7z3ykaZYwLjFfLjjo7UFSENss3e0pgP6Kb9K3xjLPtns1bfmuOp4gHYWHn
-         bygGd7xjo9pyXS/Rd7yIVF/GpPGDfofQnvZgm7SvdiRMTO20sjf6FXNMU08F7IgIYBD5
-         7OYTE2IHCXZxr9C+LxgbFGUQLdLiX4nApdhdEzc6zN7kexyhzAHbYkzr1b5ve/kmeukx
-         XJ5Q==
-X-Gm-Message-State: AOAM530P21YSQBf9i0YHdnndF+GR1W4oT/6aV+/PdpS0B5oveO1JdrvR
-        HXpeFrC7KOnmfwKRxRe+S6gvSIGHIQg=
-X-Google-Smtp-Source: ABdhPJzKoQfmV2bZQgn2DZP7YIOnZOnGVNw6kQnxHv2k/FkobKc1KUeXLk/jjzfy0Yi9kdRlc6zI9A==
-X-Received: by 2002:a05:6512:1395:: with SMTP id p21mr953097lfa.403.1642018364958;
-        Wed, 12 Jan 2022 12:12:44 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id g22sm80465lfr.126.2022.01.12.12.12.44
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Wed, 12 Jan 2022 12:12:44 -0800 (PST)
-Date:   Wed, 12 Jan 2022 23:18:24 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
-User-Agent: mtt
-References: <20210519170357.58410-1-jeremy.szu@canonical.com>
- <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
- <s5ho84h9tit.wl-tiwai@suse.de>
- <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
- <s5hilup9s87.wl-tiwai@suse.de>
- <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
+        bh=XMI3dbv7S6q2jB5/NVdmh3pFl60FzTgbFc2uAC8p4kQ=;
+        b=Vlj8Q8zylUHyno1H/A4iruh0NyLzTRFtSoIE2jKCRwtiYIcsuHNuX+Bwf4xSZfao2I
+         g8mKFeM1DLKvPF8svAPWbZrOA2bHYzG9skHvZsoR9Bm844bzWOG350Bido4sI8WY1svi
+         9GNW7d7GVcPV3tRWRjQSMdzj9978A84p1fYjODjxW80kxRL1KyVtJf8NMmon82glI270
+         lEr8LBwAITRgtxuMUHmug1qE+KrhLqGqlhQjKEaVE/VhfhK0ZSnRcqW34l6BuWwvks7R
+         bQ8zPqNltCGOf3GcK5ZBxmLhPZ7t5dyNRx/qzDdZnku4f0fMMXmljkv3Lhc5e6REGNpT
+         pZhA==
+X-Gm-Message-State: AOAM532R7QIyuqeFtgZDYrlfaUFI06FiB/uM5uctZnuB8Va7CIKPmVds
+        csga8atBHmp5bVXAx7mgZn4=
+X-Google-Smtp-Source: ABdhPJxq26drZEE9wV2Y1XH1ljH7HvENl4m541tSkiSwjR162ek5D4RLLMtTTVviKpZ4wLCDDi12mA==
+X-Received: by 2002:a17:902:c942:b0:14a:604d:2c35 with SMTP id i2-20020a170902c94200b0014a604d2c35mr986692pla.153.1642018422294;
+        Wed, 12 Jan 2022 12:13:42 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id s8sm397048pfu.190.2022.01.12.12.13.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 Jan 2022 12:13:41 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 12 Jan 2022 10:13:40 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Wang Jianchao <jianchao.wan9@gmail.com>
+Cc:     axboe@kernel.dk, jbacik@fb.com, bvanassche@acm.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 13/13] blk: introduce iostat per cgroup module
+Message-ID: <Yd82dJMxdQkssu4k@slm.duckdns.org>
+References: <20220110091046.17010-1-jianchao.wan9@gmail.com>
+ <20220110091046.17010-14-jianchao.wan9@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
+In-Reply-To: <20220110091046.17010-14-jianchao.wan9@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 01:48:28PM +0300, Alexander Sergeyev wrote:
->On Wed, Jan 12, 2022 at 11:13:44AM +0100, Takashi Iwai wrote:
->>You may try to get the codec proc dump with COEF by passing 
->>snd_hda_codec.dump_coef=1 module option for both working and non-working 
->>cases.
->>You can unbind and re-bind the PCI (HD-audio controller) device via sysfs.
->
->I'll try both options later today when able, thank you!
+On Mon, Jan 10, 2022 at 05:10:46PM +0800, Wang Jianchao wrote:
+> From: Wang Jianchao <wangjianchao@kuaishou.com>
+> 
+> iostat can only track the whole device's io statistics. This patch
+> introduces iostat per cgroup based on blk-rq-qos framework which
+> can track bw, iops, queue latency and device latency and distinguish
+> regular or meta data. The blkio.iostat per cgroup output in following
+> format,
+> vda-data bytes iops queue_lat dev_lat [ditto]  [ditto]
+>     meta   \___________ ______________/    |        |
+> 	               v                   v        v
+> 	             read               write   discard
+> In particular, the blkio.iostat of root only output the statistics
+> of IOs from root cgroup. However, the non-root blkio.iostat outputs
+> all of the children cgroups. With meta stats in root cgroup, hope
+> to observe the performace of fs metadata.
 
-First, about unbind and bind via sysfs -- attempts to unbind the HD-audio 
-controller immediately trigger BUGs:
+I think using bpf is a way better solution for this kind of detailed
+statistics. What if I want to know what portions are random, or the
+distribution of IO sizes? Do I add another rq-qos policy or add another
+interface file with interface versioning?
 
-05:00.6 Audio device [0403]: Advanced Micro Devices, Inc. [AMD] Family 17h 
-(Models 10h-1fh) HD Audio Controller [1022:15e3]
+Thanks.
 
-echo -n '0000:05:00.6' > /sys/bus/pci/drivers/snd_hda_intel/unbind
-
-BUG: unable to handle page fault for address 000000000000173c
-#PF: supervisor read access in kernel mode
-#PF: error_code(0x0000) - not-present page
-PGD 0 P4D 0
-Oops: 0000 [#1] SMP NOPTI
-CPU: 2 PID: 167 Comm: kworker/2:3 Tainted: G  T 5.16.0-dirty #3
-Workqueue: events set_brightness_delayed
-RIP: 0010:coef_micmute_led_set+0xf/0x60
-...
-Call Trace:
-   <TASK>
-   set_brightness_delayed+0x6f/0xb0
-   process_one_work+0x1e1/0x380
-   worker_thread+0x4b/0x3b0
-   ? rescuer_thread+0x370/0x370
-   kthread+0x142/0x160
-   ? set_kthread_struct+0x50/0x50
-   ret_from_work+0x22/0x30
-   </TASK>
-
-Is it normal/expected?
-
-
-Second, about dump_coef. I've collected a bunch of samples from 
-/proc/asound/Generic_1/codec#0. Overall, there are 6 different versions across 
-196 samples, two versions are with working sound (and micmute LED).
-
-
-Differences between _non-working_ versions:
-
-Node 0x02 [Audio Output] wcaps 0x41d: Stereo Amp-Out
-Amp-Out vals:  [0x3c 0x3c] // (!) OR [0x53 0x53]
-Converter: stream=5, channel=0 // (!) OR stream=0, channel=0
-
-Node 0x03 [Audio Output] wcaps 0x41d: Stereo Amp-Out
-Amp-Out vals:  [0x3c 0x3c] // (!) OR [0x53 0x53]
-Converter: stream=5, channel=0 // (!) OR stream=0, channel=0
-
-Node 0x20 [Vendor Defined Widget] wcaps 0xf00040: Mono
-Processing caps: benign=0, ncoeff=142
-Coeff 0x0b: 0x8003 // (!) OR 0x7770
-Coeff 0x19: 0x01e3 // (!) OR 0x21e3
-
-Node 0x08 [Audio Input] wcaps 0x10051b: Stereo Amp-In
-Amp-In vals:  [0x27 0x27] // (!) OR [0xa7 0xa7]
-
-
-Differences between _working_ versions:
-
-Node 0x20 [Vendor Defined Widget] wcaps 0xf00040: Mono
-Processing caps: benign=0, ncoeff=142
-Coeff 0x0b: 0x8003 // (!) OR 0x7770
-
-
-Differences between _non_working_ and _working_ versions:
-
-Node 0x20 [Vendor Defined Widget] wcaps 0xf00040: Mono
-Processing caps: benign=0, ncoeff=142
-Coeff 0x19: 0x01e3 OR 0x21e3 // (!) 0x8e11 for working versions
-
-
-In short:
-1) Coeff 0x0b is flapping between 0x8003 and 0x7770 and does not seem to have 
-any effect in both non-working and working versions. Not sure about this, maybe 
-microphone is not operational since I haven't checked it yet.
-2) Coeff 0x19 with 0x8e11 value makes speakers work. Non-working values are 
-0x01e3 and 0x21e3.
-
-Running the following commands makes speakers and micmute LED work (0x20 is the 
-node id, which is mentioned in the snippets above):
-
-hda-verb /dev/snd/hwC1D0 0x20 SET_COEF_INDEX 0x19
-hda-verb /dev/snd/hwC1D0 0x20 SET_PROC_COEF 0x8e11
-
-Is it possible to somehow trace this particular coefficient to hunt the timing 
-issue? It would be great to have a proper fix.
+-- 
+tejun
