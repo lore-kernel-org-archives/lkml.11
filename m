@@ -2,78 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CC25C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 10:59:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F62C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 11:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352688AbiALK7M (ORCPT
+        id S1352694AbiALLAE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 05:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55584 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352671AbiALK7I (ORCPT
+        Wed, 12 Jan 2022 06:00:04 -0500
+Received: from mail-ua1-f41.google.com ([209.85.222.41]:44714 "EHLO
+        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352683AbiALLAB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 05:59:08 -0500
-Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE41C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:59:07 -0800 (PST)
-Received: by mail-il1-x12e.google.com with SMTP id y3so162408ila.3
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 02:59:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MfwR9+Vn3jORLxr1DCzz5sw91FiMcAgXShlKPQP07jQ=;
-        b=NDZBc/s1vAw8tQA5LjF31oTBrFLLcmW+F8lIL8mO9e1iiuzWvOVpkL1c9Uw3JvgGgQ
-         lW01tlg/wfoycDe2ykWw52j01N7BRgIUTZHpPrdDmepvuZAUmpkG0YQzkRmb9mbMAOVa
-         27N6dOP70T+yPfhseSXJ33v4jkRK9JoRgIEx8=
+        Wed, 12 Jan 2022 06:00:01 -0500
+Received: by mail-ua1-f41.google.com with SMTP id l15so3905321uai.11;
+        Wed, 12 Jan 2022 03:00:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=MfwR9+Vn3jORLxr1DCzz5sw91FiMcAgXShlKPQP07jQ=;
-        b=jKy1CUXU9lngE1bkyCz2foLARMZ9gvVNYSupjJObIFj3jiMeCIuUBkPbiqaqk4Hxn8
-         vShGR6TI5qIvvD1T69yJMELma0kyLRQU7XYj4WoRGIsJ7Z8m04rWR6d2kno3jwMUYGdN
-         P5NOM2YNGFptqJnjW97tyuqmyS9LOo0d4okW7DQZyykqoXoz5yFv2Te1ub4ScgWrvRlt
-         75fvYNRMrB3JXvuHvZyBeNXtWD8zwNLirMG6yCScirL4U4LgT1ES/BLvSyBxjs26gJoM
-         M1y5/Y9liXlx78EhZyc98BWFqWNIHA4NioB1D4s48qddDkieiiMgoyCGzY3vhq2+icBg
-         yG1Q==
-X-Gm-Message-State: AOAM532Gr0gV3GiYUo8bcFMSKxGiE3g1Y6szKETGDKdkL3vR7hzXD0j4
-        HycvtZEnIhlyGv019yvKfl3nE6ub1Z/vTLOVrDFysw==
-X-Google-Smtp-Source: ABdhPJxMD3Payzn92jPXXv9nrRvXDf6eBuPX2VU3t1MbasTCzgSWT0uLtDReSbroas9QGt1LuRqwsjrJcGI2QNNuxqE=
-X-Received: by 2002:a05:6e02:1c27:: with SMTP id m7mr4511705ilh.114.1641985147116;
- Wed, 12 Jan 2022 02:59:07 -0800 (PST)
+        bh=P9xJBN5Sf81yronEcRpMEORUChn2S5aTbHnwQ7uOvsM=;
+        b=5ePKShnpQ0O/a+y0L9hopufbzVh93pHELQUkrFa1U1FuQiackfjcmHhtXbdok4fG84
+         YcknPxWjCHOveDBqFC06CsBJptPIx9xhAGHGSkPDTAoqz1IwAQJdcPkBDmuRU42e4o2U
+         XMvXWeVO/JDzA921ubhnKhE029fefgaC+0eRI8CIhYtXK2WwALJGWxgqw4RLlOzwCF19
+         Wa7aeyydaacOQmW6F/mvXs+9N++7yKYhT6zLLSMMVU/RdvgyixwRIiee17kxiw8uoCMa
+         vTIYlxatDySwhbP1OpbDBy89U8Zjr3XkOEcKTaZwatX6jdgCqTXAfZIOK2qq1l/l6Vgz
+         nP0g==
+X-Gm-Message-State: AOAM533mKjb6AfrzgAj0zBnML4LlEreWLo7UODkjFUw+pq44sroeGRAW
+        v1iv5aWAgQGFkGHA1V8baMMya5b5eM5qVUP6
+X-Google-Smtp-Source: ABdhPJyzrfxkgE+7legUtMTTceWLgI4buGjw+odKdGY5Ga5+3Lrb9GUl9uDNe1ZeVwosCI40bW2MdA==
+X-Received: by 2002:a05:6102:956:: with SMTP id a22mr2515050vsi.49.1641985200899;
+        Wed, 12 Jan 2022 03:00:00 -0800 (PST)
+Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com. [209.85.221.177])
+        by smtp.gmail.com with ESMTPSA id i53sm3449490vkr.29.2022.01.12.02.59.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 03:00:00 -0800 (PST)
+Received: by mail-vk1-f177.google.com with SMTP id 191so1401768vkc.1;
+        Wed, 12 Jan 2022 02:59:59 -0800 (PST)
+X-Received: by 2002:a1f:384b:: with SMTP id f72mr4324936vka.0.1641985199694;
+ Wed, 12 Jan 2022 02:59:59 -0800 (PST)
 MIME-Version: 1.0
-References: <20220106122452.18719-1-wsa@kernel.org> <Yd6gRR0jtqhRLwtB@ninjato>
- <98ed8d6d16a3d472d9432eb169aa2da44b66b5cc.camel@yandex.ru> <4dfbee97-14c2-718b-9cbd-fdeeace96f59@yahoo.com>
-In-Reply-To: <4dfbee97-14c2-718b-9cbd-fdeeace96f59@yahoo.com>
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-Date:   Wed, 12 Jan 2022 18:58:41 +0800
-Message-ID: <CAJMQK-h38XdN=QD6ozVNk+wxmpp1DKj21pkFZ+kY31+Lb8ot6Q@mail.gmail.com>
-Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in adapter"
-To:     Tareque Md Hanif <tarequemd.hanif@yahoo.com>
-Cc:     Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
+References: <20220111181037.632969-1-Jason@zx2c4.com> <20220111220506.742067-1-Jason@zx2c4.com>
+In-Reply-To: <20220111220506.742067-1-Jason@zx2c4.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 12 Jan 2022 11:59:48 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdUcJN_ZZLnx8TuhoXYV1DAKK9NsXjH2M0xAdn9JTS16wA@mail.gmail.com>
+Message-ID: <CAMuHMdUcJN_ZZLnx8TuhoXYV1DAKK9NsXjH2M0xAdn9JTS16wA@mail.gmail.com>
+Subject: Re: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
+ other small platforms
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, wireguard@lists.zx2c4.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Theodore Tso <tytso@mit.edu>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        jeanphilippe.aumasson@gmail.com, Ard Biesheuvel <ardb@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi Konstantin and Tareque,
+Hi Jason,
 
-Can you help provide logs if we apply
-5a7b95fb993ec399c8a685552aa6a8fc995c40bd but revert
-8d35a2596164c1c9d34d4656fd42b445cd1e247f?
-
-Thanks
-
-On Wed, Jan 12, 2022 at 6:02 PM Tareque Md Hanif
-<tarequemd.hanif@yahoo.com> wrote:
+On Tue, Jan 11, 2022 at 11:05 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> Geert emailed me this afternoon concerned about blake2s codesize on m68k
+> and other small systems. We identified two effective ways of chopping
+> down the size. One of them moves some wireguard-specific things into
+> wireguard proper. The other one adds a slower codepath for small
+> machines to blake2s. This worked, and was v1 of this patchset, but I
+> wasn't so much of a fan. Then someone pointed out that the generic C
+> SHA-1 implementation is still unrolled, which is a *lot* of extra code.
+> Simply rerolling that saves about as much as v1 did. So, we instead do
+> that in this patchset. SHA-1 is being phased out, and soon it won't
+> be included at all (hopefully). And nothing performance-oriented has
+> anything to do with it anyway.
 >
+> The result of these two patches mitigates Geert's feared code size
+> increase for 5.17.
 >
-> On 1/12/22 15:51, Wolfram Sang wrote:
-> > would the reporters of the
-> > regression be available for further testing?
-> Sure. I am available.
+> v3 improves on v2 by making the re-rolling of SHA-1 much simpler,
+> resulting in even larger code size reduction and much better
+> performance. The reason I'm sending yet a third version in such a short
+> amount of time is because the trick here feels obvious and substantial
+> enough that I'd hate for Geert to waste time measuring the impact of the
+> previous commit.
+>
+> Thanks,
+> Jason
+>
+> Jason A. Donenfeld (2):
+>   lib/crypto: blake2s: move hmac construction into wireguard
+>   lib/crypto: sha1: re-roll loops to reduce code size
+
+Thanks for the series!
+
+On m68k:
+add/remove: 1/4 grow/shrink: 0/1 up/down: 4/-4232 (-4228)
+Function                                     old     new   delta
+__ksymtab_blake2s256_hmac                     12       -     -12
+blake2s_init.constprop                        94       -     -94
+blake2s256_hmac                              302       -    -302
+sha1_transform                              4402     582   -3820
+Total: Before=4230537, After=4226309, chg -0.10%
+
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
