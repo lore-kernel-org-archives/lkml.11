@@ -2,122 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5902BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:10:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 00:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346899AbiALAKv (ORCPT
+        id S1347359AbiALANu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 11 Jan 2022 19:10:51 -0500
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:50926 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232804AbiALAKt (ORCPT
+        Tue, 11 Jan 2022 19:13:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347067AbiALANm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 11 Jan 2022 19:10:49 -0500
-X-Greylist: delayed 329 seconds by postgrey-1.27 at vger.kernel.org; Tue, 11 Jan 2022 19:10:48 EST
-Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id B0C5E2488A4
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:05:19 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.51.24])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 1E9F7A006D;
-        Wed, 12 Jan 2022 00:05:18 +0000 (UTC)
-Received: from mail3.candelatech.com (mail2.candelatech.com [208.74.158.173])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 03C5D3C0083;
-        Wed, 12 Jan 2022 00:05:16 +0000 (UTC)
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        Tue, 11 Jan 2022 19:13:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE29C06173F
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 16:13:42 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id C6F4913C2B0;
-        Tue, 11 Jan 2022 16:05:15 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com C6F4913C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1641945916;
-        bh=18d4yGMhNtN5WeLUyvt5HzRC/PKOBY/gWEW9JAYjrdg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=gsPX6T7F3K6YMGR/JVr1bq7c+0mqLLBmjaXA0XQdokSY0RT8yL6NQ/kHAP7IbUglZ
-         F6duLuXS3F6PlHvUSTdH5EqcONzyuXFOj/TDCZZhoSmVppVw9kRy+dsFnL8tZkZgQV
-         18Nyw+3RsepMEXqzaD2b/4sssp+Y8HAU8HQPm46E=
-Subject: Re: [Bug] mt7921e driver in 5.16 causes kernel panic
-To:     khalid@gonehiking.org, nbd@nbd.name, lorenzo.bianconi83@gmail.com,
-        ryder.lee@mediatek.com, shayne.chen@mediatek.com,
-        sean.wang@mediatek.com, kvalo@kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <5cee9a36-b094-37a0-e961-d7404b3dafe2@gonehiking.org>
- <7b15fa7c-9130-db8c-875e-8c0eb1dcc530@candelatech.com>
- <c3a66426-e6a0-4fd2-dc09-85181c96b755@gonehiking.org>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <8a34d1bc-3095-2d5d-236a-ef271775ca47@candelatech.com>
-Date:   Tue, 11 Jan 2022 16:05:15 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <c3a66426-e6a0-4fd2-dc09-85181c96b755@gonehiking.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-MDID: 1641945918-pXFd2S6286Gh
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCEC561601
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:13:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 226CDC36AE3;
+        Wed, 12 Jan 2022 00:13:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1641946421;
+        bh=mYFAr0fdiwChTVqjFuOpPztelIHQR5xDLGgL3UOsfRw=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=kXUSvKGM9LDqJ20N+oRPOZh8UY1BWZMx1aq4RvIvKNiRuRCB1f8iMMumIVjwHrU1o
+         ct4hEdTfo17xwK7P68EJiHoMRR3xiKTgZRWwqvmpIDIADR7OxyMjbk8Ifrc+0zdRbf
+         35cMw9cPo1/TJZuoWuMj7P9SD6U9wnKMPANMKLpz/4GiRBV+ChT2ggZgZcUCR7H20H
+         cmhbbFQGf2jn0/vWzMufYBZeopDHpTM4ksFlC8dV74SR30mO2SnZ/kk2u0qPS9xL+v
+         RWeHWrt4XEV5DJIz7/6B5SaMhk5CYVQl327SHte6m+++VHMk2CSgo+cMJh0E5+TTs/
+         79YC6jINhy+NQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 087CEF60794;
+        Wed, 12 Jan 2022 00:13:41 +0000 (UTC)
+Subject: Re: [GIT PULL] erofs updates for 5.17-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220110023303.GA26979@hsiangkao-HP-ZHAN-66-Pro-G1>
+References: <20220110023303.GA26979@hsiangkao-HP-ZHAN-66-Pro-G1>
+X-PR-Tracked-List-Id: Development of Linux EROFS file system <linux-erofs.lists.ozlabs.org>
+X-PR-Tracked-Message-Id: <20220110023303.GA26979@hsiangkao-HP-ZHAN-66-Pro-G1>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs.git tags/erofs-for-5.17-rc1
+X-PR-Tracked-Commit-Id: 09c543798c3cde19aae575a0f76d5fc7c130ff18
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 9149fe8ba7ff798ea1c6b1fa05eeb59f95f9a94a
+Message-Id: <164194642102.21161.13755763655607396721.pr-tracker-bot@kernel.org>
+Date:   Wed, 12 Jan 2022 00:13:41 +0000
+To:     Gao Xiang <xiang@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Peng Tao <tao.peng@linux.alibaba.com>,
+        Miao Xie <miaoxie@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Yue Hu <huyue2@yulong.com>, Liu Bo <bo.liu@linux.alibaba.com>,
+        linux-erofs@lists.ozlabs.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/11/22 3:58 PM, Khalid Aziz wrote:
-> On 1/11/22 16:31, Ben Greear wrote:
->> On 1/11/22 3:17 PM, Khalid Aziz wrote:
->>> I am seeing an intermittent bug in mt7921e driver. When the driver module is loaded
->>> and is being initialized, almost every other time it seems to write to some wild
->>> memory location. This results in driver failing to initialize with message
->>> "Timeout for driver own" and at the same time I start to see "Bad page state" messages
->>> for random processes. Here is the relevant part of dmesg:
->>
->> Please see if this helps?
->>
->> From: Ben Greear <greearb@candelatech.com>
->>
->> If the nic fails to start, it is possible that the
->> reset_work has already been scheduled.  Ensure the
->> work item is canceled so we do not have use-after-free
->> crash in case cleanup is called before the work item
->> is executed.
->>
->> This fixes crash on my x86_64 apu2 when mt7921k radio
->> fails to work.  Radio still fails, but OS does not
->> crash.
->>
->> Signed-off-by: Ben Greear <greearb@candelatech.com>
->> ---
->>   drivers/net/wireless/mediatek/mt76/mt7921/main.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
->> diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
->> index 6073bedaa1c08..9b33002dcba4a 100644
->> --- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
->> +++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
->> @@ -272,6 +272,7 @@ static void mt7921_stop(struct ieee80211_hw *hw)
->>
->>       cancel_delayed_work_sync(&dev->pm.ps_work);
->>       cancel_work_sync(&dev->pm.wake_work);
->> +    cancel_work_sync(&dev->reset_work);
->>       mt76_connac_free_pending_tx_skbs(&dev->pm, NULL);
->>
->>       mt7921_mutex_acquire(dev);
-> 
-> Hi Ben,
-> 
-> Unfortunately that did not help. I still saw the same messages and a kernel panic. I do not see this bug if I power down the laptop before booting it up, so 
-> mt7921_stop() would make sense as the reasonable place to fix it.
+The pull request you sent on Mon, 10 Jan 2022 10:33:09 +0800:
 
-I think there are bugs around soft power cycle in these radios.  (And today someone reported
-to me same type of problem in some 7915 radio, though my 7915 radios work in that regard for me.)  The patch above
-fixes a crash I saw on a system with 7921k radio when the radio fails to boot properly for some reason
-or another.  I guess there must be more bugs in the radio bringup logic and you are hitting something
-different from what I hit.
+> git://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs.git tags/erofs-for-5.17-rc1
 
-Thanks,
-Ben
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/9149fe8ba7ff798ea1c6b1fa05eeb59f95f9a94a
+
+Thank you!
 
 -- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
