@@ -2,99 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF1EC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A24C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:09:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351940AbiALJGY (ORCPT
+        id S1351946AbiALJJI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:06:24 -0500
-Received: from mail-0201.mail-europe.com ([51.77.79.158]:36587 "EHLO
-        mail-0201.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351928AbiALJGP (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:06:15 -0500
-Date:   Wed, 12 Jan 2022 09:06:02 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
-        s=protonmail2; t=1641978367;
-        bh=3OW8/QTh8VzBFezKsbQAmUoKdvtKDvroS3M/a7vQQUI=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc;
-        b=oZyw+1iWaQJjOg18hIjSfGiZBj2ds2kcvB9GC5B3Q1uck7jKVFY8iBJs2T7Lw3/k5
-         5AtzZKrDXi9zDgC/JlbcWvkeqWH6GtEQeqYpRXuRbWaU4ngKXfUvhP/sxk5EXwkpTy
-         T54MaxNggtMcAZ0mJI1CRCGwEoN/6enq4tESRQDNFaYG/Udcj/W9UeYxmKikoPpcCG
-         VBvrB/eT+6Ww3xEFZgVTn7qZ2LTgQqvGDeofMltWJGPufvlBzKp50wSYk0v3LFvFIi
-         l1wFPXNm+O/dB7/h607IGAQcXaf7DMtZG8bxcBan591DtlsjPc/o/0Q28SNnr9Armw
-         sD/ygSM1vZL4g==
-To:     Ard Biesheuvel <ardb@kernel.org>
-From:   Orlando Chamberlain <redecorating@protonmail.com>
-Cc:     Aditya Garg <gargaditya08@live.com>,
-        "jk@ozlabs.org" <jk@ozlabs.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Aun-Ali Zaidi <admin@kodeit.net>
-Reply-To: Orlando Chamberlain <redecorating@protonmail.com>
-Subject: Re: [BUG][SEVERE] Enabling EFI runtime services causes panics in the T2 security chip on Macs equipped with it.
-Message-ID: <20220112090554.1b279c4e@localhost>
-In-Reply-To: <CAMj1kXExPTyxSaioSmwhz+bTYwLjQJQ5PHRJKY11cX9M71STSQ@mail.gmail.com>
-References: <6D757C75-65B1-468B-842D-10410081A8E4@live.com> <CAMj1kXETPO9iJoFm26v5gof2xpakHkvz3YV4ahet7BLjX5m5FQ@mail.gmail.com> <D3B9962F-F6F0-4622-9E0F-A3EABACAD471@live.com> <CAMj1kXGem3QB0rj-b57xrcDYkCv6Moi=RX1OUspj3s4vMtsdug@mail.gmail.com> <CAMj1kXEjmJxS-_r4HK_v_Qm85y2oeawk+bWUpSY7mV5NLFCm4g@mail.gmail.com> <787447CE-C7DC-4EA3-B498-6FEA88C523A1@live.com> <CAMj1kXExPTyxSaioSmwhz+bTYwLjQJQ5PHRJKY11cX9M71STSQ@mail.gmail.com>
+        Wed, 12 Jan 2022 04:09:08 -0500
+Received: from mga07.intel.com ([134.134.136.100]:55558 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238120AbiALJJH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 04:09:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1641978546; x=1673514546;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=AXu4Sn7f0Nf9vLDXP59POrZr22J1Hc6Ks692FzUYPvo=;
+  b=hG/2NHMlD/FAS7d8LdEv6ZVSo3rSdNemIQrByFYu5xQ06pSkk60jzi0t
+   XEfQsbTqW20sybMSdDt7gkPb9j5dZUGvRUQ4YWO4KC1F712u/cP/vT8qU
+   Dep538S93puj1EPmo6PIwHSjgII3JjMfimTOKTxVw4/JEk7ds3D/rtRfB
+   xxBdIs1fcPFX/ywLOajOrA3ltVhpOElbv8ESqtAaoHHLkHQAoAK93VRPm
+   1EAgUUtKURS/7yUOJVL3fGYMGn3vt5hADFXh76Yrvmv68/0HkUNqI3RKU
+   tdME+JQQQTP1B1vqPwh4URpNvrQJVEAyEqz81UD5NYGOjxePsf15v5I4n
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="307045425"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="307045425"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 01:09:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="670089739"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 12 Jan 2022 01:09:03 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Wed, 12 Jan 2022 11:09:03 +0200
+Date:   Wed, 12 Jan 2022 11:09:02 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Wayne Chang <waynec@nvidia.com>
+Cc:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        Sing-Han Chen <singhanc@nvidia.com>
+Subject: Re: [PATCH v4 1/1] ucsi_ccg: Check DEV_INT bit only when starting
+ CCG4
+Message-ID: <Yd6ariWZtZN9PlBe@kuha.fi.intel.com>
+References: <20220112054950.615341-1-waynec@nvidia.com>
+ <Yd6IVb5hsc2jpXqn@kuha.fi.intel.com>
+ <0ba8f2bf-9b8b-04a6-e016-821200456100@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0ba8f2bf-9b8b-04a6-e016-821200456100@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 19:21:55 +1100
-"Ard Biesheuvel" <ardb@kernel.org> wrote:
-> What we might do is just use EFI 1.10 for all Apple x86 EFI machines.
+On Wed, Jan 12, 2022 at 08:41:50AM +0000, Wayne Chang wrote:
+> Hi Heikki
+> 
+> Thanks for the review.
+> 
+> On 1/12/22 3:50 PM, Heikki Krogerus wrote:
+> > 
+> > 
+> > Hi,
+> > 
+> > On Wed, Jan 12, 2022 at 01:49:50PM +0800, Wayne Chang wrote:
+> >> From: Sing-Han Chen <singhanc@nvidia.com>
+> >>
+> >> after driver sending the UCSI_START cmd, CCGx would
+> >> clear Bit 0:Device Interrupt in the INTR_REG if CCGX
+> >> reset successfully.
+> >>
+> >> however, there might be a chance that other bits in
+> >> INTR_REG are not cleared due to internal data queued
+> >> in PPM and cause the driver thinks CCGx reset failed.
+> >>
+> >> the commit checks bit 0 in INTR_REG and ignore other
+> >> bits. ucsi driver would reset PPM later.
+> >>
+> >> Fixes: 247c554a14aa ("usb: typec: ucsi: add support for Cypress CCGx")
+> > 
+> > So... no need to take this to the stable kernel releases?
+> > 
+> Should I put cc tag here?
 
-I have found logs of pre-T2 x86 Macs that have EFI v2.40 but I haven't
-heard of them having the issue with writing to nvram:
+Yes, Cc: stable@kernel.org, unless you have some good reason not to.
+I'm guessing you don't. This stuff is also explained here:
 
-[    0.000000] efi: EFI v2.40 by Apple
-[    0.000000] efi:  ACPI=3D0x88ffe000  ACPI 2.0=3D0x88ffe014  SMBIOS=3D0x8=
-8f00000  SMBIOS 3.0=3D0x88efe000=20
-[    0.000000] secureboot: Secure boot disabled
-[    0.000000] SMBIOS 3.0.0 present.
-[    0.000000] DMI: Apple Inc. MacBookPro14,1/Mac-B4831CEBD52A0C4C, BIOS XX=
-X.XXX.XXX.XXX.0 04/24/2020
+https://docs.kernel.org/process/submitting-patches.html#select-the-recipients-for-your-patch
 
-MacBookPro14,1 [1], and MacBookPro13,1 [2] have EFI v2.40, but
-MacBookPro12,1 [3] has v1.10
+> >> Signed-off-by: Sing-Han Chen <singhanc@nvidia.com>
+> >> Signed-off-by: Wayne Chang <waynec@nvidia.com>
+> >> ---
+> > 
+> > What has changed since v3 (and v2) - there is no patch changelog here?
+> > 
+> > In case this is new to you, you list those changes under that '---'
+> > line so they don't become part of the permanent changelog:
+> > 
+> > https://docs.kernel.org/process/submitting-patches.html#the-canonical-patch-format
+> > 
+> The changes are resent for updating the commit messages.
+> Added the Fixes tag which Greg asked for.
+> Thanks for information. I went through the documents.
+> Should I put the following messages in the patch after "---" or should I use resend in subject 
+> for the commit messages updated?
+> v3 -> v4 commit messages updated
 
-[1] https://linux-hardware.org/?probe=3Db1b965bcfa&log=3Ddmesg
-[2] https://linux-hardware.org/?probe=3Ddf102d9c8c&log=3Ddmesg
-[3] https://linux-hardware.org/?probe=3Def5195a62e&log=3Ddmesg
+I think you can say exactly what you did, like "Added the Fixes tag"
+or whatever you did.
 
-I don't know if this would mean the other Macs with EFI v2.40 would lose
-any functionality due to a patch like this (I'm not familiar with what
-was added to the runtime services between v1.10 and v2.40).
+> v2 -> v3 commit messages updated
 
-> Please try the below:
->
-> diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-> index ae79c3300129..2303f9b06412 100644
-> --- a/drivers/firmware/efi/efi.c
-> +++ b/drivers/firmware/efi/efi.c
-> @@ -722,6 +722,13 @@ void __init efi_systab_report_header(const
-> efi_table_hdr_t *systab_hdr,
->                 systab_hdr->revision >> 16,
->                 systab_hdr->revision & 0xffff,
->                 vendor);
-> +
-> +       if (IS_ENABLED(CONFIG_X86_64) &&
-> +           systab_hdr->revision > EFI_1_10_SYSTEM_TABLE_REVISION &&
-> +           !strcmp(vendor, "Apple")) {
-> +               pr_info("Apple EFI Mac detected, using EFI v1.10
-> runtime services only\n");
-> +               efi.runtime_version =3D EFI_1_10_SYSTEM_TABLE_REVISION;
-> +       }
->  }
->=20
->  static __initdata char memory_type_name[][13] =3D {
+Ditto.
 
-This patch makes writing to nvram work for me on MacBookPro16,1
+> v1 -> v2 commit messages updated
 
---=20
+Ditto.
 
+Since you are going to do one more version of this, could you also
+start the sentences with upper-case letters in the commit message?
+Normally I'm not very picky about the grammar stuff (I make plenty of
+mistakes myself), but this time it's driving me crazy for some reason.
+
+thanks,
+
+-- 
+heikki
