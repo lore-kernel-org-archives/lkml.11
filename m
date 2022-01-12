@@ -2,103 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A34FBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D10FCC433F5
 	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244575AbiALPTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 10:19:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245653AbiALPSl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 10:18:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C21AC061751;
-        Wed, 12 Jan 2022 07:18:41 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1068AB81F6A;
-        Wed, 12 Jan 2022 15:18:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5B65C36AE5;
-        Wed, 12 Jan 2022 15:18:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642000718;
-        bh=ww7911UP3Fbvn/wTWNYU+t606JgfxRHZwCcarZxvnyI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XnDfwyl4kqS1FYfuWQDSv05IZqxQTkFgS19iJkU/wk2hFw+MwNp3jR4NePxT1EWTJ
-         Uhernrsd5BV9atJ84FLXP8Rx6xH1e3amx6wYrOsCM33yCb1o2ogUFqfo05lQI0aKIu
-         BPW6Q2GYMwUodn4QHt14imFi9A2UAlEakdnadCC4LjxEw10RQePpolSXEXwHYY0QSr
-         IqjV5gxg5BN0YwkilpifQAg+npGtn8I6rJ67VVZI95W4xTq5Ja+153ADg2BiRay9MI
-         6m99ej3Mv5ogmizVL16UIFfMNLIzgkVYkHtJx4c7nDS5i/BHTgeyP82AVuuKX8pl5G
-         aRoD7J4IZoM5Q==
-Received: by pali.im (Postfix)
-        id 6DA96768; Wed, 12 Jan 2022 16:18:38 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 06/11] PCI: mvebu: Add support for PCI Bridge Subsystem Vendor ID on emulated bridge
-Date:   Wed, 12 Jan 2022 16:18:09 +0100
-Message-Id: <20220112151814.24361-7-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220112151814.24361-1-pali@kernel.org>
-References: <20220105150239.9628-1-pali@kernel.org>
- <20220112151814.24361-1-pali@kernel.org>
+        id S1354763AbiALPTc (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 10:19:32 -0500
+Received: from mga04.intel.com ([192.55.52.120]:32184 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1354529AbiALPS5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 10:18:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642000737; x=1673536737;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=EmMRGHo4Nr7gr2CBCoSSj4+UCrefbL0nyNIfOseDHmw=;
+  b=QPUih7lM+fCs34KjdhSfjqE79xcXGpvbXEu+dFbX2VYMbY84gkRsPYwk
+   GGohdmsEU3/ErJmN+ZsJXC7EKJ59Jn5BiAkdQMI/Whzjqy8gsy+8SkXz0
+   yoazq4jmqDv7i6+W65YRm2MSckcNGQB3OzBm/2W8jbQ0qu3QV+X4xVtBN
+   d5AaO7TT5Ry+GjhHuaggTksxRQbDxvQHAHuA+Fke/f0kX2LVzyWrnoPvz
+   x58f1VlVgm7//5UfzNQcTN9zVDFtBGE3lijOglmgw1gz6PZonjFYELsv1
+   0dbhGOYGtKlG6dORQtwvwLVvQGlvWY98S1RSKPksUtt0uXIi8/Ofvaghb
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10224"; a="242573130"
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="242573130"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 07:18:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,282,1635231600"; 
+   d="scan'208";a="490762367"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 12 Jan 2022 07:18:55 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n7fOo-000600-Mq; Wed, 12 Jan 2022 15:18:54 +0000
+Date:   Wed, 12 Jan 2022 23:18:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: drivers/acpi/acpi_pcc.c:34:22: sparse: sparse: symbol 'pcc_ctx' was
+ not declared. Should it be static?
+Message-ID: <202201122308.6u2N4BuL-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register with Subsystem Device/Vendor ID is at offset 0x2c. Export is via
-emulated bridge.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   daadb3bd0e8d3e317e36bc2c1542e86c528665e5
+commit: 77e2a04745ff8e391ad402e2d2d1157a5d3a7ebc ACPI: PCC: Implement OperationRegion handler for the PCC Type 3 subtype
+date:   8 days ago
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220112/202201122308.6u2N4BuL-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=77e2a04745ff8e391ad402e2d2d1157a5d3a7ebc
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 77e2a04745ff8e391ad402e2d2d1157a5d3a7ebc
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/acpi/
 
-After this change Subsystem ID is visible in lspci output at line:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-  Capabilities: [40] Subsystem
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
+sparse warnings: (new ones prefixed by >>)
+>> drivers/acpi/acpi_pcc.c:34:22: sparse: sparse: symbol 'pcc_ctx' was not declared. Should it be static?
+
+vim +/pcc_ctx +34 drivers/acpi/acpi_pcc.c
+
+    33	
+  > 34	struct acpi_pcc_info pcc_ctx;
+    35	
+
 ---
- drivers/pci/controller/pci-mvebu.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index 0f2ec0a17874..811af9e6ede5 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -32,6 +32,7 @@
- #define PCIE_DEV_REV_OFF	0x0008
- #define PCIE_BAR_LO_OFF(n)	(0x0010 + ((n) << 3))
- #define PCIE_BAR_HI_OFF(n)	(0x0014 + ((n) << 3))
-+#define PCIE_SSDEV_ID_OFF	0x002c
- #define PCIE_CAP_PCIEXP		0x0060
- #define PCIE_HEADER_LOG_4_OFF	0x0128
- #define PCIE_BAR_CTRL_OFF(n)	(0x1804 + (((n) - 1) * 4))
-@@ -731,6 +732,7 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 	struct pci_bridge_emul *bridge = &port->bridge;
- 	u32 dev_id = mvebu_readl(port, PCIE_DEV_ID_OFF);
- 	u32 dev_rev = mvebu_readl(port, PCIE_DEV_REV_OFF);
-+	u32 ssdev_id = mvebu_readl(port, PCIE_SSDEV_ID_OFF);
- 	u32 pcie_cap = mvebu_readl(port, PCIE_CAP_PCIEXP);
- 	u8 pcie_cap_ver = ((pcie_cap >> 16) & PCI_EXP_FLAGS_VERS);
- 
-@@ -752,6 +754,8 @@ static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- 	 */
- 	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
- 
-+	bridge->subsystem_vendor_id = ssdev_id & 0xffff;
-+	bridge->subsystem_id = ssdev_id >> 16;
- 	bridge->has_pcie = true;
- 	bridge->data = port;
- 	bridge->ops = &mvebu_pci_bridge_emul_ops;
--- 
-2.20.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
