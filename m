@@ -2,104 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC46C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:08:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90754C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 08:10:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351431AbiALIIB (ORCPT
+        id S1351439AbiALIKu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 03:08:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44746 "EHLO
+        Wed, 12 Jan 2022 03:10:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351416AbiALIH7 (ORCPT
+        with ESMTP id S237993AbiALIKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 03:07:59 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3A9C06173F;
-        Wed, 12 Jan 2022 00:07:58 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id y10so2189243qtw.1;
-        Wed, 12 Jan 2022 00:07:58 -0800 (PST)
+        Wed, 12 Jan 2022 03:10:48 -0500
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C8DC06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:10:48 -0800 (PST)
+Received: by mail-qk1-x72c.google.com with SMTP id t24so1633468qkg.11
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 00:10:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o7CnV6Plc3m49ljVBNe22o8ETLLt2AJm3GJl7I66i/s=;
-        b=O0yqbYatJJD8z/BiYzKVWgBzyr0pid5wIkdk1dyFYcP8ifFxYZR/XAeGt9UJFPJVG/
-         0Btvo2y946ODVnYhxa5/nYlFTwYtasRmEM/XUQWCC6m/H9Xz85fhuejprChRaOTVNmUR
-         ub7zZZHGN7J6azT4mDuBMRaAAimgoBXyOca4RvASW8mJKgtIkgX/Si3eH7AVVuZ+XJgU
-         OlQz+/MYTA452bFxlWh+gr89cUGQEG5jv9KxRPOC8f4L+W5kwFEFf9/x3zVmgF1SS2FF
-         qQsVnMtREDbuE0/TREWW+6qa78luB75F1kSjs4ETmUTELgv2ODLxviVu0lcdsvZyOcs/
-         1RTg==
+        d=dowhile0-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ln4Z+utk5t4wG7dSTr+N/vIytSHGiSk5Tc9SQNyOM48=;
+        b=jRXNSagtG+3zCQ/ueepVM/ZM8F+fDU+KYJkYAXte5pXlSXGD9pne8SjP5bzXRhTgTr
+         /LDmH+gdHv7f4ka7Fty9DPzim7kmqkCpYiSN6KQNDQ1L+UPPyG2am2s07g300gsYADGT
+         AJb+btdFlbtttkdtoD0ebAkqEFyeO5ZOGo36O3wC5NiCecrGTlB1idrAmqutPEOfyWam
+         n2rwJW/QZf1zc8D4/iVVtZbcNwIeE6AAM47bc7p45h7cvF0VojA9f3EwrNZAN7Pp7rug
+         7ldZ/AEjhRU4lUkcoA5PoPuAYB5eWOFx3J/E/jDvDoQ4tw6dtRSx+L/Q35l36UtxOMOi
+         uTrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=o7CnV6Plc3m49ljVBNe22o8ETLLt2AJm3GJl7I66i/s=;
-        b=LBeXJ1sAYjZzp4Kl4R+KRaFA/n3PDMv/PQ18nWTfnMCS3FS2+APeJ2n7ReB9sqseA/
-         Vl10O45WVKEZawJup5vFL2Zpv2Hqn60r+IP4Ubcq6gGqVcbiWgcgRlwzt9POVdqUDhEi
-         fR/zXvKzjysnsWgPlD+uHtwORy1OpazUXT6MtoupP+I4urB5cUlBvOqRlqTW+bwltJzT
-         cmn2VkAy1WS+pfoRj0p1udEfGEq9zTqKNArZP8s3gxfAJ8SkorezGrB/qqi0TGVRplz+
-         5bU1M3PGenH+ioFgxSganiq+uq2Wy/JoTyC5Vc1u4Bwg1ohpHHvsBsULjxZ0Fvth5EY0
-         RDMw==
-X-Gm-Message-State: AOAM532NCbKFkjRjNbD4eQst4y1OV3TU1Lcw19j04MHAWlNB+vOAYppq
-        bpFCB66gz7tF/9L0ULr6gdI=
-X-Google-Smtp-Source: ABdhPJxmhU3/AkiZvPhIrkQ3K6bpl665AMfd0sAPJivqMASvyC/sRCf6fmUVzCtxKyrhtrUtOrJHlg==
-X-Received: by 2002:a05:622a:1013:: with SMTP id d19mr6769175qte.151.1641974877992;
-        Wed, 12 Jan 2022 00:07:57 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id c17sm7736543qkl.90.2022.01.12.00.07.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 Jan 2022 00:07:57 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     kvalo@kernel.org
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] wireless/ath/ath9k: remove redundant status variable
-Date:   Wed, 12 Jan 2022 08:07:51 +0000
-Message-Id: <20220112080751.667316-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ln4Z+utk5t4wG7dSTr+N/vIytSHGiSk5Tc9SQNyOM48=;
+        b=7tHh6OF7NmMyHrxNqguRvfBhxrQX9wGXYbatUZOjOe51GcM5j3akzMB2+F2ct69ooQ
+         X3WVDBZZPhFMtWDSlTVccEAWNsoqyzebVW36gfoaY6b3YaZCaeB/0smoojQ9jjlKWHPS
+         gP/GeKQ/Y93SfZqE2iwpCesj/0F3Z169vOeeFdzMBwuj0pXls1mmh/ApkRUZx1uWdj/i
+         UAKRbWIOgexyISvxvY6KBMmdeyWVq1CosA1M7D/s1eoexbE8/C7ZnTLms89JE8Ixd3Qy
+         x4YAyxJZztiAARutPGJkbBKko6dxyrSjxzsgc1q1qTqcl5bJcBiOp2AHkwI3OvGlEGA3
+         A1Rw==
+X-Gm-Message-State: AOAM5328F4jkB5ALqIH4KlkWFSc0JzuDaVhQksDOUq8R5YsMTG6QZx5D
+        Q92Rr23MqmLzyZEx6Whgpcy+qGJqKGXZPYTHq14aYQ==
+X-Google-Smtp-Source: ABdhPJxgw8vuzvGsNpSUXyvXwl1oHkWI75DxxBdrzPmti4gBxsNpCUeqpRI1bGJFhSec2o2EMW1PEEto2AraQlbf+yQ=
+X-Received: by 2002:a37:8045:: with SMTP id b66mr5682021qkd.670.1641975047533;
+ Wed, 12 Jan 2022 00:10:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220111175430.224421-1-krzysztof.kozlowski@canonical.com>
+From:   Javier Martinez Canillas <javier@dowhile0.org>
+Date:   Wed, 12 Jan 2022 09:10:36 +0100
+Message-ID: <CABxcv===MQp6Riutw0Cs=CAxX1k9fNZfcL+nDEuRHveXzjMQBw@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] regulator/mfd: dt-bindings: maxim,max77802:
+ convert to dtschema
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Pavel Machek <pavel@ucw.cz>, Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+Hello Krzysztof,
 
-Return value directly instead of taking this in another redundant
-variable.
+On Tue, Jan 11, 2022 at 6:55 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> Hi,
+>
+> Changes since v1
+> ================
+> 1. MFD: Use absolute path to schemas.
+> 2. Regulator: skip properties.
+>
+> Dependencies
+> ============
+> 1. DTS patch: nothing depends on it, sending here so Rob's automatic
+>    checker won't complain about DTS.
+>    I will take it via Samsung SoC tree.
+>
+> 2. Final MFD patch depends on regulator, so the two last patches could
+>    go via Rob's, Mark's or Lee's trees.
+>
+> Best regards,
+> Krzysztof
+>
+> Krzysztof Kozlowski (3):
+>   regulator: dt-bindings: maxim,max77802: convert to dtschema
+>   dt-bindings: mfd: maxim,max77802: convert to dtschema
+>   dt-bindings: leds: common: fix unit address in max77693 example
+>
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
----
- drivers/net/wireless/ath/ath9k/eeprom.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+For the three patches:
 
-diff --git a/drivers/net/wireless/ath/ath9k/eeprom.c b/drivers/net/wireless/ath/ath9k/eeprom.c
-index e6b3cd49ea18..efb7889142d4 100644
---- a/drivers/net/wireless/ath/ath9k/eeprom.c
-+++ b/drivers/net/wireless/ath/ath9k/eeprom.c
-@@ -670,8 +670,6 @@ void ath9k_hw_get_gain_boundaries_pdadcs(struct ath_hw *ah,
- 
- int ath9k_hw_eeprom_init(struct ath_hw *ah)
- {
--	int status;
--
- 	if (AR_SREV_9300_20_OR_LATER(ah))
- 		ah->eep_ops = &eep_ar9300_ops;
- 	else if (AR_SREV_9287(ah)) {
-@@ -685,7 +683,5 @@ int ath9k_hw_eeprom_init(struct ath_hw *ah)
- 	if (!ah->eep_ops->fill_eeprom(ah))
- 		return -EIO;
- 
--	status = ah->eep_ops->check_eeprom(ah);
--
--	return status;
-+	return ah->eep_ops->check_eeprom(ah);
- }
--- 
-2.25.1
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
 
+Best regards,
+Javier
