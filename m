@@ -2,90 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 043BAC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 06:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCF3C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 06:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350981AbiALGX6 (ORCPT
+        id S1351001AbiALGbA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 01:23:58 -0500
-Received: from out162-62-57-87.mail.qq.com ([162.62.57.87]:51315 "EHLO
-        out162-62-57-87.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231773AbiALGX4 (ORCPT
+        Wed, 12 Jan 2022 01:31:00 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:44598 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345659AbiALGa4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 01:23:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1641968626;
-        bh=AFpLSdr37ru0LWxmAPC73QLpfj5oiuYqjThjLb9wsxw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=nnm9oAsnIHYCERrPtMHi18826hTqthXYw7IRFsS7rMc4cjxxpxbXbGg0oGe2ubw9x
-         m44lEd+Q/bmMvI8CGON6ZongK3JaF0kWlmhHWRp61taGA8rA7ruT3AhMGgXhYrs+Ie
-         bg39nTl1biVaFDfUZNFtAUT0fLUngU9ZANLEDDr4=
-Received: from localhost ([119.32.47.91])
-        by newxmesmtplogicsvrsza5.qq.com (NewEsmtp) with SMTP
-        id 41BB8A76; Wed, 12 Jan 2022 14:16:27 +0800
-X-QQ-mid: xmsmtpt1641968187tlvhrscib
-Message-ID: <tencent_236C8935F1179CB3D1788CBF3B179494D60A@qq.com>
-X-QQ-XMAILINFO: NhDhJCJPIfnTDcnTznCD9f89oc8Kla5y5v2MzY6O6cSG9gIiK9IrdR1D2zyAdn
-         0eevOWM0Gzp1keStWW2+1yuPnFR55xMhbf4VE/VnKMqNPaoxt8WVVPzOuWO8QkM5LrHjlxav/STa
-         NLaSIsTmak/NjAw41rodE0av49y7UgoIO9hdmnFVjKxqc37FSLHsNkM+c8g9DmI1gE+/6qMuGeoY
-         UjC9CkpgJJCWNVroOiv1aMvWX73iuGSnHsFJi6jTcVmQvDDF6SBAXvvJ/nMlXI7WdSZJ29Weh4sr
-         Fy9iEuvugRh4LbhP3JFnl+dFRzmlzNIAlNlcgWc1r4JXUmFYrTQO7buYKnXSlhbQiSdtGXbQj+tZ
-         bbcwdLcD15F1tMX+aJJ1GOYfe5flcx4bVJYbE1IT0rZmUycWtxau0MV5mCVPJrovk3MMhKTzz13C
-         Rhto0xY+wTqzl22lpJrFuG5OOhhV7hhYcofvpCqqS3yQqHtIu8vcstrC3MKi/Rukc/NpAAiI9Aw/
-         kXl9hQTS2yfDTZf97PPzb37VW9pdEoQYkaIwC8HJQ69QmX13ofWx9SQ9MqgXYOoQ2KiCdcWTuv7l
-         lhpc6stePTGrBece03FyX3cBhPpyiLjEVvYdyRe76WIo/+2+mZic2oUAk2gV2zsYRo+qYUghoB9e
-         gqSuFePvAniIjalpy3FqaP/qWcePpd/i3ylWDx7mC9NYOs4ttbaC0mPLeTk3IKepXrBeAyeWM+TZ
-         eDOSlPZTcUcJlGJzs3htjwYWZ2wERUqR3fkJfGB5XMw+U9jVV7Ik4T4N96dY4hjMQ7kqPYQqRs9s
-         jowG9PHQa4WCLVDQ/ua2h4SdTSm3iEetG+h2PMmcSnJ0qkN87OJPbzq/mMVpVFlIVpLrW1ryW2NA
-         ==
-Date:   Wed, 12 Jan 2022 14:16:27 +0800
-From:   Conley Lee <conleylee@foxmail.com>
-To:     Corentin Labbe <clabbe.montjoie@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
-        wens@csie.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] net: ethernet: sun4i-emac: replace magic number with
- macro
-X-OQ-MSGID: <Yd5yO0+T+q9gBYlj@fedora>
-References: <tencent_58B12979F0BFDB1520949A6DB536ED15940A@qq.com>
- <tencent_71466C2135CD1780B19D7844BE3F167C940A@qq.com>
- <Yd2xC7ZaHrTAXcZd@Red>
+        Wed, 12 Jan 2022 01:30:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1641969054;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bK7XyK/gVW/nDtWgdJaGpYWUQoRdCOb/XtgxbXgPvnM=;
+        b=N6qvUggzkydd0+GqfyLYAn0bcLJhIAve31LxzLXZJUf9Tpv/TfsmyCkJSrNlG/xGOSynu/
+        CfEIvT7FXJcnb4EtroEg+xCxwKG9BOPBj0XQk5pWn1HTGBhAr0Uc0eYYvXAJEEzeG2hRTl
+        COgLe6AaIbKNTtxJJOIDcVojOSlghfg=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-631-AwNamtRXN1-CFqI53b2GMg-1; Wed, 12 Jan 2022 01:30:51 -0500
+X-MC-Unique: AwNamtRXN1-CFqI53b2GMg-1
+Received: by mail-ed1-f70.google.com with SMTP id r8-20020a05640251c800b003f9a52daa3fso1300776edd.22
+        for <linux-kernel@vger.kernel.org>; Tue, 11 Jan 2022 22:30:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bK7XyK/gVW/nDtWgdJaGpYWUQoRdCOb/XtgxbXgPvnM=;
+        b=NMKblJRlXUKKWqmX4EG6XXvt9enlV+FioWfgPbkyCzBm0edd7b3jABj08bURfVw5QF
+         97g//rFtpwQQGHJMMdpGrQ/rjQCpnhP7YcfNjcPn4HyBe+rmGFZX6x32tqa2cpnRRuqn
+         j5PTLNtnmX6KtcB34iPj7Wuiekrc8z5L3jdWOtz0vRYXQCQNEN7Cidh0aBtiyg6euX5k
+         bkFVWPv53LAaXeXcHnHwu0xsk0sfQ9oyDjmltUP7Q9VtoZHv+egrgTx0dfGzwJYcmOIu
+         luiyyZb7pyMTBlOlT4IrTtcPmdJ2GiVINZoSv/jf6iradpXUzAgL+aLNgE24LPfsk23b
+         6I1w==
+X-Gm-Message-State: AOAM532oTxupEWRSptQF2KtqUKL7xQBTYaoo1tv9GmfW48/RHIZLwPpK
+        C2YSS6dQZDZ1pPUp8PbHQ0PH577mMDdcfe+CKkvTHRHUuC6+l21xfXIjZ9kUwhp+T37Io+RNM0n
+        CCwNiWucGBXh2gSttWAgM/RMU
+X-Received: by 2002:a17:906:a148:: with SMTP id bu8mr6318690ejb.421.1641969049556;
+        Tue, 11 Jan 2022 22:30:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxNjiZRz5Py3VHe2DjEuMPn36+kac6X/JVuHHlQgUeOHbPVat7+JLR0moBJobNitXh5a97tOw==
+X-Received: by 2002:a17:906:a148:: with SMTP id bu8mr6318683ejb.421.1641969049356;
+        Tue, 11 Jan 2022 22:30:49 -0800 (PST)
+Received: from redhat.com ([2.55.132.148])
+        by smtp.gmail.com with ESMTPSA id h2sm4186388ejo.169.2022.01.11.22.30.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 11 Jan 2022 22:30:48 -0800 (PST)
+Date:   Wed, 12 Jan 2022 01:30:45 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     =?utf-8?B?5p2O5Lic5Y2H?= <lidongsheng@dayudpu.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] virtio_vdpa: Support surprise removal of virtio vdpa
+ device
+Message-ID: <20220112013018-mutt-send-email-mst@kernel.org>
+References: <tencent_7A45E1E967F13AE14B061269@qq.com>
+ <20220111065033-mutt-send-email-mst@kernel.org>
+ <CACGkMEuAoSwore14qnuMDgdEtWh-UOJf1=oR9vhPMff8hoEZEQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <Yd2xC7ZaHrTAXcZd@Red>
+In-Reply-To: <CACGkMEuAoSwore14qnuMDgdEtWh-UOJf1=oR9vhPMff8hoEZEQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/11/22 at 05:32下午, Corentin Labbe wrote:
-> Date: Tue, 11 Jan 2022 17:32:11 +0100
-> From: Corentin Labbe <clabbe.montjoie@gmail.com>
-> To: Conley Lee <conleylee@foxmail.com>
-> Cc: davem@davemloft.net, kuba@kernel.org, mripard@kernel.org,
->  wens@csie.org, netdev@vger.kernel.org,
->  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v3] net: ethernet: sun4i-emac: replace magic number
->  with macro
+On Wed, Jan 12, 2022 at 10:23:07AM +0800, Jason Wang wrote:
+> On Tue, Jan 11, 2022 at 7:52 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+> >
+> > On Tue, Jan 11, 2022 at 11:36:42AM +0800, 李东升 wrote:
+> > > When virtio vdpa device removed, the abnormal damage of the device cannot be
+> > > perceived normally, which will cause problems similar to:
+> > >
+> > > 43bb40c5b926
+> >
+> >
+> > Should include the subject of the patch too.
+> >
+> > > Hence, add the ability to abort the command on surprise removal
+> > >
+> > > Signed-off-by: dongsheng li <lidongsheng@dayudpu.com>
+> >
+> > When removing gracefully,
+> > I am not sure we should break device unconditionally like this
+> > before giving drivers a chance to clean up.
+> > Should we just do it for surprise removal?
 > 
-> Le Tue, Jan 11, 2022 at 11:05:53AM +0800, Conley Lee a écrit :
-> > This patch remove magic numbers in sun4i-emac.c and replace with macros
-> > defined in sun4i-emac.h
-> > 
-> > Signed-off-by: Conley Lee <conleylee@foxmail.com>
+> That requires a new method to query whether it's a surprise removal.
 > 
-> Hello
-> 
-> I sent a CI job witch next-20220107+yourpatch and saw no regression.
-> 
-> Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-> Tested-on: sun4i-a10-olinuxino-lime
-> 
-> Thanks!
-> Regards
-> 
-Could you please provide more information about it ? I test it on my
-marsboard-a20 and everything work well.
+> Thanks
 
-Thanks 
+We can check pci_device_is_present like virtio does.
+
+> >
+> > > ---
+> > >  drivers/virtio/virtio_vdpa.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > >
+> > > diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
+> > > index 4a9ddb44b2a7..fd930409d190 100644
+> > > --- a/drivers/virtio/virtio_vdpa.c
+> > > +++ b/drivers/virtio/virtio_vdpa.c
+> > > @@ -374,6 +374,7 @@ static void virtio_vdpa_remove(struct vdpa_device *vdpa)
+> > >  {
+> > >   struct virtio_vdpa_device *vd_dev = vdpa_get_drvdata(vdpa);
+> > >
+> > > + virtio_break_device(vd_dev->vdev);
+> > >   unregister_virtio_device(&vd_dev->vdev);
+> > >  }
+> > >
+> > > --
+> > > 2.17.1
+> >
+
