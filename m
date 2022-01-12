@@ -2,125 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEE2C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 21:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 938F6C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 21:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiALVTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 16:19:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiALVTM (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 16:19:12 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0197C06173F;
-        Wed, 12 Jan 2022 13:19:11 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id r28so6577768wrc.3;
-        Wed, 12 Jan 2022 13:19:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6TxiOntNhsCrtTXgbXmjcIfphc43hOl3QDBs0NNaLFY=;
-        b=KFiMw3MPBADupNQlBvuHMx9S77BKhdF50zxz77/j9FbgxZiOW10JkOCDEu4tDtTIUZ
-         AF2ne5pOpFtLLh0J/9OVlZ3Xk8elbrON8BeE8eBJFFtdl+rcmCx6FlCLn1TGlLjOGU1U
-         MbEepFp7jfyJPApV+rIYxxpUAJzQ5eydRVetMrqCpxYELcUkPYCWoTUG1/frTgYsvUGJ
-         ZiTlzH1EJEC+Ki3ORSUcCKfj0/d1Le+p8V28PtIAlySvlQOqa+hdOESzqWF4D3jzjQSP
-         3LTRiZFk53hsfrs+MASoRHQUwhCVAtsh7bisLyz3COXkFx2eHCyN6mzF2beFQqpPV5MI
-         6hXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6TxiOntNhsCrtTXgbXmjcIfphc43hOl3QDBs0NNaLFY=;
-        b=AhCHq7KkOBj8cb3yqwx2hxb4C5O1Y47uNXu8Q4DJ8YcKxNTl8ScG4l1lfR++qJaOXg
-         jlBI6b5Xz3oVQ4puaQTTJfogXA1Y6WVCWh7jwnds5GgRNPBZtYs1mGa7Q9sMppW5/Ch9
-         rDsOa/HPI+s4hahrPtCBjEh+s1bifAPKk6CxihkodLWGv+INl3GMtCNPlPTMKUgD49pk
-         NvqJLGc42b0EKnuTPNvBGga+CTGK74I9QQnXzejjvd5D4prVRWYCIgvPvPeZfhOl4EgE
-         yw4uKQwojRebBitb/ozp8DlpL4xAL58fpDbztS6Vm7H94zlBDsvAAJZnjXFYryAYB22A
-         sVmw==
-X-Gm-Message-State: AOAM533w+L5sRr9qrUpYclC6VRjs/yZv0JrAVVCcaK1iDk8HoZTjay6+
-        TXdqGR6DyyW1jU5zBgP+UpOgj4osSFVAhPNZieE=
-X-Google-Smtp-Source: ABdhPJzFEuWp7Wsk8JdHQYZwsj1tBXEicac30GClml/cPixPa0nmwZPRG1lrU1uj5FLFPmz34phbSV+YiJmWRQFzecY=
-X-Received: by 2002:a5d:6488:: with SMTP id o8mr1369457wri.93.1642022349685;
- Wed, 12 Jan 2022 13:19:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20220112030115.1.Ibac66e1e0e565313bc28f192e6c94cb508f205eb@changeid>
- <20220112030115.3.I86c32730e08cba9e5c83f02ec17885124d45fa56@changeid>
-In-Reply-To: <20220112030115.3.I86c32730e08cba9e5c83f02ec17885124d45fa56@changeid>
-From:   Rob Clark <robdclark@gmail.com>
-Date:   Wed, 12 Jan 2022 13:19:07 -0800
-Message-ID: <CAF6AEGuJxdrYM5XXt6sUGmjossqZTRzwQ6Y8qYsnfCYDvGQurw@mail.gmail.com>
-Subject: Re: [PATCH 3/4] drm/msm/adreno: Expose speedbin to userspace
-To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
-Cc:     freedreno <freedreno@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Jordan Crouse <jordan@cosmicpenguin.net>,
-        Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-        Sean Paul <sean@poorly.run>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S230078AbiALVUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 16:20:38 -0500
+Received: from mga03.intel.com ([134.134.136.65]:1416 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229491AbiALVUg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 16:20:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642022436; x=1673558436;
+  h=from:to:cc:subject:date:message-id;
+  bh=oxP3kSzMpQU8LS3Jv/vnJRR1g2ZKuhTNt8AONEbvO4I=;
+  b=beRX8cVocSudKRkV70l3ausB2Lo4uuawQuAahj25Y+Ej2etkQ1Yj95Qj
+   PQX9i3tRVtgKDLd+rGEF75F++zc5wX77gLFx5grL7zrwFCsHuVmEINTo2
+   KQ0EiAFirYWNbWPlU60LeSY8qa0vUc9fPilZ+nc7KpPPY1KBxTSjuICq/
+   KP2/EDEIT2BGKDqgfDUOjWvBgJk2ekVLBbQS+3sDuhPjVHDC51q73RlMT
+   6iyT8OEPogsthLizjkw50E3fshGXVgyaROm6qIBN4MJdcwwKAvh12Ia1c
+   +oLWVvfCKcezw2XePwBtDLTN7v81VBgmK0rg9OkgblrGlpu/BF1lFvn9Q
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="243810777"
+X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
+   d="scan'208";a="243810777"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 13:20:36 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
+   d="scan'208";a="529378212"
+Received: from chang-linux-3.sc.intel.com ([172.25.66.175])
+  by orsmga008.jf.intel.com with ESMTP; 12 Jan 2022 13:20:35 -0800
+From:   "Chang S. Bae" <chang.seok.bae@intel.com>
+To:     linux-crypto@vger.kernel.org, dm-devel@redhat.com,
+        herbert@gondor.apana.org.au, ebiggers@kernel.org, ardb@kernel.org,
+        x86@kernel.org, luto@kernel.org, tglx@linutronix.de, bp@suse.de,
+        dave.hansen@linux.intel.com, mingo@kernel.org
+Cc:     linux-kernel@vger.kernel.org, dan.j.williams@intel.com,
+        charishma1.gairuboyina@intel.com, kumar.n.dwarakanath@intel.com,
+        ravi.v.shankar@intel.com, chang.seok.bae@intel.com
+Subject: [PATCH v5 00/12] x86: Support Key Locker
+Date:   Wed, 12 Jan 2022 13:12:46 -0800
+Message-Id: <20220112211258.21115-1-chang.seok.bae@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 1:31 PM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
->
-> Expose speedbin through MSM_PARAM_CHIP_ID parameter to help userspace
-> identify the sku.
->
-> Signed-off-by: Akhil P Oommen <quic_akhilpo@quicinc.com>
-> ---
->
->  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> index f33cfa4..e970e6a 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> @@ -242,10 +242,11 @@ int adreno_get_param(struct msm_gpu *gpu, uint32_t param, uint64_t *value)
->                 *value = !adreno_is_a650_family(adreno_gpu) ? 0x100000 : 0;
->                 return 0;
->         case MSM_PARAM_CHIP_ID:
-> -               *value = adreno_gpu->rev.patchid |
-> -                               (adreno_gpu->rev.minor << 8) |
-> -                               (adreno_gpu->rev.major << 16) |
-> -                               (adreno_gpu->rev.core << 24);
-> +               *value = (uint64_t) adreno_gpu->rev.patchid |
-> +                               (uint64_t) (adreno_gpu->rev.minor << 8) |
-> +                               (uint64_t) (adreno_gpu->rev.major << 16) |
-> +                               (uint64_t) (adreno_gpu->rev.core << 24) |
-> +                               (((uint64_t) adreno_gpu->rev.sku) << 32);
+Changes from v4 [1]:
+* Drop CBC mode support (PATCH10). (Eric Biggers)
+* Update the changelog (PATCH8). (Rafael Wysocki)
 
-How about this instead, so we are only changing the behavior for
-new/unreleased devices:
+A couple of other things outside of these patches are still in progress:
+* Support DM-crypt/cryptsetup for Key Locker usage (Andy Lutomirski)
+  [2].
+* Understand decryption under-performance (Eric Biggers and Milan Broz)
+  [3][4].
 
-*value = adreno_gpu->rev.patchid |
-(adreno_gpu->rev.minor << 8) |
-(adreno_gpu->rev.major << 16) |
-(adreno_gpu->rev.core << 24);
-if (!adreno_gpu->info->revn)
-*value |= (((uint64_t) adreno_gpu->rev.sku) << 32);
+This feature's usage for the threat model can be found in the previous
+cover letter [1]. This version is based on 5.16.
 
-(sorry about the butchered indentation.. somehow gmail has become
-antagonistic about pasting code)
+Thanks,
+Chang
 
-BR,
--R
+[1] V4: https://lore.kernel.org/lkml/20211214005212.20588-1-chang.seok.bae@intel.com/
+[2] https://lore.kernel.org/lkml/75ec3ad1-6234-ae1f-1b83-482793e4fd23@kernel.org/
+[3] https://lore.kernel.org/lkml/YbqRseO+TtuGQk5x@sol.localdomain/
+[4] https://lore.kernel.org/lkml/120368dc-e337-9176-936c-4db2a8bf710e@gmail.com/
 
->                 return 0;
->         case MSM_PARAM_MAX_FREQ:
->                 *value = adreno_gpu->base.fast_rate;
-> --
-> 2.7.4
->
+Chang S. Bae (12):
+  Documentation/x86: Document Key Locker
+  x86/cpufeature: Enumerate Key Locker feature
+  x86/insn: Add Key Locker instructions to the opcode map
+  x86/asm: Add a wrapper function for the LOADIWKEY instruction
+  x86/msr-index: Add MSRs for Key Locker internal wrapping key
+  x86/keylocker: Define Key Locker CPUID leaf
+  x86/cpu/keylocker: Load an internal wrapping key at boot-time
+  x86/PM/keylocker: Restore internal wrapping key on resume from ACPI
+    S3/4
+  x86/cpu: Add a configuration and command line option for Key Locker
+  crypto: x86/aes - Prepare for a new AES implementation
+  crypto: x86/aes-kl - Support AES algorithm using Key Locker
+    instructions
+  crypto: x86/aes-kl - Support XTS mode
+
+ .../admin-guide/kernel-parameters.txt         |   2 +
+ Documentation/x86/index.rst                   |   1 +
+ Documentation/x86/keylocker.rst               |  98 +++
+ arch/x86/Kconfig                              |   3 +
+ arch/x86/crypto/Makefile                      |   5 +-
+ arch/x86/crypto/aes-intel_asm.S               |  26 +
+ arch/x86/crypto/aes-intel_glue.c              | 125 ++++
+ arch/x86/crypto/aes-intel_glue.h              |  48 ++
+ arch/x86/crypto/aeskl-intel_asm.S             | 633 ++++++++++++++++++
+ arch/x86/crypto/aeskl-intel_glue.c            | 216 ++++++
+ arch/x86/crypto/aesni-intel_asm.S             |  58 +-
+ arch/x86/crypto/aesni-intel_glue.c            | 239 ++-----
+ arch/x86/crypto/aesni-intel_glue.h            |  17 +
+ arch/x86/include/asm/cpufeatures.h            |   1 +
+ arch/x86/include/asm/disabled-features.h      |   8 +-
+ arch/x86/include/asm/keylocker.h              |  45 ++
+ arch/x86/include/asm/msr-index.h              |   6 +
+ arch/x86/include/asm/special_insns.h          |  32 +
+ arch/x86/include/uapi/asm/processor-flags.h   |   2 +
+ arch/x86/kernel/Makefile                      |   1 +
+ arch/x86/kernel/cpu/common.c                  |  21 +-
+ arch/x86/kernel/cpu/cpuid-deps.c              |   1 +
+ arch/x86/kernel/keylocker.c                   | 199 ++++++
+ arch/x86/kernel/smpboot.c                     |   2 +
+ arch/x86/lib/x86-opcode-map.txt               |  11 +-
+ arch/x86/power/cpu.c                          |   2 +
+ crypto/Kconfig                                |  36 +
+ tools/arch/x86/lib/x86-opcode-map.txt         |  11 +-
+ 28 files changed, 1633 insertions(+), 216 deletions(-)
+ create mode 100644 Documentation/x86/keylocker.rst
+ create mode 100644 arch/x86/crypto/aes-intel_asm.S
+ create mode 100644 arch/x86/crypto/aes-intel_glue.c
+ create mode 100644 arch/x86/crypto/aes-intel_glue.h
+ create mode 100644 arch/x86/crypto/aeskl-intel_asm.S
+ create mode 100644 arch/x86/crypto/aeskl-intel_glue.c
+ create mode 100644 arch/x86/crypto/aesni-intel_glue.h
+ create mode 100644 arch/x86/include/asm/keylocker.h
+ create mode 100644 arch/x86/kernel/keylocker.c
+
+
+base-commit: df0cc57e057f18e44dac8e6c18aba47ab53202f9
+--
+2.17.1
+
