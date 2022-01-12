@@ -2,132 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63789C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4683C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 15:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354856AbiALPzm (ORCPT
+        id S1354866AbiALP4o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 10:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39416 "EHLO
+        Wed, 12 Jan 2022 10:56:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354850AbiALPze (ORCPT
+        with ESMTP id S1354858AbiALP4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 10:55:34 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425FBC061748;
-        Wed, 12 Jan 2022 07:55:34 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id q25so11813843edb.2;
-        Wed, 12 Jan 2022 07:55:34 -0800 (PST)
+        Wed, 12 Jan 2022 10:56:40 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16AE9C061748
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 07:56:40 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id c71so11761815edf.6
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 07:56:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7sr5SESFFMB446XWLFZjyV/pitsS2bsWKxu5hETTxNM=;
-        b=Z2DtGmZd15CFngreVTZS0S8eF7cgf7qNpMDbsRgyUrblkJjHI85j+s6mkaq75JZm5o
-         wEHEL2I0wXsvGpLtxUUV3rqwVXnDb9feupL/z2lSXJsWxcZChRN/j/W939f9yB725iag
-         qwklSKX1aENX/c5ItiOJhEtnVOmv+ZUs847RBU4EICM221XSsQ3t3XhFirGFoFl6TQbN
-         TCPPw7eTuOSJ22n3HaBTIAhTJFOURowETCLAj3qkYfN6YBf3S8zSBpj2BXJ3DvOXUxWZ
-         DRwAEny9Wdzxhgu3ndh5BcOqPEmvCa78a6+JiO7U/ZskfFkwVW4k9gxFhducOkDqRLwH
-         1jUQ==
+        bh=ZUIE2TtYEPu3+VteNSorh9BvWhArgrA6kX1TNQslOW0=;
+        b=AE/8XXAT+GWlyXsKx8iA8oMQffflNVnXzes3tLi6pUcdB26QnlwM5w2N5hjYTKUrYM
+         jAaju3PO7uKcuVu63C2ADgjyfSGnOaRkjGo3n83BUjtc8NuRMMZRf9Sd2bZsj3FpNDmh
+         9wfHxXxetHOur2oYPvYr94mxr4fHWk2Tr8IrVcngbeTV0p1I+7MuZZDHB1mTOiS+VuDP
+         JaPDWtmZBeu48jDcOIspNjRGaAatl80ncdPUoESUq4eaxxfNuRmEpEDyHhsicpmuYgY3
+         LH53J9eVBWGj/3QTgylfiHYpmY7USbh49S09PlvaA/AYzEuDSkgAXTmy/gWYT0p0vxFs
+         Jyow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7sr5SESFFMB446XWLFZjyV/pitsS2bsWKxu5hETTxNM=;
-        b=CBApm3Yb4z6wThdpfKHk4VlQhPo1Abhrcy/hzHu//qHjFaBijfQGsZV7XYtckNvIId
-         YFfBYNtyzJ5eOpFzKbNPgMiOi7pR9nb4HvzxTQKa6aUrk618Wm6NBqFVu4juOPzGhVLP
-         OqGqTVDf10NYR0pCJzrDzx/kAXRg+/2gVKqBgbQgXGA3UplchEUSCyu7rstzmZlOam8i
-         APLaosKmoeWZCj6AzxelIqV5fa8e5lndtvLp5ocOjMYFZgnoA0VpxM4Jl7NGeJZAbIIg
-         3I8QcvWBVSW+v/LS/jIBuIEb+9Wmrwkrr81tJkn8/NmYhD2i0THsjXL3N+zUCm9Zxg3P
-         O9Cg==
-X-Gm-Message-State: AOAM5330Afd96KBXUwp4yAFUfNxUcCtlipqnFfQuqFnWhYxYJlDxeEAE
-        K23tysQ82SPEJqkat+eSt53rhtBSQlfuY6m+8Ow=
-X-Google-Smtp-Source: ABdhPJzJXO9xzC/S0TQ24Y7YhDy0ls0vhKKyoj7GKS7LG+kDSY0DZTNtnzQnsn3WgzH7kNxAQFLNTr838SaKfW72fS4=
-X-Received: by 2002:a05:6402:2696:: with SMTP id w22mr270559edd.296.1642002932831;
- Wed, 12 Jan 2022 07:55:32 -0800 (PST)
+        bh=ZUIE2TtYEPu3+VteNSorh9BvWhArgrA6kX1TNQslOW0=;
+        b=Mx/YooH5mm9MLi9ayj+46f8NKSyW57/B0LRUG1jl+BxLIGQPEbtjTaF3uzH8s9EA7S
+         LMyGpK8E7TvjP+XvwNQl7eKxUH78o6BQi7dcM5RBvVZ/iRM6QzHgL372OGeqE/3ZRF0l
+         QxsUFqtJ9MPC1mczpoU4u2c+Ml75PYCAMchaH/Qrqot0v2cvLEqn/cr92ijyhf5i4kI5
+         dkCkdDmA7QvfqUJZtHhKmTeca6WScKvTS+8VaxfAVBTJQAzaahypCwwGnn5hqFd0iT5I
+         OeQ5JOMb/0RR8y2jFYiGEjlBaBT4t9No13YSgSxCJXiYXdPvP636Vo4LizvsVuceP5bu
+         VGXg==
+X-Gm-Message-State: AOAM5338Rd31pTWi+WoyGgUHBg6ton8Ew8+peHPzUS1H2vzMfqDM7N1E
+        wf/him6q2jCLwSOjs3t8Hka//RwMHQrwdBrHwgOVCg==
+X-Google-Smtp-Source: ABdhPJyeWuZt41D3Y95p0NJDealf3e/VotiCxmEZUzV2AnJgFO8G1BJ8ATEhYpQN39OJfSr22ufSLjOu8AmH8BWXpUc=
+X-Received: by 2002:a17:907:3f92:: with SMTP id hr18mr255113ejc.693.1642002998420;
+ Wed, 12 Jan 2022 07:56:38 -0800 (PST)
 MIME-Version: 1.0
-References: <1641996862-26960-1-git-send-email-akhilrajeev@nvidia.com> <1641996862-26960-2-git-send-email-akhilrajeev@nvidia.com>
-In-Reply-To: <1641996862-26960-2-git-send-email-akhilrajeev@nvidia.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 12 Jan 2022 17:53:45 +0200
-Message-ID: <CAHp75Vc+uN8MTM4cSMQ5gk7GvgkZwJ7aoKwnFiNjQVM4QTqPVg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] device property: Add device_irq_get_byname
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     Christian Koenig <christian.koenig@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
+References: <CA+G9fYsMHhXJCgO-ykR0oO1kVdusGnthgj6ifxEKaGPHZJ-ZCw@mail.gmail.com>
+ <20220112131837.igsjkkttqskw4eix@wittgenstein> <CADYN=9Lvm-1etZS817eZK91NUyxkFBmsu=5-q_8Ei-1eV8DuZQ@mail.gmail.com>
+ <20220112140254.cvngcwggeevwaazw@wittgenstein> <20220112141445.txgrdlycvfkiwsv5@example.org>
+ <20220112142846.3b3m2dyhdtppgwrw@example.org>
+In-Reply-To: <20220112142846.3b3m2dyhdtppgwrw@example.org>
+From:   Anders Roxell <anders.roxell@linaro.org>
+Date:   Wed, 12 Jan 2022 16:56:27 +0100
+Message-ID: <CADYN=9LBjp0=mqyPkTGmdeMx52cg4pM39fnXe-ODTZ=_1OP+zw@mail.gmail.com>
+Subject: Re: [next]: LTP: getxattr05.c:97: TFAIL: unshare(CLONE_NEWUSER)
+ failed: ENOSPC (28)
+To:     Alexey Gladkov <legion@kernel.org>
+Cc:     Christian Brauner <christian.brauner@ubuntu.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        lkft-triage@lists.linaro.org, LTP List <ltp@lists.linux.it>,
+        linux-fsdevel@vger.kernel.org, regressions@lists.linux.dev,
+        containers@lists.linux.dev, Sven Schnelle <svens@linux.ibm.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 4:14 PM Akhil R <akhilrajeev@nvidia.com> wrote:
+On Wed, 12 Jan 2022 at 15:28, Alexey Gladkov <legion@kernel.org> wrote:
+>
+> On Wed, Jan 12, 2022 at 03:14:45PM +0100, Alexey Gladkov wrote:
+> > On Wed, Jan 12, 2022 at 03:02:54PM +0100, Christian Brauner wrote:
+> > > On Wed, Jan 12, 2022 at 02:22:42PM +0100, Anders Roxell wrote:
+> > > > On Wed, 12 Jan 2022 at 14:18, Christian Brauner
+> > > > <christian.brauner@ubuntu.com> wrote:
+> > > > >
+> > > > > On Wed, Jan 12, 2022 at 05:15:37PM +0530, Naresh Kamboju wrote:
+> > > > > > While testing LTP syscalls with Linux next 20220110 (and till date 20220112)
+> > > > > > on x86_64, i386, arm and arm64 the following tests failed.
+> > > > > >
+> > > > > > tst_test.c:1365: TINFO: Timeout per run is 0h 15m 00s
+> > > > > > getxattr05.c:87: TPASS: Got same data when acquiring the value of
+> > > > > > system.posix_acl_access twice
+> > > > > > getxattr05.c:97: TFAIL: unshare(CLONE_NEWUSER) failed: ENOSPC (28)
+> > > > > > tst_test.c:391: TBROK: Invalid child (13545) exit value 1
+> > > > > >
+> > > > > > fanotify17.c:176: TINFO: Test #1: Global groups limit in privileged user ns
+> > > > > > fanotify17.c:155: TFAIL: unshare(CLONE_NEWUSER) failed: ENOSPC (28)
+> > > > > > tst_test.c:391: TBROK: Invalid child (14739) exit value 1
+> > > > > >
+> > > > > > sendto03.c:48: TBROK: unshare(268435456) failed: ENOSPC (28)
+> > > > > >
+> > > > > > setsockopt05.c:45: TBROK: unshare(268435456) failed: ENOSPC (28)
+> > > > > >
+> > > > > > strace output:
+> > > > > > --------------
+> > > > > > [pid   481] wait4(-1, 0x7fff52f5ae8c, 0, NULL) = -1 ECHILD (No child processes)
+> > > > > > [pid   481] clone(child_stack=NULL,
+> > > > > > flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD,
+> > > > > > child_tidptr=0x7f3af0fa7a10) = 483
+> > > > > > strace: Process 483 attached
+> > > > > > [pid   481] wait4(-1,  <unfinished ...>
+> > > > > > [pid   483] unshare(CLONE_NEWUSER)      = -1 ENOSPC (No space left on device)
+> > > > >
+> > > > > This looks like another regression in the ucount code. Reverting the
+> > > > > following commit fixes it and makes the getxattr05 test work again:
+> > > > >
+> > > > > commit 0315b634f933b0f12cfa82660322f6186c1aa0f4
+> > > > > Author: Alexey Gladkov <legion@kernel.org>
+> > > > > Date:   Fri Dec 17 15:48:23 2021 +0100
+> > > > >
+> > > > >     ucounts: Split rlimit and ucount values and max values
+> > > > >
+> > > > >     Since the semantics of maximum rlimit values are different, it would be
+> > > > >     better not to mix ucount and rlimit values. This will prevent the error
+> > > > >     of using inc_count/dec_ucount for rlimit parameters.
+> > > > >
+> > > > >     This patch also renames the functions to emphasize the lack of
+> > > > >     connection between rlimit and ucount.
+> > > > >
+> > > > >     v2:
+> > > > >     - Fix the array-index-out-of-bounds that was found by the lkp project.
+> > > > >
+> > > > >     Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > > >     Signed-off-by: Alexey Gladkov <legion@kernel.org>
+> > > > >     Link: https://lkml.kernel.org/r/73ea569042babda5cee2092423da85027ceb471f.1639752364.git.legion@kernel.org
+> > > > >     Signed-off-by: Eric W. Biederman <ebiederm@xmission.com>
+> > > > >
+> > > > > The issue only surfaces if /proc/sys/user/max_user_namespaces is
+> > > > > actually written to.
+> > > >
+> > > > I did a git bisect and that pointed me to this patch too.
+> > >
+> > > Uhm, doesn't this want to be:
+> >
+> > Yes. I miss it. I tried not to mix the logic, but I myself stepped on this
+> > problem.
+>
+> It should be fixed in the four places:
+>
+> diff --git a/kernel/ucount.c b/kernel/ucount.c
+> index 22070f004e97..5c373a453f43 100644
+> --- a/kernel/ucount.c
+> +++ b/kernel/ucount.c
+> @@ -264,7 +264,7 @@ long inc_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type type, long v)
+>         long ret = 0;
+>
+>         for (iter = ucounts; iter; iter = iter->ns->ucounts) {
+> -               long new = atomic_long_add_return(v, &iter->ucount[type]);
+> +               long new = atomic_long_add_return(v, &iter->rlimit[type]);
+>                 if (new < 0 || new > max)
+>                         ret = LONG_MAX;
+>                 else if (iter == ucounts)
+> @@ -279,7 +279,7 @@ bool dec_rlimit_ucounts(struct ucounts *ucounts, enum rlimit_type type, long v)
+>         struct ucounts *iter;
+>         long new = -1; /* Silence compiler warning */
+>         for (iter = ucounts; iter; iter = iter->ns->ucounts) {
+> -               long dec = atomic_long_sub_return(v, &iter->ucount[type]);
+> +               long dec = atomic_long_sub_return(v, &iter->rlimit[type]);
+>                 WARN_ON_ONCE(dec < 0);
+>                 if (iter == ucounts)
+>                         new = dec;
+> @@ -292,7 +292,7 @@ static void do_dec_rlimit_put_ucounts(struct ucounts *ucounts,
+>  {
+>         struct ucounts *iter, *next;
+>         for (iter = ucounts; iter != last; iter = next) {
+> -               long dec = atomic_long_sub_return(1, &iter->ucount[type]);
+> +               long dec = atomic_long_sub_return(1, &iter->rlimit[type]);
+>                 WARN_ON_ONCE(dec < 0);
+>                 next = iter->ns->ucounts;
+>                 if (dec == 0)
+> @@ -313,7 +313,7 @@ long inc_rlimit_get_ucounts(struct ucounts *ucounts, enum rlimit_type type)
+>         long dec, ret = 0;
+>
+>         for (iter = ucounts; iter; iter = iter->ns->ucounts) {
+> -               long new = atomic_long_add_return(1, &iter->ucount[type]);
+> +               long new = atomic_long_add_return(1, &iter->rlimit[type]);
+>                 if (new < 0 || new > max)
+>                         goto unwind;
+>                 if (iter == ucounts)
+> @@ -330,7 +330,7 @@ long inc_rlimit_get_ucounts(struct ucounts *ucounts, enum rlimit_type type)
+>         }
+>         return ret;
+>  dec_unwind:
+> -       dec = atomic_long_sub_return(1, &iter->ucount[type]);
+> +       dec = atomic_long_sub_return(1, &iter->rlimit[type]);
+>         WARN_ON_ONCE(dec < 0);
+>  unwind:
+>         do_dec_rlimit_put_ucounts(ucounts, iter, type);
+>
 
-In the subject line: device_irq_get_byname()
+Thank you for the fix.
+I applied this patch and built and ran it in qemu for arm64 and x86.
+'./runltp -s getxattr05' passed on both architectures.
 
-> Get interrupt by name from ACPI table as well.
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-an interrupt
-the ACPI
 
-> Add option to use 'interrupt-names' in _DSD which can map to interrupt by
-
-can be mapped
-Interrupt() resource
-
-(The last one is very important to point out this is only about
-Interrupt() resources for now).
-
-> index. The implementation is similar to 'interrupt-names' in devicetree.
-
-the Device Tree
-
-> Also add a common routine to get irq by name from devicetree and ACPI
-
-IRQ
-Device Tree
-
-> table.
-
-...
-
->  /**
-> + * fwnode_irq_get_byname - Get IRQ from a fwnode using its name
-> + * @fwnode:    Pointer to the firmware node
-> + * @name:      IRQ name in interrupt-names property in fwnode
-> + *
-> + * Returns Linux IRQ number on success, errno otherwise.
-
-negative errno
-
-> + */
-> +int fwnode_irq_get_byname(const struct fwnode_handle *fwnode, const char *name)
-> +{
-> +       int index;
-
-> +       if (unlikely(!name))
-
-Don't use unlikely() here.
-
-> +               return -EINVAL;
-> +
-> +       index = fwnode_property_match_string(fwnode, "interrupt-names",  name);
-> +       if (index < 0)
-> +               return index;
-> +
-> +       return fwnode_irq_get(fwnode, index);
-> +}
-
--- 
-With Best Regards,
-Andy Shevchenko
+Cheers,
+Anders
