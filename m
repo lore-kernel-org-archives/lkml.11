@@ -2,119 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82A0DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98476C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 09:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352085AbiALJdD (ORCPT
+        id S1352092AbiALJeT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 04:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238137AbiALJc5 (ORCPT
+        Wed, 12 Jan 2022 04:34:19 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:47699 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238079AbiALJeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 04:32:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314BAC06173F;
-        Wed, 12 Jan 2022 01:32:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB371618D3;
-        Wed, 12 Jan 2022 09:32:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FBDC36AEA;
-        Wed, 12 Jan 2022 09:32:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1641979976;
-        bh=v1hvtKAaxy/THVYhBJu+JN0Ofk0qcb2ouwGb4TAUGUE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bmilo3hyiTmaJAN04zcSML1dfLz3GMCyIU20G6F+ZYZVJMBYQWeh3Xkpwyxz2LUxf
-         9me1UCusCZ7MpXICHzSilMkPNAQLbiCLK1kTZAVUbVSNNNVpEjDulwFm0+VOb8S0dH
-         J2KklY9e45ik2C4DY0CKT6d8opUD2l5MhjW8v+vH93c3iIuMRJdJHjmlWdHmiEYRuK
-         HqsTHtKz/i1+/D121rCadNLl9yPEydPh9RIKx5xQTvZsuZl+FiwkKh/LT7sj8lUefT
-         7YtpXWsHmdcJ65XR7EDsQIl/3IosJXIx8u3Qd5paJh+qlvqheyAni5ALaTc/AvDurV
-         Cprt5SutneWNA==
-Date:   Wed, 12 Jan 2022 10:32:53 +0100
-From:   Wolfram Sang <wsa@kernel.org>
-To:     linux-i2c@vger.kernel.org
-Cc:     "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
-        Konstantin Kharlamov <hi-angel@yandex.ru>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH] Revert "i2c: core: support bus regulator controlling in
- adapter"
-Message-ID: <Yd6gRR0jtqhRLwtB@ninjato>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org,
-        "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>,
-        Konstantin Kharlamov <hi-angel@yandex.ru>,
-        linux-kernel@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        Bibby Hsieh <bibby.hsieh@mediatek.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-References: <20220106122452.18719-1-wsa@kernel.org>
+        Wed, 12 Jan 2022 04:34:18 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 37BCF5C01D9;
+        Wed, 12 Jan 2022 04:34:18 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 12 Jan 2022 04:34:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=nSi69K8gaCgxD8PERPpX2MbEXfG
+        odendEfrDj5aR6zg=; b=PXInPjp7CShsxgmDyZXuJmRtSJ1aWAcINblm17yKHuG
+        uN2NBTHcY8rrYLGDBkvgd05VYrkZCHQs5tN0WD4xerEXEOLtsvkj1ycnb04EUktI
+        LdlmehsTJoO4V+ARTc9CGCaXAtfncVIxCGYtUOpvxoQF3oaQ63VqRRTyVn8ZzMGV
+        y0ztAZEs5GI0ySqaBULEruxJ9Lxn18130OmWrFqoLVc4cL2FmelYUZo0ifYjeKr1
+        cKJ5z2koX2PHtW3W5UfscBwuBKe/eu94uwf8Swa7LIejkxC9HwtRpj4u0/DtChAH
+        LYFUmVmOZ07p/mvuOby4qd3DBFg6jC/a7NhXR2gdGGQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=nSi69K
+        8gaCgxD8PERPpX2MbEXfGodendEfrDj5aR6zg=; b=CyIrNRVubvEw5KPJEY2iNX
+        +Qhxie9sFBuV9CKDJNM94M+t3ZRTOnsL/xPQb8WDXZLke4bgtvRwr1qR1AGrEakp
+        sbn120YNRZo2AcvKA8plNiF5g8tyreaNligFMvNDpY/GrtqbD4CSA/oFn2m644n5
+        ymNY0jQ9Lm85m1xCoug6NwMPcizZmwyurGt/r7M4BPDR/yqNmCCTSD83KRd0DxJI
+        F3hq+jJDVMg1bDbJxLBpv/momrKHbgvhP1NBdnGgngkdSNtdUUt2R2OgGgb03fCw
+        MgjD0oE9nplYsaHXzyM82ffLNHL+UY2tjm4r03OPM0DuN4TMfGbZUkBm95x5vCFQ
+        ==
+X-ME-Sender: <xms:maDeYWKDVRLD8PxbQ6poUErvN6XbjHYDZ4MgmVl8f69DdgLzGt0tHA>
+    <xme:maDeYeIYwQRZBtrGYMmQNro2sBcN0vnE6RKxSHrf9vOmBJnbbTQoIHW_wB9XrJz5O
+    0Evywo_iqsxRvMuaoE>
+X-ME-Received: <xmr:maDeYWv8SmZzMYPLWGauYO1ajzNR5-fglAcLx0oaQ1fScJjUFejGqv-elOOsF9zejeodA8Drp4DPikzzSEsXKpGUT6e2ymYgpQWSmW8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrudehhedgtdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+    gedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:maDeYbYHPa7gRM4h0Xv7o4CDKtZmCOmr0JAGuq_4b0GZp4dIrdICAg>
+    <xmx:maDeYdaQ9TD5USGKXqM3Bh3xH8hojFjovuPJcy-SiSJuxYP3H4-WoQ>
+    <xmx:maDeYXCL3RJV5pPCc--ev-VpJQT4WFzdYLhLBfEojKmDxORMKDXsTA>
+    <xmx:mqDeYbPVLUe_l9UW2ZW8FCNrLSPVA_0gUwfCM7M88tAm1RctSSTDiQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 12 Jan 2022 04:34:17 -0500 (EST)
+Date:   Wed, 12 Jan 2022 10:34:15 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Michael Wu <michael@allwinnertech.com>
+Cc:     ulf.hansson@linaro.org, wens@csie.org, samuel@sholland.org,
+        andre.przywara@arm.com, jernej.skrabec@gmail.com,
+        linux-mmc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mmc: sunxi-mmc: check ocr_avail on resource request
+Message-ID: <20220112093415.wdy3ht5yizw5lffl@houat>
+References: <20220104060325.3957-1-michael@allwinnertech.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="khzXD0fBZjVVSddA"
+        protocol="application/pgp-signature"; boundary="pow7a6h6ea2halol"
 Content-Disposition: inline
-In-Reply-To: <20220106122452.18719-1-wsa@kernel.org>
+In-Reply-To: <20220104060325.3957-1-michael@allwinnertech.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---khzXD0fBZjVVSddA
+--pow7a6h6ea2halol
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi everyone,
+Hi,
 
-On Thu, Jan 06, 2022 at 01:24:52PM +0100, Wolfram Sang wrote:
-> This largely reverts commit 5a7b95fb993ec399c8a685552aa6a8fc995c40bd. It
-> breaks suspend with AMD GPUs, and we couldn't incrementally fix it. So,
-> let's remove the code and go back to the drawing board. We keep the
-> header extension to not break drivers already populating the regulator.
-> We expect to re-add the code handling it soon.
+On Tue, Jan 04, 2022 at 02:03:25PM +0800, Michael Wu wrote:
+> Some platforms have no regulator, discrete power devices are used instead.
+
+Is it really the case? vmmc at least should be mandatory so a platform
+not having a regulator would violate the binding itself.
+
+> However, sunxi_mmc_probe does not catch this exception when regulator is
+> absent in DTS. This leads to sd or eMMC init failure.
+
+This will still happen with your patch though?
+
+> To solve this, a fixed vmmc regulator must be hooked up in DTS, like this:
+> reg_dummy_vmmc: dummy_vmmc {
+> 	compatible =3D "regulator-fixed";
+> 	regulator-name =3D "dummy-vmmc";
+> 	regulator-min-microvolt =3D <3300000>;
+> 	regulator-max-microvolt =3D <3300000>;
+> };
 >=20
-> Reported-by: "Tareque Md.Hanif" <tarequemd.hanif@yahoo.com>
-> Link: https://lore.kernel.org/r/1295184560.182511.1639075777725@mail.yaho=
-o.com
-> Reported-by: Konstantin Kharlamov <hi-angel@yandex.ru>
-> Link: https://lore.kernel.org/r/7143a7147978f4104171072d9f5225d2ce355ec1.=
-camel@yandex.ru
-> BugLink: https://gitlab.freedesktop.org/drm/amd/-/issues/1850
-> Signed-off-by: Wolfram Sang <wsa@kernel.org>
+> mmc0:mmc@4020000 {
+> 	compatible =3D "allwinner,sun50i-a100-emmc";
+> 	device_type =3D "mmc0";
+> 	vmmc-supply =3D <&reg_dummy_vmmc>;
+> }
+>=20
+> In this patch, we print an error message and abort the probe process if
+> the regulator is not specified in DTS.
 
-So, it has been reverted now. Is someone of the original patch
-submitters interested in re-adding it? And would the reporters of the
-regression be available for further testing?
+I'm fine with the patch itself, but it's really not clear to me what
+situation is being fixed or improved here.
 
-Thanks and happy hacking,
+You're first mentioning that this is fixing the driver probing even if a
+regulator is absent, but then states (rightfully) that in such a case we
+should use a fixed regulator. So we should always have a regulator then?
 
-   Wolfram
+I assume that you want the driver to properly error out instead of going
+on if either a regulator is missing or if its voltages are out of range?
 
+If the former, then we should probably check if host->mmc->supply.vmmc
+returned an error. If the latter, then yes, checking ocr_avail is
+probably fine but we should make it clearer in the error message that
+it's what it's about.
 
---khzXD0fBZjVVSddA
+Maxime
+
+--pow7a6h6ea2halol
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmHeoEUACgkQFA3kzBSg
-KbbbJhAAn5xNNoemF53yiy5cNxFmZNExFWhUga4Ib3kd6rySwJtFUHhvS2YkRgc5
-FJekjLbWQuKFo3E+YWpsKyjVE+m7a+/cuFZ2y16m5FZ4iO5OPk26znW+dil1FuoA
-F6n7OrN4Xbkcu7n2MbEk28T/9E8yg693TgZvy2+I2YHbo1T7YB8HGOed/p30T20S
-iihk6udli3cnoBqYXiojwxM3FeYQkXOtWp1vcrreDzYtkGG8r/efWFoVwDj5WOn7
-hO/QtiOcYj0unc087DDA9pT7ZtM76zy/AbIuDKKTjJ5Z8w+B5/oql0pNPWzwMAc0
-/6N8MacMyoPhkBYxuysuw2NHsG9uuXEVYra0xzniHX6XJbp9fH9tkrs+cB8CO/6F
-IPj9roj82MIJsd58mSv3GHiXCwNKQPwGCOfb2JDshaJuWfcTLTq5K2VD5Jzp4uXS
-tNVQFLIu/+OtxT55NKDWRJXWWCQ7L2wTT6irBpRN86AE8sfreY5ja/7m368s9zHA
-W4kkF4CiU9YVAdBe/+auy8zsezoJDsEtPQgjfrdMGZ9O+uc6kqqMWCg7X4wKP8rX
-oSA+uBYlBNqZCkX5OVy3OJd2Q2FbzorjMIg72yCzzfw8gEXgwDctGWzpIWcgWtOn
-D8puyOhzjFazcSr7ixU++G+P9r2Boc3Kg258edrg6SF6EMMnN9s=
-=7V7P
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYd6glwAKCRDj7w1vZxhR
+xYMDAQDOvoByLoNbucD0rg09oRxg0ac/oM8XXvRnOEoOgNtc6AD7B4fNMTPoPSrt
+SOyuoXTJa0OcH67vLGECca6JGG6L/gg=
+=5+yC
 -----END PGP SIGNATURE-----
 
---khzXD0fBZjVVSddA--
+--pow7a6h6ea2halol--
