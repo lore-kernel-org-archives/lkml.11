@@ -2,81 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12234C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66927C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 12 Jan 2022 18:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356337AbiALShv (ORCPT
+        id S1356322AbiALSjP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 13:37:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356305AbiALShK (ORCPT
+        Wed, 12 Jan 2022 13:39:15 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:54231 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1343802AbiALSjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 13:37:10 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B79C06173F;
-        Wed, 12 Jan 2022 10:37:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=d3mYL7vvYYZr7sYSXSZoJvLItuKF2IiEftPWgxK3tvo=; b=X45E3lNuJrpAEwLmEUkOPrwziM
-        IBNiPalhlrj2QYU6klp+cJ2kP1PiK21hqA16D0chtvViP/3OYuYx7OOt2rxoNAcWW8HkjICxRW0V+
-        BMczhcYFcEu/1JqcTAGI/9YPs+fuyB19cZHXfJPbMyR5otyPtlA1yagZ7WnFNmdjxPvUoM/sX5QfV
-        OsOcixMCkLmUwHOQxOv0CeQt2B2gCqVq7RMW1lp8zLuKriV7Pj50w28yT0+V94iI6DjuJbzfkXCup
-        OAIAeUfqYXr/uV0ONNGpxSFVIK3CawYG64OUO8FP1w35qmdy9ie9862kwk5mEtW2uVL+m4/Hez/KI
-        AgvGhXgw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n7iUZ-004Jsp-5A; Wed, 12 Jan 2022 18:37:03 +0000
-Date:   Wed, 12 Jan 2022 18:37:03 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev
-Subject: Re: Phyr Starter
-Message-ID: <Yd8fz4bY/aMMk24h@casper.infradead.org>
-References: <YdyKWeU0HTv8m7wD@casper.infradead.org>
- <20220111004126.GJ2328285@nvidia.com>
- <Yd0IeK5s/E0fuWqn@casper.infradead.org>
- <20220111150142.GL2328285@nvidia.com>
- <Yd3Nle3YN063ZFVY@casper.infradead.org>
- <20220111202159.GO2328285@nvidia.com>
- <Yd311C45gpQ3LqaW@casper.infradead.org>
- <20220111225306.GR2328285@nvidia.com>
+        Wed, 12 Jan 2022 13:39:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642012751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QDVFLXIz2JDZrvGc2eGZe6Vv1J9TCTU3WjZaistUlP8=;
+        b=NATlFa4UuJJ2O4NUID5hqTXoswzbJ/VdMShvBf/8zwbdVji9QuaJYfdehAVNxKA8YfY5ZO
+        fkIiR1/fh9OuMKeciFKjTJvFVlCuFDBrhri7997P7wpKLjOWWYyq139UdhxH888yrgsHge
+        BAdvRPkbnEH9xZO4/3p1LI8FpJipSUQ=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-493-4186DCbDO8KRd_lqPk4JTw-1; Wed, 12 Jan 2022 13:39:10 -0500
+X-MC-Unique: 4186DCbDO8KRd_lqPk4JTw-1
+Received: by mail-ed1-f70.google.com with SMTP id z10-20020a05640235ca00b003f8efab3342so3070448edc.2
+        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 10:39:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QDVFLXIz2JDZrvGc2eGZe6Vv1J9TCTU3WjZaistUlP8=;
+        b=ADMqp3K8tbb9mdWbIlR/T5Es9BLmb6sSav1p9lC4Ov9ligFvDa0Zz4qeH1tPQ9bGCD
+         8SzOMgEFRWSoKtcdeFEN+o9MgVua2EHztmXPMLkDoixmQPrfToCI0A/+m9cEGr0gpAqi
+         GYtMdQtaPIuLAsHQ254dujq6lRRgBe06Y8WzmmU5VqzvXBpRwZo8pO0/TAT0RVxCHwDm
+         MZm350UMRihfTqhZcweBLAUqCllQ7/RDY2CMt54xQb8AWOPh4je75EgtARAQpMenxGuw
+         f5WrNi6leezNZ7AsCAow9qxAmJq+PJZodNN3I2vVICeljYrYrkxtaWRWx9mSpXjFLKU0
+         Pl6w==
+X-Gm-Message-State: AOAM533r9oTXfsToS5CzPpORLT0bcMT4P91ViIDJTvwgRdBG53Vc40qo
+        kvUwbVVlLwoVZ+hnJE4bNTfOcMwR0tWFIdvxM1b/5OKcghnBGK3SzhtP5/UCeyKyBNsgpoTXx0d
+        ATOyIm8uX3Yn1xDJFWdbxLi3w
+X-Received: by 2002:a05:6402:1602:: with SMTP id f2mr897818edv.80.1642012749692;
+        Wed, 12 Jan 2022 10:39:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwftRaiNcrTcdkuykZ6qJFdRyA+68PtNAEc9NiHUw/3W9bAuJOBn+/B0NV9fSBUzIRHv8zORQ==
+X-Received: by 2002:a05:6402:1602:: with SMTP id f2mr897806edv.80.1642012749515;
+        Wed, 12 Jan 2022 10:39:09 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id h2sm153319ejo.169.2022.01.12.10.39.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Jan 2022 10:39:09 -0800 (PST)
+Message-ID: <50136685-706e-fc6a-0a77-97e584e74f93@redhat.com>
+Date:   Wed, 12 Jan 2022 19:39:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220111225306.GR2328285@nvidia.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Igor Mammedov <imammedo@redhat.com>
+Cc:     kvm@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+References: <20211122175818.608220-1-vkuznets@redhat.com>
+ <20211122175818.608220-3-vkuznets@redhat.com>
+ <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
+ <20211227183253.45a03ca2@redhat.com>
+ <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com> <87mtkdqm7m.fsf@redhat.com>
+ <20220103104057.4dcf7948@redhat.com> <875yr1q8oa.fsf@redhat.com>
+ <ceb63787-b057-13db-4624-b430c51625f1@redhat.com> <87o84qpk7d.fsf@redhat.com>
+ <877dbbq5om.fsf@redhat.com> <5505d731-cf87-9662-33f3-08844d92877c@redhat.com>
+ <20220111090022.1125ffb5@redhat.com> <87fsptnjic.fsf@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <87fsptnjic.fsf@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 06:53:06PM -0400, Jason Gunthorpe wrote:
-> IOMMU is not common in those cases, it is slow.
+On 1/12/22 14:58, Vitaly Kuznetsov wrote:
+> -	best = kvm_find_cpuid_entry(vcpu, 0xD, 1);
+> +	best = cpuid_entry2_find(entries, nent, 0xD, 1);
+>   	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
+>   		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
+>   		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
+>   
+> -	best = kvm_find_kvm_cpuid_features(vcpu);
+> +	best = __kvm_find_kvm_cpuid_features(vcpu, vcpu->arch.cpuid_entries,
+> +					     vcpu->arch.cpuid_nent);
+>   	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
+
+I think this should be __kvm_find_kvm_cpuid_features(vcpu, entries, nent).
+
 > 
-> So you end up with 16 bytes per entry then another 24 bytes in the
-> entirely redundant scatter list. That is now 40 bytes/page for typical
-> HPC case, and I can't see that being OK.
+> +		case 0x1:
+> +			/* Only initial LAPIC id is allowed to change */
+> +			if (e->eax ^ best->eax || ((e->ebx ^ best->ebx) >> 24) ||
+> +			    e->ecx ^ best->ecx || e->edx ^ best->edx)
+> +				return -EINVAL;
+> +			break;
 
-Ah, I didn't realise what case you wanted to optimise for.
+This XOR is a bit weird.  In addition the EBX test is checking the wrong 
+bits (it checks whether 31:24 change and ignores changes to 23:0).
 
-So, how about this ...
+You can write just "(e->ebx & ~0xff000000u) != (best->ebx ~0xff000000u)".
 
-Since you want to get to the same destination as I do (a
-16-byte-per-entry dma_addr+dma_len struct), but need to get there sooner
-than "make all sg users stop using it wrongly", let's introduce a
-(hopefully temporary) "struct dma_range".
+> 
+> +		default:
+> +			if (e->eax ^ best->eax || e->ebx ^ best->ebx ||
+> +			    e->ecx ^ best->ecx || e->edx ^ best->edx)
+> +				return -EINVAL;
 
-But let's go further than that (which only brings us to 32 bytes per
-range).  For the systems you care about which use an identity mapping,
-and have sizeof(dma_addr_t) == sizeof(phys_addr_t), we can simply
-point the dma_range pointer to the same memory as the phyr.  We just
-have to not free it too early.  That gets us down to 16 bytes per range,
-a saving of 33%.
+This one even more so.
+
+Paolo
 
