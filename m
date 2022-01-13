@@ -2,147 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE87C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 07:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E85C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 07:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiAMHAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 02:00:01 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:58622 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230225AbiAMHAA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 02:00:00 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-03 (Coremail) with SMTP id rQCowAAXHlrRzd9hz4d7BQ--.64571S2;
-        Thu, 13 Jan 2022 14:59:29 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     hverkuil-cisco@xs4all.nl, narmstrong@baylibre.com,
-        mchehab@kernel.org, gregkh@linuxfoundation.org,
-        khilman@baylibre.com, jbrunet@baylibre.com,
-        martin.blumenstingl@googlemail.com, p.zabel@pengutronix.de
-Cc:     linux-media@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        linux-staging@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH v3] media: meson: vdec: potential dereference of null pointer
-Date:   Thu, 13 Jan 2022 14:59:28 +0800
-Message-Id: <20220113065928.1198125-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S230217AbiAMHCn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 02:02:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:41328 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229684AbiAMHCm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 02:02:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642057361;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=wa1b8MmKgX3tm872f9qab+x44K+GoLAvtcl9qdRW4BA=;
+        b=DcIX1a4g46TBzFYiGgzHM7IEZqh8OzEViTQdVdZgtQQVYKgUcBnvDZhQzDFcis2jNXyvc/
+        wARAxIp6Fk8sndl5gDYlPLnq4QUvgZYQ5LM360e1pciE7FtwrB8kMZO1wxYnxGnuD0raLS
+        VNWv0naQG9TC47CfdoS5Xjt06/RdK4Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-192-ODlie5dgMVCGAC5FglCJow-1; Thu, 13 Jan 2022 02:02:38 -0500
+X-MC-Unique: ODlie5dgMVCGAC5FglCJow-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06D7C8042DB;
+        Thu, 13 Jan 2022 07:02:37 +0000 (UTC)
+Received: from [10.72.13.202] (ovpn-13-202.pek2.redhat.com [10.72.13.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6F3656784A;
+        Thu, 13 Jan 2022 07:02:21 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v4 06/21] KVM: arm64: Support SDEI_EVENT_CONTEXT hypercall
+To:     Shannon Zhao <shannon.zhaosl@gmail.com>,
+        kvmarm@lists.cs.columbia.edu
+Cc:     maz@kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan.Cameron@huawei.com, pbonzini@redhat.com, will@kernel.org
+References: <20210815001352.81927-1-gshan@redhat.com>
+ <20210815001352.81927-7-gshan@redhat.com>
+ <40d818a2-0c91-e06e-6ce8-ac8123b8d1d4@gmail.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <798ecbb0-f369-f3e7-ad50-78acfd902d1d@redhat.com>
+Date:   Thu, 13 Jan 2022 15:02:15 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
+In-Reply-To: <40d818a2-0c91-e06e-6ce8-ac8123b8d1d4@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: rQCowAAXHlrRzd9hz4d7BQ--.64571S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxWr43tFW5uF4DWF4rZryDGFg_yoWrJFW3pF
-        10q3sFgFyUtFyUCr48Jr1kXFWaq348JFyI9a97Xw1fZryakF17XFnayFWjgr98Jr1S9a1r
-        AFyFg3y7uw1jqrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Cr
-        1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-        8cxan2IY04v7MxkIecxEwVAFwVW8AwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
-        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
-        67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
-        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6Fyj6rWUJwCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjfUYeHqDUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the kzalloc(), the 'new_ts' could be NULL
-pointer.
-Therefore, it should be better to check it in order to avoid the
-dereference of the NULL pointer.
-Also, the caller esparser_queue() needs to deal with the return value of
-the amvdec_add_ts().
+Hi Shannon,
 
-Fixes: 876f123b8956 ("media: meson: vdec: bring up to compliance")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
-Changelog
+On 1/11/22 5:43 PM, Shannon Zhao wrote:
+> On 2021/8/15 8:13, Gavin Shan wrote:
+>> +static unsigned long kvm_sdei_hypercall_context(struct kvm_vcpu *vcpu)
+>> +{
+>> +    struct kvm *kvm = vcpu->kvm;
+>> +    struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
+>> +    struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
+>> +    struct kvm_sdei_vcpu_regs *regs;
+>> +    unsigned long index = smccc_get_arg1(vcpu);
+>> +    unsigned long ret = SDEI_SUCCESS;
+>> +
+>> +    /* Sanity check */
+>> +    if (!(ksdei && vsdei)) {
+>> +        ret = SDEI_NOT_SUPPORTED;
+>> +        goto out;
+>> +    }
+> Maybe we could move these common sanity check codes to kvm_sdei_hypercall to save some lines.
+> 
 
-v1 -> v2
+Not all hypercalls need this check. For example, COMPLETE/COMPLETE_RESUME/CONTEXT don't
+have SDEI event number as the argument. If we really want move this check into function
+kvm_sdei_hypercall(), we would have code like below. Too much duplicated snippets will
+be seen. I don't think it's better than what we have if I fully understand your comments.
 
-* Change 1. Change the return type of amvdec_add_ts from void to int.
-* Change 2. Return -ENOMEN if alloc fail and return 0 if not.
-* Change 3. Modify the caller to deal with the error.
+       switch (...) {
+       case REGISTER:
+            if (!(ksdei && vsdei)) {
+                ret = SDEI_NOT_SUPPORTED;
+                break;
+            }
 
-v2 -> v3
+            ret = kvm_sdei_hypercall_register(vcpu);
+            break;
+       case UNREGISTER:
+            if (!(ksdei && vsdei)) {
+                ret = SDEI_NOT_SUPPORTED;
+                break;
+            }
 
-* Change 1. Fix the indentation and refine the commit message.
----
- drivers/staging/media/meson/vdec/esparser.c     | 7 ++++++-
- drivers/staging/media/meson/vdec/vdec_helpers.c | 8 ++++++--
- drivers/staging/media/meson/vdec/vdec_helpers.h | 4 ++--
- 3 files changed, 14 insertions(+), 5 deletions(-)
+            ret = kvm_sdei_hypercall_unregister(vcpu);
+            break;
+      case CONTEXT:
+            ret = kvm_sdei_hypercall_context(vcpu);
+            break;
+        :
+     }
 
-diff --git a/drivers/staging/media/meson/vdec/esparser.c b/drivers/staging/media/meson/vdec/esparser.c
-index db7022707ff8..86ccc8937afc 100644
---- a/drivers/staging/media/meson/vdec/esparser.c
-+++ b/drivers/staging/media/meson/vdec/esparser.c
-@@ -328,7 +328,12 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
- 
- 	offset = esparser_get_offset(sess);
- 
--	amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
-+	ret = amvdec_add_ts(sess, vb->timestamp, vbuf->timecode, offset, vbuf->flags);
-+	if (ret) {
-+		v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);
-+		return ret;
-+	}
-+
- 	dev_dbg(core->dev, "esparser: ts = %llu pld_size = %u offset = %08X flags = %08X\n",
- 		vb->timestamp, payload_size, offset, vbuf->flags);
- 
-diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.c b/drivers/staging/media/meson/vdec/vdec_helpers.c
-index 203d7afa085d..7d2a75653250 100644
---- a/drivers/staging/media/meson/vdec/vdec_helpers.c
-+++ b/drivers/staging/media/meson/vdec/vdec_helpers.c
-@@ -227,13 +227,16 @@ int amvdec_set_canvases(struct amvdec_session *sess,
- }
- EXPORT_SYMBOL_GPL(amvdec_set_canvases);
- 
--void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
--		   struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
-+int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
-+		  struct v4l2_timecode tc, u32 offset, u32 vbuf_flags)
- {
- 	struct amvdec_timestamp *new_ts;
- 	unsigned long flags;
- 
- 	new_ts = kzalloc(sizeof(*new_ts), GFP_KERNEL);
-+	if (!new_ts)
-+		return -ENOMEM;
-+
- 	new_ts->ts = ts;
- 	new_ts->tc = tc;
- 	new_ts->offset = offset;
-@@ -242,6 +245,7 @@ void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
- 	spin_lock_irqsave(&sess->ts_spinlock, flags);
- 	list_add_tail(&new_ts->list, &sess->timestamps);
- 	spin_unlock_irqrestore(&sess->ts_spinlock, flags);
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(amvdec_add_ts);
- 
-diff --git a/drivers/staging/media/meson/vdec/vdec_helpers.h b/drivers/staging/media/meson/vdec/vdec_helpers.h
-index 88137d15aa3a..4bf3e61d081b 100644
---- a/drivers/staging/media/meson/vdec/vdec_helpers.h
-+++ b/drivers/staging/media/meson/vdec/vdec_helpers.h
-@@ -56,8 +56,8 @@ void amvdec_dst_buf_done_offset(struct amvdec_session *sess,
-  * @offset: offset in the VIFIFO where the associated packet was written
-  * @flags: the vb2_v4l2_buffer flags
-  */
--void amvdec_add_ts(struct amvdec_session *sess, u64 ts,
--		   struct v4l2_timecode tc, u32 offset, u32 flags);
-+int amvdec_add_ts(struct amvdec_session *sess, u64 ts,
-+		  struct v4l2_timecode tc, u32 offset, u32 flags);
- void amvdec_remove_ts(struct amvdec_session *sess, u64 ts);
- 
- /**
--- 
-2.25.1
+Thanks,
+Gavin
 
