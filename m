@@ -2,98 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6902EC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 119B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:30:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236722AbiAMQ3o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 11:29:44 -0500
-Received: from mail-oi1-f182.google.com ([209.85.167.182]:34684 "EHLO
-        mail-oi1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236701AbiAMQ3m (ORCPT
+        id S236715AbiAMQa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 11:30:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38288 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236698AbiAMQa5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 11:29:42 -0500
-Received: by mail-oi1-f182.google.com with SMTP id r131so8407416oig.1;
-        Thu, 13 Jan 2022 08:29:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=CusFUBG9Oz+FsYX8f2EjVVpRfC5MMMM3gtsBOX9vADQ=;
-        b=MGJxMDZJgu0oj7goQVEaUltrBiyNYQHiNV+EPBiiaihaaS48qBRiAV5KBAU4L4+r5u
-         GLDJnA9Nx9O55vG6HyjzQ+z8Z5KXFipxwopgIBJD93JNOXWEzeFv0JIDAFhzrHb2XFWJ
-         ngo48l2dspwotml8FlQlC8qkegv+SYz8rdAvvQzqfx2BpK9fcJfC8VYgUw2xWgq1YBwA
-         eEKSELHklV9A/XmyA8zRcNKug0S2SudxDaANnDLIuWqA2/bxekZ5YoTf5dsU3jXk2qSh
-         FDj76gRbfIFGYhirLIUkqcWHsunu72Q3zS6f27y3rJi0ntD6RO+9HGCwcqX/+pff5FUq
-         Qcrg==
-X-Gm-Message-State: AOAM533NeM+nbvfQnV0+usayembrcNRt3nfTbPPMJwU8V7wgujDRIaki
-        Vf7t3u+WXEei36HGkdUGu3VAWekSqg==
-X-Google-Smtp-Source: ABdhPJyRgESHBfGHq7zyS63j/N2RP/5yfJZqpp+OQ6tJcIGznR8kw0goZE3ZrNBY6fLox981RdQNPA==
-X-Received: by 2002:a05:6808:1a28:: with SMTP id bk40mr3803203oib.26.1642091381706;
-        Thu, 13 Jan 2022 08:29:41 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id f9sm557489oto.56.2022.01.13.08.29.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 08:29:40 -0800 (PST)
-Received: (nullmailer pid 3647189 invoked by uid 1000);
-        Thu, 13 Jan 2022 16:29:34 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Gabriel Somlo <gsomlo@gmail.com>
-Cc:     david.abdurachmanov@sifive.com, geert@linux-m68k.org,
-        ulf.hansson@linaro.org, linux-kernel@vger.kernel.org,
-        mdudek@internships.antmicro.com, shorne@gmail.com,
-        paulus@ozlabs.org, joel@jms.id.au, andy.shevchenko@gmail.com,
-        kgugala@antmicro.com, florent@enjoy-digital.fr, hdanton@sina.com,
-        devicetree@vger.kernel.org, mholenko@antmicro.com,
-        linux-mmc@vger.kernel.org, krakoczy@antmicro.com,
-        robh+dt@kernel.org, rdunlap@infradead.org
-In-Reply-To: <20220112222747.3135585-3-gsomlo@gmail.com>
-References: <20220112222747.3135585-1-gsomlo@gmail.com> <20220112222747.3135585-3-gsomlo@gmail.com>
-Subject: Re: [PATCH v13 2/3] dt-bindings: mmc: Add bindings for LiteSDCard
-Date:   Thu, 13 Jan 2022 10:29:34 -0600
-Message-Id: <1642091374.254625.3647188.nullmailer@robh.at.kernel.org>
+        Thu, 13 Jan 2022 11:30:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642091455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4H2G/AcFCWNIo4a7X3Hpex/LEo4UsnyCD4gzRSNQTAQ=;
+        b=iS7qhr2ZU2Jf7Q/u02AJ/TnxnjtKJPDFFN4B6uGiWsvrdpSdxbtNZAOHgWTbP0uuxFfdo8
+        jYMedgFWvEUzQ3uoVJRTvR/D6EYLm+q3qehToo0vjKG/JD/PkzFv/lMaBmWiamFiQglO73
+        /jL/3ta2iN/v7MVaW8iSzU1lNpLYlgQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-498-Ax1e_eeJPauRyoBTaav1KA-1; Thu, 13 Jan 2022 11:30:54 -0500
+X-MC-Unique: Ax1e_eeJPauRyoBTaav1KA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4D54810AF8C2;
+        Thu, 13 Jan 2022 16:30:53 +0000 (UTC)
+Received: from starship (unknown [10.40.192.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 95131858A0;
+        Thu, 13 Jan 2022 16:30:50 +0000 (UTC)
+Message-ID: <d3cc3cd1a90d7ee9a31e40fbe2db9f3f338d5004.camel@redhat.com>
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Igor Mammedov <imammedo@redhat.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Date:   Thu, 13 Jan 2022 18:30:49 +0200
+In-Reply-To: <YeBSrcNawgzvTzQ6@google.com>
+References: <877dbbq5om.fsf@redhat.com>
+         <5505d731-cf87-9662-33f3-08844d92877c@redhat.com>
+         <20220111090022.1125ffb5@redhat.com> <87fsptnjic.fsf@redhat.com>
+         <50136685-706e-fc6a-0a77-97e584e74f93@redhat.com>
+         <87bl0gnfy5.fsf@redhat.com>
+         <7e7c7e22f8b1b1695d26d9e19a767b87c679df93.camel@redhat.com>
+         <87zgnzn1nr.fsf@redhat.com>
+         <6ae7e64c53727f9f00537d787e9612c292c4e244.camel@redhat.com>
+         <87wnj3n0k0.fsf@redhat.com> <YeBSrcNawgzvTzQ6@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 12 Jan 2022 17:27:46 -0500, Gabriel Somlo wrote:
-> LiteSDCard is a small footprint, configurable SDCard core for
-> FPGA based SoCs.
+On Thu, 2022-01-13 at 16:26 +0000, Sean Christopherson wrote:
+> On Thu, Jan 13, 2022, Vitaly Kuznetsov wrote:
+> > Maxim Levitsky <mlevitsk@redhat.com> writes:
+> > > For my nested AVIC work I would really want the APIC ID of a VCPU to be read-only
+> > > and be equal to vcpu_id.
+> > > 
+> > 
+> > Doesn't APIC ID have topology encoded in it?
 > 
-> Signed-off-by: Gabriel Somlo <gsomlo@gmail.com>
-> Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Joel Stanley <joel@jms.id.au>
-> ---
+> Yeah, APIC IDs are derived from the topology.  From the SDM (this doesn't
+> talk about core/SMT info, but that's included as well):
 > 
-> New in v13:
->   - add `vmmc-supply` requirement
+>   The hardware assigned APIC ID is based on system topology and includes encoding
+>   for socket position and cluster information.
 > 
->  .../devicetree/bindings/mmc/litex,mmc.yaml    | 77 +++++++++++++++++++
->  1 file changed, 77 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mmc/litex,mmc.yaml
+> The SDM also says:
 > 
+>   Some processors permit software to modify the APIC ID. However, the ability of
+>   software to modify the APIC ID is processor model specific.
+> 
+> So I _think_ we could define KVM behavior to ignore writes from the _guest_, but
+> the APIC_ID == vcpu_id requirement won't fly as userspace expects to be able to
+> stuff virtual toplogy info into the APIC ID.
+> 
+That is a very good piece of information! Thanks!
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mmc/litex,mmc.example.dt.yaml: mmc@12005000: 'vmmc-supply' is a required property
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mmc/litex,mmc.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1579360
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+Best regards,
+	Maxim Levitsky
 
