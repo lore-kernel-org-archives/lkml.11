@@ -2,148 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D678C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A70C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234841AbiAMVDw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 16:03:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41084 "EHLO
+        id S234887AbiAMVDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 16:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiAMVDu (ORCPT
+        with ESMTP id S234848AbiAMVDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 16:03:50 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E891C06161C
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:03:50 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id s15so970009pfw.1
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:03:50 -0800 (PST)
+        Thu, 13 Jan 2022 16:03:52 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216EDC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:03:52 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o12so7228429lfu.12
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:03:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Tf1MJf6G2L7udqFNeyVKsBEheXd/tBNophjVUNr0QVo=;
-        b=DeQodgOHBqWkgcKGoBpIkzq3Rxnr4OG1z4IS+qgaflCyJUTYyUSaA64hl9hI+tKJqB
-         u2jYnP8pn0xJ7sBp3f8EfjJYKFEhWUerIBDY5/2slyHYfOLqCFriEyGpQOcb8Dn0kJFT
-         +Jo331nwAqEOGAxi9kgQKUzh5oEBvCOoiHEwFMTNGUIpqlmMKki7jTabKs1Fir6h5aHU
-         cRUSJqlC1FvWpRoyifPd6sujgNaHrOjuniP2fMwCZqQRObnYEbaePhW6Cus/WyvyZkGF
-         sqk5ztNWZvuSGnsDODN6LvEPitJ2SxCEmi+wdFMRsjnh3G3HsweQELMmGZ1NOfx6TZki
-         aRKg==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:user-agent:mime-version
+         :content-disposition;
+        bh=tGX52jpKcvhFH/6brEyGmgi4fo82MK8VJ055FYumYks=;
+        b=BiCDKASXPZBtC1iofv0BUMoC2DJJnKaHN1XpKxglNscDIjTE/BT/THocVVnQ7kbqBi
+         Mzkwhz+rPXygx7lku8MPXYm11m25daNyn6Je6Ag0/gr2X6+z5PUXksxCyjVNsQsQ6tKO
+         ciSLwSJr34dh9jWc1vUo0DI1DpgMI5uLwkJPVNlrcxhRWWxLqMaghjnlBW1Kz/TQWcC0
+         aIAtwO47Wj/Tk3zXgbYkA2nuP4T8epqw8sCIaqksM1wRO9DyA8L4v3HdDVsYjzpS2qd3
+         HFHhkiGjr+OHHqqkVJzqE4cTg0oo3STwuAOLfMc26tUXw/Pea1qUFQ5JCfVAykKc+oxB
+         cR6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Tf1MJf6G2L7udqFNeyVKsBEheXd/tBNophjVUNr0QVo=;
-        b=LVUL7geP8ScYTRT1Xb+AMKj8ljQHa+6NUgEYC+adL2CtoG6ZeCJvDiDdwNqPzr3IXr
-         ZXiQIjtql267TLEau/lufnJyOE3KifH3vlZRxrBkuVwohT/cLi7U6k1nMmY+d+7G4+a/
-         4UySvqjKMs4UzbmnLMS9HIJd57mRDS+TFCr5HN5LQIrxtWEAqd81LYnsDmyZEjRIs4h8
-         5F/ExrNNFCYlT2ynN1p3si0p2nZf2gT37al1/sH+kPSEpcaBz5Gx+Z4oprEFjZ2PyO32
-         UWFlcXE2ybTATaQkEtwJsKxVHcia8FL9yI1rf5HO3HrycNoGFWunJbzNwo6dqIV3tf2R
-         c2Fw==
-X-Gm-Message-State: AOAM533OAlzWcomrKeTvFmrwCSkB7E5mrBfAZx6sGSI7OfNwN/KMb8U2
-        e86W+wgbrIyHIsJADcNRPcMsKQ==
-X-Google-Smtp-Source: ABdhPJzQ+lbF4Ngarff0hCewsh2F0/UOv1xny5L70zC8QKcPqQdmFzCrzJo0x6NSN9juSeEhSwE74g==
-X-Received: by 2002:a62:33c7:0:b0:4bd:5aa4:1220 with SMTP id z190-20020a6233c7000000b004bd5aa41220mr5864708pfz.55.1642107829603;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :mime-version:content-disposition;
+        bh=tGX52jpKcvhFH/6brEyGmgi4fo82MK8VJ055FYumYks=;
+        b=WG82V1/Xb8bTllATPNq6pLD7s5MSuLxzNQ+8F9PTgIw39KFfvCGtE3b9saqx/uArrk
+         9C5QAekc7EoC9paWOwHJi7CY3Ym6TYNHkMlFcWsKMUh9zhVwBH1BhQfsHdRvmAY/r4k3
+         XL2UJvSABRAthe4yGlwSMV1gdIzncZG8/nKp1VRcOxAiCymvCY672RG92zjgbg/NPRiH
+         1dURfidzKoXt/Av36AsyCiV8utyAs6DK0BTcqPtFP4lKinGNSh6QPu66jsF6wmXWG+8H
+         pBtNruampAyGRn29zuIt48NUfZZ/gznkPLgNXUAGiHoLUrigNbxQwJ6zHASrt/tT7Amd
+         ka3w==
+X-Gm-Message-State: AOAM533LmdZSuBImOfjr43ixAdPXBHjhvN8tGQ9/XDaMRsZ71ld0Sc7P
+        z9PFGcWkofit2MDX19OIjvo=
+X-Google-Smtp-Source: ABdhPJwkWM114QNfLjFQzUCqwBMbRjR32QYRDP2Wdz4P+zKOumDAKoKrj6k1plTk8R9kbaBHpkSWBQ==
+X-Received: by 2002:a2e:9209:: with SMTP id k9mr3796207ljg.165.1642107830507;
+        Thu, 13 Jan 2022 13:03:50 -0800 (PST)
+Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
+        by smtp.gmail.com with ESMTPSA id u10sm377489ljh.119.2022.01.13.13.03.49
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
         Thu, 13 Jan 2022 13:03:49 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id h5sm3419529pfo.57.2022.01.13.13.03.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 13:03:49 -0800 (PST)
-Date:   Thu, 13 Jan 2022 21:03:45 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Zeng Guang <guang.zeng@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
-        Gao Chao <chao.gao@intel.com>,
-        Robert Hoo <robert.hu@linux.intel.com>
-Subject: Re: [PATCH v5 4/8] KVM: VMX: dump_vmcs() reports
- tertiary_exec_control field as well
-Message-ID: <YeCTsVCwEkT2N6kQ@google.com>
-References: <20211231142849.611-1-guang.zeng@intel.com>
- <20211231142849.611-5-guang.zeng@intel.com>
+Date:   Fri, 14 Jan 2022 00:09:30 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Jeremy Szu <jeremy.szu@canonical.com>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
+        Elia Devito <eliadevito@gmail.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ALSA: hda/realtek: fix speakers and micmute on HP 855 G8
+Message-ID: <20220113210930.dtryx4ifjsmb33lz@localhost.localdomain>
+User-Agent: mtt
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211231142849.611-5-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 31, 2021, Zeng Guang wrote:
-> From: Robert Hoo <robert.hu@linux.intel.com>
-> 
-> Add tertiary_exec_control field report in dump_vmcs()
-> 
-> Signed-off-by: Robert Hoo <robert.hu@linux.intel.com>
-> Signed-off-by: Zeng Guang <guang.zeng@intel.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index fb0f600368c6..5716db9704c0 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -5729,6 +5729,7 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
->  	struct vcpu_vmx *vmx = to_vmx(vcpu);
->  	u32 vmentry_ctl, vmexit_ctl;
->  	u32 cpu_based_exec_ctrl, pin_based_exec_ctrl, secondary_exec_control;
-> +	u64 tertiary_exec_control = 0;
->  	unsigned long cr4;
->  	int efer_slot;
->  
-> @@ -5746,6 +5747,9 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
->  	if (cpu_has_secondary_exec_ctrls())
->  		secondary_exec_control = vmcs_read32(SECONDARY_VM_EXEC_CONTROL);
+There are several PCI ids associated with HP EliteBook 855 G8 Notebook
+PC. Commit 0e68c4b11f1e6 ("ALSA: hda/realtek: fix mute/micmute LEDs for
+HP 855 G8") covers 0x103c:0x8896, while this commit covers 0x103c:0x8895
+which needs some additional work on top of the quirk from 0e68c4b11f1e6.
 
-Gah, this (not your) code is silly.  I had to go look at the full source to see
-that secondary_exec_control isn't accessed uninitialized...
+Note that the device can boot up with working speakers and micmute LED
+without this patch, but the success rate would be quite low (order of
+16 working boots across 709 boots) at least for the built-in drivers
+scenario. This also means that there are some timing issues during early
+boot and this patch is a workaround.
 
-Can you opportunistically tweak it to the below, and use the same patter for the
-tertiary controls?
+Changes are tested on v5.16. Speakers and headphones are consistenly
+working, as well as mute/micmute LEDs and the internal microphone.
 
-	if (cpu_has_secondary_exec_ctrls())
-		secondary_exec_control = vmcs_read32(SECONDARY_VM_EXEC_CONTROL);
-	else
-		secondary_exec_control = 0;
+Signed-off-by: Alexander Sergeyev <sergeev917@gmail.com>
+---
+ sound/pci/hda/patch_realtek.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
->  
-> +	if (cpu_has_tertiary_exec_ctrls())
-> +		tertiary_exec_control = vmcs_read64(TERTIARY_VM_EXEC_CONTROL);
-> +
->  	pr_err("VMCS %p, last attempted VM-entry on CPU %d\n",
->  	       vmx->loaded_vmcs->vmcs, vcpu->arch.last_vmentry_cpu);
->  	pr_err("*** Guest State ***\n");
-> @@ -5844,8 +5848,9 @@ void dump_vmcs(struct kvm_vcpu *vcpu)
->  		vmx_dump_msrs("host autoload", &vmx->msr_autoload.host);
->  
->  	pr_err("*** Control State ***\n");
-> -	pr_err("PinBased=%08x CPUBased=%08x SecondaryExec=%08x\n",
-> -	       pin_based_exec_ctrl, cpu_based_exec_ctrl, secondary_exec_control);
-> +	pr_err("PinBased=0x%08x CPUBased=0x%08x SecondaryExec=0x%08x TertiaryExec=0x%016llx\n",
-> +	       pin_based_exec_ctrl, cpu_based_exec_ctrl, secondary_exec_control,
-> +	       tertiary_exec_control);
+diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
+index 28255e752c4a..b809de2b9759 100644
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -6784,6 +6784,7 @@ enum {
+ 	ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE,
+ 	ALC233_FIXUP_NO_AUDIO_JACK,
+ 	ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME,
++	ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED,
+ };
+ 
+ static const struct hda_fixup alc269_fixups[] = {
+@@ -8514,6 +8515,16 @@ static const struct hda_fixup alc269_fixups[] = {
+ 		.chained = true,
+ 		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
+ 	},
++	[ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED] = {
++		.type = HDA_FIXUP_VERBS,
++		.v.verbs = (const struct hda_verb[]) {
++			 { 0x20, AC_VERB_SET_COEF_INDEX, 0x19 },
++			 { 0x20, AC_VERB_SET_PROC_COEF, 0x8e11 },
++			 { }
++		},
++		.chained = true,
++		.chain_id = ALC285_FIXUP_HP_MUTE_LED,
++	},
+ };
+ 
+ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -8727,6 +8738,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x103c, 0x8870, "HP ZBook Fury 15.6 Inch G8 Mobile Workstation PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
+ 	SND_PCI_QUIRK(0x103c, 0x8873, "HP ZBook Studio 15.6 Inch G8 Mobile Workstation PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
+ 	SND_PCI_QUIRK(0x103c, 0x888d, "HP ZBook Power 15.6 inch G8 Mobile Workstation PC", ALC236_FIXUP_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x8895, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8896, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8898, "HP EliteBook 845 G8 Notebook PC", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
+ 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
+-- 
+2.34.1
 
-Can you provide a sample dump?  It's hard to visualize the output, e.g. I'm worried
-this will be overly log and harder to read than putting tertiary controls on their
-own line.
-
->  	pr_err("EntryControls=%08x ExitControls=%08x\n", vmentry_ctl, vmexit_ctl);
->  	pr_err("ExceptionBitmap=%08x PFECmask=%08x PFECmatch=%08x\n",
->  	       vmcs_read32(EXCEPTION_BITMAP),
-> -- 
-> 2.27.0
-> 
