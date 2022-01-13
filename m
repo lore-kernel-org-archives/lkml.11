@@ -2,79 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E61C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73417C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235418AbiAMNhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:37:54 -0500
-Received: from mga06.intel.com ([134.134.136.31]:61579 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235328AbiAMNhu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:37:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642081070; x=1673617070;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0moxA1lCdI5ugcQRXln+ImaNFqLpbC6L4ShiuHrUqVI=;
-  b=SpyL/KEGuXb4duPPbEmFZuUYPqCw+6PIWdRcf1C5zTqf3tWposLfv98L
-   0Yxm2Q+ITjZMVftg++iSWs2iY9eL09si/7w/NqF1aO1lHbBvzoo9FrWCH
-   1DKbHBk8u9LQOOiYy08NNkdgMgw3k+/qIHEiWL9OoHNY9Wy2wgcQXLgqw
-   tyXz6iz4bnIiaztczNA9hWQlwYa74btZfOfrU4JDR+uxNmWb5XO1sNVQ1
-   NlRgm6UDXiAkU6qvqW0S/g+PDqsVh+gvr3oLJTHamFN8FYhD9+OfGxT8X
-   FL5y+tLBSAbySQrEeBellFdWrwFuYIDjNyK8kVjJe+y+BFSYITbn4ZoK7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="304742093"
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="304742093"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 05:37:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="691802843"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 13 Jan 2022 05:37:48 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n80IW-0007F1-4f; Thu, 13 Jan 2022 13:37:48 +0000
-Date:   Thu, 13 Jan 2022 21:37:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [cel:topic-rpc-with-tls-upcall 16/19] ERROR: modpost:
- "inet6_getname" [net/tls/tls.ko] undefined!
-Message-ID: <202201132110.eYE2iS4l-lkp@intel.com>
+        id S235381AbiAMNiN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 08:38:13 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31158 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235344AbiAMNiH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 08:38:07 -0500
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JZQRB6kfVz8wN3;
+        Thu, 13 Jan 2022 21:35:18 +0800 (CST)
+Received: from dggpeml500017.china.huawei.com (7.185.36.243) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 13 Jan 2022 21:38:02 +0800
+Received: from huawei.com (10.175.103.91) by dggpeml500017.china.huawei.com
+ (7.185.36.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Thu, 13 Jan
+ 2022 21:38:02 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-nfs@vger.kernel.org>
+CC:     <anna.schumaker@netapp.com>, <trond.myklebust@hammerspace.com>
+Subject: [PATCH -next] NFSv4.1 Use kmemdup_nul() helper
+Date:   Thu, 13 Jan 2022 21:43:17 +0800
+Message-ID: <20220113134317.3130643-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500017.china.huawei.com (7.185.36.243)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux topic-rpc-with-tls-upcall
-head:   0fd328ea53e7d539bf8bb160d773e1d027c60fea
-commit: 021aa32bd7f87e46837a5f8774a010f9aa347e61 [16/19] net/tls: Add support for PF_TLSH (a TLS handshake listener)
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220113/202201132110.eYE2iS4l-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d1021978b8e7e35dcc30201ca1731d64b5a602a8)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=021aa32bd7f87e46837a5f8774a010f9aa347e61
-        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-        git fetch --no-tags cel topic-rpc-with-tls-upcall
-        git checkout 021aa32bd7f87e46837a5f8774a010f9aa347e61
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Use kmemdup_nul() helper instead of open-coding to
+simplify the code.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "inet6_getname" [net/tls/tls.ko] undefined!
-
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ fs/nfs/nfs4proc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index e6b49d6318bc..60fcd98b40a6 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -4004,11 +4004,10 @@ static void test_fs_location_for_trunking(struct nfs4_fs_location *location,
+ 			return;
+ 		xprt_args.dstaddr = &addr;
+ 		xprt_args.addrlen = addrlen;
+-		servername = kmalloc(srv_loc->len + 1, GFP_KERNEL);
++		servername = kmemdup_nul(srv_loc->data, srv_loc->len,
++					 GFP_KERNEL);
+ 		if (!servername)
+ 			return;
+-		memcpy(servername, srv_loc->data, srv_loc->len);
+-		servername[srv_loc->len] = '\0';
+ 		xprt_args.servername = servername;
+ 
+ 		xprtdata.cred = nfs4_get_clid_cred(clp);
+-- 
+2.25.1
+
