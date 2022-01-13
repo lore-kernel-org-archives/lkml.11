@@ -2,155 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E64EC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:52:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCB8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230177AbiAMIw2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42828 "EHLO
+        id S230376AbiAMIyJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:54:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiAMIwV (ORCPT
+        with ESMTP id S230071AbiAMIyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:52:21 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D00DC06173F;
-        Thu, 13 Jan 2022 00:52:21 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E9F6F223F0;
-        Thu, 13 Jan 2022 09:52:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1642063938;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pQDstKVfxOplCxz607M7RU1DVDN+DYE7e3aikEdAg4g=;
-        b=jZV/q2OrrBNXFX4fV7ua+62LyeVCFOm16xeitZdTPhrL4d9iLZ5EfjAdapr4KKhLtPo1kk
-        EkZTIAS5KUUoapCn9fG4fwUiHrjSSlnmJh/2RyqAEDxWliuqcoEPqXR0Zl0GL9bb68uMCS
-        IpAXl9cKGPZu3VdxJ0gdM1Qn1F1TDpo=
-From:   Michael Walle <michael@walle.cc>
-To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH 2/3] of: property: use unsigned index for of_link_property()
-Date:   Thu, 13 Jan 2022 09:52:07 +0100
-Message-Id: <20220113085208.2636517-3-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220113085208.2636517-1-michael@walle.cc>
-References: <20220113085208.2636517-1-michael@walle.cc>
+        Thu, 13 Jan 2022 03:54:08 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97387C06173F;
+        Thu, 13 Jan 2022 00:54:08 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id n11so6681080plf.4;
+        Thu, 13 Jan 2022 00:54:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=uAZ68Y2XfdAKorZiV700UePRC99qa3lTlzuq+2AtBAg=;
+        b=TKbcO0jr+l53jtGwqRstAcbmZXRP6RcmN9hGG2GaWHmS6Ee9Fo2C7FLf3gd+2+wF4z
+         EOD8avQxSQm1GCXBD8+vHiYyHAB2+95EbPAksAe7NxIQZ0LIhA71QrdjiVnxcRJizvLj
+         1hN3ejxPoVzVXRGGocdlf4LAL5AQq8nMk5qm7rnSFQ9KU69+98M/xiQIvH2zeP5QrM0s
+         +EXfQ1EtX38GtKUMGK572NK2RSFq92n8NA+ilISglODA5cfbrUnX2DvzvIloYO3bW2UC
+         kCGpgV3iBWXJTj2xkO8QKUoxYt5ecuEkZ5A3nvOXk0RITS5StqAMQcWkOS1jnjHELpCt
+         v9WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=uAZ68Y2XfdAKorZiV700UePRC99qa3lTlzuq+2AtBAg=;
+        b=QxM5YoFyFjuK0Io5gtUIG0UAoJGQZwPyEbSNkQAv35oSrNXgAJjRjR5YAQu6RRabOM
+         Q2LQwtsIqzdqPPnH9zff/txH8epd4rDMHi3C84PiUcyMlrqGgozA7g9A7HXcEPelxQwj
+         5TeviYC5ftdYa4ruVoiQ29mt40mmxG5Qxdxr12RzaCEq+wSSKRye16TDWhp+1Kx70NJY
+         iA9BcYndP/xb6s6f5TRW6BN64n1l/c1nMhOiRIyOn7cscwu8swXDkUWUJaZbi2NfahR7
+         tiyKjIpljg8vEIXHQHaM66pOSyTbxcuVbVTO0FE4Rmxf5SvgJpvl7L78JwGHV0UtT4ek
+         GE6w==
+X-Gm-Message-State: AOAM530nAl5RPQ+NpU9aGK8UTfe9t0guISQTd79qFNpkGMW3YjXefMap
+        QXOKrNOcZs1S0a+toEuzzlIbEcpZXbgGEwA/KG4=
+X-Google-Smtp-Source: ABdhPJzCHzJ6G8FR10V5FLG8CU7iOrWbVN7PznzQHudPnABW40Gu6lA9xZF2IRvT+vjDPErvUXT6in+NZIwjD795A4M=
+X-Received: by 2002:a17:902:a501:b0:14a:4ed2:2a01 with SMTP id
+ s1-20020a170902a50100b0014a4ed22a01mr3332335plq.49.1642064048054; Thu, 13 Jan
+ 2022 00:54:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1641979444-11661-1-git-send-email-hammerh0314@gmail.com>
+ <1641979444-11661-3-git-send-email-hammerh0314@gmail.com> <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
+In-Reply-To: <fcd43c65-6201-9e44-061c-f04e39cef726@kernel.org>
+From:   hammer hsieh <hammerh0314@gmail.com>
+Date:   Thu, 13 Jan 2022 16:54:17 +0800
+Message-ID: <CAOX-t54oA9V94d3901w2xKSagSzmXc9r=TDTtbgaSLfL1DxNbw@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] serial:sunplus-uart:Add Sunplus SoC UART Driver
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, robh+dt@kernel.org,
+        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        wells.lu@sunplus.com, "hammer.hsieh" <hammer.hsieh@sunplus.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that of_parse_handle() and its variants take an unsigned int,
-convert the index used in of_link_property() and its called functions
-to unsigned too.
+Jiri Slaby <jirislaby@kernel.org> =E6=96=BC 2022=E5=B9=B41=E6=9C=8813=E6=97=
+=A5 =E9=80=B1=E5=9B=9B =E4=B8=8B=E5=8D=883:06=E5=AF=AB=E9=81=93=EF=BC=9A
+>
+> Hi,
+>
+> On 12. 01. 22, 10:24, Hammer Hsieh wrote:
+> > Add Sunplus SoC UART Driver
+> ...
+> > --- /dev/null
+> > +++ b/drivers/tty/serial/sunplus-uart.c
+> > @@ -0,0 +1,756 @@
+> ...
+> > +/* Register offsets */
+> > +#define SUP_UART_DATA                        0x00
+> > +#define SUP_UART_LSR                 0x04
+> > +#define SUP_UART_MSR                 0x08
+> > +#define SUP_UART_LCR                 0x0C
+> > +#define SUP_UART_MCR                 0x10
+> > +#define SUP_UART_DIV_L                       0x14
+> > +#define SUP_UART_DIV_H                       0x18
+> > +#define SUP_UART_ISC                 0x1C
+> > +#define SUP_UART_TX_RESIDUE          0x20
+> > +#define SUP_UART_RX_RESIDUE          0x24
+> > +
+> > +/* Line Status Register bits */
+> > +#define SUP_UART_LSR_BC                      BIT(5) /* break condition=
+ status */
+> > +#define SUP_UART_LSR_FE                      BIT(4) /* frame error sta=
+tus */
+> > +#define SUP_UART_LSR_OE                      BIT(3) /* overrun error s=
+tatus */
+> > +#define SUP_UART_LSR_PE                      BIT(2) /* parity error st=
+atus */
+>
+> I just wonder why do the HW creators feel so creative to redefine the
+> world...
+>
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/of/property.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+Our IC designer create it, I just try to make it work.
+Indeed, before Greg KH mentioned 8250-like, I didn't realize our uart
+so much like 8250.
+Thanks for your review.
 
-diff --git a/drivers/of/property.c b/drivers/of/property.c
-index 8e90071de6ed..e77fb6cda0b7 100644
---- a/drivers/of/property.c
-+++ b/drivers/of/property.c
-@@ -1173,7 +1173,8 @@ static int of_link_to_phandle(struct device_node *con_np,
-  * - NULL if no phandle found at index
-  */
- static struct device_node *parse_prop_cells(struct device_node *np,
--					    const char *prop_name, int index,
-+					    const char *prop_name,
-+					    unsigned int index,
- 					    const char *list_name,
- 					    const char *cells_name)
- {
-@@ -1191,7 +1192,8 @@ static struct device_node *parse_prop_cells(struct device_node *np,
- 
- #define DEFINE_SIMPLE_PROP(fname, name, cells)				  \
- static struct device_node *parse_##fname(struct device_node *np,	  \
--					const char *prop_name, int index) \
-+					 const char *prop_name,		  \
-+					 unsigned int index)		  \
- {									  \
- 	return parse_prop_cells(np, prop_name, index, name, cells);	  \
- }
-@@ -1227,7 +1229,8 @@ static int strcmp_suffix(const char *str, const char *suffix)
-  * - NULL if no phandle found at index
-  */
- static struct device_node *parse_suffix_prop_cells(struct device_node *np,
--					    const char *prop_name, int index,
-+					    const char *prop_name,
-+					    unsigned int index,
- 					    const char *suffix,
- 					    const char *cells_name)
- {
-@@ -1245,7 +1248,8 @@ static struct device_node *parse_suffix_prop_cells(struct device_node *np,
- 
- #define DEFINE_SUFFIX_PROP(fname, suffix, cells)			     \
- static struct device_node *parse_##fname(struct device_node *np,	     \
--					const char *prop_name, int index)    \
-+					 const char *prop_name,		     \
-+					 unsigned int index)		     \
- {									     \
- 	return parse_suffix_prop_cells(np, prop_name, index, suffix, cells); \
- }
-@@ -1272,7 +1276,8 @@ static struct device_node *parse_##fname(struct device_node *np,	     \
-  */
- struct supplier_bindings {
- 	struct device_node *(*parse_prop)(struct device_node *np,
--					  const char *prop_name, int index);
-+					  const char *prop_name,
-+					  unsigned int index);
- 	bool optional;
- 	bool node_not_dev;
- };
-@@ -1308,7 +1313,8 @@ DEFINE_SUFFIX_PROP(regulators, "-supply", NULL)
- DEFINE_SUFFIX_PROP(gpio, "-gpio", "#gpio-cells")
- 
- static struct device_node *parse_gpios(struct device_node *np,
--				       const char *prop_name, int index)
-+				       const char *prop_name,
-+				       unsigned int index)
- {
- 	if (!strcmp_suffix(prop_name, ",nr-gpios"))
- 		return NULL;
-@@ -1318,7 +1324,8 @@ static struct device_node *parse_gpios(struct device_node *np,
- }
- 
- static struct device_node *parse_iommu_maps(struct device_node *np,
--					    const char *prop_name, int index)
-+					    const char *prop_name,
-+					    unsigned int index)
- {
- 	if (strcmp(prop_name, "iommu-map"))
- 		return NULL;
-@@ -1327,7 +1334,8 @@ static struct device_node *parse_iommu_maps(struct device_node *np,
- }
- 
- static struct device_node *parse_gpio_compat(struct device_node *np,
--					     const char *prop_name, int index)
-+					     const char *prop_name,
-+					     unsigned int index)
- {
- 	struct of_phandle_args sup_args;
- 
-@@ -1349,7 +1357,8 @@ static struct device_node *parse_gpio_compat(struct device_node *np,
- }
- 
- static struct device_node *parse_interrupts(struct device_node *np,
--					    const char *prop_name, int index)
-+					    const char *prop_name,
-+					    unsigned int index)
- {
- 	struct of_phandle_args sup_args;
- 
--- 
-2.30.2
+> > +static void sunplus_shutdown(struct uart_port *port)
+> > +{
+> > +     unsigned long flags;
+> > +
+> > +     spin_lock_irqsave(&port->lock, flags);
+> > +     writel(0, port->membase + SUP_UART_ISC);
+> > +     spin_unlock_irqrestore(&port->lock, flags);
+>
+> I asked last time:
+> * What bus is this -- posting?
+>
+> You replied:
+> * Here just clear interrupt.
+> * Not really understand your comment?
+>
+> So I am asking again:
+> What bus is this? Isn't a posted write a problem here? I mean, shouldn't
+> you read from the register so that the write hits the device? That
+> depends on the bus this sits on, so just asking.
+>
 
+Each UART has its own ISC register.
+Ex.
+dev/ttySUP0 base_adr =3D 0x9C00-0000 , isc_addr =3D 0x9C00-001C
+dev/ttySUP1 base_adr =3D 0x9C00-0080 , isc_addr =3D 0x9C00-009C
+dev/ttySUP2 base_adr =3D 0x9C00-0100 , isc_addr =3D 0x9C00-011C
+dev/ttySUP3 base_adr =3D 0x9C00-0180 , isc_addr =3D 0x9C00-019C
+dev/ttySUP4 base_adr =3D 0x9C00-0200 , isc_addr =3D 0x9C00-021C
+So sunplus_shutdown() just simply turn off its own device isc only.
+That's why I didn't read register value, just write 0 for it.
+
+> Other than that the driver looks much better now, i.e. LGTM.
+>
+> thanks,
+> --
+> js
+> suse labs
