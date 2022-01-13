@@ -2,142 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6EDEC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233479AbiAMI6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:58:19 -0500
-Received: from mail-dm6nam11on2067.outbound.protection.outlook.com ([40.107.223.67]:58624
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233422AbiAMI5a (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:57:30 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OOpxyhhfsHfF8iV+FF5mgYaTOiJqdJnicOX9JSiPUMKx7WNtc8J8Gs4pb2ivgEhTwknKtWoefh09M/xeGE3aAxnD3Ds62G/t6cs+MtveFgWEFRC8Wa41ZDSmNPE7JauNpw4UG10+SB+oA/pATpBHBTzgLe7VwSF0lUbz+1V/Zh/TT0cw1UAKYqKS+ulPNqWtLG4t+ihM88geovCT2lQCkDrM/4CeK3uA/vYrO2VZbr8hcmIMSoi7PXFFzNx4CN3/Pjt6MmkZ28GaXYm8X4MiPd6pp8CLgZ9MEeB1CScayqsQ7IS1gsZLDuesAViyJMzcx9TVOBISMGFTMxPx/SGFyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pG21vyC3xFQoCuo6lUwFIbPoAQR3xI8/mNdq+O8nT/c=;
- b=MPLfVhhO7FECaLzWTWKqqBD+mU6UKDjAUClofWqDxx/ATXU7BNVSuKSR9cR5uNmoPHbu0aHnQkFxV8lLg6OTPS6dle9yS12sG5px9L3ad+D3RK6QDjoFGIA50m1OuqPG0Pwfj7wmge3IW/hNc9OLxscPUS1w2TUfbpHAfLe5pa9nqXdp8sskIVXmcfsbh4HFCkVk4ziLk/cP5kHq1hOuY0q1Lp25KN4D5/gO1aTJlGhdnfcPDqjEqNlx1KoWpmAkawfrEhBuwNxGVPuEWomiFn6bl7Aa3VdDMDIqVk/hMEj0EL0fFtxIXjd6pfCtkRXCatRYdF1dIv4tMZ1R7jJiDQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S232254AbiAMI60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:58:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233428AbiAMI5e (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 03:57:34 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1B1C0611FF;
+        Thu, 13 Jan 2022 00:57:11 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id m4so20359717edb.10;
+        Thu, 13 Jan 2022 00:57:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pG21vyC3xFQoCuo6lUwFIbPoAQR3xI8/mNdq+O8nT/c=;
- b=LVM1o/0nq7TVnVbfMAtWxC/1Lwgo9ka3KnEFCYMyhwqaAvtcXD38PZQD1nHxtm6PnV5lCacw0njRdrqJil73RDnp8OBtjXiGb5dGqgfDV8pP14UoY71gC8AhTuJfxm8JI1Qr8FP1ks84QQnPR7q225lLMQWtg0wzD4iPt2RwDas=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silabs.com;
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
- by CY4PR1101MB2071.namprd11.prod.outlook.com (2603:10b6:910:1a::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Thu, 13 Jan
- 2022 08:56:26 +0000
-Received: from PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
- ([fe80::d031:da9e:71a:73e4%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
- 08:56:26 +0000
-From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
-To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=C9pTSew8IvqTOHh5d+VI9Kbh5oAaqV9jV+b1RhfYG/A=;
+        b=cf7UUKkXIHJAeHcBfjVDg0wmg5YMnquQU1q7exQ8o0nbyzxtwR08La/4GH8MmkeOZA
+         Dgp+ZptQ5pSDBa5zQKHQ4KtFXDIyw3qio4eYZ3J88rSAciT/JlkmIfM7AdWsJ7vgWPjD
+         LBwvxQoAoy5yOjslkKMjWiNg/tgpg3A9MI1mlAsMFPz5pQnrpjo3JoEC9BJv5L+pBMll
+         /NRIaf+hInn8ZAnmn90/xEXRaEkocUw0ECkMbqdtJ6hVFeH+dPpghd8h5IJDbG1LIuas
+         GPr/Yy4cEYK8msTQxW7Kc7xT4DrI6vmT4sbJfaarIHBoilIZ19+1SyT4ShOWM8K9asqx
+         iY4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=C9pTSew8IvqTOHh5d+VI9Kbh5oAaqV9jV+b1RhfYG/A=;
+        b=XqVzOKCk2M1JiBeozBLyijP0L+6QofdXLMbetKt7gkJXIQ8z69BiWSaL8vW9RPW0cw
+         SsbTbUbj4FiPmjhboFVZZ9pQMIyTkfXioCPIJTDgyx21/2YoSZ86LipVoa8pHi1WuQiZ
+         kM13bned1+YvQYPmfJqTJ7h1RTHN6InlcFObJ8wgomOJPtZ5dO64ZD+F5fWtr8xnHs6G
+         fbmEkckAxB7J0bCUcc8w/IW9v7wYjZXRX1gsCvHh04Wd0KlfM8S0NohiteoLk8VNfmIF
+         Ne4vDKB245pO6ZKc8/l1rN4H8bYyxF9lUZfAKQ392gOFkRSuQ9p4BNNhzzss5KCSqsPZ
+         BsMQ==
+X-Gm-Message-State: AOAM53146eiMiapsVhEpxJceQ7hH1mcVO2VlR6KHNVT2qNVluiM60Q63
+        fI1UjcTu39Y6B35Ec4Jks/jXjVt6bAw=
+X-Google-Smtp-Source: ABdhPJxhzkIGZghbcoKFqEK6eMFLnNZmt3YymMUv1xq6yuUOXWszbChBHB4wW7k/lUsHDiE+lgIfRw==
+X-Received: by 2002:a05:6402:4406:: with SMTP id y6mr3227210eda.374.1642064230155;
+        Thu, 13 Jan 2022 00:57:10 -0800 (PST)
+Received: from gmail.com (563BAB82.dsl.pool.telekom.hu. [86.59.171.130])
+        by smtp.gmail.com with ESMTPSA id f18sm886823edf.95.2022.01.13.00.57.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 00:57:09 -0800 (PST)
+Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
+Date:   Thu, 13 Jan 2022 09:57:05 +0100
+From:   Ingo Molnar <mingo@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>
-Subject: [PATCH 24/31] staging: wfx: replace compiletime_assert() by BUILD_BUG_ON_MSG()
-Date:   Thu, 13 Jan 2022 09:55:17 +0100
-Message-Id: <20220113085524.1110708-25-Jerome.Pouiller@silabs.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com>
-References: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-ClientProxiedBy: SA0PR11CA0117.namprd11.prod.outlook.com
- (2603:10b6:806:d1::32) To PH0PR11MB5657.namprd11.prod.outlook.com
- (2603:10b6:510:ee::19)
+        Nathan Chancellor <nathan@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [ANNOUNCE] "Fast Kernel Headers" Tree -v2
+Message-ID: <Yd/pYSKZKDgPieVR@gmail.com>
+References: <Ydm7ReZWQPrbIugn@gmail.com>
+ <CAK8P3a1emGYHPcjTfLqd-yyU8_9w88=2g_B_vfhbKeDtDHMM-w@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fe5f0037-45f6-4e9e-e0f7-08d9d67294d0
-X-MS-TrafficTypeDiagnostic: CY4PR1101MB2071:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR1101MB20716E07E76DD23B4A27C68193539@CY4PR1101MB2071.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XXQNQm7RvCQmVuFZynaP+dfeRtc0NudZVkT0DWuYoIwYKc9tY9aZ8eRWkWsvbDbzJtJXXO72iVyySqZoPAavNnXbg1+py4RNiNuc8O9hjTqYIh4SJ82uQbrUGVpzV39HccpAr1Aua2hW3So5sc2KodhFofe3FGjV+XmM8ONzSP8qZi/J1wDctIAw2SNsrQyN9coAA9cTxgiwreNpCd+AydLwdAotSHIWz/SeglTmxx4sQ5PzvxHT+VGx4TsU0t1HMWhyK3arzv9LkK1aqV2oXF5J12gxepqVM9TakSS2WFo2rizKQ/URTc/Q5+i0l9t8rXHUHyK0x93P2cNEKngnyXGvO+LusvkLJpbchDQda4MBaPyTXVci0dF7CJXFgNYtpHLq6dIhZprb2uHB30d2b5ZDq4xJQeMoPi0ZcUPkvR9w7efS6+rDALrOWSKkSPzNAYEXX9H66HtK3PtwSsEN16VI0YYUcN1ZmfCi6b0vxclvTVrGb/T7HVCNQFQR2LMqtqwVfK50VZpm7ipqKtcSFeGJgdOUp9VCMxfqc/I2ECKXp9aWC3xq68FnRua/N9dGiVm20lrALkyU5QzNE/p7hlyMBLIUbiDZhoaZZ4Hc6Oi/Z65pi9T2lXvPCxi4e5xyugnQHPux4zIaHitYOAXMxg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2616005)(66476007)(52116002)(8676002)(6486002)(4326008)(38100700002)(8936002)(83380400001)(6506007)(107886003)(66556008)(6666004)(36756003)(508600001)(2906002)(5660300002)(6512007)(1076003)(86362001)(186003)(316002)(66946007)(54906003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QUtjQUxkTGFJaldra0tSQVZ5L042NnFmMzlwaEZ1L2g2cTJtMkNLRGdTQ3pD?=
- =?utf-8?B?T3Q4c29Qb0laVlJJQlIyRGxhZUcwWE44Z3NtcUU2WlFqdEZCZkpZN2RqWjFB?=
- =?utf-8?B?MlltVjZTUHlEZDA3dDdrYTJXbkN2OTFtUFpOZW51a01DRDFYakpseDdJNW1S?=
- =?utf-8?B?TWtXWU5rTi9UMzdFWi9sQWQrV0dtT1JWV1lGSHBDcFdPbkc5UXNrUGdtQUVZ?=
- =?utf-8?B?bEhzc3JRYmlPaFNyUWZYTVN2NTNhK0wyWlVnVVBMSnVqTFUzQVlwSVE5a3h6?=
- =?utf-8?B?Zkd2MGMwLzBYZUdFbGpPakZCYWwydlo5QTZIZ1FaSW1wK2ZmK2hocFpLdjNN?=
- =?utf-8?B?SlZaVHFXRVhaVXpXb1FrSzlXSGtqamx3aFg1RkcrbEtYOVU2NlVWUzU5YXUx?=
- =?utf-8?B?aTFtcW93U3J3bG9FRzZlUkNvSXlUSVZmLy9ZeE5iOHdEc1RjdHU5b2NpRE1Q?=
- =?utf-8?B?RHJUV2hya3VXTVdEQWNBV1BrV1c4M1U0azl6ak9tdkhDZHJzcjQreUN5VFN1?=
- =?utf-8?B?VjlDZEQ5a0lFeWtLcUhsNnJGK2JYcVVGUjI2U2VRaUFGcXZ2K216Z1FrUXg4?=
- =?utf-8?B?bXBDSnp3ZUdnODQ4UTFsN1dVOVYza2pKamdRVlQ5SXpWL2NkNmFWYWo5ZC9L?=
- =?utf-8?B?NzNWWlB2Q3N6Z1lySWZTMUN6SHMweVJ5OG52Uk5aVFlLb1gyRVpLTnFPbjV4?=
- =?utf-8?B?OTJjR0NQTlRWNERTZkpFY0FuZmRaQnBjWkRaZzQ5OUxrNWNUVmowc0ovNXdZ?=
- =?utf-8?B?aSt5dGN6dDVmZ096ZFJid0pQWkZnUnYzNHl3RGpudzFHeEhMWWdMc3ZqM0h3?=
- =?utf-8?B?enVHNENaWWMyYjkvNTVOSllaZklXVGJ5QzIvdVlFZUhFNUdkaXUrZzREQjFB?=
- =?utf-8?B?L0hYWGYveWFobDJrUzE2cXdEL0FrbDl5Wi92TC9BWVpIOUtPMExjV0hhMThj?=
- =?utf-8?B?UVpOSldTRmtiN0pFcXhteU5Wc2hIVm9rRjR4U0srcU9pM1V1cDZQNzVlK2dJ?=
- =?utf-8?B?ZXl5UlJpZjF2SzZZa3hXNzIzY2xkelQvQWE1UHBFRytXNTY0MzFYM0NsWVBh?=
- =?utf-8?B?bStxRmowWXVaeEpuYXpublkzRlZoN3dTWUFKZHVjSjcrSUROeW1XQm9KdUlk?=
- =?utf-8?B?aEZzUjNtL3l3azV3YnRvQ3ZMQmFldHZmc3Jwd1ZMOVdsSWl4TjFFRnNBZ0Vw?=
- =?utf-8?B?VjhHcldwYUczQjZ4Uk4rQm5BTHdIdk5mTUhXVGI1L3JKRStIYXhBaW82RGxE?=
- =?utf-8?B?OFRncG5ZVUdZaEFTcDY1SURSYzBxeXBTam9HdnRGV0xkaFdOK3pPZHpkVVgv?=
- =?utf-8?B?amVpT2l2aVdYdWJLdk1IeUhyT0lpNS82R2hzUVEvSFViVzN2a0R6a00wSjdI?=
- =?utf-8?B?cnVXUXRHdHVEa1poOEhlRkZjLzgySStlNW5UZlJpTlJwV3N4ZS9PZS9tTFgw?=
- =?utf-8?B?TXUrM2xXMngycWNULytaNXNFUnpiNTVVS3Z1RVREZlBlY3JsbHVoSUwxN2VL?=
- =?utf-8?B?K2lieDRQUnVXbXpMTW5EWEQxcXpabDZuSGFUVC9hbUZUOEtOWlRvZC8rNDVt?=
- =?utf-8?B?OFozODRta1FxOEt6SGxsRlIyWm1CZWd4SGZoMmFqaXk0NG83cDlZdzQxMXlp?=
- =?utf-8?B?QWdiNXlaNkI3VmdhSmVxQUN6ZEQ2YTg1eVgxSVkzK3FuQXRwL0MrbGtsRStK?=
- =?utf-8?B?S3JhVUFDVDRjeEFXcEhWZEd4SkVmalNkZFF3L1VzSTZvT3F6K2pvVVdWSU5t?=
- =?utf-8?B?UnAweGtIOXUzSVZ0TEZ3b3BpazU1Tm1LZW5PQUhZbGc5blNEc0p0YjRtVHBw?=
- =?utf-8?B?dCtNQ2F3R2xaVGZueGJPRTI0WSs0MlhYNDltbEIzMVB6VWVBVXVEaHRIK2hr?=
- =?utf-8?B?cURaZWtJUDZTQ1ZKQ3JQem5WbXpLM1QvVEJmbDAybytRaERoeWJFUU13eGtx?=
- =?utf-8?B?ajBoRXE3OEhYTGdLbmRCNzd2UTdiemF0SnFFV1EwU0JhS2pPZlYvUy83bFVp?=
- =?utf-8?B?Q2FnUEpteWVxNko2bTUya3RKY2NmR05nV2x6eE9sSmhEdzR1cTZYM3ZSZFk4?=
- =?utf-8?B?RlBGaG1ObzJtS3VQeGI5OEVaZWNRNU5yMVhrQ0xHRUpqdjJLUGh2cUFoamgr?=
- =?utf-8?B?T0lMMDIyY0psVjFRSGV6VzNKV1JxdEZtbFRKa3BVcHltejc4N005Sld5RFFk?=
- =?utf-8?B?WW5iREFLVWU0UVNZdG13bitFNW43SmllNEZ1Ym9KS3FyUW1qYThOY3hYR04v?=
- =?utf-8?Q?XX6YKXMTLaDtjtAuQKdXrSoU0Y/+6eeDcn3+Pbp6g0=3D?=
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe5f0037-45f6-4e9e-e0f7-08d9d67294d0
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 08:56:26.3156
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N1DAGF4U2NOiFKHoEGJ9IEk0HFtPmmhwP10rd86i/I4bW0JptZIYjlt/ennYef4cl90GIfeZa4ka64iVbJP/Lw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2071
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a1emGYHPcjTfLqd-yyU8_9w88=2g_B_vfhbKeDtDHMM-w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSXQg
-c2VlbXMgdGhhdCBCVUlMRF9CVUdfT05fTVNHKCkgaXMgYSBiaXQgbW9yZSBwb3B1bGFyLgoKU2ln
-bmVkLW9mZi1ieTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29t
-PgotLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90eC5jIHwgNCArKy0tCiAxIGZpbGUgY2hh
-bmdlZCwgMiBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvc3RhZ2luZy93ZngvZGF0YV90eC5jIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9kYXRhX3R4LmMK
-aW5kZXggY2EyZjI0YjkyZDI0Li5iZmMzZDQ0MTJhYzYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvc3Rh
-Z2luZy93ZngvZGF0YV90eC5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90eC5jCkBA
-IC0zOTEsOCArMzkxLDggQEAgdm9pZCB3ZnhfdHgoc3RydWN0IGllZWU4MDIxMV9odyAqaHcsIHN0
-cnVjdCBpZWVlODAyMTFfdHhfY29udHJvbCAqY29udHJvbCwgc3RydWMKIAlzdHJ1Y3QgaWVlZTgw
-MjExX2hkciAqaGRyID0gKHN0cnVjdCBpZWVlODAyMTFfaGRyICopc2tiLT5kYXRhOwogCXNpemVf
-dCBkcml2ZXJfZGF0YV9yb29tID0gc2l6ZW9mX2ZpZWxkKHN0cnVjdCBpZWVlODAyMTFfdHhfaW5m
-bywgcmF0ZV9kcml2ZXJfZGF0YSk7CiAKLQljb21waWxldGltZV9hc3NlcnQoc2l6ZW9mKHN0cnVj
-dCB3ZnhfdHhfcHJpdikgPD0gZHJpdmVyX2RhdGFfcm9vbSwKLQkJCSAgICJzdHJ1Y3QgdHhfcHJp
-diBpcyB0b28gbGFyZ2UiKTsKKwlCVUlMRF9CVUdfT05fTVNHKHNpemVvZihzdHJ1Y3Qgd2Z4X3R4
-X3ByaXYpID4gZHJpdmVyX2RhdGFfcm9vbSwKKwkJCSAic3RydWN0IHR4X3ByaXYgaXMgdG9vIGxh
-cmdlIik7CiAJV0FSTihza2ItPm5leHQgfHwgc2tiLT5wcmV2LCAic2tiIGlzIGFscmVhZHkgbWVt
-YmVyIG9mIGEgbGlzdCIpOwogCS8qIGNvbnRyb2wudmlmIGNhbiBiZSBOVUxMIGZvciBpbmplY3Rl
-ZCBmcmFtZXMgKi8KIAlpZiAodHhfaW5mby0+Y29udHJvbC52aWYpCi0tIAoyLjM0LjEKCg==
+
+* Arnd Bergmann <arnd@arndb.de> wrote:
+
+> On Sat, Jan 8, 2022 at 5:26 PM Ingo Molnar <mingo@kernel.org> wrote:
+> >
+> >
+> > I'm pleased to announce -v2 of the "Fast Kernel Headers" tree, which is a
+> > comprehensive rework of the Linux kernel's header hierarchy & header
+> > dependencies, with the dual goals of:
+> >
+> >  - speeding up the kernel build (both absolute and incremental build times)
+> >
+> >  - decoupling subsystem type & API definitions from each other
+> >
+> > The fast-headers tree consists of over 25 sub-trees internally, spanning
+> > over 2,300 commits, which can be found at:
+> >
+> >    git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
+> >
+> >    # HEAD: 391ce485ced0 headers/deps: Introduce the CONFIG_FAST_HEADERS=y config option
+> 
+> I've started reading through it at last. I can't say that I'm reviewing 
+> every patch, [...]
+
+Yeah, not expected at all with 2,300+ commits - but even cursory review or 
+review of specific areas is appreciated.
+
+> but at least (almost all) the things I've looked at so far all seem 
+> really nice to me, mostly this is the same that I was planning to do as 
+
+Thanks!
+
+> well, some things I would have done differently but I'm not complaining 
+> as you did the work, and some things seem unnecessary but might not be.
+> 
+> I've started building randconfig kernels for arm64 and x86, and fixing
+> up things that come up,
+> a few things I have noticed out so far:
+> 
+> * 2e98ec93d465 ("headers/prep: Rename constants: SOCK_DESTROY =>
+> SOCK_DIAG_SOCK_DESTROY")
+> 
+>   This one looks wrong, as you are changing a uapi header, possibly 
+>   breaking applications at compile time. I think the other one should be 
+>   renamed instead.
+
+This is hard: SOCK_DESTROY is one of the main constants for sockets, is 
+well named, fits into an existing in-kernel nomenclature and both me and 
+networking folks would hate to rename it ...
+
+So I'd keep this one and wait for any reported breakage. I don't think we 
+*guarantee* the specific naming of symbols - we guarantee an ABI, and make 
+a best-effort for the rest. The constant is netdiag specific and doesn't 
+seem to be included by any major user-space header in /usr/include.
+
+> * 04293522a8cb ("headers/deps: ipc/shm: Move the 'struct shmid_ds'
+> definition to ipc/shm.c")
+>   and related patches
+> 
+>   Similarly, the IPC structures are uapi headers that I would not
+> change here for the same reasons.
+>   Even if nothing uses those any more with modern libc
+> implementations, the structures belong into
+>   uapi, unless we can prove that the old-style sysvipc interface is
+> completely unused and we
+>   remove the implementation from the kernel as well (I don't think we
+> want that, but I have not
+>   looked in depth at when it was last used by a libc)
+
+Ok, we can certainly undo this one - but how does it work in practice, as 
+the structure is already defined by libc:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_shmid_ds.h:struct shmid_ds
+
+/* Data structure describing a shared memory segment.  */
+struct shmid_ds
+  {
+    struct ipc_perm shm_perm;           /* operation permission struct */
+    size_t shm_segsz;                   /* size of segment in bytes */
+#if __TIMESIZE == 32
+    __time_t shm_atime;                 /* time of last shmat() */
+    unsigned long int __shm_atime_high;
+    __time_t shm_dtime;                 /* time of last shmdt() */
+    unsigned long int __shm_dtime_high;
+    __time_t shm_ctime;                 /* time of last change by shmctl() */
+    unsigned long int __shm_ctime_high;
+#else
+    __time_t shm_atime;                 /* time of last shmat() */
+    __time_t shm_dtime;                 /* time of last shmdt() */
+    __time_t shm_ctime;                 /* time of last change by shmctl() */
+#endif
+    __pid_t shm_cpid;                   /* pid of creator */
+    __pid_t shm_lpid;                   /* pid of last shmop */
+    shmatt_t shm_nattch;                /* number of current attaches */
+    __syscall_ulong_t __glibc_reserved5;
+    __syscall_ulong_t __glibc_reserved6;
+  };
+
+
+Wouldn't this definition conflict with any header use of linux/shm.h?
+
+> * changing any include/uapi headers to use "#include <uapi/linux/*.h>"
+> is broken because
+>   that makes the headers unusable from userspace, including any of
+> tools/*/. I think we
+>   can work around this in the headers_install.sh postprocessing step
+> though, where we already
+>   do unifdef etc.
+
+Yeah, so the problem here is on the kernel side, the following innocent 
+looking include in a UAPI header:
+
+   #include <linux/foo.h>
+
+Will turn into a very large header - and unintentionally so - if there 
+happens to be an include/foo.h header.
+
+I.e. normally there's only the UAPI header, which is then included, but in 
+some significant cases that's not so.
+
+IMO it seems so much cleaner to express the intent to only include the UAPI 
+header - so solving this at header-install time would be preferable.
+
+> * For all the header additions to .c files, I assume you are using a set 
+> of script, so these could
+>   probably be changed without much trouble. I would suggest applying
+> them in sequence so
+>    the headers remain sorted alphabetically in the end. It would
+> probably make sense to
+>    squash those all together to avoid patching certain files many
+> times over, for the sake
+>    of keeping a slightly saner git history.
+
+Are you suggesting to change the current reverse-alphabetical order of 
+headers:
+
+--- a/drivers/auxdisplay/ht16k33.c
++++ b/drivers/auxdisplay/ht16k33.c
+@@ -8,6 +8,15 @@
+  * Copyright (C) 2021 Glider bv
+  */
+ 
++#include <linux/workqueue_api.h>
++#include <linux/wait_api.h>
++#include <linux/sched.h>
++#include <linux/pgtable_api.h>
++#include <linux/of_api.h>
++#include <linux/mm_api.h>
++#include <linux/jiffies.h>
++#include <linux/gfp_api.h>
++#include <linux/device_api_lock.h>
+
+... to alphabetical?
+
+Can certainly do that - but this will flip around the commit order: it's 
+much easier to add at the head of the include files section.
+
+> * The per-task stuff sounded a bit scary from your descriptions but
+> looking at the actual
+>    implementation I now get it, this looks like a really nice way of doing it.
+
+Thank you!
+
+> * I think it would be good to keep the include/linux/syscalls_api.h declarations
+>    in the same header as the SYSCALL_DEFINE*() macros, to ensure that the
+>    prototypes remain synchronized. Splitting them out will likely also
+> cause sparse
+>    warnings for missing prototypes (or maybe it should but doesn't at
+> the moment).
+
+Yeah, I suppose we could undo the split:
+
+  # -fast-headers-v2:
+
+                                                               _______________________
+                                                              | stripped lines of code
+                                                              |              _____________________________
+                                                              |             | headers included recursively
+                                                              |             |                _______________________________
+                                                              |             |               | usage in a distro kernel build
+ ____________                                                 |             |               |         _________________________________________
+| header name                                                 |             |               |        | million lines of comment-stripped C code
+|                                                             |             |               |        |
+  #include <linux/syscalls_types.h>                           | LOC:  2,397 | headers:  128 |    353 | MLOC:    0.8 | 
+  #include <linux/syscalls_api.h>                             | LOC: 12,842 | headers:  361 |    167 | MLOC:    2.1 | 
+
+The full header used to be a lot bigger:
+
+  # v5.16-rc8
+
+  #include <linux/syscalls.h>                                 | LOC: 40,217 | headers:  604 |    321 | MLOC:   12.9 | ###
+
+
+> * include/linux/time64_types.h is not a good name, as these are now
+> the default types
+>    after we removed the time32 versions. I'd either rename it to
+> linux/time_types.h
+>    or split it up between linux/types.h and linux/ktime_types.h
+
+I was doing this in the context of v5.16.
+
+> * arm64 needs  a couple of minor fixups, see
+> https://pastebin.com/eSKhz4CL for what
+>   I have so far, feel free to integrate any things that directly make sense.
+
+Thanks! Mind sending the dependency removals in a series, so I can keep 
+attribution? These bits are usually in separate commits, unless they fix 
+some bug in an existing commit:
+
+ arch/arm64/include/asm/mmu.h                     |    1 -
+ arch/arm64/include/asm/pgtable-hwdef.h           |    1 -
+ arch/arm64/include/asm/pgtable-prot.h            |    1 -
+
+This bit looks suboptimal - but as you mentioned it fixes tooling build 
+errors:
+
+--- a/include/uapi/linux/netdevice.h
++++ b/include/uapi/linux/netdevice.h
+@@ -26,11 +26,17 @@
+ #ifndef _UAPI_LINUX_NETDEVICE_H
+ #define _UAPI_LINUX_NETDEVICE_H
+ 
++#ifdef __KERNEL__
+ #include <uapi/linux/if.h>
+ #include <uapi/linux/if_ether.h>
+ #include <uapi/linux/if_packet.h>
+ #include <uapi/linux/if_link.h>
+-
++#else
++#include <linux/if.h>
++#include <linux/if_ether.h>
++#include <linux/if_packet.h>
++#include <linux/if_link.h>
++#endif
+
+I'll apply & backmerge the per_task() fixlets for the bugs you found:
+
+-       per_task(&init_task, kcsan_ctx).scoped_addresses.next = LIST_POISON1;
++       per_task(&init_task, kcsan_ctx).scoped_accesses.next = LIST_POISON1;
+
+-       return ptr == &current->flags;
++       return ptr == &task_flags(current);
+
+This KASAN bit:
+
+--- a/include/linux/mm_api_kasan.h
++++ b/include/linux/mm_api_kasan.h
+@@ -18,7 +18,7 @@ static inline u8 page_kasan_tag(const struct page *page)
+ {
+        u8 tag = 0xff;
+ 
+-       if (kasan_enabled()) {
++       if (IS_ENABLED(CONFIG_KASAN)) {
+                tag = (page->flags >> KASAN_TAG_PGSHIFT) & KASAN_TAG_MASK;
+                tag ^= 0xff;
+        }
+
+Is this a fix for some build failure? Upstream it's using kasan_enabled():
+
+static inline u8 page_kasan_tag(const struct page *page)
+{
+        u8 tag = 0xff;
+
+        if (kasan_enabled()) {
+                tag = (page->flags >> KASAN_TAG_PGSHIFT) & KASAN_TAG_MASK;
+                tag ^= 0xff;
+        }
+
+        return tag;
+}
+
+	Ingo
