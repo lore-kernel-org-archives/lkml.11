@@ -2,288 +2,562 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:41:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231666AbiAMIld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:41:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233114AbiAMIl3 (ORCPT
+        id S233133AbiAMIoW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:44:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:21955 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231804AbiAMIoV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:41:29 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A73C06173F
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 00:41:29 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id z3so8590212plg.8
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 00:41:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:in-reply-to:references:from:date:subject:to:cc;
-        bh=dOtowF47PQ1OCn9zSdr9LGqtyxZh5tAWtNpLCito+H4=;
-        b=NpNxKDSs3IKduK6K0FSRk811YyFXtMArr9y201Jd977Cg9MF3//9MnP+eN8Yw5BnuQ
-         hJBJabTVr6H1huCKYnpJWwENMVqccH5pPaQBxcblZEOYKVxejA0eUF5CPwvyopxcX9zC
-         KnfIlYz6pH66iE8MNUflVtw5z7n4B5zR5BTdmAQjzKncRT4dbpWoGUxCB6wuWG//o29T
-         USOMSOrmYbnGg/c2M5+KbAipfjnzTfW2dBvTUBn809KNQXJwF/m4H9ZgUj/AHN8JWEIe
-         2eWfhLS/4aWFUtRjzuVBUwepyevfzivIeNSX9ejqevWmU6ktObfOm8HMA16/wfD9Z/1y
-         sk7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:in-reply-to:references:from:date
-         :subject:to:cc;
-        bh=dOtowF47PQ1OCn9zSdr9LGqtyxZh5tAWtNpLCito+H4=;
-        b=SOtmuCjzcHbzmqDAvY5z4q2T0KJhIaiwX5D4xv8zg5Dbp3e6pHiJS2j258ZNCYu+4S
-         KwwzvARz7qi4nV90BpmkKGRdR16g4OiO1YkdZwQLyhwzmnWPXWYAODD4ywkJpbcy0Dk+
-         n7wHwrY88WaoePvuQlnkOcawqgbg4NklawAKAs+uj8TOz3+ru/+utAETpCczimzPn89m
-         En2OfzY0Iggny3ysugDpITKg1zMS/5B96yjdIGoyXcFNSqBIpTZaPBoJ279bDXnIHGZF
-         Q+q8vD20MxMJOgZ7KiIgNkjsGLsPUjrYPP/7lErBI8aXcDIcIosNMcgyf2268coQLsqL
-         hhWw==
-X-Gm-Message-State: AOAM531V38faLsA6WmkTX0cQo9pQZKnBOzpx2JVbFB/VStjwzQaefFWK
-        kF9ab0N+ZDOWGLACiRCw2t8TBdfRBh4qyRXN
-X-Google-Smtp-Source: ABdhPJz/23Qos5GKweDup3rMg+pX3hbqS2c95Q1r13ILbw0RdIqAQ+qnoY5dVn1QkMsE2ZljUTBSAg==
-X-Received: by 2002:a17:902:6948:b0:149:f187:e601 with SMTP id k8-20020a170902694800b00149f187e601mr3273764plt.81.1642063288250;
-        Thu, 13 Jan 2022 00:41:28 -0800 (PST)
-Received: from localhost ([121.99.145.49])
-        by smtp.gmail.com with ESMTPSA id j4sm2137293pfj.217.2022.01.13.00.41.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 00:41:28 -0800 (PST)
-Message-Id: <2eb938b60d232dfc48fcc53e3c87d1f773b3bf2d.1642063121.git.daniel.beer@igorinstitute.com>
-In-Reply-To: <cover.1642063121.git.daniel.beer@igorinstitute.com>
-References: <cover.1642063121.git.daniel.beer@igorinstitute.com>
-From:   Daniel Beer <daniel.beer@igorinstitute.com>
-Date:   Tue, 11 Jan 2022 13:00:09 +1300
-Subject: [PATCH v2 2/2] ASoC: dt-bindings: add bindings for TI TAS5805M.
-To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Andy Liu <andy-liu@ti.com>,
-        Daniel Beer <daniel.beer@igorinstitute.com>,
-        Derek Simkowiak <derek.simkowiak@igorinstitute.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
+        Thu, 13 Jan 2022 03:44:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642063460;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=K+81HiUK1wsOShqhpc5KzY+HFzY/B7IX7rghZBJJAzs=;
+        b=H6CoJdyatGJTfZPhJejYjK1CQYDiw8RvsRgtuiQ30QpiKvvLdElDsCoKhqmZaH9f6SOpJa
+        vGqwgJmprYvsdXrj0MfCcK3WjiLs+XbzlTQJtc/+4PUzOe5h2vRDW4C+5llz3DseUFHLuE
+        w2GQKj53ifXG6MAea3BBc5wCOPEbUKU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-411-5PvQFJl4NK-ecTxWAHSmhw-1; Thu, 13 Jan 2022 03:44:17 -0500
+X-MC-Unique: 5PvQFJl4NK-ecTxWAHSmhw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 721DB1B18BCD;
+        Thu, 13 Jan 2022 08:44:15 +0000 (UTC)
+Received: from [10.72.13.202] (ovpn-13-202.pek2.redhat.com [10.72.13.202])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1B16256A8A;
+        Thu, 13 Jan 2022 08:43:49 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v4 07/15] KVM: arm64: Support page-not-present
+ notification
+To:     Eric Auger <eauger@redhat.com>, kvmarm@lists.cs.columbia.edu
+Cc:     kvm@vger.kernel.org, maz@kernel.org, linux-kernel@vger.kernel.org,
+        shan.gavin@gmail.com, Jonathan.Cameron@huawei.com,
+        pbonzini@redhat.com, vkuznets@redhat.com, will@kernel.org
+References: <20210815005947.83699-1-gshan@redhat.com>
+ <20210815005947.83699-8-gshan@redhat.com>
+ <03b0df69-c590-ab99-4a36-9b5b5fc588bf@redhat.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <00633ae4-0b9f-f881-6944-9a43ba3781ae@redhat.com>
+Date:   Thu, 13 Jan 2022 16:43:45 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
+MIME-Version: 1.0
+In-Reply-To: <03b0df69-c590-ab99-4a36-9b5b5fc588bf@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TAS5805M is a class D speaker amplifier with integrated DSP. The
-example here includes a tested flat configuration for mono (PBTL)
-output.
+Hi Eric,
 
-Signed-off-by: Daniel Beer <daniel.beer@igorinstitute.com>
----
- .../devicetree/bindings/sound/tas5805m.yaml   | 204 ++++++++++++++++++
- 1 file changed, 204 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/sound/tas5805m.yaml
+On 11/12/21 11:01 PM, Eric Auger wrote:
+> On 8/15/21 2:59 AM, Gavin Shan wrote:
+>> The requested page might be not resident in memory during the stage-2
+>> page fault. For example, the requested page could be resident in swap
+>> device (file). In this case, disk I/O is issued in order to fetch the
+>> requested page and it could take tens of milliseconds, even hundreds
+>> of milliseconds in extreme situation. During the period, the guest's
+>> vCPU is suspended until the requested page becomes ready. Actually,
+>> the something else on the guest's vCPU could be rescheduled during
+> s/the//
 
-diff --git a/Documentation/devicetree/bindings/sound/tas5805m.yaml b/Documentation/devicetree/bindings/sound/tas5805m.yaml
-new file mode 100644
-index 000000000000..c3a714bac275
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/tas5805m.yaml
-@@ -0,0 +1,204 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/tas5805m.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TAS5805M audio amplifier
-+
-+maintainers:
-+  - Daniel Beer <daniel.beer@igorinstitute.com>
-+
-+description: |
-+  The TAS5805M is a class D audio amplifier with a built-in DSP.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,tas5805m
-+
-+  reg:
-+    maxItems: 1
-+    description: |
-+      I2C address of the amplifier. See the datasheet for possible values.
-+
-+  pvdd-supply:
-+    description: |
-+      Regulator for audio power supply (PVDD in the datasheet).
-+
-+  pdn-gpios:
-+    description: |
-+      Power-down control GPIO (PDN pin in the datasheet).
-+
-+  ti,dsp-config:
-+    description: |
-+      A byte sequence giving DSP configuration. Each pair of bytes, in
-+      sequence, gives a register address and a value to write. If you
-+      are taking this data from TI's PPC3 tool, this should contain only
-+      the register writes following the 5ms delay.
-+    $ref: /schemas/types.yaml#/definitions/uint8-array
-+
-+examples:
-+  - |
-+    i2c0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        tas5805m: tas5805m@2c {
-+                reg = <0x2c>;
-+                compatible = "ti,tas5805m";
-+                status = "ok";
-+
-+                pvdd-supply = <&audiopwr>;
-+                pdn-gpios = <&tlmm 160 0>;
-+
-+                // Mono PBTL DSP configuration
-+                ti,dsp-config = [
-+                        00 00 7f 00 03 00 00 00 7f 00 46 01 00 00 7f 00
-+                        03 02 00 00 7f 00 78 80 00 00 7f 00 61 0b 60 01
-+                        7d 11 7e ff 00 01 51 05 00 00 02 04 53 00 54 00
-+                        00 00 00 00 00 00 00 00 00 00 7f 00 66 87 7f 8c
-+                        00 29 18 00 19 40 1a 26 1b e7 1c 00 1d 40 1e 26
-+                        1f e7 20 00 21 00 22 00 23 00 24 00 25 00 26 00
-+                        27 00 00 2a 24 00 25 80 26 00 27 00 28 00 29 80
-+                        2a 00 2b 00 30 00 31 71 32 94 33 9a 00 2c 0c 00
-+                        0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00 14 00
-+                        15 80 16 00 17 00 18 00 19 00 1a 00 1b 00 1c 00
-+                        1d 80 1e 00 1f 00 20 00 21 00 22 00 23 00 28 00
-+                        29 80 2a 00 2b 00 2c 00 2d 00 2e 00 2f 00 34 00
-+                        35 80 36 00 37 00 38 00 39 00 3a 00 3b 00 48 00
-+                        49 80 4a 00 4b 00 4c 00 4d 00 4e 00 4f 00 5c 00
-+                        5d 00 5e 57 5f 62 60 00 61 89 62 37 63 4c 64 08
-+                        65 13 66 85 67 62 68 40 69 00 6a 00 6b 00 6c 02
-+                        6d 66 6e c4 6f 1b 74 00 75 80 76 00 77 00 00 2d
-+                        18 7d 19 99 1a 3b 1b e5 1c 00 1d 00 1e 57 1f 62
-+                        20 00 21 00 22 00 23 00 24 00 25 00 26 00 27 00
-+                        28 00 29 00 2a 00 2b 00 2c 00 2d 80 2e 00 2f 00
-+                        00 2e 24 11 25 3d 26 c3 27 1a 00 00 7f aa 00 24
-+                        18 08 19 00 1a 00 1b 00 1c 00 1d 00 1e 00 1f 00
-+                        20 00 21 00 22 00 23 00 24 00 25 00 26 00 27 00
-+                        28 00 29 00 2a 00 2b 00 2c 08 2d 00 2e 00 2f 00
-+                        30 00 31 00 32 00 33 00 34 00 35 00 36 00 37 00
-+                        38 00 39 00 3a 00 3b 00 3c 00 3d 00 3e 00 3f 00
-+                        40 08 41 00 42 00 43 00 44 00 45 00 46 00 47 00
-+                        48 00 49 00 4a 00 4b 00 4c 00 4d 00 4e 00 4f 00
-+                        50 00 51 00 52 00 53 00 54 08 55 00 56 00 57 00
-+                        58 00 59 00 5a 00 5b 00 5c 00 5d 00 5e 00 5f 00
-+                        60 00 61 00 62 00 63 00 64 00 65 00 66 00 67 00
-+                        68 08 69 00 6a 00 6b 00 6c 00 6d 00 6e 00 6f 00
-+                        70 00 71 00 72 00 73 00 74 00 75 00 76 00 77 00
-+                        78 00 79 00 7a 00 7b 00 7c 08 7d 00 7e 00 7f 00
-+                        00 25 08 00 09 00 0a 00 0b 00 0c 00 0d 00 0e 00
-+                        0f 00 10 00 11 00 12 00 13 00 14 00 15 00 16 00
-+                        17 00 18 08 19 00 1a 00 1b 00 1c 00 1d 00 1e 00
-+                        1f 00 20 00 21 00 22 00 23 00 24 00 25 00 26 00
-+                        27 00 28 00 29 00 2a 00 2b 00 2c 08 2d 00 2e 00
-+                        2f 00 30 00 31 00 32 00 33 00 34 00 35 00 36 00
-+                        37 00 38 00 39 00 3a 00 3b 00 3c 00 3d 00 3e 00
-+                        3f 00 40 08 41 00 42 00 43 00 44 00 45 00 46 00
-+                        47 00 48 00 49 00 4a 00 4b 00 4c 00 4d 00 4e 00
-+                        4f 00 50 00 51 00 52 00 53 00 54 08 55 00 56 00
-+                        57 00 58 00 59 00 5a 00 5b 00 5c 00 5d 00 5e 00
-+                        5f 00 60 00 61 00 62 00 63 00 64 00 65 00 66 00
-+                        67 00 68 08 69 00 6a 00 6b 00 6c 00 6d 00 6e 00
-+                        6f 00 70 00 71 00 72 00 73 00 74 00 75 00 76 00
-+                        77 00 78 00 79 00 7a 00 7b 00 7c 08 7d 00 7e 00
-+                        7f 00 00 26 08 00 09 00 0a 00 0b 00 0c 00 0d 00
-+                        0e 00 0f 00 10 00 11 00 12 00 13 00 14 00 15 00
-+                        16 00 17 00 18 08 19 00 1a 00 1b 00 1c 00 1d 00
-+                        1e 00 1f 00 20 00 21 00 22 00 23 00 24 00 25 00
-+                        26 00 27 00 28 00 29 00 2a 00 2b 00 2c 08 2d 00
-+                        2e 00 2f 00 30 00 31 00 32 00 33 00 34 00 35 00
-+                        36 00 37 00 38 00 39 00 3a 00 3b 00 3c 00 3d 00
-+                        3e 00 3f 00 40 08 41 00 42 00 43 00 44 00 45 00
-+                        46 00 47 00 48 00 49 00 4a 00 4b 00 4c 00 4d 00
-+                        4e 00 4f 00 50 00 51 00 52 00 53 00 54 08 55 00
-+                        56 00 57 00 58 00 59 00 5a 00 5b 00 5c 00 5d 00
-+                        5e 00 5f 00 60 00 61 00 62 00 63 00 64 00 65 00
-+                        66 00 67 00 68 08 69 00 6a 00 6b 00 6c 00 6d 00
-+                        6e 00 6f 00 70 00 71 00 72 00 73 00 74 00 75 00
-+                        76 00 77 00 78 00 79 00 7a 00 7b 00 7c 08 7d 00
-+                        7e 00 7f 00 00 27 08 00 09 00 0a 00 0b 00 0c 00
-+                        0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00 14 00
-+                        15 00 16 00 17 00 18 08 19 00 1a 00 1b 00 1c 00
-+                        1d 00 1e 00 1f 00 20 00 21 00 22 00 23 00 24 00
-+                        25 00 26 00 27 00 28 00 29 00 2a 00 2b 00 2c 08
-+                        2d 00 2e 00 2f 00 30 00 31 00 32 00 33 00 34 00
-+                        35 00 36 00 37 00 38 00 39 00 3a 00 3b 00 3c 00
-+                        3d 00 3e 00 3f 00 40 08 41 00 42 00 43 00 44 00
-+                        45 00 46 00 47 00 48 00 49 00 4a 00 4b 00 4c 00
-+                        4d 00 4e 00 4f 00 50 00 51 00 52 00 53 00 54 08
-+                        55 00 56 00 57 00 58 00 59 00 5a 00 5b 00 5c 00
-+                        5d 00 5e 00 5f 00 60 00 61 00 62 00 63 00 64 00
-+                        65 00 66 00 67 00 68 08 69 00 6a 00 6b 00 6c 00
-+                        6d 00 6e 00 6f 00 70 00 71 00 72 00 73 00 74 00
-+                        75 00 76 00 77 00 78 00 79 00 7a 00 7b 00 7c 08
-+                        7d 00 7e 00 7f 00 00 28 08 00 09 00 0a 00 0b 00
-+                        0c 00 0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00
-+                        14 00 15 00 16 00 17 00 18 08 19 00 1a 00 1b 00
-+                        1c 00 1d 00 1e 00 1f 00 20 00 21 00 22 00 23 00
-+                        24 00 25 00 26 00 27 00 28 00 29 00 2a 00 2b 00
-+                        2c 08 2d 00 2e 00 2f 00 30 00 31 00 32 00 33 00
-+                        34 00 35 00 36 00 37 00 38 00 39 00 3a 00 3b 00
-+                        3c 00 3d 00 3e 00 3f 00 40 08 41 00 42 00 43 00
-+                        44 00 45 00 46 00 47 00 48 00 49 00 4a 00 4b 00
-+                        4c 00 4d 00 4e 00 4f 00 50 00 51 00 52 00 53 00
-+                        54 08 55 00 56 00 57 00 58 00 59 00 5a 00 5b 00
-+                        5c 00 5d 00 5e 00 5f 00 60 00 61 00 62 00 63 00
-+                        64 00 65 00 66 00 67 00 68 08 69 00 6a 00 6b 00
-+                        6c 00 6d 00 6e 00 6f 00 70 00 71 00 72 00 73 00
-+                        74 00 75 00 76 00 77 00 78 00 79 00 7a 00 7b 00
-+                        7c 08 7d 00 7e 00 7f 00 00 29 08 00 09 00 0a 00
-+                        0b 00 0c 00 0d 00 0e 00 0f 00 10 00 11 00 12 00
-+                        13 00 14 00 15 00 16 00 17 00 00 2e 7c 08 7d 00
-+                        7e 00 7f 00 00 2f 08 00 09 00 0a 00 0b 00 0c 00
-+                        0d 00 0e 00 0f 00 10 00 11 00 12 00 13 00 14 00
-+                        15 00 16 00 17 00 1c 08 1d 00 1e 00 1f 00 20 00
-+                        21 00 22 00 23 00 24 00 25 00 26 00 27 00 28 00
-+                        29 00 2a 00 2b 00 2c 00 2d 00 2e 00 2f 00 00 2a
-+                        48 00 49 01 4a 64 4b 0a 4c 00 4d 01 4e 64 4f 0a
-+                        50 00 51 01 52 64 53 0a 54 7e 55 d0 56 b5 57 2d
-+                        58 82 59 59 5a 05 5b 7b 00 00 7f 8c 00 2b 34 00
-+                        35 0d 36 a6 37 86 38 00 39 0d 3a a6 3b 86 3c 00
-+                        3d 06 3e d3 3f 72 40 00 41 00 42 00 43 00 44 00
-+                        45 00 46 00 47 00 48 ff 49 81 4a 47 4b ae 4c f9
-+                        4d 06 4e 21 4f a9 50 fe 51 01 52 c0 53 79 54 00
-+                        55 00 56 00 57 00 58 00 59 00 5a 00 5b 00 00 2d
-+                        58 01 59 53 5a 8f 5b cc 5c 01 5d 53 5e 8f 5f cc
-+                        60 00 61 22 62 1d 63 95 64 00 65 00 66 00 67 00
-+                        68 00 69 00 6a 00 6b 00 6c ff 6d 81 6e 47 6f ae
-+                        70 f9 71 06 72 21 73 a9 74 fe 75 01 76 c0 77 79
-+                        78 00 79 00 7a 00 7b 00 7c 00 7d 00 7e 00 7f 00
-+                        00 00 7f aa 00 2e 40 01 41 d7 42 e8 43 0a 44 01
-+                        45 d7 46 e8 47 0a 48 01 49 d7 4a e8 4b 0a 4c 68
-+                        4d 82 4e f5 4f bf 50 a7 51 9a 52 74 53 5a 00 2b
-+                        20 6a 21 5a 22 dd 23 c9 24 95 25 a5 26 22 27 37
-+                        28 6a 29 5a 2a dd 2b c9 2c 68 2d 82 2e f5 2f bf
-+                        30 a7 31 9a 32 74 33 5a 0c 6a 0d 5a 0e dd 0f c9
-+                        10 95 11 a5 12 22 13 37 14 6a 15 5a 16 dd 17 c9
-+                        18 68 19 82 1a f5 1b bf 1c a7 1d 9a 1e 74 1f 5a
-+                        00 2a 34 00 35 01 36 64 37 0a 38 00 39 01 3a 64
-+                        3b 0a 3c 00 3d 01 3e 64 3f 0a 40 7e 41 d0 42 b5
-+                        43 2d 44 82 45 59 46 05 47 7b 00 00 7f 8c 00 2d
-+                        30 01 31 53 32 8f 33 cc 34 01 35 53 36 8f 37 cc
-+                        38 00 39 03 3a 69 3b c5 3c 00 3d 00 3e 00 3f 00
-+                        40 00 41 00 42 00 43 00 44 ff 45 81 46 47 47 ae
-+                        48 f9 49 06 4a 21 4b a9 4c fe 4d 01 4e c0 4f 79
-+                        50 00 51 00 52 00 53 00 54 00 55 00 56 00 57 00
-+                        00 00 7f aa 00 2a 5c 7e 5d d2 5e 19 5f 37 60 81
-+                        61 2d 62 e6 63 c9 64 7e 65 d2 66 19 67 37 68 7e
-+                        69 d0 6a b5 6b 2d 6c 82 6d 59 6e 05 6f 7b 70 7e
-+                        71 d2 72 19 73 37 74 81 75 2d 76 e6 77 c9 78 7e
-+                        79 d2 7a 19 7b 37 7c 7e 7d d0 7e b5 7f 2d 00 2b
-+                        08 82 09 59 0a 05 0b 7b 00 2e 54 01 55 d7 56 e8
-+                        57 0a 58 01 59 d7 5a e8 5b 0a 5c 01 5d d7 5e e8
-+                        5f 0a 60 68 61 82 62 f5 63 bf 64 a7 65 9a 66 74
-+                        67 5a 00 00 7f 8c 00 2e 10 00 11 80 12 00 13 00
-+                        0c 00 0d 80 0e 00 0f 00 08 00 09 80 0a 00 0b 00
-+                        18 00 19 80 1a 00 1b 00 1c 40 1d 00 1e 00 1f 00
-+                        20 40 21 00 22 00 23 00 00 00 7f 00 30 00 4c 30
-+                        03 03 00 00 7f 00 78 80
-+                ];
-+        };
-+    };
-+
-+additionalProperties: true
--- 
-2.30.2
+ok.
+
+>> the period, so that the time slice isn't wasted as the guest's vCPU
+>> can see. This is the primary goal of the feature (Asynchronous Page
+>> Fault).
+>>
+>> This supports delivery of page-not-present notification through SDEI
+>> event when the requested page isn't present. When the notification is
+>> received on the guest's vCPU, something else (another process) can be
+>> scheduled. The design is highlighted as below:
+>>
+>>     * There is dedicated memory region shared by host and guest. It's
+>>       represented by "struct kvm_vcpu_pv_apf_data". The field @reason
+>>       indicates the reason why the SDEI event is triggered, while the
+>>       unique @token is used by guest to associate the event with the
+>>       suspended process.
+>>
+>>     * One control block is associated with each guest's vCPU and it's
+>>       represented by "struct kvm_arch_async_pf_control". It allows the
+>>       guest to configure the functionality to indicate the situations
+>>       where the host can deliver the page-not-present notification to
+>>       kick off asyncrhonous page fault. Besides, runtime states are
+> asynchronous
+
+ok.
+
+>>       also maintained in this struct.
+>>
+>>     * Before the page-not-present notification is sent to the guest's
+>>       vCPU, a worker is started and executed asynchronously on host,
+>>       to fetch the requested page. "struct kvm{_,_arch}async_pf" is
+>>       associated with the worker, to track the work.
+>>
+>> The feature isn't enabled by CONFIG_KVM_ASYNC_PF yet. Also, the
+>> page-ready notification delivery and control path isn't implemented
+>> and will be done in the subsequent patches.
+>>
+>> Signed-off-by: Gavin Shan <gshan@redhat.com>
+>> ---
+>>   arch/arm64/include/asm/kvm_host.h      |  52 +++++++++
+>>   arch/arm64/include/uapi/asm/kvm_para.h |  15 +++
+>>   arch/arm64/kvm/Makefile                |   1 +
+>>   arch/arm64/kvm/arm.c                   |   3 +
+>>   arch/arm64/kvm/async_pf.c              | 145 +++++++++++++++++++++++++
+>>   arch/arm64/kvm/mmu.c                   |  33 +++++-
+>>   6 files changed, 247 insertions(+), 2 deletions(-)
+>>   create mode 100644 arch/arm64/kvm/async_pf.c
+>>
+>> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+>> index 581825b9df77..6b98aef936b4 100644
+>> --- a/arch/arm64/include/asm/kvm_host.h
+>> +++ b/arch/arm64/include/asm/kvm_host.h
+>> @@ -283,6 +283,31 @@ struct vcpu_reset_state {
+>>   	bool		reset;
+>>   };
+>>   
+>> +/* Should be a power of two number */
+>> +#define ASYNC_PF_PER_VCPU	64
+>> +
+>> +/*
+>> + * The association of gfn and token. The token will be sent to guest as
+>> + * page fault address. Also, the guest could be in aarch32 mode. So its
+> s/as page fault address/together with page fault address?
+>> + * length should be 32-bits.
+>> + */
+>> +struct kvm_arch_async_pf {
+>> +	u32	token;
+>> +	gfn_t	gfn;
+>> +	u32	esr;
+>> +};
+>> +
+>> +struct kvm_arch_async_pf_control {
+>> +		struct gfn_to_hva_cache	cache;
+>> +		u64			control_block;
+>> +		bool			send_user_only;
+>> +		u64			sdei_event_num;
+>> +
+> nit: spare empty line
+
+It's intended because I want to keep two blocks separate
+due to their usages :)
+
+>> +		u16			id;
+>> +		bool			notpresent_pending;
+>> +		u32			notpresent_token;
+>> +};
+>> +
+>>   struct kvm_vcpu_arch {
+>>   	struct kvm_cpu_context ctxt;
+>>   	void *sve_state;
+>> @@ -346,6 +371,9 @@ struct kvm_vcpu_arch {
+>>   	/* SDEI support */
+>>   	struct kvm_sdei_vcpu *sdei;
+>>   
+>> +	/* Asynchronous page fault support */
+>> +	struct kvm_arch_async_pf_control *apf;
+>> +
+>>   	/*
+>>   	 * Guest registers we preserve during guest debugging.
+>>   	 *
+>> @@ -741,6 +769,30 @@ int kvm_arm_vcpu_arch_has_attr(struct kvm_vcpu *vcpu,
+>>   long kvm_vm_ioctl_mte_copy_tags(struct kvm *kvm,
+>>   				struct kvm_arm_copy_mte_tags *copy_tags);
+>>   
+>> +#ifdef CONFIG_KVM_ASYNC_PF
+>> +void kvm_arch_async_pf_create_vcpu(struct kvm_vcpu *vcpu);
+>> +bool kvm_arch_async_not_present_allowed(struct kvm_vcpu *vcpu);
+>> +bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu,
+>> +			     u32 esr, gpa_t gpa, gfn_t gfn);
+>> +bool kvm_arch_async_page_not_present(struct kvm_vcpu *vcpu,
+>> +				     struct kvm_async_pf *work);
+>> +void kvm_arch_async_pf_destroy_vcpu(struct kvm_vcpu *vcpu);
+>> +#else
+>> +static inline void kvm_arch_async_pf_create_vcpu(struct kvm_vcpu *vcpu) { }
+>> +static inline void kvm_arch_async_pf_destroy_vcpu(struct kvm_vcpu *vcpu) { }
+>> +
+>> +static inline bool kvm_arch_async_not_present_allowed(struct kvm_vcpu *vcpu)
+>> +{
+>> +	return false;
+>> +}
+>> +
+>> +static inline bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu,
+>> +					   u32 esr, gpa_t gpa, gfn_t gfn)
+>> +{
+>> +	return false;
+>> +}
+>> +#endif
+>> +
+>>   /* Guest/host FPSIMD coordination helpers */
+>>   int kvm_arch_vcpu_run_map_fp(struct kvm_vcpu *vcpu);
+>>   void kvm_arch_vcpu_load_fp(struct kvm_vcpu *vcpu);
+>> diff --git a/arch/arm64/include/uapi/asm/kvm_para.h b/arch/arm64/include/uapi/asm/kvm_para.h
+>> index cd212282b90c..3fa04006714e 100644
+>> --- a/arch/arm64/include/uapi/asm/kvm_para.h
+>> +++ b/arch/arm64/include/uapi/asm/kvm_para.h
+>> @@ -2,4 +2,19 @@
+>>   #ifndef _UAPI_ASM_ARM_KVM_PARA_H
+>>   #define _UAPI_ASM_ARM_KVM_PARA_H
+>>   
+>> +#include <linux/types.h>
+>> +
+>> +/* Async PF */
+>> +#define KVM_ASYNC_PF_ENABLED		(1 << 0)
+>> +#define KVM_ASYNC_PF_SEND_ALWAYS	(1 << 1)
+> The above define is not used in this patch. Besides can you explain what
+> it aims at?
+
+Yep, this should be dropped. When host receives stage-2 page fault, it's
+unaware what context the guest is in. The guest can be in user or kernel
+mode. It's safe to preempt (interrupt) the guest if it's in user mode
+because of async PF. However, it's not safe to do when the guest in
+kernel mode.
+
+It seems it's supported on x86, but I didn't look into the details. So
+we don't support it on ARM64 for now. It can be supported in future if
+needed.
+
+>> +
+>> +#define KVM_PV_REASON_PAGE_NOT_PRESENT	1
+>> +
+>> +struct kvm_vcpu_pv_apf_data {
+>> +	__u32	reason;
+> on x86 it was renamed into flags. Should we do the same right now?
+>> +	__u32	token;
+>> +	__u8	pad[56];
+>> +	__u32	enabled;
+>> +};
+>> +
+>>   #endif /* _UAPI_ASM_ARM_KVM_PARA_H */
+>> diff --git a/arch/arm64/kvm/Makefile b/arch/arm64/kvm/Makefile
+>> index eefca8ca394d..c9aa307ea542 100644
+>> --- a/arch/arm64/kvm/Makefile
+>> +++ b/arch/arm64/kvm/Makefile
+>> @@ -25,3 +25,4 @@ kvm-y := $(KVM)/kvm_main.o $(KVM)/coalesced_mmio.o $(KVM)/eventfd.o \
+>>   	 vgic/vgic-its.o vgic/vgic-debug.o
+>>   
+>>   kvm-$(CONFIG_HW_PERF_EVENTS)  += pmu-emul.o
+>> +kvm-$(CONFIG_KVM_ASYNC_PF) += $(KVM)/async_pf.o async_pf.o
+>> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+>> index 7d9bbc888ae5..af251896b41d 100644
+>> --- a/arch/arm64/kvm/arm.c
+>> +++ b/arch/arm64/kvm/arm.c
+>> @@ -342,6 +342,8 @@ int kvm_arch_vcpu_create(struct kvm_vcpu *vcpu)
+>>   
+>>   	kvm_sdei_create_vcpu(vcpu);
+>>   
+>> +	kvm_arch_async_pf_create_vcpu(vcpu);
+>> +
+>>   	vcpu->arch.hw_mmu = &vcpu->kvm->arch.mmu;
+>>   
+>>   	err = kvm_vgic_vcpu_init(vcpu);
+>> @@ -363,6 +365,7 @@ void kvm_arch_vcpu_destroy(struct kvm_vcpu *vcpu)
+>>   	kvm_mmu_free_memory_cache(&vcpu->arch.mmu_page_cache);
+>>   	kvm_timer_vcpu_terminate(vcpu);
+>>   	kvm_pmu_vcpu_destroy(vcpu);
+>> +	kvm_arch_async_pf_destroy_vcpu(vcpu);
+>>   	kvm_sdei_destroy_vcpu(vcpu);
+>>   
+>>   	kvm_arm_vcpu_destroy(vcpu);
+>> diff --git a/arch/arm64/kvm/async_pf.c b/arch/arm64/kvm/async_pf.c
+>> new file mode 100644
+>> index 000000000000..742bb8a0a8c0
+>> --- /dev/null
+>> +++ b/arch/arm64/kvm/async_pf.c
+>> @@ -0,0 +1,145 @@
+>> +// SPDX-License-Identifier: GPL-2.0-only
+>> +/*
+>> + * Asynchronous page fault support.
+>> + *
+>> + * Copyright (C) 2021 Red Hat, Inc.
+>> + *
+>> + * Author(s): Gavin Shan <gshan@redhat.com>
+>> + */
+>> +
+>> +#include <linux/arm-smccc.h>
+>> +#include <linux/kvm_host.h>
+>> +#include <asm/kvm_emulate.h>
+>> +#include <kvm/arm_hypercalls.h>
+>> +#include <kvm/arm_vgic.h>
+>> +#include <asm/kvm_sdei.h>
+>> +
+>> +static inline int read_cache(struct kvm_vcpu *vcpu, u32 offset, u32 *val)
+>> +{
+>> +	struct kvm *kvm = vcpu->kvm;
+>> +	struct kvm_arch_async_pf_control *apf = vcpu->arch.apf;
+>> +
+>> +	return kvm_read_guest_offset_cached(kvm, &apf->cache,
+>> +					    val, offset, sizeof(*val));
+>> +}
+>> +
+>> +static inline int write_cache(struct kvm_vcpu *vcpu, u32 offset, u32 val)
+>> +{
+>> +	struct kvm *kvm = vcpu->kvm;
+>> +	struct kvm_arch_async_pf_control *apf = vcpu->arch.apf;
+>> +
+>> +	return kvm_write_guest_offset_cached(kvm, &apf->cache,
+>> +					     &val, offset, sizeof(val));
+>> +}
+>> +
+>> +void kvm_arch_async_pf_create_vcpu(struct kvm_vcpu *vcpu)
+>> +{
+>> +	vcpu->arch.apf = kzalloc(sizeof(*(vcpu->arch.apf)), GFP_KERNEL);
+> shouldn't we escalate the alloc failure and fail the vcpu creation
+> instead of checking everywhere that apf is !null which is error prone.
+> By the way I saw that on x86 this is a struct included in the vcpu one
+> instead of a poinnter.
+
+Ok. Lets embeded this struct to kvm_vcpu_arch, to avoid memory allocation
+here. Async PF is a auxillary function and everything should work just
+fine when it's disabled. It's why I didn't escalate the memory allocation
+failure.
+
+>> +}
+>> +
+>> +bool kvm_arch_async_not_present_allowed(struct kvm_vcpu *vcpu)
+>> +{
+>> +	struct kvm *kvm = vcpu->kvm;
+>> +	struct kvm_arch_async_pf_control *apf = vcpu->arch.apf;
+>> +	struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
+>> +	u32 reason, token;
+>> +	int ret;
+>> +
+>> +	if (!apf || !(apf->control_block & KVM_ASYNC_PF_ENABLED))
+>> +		return false;
+>> +
+>> +	if (apf->send_user_only && vcpu_mode_priv(vcpu))
+>> +		return false;
+>> +
+>> +	if (!irqchip_in_kernel(vcpu->kvm))
+>> +		return false;
+> can you explain why this is needed?
+
+Async PF uses SDEI event to deliver page-not-present notification. When
+the guest receives the SDEI event, the associated handler is invoked.
+After that, the hyper call (COMPLETE_AND_RESUME) is issued from guest
+to host. When host receives this hypercall, all pending interrupts
+should be delivered immediately. Without a in-kernel IRQ chip, we're
+unable to do that.
+
+>> +
+>> +	if (!vsdei || vsdei->critical_event || vsdei->normal_event)
+>> +		return false;
+> don't you need some locking mechanism to void that vdsei fields change
+> after that check? At the moment we may have a single SDEI num but
+> nothing prevents from adding others in the future, right?
+
+You're right that we currently have only one SDEI event. However,
+additional inline helper with lock is needed for this in future.
+
+>> +
+>> +	/* Pending page fault, which isn't acknowledged by guest */
+>> +	ret = read_cache(vcpu, offsetof(struct kvm_vcpu_pv_apf_data, reason),
+>> +			 &reason);
+>> +	if (ret) {
+>> +		kvm_err("%s: Error %d to read reason (%d-%d)\n",
+>> +			__func__, ret, kvm->userspace_pid, vcpu->vcpu_idx);
+>> +		return false;
+>> +	}
+> x86 code does not have those kvm_err(). You may simply drop them.
+
+It's useful for debugging. I may introduce a macro for this and it's
+disabled by default.
+
+>> +
+>> +	ret = read_cache(vcpu, offsetof(struct kvm_vcpu_pv_apf_data, token),
+>> +			 &token);
+>> +	if (ret) {
+>> +		kvm_err("%s: Error %d to read token %d-%d\n",
+>> +			__func__, ret, kvm->userspace_pid, vcpu->vcpu_idx);
+>> +		return false;
+>> +	}
+>> +
+>> +	if (reason || token)
+> can't the token be null?
+
+Nice catch! My intend is @token can't be NULL. However, it's not true
+in current implementation. Please refer to the explanation below.
+
+>> +		return false;
+>> +
+>> +	return true;
+>> +}
+>> +
+>> +bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu,
+>> +			     u32 esr, gpa_t gpa, gfn_t gfn)
+>> +{
+>> +	struct kvm_arch_async_pf_control *apf = vcpu->arch.apf;
+>> +	struct kvm_arch_async_pf arch;
+>> +	unsigned long hva = kvm_vcpu_gfn_to_hva(vcpu, gfn);
+>> +
+>> +	arch.token = (apf->id++ << 12) | vcpu->vcpu_id;
+>> +	arch.gfn = gfn;
+>> +	arch.esr = esr;
+
+@arch.token is spposed not NULL. However, "apf->id++" can overflow.
+So we need change the code into:
+
+         /*
+          * The token is invalid when it's zero. To avoid that by
+          * check if overflowing happens.
+          */
+	if (apf->id == USHORT_MAX)
+            apf->id = 0;
+
+	arch.token = (apf->id++ << 12) | vcpu->vcpu_id;
+         arch.gfn = gfn;
+	arch.esr = esr;
+
+>> +
+>> +	return kvm_setup_async_pf(vcpu, gpa, hva, &arch);
+>> +}
+>> +
+>> +/*
+>> + * It's guaranteed that no pending asynchronous page fault when this is
+> that no APF is pending
+
+Ok.
+
+>> + * called. It means all previous issued asynchronous page faults have
+>> + * been acknowledged.
+>> + */
+>> +bool kvm_arch_async_page_not_present(struct kvm_vcpu *vcpu,
+>> +				     struct kvm_async_pf *work)
+>> +{
+>> +	struct kvm *kvm = vcpu->kvm;
+>> +	struct kvm_arch_async_pf_control *apf = vcpu->arch.apf;
+>> +	int ret;
+>> +
+>> +	kvm_async_pf_add_slot(vcpu, work->arch.gfn);
+>> +
+>> +	ret = write_cache(vcpu, offsetof(struct kvm_vcpu_pv_apf_data, token),
+>> +			  work->arch.token);
+>> +	if (ret) {
+>> +		kvm_err("%s: Error %d to write token (%d-%d %08x)\n",
+> kvm_err's may be dropped
+
+Ok. I will introduce a marco, which is disabled by default.
+
+>> +			__func__, ret, kvm->userspace_pid,
+>> +			vcpu->vcpu_idx, work->arch.token);
+>> +		goto fail;
+>> +	}
+>> +
+>> +	ret = write_cache(vcpu, offsetof(struct kvm_vcpu_pv_apf_data, reason),
+>> +			  KVM_PV_REASON_PAGE_NOT_PRESENT);
+>> +	if (ret) {
+>> +		kvm_err("%s: Error %d to write reason (%d-%d %08x)\n",
+>> +			__func__, ret, kvm->userspace_pid,
+>> +			vcpu->vcpu_idx, work->arch.token);
+>> +		goto fail;
+>> +	}
+>> +
+>> +	apf->notpresent_pending = true;
+>> +	apf->notpresent_token = work->arch.token;
+>> +
+>> +	return !kvm_sdei_inject(vcpu, apf->sdei_event_num, true);
+>> +
+>> +fail:
+>> +	write_cache(vcpu, offsetof(struct kvm_vcpu_pv_apf_data, token), 0);
+>> +	write_cache(vcpu, offsetof(struct kvm_vcpu_pv_apf_data, reason), 0);
+>> +	kvm_async_pf_remove_slot(vcpu, work->arch.gfn);
+>> +	return false;
+>> +}
+>> +
+>> +void kvm_arch_async_pf_destroy_vcpu(struct kvm_vcpu *vcpu)
+>> +{
+>> +	kfree(vcpu->arch.apf);
+>> +	vcpu->arch.apf = NULL;
+>> +}
+>> diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
+>> index e4038c5e931d..4ba78bd1f18c 100644
+>> --- a/arch/arm64/kvm/mmu.c
+>> +++ b/arch/arm64/kvm/mmu.c
+>> @@ -914,6 +914,33 @@ static inline bool is_write_fault(unsigned int esr)
+>>   	return esr_dabt_is_wnr(esr);
+>>   }
+>>   
+>> +static bool try_async_pf(struct kvm_vcpu *vcpu, unsigned int esr,
+>> +			 gpa_t gpa, gfn_t gfn, kvm_pfn_t *pfn,
+>> +			 bool write, bool *writable, bool prefault)
+>> +{
+>> +	struct kvm_arch_async_pf_control *apf = vcpu->arch.apf;
+>> +	struct kvm_memory_slot *slot = kvm_vcpu_gfn_to_memslot(vcpu, gfn);
+>> +	bool async = false;
+>> +
+>> +	if (apf) {
+> checking apf each time for a potential kacl of resource at vcpu creation
+> look heavy to me.
+
+Yep, As replied before, lets embedded the struct to kvm_vcpu_arch to
+avoid the memory allocation. In that case, we needn't check it any
+more.
+
+>> +		/* Bail if *pfn has correct page */
+> s/bail/bail out? Comment rather related to !async check.
+
+Ok.
+
+>> +		*pfn = __gfn_to_pfn_memslot(slot, gfn, false, &async,
+>> +					    write, writable, NULL);
+>> +		if (!async)
+>> +			return false;
+>> +
+>> +		if (!prefault && kvm_arch_async_not_present_allowed(vcpu)) {
+> x86 kvm_can_do_async_pf() naming look more straightforward than
+> kvm_arch_async_not_present_allowed
+
+I would keep the function name as I intend to have all function names
+have prefix "kvm_arch_async". So lets rename it to kvm_arch_async_allowed()
+in next revision.
+
+>> +			if (kvm_async_pf_find_slot(vcpu, gfn) ||
+> x86 has some trace points. You may envision to add some, maybe later on.
+
+Yeah, lets ignore this one and we can add it in future.
+
+>> +			    kvm_arch_setup_async_pf(vcpu, esr, gpa, gfn))
+>> +				return true;
+>> +		}
+>> +	}
+>> +
+>> +	*pfn = __gfn_to_pfn_memslot(slot, gfn, false, NULL,
+>> +				    write, writable, NULL);
+>> +	return false;
+>> +}
+>> +
+>>   int kvm_handle_user_mem_abort(struct kvm_vcpu *vcpu,
+>>   			      struct kvm_memory_slot *memslot,
+>>   			      phys_addr_t fault_ipa,
+>> @@ -1035,8 +1062,10 @@ int kvm_handle_user_mem_abort(struct kvm_vcpu *vcpu,
+>>   	 */
+>>   	smp_rmb();
+>>   
+>> -	pfn = __gfn_to_pfn_memslot(memslot, gfn, false, NULL,
+>> -				   write_fault, &writable, NULL);
+>> +	if (try_async_pf(vcpu, esr, fault_ipa, gfn, &pfn,
+>> +			 write_fault, &writable, prefault))
+>> +		return 1;
+>> +
+>>   	if (pfn == KVM_PFN_ERR_HWPOISON) {
+>>   		kvm_send_hwpoison_signal(hva, vma_shift);
+>>   		return 0;
+>>
+
+Thanks,
+Gavin
 
