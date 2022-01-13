@@ -2,128 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A70C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1721BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:07:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbiAMVDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 16:03:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
+        id S234851AbiAMVHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 16:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234848AbiAMVDw (ORCPT
+        with ESMTP id S229543AbiAMVH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 16:03:52 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216EDC061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:03:52 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id o12so7228429lfu.12
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:03:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:mime-version
-         :content-disposition;
-        bh=tGX52jpKcvhFH/6brEyGmgi4fo82MK8VJ055FYumYks=;
-        b=BiCDKASXPZBtC1iofv0BUMoC2DJJnKaHN1XpKxglNscDIjTE/BT/THocVVnQ7kbqBi
-         Mzkwhz+rPXygx7lku8MPXYm11m25daNyn6Je6Ag0/gr2X6+z5PUXksxCyjVNsQsQ6tKO
-         ciSLwSJr34dh9jWc1vUo0DI1DpgMI5uLwkJPVNlrcxhRWWxLqMaghjnlBW1Kz/TQWcC0
-         aIAtwO47Wj/Tk3zXgbYkA2nuP4T8epqw8sCIaqksM1wRO9DyA8L4v3HdDVsYjzpS2qd3
-         HFHhkiGjr+OHHqqkVJzqE4cTg0oo3STwuAOLfMc26tUXw/Pea1qUFQ5JCfVAykKc+oxB
-         cR6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :mime-version:content-disposition;
-        bh=tGX52jpKcvhFH/6brEyGmgi4fo82MK8VJ055FYumYks=;
-        b=WG82V1/Xb8bTllATPNq6pLD7s5MSuLxzNQ+8F9PTgIw39KFfvCGtE3b9saqx/uArrk
-         9C5QAekc7EoC9paWOwHJi7CY3Ym6TYNHkMlFcWsKMUh9zhVwBH1BhQfsHdRvmAY/r4k3
-         XL2UJvSABRAthe4yGlwSMV1gdIzncZG8/nKp1VRcOxAiCymvCY672RG92zjgbg/NPRiH
-         1dURfidzKoXt/Av36AsyCiV8utyAs6DK0BTcqPtFP4lKinGNSh6QPu66jsF6wmXWG+8H
-         pBtNruampAyGRn29zuIt48NUfZZ/gznkPLgNXUAGiHoLUrigNbxQwJ6zHASrt/tT7Amd
-         ka3w==
-X-Gm-Message-State: AOAM533LmdZSuBImOfjr43ixAdPXBHjhvN8tGQ9/XDaMRsZ71ld0Sc7P
-        z9PFGcWkofit2MDX19OIjvo=
-X-Google-Smtp-Source: ABdhPJwkWM114QNfLjFQzUCqwBMbRjR32QYRDP2Wdz4P+zKOumDAKoKrj6k1plTk8R9kbaBHpkSWBQ==
-X-Received: by 2002:a2e:9209:: with SMTP id k9mr3796207ljg.165.1642107830507;
-        Thu, 13 Jan 2022 13:03:50 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id u10sm377489ljh.119.2022.01.13.13.03.49
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Thu, 13 Jan 2022 13:03:49 -0800 (PST)
-Date:   Fri, 14 Jan 2022 00:09:30 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        Elia Devito <eliadevito@gmail.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ALSA: hda/realtek: fix speakers and micmute on HP 855 G8
-Message-ID: <20220113210930.dtryx4ifjsmb33lz@localhost.localdomain>
-User-Agent: mtt
+        Thu, 13 Jan 2022 16:07:29 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D173C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:07:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=/0L41nuHVCYCitqm3wG9uWMDKdWeGmtc8DsG8OaX/x8=; b=akSrEgWILuGq7fiIGePjdr3c9F
+        bYBxshnHtIlBb3VRBSnAynCxcj48WRbd7kBKUCluAU74Ld9LJ5W159IOT1dXBL0K6A/FCF094U3FT
+        RuZ7vN/bUsHzKZLpm2i8q0Pj3uYUADShZYdRnuRODPWQwqUfZ6WdjsOfhAuMYHa2MG6Kr2rCV1JuU
+        1Of6ch1emlOkkHTVppgJZPfTnXA71IEbIwvQybJsUC7AvsgRQ6UNCS5oivkWHJCOVatwQymHb29xl
+        kBSIFBX/V+6RRRlhatERu7Cz7wYJnRrlHvDTe7dA3n0y7YHs14b4dKkC24L3I3FuLg3aU0HgNuh+c
+        jWYPzKTg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n87JY-005Ey7-9J; Thu, 13 Jan 2022 21:07:20 +0000
+Date:   Thu, 13 Jan 2022 21:07:20 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Liang Zhang <zhangliang5@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        wangzhigang17@huawei.com
+Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
+Message-ID: <YeCUiO7RBqo/VTMh@casper.infradead.org>
+References: <20220113140318.11117-1-zhangliang5@huawei.com>
+ <YeA5oP/iaxtVPHb3@casper.infradead.org>
+ <CAHk-=wjB0i-B=U-DhpAajQx3f6bp1X==neLOrg0jwq29mgz=3g@mail.gmail.com>
+ <172ccfbb-7e24-db21-7d84-8c8d8c3805fd@redhat.com>
+ <CAHk-=wi21DZ4H5uLnn2QgAeAUqg0wNPboijC0OgDDk1e7TdkPw@mail.gmail.com>
+ <c3f34084-7315-e0c5-55db-d1cb006979f4@redhat.com>
+ <CAHk-=wjv+beg2gRNdERANGfaGcqwDzzVD5RDD07FcrE5c6k-XA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <CAHk-=wjv+beg2gRNdERANGfaGcqwDzzVD5RDD07FcrE5c6k-XA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several PCI ids associated with HP EliteBook 855 G8 Notebook
-PC. Commit 0e68c4b11f1e6 ("ALSA: hda/realtek: fix mute/micmute LEDs for
-HP 855 G8") covers 0x103c:0x8896, while this commit covers 0x103c:0x8895
-which needs some additional work on top of the quirk from 0e68c4b11f1e6.
+On Thu, Jan 13, 2022 at 09:44:04AM -0800, Linus Torvalds wrote:
+> IOW, the COW path would do
+> 
+>  trylock - copy if fails
+>  try to remove from swap cache
+>  if page_count() is now 1, we can reuse it
+> 
+> Note how the "try to remove from swap cache" is entirely independent
+> of whether we then reuse it or not.
+> 
+> And yes, we can have optimistic other tests - like not even bothering
+> to trylock if we can see that the page-count is so elevated that it
+> makes no difference and trying to remove from swap cache would be just
+> pointless extra work (both the removal itself, and then potentially
+> later re-additions).
+> 
+> But those should be seen for what they are - not important for
+> semantics, only a "don't bother, this page has so many users that we
+> already know that removing the swapcache one doesn't make any
+> difference at all".
 
-Note that the device can boot up with working speakers and micmute LED
-without this patch, but the success rate would be quite low (order of
-16 working boots across 709 boots) at least for the built-in drivers
-scenario. This also means that there are some timing issues during early
-boot and this patch is a workaround.
+I think what you mean is something like ...
 
-Changes are tested on v5.16. Speakers and headphones are consistenly
-working, as well as mute/micmute LEDs and the internal microphone.
-
-Signed-off-by: Alexander Sergeyev <sergeev917@gmail.com>
----
- sound/pci/hda/patch_realtek.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 28255e752c4a..b809de2b9759 100644
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -6784,6 +6784,7 @@ enum {
- 	ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE,
- 	ALC233_FIXUP_NO_AUDIO_JACK,
- 	ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME,
-+	ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED,
- };
++++ b/mm/memory.c
+@@ -3290,15 +3290,13 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+        if (PageAnon(vmf->page)) {
+                struct page *page = vmf->page;
  
- static const struct hda_fixup alc269_fixups[] = {
-@@ -8514,6 +8515,16 @@ static const struct hda_fixup alc269_fixups[] = {
- 		.chained = true,
- 		.chain_id = ALC269_FIXUP_HEADSET_MODE_NO_HP_MIC
- 	},
-+	[ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED] = {
-+		.type = HDA_FIXUP_VERBS,
-+		.v.verbs = (const struct hda_verb[]) {
-+			 { 0x20, AC_VERB_SET_COEF_INDEX, 0x19 },
-+			 { 0x20, AC_VERB_SET_PROC_COEF, 0x8e11 },
-+			 { }
-+		},
-+		.chained = true,
-+		.chain_id = ALC285_FIXUP_HP_MUTE_LED,
-+	},
- };
- 
- static const struct snd_pci_quirk alc269_fixup_tbl[] = {
-@@ -8727,6 +8738,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
- 	SND_PCI_QUIRK(0x103c, 0x8870, "HP ZBook Fury 15.6 Inch G8 Mobile Workstation PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x8873, "HP ZBook Studio 15.6 Inch G8 Mobile Workstation PC", ALC285_FIXUP_HP_GPIO_AMP_INIT),
- 	SND_PCI_QUIRK(0x103c, 0x888d, "HP ZBook Power 15.6 inch G8 Mobile Workstation PC", ALC236_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x8895, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_SPEAKERS_MICMUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8896, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8898, "HP EliteBook 845 G8 Notebook PC", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
- 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
--- 
-2.34.1
+-               /* PageKsm() doesn't necessarily raise the page refcount */
+-               if (PageKsm(page) || page_count(page) != 1)
++               /* Lots of people are using this page, just copy */
++               if (page_count(page) > 5)
+                        goto copy;
+                if (!trylock_page(page))
+                        goto copy;
+-               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
+-                       unlock_page(page);
+-                       goto copy;
+-               }
++               if (!reuse_swap_page(page, NULL))
++                       goto unlock;
+                /*
+                 * Ok, we've got the only map reference, and the only
+                 * page count reference, and the page is locked,
+@@ -3311,6 +3309,8 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+                                        (VM_WRITE|VM_SHARED))) {
+                return wp_page_shared(vmf);
+        }
++unlock:
++       unlock_page(page);
+ copy:
+        /*
+         * Ok, we need to copy. Oh, well..
 
+... with a suitably sensible reuse_swap_page().
