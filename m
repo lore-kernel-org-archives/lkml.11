@@ -2,102 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA09C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 11:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ABDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 11:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234303AbiAMLzp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 06:55:45 -0500
-Received: from mga01.intel.com ([192.55.52.88]:11406 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231260AbiAMLzo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 06:55:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642074944; x=1673610944;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LtGS+dHAlZZ57boP/K9NFFKaU+eEtvp+/DAYNw2stQ8=;
-  b=MMa0702hq4CnS6yopQ9NsTx+g7+kYV8oRZrpqlyRvECU8WgPKSXF9Rle
-   j9lPH9dKqVziUpDT1+BtIgHXSUPQWSfJIdfvVqnlkNs4G76314oMspOoS
-   J9VNGA5SJHS2lhL7M465BSztD+tOUswB7cgGPQyeGRzER07A6hyIfZQSk
-   /UeUidF15WsQkl0czj03uUSAwsa2sof3WmEpGBxSOAPsh89nGdfF1UxMm
-   /PiDCZxPRy+2bM6s640/muQXwJJVO0XPYc7PUdVRrnik2TNAnaEhF8JKU
-   H/6eFHy32K1Z2m6rBiL63ltVpCfXCo67COGg1XWwyrbEvYlmsFg0antij
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="268343669"
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="268343669"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 03:55:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="475284808"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 13 Jan 2022 03:55:42 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7yhi-00079t-8P; Thu, 13 Jan 2022 11:55:42 +0000
-Date:   Thu, 13 Jan 2022 19:55:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 571/2382] elf.c:496:18: error: no member
- named 'len' in 'struct section'
-Message-ID: <202201131950.VXD05up8-lkp@intel.com>
+        id S234158AbiAML5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 06:57:54 -0500
+Received: from mail-sz.amlogic.com ([211.162.65.117]:49521 "EHLO
+        mail-sz.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231777AbiAML5y (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 06:57:54 -0500
+Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
+ (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Thu, 13 Jan 2022
+ 19:57:51 +0800
+From:   Liang Yang <liang.yang@amlogic.com>
+To:     Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, <linux-clk@vger.kernel.org>
+CC:     Liang Yang <liang.yang@amlogic.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v9 0/4] clk: meson: add a sub EMMC clock controller support
+Date:   Thu, 13 Jan 2022 19:57:41 +0800
+Message-ID: <20220113115745.45826-1-liang.yang@amlogic.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.28.8.21]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   1a880941a087613ed42f77001229edfcf75ea8a5
-commit: 4e8fb52df12408e936d71ebf34aaa990fd61e736 [571/2382] objtool/kallsyms: Copy the symbol name and offset to the new __kallsyms ELF section
-config: x86_64-randconfig-a015-20220109 (https://download.01.org/0day-ci/archive/20220113/202201131950.VXD05up8-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d1021978b8e7e35dcc30201ca1731d64b5a602a8)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=4e8fb52df12408e936d71ebf34aaa990fd61e736
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 4e8fb52df12408e936d71ebf34aaa990fd61e736
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 prepare
+Changes since v8 [9]
+ - use MESON_SCLK_ONE_BASED instead of CLK_DIVIDER_ONE_BASED
+ - use struct_size to caculate onecell_data
+ - add clk-phase-delay.h
+ - define CLK_DELAY_STEP_PS_GX and CLK_DELAY_STEP_PS_AXG
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Changes since v7 [8]
+ - move meson_clk_get_phase_delay_data() from header to driver
+ - CONFIG sclk-div with COMMON_CLK_AMLOGIC instead of COMMON_CLK_AMLOGIC_AUDIO
+ - remove onecell date and ID for internal MUX clk
+ - use helper for functions for ONE_BASED in sclk-div
+ - add ONE_BASED support for duty cycle
 
-Note: the mingo-tip/sched/headers HEAD 1a880941a087613ed42f77001229edfcf75ea8a5 builds fine.
-      It only hurts bisectability.
+Changes since v6 [7]:
+ - add one based support for sclk divier
+ - alloc sclk in probe for multiple instance
+ - fix coding styles
 
-All errors (new ones prefixed by >>):
+Changes since v5 [6]:
+ - remove divider ops with .init and use sclk_div instead
+ - drop CLK_DIVIDER_ROUND_CLOSEST in mux and div
+ - drop the useless type cast 
 
->> elf.c:496:18: error: no member named 'len' in 'struct section'
-                           sec_kallsyms->len += data->d_size;
-                           ~~~~~~~~~~~~  ^
-   1 error generated.
-   make[4]: *** [tools/build/Makefile.build:96: tools/objtool/elf.o] Error 1
-   make[4]: *** Waiting for unfinished jobs....
-   make[3]: *** [Makefile:56: tools/objtool/objtool-in.o] Error 2
-   make[2]: *** [Makefile:69: objtool] Error 2
-   make[1]: *** [Makefile:1349: tools/objtool] Error 2
-   In file included from arch/x86/kernel/asm-offsets.c:34:
-   arch/x86/kernel/../../../kernel/sched/per_task_area_struct_defs.h:13:13: warning: no previous prototype for function 'per_task_common' [-Wmissing-prototypes]
-   void __used per_task_common(void)
-               ^
-   arch/x86/kernel/../../../kernel/sched/per_task_area_struct_defs.h:13:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void __used per_task_common(void)
-   ^
-   static 
-   1 warning generated.
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Changes since v4 [5]:
+ - use struct parm in phase delay driver
+ - remove 0 delay releted part in phase delay driver
+ - don't rebuild the parent name once again
+ - add divider ops with .init
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Changes since v3 [4]:
+ - separate clk-phase-delay driver
+ - replace clk_get_rate() with clk_hw_get_rate()
+ - collect Rob's R-Y
+ - drop 'meson-' prefix from compatible string
+
+ Changes since v2 [3]:
+ - squash dt-binding clock-id patch
+ - update license
+ - fix alignment
+ - construct a clk register helper() function
+
+Changes since v1 [2]:
+ - implement phase clock
+ - update compatible name
+ - adjust file name
+ - divider probe() into small functions, and re-use them
+
+[1] https://lkml.kernel.org/r/20180628090034.0637a062@xps13
+[2] https://lkml.kernel.org/r/20180703145716.31860-1-yixun.lan@amlogic.com
+[3] https://lkml.kernel.org/r/20180710163658.6175-1-yixun.lan@amlogic.com
+[4] https://lkml.kernel.org/r/20180712211244.11428-1-yixun.lan@amlogic.com
+[5] https://lkml.kernel.org/r/20180809070724.11935-4-yixun.lan@amlogic.com
+[6] https://lkml.kernel.org/r/1539839245-13793-1-git-send-email-jianxin.pan@amlogic.com
+[7] https://lkml.kernel.org/r/1541089855-19356-1-git-send-email-jianxin.pan@amlogic.com
+[8] https://lkml.kernel.org/r/1544457877-51301-1-git-send-email-jianxin.pan@amlogic.com
+[9] https://lkml.kernel.org/r/1545063850-21504-1-git-send-email-jianxin.pan@amlogic.com
+Liang Yang (4):
+  clk: meson: add one based divider support for sclk
+  clk: meson: add emmc sub clock phase delay driver
+  clk: meson: add DT documentation for emmc clock controller
+  clk: meson: add sub MMC clock controller driver
+
+ .../bindings/clock/amlogic,mmc-clkc.yaml      |  64 ++++
+ drivers/clk/meson/Kconfig                     |  18 ++
+ drivers/clk/meson/Makefile                    |   2 +
+ drivers/clk/meson/clk-phase-delay.c           |  69 ++++
+ drivers/clk/meson/clk-phase-delay.h           |  20 ++
+ drivers/clk/meson/mmc-clkc.c                  | 300 ++++++++++++++++++
+ drivers/clk/meson/sclk-div.c                  |  61 ++--
+ drivers/clk/meson/sclk-div.h                  |   3 +
+ include/dt-bindings/clock/amlogic,mmc-clkc.h  |  14 +
+ 9 files changed, 529 insertions(+), 22 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/clock/amlogic,mmc-clkc.yaml
+ create mode 100644 drivers/clk/meson/clk-phase-delay.c
+ create mode 100644 drivers/clk/meson/clk-phase-delay.h
+ create mode 100644 drivers/clk/meson/mmc-clkc.c
+ create mode 100644 include/dt-bindings/clock/amlogic,mmc-clkc.h
+
+-- 
+2.34.1
+
