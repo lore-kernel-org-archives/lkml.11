@@ -2,112 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C411C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 06:04:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0028DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 06:06:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbiAMGEr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 01:04:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiAMGEp (ORCPT
+        id S231270AbiAMGGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 01:06:04 -0500
+Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:45874 "EHLO
+        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231205AbiAMGGD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 01:04:45 -0500
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1708EC06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 22:04:45 -0800 (PST)
-Received: by mail-qk1-x72f.google.com with SMTP id t66so6133211qkb.4
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 22:04:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9Tgq8vnBLaqoGtVnAIFn+qw1j/rzB5eIxYzxKDw0gVo=;
-        b=W0ySxSkyeJF9JAq4q09//RzzelwHreCVB1NcvLZOL2YWFSv2afey/QkMI8iagRZWgg
-         sG+NTKq6NxNuYnAfVuOQUGNKyIy8Xc+ifAXUvRzaBU5NQDcYAwrikObbhFzHNy7i/q76
-         AcOkgmwN9miG/RDxeNt2HWRReQpNJDqatBRsM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9Tgq8vnBLaqoGtVnAIFn+qw1j/rzB5eIxYzxKDw0gVo=;
-        b=NW01slXnnlV/rHulK5f/jQ8S057vW+YaIYlJFcFqX21QEQunE8j8jaeTSLv6pk6brx
-         3POyPONBJf6hcw5/4kWusUDPPAFwcUq8KLfa+CPkUw7gLAisRa6XflGp30HOXmo2kZH9
-         Fazt40X4YPCwrkqxdi409ZCfzpZcQecMFC6NTwGM22JGo9sS+SfnZGP7AFhzvGRJ7sYH
-         b4pbxVBeWhRXxE9cA6gKTIgurcb+5BmYVlzh0zvPgRjpItk2Wp3e4exSVBKIrkeYEYvI
-         JwkBPfdBBgIP0SACH0AOnIw3LG5z4p3B/JGd+MCbWy1dbXvG4G8KtkbmqwFsviT6gflk
-         wJtQ==
-X-Gm-Message-State: AOAM533JGgxhfXRrt03QH5pkzHvLluoGdrg+WbF+LSS72ExGuMVTmLis
-        KAsGdpZsc01TmWYJKHP8Q8r3XN9Tyja4OyMwlAU=
-X-Google-Smtp-Source: ABdhPJxEguI+wRJO1BoxhzYw20IedIttWTnkBc/KK+Rr5R4cqC4R49HmKReWXHfctQ4l9hLQxS7Tzy0931B7g9DQjYw=
-X-Received: by 2002:a05:620a:f0b:: with SMTP id v11mr2143338qkl.243.1642053883592;
- Wed, 12 Jan 2022 22:04:43 -0800 (PST)
+        Thu, 13 Jan 2022 01:06:03 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jkchen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V1ihKZj_1642053960;
+Received: from 30.225.24.127(mailfrom:jkchen@linux.alibaba.com fp:SMTPD_---0V1ihKZj_1642053960)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 13 Jan 2022 14:06:01 +0800
+Message-ID: <b021efc9-736d-7180-ccdf-c6ce7d745a83@linux.alibaba.com>
+Date:   Thu, 13 Jan 2022 14:06:00 +0800
 MIME-Version: 1.0
-References: <20211216062405.415888-1-amitay@ozlabs.org> <20211216062405.415888-3-amitay@ozlabs.org>
- <YbrzHf+wRKzTFxEm@kroah.com>
-In-Reply-To: <YbrzHf+wRKzTFxEm@kroah.com>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Thu, 13 Jan 2022 06:04:31 +0000
-Message-ID: <CACPK8XeBArKre_-Sg+m+FaB9ALy++hBJUE+KQx-2qgxrB384cw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] fsi: sbefifo: implement FSI_SBEFIFO_READ_TIMEOUT ioctl
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Amitay Isaacs <amitay@ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsi@lists.ozlabs.org, Jeremy Kerr <jk@ozlabs.org>,
-        Alistair Popple <alistair@popple.id.au>,
-        Eddie James <eajames@linux.ibm.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [RESEND PATCH] coresight: change tmc from misc device to cdev
+ device
+From:   Jiankang Chen <jkchen@linux.alibaba.com>
+To:     mathieu.poirier@linaro.org, suzuki.poulose@arm.com,
+        leo.yan@linaro.org, alexander.shishkin@linux.intel.com,
+        linux-arm-kernel@lists.infradead.org, coresight@lists.linaro.org,
+        linux-kernel@vger.kernel.org
+References: <20220105023832.4729-1-jkchen@linux.alibaba.com>
+In-Reply-To: <20220105023832.4729-1-jkchen@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+hi all
 
-On Thu, 16 Dec 2021 at 08:04, Greg KH <gregkh@linuxfoundation.org> wrote:
+在 2022/1/5 10:38, Jay Chen 写道:
+> Currently, there are 130 etr and etf on our machine,
+> but the current coresight tmc driver uses misc_register
+> to register the device, which leads to the error that
+> the device number is not enough.
 >
-> On Thu, Dec 16, 2021 at 05:24:05PM +1100, Amitay Isaacs wrote:
-> > FSI_SBEFIFO_READ_TIMEOUT ioctl sets the read timeout (in seconds) for
-> > the response received by sbefifo device from sbe.  The timeout affects
-> > only the read operation on sbefifo device fd.
-> >
-> > Certain SBE operations can take long time to complete and the default
-> > timeout of 10 seconds might not be sufficient to start receiving
-> > response from SBE.  In such cases, allow the timeout to be set to the
-> > maximum of 120 seconds.
-> >
-> > Signed-off-by: Amitay Isaacs <amitay@ozlabs.org>
-> > ---
-> >  drivers/fsi/fsi-sbefifo.c | 44 +++++++++++++++++++++++++++++++++++++++
-> >  include/uapi/linux/fsi.h  | 14 +++++++++++++
-> >  2 files changed, 58 insertions(+)
+> coresight-tmc: probe of xxxxx failed with error -16
+>
+> This patch changes the device registration method
+> to cdev's dynamic registration method to solve the
+> problem of insufficient device numbers.
+>
+> Signed-off-by: Jay Chen <jkchen@linux.alibaba.com>
+> ---
+>   .../hwtracing/coresight/coresight-tmc-core.c  | 91 +++++++++++++++----
+>   drivers/hwtracing/coresight/coresight-tmc.h   | 11 ++-
+>   2 files changed, 82 insertions(+), 20 deletions(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-tmc-core.c b/drivers/hwtracing/coresight/coresight-tmc-core.c
+> index d0276af82494..55a131c059fe 100644
+> --- a/drivers/hwtracing/coresight/coresight-tmc-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-tmc-core.c
+> @@ -12,7 +12,6 @@
+>   #include <linux/io.h>
+>   #include <linux/err.h>
+>   #include <linux/fs.h>
+> -#include <linux/miscdevice.h>
+>   #include <linux/mutex.h>
+>   #include <linux/property.h>
+>   #include <linux/uaccess.h>
+> @@ -31,6 +30,12 @@ DEFINE_CORESIGHT_DEVLIST(etb_devs, "tmc_etb");
+>   DEFINE_CORESIGHT_DEVLIST(etf_devs, "tmc_etf");
+>   DEFINE_CORESIGHT_DEVLIST(etr_devs, "tmc_etr");
+>   
+> +static DEFINE_IDA(tmc_ida);
+> +static dev_t tmc_major;
+> +static struct class *tmc_class;
+> +
+> +#define TMC_DEV_MAX	(MINORMASK + 1)
+> +
+>   void tmc_wait_for_tmcready(struct tmc_drvdata *drvdata)
+>   {
+>   	struct coresight_device *csdev = drvdata->csdev;
+> @@ -147,7 +152,7 @@ static int tmc_open(struct inode *inode, struct file *file)
+>   {
+>   	int ret;
+>   	struct tmc_drvdata *drvdata = container_of(file->private_data,
+> -						   struct tmc_drvdata, miscdev);
+> +		
 
-I'm taking over this patch series on behalf of Amitay.
+I found a mistake in this place. I'll revise it again;
 
-> Where is the userspace tool that uses this new ioctl?
+sorry
 
-The userspace is a library called 'libpdbg'. Amitay has some patches
-prepared that use this new ioctl here:
-
- https://github.com/amitay/pdbg/commits/ioctl
-
-> And again, why does it have to be an ioctl?  Where is this now
-> documented?  What are the units of the value?
-
-We need a way for userspace to tell the driver that subsequent
-operations (writes to the chardev, that cause the driver to send data
-to a microcontroller over a fsi link) are expected to take a longer
-time, so the kernel should wait longer before declaring the operation
-timed out.
-
-The kernel driver doesn't know about the specific operation, and we
-don't want to have that policy in the kernel, so userspace will set
-the timeout appropriately.
-
-I'll send a new version, as Amitay wants to remove the one-shot nature
-of the configuration, and instead have it persist. I'll update the
-patch to make it clear what the units are.
-
-Where do we usually stick documentation for ioctls such as this one?
-
-Cheers,
-
-Joel
+> 				   struct tmc_drvdata, cdev);
+>   
+>   	ret = tmc_read_prepare(drvdata);
+>   	if (ret)
+> @@ -179,7 +184,7 @@ static ssize_t tmc_read(struct file *file, char __user *data, size_t len,
+>   	char *bufp;
+>   	ssize_t actual;
+>   	struct tmc_drvdata *drvdata = container_of(file->private_data,
+> -						   struct tmc_drvdata, miscdev);
+> +						   struct tmc_drvdata, cdev);
+>   	actual = tmc_get_sysfs_trace(drvdata, *ppos, len, &bufp);
+>   	if (actual <= 0)
+>   		return 0;
+> @@ -200,7 +205,7 @@ static int tmc_release(struct inode *inode, struct file *file)
+>   {
+>   	int ret;
+>   	struct tmc_drvdata *drvdata = container_of(file->private_data,
+> -						   struct tmc_drvdata, miscdev);
+> +						   struct tmc_drvdata, cdev);
+>   
+>   	ret = tmc_read_unprepare(drvdata);
+>   	if (ret)
+> @@ -451,6 +456,7 @@ static int tmc_probe(struct amba_device *adev, const struct amba_id *id)
+>   {
+>   	int ret = 0;
+>   	u32 devid;
+> +	dev_t devt;
+>   	void __iomem *base;
+>   	struct device *dev = &adev->dev;
+>   	struct coresight_platform_data *pdata = NULL;
+> @@ -546,14 +552,32 @@ static int tmc_probe(struct amba_device *adev, const struct amba_id *id)
+>   		goto out;
+>   	}
+>   
+> -	drvdata->miscdev.name = desc.name;
+> -	drvdata->miscdev.minor = MISC_DYNAMIC_MINOR;
+> -	drvdata->miscdev.fops = &tmc_fops;
+> -	ret = misc_register(&drvdata->miscdev);
+> +	ret = ida_simple_get(&tmc_ida, 0, TMC_DEV_MAX, GFP_KERNEL);
+> +	if (ret < 0)
+> +		goto err_coresight_unregister;
+> +
+> +	cdev_init(&drvdata->cdev.cdev, &tmc_fops);
+> +	drvdata->cdev.cdev.owner = THIS_MODULE;
+> +	devt = MKDEV(MAJOR(tmc_major), ret);
+> +	ret = cdev_add(&drvdata->cdev.cdev, devt, 1);
+>   	if (ret)
+> -		coresight_unregister(drvdata->csdev);
+> -	else
+> +		goto err_free_tmc_ida;
+> +
+> +	drvdata->cdev.dev = device_create(tmc_class, NULL, devt, &drvdata->cdev, desc.name);
+> +	if (IS_ERR(drvdata->cdev.dev)) {
+> +		ret = PTR_ERR(drvdata->cdev.dev);
+> +		goto err_delete_cdev;
+> +	} else
+>   		pm_runtime_put(&adev->dev);
+> +
+> +	return 0;
+> +
+> +err_delete_cdev:
+> +	cdev_del(&drvdata->cdev.cdev);
+> +err_free_tmc_ida:
+> +	ida_simple_remove(&tmc_ida, MINOR(devt));
+> +err_coresight_unregister:
+> +	coresight_unregister(drvdata->csdev);
+>   out:
+>   	return ret;
+>   }
+> @@ -583,13 +607,11 @@ static void tmc_shutdown(struct amba_device *adev)
+>   static void tmc_remove(struct amba_device *adev)
+>   {
+>   	struct tmc_drvdata *drvdata = dev_get_drvdata(&adev->dev);
+> +	struct device *dev = drvdata->cdev.dev;
+>   
+> -	/*
+> -	 * Since misc_open() holds a refcount on the f_ops, which is
+> -	 * etb fops in this case, device is there until last file
+> -	 * handler to this device is closed.
+> -	 */
+> -	misc_deregister(&drvdata->miscdev);
+> +	ida_simple_remove(&tmc_ida, MINOR(dev->devt));
+> +	device_destroy(tmc_class, dev->devt);
+> +	cdev_del(&drvdata->cdev.cdev);
+>   	coresight_unregister(drvdata->csdev);
+>   }
+>   
+> @@ -618,7 +640,42 @@ static struct amba_driver tmc_driver = {
+>   	.id_table	= tmc_ids,
+>   };
+>   
+> -module_amba_driver(tmc_driver);
+> +static int __init tmc_init(void)
+> +{
+> +	int ret;
+> +
+> +	ret = alloc_chrdev_region(&tmc_major, 0, TMC_DEV_MAX, "tmc");
+> +	if (ret < 0) {
+> +		pr_err("tmc: failed to allocate char dev region\n");
+> +		return ret;
+> +	}
+> +
+> +	tmc_class = class_create(THIS_MODULE, "tmc");
+> +	if (IS_ERR(tmc_class)) {
+> +		pr_err("tmc: failed to create class\n");
+> +		unregister_chrdev_region(tmc_major, TMC_DEV_MAX);
+> +		return PTR_ERR(tmc_class);
+> +	}
+> +
+> +	ret = amba_driver_register(&tmc_driver);
+> +	if (ret) {
+> +		pr_err("tmc: error registering amba driver\n");
+> +		class_destroy(tmc_class);
+> +		unregister_chrdev_region(tmc_major, TMC_DEV_MAX);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static void __exit tmc_exit(void)
+> +{
+> +	amba_driver_unregister(&tmc_driver);
+> +	class_destroy(tmc_class);
+> +	unregister_chrdev_region(tmc_major, TMC_DEV_MAX);
+> +}
+> +
+> +module_init(tmc_init);
+> +module_exit(tmc_exit);
+>   
+>   MODULE_AUTHOR("Pratik Patel <pratikp@codeaurora.org>");
+>   MODULE_DESCRIPTION("Arm CoreSight Trace Memory Controller driver");
+> diff --git a/drivers/hwtracing/coresight/coresight-tmc.h b/drivers/hwtracing/coresight/coresight-tmc.h
+> index 6bec20a392b3..11441c6b9c26 100644
+> --- a/drivers/hwtracing/coresight/coresight-tmc.h
+> +++ b/drivers/hwtracing/coresight/coresight-tmc.h
+> @@ -7,9 +7,9 @@
+>   #ifndef _CORESIGHT_TMC_H
+>   #define _CORESIGHT_TMC_H
+>   
+> +#include <linux/cdev.h>
+>   #include <linux/dma-mapping.h>
+>   #include <linux/idr.h>
+> -#include <linux/miscdevice.h>
+>   #include <linux/mutex.h>
+>   #include <linux/refcount.h>
+>   
+> @@ -163,11 +163,16 @@ struct etr_buf {
+>   	void				*private;
+>   };
+>   
+> +struct tmc_cdev {
+> +	struct cdev cdev;
+> +	struct device *dev;
+> +};
+> +
+>   /**
+>    * struct tmc_drvdata - specifics associated to an TMC component
+>    * @base:	memory mapped base address for this component.
+>    * @csdev:	component vitals needed by the framework.
+> - * @miscdev:	specifics to handle "/dev/xyz.tmc" entry.
+> + * @tmc_cdev:	specifics to handle "/dev/xyz.tmc" entry.
+>    * @spinlock:	only one at a time pls.
+>    * @pid:	Process ID of the process being monitored by the session
+>    *		that is using this component.
+> @@ -191,7 +196,7 @@ struct etr_buf {
+>   struct tmc_drvdata {
+>   	void __iomem		*base;
+>   	struct coresight_device	*csdev;
+> -	struct miscdevice	miscdev;
+> +	struct tmc_cdev		cdev;
+>   	spinlock_t		spinlock;
+>   	pid_t			pid;
+>   	bool			reading;
