@@ -2,132 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C463C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28BCEC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236112AbiAMVb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 16:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236079AbiAMVbR (ORCPT
+        id S236032AbiAMVcJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 16:32:09 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44706 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235110AbiAMVcG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 16:31:17 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DD8CC061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:31:17 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id i9so9675598oih.4
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:31:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=eclypsium.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yVN27if4TLsRCEMhCF/aqw8r/7THOayqDLYA7IAtavc=;
-        b=cl/0zLZFJiGx8sFR5y9ZQu0me7yAE4sNXzqAJwzAbdsxRpWRMgUShOFWYq8N1hPJY2
-         48lcCYaUXpUWBAmmXMep3197PfpmGKcgBMTygUt3HNfyP7uOOgBxNz99RILKcZoRYfqs
-         Zt/3R6UjOLJefC5vcjn7sL1MXjc3KjmC+NQjSymVxGXKyYrGFTRPKZcRuLkkEg6NPefk
-         U12lx/o3FRe8+qmMzea5DJ5DLvKXyzTANaRZcV9oVsgPU8w8f/XvJ3Tac1oXIB+RUkGf
-         hwj4x2EZC7kxNZHRPe0QXebw4HB5BaulW7Esu1JdDEw+fpJCtRbhSQoxMNwuGdoSTe3I
-         L08Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yVN27if4TLsRCEMhCF/aqw8r/7THOayqDLYA7IAtavc=;
-        b=Sh9TdXIx0JAp9V5j9oN4ktJtNOhqhlJcYXnXUYqdeMOQagWA4rJTuYD3tWgK4Zz7AE
-         lJoC9JX/TmcnJ9R0RRlH+gfmK/tckRqY+UNaZyk3uFwEXUwUn6EyDKMXJhxyCtc5hp4c
-         6+NjETartfN5yPC+7qQFOoQlr9Q2Q2uT++7yzOuperUPB/bfdtuJQcRUcGtXlg757yc7
-         Oj0WjbVDUNR1XLoy2ew0hefrMk38ZwDm8tr64ztgP+U95WSnifvhsfzPCPMC+j4Y7Z0p
-         Dyrc2tHdheBTCE85NLtzBjc5lhVQiTerAEiRbr4fdtWFcWRW7uitG3cc7mXX/zY8QObP
-         Iw7Q==
-X-Gm-Message-State: AOAM530SeYyK2z9H79D1Qrzj4eF6QRVtyGMkv2GwrLsE7JAE6g8u3fmy
-        73/JCVZ6Iav7gKtl14jONHd7CQF6SKkFqjTr3bbIM6/cKxPZE110hc5eMigGR8dK6Km1Nrrsa3E
-        4jxV/qO0dpsUzmJAUrRJwzcxO6bwr6/Cqgapd9N6oK4dUB7QCz3wJI4NT30pZ6giFY2+zBYEldw
-        3i1iNg1v+hUkPVcmmnrn8=
-X-Google-Smtp-Source: ABdhPJxJcXPnlOWnI9M6Jnqh9i6KsB4TBvlTnQrIc/FadDEsjuKYa97ar6lwUiV86vnw2DEkK9FwHA==
-X-Received: by 2002:a05:6808:1a83:: with SMTP id bm3mr3785579oib.53.1642109476722;
-        Thu, 13 Jan 2022 13:31:16 -0800 (PST)
-Received: from localhost (115-127-16-190.fibertel.com.ar. [190.16.127.115])
-        by smtp.gmail.com with ESMTPSA id o130sm1040829oig.26.2022.01.13.13.31.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 13:31:16 -0800 (PST)
-From:   Martin Fernandez <martin.fernandez@eclypsium.com>
-To:     linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-mm@kvack.org
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        ardb@kernel.org, dvhart@infradead.org, andy@infradead.org,
-        gregkh@linuxfoundation.org, rafael@kernel.org, rppt@kernel.org,
-        akpm@linux-foundation.org, daniel.gutson@eclypsium.com,
-        hughsient@gmail.com, alex.bazhaniuk@eclypsium.com,
-        alison.schofield@intel.com,
-        Martin Fernandez <martin.fernandez@eclypsium.com>
-Subject: [PATCH v5 5/5] drivers/node: Show in sysfs node's crypto capabilities
-Date:   Thu, 13 Jan 2022 18:30:27 -0300
-Message-Id: <20220113213027.457282-6-martin.fernandez@eclypsium.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220113213027.457282-1-martin.fernandez@eclypsium.com>
-References: <20220113213027.457282-1-martin.fernandez@eclypsium.com>
+        Thu, 13 Jan 2022 16:32:06 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7055E61444;
+        Thu, 13 Jan 2022 21:32:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02EB1C36AEA;
+        Thu, 13 Jan 2022 21:32:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642109525;
+        bh=hj29mHHG1QdwbI27RwfBUvkMrE2JljtHYAxHeD3RozE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=VB3VA+Q9Q4VAp//nSyPbE/D7jCUAYkDOcvI0Rtb//6OkTbwsqAd98uJG9bDOw1gio
+         SqFEabwiKBkCDf1zVVa72s5SVvndzELh2+7FQ9GxEvj5cbCZRNjtCOG/crWOT++dQz
+         9qETli9kW95feFBygDJl6gjtze6/Ybreizu6EcexeoKxfMMZZ4gzAfF4t+3BflTxTm
+         SGl/9lCLYpc546IcCur46bzoVmh2oKnGeVrBbF+FUdka4yyXwjkDHsnVQ3AT4nOG1S
+         T5C/i/Mf0YlpZLZHCxFJEDP40dBceEJe9EcMaPgnN4iCok4W8qsRiC0HDwPNAF3yGl
+         CYqMVHczJScAA==
+Message-ID: <034075bd-aac5-9b97-6d09-02d9dd658a0b@kernel.org>
+Date:   Thu, 13 Jan 2022 13:31:58 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3 2/3] selftests/x86/Makefile: Support per-target $(LIBS)
+ configuration
+Content-Language: en-US
+To:     Florian Weimer <fweimer@redhat.com>
+Cc:     linux-arch@vger.kernel.org, Linux API <linux-api@vger.kernel.org>,
+        linux-x86_64@vger.kernel.org, kernel-hardening@lists.openwall.com,
+        linux-mm@kvack.org, the arch/x86 maintainers <x86@kernel.org>,
+        musl@lists.openwall.com, libc-alpha@sourceware.org,
+        linux-kernel@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andrei Vagin <avagin@gmail.com>
+References: <3a1c8280967b491bf6917a18fbff6c9b52e8df24.1641398395.git.fweimer@redhat.com>
+ <54ae0e1f8928160c1c4120263ea21c8133aa3ec4.1641398395.git.fweimer@redhat.com>
+From:   Andy Lutomirski <luto@kernel.org>
+In-Reply-To: <54ae0e1f8928160c1c4120263ea21c8133aa3ec4.1641398395.git.fweimer@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Show in each node in sysfs if its memory is able to do be encrypted by
-the CPU, ie. if all its memory is marked with EFI_MEMORY_CPU_CRYPTO in
-the EFI memory map.
+On 1/5/22 08:03, Florian Weimer wrote:
+> And avoid compiling PCHs by accident.
+> 
 
-Signed-off-by: Martin Fernandez <martin.fernandez@eclypsium.com>
----
- Documentation/ABI/testing/sysfs-devices-node | 10 ++++++++++
- drivers/base/node.c                          | 10 ++++++++++
- 2 files changed, 20 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-devices-node
+The patch seems fine, but I can't make heads or tails of the $SUBJECT. 
+Can you help me?
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-node b/Documentation/ABI/testing/sysfs-devices-node
-new file mode 100644
-index 000000000000..7c0480580670
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-devices-node
-@@ -0,0 +1,10 @@
-+What:		/sys/devices/system/node/nodeX/crypto_capable
-+Date:		January 2022
-+Contact:	Martin Fernandez <martin.fernandez@eclypsium.com>
-+Users:		fwupd (https://fwupd.org)
-+Description:
-+		This value is 1 if all system memory in this node is
-+		marked with EFI_MEMORY_CPU_CRYPTO, indicating that the
-+		system memory is capable of being protected with the
-+		CPU’s memory cryptographic capabilities. It is 0
-+		otherwise.
-\ No newline at end of file
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 87acc47e8951..dabaed997ecd 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -560,11 +560,21 @@ static ssize_t node_read_distance(struct device *dev,
- }
- static DEVICE_ATTR(distance, 0444, node_read_distance, NULL);
- 
-+static ssize_t crypto_capable_show(struct device *dev,
-+				   struct device_attribute *attr, char *buf)
-+{
-+	struct pglist_data *pgdat = NODE_DATA(dev->id);
-+
-+	return sysfs_emit(buf, "%d\n", pgdat->crypto_capable);
-+}
-+static DEVICE_ATTR_RO(crypto_capable);
-+
- static struct attribute *node_dev_attrs[] = {
- 	&dev_attr_meminfo.attr,
- 	&dev_attr_numastat.attr,
- 	&dev_attr_distance.attr,
- 	&dev_attr_vmstat.attr,
-+	&dev_attr_crypto_capable.attr,
- 	NULL
- };
- 
--- 
-2.30.2
+> Signed-off-by: Florian Weimer <fweimer@redhat.com>
+> ---
+> v3: Patch split out.
+> 
+>   tools/testing/selftests/x86/Makefile | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/x86/Makefile b/tools/testing/selftests/x86/Makefile
+> index 8a1f62ab3c8e..0993d12f2c38 100644
+> --- a/tools/testing/selftests/x86/Makefile
+> +++ b/tools/testing/selftests/x86/Makefile
+> @@ -72,10 +72,12 @@ all_64: $(BINARIES_64)
+>   EXTRA_CLEAN := $(BINARIES_32) $(BINARIES_64)
+>   
+>   $(BINARIES_32): $(OUTPUT)/%_32: %.c helpers.h
+> -	$(CC) -m32 -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $^ -lrt -ldl -lm
+> +	$(CC) -m32 -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(filter-out %.h, $^) \
+> +		$(or $(LIBS), -lrt -ldl -lm)
+>   
+>   $(BINARIES_64): $(OUTPUT)/%_64: %.c helpers.h
+> -	$(CC) -m64 -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $^ -lrt -ldl
+> +	$(CC) -m64 -o $@ $(CFLAGS) $(EXTRA_CFLAGS) $(filter-out %.h, $^) \
+> +		$(or $(LIBS), -lrt -ldl -lm)
+>   
+>   # x86_64 users should be encouraged to install 32-bit libraries
+>   ifeq ($(CAN_BUILD_I386)$(CAN_BUILD_X86_64),01)
 
