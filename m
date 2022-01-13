@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF445C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B91C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235816AbiAMOsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 09:48:15 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:31589 "EHLO
+        id S235845AbiAMOsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 09:48:18 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:19880 "EHLO
         esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235791AbiAMOsI (ORCPT
+        with ESMTP id S235801AbiAMOsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 09:48:08 -0500
+        Thu, 13 Jan 2022 09:48:14 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1642085288; x=1673621288;
+  t=1642085294; x=1673621294;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cpKxdtwy7Ox5Jspj12nGljBMXStsy5iD5Lt1+j43mkI=;
-  b=M2XdIhHByRrPM9DLlgfgGH3FpCAcKqYNmZSAeanB0+ZAWkjxhqAJSjgD
-   7fuiRCKh51T7QxNVh8NGIPUqhQf+LmEl/c5UFpqYq7xu/w3tEOotDUB6w
-   O5l7wYu4k2L9UOkmESE3Wse3tpRnp/6czx4EppxMZVKCkRDTVDEUcxFk0
-   Nn9VX8N3gZsUqDE09Do/CgDErehgNo+cPPnzIHyJXEefLiQlaPD9uV7Fm
-   RAFa+ojCXnFq5yTEnkaY+PWO0VhLzGquiRd3Za6xP5IqdWOoJ/40ENJeq
-   zSQ2kbTBtAiUnjxwJroXeQDUzzgFd90E6onm42+gGA4hkaibg/XVQLQwH
-   g==;
-IronPort-SDR: l25eMLLmgkkG50NGqSakJ+63kGv8LZzXzzZ5yAaC9psEOjUcqRV8asD51bVC2J/cZlbPxL076U
- N7yz6ifnfauTQGaXkD1Zz5li6ybwQR0PPWnhHdnlgrmiM1/N7zmo1agrwFW2hJ5g45yjolVVJ1
- 9Mv1BxMGXJZvdVYfsrf9/stGM0DvJFBvzf9K2BLLS4Vffs4YrQHWZ6O9ecFILAklFEOPQfK00O
- 9fW5IeksDKMBDTGDY2o/U1mSuw5usuEB+zQpFesEeoYKz0t4rzA/LJlnwKHVYHF7atGnUwLl5D
- OfUV6z/Nwp+DZdZoLecV308A
+  bh=qzxL53+xCwUlzzE+c5h3xp0iY0GwHksZEGL+kIYmI/c=;
+  b=tlJt+YYE5Nto4VakTfacNyrIfIR1bZMpO9bEG11al8bShyEOMY/YL2IJ
+   Kb6P94o4Jwsx4Vjqylbk0Ngpt/hn92age4Xzr6g3kooYc7953lRgDYr5b
+   1EKFeLhTqzEPvWP1iKo/a7/oAXaFfp7V1pdeVBClOKK05iK81167APFz6
+   JYoL3tY5n4QljfAuSWE1+uSDlLELD0O7aRegqd5svqYiwUi2+WuLCHFgn
+   BnIlSYVyQGC2cLM8kP3g3YB/TEPBhbNzEffzT8DYS1FcwxOTIn8NFund4
+   KWUV5/ZwaXC0o8leE8ZA8D5YEidt7KruTzwUtYhbYjXwVz7ZKnA/NnUi5
+   A==;
+IronPort-SDR: BPtLW3vol1O10wBtDTdU/osMfjW67K7iAB5k1pKez50+5jPucwUS0EZrWSckGbBNjqy/jFfq2N
+ 2j5GaDyRCRyD9xRGlOvi+B4s1AHd3vERmEq+eS0mcZLGO+9SfkS6z5cKlAqwOGTjEDvsFAZ+AG
+ P6d6gaoG9thkSHQXVo/NSWpvtiVEhoYt/CAC5xAKkwbvuZtFYK7szGF36s+AHrfOXu2C8IXgnc
+ XUS5bnGaasttb+DJb+JMqoCnmupYmd94ZUDW8ufY1xW2d1WSX6Zp3wLGmmL/SrIpuxju90tKPk
+ vrpC7eLj1FSanHBjxIuvEtV2
 X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="158557517"
+   d="scan'208";a="150108218"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jan 2022 07:48:07 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jan 2022 07:48:14 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 13 Jan 2022 07:48:07 -0700
+ 15.1.2375.17; Thu, 13 Jan 2022 07:48:14 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 13 Jan 2022 07:48:05 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 13 Jan 2022 07:48:11 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <ludovic.desroches@microchip.com>, <robh+dt@kernel.org>,
@@ -50,9 +50,9 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v2 04/10] ARM: at91: PM: add cpu idle support for sama7g5
-Date:   Thu, 13 Jan 2022 16:48:54 +0200
-Message-ID: <20220113144900.906370-5-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 06/10] ARM: dts: at91: fix low limit for CPU regulator
+Date:   Thu, 13 Jan 2022 16:48:56 +0200
+Message-ID: <20220113144900.906370-7-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220113144900.906370-1-claudiu.beznea@microchip.com>
 References: <20220113144900.906370-1-claudiu.beznea@microchip.com>
@@ -63,97 +63,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add CPU idle support for SAMA7G5. Support will make use of PMC_CPU_RATIO
-register to divide the CPU clock by 16 before switching it to idle and
-use automatic self-refresh option of DDR controller.
+Fix low limit for CPU regulator. Otherwise setting voltages lower than
+1.125V will not be allowed (CPUFreq will not be allowed to set proper
+voltages on proper frequencies).
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
 ---
- arch/arm/mach-at91/pm.c      | 27 ++++++++++++++++++++++++++-
- include/linux/clk/at91_pmc.h |  4 ++++
- include/soc/at91/sama7-ddr.h |  1 +
- 3 files changed, 31 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/at91-sama7g5ek.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index dd6f4ce3f766..0fd609e26615 100644
---- a/arch/arm/mach-at91/pm.c
-+++ b/arch/arm/mach-at91/pm.c
-@@ -605,6 +605,30 @@ static void at91sam9_sdram_standby(void)
- 		at91_ramc_write(1, AT91_SDRAMC_LPR, saved_lpr1);
- }
+diff --git a/arch/arm/boot/dts/at91-sama7g5ek.dts b/arch/arm/boot/dts/at91-sama7g5ek.dts
+index 0e1975c6812e..50f0fc3064cc 100644
+--- a/arch/arm/boot/dts/at91-sama7g5ek.dts
++++ b/arch/arm/boot/dts/at91-sama7g5ek.dts
+@@ -236,7 +236,7 @@ regulator-state-mem {
  
-+static void sama7g5_standby(void)
-+{
-+	int pwrtmg, ratio;
-+
-+	pwrtmg = readl(soc_pm.data.ramc[0] + UDDRC_PWRCTL);
-+	ratio = readl(soc_pm.data.pmc + AT91_PMC_RATIO);
-+
-+	/*
-+	 * Place RAM into self-refresh after a maximum idle clocks. The maximum
-+	 * idle clocks is configured by bootloader in
-+	 * UDDRC_PWRMGT.SELFREF_TO_X32.
-+	 */
-+	writel(pwrtmg | UDDRC_PWRCTL_SELFREF_EN,
-+	       soc_pm.data.ramc[0] + UDDRC_PWRCTL);
-+	/* Divide CPU clock by 16. */
-+	writel(ratio & ~AT91_PMC_RATIO_RATIO, soc_pm.data.pmc + AT91_PMC_RATIO);
-+
-+	cpu_do_idle();
-+
-+	/* Restore previous configuration. */
-+	writel(ratio, soc_pm.data.pmc + AT91_PMC_RATIO);
-+	writel(pwrtmg, soc_pm.data.ramc[0] + UDDRC_PWRCTL);
-+}
-+
- struct ramc_info {
- 	void (*idle)(void);
- 	unsigned int memctrl;
-@@ -615,6 +639,7 @@ static const struct ramc_info ramc_infos[] __initconst = {
- 	{ .idle = at91sam9_sdram_standby, .memctrl = AT91_MEMCTRL_SDRAMC},
- 	{ .idle = at91_ddr_standby, .memctrl = AT91_MEMCTRL_DDRSDR},
- 	{ .idle = sama5d3_ddr_standby, .memctrl = AT91_MEMCTRL_DDRSDR},
-+	{ .idle = sama7g5_standby, },
- };
- 
- static const struct of_device_id ramc_ids[] __initconst = {
-@@ -622,7 +647,7 @@ static const struct of_device_id ramc_ids[] __initconst = {
- 	{ .compatible = "atmel,at91sam9260-sdramc", .data = &ramc_infos[1] },
- 	{ .compatible = "atmel,at91sam9g45-ddramc", .data = &ramc_infos[2] },
- 	{ .compatible = "atmel,sama5d3-ddramc", .data = &ramc_infos[3] },
--	{ .compatible = "microchip,sama7g5-uddrc", },
-+	{ .compatible = "microchip,sama7g5-uddrc", .data = &ramc_infos[4], },
- 	{ /*sentinel*/ }
- };
- 
-diff --git a/include/linux/clk/at91_pmc.h b/include/linux/clk/at91_pmc.h
-index ccb3f034bfa9..3484309b59bf 100644
---- a/include/linux/clk/at91_pmc.h
-+++ b/include/linux/clk/at91_pmc.h
-@@ -78,6 +78,10 @@
- #define		AT91_PMC_MAINRDY	(1	<< 16)		/* Main Clock Ready */
- 
- #define	AT91_CKGR_PLLAR		0x28			/* PLL A Register */
-+
-+#define	AT91_PMC_RATIO		0x2c			/* Processor clock ratio register [SAMA7G5 only] */
-+#define		AT91_PMC_RATIO_RATIO	(0xf)		/* CPU clock ratio. */
-+
- #define	AT91_CKGR_PLLBR		0x2c			/* PLL B Register */
- #define		AT91_PMC_DIV		(0xff  <<  0)		/* Divider */
- #define		AT91_PMC_PLLCOUNT	(0x3f  <<  8)		/* PLL Counter */
-diff --git a/include/soc/at91/sama7-ddr.h b/include/soc/at91/sama7-ddr.h
-index fee1b11bddca..9e17247474fa 100644
---- a/include/soc/at91/sama7-ddr.h
-+++ b/include/soc/at91/sama7-ddr.h
-@@ -53,6 +53,7 @@
- #define		UDDRC_STAT_OPMODE_MSK		(0x7 << 0)	/* Operating mode mask */
- 
- #define UDDRC_PWRCTL				(0x30)		/* UDDRC Low Power Control Register */
-+#define		UDDRC_PWRCTL_SELFREF_EN		(1 << 0)	/* Automatic self-refresh */
- #define		UDDRC_PWRCTL_SELFREF_SW		(1 << 5)	/* Software self-refresh */
- 
- #define UDDRC_DFIMISC				(0x1B0)		/* UDDRC DFI Miscellaneous Control Register */
+ 				vddcpu: VDD_OTHER {
+ 					regulator-name = "VDD_OTHER";
+-					regulator-min-microvolt = <1125000>;
++					regulator-min-microvolt = <1050000>;
+ 					regulator-max-microvolt = <1850000>;
+ 					regulator-initial-mode = <2>;
+ 					regulator-allowed-modes = <2>, <4>;
 -- 
 2.32.0
 
