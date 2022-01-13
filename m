@@ -2,96 +2,223 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BFDCC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 06:03:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 938D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 06:04:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230005AbiAMGDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 01:03:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiAMGDn (ORCPT
+        id S230515AbiAMGEX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 01:04:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37418 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230008AbiAMGEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 01:03:43 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 414A7C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 22:03:43 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id y4-20020a5b0f44000000b00611862e546dso9372266ybr.7
-        for <linux-kernel@vger.kernel.org>; Wed, 12 Jan 2022 22:03:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:cc;
-        bh=rRyEFmS7punxeQqOoiys20soJGTAicrW1PQEVjtcuOA=;
-        b=UC0FFRMh7o2iv/d1ZaJ/LghgsJZH08kcjGW6ZhhwJ4hbYSY6P+mQaFSJDBtkIeisxh
-         dMYTFNE35bneVl2jeioGSk0VZpsNrNj5umTNHSo7/WfBdW43ivLDm0uSMRRiN1q+wk18
-         KUO68aRriqBmEwRu1X2MJ4F7pNMwbp3x5cG1qIhUeqa4uGQsEkK4wE/8puOTljUSMwxF
-         bvjGIA8CNa10xPaJBAYSDpATqlY2HMsAksMnBkY1N10KeVbcV58t0I67QfSbqlDyIHqi
-         7HCGiemBUd4/oKlwlhieXx+3JMxbst/olfPkK+vw2Dy7LIHVwPax+YlCJeOetB0tNcwu
-         eOjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:cc;
-        bh=rRyEFmS7punxeQqOoiys20soJGTAicrW1PQEVjtcuOA=;
-        b=Wrmb98Ilbmc2Kl4ZxMjONt057Vt00s0l3fhsDkXD6swhEPO9zM02UTQ5PguFBEitM3
-         lgJ496EgapFKu1rv6klQjS6vDPrsqe+7gPHdXwtLs7yCgt3V2SEbHgXICBzQfVudKdGP
-         WtUPPKHCQ5O5ii/oqzfWt1ff7DGbxjiy/PbV0+OhFAVXVP2wzr8FoXYAT7NntpqKOv/x
-         og9sYoUKTiDhi1o3xluwvgxqNFx85GoDT2D/sWzNZUAgkilJHjDa3LhAl/1SpCPrS2Uz
-         z/aze1Gtd9ebXi4e01MdhBdwsc/KVAZpmvmryk6mdH3zGbsuz20PMQQlFDl5Xsb77lzQ
-         hsCQ==
-X-Gm-Message-State: AOAM532lt/oe3l0S/ZzfBZEVCuNQhqQM9VlccvBxAIneeuUh16qt9QG+
-        zYyK7iyRn8hvPr4vyqg6uRPZjDY1KO8=
-X-Google-Smtp-Source: ABdhPJxSiBZP+f3lo0Lf91MgLkH3gGGAomTSOZ3Jk/TA1UJ3E9WfxNaD7K60yMczdglZzeGoqktyox8bTi4=
-X-Received: from jaeman.seo.corp.google.com ([2401:fa00:d:11:2232:d256:314c:979c])
- (user=jaeman job=sendgmr) by 2002:a05:6902:120f:: with SMTP id
- s15mr4571599ybu.390.1642053822522; Wed, 12 Jan 2022 22:03:42 -0800 (PST)
-Date:   Thu, 13 Jan 2022 15:02:35 +0900
-Message-Id: <20220113060235.546107-1-jaeman@google.com>
+        Thu, 13 Jan 2022 01:04:22 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 83DA861B22
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 06:04:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6780BC36AEA;
+        Thu, 13 Jan 2022 06:04:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642053860;
+        bh=06sJ9c5JgNOLtzme1c2S7cgTzgkZifEO6qTGdbDX5Zc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q9mz1PAwE+hsuCsWWwFn450CoVfokGsAXW/7fJHvaV1JIkoSbVbx2nfu8tRIVl9r2
+         AHgqJnyPOP3Dg6Rjtt9h6816rgmV/9iDxaIfQ0GWuWg+wmHTRNSw0smMIA2chvA+hT
+         4Yp5oQWEkk1Foo3kRWjFaKBDYBG5w4vRSRXMIfhkNxGh4QIsnnN5ETc7LDqFlDbj3l
+         nISXHOZriForazQSLBxS/BEVa6cnjsTnc25aSNDiJLE0TpIs+r/cdHY6v6mYjxmVyL
+         z/RgWGTL0eXet2Q3DRueoyrF0SXS8Q6jUUTyHMVZ40rzdINXzSfeqm0nudSUIjsNa5
+         c5xLvcmgTo3Jw==
+Date:   Thu, 13 Jan 2022 15:04:15 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jianhua Liu <jianhua.ljh@gmail.com>
+Cc:     "liuqi (BA)" <liuqi115@huawei.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Linuxarm <linuxarm@huawei.com>, Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>,
+        "Zengtao (B)" <prime.zeng@hisilicon.com>, robin.murphy@arm.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] arm64: kprobe: Enable OPTPROBE for arm64
+Message-Id: <20220113150415.2a3c9129ba17893a89428489@kernel.org>
+In-Reply-To: <CAAgTQPUEgSf-E_GOUNY_=4Piiy0K_-5U_YVbnoMAZ94Q3ducOg@mail.gmail.com>
+References: <20211207124002.59877-1-liuqi115@huawei.com>
+        <20211213183851.GD12405@willie-the-truck>
+        <20211214092657.5b9c26b4e3852602eced4fda@kernel.org>
+        <CAAgTQPUKqFn9_ENKbfJkFjT3v9L2NiFAY2xvULEj_6wguqWYNg@mail.gmail.com>
+        <f4552c3e-8f1a-bef1-9396-39aa2405b486@huawei.com>
+        <CAAgTQPWAK==cYPKeYNGE7nPGh0Y7Py4TcUoMPz76h15YNBNsLQ@mail.gmail.com>
+        <CAAgTQPWomoiGdVJxwYBmXOj7RegHM4TSa2+yKVTQFhBFg8PtLg@mail.gmail.com>
+        <20220104113559.7dd1ff2cb575f62e0b01fb47@kernel.org>
+        <dbcbc161-228d-ee78-e1f0-b59ad9b0a36f@huawei.com>
+        <CAAgTQPUEgSf-E_GOUNY_=4Piiy0K_-5U_YVbnoMAZ94Q3ducOg@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-Subject: [PATCH] mac80211_hwsim: initialize ieee80211_tx_info at hw_scan_work
-From:   JaeMan Park <jaeman@google.com>
-Cc:     johannes@sipsolutions.net, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        adelva@google.com, kernel-team@android.com,
-        JaeMan Park <jaeman@google.com>
-Content-Type: text/plain; charset="UTF-8"
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In mac80211_hwsim, the probe_req frame is created and sent while
-scanning. It is sent with ieee80211_tx_info which is not initialized.
-Uninitialized ieee80211_tx_info can cause problems when using
-mac80211_hwsim with wmediumd. wmediumd checks the tx_rates field of
-ieee80211_tx_info and doesn't relay probe_req frame to other clients
-even if it is a broadcasting message.
+On Wed, 12 Jan 2022 20:21:57 +0800
+Jianhua Liu <jianhua.ljh@gmail.com> wrote:
 
-Call ieee80211_tx_prepare_skb() to initialize ieee80211_tx_info for
-the probe_req that is created by hw_scan_work in mac80211_hwsim.
+> On Wed, Jan 12, 2022 at 9:31 AM liuqi (BA) <liuqi115@huawei.com> wrote:
+> >
+> >
+> >
+> > On 2022/1/4 10:35, Masami Hiramatsu wrote:
+> > > Hi Jianhua,
+> > >
+> > > On Mon, 3 Jan 2022 17:03:33 +0800
+> > > Jianhua Liu <jianhua.ljh@gmail.com> wrote:
+> > >
+> > >> Hi Qi,
+> > >> I have tested your patch on UNISOC s9863a.
+> > >> Test case "kprobe_example & kretprobe_example" is OK.
+> > >>
+> > >> Two point:
+> > >> 1. backtrace is not perfect.
+> > >>     optprobe_common does not saved frame pointer,
+> > >>     backtrace lacks two calls.
+> > >> such as for dup_mm: lack copy_process-->dup_mm
+> > >> dup_mm backtrace from your patch:
+> > >> [  832.387066] CPU: 0 PID: 296 Comm: sh Not tainted 5.16.0-rc5+ #8
+> > >> [  832.387078] Hardware name: Spreadtrum SP9863A-1H10 Board (DT)
+> > >> [  832.387083] Call trace:
+> > >> [  832.387086]  dump_backtrace+0x0/0x1e0
+> > >> [  832.387103]  show_stack+0x24/0x30
+> > >> [  832.387112]  dump_stack_lvl+0x68/0x84
+> > >> [  832.387123]  dump_stack+0x18/0x34
+> > >> [  832.387131]  handler_pre+0x40/0x50 [kprobe_example]
+> > >> [  832.387143]  opt_pre_handler+0x84/0xc0
+> > >> [  832.387154]  optprobe_optimized_callback+0xec/0x164
+> > >> [  832.387164]  optprobe_common+0x70/0xc4
+> > >> [  832.387173]  kernel_clone+0x98/0x440
+> > >> [  832.387182]  __do_sys_clone+0x54/0x80
+> > >> [  832.387191]  __arm64_sys_clone+0x2c/0x40
+> > >> [  832.387199]  invoke_syscall+0x50/0x120
+> > >> [  832.387208]  el0_svc_common.constprop.0+0x4c/0xf4
+> > >> [  832.387217]  do_el0_svc+0x30/0x9c
+> > >> [  832.387225]  el0_svc+0x20/0x60
+> > >> [  832.387235]  el0t_64_sync_handler+0xe8/0xf0
+> > >> [  832.387242]  el0t_64_sync+0x1a0/0x1a4
+> > >>
+> > >>
+> > >> dup_mm backtrace from other:
+> > >> [  173.352294] CPU: 6 PID: 309 Comm: sh Not tainted 5.16.0-rc5+ #19
+> > >> [  173.352301] Hardware name: Spreadtrum SP9863A-1H10 Board (DT)
+> > >> [  173.352304] Call trace:
+> > >> [  173.352307]  dump_backtrace+0x0/0x1d4
+> > >> [  173.352319]  show_stack+0x18/0x24
+> > >> [  173.352326]  dump_stack_lvl+0x68/0x84
+> > >> [  173.352333]  dump_stack+0x18/0x34
+> > >> [  173.352338]  handler_pre+0x38/0x48 [kprobe_example]
+> > >> [  173.352347]  opt_pre_handler+0x74/0xb0
+> > >> [  173.352354]  optimized_callback+0x108/0x130
+> > >> [  173.352361]  optinsn_slot+0x258/0x1000
+> > >> [  173.352366]  dup_mm+0x4/0x4b0
+> > >> [  173.352373]  copy_process+0x1284/0x1360
+> > >> [  173.352378]  kernel_clone+0x5c/0x3c0
+> > >> [  173.352384]  __do_sys_clone+0x54/0x80
+> > >> [  173.352390]  __arm64_sys_clone+0x24/0x30
+> > >> [  173.352396]  invoke_syscall+0x48/0x114
+> > >> [  173.352402]  el0_svc_common.constprop.0+0x44/0xec
+> > >> [  173.352408]  do_el0_svc+0x24/0x90
+> > >> [  173.352413]  el0_svc+0x20/0x60
+> > >> [  173.352420]  el0t_64_sync_handler+0xe8/0xf0
+> > >> [  173.352427]  el0t_64_sync+0x1a0/0x1a4
+> > >
+> >
+> > Hi Masami and Jianhua,
+> >
+> > optprobe_common() is added to minize size of code in trampoline, but
+> > each trampoline is alloced as PAGE_SIZE, so optprobe_common() seems
+> > unnecessary, and will make optprobe_trampoline.S much more complicated.
+> > How about drop optprobe_common() and use a maro to reduce duplicate code .
+> >
+> 1. each trampoline is allocated as
+> (MAX_OPTINSN_SIZE*sizeof(kprobe_opcode_t)), not PAGE_SIZE
 
-Signed-off-by: JaeMan Park <jaeman@google.com>
----
- drivers/net/wireless/mac80211_hwsim.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Right. What Jianhua pointed was the alloc_optinsn_page() is expected to
+return the PAGE_SIZE memory. Each trampoline "slot" is allocated on
+that page. See __get_insn_slot()@kernel/kprobes.c for detail.
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 0307a6677907..95f1e4899231 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -2336,6 +2336,13 @@ static void hw_scan_work(struct work_struct *work)
- 			if (req->ie_len)
- 				skb_put_data(probe, req->ie, req->ie_len);
- 
-+			if (!ieee80211_tx_prepare_skb(hwsim->hw,
-+						      hwsim->hw_scan_vif,
-+						      probe,
-+						      hwsim->tmp_chan->band,
-+						      NULL))
-+				continue;
-+
- 			local_bh_disable();
- 			mac80211_hwsim_tx_frame(hwsim->hw, probe,
- 						hwsim->tmp_chan);
+> 2. MAX_OPTINSN_SIZE should be "((unsigned long)(optprobe_template_end
+> - optprobe_template_entry)),
+>    your MAX_OPTINSN_SIZE  is not accurate.
+
+Good catch! The MAX_OPTINSN_SIZE is not in byte, but in sizeof(kprobe_opcode_t).
+
++#define MAX_OPTINSN_SIZE                                                       \
++       ((unsigned long)optprobe_template_restore_end - (unsigned long)optprobe_template_entry)
+
+This will calculate the MAX_OPTINSN_SIZE in byte. Hmm, arm 32bit 
+implementation has same mistake. Thanks for pointing it out!
+
+> 3.optprobe_template_val in different kprobe may not be aligned with 8 byte.
+>    ldr instruction for this value, may use address that not aligned 8 byte.
+>    "ldr x0, 1f
+>    .global optprobe_template_common"
+
+Ouch. Hmm, I think we should adjust MAX_OPTINSN_SIZE is always 2n, or
+just add a nop (or additional .long 0) with a comment.
+
+BTW, the filename of arch/arm64/kernel/probes/opt_arm64.c is redundant,
+it should be arch/arm64/kernel/probes/optprobe.c, since we are sure
+that is for arm64.
+
+Thank you!
+
+> 
+> Thanks,
+> Jianhua
+> > Thanks,
+> > Qi
+> > > Is the second one with your patch?
+> > >
+> > >>
+> > >> 2. The reserve memory "OPT_SLOT_SIZE - PAGE_SIZE"  is waste.
+> > >>     kernel/kprobe.c used only one PAGE_SIZE slot memory.
+> > >
+> > > Good catch!
+> > > Qi, can you make an array (or bit map) of usage flags and
+> > > manage the reserved memory?
+> > >
+> > > #define OPT_INSN_PAGES (OPT_SLOT_SIZE/PAGE_SIZE)
+> > > static bool insn_page_in_use[OPT_INSN_PAGES];
+> > >
+> > > void *alloc_optinsn_page(void)
+> > > {
+> > >       int i;
+> > >
+> > >       for (i = 0; i < OPT_INSN_PAGES; i++)
+> > >               if (!insn_page_in_use[i])
+> > >                       goto found;
+> > >       return NULL;
+> > > found:
+> > >       insn_page_in_use[i] = true;
+> > >       return (void *)((unsigned long)optinsn_slot + PAGE_SIZE * i);
+> > > }
+> > >
+> > > void free_optinsn_page(void *page)
+> > > {
+> > >       unsigned long idx = (unsigned long)page - (unsigned long)optinsn_slot;
+> > >
+> > >       WARN_ONCE(idx & (PAGE_SIZE - 1));
+> > >       idx >>= PAGE_SHIFT;
+> > >       if (WARN_ONCE(idx >= OPT_INSN_PAGES))
+> > >               return;
+> > >       insn_page_in_use[idx] = false;
+> > > }
+> > >
+> > > Thank you,
+> > >
+> > >
+> > >
+> > >
+
+
 -- 
-2.34.1.703.g22d0c6ccf7-goog
-
+Masami Hiramatsu <mhiramat@kernel.org>
