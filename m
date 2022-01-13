@@ -2,120 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EB95C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 22:11:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB55FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 22:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237019AbiAMWLo convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 17:11:44 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:56574 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233023AbiAMWLn (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 17:11:43 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-140-S1wWihjPMYGfmUu8_x_IuQ-1; Thu, 13 Jan 2022 22:11:36 +0000
-X-MC-Unique: S1wWihjPMYGfmUu8_x_IuQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Thu, 13 Jan 2022 22:11:35 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Thu, 13 Jan 2022 22:11:35 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Sven Schnelle' <svens@linux.ibm.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-CC:     LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Pingfan Liu <kernelfans@gmail.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        "hca@linux.ibm.com" <hca@linux.ibm.com>,
-        "deller@gmx.de" <deller@gmx.de>
-Subject: RE: [PATCH v2] tracing: Add test for user space strings when
- filtering on  string pointers
-Thread-Topic: [PATCH v2] tracing: Add test for user space strings when
- filtering on  string pointers
-Thread-Index: AQHYCMRx7AQ+C6qOvkCW4jNyMLz0qKxhghEQ
-Date:   Thu, 13 Jan 2022 22:11:35 +0000
-Message-ID: <e66911061f9344fa8de2da982ab98a7b@AcuMS.aculab.com>
-References: <20220110115532.536088fd@gandalf.local.home>
-        <31c11a47a8bc4e34a1a64d54a54bb944@AcuMS.aculab.com>
-        <20220110122436.5302128f@gandalf.local.home>
-        <7a0fefb7ed3542b4a49dee1e78b1668b@AcuMS.aculab.com>
-        <yt9d8rvmt2jq.fsf@linux.ibm.com>        <20220113125754.0cb5273f@gandalf.local.home>
- <yt9dwnj3wcke.fsf@linux.ibm.com>
-In-Reply-To: <yt9dwnj3wcke.fsf@linux.ibm.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S237069AbiAMWNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 17:13:17 -0500
+Received: from mga14.intel.com ([192.55.52.115]:53718 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233023AbiAMWNP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 17:13:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642111995; x=1673647995;
+  h=from:to:cc:subject:date:message-id;
+  bh=BRcMWiTvAIYEWm6nRi08D8xbfePlAJ2/c+iNxGqgvx0=;
+  b=DP1ROMPsD8l/89lJY4tUrSTyfu8F927a3tc0Av4vlClIRhFwTabPMTVg
+   Gb6v0uGvHTL5gpsKs77JnE5zV9FdSRTD4J0xoBE1tPGcOtUPXwxAdIWI7
+   QgKFvYbnuo8ECwrTm032kwRlntx5ysdTgVXLqgOqBnbfsGfJM7hf++qMI
+   QB1O4t9h59p1dsFwpFahO5EkJX0v7A28YdTPrx6MzqktH4DBDJRvsfFib
+   lEG9keSPOZuZizrYQdMkPX2N5oNK+fSp8Q4X0RQPATGg4Ns5pf7OPW6SY
+   y0atK2+ap+cRriKv9n0/u2AiUYwuMCRKKjlaKXMxn/ca5qHElNpafQizw
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244327500"
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="244327500"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 14:13:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="491283174"
+Received: from otc-wp-03.jf.intel.com ([10.54.39.79])
+  by orsmga002.jf.intel.com with ESMTP; 13 Jan 2022 14:13:13 -0800
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        "Lu Baolu" <baolu.lu@linux.intel.com>
+Cc:     Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>
+Subject: [PATCH] iommu/vt-d: Fix PCI bus rescan device hot add
+Date:   Thu, 13 Jan 2022 05:23:18 -0800
+Message-Id: <1642080198-10971-1-git-send-email-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Schnelle
-> Sent: 13 January 2022 21:28
-> 
-> Hi Steve,
-> 
-> Steven Rostedt <rostedt@goodmis.org> writes:
-> 
-> > On Tue, 11 Jan 2022 21:55:53 +0100
-> > Sven Schnelle <svens@linux.ibm.com> wrote:
-> >
-> >> > Isn't there also at least one architecture where you can't differentiate
-> >> > between user and kernel pointers by looking at the address?
-> >> > (Something like sparc ASI is used for user accesses so both user
-> >> > and kernel get the full 4G address range. But it isn't sparc (or pdp/11))
-> >> > ISTR it causing issues with the code for kernel_setsockopt() and
-> >> > required a separate flag.
-> >>
-> >> On s390 TASK_SIZE is defined as -PAGE_SIZE, so with the patch above the
-> >> kernel would always try to fetch it from user space. I think it would be
-> >> the same for parisc.
-> >
-> > As a work around for these cases, would something like this work?
-> 
-> Hmm, i don't see how. On s390, TASK_SIZE is -PAGE_SIZE, which means
-> 0xfffffffffffff000 so i think the if() condition below is always true.
+During PCI bus rescan, adding new devices involve two notifiers.
+1. dmar_pci_bus_notifier()
+2. iommu_bus_notifier()
+The current code sets #1 as low priority (INT_MIN) which resulted in #2
+being invoked first. The result is that struct device pointer cannot be
+found in DRHD search for the new device's DMAR/IOMMU. Subsequently, the
+device is put under the "catch-all" IOMMU instead of the correct one.
 
-Isn't TASK_SIZE also dependant on current->xxxx on at least one architecture?
-Possibly even x86-64.
+This could cause system hang when device TLB invalidation is sent to the
+wrong IOMMU. Invalidation timeout error or hard lockup can be observed.
 
-> Too bad that the __user attribute is stripped during a normal compile.
-> But couldn't we add the information whether a pointer belongs to user
-> or kernel space in the trace event definition? For syscall tracing it's
-> easy, because pointer types in SYSCALL_DEFINE() and friends are always
-> userspace pointers?
+This patch fixes the issue by setting a higher priority for
+dmar_pci_bus_notifier. DRHD search for a new device will find the
+correct IOMMU.
 
-Also, when the __user pointer is saved it MUST be checked for being
-a valid user pointer (eg with access_ok(ptr, 1).
+Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
+Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-You really do need to remember whether the pointer is user or kernel
-when you save it.
-
-I also suspect that you need to check for contexts where 'current'
-isn't really valid (eg any kind on interrupt) and ensure the user
-reads aren't even attempted.
-The excuse of being 'root' in order to request/read trace isn't
-really a very good one.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 915bff76fe96..5d07e5b89c2e 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -385,7 +385,7 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
+ 
+ static struct notifier_block dmar_pci_bus_nb = {
+ 	.notifier_call = dmar_pci_bus_notifier,
+-	.priority = INT_MIN,
++	.priority = INT_MAX,
+ };
+ 
+ static struct dmar_drhd_unit *
+-- 
+2.25.1
 
