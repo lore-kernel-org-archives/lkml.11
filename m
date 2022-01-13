@@ -2,124 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DC0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:26:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A773C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:27:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237471AbiAMS0E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 13:26:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230329AbiAMS0D (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 13:26:03 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54167C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 10:26:03 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id o12so5911964lfu.12
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 10:26:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=B5TgjevVKySYpGG9iiTbPrO6S1lbtFaG1P8WhSMYH4c=;
-        b=UzRFXjsLQqyBBJrZpn6riJa0F6IToDXEXWwsDdd0iKURLbdOw7f8L0+GWNZCQTn26A
-         ZbI1FRb/JGmh0sMLsheiYLNVjajxsUWngD6tJ2l+yWy6Q58sVO6mGxu2KnBos7yRFkbB
-         oJarzLK8mWpTPs6HqXiqYwPFjXnzGQQA+k6C1A1CQ6RGYCsZRFSaIPShe7btB/EJLqp8
-         jjn4hvuYePMXnS4J2T5S2A4lu0QvwZZs/jsOUEK+Qz5MQ1rl69Hg3yDEY9T2N6ZeQjBL
-         nDV/Dhv+w8HQ3D35QzDQEqZ3EcxReThKkqGXl/SvozsOb/hL6/GS3oCQ+67iPZc7O80g
-         6Ueg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=B5TgjevVKySYpGG9iiTbPrO6S1lbtFaG1P8WhSMYH4c=;
-        b=5t7xpa2ptAvvTACFdcSCqD+1Ow1+xUthJYd8agw/keb16vVZffSztSiTbd6D0Z2j0y
-         ZCzqi3Ggm2FtzvHcIyDR+dCJkZf5JUSeym0SNXnQli18NZYcjGvwkwBottGHbZkKmhbP
-         cN21pRJ7BR/zrDoIisC9SpcEyx2ssp0v4/0fpbpf+uU+D6q3YV1xv4ai1ZondjPGxGhz
-         s7aGh2Yp13TkF8SGKzPoXlNOLGMhT5+CaGq84PPBlkNRCridRJNX1l1GSOC1NCWKizQZ
-         2NLU4+6SYLVMIdcug4lMv1th9zIDZm7EY4wzsDYOwB/n74Kgtq7tpNIeznKcJAvAdI+5
-         +ADg==
-X-Gm-Message-State: AOAM530UXE13jjMEvdAAULOW1XguHThY3KZWnJ9UaizkvRGmF9kkcoYm
-        EUXYE7zXXGJxxX9wRt5tC/M=
-X-Google-Smtp-Source: ABdhPJy27IUTBd+Z8Rh7lbHoBqnHWejZI2QSJ3yGabDrmkSjP71QVVenPekZHZMOk95hjmya4tSwTg==
-X-Received: by 2002:a05:6512:1512:: with SMTP id bq18mr1275324lfb.13.1642098361725;
-        Thu, 13 Jan 2022 10:26:01 -0800 (PST)
-Received: from localhost.localdomain (broadband-95-84-228-163.ip.moscow.rt.ru. [95.84.228.163])
-        by smtp.gmail.com with ESMTPSA id p9sm358906lfu.83.2022.01.13.10.26.00
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Thu, 13 Jan 2022 10:26:01 -0800 (PST)
-Date:   Thu, 13 Jan 2022 21:31:41 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220113183141.kla37mbqmo4x6wxp@localhost.localdomain>
-User-Agent: mtt
-References: <20210519170357.58410-1-jeremy.szu@canonical.com>
- <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
- <s5ho84h9tit.wl-tiwai@suse.de>
- <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
- <s5hilup9s87.wl-tiwai@suse.de>
- <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
- <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
- <s5h8rvk85uy.wl-tiwai@suse.de>
+        id S237515AbiAMS1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 13:27:19 -0500
+Received: from mga17.intel.com ([192.55.52.151]:63222 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230289AbiAMS1S (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 13:27:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642098438; x=1673634438;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=xmMxOhuDgDR80zFi6/Sqos4w73CoL3keesfZU0Ro/DA=;
+  b=eMLlfGikrgCYQUofNjc+GHCHCxxls2hPfc4lFd6LTeGnbBxZ9AjdOUt9
+   N/6o0EgaPoObk28TWLQUMvTVqj0+am4vwCLyyjRrzGqwGymE151d9LaBx
+   zXeTlsJp6aDHujcIcSXadVWlgftxrxXPQ2/W/0uqZtCBmcGGJUCrFNOmP
+   toNsDQoXF/CF6qbzFiAVzMlZu1NEzhAkj61LdZzb9r1kf+2jFTF1/Rq60
+   r0xgNjmMlPGkwOrCdygI6CCEF8b8oxleG7V1rReG59OztYzdRN921/ZJz
+   xLTc9lVBRy7WvbDn5NiNiwdc2IfXcZmJYYVUqEKI6hGc3rxtvPLGQl+tf
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="224773433"
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="224773433"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 10:25:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="623951642"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 13 Jan 2022 10:24:59 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n84mR-0007XE-3m; Thu, 13 Jan 2022 18:24:59 +0000
+Date:   Fri, 14 Jan 2022 02:24:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:master 1863/2382]
+ arch/x86/entry/vsyscall/vsyscall_64.c:323:24: warning: no previous prototype
+ for 'get_gate_vma'
+Message-ID: <202201140224.O4rqby5c-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <s5h8rvk85uy.wl-tiwai@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 08:14:29AM +0100, Takashi Iwai wrote:
->> First, about unbind and bind via sysfs -- attempts to unbind the
->> HD-audio controller immediately trigger BUGs:
->> Is it normal/expected?
->
->A sort of. The sysfs unbind is little tested and may be still buggy
->if done during the stream operation.
->
->To be sure, could you check with my latest sound.git tree for-linus
->branch?  There are a few fixes that harden the dynamic unbind.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
+head:   1a880941a087613ed42f77001229edfcf75ea8a5
+commit: 8c564323537ccfe86a2423a4b98a423ab2182c9e [1863/2382] headers/deps: mm: Optimize <linux/mm_api.h>, remove the <linux/mm_api_gate_area.h> header
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220114/202201140224.O4rqby5c-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=8c564323537ccfe86a2423a4b98a423ab2182c9e
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip master
+        git checkout 8c564323537ccfe86a2423a4b98a423ab2182c9e
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vsyscall/
 
-I assume that the referred repository is the one at [1]. I've tried 
-081c73701ef0 "ALSA: hda: intel-dsp-config: reorder the config table". It 
-crashed with nearly identical logs.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->> 1) Coeff 0x0b is flapping between 0x8003 and 0x7770 and does not seem
->> to have any effect in both non-working and working versions. Not sure
->> about this, maybe microphone is not operational since I haven't
->> checked it yet.
+All warnings (new ones prefixed by >>):
 
-I got some time to poke the internal microphone. It works, but oddities are 
-there as well. Initially I get "Mic Boost", "Capture" and "Internal Mic Boost" 
-controls in alsamixer. When I run arecord, "Digital" control appears, but it 
-cannot be changed until arecord is stopped. Subsequent arecord calls do not 
-lock "Digital" control. This control affects sensitivity of the microphone and 
-seems useful.
+>> arch/x86/entry/vsyscall/vsyscall_64.c:323:24: warning: no previous prototype for 'get_gate_vma' [-Wmissing-prototypes]
+     323 | struct vm_area_struct *get_gate_vma(struct mm_struct *mm)
+         |                        ^~~~~~~~~~~~
+>> arch/x86/entry/vsyscall/vsyscall_64.c:334:5: warning: no previous prototype for 'in_gate_area' [-Wmissing-prototypes]
+     334 | int in_gate_area(struct mm_struct *mm, unsigned long addr)
+         |     ^~~~~~~~~~~~
+>> arch/x86/entry/vsyscall/vsyscall_64.c:349:5: warning: no previous prototype for 'in_gate_area_no_mm' [-Wmissing-prototypes]
+     349 | int in_gate_area_no_mm(unsigned long addr)
+         |     ^~~~~~~~~~~~~~~~~~
 
-/proc/asound/card1/codec#0:
-  Node 0x08 [Audio Input] wcaps 0x10051b: Stereo Amp-In
-    Control: name="Capture Volume", index=0, device=0
-      ControlAmp: chs=3, dir=In, idx=0, ofs=0
-    Control: name="Capture Switch", index=0, device=0
-      ControlAmp: chs=3, dir=In, idx=0, ofs=0
-    Device: name="ALC285 Analog", type="Audio", device=0
-    Amp-In caps: ofs=0x17, nsteps=0x3f, stepsize=0x02, mute=1
-    Amp-In vals:  [0x27 0x27]
--  Converter: stream=0, channel=0
-+  Converter: stream=1, channel=0
 
-This is the only change in /proc/asound after the first arecord run. Overall, 
-seems like a small annoyance, but I'm curious -- is it how it's supposed to 
-work?
+vim +/get_gate_vma +323 arch/x86/entry/vsyscall/vsyscall_64.c
 
-[1]https://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git/?h=for-linus
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  322  
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23 @323  struct vm_area_struct *get_gate_vma(struct mm_struct *mm)
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  324  {
+c338867d0e4224 arch/x86/entry/vsyscall/vsyscall_64.c Brian Gerst             2015-06-22  325  #ifdef CONFIG_COMPAT
+ff170cd0595398 arch/x86/entry/vsyscall/vsyscall_64.c Gabriel Krisman Bertazi 2020-10-03  326  	if (!mm || !(mm->context.flags & MM_CONTEXT_HAS_VSYSCALL))
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  327  		return NULL;
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  328  #endif
+87983c66bc02c9 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-10-29  329  	if (vsyscall_mode == NONE)
+87983c66bc02c9 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-10-29  330  		return NULL;
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  331  	return &gate_vma;
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  332  }
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  333  
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23 @334  int in_gate_area(struct mm_struct *mm, unsigned long addr)
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  335  {
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  336  	struct vm_area_struct *vma = get_gate_vma(mm);
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  337  
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  338  	if (!vma)
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  339  		return 0;
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  340  
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  341  	return (addr >= vma->vm_start) && (addr < vma->vm_end);
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  342  }
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  343  
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  344  /*
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  345   * Use this when you have no reliable mm, typically from interrupt
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  346   * context. It is less reliable than using a task's mm and may give
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  347   * false positives.
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  348   */
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23 @349  int in_gate_area_no_mm(unsigned long addr)
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  350  {
+87983c66bc02c9 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-10-29  351  	return vsyscall_mode != NONE && (addr & PAGE_MASK) == VSYSCALL_ADDR;
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  352  }
+b93590901a01a6 arch/x86/kernel/vsyscall_64.c         Andy Lutomirski         2014-09-23  353  
+
+:::::: The code at line 323 was first introduced by commit
+:::::: b93590901a01a6d036b3b7c856bcc5724fdb9911 x86_64/vsyscall: Move all of the gate_area code to vsyscall_64.c
+
+:::::: TO: Andy Lutomirski <luto@amacapital.net>
+:::::: CC: Ingo Molnar <mingo@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
