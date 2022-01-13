@@ -2,102 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 999AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 23:46:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1922DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 23:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238280AbiAMXqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 18:46:17 -0500
-Received: from mga09.intel.com ([134.134.136.24]:28667 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229870AbiAMXqP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 18:46:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642117575; x=1673653575;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jXQMqB5M1B1k0ZRciPQ8qceliwv38BwKOA73t7XuYu8=;
-  b=TgXpTxxwzLmR/3IwBp8/lcyhEJL8ngPb9WPgc4wRyU6EKJurxY/7tW4D
-   SF/qnZmGf2fYLJLIcZSw2ceoYKozaIjyWznnBeTDlwkLTenkb+4Rqhjb6
-   uSooiDur4LQr7K629zCGG6Bf8uEt1ISlR3aYzYnidbYYs6w8quu4BFxjl
-   zapLzg/jRh6+veTywUTRlenyrodAxkAwK74ALHVle1lE4WY2v5YJuk62l
-   jvEbIZ3j+r2DN0/ReGPay3Xg6N30YktaOCtB0xeRElVHowRN39Qksf8TK
-   9gtva8bCPDDR+IJLyqtUmlYMO2WCSMdTUNFDNzlRdfPA8A6Vsjpcnsb1e
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="243936699"
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="243936699"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 15:46:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="473436275"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jan 2022 15:46:14 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n89nJ-0007mw-NR; Thu, 13 Jan 2022 23:46:13 +0000
-Date:   Fri, 14 Jan 2022 07:45:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Biggers <ebiggers@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [ebiggers:blk-crypto-sysfs-testing 4/4]
- drivers/block/virtio_blk.c:763:5: error: no member named 'crypto_profile' in
- 'struct request_queue'
-Message-ID: <202201140721.JP8Zzews-lkp@intel.com>
+        id S235811AbiAMXxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 18:53:50 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:19874 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229870AbiAMXxt (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 18:53:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642118029; x=1673654029;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=cLZfx71HsIHMJqhxNxw2OQZF1FgZr0sHYUmOJh/12/Q=;
+  b=hpv5mvNdVaMOnZNhxPu1C97NN1mxpKBtEItPRZQ5KrNnamDtVbcuVaJx
+   VEyWmpUvQu0YLGmS0JfR+UqjGzlFBI5A4oi9VFteqWdO8wRsDYIjsS6Rn
+   9h1j7eCasoL4zwoXHT7w2Mk6N/nlfZLXRatoLSqWsoqefosC7jJM0+bJG
+   E=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jan 2022 15:53:49 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 15:53:48 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 13 Jan 2022 15:53:48 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Thu, 13 Jan 2022 15:53:47 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v13 0/4] group dp driver related patches into one series
+Date:   Thu, 13 Jan 2022 15:53:35 -0800
+Message-ID: <1642118019-18673-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git blk-crypto-sysfs-testing
-head:   59eaf05f0496aed45c6825a931254a94381d36ac
-commit: 59eaf05f0496aed45c6825a931254a94381d36ac [4/4] virtio-blk: add fake crypto profile for testing
-config: hexagon-randconfig-r045-20220113 (https://download.01.org/0day-ci/archive/20220114/202201140721.JP8Zzews-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d1021978b8e7e35dcc30201ca1731d64b5a602a8)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git/commit/?id=59eaf05f0496aed45c6825a931254a94381d36ac
-        git remote add ebiggers https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git
-        git fetch --no-tags ebiggers blk-crypto-sysfs-testing
-        git checkout 59eaf05f0496aed45c6825a931254a94381d36ac
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/block/
+Group below 4 dp driver related patches into one series.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Kuogee Hsieh (4):
+  drm/msm/dp: do not initialize phy until plugin interrupt received
+  drm/msm/dp:  populate connector of struct  dp_panel
+  drm/msm/dp: add support of tps4 (training pattern 4) for HBR3
+  drm/msm/dp: stop link training after link training 2 failed
 
-All errors (new ones prefixed by >>):
+ drivers/gpu/drm/msm/dp/dp_catalog.c |  12 ++---
+ drivers/gpu/drm/msm/dp/dp_catalog.h |   2 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 100 ++++++++++++++++--------------------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |   8 +--
+ drivers/gpu/drm/msm/dp/dp_display.c |  90 +++++++++++++++++++++-----------
+ 5 files changed, 116 insertions(+), 96 deletions(-)
 
->> drivers/block/virtio_blk.c:763:5: error: no member named 'crypto_profile' in 'struct request_queue'
-           q->crypto_profile = profile;
-           ~  ^
-   1 error generated.
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
-
-vim +763 drivers/block/virtio_blk.c
-
-   751	
-   752	static void virtblk_add_crypto_profile(struct request_queue *q)
-   753	{
-   754		struct blk_crypto_profile *profile;
-   755	
-   756		profile = kzalloc(sizeof(*profile), GFP_KERNEL);
-   757	
-   758		blk_crypto_profile_init(profile, 32);
-   759		profile->modes_supported[BLK_ENCRYPTION_MODE_AES_256_XTS] =
-   760			4096 | 8192;
-   761		profile->max_dun_bytes_supported = 8;
-   762	
- > 763		q->crypto_profile = profile;
-   764	}
-   765	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
