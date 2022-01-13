@@ -2,100 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8221C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C71C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbiAMII5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:08:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35046 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229685AbiAMII4 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:08:56 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1FACB821C6;
-        Thu, 13 Jan 2022 08:08:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A500C36AED;
-        Thu, 13 Jan 2022 08:08:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642061333;
-        bh=fGppOKwts/UQmumuyGu94Gr0B26R/oF5wecYItkERg8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=W2OF8mrKVIDoTiDK9H5MbNyXDJqp0Vl8NQoNzRCNwQwhZihdx+8aC0JWv49J+0dc3
-         +gimKBiGOedrAgCE2f6qs5ncHJ2ta++mvFWVgy9a1urzB/XhIJDXQw1wDgE4e8BekF
-         aBlbe+u3szNiZuBVXhnz0DWa1cj4BeMdPGuBbo+mnDfz/xMQeTylDzGKmNjYuDsOLe
-         gXrDcecO5zrPna1JosAZiucdVAoSwDLdqtjryAELBCg2EiZ7O2jQGSKIoLTOlYdmlR
-         lHFD0Jodk6LWuHD1aNb/ucIqa7K7db5too5VqhRhE7DOx5Sgi3sc9r831PwYh/oTi6
-         ApVSqaTMoms7g==
-Received: by mail-wm1-f48.google.com with SMTP id ay4-20020a05600c1e0400b0034a81a94607so2188153wmb.1;
-        Thu, 13 Jan 2022 00:08:53 -0800 (PST)
-X-Gm-Message-State: AOAM533eEqnMcyOUTrUv8PZc8c5fh6WJ/FYaW1Bw5mfys3aT6PAzZbMW
-        U/9qXuLpOgYcbrf7wf87nO4oLwRfXuTqmra+XvI=
-X-Google-Smtp-Source: ABdhPJzlNo9hTJdUbMaTWVOxiNCg8wO+mgluAAlRvMgO8203Q/53p5OTdqryVdIpOQWuQAu5yGLLVe93Y/DA2+fPsVs=
-X-Received: by 2002:a05:600c:3c9c:: with SMTP id bg28mr2718897wmb.190.1642061331868;
- Thu, 13 Jan 2022 00:08:51 -0800 (PST)
+        id S232926AbiAMITg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:19:36 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:17132 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231249AbiAMITf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 03:19:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1642061975; x=1673597975;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8bp8FKrTEUjqpGTGgV1by4+xj1+qlkc5SGm08bGMoT4=;
+  b=HXsfB4NHSEOvrOLU3kalkwqrc5T+/dbJRhjVJ+AxakL6jIa9j21ccAHw
+   PLWtTKqWHUybLmMBwkL1RKtGacejuKwPX8gGgSPRdV8u+F97qYmoeS9yp
+   Pi37+nH4IhW5k2HhNM83qGxHGz8tpqgCv6pnurvWMLjZ227HXIiZXfn6h
+   OpLGK8Zc400md/VlSwHYcXly4nB/JyZrhqS5b+nRdwUO0aIp6RlViAhXD
+   jEED7rwvLoR6M7tpcP7NX4bdundLv5VnezoGiO0r4kTKVElZHT5OiMa1R
+   8B93hmCU7ZOo4ol3WyK9evSpPOfLBqIbou7xrsTEbF27MSpqu+RaQkmB9
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,284,1635199200"; 
+   d="scan'208";a="21474406"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 13 Jan 2022 09:19:34 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Thu, 13 Jan 2022 09:19:34 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Thu, 13 Jan 2022 09:19:34 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1642061974; x=1673597974;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8bp8FKrTEUjqpGTGgV1by4+xj1+qlkc5SGm08bGMoT4=;
+  b=Bwrxvf6wgVTZutEgv9eBhNR2h/uk0/6kzFJl5NsltWagk3WTYNtm+oPa
+   pCtxRJGs+ciRU5mOLeg8DHSJR8KUUUu+ov241d6+Ljjx2SOnsRrGZvp67
+   4r4AcvMtRF7ZU5zrfg1AH2GYsDr+B+sGQ8AN5V2uXDVFeR/ZNT1+G769C
+   W+MB4wNoXR4hMJ83A0rDq/4J2dJDx7o0wkR3JOmfK/8Iduu48vlKpXQ85
+   3Fvb4d7cTO+TgKOmhnQpqi/YkplYoIe/9YA/efDu8wvzD8Q4rJGIesqpU
+   +dzGM96jhI9gatxNJVp40hdGw9PUymh1XMfnlXePRCWDiSEtPHCnfwicE
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.88,284,1635199200"; 
+   d="scan'208";a="21474405"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 13 Jan 2022 09:19:34 +0100
+Received: from localhost.localdomain (SCHIFFERM-M2.tq-net.de [10.121.201.138])
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id 83E2F280065;
+        Thu, 13 Jan 2022 09:19:33 +0100 (CET)
+From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH v2] scripts/dtc: dtx_diff: remove broken example from help text
+Date:   Thu, 13 Jan 2022 09:19:18 +0100
+Message-Id: <20220113081918.10387-1-matthias.schiffer@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <CACXcFmkauHRkTdD1zkr9QRCwG-uD8=7q9=Wk0_VFueRy-Oy+Nw@mail.gmail.com>
-In-Reply-To: <CACXcFmkauHRkTdD1zkr9QRCwG-uD8=7q9=Wk0_VFueRy-Oy+Nw@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 13 Jan 2022 09:08:40 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXFhoyADsW9+79boCEV6zG7RZ3HquFStBUbGZoKEWVJAwQ@mail.gmail.com>
-Message-ID: <CAMj1kXFhoyADsW9+79boCEV6zG7RZ3HquFStBUbGZoKEWVJAwQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 0/3] remove remaining users of SHA-1
-To:     Sandy Harris <sandyinchina@gmail.com>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        "Ted Ts'o" <tytso@mit.edu>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 13 Jan 2022 at 04:24, Sandy Harris <sandyinchina@gmail.com> wrote:
->
-> Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> > There are currently two remaining users of SHA-1 left in the kernel: bpf
-> > tag generation, and ipv6 address calculation.
->
-> I think there are three, since drivers/char/random.c also uses it.
-> Moreover, there's some inefficiency there (or was last time I
-> looked) since it produces a 160-bit hash then folds it in half
-> to give an 80-bit output.
->
+dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
+this has never worked: The /proc/self/fds/... paths passed by the shell
+will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
+but even with this check removed, the function cannot work: hexdump will
+eat up the DTB magic, making the subsequent dtc call fail, as a pipe
+cannot be rewound.
 
-That code was removed, hence the two /remaining/ users.
+Simply remove this broken example, as there is already an alternative one
+that works fine.
 
-> A possible fix would be to use a more modern 512-bit hash.
-> SHA3 would be the obvious one, but Blake2 would work,
-> Blake3 might be faster & there are several other possibilities.
-> Hash context size would then match ChaCha so you could
-> update the whole CC context at once, maybe even use the
-> same context for both.
->
-> That approach has difficulties, Extracting 512 bits every
-> time might drain the input pool too quickly & it is overkill
-> for ChaCha which should be secure with smaller rekeyings.
->
-> If you look at IPsec, SSL & other such protocols, many
-> have now mostly replaced the hash-based HMAC
-> constructions used in previous generations with things
-> like Galois field calculations (e.g. AES-GCM) or other
-> strange math (e,g. poly 1305). These have most of the
-> desirable properties of hashes & are much faster. As
-> far as I know, they all give 128-bit outputs.
->
-> I think we should replace SHA-1 with GCM. Give
-> ChaCha 128 bits somewhat more often than current
-> code gives it 256.
+Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+---
+ scripts/dtc/dtx_diff | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-You are conflating MACs with hashes. A MAC does is not suitable for
-backtrack resistance, and GHASH in particular is really only suited to
-be used in the context of GCM.
+diff --git a/scripts/dtc/dtx_diff b/scripts/dtc/dtx_diff
+index d3422ee15e30..f2bbde4bba86 100755
+--- a/scripts/dtc/dtx_diff
++++ b/scripts/dtc/dtx_diff
+@@ -59,12 +59,8 @@ Otherwise DTx is treated as a dts source file (aka .dts).
+    or '/include/' to be processed.
+ 
+    If DTx_1 and DTx_2 are in different architectures, then this script
+-   may not work since \${ARCH} is part of the include path.  Two possible
+-   workarounds:
+-
+-      `basename $0` \\
+-          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
+-          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
++   may not work since \${ARCH} is part of the include path.  The following
++   workaround can be used:
+ 
+       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
+       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
+-- 
+2.25.1
+
