@@ -2,219 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33107C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CF2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235101AbiAMVTX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 16:19:23 -0500
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:45409 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231592AbiAMVTU (ORCPT
+        id S235178AbiAMVTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 16:19:42 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:30176 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235144AbiAMVTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 16:19:20 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id BC6545802C1;
-        Thu, 13 Jan 2022 16:19:19 -0500 (EST)
-Received: from imap44 ([10.202.2.94])
-  by compute4.internal (MEProxy); Thu, 13 Jan 2022 16:19:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        mime-version:message-id:in-reply-to:references:date:from:to:cc
-        :subject:content-type:content-transfer-encoding; s=fm1; bh=wKnJN
-        fNAdFvszmvv1j06We4V9Pb2eZZdg/QXVQobFuk=; b=GbbNa22XndxUtAHAhTE2L
-        1F/Z3QJ4CAxKGineSw57g7VwjzeXB7EOchaSaFvTEIWighJ2AJyDHOtctbnRO9rQ
-        6glhegdBfx38cMOX9mSENrDi1zczCJOYrJNZwF8tkfD7A57neKOIGj0SItQamO47
-        8D65hF3P92vAhshegJQ41tSRHVDtXp/gf2RdvBa0u4WIAJwrxcVliVp6woPJKt0K
-        +ti0GWhGlejEfRXJL1kssPefKwEDhAQ3ng/qxAxm1B1+UkWq0HybCZC3ikvi7pOc
-        ExeshA2MPg3jthBPndpr7qnprV0ngZm6hfkJqX5kt8yQyE+fnLg9dJxD6RueCUdy
-        g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=wKnJNfNAdFvszmvv1j06We4V9Pb2eZZdg/QXVQobF
-        uk=; b=FkQTeMkFqRts4ecT3UGrUHaPsYewTtHYGm765kQRlPiktnXVPcF2CBi+2
-        0pTzd6oxhwGNHklde1ZYGJAKdndvbm67a0FgTREjso+b1W+gS870mjT8CBCDbvIo
-        pxYq1t47ctlg5MTaAxHXz2OJaP7cHDF2OXBfY0V+8/JFe47uogrj/EklZKSI0sro
-        RDIxslljwHXRzrbLYPyhWVI4Asezhafv94/JglRFioAstFMuejhrkcaC5p6TwpVa
-        eJJeR8RHVX4DQP7juTLWdcjiC15Q0ClpR+GjL6L8WFJ5CjBtaU3MfNVdhRBho1wT
-        blDPE/K/ieq1ya+9wIgp9zfUOK78g==
-X-ME-Sender: <xms:V5fgYedW_mDDUQC5msqTs4bniSMR5B2j20f5uVnLHvmHB6y5DUH4ag>
-    <xme:V5fgYYOmSIUhL3KYTNOAGzggREhlGpYOk0hxUaJQFVKobEGk8wigK68geyy-2aCP7
-    CdKKXZzChCPgMXNV7I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdefgddugeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgfgsehtqhertderreejnecuhfhrohhmpedflfhi
-    rgiguhhnucgjrghnghdfuceojhhirgiguhhnrdihrghnghesfhhlhihgohgrthdrtghomh
-    eqnecuggftrfgrthhtvghrnhepuddvhfdvgeekgeduheelhefgjeeuhfegieelueevfffg
-    kefgudevfefgkeduffeinecuffhomhgrihhnpehgohhoghhlvghsohhurhgtvgdrtghomh
-    enucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjihgr
-    gihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
-X-ME-Proxy: <xmx:V5fgYfjvrBdAqKEVNrX2RumJ3-MH6J8d6CwfikLAi8UmqjaqeJmf5Q>
-    <xmx:V5fgYb9ovgEZeUSeaOsB-AVTx3brp60BnVeb0JAXarr1QhxtT1WkLw>
-    <xmx:V5fgYav3hT6oqnt_p7OMifaK7ymHS8-prtT0A9vq6JSmHTl6tutprw>
-    <xmx:V5fgYUI3yyGI6baEz5Q69Cm7sjBfaBT_q03bRF7cdSQaNagWYnGI_g>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 2926AFA0AA6; Thu, 13 Jan 2022 16:19:19 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4569-g891f756243-fm-20220111.001-g891f7562
-Mime-Version: 1.0
-Message-Id: <90a1b3b0-97d7-4880-a42f-44c450cbc2fb@www.fastmail.com>
-In-Reply-To: <20220113201920.3201760-3-laurent@vivier.eu>
-References: <20220113201920.3201760-1-laurent@vivier.eu>
- <20220113201920.3201760-3-laurent@vivier.eu>
-Date:   Thu, 13 Jan 2022 21:18:53 +0000
-From:   "Jiaxun Yang" <jiaxun.yang@flygoat.com>
-To:     "Laurent Vivier" <laurent@vivier.eu>, linux-kernel@vger.kernel.org
-Cc:     "Thomas Gleixner" <tglx@linutronix.de>,
-        "Alessandro Zummo" <a.zummo@towertech.it>,
-        linux-m68k@lists.linux-m68k.org,
-        "John Stultz" <john.stultz@linaro.org>, linux-rtc@vger.kernel.org,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        "Daniel Lezcano" <daniel.lezcano@linaro.org>,
-        "Geert Uytterhoeven" <geert@linux-m68k.org>,
-        "Stephen Boyd" <sboyd@kernel.org>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>
-Subject: Re: [PATCH v6 2/4] rtc: goldfish: use __raw_writel()/__raw_readl()
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Thu, 13 Jan 2022 16:19:39 -0500
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20DKS908012145;
+        Thu, 13 Jan 2022 21:19:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=gglTjkJQfUQeW1de/xy1Uu37Ciw6EQP2ZvTjwgTy8g8=;
+ b=Pn+xY/c0IJINFihRCVKn6Bcv2cZD1xtU+ilXssjX57BMGpsk82WltbrXBPLceEHH3t0n
+ XK/4BM3taLSTqdsxGKp/bte4pauyJ1q3VX2ElUnL1dDLHO1JLSn5aBKpNsgpCQ3+QAiO
+ e2rLaQSbvhG/XvYb7228Nxghkx45mqkfoUiXLgzMJGn3LJXdl5t+2rvWWlJZ2DSgRvha
+ SEvv4uOdUVBNSP89zmcsJHSYg07ERt+dus4GVMiWD1ATbSus96cSCdB5i9Iba8ij25g7
+ NFbessQqN3BZI8h+yGmbhW/J2mxKqDrtMGasgKB9/ral1FnPzGgkY3aesoeBQcuM5u9K 1Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dju55h1fn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jan 2022 21:19:35 +0000
+Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20DLDuhc031078;
+        Thu, 13 Jan 2022 21:19:35 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dju55h1fe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jan 2022 21:19:35 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20DLHwQX019673;
+        Thu, 13 Jan 2022 21:19:34 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma02dal.us.ibm.com with ESMTP id 3df28cnncj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jan 2022 21:19:34 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20DLJXQU33292630
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 13 Jan 2022 21:19:33 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 83D3913604F;
+        Thu, 13 Jan 2022 21:19:33 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C2E37136061;
+        Thu, 13 Jan 2022 21:19:32 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 13 Jan 2022 21:19:32 +0000 (GMT)
+Message-ID: <4b59d305-6858-1514-751a-37853ad777be@linux.ibm.com>
+Date:   Thu, 13 Jan 2022 16:19:32 -0500
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] tpm: vtpm_proxy: Avoid device-originated buffer overflow
+Content-Language: en-US
+To:     Kees Cook <keescook@chromium.org>, Peter Huewe <peterhuewe@gmx.de>
+Cc:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+References: <20220113002727.3709495-1-keescook@chromium.org>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <20220113002727.3709495-1-keescook@chromium.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: uN_XodsZ-6rQp0VYokR1dUX0tyVpPSlM
+X-Proofpoint-GUID: wApIpmcjT2Lfp7eHeYAXTbKLYI-eziLm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-13_09,2022-01-13_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 adultscore=0
+ bulkscore=0 impostorscore=0 malwarescore=0 priorityscore=1501
+ suspectscore=0 phishscore=0 clxscore=1011 spamscore=0 mlxscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201130129
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-=E5=9C=A82022=E5=B9=B41=E6=9C=8813=E6=97=A5=E4=B8=80=E6=9C=88 =E4=B8=8B=E5=
-=8D=888:19=EF=BC=8CLaurent Vivier=E5=86=99=E9=81=93=EF=BC=9A
-> As android implementation defines the endianness of the device is the =
-one
-> of the architecture replace all writel()/readl() by
-> __raw_writel()/__raw_readl()
+On 1/12/22 19:27, Kees Cook wrote:
+> When building with -Warray-bounds, this warning was emitted:
 >
-> https://android.googlesource.com/platform/external/qemu/+/refs/heads/e=
-mu-master-dev/hw/timer/goldfish_timer.c#177
+> In function 'memset',
+>      inlined from 'vtpm_proxy_fops_read' at drivers/char/tpm/tpm_vtpm_proxy.c:102:2:
+> ./include/linux/fortify-string.h:43:33: warning: '__builtin_memset' pointer overflow between offset 164 and size [2147483648, 4294967295]
+> [-Warray-bounds]
+>     43 | #define __underlying_memset     __builtin_memset
+>        |                                 ^
 >
-> The same change has been done for goldfish-tty:
+> There was no checking of the req_len value from the device. A malicious
+> (or buggy) device could end up leaking (and when wiping) memory contents
+> beyond the end of the proxy buffer.
 >
->   commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl(=
-)")
->
-> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
-
-Acked-by: Jiauxn Yang <jiaxun.yang@flygoat.com>
-
-Well I do think it's a mistake by Android. They only considered little e=
-ndian as they only have little endian devices.
-
-But given that the implementation is already a part of QEMU, we must liv=
-e with that :-)
-
-Thanks.
-
+> Cc: Peter Huewe <peterhuewe@gmx.de>
+> Cc: Jarkko Sakkinen <jarkko@kernel.org>
+> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+> Cc: linux-integrity@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
 > ---
->  drivers/rtc/rtc-goldfish.c | 30 +++++++++++++++---------------
->  1 file changed, 15 insertions(+), 15 deletions(-)
+>   drivers/char/tpm/tpm_vtpm_proxy.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
-> index 7ab95d052644..3e76160d40b9 100644
-> --- a/drivers/rtc/rtc-goldfish.c
-> +++ b/drivers/rtc/rtc-goldfish.c
-> @@ -41,8 +41,8 @@ static int goldfish_rtc_read_alarm(struct device *de=
-v,
->  	rtcdrv =3D dev_get_drvdata(dev);
->  	base =3D rtcdrv->base;
->=20
-> -	rtc_alarm_low =3D readl(base + TIMER_ALARM_LOW);
-> -	rtc_alarm_high =3D readl(base + TIMER_ALARM_HIGH);
-> +	rtc_alarm_low =3D __raw_readl(base + TIMER_ALARM_LOW);
-> +	rtc_alarm_high =3D __raw_readl(base + TIMER_ALARM_HIGH);
->  	rtc_alarm =3D (rtc_alarm_high << 32) | rtc_alarm_low;
->=20
->  	do_div(rtc_alarm, NSEC_PER_SEC);
-> @@ -50,7 +50,7 @@ static int goldfish_rtc_read_alarm(struct device *de=
-v,
->=20
->  	rtc_time64_to_tm(rtc_alarm, &alrm->time);
->=20
-> -	if (readl(base + TIMER_ALARM_STATUS))
-> +	if (__raw_readl(base + TIMER_ALARM_STATUS))
->  		alrm->enabled =3D 1;
->  	else
->  		alrm->enabled =3D 0;
-> @@ -71,18 +71,18 @@ static int goldfish_rtc_set_alarm(struct device *d=
-ev,
->=20
->  	if (alrm->enabled) {
->  		rtc_alarm64 =3D rtc_tm_to_time64(&alrm->time) * NSEC_PER_SEC;
-> -		writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
-> -		writel(rtc_alarm64, base + TIMER_ALARM_LOW);
-> -		writel(1, base + TIMER_IRQ_ENABLED);
-> +		__raw_writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
-> +		__raw_writel(rtc_alarm64, base + TIMER_ALARM_LOW);
-> +		__raw_writel(1, base + TIMER_IRQ_ENABLED);
->  	} else {
->  		/*
->  		 * if this function was called with enabled=3D0
->  		 * then it could mean that the application is
->  		 * trying to cancel an ongoing alarm
->  		 */
-> -		rtc_status_reg =3D readl(base + TIMER_ALARM_STATUS);
-> +		rtc_status_reg =3D __raw_readl(base + TIMER_ALARM_STATUS);
->  		if (rtc_status_reg)
-> -			writel(1, base + TIMER_CLEAR_ALARM);
-> +			__raw_writel(1, base + TIMER_CLEAR_ALARM);
->  	}
->=20
->  	return 0;
-> @@ -98,9 +98,9 @@ static int goldfish_rtc_alarm_irq_enable(struct devi=
-ce *dev,
->  	base =3D rtcdrv->base;
->=20
->  	if (enabled)
-> -		writel(1, base + TIMER_IRQ_ENABLED);
-> +		__raw_writel(1, base + TIMER_IRQ_ENABLED);
->  	else
-> -		writel(0, base + TIMER_IRQ_ENABLED);
-> +		__raw_writel(0, base + TIMER_IRQ_ENABLED);
->=20
->  	return 0;
->  }
-> @@ -110,7 +110,7 @@ static irqreturn_t goldfish_rtc_interrupt(int irq,=20
-> void *dev_id)
->  	struct goldfish_rtc *rtcdrv =3D dev_id;
->  	void __iomem *base =3D rtcdrv->base;
->=20
-> -	writel(1, base + TIMER_CLEAR_INTERRUPT);
-> +	__raw_writel(1, base + TIMER_CLEAR_INTERRUPT);
->=20
->  	rtc_update_irq(rtcdrv->rtc, 1, RTC_IRQF | RTC_AF);
->=20
-> @@ -128,8 +128,8 @@ static int goldfish_rtc_read_time(struct device=20
-> *dev, struct rtc_time *tm)
->  	rtcdrv =3D dev_get_drvdata(dev);
->  	base =3D rtcdrv->base;
->=20
-> -	time_low =3D readl(base + TIMER_TIME_LOW);
-> -	time_high =3D readl(base + TIMER_TIME_HIGH);
-> +	time_low =3D __raw_readl(base + TIMER_TIME_LOW);
-> +	time_high =3D __raw_readl(base + TIMER_TIME_HIGH);
->  	time =3D (time_high << 32) | time_low;
->=20
->  	do_div(time, NSEC_PER_SEC);
-> @@ -149,8 +149,8 @@ static int goldfish_rtc_set_time(struct device=20
-> *dev, struct rtc_time *tm)
->  	base =3D rtcdrv->base;
->=20
->  	now64 =3D rtc_tm_to_time64(tm) * NSEC_PER_SEC;
-> -	writel((now64 >> 32), base + TIMER_TIME_HIGH);
-> -	writel(now64, base + TIMER_TIME_LOW);
-> +	__raw_writel((now64 >> 32), base + TIMER_TIME_HIGH);
-> +	__raw_writel(now64, base + TIMER_TIME_LOW);
->=20
->  	return 0;
->  }
-> --=20
-> 2.34.1
+> diff --git a/drivers/char/tpm/tpm_vtpm_proxy.c b/drivers/char/tpm/tpm_vtpm_proxy.c
+> index 91c772e38bb5..5c865987ba5c 100644
+> --- a/drivers/char/tpm/tpm_vtpm_proxy.c
+> +++ b/drivers/char/tpm/tpm_vtpm_proxy.c
+> @@ -91,7 +91,7 @@ static ssize_t vtpm_proxy_fops_read(struct file *filp, char __user *buf,
+>   
+>   	len = proxy_dev->req_len;
+>   
+> -	if (count < len) {
+> +	if (count < len || len > sizeof(proxy_dev->buffer)) {
+>   		mutex_unlock(&proxy_dev->buf_lock);
+>   		pr_debug("Invalid size in recv: count=%zd, req_len=%zd\n",
+>   			 count, len);
 
---=20
-- Jiaxun
+
+Thanks for this patch.
+
+I just want to clarify this. In vtpm_proxy_tpm_op_send() we have the 
+only place that sets req_len to a value larger than 0:
+
+static int vtpm_proxy_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t 
+count)
+{
+     struct proxy_dev *proxy_dev = dev_get_drvdata(&chip->dev);
+
+     if (count > sizeof(proxy_dev->buffer)) {
+         dev_err(&chip->dev,
+             "Invalid size in send: count=%zd, buffer size=%zd\n",
+             count, sizeof(proxy_dev->buffer));
+         return -EIO;
+     }
+
+[...]
+
+     proxy_dev->req_len = count;
+     memcpy(proxy_dev->buffer, buf, count);
+
+[...]
+
+}
+
+
+The above makes sure that we cannot copy more bytes into the 
+proxy_dev->buffer than the what the buffer has bytes for.
+
+It then sets req_len to a valid value that is less or equal to the 
+buffer size.
+
+Considering this your check above seems to only be there to make the 
+compiler happy but otherwise I don't see that this is a real problem 
+with a buffer overflow?!
+
+Nevertheless, let all those compilers be happy:
+
+Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
+
+
