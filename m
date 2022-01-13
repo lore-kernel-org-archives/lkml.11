@@ -2,95 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F60C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 22:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD62BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 22:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237002AbiAMWIc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 17:08:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55678 "EHLO
+        id S236998AbiAMWJl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 17:09:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235036AbiAMWI3 (ORCPT
+        with ESMTP id S235193AbiAMWJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 17:08:29 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D49C061574;
-        Thu, 13 Jan 2022 14:08:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=IDWd/IwHC04isId/iqsr+2lvOr59lemWZtcJ7xJcHQ8=; b=S6PRB2iNVWjdYGSM5xIlrNR7DL
-        H3ZXNb0AaFUeQDx9woQRC3mynAnlA0zO42J4QTvToV1e4TNqV8JLEG8SSBByob0QXShOpu/f7+rfh
-        jp/mlnGeNk1sHZtPGVBD6uPhx8Fjk1fFXvvgruGRPz47DtBNVttFY4jhqgb4/h7p43DC6PJ+Qmeo2
-        T155/22ATgwj7NFEIOV0QFjVxko9cSzqG/gDRqcvbbRnSIcrL7dlAQKP50G6StK2CrIK8cj6fJTdZ
-        yG2BzbbVfP87B8f3OGkeTCp4xOKddJBqe/UIWLwH2Wizlx5WRJVpIsKjEDWyCe/A/biA75/XZkOWF
-        zLQ7+fhw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n88Gc-005HEW-D7; Thu, 13 Jan 2022 22:08:22 +0000
-From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
-To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Christoph Hellwig <hch@lst.de>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        William Kucharski <william.kucharski@oracle.com>
-Subject: [PATCH 1/2] mm: Add folio_put_refs()
-Date:   Thu, 13 Jan 2022 22:08:15 +0000
-Message-Id: <20220113220816.1257657-2-willy@infradead.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220113220816.1257657-1-willy@infradead.org>
-References: <20220113220816.1257657-1-willy@infradead.org>
+        Thu, 13 Jan 2022 17:09:38 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ADFAC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 14:09:38 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id i17so1091125pfk.11
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 14:09:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AC2HTFJ1ATzCZyLtom4XJg0IJvKzl0TNNBtGMizTd8Q=;
+        b=U+T4F26wkMoKmJIJ1QTUZgPt3LYcSKtsHbd7REnwzpdUxVIhXc1VGzxKOTWPI/T42o
+         /22qUfEf209ZLOY0KUQ2v6LedfQ8tKtsUQjHtebLySJIPezt6kftoGGvXNiNUhO4cKyo
+         U6Mw6T+i2lJxtSjkt4IzCQEvIEp47zj5YQLxgqsdutt10cPRQCG16PT4/hEixtm6voRx
+         /nNf1s0FOttaN9D2C1QLSK0Fm1FZi8CMNufXrnwf4yBxOSgoEEAiAXQYwRBntEl7jnVE
+         ODD+o76Juw2dJS8kRdTpVn0SYm4g782O8ehDCTHXVmKUvbwG8c2Ng8PJRv5ZX2PgTyWH
+         mwyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AC2HTFJ1ATzCZyLtom4XJg0IJvKzl0TNNBtGMizTd8Q=;
+        b=r+lRUAhaQPAUCXxA9Oyfa4qIib4jMu4AJeRN2vBR4U5m5ZvxudYnbmwDxHfoatB6BV
+         F0H4+VcvtnHa1aoB8r0S4XAc/tH3HKXtVpaBK5d8C9l0jKkq6i+ENK/jlofsvf38pkln
+         p2EtgbWnPACcky3rXoUVPnEhCiCYzP4rzxxGV1JkbucLGx/UCUhLcrZuYHi5d/m2DeTL
+         0tME6NwYTxgc7lArRwaYIuQxtlM/gQYffO2WQSdmEAA7fn9jG5y/zwePhGP0JOHQeE2Q
+         B8vILYsybmAjnk9IN3nQOVTCpU7BUGhqNpcXzFzdD/A5dI060bwVEYSTlM/O19wMSdTe
+         cZ5w==
+X-Gm-Message-State: AOAM531s6fp1fthmiEjQxmbQVF7Ny9UPVKIWgopWqc2iWhBm8HvSBYwT
+        9j0OQpwqZ+2w5h5YfNxUvboaKQ==
+X-Google-Smtp-Source: ABdhPJwn/TmRC2ZoREFVED7MDc2QJTqiBDWq2zTBbSNYy5uyZEWJariDsNSuc5VL4Ix8KcssmQIwcQ==
+X-Received: by 2002:a63:ae4b:: with SMTP id e11mr5548909pgp.386.1642111777586;
+        Thu, 13 Jan 2022 14:09:37 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id n5sm3512558pfo.39.2022.01.13.14.09.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 14:09:37 -0800 (PST)
+Date:   Thu, 13 Jan 2022 22:09:33 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Zeng Guang <guang.zeng@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        Kai Huang <kai.huang@intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Robert Hu <robert.hu@intel.com>,
+        Gao Chao <chao.gao@intel.com>
+Subject: Re: [PATCH v5 8/8] KVM: VMX: Resize PID-ponter table on demand for
+ IPI virtualization
+Message-ID: <YeCjHbdAikyIFQc9@google.com>
+References: <20211231142849.611-1-guang.zeng@intel.com>
+ <20211231142849.611-9-guang.zeng@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211231142849.611-9-guang.zeng@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is like folio_put(), but puts N references at once instead of
-just one.  It's like put_page_refs(), but does one atomic operation
-instead of two, and is available to more than just gup.c.
+On Fri, Dec 31, 2021, Zeng Guang wrote:
+> +static int vmx_expand_pid_table(struct kvm_vmx *kvm_vmx, int entry_idx)
+> +{
+> +	u64 *last_pid_table;
+> +	int last_table_size, new_order;
+> +
+> +	if (entry_idx <= kvm_vmx->pid_last_index)
+> +		return 0;
+> +
+> +	last_pid_table = kvm_vmx->pid_table;
+> +	last_table_size = table_index_to_size(kvm_vmx->pid_last_index + 1);
+> +	new_order = get_order(table_index_to_size(entry_idx + 1));
+> +
+> +	if (vmx_alloc_pid_table(kvm_vmx, new_order))
+> +		return -ENOMEM;
+> +
+> +	memcpy(kvm_vmx->pid_table, last_pid_table, last_table_size);
+> +	kvm_make_all_cpus_request(&kvm_vmx->kvm, KVM_REQ_PID_TABLE_UPDATE);
+> +
+> +	/* Now old PID table can be freed safely as no vCPU is using it. */
+> +	free_pages((unsigned long)last_pid_table, get_order(last_table_size));
 
-Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: John Hubbard <jhubbard@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: William Kucharski <william.kucharski@oracle.com>
----
- include/linux/mm.h | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+This is terrifying.  I think it's safe?  But it's still terrifying.
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c768a7c81b0b..cb98f75b245e 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1244,6 +1244,26 @@ static inline void folio_put(struct folio *folio)
- 		__put_page(&folio->page);
- }
- 
-+/**
-+ * folio_put_refs - Reduce the reference count on a folio.
-+ * @folio: The folio.
-+ * @refs: The amount to subtract from the folio's reference count.
-+ *
-+ * If the folio's reference count reaches zero, the memory will be
-+ * released back to the page allocator and may be used by another
-+ * allocation immediately.  Do not access the memory or the struct folio
-+ * after calling folio_put_refs() unless you can be sure that these weren't
-+ * the last references.
-+ *
-+ * Context: May be called in process or interrupt context, but not in NMI
-+ * context.  May be called while holding a spinlock.
-+ */
-+static inline void folio_put_refs(struct folio *folio, int refs)
-+{
-+	if (folio_ref_sub_and_test(folio, refs))
-+		__put_page(&folio->page);
-+}
-+
- static inline void put_page(struct page *page)
- {
- 	struct folio *folio = page_folio(page);
--- 
-2.33.0
+Rather than dynamically react as vCPUs are created, what about we make max_vcpus
+common[*], extend KVM_CAP_MAX_VCPUS to allow userspace to override max_vcpus,
+and then have the IPIv support allocate the PID table on first vCPU creation
+instead of in vmx_vm_init()?
 
+That will give userspace an opportunity to lower max_vcpus to reduce memory
+consumption without needing to dynamically muck with the table in KVM.  Then
+this entire patch goes away.
