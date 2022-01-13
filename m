@@ -2,72 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1F2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B624C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236015AbiAMPMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:12:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229838AbiAMPMO (ORCPT
+        id S236024AbiAMPPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:15:16 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:47343 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230224AbiAMPPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:12:14 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B905C06161C;
-        Thu, 13 Jan 2022 07:12:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=3bx833r6RpZnMzrPl+Mmdeh1bsazWa4CUEpQNSO0/VI=; b=0FA/wbVVAigVPO8SxjsQ6d3WTp
-        /8u6lEqBk4csz9dttKO2RGPXqiyaUsWk9YW+2+3ORS2KWP6pRJx3UbosxOqhRwjTOQ1oWavRtmhlV
-        siF+k6KCZf5nang7MytiaMBjv5Bzfv+iYYq0/T/8UfhsEsNTnHKtipl/JPrzyXqsfs1VjcwJh0DFq
-        aabLrOZeMA7oCF56oUV6xz74h9YYZ9CCx3wgsoaYSryFLvEoYL3q8Wc7/vcMQ6s99vGTlherxMvNN
-        +G48sk2vikUXsTYte2vzw8tiMnHc0QeXXgNXjc9E39S/ZqNxvzD6hvlYdkJ5UwGZQDJ9UPZQBtu/8
-        Gc0smJ6A==;
-Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n81lj-006Mxe-B0; Thu, 13 Jan 2022 15:12:03 +0000
-Date:   Thu, 13 Jan 2022 07:12:03 -0800
-From:   Luis Chamberlain <mcgrof@kernel.org>
-To:     David Vernet <void@manifault.com>
-Cc:     Aaron Tomlin <atomlin@atomlin.com>,
-        Aaron Tomlin <atomlin@redhat.com>, cl@linux.com,
-        pmladek@suse.com, mbenes@suse.cz, akpm@linux-foundation.org,
-        jeyu@kernel.org, linux-kernel@vger.kernel.org,
-        linux-modules@vger.kernel.org, ghalat@redhat.com,
-        allen.lkml@gmail.com
-Subject: Re: [RFC PATCH v2 03/13] module: Move livepatch support to a
- separate file
-Message-ID: <YeBBQ+W/UaU06Fd5@bombadil.infradead.org>
-References: <20220106234319.2067842-1-atomlin@redhat.com>
- <20220106234319.2067842-4-atomlin@redhat.com>
- <Yd8j/Q2H0zYrAA2c@dev0025.ash9.facebook.com>
- <20220113103531.sn76g34tfkxscs4e@ava.usersys.com>
- <20220113141654.74lllshgujatnopg@dev0025.ash9.facebook.com>
+        Thu, 13 Jan 2022 10:15:15 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1kE-D2_1642086911;
+Received: from 30.225.24.75(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1kE-D2_1642086911)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 13 Jan 2022 23:15:12 +0800
+Message-ID: <5c506c95-1f18-9f6b-efd1-50e0f6d097da@linux.alibaba.com>
+Date:   Thu, 13 Jan 2022 23:15:11 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220113141654.74lllshgujatnopg@dev0025.ash9.facebook.com>
-Sender: Luis Chamberlain <mcgrof@infradead.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.0
+Subject: Re: [PATCH net] net/smc: Avoid setting clcsock options after clcsock
+ released
+To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1641807505-54454-1-git-send-email-guwen@linux.alibaba.com>
+ <ac977743-9696-9723-5682-97ebbcca6828@linux.ibm.com>
+ <719f264e-a70d-7bed-0873-ffbba8381841@linux.alibaba.com>
+ <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
+From:   Wen Gu <guwen@linux.alibaba.com>
+In-Reply-To: <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 06:16:54AM -0800, David Vernet wrote:
-> Aaron Tomlin <atomlin@atomlin.com> wrote on Thu [2022-Jan-13 10:35:31 +0000]:
-> > Who should I specify? I'm not entirely sure. If I understand correctly,
-> > Jessica was the original author of the majority.
+
+
+On 2022/1/12 5:38 pm, Karsten Graul wrote:
+> On 11/01/2022 17:34, Wen Gu wrote:
+>> Thanks for your reply.
+>>
+>> On 2022/1/11 6:03 pm, Karsten Graul wrote:
+>>> On 10/01/2022 10:38, Wen Gu wrote:
+>>>> We encountered a crash in smc_setsockopt() and it is caused by
+>>>> accessing smc->clcsock after clcsock was released.
+>>>>
+>>>
+>>> In the switch() the function smc_switch_to_fallback() might be called which also
+>>> accesses smc->clcsock without further checking. This should also be protected then?
+>>> Also from all callers of smc_switch_to_fallback() ?
+>>>
 > 
-> Personally I would just remove the whole copyright as the SPDX identifier
-> should be sufficient. I'll let Luis weigh in here as the Modules
-> maintainer, though.
+> Lets go with your initial patch (improved to address the access in smc_switch_to_fallback())
+> for now because it solves your current problem.
+> 
 
-Technically every contributor to the file has a copyright entry added,
-one does not need to add the name to the header, that's just common
-practice though. If someone goes through the work of at least adding
-the name of the main author, that a nice effort. Tons of files don't
-have authors listed, so I'd be fine with that too and it keeps things
-simple. What we should not do ever is remove the copyright notice so
-code which Rusty wrote should be maintained with the notice.
+Since the upcoming v2 patch added clcsock check in smc_switch_to_fallback(),
+the original subject is inappropriate.
 
-  Luis
+So I sent a new patch named 'net/smc: Transitional solution for clcsock race issue'
+instead of a v2.
+
+Thanks,
+Wen Gu
