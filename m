@@ -2,79 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 069F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 090A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235920AbiAMPCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:02:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43652 "EHLO
+        id S235940AbiAMPCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:02:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233641AbiAMPCj (ORCPT
+        with ESMTP id S235923AbiAMPCp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:02:39 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A813C06173F
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 07:02:39 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id k30so10612613wrd.9
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 07:02:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=NjQ5CckMH/FqJHfWgmyb7DQKMb+OQO1cEac1mm0zNp0=;
-        b=yt160kvam3HJdDmZb3vsgy1B/f68cJyCqRxHQGpeUER/bpnSaBG7Qh/n9igDWSpKlW
-         lMQHT+qDXxcH3Ji+D24uEeHoEGgFn9vwppBCwpbmCI00TJsAxYE/zuzhspFjriUt3zIO
-         xO1kYIHSoT7TdChA2VswjVnPZ7zaQG20FDT4WB+SdrPYYjW7k+3dbRvf+geNvagAYkpq
-         AMr5RBx28EPYCSqhT8++9pqwwsSMEFhlsEOhqs2BGtwAJqEMVFDO3V26YtGLQ8Pu/OqL
-         ga6ApEUefApiDfHc9WqxWYwCOHyKMnDIWJPL/5ETrgBEebfweJNEM0UEZko1ivBtaQjx
-         zw3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=NjQ5CckMH/FqJHfWgmyb7DQKMb+OQO1cEac1mm0zNp0=;
-        b=hJ9iQeLBZYveDkLR7KYTXCQIA8ppeLGmrF/CJUMlD7BdBlEsQHreacGeK8JoPuytDw
-         5U29PtgtVySt4qX0/ZoPwwgBr6Q+MsZ6DEnAahrR93SqRTtiK7Yj0qqV8oyBcuGTat8w
-         wCD1kh8WygvJ13C1Nnh/G99zQAOQd+kxe1253iPMB+KZwyRc+6hhkxiJxjvCtE00q/P0
-         lT9YIYth75+sg/dI+j7iOQ9FuLUTVIgrcsAUIFmmkjYFduTAVc3RRxhxZfy6lHxgQeVF
-         N3Oj9Eta9VXPvE1fvwujFCFHvG7jcXUsWhnXWP4Gb/C3phwTex+xIipcLHJnjB3m+XJv
-         0q6g==
-X-Gm-Message-State: AOAM531BjUIrm866oga9XDYlSqPLs4dvi2MnP91KvdlriQT492S+2EjM
-        CBt3UlblEgJ5gbfwcNfyn8oSuA==
-X-Google-Smtp-Source: ABdhPJxel8Y0oxv14BbumdD74ugMJ5nF6Wawn+vNlK5AtA4I45AJGBMjljCF4xkTlJ3wYfJ8vpqPrQ==
-X-Received: by 2002:a05:6000:1563:: with SMTP id 3mr1836447wrz.395.1642086157839;
-        Thu, 13 Jan 2022 07:02:37 -0800 (PST)
-Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
-        by smtp.gmail.com with ESMTPSA id h14sm2682335wrz.31.2022.01.13.07.02.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 07:02:37 -0800 (PST)
-Date:   Thu, 13 Jan 2022 15:02:35 +0000
-From:   Daniel Thompson <daniel.thompson@linaro.org>
-To:     Xu Wang <vulab@iscas.ac.cn>
-Cc:     lee.jones@linaro.org, jingoohan1@gmail.com,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] backlight: lm3630a_bl: Remove redundant
- 'flush_workqueue()' calls
-Message-ID: <20220113150235.fyzee7bhx7uceiwk@maple.lan>
-References: <20220113084806.13822-1-vulab@iscas.ac.cn>
+        Thu, 13 Jan 2022 10:02:45 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A6AC06161C
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 07:02:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=B11Ie4xk5bhkeIzwoNtpBIh4wfJJi+YAtt7ECX6UPrY=; b=ArD+YXOtK+Dd+ZwEFfcxBbHWnF
+        Dya1ULbAXp7RamN0GjE2Kgzg89oG7QnUUzlMRA4cdna4LXlT/9UOyIz0rXNsLbTx9XfMTduNV1thA
+        nJfuybt91e6f3Nw9/HADphhEABf99j1DS8XHfw6+rupshBWxaiRgCp9GthZU60QaNC0ymo/fxnd2Z
+        PT4Zal1qlgYrq/V9K9zf+f34zRYZGQ4FYLAUc2QpJ3CVpoSDhka0+ED6c0oKFuq/wiRHpZkSi2rGY
+        1OXEmyfGHHLJ2CZTd10cugWVtV45FhDSTllVPtWUnd4hQHLnbmAdsx5JQrowip3qQIXyJ+nHK70ct
+        trymDh4w==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n81cb-0050k2-TX; Thu, 13 Jan 2022 15:02:37 +0000
+Date:   Thu, 13 Jan 2022 15:02:37 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Liang Zhang <zhangliang5@huawei.com>, akpm@linux-foundation.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        wangzhigang17@huawei.com,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
+Message-ID: <YeA/DQptAz3fl6ym@casper.infradead.org>
+References: <20220113140318.11117-1-zhangliang5@huawei.com>
+ <YeA5oP/iaxtVPHb3@casper.infradead.org>
+ <ec0f57e6-f1f6-b9d9-b507-20e845fe7f17@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220113084806.13822-1-vulab@iscas.ac.cn>
+In-Reply-To: <ec0f57e6-f1f6-b9d9-b507-20e845fe7f17@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 08:48:06AM +0000, Xu Wang wrote:
-> 'destroy_workqueue()' already drains the queue before destroying it, so
-> there is no need to flush it explicitly.
+On Thu, Jan 13, 2022 at 03:46:54PM +0100, David Hildenbrand wrote:
+> On 13.01.22 15:39, Matthew Wilcox wrote:
+> > On Thu, Jan 13, 2022 at 10:03:18PM +0800, Liang Zhang wrote:
+> >> In current implementation, process's read requestions will fault in pages
+> >> with WP flags in PTEs. Next, if process emit a write requestion will go
+> >> into do_wp_page() and copy data to a new allocated page from the old one
+> >> due to refcount > 1 (page table mapped and swapcache), which could be
+> >> result in performance degradation. In fact, this page is exclusively owned
+> >> by this process and the duplication from old to a new allocated page is
+> >> really unnecessary.
+> >>
+> >> So In this situation, these unshared pages can be reused by its process.
+> > 
+> > Let's bring Linus in on this, but I think this reintroduces all of the
+> > mapcount problems that we've been discussing recently.
+> > 
+> > How about this as an alternative?
+> > 
+> > +++ b/mm/memory.c
+> > @@ -3291,11 +3291,11 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+> >                 struct page *page = vmf->page;
+> > 
+> >                 /* PageKsm() doesn't necessarily raise the page refcount */
+> > -               if (PageKsm(page) || page_count(page) != 1)
+> > +               if (PageKsm(page) || page_count(page) != 1 + PageSwapCache(page))
+> >                         goto copy;
+> >                 if (!trylock_page(page))
+> >                         goto copy;
+> > -               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
+> > +               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1 + PageSwapCache(page)) {
+> >                         unlock_page(page);
+> >                         goto copy;
+> >                 }
 > 
-> Remove the redundant 'flush_workqueue()' calls.
+> Funny, I was staring at swap reuse code as I received this mail ...
+> because if we're not using reuse_swap_page() here anymore, we shouldn't
+> really be reusing it anywhere for consistency, most prominently in
+> do_swap_page() when we handle vmf->flags & FAULT_FLAG_WRITE just
+> similarly as we do here ...
 > 
-> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+> And that's where things get hairy and I am still trying to figure out
+> all of the details.
+> 
+> Regarding above: If the page is swapped out in multiple processes but
+> was only faulted into the current process R/O, and then we try to write:
+> 
+> 1. Still in the swapcache: PageSwapCache()
+> 2. Mapped only by one process: page_mapcount(page) == 1
+> 3. Reference from one page table and the swap cache: page_count(page) ==
+> 
+> But other processes could read-fault on the swapcache page, no?
+> 
+> I think we'd really have to check against the swapcount as well ...
+> essentially reuse_swap_page(), no?
 
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-
-
-Daniel.
+Unfortunately the last digit is missing from your "3.", but I
+think you're absolutely right; we need to check swapcount.  So
+once reuse_swap_page() checks page_count instead of mapcount, we'll
+be good?
