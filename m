@@ -2,176 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C84C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:30:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F29E9C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiAMNas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:30:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:45114 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232034AbiAMNaq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:30:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642080645;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gvHWAt4pFJMvbqSfBskw1CokGwtuUo9iIrW7YGw4dXU=;
-        b=jU1KuGrFfwjCA7ZiAQktpfdD0HGe8GsjUktYMkYIUy1THCGwm5tro4jBs69Y5ya+r5xRy8
-        t3uqZ/x3zZKa2WU6SHnLQy99OxuFdY1f96sMvlQEGLRRq+hJmj+temStWROXTYjVeDa2wZ
-        PttpQDcW/AuszmXgYe4Qt6t03u942vQ=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-60-lyoqPdDmMJivZ-awZHLT1g-1; Thu, 13 Jan 2022 08:30:44 -0500
-X-MC-Unique: lyoqPdDmMJivZ-awZHLT1g-1
-Received: by mail-ed1-f70.google.com with SMTP id x19-20020a05640226d300b003f8b80f5729so5297920edd.13
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 05:30:44 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=gvHWAt4pFJMvbqSfBskw1CokGwtuUo9iIrW7YGw4dXU=;
-        b=nCcqo80Et6KNILA9C0gXZOFxz5yKy4IZ4c8quj0ABQ72ngjcUMFmw8kCWitOtZXUZu
-         Uv36i4BY7XZEknaxZJ9UUP8AoZeSafWBWpnkTCGM69EC308hcCfibwg6XChNu7fp232m
-         08P78ZwZWECkfzPvCrsneltnIdTu0rxAYSMoYkcmQDPW10CCTX5AEy39S3T6+2pFeNFK
-         hyZiJjULKPl6hTJ2mXzsDX/ta876qbCyr5RtLGwei1jmRtk78fq9FfScoNeOmWQbH7Dp
-         xr4cOjPVA+fMA7sEpiaYxkeZSbVCUHxbkP1pfAzszI10LediVH8ZsWXc6i/Dee0HNVan
-         djjQ==
-X-Gm-Message-State: AOAM5303rFAPkYUW5vCSJ6Sb0afs49iPvWkHNApu6Q/Opj6hIVOl1VPQ
-        DB+0fV74mzUEvGtIDUFJfHfa3KyTlnlO+3VG5Y+nRsF850AE3qivBK7h5zKOqt21qQJoFAFc4qd
-        jJFw2ac6riv+a9B2wzh2k53Fp
-X-Received: by 2002:a17:906:58c8:: with SMTP id e8mr3412828ejs.444.1642080642985;
-        Thu, 13 Jan 2022 05:30:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxu95cph8hLalPlDqvObhZKkMQqq8qJHdmzUV5r02GaDVvKx4qtduJCMZBnrcroKY6zd3i3vg==
-X-Received: by 2002:a17:906:58c8:: with SMTP id e8mr3412797ejs.444.1642080642532;
-        Thu, 13 Jan 2022 05:30:42 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id f18sm1210968edf.95.2022.01.13.05.30.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 05:30:41 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1AC681802D8; Thu, 13 Jan 2022 14:30:40 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Ard Biesheuvel <ardb@kernel.org>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Erik Kline <ek@google.com>,
-        Fernando Gont <fgont@si6networks.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        hideaki.yoshifuji@miraclelinux.com
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address
- calculation
-In-Reply-To: <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
-References: <20220112131204.800307-1-Jason@zx2c4.com>
- <20220112131204.800307-3-Jason@zx2c4.com> <87r19cftbr.fsf@toke.dk>
- <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
- <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
- <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 13 Jan 2022 14:30:39 +0100
-Message-ID: <87ilung3uo.fsf@toke.dk>
+        id S235197AbiAMNbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 08:31:14 -0500
+Received: from mail-mw2nam12on2077.outbound.protection.outlook.com ([40.107.244.77]:29272
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232034AbiAMNbM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 08:31:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YxwLdc7po5jNLa4vnBB/bUMojzLCiGxaI5D1IsGxgmEhhEJgVmibFoH5QxzTqPpR0JNnTtxnr90Ijc6E/joLumVgeB4ITdkpLFNq/HOXW2dVLmG9HWRXzx4RazGbEjeG0o8b7mJ3PjcF0UcGs3wY2Q9mHfKjXynq0X7UReP5AsBbYsFZhK1M1BgVv7d+7Xc418MJfQutCz6pz8lU4KvEmo9twObmXM8QaFrGPtHfH87cwE1RQYlqOpsQza4JKO3NgD2Inc4jRliXziZIOg8sssU7JtxvX0FConSC3N8Zs0eq3dyYYDloT+qXMgGeHQF1HM9Ilpap31WuGDkQLylY7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dbLMd+sYGaX/Q/7v/g6hvJFzQ63GYKBhQwahmY4YC7o=;
+ b=X5FaSC8ZEVMo5zhxToVY9OCQFgD4xRBRffAmid7NsD3VleEEWovnSmzh52f+1nt3SNBSm6pCLVwF1Je7M/E0t88YoYt0Io9+fjOshau+6kLxorR+ETDUA9gcAGFJ/5oy7gkAdqmfAJZy+3miEM31jXjcZpjVqywx7IjQKNCO945E7ilYEdgpHOj6ak6FOh25pZzmRdJzyaAyIFFIERciHFo7W8nHn9JEqNx2L5Dy+fBhaKgCy3teS5qbxMjTj1jRq6+XKgf5wJ0K+vjmuaFvPVebTcXpOb8uef+fZFFPBlk+MKYhZytoOMw/6zuujG9Fv+5lKA9k8pbUL2FtSvJ/MA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dbLMd+sYGaX/Q/7v/g6hvJFzQ63GYKBhQwahmY4YC7o=;
+ b=EDkDaBTimFdEN7f+075u/oGQTFHBUubx19UVIDtd1EPotAJv9PGY407LGGie64+LT51gKuRXAFOUOlHDZEWbuavTI3kIECHCq6SimFqZOW/R8dC5FHhbXPiT7kytEgUb8CzOh3ukEUN8tsro2Tiw+WEsug2njqwpCNdDmn7UoRgpsfPjol/vj/p28PyF8aqKwlY1gD7PEIHB6dLVjjzwyUtHYzyezGsvvVJAjS+5YHFQIhjrb2399wQMs74HrPBAjAwjYD8R9qvmHrMQ2tAvBej691lQTc6n1/X//W00JUQkyrs4Kkpl0Xp6xWFwCFOHy3uGJGJC+vKdQ0fBBWM/YA==
+Received: from DM5PR07CA0056.namprd07.prod.outlook.com (2603:10b6:4:ad::21) by
+ DM5PR12MB1851.namprd12.prod.outlook.com (2603:10b6:3:109::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4888.11; Thu, 13 Jan 2022 13:31:10 +0000
+Received: from DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ad:cafe::7d) by DM5PR07CA0056.outlook.office365.com
+ (2603:10b6:4:ad::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10 via Frontend
+ Transport; Thu, 13 Jan 2022 13:31:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT020.mail.protection.outlook.com (10.13.172.224) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4888.9 via Frontend Transport; Thu, 13 Jan 2022 13:31:10 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 13 Jan
+ 2022 13:31:09 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 13 Jan
+ 2022 13:31:08 +0000
+Received: from kyarlagadda-linux.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 13 Jan 2022 13:31:05 +0000
+From:   Akhil R <akhilrajeev@nvidia.com>
+To:     <robh+dt@kernel.org>, <thierry.reding@gmail.com>,
+        <jonathanh@nvidia.com>, <mperttunen@nvidia.com>,
+        <ldewangan@nvidia.com>, <digetx@gmail.com>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <akhilrajeev@nvidia.com>
+Subject: [PATCH 2/6] dt-bindings: i2c: tegra: Add Tegra234 details
+Date:   Thu, 13 Jan 2022 19:00:19 +0530
+Message-ID: <1642080623-15980-3-git-send-email-akhilrajeev@nvidia.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1642080623-15980-1-git-send-email-akhilrajeev@nvidia.com>
+References: <1642080623-15980-1-git-send-email-akhilrajeev@nvidia.com>
+X-NVConfidentiality: public
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f7697f11-3533-4b90-bedb-08d9d698f65c
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1851:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1851022FFA8BB686D87B6C7BC0539@DM5PR12MB1851.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9YilOuxW8MdGEZb+SHCZf6unoEbHN7kdlt4/abOK+afg8Taklb5ZqmhifCf6URiDF13QIu5Ua0APXQ9W6BSJ2pzpcuZmKKCmrwcD9+KOe5Yuy6VMCF3FqRqTNFE4i5OJMtns9+crupQTiksnmHTBw0YkYHmNdFmmlz0zaPL06tRRTqh3kgm7WxCB6AlAMJIL4idF1jkz2sF1U/vJWRBnolZryE5eu9sKraCKLHDl5/XGrsINNv7OYYPqgfCwWvSYRuthJ2FLhTeur2/53nWoArCvJsx/jnDaB2YQOC96NGgVc/NyCfTBVaS/YRoR+pLhHiKMDTMm+6clryWm/+BhewhMEgp1GUqt6J/uB8Wf2RhFjKclacHo2Q4PFYC+g0Fx/oq3odjAJRlAU+iZHmW0eAXjP/aq/ekdrvnlB7Sl8Tjbb7n5zG/WNmyDkLJrPghXX/ghEViOsu1BQPf5Pk2wld3a7+Vh4UyFpg1OwAksP9tsFxdbXhc6b97Fuy9jGiA8xx7+nDjZcbEBqQWQKUBcoPAg7UioQW95aydWwlRlYlJLRWrWDcXdpwEHZaPmfLVcyS3Gm2wu4IDmJ5LYMmkm1dA1wLsHChExv7OTEBGS/gn3oeheSips7SpI4UanBYBYyvBIRHBqAQN8aKJICmPhmrwP2AZDiRUWJIU+H89AmI79Jj5UhLFzptLaNTrNCDx3IBFMWwS8yern4vx1x3efw2qb4H5OELBaYo4vK7OKun/lGaWzNJv7rcRE/2U7MPqJ8w6YWGyLA0OBDaYRAlfN24xAhi8a05P5nqeY0gO1zRIR91TfWMpm48H/LK6JcSI7
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(40470700002)(36840700001)(6666004)(921005)(36860700001)(47076005)(70586007)(70206006)(508600001)(2616005)(426003)(2906002)(8936002)(4326008)(356005)(4744005)(82310400004)(316002)(110136005)(107886003)(26005)(336012)(5660300002)(186003)(36756003)(86362001)(81166007)(40460700001)(7696005)(8676002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 13:31:10.4719
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7697f11-3533-4b90-bedb-08d9d698f65c
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT020.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1851
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ard Biesheuvel <ardb@kernel.org> writes:
+Add documentation for Tegra234 I2C compatible.
 
-> On Thu, 13 Jan 2022 at 12:15, Hannes Frederic Sowa
-> <hannes@stressinduktion.org> wrote:
->>
->> Hello,
->>
->> On 13.01.22 00:31, Jason A. Donenfeld wrote:
->> > On 1/13/22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->> >> However, if we make this change, systems setting a stable_secret and
->> >> using addr_gen_mode 2 or 3 will come up with a completely different
->> >> address after a kernel upgrade. Which would be bad for any operator
->> >> expecting to be able to find their machine again after a reboot,
->> >> especially if it is accessed remotely.
->> >>
->> >> I haven't ever used this feature myself, though, or seen it in use. S=
-o I
->> >> don't know if this is purely a theoretical concern, or if the
->> >> stable_address feature is actually used in this way in practice. If it
->> >> is, I guess the switch would have to be opt-in, which kinda defeats t=
-he
->> >> purpose, no (i.e., we'd have to keep the SHA1 code around
->>
->> Yes, it is hard to tell if such a change would have real world impact
->> due to not knowing its actual usage in the field - but I would avoid
->> such a change. The reason for this standard is to have stable addresses
->> across reboots. The standard is widely used but most servers or desktops
->> might get their stable privacy addresses being generated by user space
->> network management systems (NetworkManager/networkd) nowadays. I would
->> guess it could be used in embedded installations.
->>
->> The impact of this change could be annoying though: users could suddenly
->> lose connectivity due to e.g. changes to the default gateway after an
->> upgrade.
->>
->> > I'm not even so sure that's true. That was my worry at first, but
->> > actually, looking at this more closely, DAD means that the address can
->> > be changed anyway - a byte counter is hashed in - so there's no
->> > gurantee there.
->>
->> The duplicate address detection counter is a way to merely provide basic
->> network connectivity in case of duplicate addresses on the network
->> (maybe some kind misconfiguration or L2 attack). Such detected addresses
->> would show up in the kernel log and an administrator should investigate
->> and clean up the situation. Afterwards bringing the interface down and
->> up again should revert the interface to its initial (dad_counter =3D=3D =
-0)
->> address.
->>
->> > There's also the other aspect that open coding sha1_transform like
->> > this and prepending it with the secret (rather than a better
->> > construction) isn't so great... Take a look at the latest version of
->> > this in my branch to see a really nice simplification and security
->> > improvement:
->> >
->> > https://git.zx2c4.com/linux-dev/log/?h=3Dremove-sha1
->>
->> All in all, I consider the hash produced here as being part of uAPI
->> unfortunately and thus cannot be changed. It is unfortunate that it
->> can't easily be improved (I assume a separate mode for this is not
->> reasonable). The patches definitely look like a nice cleanup.
->>
->> Would this be the only user of sha_transform left?
->>
->
-> The question is not whether but when we can/will change this.
->
-> SHA-1 is broken and should be removed at *some* point, so unless the
-> feature itself is going to be obsolete, its implementation will need
-> to switch to a PRF that fulfils the requirements in RFC7217 once SHA-1
-> ceases to do so.
->
-> And I should also point out that the current implementation does not
-> even use SHA-1 correctly, as it omits the finalization step. This may
-> or may not matter in practice, but it deviates from crypto best
-> practices, as well as from RFC7217
+Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
+---
+ Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Right, but that implies we need to work on a transition mechanism. For
-newly deployed systems changing the hash is obviously fine, it's the
-"reboot and you have a new address" problem.
-
-We could introduce new values to the addr_gen_mode? I.e. values of 4 and
-5 would be equivalent to 2 and 3 (respectively), but with the new
-hashing algorithm? And then document that 2 and 3 are considered
-deprecated to be removed at some point in the future...
-
--Toke
+diff --git a/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml b/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
+index 424a4fc..c58e256 100644
+--- a/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
++++ b/Documentation/devicetree/bindings/i2c/nvidia,tegra20-i2c.yaml
+@@ -80,6 +80,11 @@ properties:
+           support for 64 KiB transactions whereas earlier chips supported no
+           more than 4 KiB per transactions.
+         const: nvidia,tegra194-i2c
++      - description: |
++          Tegra234 has 8 generic I2C controllers, two of which are in the AON
++          (always-on) partition of the SoC. All of these controllers are
++          similar to those found on Tegra194.
++        const: nvidia,tegra234-i2c
+ 
+   reg:
+     maxItems: 1
+-- 
+2.7.4
 
