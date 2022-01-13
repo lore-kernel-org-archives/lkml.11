@@ -2,134 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF1EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235105AbiAMNZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:25:34 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:34906 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiAMNZd (ORCPT
+        id S235135AbiAMN1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 08:27:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229534AbiAMN1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:25:33 -0500
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JZQC74vn1zccTr;
-        Thu, 13 Jan 2022 21:24:51 +0800 (CST)
-Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 13 Jan 2022 21:25:31 +0800
-Received: from huawei.com (10.175.104.170) by dggpemm500003.china.huawei.com
- (7.185.36.56) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Thu, 13 Jan
- 2022 21:25:31 +0800
-From:   Liang Zhang <zhangliang5@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhigang17@huawei.com>, <zhangliang5@huawei.com>
-Subject: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
-Date:   Thu, 13 Jan 2022 22:03:18 +0800
-Message-ID: <20220113140318.11117-1-zhangliang5@huawei.com>
-X-Mailer: git-send-email 2.30.0
+        Thu, 13 Jan 2022 08:27:15 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC88EC06173F;
+        Thu, 13 Jan 2022 05:27:14 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id x22so19361461lfd.10;
+        Thu, 13 Jan 2022 05:27:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G72ZDsNgZpbxHJadsjYOpB+FuUHajnp+ihIWoz3Zf7k=;
+        b=fsF2iaPxk6cXPdIJJNtjHoUWgG22LpQspTstEjGJSoo/KxQwWNLpIFYiTsGi24gmFk
+         Wjx2JxC/zQZ1tit5p0pPr1dhn3otpuuqCavM0C/KVvgQAZNVTOZOyoJ2D7NcSz9ejXnk
+         UrbqB1XBObkBYX0kxwF1W8JdKN6HoHicXOPt6IHNuKEmHNo7v2hVO5UOLr4r7gsxCLvV
+         JlKgh3t9bZ4wnNLIsTGC3LIUNS0F40KH/O3etUT7azgI0hX/9aHf9KSIoRN7VGcy0+x8
+         jn9LJ5+04A2CelKckZGIHmwjiqhOgJC1Uilcu4Tvz9v3lgf45nUszw1HxbfdxmKJz9PG
+         AFYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=G72ZDsNgZpbxHJadsjYOpB+FuUHajnp+ihIWoz3Zf7k=;
+        b=Rss5aUUASV4XwQXo6kojNU5fUnwb6eq1YQz7Wt/HiyePsHl3mkhuJwg9NKcLpgLpTz
+         h3HvgsJo0Q5sTBH1exC2kKKyyNpD5T+uI23miWq4KKoJgZsrdolDQ6QuPNdKce+CPM4m
+         e3PHQxlWUZ11J8H3dZCRrj0sDyWOtrarzgSicVjqqJDyvrD0FOxNehpqFNJJgk8l9+Ee
+         wdl9ffUhgm1M4Krlxfc9IuwaCKvWi+YVLM4VhQdTJAYgvBhp3HrPGj/YHEX2NsazwWyO
+         EPm5CYDZRkAbpOG/lhx2c8qMDJyNEPDyX23JtWfK0zw1maC/5SzDN4RK4RbiacK+ex9H
+         5wag==
+X-Gm-Message-State: AOAM531ki9P3OmnGgOd03CfgwNHu+/LpjZV2u8dKs6gUBwCsDzMDE9LV
+        fxmRL7vDanjZoiM/4tgr5s8=
+X-Google-Smtp-Source: ABdhPJy62I8/4CY0JCMHFdEmot2tO5odHLO82mfhXJ5VDMK3ffOrqBI7GKkTXmTzSayP+nyE+lPHog==
+X-Received: by 2002:a05:651c:2059:: with SMTP id t25mr3001801ljo.427.1642080433041;
+        Thu, 13 Jan 2022 05:27:13 -0800 (PST)
+Received: from localhost.localdomain ([217.117.245.67])
+        by smtp.gmail.com with ESMTPSA id e4sm267609ljj.97.2022.01.13.05.27.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 05:27:12 -0800 (PST)
+From:   Pavel Skripkin <paskripkin@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com,
+        lukas@wunner.de
+Cc:     linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Yiru Xu <xyru1999@gmail.com>
+Subject: [PATCH] Bluetooth: hci_serdev: call init_rwsem() before p->open()
+Date:   Thu, 13 Jan 2022 16:27:04 +0300
+Message-Id: <20220113132704.4354-1-paskripkin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.170]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500003.china.huawei.com (7.185.36.56)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In current implementation, process's read requestions will fault in pages
-with WP flags in PTEs. Next, if process emit a write requestion will go
-into do_wp_page() and copy data to a new allocated page from the old one
-due to refcount > 1 (page table mapped and swapcache), which could be
-result in performance degradation. In fact, this page is exclusively owned
-by this process and the duplication from old to a new allocated page is
-really unnecessary.
+kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
+The problem was in wrong place for percpu_init_rwsem() call.
 
-So In this situation, these unshared pages can be reused by its process.
+hci_uart_proto::open() may register a timer whose callback may call
+hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
+thread won't be fast enough to call percpu_init_rwsem().
 
-Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
+Fix it my moving percpu_init_rwsem() call before p->open().
+
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
+...
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:951 [inline]
+ register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
+ __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
+ lock_acquire kernel/locking/lockdep.c:5637 [inline]
+ lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
+ percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
+ hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
+ h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
+ call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+
+Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
+Reported-by: Yiru Xu <xyru1999@gmail.com>
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 ---
-This patch has been tested with redis benchmark. Here is the test
-result.
+ drivers/bluetooth/hci_serdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Hardware
-========
-Memory (GB): 512G
-CPU (total #): 88
-NVMe SSD (GB): 1024
-
-OS
-==
-kernel 5.10.0
-
-Testcase
-========
-step 1:
-  Run 16 VMs (4U8G), each running with redis-server, in a cgroup 
-  limiting memory.limit_in_bytes to 100G. 
-step 2:
-  Run memtier_bemchmark in host with params "--threads=1 --clients=1 \
---pipeline=256 --data-size=2048 --requests=allkeys --key-minimum=1 \
---key-maximum=30000000 --key-prefix=memtier-benchmark-prefix-redistests"
-  to test every VM concurrently.
-
-Workset size
-============
-cat memory.memsw.usage_in_bytes
-125403303936
-
-Result
-======
-Comparing with Baseline, this patch can achieved 41% more Ops/sec, 
-41% more Hits/sec, 41% more Misses/sec, 30% less Latency and 
-41% more KB/sec. 
-
-  Index(average)        Baseline kernel        Patched kernel
-  Ops/sec               109497                 155428
-  Hits/sec              8653                   12283
-  Misses/sec            90889                  129014
-  Latency               2.297                  1.603
-  KB/sec                44569                  63186
-
-
- mm/memory.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/mm/memory.c b/mm/memory.c
-index 23f2f1300d42..fd4d868b1c2d 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3291,10 +3291,16 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		struct page *page = vmf->page;
+diff --git a/drivers/bluetooth/hci_serdev.c b/drivers/bluetooth/hci_serdev.c
+index 9e03402ef1b3..e9a44ab3812d 100644
+--- a/drivers/bluetooth/hci_serdev.c
++++ b/drivers/bluetooth/hci_serdev.c
+@@ -305,6 +305,8 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 	if (err)
+ 		return err;
  
- 		/* PageKsm() doesn't necessarily raise the page refcount */
--		if (PageKsm(page) || page_count(page) != 1)
-+		if (PageKsm(page))
- 			goto copy;
- 		if (!trylock_page(page))
- 			goto copy;
++	percpu_init_rwsem(&hu->proto_lock);
 +
-+		/* reuse the unshared swapcache page */
-+		if (PageSwapCache(page) && reuse_swap_page(page, NULL)) {
-+			goto reuse;
-+		}
-+
- 		if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
- 			unlock_page(page);
- 			goto copy;
-@@ -3304,6 +3310,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
- 		 * page count reference, and the page is locked,
- 		 * it's dark out, and we're wearing sunglasses. Hit it.
- 		 */
-+reuse:
- 		unlock_page(page);
- 		wp_page_reuse(vmf);
- 		return VM_FAULT_WRITE;
+ 	err = p->open(hu);
+ 	if (err)
+ 		goto err_open;
+@@ -327,7 +329,6 @@ int hci_uart_register_device(struct hci_uart *hu,
+ 
+ 	INIT_WORK(&hu->init_ready, hci_uart_init_work);
+ 	INIT_WORK(&hu->write_work, hci_uart_write_work);
+-	percpu_init_rwsem(&hu->proto_lock);
+ 
+ 	/* Only when vendor specific setup callback is provided, consider
+ 	 * the manufacturer information valid. This avoids filling in the
 -- 
-2.30.0
+2.34.1
 
