@@ -2,71 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 279E7C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:24:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A797BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233002AbiAMIYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:24:03 -0500
-Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:48054 "EHLO
-        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232977AbiAMIYC (ORCPT
+        id S233003AbiAMIZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:25:07 -0500
+Received: from smtpcmd15176.aruba.it ([62.149.156.176]:60404 "EHLO
+        smtpcmd15176.aruba.it" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229821AbiAMIZG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:24:02 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1ixvv7_1642062240;
-Received: from 30.225.24.75(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1ixvv7_1642062240)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 13 Jan 2022 16:24:00 +0800
-Message-ID: <420e9627-82fd-e667-f0c2-726933e58b21@linux.alibaba.com>
-Date:   Thu, 13 Jan 2022 16:23:59 +0800
+        Thu, 13 Jan 2022 03:25:06 -0500
+X-Greylist: delayed 422 seconds by postgrey-1.27 at vger.kernel.org; Thu, 13 Jan 2022 03:25:06 EST
+Received: from [192.168.1.56] ([79.0.204.227])
+        by Aruba Outgoing Smtp  with ESMTPSA
+        id 7vJ0n0l5QXfnt7vJ0nCTuY; Thu, 13 Jan 2022 09:18:02 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
+        t=1642061882; bh=E8QqJWxJWNAWd8iW7hzgzQw25jkEtuY2BJyXz7LyYzE=;
+        h=Subject:To:From:Date:MIME-Version:Content-Type;
+        b=ZnHF7yMEDPTw/dtoXIUyLttFaQJyVadjjw19HKqVH3wL8aSOw9FDSiC0ADysr+RYd
+         ONODmQApDuJa+jBCmdebpkmD9+/LFEnHK2LFw73NK+cM2GME8ndQT/4zDVHivVQiIL
+         /fn53eLG20BDPGGqLDbahItjqex7zIsIHpJSgjMA2eSpVGEEWznJ1TNPzAlDTeXtRv
+         e0LqQCuOJTW8gFvt6lY5J6o6Eyvvh6eD5hwFjSFEwJ4vpjM9lwyVSGVTta9GgQIk4a
+         I56Kd0aNV3AxLYi2EdYy5JhBsX/g7opEnhmnbOfvSm8LZLsAveo/PfTqYqYK4I65Oa
+         a5p8x5PoFQEWg==
+Subject: Re: [PATCH] pps: clients: gpio: Propagate return value from
+ pps_gpio_probe
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Robert Hancock <robert.hancock@calian.com>
+Cc:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        rasm@fe.up.pt, jamesnuss@nanometrics.ca, akpm@linux-foundation.org
+References: <20220112205214.2060954-1-robert.hancock@calian.com>
+ <Yd9DDJ2HmptwIITA@smile.fi.intel.com>
+From:   Rodolfo Giometti <giometti@enneenne.com>
+Message-ID: <d21aeae0-f75d-f8b9-032a-f4751696d467@enneenne.com>
+Date:   Thu, 13 Jan 2022 09:17:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.4.0
-Subject: Re: [PATCH net] net/smc: Avoid setting clcsock options after clcsock
- released
-To:     Karsten Graul <kgraul@linux.ibm.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1641807505-54454-1-git-send-email-guwen@linux.alibaba.com>
- <ac977743-9696-9723-5682-97ebbcca6828@linux.ibm.com>
- <719f264e-a70d-7bed-0873-ffbba8381841@linux.alibaba.com>
- <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
-From:   Wen Gu <guwen@linux.alibaba.com>
-In-Reply-To: <5dd7ffd1-28e2-24cc-9442-1defec27375e@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <Yd9DDJ2HmptwIITA@smile.fi.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-CMAE-Envelope: MS4xfM+u+afPtUMvhHcHaGGnnOVaadRY15Ikdv31n6AVW3Mv9sr+eD4HlAVYl4XOLCfKqDo5/KW4XpXNYnsH5Zjag3auTetC9lIFguSkb8k1Kt502b/qBizV
+ xCgsOLtJ0ckxxjdcYE7RJ+Vfr9hPECdXeZ9tUroM8KH7bycs6GWe/ZldCnkEAA63jFn/EoS4xs5iWBF1x3pPr+5ofgcsIx+IKkc04deB1C56TL/9SLT2y7QV
+ Pu7sSoHWIReHGFxKTEgMWjGOrfunZjxGoC8r9tZHfpaNDixpMSb/wh/g/owsvZWRBC0kI8x2SXXvqjiEYKJMrVDPWsla2/4sknxxaXaScx34UqUBy689cz4U
+ tX8xZH2TElhf/yt41DNSPe69iICtU1DQY2jM04ZPHHcH7YZDCVhNx+n22pRsRHtbuR3LvfKS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for your reply.
+On 12/01/22 22:07, Andy Shevchenko wrote:
+> On Wed, Jan 12, 2022 at 02:52:14PM -0600, Robert Hancock wrote:
+>> If the pps-gpio driver was probed prior to the GPIO device it uses, the
+>> devm_gpiod_get call returned an -EPROBE_DEFER error, but pps_gpio_probe
+>> replaced that error code with -EINVAL, causing the pps-gpio probe to
+>> fail and not be retried later. Propagate the error return value so that
+>> deferred probe works properly.
+> 
+> FWIW,
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-On 2022/1/12 5:38 pm, Karsten Graul wrote:
-> On 11/01/2022 17:34, Wen Gu wrote:
->> Thanks for your reply.
+Acked-by: Rodolfo Giometti <giometti@enneenne.com>
+> 
+>> Fixes: 161520451dfa (pps: new client driver using GPIO)
+>> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+>> ---
+>>  drivers/pps/clients/pps-gpio.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
 >>
->> On 2022/1/11 6:03 pm, Karsten Graul wrote:
->>> On 10/01/2022 10:38, Wen Gu wrote:
->>>> We encountered a crash in smc_setsockopt() and it is caused by
->>>> accessing smc->clcsock after clcsock was released.
-> 
-> I like the idea to use RCU with rcu_assign_pointer() to protect that pointer!
-> 
-> Lets go with your initial patch (improved to address the access in smc_switch_to_fallback())
-> for now because it solves your current problem.
+>> diff --git a/drivers/pps/clients/pps-gpio.c b/drivers/pps/clients/pps-gpio.c
+>> index 35799e6401c9..2f4b11b4dfcd 100644
+>> --- a/drivers/pps/clients/pps-gpio.c
+>> +++ b/drivers/pps/clients/pps-gpio.c
+>> @@ -169,7 +169,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
+>>  	/* GPIO setup */
+>>  	ret = pps_gpio_setup(dev);
+>>  	if (ret)
+>> -		return -EINVAL;
+>> +		return ret;
+>>  
+>>  	/* IRQ setup */
+>>  	ret = gpiod_to_irq(data->gpio_pin);
+>> -- 
+>> 2.31.1
+>>
 > 
 
-OK, I will improve the patch, adding check before clcsock access in smc_switch_to_fallback()
-and return an error (-EBADF) if smc->clcsock is NULL. The caller of smc_switch_to_fallback()
-will check the return value to identify whether fallback is possible.
 
-> I put that RCU thing on our list, but if either of us here starts working on that please let the
-> others know so we don't end up doing parallel work on this. But I doubt that we will be able to start working
-> on that soon.
-> 
-> Thanks for the good idea!
-
-Thank you! If I start working on the RCU things, I will send a RFC to let you know.
-
-Thanks,
-Wen Gu
+-- 
+GNU/Linux Solutions                  e-mail: giometti@enneenne.com
+Linux Device Driver                          giometti@linux.it
+Embedded Systems                     phone:  +39 349 2432127
+UNIX programming                     skype:  rodolfo.giometti
