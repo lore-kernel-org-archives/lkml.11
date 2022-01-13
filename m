@@ -2,204 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC19C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 11:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61ACBC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 11:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233977AbiAMLJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 06:09:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46538 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231831AbiAMLJw (ORCPT
+        id S233979AbiAMLKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 06:10:37 -0500
+Received: from mout.kundenserver.de ([212.227.126.131]:42681 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229684AbiAMLKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 06:09:52 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA407C061748
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 03:09:51 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n7xyF-0006Q7-HJ; Thu, 13 Jan 2022 12:08:43 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n7xy5-00A3Hi-BT; Thu, 13 Jan 2022 12:08:32 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n7xy3-0005lb-Nu; Thu, 13 Jan 2022 12:08:31 +0100
-Date:   Thu, 13 Jan 2022 12:08:31 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Borislav Petkov <bp@alien8.de>,
-        Eric Auger <eric.auger@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
+        Thu, 13 Jan 2022 06:10:36 -0500
+Received: from mail-wm1-f54.google.com ([209.85.128.54]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MgzWP-1mgtWB356j-00hJe6; Thu, 13 Jan 2022 12:10:34 +0100
+Received: by mail-wm1-f54.google.com with SMTP id d187-20020a1c1dc4000000b003474b4b7ebcso3381561wmd.5;
+        Thu, 13 Jan 2022 03:10:34 -0800 (PST)
+X-Gm-Message-State: AOAM532UYgRrjedyMYJ9kQeiJMP2nXippbwlRn5AjslmuTz4S0yHmPnQ
+        y15Kt4ItPHIPIq9PS99/B6D8+E1Blyf/iZl0iMQ=
+X-Google-Smtp-Source: ABdhPJwyJNjDJe6g9IqOlmOuo4XRBlGbBJ6S5R+pEnE5PJ59so8o5FUGRVoYbyoifHh7K/xwu46GnaSGCZkpF8bZDcs=
+X-Received: by 2002:a05:600c:5c1:: with SMTP id p1mr10610658wmd.1.1642072234254;
+ Thu, 13 Jan 2022 03:10:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zcdy7nemyxfoojub"
-Content-Disposition: inline
-In-Reply-To: <Yd9L9SZ+g13iyKab@sirena.org.uk>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <266065918e47e8965bb6a0ab486da070278788e4.1641996057.git.geert+renesas@glider.be>
+ <BY3PR18MB47375336D4AC1FE79D493945C6529@BY3PR18MB4737.namprd18.prod.outlook.com>
+ <CAK8P3a2jLgtcuJ6MD7LmJzagiRQSk85eL3tiHDmB33i_n3CZ2w@mail.gmail.com>
+ <BY3PR18MB4737E57C0DC616FFE73CC7AEC6529@BY3PR18MB4737.namprd18.prod.outlook.com>
+ <CAK8P3a0Eeyt=rWG6CjYCKck-k5+uT5GkLuDG+S4GkQgD49-H1A@mail.gmail.com> <BY3PR18MB47371C7C66042D7982C00474C6539@BY3PR18MB4737.namprd18.prod.outlook.com>
+In-Reply-To: <BY3PR18MB47371C7C66042D7982C00474C6539@BY3PR18MB4737.namprd18.prod.outlook.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 13 Jan 2022 12:10:18 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0qxMDFie3SvciMNUOq0G6njqqqVdBOxrXexFWMv+0png@mail.gmail.com>
+Message-ID: <CAK8P3a0qxMDFie3SvciMNUOq0G6njqqqVdBOxrXexFWMv+0png@mail.gmail.com>
+Subject: Re: [EXT] [PATCH] hwrng: cn10k - HW_RANDOM_CN10K should depend on ARCH_THUNDER
+To:     Sunil Kovvuri Goutham <sgoutham@marvell.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Bharat Bhushan <bbhushan2@marvell.com>,
+        Joseph Longever <jlongever@marvell.com>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:oX0guH3ljFzut7gKm23e+Y4CY4MECr1A1xsq2zK++cTDmOcRwYU
+ QNu5wA06Whmt4Z32ZxQ2nPlm5cS1bNfav/pt+lJxx/SReg9o4WGH/igdCkXV74REBSsy03h
+ 3SMcwNcJ2W1ayFHYCKuDK4o8w+p5DL9W5L1hMQsBBijzvv+2Xg5QBsDcaaQixPrCHIOEwAh
+ Lhbvl4kH3HG1B5Kikr5Ag==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iMNjJcTUpAA=:D1ue1FXdaKQST6RU9r1o47
+ WfpcXTevvRrxdJ0j00QJ+KsdPdK+QPG3EiQ/1cZ+7+yxDqAJHg5mJBTSaLrVXAr7fLsbhi12A
+ Lp5rJe3FWPPVZH5i+2B/IbI76/jfgo69feO6odtkQus2NS1R5zpZqIR3Lgd+hEKyRNzrGckM6
+ u/fXleuNLM5jFtu1d6fEczduG0kYvbxrgnKeYv2smhuzJqpIewV1rBUlNrujJkb7ZtQC022VR
+ mkLILBtoOcxYCkZ6fUDTSb2AdX57WxomwsUJy7BoWmm4Jh8eu0tt454VGuL4HcQcNxSXsoEbb
+ h1xU8+6qpEmgWOlt7GpxTtNjoT8hzlVFf9/89Uj1YbLHwEp0DA4nlEkteOWM0R9krLD9asjhi
+ RHTFETrkfnmmJO28l6lf3mkdyfrD+ooIJtB0WWJhAkwOq5LHcyi4C+UhULVsaxsuKV8FE0tP7
+ Rb3j+QyzqGTIXfmZT+qZdK0MMMzYk8RWCFnDPfKORZDeSjv2ZLRLec8rfS3qWS2vplIQWNaUu
+ Dfj1edB+W8H98bVxpLt6AW+4aPkAYmYdd24B925yG8vgv/r9sa2Tfe4jTMCXJlL+Z6T+Eeijk
+ t867brBLe2biNqDBA5tKKYfXHYDzOvRALm4fvQ3nitOf17jtWCS3tgl7QkzY3g2RydILFSYzn
+ +j6yH9l4U8Uk0IVaRuYY0Kk1H8yTw97Bn49THHuD4ffsY1QPuuL7SSNnYz6mlzBHXQkGiJt7T
+ +rnGIXIdAJmA36R+NT9Jm00tmJzYRJuogrvOm6nMzjcBka+GKdwenmzf1DPbMCT5KPMiN3q82
+ pownIWxeOm9igJhWYp8eo8GjZ9lNy6ZrVJFhVWGX++JE8HwYRk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jan 13, 2022 at 10:42 AM Sunil Kovvuri Goutham
+<sgoutham@marvell.com> wrote:
+> >From: Arnd Bergmann <arnd@arndb.de>
 
---zcdy7nemyxfoojub
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> >
+> >Ok, and those are the same family as the earlier cnMIPS based OCTEON
+> >CN3xxx/CN5xxx/CN6xxx/CN7xxx/CNF7xxx and the later ARMv8.2
+> >Fusion CNF9xxx, right?
+>
+> Yes, except the CNF9x.
 
-On Wed, Jan 12, 2022 at 09:45:25PM +0000, Mark Brown wrote:
-> On Wed, Jan 12, 2022 at 10:31:21PM +0100, Uwe Kleine-K=F6nig wrote:
-> > On Wed, Jan 12, 2022 at 11:27:02AM +0100, Geert Uytterhoeven wrote:
->=20
-> (Do we really need *all* the CCs here?)
+Ok, what is CNF9x then?
 
-It's probably counteractive to finding an agreement because there are
-too many opinions on that matter. But I didn't dare to strip it down,
-too :-)
+> >> Octeon 10 and OcteonTx2 (9x series) are different families and not related to
+> >> Armada as well.
+>
+> >I assume with '9x' you mean only the CN92xx/CN96xx/CN98xx/CN10x/DPU400
+> >family here, not the OcteonTx2 CN91xx that is clearly part of the Marvell
+> >Sheeva/Kirkwood/MVEBU/Armada family, and the CN99xx in the
+> >Netlogic/Broadcom family.
+>
+> By 9x I mean CN96xx, CN98xx, CNF9xx, base architecture is same across all.
 
-> > That convinces me, that platform_get_irq_optional() is a bad name. The
-> > only difference to platform_get_irq is that it's silent. And returning
-> > a dummy irq value (which would make it aligned with the other _optional
-> > functions) isn't possible.
->=20
-> There is regulator_get_optional() which is I believe the earliest of
-> these APIs, it doesn't return a dummy either (and is silent too) - this
-> is because regulator_get() does return a dummy since it's the vastly
-> common case that regulators must be physically present and them not
-> being found is due to there being an error in the system description.
-> It's unfortunate that we've ended up with these two different senses for
-> _optional(), people frequently get tripped up by it.
+> >Is there anything that you can say about this product line? It looked like it
+> >was derived from the cnMIPS/OcteonTX line, and it seems to share its
+> >mystery (presumably ThunderX1-derived rather than Cortex or Vulcan)
+> >ARMv8.2 core with the CNF9xxx.
+>
+> 9x core is Marvell (or Cavium) developed core and is next-gen of 8x.
+> 10x and DPU400 have ARM cores.
 
-Yeah, I tripped over that one already, too. And according to my counting
-this results in three different senses now :-\ :
+I don't care about the CPU core, only about the SoC design for the family,
+the old octeon family includes both cnMIPS and ThunderX cores already
+and those are not even the same ISA, so going from custom ARMv8.2
+cores to Neoverse ARMv9 is not relevant at all.
 
- a) regulator
-    regulator_get returns a dummy, regulator_get_optional returns ERR_PTR(-=
-ENODEV)
- b) clk + gpiod
-    ..._get returns ERR_PTR(-ENODEV), ..._get_optional returns a dummy
- c) platform_get_irq()
-    platform_get_irq_optional() is just a silent variant of
-    platform_get_irq(); the return values are identical.
-   =20
-This is all very unfortunate. In my eyes b) is the most sensible
-sense, but the past showed that we don't agree here. (The most annoying
-part of regulator_get is the warning that is emitted that regularily
-makes customers ask what happens here and if this is fixable.)
+> CN91xx is Armada.
 
-I think at least c) is easy to resolve because
-platform_get_irq_optional() isn't that old yet and mechanically
-replacing it by platform_get_irq_silent() should be easy and safe.
-And this is orthogonal to the discussion if -ENOXIO is a sensible return
-value and if it's as easy as it could be to work with errors on irq
-lookups.
+Ok
 
-Best regards
-Uwe
+> >> But I am fine if ARCH_THUNDER is renamed to ARCH_OCTEON to include all.
+>
+> >I'd really prefer to have sensible names, so if there are six unrelated Marvell
+> >SoC families (pxa/mmp, armada/mvebu/cn91xx, xlp/vulcan/thunderx2,
+> >berlin/synaptics, cavium/octeon/thunderx/fusion, and whatever turned into
+> >non-cavium cn92xx/cn96xx/cn98xx/cn10x/dpu400) instead of five, we should
+> >probably have six ARCH_* names for those. (Note: for some other
+> >manufacturers such as Broadcom or Mediatek, we do use just the company
+> >name as the CONFIG_ARCH_* symbol, but I feel that for Marvell or NXP,
+> >that ship has sailed long ago, based on the number of acquisitions and
+> >spinoffs).
+> >
+> >Any suggestions for the name? Were these acquired from some other company?
+>
+> For OcteonTx2, CN10K and future silicons, ARCH_MARVELL_OCTEON  / ARCH_MRVL_OCTEON ?
+> Different ARCH_* config for each family is not needed IMHO.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+It does sound like these are all the same family then. Ideally we'd use the same
+name as the MIPS based parts, but those currently use
+CONFIG_CAVIUM_OCTEON_SOC, which doesn't fit the same naming scheme,
+and we seem to have a duplicate set of drivers.
 
---zcdy7nemyxfoojub
-Content-Type: application/pgp-signature; name="signature.asc"
+We usually pick shorter names, so I'd just leave it with CONFIG_ARCH_OCTEON
+as I have in my current patch. That also means it's less likely to
+require a rename
+after the next acquisition or spinoff ;-)
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHgCCsACgkQwfwUeK3K
-7AktbAf/UzNin6+fnXTmkdrTvXWaXCV8TB76EIUtIdNWwJEjmXxWes5jyBpp/jXj
-7gSmYT3gi4oK0wjB6dKmqF6jba5/RPL4cdS6/8iQDp32Xey0hzWymBPENLc/Nxt5
-Ge81cdot6EFxqSkuW1Zbe55wzmNUmEsez7+e+8gJAviPB6zQndDE/zAkwxczzb04
-GfD6Uixgm4a29NwXNIignwNm8pACez/px2A8cVhILZ8135X0rdwYM17BiQtfM5Uq
-s2hZsLfxWm9ZvdyxA7gGvsfefPmiPfS3k/HWagHMDB8nQq4vqnMmPTu01YJs34dM
-+ycJZkglW3eJnCZ9Fr5sjnuP6uLExw==
-=5Hn7
------END PGP SIGNATURE-----
-
---zcdy7nemyxfoojub--
+        Arnd
