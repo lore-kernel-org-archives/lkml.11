@@ -2,115 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF9DC43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:25:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235105AbiAMNYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:24:39 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:52492
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235103AbiAMNYi (ORCPT
+        id S235105AbiAMNZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 08:25:34 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:34906 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229534AbiAMNZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:24:38 -0500
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id C2C373F1C6
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:24:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642080277;
-        bh=jgEXa3jIbZdSwQdiBctgazOr3O8giX16P/36cdj/vYs=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=A+LcaMb+vNTyK+jwIwwLGaLyoopwwYV3qwNAditX8h4dAEcI41gQQNz9929fTppK7
-         GjrlUgpStGWwRirmQc0nrzKlWav7en1kd/352Q73YZYL8ZI9jAfhdiFwyOC/McVB/p
-         mtjs/SwQwmrljHB+5gLjopSwIgcWG4N9+4WvmEYv56wyRZOXR+78ctTid/iWFJgD7Z
-         +QJMiCUOayb/c9I8WkXG/giqJezVsaKtQFq1uRpdDdPeZQIUL/8AM91edlVWy7cKLT
-         88n5lyC9td3g/f1C7xbS8IR+Cm4OzKUdamKwZhZOX/qUo9klOGi84UIiQMHCIFyvIt
-         NkJeS0qmTfTkg==
-Received: by mail-ed1-f69.google.com with SMTP id s7-20020a056402520700b003f841380832so5339640edd.5
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 05:24:37 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jgEXa3jIbZdSwQdiBctgazOr3O8giX16P/36cdj/vYs=;
-        b=W9UpFm9Hs4Wp2ybFHMU0qp7yqHl0/Z1xBK2H0tYnuGejU/giIvurTymQOoJopDLqCq
-         sVDbPkI05HON2gC0WLWXtjl1vcRPtQa0+sb9mLLtL6BFOmySi5nJoM7wnHkNC/jhO2/m
-         crAvwDtllYt4xB2meQ0fDSDp3sNsKKUNo/N0/4QL0q1rrBtlKq5fM03uUF1gwLgtz2dH
-         Ln0mkUviUSKOnHgI95ra2dIQcBFb3hFB04bMsEAZiMiOjCOQIJFEJftFhUGTfh6g70bn
-         zAwiu8o4KnsMVGHOgKMJftG0GtRpHfLerX8EpHOXNsvWd4orO3IbbNeaa/uckCxZUppS
-         Pd2Q==
-X-Gm-Message-State: AOAM5335agCzziz7PQsZysdZB0RdQwhdPic7WpJlEetU8S+JBfWiBvRq
-        mMqQYupO69l0/OPPq1a9nipPwHXZmaxTzYhegPPxZCNPRpWs58dKFBlOqkw613OWHK53LeC95KG
-        WjW92+6Ckj1K0qFkKLcD6kJ6LkPl+9gQMde/Cn+RqRg==
-X-Received: by 2002:a17:906:7e57:: with SMTP id z23mr3540856ejr.674.1642080277480;
-        Thu, 13 Jan 2022 05:24:37 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwS4LnTV4+PzPZuQbqmHmEZJRNcweUCHmK6aMYoKKN4T0AB3VCXZZ9fkpjjEJwNNdQtq4JXPQ==
-X-Received: by 2002:a17:906:7e57:: with SMTP id z23mr3540832ejr.674.1642080277270;
-        Thu, 13 Jan 2022 05:24:37 -0800 (PST)
-Received: from [192.168.0.30] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id mp12sm905633ejc.19.2022.01.13.05.24.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 05:24:36 -0800 (PST)
-Message-ID: <0d4c7a40-5eec-2cc5-82bc-d0ba4910d665@canonical.com>
-Date:   Thu, 13 Jan 2022 14:24:35 +0100
+        Thu, 13 Jan 2022 08:25:33 -0500
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JZQC74vn1zccTr;
+        Thu, 13 Jan 2022 21:24:51 +0800 (CST)
+Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 13 Jan 2022 21:25:31 +0800
+Received: from huawei.com (10.175.104.170) by dggpemm500003.china.huawei.com
+ (7.185.36.56) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Thu, 13 Jan
+ 2022 21:25:31 +0800
+From:   Liang Zhang <zhangliang5@huawei.com>
+To:     <akpm@linux-foundation.org>
+CC:     <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhigang17@huawei.com>, <zhangliang5@huawei.com>
+Subject: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
+Date:   Thu, 13 Jan 2022 22:03:18 +0800
+Message-ID: <20220113140318.11117-1-zhangliang5@huawei.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 17/23] Documentation: bindings: Add fsd spi compatible in
- dt-bindings document
-Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, olof@lixom.net,
-        linus.walleij@linaro.org, catalin.marinas@arm.com,
-        robh+dt@kernel.org, s.nawrocki@samsung.com,
-        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
-        linux-fsd@tesla.com, Adithya K V <adithya.kv@samsung.com>
-References: <20220113121143.22280-1-alim.akhtar@samsung.com>
- <CGME20220113122427epcas5p1885d8b3b735e8f127b6694a309796e5a@epcas5p1.samsung.com>
- <20220113121143.22280-18-alim.akhtar@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220113121143.22280-18-alim.akhtar@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.170]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500003.china.huawei.com (7.185.36.56)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/01/2022 13:11, Alim Akhtar wrote:
-> This patch adds spi controller dt-binding compatible information for
-> Tesla Full Self-Driving SoC.
-> 
-> Cc: linux-fsd@tesla.com
-> Signed-off-by: Adithya K V <adithya.kv@samsung.com>
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> ---
->  Documentation/devicetree/bindings/spi/spi-samsung.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+In current implementation, process's read requestions will fault in pages
+with WP flags in PTEs. Next, if process emit a write requestion will go
+into do_wp_page() and copy data to a new allocated page from the old one
+due to refcount > 1 (page table mapped and swapcache), which could be
+result in performance degradation. In fact, this page is exclusively owned
+by this process and the duplication from old to a new allocated page is
+really unnecessary.
 
-Also: subject prefix:
-spi: dt-bindings: samsung:
+So In this situation, these unshared pages can be reused by its process.
 
-> diff --git a/Documentation/devicetree/bindings/spi/spi-samsung.txt b/Documentation/devicetree/bindings/spi/spi-samsung.txt
-> index 49028a4f5df1..3af2408454b4 100644
-> --- a/Documentation/devicetree/bindings/spi/spi-samsung.txt
-> +++ b/Documentation/devicetree/bindings/spi/spi-samsung.txt
-> @@ -11,6 +11,7 @@ Required SoC Specific Properties:
->      - samsung,s5pv210-spi: for s5pv210 and s5pc110 platforms
->      - samsung,exynos5433-spi: for exynos5433 compatible controllers
->      - samsung,exynos7-spi: for exynos7 platforms <DEPRECATED>
-> +    - tesla,fsd-spi: spi controller support for Tesla Full Self-Driving SoC
->  
->  - reg: physical base address of the controller and length of memory mapped
->    region.
-> 
+Signed-off-by: Liang Zhang <zhangliang5@huawei.com>
+---
+This patch has been tested with redis benchmark. Here is the test
+result.
+
+Hardware
+========
+Memory (GB): 512G
+CPU (total #): 88
+NVMe SSD (GB): 1024
+
+OS
+==
+kernel 5.10.0
+
+Testcase
+========
+step 1:
+  Run 16 VMs (4U8G), each running with redis-server, in a cgroup 
+  limiting memory.limit_in_bytes to 100G. 
+step 2:
+  Run memtier_bemchmark in host with params "--threads=1 --clients=1 \
+--pipeline=256 --data-size=2048 --requests=allkeys --key-minimum=1 \
+--key-maximum=30000000 --key-prefix=memtier-benchmark-prefix-redistests"
+  to test every VM concurrently.
+
+Workset size
+============
+cat memory.memsw.usage_in_bytes
+125403303936
+
+Result
+======
+Comparing with Baseline, this patch can achieved 41% more Ops/sec, 
+41% more Hits/sec, 41% more Misses/sec, 30% less Latency and 
+41% more KB/sec. 
+
+  Index(average)        Baseline kernel        Patched kernel
+  Ops/sec               109497                 155428
+  Hits/sec              8653                   12283
+  Misses/sec            90889                  129014
+  Latency               2.297                  1.603
+  KB/sec                44569                  63186
 
 
-Best regards,
-Krzysztof
+ mm/memory.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/mm/memory.c b/mm/memory.c
+index 23f2f1300d42..fd4d868b1c2d 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3291,10 +3291,16 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+ 		struct page *page = vmf->page;
+ 
+ 		/* PageKsm() doesn't necessarily raise the page refcount */
+-		if (PageKsm(page) || page_count(page) != 1)
++		if (PageKsm(page))
+ 			goto copy;
+ 		if (!trylock_page(page))
+ 			goto copy;
++
++		/* reuse the unshared swapcache page */
++		if (PageSwapCache(page) && reuse_swap_page(page, NULL)) {
++			goto reuse;
++		}
++
+ 		if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
+ 			unlock_page(page);
+ 			goto copy;
+@@ -3304,6 +3310,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+ 		 * page count reference, and the page is locked,
+ 		 * it's dark out, and we're wearing sunglasses. Hit it.
+ 		 */
++reuse:
+ 		unlock_page(page);
+ 		wp_page_reuse(vmf);
+ 		return VM_FAULT_WRITE;
+-- 
+2.30.0
+
