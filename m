@@ -2,87 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D44C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB863C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236200AbiAMPoS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:44:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236215AbiAMPoO (ORCPT
+        id S236238AbiAMPob (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:44:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33042 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236213AbiAMPo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:44:14 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C167C061574;
-        Thu, 13 Jan 2022 07:44:14 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id 4A7421F45F52
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642088653;
-        bh=OCoO1qcOvbTSRnl8cd3s4VLrF0+nSIp3C4F6axnFvE4=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=hsYI0QU8kAEuHKcWn3ygTE6VlGWOluTXSPxAG10x0EfTk8xP/aPZdqBXt3qK4W8Ml
-         rceQtiuf3bRX9VlepakMKRs9MSJnsNg+585JsW1WLe92vTGLmMBPn397qbf5btoP3y
-         EmD/TIkY5531qS8GGM9vjfXTA71dhsi7GJ1ebWj73I+MW9k16hRjQ51x8Wg5OoyOSF
-         GPCIEXc8oA7FHLuiOXcaQZQSJANTVsxFsbz94T215pZv8P6RDeK7eVpeD7n/fq4QU8
-         53Eii705xxn0RpbtXLhOgFmQ72DVjdbon6GUg3NVJb5iYk6FRcB/2SivSLFdSbhkmx
-         LDEY4dqU+RZvA==
-Subject: Re: [PATCH v3 2/7] dt-bindings: memory: mtk-smi: No need
- mediatek,larb-id for mt8167
-To:     Yong Wu <yong.wu@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Tomasz Figa <tfiga@chromium.org>,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, youlin.pei@mediatek.com,
-        anan.sun@mediatek.com, lc.kan@mediatek.com, yi.kuo@mediatek.com,
-        anthony.huang@mediatek.com
-References: <20220113111057.29918-1-yong.wu@mediatek.com>
- <20220113111057.29918-3-yong.wu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <65919fad-3fbc-728d-4f14-5490b59e30a9@collabora.com>
-Date:   Thu, 13 Jan 2022 16:44:09 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Thu, 13 Jan 2022 10:44:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BDE7860CA0
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 15:44:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C26B3C36AE9;
+        Thu, 13 Jan 2022 15:44:27 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="As3RgnPS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642088666;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=//hC7B/fMPnzJam43NIjPCJ7jgKt0JVRW0xM9AnOBUI=;
+        b=As3RgnPSh86aPHrTpxbNbzePQyftFxnzqxuazkiJSthM1fh7DVAiDsUzTWbfx5ywWbWwaf
+        f9g7jqS56cpFdYTDJNm/qQLMpdSFI9o0sH+31z/UFUu1TQraMcz28Zd9PV7TXivbZYNwEd
+        Ez85/09sArJpNy0y6RMr2KueQMGF3qo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id f5550ca5 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Thu, 13 Jan 2022 15:44:26 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-kernel@vger.kernel.org, tytso@mit.edu
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 0/7] first in overall series of rng code house cleaning
+Date:   Thu, 13 Jan 2022 16:44:06 +0100
+Message-Id: <20220113154413.29513-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-In-Reply-To: <20220113111057.29918-3-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 13/01/22 12:10, Yong Wu ha scritto:
-> Mute the warning from "make dtbs_check":
-> 
-> larb@14016000: 'mediatek,larb-id' is a required property
-> 	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
-> larb@15001000: 'mediatek,larb-id' is a required property
-> 	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
-> larb@16010000: 'mediatek,larb-id' is a required property
-> 	arch/arm64/boot/dts/mediatek/mt8167-pumpkin.dt.yaml
-> 
-> As the description of mediatek,larb-id, the property is only
-> required when the larbid is not consecutive from its IOMMU point of view.
-> 
-> Also, from the description of mediatek,larbs in
-> Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml, all the larbs
-> must sort by the larb index.
-> 
-> In mt8167, there is only one IOMMU HW and three larbs. The drivers already
-> know its larb index from the mediatek,larbs property of IOMMU, thus no
-> need this property.
-> 
-> Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+The RNG has been through a lot of changes over the years, and the code
+could use a bit of house cleaning. This is the first series in what I
+anticipate will be a few of these. The goal is to have each component of
+it clearly analyzable for what it is, which should make the job of
+analyzing its security as well as overall maintenance easier.
 
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Jason A. Donenfeld (7):
+  random: cleanup poolinfo abstraction
+  random: cleanup integer types
+  random: remove incomplete last_data logic
+  random: remove unused reserved argument
+  random: rather than entropy_store abstraction, use global
+  random: remove unused OUTPUT_POOL constants
+  random: de-duplicate INPUT_POOL constants
 
+ drivers/char/random.c         | 430 ++++++++++++++--------------------
+ include/trace/events/random.h |  56 ++---
+ 2 files changed, 198 insertions(+), 288 deletions(-)
 
+-- 
+2.34.1
 
