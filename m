@@ -2,81 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C8AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:44:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 276CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbiAMPoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S236227AbiAMPoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:44:15 -0500
+Received: from mga02.intel.com ([134.134.136.20]:29323 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233305AbiAMPoN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 13 Jan 2022 10:44:13 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:47550 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236200AbiAMPoL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:44:11 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id C463E1F45F54
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642088650;
-        bh=3vGVtVzMAhUmYM5YjA6CBnjnlY+uoAIkrXPjo/Gg1GI=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=Y3KiLojbdjd1lJ/W6NH25Ji0/8OF+E0IkH2Onn7bsAkaEmfjjj02nAY4kSZ1Y+UfI
-         94A10jPfHgHlRBJxERt9+viTwuzR18mGLHnUCR/AagKfPO0o5pjAOCuGfow+b1lvuh
-         Tlqzq/MQ7aSujocogRWsgNxbGeKDIKUrDut6cpXRIX+Iu5lPFzeks0tonky7C5Aols
-         jvJNgrMEYmM1YpqbBnlf0uCEx8OpLuf6K7nTFBuxoYOi9Yw4tYRfG0q6TgPFUQEljs
-         uq/4C0kDkcrUAP2QL3QVr6lBpx6fjW3s8Qp9k+X1bwnUajHOQIHeY/DpHMYNyYHylI
-         WY+a95p3pxwrQ==
-Subject: Re: [PATCH v3 3/7] dt-bindings: memory: mtk-smi: Correct minItems to
- 2 for the gals clocks
-To:     Yong Wu <yong.wu@mediatek.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Tomasz Figa <tfiga@chromium.org>,
-        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        iommu@lists.linux-foundation.org, youlin.pei@mediatek.com,
-        anan.sun@mediatek.com, lc.kan@mediatek.com, yi.kuo@mediatek.com,
-        anthony.huang@mediatek.com
-References: <20220113111057.29918-1-yong.wu@mediatek.com>
- <20220113111057.29918-4-yong.wu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <dbaf0fa5-4900-a59d-b05d-a138464a4f39@collabora.com>
-Date:   Thu, 13 Jan 2022 16:44:07 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642088652; x=1673624652;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=m75ld79nt8TPm8DDWMvOut/woD0VIiTUU3VSnhxSZAQ=;
+  b=kLcWrcJEZ81fUTy1gOnvx5G1SlahtYPU0Lm2EBvxWf6sBF1/vbABS59/
+   gtqT7mlwE+RoKlZx8tt2PfRDVWJOB8imxb2YDiW/9qQ0vHRFw2kl31NhY
+   WuI6C36HHHumMNWcSMi95O67kftjuEMaEePEbKCUPGp54yADil0V6+uJw
+   Fmp5Rx4afh85qb3JJHEhQ5ARcueNY4aXbyx25QTkdGIpwjji4ZEHrwXw+
+   rNsHKwRAdBmP9gERiV6nICEeZZ5FNwYwNI3BwNBR3agFXqMxM1nCiuu+W
+   qc1IOH/jTdWruj43pwmivKcinDLQEep+lJ0VkeH+jd2oQ6pQ7YBya8fsx
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="231380963"
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="231380963"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 07:44:12 -0800
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="620639268"
+Received: from ypchen-mobl.amr.corp.intel.com (HELO [10.212.66.70]) ([10.212.66.70])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 07:44:11 -0800
+Subject: Re: [PATCH 3/6] ASoC: amd: acp: Add generic PCI driver module for ACP
+ device
+To:     Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>, broonie@kernel.org,
+        alsa-devel@alsa-project.org
+Cc:     Sunil-kumar.Dommati@amd.com,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        open list <linux-kernel@vger.kernel.org>,
+        Basavaraj.Hiregoudar@amd.com, Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        V sujith kumar Reddy <vsujithkumar.reddy@amd.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Vijendar.Mukunda@amd.com, Alexander.Deucher@amd.com,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Bard Liao <bard.liao@intel.com>
+References: <20220113092842.432101-1-AjitKumar.Pandey@amd.com>
+ <20220113092842.432101-4-AjitKumar.Pandey@amd.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <9da4d004-5fc3-125a-4e60-f0a6a4007d2b@linux.intel.com>
+Date:   Thu, 13 Jan 2022 09:27:22 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20220113111057.29918-4-yong.wu@mediatek.com>
-Content-Type: text/plain; charset=iso-8859-15; format=flowed
+In-Reply-To: <20220113092842.432101-4-AjitKumar.Pandey@amd.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 13/01/22 12:10, Yong Wu ha scritto:
-> Mute the warning from "make dtbs_check":
-> 
-> larb@14017000: clock-names: ['apb', 'smi'] is too short
-> 	arch/arm64/boot/dts/mediatek/mt8183-evb.dt.yaml
-> 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-burnet.dt.yaml
-> 	...
-> 
-> larb@16010000: clock-names: ['apb', 'smi'] is too short
-> 	arch/arm64/boot/dts/mediatek/mt8183-evb.dt.yaml
-> 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-burnet.dt.yaml
-> 
-> larb@17010000: clock-names: ['apb', 'smi'] is too short
-> 	arch/arm64/boot/dts/mediatek/mt8183-evb.dt.yaml
-> 	arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi-burnet.dt.yaml
-> 
-> If a platform's larb supports gals, there will be some larbs have one
-> more "gals" clock while the others still only need "apb"/"smi" clocks,
-> then the minItems for clocks and clock-names are 2.
-> 
-> Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> +static int acp_pci_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+> +{
+> +	struct platform_device_info pdevinfo;
+> +	struct device *dev = &pci->dev;
+> +	const struct resource *res_acp;
+> +	struct acp_chip_info *chip;
+> +	struct resource *res;
+> +	unsigned int flag, addr, num_res, i;
+> +	int ret;
+> +
+> +	flag = snd_amd_acp_find_config(pci);
+> +	if (flag != FLAG_AMD_LEGACY)
+> +		return -ENODEV;
+> +
+> +	chip = devm_kzalloc(&pci->dev, sizeof(*chip), GFP_KERNEL);
+> +	if (!chip)
+> +		return -ENOMEM;
+> +
+> +	if (pci_enable_device(pci)) {
+> +		dev_err(&pci->dev, "pci_enable_device failed\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	ret = pci_request_regions(pci, "AMD ACP3x audio");
+> +	if (ret < 0) {
+> +		dev_err(&pci->dev, "pci_request_regions failed\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	pci_set_master(pci);
+> +
+> +	switch (pci->revision) {
+> +	case 0x01:
+> +		res_acp = acp3x_res;
+> +		num_res = ARRAY_SIZE(acp3x_res);
+> +		chip->name = "acp_asoc_renoir";
+> +		chip->acp_rev = ACP3X_DEV;
+> +		break;
+> +	default:
+> +		dev_err(dev, "Unsupported device revision:0x%x\n", pci->revision);
+> +		return -EINVAL;
+> +	}
+> +
+> +	dmic_dev = platform_device_register_data(dev, "dmic-codec", PLATFORM_DEVID_NONE, NULL, 0);
+> +	if (IS_ERR(dmic_dev)) {
+> +		dev_err(dev, "failed to create DMIC device\n");
+> +		return PTR_ERR(dmic_dev);
+> +	}
+
+Past this point, any error handling needs to use
+platform_device_unregister(dmic_dev);
+...
+
+> +	addr = pci_resource_start(pci, 0);
+> +	chip->base = devm_ioremap(&pci->dev, addr, pci_resource_len(pci, 0));
+> +
+> +	res = devm_kzalloc(&pci->dev, sizeof(struct resource) * num_res, GFP_KERNEL);
+> +	if (!res)
+> +		return -ENOMEM;
+
+...which is missed here.
+
+> +
+> +	for (i = 0; i < num_res; i++, res_acp++) {
+> +		res[i].name = res_acp->name;
+> +		res[i].flags = res_acp->flags;
+> +		res[i].start = addr + res_acp->start;
+> +		res[i].end = addr + res_acp->end;
+> +		if (res_acp->flags == IORESOURCE_IRQ) {
+> +			res[i].start = pci->irq;
+> +			res[i].end = res[i].start;
+> +		}
+> +	}
+> +
+> +	memset(&pdevinfo, 0, sizeof(pdevinfo));
+> +
+> +	pdevinfo.name = chip->name;
+> +	pdevinfo.id = 0;
+> +	pdevinfo.parent = &pci->dev;
+> +	pdevinfo.num_res = num_res;
+> +	pdevinfo.res = &res[0];
+> +	pdevinfo.data = chip;
+> +	pdevinfo.size_data = sizeof(*chip);
+> +
+> +	pdev = platform_device_register_full(&pdevinfo);
+> +	if (IS_ERR(pdev)) {
+> +		dev_err(&pci->dev, "cannot register %s device\n", pdevinfo.name);
+> +		platform_device_unregister(dmic_dev);
+> +		ret = PTR_ERR(pdev);
+> +	}
+> +
+> +	return ret;
+> +};
 
