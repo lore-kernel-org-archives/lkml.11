@@ -2,102 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E51C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3E8C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbiAMMkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 07:40:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33072 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233055AbiAMMkK (ORCPT
+        id S234697AbiAMMkk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 07:40:40 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:50820
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232977AbiAMMki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 07:40:10 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 13 Jan 2022 07:40:38 -0500
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 803D761C18;
-        Thu, 13 Jan 2022 12:40:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DF2A1C36AEC;
-        Thu, 13 Jan 2022 12:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642077609;
-        bh=188HWT1CkxrwlSeVx4VHEbaaD4KJ+ccLjOYC5mXrvY4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=AISn/NZ6B27ZlACncbGXBr4gRX6qLlhoSQODl95aWH80M3n97WupOPafhF/YUsLuB
-         nt3S1EVYA/C/TMvtoCgr1ZxHNP1mtOlytCJ8z+WE2gaaPHqz6OTP1NsCceQ5DTFoc3
-         V6x7dtcG2KNoUeK4eoRwtmIQv2cNJSmx2wW2LPjAZWtKebiyK0gB3saJ3vJZ7uacuV
-         CyQWB6K5ClMFTIoZARkg29EvB/yBwiMYvhSM1nRzWf5Ghb8N5lnTq+uIW3CYtg2z4S
-         FP80fkqe8ZfcpSNCXHyR88YuGWYBTz8zTupWIyV9XxSxKjOmNGkXkoo4+5GDwbD4GW
-         4ltfDIeuv4Mng==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C7A0CF6078E;
-        Thu, 13 Jan 2022 12:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D2FCF3F198
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 12:40:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642077637;
+        bh=NtF9Qcv8dCyv4imQqdPZ0gphBbiJgf6BkMwibu0qdek=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=FylfRzFpYWYgd4WO09AQsPJqT5Q1Ge7coeHBZga3wuxwXc2pUqBtINPpHyQkh5mbF
+         Q2hmNQOuK7lk6TAJ0wVYyPnJCmJ3PRV2QilTTkRgDU8Xn6oPKKTYP/dHXw3FcT7wvV
+         KgiP0gTBbg/AcgEGSwu4FTriqdMU1Nl46Wcql9FomQViOjrThtg1EBARDEJndnH0nL
+         LlZNysBO3TuD9KHm52N6FAr8Qhje1+5ihw0yCJ5cL7+LEeSr3gF3Vj0xvr2zzu439J
+         0ZDTKrNbv53U7UhsyUCNQu1Q7yp4/VLJgNppWQuEtA547Jx3Y75VIaTzk8leaS+2yg
+         MqsxOSBIo5sqg==
+Received: by mail-ed1-f72.google.com with SMTP id y18-20020a056402271200b003fa16a5debcso5215499edd.14
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 04:40:37 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=NtF9Qcv8dCyv4imQqdPZ0gphBbiJgf6BkMwibu0qdek=;
+        b=frJ7IxQ/c79J53DFDf7Lb2AFrpOFf79Udt3BuF0QBkWe69xz6t35pbxMO5FTEiE6FO
+         vzxldLgZjN5cRmWPAt7YhV9QFcHyI9yoFY5FicZXU1DqMiJDsC3dVmDqzgX1CDooLxBP
+         /58xKgiLwLtbB6BS5tbHr6lecMZIEuAYJjG3+/TdToTpxNjGzMrj0VkaCiooRtV6MZDe
+         Dn3xMtVraKwWaYe4TV693jIn/apAn4Dcy98lZgrHVvuWmgkV4aY9LRDSMD79QTrdhRnC
+         nyTt+38w/czIvxRNOkoe6gFOG6oLn2SvSWVfTYbUfNi8sjCRMJINFEjcikmXA4UuUxQd
+         0zSQ==
+X-Gm-Message-State: AOAM5301lUhCbM2qh7nAR3Qbwh9i8gMvrwi6Dfs35qRdi4YS8TmiT6Ov
+        D3tcKcXiOLkBMAtSGN8hbkbjA37m/q2vL+9lSj8LvKgmaRVB2XYI/SV3Yt6Py92VcUmfiadIJJ3
+        6fg92CIghfNYsaBhDQGVQIAf0JMs8rfimujuBZ8Jmjw==
+X-Received: by 2002:a05:6402:655:: with SMTP id u21mr4010428edx.30.1642077637575;
+        Thu, 13 Jan 2022 04:40:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzysO4hAvoMYoJ/ruIH66z8VzH4bfZ21Ozb1u+/RRfHvZ0YP4DJm75J85RG/HrmE+6HlqV7UQ==
+X-Received: by 2002:a05:6402:655:: with SMTP id u21mr4010406edx.30.1642077637409;
+        Thu, 13 Jan 2022 04:40:37 -0800 (PST)
+Received: from [192.168.0.29] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id sa13sm858440ejc.28.2022.01.13.04.40.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Jan 2022 04:40:37 -0800 (PST)
+Message-ID: <c87f500e-e43e-465c-94fa-050c2b0de083@canonical.com>
+Date:   Thu, 13 Jan 2022 13:40:36 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: qmi_wwan: add ZTE MF286D modem 19d2:1485
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164207760981.15302.4251167681503025563.git-patchwork-notify@kernel.org>
-Date:   Thu, 13 Jan 2022 12:40:09 +0000
-References: <20220111221132.14586-1-paweldembicki@gmail.com>
-In-Reply-To: <20220111221132.14586-1-paweldembicki@gmail.com>
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     linux-usb@vger.kernel.org, bjorn@mork.no, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 01/23] dt-bindings: clock: Document FSD CMU bindings
+Content-Language: en-US
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, olof@lixom.net,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, s.nawrocki@samsung.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        linux-fsd@tesla.com
+References: <20220113121143.22280-1-alim.akhtar@samsung.com>
+ <CGME20220113122311epcas5p4b7c253b49dce3bd3580407fcf312e70e@epcas5p4.samsung.com>
+ <20220113121143.22280-2-alim.akhtar@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220113121143.22280-2-alim.akhtar@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Tue, 11 Jan 2022 23:11:32 +0100 you wrote:
-> Modem from ZTE MF286D is an Qualcomm MDM9250 based 3G/4G modem.
+On 13/01/2022 13:11, Alim Akhtar wrote:
+> Add dt-schema documentation for Tesla FSD SoC clock controller.
 > 
-> T:  Bus=02 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  3 Spd=5000 MxCh= 0
-> D:  Ver= 3.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS= 9 #Cfgs=  1
-> P:  Vendor=19d2 ProdID=1485 Rev=52.87
-> S:  Manufacturer=ZTE,Incorporated
-> S:  Product=ZTE Technologies MSM
-> S:  SerialNumber=MF286DZTED000000
-> C:* #Ifs= 7 Cfg#= 1 Atr=80 MxPwr=896mA
-> A:  FirstIf#= 0 IfCount= 2 Cls=02(comm.) Sub=06 Prot=00
-> I:* If#= 0 Alt= 0 #EPs= 1 Cls=02(comm.) Sub=02 Prot=ff Driver=rndis_host
-> E:  Ad=82(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-> I:* If#= 1 Alt= 0 #EPs= 2 Cls=0a(data ) Sub=00 Prot=00 Driver=rndis_host
-> E:  Ad=81(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> E:  Ad=01(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> I:* If#= 2 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-> E:  Ad=83(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> E:  Ad=02(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-> E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=84(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> E:  Ad=03(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
-> E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-> E:  Ad=86(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> E:  Ad=04(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> I:* If#= 5 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-> E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-> E:  Ad=8e(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> E:  Ad=0f(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> I:* If#= 6 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=usbfs
-> E:  Ad=05(O) Atr=02(Bulk) MxPS=1024 Ivl=0ms
-> E:  Ad=89(I) Atr=02(Bulk) MxPS=1024 Ivl=0ms
+> Cc: linux-fsd@tesla.com
+> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
+> ---
+>  .../bindings/clock/tesla,fsd-clock.yaml       | 212 ++++++++++++++++++
+>  1 file changed, 212 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
 > 
-> [...]
+> diff --git a/Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml b/Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+> new file mode 100644
+> index 000000000000..58f341e5004d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+> @@ -0,0 +1,212 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/tesla,fsd-clock.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Tesla FSD (Full Self-Driving) SoC clock controller
+> +
+> +maintainers:
+> +  - Alim Akhtar <alim.akhtar@samsung.com>
+> +  - linux-fsd@tesla.com
+> +
+> +description: |
+> +  FSD clock controller consist of several clock management unit
+> +  (CMU), which generates clocks for various inteernal SoC blocks.
+> +  The root clock comes from external OSC clock (24 MHz).
+> +
+> +  All available clocks are defined as preprocessor macros in
+> +  'dt-bindings/clock/fsd-clk.h' header.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - tesla,fsd-clock-cmu
+> +      - tesla,fsd-clock-imem
+> +      - tesla,fsd-clock-peric
+> +      - tesla,fsd-clock-fsys0
+> +      - tesla,fsd-clock-fsys1
+> +      - tesla,fsd-clock-mfc
+> +      - tesla,fsd-clock-cam_csi
+> +
+> +  clocks:
+> +    minItems: 1
+> +    maxItems: 6
+> +
+> +  clock-names:
+> +    minItems: 1
+> +    maxItems: 6
+> +
+> +  "#clock-cells":
+> +    const: 1
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            const: tesla,fsd-clock-cmu
+> +
 
-Here is the summary with links:
-  - net: qmi_wwan: add ZTE MF286D modem 19d2:1485
-    https://git.kernel.org/netdev/net/c/078c6a1cbd4c
+Nitpick: Drop the white-spaces between if-then. It's easier to spot the
+if-blocks if they are together.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> +    then:
+> +      properties:
+> +        clocks:
+> +          items:
+> +            - description: External reference clock (24 MHz)
+> +
+
+Drop this whitespace as well.
+
+Rest looks good to me, except the discussion about the compatible.
 
 
+Best regards,
+Krzysztof
