@@ -2,63 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E72C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:41:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236131AbiAMPbY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:31:24 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:41998 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232070AbiAMPbW (ORCPT
+        id S236190AbiAMPlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:41:37 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:47508 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231216AbiAMPlh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:31:22 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7E36821129;
-        Thu, 13 Jan 2022 15:31:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642087881; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zIXhxVVHGtk6ijZKhabiqkui6YCqOppbvprKjXD8XzM=;
-        b=AaV+zMcbVcgg/XXoOO/p32goghWxiXPv2dtWCsrhkJwWM7gjx6zEoTun9YsoHH5c8BgNhV
-        eTK3KKj9TrteV9EI25Oknd1kGmIeDMlpHOElE3BTeymNQznitD/rpkPj1ud/jBkAzBEJJJ
-        L6zN42xHy+SegMUyC0zVT8kJjIi1QXQ=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 71C80A3B89;
-        Thu, 13 Jan 2022 15:31:20 +0000 (UTC)
-Date:   Thu, 13 Jan 2022 16:31:16 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     sxwjean@me.com
-Cc:     akpm@linux-foundation.org, david@redhat.com,
-        dan.j.williams@intel.com, osalvador@suse.de,
-        naoya.horiguchi@nec.com, thunder.leizhen@huawei.com,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xiongwei Song <sxwjean@gmail.com>
-Subject: Re: [PATCH v3 2/2] proc: Add getting pages info of ZONE_DEVICE
- support
-Message-ID: <YeBFxBwaHtfs8jmg@dhcp22.suse.cz>
-References: <20220112143517.262143-1-sxwjean@me.com>
- <20220112143517.262143-3-sxwjean@me.com>
+        Thu, 13 Jan 2022 10:41:37 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 074301F45608
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642088495;
+        bh=BMHWWGEM16d3WzPZdxSB+d8Mct80ra3tr+9TJ/UQpa4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=J9kcGl/0J4V49lY6XnV5B2YY58lrFCZrLhH9srG8OOmu3iu2Ji/uZNRAzbDPI4K/l
+         ET4Rrk0EWDPONpj/bF/RmKPz9FoMGsPdFGCG5QMguY2IYc1M5U2bseXaYZaFZXdc/c
+         4Du16Z0SJC5S2islbnuoLd8D5SazLVR1cHkYsoL69mL2BxXBFf1KQSyOnbbn2+AVgY
+         7ws0SD5/ilVL9C41kdbu0/F/SHqiWyhY+WIZbVn4kDyBWsU/0pECQ6rrZ/7uInzB25
+         nD9jp8wIHFAPb2PzTelpQQOI7U33s98FZ3x7Hf3veMF2ouKR+8iSw+y9f5S2VlJCt9
+         xl/vImRVS/gjw==
+Subject: Re: [PATCH v3 1/7] dt-bindings: memory: mtk-smi: Rename clock to
+ clocks
+To:     Yong Wu <yong.wu@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Tomasz Figa <tfiga@chromium.org>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, youlin.pei@mediatek.com,
+        anan.sun@mediatek.com, lc.kan@mediatek.com, yi.kuo@mediatek.com,
+        anthony.huang@mediatek.com
+References: <20220113111057.29918-1-yong.wu@mediatek.com>
+ <20220113111057.29918-2-yong.wu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Message-ID: <c88b8a01-6048-77bc-b49d-dd58ddbe5d74@collabora.com>
+Date:   Thu, 13 Jan 2022 16:41:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112143517.262143-3-sxwjean@me.com>
+In-Reply-To: <20220113111057.29918-2-yong.wu@mediatek.com>
+Content-Type: text/plain; charset=iso-8859-15; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 12-01-22 22:35:17, sxwjean@me.com wrote:
-> From: Xiongwei Song <sxwjean@gmail.com>
+Il 13/01/22 12:10, Yong Wu ha scritto:
+> The property "clock" should be rename to "clocks", and delete the "items",
+> the minItems/maxItems should not be put under "items".
 > 
-> When requesting pages info by /proc/kpage*, the pages in ZONE_DEVICE were
-> ignored.
-> 
-> The pfn_to_devmap_page() function can help to get page that belongs to
-> ZONE_DEVICE.
+> Fixes: 27bb0e42855a ("dt-bindings: memory: mediatek: Convert SMI to DT schema")
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-Why is this needed? Who would consume that information and what for?
--- 
-Michal Hocko
-SUSE Labs
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
