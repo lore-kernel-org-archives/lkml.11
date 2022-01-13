@@ -2,154 +2,288 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64EBC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:04:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC87CC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:04:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235952AbiAMPE2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:04:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34515 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229554AbiAMPE0 (ORCPT
+        id S235967AbiAMPEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229554AbiAMPEw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:04:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642086266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cRTsijcpTTyHraoR+V3O1Mi16FiVJpK3PKf++RerMpw=;
-        b=Zk1KP2duy8hLUAqFuOLaXE5CcRc7FdYbGsUUXGVKO5HPs4GLrRmZdRptupinvXLyUjejwX
-        6razHT8L/zC1AslnAeMYQ+6EmW8m9VuevU+wEKgudRQxT51ZV30sLpumdfVrB32q6itgvR
-        sMEWSOOv0bqoFhXRMw30vWmGaKAobH4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-377-SXOjhBofNNGntp7JKul0JQ-1; Thu, 13 Jan 2022 10:04:24 -0500
-X-MC-Unique: SXOjhBofNNGntp7JKul0JQ-1
-Received: by mail-ed1-f69.google.com with SMTP id y18-20020a056402271200b003fa16a5debcso5593096edd.14
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 07:04:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=cRTsijcpTTyHraoR+V3O1Mi16FiVJpK3PKf++RerMpw=;
-        b=hvSTflwYkjGty6G1xfyVWYcdX+8JjeX0gkgaIHBfz/8F+A81vOnnzySoa4y4vH4RW8
-         vA5U189U/21RqgyTo2kvOe3UhD+rrgPbkOU9hmq+t3Czi+Y4sw3HjhtI9xvmbYwVQ7fp
-         0nyMteFyCOpVqu5OOE3QyMY4UwT8e99QD4+qoP5FqwpYiqml71GHsWrd9P20tHK0Mj9E
-         8Kie9SXy5tHzlGlliwc+i9AfJV9Aj66KJ4Uvjz7QE8CnmD3aVLMvLGxRuuRqsbtzXko6
-         DvAM26HadmVBcZLL+EaZjstAqqpbD2S/P4sZeWj27uprqScCHGoAntFFBNpYdutkAcqc
-         20DA==
-X-Gm-Message-State: AOAM530JfQSv1aTPgjGWJL7c26asKd7UcZgoapVkJ8j64qX9vaKihyJW
-        USZBzDcfQQ76jfNltyO57W+0xlXi3PuHSpoDIqQ9YEYLSYBJHXq9uVedUsHjbr11eK+z9cd+eXi
-        v80FQl3zSB0Cxmt4+SXKX4/m0
-X-Received: by 2002:a17:907:a411:: with SMTP id sg17mr3970383ejc.386.1642086263415;
-        Thu, 13 Jan 2022 07:04:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwjs3sI3lBKoJfQelsLOUNn03wgAPiabACCHXkb0MaN1/2AMIGOdqbV88alKCvlLM5aoh0wdg==
-X-Received: by 2002:a17:907:a411:: with SMTP id sg17mr3970358ejc.386.1642086263121;
-        Thu, 13 Jan 2022 07:04:23 -0800 (PST)
-Received: from ?IPV6:2003:cb:c703:e200:8511:ed0f:ac2c:42f7? (p200300cbc703e2008511ed0fac2c42f7.dip0.t-ipconnect.de. [2003:cb:c703:e200:8511:ed0f:ac2c:42f7])
-        by smtp.gmail.com with ESMTPSA id d27sm953104ejd.117.2022.01.13.07.04.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 07:04:22 -0800 (PST)
-Message-ID: <79e04824-73d5-c69f-64fb-f67051f4e124@redhat.com>
-Date:   Thu, 13 Jan 2022 16:04:21 +0100
+        Thu, 13 Jan 2022 10:04:52 -0500
+X-Greylist: delayed 555 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 13 Jan 2022 07:04:52 PST
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5219DC06161C
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 07:04:52 -0800 (PST)
+Received: from localhost.localdomain (89-166-24-184.bb.dnainternet.fi [89.166.24.184])
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id E5CD13F657;
+        Thu, 13 Jan 2022 15:55:37 +0100 (CET)
+From:   Jami Kettunen <jami.kettunen@somainline.org>
+To:     linux-arm-msm@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] dt-bindings: display: msm: Add binding for msm8998 dpu
+Date:   Thu, 13 Jan 2022 16:51:11 +0200
+Message-Id: <20220113145111.29984-4-jami.kettunen@somainline.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220113145111.29984-1-jami.kettunen@somainline.org>
+References: <20220113145111.29984-1-jami.kettunen@somainline.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
-Content-Language: en-US
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Liang Zhang <zhangliang5@huawei.com>, akpm@linux-foundation.org,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        wangzhigang17@huawei.com,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <20220113140318.11117-1-zhangliang5@huawei.com>
- <YeA5oP/iaxtVPHb3@casper.infradead.org>
- <ec0f57e6-f1f6-b9d9-b507-20e845fe7f17@redhat.com>
- <YeA/DQptAz3fl6ym@casper.infradead.org>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <YeA/DQptAz3fl6ym@casper.infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13.01.22 16:02, Matthew Wilcox wrote:
-> On Thu, Jan 13, 2022 at 03:46:54PM +0100, David Hildenbrand wrote:
->> On 13.01.22 15:39, Matthew Wilcox wrote:
->>> On Thu, Jan 13, 2022 at 10:03:18PM +0800, Liang Zhang wrote:
->>>> In current implementation, process's read requestions will fault in pages
->>>> with WP flags in PTEs. Next, if process emit a write requestion will go
->>>> into do_wp_page() and copy data to a new allocated page from the old one
->>>> due to refcount > 1 (page table mapped and swapcache), which could be
->>>> result in performance degradation. In fact, this page is exclusively owned
->>>> by this process and the duplication from old to a new allocated page is
->>>> really unnecessary.
->>>>
->>>> So In this situation, these unshared pages can be reused by its process.
->>>
->>> Let's bring Linus in on this, but I think this reintroduces all of the
->>> mapcount problems that we've been discussing recently.
->>>
->>> How about this as an alternative?
->>>
->>> +++ b/mm/memory.c
->>> @@ -3291,11 +3291,11 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
->>>                 struct page *page = vmf->page;
->>>
->>>                 /* PageKsm() doesn't necessarily raise the page refcount */
->>> -               if (PageKsm(page) || page_count(page) != 1)
->>> +               if (PageKsm(page) || page_count(page) != 1 + PageSwapCache(page))
->>>                         goto copy;
->>>                 if (!trylock_page(page))
->>>                         goto copy;
->>> -               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
->>> +               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1 + PageSwapCache(page)) {
->>>                         unlock_page(page);
->>>                         goto copy;
->>>                 }
->>
->> Funny, I was staring at swap reuse code as I received this mail ...
->> because if we're not using reuse_swap_page() here anymore, we shouldn't
->> really be reusing it anywhere for consistency, most prominently in
->> do_swap_page() when we handle vmf->flags & FAULT_FLAG_WRITE just
->> similarly as we do here ...
->>
->> And that's where things get hairy and I am still trying to figure out
->> all of the details.
->>
->> Regarding above: If the page is swapped out in multiple processes but
->> was only faulted into the current process R/O, and then we try to write:
->>
->> 1. Still in the swapcache: PageSwapCache()
->> 2. Mapped only by one process: page_mapcount(page) == 1
->> 3. Reference from one page table and the swap cache: page_count(page) ==
->>
->> But other processes could read-fault on the swapcache page, no?
->>
->> I think we'd really have to check against the swapcount as well ...
->> essentially reuse_swap_page(), no?
-> 
-> Unfortunately the last digit is missing from your "3.", but I
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 
-Sorry, == 2.
+Add yaml binding for msm8998 dpu1 support.
 
-> think you're absolutely right; we need to check swapcount.  So
-> once reuse_swap_page() checks page_count instead of mapcount, we'll
-> be good?
-> 
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Signed-off-by: Jami Kettunen <jami.kettunen@somainline.org>
+---
+ .../bindings/display/msm/dpu-msm8998.yaml     | 219 ++++++++++++++++++
+ 1 file changed, 219 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml
 
-That's something I've been thinking of. Either get rid of
-reuse_swap_page() completely or make it obey the same rules everywhere.
-
-It's highly inconsistent how we handle COW.
-
+diff --git a/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml b/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml
+new file mode 100644
+index 000000000000..167bc48748d7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/msm/dpu-msm8998.yaml
+@@ -0,0 +1,219 @@
++# SPDX-License-Identifier: GPL-2.0-only or BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/msm/dpu-msm8998.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Display DPU dt properties for MSM8998 target
++
++maintainers:
++  - AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
++
++description: |
++  Device tree bindings for MSM Mobile Display Subsystem(MDSS) that encapsulates
++  sub-blocks like DPU display controller, DSI and DP interfaces etc. Device tree
++  bindings of MDSS and DPU are mentioned for MSM8998 target.
++
++properties:
++  compatible:
++    items:
++      - const: qcom,msm8998-mdss
++
++  reg:
++    maxItems: 1
++
++  reg-names:
++    const: mdss
++
++  power-domains:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Display AHB clock
++      - description: Display AXI clock
++      - description: Display core clock
++
++  clock-names:
++    items:
++      - const: iface
++      - const: bus
++      - const: core
++
++  interrupts:
++    maxItems: 1
++
++  interrupt-controller: true
++
++  "#address-cells": true
++
++  "#size-cells": true
++
++  "#interrupt-cells":
++    const: 1
++
++  iommus:
++    items:
++      - description: Phandle to apps_smmu node with SID mask for Hard-Fail port0
++
++  ranges: true
++
++patternProperties:
++  "^display-controller@[0-9a-f]+$":
++    type: object
++    description: Node containing the properties of DPU.
++
++    properties:
++      compatible:
++        items:
++          - const: qcom,msm8998-dpu
++
++      reg:
++        items:
++          - description: Address offset and size for mdp register set
++          - description: Address offset and size for regdma register set
++          - description: Address offset and size for vbif register set
++          - description: Address offset and size for non-realtime vbif register set
++
++      reg-names:
++        items:
++          - const: mdp
++          - const: regdma
++          - const: vbif
++          - const: vbif_nrt
++
++      clocks:
++        items:
++          - description: Display ahb clock
++          - description: Display axi clock
++          - description: Display mem-noc clock
++          - description: Display core clock
++          - description: Display vsync clock
++
++      clock-names:
++        items:
++          - const: iface
++          - const: bus
++          - const: mnoc
++          - const: core
++          - const: vsync
++
++      interrupts:
++        maxItems: 1
++
++      power-domains:
++        maxItems: 1
++
++      operating-points-v2: true
++      ports:
++        $ref: /schemas/graph.yaml#/properties/ports
++        description: |
++          Contains the list of output ports from DPU device. These ports
++          connect to interfaces that are external to the DPU hardware,
++          such as DSI, DP etc. Each output port contains an endpoint that
++          describes how it is connected to an external interface.
++
++        properties:
++          port@0:
++            $ref: /schemas/graph.yaml#/properties/port
++            description: DPU_INTF1 (DSI1)
++
++          port@1:
++            $ref: /schemas/graph.yaml#/properties/port
++            description: DPU_INTF2 (DSI2)
++
++        required:
++          - port@0
++          - port@1
++
++    required:
++      - compatible
++      - reg
++      - reg-names
++      - clocks
++      - interrupts
++      - power-domains
++      - operating-points-v2
++      - ports
++
++required:
++  - compatible
++  - reg
++  - reg-names
++  - power-domains
++  - clocks
++  - interrupts
++  - interrupt-controller
++  - iommus
++  - ranges
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,mmcc-msm8998.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/power/qcom-rpmpd.h>
++
++    display-subsystem@c900000 {
++        compatible = "qcom,msm8998-mdss";
++        reg = <0x0c900000 0x1000>;
++        reg-names = "mdss";
++
++        clocks = <&mmcc MDSS_AHB_CLK>,
++                 <&mmcc MDSS_AXI_CLK>,
++                 <&mmcc MDSS_MDP_CLK>;
++        clock-names = "iface", "bus", "core";
++
++        #address-cells = <1>;
++        #interrupt-cells = <1>;
++        #size-cells = <1>;
++
++        interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-controller;
++        iommus = <&mmss_smmu 0>;
++
++        power-domains = <&mmcc MDSS_GDSC>;
++        ranges;
++
++        display-controller@c901000 {
++            compatible = "qcom,msm8998-dpu";
++            reg = <0x0c901000 0x8f000>,
++                  <0x0c9a8e00 0xf0>,
++                  <0x0c9b0000 0x2008>,
++                  <0x0c9b8000 0x1040>;
++            reg-names = "mdp", "regdma", "vbif", "vbif_nrt";
++
++            clocks = <&mmcc MDSS_AHB_CLK>,
++                     <&mmcc MDSS_AXI_CLK>,
++                     <&mmcc MNOC_AHB_CLK>,
++                     <&mmcc MDSS_MDP_CLK>,
++                     <&mmcc MDSS_VSYNC_CLK>;
++            clock-names = "iface", "bus", "mnoc", "core", "vsync";
++
++            interrupt-parent = <&mdss>;
++            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
++            operating-points-v2 = <&mdp_opp_table>;
++            power-domains = <&rpmpd MSM8998_VDDMX>;
++
++            ports {
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                port@0 {
++                    reg = <0>;
++                    dpu_intf1_out: endpoint {
++                        remote-endpoint = <&dsi0_in>;
++                    };
++                };
++
++                port@1 {
++                    reg = <1>;
++                    dpu_intf2_out: endpoint {
++                        remote-endpoint = <&dsi1_in>;
++                    };
++                };
++            };
++        };
++    };
++...
 -- 
-Thanks,
-
-David / dhildenb
+2.34.1
 
