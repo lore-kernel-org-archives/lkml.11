@@ -2,347 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DC8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EF1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbiAMI60 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:58:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233428AbiAMI5e (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S232009AbiAMI6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:58:31 -0500
+Received: from mail-dm6nam11on2073.outbound.protection.outlook.com ([40.107.223.73]:16221
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232463AbiAMI5e (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 13 Jan 2022 03:57:34 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1B1C0611FF;
-        Thu, 13 Jan 2022 00:57:11 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id m4so20359717edb.10;
-        Thu, 13 Jan 2022 00:57:11 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gGZw1gsa+ckb6Iogp0J1MLALm5LbBLWT7FFiDGUkFTp529u7JgSr/9AJq8Kjyiwn84itvyIEJ2ff1Mo4ciGJ8pEPJIZGbZh3sxacQrL2UARkR6RMJkIMKgzwHIh7EtXIgaELdpe2YWQ415aIquZJHCdE+Uli39bMB7Qr6oDBCxx0Ktmyet1oOfG6EhlRzykwaUtwlkV4bt9BKEA6F82QD3rU+XOdrRxTV9eMFHhx6xHcZVPeW0jdgCRzFiXcxmiZmXvHviiR7JPl1MeFjWu5vkB25eNpanM0VXj392QmaqGfLY9pZDDCgYGJUSOPSw61oqmo+9g5WCOCXQV55cksww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qIcn4Cf4/8ZtWki0hhroUT1yK9q1a3c0Ptu+hemQpCE=;
+ b=TKXaqnOEc4/NuthzbmvoBet5q24N8GinVi4QLZc68ff0R5fqazxgUZn3V1kPBpJG3duRMXT7qFtaJqNRXP72lq3jmVa1xlDdxECjHkOaCZEmZ5W0JbKBRrYgymJ2G33F92/7/RQO8bwY/vZILtZKkQkjvh0KeGxhuQ4I5CKdvUKer+uE76mGOK5xsxjRMR2eNUaDC9vFsK3VxCDICO5JSx8xOOQthfiWh62CT3TMlnXxuUAQVaZN7B0Ga5ycCVqAhO5rmC2NY/J9/Inj6LD7qGcOR31GpY+96T/zjShwj06m9ZfsLt+Kc2v4sCOecrbeVsGXZUxGwTIuH+QuUU17aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=C9pTSew8IvqTOHh5d+VI9Kbh5oAaqV9jV+b1RhfYG/A=;
-        b=cf7UUKkXIHJAeHcBfjVDg0wmg5YMnquQU1q7exQ8o0nbyzxtwR08La/4GH8MmkeOZA
-         Dgp+ZptQ5pSDBa5zQKHQ4KtFXDIyw3qio4eYZ3J88rSAciT/JlkmIfM7AdWsJ7vgWPjD
-         LBwvxQoAoy5yOjslkKMjWiNg/tgpg3A9MI1mlAsMFPz5pQnrpjo3JoEC9BJv5L+pBMll
-         /NRIaf+hInn8ZAnmn90/xEXRaEkocUw0ECkMbqdtJ6hVFeH+dPpghd8h5IJDbG1LIuas
-         GPr/Yy4cEYK8msTQxW7Kc7xT4DrI6vmT4sbJfaarIHBoilIZ19+1SyT4ShOWM8K9asqx
-         iY4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=C9pTSew8IvqTOHh5d+VI9Kbh5oAaqV9jV+b1RhfYG/A=;
-        b=XqVzOKCk2M1JiBeozBLyijP0L+6QofdXLMbetKt7gkJXIQ8z69BiWSaL8vW9RPW0cw
-         SsbTbUbj4FiPmjhboFVZZ9pQMIyTkfXioCPIJTDgyx21/2YoSZ86LipVoa8pHi1WuQiZ
-         kM13bned1+YvQYPmfJqTJ7h1RTHN6InlcFObJ8wgomOJPtZ5dO64ZD+F5fWtr8xnHs6G
-         fbmEkckAxB7J0bCUcc8w/IW9v7wYjZXRX1gsCvHh04Wd0KlfM8S0NohiteoLk8VNfmIF
-         Ne4vDKB245pO6ZKc8/l1rN4H8bYyxF9lUZfAKQ392gOFkRSuQ9p4BNNhzzss5KCSqsPZ
-         BsMQ==
-X-Gm-Message-State: AOAM53146eiMiapsVhEpxJceQ7hH1mcVO2VlR6KHNVT2qNVluiM60Q63
-        fI1UjcTu39Y6B35Ec4Jks/jXjVt6bAw=
-X-Google-Smtp-Source: ABdhPJxhzkIGZghbcoKFqEK6eMFLnNZmt3YymMUv1xq6yuUOXWszbChBHB4wW7k/lUsHDiE+lgIfRw==
-X-Received: by 2002:a05:6402:4406:: with SMTP id y6mr3227210eda.374.1642064230155;
-        Thu, 13 Jan 2022 00:57:10 -0800 (PST)
-Received: from gmail.com (563BAB82.dsl.pool.telekom.hu. [86.59.171.130])
-        by smtp.gmail.com with ESMTPSA id f18sm886823edf.95.2022.01.13.00.57.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 00:57:09 -0800 (PST)
-Sender: Ingo Molnar <mingo.kernel.org@gmail.com>
-Date:   Thu, 13 Jan 2022 09:57:05 +0100
-From:   Ingo Molnar <mingo@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qIcn4Cf4/8ZtWki0hhroUT1yK9q1a3c0Ptu+hemQpCE=;
+ b=P72QgOd3Hbn56/PQPXoXBlvyiEKM4gy0Uj/X1reUpWAzTYQDV6qH4WyKKJUAXDzkrv9EuoGD+YzX9zbu5zwMTdu3rKYRZLrXpN+vk/BBjpPXcsOMTmejFB/CrnGwm5hbHs/p8cbz6N9SXbK4wNu4SoD+CD3i/1VPxMhlSmifT1I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by CY4PR1101MB2071.namprd11.prod.outlook.com (2603:10b6:910:1a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Thu, 13 Jan
+ 2022 08:56:28 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
+ 08:56:28 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [ANNOUNCE] "Fast Kernel Headers" Tree -v2
-Message-ID: <Yd/pYSKZKDgPieVR@gmail.com>
-References: <Ydm7ReZWQPrbIugn@gmail.com>
- <CAK8P3a1emGYHPcjTfLqd-yyU8_9w88=2g_B_vfhbKeDtDHMM-w@mail.gmail.com>
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>
+Subject: [PATCH 25/31] staging: wfx: do not display functions names in logs
+Date:   Thu, 13 Jan 2022 09:55:18 +0100
+Message-Id: <20220113085524.1110708-26-Jerome.Pouiller@silabs.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com>
+References: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: SA0PR11CA0117.namprd11.prod.outlook.com
+ (2603:10b6:806:d1::32) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1emGYHPcjTfLqd-yyU8_9w88=2g_B_vfhbKeDtDHMM-w@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e941f6d5-75b1-4660-db02-08d9d6729638
+X-MS-TrafficTypeDiagnostic: CY4PR1101MB2071:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1101MB207129F6AF024F05BBA2671593539@CY4PR1101MB2071.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NMq1SZxEvAAXJpatY9K9Yhb+jNbx+o6W+ACpgeO6whZUSXuNKClTRY6Llr5AHLV60q3UVnzrkhC9NlscwEykfPtHJTYjN7qDV4L2dF21wYZbTgLZNbpBI2CHiLiBq+ZQ6zDBkzTXoF7wfZOVTk3E9PZ1oBMgSAKu06MNKHvSTNrbfjxi0CNX4UOiABj5EQbchn9axJS/7MIlmZz7X9lnrAOHoE4qL9lLkGGcwdpSp+pNYCLlf//WB1PHLzUckVN3w4nnoYJPYCKuZjYjnRz+1NgFL1AkOX5gvm2Q7k7tBppJvUXIZO8J4TuzyYAdPdsjPajop2Ar4jwAUC4FgeqNnygbsXOHl7TW1RsRZZElAgkIlWV7gOiF7ELA9DLfbZvtwNA03uLKLruzIAp5jJ2RhR0KSKArJIM0ainhSxWp0PIzjdHhX2vI/9Z6h3SyAlF/CyWY/a/HH7poTTrtcu6emoCi6ciWRIscrCEMnb9ivUaifjAy4N/TveEk1361RP2ZNskweIqf73UbpR/iff7sBaCg66VpVEMBx6Jdg+Dd9g3ICtXh7Jg18s2PCO8kVt4sGa2KpFrFB6DpIRM7A7zq8Kl6NYvUdJHYP0RpQpMHJZOjAPBDHBV2FlCJhYg0cgdMiy1sUWcH0QN0kMLrRAP9Jw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2616005)(66476007)(52116002)(8676002)(6486002)(4326008)(66574015)(38100700002)(8936002)(83380400001)(6506007)(107886003)(66556008)(6666004)(36756003)(508600001)(2906002)(5660300002)(6512007)(1076003)(86362001)(186003)(316002)(66946007)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TUpWQjRid3VHaWhZOUQ1U1FPcStNc0Jhcm1CNGVUaXo2VlFTc3poSmo5MlUv?=
+ =?utf-8?B?UDh1anJEbURCbDd5aFM5dysvMFFkZGdjaFR1OHpneTZ6bVVHVklVanVYR2Jq?=
+ =?utf-8?B?cFUxdGZXOHhyNVRCcVE5WXRrd081UWlqd2FiVEp2T2VKN1F4enJ2dkJuWUJX?=
+ =?utf-8?B?UzRmR2EyWGpPbWZTSEVxcm1CWHd4cllVZHJGK0I0UTlwNE0wU29YVWVTaGlL?=
+ =?utf-8?B?TjJFd3RuYzBjaWFINEsyM0V6OWRJNC8vRG55TWprdFNodGQ0a0xUUEN2MlhD?=
+ =?utf-8?B?NURBV3orUzFnV01sNEVkTFFzSXJvcmpmcUtiVWM2c3Rxek5qOHEvKzNlM2xJ?=
+ =?utf-8?B?aTJwdEhUNjVkbWVBOHVqMkpWWWVvaTFldGV1R3NWRWpINTdIUGI1dzl1VjR0?=
+ =?utf-8?B?a3hUcUg3dlhFSU1zS2JZcEVMN09jWkM3WFdpaFhRaDdqOFIvQnJzeVdPbzNs?=
+ =?utf-8?B?YTBHb0czV1oyL3gyWVFLS09iajBRYkxFZWpjMjhWOTdsbGRoTkNQT1BMa3dG?=
+ =?utf-8?B?R2dWcStPRVVBL20zQnpzOW9vRlA2d2pJQVEweXVVZlN5d0daSUpidVBnWGVi?=
+ =?utf-8?B?MDFmb3NmWSsrZ2VmLzFCKy9RdDZQVkdlNUJrNyt2WGYyTVVMcGZReVVmUGcr?=
+ =?utf-8?B?MDNmZWlTZ1ljanpFbnNtdXprdUtpVWhGdnd3SWhkLzNpYXI0Vy9BT0JodHdN?=
+ =?utf-8?B?ZTVZeXlXbHFHQWt0bFVCNWU4bnNCRUp5dkFpWjZNMnh0VWNpeUk1UU5iQXZa?=
+ =?utf-8?B?RjV1OXFsdFpyS21TQTg1WW1NellOOHdoVGtvcnJuNy9DOVM5L0xnZHcrODFi?=
+ =?utf-8?B?bHRqQzRuWmlLTElSWVRhNE1sbFpKN0JnRk42ZDltQ2Zrdi9SWG5HMmlCajZD?=
+ =?utf-8?B?ZVMwamlLc1hqVEFsaHpmZFJpVEdEZHVwV2s1N3pMcVdoSGg4b00rWDdlSE5p?=
+ =?utf-8?B?NkRYQzROd2lrUEk3OGM3TDlMNDh6b1d6UFhmM3o5Y2tad29oRVdTSW4zOHU5?=
+ =?utf-8?B?aC9QdGh0K2h4cWFlWWRSUEFuTXF5THkvTnpHTFV0Q1hCRGxmS1Y1SWc1clpZ?=
+ =?utf-8?B?VEc4Sk5XaGtEK1NhZHNWRHBRZ0pTbzF2WUJBcCtFWXBvMU5PaWgzUjExbkFG?=
+ =?utf-8?B?ejIyZkxQcDZ6U3FNNEw5Q1VWMFRkR21MSjlab2RoV3lraWlXNDQyVXFZb3NE?=
+ =?utf-8?B?aWRyc0xYMzZpTzdiSmVQMCtIYlNwRXhseFZZOWVoTkZhd29ucXpWd2Vva2NY?=
+ =?utf-8?B?bldSc0xzZGdmU2dlaUd2Nlc3ZVR6YVV4Z3BXU1dyL2hWUEd0dkp3Zkl6K0N2?=
+ =?utf-8?B?WEdaQWlvekV5WEVLNk9uNWJrdWtpb3l4VDlRajhjSExVN296ZnFOb3VscnFq?=
+ =?utf-8?B?YjdwUFFkc1doRDZ6OGp1RnhrcFFvKzZVZkdLYW9kZG1nU0kzMSt1K1VkRGtk?=
+ =?utf-8?B?YUhtelloVHByZWF6NWhRdEkyTUwxTTh4NllqVmRMdDR4YlVXNmxOOVByRlNm?=
+ =?utf-8?B?cWE3czBPNjhpa2tMU0g5ZTNjM1lQSWh2TGc1YXR2SXkrR2N1ZDJNRXZJd05F?=
+ =?utf-8?B?akQvRTk1MzVsTmtseUl5WU9peVdBTTlIRkFPRUsxc3lzS2FKSWRsalpicHlP?=
+ =?utf-8?B?aHArNjVnajdINXlheVZFU2hjcm5sU3o2aUZNT3JDZDlDL21Yd0dVaUpNNHZZ?=
+ =?utf-8?B?bWRVQ2NZTmhOdW4wNjB2MFk4MU91STZNekozTEZMWW1JZ0RpWjVCRVNucGhU?=
+ =?utf-8?B?OW1GNnRRSHFma3hwNU1PaFdRZE52T3JNSGhjSzBIOThLbWN4Tm84d0FVdmpv?=
+ =?utf-8?B?RXlLMGE3RUtvUHl2QWRjcGwrSHk4cm9GR2p4emZkSkdzb3FxdzNLbXRvTG1V?=
+ =?utf-8?B?WERWcTFmY21YRzZ3N0E4WEhkUXJ2VEFGTXlPQUFQeGNkZ3U2VE1icUpHdXM0?=
+ =?utf-8?B?cndyU0dXY2NNWnQyVW5KTkFNVkFLTDkxL2NKV08wcUM4dWhkbFR1aGV5cThQ?=
+ =?utf-8?B?TGREMzNVVkNQK1Q5L2tpQzRFVWZkR0hZVjRwM3h4bHRSSmR1SDBGdDA4bTJt?=
+ =?utf-8?B?WGVBM3ova0pHc0NVTUZYMzVZV3ZJRWFRRDhXMTYyMGdRZk9UTHh0WTRERURG?=
+ =?utf-8?B?ckxOU21NQmh2Rmw3dkwxaUFlQWNOU1Y3aEdxWXE0Wlg4am9nS1B3d01rb1BJ?=
+ =?utf-8?B?cHNhRXdtNFF3NWNXSkhtUWZFZEtLQjBGWGg2QkFXVG1nK2lWMWt6NTF4Z01r?=
+ =?utf-8?Q?v1y5jmhyCTbbkvkchubkBjbSSG1SZMccuHkJQIATlU=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e941f6d5-75b1-4660-db02-08d9d6729638
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 08:56:28.6590
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MDKfUVBw11HY/IjV0BahVqHB2gBD9iyeRzrJt5oYx5RZqBHyKtAD6863B3/tN2sP27Laf3AGRjifcljuYhLXHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2071
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-* Arnd Bergmann <arnd@arndb.de> wrote:
-
-> On Sat, Jan 8, 2022 at 5:26 PM Ingo Molnar <mingo@kernel.org> wrote:
-> >
-> >
-> > I'm pleased to announce -v2 of the "Fast Kernel Headers" tree, which is a
-> > comprehensive rework of the Linux kernel's header hierarchy & header
-> > dependencies, with the dual goals of:
-> >
-> >  - speeding up the kernel build (both absolute and incremental build times)
-> >
-> >  - decoupling subsystem type & API definitions from each other
-> >
-> > The fast-headers tree consists of over 25 sub-trees internally, spanning
-> > over 2,300 commits, which can be found at:
-> >
-> >    git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-> >
-> >    # HEAD: 391ce485ced0 headers/deps: Introduce the CONFIG_FAST_HEADERS=y config option
-> 
-> I've started reading through it at last. I can't say that I'm reviewing 
-> every patch, [...]
-
-Yeah, not expected at all with 2,300+ commits - but even cursory review or 
-review of specific areas is appreciated.
-
-> but at least (almost all) the things I've looked at so far all seem 
-> really nice to me, mostly this is the same that I was planning to do as 
-
-Thanks!
-
-> well, some things I would have done differently but I'm not complaining 
-> as you did the work, and some things seem unnecessary but might not be.
-> 
-> I've started building randconfig kernels for arm64 and x86, and fixing
-> up things that come up,
-> a few things I have noticed out so far:
-> 
-> * 2e98ec93d465 ("headers/prep: Rename constants: SOCK_DESTROY =>
-> SOCK_DIAG_SOCK_DESTROY")
-> 
->   This one looks wrong, as you are changing a uapi header, possibly 
->   breaking applications at compile time. I think the other one should be 
->   renamed instead.
-
-This is hard: SOCK_DESTROY is one of the main constants for sockets, is 
-well named, fits into an existing in-kernel nomenclature and both me and 
-networking folks would hate to rename it ...
-
-So I'd keep this one and wait for any reported breakage. I don't think we 
-*guarantee* the specific naming of symbols - we guarantee an ABI, and make 
-a best-effort for the rest. The constant is netdiag specific and doesn't 
-seem to be included by any major user-space header in /usr/include.
-
-> * 04293522a8cb ("headers/deps: ipc/shm: Move the 'struct shmid_ds'
-> definition to ipc/shm.c")
->   and related patches
-> 
->   Similarly, the IPC structures are uapi headers that I would not
-> change here for the same reasons.
->   Even if nothing uses those any more with modern libc
-> implementations, the structures belong into
->   uapi, unless we can prove that the old-style sysvipc interface is
-> completely unused and we
->   remove the implementation from the kernel as well (I don't think we
-> want that, but I have not
->   looked in depth at when it was last used by a libc)
-
-Ok, we can certainly undo this one - but how does it work in practice, as 
-the structure is already defined by libc:
-
-/usr/include/x86_64-linux-gnu/bits/types/struct_shmid_ds.h:struct shmid_ds
-
-/* Data structure describing a shared memory segment.  */
-struct shmid_ds
-  {
-    struct ipc_perm shm_perm;           /* operation permission struct */
-    size_t shm_segsz;                   /* size of segment in bytes */
-#if __TIMESIZE == 32
-    __time_t shm_atime;                 /* time of last shmat() */
-    unsigned long int __shm_atime_high;
-    __time_t shm_dtime;                 /* time of last shmdt() */
-    unsigned long int __shm_dtime_high;
-    __time_t shm_ctime;                 /* time of last change by shmctl() */
-    unsigned long int __shm_ctime_high;
-#else
-    __time_t shm_atime;                 /* time of last shmat() */
-    __time_t shm_dtime;                 /* time of last shmdt() */
-    __time_t shm_ctime;                 /* time of last change by shmctl() */
-#endif
-    __pid_t shm_cpid;                   /* pid of creator */
-    __pid_t shm_lpid;                   /* pid of last shmop */
-    shmatt_t shm_nattch;                /* number of current attaches */
-    __syscall_ulong_t __glibc_reserved5;
-    __syscall_ulong_t __glibc_reserved6;
-  };
-
-
-Wouldn't this definition conflict with any header use of linux/shm.h?
-
-> * changing any include/uapi headers to use "#include <uapi/linux/*.h>"
-> is broken because
->   that makes the headers unusable from userspace, including any of
-> tools/*/. I think we
->   can work around this in the headers_install.sh postprocessing step
-> though, where we already
->   do unifdef etc.
-
-Yeah, so the problem here is on the kernel side, the following innocent 
-looking include in a UAPI header:
-
-   #include <linux/foo.h>
-
-Will turn into a very large header - and unintentionally so - if there 
-happens to be an include/foo.h header.
-
-I.e. normally there's only the UAPI header, which is then included, but in 
-some significant cases that's not so.
-
-IMO it seems so much cleaner to express the intent to only include the UAPI 
-header - so solving this at header-install time would be preferable.
-
-> * For all the header additions to .c files, I assume you are using a set 
-> of script, so these could
->   probably be changed without much trouble. I would suggest applying
-> them in sequence so
->    the headers remain sorted alphabetically in the end. It would
-> probably make sense to
->    squash those all together to avoid patching certain files many
-> times over, for the sake
->    of keeping a slightly saner git history.
-
-Are you suggesting to change the current reverse-alphabetical order of 
-headers:
-
---- a/drivers/auxdisplay/ht16k33.c
-+++ b/drivers/auxdisplay/ht16k33.c
-@@ -8,6 +8,15 @@
-  * Copyright (C) 2021 Glider bv
-  */
- 
-+#include <linux/workqueue_api.h>
-+#include <linux/wait_api.h>
-+#include <linux/sched.h>
-+#include <linux/pgtable_api.h>
-+#include <linux/of_api.h>
-+#include <linux/mm_api.h>
-+#include <linux/jiffies.h>
-+#include <linux/gfp_api.h>
-+#include <linux/device_api_lock.h>
-
-... to alphabetical?
-
-Can certainly do that - but this will flip around the commit order: it's 
-much easier to add at the head of the include files section.
-
-> * The per-task stuff sounded a bit scary from your descriptions but
-> looking at the actual
->    implementation I now get it, this looks like a really nice way of doing it.
-
-Thank you!
-
-> * I think it would be good to keep the include/linux/syscalls_api.h declarations
->    in the same header as the SYSCALL_DEFINE*() macros, to ensure that the
->    prototypes remain synchronized. Splitting them out will likely also
-> cause sparse
->    warnings for missing prototypes (or maybe it should but doesn't at
-> the moment).
-
-Yeah, I suppose we could undo the split:
-
-  # -fast-headers-v2:
-
-                                                               _______________________
-                                                              | stripped lines of code
-                                                              |              _____________________________
-                                                              |             | headers included recursively
-                                                              |             |                _______________________________
-                                                              |             |               | usage in a distro kernel build
- ____________                                                 |             |               |         _________________________________________
-| header name                                                 |             |               |        | million lines of comment-stripped C code
-|                                                             |             |               |        |
-  #include <linux/syscalls_types.h>                           | LOC:  2,397 | headers:  128 |    353 | MLOC:    0.8 | 
-  #include <linux/syscalls_api.h>                             | LOC: 12,842 | headers:  361 |    167 | MLOC:    2.1 | 
-
-The full header used to be a lot bigger:
-
-  # v5.16-rc8
-
-  #include <linux/syscalls.h>                                 | LOC: 40,217 | headers:  604 |    321 | MLOC:   12.9 | ###
-
-
-> * include/linux/time64_types.h is not a good name, as these are now
-> the default types
->    after we removed the time32 versions. I'd either rename it to
-> linux/time_types.h
->    or split it up between linux/types.h and linux/ktime_types.h
-
-I was doing this in the context of v5.16.
-
-> * arm64 needs  a couple of minor fixups, see
-> https://pastebin.com/eSKhz4CL for what
->   I have so far, feel free to integrate any things that directly make sense.
-
-Thanks! Mind sending the dependency removals in a series, so I can keep 
-attribution? These bits are usually in separate commits, unless they fix 
-some bug in an existing commit:
-
- arch/arm64/include/asm/mmu.h                     |    1 -
- arch/arm64/include/asm/pgtable-hwdef.h           |    1 -
- arch/arm64/include/asm/pgtable-prot.h            |    1 -
-
-This bit looks suboptimal - but as you mentioned it fixes tooling build 
-errors:
-
---- a/include/uapi/linux/netdevice.h
-+++ b/include/uapi/linux/netdevice.h
-@@ -26,11 +26,17 @@
- #ifndef _UAPI_LINUX_NETDEVICE_H
- #define _UAPI_LINUX_NETDEVICE_H
- 
-+#ifdef __KERNEL__
- #include <uapi/linux/if.h>
- #include <uapi/linux/if_ether.h>
- #include <uapi/linux/if_packet.h>
- #include <uapi/linux/if_link.h>
--
-+#else
-+#include <linux/if.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/if_link.h>
-+#endif
-
-I'll apply & backmerge the per_task() fixlets for the bugs you found:
-
--       per_task(&init_task, kcsan_ctx).scoped_addresses.next = LIST_POISON1;
-+       per_task(&init_task, kcsan_ctx).scoped_accesses.next = LIST_POISON1;
-
--       return ptr == &current->flags;
-+       return ptr == &task_flags(current);
-
-This KASAN bit:
-
---- a/include/linux/mm_api_kasan.h
-+++ b/include/linux/mm_api_kasan.h
-@@ -18,7 +18,7 @@ static inline u8 page_kasan_tag(const struct page *page)
- {
-        u8 tag = 0xff;
- 
--       if (kasan_enabled()) {
-+       if (IS_ENABLED(CONFIG_KASAN)) {
-                tag = (page->flags >> KASAN_TAG_PGSHIFT) & KASAN_TAG_MASK;
-                tag ^= 0xff;
-        }
-
-Is this a fix for some build failure? Upstream it's using kasan_enabled():
-
-static inline u8 page_kasan_tag(const struct page *page)
-{
-        u8 tag = 0xff;
-
-        if (kasan_enabled()) {
-                tag = (page->flags >> KASAN_TAG_PGSHIFT) & KASAN_TAG_MASK;
-                tag ^= 0xff;
-        }
-
-        return tag;
-}
-
-	Ingo
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKSXQg
+aXMgbm90IG5lY2Vzc2FyeSB0byBwcmVmaXggZXJyb3IgbG9ncyB3aXRoIHRoZSBmdW5jdGlvbiBu
+YW1lIHdoZW4gYW4KZXJyb3IgbWVzc2FnZSBpcyB1bmlxdWUgaW4gdGhlIGNvZGUuCgpOb3RlIHRo
+aXMgcGF0Y2ggc3RpbGwgcHJlZml4ZXMgdGhlIG1lc3NhZ2UgJ3JlY2VpdmVkIGV2ZW50IGZvcgpu
+b24tZXhpc3RlbnQgdmlmJyB3aXRoIHRoZSBmdW5jdGlvbiBuYW1lIHNpbmNlIGl0IGlzIHVzZWQg
+c2V2ZXJhbAp0aW1lcy4KClNpZ25lZC1vZmYtYnk6IErDqXLDtG1lIFBvdWlsbGVyIDxqZXJvbWUu
+cG91aWxsZXJAc2lsYWJzLmNvbT4KLS0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2JoLmMgICAgICB8
+IDMgKy0tCiBkcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguYyB8IDIgKy0KIGRyaXZlcnMvc3Rh
+Z2luZy93ZngvaGlmX3J4LmMgIHwgMyArLS0KIGRyaXZlcnMvc3RhZ2luZy93Zngvc2Nhbi5jICAg
+IHwgMyArLS0KIGRyaXZlcnMvc3RhZ2luZy93Zngvc3RhLmMgICAgIHwgNSArKy0tLQogNSBmaWxl
+cyBjaGFuZ2VkLCA2IGluc2VydGlvbnMoKyksIDEwIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvc3RhZ2luZy93ZngvYmguYyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvYmguYwppbmRl
+eCAxZWM0YTQ5NTFkOTkuLjRjNmJhOWMzNDJhNiAxMDA2NDQKLS0tIGEvZHJpdmVycy9zdGFnaW5n
+L3dmeC9iaC5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvYmguYwpAQCAtNjksOCArNjksNyBA
+QCBzdGF0aWMgaW50IHJ4X2hlbHBlcihzdHJ1Y3Qgd2Z4X2RldiAqd2Rldiwgc2l6ZV90IHJlYWRf
+bGVuLCBpbnQgKmlzX2NuZikKIAlpbnQgcmVsZWFzZV9jb3VudDsKIAlpbnQgcGlnZ3liYWNrID0g
+MDsKIAotCVdBUk4ocmVhZF9sZW4gPiByb3VuZF9kb3duKDB4RkZGLCAyKSAqIHNpemVvZih1MTYp
+LAotCSAgICAgIiVzOiByZXF1ZXN0IGV4Y2VlZCB0aGUgY2hpcCBjYXBhYmlsaXR5IiwgX19mdW5j
+X18pOworCVdBUk4ocmVhZF9sZW4gPiByb3VuZF9kb3duKDB4RkZGLCAyKSAqIHNpemVvZih1MTYp
+LCAicmVxdWVzdCBleGNlZWQgdGhlIGNoaXAgY2FwYWJpbGl0eSIpOwogCiAJLyogQWRkIDIgdG8g
+dGFrZSBpbnRvIGFjY291bnQgcGlnZ3liYWNrIHNpemUgKi8KIAlhbGxvY19sZW4gPSB3ZGV2LT5o
+d2J1c19vcHMtPmFsaWduX3NpemUod2Rldi0+aHdidXNfcHJpdiwgcmVhZF9sZW4gKyAyKTsKZGlm
+ZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90eC5jIGIvZHJpdmVycy9zdGFnaW5n
+L3dmeC9kYXRhX3R4LmMKaW5kZXggYmZjM2Q0NDEyYWM2Li5kN2JjZjNiYWUwOGEgMTAwNjQ0Ci0t
+LSBhL2RyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90eC5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93
+ZngvZGF0YV90eC5jCkBAIC00MjUsNyArNDI1LDcgQEAgc3RhdGljIHZvaWQgd2Z4X3NrYl9kdG9y
+KHN0cnVjdCB3ZnhfdmlmICp3dmlmLCBzdHJ1Y3Qgc2tfYnVmZiAqc2tiKQogCQkJICAgICAgcmVx
+LT5mY19vZmZzZXQ7CiAKIAlpZiAoIXd2aWYpIHsKLQkJcHJfd2FybigiJXM6IHZpZiBhc3NvY2lh
+dGVkIHdpdGggdGhlIHNrYiBkb2VzIG5vdCBleGlzdCBhbnltb3JlXG4iLCBfX2Z1bmNfXyk7CisJ
+CXByX3dhcm4oInZpZiBhc3NvY2lhdGVkIHdpdGggdGhlIHNrYiBkb2VzIG5vdCBleGlzdCBhbnlt
+b3JlXG4iKTsKIAkJcmV0dXJuOwogCX0KIAl3ZnhfdHhfcG9saWN5X3B1dCh3dmlmLCByZXEtPnJl
+dHJ5X3BvbGljeV9pbmRleCk7CmRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl9y
+eC5jIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfcnguYwppbmRleCA1MzAwZWY1NzQxM2YuLjMw
+MmJkYjJiZjAzNiAxMDA2NDQKLS0tIGEvZHJpdmVycy9zdGFnaW5nL3dmeC9oaWZfcnguYworKysg
+Yi9kcml2ZXJzL3N0YWdpbmcvd2Z4L2hpZl9yeC5jCkBAIC0xMDEsOCArMTAxLDcgQEAgc3RhdGlj
+IGludCB3ZnhfaGlmX3JlY2VpdmVfaW5kaWNhdGlvbihzdHJ1Y3Qgd2Z4X2RldiAqd2RldiwgY29u
+c3Qgc3RydWN0IHdmeF9oaWYKIAljb25zdCBzdHJ1Y3Qgd2Z4X2hpZl9pbmRfcnggKmJvZHkgPSBi
+dWY7CiAKIAlpZiAoIXd2aWYpIHsKLQkJZGV2X3dhcm4od2Rldi0+ZGV2LCAiJXM6IGlnbm9yZSBy
+eCBkYXRhIGZvciBub24tZXhpc3RlbnQgdmlmICVkXG4iLAotCQkJIF9fZnVuY19fLCBoaWYtPmlu
+dGVyZmFjZSk7CisJCWRldl93YXJuKHdkZXYtPmRldiwgIiVzOiByZWNlaXZlZCBldmVudCBmb3Ig
+bm9uLWV4aXN0ZW50IHZpZlxuIiwgX19mdW5jX18pOwogCQlyZXR1cm4gLUVJTzsKIAl9CiAJc2ti
+X3B1bGwoc2tiLCBzaXplb2Yoc3RydWN0IHdmeF9oaWZfbXNnKSArIHNpemVvZihzdHJ1Y3Qgd2Z4
+X2hpZl9pbmRfcngpKTsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3RhZ2luZy93Zngvc2Nhbi5jIGIv
+ZHJpdmVycy9zdGFnaW5nL3dmeC9zY2FuLmMKaW5kZXggY2UwYWU0YzkxMTkwLi43ZjM0ZjBkMzIy
+ZjkgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvc3RhZ2luZy93Zngvc2Nhbi5jCisrKyBiL2RyaXZlcnMv
+c3RhZ2luZy93Zngvc2Nhbi5jCkBAIC05NCw4ICs5NCw3IEBAIHZvaWQgd2Z4X2h3X3NjYW5fd29y
+ayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspCiAJbXV0ZXhfbG9jaygmd3ZpZi0+d2Rldi0+Y29u
+Zl9tdXRleCk7CiAJbXV0ZXhfbG9jaygmd3ZpZi0+c2Nhbl9sb2NrKTsKIAlpZiAod3ZpZi0+am9p
+bl9pbl9wcm9ncmVzcykgewotCQlkZXZfaW5mbyh3dmlmLT53ZGV2LT5kZXYsICIlczogYWJvcnQg
+aW4tcHJvZ3Jlc3MgUkVRX0pPSU4iLAotCQkJIF9fZnVuY19fKTsKKwkJZGV2X2luZm8od3ZpZi0+
+d2Rldi0+ZGV2LCAiYWJvcnQgaW4tcHJvZ3Jlc3MgUkVRX0pPSU4iKTsKIAkJd2Z4X3Jlc2V0KHd2
+aWYpOwogCX0KIAl1cGRhdGVfcHJvYmVfdG1wbCh3dmlmLCAmaHdfcmVxLT5yZXEpOwpkaWZmIC0t
+Z2l0IGEvZHJpdmVycy9zdGFnaW5nL3dmeC9zdGEuYyBiL2RyaXZlcnMvc3RhZ2luZy93Zngvc3Rh
+LmMKaW5kZXggZjY0YWRiYTM1MGViLi44M2YxYWM4N2UwZjIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMv
+c3RhZ2luZy93Zngvc3RhLmMKKysrIGIvZHJpdmVycy9zdGFnaW5nL3dmeC9zdGEuYwpAQCAtNTEz
+LDEzICs1MTMsMTIgQEAgdm9pZCB3ZnhfYnNzX2luZm9fY2hhbmdlZChzdHJ1Y3QgaWVlZTgwMjEx
+X2h3ICpodywgc3RydWN0IGllZWU4MDIxMV92aWYgKnZpZiwKIAkJZWxzZSBpZiAoIWluZm8tPmFz
+c29jICYmIHZpZi0+dHlwZSA9PSBOTDgwMjExX0lGVFlQRV9TVEFUSU9OKQogCQkJd2Z4X3Jlc2V0
+KHd2aWYpOwogCQllbHNlCi0JCQlkZXZfd2Fybih3ZGV2LT5kZXYsICIlczogbWlzdW5kZXJzdG9v
+ZCBjaGFuZ2U6IEFTU09DXG4iLAotCQkJCSBfX2Z1bmNfXyk7CisJCQlkZXZfd2Fybih3ZGV2LT5k
+ZXYsICJtaXN1bmRlcnN0b29kIGNoYW5nZTogQVNTT0NcbiIpOwogCX0KIAogCWlmIChjaGFuZ2Vk
+ICYgQlNTX0NIQU5HRURfQkVBQ09OX0lORk8pIHsKIAkJaWYgKHZpZi0+dHlwZSAhPSBOTDgwMjEx
+X0lGVFlQRV9TVEFUSU9OKQotCQkJZGV2X3dhcm4od2Rldi0+ZGV2LCAiJXM6IG1pc3VuZGVyc3Rv
+b2QgY2hhbmdlOiBCRUFDT05fSU5GT1xuIiwgX19mdW5jX18pOworCQkJZGV2X3dhcm4od2Rldi0+
+ZGV2LCAibWlzdW5kZXJzdG9vZCBjaGFuZ2U6IEJFQUNPTl9JTkZPXG4iKTsKIAkJd2Z4X2hpZl9z
+ZXRfYmVhY29uX3dha2V1cF9wZXJpb2Qod3ZpZiwgaW5mby0+ZHRpbV9wZXJpb2QsIGluZm8tPmR0
+aW1fcGVyaW9kKTsKIAkJLyogV2UgdGVtcG9yYXJ5IGZvcndhcmRlZCBiZWFjb24gZm9yIGpvaW4g
+cHJvY2Vzcy4gSXQgaXMgbm93IG5vIG1vcmUgbmVjZXNzYXJ5LiAqLwogCQl3ZnhfZmlsdGVyX2Jl
+YWNvbih3dmlmLCB0cnVlKTsKLS0gCjIuMzQuMQoK
