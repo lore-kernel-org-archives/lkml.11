@@ -2,85 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69FB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C155C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235697AbiAMOgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 09:36:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235686AbiAMOgR (ORCPT
+        id S235704AbiAMOga (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 09:36:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44936 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235711AbiAMOgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 09:36:17 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7492CC06161C
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 06:36:17 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: alyssa)
-        with ESMTPSA id C737F1F459C8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642084575;
-        bh=EAzk6FY/7dS3FWywqUQJ/Bm6/lfzjy70ybyrDi9wJGg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=B/v26arCErviEi3hhOjx7aIkkT2lhk08QUonexMFfmABunRc6cPy8o8UufG81zKbD
-         GOU3Wbp9tBkjwltSKN/kkHX+U0XED0bDi1uibdI7I6xUO5s4U01BduUi/ZpX5Fwd5i
-         XclOFxT1fTsuQvUPb3SPfa+C+WjEVpXFlJ3qyG4BnzBMgBDNOLA4V/WIljcGfyJ/N9
-         Cr6zRL47rHQi+xUHUFqkM4OdQlQ3+AIvy+EdQSac13PR4nIeTHomeTV6lfnHKkeANu
-         L4pDRxNzqMK3Hk1HYkE2BwUBSPuBlTZHjAB4/33fJgN7grmiygYh/dsb1Jp2xadKu+
-         hOUmyzuugqaig==
-Date:   Thu, 13 Jan 2022 09:36:07 -0500
-From:   Alyssa Rosenzweig <alyssa@collabora.com>
-To:     Steven Price <steven.price@arm.com>
-Cc:     Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
-        dri-devel@lists.freedesktop.org, Rob Herring <robh@kernel.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] drm/panfrost: Merge some feature lists
-Message-ID: <YeA412iKn2bEynPl@maud>
-References: <20220109170920.2921-1-alyssa.rosenzweig@collabora.com>
- <20220109170920.2921-3-alyssa.rosenzweig@collabora.com>
- <c34845c7-481b-91c1-d2ae-e239324f8364@arm.com>
- <Yd8qFqkTqzdUzOxc@maud>
- <023dbd83-0719-462b-3f41-6527cee45374@arm.com>
+        Thu, 13 Jan 2022 09:36:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642084581;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IgjOVeBDkVjVu0DqCL0W103eS8yEjSifpQfplyuzn/Y=;
+        b=C6AMoAJ++bbJukIIgXarjgKgt+SQiDuY2zunoOpdc/aHvHVxhi/egTrMr7Cp10yPYFD3u9
+        JfIg7fylWpgiA2NpNCvJC44RPsxxsQx5qy84m6ge8WwIV7byfYVECfl3GuIaauE0o82afv
+        WV22IMncmPAwyGbyWD6FSD8/DfJm0Qs=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-664-2pMctT0iM12yXY7kDNd_aA-1; Thu, 13 Jan 2022 09:36:20 -0500
+X-MC-Unique: 2pMctT0iM12yXY7kDNd_aA-1
+Received: by mail-ed1-f70.google.com with SMTP id s7-20020a056402520700b003f841380832so5531308edd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 06:36:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IgjOVeBDkVjVu0DqCL0W103eS8yEjSifpQfplyuzn/Y=;
+        b=8A8CZUNlqZFqkEI87qQozjzptm+Hqgsw+TTh+DNv/JHOKTCH6h9qlUqspItsUEvIqr
+         aV5VmyahsUDLlzYVDPhnX3m6H3fBFYJ52MFgIHE6fBdQ63tj32dcyjYeybPoOPrQJa1u
+         qGdge5NslRjY3z7cdvr2wL9XliogKqokn7uWCrnUIyssBwlfUi8uu3Vfv39QUHID8HZl
+         9X+qhyTS9F/ZZCuAdEnVMO1HHQfCxBvrtKTeJffnUBeC97eHpig37wcm14TvOLhN33P/
+         vApcncKNmRd1JgAN1iyc9/ZgbPaVhQu+QRTjMhxizVGDYnyLV9QXlyK+LzNHtqPeSOOG
+         5zCw==
+X-Gm-Message-State: AOAM533ttMjrJRTikbR1jVl0i7k5bZaWyVqrH5vfubT5cOYjHWuTIOb3
+        1wnm7SU+2eKA9gdxdRR7qyW+AC8gDJIOzlJ2fYVKY0AtwKpNYryAFPvBheVvb79sGwWH6Yu6lG1
+        m8S9r3RZ+YYTcPpLYudstQ3iH
+X-Received: by 2002:a17:907:6e0c:: with SMTP id sd12mr3795826ejc.536.1642084578972;
+        Thu, 13 Jan 2022 06:36:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzOD4ZuNaqfWJsHOyQAzWBVTLHAz0c77AXhRgw1f3/AHOJfF9Qynw12hmuu+NaWD8zPJOqGKw==
+X-Received: by 2002:a17:907:6e0c:: with SMTP id sd12mr3795799ejc.536.1642084578695;
+        Thu, 13 Jan 2022 06:36:18 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id gb35sm941164ejc.36.2022.01.13.06.36.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Jan 2022 06:36:17 -0800 (PST)
+Message-ID: <bdad7add-408f-e649-c796-6f83420077fc@redhat.com>
+Date:   Thu, 13 Jan 2022 15:36:16 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <023dbd83-0719-462b-3f41-6527cee45374@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: KVM: Warn if mark_page_dirty() is called without an active vCPU
+Content-Language: en-US
+To:     David Woodhouse <dwmw2@infradead.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     butterflyhuangxx@gmail.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, seanjc@google.com,
+        Cornelia Huck <cohuck@redhat.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Thomas Huth <thuth@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+References: <e8f40b8765f2feefb653d8a67e487818f66581aa.camel@infradead.org>
+ <20220113120609.736701-1-borntraeger@linux.ibm.com>
+ <e9e5521d-21e5-8f6f-902c-17b0516b9839@redhat.com>
+ <b6d9785d769f98da0b057fac643b0f088e346a94.camel@infradead.org>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <b6d9785d769f98da0b057fac643b0f088e346a94.camel@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> >>> Note that this leaves some unmerged identical Bifrost feature lists, as
-> >>> there are more features affecting Bifrost kernel space that we do not
-> >>> yet hanlde.
-> >>
-> >> NIT: s/hanlde/handle/ ;)
-> >>
-> >> Do you have any features in mind that we're missing? The list looks very
-> >> similar to the kbase one. And anyway it is simple enough to split again
-> >> if we need to.
-> > 
-> > Just IDVS group size. For some reason I thought there were more when I
-> > wrote that commit message. It's split to avoid churn in that patch.
-> > 
-> > Logically, this series should contain three patches, with the IDVS group
-> > size enablement patch at the end. That was the series I wrote and
-> > committed to disk. For review I split it out, since the feature clean-up
-> > can land now, while the (RFC) IDVS group size patch needs
-> > testing/benchmarking.
-> > 
-> 
-> Ah, of course! That makes perfect sense, but somehow I hadn't managed to
-> connect the two.
-> 
-> I've fixed the typo and pushed to drm-misc-next. And I'll wait for your
-> benchmarking on IDVS. Do I get a few minutes break before the Valhall
-> patches need reviewing? ;)
+On 1/13/22 13:30, David Woodhouse wrote:
+> Are you proposing that as an officially documented part of the already
+> horrid API, or a temporary measure:)
 
-Thanks for the push :-) And yes, I'd like to get Valhall userspace up to
-shape before trying to shovel code into the kernel ^^ There are some
-errata that kbase works around that I haven't implemented workarounds
-for yet, and I'd like to figure out how to hit those so I can test that
-the workarounds are correct. (Particularly thinking of the dummy job
-workaround / GPU hang issue)
+Hopefully temporary, but honestly you never know how these things go.
+
+Paolo
+
