@@ -2,165 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57247C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C1DC4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:51:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233160AbiAMKvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 05:51:03 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:35994 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233140AbiAMKvB (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 05:51:01 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20DAogyU7001521, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20DAogyU7001521
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 13 Jan 2022 18:50:42 +0800
-Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 13 Jan 2022 18:50:42 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Thu, 13 Jan 2022 18:50:42 +0800
-Received: from RTEXMBS01.realtek.com.tw ([fe80::a5c6:3ded:8fd8:286a]) by
- RTEXMBS01.realtek.com.tw ([fe80::a5c6:3ded:8fd8:286a%5]) with mapi id
- 15.01.2308.020; Thu, 13 Jan 2022 18:50:41 +0800
-From:   Ricky WU <ricky_wu@realtek.com>
-To:     "arnd@arndb.de" <arnd@arndb.de>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Ricky WU <ricky_wu@realtek.com>,
-        "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
-        "kai.heng.feng@canonical.com" <kai.heng.feng@canonical.com>,
-        "yang.lee@linux.alibaba.com" <yang.lee@linux.alibaba.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] misc: rtsx: modify rtd3 flow
-Thread-Topic: [PATCH] misc: rtsx: modify rtd3 flow
-Thread-Index: AQHYCGrv53PrNO0bY0ew2A940nWAjA==
-Date:   Thu, 13 Jan 2022 10:50:41 +0000
-Message-ID: <c4525b4738f94483b9b8f8571fc80646@realtek.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.81.102]
-x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzEvMTMgpFekyCAwOTo0NTowMA==?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        id S233228AbiAMKvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:51:13 -0500
+Received: from mga01.intel.com ([192.55.52.88]:7439 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233182AbiAMKvL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 05:51:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642071071; x=1673607071;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZNYawhiOmR8z6wfQZHEZQfkWXoG1HGn4PlpAKTtbMFQ=;
+  b=QLxCQATbigsQ6l6ZOJCTaezVBVNmALfexV3iUplJnHiWGqvTlPFKNB/x
+   4IaQnSJcRYOKuBdj7phF951Aah9IU9RsniH0zcqfrPcgL2pj6ZHRWuiFB
+   vrGbF2lx9VV1nwWVBZPKz/HRJVPMceLOca9G1+lwf09YsycC6sMijdPQd
+   gllt0R06y6y2mGqyYQuce9fM7uW4zx+5An1WsZlT2W3gTSElTztmh/hbX
+   ahtDygW9eN4tn3n7WeWPEIw/Sp8H6MnUhFrjxDqGDh2WrREoFzizKr7m3
+   MpZpcWgW3AXj9FzuYNAWk96N4sL3HaLgoZpeesFBTh7sL/2iCi7sD2Mu9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="268335069"
+X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
+   d="scan'208";a="268335069"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 02:51:11 -0800
+X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
+   d="scan'208";a="515881310"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 02:51:09 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n7xg4-00AA0z-Hv;
+        Thu, 13 Jan 2022 12:49:56 +0200
+Date:   Thu, 13 Jan 2022 12:49:56 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v1 1/1] pinctrl: Place correctly CONFIG_PINCTRL_STMFX in
+ the Makefile
+Message-ID: <YeAD1FnPi0i9th9t@smile.fi.intel.com>
+References: <20220112210456.29375-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220112210456.29375-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-bW92ZSBwbV9ydW50aW1lX2dldCgpIHRvIF9ydW50aW1lX3Jlc3VtZQ0Kd2hlbiBTeXN0ZW0gZW50
-ZXIgUzMsIGRvIG5vdCBoYXZlIHNkX3JlcXVlc3QgYW5kIGRvIG5vdA0KY2FsbCBzdGFydF9ydW4g
-dG8gcG1fcnVudGltZV9nZXQoKSBjYXVzZSBpc19ydW50aW1lX3N1c3BlbmRlZCBzdGF0dXMNCm5v
-dCBjb3JyZWN0DQoNCnNldCBtb3JlIHJlZ2lzdGVyIGluIHBvd2VyX2Rvd24gZmxvdyB0byBtYWtl
-IHBsdWdpbiBvciB1bnBsdWcNCmNhcmQgZG8gbm90IHdha2UgdXAgc3lzdGVtIHdoZW4gc3lzdGVt
-IGlzIGF0IFMzDQoNClNpZ25lZC1vZmYtYnk6IFJpY2t5IFd1IDxyaWNreV93dUByZWFsdGVrLmNv
-bT4NCi0tLQ0KIGRyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0czUyNDkuYyAgfCAzMSArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrLS0NCiBkcml2ZXJzL21pc2MvY2FyZHJlYWRlci9ydHN4X3Bj
-ci5jIHwgMTcgKysrKysrKystLS0tLS0tLQ0KIGRyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0c3hf
-cGNyLmggfCAgMSArDQogMyBmaWxlcyBjaGFuZ2VkLCAzOCBpbnNlcnRpb25zKCspLCAxMSBkZWxl
-dGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0czUyNDku
-YyBiL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0czUyNDkuYw0KaW5kZXggNTNmM2ExZjQ1YzRh
-Li42OWUzMmYwNzVjYTkgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL21pc2MvY2FyZHJlYWRlci9ydHM1
-MjQ5LmMNCisrKyBiL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0czUyNDkuYw0KQEAgLTc0LDcg
-Kzc0LDggQEAgc3RhdGljIHZvaWQgcnRzeF9iYXNlX2ZldGNoX3ZlbmRvcl9zZXR0aW5ncyhzdHJ1
-Y3QgcnRzeF9wY3IgKnBjcikNCiAJcGNpX3JlYWRfY29uZmlnX2R3b3JkKHBkZXYsIFBDUl9TRVRU
-SU5HX1JFRzIsICZyZWcpOw0KIAlwY3JfZGJnKHBjciwgIkNmZyAweCV4OiAweCV4XG4iLCBQQ1Jf
-U0VUVElOR19SRUcyLCByZWcpOw0KIA0KLQlwY3ItPnJ0ZDNfZW4gPSBydHN4X3JlZ190b19ydGQz
-X3Voc2lpKHJlZyk7DQorCWlmIChDSEtfUENJX1BJRChwY3IsIFBJRF81MjRBKSB8fCBDSEtfUENJ
-X1BJRChwY3IsIFBJRF81MjVBKSkNCisJCXBjci0+cnRkM19lbiA9IHJ0c3hfcmVnX3RvX3J0ZDNf
-dWhzaWkocmVnKTsNCiANCiAJaWYgKHJ0c3hfY2hlY2tfbW1jX3N1cHBvcnQocmVnKSkNCiAJCXBj
-ci0+ZXh0cmFfY2FwcyB8PSBFWFRSQV9DQVBTX05PX01NQzsNCkBAIC0xNDMsNiArMTQ0LDI3IEBA
-IHN0YXRpYyBpbnQgcnRzNTI0OV9pbml0X2Zyb21faHcoc3RydWN0IHJ0c3hfcGNyICpwY3IpDQog
-CXJldHVybiAwOw0KIH0NCiANCitzdGF0aWMgdm9pZCBydHM1MnhhX2ZvcmNlX3Bvd2VyX2Rvd24o
-c3RydWN0IHJ0c3hfcGNyICpwY3IsIHU4IHBtX3N0YXRlKQ0KK3sNCisJLyogU2V0IHJlbGlua190
-aW1lIHRvIDAgKi8NCisJcnRzeF9wY2lfd3JpdGVfcmVnaXN0ZXIocGNyLCBBVVRPTE9BRF9DRkdf
-QkFTRSArIDEsIE1BU0tfOF9CSVRfREVGLCAwKTsNCisJcnRzeF9wY2lfd3JpdGVfcmVnaXN0ZXIo
-cGNyLCBBVVRPTE9BRF9DRkdfQkFTRSArIDIsIE1BU0tfOF9CSVRfREVGLCAwKTsNCisJcnRzeF9w
-Y2lfd3JpdGVfcmVnaXN0ZXIocGNyLCBBVVRPTE9BRF9DRkdfQkFTRSArIDMsDQorCQkJCVJFTElO
-S19USU1FX01BU0ssIDApOw0KKw0KKwlydHN4X3BjaV93cml0ZV9yZWdpc3RlcihwY3IsIFJUUzUy
-NEFfUE1fQ1RSTDMsDQorCQkJRDNfREVMSU5LX01PREVfRU4sIEQzX0RFTElOS19NT0RFX0VOKTsN
-CisNCisJaWYgKCFwY3ItPmlzX3J1bnRpbWVfc3VzcGVuZGVkKSB7DQorCQlydHN4X3BjaV93cml0
-ZV9yZWdpc3RlcihwY3IsIFJUUzUyNEFfQVVUT0xPQURfQ0ZHMSwNCisJCQkJQ0RfUkVTVU1FX0VO
-X01BU0ssIDApOw0KKwkJcnRzeF9wY2lfd3JpdGVfcmVnaXN0ZXIocGNyLCBSVFM1MjRBX1BNX0NU
-UkwzLCAweDAxLCAweDAwKTsNCisJCXJ0c3hfcGNpX3dyaXRlX3JlZ2lzdGVyKHBjciwgUlRTNTI0
-QV9QTUVfRk9SQ0VfQ1RMLCAweDMwLCAweDIwKTsNCisJfQ0KKw0KKwlydHN4X3BjaV93cml0ZV9y
-ZWdpc3RlcihwY3IsIEZQRENUTCwgQUxMX1BPV0VSX0RPV04sIEFMTF9QT1dFUl9ET1dOKTsNCit9
-DQorDQogc3RhdGljIHZvaWQgcnRzNTJ4YV9zYXZlX2NvbnRlbnRfZnJvbV9lZnVzZShzdHJ1Y3Qg
-cnRzeF9wY3IgKnBjcikNCiB7DQogCXU4IGNudCwgc3Y7DQpAQCAtMjgxLDggKzMwMywxMSBAQCBz
-dGF0aWMgaW50IHJ0czUyNDlfZXh0cmFfaW5pdF9odyhzdHJ1Y3QgcnRzeF9wY3IgKnBjcikNCiAN
-CiAJcnRzeF9wY2lfc2VuZF9jbWQocGNyLCBDTURfVElNRU9VVF9ERUYpOw0KIA0KLQlpZiAoQ0hL
-X1BDSV9QSUQocGNyLCBQSURfNTI0QSkgfHwgQ0hLX1BDSV9QSUQocGNyLCBQSURfNTI1QSkpDQor
-CWlmIChDSEtfUENJX1BJRChwY3IsIFBJRF81MjRBKSB8fCBDSEtfUENJX1BJRChwY3IsIFBJRF81
-MjVBKSkgew0KIAkJcnRzeF9wY2lfd3JpdGVfcmVnaXN0ZXIocGNyLCBSRUdfVlJFRiwgUFdEX1NV
-U1BORF9FTiwgUFdEX1NVU1BORF9FTik7DQorCQlydHN4X3BjaV93cml0ZV9yZWdpc3RlcihwY3Is
-IFJUUzUyNEFfQVVUT0xPQURfQ0ZHMSwNCisJCQlDRF9SRVNVTUVfRU5fTUFTSywgQ0RfUkVTVU1F
-X0VOX01BU0spOw0KKwl9DQogDQogCWlmIChwY3ItPnJ0ZDNfZW4pIHsNCiAJCWlmIChDSEtfUENJ
-X1BJRChwY3IsIFBJRF81MjRBKSB8fCBDSEtfUENJX1BJRChwY3IsIFBJRF81MjVBKSkgew0KQEAg
-LTcyNCw2ICs3NDksNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHBjcl9vcHMgcnRzNTI0YV9wY3Jf
-b3BzID0gew0KIAkuY2FyZF9wb3dlcl9vbiA9IHJ0c3hfYmFzZV9jYXJkX3Bvd2VyX29uLA0KIAku
-Y2FyZF9wb3dlcl9vZmYgPSBydHN4X2Jhc2VfY2FyZF9wb3dlcl9vZmYsDQogCS5zd2l0Y2hfb3V0
-cHV0X3ZvbHRhZ2UgPSBydHN4X2Jhc2Vfc3dpdGNoX291dHB1dF92b2x0YWdlLA0KKwkuZm9yY2Vf
-cG93ZXJfZG93biA9IHJ0czUyeGFfZm9yY2VfcG93ZXJfZG93biwNCiAJLnNldF9sMW9mZl9jZmdf
-c3ViX2QwID0gcnRzNTI1MF9zZXRfbDFvZmZfY2ZnX3N1Yl9kMCwNCiB9Ow0KIA0KQEAgLTg0MSw2
-ICs4NjcsNyBAQCBzdGF0aWMgY29uc3Qgc3RydWN0IHBjcl9vcHMgcnRzNTI1YV9wY3Jfb3BzID0g
-ew0KIAkuY2FyZF9wb3dlcl9vbiA9IHJ0czUyNWFfY2FyZF9wb3dlcl9vbiwNCiAJLmNhcmRfcG93
-ZXJfb2ZmID0gcnRzeF9iYXNlX2NhcmRfcG93ZXJfb2ZmLA0KIAkuc3dpdGNoX291dHB1dF92b2x0
-YWdlID0gcnRzNTI1YV9zd2l0Y2hfb3V0cHV0X3ZvbHRhZ2UsDQorCS5mb3JjZV9wb3dlcl9kb3du
-ID0gcnRzNTJ4YV9mb3JjZV9wb3dlcl9kb3duLA0KIAkuc2V0X2wxb2ZmX2NmZ19zdWJfZDAgPSBy
-dHM1MjUwX3NldF9sMW9mZl9jZmdfc3ViX2QwLA0KIH07DQogDQpkaWZmIC0tZ2l0IGEvZHJpdmVy
-cy9taXNjL2NhcmRyZWFkZXIvcnRzeF9wY3IuYyBiL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0
-c3hfcGNyLmMNCmluZGV4IDZhYzUwOWMxODIxYy4uYTgzYWRmYjEyMmRjIDEwMDY0NA0KLS0tIGEv
-ZHJpdmVycy9taXNjL2NhcmRyZWFkZXIvcnRzeF9wY3IuYw0KKysrIGIvZHJpdmVycy9taXNjL2Nh
-cmRyZWFkZXIvcnRzeF9wY3IuYw0KQEAgLTE1MiwxMiArMTUyLDYgQEAgdm9pZCBydHN4X3BjaV9z
-dGFydF9ydW4oc3RydWN0IHJ0c3hfcGNyICpwY3IpDQogCWlmIChwY3ItPnJlbW92ZV9wY2kpDQog
-CQlyZXR1cm47DQogDQotCWlmIChwY3ItPnJ0ZDNfZW4pDQotCQlpZiAocGNyLT5pc19ydW50aW1l
-X3N1c3BlbmRlZCkgew0KLQkJCXBtX3J1bnRpbWVfZ2V0KCYocGNyLT5wY2ktPmRldikpOw0KLQkJ
-CXBjci0+aXNfcnVudGltZV9zdXNwZW5kZWQgPSBmYWxzZTsNCi0JCX0NCi0NCiAJaWYgKHBjci0+
-c3RhdGUgIT0gUERFVl9TVEFUX1JVTikgew0KIAkJcGNyLT5zdGF0ZSA9IFBERVZfU1RBVF9SVU47
-DQogCQlpZiAocGNyLT5vcHMtPmVuYWJsZV9hdXRvX2JsaW5rKQ0KQEAgLTE1OTcsNiArMTU5MSw3
-IEBAIHN0YXRpYyBpbnQgcnRzeF9wY2lfcHJvYmUoc3RydWN0IHBjaV9kZXYgKnBjaWRldiwNCiAJ
-cGNyLT5ob3N0X3NnX3RibF9hZGRyID0gcGNyLT5ydHN4X3Jlc3ZfYnVmX2FkZHIgKyBIT1NUX0NN
-RFNfQlVGX0xFTjsNCiAJcGNyLT5jYXJkX2luc2VydGVkID0gMDsNCiAJcGNyLT5jYXJkX3JlbW92
-ZWQgPSAwOw0KKwlwY3ItPnJ0ZDNfZW4gPSAwOw0KIAlJTklUX0RFTEFZRURfV09SSygmcGNyLT5j
-YXJkZGV0X3dvcmssIHJ0c3hfcGNpX2NhcmRfZGV0ZWN0KTsNCiAJSU5JVF9ERUxBWUVEX1dPUkso
-JnBjci0+aWRsZV93b3JrLCBydHN4X3BjaV9pZGxlX3dvcmspOw0KIA0KQEAgLTE3OTYsMTcgKzE3
-OTEsMTYgQEAgc3RhdGljIGludCBydHN4X3BjaV9ydW50aW1lX3N1c3BlbmQoc3RydWN0IGRldmlj
-ZSAqZGV2aWNlKQ0KIAlwY3IgPSBoYW5kbGUtPnBjcjsNCiAJZGV2X2RiZygmKHBjaWRldi0+ZGV2
-KSwgIi0tPiAlc1xuIiwgX19mdW5jX18pOw0KIA0KKwlwY3ItPmlzX3J1bnRpbWVfc3VzcGVuZGVk
-ID0gdHJ1ZTsNCisNCiAJY2FuY2VsX2RlbGF5ZWRfd29yaygmcGNyLT5jYXJkZGV0X3dvcmspOw0K
-IAljYW5jZWxfZGVsYXllZF93b3JrKCZwY3ItPnJ0ZDNfd29yayk7DQogCWNhbmNlbF9kZWxheWVk
-X3dvcmsoJnBjci0+aWRsZV93b3JrKTsNCiANCiAJbXV0ZXhfbG9jaygmcGNyLT5wY3JfbXV0ZXgp
-Ow0KIAlydHN4X3BjaV9wb3dlcl9vZmYocGNyLCBIT1NUX0VOVEVSX1MzKTsNCi0NCiAJbXV0ZXhf
-dW5sb2NrKCZwY3ItPnBjcl9tdXRleCk7DQogDQotCXBjci0+aXNfcnVudGltZV9zdXNwZW5kZWQg
-PSB0cnVlOw0KLQ0KIAlyZXR1cm4gMDsNCiB9DQogDQpAQCAtMTgyMCw2ICsxODE0LDExIEBAIHN0
-YXRpYyBpbnQgcnRzeF9wY2lfcnVudGltZV9yZXN1bWUoc3RydWN0IGRldmljZSAqZGV2aWNlKQ0K
-IAlwY3IgPSBoYW5kbGUtPnBjcjsNCiAJZGV2X2RiZygmKHBjaWRldi0+ZGV2KSwgIi0tPiAlc1xu
-IiwgX19mdW5jX18pOw0KIA0KKwlpZiAocGNyLT5pc19ydW50aW1lX3N1c3BlbmRlZCkgew0KKwkJ
-cG1fcnVudGltZV9nZXQoJihwY3ItPnBjaS0+ZGV2KSk7DQorCQlwY3ItPmlzX3J1bnRpbWVfc3Vz
-cGVuZGVkID0gZmFsc2U7DQorCX0NCisNCiAJbXV0ZXhfbG9jaygmcGNyLT5wY3JfbXV0ZXgpOw0K
-IA0KIAlydHN4X3BjaV93cml0ZV9yZWdpc3RlcihwY3IsIEhPU1RfU0xFRVBfU1RBVEUsIDB4MDMs
-IDB4MDApOw0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0c3hfcGNyLmgg
-Yi9kcml2ZXJzL21pc2MvY2FyZHJlYWRlci9ydHN4X3Bjci5oDQppbmRleCBkYWYwNTdjNGVlYTYu
-LmI5Mzk3NTI2OGU2ZCAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0c3hf
-cGNyLmgNCisrKyBiL2RyaXZlcnMvbWlzYy9jYXJkcmVhZGVyL3J0c3hfcGNyLmgNCkBAIC0yNSw2
-ICsyNSw3IEBADQogI2RlZmluZSBSRUdfRUZVU0VfUE9XRVJPRkYJCTB4MDANCiAjZGVmaW5lIFJU
-UzUyNTBfQ0xLX0NGRzMJCTB4RkY3OQ0KICNkZWZpbmUgUlRTNTI1QV9DRkdfTUVNX1BECQkweEYw
-DQorI2RlZmluZSBSVFM1MjRBX0FVVE9MT0FEX0NGRzEJMHhGRjdDDQogI2RlZmluZSBSVFM1MjRB
-X1BNX0NUUkwzCQkweEZGN0UNCiAjZGVmaW5lIFJUUzUyNUFfQklPU19DRkcJCTB4RkYyRA0KICNk
-ZWZpbmUgUlRTNTI1QV9MT0FEX0JJT1NfRkxBRwkweDAxDQotLSANCjIuMjUuMQ==
+On Wed, Jan 12, 2022 at 11:04:56PM +0200, Andy Shevchenko wrote:
+> Keep Makefile entries ordered in the same way as Kconfig ones.
+
+Damn, this is against old next/master.
+I will send a new one later on.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
