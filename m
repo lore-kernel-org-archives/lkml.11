@@ -2,125 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A92E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D30EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiAMKPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 05:15:54 -0500
-Received: from ewsoutbound.kpnmail.nl ([195.121.94.167]:64554 "EHLO
-        ewsoutbound.kpnmail.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229631AbiAMKPw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 05:15:52 -0500
-X-KPN-MessageId: b2220258-7459-11ec-9a2e-005056abbe64
-Received: from smtp.kpnmail.nl (unknown [10.31.155.37])
-        by ewsoutbound.so.kpn.org (Halon) with ESMTPS
-        id b2220258-7459-11ec-9a2e-005056abbe64;
-        Thu, 13 Jan 2022 11:15:13 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=xs4all.nl; s=xs4all01;
-        h=content-type:from:to:subject:mime-version:date:message-id;
-        bh=gDVXsjFxRvpjVOimhsqczbSYEgs92OjIY8q3HQ0xZLo=;
-        b=HBr/18+Ajg3wdobbfWiqxNHvlD5i0q1fqXDA/Hd6sXbGh1VIvyCHpK08n/9w1Gb+CSo6G3/2+QYgh
-         6D7DjgaCmpgmWNmn42nFiXcnqeWwFneTX2hFv5YkafeaAN8dL5/bS7kJYqwLF8oFL5LOH/DYFC2Xaw
-         z5khnE9cYoIjJOWI43E5RtaLFz99+hrR107PUMVKQcoBO0na3FMPXEDUkQMcWIBcGs658HYp913aLt
-         m6IiJ6/e/+N1z5xEO4Xds2vDDKkwI7t77pHPUpFWQ7yyyhuh9s9mbSvIdLJyIvhMqWnqKIHrw38aaX
-         rjz44ENw3ycdGfIor0BEqqupi6EIUCw==
-X-KPN-VerifiedSender: Yes
-X-CMASSUN: 33|E3dVle7ORv8LVtMgyR7kL3/O5bzeh7Y0MMGEunRsfjRJEHWcSAEdfVoLox9zTgP
- iTmLz1DX0F5kFZJzXWyZNow==
-X-Originating-IP: 193.91.129.219
-Received: from [192.168.2.10] (cdb815bc1.dhcp.as2116.net [193.91.129.219])
-        by smtp.xs4all.nl (Halon) with ESMTPSA
-        id c77cf44a-7459-11ec-83ab-005056ab1411;
-        Thu, 13 Jan 2022 11:15:50 +0100 (CET)
-Message-ID: <fa9b2b73-c6bb-5737-93ac-ba2ab6b3b771@xs4all.nl>
-Date:   Thu, 13 Jan 2022 11:15:48 +0100
+        id S230407AbiAMKQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:16:45 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:44360 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229459AbiAMKQo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 05:16:44 -0500
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 81B301EC051E;
+        Thu, 13 Jan 2022 11:16:39 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642068999;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=+QhzEG6ToIFAz/w6NjWJu8fdA/A/YpiVUdgwWkB2yJY=;
+        b=K682OL/4UTttex7hTZxAHc7vk3PAMy3xEOKEq8cVV6K/4HnEsYIdom8VqkxK18c1Gku0E/
+        SFFBD7wz7gjla34CamBfOtQ6I8yhpPc35ELNC5QRCKn8+QcdGBOcrmHXhS9EFmmF8THn/L
+        4v7juh2eYIrua38dCk2S96rjwKJKTUE=
+Date:   Thu, 13 Jan 2022 11:16:42 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        H Peter Anvin <hpa@zytor.com>, chang.seok.bae@intel.com,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+Subject: Re: [PATCH 0/6] x86/insn: Add instructions to instruction decoder
+Message-ID: <Yd/8Ck06NXI4sR4U@zn.tnic>
+References: <20211202095029.2165714-1-adrian.hunter@intel.com>
+ <20211223153808.cddab56b114e5ddf755bd2d0@kernel.org>
+ <c5737eb6-383b-13ea-20d1-af597c69a21d@intel.com>
+ <YdMOiFDdEny4Jicc@kernel.org>
+ <YdMP5vmU+uqMz04d@kernel.org>
+ <c7ac518e-82fb-eb51-7778-5e9b1aaed9a9@intel.com>
+ <YdM/A3pWcQi87DbT@kernel.org>
+ <YdNArxYU25LfrS52@kernel.org>
+ <678169e0-de12-6a61-d0df-cd898b9377a9@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.4.1
-Subject: Re: [PATCH v9 12/15] media: mtk-vcodec: enc: Remove
- mtk_vcodec_release_enc_pm
-Content-Language: en-US
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Yong Wu <yong.wu@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        David Airlie <airlied@linux.ie>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
-        Will Deacon <will.deacon@arm.com>,
-        dri-devel@lists.freedesktop.org, yf.wang@mediatek.com,
-        anthony.huang@mediatek.com, youlin.pei@mediatek.com,
-        Irui Wang <irui.wang@mediatek.com>,
-        Evan Green <evgreen@chromium.org>,
-        Eizan Miyamoto <eizan@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, mingyuan.ma@mediatek.com,
-        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
-        Philipp Zabel <p.zabel@pengutronix.de>, libo.kang@mediatek.com,
-        yi.kuo@mediatek.com, linux-mediatek@lists.infradead.org,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>, anan.sun@mediatek.com,
-        srv_heupstream@mediatek.com, acourbot@chromium.org,
-        linux-kernel@vger.kernel.org, Tomasz Figa <tfiga@chromium.org>,
-        iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
-        Robin Murphy <robin.murphy@arm.com>
-References: <20211112105509.12010-1-yong.wu@mediatek.com>
- <20211112105509.12010-13-yong.wu@mediatek.com>
- <68c3a573-8453-38e9-93b2-2067bedcd06f@collabora.com>
- <4bd9e849-96dd-6f1c-2841-979459366ee5@collabora.com>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <4bd9e849-96dd-6f1c-2841-979459366ee5@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <678169e0-de12-6a61-d0df-cd898b9377a9@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/01/2022 11:11, AngeloGioacchino Del Regno wrote:
-> Il 11/01/22 11:57, AngeloGioacchino Del Regno ha scritto:
->> Il 12/11/21 11:55, Yong Wu ha scritto:
->>> After this patchset, mtk_vcodec_release_enc_pm has only one line.
->>> then remove that function, use pm_runtime_disable instead.
->>>
->>> meanwhile, mtk_vcodec_init_enc_pm only operate for the clocks,
->>> rename it from the _pm to _clk.
->>>
->>> No functional change.
->>>
->>> CC: Tiffany Lin <tiffany.lin@mediatek.com>
->>> CC: Irui Wang <irui.wang@mediatek.com>
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>
->> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
->>
-> 
-> Hello Yong,
-> the mtk-vcodec patches were merged in Yunfei's vcodec patch series and Hans has
-> scheduled that for v5.18.
-> 
-> Can you please send a v10 and drop patches 10/15, 11/15, 12/15 (all of the
-> media: mtk-vcodec: *) from this series?
-> 
-> For the records, I think that after sending v10 this series is ready to be merged,
-> as it was well reviewed and also tested on many MTK platforms.
+On Thu, Jan 13, 2022 at 08:52:58AM +0200, Adrian Hunter wrote:
+> Peter or Borislav, could these patches be considered as a late
+> inclusion for v5.17?
 
-Good to know. When I have the v10 I'll try to prioritize reviewing it and running
-my usual tests.
+Stuff for the merge window gets queued before the merge window, in the
+overwhelming majority of cases.
 
-Yong, please make sure you run 'checkpatch.pl --strict' over the v10 patches and fix
-any issues (using common sense).
+Is there any particular reason this needs to be rushed to Linus now or
+can I queue it after the merge window is over, in less than two weeks?
 
-Regards,
+-- 
+Regards/Gruss,
+    Boris.
 
-	Hans
-
-> 
-> Thank you,
-> - Angelo
-
+https://people.kernel.org/tglx/notes-about-netiquette
