@@ -2,100 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0734C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:47:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A117C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236345AbiAMPq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:46:59 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:47604 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236283AbiAMPqy (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:46:54 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id F129C1F387;
-        Thu, 13 Jan 2022 15:46:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642088813; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NMMOJAr/nOnpKZlb714JwJhyEXP557sdSv675jlH2BI=;
-        b=KxAtbzDG1pyPsyzqVmQlxbZId53X3xrbCB2dWLLkW8gb+o16O3JGeenJnHjBdXuP6kQ6DZ
-        fCtOAqIRH9ZWHRNKfUwzYrTuDoYFeN+702Drbswj4rlrXylg8vPj10uuiV2XAHrHWDo6pP
-        d2sTsJpNLve7hosSWaodZJC3E+wJMiI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642088813;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NMMOJAr/nOnpKZlb714JwJhyEXP557sdSv675jlH2BI=;
-        b=wS4tK9Fe0o85B2PtNRKsLE0hZKULejN2ObmGQYsEhGPKE564/JjCINO7xD+6s7I9luxB0e
-        S2uZWXnfn+ZpdNAw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 97CC11330C;
-        Thu, 13 Jan 2022 15:46:52 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id QLNdJGxJ4GHmHwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 13 Jan 2022 15:46:52 +0000
-Message-ID: <0ff40eb4-aa9b-ef12-5278-e9dce2354a59@suse.cz>
-Date:   Thu, 13 Jan 2022 16:46:52 +0100
+        id S229483AbiAMPrD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:47:03 -0500
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:40095 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S236244AbiAMPq4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 10:46:56 -0500
+Received: from handsomejack.molgen.mpg.de (handsomejack.molgen.mpg.de [141.14.17.248])
+        by mx.molgen.mpg.de (Postfix) with ESMTP id 45E6161EA191E;
+        Thu, 13 Jan 2022 16:46:55 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     linux-ide@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] ata: Add module parameter `debounce_delay_ms`
+Date:   Thu, 13 Jan 2022 16:46:34 +0100
+Message-Id: <20220113154635.17581-2-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220113154635.17581-1-pmenzel@molgen.mpg.de>
+References: <20220113154635.17581-1-pmenzel@molgen.mpg.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v4 09/66] mm/mmap: Use the maple tree in find_vma()
- instead of the rbtree.
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Song Liu <songliubraving@fb.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Rik van Riel <riel@surriel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michel Lespinasse <walken.cr@gmail.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        Rom Lemarchand <romlem@google.com>
-References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
- <20211201142918.921493-10-Liam.Howlett@oracle.com>
- <4207b5a3-efac-40f3-6b42-6713c9283cdd@suse.cz>
- <20211215180903.huv74nff62lgepsa@revolver>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20211215180903.huv74nff62lgepsa@revolver>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/15/21 19:09, Liam Howlett wrote:
->> - the future lookup of address vma->vm_end will return this vma, although
->> the address doesn't belong to it. Wouldn't be surprised if this caused
->> infrequent mysterious bugs?
->>
->> Both will resolve with vmacache removal later, but better still fix this.
-> This is certainly worth fixing.  I am surprised that I did not hit a
-> random bug as you said above, I would expect it to occur as well.
-> Although, I didn't run each patch individually for long unless I was
-> tracking down an issue on a rebase.
+The 200 ms delay in `sata_resume_lin()` is probably only needed for a
+few old controllers, so allow users to test this by setting the delay
+time (preferrably 0). To be able to track defaults, make it a signed
+integer with negative values being the default, which currently stays at
+200 ms.
 
-Ah, it doesn't cause a bug because vmacache_find() checks the boundaries of
-vmas in the vmacache.
+This parameter could also be made boolean, but making the delay
+configurable adds more flexibility, but also does not directly match the
+existing boolean flag `ATA_LFLAG_NO_DEBOUNCE_DELAY`.
+
+Note, if that flag is set for a board, then the parameter is ignored.
+
+History:
+
+Commit 4effb658a0 from October 2003 [1, historical git archive] with the
+commit message
+
+> [libata] Merge Serial ATA core, and drivers for:
+>
+> Intel ICH5 (production)
+> ServerWorks / Apple K2 (beta)
+> VIA (beta)
+> Silicon Image 3112 (broken!)
+> Various Promise (alpha/beta)
+
+adds the code below:
+
+    void sata_phy_reset(struct ata_port *ap)
+    {
+    […]
+        /* wait for phy to become ready, if necessary */
+        do {
+            msleep(200);
+            sstatus = scr_read(ap, SCR_STATUS);
+            if ((sstatus & 0xf) != 1)
+                break;
+        } while (time_before(jiffies, timeout));
+    […]
+    }
+
+Later on in commit d7bb4cc75759 ([PATCH] libata-hp-prep: implement
+sata_phy_debounce()) the commit is refactored [2], and the comment
+clarified.
+
+     /*
+      * Writes to SControl sometimes get ignored under certain
+      * controllers (ata_piix SIDPR).  Make sure DET actually is
+      * cleared.
+      */
+     do {
+             scontrol = (scontrol & 0x0f0) | 0x300;
+             if ((rc = sata_scr_write(link, SCR_CONTROL, scontrol)))
+                     return rc;
+             /*
+              * Some PHYs react badly if SStatus is pounded
+              * immediately after resuming.  Delay 200ms before
+              * debouncing.
+              */
+             if (!(link->flags & ATA_LFLAG_NO_DEBOUNCE_DELAY))
+                     ata_msleep(link->ap, 200);
+
+             /* is SControl restored correctly? */
+             if ((rc = sata_scr_read(link, SCR_CONTROL, &scontrol)))
+                     return rc;
+     } while ((scontrol & 0xf0f) != 0x300 && --tries);
+
+A lot of PHYs do not need a delay though, so delaying 200 ms increases
+the boot time by 30 percent unnecessarily for a lot of systems, making
+“instant booting” quite hard.
+
+[1]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/commit/?id=4effb658a0f800e159c29a2d881cac76c326087a
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d7bb4cc7575929a60b0a718daa1bce87bea9a9cc
+
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 6 ++++++
+ drivers/ata/libata-core.c                       | 4 ++++
+ drivers/ata/libata-sata.c                       | 6 ++++--
+ drivers/ata/libata.h                            | 1 +
+ 4 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 2fba82431efbe..8cc0e790f49d6 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -2548,6 +2548,12 @@
+ 	lapic_timer_c2_ok	[X86,APIC] trust the local apic timer
+ 			in C2 power state.
+ 
++	libata.libata_debounce_delay_ms=	[LIBATA] Set debounce delay in
++			ms
++
++			libata.dma<0	  Use default value from code
++			libata.dma>1	  Debounce delay in milliseconds
++
+ 	libata.dma=	[LIBATA] DMA control
+ 			libata.dma=0	  Disable all PATA and SATA DMA
+ 			libata.dma=1	  PATA and SATA Disk DMA only
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 67f88027680ac..b0d76cb8a7531 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -154,6 +154,10 @@ static int atapi_an;
+ module_param(atapi_an, int, 0444);
+ MODULE_PARM_DESC(atapi_an, "Enable ATAPI AN media presence notification (0=0ff [default], 1=on)");
+ 
++int debounce_delay_ms = -1;
++module_param_named(debounce_delay_ms, libata_debounce_delay_ms, int, 0644);
++MODULE_PARM_DESC(debounce_delay_ms, "Delay amount milliseconds in sata_link_resume() to work around controller issues (negative values mean default value in code (200 ms)");
++
+ MODULE_AUTHOR("Jeff Garzik");
+ MODULE_DESCRIPTION("Library module for ATA devices");
+ MODULE_LICENSE("GPL");
+diff --git a/drivers/ata/libata-sata.c b/drivers/ata/libata-sata.c
+index 071158c0c44c1..29a815e2b7248 100644
+--- a/drivers/ata/libata-sata.c
++++ b/drivers/ata/libata-sata.c
+@@ -315,10 +315,12 @@ int sata_link_resume(struct ata_link *link, const unsigned long *params,
+ 		/*
+ 		 * Some PHYs react badly if SStatus is pounded
+ 		 * immediately after resuming.  Delay 200ms before
+-		 * debouncing.
++		 * debouncing. Duration can be configured with module
++		 * parameter debounce_delay_ms.
+ 		 */
+ 		if (!(link->flags & ATA_LFLAG_NO_DEBOUNCE_DELAY))
+-			ata_msleep(link->ap, 200);
++			ata_msleep(link->ap,
++					(libata_debounce_delay_ms < 0) ? 200 : libata_debounce_delay_ms);
+ 
+ 		/* is SControl restored correctly? */
+ 		if ((rc = sata_scr_read(link, SCR_CONTROL, &scontrol)))
+diff --git a/drivers/ata/libata.h b/drivers/ata/libata.h
+index 51e01acdd2410..a26e77ee25aa2 100644
+--- a/drivers/ata/libata.h
++++ b/drivers/ata/libata.h
+@@ -35,6 +35,7 @@ extern int atapi_passthru16;
+ extern int libata_fua;
+ extern int libata_noacpi;
+ extern int libata_allow_tpm;
++extern int libata_debounce_delay_ms;
+ extern const struct device_type ata_port_type;
+ extern struct ata_link *ata_dev_phys_link(struct ata_device *dev);
+ #ifdef CONFIG_ATA_FORCE
+-- 
+2.30.2
+
