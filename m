@@ -2,222 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6992CC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 04:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C63C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 04:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233253AbiAMEOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 23:14:14 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:45654 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232529AbiAMELa (ORCPT
+        id S232849AbiAMEOy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 23:14:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233102AbiAMENi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 23:11:30 -0500
-X-UUID: 5ccc5d9e25894620b3f0a95c28b59bcb-20220113
-X-UUID: 5ccc5d9e25894620b3f0a95c28b59bcb-20220113
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1406370068; Thu, 13 Jan 2022 12:11:26 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Thu, 13 Jan 2022 12:11:26 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 13 Jan
- 2022 12:11:25 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 13 Jan 2022 12:11:23 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        "Tzung-Bi Shih" <tzungbi@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v19, 18/19] media: mtk-vcodec: Remove mtk_vcodec_release_dec_pm
-Date:   Thu, 13 Jan 2022 12:10:54 +0800
-Message-ID: <20220113041055.25213-19-yunfei.dong@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220113041055.25213-1-yunfei.dong@mediatek.com>
-References: <20220113041055.25213-1-yunfei.dong@mediatek.com>
+        Wed, 12 Jan 2022 23:13:38 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3603AC06175B;
+        Wed, 12 Jan 2022 20:12:29 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id bl18so5882521qkb.5;
+        Wed, 12 Jan 2022 20:12:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pbtW5GNEznZHiafA75unnHcFZvdczANI1PgQ6YwC50I=;
+        b=ibjmvFEuzUnUj0P4/dhygtlpXkwqsmCbtqtSnsfMo8cpFNuhzqPWC58ZSdU3L1JTwt
+         0JbiyhvXcxCguvtxAY6qa9hCdayN57icMXEHv5DOV32DSMkflySg0TSy0Uod6ngnhHaT
+         A+M5uaveL8e8wlbe7AJqTbAjOrKQ1vG8fia6k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pbtW5GNEznZHiafA75unnHcFZvdczANI1PgQ6YwC50I=;
+        b=DCSq349x/8mLa4oBTbhmPe9amY8CCKiXSqQY2EkMvaLiFTOQE0/rYViIkX1Y652tl+
+         vH3UWVYsvRaDPFvzEIS1eTQ9QLY+mAfmUHx8y7za9oZschFQS1SALOqXBz9J3wIiCzX6
+         L+Wg1IW+iI4lvpS+XORYkK58G3LjNIQUD0RxAKGF0KtI71UjL8xgvTjaxyaRjYKuEYnG
+         WLauJ95mxDtL0VB7xKwA8LXYH3eO8vPeTb+PHLS3p0OoRvw8zMVc5e+4eLvdBw3+MzXl
+         +XoEUyMDkMr+KoywviXWaVJUP7HN6eTGvkaOh4ojGymnTynf4EcPSW9VJD2pY6Lvbaqw
+         KEtQ==
+X-Gm-Message-State: AOAM532ze74qwpbmEdKRkKuOS4rL1JIpPwTBz2H8Orr/gtXUImxuzPBB
+        czWX/QQH1g1OY/5T8a12PiQqldo5szdPS4pHibE=
+X-Google-Smtp-Source: ABdhPJwOVBaayKDH/i9TEqiJA4jUpG5Q9ZPM20KYYIs0XA0wcVXkAniMBmivwNgSlbtXPJKggVHdozQRsoV+5JJNw5E=
+X-Received: by 2002:a37:a342:: with SMTP id m63mr272966qke.347.1642047148268;
+ Wed, 12 Jan 2022 20:12:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20220112230247.982212-1-iwona.winiarska@intel.com> <20220112230247.982212-6-iwona.winiarska@intel.com>
+In-Reply-To: <20220112230247.982212-6-iwona.winiarska@intel.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Thu, 13 Jan 2022 04:12:16 +0000
+Message-ID: <CACPK8XewQJBvwssM6zQKQoxT=JLpk-qjGhsiTAa980OtbU7JBw@mail.gmail.com>
+Subject: Re: [PATCH v5 05/13] peci: Add peci-aspeed controller driver
+To:     Iwona Winiarska <iwona.winiarska@intel.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-hwmon@vger.kernel.org, linux-doc@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Zev Weiss <zweiss@equinix.com>,
+        David Muller <d.mueller@elsoft.ch>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are only two lines in mtk_vcodec_release_dec_pm, using
-pm_runtime_disable and put_device instead directly.
+On Wed, 12 Jan 2022 at 23:06, Iwona Winiarska <iwona.winiarska@intel.com> wrote:
+>
+> From: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+>
+> ASPEED AST24xx/AST25xx/AST26xx SoCs support the PECI electrical
+> interface (a.k.a PECI wire) that provides a communication channel with
+> Intel processors.
+> This driver allows BMC to discover devices connected to it and
+> communicate with them using PECI protocol.
+>
+> Signed-off-by: Jae Hyun Yoo <jae.hyun.yoo@linux.intel.com>
+> Co-developed-by: Iwona Winiarska <iwona.winiarska@intel.com>
+> Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+> Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-Move pm_runtime_enable outside mtk_vcodec_init_dec_pm to symmetry with
-pm_runtime_disable, after that, rename mtk_vcodec_init_dec_pm to *_clk
-since it only has clock operations now.
+The driver looks good to me. I would be happy to see it merged in its
+current state.
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- .../media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c   | 10 +++++++---
- .../media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c    |  7 +++++--
- .../media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c    | 12 ++----------
- .../media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h    |  3 +--
- 4 files changed, 15 insertions(+), 17 deletions(-)
+Reviewed-by: Joel Stanley <joel@jms.id.au>
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-index 08d8e02559c6..86b639d82be8 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-@@ -11,6 +11,7 @@
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/of.h>
-+#include <linux/pm_runtime.h>
- #include <media/v4l2-event.h>
- #include <media/v4l2-mem2mem.h>
- #include <media/videobuf2-dma-contig.h>
-@@ -128,12 +129,13 @@ static int mtk_vcodec_init_dec_resources(struct mtk_vcodec_dev *dev)
- 		return ret;
- 	}
- 
--	ret = mtk_vcodec_init_dec_pm(pdev, &dev->pm);
-+	ret = mtk_vcodec_init_dec_clk(pdev, &dev->pm);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "failed to get mt vcodec clock source");
- 		return ret;
- 	}
- 
-+	pm_runtime_enable(&pdev->dev);
- 	return 0;
- }
- 
-@@ -447,7 +449,8 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 	if (IS_VDEC_LAT_ARCH(dev->vdec_pdata->hw_arch))
- 		destroy_workqueue(dev->core_workqueue);
- err_res:
--	mtk_vcodec_release_dec_pm(&dev->pm);
-+	pm_runtime_disable(dev->pm.dev);
-+	put_device(dev->pm.larbvdec);
- err_dec_pm:
- 	mtk_vcodec_fw_release(dev->fw_handler);
- 	return ret;
-@@ -490,7 +493,8 @@ static int mtk_vcodec_dec_remove(struct platform_device *pdev)
- 		video_unregister_device(dev->vfd_dec);
- 
- 	v4l2_device_unregister(&dev->v4l2_dev);
--	mtk_vcodec_release_dec_pm(&dev->pm);
-+	pm_runtime_disable(dev->pm.dev);
-+	put_device(dev->pm.larbvdec);
- 	mtk_vcodec_fw_release(dev->fw_handler);
- 	return 0;
- }
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
-index f2f5d8869c70..7b5da3e4cac2 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_hw.c
-@@ -9,6 +9,7 @@
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
-+#include <linux/pm_runtime.h>
- #include <linux/slab.h>
- 
- #include "mtk_vcodec_drv.h"
-@@ -140,9 +141,10 @@ static int mtk_vdec_hw_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	subdev_dev->plat_dev = pdev;
--	ret = mtk_vcodec_init_dec_pm(pdev, &subdev_dev->pm);
-+	ret = mtk_vcodec_init_dec_clk(pdev, &subdev_dev->pm);
- 	if (ret)
- 		return ret;
-+	pm_runtime_enable(&pdev->dev);
- 
- 	of_id = of_match_device(mtk_vdec_hw_match, dev);
- 	if (!of_id) {
-@@ -181,7 +183,8 @@ static int mtk_vdec_hw_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, subdev_dev);
- 	return 0;
- err:
--	mtk_vcodec_release_dec_pm(&subdev_dev->pm);
-+	pm_runtime_disable(subdev_dev->pm.dev);
-+	put_device(subdev_dev->pm.larbvdec);
- 	return ret;
- }
- 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-index f5b1e1aab301..44035a50e335 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-@@ -15,7 +15,7 @@
- #include "mtk_vcodec_dec_pm.h"
- #include "mtk_vcodec_util.h"
- 
--int mtk_vcodec_init_dec_pm(struct platform_device *pdev, struct mtk_vcodec_pm *pm)
-+int mtk_vcodec_init_dec_clk(struct platform_device *pdev, struct mtk_vcodec_pm *pm)
- {
- 	struct device_node *node;
- 	struct platform_device *larb_pdev;
-@@ -72,20 +72,12 @@ int mtk_vcodec_init_dec_pm(struct platform_device *pdev, struct mtk_vcodec_pm *p
- 		}
- 	}
- 
--	pm_runtime_enable(&pdev->dev);
- 	return 0;
- put_device:
- 	put_device(pm->larbvdec);
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(mtk_vcodec_init_dec_pm);
--
--void mtk_vcodec_release_dec_pm(struct mtk_vcodec_pm *pm)
--{
--	pm_runtime_disable(pm->dev);
--	put_device(pm->larbvdec);
--}
--EXPORT_SYMBOL_GPL(mtk_vcodec_release_dec_pm);
-+EXPORT_SYMBOL_GPL(mtk_vcodec_init_dec_clk);
- 
- int mtk_vcodec_dec_pw_on(struct mtk_vcodec_dev *vdec_dev, int hw_idx)
- {
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h
-index ff979d384f4c..3cc721bbfaf6 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.h
-@@ -9,8 +9,7 @@
- 
- #include "mtk_vcodec_drv.h"
- 
--int mtk_vcodec_init_dec_pm(struct platform_device *pdev, struct mtk_vcodec_pm *pm);
--void mtk_vcodec_release_dec_pm(struct mtk_vcodec_pm *pm);
-+int mtk_vcodec_init_dec_clk(struct platform_device *pdev, struct mtk_vcodec_pm *pm);
- 
- int mtk_vcodec_dec_pw_on(struct mtk_vcodec_dev *vdec_dev, int hw_idx);
- void mtk_vcodec_dec_pw_off(struct mtk_vcodec_dev *vdec_dev, int hw_idx);
--- 
-2.25.1
+I've a few questions below that can be followed up later if need be.
 
+> +
+> +static void aspeed_peci_init_regs(struct aspeed_peci *priv)
+> +{
+> +       u32 val;
+> +
+> +       /* Clear interrupts */
+> +       val = readl(priv->base + ASPEED_PECI_INT_STS) | ASPEED_PECI_INT_MASK;
+
+Should that be & MASK?
+
+As you're just sanitising the registers, you could clear the status
+unconditionally:
+
+ writel(ASPEED_PECI_INT_MASK, priv->base + ASPEED_PECI_INT_STS);
+
+> +       writel(val, priv->base + ASPEED_PECI_INT_STS);
+> +
+> +       /* Set timing negotiation mode and enable interrupts */
+> +       val = FIELD_PREP(ASPEED_PECI_TIMING_NEGO_SEL_MASK, ASPEED_PECI_1ST_BIT_OF_ADDR_NEGO);
+
+That's a complicated way to set val to zero :)
+
+> +       val |= ASPEED_PECI_INT_MASK;
+> +       writel(val, priv->base + ASPEED_PECI_INT_CTRL);
+> +
+> +       val = FIELD_PREP(ASPEED_PECI_CTRL_SAMPLING_MASK, ASPEED_PECI_RD_SAMPLING_POINT_DEFAULT);
+> +       writel(val, priv->base + ASPEED_PECI_CTRL);
+
+This will clear the rest of the ctrl register, including the divisor
+settings. Was that your intention?
+
+Reading the rest of your driver you only call _init_regs after
+_controller_enable, so I guess you're fine.
+
+> +}
+> +
+> +static int aspeed_peci_check_idle(struct aspeed_peci *priv)
+> +{
+> +       u32 cmd_sts = readl(priv->base + ASPEED_PECI_CMD);
+> +       int ret;
+> +
+> +       /*
+> +        * Under normal circumstances, we expect to be idle here.
+> +        * In case there were any errors/timeouts that led to the situation
+> +        * where the hardware is not in idle state - we need to reset and
+> +        * reinitialize it to avoid potential controller hang.
+> +        */
+> +       if (FIELD_GET(ASPEED_PECI_CMD_STS_MASK, cmd_sts)) {
+> +               reset_control_assert(priv->rst);
+> +
+> +               ret = reset_control_deassert(priv->rst);
+> +               if (ret) {
+> +                       dev_err(priv->dev, "cannot deassert reset control\n");
+> +                       return ret;
+> +               }
+> +
+> +               aspeed_peci_init_regs(priv);
+> +
+> +               ret = clk_set_rate(priv->clk, priv->clk_frequency);
+> +               if (ret < 0) {
+> +                       dev_err(priv->dev, "cannot set clock frequency\n");
+> +                       return ret;
+> +               }
+> +
+> +               aspeed_peci_controller_enable(priv);
+> +       }
+> +
+> +       return readl_poll_timeout(priv->base + ASPEED_PECI_CMD,
+> +                                 cmd_sts,
+> +                                 !(cmd_sts & ASPEED_PECI_CMD_IDLE_MASK),
+> +                                 ASPEED_PECI_IDLE_CHECK_INTERVAL_US,
+> +                                 ASPEED_PECI_IDLE_CHECK_TIMEOUT_US);
+> +}
+> +
+> +static int aspeed_peci_xfer(struct peci_controller *controller,
+> +                           u8 addr, struct peci_request *req)
+> +{
+> +       struct aspeed_peci *priv = dev_get_drvdata(controller->dev.parent);
+> +       unsigned long timeout = msecs_to_jiffies(priv->cmd_timeout_ms);
+> +       u32 peci_head;
+> +       int ret;
+> +
+> +       if (req->tx.len > ASPEED_PECI_DATA_BUF_SIZE_MAX ||
+> +           req->rx.len > ASPEED_PECI_DATA_BUF_SIZE_MAX)
+> +               return -EINVAL;
+> +
+> +       /* Check command sts and bus idle state */
+> +       ret = aspeed_peci_check_idle(priv);
+> +       if (ret)
+> +               return ret; /* -ETIMEDOUT */
+> +
+> +       spin_lock_irq(&priv->lock);
+> +       reinit_completion(&priv->xfer_complete);
+> +
+> +       peci_head = FIELD_PREP(ASPEED_PECI_TARGET_ADDR_MASK, addr) |
+> +                   FIELD_PREP(ASPEED_PECI_WR_LEN_MASK, req->tx.len) |
+> +                   FIELD_PREP(ASPEED_PECI_RD_LEN_MASK, req->rx.len);
+> +
+> +       writel(peci_head, priv->base + ASPEED_PECI_RW_LENGTH);
+> +
+> +       memcpy_toio(priv->base + ASPEED_PECI_WR_DATA0, req->tx.buf, min_t(u8, req->tx.len, 16));
+> +       if (req->tx.len > 16)
+> +               memcpy_toio(priv->base + ASPEED_PECI_WR_DATA4, req->tx.buf + 16,
+> +                           req->tx.len - 16);
+> +
+> +#if IS_ENABLED(CONFIG_DYNAMIC_DEBUG)
+> +       dev_dbg(priv->dev, "HEAD : %#08x\n", peci_head);
+> +       print_hex_dump_bytes("TX : ", DUMP_PREFIX_NONE, req->tx.buf, req->tx.len);
+> +#endif
+
+The ifdef is unfortunate. Could you do this?
+
+dev_dbg(priv->dev, "HEAD : %#08x\n", peci_head);
+if (IS_ENABLED(CONFIG_DYNAMIC_DEBUG))
+       print_hex_dump_bytes("TX : ", DUMP_PREFIX_NONE, req->tx.buf,
+req->tx.len);
+
+Not a biggie though, don't let this hold up merging.
+
+> +       priv->status = 0;
+> +       writel(ASPEED_PECI_CMD_FIRE, priv->base + ASPEED_PECI_CMD);
+> +       spin_unlock_irq(&priv->lock);
+> +
