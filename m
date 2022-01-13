@@ -2,128 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA024C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD76C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 31 Jan 2022 16:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380376AbiAaQ2i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 31 Jan 2022 11:28:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380370AbiAaQ2e (ORCPT
+        id S239054AbiAaQ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 31 Jan 2022 11:28:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42044 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380358AbiAaQ2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 31 Jan 2022 11:28:34 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED60C06173B;
-        Mon, 31 Jan 2022 08:28:33 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id p7so27757180edc.12;
-        Mon, 31 Jan 2022 08:28:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dwt+S+xaQOb5oolekdBKMH+fGFi5CzTZ33U4PJNpXnE=;
-        b=XbUONObw9m3FeEzG8kzzGOJWeQjOCK9wirykP4FDExl5B/1dbMR8BtSh9kkOYF3yQe
-         eUJfi+QOYsFQnKvZJZmBR2+gm3vdnl5dGuvjC4RaV3LPOwFiNi25VQpe2kw4ikxgJvqi
-         r5oEJSbkV7qby8nT8R0fhesITOQShBmhjsrTYlraw2qpoNgDHH9q0567RyXRDIQrvzpW
-         WiTMf4ODMq//41ZC0RbVpi3jhxUZfeV+oJlNM5+xOHspbVD0yOYbBBGze5iTRBgf9Ssq
-         oXaOYs6eCQn0mHh7MarPkl2a28yjSULvkoD8A3j/mxP+7gZgyGTI1IqYErNLJ+SVg0UX
-         OfnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dwt+S+xaQOb5oolekdBKMH+fGFi5CzTZ33U4PJNpXnE=;
-        b=VgBqXY5xEobCQJzAiN7z9iy5SovzNVCmb1a4sQWPKYcrR2oxMMl4PWGSb0bWMydUPW
-         w097uFX/4yuHrIgdus4cOcNjTS9P3iAcNGuxM9C+B+P9cG4e0sHGQZasVqNXdH74ZvTS
-         owHGJGP4fAvCnb4OcGVkwAqxcf1w3cqKHr/URtFBn+sxk9GxgsZVsjbe5GJZO9ayN2mu
-         gn12p/ZR71bNwHdp/QCRgSpi9/ptU+T97f0wcZSp/j25tWRwApKURzXk0FL0IGAAxCV8
-         cbbx8pnTsCCpfI6BvqPOyPVlxsY/CtE+lMRWrgWf2lUUJmQd93SZxjKy+HLxRv0lENkG
-         Oyng==
-X-Gm-Message-State: AOAM5303PK83iaxBpiSfvQHIGBEAWLSDGkp16AZPqyJPfa4y9KUEiRNl
-        3N6h4wrMDz6w7KIrOLK+zYWe9Eki934mX7kkuZU=
-X-Google-Smtp-Source: ABdhPJxSBz18NwyW86CThCeoCdkkXwq6+Gjg58B4suZ/8V/WkVaJw3IipwwO7vMKIpFbTBJGMyRYHQ29vDLeDxuWYeg=
-X-Received: by 2002:aa7:d1d4:: with SMTP id g20mr21531766edp.296.1643646512457;
- Mon, 31 Jan 2022 08:28:32 -0800 (PST)
-MIME-Version: 1.0
-References: <20220131160713.245637-1-marcan@marcan.st> <20220131160713.245637-2-marcan@marcan.st>
-In-Reply-To: <20220131160713.245637-2-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Jan 2022 18:26:56 +0200
-Message-ID: <CAHp75VcQ=BRkVb3QT0brAO7P_L47tyaymfkM-syOPDMAKG5R3A@mail.gmail.com>
-Subject: Re: [PATCH v4 1/9] brcmfmac: pcie: Release firmwares in the
- brcmf_pcie_setup error path
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Arend van Spriel <arend.vanspriel@broadcom.com>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mon, 31 Jan 2022 11:28:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC544614BE;
+        Mon, 31 Jan 2022 16:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C48CC340ED;
+        Mon, 31 Jan 2022 16:28:38 +0000 (UTC)
+X-Mailbox-Line: From 9f0ed270b80b0209ff781027712c0c46e3f085d6 Mon Sep 17 00:00:00 2001
+From:   Clark Williams <williams@redhat.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-rt-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 13 Jan 2022 17:12:15 -0600
+Subject: [RFC PATCH PREEMPT_RT 4.19 STABLE] net: Fix compiler warnings on 4.19 PREEMPT_RT with xmit_lock_owner
+Message-Id: <20220131162838.1C48CC340ED@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 6:07 PM Hector Martin <marcan@marcan.st> wrote:
->
-> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-> the CLM blob is released in the device remove path.
+GCC 11 has started complaining about the PREEMPT_RT changes to 2fd949365fe6628fb2
+which change the xmit_lock_owner from an integer to a pointer to struct
+task_struct. These changes are from the patch:
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+	     net: move xmit_recursion to per-task variable on -RT
 
+The below patch is ugly but fixes the compiler warnings.
 
-> Fixes: 82f93cf46d60 ("brcmfmac: get chip's default RAM info during PCIe setup")
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> index 8b149996fc00..f876b1d8d00d 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
-> @@ -1777,6 +1777,8 @@ static void brcmf_pcie_setup(struct device *dev, int ret,
->         ret = brcmf_chip_get_raminfo(devinfo->ci);
->         if (ret) {
->                 brcmf_err(bus, "Failed to get RAM info\n");
-> +               release_firmware(fw);
-> +               brcmf_fw_nvram_free(nvram);
->                 goto fail;
->         }
->
-> --
-> 2.33.0
->
+I'd be happy to entertain a better/cleaner solution
 
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ include/linux/netdevice.h | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 7b34ce34114a..fa2a52d24218 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3921,7 +3921,11 @@ static inline void __netif_tx_lock(struct netdev_queue *txq, int cpu)
+ {
+ 	spin_lock(&txq->_xmit_lock);
+ 	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++#ifdef CONFIG_PREEMPT_RT_FULL
++	WRITE_ONCE(txq->xmit_lock_owner, current);
++#else
+ 	WRITE_ONCE(txq->xmit_lock_owner, cpu);
++#endif
+ }
+ 
+ static inline bool __netif_tx_acquire(struct netdev_queue *txq)
+@@ -3939,7 +3943,11 @@ static inline void __netif_tx_lock_bh(struct netdev_queue *txq)
+ {
+ 	spin_lock_bh(&txq->_xmit_lock);
+ 	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++#ifdef CONFIG_PREEMPT_RT_FULL
++	WRITE_ONCE(txq->xmit_lock_owner, current);
++#else
+ 	WRITE_ONCE(txq->xmit_lock_owner, smp_processor_id());
++#endif
+ }
+ 
+ static inline bool __netif_tx_trylock(struct netdev_queue *txq)
+@@ -3948,7 +3956,11 @@ static inline bool __netif_tx_trylock(struct netdev_queue *txq)
+ 
+ 	if (likely(ok)) {
+ 		/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++#ifdef CONFIG_PREEMPT_RT_FULL
++		WRITE_ONCE(txq->xmit_lock_owner, current);
++#else
+ 		WRITE_ONCE(txq->xmit_lock_owner, smp_processor_id());
++#endif
+ 	}
+ 	return ok;
+ }
+@@ -3956,14 +3968,22 @@ static inline bool __netif_tx_trylock(struct netdev_queue *txq)
+ static inline void __netif_tx_unlock(struct netdev_queue *txq)
+ {
+ 	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++#ifdef CONFIG_PREEMPT_RT_FULL
++	WRITE_ONCE(txq->xmit_lock_owner, NULL);
++#else
+ 	WRITE_ONCE(txq->xmit_lock_owner, -1);
++#endif
+ 	spin_unlock(&txq->_xmit_lock);
+ }
+ 
+ static inline void __netif_tx_unlock_bh(struct netdev_queue *txq)
+ {
+ 	/* Pairs with READ_ONCE() in __dev_queue_xmit() */
++#ifdef CONFIG_PREEMPT_RT_FULL
++	WRITE_ONCE(txq->xmit_lock_owner, NULL);
++#else
+ 	WRITE_ONCE(txq->xmit_lock_owner, -1);
++#endif
+ 	spin_unlock_bh(&txq->_xmit_lock);
+ }
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
