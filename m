@@ -2,108 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C14C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:55:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237724AbiAMSz2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 13:55:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237707AbiAMSz1 (ORCPT
+        id S237736AbiAMSzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 13:55:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40112 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237707AbiAMSzv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 13:55:27 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91F54C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 10:55:26 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id u25so26649302edf.1
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 10:55:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oRiVpEhqgJD+mGewiIi65w1fedUbfZZFb7W9HHAZRIE=;
-        b=ct37F4+kNDa/5rStIs6q5gEJQHPbgNgsFIIOgbhuczvIpsihHXfdAvP0aHiEsoL+rp
-         aPk9bagtKhFcdssAU0zK/53zynLDefrVybrhHiJe3LQ/Knt24pwdimn7uebHLTPlJyAJ
-         LhzOFrLz/C7Lwij0on65wfikAZho0IiSAc/+Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oRiVpEhqgJD+mGewiIi65w1fedUbfZZFb7W9HHAZRIE=;
-        b=rUjBrCPRPW8xvReB7H1vT2QRpzeOFEdpWA5kr1gIJdzwJjyPloV+lGi++61sZ9j8k2
-         6auChXG4KsSA4IKSsOFnJS5ekZqRcVkHYYF90YwvUREGEIxYGjungEtY83veTX1OqEZT
-         /UzUeiCHkSUu9XxIII9ElR5W4iDUg0hwmp+sJ56L3s6C26Pk55n/UstM/d7sGXOZxGI5
-         T67zSokdR+UGrLBpqW1uLksccHDPdtmTU9aa5wFPcWfx7rjFzzQp4MFH3lorDROBKEno
-         bRPtSA/YAT64oQ7nM5T2vJ6Mlpj2Q5w6zLtBKhgptGWMv968vusM8v3nCr5zirHVB1wK
-         zXJg==
-X-Gm-Message-State: AOAM533/lz0fJ2EJ90ei1RRiWPjzRNmOEiakO8O6w+bOWpijEQcyqGnb
-        otMdyxXAri5vKmRnCJZqHyKSp6ArmWWpe+fF
-X-Google-Smtp-Source: ABdhPJyLTZCBi3heFHewHk8trDegBWC08Vmun98vSfG2bT5gSmu8Vy5oqW/omdkBPzxfYvevdOZSfw==
-X-Received: by 2002:a17:906:c0d6:: with SMTP id bn22mr1302484ejb.740.1642100124998;
-        Thu, 13 Jan 2022 10:55:24 -0800 (PST)
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
-        by smtp.gmail.com with ESMTPSA id j5sm1133797ejo.171.2022.01.13.10.55.22
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 10:55:23 -0800 (PST)
-Received: by mail-wm1-f50.google.com with SMTP id l12-20020a7bc34c000000b003467c58cbdfso5995850wmj.2
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 10:55:22 -0800 (PST)
-X-Received: by 2002:a05:600c:4f13:: with SMTP id l19mr12264326wmq.152.1642100122506;
- Thu, 13 Jan 2022 10:55:22 -0800 (PST)
+        Thu, 13 Jan 2022 13:55:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EBAB61D40;
+        Thu, 13 Jan 2022 18:55:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DB79C36AEC;
+        Thu, 13 Jan 2022 18:55:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642100150;
+        bh=hMlJ9QB1L16utXssQ293CfOFivWIchx1FAeMsc3sNoI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=SkiLjRj7G2antCNr0Xeb0tvN2njwb/UzFIYBE4p/rd+fEMhJrk1ts4VdJ0kxrAJsj
+         gW1/DkgQUGcA1mIgVACsYabSg4qjuJCxH+O2fWSaoCOcuxNnncFge78OV6rtYEZx/1
+         uf65LChZYjW+ZJWkr4+wxD0yFO8PuMf4yuPxvLOBHmAI+WGbIWeFOirCz9TeZxsZRV
+         RG1p5na1G7JWnApvrYW1pUklJq5XfycsD5QcIwBREsWfwZ/L1pQRN8wmJ+A4BzS2Hf
+         k9UbHe8LwCtb95H6SRZU/JfCb2KoAZvsiqtGolfElhXlEfsVpBVvwIOwuSUIa+L6Rm
+         3MSFpRRpUxvTQ==
+Received: by mail-yb1-f177.google.com with SMTP id g14so17710409ybs.8;
+        Thu, 13 Jan 2022 10:55:50 -0800 (PST)
+X-Gm-Message-State: AOAM533yiDf0P0r/Iqf6pm1e2kSvcGTE8i2Gu5oACq8Ucj+XAi1GhktE
+        B4XBX4TxZ2iefTgUsMqIwQVJlVLFJUN9wwGbSKQ=
+X-Google-Smtp-Source: ABdhPJzy3uH8nfMkDWu9YayjnvJO6vmodvRntm4s02doIFEXvE99PxC88E0Afwy1DsXL6Pagrbovz9ItsUsin/jxvRQ=
+X-Received: by 2002:a25:8b85:: with SMTP id j5mr7726044ybl.558.1642100149669;
+ Thu, 13 Jan 2022 10:55:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20220113140318.11117-1-zhangliang5@huawei.com>
- <YeA5oP/iaxtVPHb3@casper.infradead.org> <CAHk-=wjB0i-B=U-DhpAajQx3f6bp1X==neLOrg0jwq29mgz=3g@mail.gmail.com>
- <172ccfbb-7e24-db21-7d84-8c8d8c3805fd@redhat.com> <CAHk-=wi21DZ4H5uLnn2QgAeAUqg0wNPboijC0OgDDk1e7TdkPw@mail.gmail.com>
- <c3f34084-7315-e0c5-55db-d1cb006979f4@redhat.com> <CAHk-=wjv+beg2gRNdERANGfaGcqwDzzVD5RDD07FcrE5c6k-XA@mail.gmail.com>
- <0c44a89d-06a7-d0bb-e71e-7947d651f4d1@redhat.com>
-In-Reply-To: <0c44a89d-06a7-d0bb-e71e-7947d651f4d1@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 13 Jan 2022 10:55:06 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wg-FvLd9Vyg1+n47gDSSDmHJnjmW0-FaQGJcbrtgbYALg@mail.gmail.com>
-Message-ID: <CAHk-=wg-FvLd9Vyg1+n47gDSSDmHJnjmW0-FaQGJcbrtgbYALg@mail.gmail.com>
-Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        wangzhigang17@huawei.com
+References: <20220113070245.791577-1-imagedong@tencent.com>
+In-Reply-To: <20220113070245.791577-1-imagedong@tencent.com>
+From:   Song Liu <song@kernel.org>
+Date:   Thu, 13 Jan 2022 10:55:38 -0800
+X-Gmail-Original-Message-ID: <CAPhsuW5zf3MqJL+tJtHTd-hYSwpUpeAvduhL7uy2T=T2+eLQug@mail.gmail.com>
+Message-ID: <CAPhsuW5zf3MqJL+tJtHTd-hYSwpUpeAvduhL7uy2T=T2+eLQug@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
+To:     menglong8.dong@gmail.com
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        mengensun@tencent.com, flyingpeng@tencent.com,
+        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 9:55 AM David Hildenbrand <david@redhat.com> wrote:
+On Wed, Jan 12, 2022 at 11:03 PM <menglong8.dong@gmail.com> wrote:
 >
-> However, reuse_swap_page() currently does multiple things, and that's part of the issue.
-
-Yeah, I think it's a horrible function. The COW path was explicitly
-changed not to use it because it's so confusing.
-
-> While we're at it, is there a real reason we can't simplify to
+> From: Menglong Dong <imagedong@tencent.com>
 >
-> diff --git a/mm/memory.c b/mm/memory.c
-> index e8e2144cbfa6..ab114a5862a0 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -3295,7 +3295,7 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
-> -               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
-> +               if (PageKsm(page) || page_count(page) != 1) {
+> The description of 'dst_port' in 'struct bpf_sock' is not accurated.
+> In fact, 'dst_port' is not in network byte order, it is 'partly' in
+> network byte order.
+>
+> We can see it in bpf_sock_convert_ctx_access():
+>
+> > case offsetof(struct bpf_sock, dst_port):
+> >       *insn++ = BPF_LDX_MEM(
+> >               BPF_FIELD_SIZEOF(struct sock_common, skc_dport),
+> >               si->dst_reg, si->src_reg,
+> >               bpf_target_off(struct sock_common, skc_dport,
+> >                              sizeof_field(struct sock_common,
+> >                                           skc_dport),
+> >                              target_size));
+>
+> It simply passes 'sock_common->skc_dport' to 'bpf_sock->dst_port',
+> which makes that the low 16-bits of 'dst_port' is equal to 'skc_port'
+> and is in network byte order, but the high 16-bites of 'dst_port' is
+> 0. And the actual port is 'bpf_ntohs((__u16)dst_port)', and
+> 'bpf_ntohl(dst_port)' is totally not the right port.
+>
+> This is different form 'remote_port' in 'struct bpf_sock_ops' or
+> 'struct __sk_buff':
+>
+> > case offsetof(struct __sk_buff, remote_port):
+> >       BUILD_BUG_ON(sizeof_field(struct sock_common, skc_dport) != 2);
+> >
+> >       *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, sk),
+> >                             si->dst_reg, si->src_reg,
+> >                                     offsetof(struct sk_buff, sk));
+> >       *insn++ = BPF_LDX_MEM(BPF_H, si->dst_reg, si->dst_reg,
+> >                             bpf_target_off(struct sock_common,
+> >                                            skc_dport,
+> >                                            2, target_size));
+> > #ifndef __BIG_ENDIAN_BITFIELD
+> >       *insn++ = BPF_ALU32_IMM(BPF_LSH, si->dst_reg, 16);
+> > #endif
+>
+> We can see that it will left move 16-bits in little endian, which makes
+> the whole 'remote_port' is in network byte order, and the actual port
+> is bpf_ntohl(remote_port).
+>
+> Note this in the document of 'dst_port'. ( Maybe this should be unified
+> in the code? )
+>
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
 
-No, I think both the mapcount and the ksm check are bogus and should
-be removed, but they are both examples of "get rid of the nastiest
-complexity, leave the stuff that doesn't much matter".
+Acked-by: Song Liu <songliubraving@fb.com>
 
-Somebody who really knows the ksm logic should check all the ksm
-tests. I really think they are pointless, and came from the old and
-horribly broken page_mapcount() logic that did *not* check
-page_count().
-
-When you think page_mapcount() matters, suddenly you have to worry
-about all the other non-mapping uses of a page, which is why I think
-that ksm test still exists. But I didn't mind keeping a couple of
-extraneous tests that I didn't see the point of , as long as the core
-page-count-based logfc was solid
-
-          Linus
+> ---
+>  include/uapi/linux/bpf.h | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index b0383d371b9a..891a182a749a 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5500,7 +5500,11 @@ struct bpf_sock {
+>         __u32 src_ip4;
+>         __u32 src_ip6[4];
+>         __u32 src_port;         /* host byte order */
+> -       __u32 dst_port;         /* network byte order */
+> +       __u32 dst_port;         /* low 16-bits are in network byte order,
+> +                                * and high 16-bits are filled by 0.
+> +                                * So the real port in host byte order is
+> +                                * bpf_ntohs((__u16)dst_port).
+> +                                */
+>         __u32 dst_ip4;
+>         __u32 dst_ip6[4];
+>         __u32 state;
+> --
+> 2.34.1
+>
