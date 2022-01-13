@@ -2,97 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A67D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 07:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 07:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230348AbiAMHNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 02:13:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56406 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230316AbiAMHNm (ORCPT
+        id S230386AbiAMHOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 02:14:31 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:52454 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230373AbiAMHOa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 02:13:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642058022;
-        h=from:from:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        Thu, 13 Jan 2022 02:14:30 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 62779212B9;
+        Thu, 13 Jan 2022 07:14:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1642058069; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=ArUbr7W7ik02hU0NABKd25g1aVuXZ4WkMZc8n6qsFfo=;
-        b=RPA6WLd1FGQqNQtpfnMy2l7ZUUST1bibnSrGmeGeIg7hx7fmVyGfsNq+uWiEt85Rz6XT/s
-        xwLgb8odS2RGoilIm2935R6MDVoBxilrFNvfah7WZEk/740lnwr9xy6JmQyk9dn/cr8ye0
-        OTYc1YzCpnNqro+4CK3G36+C/KtytX8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-642-ttrmkoK6M72JdX4nAPg7JA-1; Thu, 13 Jan 2022 02:13:39 -0500
-X-MC-Unique: ttrmkoK6M72JdX4nAPg7JA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 30AD883DD21;
-        Thu, 13 Jan 2022 07:13:38 +0000 (UTC)
-Received: from [10.72.13.202] (ovpn-13-202.pek2.redhat.com [10.72.13.202])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4DA3D16A50;
-        Thu, 13 Jan 2022 07:13:33 +0000 (UTC)
-Reply-To: Gavin Shan <gshan@redhat.com>
-Subject: Re: [PATCH v4 06/21] KVM: arm64: Support SDEI_EVENT_CONTEXT hypercall
-From:   Gavin Shan <gshan@redhat.com>
-To:     Shannon Zhao <shannon.zhaosl@gmail.com>,
-        kvmarm@lists.cs.columbia.edu
-Cc:     maz@kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan.Cameron@huawei.com, pbonzini@redhat.com, will@kernel.org
-References: <20210815001352.81927-1-gshan@redhat.com>
- <20210815001352.81927-7-gshan@redhat.com>
- <40d818a2-0c91-e06e-6ce8-ac8123b8d1d4@gmail.com>
- <798ecbb0-f369-f3e7-ad50-78acfd902d1d@redhat.com>
-Message-ID: <71b87778-ea60-b01d-9010-789feb1e16fa@redhat.com>
-Date:   Thu, 13 Jan 2022 15:13:30 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.0
-MIME-Version: 1.0
-In-Reply-To: <798ecbb0-f369-f3e7-ad50-78acfd902d1d@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        bh=68BPiA9q74CYVpmbvqf14shCqahIvJ0BJK1IwaLqeeQ=;
+        b=SCPGJPa5Tq7C++7BQwJ193k7gp3DVEm2jBQNWEGliSztiScMm9VY30+I5Etev0yyWgsffd
+        rqQ0MhGCuTTsom0+h2SNv//ohxhb6rr62BBAPtdaMxKJzFy5XpAUjU45K/OVLh5CmtQA+u
+        tEjMwUYi5vdzcaqwNLovKyWHck27iG4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1642058069;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=68BPiA9q74CYVpmbvqf14shCqahIvJ0BJK1IwaLqeeQ=;
+        b=0N6bdpLiJjUWUzXNHa1SnPNHkoQh96eub9mYWeMAbFrMCZj9gRDZ5hXAD4qZt9e1t1AT8S
+        617rNmvoMSS0H1CA==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 1AEA5A3B83;
+        Thu, 13 Jan 2022 07:14:29 +0000 (UTC)
+Date:   Thu, 13 Jan 2022 08:14:29 +0100
+Message-ID: <s5h8rvk85uy.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Alexander Sergeyev <sergeev917@gmail.com>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855 G8
+In-Reply-To: <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
+References: <20210519170357.58410-1-jeremy.szu@canonical.com>
+        <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
+        <s5ho84h9tit.wl-tiwai@suse.de>
+        <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
+        <s5hilup9s87.wl-tiwai@suse.de>
+        <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
+        <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Shannon,
-
-On 1/13/22 3:02 PM, Gavin Shan wrote:
-> On 1/11/22 5:43 PM, Shannon Zhao wrote:
->> On 2021/8/15 8:13, Gavin Shan wrote:
->>> +static unsigned long kvm_sdei_hypercall_context(struct kvm_vcpu *vcpu)
->>> +{
->>> +    struct kvm *kvm = vcpu->kvm;
->>> +    struct kvm_sdei_kvm *ksdei = kvm->arch.sdei;
->>> +    struct kvm_sdei_vcpu *vsdei = vcpu->arch.sdei;
->>> +    struct kvm_sdei_vcpu_regs *regs;
->>> +    unsigned long index = smccc_get_arg1(vcpu);
->>> +    unsigned long ret = SDEI_SUCCESS;
->>> +
->>> +    /* Sanity check */
->>> +    if (!(ksdei && vsdei)) {
->>> +        ret = SDEI_NOT_SUPPORTED;
->>> +        goto out;
->>> +    }
->> Maybe we could move these common sanity check codes to kvm_sdei_hypercall to save some lines.
->>
+On Wed, 12 Jan 2022 21:18:24 +0100,
+Alexander Sergeyev wrote:
 > 
-> Not all hypercalls need this check. For example, COMPLETE/COMPLETE_RESUME/CONTEXT don't
-> have SDEI event number as the argument. If we really want move this check into function
-> kvm_sdei_hypercall(), we would have code like below. Too much duplicated snippets will
-> be seen. I don't think it's better than what we have if I fully understand your comments.
+> On Wed, Jan 12, 2022 at 01:48:28PM +0300, Alexander Sergeyev wrote:
+> >On Wed, Jan 12, 2022 at 11:13:44AM +0100, Takashi Iwai wrote:
+> >> You may try to get the codec proc dump with COEF by passing
+> >> snd_hda_codec.dump_coef=1 module option for both working and
+> >> non-working cases.
+> >>You can unbind and re-bind the PCI (HD-audio controller) device via sysfs.
+> >
+> >I'll try both options later today when able, thank you!
 > 
+> First, about unbind and bind via sysfs -- attempts to unbind the
+> HD-audio controller immediately trigger BUGs:
+> 
+> 05:00.6 Audio device [0403]: Advanced Micro Devices, Inc. [AMD] Family
+> 17h (Models 10h-1fh) HD Audio Controller [1022:15e3]
+> 
+> echo -n '0000:05:00.6' > /sys/bus/pci/drivers/snd_hda_intel/unbind
+> 
+> BUG: unable to handle page fault for address 000000000000173c
+> #PF: supervisor read access in kernel mode
+> #PF: error_code(0x0000) - not-present page
+> PGD 0 P4D 0
+> Oops: 0000 [#1] SMP NOPTI
+> CPU: 2 PID: 167 Comm: kworker/2:3 Tainted: G  T 5.16.0-dirty #3
+> Workqueue: events set_brightness_delayed
+> RIP: 0010:coef_micmute_led_set+0xf/0x60
+> ...
+> Call Trace:
+>   <TASK>
+>   set_brightness_delayed+0x6f/0xb0
+>   process_one_work+0x1e1/0x380
+>   worker_thread+0x4b/0x3b0
+>   ? rescuer_thread+0x370/0x370
+>   kthread+0x142/0x160
+>   ? set_kthread_struct+0x50/0x50
+>   ret_from_work+0x22/0x30
+>   </TASK>
+> 
+> Is it normal/expected?
 
-oops... sorry. Please ignore my previous reply. I thought you talk about
-the check on the SDEI event number wrongly. Yes, you're correct that the
-check should be moved to kvm_sdei_hypercall().
+A sort of.  The sysfs unbind is little tested and may be still buggy
+if done during the stream operation.
 
-Thanks,
-Gavin
+To be sure, could you check with my latest sound.git tree for-linus
+branch?  There are a few fixes that harden the dynamic unbind.
 
+Though, the code path is from the leds class, and it might not be
+covered yet.  It's managed via devm, so it should have been cleared,
+but there may be still some ordering problem...
+
+> Second, about dump_coef. I've collected a bunch of samples from
+> /proc/asound/Generic_1/codec#0. Overall, there are 6 different
+> versions across 196 samples, two versions are with working sound (and
+> micmute LED).
+> 
+> 
+> Differences between _non-working_ versions:
+> 
+> Node 0x02 [Audio Output] wcaps 0x41d: Stereo Amp-Out
+> Amp-Out vals:  [0x3c 0x3c] // (!) OR [0x53 0x53]
+> Converter: stream=5, channel=0 // (!) OR stream=0, channel=0
+> 
+> Node 0x03 [Audio Output] wcaps 0x41d: Stereo Amp-Out
+> Amp-Out vals:  [0x3c 0x3c] // (!) OR [0x53 0x53]
+> Converter: stream=5, channel=0 // (!) OR stream=0, channel=0
+> 
+> Node 0x20 [Vendor Defined Widget] wcaps 0xf00040: Mono
+> Processing caps: benign=0, ncoeff=142
+> Coeff 0x0b: 0x8003 // (!) OR 0x7770
+> Coeff 0x19: 0x01e3 // (!) OR 0x21e3
+> 
+> Node 0x08 [Audio Input] wcaps 0x10051b: Stereo Amp-In
+> Amp-In vals:  [0x27 0x27] // (!) OR [0xa7 0xa7]
+> 
+> 
+> Differences between _working_ versions:
+> 
+> Node 0x20 [Vendor Defined Widget] wcaps 0xf00040: Mono
+> Processing caps: benign=0, ncoeff=142
+> Coeff 0x0b: 0x8003 // (!) OR 0x7770
+> 
+> 
+> Differences between _non_working_ and _working_ versions:
+> 
+> Node 0x20 [Vendor Defined Widget] wcaps 0xf00040: Mono
+> Processing caps: benign=0, ncoeff=142
+> Coeff 0x19: 0x01e3 OR 0x21e3 // (!) 0x8e11 for working versions
+> 
+> 
+> In short:
+> 1) Coeff 0x0b is flapping between 0x8003 and 0x7770 and does not seem
+> to have any effect in both non-working and working versions. Not sure
+> about this, maybe microphone is not operational since I haven't
+> checked it yet.
+> 2) Coeff 0x19 with 0x8e11 value makes speakers work. Non-working
+> values are 0x01e3 and 0x21e3.
+> 
+> Running the following commands makes speakers and micmute LED work
+> (0x20 is the node id, which is mentioned in the snippets above):
+> 
+> hda-verb /dev/snd/hwC1D0 0x20 SET_COEF_INDEX 0x19
+> hda-verb /dev/snd/hwC1D0 0x20 SET_PROC_COEF 0x8e11
+> 
+> Is it possible to somehow trace this particular coefficient to hunt
+> the timing issue? It would be great to have a proper fix.
+
+Those might be some codec init values, which aren't set up properly by
+whatever reason, e.g. it might need a bit more wait time for init,
+etc.  You can fix it rather by issuing those explicitly at the fixup.
+
+
+Takashi
