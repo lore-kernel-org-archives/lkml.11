@@ -2,131 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40AF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B25FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237391AbiAMSEO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 13:04:14 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:54866 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237440AbiAMSEL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 13:04:11 -0500
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20DHqsod027852;
-        Thu, 13 Jan 2022 18:04:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : from : to : cc : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=h7PGYmYGOaS7whOzz2krlo4qhHm2j2+iN2wg1u9LGzo=;
- b=IugUQjNZbqI3tZpwi2Y5jTuSZwFgqmdjxbunCKZCJYFV56Gmj8Js7Ztgs2mCqhZ9DoV7
- ZmZfPRMgjpb3S6SJNopcGbp2WdHvyt73Vp705LYD60xXZ9ShaeAKXWPpCR9uzywhd/qo
- +ojjK6Ce0skaNzRPmJnVDG/jFFjE6UF/kXOLEMa74PJgaieNk44xZPM6oBgDztH4jVhf
- CYLZRwjyU6KkaI6LjC8THxoaHUsVp33k+Oc9ME4dIh7b9y4vSTJrkrOWdp/kNFAyIhf7
- kPHVXXSr64tLFiP08Vf7zo8uxA2heOpVbz4Y7jRa/wrCI1X0QZ+DTiKPMBzpKlLDS7mO gg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3djrv98716-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 13 Jan 2022 18:04:07 +0000
-Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20DHu1qC009802;
-        Thu, 13 Jan 2022 18:04:07 GMT
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3djrv9870x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 13 Jan 2022 18:04:07 +0000
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20DI3qek007408;
-        Thu, 13 Jan 2022 18:04:05 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma02wdc.us.ibm.com with ESMTP id 3df28bya1m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 13 Jan 2022 18:04:05 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20DI447v27066710
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 13 Jan 2022 18:04:04 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6F7F32806A;
-        Thu, 13 Jan 2022 18:04:04 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3544A28064;
-        Thu, 13 Jan 2022 18:04:04 +0000 (GMT)
-Received: from [9.47.158.152] (unknown [9.47.158.152])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 13 Jan 2022 18:04:04 +0000 (GMT)
-Message-ID: <1e3b1e6f-6600-d77f-843b-f3d60e062192@linux.ibm.com>
-Date:   Thu, 13 Jan 2022 13:04:03 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v4 1/2] selftests: tpm2: Determine available PCR bank
-Content-Language: en-US
-From:   Stefan Berger <stefanb@linux.ibm.com>
-To:     Jarkko Sakkinen <jarkko@kernel.org>,
-        Stefan Berger <stefanb@linux.vnet.ibm.com>
-Cc:     linux-integrity@vger.kernel.org, peterhuewe@gmx.de,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        skhan@linuxfoundation.org
-References: <20211128041052.1395504-1-stefanb@linux.vnet.ibm.com>
- <20211128041052.1395504-2-stefanb@linux.vnet.ibm.com>
- <YaVkw5dnCewnFybR@iki.fi>
- <eaad369c-f02e-8d83-94b1-fdac7ae84388@linux.ibm.com>
-In-Reply-To: <eaad369c-f02e-8d83-94b1-fdac7ae84388@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: VhrntTOZ2fUnC6cHeX1xOWCtbKldnM9b
-X-Proofpoint-ORIG-GUID: eYe9VVJM1UlquiHJWHJU8lBVaQ_VmqMM
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S237450AbiAMSFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 13:05:02 -0500
+Received: from mga05.intel.com ([192.55.52.43]:15231 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231138AbiAMSFB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 13:05:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642097101; x=1673633101;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HqJcif4A+/iNXNXnoMtIA43mVWjUXStqiv78DzDwYdA=;
+  b=UbD6bx9OXudUEhHKIi7xBLHCrGwpQJdWCwGpA/t0Eq5cWbjVDpqwQnvc
+   0FxPcPDrYsP2orw467r/BxTjdA3bD/OMCnnGRHxtD1oOaA2xaIu+Kbp0Y
+   XUVhz0Vch/wl6n3/N+Is/XRecfRpgwdQnZ/dEr01vLeYBc9htBne3QyrW
+   IjPSSyOlcRiKfnYLga2Bzj0WA8haej/1dl4UYzwkKnWNKP2oBQcOoHSnp
+   ApK3XNZ9XqGZ35iSTGuQq+3bv8NsUAfLjs0C402nq+ebm+VRncYGc8SBq
+   2JZFeYwnhfUOtouZQDNd/baNI2HuaI78L0o7KuOCA2bmw+DMebxVy15Ff
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="330426652"
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="330426652"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 10:05:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="475429932"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 13 Jan 2022 10:04:59 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n84T4-0007WR-Qb; Thu, 13 Jan 2022 18:04:58 +0000
+Date:   Fri, 14 Jan 2022 02:04:09 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Andi Kleen <ak@linux.intel.com>
+Subject: [intel-tdx:tdx/guest-rebased 55/133] arch/x86/kernel/tdx.c:224:5:
+ warning: no previous prototype for 'tdx_hcall_set_notify_intr'
+Message-ID: <202201140147.8KQUVLdd-lkp@intel.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-13_08,2022-01-13_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- adultscore=0 priorityscore=1501 spamscore=0 phishscore=0 mlxlogscore=822
- clxscore=1015 malwarescore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201130112
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Jarkko,
+tree:   https://github.com/intel/tdx.git tdx/guest-rebased
+head:   e3995864d37c56f431c93fc3dc454d9c65f5e9ea
+commit: eff3229d99a6ea4b75fa0656fca38ac6db67ca7d [55/133] x86/tdx: Add SetupEventNotifyInterrupt TDX hypercall support
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220114/202201140147.8KQUVLdd-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel/tdx/commit/eff3229d99a6ea4b75fa0656fca38ac6db67ca7d
+        git remote add intel-tdx https://github.com/intel/tdx.git
+        git fetch --no-tags intel-tdx tdx/guest-rebased
+        git checkout eff3229d99a6ea4b75fa0656fca38ac6db67ca7d
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
 
-   can you take this patch 1/2?
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-  https://lore.kernel.org/lkml/20211128041052.1395504-1-stefanb@linux.vnet.ibm.com/T/#m21209a978c237368499ce5f082f3c0fc03bcbbeb
+All warnings (new ones prefixed by >>):
 
-   Stefan
+>> arch/x86/kernel/tdx.c:224:5: warning: no previous prototype for 'tdx_hcall_set_notify_intr' [-Wmissing-prototypes]
+     224 | int tdx_hcall_set_notify_intr(u8 vector)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-On 12/23/21 20:12, Stefan Berger wrote:
-> Shuah,
->
->   are you going to take this fix here - only 1/2 ?
->
-> https://lore.kernel.org/lkml/20211128041052.1395504-1-stefanb@linux.vnet.ibm.com/T/#m21209a978c237368499ce5f082f3c0fc03bcbbeb 
->
->
->   Stefan
->
-> On 11/29/21 18:39, Jarkko Sakkinen wrote:
->> On Sat, Nov 27, 2021 at 11:10:51PM -0500, Stefan Berger wrote:
->>> From: Stefan Berger <stefanb@linux.ibm.com>
->>>
->>> Determine an available PCR bank to be used by a test case by 
->>> querying the
->>> capability TPM2_GET_CAP. The TPM2 returns TPML_PCR_SELECTIONS that
->>> contains an array of TPMS_PCR_SELECTIONs indicating available PCR banks
->>> and the bitmasks that show which PCRs are enabled in each bank. Collect
->>> the data in a dictionary. From the dictionary determine the PCR bank 
->>> that
->>> has the PCRs enabled that the test needs. This avoids test failures 
->>> with
->>> TPM2's that either to not have a SHA-1 bank or whose SHA-1 bank is
->>> disabled.
->>>
->>> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
->> Acked-by: Jarkko Sakkinen <jarkko@kernel.org>
->>
->> /Jarkko
+vim +/tdx_hcall_set_notify_intr +224 arch/x86/kernel/tdx.c
+
+   216	
+   217	/*
+   218	 * tdx_hcall_set_notify_intr() - Setup Event Notify Interrupt Vector.
+   219	 *
+   220	 * @vector        : Vector address to be used for notification.
+   221	 *
+   222	 * return 0 on success or failure error number.
+   223	 */
+ > 224	int tdx_hcall_set_notify_intr(u8 vector)
+   225	{
+   226		u64 ret;
+   227	
+   228		/* Minimum vector value allowed is 32 */
+   229		if (vector < 32)
+   230			return -EINVAL;
+   231	
+   232		/*
+   233		 * Register callback vector address with VMM. More details
+   234		 * about the ABI can be found in TDX Guest-Host-Communication
+   235		 * Interface (GHCI), sec 3.5.
+   236		 */
+   237		ret = _trace_tdx_hypercall(TDVMCALL_SETUP_NOTIFY_INTR, vector, 0, 0, 0,
+   238					   NULL);
+   239	
+   240		if (ret == TDVMCALL_SUCCESS)
+   241			return 0;
+   242		else if (ret == TDCALL_INVALID_OPERAND)
+   243			return -EINVAL;
+   244	
+   245		return -EIO;
+   246	}
+   247	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
