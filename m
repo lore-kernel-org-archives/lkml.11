@@ -2,88 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49471C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 20:00:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7BDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 20:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232131AbiAMUAu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 15:00:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
+        id S232339AbiAMUBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 15:01:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbiAMUAs (ORCPT
+        with ESMTP id S231193AbiAMUBs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 15:00:48 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AF6C06161C
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 12:00:48 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id p7so9939806iod.2
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 12:00:48 -0800 (PST)
+        Thu, 13 Jan 2022 15:01:48 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08CBC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 12:01:47 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id u21so27172824edd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 12:01:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:in-reply-to:references:subject:message-id:date
-         :mime-version:content-transfer-encoding;
-        bh=+bXcVsuUppNYKhF9ZtC6Trbv8FtRnS305N6GIULbySM=;
-        b=R5DKTup50Gfl9IeMM2VI0sXMqVCI6jAQ1VCCrulnjDdxtBlxd2jnkFCiaMivfhwbvH
-         22r1SW7pjHYmHZKN4rsBsJrFm2NU8krSUBPRUerLberQyIkQkuJX6Kwz0uLubLSyjQy/
-         46RChVlrUEsZNIloLoJ8GGbbXCXqrMVIolV6pfEZwcdEQsCeDGSr8Klr+l/yW+xOM7Td
-         BUaHx980l8luPOqghwwo92UOi+HVcCi0Dq+ivpGK90EkzermJ45Vk/RrjuO1WADJUUus
-         m8SRmsnmRZHKzmW/p/4NfoIByeZjUjaIEbBkva4X4WVI3Pgh3XqV4n3A3KBHzQC5JnPZ
-         XChQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CKKBvExIdXR4NmexUNKYFi4XGwRsnmajoIJ3WHiHemw=;
+        b=P6MjH8VbEXKaa9Xe+OrKdRO/17t1xnavCQ1iFuARciPT4LOiqcts2TRquGSo5R4hUs
+         1HKly7dXYmo1IcgU9eZ4RmPEjLSqFF5kdyQWJnjz5/QihSZl6AGE+jS9VQ77dkxe0Wlq
+         0d5L0I0bVSUC+9dy1Z/pSnd9aqqpJeumK3DHxYZz4Bt7jIJWGJuAZdFZ01sJY8HxXVUo
+         H6b/dbQhLkC+rjVhwONRlsm3b5c5Qqt0xdGix+lt5LFdDdhVyg85xvsD501bTueWz05l
+         Lt99uTyImY/wlqSlKOJswzL3ZLzS0SJI7r6mjE5yB3GbQqi0HzmXON/MMPGHvLZ6JHTa
+         WVyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
-         :message-id:date:mime-version:content-transfer-encoding;
-        bh=+bXcVsuUppNYKhF9ZtC6Trbv8FtRnS305N6GIULbySM=;
-        b=coCLMoJDAhXdAeA8RzoCxkN8Wy1FfCMAmYYC8NlI4xf9FWEizp5hAv0FAKhK8/hmNG
-         hayFF9UEBP1fpcJHbqr/XuM64NhxRUBTL/T7dtTGOLYrkAk4FCwdACFTM97iCvMmZSIb
-         Th/pg7Z1EZcNPT2vpW6+DFnwpfDJ4O4myUDH75eUwAc8Z2mbdu9CeNI1xFDpyyoikyde
-         ++1K0eyWj2eBEE0YpYIfPr86qx/Dxxq4hW96DO/2wqiha6e7YpE+Vosc7eD7hsVq2SR8
-         MO4JZXqXk00Q6jz7+S3jhoQR/hUL+rlQijMlmvX4R83NMYseVGFyiKWF3PebD3r9J55Z
-         QGNw==
-X-Gm-Message-State: AOAM5303ToJs/Gju+TZc+d1KNnFX3nafADlbRyqCryUUjbM2bwsAJFNJ
-        Vj90itpza5WwgReHGtVCWN8VWA==
-X-Google-Smtp-Source: ABdhPJwqANTtW8FxiE2ZK0CCdiycPJ1uIvNavWUQqzW2r03sG7uU/KIYOsUbGKs+I+4yN0BdsqPNpw==
-X-Received: by 2002:a05:6602:1409:: with SMTP id t9mr2808021iov.166.1642104048027;
-        Thu, 13 Jan 2022 12:00:48 -0800 (PST)
-Received: from x1.localdomain ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id n5sm3887025ilk.44.2022.01.13.12.00.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 12:00:47 -0800 (PST)
-From:   Jens Axboe <axboe@kernel.dk>
-To:     Justin Sanders <justin@coraid.com>,
-        Colin Ian King <colin.i.king@gmail.com>,
-        linux-block@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220113000545.1307091-1-colin.i.king@gmail.com>
-References: <20220113000545.1307091-1-colin.i.king@gmail.com>
-Subject: Re: [PATCH] aoe: remove redundant assignment on variable n
-Message-Id: <164210404746.172546.12306036907222392441.b4-ty@kernel.dk>
-Date:   Thu, 13 Jan 2022 13:00:47 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CKKBvExIdXR4NmexUNKYFi4XGwRsnmajoIJ3WHiHemw=;
+        b=jzY8jJwD5AomNVjLNzzbf7eWIyKHHS6YQJWxkGl48n/A5sgUfIvu9dgQD2bj/Z0qDM
+         aBLLDnGNnOQ922T14z53+dnG6DSM+cNZBh2uOv4/fKL45ivmqJOMIHfvsmDF8G4aBlTU
+         PMhHTlnosxE6DR7VWuPTfg3GaGLkAQ+eyFsO0uoVbavVK9CkSggnFQzGfkRuA8o8qYWm
+         LNvPLjgE5OEFqha6pI4dHhJpcuy0h3hKNQ7RTZjKn6Tbxx/LWs60GIMxuMm2N3Ox7Zpc
+         GMtl9A9HfSX97rr92Yo24K0XXCDCAy9ZkP1UDd41DuzA6Vo0KY4TjzuQdMJgYJVY31j6
+         NMsw==
+X-Gm-Message-State: AOAM530Yhp5zOh6/X96gwGBdF7Nj6VHVGAuld4ik6PwxCSIZ793aGa97
+        biv6UhTyPWSrfnsVGVG2QIhmRVG9xkxVplQMgSA=
+X-Google-Smtp-Source: ABdhPJwslh+6ha9GsyWg4OE9COVsBHcsGl2nt9B4vD1RxEyfjpYwfsR9lnhbTXuKZfXaIgsCtfoSmB0myB659ctydp4=
+X-Received: by 2002:a05:6402:350f:: with SMTP id b15mr5636003edd.77.1642104106220;
+ Thu, 13 Jan 2022 12:01:46 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <OS0PR01MB59221ED76B74231F5836D5FB86539@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+In-Reply-To: <OS0PR01MB59221ED76B74231F5836D5FB86539@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Thu, 13 Jan 2022 17:01:34 -0300
+Message-ID: <CAOMZO5DJiCb5bJN5_nxnYa-FsK-u7QtFghWNzs_-udE42XPDeA@mail.gmail.com>
+Subject: Re: dw_hdmi is showing wrong colour after commit 7cd70656d1285b79("drm/bridge:
+ display-connector: implement bus fmts callbacks")
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "Laurent.pinchart@ideasonboard.com" 
+        <Laurent.pinchart@ideasonboard.com>,
+        "robert.foss@linaro.org" <robert.foss@linaro.org>,
+        "jonas@kwiboo.se" <jonas@kwiboo.se>,
+        "jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux-amlogic@lists.infradead.org" 
+        <linux-amlogic@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 13 Jan 2022 00:05:45 +0000, Colin Ian King wrote:
-> The variable n is being bit-wise or'd with a value and reassigned
-> before being returned. The update of n is redundant, replace
-> the |= operator with | instead. Cleans up clang scan warning:
-> 
-> drivers/block/aoe/aoecmd.c:125:9: warning: Although the value stored
-> to 'n' is used in the enclosing expression, the value is never
-> actually read from 'n' [deadcode.DeadStores]
-> 
-> [...]
+Hi Biju,
 
-Applied, thanks!
+On Thu, Jan 13, 2022 at 2:45 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>
+> Hi All,
+>
+> RZ/G2{H, M, N} SoC has dw_hdmi IP and it was working ok(colour) till the commit
+> 7cd70656d1285b79("drm/bridge: display-connector: implement bus fmts callbacks").
+>
+> After this patch, the screen becomes greenish(may be it is setting it into YUV format??).
+>
+> By checking the code, previously it used to call get_input_fmt callback and set colour as RGB24.
+>
+> After this commit, it calls get_output_fmt_callbck and returns 3 outputformats(YUV16, YUV24 and RGB24)
+> And get_input_fmt callback, I see the outputformat as YUV16 instead of RGB24.
+>
+> Not sure, I am the only one seeing this issue with dw_HDMI driver.
 
-[1/1] aoe: remove redundant assignment on variable n
-      commit: a6431e351c6ec5bb6800787d259b343088f369a3
+I have tested linux-next 20220112 on a imx6q-sabresd board, which shows:
 
-Best regards,
--- 
-Jens Axboe
+dwhdmi-imx 120000.hdmi: Detected HDMI TX controller v1.30a with HDCP
+(DWC HDMI 3D TX PHY)
 
-
+The colors are shown correctly here.
