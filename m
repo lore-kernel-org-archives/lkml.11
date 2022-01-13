@@ -2,165 +2,302 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A28C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8306CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 18:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237748AbiAMS4T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 13:56:19 -0500
-Received: from mga11.intel.com ([192.55.52.93]:18335 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237737AbiAMS4S (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 13:56:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642100178; x=1673636178;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=0UNevOJF4fJKF2CvFjQKd+AReGcnvxU7BVcSlDGRpG8=;
-  b=CKjtYmHL2xIxhvAoYmkPNpX8nhiKMccipmhpJ7OX7rb23IvQW7TTn9jP
-   Oza30cMJEAIP6yn3+Cg/LB5RNJxicRmKLNt4jHfUcZjFgWelGdDt1vwY/
-   7BY8gIEJRO10A3yQ2VWgCej4c4/uBFJrd5gbaASWBoDsEzrAP2CvraSR+
-   RxfLqUs6oGZnWUK5X8AESVIXHpNjkIk2VYgVk3K3DyRSJi5wcvngyfVpj
-   WU1WNMTpW9CFxrrpJS5mHBcYP6KBBcb/v7TNoc6J8gEw63i+f7EyRBHPy
-   pnZ20oX0qiTKHmTKv5n7y23Fi/2cslC8x1hqEHeJCx16e3/yBca3O8pzm
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="241651466"
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="241651466"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 10:56:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="491234367"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 13 Jan 2022 10:56:00 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n85GR-0007Ya-Pi; Thu, 13 Jan 2022 18:55:59 +0000
-Date:   Fri, 14 Jan 2022 02:55:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 1793/2382] kernel/sched/fair.c:10758:6: warning:
- no previous prototype for 'nohz_balance_enter_idle'
-Message-ID: <202201140251.J3IHIgTm-lkp@intel.com>
+        id S237758AbiAMS4d convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 13:56:33 -0500
+Received: from mout.kundenserver.de ([212.227.126.135]:47239 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237683AbiAMS4a (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 13:56:30 -0500
+Received: from [192.168.1.107] ([37.4.249.169]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1M91Tq-1nE78T3Jag-006AIx; Thu, 13 Jan 2022 19:55:59 +0100
+Subject: Re: [PATCH 1/2] watchdog: imx2_wdg: Alow ping on suspend
+To:     Alistair Francis <alistair@alistair23.me>,
+        linux-kernel@vger.kernel.org, linux@roeck-us.net,
+        shawnguo@kernel.org, wim@linux-watchdog.org,
+        linux-watchdog@vger.kernel.org, s.hauer@pengutronix.de,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linux-imx@nxp.com, kernel@pengutronix.de, festevam@gmail.com,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+References: <20220109114120.386013-1-alistair@alistair23.me>
+ <20220109114120.386013-2-alistair@alistair23.me>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Autocrypt: addr=stefan.wahren@i2se.com; keydata=
+ LS0tLS1CRUdJTiBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tClZlcnNpb246IEdudVBHIHYy
+ CgptUUlOQkZ0NmdCTUJFQUN1Yi9wQmV2SHhidkplZnlaRzMySklObW4yYnNFUFgyNVY2ZmVq
+ bXlZd21DR0tqRnRMCi9Eb1VNRVZIRHhDSjQ3Qk1YbzM0NGZIVjFDM0FudWRnTjFCZWhMb0J0
+ TEh4bW5lQ3pnSDNLY1B0V1c3cHRqNEcKdEp2OUNRRFp5MjdTS29FUHh5YUk4Q0YweWdSeEpj
+ NzJNOUk5d21zUFo1YlVIc0x1WVdNcVE3SmNSbVBzNkQ4ZwpCa2srOC95bmdFeU5FeHd4SnBS
+ MXlsajVianhXREh5WVF2dUo1THpaS3VPOUxCM2xYVnNjNGJxWEVqYzZWRnVaCkZDQ2svc3lp
+ by9ZaHNlOE4rUXN4N01RYWd6NHdLVWtRUWJmWGcxVnFrVG5BaXZYczQyVm5Ja211NWd6SXcv
+ MHQKUkp2NTBGUmhIaHhweUtBSThCOG5oTjhRdng3TVZrUGM1dkRmZDN1R1lXNDdKUGhWUUJj
+ VXdKd05rLzQ5RjllQQp2ZzJtdE1QRm5GT1JrV1VSdlArRzZGSmZtNitDdk92N1lmUDF1ZXdB
+ aTRsbitKTzFnK2dqVklXbC9XSnB5MG5UCmlwZGZlSDlkSGtnU2lmUXVuWWN1Y2lzTXlvUmJG
+ OTU1dENna0VZOUVNRWRZMXQ4aUdEaUNnWDZzNTBMSGJpM2sKNDUzdWFjcHhmUVhTYUF3UGtz
+ bDhNa0NPc3YyZUVyNElOQ0hZUUR5WmljbEJ1dUNnOEVOYlI2QUdWdFpTUGNRYgplbnpTektS
+ Wm9POUNhcUlEK2ZhdkxpQi9kaHptSEErOWJnSWhtWGZ2WFJMRFp6ZThwbzFkeXQzRTFzaFhp
+ ZGRaClBBOE51SlZ6RUl0MmxtSTZWOHBaRHBuMjIxcmZLaml2UlFpYW9zNTRUZ1pqak1ZSTdu
+ bko3ZTZ4endBUkFRQUIKdENCVGRHVm1ZVzRnVjJGb2NtVnVJRHgzWVdoeVpXNXpkRUJuYlhn
+ dWJtVjBQb2tDTndRVEFRZ0FJUVVDWElkYwo0Z0liQXdVTENRZ0hBZ1lWQ0FrS0N3SUVGZ0lE
+ QVFJZUFRSVhnQUFLQ1JDVWdld1BFWkR5MjFPVEQvOUdpWkxkCnRSWWNteVJKZ2x0aVFRekFp
+ UWRjSUQ3OGxHb1dwL3grci92Y1U2YjZqdVl1ZVR3Z1Iwclc3djdsMklSQnlEN24KSEp4YSt0
+ SVNvUVpCZ2hvbE1JZmI5TXRoR09KTENZNzdrL1FoQWhuMzJOR1prZWp3OXR6a3MvNDBtclpT
+ VVQ4NApaeWJzUVhyTE0vSFI2VElJL0RlUEIwbktEM0ppcHBzMlVIUUQ5cUQySWpFd1NRUGxI
+ akNPckVaaDQ1UFo3bTkrClo5M0x6aVRlc1dabFlRdUxpSndzNHJLcHRIVzFkL3dSZWxzaG1t
+ NlFxY0wybDRDL2U0MGVEQjlncTRkU1poOVgKUEVZbGxpeU5RaDdhMkxTZHVtRTFyK2NTd0lq
+ RS91ZHRSdmRPOWFLb0psT2JVSzVkTmpTUEg3d0tUYndkWGRZRApHUHdEaFhkNThOQXdyK1BY
+ QmxQajB0STFMQ3ErTEJ4ZUt6aFdYK0dWcTlEb2pWanlVREV4Rk5Ga1h1b0M3ZzhtClY5VDB0
+ ZUJpdVpSbm91WEt3VjJGcHRaT0hIN0JVRVd0a0t0aGgxZXRmT1dwaWdCemtVN2JQc2ZJWVQr
+ cnk5dGIKMW9KK3Y0MVBOYXFaRW1QVXBKeHZmek5UN3Ayd01lRDdaajlmMHJ1YlJQdExBSjJR
+ R2pyRkhzdVh3QU9xcHl6ZQoxOEVidHNZazBOMHp1SEVoY2orUEJJQmZoMFlJWWQ1MW9mNkdJ
+ aU95UjlxMFhYdHBsVUo3VDIvSDF1UXFrWGxwCitnVzRWa2lmc2NJckl1eWZueFpXMTJlSXZq
+ NnlicVdMN2FZS0dZbVQ2aUxDUGJIWXlZY2F5bDRFa0ZjckNGN0UKZTBXVC9zY1ZNaE8vNVgv
+ SGFOQTVIQngvcjUycGdMY3Y0aTlNeExRbVUzUmxabUZ1SUZkaGFISmxiaUE4YzNSbApabUZ1
+ TG5kaGFISmxia0JwTW5ObExtTnZiVDZKQWpnRUV3RUNBQ0lGQWx0NmdCTUNHd01HQ3drSUJ3
+ TUNCaFVJCkFna0tDd1FXQWdNQkFoNEJBaGVBQUFvSkVKU0I3QThSa1BMYmpic1AvamdqYVNz
+ NUh0bGtBSXZXUytGcm15N2MKaG5jT0F4TFRWL0Q2UkV3SU95R0poRkt3d29pck55UTJnOXZV
+ YTNZQ1lDZjFmSjh3RWhhS09COWQwTHBNUm5MNApkRVQ4ZDgyMzhFL3BLK0hxTktpSXNKaHM2
+ SnNLOFpnalZRR3JtbWZua0dyWisxdjBIQnV4ZGljZ0duUC9XdHVBClVsOGw2Mi9BTGJheXlq
+ KzYxQ2xyc0V0UklhcU82N0xJWXdQaVBEUkkrWGlNek5pR3pIRi8xUTZHUjAyUkg2YTMKRjg5
+ ejhhUHhjSGkxWnZDdDJ5a3o2VUVjaHpQMHI1Z3FGSisvTC9VcHU4ME1YaVk0djVlSWFCNTJn
+ VlBnaXlNQQpsTDJkRHMxbUladm5yUkxSWTJ0YjNtQVlOa1Y1QjVJRFQzcGtXeTZrS281T0Nn
+ SytZZFlPUjhGTloyb04ydDhPCnJLK1ZudGFLN01NU0tIbG1ZL3NPd3RSbEVoMU9CbXJjQ3dH
+ d21wLzA1R2tSNDZmL0lzaFJWZUZPUmF3K0dBcXQKUDIrQ0ZhMkNOQS9JSG5aTm95aWtsRHpQ
+ UUhVVUdzck5wcERyaFg5Sm1oQm1nMXYyeXdIMU5YdTFpRGZQMUJBdwpLZ29rdDVmNVVhUkY5
+ c0FBNTN2V0V2YlVVTjllZXNGR0x6UFdkSkdRNWhwZC9WSDVJUXk5U0JyaC93SWNla3E1Cm4w
+ a042cGJUSHhHRTUyU2kvTVZJa05UdURaM2FwbjJqbERaNHBPdHBCWEkydlAzYlBPK05pcUJa
+ anNVM3R4TGkKV2R2MkZqeXp6NlhMUndlV1JZVkw1SGE2TER0eG9yMnZ1NlVQMDdwOXh6MXhS
+ WmFPRFczb1lsSEZ6WXBhNFc1ZwpMSGIybEVrSXVVZlNjaWNHYmpqQXRDbFRkR1ZtWVc0Z1Yy
+ Rm9jbVZ1SUR4emRHVm1ZVzR1ZDJGb2NtVnVRR2x1CkxYUmxZMmd1WTI5dFBva0NOd1FUQVFn
+ QUlRVUNYSWRlaHdJYkF3VUxDUWdIQWdZVkNBa0tDd0lFRmdJREFRSWUKQVFJWGdBQUtDUkNV
+ Z2V3UEVaRHkyeUhURC85VUY3UWxEa0d4elE3QWFDSTZOOTVpUWY4LzFvU1VhRE51Mlk2SQpL
+ K0R6UXBiMVRiVE9yM1ZKd3dZOGEzT1d6NU5MU09MTVdlVnh0K29zTW1sUUlHdWJEM09EWko4
+ aXpQbEcvSnJOCnQ1elNkbU41SUE1ZjNlc1dXUVZLdmdoWkFnVERxZHB2K1pIVzJFbXhuQUox
+ dUxGWFhlUWQzVVpjQzVyMy9nL3YKU2FNbzl4ZWszSjVtTnVEbTcxbEVXc0FzL0JBY0ZjK3lu
+ TGh4d0JXQld3c3Z3UjhiSHRKNURPTVd2YUt1RHNrcApJR0ZVZS9LYjJCK2pyYXZRM1RuNnMv
+ SHFKTTBjZXhTSHo1cGUrMHNHdlArdDlKNzIzNEJGUXdlRkV4cmlleThVCkl4T3I0WEFiYWFi
+ U3J5WW5VL3pWSDlVMWkyQUlRWk1XSkFldkN2VmdRL1UrTmVSaFh1ZGU5WVVtRE1EbzJzQjIK
+ VkFGRUFxaUYyUVVIUEEybThhN0VPM3lmTDRyTWswaUh6TElLdmg2L3JIOFFDWThpM1h4VE5M
+ OWlDTHpCV3UvTgpPbkNBYlMremx2TFphaVNNaDVFZnV4VHR2NFBsVmRFamY2MlArWkhJRDE2
+ Z1VEd0VtYXpMQU1yeDY2NmpINWt1ClVDVFZ5bWJMMFR2Qis2TDZBUmw4QU55TTRBRG1rV2tw
+ eU0yMmtDdUlTWUFFZlFSM3VXWFo5WWd4YVBNcWJWK3cKQnJoSmc0SGFONkM2eFRxR3YzcjRC
+ MmFxYjc3L0NWb1JKMVo5Y3BIQ3dpT3pJYUFtdnl6UFU2TXhDRFhaOEZnWQpsVDR2MjNHNWlt
+ SlAyemdYNXMrRjZBQ1VKOVVRUEQwdVRmK0o5RGEycitza2gvc1dPbloreWNvSE5CUXZvY1pF
+ Ck5BSFFmN2tDRFFSYmVvQVRBUkFBMkhkMGZzRFZLNzJSTFNESGJ5ME9oZ0RjRGxWQk0yTSto
+ WVlwTzNmWDFyKysKc2hpcVBLQ0hWQXNRNWJ4ZTdIbUppbUhhNEtLWXMya3YvbWx0L0NhdUNK
+ Ly9wbWN5Y0JNN0d2d25Lem11WHp1QQpHbVZUWkM2V1I1TGtha0ZydEhPelZtc0VHcE52NVJj
+ OWw2SFlGcExrYlNrVmk1U1BRWkp5K0VNZ01DRmdqclpmClZGNnlvdHdFMWFmN0hOdE1oTlBh
+ TEROMW9VS0Y1aitSeVJnNWl3SnVDRGtuSGp3QlFWNHBndzIvNXZTOEE3WlEKdjJNYlcvVExF
+ eXBLWGlmNzhJaGdBelh0RTJYck0xbi9vNlpINzFvUkZGS096NDJsRmR6ZHJTWDBZc3FYZ0hD
+ WAo1Z0l0TGZxemoxcHNNYTlvMWVpTlRFbTFkVlFyVHFueXMwbDE4b2FsUk5zd1lsUW1uWUJ3
+ cHdDa2FUSExNSHdLCmZHQmJvNWRMUEVzaHRWb3dJNm5zZ3FMVHlRSG1xSFlxVVpZSXBpZ21t
+ QzNTd0JXWTFWNmZmVUVta3FwQUFDRW4KTDQvZ1Vnbjd5US81ZDBzZXFuQXEycFNCSE1VVW9D
+ Y1R6RVFVV1ZraUR2M1JrN2hURm1oVHNNcTc4eHYyWFJzWApNUjZ5UWhTVFBGWkNZRFVFeEVs
+ RXNTbzlGV0hXcjZ6SHlZY2M4cURMRnZHOUZQaG1RdVQyczlCbHg2Z0kzMjNHCm5FcTFsd1dQ
+ SlZ6UDRqUWtKS0lBWHdGcHYrVzhDV0xxekRXT3ZkbHJEYVRhVk1zY0ZUZUg1VzZVcHJsNjVq
+ cUYKUUdNcGNSR0NzOEdDVVcxM0gwSXlPdFF0d1dYQTRueStTTDgxcHZpQW1hU1hVOGxhS2FS
+ dTkxVk9WYUY5ZjRzQQpFUUVBQVlrQ0h3UVlBUUlBQ1FVQ1czcUFFd0liREFBS0NSQ1VnZXdQ
+ RVpEeTIrb1hELzljSEhSa0JaT2ZrbVNxCjE0U3Z4MDYyUHRVMEtWNDcwVFNucC9qV29ZSm5L
+ SXczRzBtWElSZ3J0SDJkUHdwSWdWanNZeVJTVk1LbVNwdDUKWnJEZjlOdFRiTldnazhWb0xl
+ WnpZRW8rSjNvUHFGclRNczNhWVl2N2U0K0pLNjk1WW5tUSttT0Q5bmlhOTE1dApyNUFaajk1
+ VWZTVGx5VW15aWMxZDhvdnNmMWZQN1hDVVZSRmNSamZOZkRGMW9ML3BEZ01QNUdaMk93YVRl
+ am15CkN1SGpNOElSMUNpYXZCcFlEbUJuVFlrN1B0aHk2YXRXdllsMGZ5L0NxYWpUS3N4Nytw
+ OXh6aXU4WmZWWCtpS0IKQ2MrSGUrRURFZEdJRGh2TlovSVFIZk9CMlBVWFdHUytzOUZOVHhy
+ L0E2bkxHWG5BOVk2dzkzaVBkWUl3eFM3SwpYTG9LSmVlMTBEamx6c1lzUmZsRk9XMFpPaVNp
+ aElDWGlRVjF1cU02dHpGRzlndFJjaXVzNVVBdGhXYU8xT3dVClNDUW1mQ09tNGZ2TUlKSUE5
+ cnh0b1M2T3FSUWNpRjNjcm1vMHJKQ3ROMmF3WmZnaThYRWlmN2Q2aGp2MEVLTTkKWFpvaUFa
+ WVpEKy9pTG01VGFLV042b0dJdGkwVmpKdjhaWk9aT2ZDYjZ2cUZJa0pXK2FPdTRvclRMRk16
+ MjhhbwpVM1F5V3BOQzhGRm1kWXNWdWE4czZnTjFOSWE2eTNxYS9aQjhiQS9pa3k1OUFFejRp
+ RElScmdVek1FZzhBazdUCmZtMUtpWWVpVHRCRENvMjVCdlhqYnFzeXhrUUQxbmtSbTZGQVZ6
+ RXVPUEllOEp1cVcyeEQ5aXhHWXZqVTVoa1IKZ0pwM2dQNWIrY25HM0xQcXF1UTJFNmdvS1VN
+ TEFia0NEUVJiZmw5REFSQUFzRExjYStMbFAydm5mdEVHaHBjQQpCR1ZOUUVGbkdQckNhdVU2
+ SGhOODA1V3RQVHRtc1JPdUp6cWdVVDBtcHFXSWZacTZzTXd5dkhLOVRzL0tIM0paClVWYlJD
+ M3oyaDNLZmhIL0RhZjk1cGQ2bVBjL2g5dkYvT3kzK2VUV2hnR25QNmNBNWtsUitmTzFXaEc4
+ VnJpWHYKck5lUkcyMHN6emplSG9jblNJY1Q1WHVaUjB1REhPaUd4T2l6MXNNUkZUR3h6R095
+ MTlSOXJ2dTYzdGlJM2Q3dgpnYzc1T0NBZGtlQi9TZUNFbGFSdzBUZjdMWmJQampzRjI2M0JZ
+ bk1mNGtrTkVLdnFXY1UyaWNNcCtxZXpqeW5CCnB2ZXVlMHJDVFFCWUFRbG9GQ1ZUR0hyV1dB
+ NkQ0VzVPMkFmSWRJYzF1MUpDWnAyZjVMV1ZvVUZUVklyUW5RUVUKU0hDaWZyOU1aeExUdFBK
+ ZFU1Mm9TUHczZGs0aExQOGlKSUx1dnYvYXZhakNzUVlIRXR3WXNiZUZaeGl1TGdscApBN1lj
+ Sk5ObXBnQ3BNRDR3VWh2bEN0QUtOQlFXeXIyOTc2OThFUVRuNDZlQmVVNkttMkNpaFhrZ3dD
+ eWY4ZXlLCkxFM3NYZXdhcTVrZ1pXdk5xNml1NXFZSVJCOXl3K2NYYzYwZE9aRE9scTkzWDVT
+ QVJZemFvZXBrSHo0cmtMa1AKUG8rdENIeUhRUHNHblBYYzlXVDgwREM5Tm5KR2R2VWx5NXJk
+ TUk0eHBaeWdlb2tqd293VlFsUFV1Y1M2TXluNwpmOHc4Y2dmQjdDMklBSWNEeDJwUC9IendY
+ dmtDT1FOQTdtVjFsTTA4bitnVmtUcnpweGlwNURicTRDSW9ZeDJNCkpaVDhiR1JINlhqY1VE
+ S2EwOVFoeVpzQUVRRUFBWWtFUkFRWUFRZ0FEd1VDVzM1ZlF3SWJBZ1VKQThKbkFBSXAKQ1JD
+ VWdld1BFWkR5MjhGZElBUVpBUWdBQmdVQ1czNWZRd0FLQ1JCVnhETFBjVk1NamNkc0QvMFJo
+ QXN1UVlPeQpyMTNCbDNOaFhrWUFaR3AyWkZER3VrZTdPU2tWOG9qT09UZFR5ei9jT1JHQ2J5
+ ZEQrRGd2cUZ5VmRuT1hLZ08wCmxKbUd3ckdlTGRnZ0F2aDBpaHJwNU8wWVVKOWJCU1htR01t
+ UVRZSC9BbUxUR2FkYnVqQ1dqNWZGVWtDeXd4aW0KSHV5MFBiMjRwelR2UzUwR1k1WStxSDBG
+ SE5haWdka2tpV04zcnVnN0haRXUvQ3lsUFpqT1h6K0QxUVBNckV4dwo3ZC9NS2FiVis5YU5i
+ UVlabGRJajk4UXd2VUYxS1N6YThqbFVJdnBoUnEyN0FUOGZER1lHUGZERU1nMmNCT2FlCkty
+ N29uUXM0YjdhV082aWZEbHhRVHB6c3pvK0FuODA3Tk1TdFZFRmYrczNBaFZEM2U3bmY4SkJh
+ dmJWckFlMGsKb20yNm96elBubnh6K2xxVlZ0dzZVazRYTUl6dGl4L0h3SFl3dUNuY1VYWndL
+ MEkzeUFKd2pZd29vck9DaEozUwpFVWJKUVB0R3NneFJERXhWQkZlNk5MUC82MnhQOU82dGFj
+ d09kYjBNbVAxYjM5cFJBVEM3YmdkMWxkVUxpNzVaCmxKckowL1NpVkVyb3FOWXk3OXRmbWdB
+ WjJVeFptczlTckV5Nm85UVNmc24xYVh2K01QTDlKYUNHbWtQNnpiTFEKTm5kajBKY2FRbmtD
+ MHZneWRPMUJtNk11OTZQOXVmbEtaY0FTNndtTE01SWRIT3lqTDg4d0h3anVjakFPQnRjdwpw
+ MG9HVG5WT25Sc05ZU084VzhZWi9LZGJ1Nzg1ZGF6TXFKMmlOakFEdUJiZG02TjRqNUVkTW5r
+ TG4wQklmUEpwCmRnbTR2bDJVcExqd1JHci9NM3dtbTVwdnMrNnVCN2hrL0ZKaUQvNGxsRU5Q
+ NGVNMWg3U200aitWcTZOMSt6VEIKSVhKQWViSXFhc0RwNXlaUzdYcnk0STM2bjg1WEVZZkcw
+ MWx0QXlob05WMkRPOFNJUlFwdWkydHErOVJQM1JLMQpKREJ4eEVKWTJFTzVKWjhNeGFQSFEw
+ RFQwNWxSRmpLMkFsaGRFSXRqTGpwSjNmVW05c3FMeE1XeHpQNlV6M2lpCjJ1YTR1bnJ0Nk9D
+ VHFRd2lqRi8zYlRXaXd2VkFBSG5NRlVpb1hzaEhhb2hWRGNWZm5lSU1mVjBiUUNYWWkzTnAK
+ WTB2MFp3Y2lGSCtnU0M3cUQ2WE51aHBWR1NMNElpbGlGeS9TemNhSkV6QUhlTERTaFpQMkNX
+ ZG5DNHZnbDM3dApocHg4aDU1WWhKbjZIU3VVelBnaGFLdFZCMmsrajdaZXlaK1NGeHA3SXVi
+ SEN3TEhsUWhUNzVSd1EzaUF4S242CjBxajUxY1lUbnF4ZFpYVzZmSDNQa3VNellVNUdwcVIv
+ MU9sNWMvd2ZJNmc2QW04eUtXLzBFVUx0K0tuNExGc1MKbTdZM201SDV2MTJVNkpCWXZWK3Ix
+ M2paaW9zNEVFREU5M0Q1c05IMk1JeVJ6Q0RxMXpkZHQ0WHV5S0ZqUEtXMQo5aWJaRGZGVjdL
+ dUNzdnVMMjNzQmMxc0NNb3ArRTFtVC9ReE9JQTZvRFQxTVFzdHdPVnVReURDdi9PdktTZ2Z6
+ CjhGWEdMNkFQY2xqQ3FqOEFKaHhReXN4ZG9pUVA4bS92dStialdHR3Z4dzVzMWxncGlSRFRS
+ VVBnY0pKTmFHWTIKVklEclpRaTROU2lOUTBOSWkrZGp1NGZOTW1DcFFxZzh0YkMzY0FhNnl3
+ bTZvUUIxU0JobURYMmUxMWdSbGx1SQpPblRHUEUwSFRvM2w3MmxoYmc9PQo9cVpNVgotLS0t
+ LUVORCBQR1AgUFVCTElDIEtFWSBCTE9DSy0tLS0tCg==
+Message-ID: <4c5df296-b930-f65f-1106-c00889f1cdc1@i2se.com>
+Date:   Thu, 13 Jan 2022 19:55:58 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220109114120.386013-2-alistair@alistair23.me>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+Content-Language: en-US
+X-Provags-ID: V03:K1:UPIzwSEq6W60y92d9SD817JQD4SXRL+kTRj0RI/YsT5cPQR+xJV
+ ejyK/iX48jw2fyBU6su1U2ej511YmjvFGYoKCGEOB3PiqUR0KS3cQQIyQ5ssEpP9aOfbA10
+ 18+hnpl82g1POsRNZJKJt0kR+ftmtf49X4tfTm0WNP1trUvKPVWaZCoAAyndGnjBeh5SBGR
+ IvU0OhS+ixmGTBhUD3L+g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CftxcI2hVw0=:ZPbE0zNYCXQCF9gnJgDfH1
+ DWttjVuND+NjeYyM9tDih1mb1X/BtE8ab2GWJuhp4d78GyA54DC0Xl2ACvz55Plu48GAJ3T0n
+ YFaJtCaq7SWYWrnxpV0pf5xyu67XPAA8Yg+109bkZ7HBCjKSWkoijxQZ8BJIEKaSCmOfrR900
+ H082saxYooEAbfSvku+W8Mmr1pcy/PIEngtL50Adtq/D0JbOr2lrGPMFuHAUt6LudeECj/BIJ
+ 0qfvpoQ84Rdehjr9Efad7JIItR5AIA0Qehkb2ghx6G3eqc6sdpPOj/pSXdpMv0XBmuScmiAm1
+ JvFNMLbJ4YozljGo0hfnGSbVV+rV4MyrC7iOjBm5JDANmxp2/Opwe4MYoTtiPq4NgMTvFiqdG
+ W+GgDVe0YE0QpNRbuUK5oBD8zbkBYu+wukEYG2MdA05LK/eoRaWlBv0I99ozOG7d5914HN67M
+ 56RoNz/rW0ZhfokkgE93W+csql2knrrpWcI/VFYU834XLErt0/TwA74PRGN1e27KvDfe/rW5l
+ fWAmclXO/EFmogkNypqoya5WYG6j+AHBE54OCQbKmTgsvnhfGzxYLLSPmR/9M1bnGHZv1zaPy
+ +5tcmdtK/1huD2ODDh+wmcdfl7nWx3tg0Ycrm9MwfBh0aLZdteUUXSByZp2mFh5w6im3YVEOz
+ 8982MsY+MuWkNh3YaUWNzI9jEA/uOK+amp2jGUPkhUUEmr1cNFT2OEohTlrvSSIPlETmxXhAp
+ ZGZgvNIm0dcYpY/N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   1a880941a087613ed42f77001229edfcf75ea8a5
-commit: 90af8efc5f313f5faa40d7e7bc58986a4342828a [1793/2382] headers/deps: Reorganize, clean up and optimize kernel/sched/sched.h dependencies
-config: x86_64-randconfig-a011 (https://download.01.org/0day-ci/archive/20220114/202201140251.J3IHIgTm-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=90af8efc5f313f5faa40d7e7bc58986a4342828a
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 90af8efc5f313f5faa40d7e7bc58986a4342828a
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash kernel/sched/
+Hi,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Am 09.01.22 um 12:41 schrieb Alistair Francis:
+> The i.MX watchdog cannot be disabled by softwrae once it has been
+s/softwrae/software/
+> enabled. This means that it can't be stopped before suspend.
+>
+> For systems that enter low power mode this is fine, as the watchdog will
+> be automatically stopped by hardwrae in low power mode. Not all i.MX
+s/hardwrae/hardware/
+> platforms support low power mode in the mainline kernel. For example the
+> i.MX7D does not enter low power mode and so will be rebooted 2 minutes
+> after entering freeze or mem sleep states.
+>
+> This patch introduces a device tree property "fsl,ping-during-suspend"
+> that can be used to enable ping on suspend support for these systems.
 
-All warnings (new ones prefixed by >>):
+Introducing vendor specific properties for Linux behavior should be
+avoided. The DT should describe just the hardware.
 
-   kernel/sched/fair.c:5486:6: warning: no previous prototype for 'init_cfs_bandwidth' [-Wmissing-prototypes]
-    5486 | void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b) {}
-         |      ^~~~~~~~~~~~~~~~~~
->> kernel/sched/fair.c:10758:6: warning: no previous prototype for 'nohz_balance_enter_idle' [-Wmissing-prototypes]
-   10758 | void nohz_balance_enter_idle(int cpu)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11880:6: warning: no previous prototype for 'free_fair_sched_group' [-Wmissing-prototypes]
-   11880 | void free_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11882:5: warning: no previous prototype for 'alloc_fair_sched_group' [-Wmissing-prototypes]
-   11882 | int alloc_fair_sched_group(struct task_group *tg, struct task_group *parent)
-         |     ^~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11887:6: warning: no previous prototype for 'online_fair_sched_group' [-Wmissing-prototypes]
-   11887 | void online_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~
-   kernel/sched/fair.c:11889:6: warning: no previous prototype for 'unregister_fair_sched_group' [-Wmissing-prototypes]
-   11889 | void unregister_fair_sched_group(struct task_group *tg) { }
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+In case i.mx7d is affected, how about enabling this workaround for
+compatible fsl,imx7d-wdt? This has the advantage that in case low power
+mode will be implemented
+<https://elixir.bootlin.com/linux/latest/B/ident/fsl%2Cimx7d-wdt>, we
+don't have to care about DTB files.
 
+Best regards
 
-vim +/nohz_balance_enter_idle +10758 kernel/sched/fair.c
+>
+> Signed-off-by: Alistair Francis <alistair@alistair23.me>
+> ---
+>  .../bindings/watchdog/fsl-imx-wdt.yaml        |  7 ++++++
+>  drivers/watchdog/imx2_wdt.c                   | 22 +++++++++++++------
+>  2 files changed, 22 insertions(+), 7 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/watchdog/fsl-imx-wdt.yaml b/Documentation/devicetree/bindings/watchdog/fsl-imx-wdt.yaml
+> index fb7695515be1..b8660a3c456c 100644
+> --- a/Documentation/devicetree/bindings/watchdog/fsl-imx-wdt.yaml
+> +++ b/Documentation/devicetree/bindings/watchdog/fsl-imx-wdt.yaml
+> @@ -55,6 +55,13 @@ properties:
+>        If present, the watchdog device is configured to assert its
+>        external reset (WDOG_B) instead of issuing a software reset.
+>  
+> +  fsl,ping-during-suspend:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      If present, the kernel will ping the watchdog during suspend.
+> +      This should be used on platforms that don't enter low power mode
+> +      during suspend.
+> +
+>  required:
+>    - compatible
+>    - interrupts
+> diff --git a/drivers/watchdog/imx2_wdt.c b/drivers/watchdog/imx2_wdt.c
+> index 51bfb796898b..9a5fdb3173a8 100644
+> --- a/drivers/watchdog/imx2_wdt.c
+> +++ b/drivers/watchdog/imx2_wdt.c
+> @@ -66,6 +66,7 @@ struct imx2_wdt_device {
+>  	struct watchdog_device wdog;
+>  	bool ext_reset;
+>  	bool clk_is_on;
+> +	bool no_ping;
+>  };
+>  
+>  static bool nowayout = WATCHDOG_NOWAYOUT;
+> @@ -312,12 +313,14 @@ static int __init imx2_wdt_probe(struct platform_device *pdev)
+>  
+>  	wdev->ext_reset = of_property_read_bool(dev->of_node,
+>  						"fsl,ext-reset-output");
+> +	wdev->no_ping = !of_property_read_bool(dev->of_node, "fsl,ping-during-suspend");
+>  	platform_set_drvdata(pdev, wdog);
+>  	watchdog_set_drvdata(wdog, wdev);
+>  	watchdog_set_nowayout(wdog, nowayout);
+>  	watchdog_set_restart_priority(wdog, 128);
+>  	watchdog_init_timeout(wdog, timeout, dev);
+> -	watchdog_stop_ping_on_suspend(wdog);
+> +	if (wdev->no_ping)
+> +		watchdog_stop_ping_on_suspend(wdog);
+>  
+>  	if (imx2_wdt_is_running(wdev)) {
+>  		imx2_wdt_set_timeout(wdog, wdog->timeout);
+> @@ -366,9 +369,11 @@ static int __maybe_unused imx2_wdt_suspend(struct device *dev)
+>  		imx2_wdt_ping(wdog);
+>  	}
+>  
+> -	clk_disable_unprepare(wdev->clk);
+> +	if (wdev->no_ping) {
+> +		clk_disable_unprepare(wdev->clk);
+>  
+> -	wdev->clk_is_on = false;
+> +		wdev->clk_is_on = false;
+> +	}
+>  
+>  	return 0;
+>  }
+> @@ -380,11 +385,14 @@ static int __maybe_unused imx2_wdt_resume(struct device *dev)
+>  	struct imx2_wdt_device *wdev = watchdog_get_drvdata(wdog);
+>  	int ret;
+>  
+> -	ret = clk_prepare_enable(wdev->clk);
+> -	if (ret)
+> -		return ret;
+> +	if (wdev->no_ping) {
+> +		ret = clk_prepare_enable(wdev->clk);
+>  
+> -	wdev->clk_is_on = true;
+> +		if (ret)
+> +			return ret;
+> +
+> +		wdev->clk_is_on = true;
+> +	}
+>  
+>  	if (watchdog_active(wdog) && !imx2_wdt_is_running(wdev)) {
+>  		/*
 
-69e1e811dcc436 kernel/sched/fair.c Suresh Siddha       2011-12-01  10753  
-1e3c88bdeb1260 kernel/sched_fair.c Peter Zijlstra      2009-12-17  10754  /*
-97fb7a0a8944bd kernel/sched/fair.c Ingo Molnar         2018-03-03  10755   * This routine will record that the CPU is going idle with tick stopped.
-0b005cf54eac17 kernel/sched/fair.c Suresh Siddha       2011-12-01  10756   * This info will be used in performing idle load balancing in the future.
-1e3c88bdeb1260 kernel/sched_fair.c Peter Zijlstra      2009-12-17  10757   */
-c1cc017c59c44d kernel/sched/fair.c Alex Shi            2012-09-10 @10758  void nohz_balance_enter_idle(int cpu)
-1e3c88bdeb1260 kernel/sched_fair.c Peter Zijlstra      2009-12-17  10759  {
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10760  	struct rq *rq = cpu_rq(cpu);
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10761  
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10762  	SCHED_WARN_ON(cpu != smp_processor_id());
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10763  
-97fb7a0a8944bd kernel/sched/fair.c Ingo Molnar         2018-03-03  10764  	/* If this CPU is going down, then nothing needs to be done: */
-71325960d16cd6 kernel/sched/fair.c Suresh Siddha       2012-01-19  10765  	if (!cpu_active(cpu))
-71325960d16cd6 kernel/sched/fair.c Suresh Siddha       2012-01-19  10766  		return;
-71325960d16cd6 kernel/sched/fair.c Suresh Siddha       2012-01-19  10767  
-387bc8b5536eeb kernel/sched/fair.c Frederic Weisbecker 2017-06-19  10768  	/* Spare idle load balancing on CPUs that don't want to be disturbed: */
-de201559df872f kernel/sched/fair.c Frederic Weisbecker 2017-10-27  10769  	if (!housekeeping_cpu(cpu, HK_FLAG_SCHED))
-387bc8b5536eeb kernel/sched/fair.c Frederic Weisbecker 2017-06-19  10770  		return;
-387bc8b5536eeb kernel/sched/fair.c Frederic Weisbecker 2017-06-19  10771  
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10772  	/*
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10773  	 * Can be set safely without rq->lock held
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10774  	 * If a clear happens, it will have evaluated last additions because
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10775  	 * rq->lock is held during the check and the clear
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10776  	 */
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10777  	rq->has_blocked_load = 1;
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10778  
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10779  	/*
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10780  	 * The tick is still stopped but load could have been added in the
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10781  	 * meantime. We set the nohz.has_blocked flag to trig a check of the
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10782  	 * *_avg. The CPU is already part of nohz.idle_cpus_mask so the clear
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10783  	 * of nohz.has_blocked can only happen after checking the new load
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10784  	 */
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10785  	if (rq->nohz_tick_stopped)
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10786  		goto out;
-1e3c88bdeb1260 kernel/sched_fair.c Peter Zijlstra      2009-12-17  10787  
-97fb7a0a8944bd kernel/sched/fair.c Ingo Molnar         2018-03-03  10788  	/* If we're a completely isolated CPU, we don't play: */
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10789  	if (on_null_domain(rq))
-d987fc7f3228bf kernel/sched/fair.c Mike Galbraith      2011-12-05  10790  		return;
-d987fc7f3228bf kernel/sched/fair.c Mike Galbraith      2011-12-05  10791  
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10792  	rq->nohz_tick_stopped = 1;
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10793  
-83cd4fe27ad844 kernel/sched_fair.c Venkatesh Pallipadi 2010-05-21  10794  	cpumask_set_cpu(cpu, nohz.idle_cpus_mask);
-0b005cf54eac17 kernel/sched/fair.c Suresh Siddha       2011-12-01  10795  	atomic_inc(&nohz.nr_cpus);
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10796  
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10797  	/*
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10798  	 * Ensures that if nohz_idle_balance() fails to observe our
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10799  	 * @idle_cpus_mask store, it must observe the @has_blocked
-7fd7a9e0caba10 kernel/sched/fair.c Valentin Schneider  2021-08-23  10800  	 * and @needs_update stores.
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10801  	 */
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10802  	smp_mb__after_atomic();
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10803  
-00357f5ec5d67a kernel/sched/fair.c Peter Zijlstra      2017-12-21  10804  	set_cpu_sd_state_idle(cpu);
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10805  
-7fd7a9e0caba10 kernel/sched/fair.c Valentin Schneider  2021-08-23  10806  	WRITE_ONCE(nohz.needs_update, 1);
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10807  out:
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10808  	/*
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10809  	 * Each time a cpu enter idle, we assume that it has blocked load and
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10810  	 * enable the periodic update of the load of idle cpus
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10811  	 */
-f643ea2207010d kernel/sched/fair.c Vincent Guittot     2018-02-13  10812  	WRITE_ONCE(nohz.has_blocked, 1);
-1e3c88bdeb1260 kernel/sched_fair.c Peter Zijlstra      2009-12-17  10813  }
-1e3c88bdeb1260 kernel/sched_fair.c Peter Zijlstra      2009-12-17  10814  
-
-:::::: The code at line 10758 was first introduced by commit
-:::::: c1cc017c59c44d9ede7003631c43adc0cfdce2f9 sched/nohz: Clean up select_nohz_load_balancer()
-
-:::::: TO: Alex Shi <alex.shi@intel.com>
-:::::: CC: Ingo Molnar <mingo@kernel.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
