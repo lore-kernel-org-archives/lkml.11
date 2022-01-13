@@ -2,113 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94043C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 17:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A56F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 17:16:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237078AbiAMRPL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 12:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46256 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234100AbiAMRPJ (ORCPT
+        id S237201AbiAMRQm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 12:16:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50364 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232571AbiAMRQl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 12:15:09 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 349D8C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 09:15:09 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id i5so25615506edf.9
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 09:15:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kS0t9n6WxIZ4bWLd5wtbwG6/RZMrpLppDsAbCaXE63M=;
-        b=YxzTX5Uhqq8IWsJVPAOhmMK2xnzPz7eAXueVAcwmhnWzlL8a0IUxHPtVCqGhIxIINq
-         u5etVqmHwf1LHxwq5QG/zTCtvahIR9hBSYDsx4/mvVoAiR7Hh9WZpYSQZEPo2pUACeva
-         2JHZIo/uFA2x3txdZZgzgpCWkBdVOVqolnhzI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kS0t9n6WxIZ4bWLd5wtbwG6/RZMrpLppDsAbCaXE63M=;
-        b=6eBT74HivAyBUXRT7BxQ2jakuey5xjRhEjyYBKqB1reiEq9XMCvHHjOAPwnbLh9Wkl
-         vCqSR5d+Vay5bG6x94HozJzeTvSP2VH35V/XhGMdz/OtGIRzfkmQg5RbyI4FuFsQCQtN
-         twJdIUWiGKUlscGRiGu14sfHPLnbTUZa78uaPVsLe979SdePqSpEoQMwsu66qFShf9qQ
-         3W6maOd/18GroKyk6+FyhDSNm8EqMstoG7UqHQt2wta72rkx+lITI9OF9ajcetK9fVEC
-         QhDGkPLW/SbRWSrMd+CN3mIwTXiC8O5X3uNjX7+UsYSy5XHJVgi2Y3abRQUZwoPF46gN
-         R/tQ==
-X-Gm-Message-State: AOAM531JaRINmz5FHFGs8jq3Qx//VSRNnPhPCqkZdRuf0HHi+VYZGtTk
-        fXalX+BM0Oxvw5Yj7prSqxHxb9rYX0yX5pDL
-X-Google-Smtp-Source: ABdhPJx7WhP5r2DJnV1h1KQiYyh09N4Dg66ECBiTYzDOhHMHWTmuMRRL/mfRqbT8pPSk6ir+vgZzug==
-X-Received: by 2002:a50:8e4b:: with SMTP id 11mr5017153edx.272.1642094107350;
-        Thu, 13 Jan 2022 09:15:07 -0800 (PST)
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com. [209.85.221.42])
-        by smtp.gmail.com with ESMTPSA id k22sm1415538edv.22.2022.01.13.09.15.04
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 09:15:04 -0800 (PST)
-Received: by mail-wr1-f42.google.com with SMTP id k18so11325333wrg.11
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 09:15:04 -0800 (PST)
-X-Received: by 2002:a05:6000:1846:: with SMTP id c6mr4710646wri.193.1642094104088;
- Thu, 13 Jan 2022 09:15:04 -0800 (PST)
-MIME-Version: 1.0
-References: <20220113140318.11117-1-zhangliang5@huawei.com>
- <YeA5oP/iaxtVPHb3@casper.infradead.org> <CAHk-=wjB0i-B=U-DhpAajQx3f6bp1X==neLOrg0jwq29mgz=3g@mail.gmail.com>
- <172ccfbb-7e24-db21-7d84-8c8d8c3805fd@redhat.com>
-In-Reply-To: <172ccfbb-7e24-db21-7d84-8c8d8c3805fd@redhat.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 13 Jan 2022 09:14:48 -0800
-X-Gmail-Original-Message-ID: <CAHk-=wi21DZ4H5uLnn2QgAeAUqg0wNPboijC0OgDDk1e7TdkPw@mail.gmail.com>
-Message-ID: <CAHk-=wi21DZ4H5uLnn2QgAeAUqg0wNPboijC0OgDDk1e7TdkPw@mail.gmail.com>
-Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Liang Zhang <zhangliang5@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        wangzhigang17@huawei.com
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 13 Jan 2022 12:16:41 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45EF961CEA
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 17:16:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id ACD79C36AED;
+        Thu, 13 Jan 2022 17:16:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642094200;
+        bh=OGR8BatFmLW9rRgYsl7va768TkmCSZ9RLxhv1E0WHag=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=IqLDnnv4d98qdnJpquT8Zhyz3ExvHdL4CVCNzgGhMmr7e0Pnf2YwcWjB81Ie4NriS
+         ElZI0VZBE3PQD+gEXumopsRfD2YfYJrvWrkYjnx1l3jITQTsXCbW1vJ8Tc3bRGFwlh
+         QXrqK+MKU4YTVCv/3EN8paRIg4u0l/nb40zGZDmtkgxAD1FWbkXCuYF1eF0ZSzLk1p
+         w/xBnpr7/vL6D6xiFKw7w0x2lPmRDdGQr8wexYfC1ottBj5ue4TAXnUhkhWuh0eJb1
+         Knrz/7Ipf4hlF3PKkWW93U+VxGLfcIJ+FC53MEDoLwDxMBfZtLAUAUzsChl4iSJLi8
+         8H2q7BuqevIDA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 96392F6079A;
+        Thu, 13 Jan 2022 17:16:40 +0000 (UTC)
+Subject: Re: [GIT pull] irq/msi for v5.17-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <164206863209.82661.6310423060263423123.tglx@xen13.tec.linutronix.de>
+References: <164206863083.82661.4520085707599437707.tglx@xen13.tec.linutronix.de> <164206863209.82661.6310423060263423123.tglx@xen13.tec.linutronix.de>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <164206863209.82661.6310423060263423123.tglx@xen13.tec.linutronix.de>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-msi-2022-01-13
+X-PR-Tracked-Commit-Id: 74a5257a0c175810d620b5e631c4e7554955ac25
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: feb7a43de5ef625ad74097d8fd3481d5dbc06a59
+Message-Id: <164209420061.1143.11680500164036522471.pr-tracker-bot@kernel.org>
+Date:   Thu, 13 Jan 2022 17:16:40 +0000
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, x86@kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 8:48 AM David Hildenbrand <david@redhat.com> wrote:
->
-> I'm wondering if we can get rid of the mapcount checks in
-> reuse_swap_page() and instead check for page_count() and swapcount only.
+The pull request you sent on Thu, 13 Jan 2022 11:13:20 +0100 (CET):
 
-Honestly, I think even checking page_count() is pointless.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-msi-2022-01-13
 
-If the page has users, then that's fine. That's irrelevant for whether
-it's a swap page or not, no?
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/feb7a43de5ef625ad74097d8fd3481d5dbc06a59
 
-So if you want to remove it from the swap cache, all that matters is that
+Thank you!
 
- (a) you have it locked so that there can be no new users trying to mix it up
-
- (b) there are no swapcount() users of this page (which don't have a
-ref to the page itself, they only have a swap entry), so that you
-can't have somebody trying to look it up (whether some racy
-"concurrent" lookup _or_ any later one, since we're about to remove
-the swap cache association).
-
-Why would "map_count()" matter - it's now many times the *page* is
-mapped, it's irrelevant to swap cache status? And for the same reason,
-what difference does "page_count()" have?
-
-One big reason I did the COW rewrite was literally that the rules were
-pure voodoo and made no sense at all. There was no underlying logic,
-it was just a random collection of random tests that didn't have any
-logical architecture to them.
-
-Our VM is really really complicated already, so I really want our code
-to make sense.
-
-So even if I'm entirely wrong in my swap/map-count arguments above,
-I'd like whatever patches in this area to be really well commented and
-have some fundamental rules and logic to them so that people can read
-the code and go "Ok, makes sense".
-
-Please?
-
-         Linus
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
