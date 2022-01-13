@@ -2,115 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF14AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70914C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:07:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234369AbiAMMG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 07:06:58 -0500
-Received: from mga12.intel.com ([192.55.52.136]:34006 "EHLO mga12.intel.com"
+        id S234380AbiAMMHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 07:07:00 -0500
+Received: from mga07.intel.com ([134.134.136.100]:29254 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234385AbiAMMGs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 07:06:48 -0500
+        id S234383AbiAMMGv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 07:06:51 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642075607; x=1673611607;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=Yq87Afp64FG/fgc06uri6AT2cW3uh4/5BtkWpNNlZ3c=;
-  b=JAO+i9o5LCxctq3Lc8R67iwu4PqI2s3QnzITnRTIAaJDSUwf00Vy710x
-   yrm+mG8tQbOgRzTKRVcz6zpBpzRri2tbKmowpOytGMsVB2HHGIZUdzTcn
-   UNMlQj2X8GuES1+kondZH0swMfza/2cs1uclZXimgQgUfv9AWlG4RKCG9
-   ssvKcOCe/0eVFfX62dNw8KsYObE189wU8AYM9uyrkTqFadlbkjvJJbdd0
-   +VEiT8R2LqZr/Fos26f7Rrw0/gzy73NS50ns5kfcf/1ZTOUpLnvZfFs2U
-   nHoEkgoGgYajzvAwLZUJs+dhDF+whRYxkl0++XLfq6iQx5UDF8r5nxacT
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="223976318"
+  t=1642075611; x=1673611611;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=4fWpAMCkMJpXx/DYwwFItfouhoPnra/h+mOm6olLclQ=;
+  b=G9c+jNIzfDpIVqKokYhAX9q/6r37xAOokbjdUxVaYF4JGHHpNJzBUhz+
+   sRYx4wURnbOpbNDRM9NCMjkNJJXMJZG6nLlPkKE/7t89DwHei7eOCXnAm
+   uyw1Jh8URn3FskhP0UBpsDwjq3oAnwspx9h3JGVmfDhj/MEF4KTcRxsio
+   DIIeqqjnF9k6Kq50f4FohyCmNimHEYJLimfuXXGbPlyonPMG0jYEMQSrT
+   wd4Bt9YsmxpJc6ZSmlc7JdXzWSAXbJJVeMaG1lI8MfKpRNah9UK0x75Qp
+   8DrVbekRMlIN7BI/6Oy5egP1FpInpe2zSW60gSxIXhEeXPB8EaN9cIsQ6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="307339456"
 X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="223976318"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 04:06:46 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="307339456"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 04:06:46 -0800
 X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="576918558"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Jan 2022 04:06:45 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7ysO-0007AP-Oq; Thu, 13 Jan 2022 12:06:44 +0000
-Date:   Thu, 13 Jan 2022 20:05:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chuck Lever <chuck.lever@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [cel:topic-rpc-with-tls-upcall 18/19] net/sunrpc/xprtsock.c:2257:
- undefined reference to `tls_client_hello_user'
-Message-ID: <202201131908.bylSNIA1-lkp@intel.com>
+   d="scan'208";a="475290041"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.11])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 04:06:42 -0800
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Mel Gorman <mgorman@suse.de>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, Feng Tang <feng.tang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        Hasan Al Maruf <hasanalmaruf@fb.com>
+Subject: Re: [PATCH -V10 RESEND 0/6] NUMA balancing: optimize memory
+ placement for memory tiering system
+References: <20211207022757.2523359-1-ying.huang@intel.com>
+        <Yd79b6PptQMNzDRw@hirez.programming.kicks-ass.net>
+        <87sftsumqd.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <Yd/1r49RKgwCXCQL@hirez.programming.kicks-ass.net>
+Date:   Thu, 13 Jan 2022 20:06:40 +0800
+In-Reply-To: <Yd/1r49RKgwCXCQL@hirez.programming.kicks-ass.net> (Peter
+        Zijlstra's message of "Thu, 13 Jan 2022 10:49:35 +0100")
+Message-ID: <87o84fu9f3.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux topic-rpc-with-tls-upcall
-head:   0fd328ea53e7d539bf8bb160d773e1d027c60fea
-commit: adb54a631895e050da6ed9a18f9b503f927b642d [18/19] SUNRPC: RPC client support for TLS handshake upcall
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220113/202201131908.bylSNIA1-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=adb54a631895e050da6ed9a18f9b503f927b642d
-        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
-        git fetch --no-tags cel topic-rpc-with-tls-upcall
-        git checkout adb54a631895e050da6ed9a18f9b503f927b642d
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Peter Zijlstra <peterz@infradead.org> writes:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On Thu, Jan 13, 2022 at 03:19:06PM +0800, Huang, Ying wrote:
+>> Hi, Peter,
+>> 
+>> Peter Zijlstra <peterz@infradead.org> writes:
+>> 
+>> > On Tue, Dec 07, 2021 at 10:27:51AM +0800, Huang Ying wrote:
+>> >> After commit c221c0b0308f ("device-dax: "Hotplug" persistent memory
+>> >> for use like normal RAM"), the PMEM could be used as the
+>> >> cost-effective volatile memory in separate NUMA nodes.  In a typical
+>> >> memory tiering system, there are CPUs, DRAM and PMEM in each physical
+>> >> NUMA node.  The CPUs and the DRAM will be put in one logical node,
+>> >> while the PMEM will be put in another (faked) logical node.
+>> >
+>> > So what does a system like that actually look like, SLIT table wise, and
+>> > how does that affect init_numa_topology_type() ?
+>> 
+>> The SLIT table is as follows,
+>> 
+>> [000h 0000   4]                    Signature : "SLIT"    [System Locality Information Table]
+>> [004h 0004   4]                 Table Length : 0000042C
+>> [008h 0008   1]                     Revision : 01
+>> [009h 0009   1]                     Checksum : 59
+>> [00Ah 0010   6]                       Oem ID : "INTEL "
+>> [010h 0016   8]                 Oem Table ID : "S2600WF "
+>> [018h 0024   4]                 Oem Revision : 00000001
+>> [01Ch 0028   4]              Asl Compiler ID : "INTL"
+>> [020h 0032   4]        Asl Compiler Revision : 20091013
+>> 
+>> [024h 0036   8]                   Localities : 0000000000000004
+>> [02Ch 0044   4]                 Locality   0 : 0A 15 11 1C
+>> [030h 0048   4]                 Locality   1 : 15 0A 1C 11
+>> [034h 0052   4]                 Locality   2 : 11 1C 0A 1C
+>> [038h 0056   4]                 Locality   3 : 1C 11 1C 0A
+>> 
+>> The `numactl -H` output is as follows,
+>> 
+>> available: 4 nodes (0-3)
+>> node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71
+>> node 0 size: 64136 MB
+>> node 0 free: 5981 MB
+>> node 1 cpus: 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95
+>> node 1 size: 64466 MB
+>> node 1 free: 10415 MB
+>> node 2 cpus:
+>> node 2 size: 253952 MB
+>> node 2 free: 253920 MB
+>> node 3 cpus:
+>> node 3 size: 253952 MB
+>> node 3 free: 253951 MB
+>> node distances:
+>> node   0   1   2   3 
+>>   0:  10  21  17  28 
+>>   1:  21  10  28  17 
+>>   2:  17  28  10  28 
+>>   3:  28  17  28  10 
+>> 
+>> init_numa_topology_type() set sched_numa_topology_type to NUMA_DIRECT.
+>> 
+>> The node 0 and node 1 are onlined during boot.  While the PMEM node,
+>> that is, node 2 and node 3 are onlined later.  As in the following dmesg
+>> snippet.
+>
+> But how? sched_init_numa() scans the *whole* SLIT table to determine
+> nr_levels / sched_domains_numa_levels, even offline nodes. Therefore it
+> should find 4 distinct distance values and end up not selecting
+> NUMA_DIRECT.
+>
+> Similarly for the other types it uses for_each_online_node(), which
+> would include the pmem nodes once they've been onlined, but I'm thinking
+> we explicitly want to skip CPU-less nodes in that iteration.
 
-All errors (new ones prefixed by >>):
+I used the debug patch as below, and get the log in dmesg as follows,
 
-   ld: net/sunrpc/xprtsock.o: in function `xs_tcp_tls_handshake_sync':
->> net/sunrpc/xprtsock.c:2257: undefined reference to `tls_client_hello_user'
-   ld: net/sunrpc/xprtsock.o: in function `xs_tcp_tls_handshake_async':
-   net/sunrpc/xprtsock.c:2296: undefined reference to `tls_client_hello_user'
-   pahole: .tmp_vmlinux.btf: No such file or directory
-   .btf.vmlinux.bin.o: file not recognized: file format not recognized
+[    5.394577][    T1] sched_numa_topology_type: 0, levels: 4, max_distance: 28
 
+I found that I forget another caller of init_numa_topology_type() run
+during hotplug.  I will add another printk() to show it.  Sorry about
+that.
 
-vim +2257 net/sunrpc/xprtsock.c
+Best Regards,
+Huang, Ying
 
-  2239	
-  2240	/**
-  2241	 * xs_tcp_tls_handshake_sync - Perform a full TLS client handshake
-  2242	 * @xprt: transport on which to perform handshake
-  2243	 *
-  2244	 * Return values:
-  2245	 *   %0: Handshake completed successfully.
-  2246	 *   Negative errno: handshake not started, or failed.
-  2247	 */
-  2248	static int xs_tcp_tls_handshake_sync(struct rpc_xprt *xprt)
-  2249	{
-  2250		struct sock_xprt *transport =
-  2251					container_of(xprt, struct sock_xprt, xprt);
-  2252		int rc;
-  2253	
-  2254		init_completion(&transport->handshake_done);
-  2255	
-  2256		transport->xprt_err = -ETIMEDOUT;
-> 2257		rc = tls_client_hello_user(transport->sock,
-  2258					   xs_tcp_tls_handshake_done, xprt);
-  2259		if (rc)
-  2260			return rc;
-  2261		rc = wait_for_completion_interruptible_timeout(&transport->handshake_done,
-  2262							       XS_TLS_HANDSHAKE_TO);
-  2263		if (rc < 0)
-  2264			return rc;
-  2265	
-  2266		return transport->xprt_err;
-  2267	}
-  2268	
+-------------------------------8<------------------------------------
+From 11cea4be2db6220333d84f5b168174f534ac0933 Mon Sep 17 00:00:00 2001
+From: Huang Ying <ying.huang@intel.com>
+Date: Thu, 13 Jan 2022 09:53:15 +0800
+Subject: [PATCH] dbg: show sched_numa_topology_type
 
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ kernel/sched/topology.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
+index d201a7052a29..9d92191fd62d 100644
+--- a/kernel/sched/topology.c
++++ b/kernel/sched/topology.c
+@@ -1914,6 +1914,10 @@ void sched_init_numa(void)
+ 
+ 	init_numa_topology_type();
+ 
++	pr_info("sched_numa_topology_type: %d, levels: %d, max_distance: %d\n",
++		sched_numa_topology_type, sched_domains_numa_levels,
++		sched_max_numa_distance);
++
+ 	sched_numa_onlined_nodes = bitmap_alloc(nr_node_ids, GFP_KERNEL);
+ 	if (!sched_numa_onlined_nodes)
+ 		return;
+-- 
+2.30.2
+
