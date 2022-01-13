@@ -2,1111 +2,1060 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B701C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231486AbiAMKNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 05:13:25 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:34852 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiAMKNV (ORCPT
+        id S231771AbiAMKNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:13:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231687AbiAMKNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 05:13:21 -0500
+        Thu, 13 Jan 2022 05:13:24 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D52BC061748
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 02:13:24 -0800 (PST)
 From:   Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1642068799;
+        s=2020; t=1642068801;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=kPHP2PGj8qeBBx0StSTpQUEfdU6icgHk/WUz0l3hajk=;
-        b=beehgXMsHL5OYgHEB+Zb4FDhhROPjS3TxNXIF5dvWz9lAdmGAZ+EgNnY74vEQAM3dQ8N3s
-        e+uSMofbK6sQNALhEFu2rtn7Umi1rR3+LFiUqNmcsCj7m9uez2c9JqqqRaCgFEpDbvEntT
-        NYElqOekIlzp/+uX0zvD+vvipqi6xupfTwW+z7Nx8nruXwIBE2LI+wh3M14DcTcH2NxcYf
-        w9TGeqR2f0z3sjGUn1JpZi1DYlascE0MJsi1Qa6m6+0Uq0sZxB2suqywBJnbpptxM2ppou
-        roOh97XsJSHS5XHalPYg8y3VEo9fp4zlA3eFouXJfxW8zxetaozG57uCNOSNnw==
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=08qLIIkMgCg6qoSFt7MYoppIiJXwGMX3IcQ1S5dtnPE=;
+        b=SpH7mkR2flPS1j6z0+phDIdGVY4l47oTLjE3VjhepXXKMQ9sy8lmFbsHbzpePJbzU2NVEh
+        GrIy5OyKr4FYLBH8tlt2dTt+94f+pHoFkRWRfyw8DDaHZfkzyf1Yx9CdM3wyQzqqpJpkdB
+        31XsY6qRz7nFAlE2MrkRBfjEzuaIsNtBRWT9asrZwcqn3c2eLs/yFt4Pk+k6kC6fVcpFt2
+        bQebvoQxx8yHi8Q4WhtI7aC16g/DuhN2z+FkOFp05IxVAZshvEuSWy6rz6n04uWR9TMWUm
+        uoVHMLtSlhSqVQKJ84Kf67vmVGxYZ5mcUifY6OIFNsNGVp4NaTjapKGv1neyyA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1642068799;
+        s=2020e; t=1642068801;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=kPHP2PGj8qeBBx0StSTpQUEfdU6icgHk/WUz0l3hajk=;
-        b=junIozUrnBFnsfvAoBnl/l5AeO3KM23zxa83v6w6I16Wn5ml00rupGmSsdvz/4Ya/Pc+AV
-        Hr7GFq3DmjWgqTAw==
+         content-transfer-encoding:content-transfer-encoding:  references:references;
+        bh=08qLIIkMgCg6qoSFt7MYoppIiJXwGMX3IcQ1S5dtnPE=;
+        b=9Whlo9WqHJuhXd/KekLLc5jqDwY4eXRTVKfgc4ebgffE9l8OF4dUQwMjSNq9DRnH35YuA+
+        gYRg8V8TVfBxRBDQ==
 To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: [GIT pull] irq/core for v5.17-rc1
-Message-ID: <164206863083.82661.4520085707599437707.tglx@xen13.tec.linutronix.de>
+Subject: [GIT pull] timers/core for v5.17-rc1
+References: <164206863083.82661.4520085707599437707.tglx@xen13.tec.linutronix.de>
+Message-ID: <164206863332.82661.16045492031950918045.tglx@xen13.tec.linutronix.de>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Date:   Thu, 13 Jan 2022 11:13:19 +0100 (CET)
+Date:   Thu, 13 Jan 2022 11:13:21 +0100 (CET)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Linus,
 
-please pull the latest irq/core branch from:
+please pull the latest timers/core branch from:
 
-   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git irq-core-2022-01=
--13
+   git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git timers-core-2022=
+-01-13
 
-up to:  67d50b5f9114: Merge tag 'irqchip-5.17' of git://git.kernel.org/pub/sc=
-m/linux/kernel/git/maz/arm-platforms into irq/core
+up to:  35e13e9da9af: Merge branch 'clocksource' of git://git.kernel.org/pub/=
+scm/linux/kernel/git/paulmck/linux-rcu into timers/core
 
-Updates for the interrupt subsystem:
+
+Updates for the time(r) subsystem:
 
  Core:
-=20
-  - Provide a new interface for affinity hints to provide a separation
-    between hint and actual affinity change which has become a hidden
-    property of the current interface
 
-  - Fix up the in tree usage of the affinity hint interfaces
+  - Make the clocksource watchdog more robust by better validation checks
+    of the measurement.
 
  Drivers:
 
-  - No new irqchip drivers!
+  - New drivers for MStar and SSD20xd SOCs
 
-  - Fix GICv3 redistributor table reservation with RT across kexec
-   =20
-  - Fix GICv4.1 redistributor view of the VPE table across kexec
-   =20
-  - Add support for extra interrupts on spear-shirq
-   =20
-  - Make obtaining some interrupts optional for the Renesas drivers
-   =20
-  - Various cleanups and bug fixes
+  - The usual cleanups and improvements all over the place
+
 
 Thanks,
 
 	tglx
 
 ------------------>
-Herve Codina (1):
-      irqchip/spear-shirq: Add support for IRQ 0..6
+Biju Das (4):
+      reset: Add of_reset_control_get_optional_exclusive()
+      dt-bindings: timer: renesas: ostm: Document Renesas RZ/G2L OSTM
+      clocksource/drivers/renesas-ostm: Add RZ/G2L OSTM support
+      clocksource/drivers/renesas,ostm: Make RENESAS_OSTM symbol visible
 
-Kees Cook (1):
-      irqchip/ingenic-tcu: Use correctly sized arguments for bit field
+Drew Fustini (1):
+      clocksource/drivers/pistachio: Fix -Wunused-but-set-variable warning
 
-Lad Prabhakar (2):
-      irqchip/renesas-irqc: Use platform_get_irq_optional() to get the interr=
-upt
-      irqchip/renesas-intc-irqpin: Use platform_get_irq_optional() to get the=
- interrupt
+Jacky Bai (1):
+      dt-bindings: timer: tpm-timer: Add imx8ulp compatible string
 
-Marc Zyngier (1):
-      irqchip/gic-v4: Disable redistributors' view of the VPE table at boot t=
-ime
+Johan Jonker (1):
+      dt-bindings: timer: remove rockchip,rk3066-timer compatible string from=
+ rockchip,rk-timer.yaml
 
-Nitesh Narayan Lal (13):
-      iavf: Use irq_update_affinity_hint()
-      i40e: Use irq_update_affinity_hint()
-      scsi: megaraid_sas: Use irq_set_affinity_and_hint()
-      scsi: mpt3sas: Use irq_set_affinity_and_hint()
-      RDMA/irdma: Use irq_update_affinity_hint()
-      enic: Use irq_update_affinity_hint()
-      be2net: Use irq_update_affinity_hint()
-      ixgbe: Use irq_update_affinity_hint()
-      mailbox: Use irq_update_affinity_hint()
-      scsi: lpfc: Use irq_set_affinity()
-      hinic: Use irq_set_affinity_and_hint()
-      net/mlx5: Use irq_set_affinity_and_hint()
-      net/mlx4: Use irq_update_affinity_hint()
+Marek Szyprowski (1):
+      clocksource/drivers/exynos_mct: Refactor resources allocation
 
-Peng Fan (1):
-      irqchip/imx-gpcv2: Mark imx_gpcv2_instance with __ro_after_init
+Michal Simek (1):
+      dt-bindings: timer: cadence_ttc: Add power-domains
 
-Rikard Falkeborn (1):
-      genirq/generic_chip: Constify irq_generic_chip_ops
+Paul E. McKenney (1):
+      rcutorture: Add CONFIG_PREEMPT_DYNAMIC=3Dn to tiny scenarios
 
-Thomas Gleixner (1):
-      genirq: Provide new interfaces for affinity hints
+Peng Fan (2):
+      clocksource/drivers/imx-sysctr: Mark two variable with __ro_after_init
+      clocksource/drivers/timer-imx-sysctr: Set cpumask to cpu_possible_mask
 
-Valentin Schneider (3):
-      irqchip/gic-v3-its: Give the percpu rdist struct its own flags field
-      irqchip/gic-v3-its: Postpone LPI pending table freeing and memreserve
-      irqchip/gic-v3-its: Limit memreserve cpuhp state lifetime
+Romain Perier (3):
+      clocksource/drivers: Add MStar MSC313e timer support
+      clocksource/drivers/msc313e: Add support for ssd20xd-based platforms
+      dt-bindings: timer: Add Mstar MSC313e timer devicetree bindings documen=
+tation
 
-Xiang wangx (1):
-      irqchip/gic-v2m: Add const to of_device_id
+Waiman Long (2):
+      clocksource: Avoid accidental unstable marking of clocksources
+      clocksource: Reduce the default clocksource_watchdog() retries to 2
+
+Will Deacon (1):
+      clocksource/drivers/exynos_mct: Fix silly typo resulting in checkpatch =
+warning
 
 
- drivers/infiniband/hw/irdma/hw.c                  |  4 +-
- drivers/irqchip/irq-gic-v2m.c                     |  2 +-
- drivers/irqchip/irq-gic-v3-its.c                  | 82 +++++++++++++++++++++=
---
- drivers/irqchip/irq-gic-v3.c                      | 17 +++++
- drivers/irqchip/irq-imx-gpcv2.c                   |  2 +-
- drivers/irqchip/irq-ingenic-tcu.c                 |  4 +-
- drivers/irqchip/irq-renesas-intc-irqpin.c         |  9 +--
- drivers/irqchip/irq-renesas-irqc.c                |  9 +--
- drivers/irqchip/spear-shirq.c                     |  2 +
- drivers/mailbox/bcm-flexrm-mailbox.c              |  4 +-
- drivers/net/ethernet/cisco/enic/enic_main.c       |  8 +--
- drivers/net/ethernet/emulex/benet/be_main.c       |  4 +-
- drivers/net/ethernet/huawei/hinic/hinic_rx.c      |  4 +-
- drivers/net/ethernet/intel/i40e/i40e_main.c       |  8 +--
- drivers/net/ethernet/intel/iavf/iavf_main.c       |  8 +--
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     | 10 +--
- drivers/net/ethernet/mellanox/mlx4/eq.c           |  8 +--
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c |  8 +--
- drivers/scsi/lpfc/lpfc_init.c                     |  4 +-
- drivers/scsi/megaraid/megaraid_sas_base.c         | 27 ++++----
- drivers/scsi/mpt3sas/mpt3sas_base.c               | 21 +++---
- include/linux/interrupt.h                         | 53 ++++++++++++++-
- include/linux/irqchip/arm-gic-v3.h                |  4 +-
- include/linux/irqdomain.h                         |  2 +-
- kernel/irq/generic-chip.c                         |  2 +-
- kernel/irq/manage.c                               |  8 +--
- 26 files changed, 228 insertions(+), 86 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt    |   4 +-
+ .../devicetree/bindings/timer/cdns,ttc.yaml        |   3 +
+ .../bindings/timer/mstar,msc313e-timer.yaml        |  46 ++++
+ .../devicetree/bindings/timer/nxp,tpm-timer.yaml   |   6 +-
+ .../devicetree/bindings/timer/renesas,ostm.yaml    |  20 +-
+ .../bindings/timer/rockchip,rk-timer.yaml          |   1 -
+ MAINTAINERS                                        |   1 +
+ drivers/clocksource/Kconfig                        |  12 +-
+ drivers/clocksource/Makefile                       |   1 +
+ drivers/clocksource/exynos_mct.c                   |  52 +++--
+ drivers/clocksource/renesas-ostm.c                 |  39 +++-
+ drivers/clocksource/timer-imx-sysctr.c             |   6 +-
+ drivers/clocksource/timer-msc313e.c                | 253 +++++++++++++++++++=
+++
+ drivers/clocksource/timer-pistachio.c              |   3 +-
+ include/linux/reset.h                              |  20 ++
+ kernel/time/clocksource.c                          |  52 ++++-
+ .../selftests/rcutorture/configs/rcu/SRCU-T        |   1 +
+ .../selftests/rcutorture/configs/rcu/SRCU-U        |   1 +
+ .../selftests/rcutorture/configs/rcu/TINY01        |   1 +
+ .../selftests/rcutorture/configs/rcu/TINY02        |   1 +
+ .../selftests/rcutorture/configs/rcuscale/TINY     |   1 +
+ 21 files changed, 480 insertions(+), 44 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/timer/mstar,msc313e-tim=
+er.yaml
+ create mode 100644 drivers/clocksource/timer-msc313e.c
 
-diff --git a/drivers/infiniband/hw/irdma/hw.c b/drivers/infiniband/hw/irdma/h=
-w.c
-index b4c657f5f2f9..4b1b16e7a75b 100644
---- a/drivers/infiniband/hw/irdma/hw.c
-+++ b/drivers/infiniband/hw/irdma/hw.c
-@@ -550,7 +550,7 @@ static void irdma_destroy_irq(struct irdma_pci_f *rf,
- 	struct irdma_sc_dev *dev =3D &rf->sc_dev;
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/=
+admin-guide/kernel-parameters.txt
+index 9725c546a0d4..3ea934b034f7 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -603,8 +603,8 @@
+ 	clocksource.max_cswd_read_retries=3D [KNL]
+ 			Number of clocksource_watchdog() retries due to
+ 			external delays before the clock will be marked
+-			unstable.  Defaults to three retries, that is,
+-			four attempts to read the clock under test.
++			unstable.  Defaults to two retries, that is,
++			three attempts to read the clock under test.
 =20
- 	dev->irq_ops->irdma_dis_irq(dev, msix_vec->idx);
--	irq_set_affinity_hint(msix_vec->irq, NULL);
-+	irq_update_affinity_hint(msix_vec->irq, NULL);
- 	free_irq(msix_vec->irq, dev_id);
- }
+ 	clocksource.verify_n_cpus=3D [KNL]
+ 			Limit the number of CPUs checked for clocksources
+diff --git a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml b/Document=
+ation/devicetree/bindings/timer/cdns,ttc.yaml
+index 8615353f69b4..c3386076a98c 100644
+--- a/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
++++ b/Documentation/devicetree/bindings/timer/cdns,ttc.yaml
+@@ -25,6 +25,9 @@ properties:
+   clocks:
+     maxItems: 1
 =20
-@@ -1100,7 +1100,7 @@ irdma_cfg_ceq_vector(struct irdma_pci_f *rf, struct ird=
-ma_ceq *iwceq,
- 	}
- 	cpumask_clear(&msix_vec->mask);
- 	cpumask_set_cpu(msix_vec->cpu_affinity, &msix_vec->mask);
--	irq_set_affinity_hint(msix_vec->irq, &msix_vec->mask);
-+	irq_update_affinity_hint(msix_vec->irq, &msix_vec->mask);
- 	if (status) {
- 		ibdev_dbg(&rf->iwdev->ibdev, "ERR: ceq irq config fail\n");
- 		return IRDMA_ERR_CFG;
-diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
-index 9349fc68b81a..f2d252dff5f3 100644
---- a/drivers/irqchip/irq-gic-v2m.c
-+++ b/drivers/irqchip/irq-gic-v2m.c
-@@ -405,7 +405,7 @@ static int __init gicv2m_init_one(struct fwnode_handle *f=
-wnode,
- 	return ret;
- }
-=20
--static struct of_device_id gicv2m_device_id[] =3D {
-+static const struct of_device_id gicv2m_device_id[] =3D {
- 	{	.compatible	=3D "arm,gic-v2m-frame",	},
- 	{},
- };
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-it=
-s.c
-index 0cb584d9815b..d25b7a864bbb 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -46,6 +46,10 @@
- #define RDIST_FLAGS_PROPBASE_NEEDS_FLUSHING	(1 << 0)
- #define RDIST_FLAGS_RD_TABLES_PREALLOCATED	(1 << 1)
-=20
-+#define RD_LOCAL_LPI_ENABLED                    BIT(0)
-+#define RD_LOCAL_PENDTABLE_PREALLOCATED         BIT(1)
-+#define RD_LOCAL_MEMRESERVE_DONE                BIT(2)
++  power-domains:
++    maxItems: 1
 +
- static u32 lpi_id_bits;
+   timer-width:
+     $ref: "/schemas/types.yaml#/definitions/uint32"
+     description: |
+diff --git a/Documentation/devicetree/bindings/timer/mstar,msc313e-timer.yaml=
+ b/Documentation/devicetree/bindings/timer/mstar,msc313e-timer.yaml
+new file mode 100644
+index 000000000000..03d5dba5d5b3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/timer/mstar,msc313e-timer.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/timer/mstar,msc313e-timer.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Mstar MSC313e Timer Device Tree Bindings
++
++maintainers:
++  - Daniel Palmer <daniel@0x0f.com>
++  - Romain Perier <romain.perier@gmail.com>
++
++properties:
++  compatible:
++    enum:
++      - mstar,msc313e-timer
++      - sstar,ssd20xd-timer
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    timer@6040 {
++        compatible =3D "mstar,msc313e-timer";
++        reg =3D <0x6040 0x40>;
++        clocks =3D <&xtal_div2>;
++        interrupts-extended =3D <&intc_fiq GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
++    };
++...
+diff --git a/Documentation/devicetree/bindings/timer/nxp,tpm-timer.yaml b/Doc=
+umentation/devicetree/bindings/timer/nxp,tpm-timer.yaml
+index edd9585f6726..f69773a8e4b9 100644
+--- a/Documentation/devicetree/bindings/timer/nxp,tpm-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/nxp,tpm-timer.yaml
+@@ -19,7 +19,11 @@ description: |
 =20
- /*
-@@ -3044,7 +3048,7 @@ static void its_cpu_init_lpis(void)
- 	phys_addr_t paddr;
- 	u64 val, tmp;
+ properties:
+   compatible:
+-    const: fsl,imx7ulp-tpm
++    oneOf:
++      - const: fsl,imx7ulp-tpm
++      - items:
++          - const: fsl,imx8ulp-tpm
++          - const: fsl,imx7ulp-tpm
 =20
--	if (gic_data_rdist()->lpi_enabled)
-+	if (gic_data_rdist()->flags & RD_LOCAL_LPI_ENABLED)
- 		return;
+   reg:
+     maxItems: 1
+diff --git a/Documentation/devicetree/bindings/timer/renesas,ostm.yaml b/Docu=
+mentation/devicetree/bindings/timer/renesas,ostm.yaml
+index 600d47ab7d58..7fa7f977b44c 100644
+--- a/Documentation/devicetree/bindings/timer/renesas,ostm.yaml
++++ b/Documentation/devicetree/bindings/timer/renesas,ostm.yaml
+@@ -21,9 +21,10 @@ properties:
+   compatible:
+     items:
+       - enum:
+-          - renesas,r7s72100-ostm # RZ/A1H
+-          - renesas,r7s9210-ostm  # RZ/A2M
+-      - const: renesas,ostm       # Generic
++          - renesas,r7s72100-ostm  # RZ/A1H
++          - renesas,r7s9210-ostm   # RZ/A2M
++          - renesas,r9a07g044-ostm # RZ/G2{L,LC}
++      - const: renesas,ostm        # Generic
 =20
- 	val =3D readl_relaxed(rbase + GICR_CTLR);
-@@ -3063,15 +3067,13 @@ static void its_cpu_init_lpis(void)
- 		paddr &=3D GENMASK_ULL(51, 16);
+   reg:
+     maxItems: 1
+@@ -37,6 +38,9 @@ properties:
+   power-domains:
+     maxItems: 1
 =20
- 		WARN_ON(!gic_check_reserved_range(paddr, LPI_PENDBASE_SZ));
--		its_free_pending_table(gic_data_rdist()->pend_page);
--		gic_data_rdist()->pend_page =3D NULL;
-+		gic_data_rdist()->flags |=3D RD_LOCAL_PENDTABLE_PREALLOCATED;
++  resets:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -44,6 +48,16 @@ required:
+   - clocks
+   - power-domains
 =20
- 		goto out;
- 	}
++if:
++  properties:
++    compatible:
++      contains:
++        enum:
++          - renesas,r9a07g044-ostm
++then:
++  required:
++    - resets
++
+ additionalProperties: false
 =20
- 	pend_page =3D gic_data_rdist()->pend_page;
- 	paddr =3D page_to_phys(pend_page);
--	WARN_ON(gic_reserve_range(paddr, LPI_PENDBASE_SZ));
+ examples:
+diff --git a/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml b=
+/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml
+index e26ecb5893ae..5d157d87dad5 100644
+--- a/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml
++++ b/Documentation/devicetree/bindings/timer/rockchip,rk-timer.yaml
+@@ -18,7 +18,6 @@ properties:
+           - enum:
+               - rockchip,rv1108-timer
+               - rockchip,rk3036-timer
+-              - rockchip,rk3066-timer
+               - rockchip,rk3188-timer
+               - rockchip,rk3228-timer
+               - rockchip,rk3229-timer
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 13f9a84a617e..45c143618ce4 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2291,6 +2291,7 @@ F:	Documentation/devicetree/bindings/gpio/mstar,msc313-=
+gpio.yaml
+ F:	arch/arm/boot/dts/mstar-*
+ F:	arch/arm/mach-mstar/
+ F:	drivers/clk/mstar/
++F:	drivers/clocksource/timer-msc313e.c
+ F:	drivers/gpio/gpio-msc313.c
+ F:	drivers/rtc/rtc-msc313.c
+ F:	drivers/watchdog/msc313e_wdt.c
+diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+index f65e31bab9ae..cfb8ea0df3b1 100644
+--- a/drivers/clocksource/Kconfig
++++ b/drivers/clocksource/Kconfig
+@@ -510,7 +510,8 @@ config SH_TIMER_MTU2
+ 	  This hardware comes with 16-bit timer registers.
 =20
- 	/* set PROPBASE */
- 	val =3D (gic_rdists->prop_table_pa |
-@@ -3158,10 +3160,11 @@ static void its_cpu_init_lpis(void)
- 	/* Make sure the GIC has seen the above */
- 	dsb(sy);
- out:
--	gic_data_rdist()->lpi_enabled =3D true;
-+	gic_data_rdist()->flags |=3D RD_LOCAL_LPI_ENABLED;
- 	pr_info("GICv3: CPU%d: using %s LPI pending table @%pa\n",
- 		smp_processor_id(),
--		gic_data_rdist()->pend_page ? "allocated" : "reserved",
-+		gic_data_rdist()->flags & RD_LOCAL_PENDTABLE_PREALLOCATED ?
-+		"reserved" : "allocated",
- 		&paddr);
- }
+ config RENESAS_OSTM
+-	bool "Renesas OSTM timer driver" if COMPILE_TEST
++	bool "Renesas OSTM timer driver"
++	depends on ARCH_RENESAS || COMPILE_TEST
+ 	select CLKSRC_MMIO
+ 	select TIMER_OF
+ 	help
+@@ -671,6 +672,15 @@ config MILBEAUT_TIMER
+ 	help
+ 	  Enables the support for Milbeaut timer driver.
 =20
-@@ -5138,7 +5141,7 @@ static int redist_disable_lpis(void)
- 	 *
- 	 * If running with preallocated tables, there is nothing to do.
- 	 */
--	if (gic_data_rdist()->lpi_enabled ||
-+	if ((gic_data_rdist()->flags & RD_LOCAL_LPI_ENABLED) ||
- 	    (gic_rdists->flags & RDIST_FLAGS_RD_TABLES_PREALLOCATED))
- 		return 0;
++config MSC313E_TIMER
++	bool "MSC313E timer driver" if COMPILE_TEST
++	select TIMER_OF
++	select CLKSRC_MMIO
++	help
++	  Enables support for the MStar MSC313E timer driver.
++	  This provides access to multiple interrupt generating
++	  programmable 32-bit free running incrementing counters.
++
+ config INGENIC_TIMER
+ 	bool "Clocksource/timer using the TCU in Ingenic JZ SoCs"
+ 	default MACH_INGENIC
+diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
+index c17ee32a7151..fa5f624eadb6 100644
+--- a/drivers/clocksource/Makefile
++++ b/drivers/clocksource/Makefile
+@@ -88,3 +88,4 @@ obj-$(CONFIG_CSKY_MP_TIMER)		+=3D timer-mp-csky.o
+ obj-$(CONFIG_GX6605S_TIMER)		+=3D timer-gx6605s.o
+ obj-$(CONFIG_HYPERV_TIMER)		+=3D hyperv_timer.o
+ obj-$(CONFIG_MICROCHIP_PIT64B)		+=3D timer-microchip-pit64b.o
++obj-$(CONFIG_MSC313E_TIMER)		+=3D timer-msc313e.o
+diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mc=
+t.c
+index 5e3e96d3d1b9..6db3d5511b0f 100644
+--- a/drivers/clocksource/exynos_mct.c
++++ b/drivers/clocksource/exynos_mct.c
+@@ -467,7 +467,7 @@ static int exynos4_mct_starting_cpu(unsigned int cpu)
+ 	evt->tick_resume =3D set_state_shutdown;
+ 	evt->features =3D CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT |
+ 			CLOCK_EVT_FEAT_PERCPU;
+-	evt->rating =3D MCT_CLKEVENTS_RATING,
++	evt->rating =3D MCT_CLKEVENTS_RATING;
 =20
-@@ -5200,6 +5203,51 @@ int its_cpu_init(void)
+ 	exynos4_mct_write(TICK_BASE_CNT, mevt->base + MCT_L_TCNTB_OFFSET);
+=20
+@@ -504,11 +504,14 @@ static int exynos4_mct_dying_cpu(unsigned int cpu)
  	return 0;
  }
 =20
-+static void rdist_memreserve_cpuhp_cleanup_workfn(struct work_struct *work)
-+{
-+	cpuhp_remove_state_nocalls(gic_rdists->cpuhp_memreserve_state);
-+	gic_rdists->cpuhp_memreserve_state =3D CPUHP_INVALID;
-+}
-+
-+static DECLARE_WORK(rdist_memreserve_cpuhp_cleanup_work,
-+		    rdist_memreserve_cpuhp_cleanup_workfn);
-+
-+static int its_cpu_memreserve_lpi(unsigned int cpu)
-+{
-+	struct page *pend_page;
-+	int ret =3D 0;
-+
-+	/* This gets to run exactly once per CPU */
-+	if (gic_data_rdist()->flags & RD_LOCAL_MEMRESERVE_DONE)
-+		return 0;
-+
-+	pend_page =3D gic_data_rdist()->pend_page;
-+	if (WARN_ON(!pend_page)) {
-+		ret =3D -ENOMEM;
-+		goto out;
-+	}
-+	/*
-+	 * If the pending table was pre-programmed, free the memory we
-+	 * preemptively allocated. Otherwise, reserve that memory for
-+	 * later kexecs.
-+	 */
-+	if (gic_data_rdist()->flags & RD_LOCAL_PENDTABLE_PREALLOCATED) {
-+		its_free_pending_table(pend_page);
-+		gic_data_rdist()->pend_page =3D NULL;
-+	} else {
-+		phys_addr_t paddr =3D page_to_phys(pend_page);
-+		WARN_ON(gic_reserve_range(paddr, LPI_PENDBASE_SZ));
-+	}
-+
-+out:
-+	/* Last CPU being brought up gets to issue the cleanup */
-+	if (cpumask_equal(&cpus_booted_once_mask, cpu_possible_mask))
-+		schedule_work(&rdist_memreserve_cpuhp_cleanup_work);
-+
-+	gic_data_rdist()->flags |=3D RD_LOCAL_MEMRESERVE_DONE;
-+	return ret;
-+}
-+
- static const struct of_device_id its_device_id[] =3D {
- 	{	.compatible	=3D "arm,gic-v3-its",	},
- 	{},
-@@ -5383,6 +5431,26 @@ static void __init its_acpi_probe(void)
- static void __init its_acpi_probe(void) { }
- #endif
+-static int __init exynos4_timer_resources(struct device_node *np, void __iom=
+em *base)
++static int __init exynos4_timer_resources(struct device_node *np)
+ {
+-	int err, cpu;
+ 	struct clk *mct_clk, *tick_clk;
 =20
-+int __init its_lpi_memreserve_init(void)
++	reg_base =3D of_iomap(np, 0);
++	if (!reg_base)
++		panic("%s: unable to ioremap mct address space\n", __func__);
++
+ 	tick_clk =3D of_clk_get_by_name(np, "fin_pll");
+ 	if (IS_ERR(tick_clk))
+ 		panic("%s: unable to determine tick clock rate\n", __func__);
+@@ -519,9 +522,27 @@ static int __init exynos4_timer_resources(struct device_=
+node *np, void __iomem *
+ 		panic("%s: unable to retrieve mct clock instance\n", __func__);
+ 	clk_prepare_enable(mct_clk);
+=20
+-	reg_base =3D base;
+-	if (!reg_base)
+-		panic("%s: unable to ioremap mct address space\n", __func__);
++	return 0;
++}
++
++static int __init exynos4_timer_interrupts(struct device_node *np,
++					   unsigned int int_type)
 +{
-+	int state;
++	int nr_irqs, i, err, cpu;
 +
-+	if (!efi_enabled(EFI_CONFIG_TABLES))
-+		return 0;
++	mct_int_type =3D int_type;
 +
-+	gic_rdists->cpuhp_memreserve_state =3D CPUHP_INVALID;
-+	state =3D cpuhp_setup_state(CPUHP_AP_ONLINE_DYN,
-+				  "irqchip/arm/gicv3/memreserve:online",
-+				  its_cpu_memreserve_lpi,
-+				  NULL);
-+	if (state < 0)
-+		return state;
++	/* This driver uses only one global timer interrupt */
++	mct_irqs[MCT_G0_IRQ] =3D irq_of_parse_and_map(np, MCT_G0_IRQ);
 +
-+	gic_rdists->cpuhp_memreserve_state =3D state;
++	/*
++	 * Find out the number of local irqs specified. The local
++	 * timer irqs are specified after the four global timer
++	 * irqs are specified.
++	 */
++	nr_irqs =3D of_irq_count(np);
++	for (i =3D MCT_L0_IRQ; i < nr_irqs; i++)
++		mct_irqs[i] =3D irq_of_parse_and_map(np, i);
+=20
+ 	if (mct_int_type =3D=3D MCT_INT_PPI) {
+=20
+@@ -581,24 +602,13 @@ static int __init exynos4_timer_resources(struct device=
+_node *np, void __iomem *
+=20
+ static int __init mct_init_dt(struct device_node *np, unsigned int int_type)
+ {
+-	u32 nr_irqs, i;
+ 	int ret;
+=20
+-	mct_int_type =3D int_type;
+-
+-	/* This driver uses only one global timer interrupt */
+-	mct_irqs[MCT_G0_IRQ] =3D irq_of_parse_and_map(np, MCT_G0_IRQ);
+-
+-	/*
+-	 * Find out the number of local irqs specified. The local
+-	 * timer irqs are specified after the four global timer
+-	 * irqs are specified.
+-	 */
+-	nr_irqs =3D of_irq_count(np);
+-	for (i =3D MCT_L0_IRQ; i < nr_irqs; i++)
+-		mct_irqs[i] =3D irq_of_parse_and_map(np, i);
++	ret =3D exynos4_timer_resources(np);
++	if (ret)
++		return ret;
+=20
+-	ret =3D exynos4_timer_resources(np, of_iomap(np, 0));
++	ret =3D exynos4_timer_interrupts(np, int_type);
+ 	if (ret)
+ 		return ret;
+=20
+diff --git a/drivers/clocksource/renesas-ostm.c b/drivers/clocksource/renesas=
+-ostm.c
+index 3d06ba66008c..21d1392637b8 100644
+--- a/drivers/clocksource/renesas-ostm.c
++++ b/drivers/clocksource/renesas-ostm.c
+@@ -9,6 +9,8 @@
+ #include <linux/clk.h>
+ #include <linux/clockchips.h>
+ #include <linux/interrupt.h>
++#include <linux/platform_device.h>
++#include <linux/reset.h>
+ #include <linux/sched_clock.h>
+ #include <linux/slab.h>
+=20
+@@ -159,6 +161,7 @@ static int __init ostm_init_clkevt(struct timer_of *to)
+=20
+ static int __init ostm_init(struct device_node *np)
+ {
++	struct reset_control *rstc;
+ 	struct timer_of *to;
+ 	int ret;
+=20
+@@ -166,6 +169,14 @@ static int __init ostm_init(struct device_node *np)
+ 	if (!to)
+ 		return -ENOMEM;
+=20
++	rstc =3D of_reset_control_get_optional_exclusive(np, NULL);
++	if (IS_ERR(rstc)) {
++		ret =3D PTR_ERR(rstc);
++		goto err_free;
++	}
++
++	reset_control_deassert(rstc);
++
+ 	to->flags =3D TIMER_OF_BASE | TIMER_OF_CLOCK;
+ 	if (system_clock) {
+ 		/*
+@@ -178,7 +189,7 @@ static int __init ostm_init(struct device_node *np)
+=20
+ 	ret =3D timer_of_init(np, to);
+ 	if (ret)
+-		goto err_free;
++		goto err_reset;
+=20
+ 	/*
+ 	 * First probed device will be used as system clocksource. Any
+@@ -203,9 +214,35 @@ static int __init ostm_init(struct device_node *np)
+=20
+ err_cleanup:
+ 	timer_of_cleanup(to);
++err_reset:
++	reset_control_assert(rstc);
++	reset_control_put(rstc);
+ err_free:
+ 	kfree(to);
+ 	return ret;
+ }
+=20
+ TIMER_OF_DECLARE(ostm, "renesas,ostm", ostm_init);
++
++#ifdef CONFIG_ARCH_R9A07G044
++static int __init ostm_probe(struct platform_device *pdev)
++{
++	struct device *dev =3D &pdev->dev;
++
++	return ostm_init(dev->of_node);
++}
++
++static const struct of_device_id ostm_of_table[] =3D {
++	{ .compatible =3D "renesas,ostm", },
++	{ /* sentinel */ }
++};
++
++static struct platform_driver ostm_device_driver =3D {
++	.driver =3D {
++		.name =3D "renesas_ostm",
++		.of_match_table =3D of_match_ptr(ostm_of_table),
++		.suppress_bind_attrs =3D true,
++	},
++};
++builtin_platform_driver_probe(ostm_device_driver, ostm_probe);
++#endif
+diff --git a/drivers/clocksource/timer-imx-sysctr.c b/drivers/clocksource/tim=
+er-imx-sysctr.c
+index 18b90fc56bfc..55a8e198d2a1 100644
+--- a/drivers/clocksource/timer-imx-sysctr.c
++++ b/drivers/clocksource/timer-imx-sysctr.c
+@@ -20,8 +20,8 @@
+=20
+ #define SYS_CTR_CLK_DIV		0x3
+=20
+-static void __iomem *sys_ctr_base;
+-static u32 cmpcr;
++static void __iomem *sys_ctr_base __ro_after_init;
++static u32 cmpcr __ro_after_init;
+=20
+ static void sysctr_timer_enable(bool enable)
+ {
+@@ -119,7 +119,7 @@ static struct timer_of to_sysctr =3D {
+=20
+ static void __init sysctr_clockevent_init(void)
+ {
+-	to_sysctr.clkevt.cpumask =3D cpumask_of(0);
++	to_sysctr.clkevt.cpumask =3D cpu_possible_mask;
+=20
+ 	clockevents_config_and_register(&to_sysctr.clkevt,
+ 					timer_of_rate(&to_sysctr),
+diff --git a/drivers/clocksource/timer-msc313e.c b/drivers/clocksource/timer-=
+msc313e.c
+new file mode 100644
+index 000000000000..54c54ca7c786
+--- /dev/null
++++ b/drivers/clocksource/timer-msc313e.c
+@@ -0,0 +1,253 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * MStar timer driver
++ *
++ * Copyright (C) 2021 Daniel Palmer
++ * Copyright (C) 2021 Romain Perier
++ *
++ */
++
++#include <linux/clk.h>
++#include <linux/clockchips.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/irqreturn.h>
++#include <linux/sched_clock.h>
++#include <linux/of.h>
++#include <linux/of_address.h>
++#include <linux/of_irq.h>
++
++#ifdef CONFIG_ARM
++#include <linux/delay.h>
++#endif
++
++#include "timer-of.h"
++
++#define TIMER_NAME "msc313e_timer"
++
++#define MSC313E_REG_CTRL		0x00
++#define MSC313E_REG_CTRL_TIMER_EN	BIT(0)
++#define MSC313E_REG_CTRL_TIMER_TRIG	BIT(1)
++#define MSC313E_REG_CTRL_TIMER_INT_EN	BIT(8)
++#define MSC313E_REG_TIMER_MAX_LOW	0x08
++#define MSC313E_REG_TIMER_MAX_HIGH	0x0c
++#define MSC313E_REG_COUNTER_LOW		0x10
++#define MSC313E_REG_COUNTER_HIGH	0x14
++#define MSC313E_REG_TIMER_DIVIDE	0x18
++
++#define MSC313E_CLK_DIVIDER		9
++#define TIMER_SYNC_TICKS		3
++
++#ifdef CONFIG_ARM
++struct msc313e_delay {
++	void __iomem *base;
++	struct delay_timer delay;
++};
++static struct msc313e_delay msc313e_delay;
++#endif
++
++static void __iomem *msc313e_clksrc;
++
++static void msc313e_timer_stop(void __iomem *base)
++{
++	writew(0, base + MSC313E_REG_CTRL);
++}
++
++static void msc313e_timer_start(void __iomem *base, bool periodic)
++{
++	u16 reg;
++
++	reg =3D readw(base + MSC313E_REG_CTRL);
++	if (periodic)
++		reg |=3D MSC313E_REG_CTRL_TIMER_EN;
++	else
++		reg |=3D MSC313E_REG_CTRL_TIMER_TRIG;
++	writew(reg | MSC313E_REG_CTRL_TIMER_INT_EN, base + MSC313E_REG_CTRL);
++}
++
++static void msc313e_timer_setup(void __iomem *base, unsigned long delay)
++{
++	unsigned long flags;
++
++	local_irq_save(flags);
++	writew(delay >> 16, base + MSC313E_REG_TIMER_MAX_HIGH);
++	writew(delay & 0xffff, base + MSC313E_REG_TIMER_MAX_LOW);
++	local_irq_restore(flags);
++}
++
++static unsigned long msc313e_timer_current_value(void __iomem *base)
++{
++	unsigned long flags;
++	u16 l, h;
++
++	local_irq_save(flags);
++	l =3D readw(base + MSC313E_REG_COUNTER_LOW);
++	h =3D readw(base + MSC313E_REG_COUNTER_HIGH);
++	local_irq_restore(flags);
++
++	return (((u32)h) << 16 | l);
++}
++
++static int msc313e_timer_clkevt_shutdown(struct clock_event_device *evt)
++{
++	struct timer_of *timer =3D to_timer_of(evt);
++
++	msc313e_timer_stop(timer_of_base(timer));
 +
 +	return 0;
 +}
 +
- int __init its_init(struct fwnode_handle *handle, struct rdists *rdists,
- 		    struct irq_domain *parent_domain)
- {
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index daec3309b014..5e935d97207d 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -920,6 +920,22 @@ static int __gic_update_rdist_properties(struct redist_r=
-egion *region,
- {
- 	u64 typer =3D gic_read_typer(ptr + GICR_TYPER);
-=20
-+	/* Boot-time cleanip */
-+	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
-+		u64 val;
++static int msc313e_timer_clkevt_set_oneshot(struct clock_event_device *evt)
++{
++	struct timer_of *timer =3D to_timer_of(evt);
 +
-+		/* Deactivate any present vPE */
-+		val =3D gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
-+		if (val & GICR_VPENDBASER_Valid)
-+			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
-+					      ptr + SZ_128K + GICR_VPENDBASER);
++	msc313e_timer_stop(timer_of_base(timer));
++	msc313e_timer_start(timer_of_base(timer), false);
 +
-+		/* Mark the VPE table as invalid */
-+		val =3D gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
-+		val &=3D ~GICR_VPROPBASER_4_1_VALID;
-+		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
++	return 0;
++}
++
++static int msc313e_timer_clkevt_set_periodic(struct clock_event_device *evt)
++{
++	struct timer_of *timer =3D to_timer_of(evt);
++
++	msc313e_timer_stop(timer_of_base(timer));
++	msc313e_timer_setup(timer_of_base(timer), timer_of_period(timer));
++	msc313e_timer_start(timer_of_base(timer), true);
++
++	return 0;
++}
++
++static int msc313e_timer_clkevt_next_event(unsigned long evt, struct clock_e=
+vent_device *clkevt)
++{
++	struct timer_of *timer =3D to_timer_of(clkevt);
++
++	msc313e_timer_stop(timer_of_base(timer));
++	msc313e_timer_setup(timer_of_base(timer), evt);
++	msc313e_timer_start(timer_of_base(timer), false);
++
++	return 0;
++}
++
++static irqreturn_t msc313e_timer_clkevt_irq(int irq, void *dev_id)
++{
++	struct clock_event_device *evt =3D dev_id;
++
++	evt->event_handler(evt);
++
++	return IRQ_HANDLED;
++}
++
++static u64 msc313e_timer_clksrc_read(struct clocksource *cs)
++{
++	return msc313e_timer_current_value(msc313e_clksrc) & cs->mask;
++}
++
++#ifdef CONFIG_ARM
++static unsigned long msc313e_read_delay_timer_read(void)
++{
++	return msc313e_timer_current_value(msc313e_delay.base);
++}
++#endif
++
++static u64 msc313e_timer_sched_clock_read(void)
++{
++	return msc313e_timer_current_value(msc313e_clksrc);
++}
++
++static struct clock_event_device msc313e_clkevt =3D {
++	.name =3D TIMER_NAME,
++	.rating =3D 300,
++	.features =3D CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
++	.set_state_shutdown =3D msc313e_timer_clkevt_shutdown,
++	.set_state_periodic =3D msc313e_timer_clkevt_set_periodic,
++	.set_state_oneshot =3D msc313e_timer_clkevt_set_oneshot,
++	.tick_resume =3D msc313e_timer_clkevt_shutdown,
++	.set_next_event =3D msc313e_timer_clkevt_next_event,
++};
++
++static int __init msc313e_clkevt_init(struct device_node *np)
++{
++	int ret;
++	struct timer_of *to;
++
++	to =3D kzalloc(sizeof(*to), GFP_KERNEL);
++	if (!to)
++		return -ENOMEM;
++
++	to->flags =3D TIMER_OF_IRQ | TIMER_OF_CLOCK | TIMER_OF_BASE;
++	to->of_irq.handler =3D msc313e_timer_clkevt_irq;
++	ret =3D timer_of_init(np, to);
++	if (ret)
++		return ret;
++
++	if (of_device_is_compatible(np, "sstar,ssd20xd-timer")) {
++		to->of_clk.rate =3D clk_get_rate(to->of_clk.clk) / MSC313E_CLK_DIVIDER;
++		to->of_clk.period =3D DIV_ROUND_UP(to->of_clk.rate, HZ);
++		writew(MSC313E_CLK_DIVIDER - 1, timer_of_base(to) + MSC313E_REG_TIMER_DIVI=
+DE);
 +	}
 +
- 	gic_data.rdists.has_vlpis &=3D !!(typer & GICR_TYPER_VLPIS);
-=20
- 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-=
-/ */
-@@ -1802,6 +1818,7 @@ static int __init gic_init_bases(void __iomem *dist_bas=
-e,
- 	if (gic_dist_supports_lpis()) {
- 		its_init(handle, &gic_data.rdists, gic_data.domain);
- 		its_cpu_init();
-+		its_lpi_memreserve_init();
- 	} else {
- 		if (IS_ENABLED(CONFIG_ARM_GIC_V2M))
- 			gicv2m_init(handle, gic_data.domain);
-diff --git a/drivers/irqchip/irq-imx-gpcv2.c b/drivers/irqchip/irq-imx-gpcv2.c
-index 5b5a365dbd5e..b9c22f764b4d 100644
---- a/drivers/irqchip/irq-imx-gpcv2.c
-+++ b/drivers/irqchip/irq-imx-gpcv2.c
-@@ -26,7 +26,7 @@ struct gpcv2_irqchip_data {
- 	u32			cpu2wakeup;
- };
-=20
--static struct gpcv2_irqchip_data *imx_gpcv2_instance;
-+static struct gpcv2_irqchip_data *imx_gpcv2_instance __ro_after_init;
-=20
- static void __iomem *gpcv2_idx_to_reg(struct gpcv2_irqchip_data *cd, int i)
- {
-diff --git a/drivers/irqchip/irq-ingenic-tcu.c b/drivers/irqchip/irq-ingenic-=
-tcu.c
-index 34a7d261b710..3363f83bd7e9 100644
---- a/drivers/irqchip/irq-ingenic-tcu.c
-+++ b/drivers/irqchip/irq-ingenic-tcu.c
-@@ -28,6 +28,7 @@ static void ingenic_tcu_intc_cascade(struct irq_desc *desc)
- 	struct irq_chip_generic *gc =3D irq_get_domain_generic_chip(domain, 0);
- 	struct regmap *map =3D gc->private;
- 	uint32_t irq_reg, irq_mask;
-+	unsigned long bits;
- 	unsigned int i;
-=20
- 	regmap_read(map, TCU_REG_TFR, &irq_reg);
-@@ -36,8 +37,9 @@ static void ingenic_tcu_intc_cascade(struct irq_desc *desc)
- 	chained_irq_enter(irq_chip, desc);
-=20
- 	irq_reg &=3D ~irq_mask;
-+	bits =3D irq_reg;
-=20
--	for_each_set_bit(i, (unsigned long *)&irq_reg, 32)
-+	for_each_set_bit(i, &bits, 32)
- 		generic_handle_domain_irq(domain, i);
-=20
- 	chained_irq_exit(irq_chip, desc);
-diff --git a/drivers/irqchip/irq-renesas-intc-irqpin.c b/drivers/irqchip/irq-=
-renesas-intc-irqpin.c
-index cb7f60b3b4a9..37f9a4499fdb 100644
---- a/drivers/irqchip/irq-renesas-intc-irqpin.c
-+++ b/drivers/irqchip/irq-renesas-intc-irqpin.c
-@@ -375,7 +375,6 @@ static int intc_irqpin_probe(struct platform_device *pdev)
- 	struct intc_irqpin_priv *p;
- 	struct intc_irqpin_iomem *i;
- 	struct resource *io[INTC_IRQPIN_REG_NR];
--	struct resource *irq;
- 	struct irq_chip *irq_chip;
- 	void (*enable_fn)(struct irq_data *d);
- 	void (*disable_fn)(struct irq_data *d);
-@@ -418,12 +417,14 @@ static int intc_irqpin_probe(struct platform_device *pd=
-ev)
-=20
- 	/* allow any number of IRQs between 1 and INTC_IRQPIN_MAX */
- 	for (k =3D 0; k < INTC_IRQPIN_MAX; k++) {
--		irq =3D platform_get_resource(pdev, IORESOURCE_IRQ, k);
--		if (!irq)
-+		ret =3D platform_get_irq_optional(pdev, k);
-+		if (ret =3D=3D -ENXIO)
- 			break;
-+		if (ret < 0)
-+			goto err0;
-=20
- 		p->irq[k].p =3D p;
--		p->irq[k].requested_irq =3D irq->start;
-+		p->irq[k].requested_irq =3D ret;
- 	}
-=20
- 	nirqs =3D k;
-diff --git a/drivers/irqchip/irq-renesas-irqc.c b/drivers/irqchip/irq-renesas=
--irqc.c
-index 07a6d8b42b63..909325f88239 100644
---- a/drivers/irqchip/irq-renesas-irqc.c
-+++ b/drivers/irqchip/irq-renesas-irqc.c
-@@ -126,7 +126,6 @@ static int irqc_probe(struct platform_device *pdev)
- 	struct device *dev =3D &pdev->dev;
- 	const char *name =3D dev_name(dev);
- 	struct irqc_priv *p;
--	struct resource *irq;
- 	int ret;
- 	int k;
-=20
-@@ -142,13 +141,15 @@ static int irqc_probe(struct platform_device *pdev)
-=20
- 	/* allow any number of IRQs between 1 and IRQC_IRQ_MAX */
- 	for (k =3D 0; k < IRQC_IRQ_MAX; k++) {
--		irq =3D platform_get_resource(pdev, IORESOURCE_IRQ, k);
--		if (!irq)
-+		ret =3D platform_get_irq_optional(pdev, k);
-+		if (ret =3D=3D -ENXIO)
- 			break;
-+		if (ret < 0)
-+			goto err_runtime_pm_disable;
-=20
- 		p->irq[k].p =3D p;
- 		p->irq[k].hw_irq =3D k;
--		p->irq[k].requested_irq =3D irq->start;
-+		p->irq[k].requested_irq =3D ret;
- 	}
-=20
- 	p->number_of_irqs =3D k;
-diff --git a/drivers/irqchip/spear-shirq.c b/drivers/irqchip/spear-shirq.c
-index 1518ba31a80c..7c17a6f643ef 100644
---- a/drivers/irqchip/spear-shirq.c
-+++ b/drivers/irqchip/spear-shirq.c
-@@ -149,6 +149,8 @@ static struct spear_shirq spear320_shirq_ras3 =3D {
- 	.offset		=3D 0,
- 	.nr_irqs	=3D 7,
- 	.mask		=3D ((0x1 << 7) - 1) << 0,
-+	.irq_chip	=3D &dummy_irq_chip,
-+	.status_reg	=3D SPEAR320_INT_STS_MASK_REG,
- };
-=20
- static struct spear_shirq spear320_shirq_ras1 =3D {
-diff --git a/drivers/mailbox/bcm-flexrm-mailbox.c b/drivers/mailbox/bcm-flexr=
-m-mailbox.c
-index 78073ad1f2f1..16982c13d323 100644
---- a/drivers/mailbox/bcm-flexrm-mailbox.c
-+++ b/drivers/mailbox/bcm-flexrm-mailbox.c
-@@ -1298,7 +1298,7 @@ static int flexrm_startup(struct mbox_chan *chan)
- 	val =3D (num_online_cpus() < val) ? val / num_online_cpus() : 1;
- 	cpumask_set_cpu((ring->num / val) % num_online_cpus(),
- 			&ring->irq_aff_hint);
--	ret =3D irq_set_affinity_hint(ring->irq, &ring->irq_aff_hint);
-+	ret =3D irq_update_affinity_hint(ring->irq, &ring->irq_aff_hint);
- 	if (ret) {
- 		dev_err(ring->mbox->dev,
- 			"failed to set IRQ affinity hint for ring%d\n",
-@@ -1425,7 +1425,7 @@ static void flexrm_shutdown(struct mbox_chan *chan)
-=20
- 	/* Release IRQ */
- 	if (ring->irq_requested) {
--		irq_set_affinity_hint(ring->irq, NULL);
-+		irq_update_affinity_hint(ring->irq, NULL);
- 		free_irq(ring->irq, ring);
- 		ring->irq_requested =3D false;
- 	}
-diff --git a/drivers/net/ethernet/cisco/enic/enic_main.c b/drivers/net/ethern=
-et/cisco/enic/enic_main.c
-index aacf141986d5..2faba079b4fb 100644
---- a/drivers/net/ethernet/cisco/enic/enic_main.c
-+++ b/drivers/net/ethernet/cisco/enic/enic_main.c
-@@ -150,10 +150,10 @@ static void enic_set_affinity_hint(struct enic *enic)
- 		    !cpumask_available(enic->msix[i].affinity_mask) ||
- 		    cpumask_empty(enic->msix[i].affinity_mask))
- 			continue;
--		err =3D irq_set_affinity_hint(enic->msix_entry[i].vector,
--					    enic->msix[i].affinity_mask);
-+		err =3D irq_update_affinity_hint(enic->msix_entry[i].vector,
-+					       enic->msix[i].affinity_mask);
- 		if (err)
--			netdev_warn(enic->netdev, "irq_set_affinity_hint failed, err %d\n",
-+			netdev_warn(enic->netdev, "irq_update_affinity_hint failed, err %d\n",
- 				    err);
- 	}
-=20
-@@ -173,7 +173,7 @@ static void enic_unset_affinity_hint(struct enic *enic)
- 	int i;
-=20
- 	for (i =3D 0; i < enic->intr_count; i++)
--		irq_set_affinity_hint(enic->msix_entry[i].vector, NULL);
-+		irq_update_affinity_hint(enic->msix_entry[i].vector, NULL);
- }
-=20
- static int enic_udp_tunnel_set_port(struct net_device *netdev,
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethern=
-et/emulex/benet/be_main.c
-index d51f24c9e1b8..84b3ba9bdb18 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -3491,7 +3491,7 @@ static int be_msix_register(struct be_adapter *adapter)
- 		if (status)
- 			goto err_msix;
-=20
--		irq_set_affinity_hint(vec, eqo->affinity_mask);
-+		irq_update_affinity_hint(vec, eqo->affinity_mask);
- 	}
-=20
- 	return 0;
-@@ -3552,7 +3552,7 @@ static void be_irq_unregister(struct be_adapter *adapte=
-r)
- 	/* MSIx */
- 	for_all_evt_queues(adapter, eqo, i) {
- 		vec =3D be_msix_vec_get(adapter, eqo);
--		irq_set_affinity_hint(vec, NULL);
-+		irq_update_affinity_hint(vec, NULL);
- 		free_irq(vec, eqo);
- 	}
-=20
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_rx.c b/drivers/net/ether=
-net/huawei/hinic/hinic_rx.c
-index fed3b6bc0d76..b33ed4d92b71 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_rx.c
-@@ -548,7 +548,7 @@ static int rx_request_irq(struct hinic_rxq *rxq)
- 		goto err_req_irq;
-=20
- 	cpumask_set_cpu(qp->q_id % num_online_cpus(), &rq->affinity_mask);
--	err =3D irq_set_affinity_hint(rq->irq, &rq->affinity_mask);
-+	err =3D irq_set_affinity_and_hint(rq->irq, &rq->affinity_mask);
- 	if (err)
- 		goto err_irq_affinity;
-=20
-@@ -565,7 +565,7 @@ static void rx_free_irq(struct hinic_rxq *rxq)
- {
- 	struct hinic_rq *rq =3D rxq->rq;
-=20
--	irq_set_affinity_hint(rq->irq, NULL);
-+	irq_update_affinity_hint(rq->irq, NULL);
- 	free_irq(rq->irq, rxq);
- 	rx_del_napi(rxq);
- }
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethern=
-et/intel/i40e/i40e_main.c
-index 61afc220fc6c..2a3d8aef7f4e 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -3915,10 +3915,10 @@ static int i40e_vsi_request_irq_msix(struct i40e_vsi =
-*vsi, char *basename)
- 		 *
- 		 * get_cpu_mask returns a static constant mask with
- 		 * a permanent lifetime so it's ok to pass to
--		 * irq_set_affinity_hint without making a copy.
-+		 * irq_update_affinity_hint without making a copy.
- 		 */
- 		cpu =3D cpumask_local_spread(q_vector->v_idx, -1);
--		irq_set_affinity_hint(irq_num, get_cpu_mask(cpu));
-+		irq_update_affinity_hint(irq_num, get_cpu_mask(cpu));
- 	}
-=20
- 	vsi->irqs_ready =3D true;
-@@ -3929,7 +3929,7 @@ static int i40e_vsi_request_irq_msix(struct i40e_vsi *v=
-si, char *basename)
- 		vector--;
- 		irq_num =3D pf->msix_entries[base + vector].vector;
- 		irq_set_affinity_notifier(irq_num, NULL);
--		irq_set_affinity_hint(irq_num, NULL);
-+		irq_update_affinity_hint(irq_num, NULL);
- 		free_irq(irq_num, &vsi->q_vectors[vector]);
- 	}
- 	return err;
-@@ -4750,7 +4750,7 @@ static void i40e_vsi_free_irq(struct i40e_vsi *vsi)
- 			/* clear the affinity notifier in the IRQ descriptor */
- 			irq_set_affinity_notifier(irq_num, NULL);
- 			/* remove our suggested affinity mask for this IRQ */
--			irq_set_affinity_hint(irq_num, NULL);
-+			irq_update_affinity_hint(irq_num, NULL);
- 			synchronize_irq(irq_num);
- 			free_irq(irq_num, vsi->q_vectors[i]);
-=20
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethern=
-et/intel/iavf/iavf_main.c
-index e4439b095533..b1c161f9d706 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -492,10 +492,10 @@ iavf_request_traffic_irqs(struct iavf_adapter *adapter,=
- char *basename)
- 		irq_set_affinity_notifier(irq_num, &q_vector->affinity_notify);
- 		/* Spread the IRQ affinity hints across online CPUs. Note that
- 		 * get_cpu_mask returns a mask with a permanent lifetime so
--		 * it's safe to use as a hint for irq_set_affinity_hint.
-+		 * it's safe to use as a hint for irq_update_affinity_hint.
- 		 */
- 		cpu =3D cpumask_local_spread(q_vector->v_idx, -1);
--		irq_set_affinity_hint(irq_num, get_cpu_mask(cpu));
-+		irq_update_affinity_hint(irq_num, get_cpu_mask(cpu));
- 	}
-=20
- 	return 0;
-@@ -505,7 +505,7 @@ iavf_request_traffic_irqs(struct iavf_adapter *adapter, c=
-har *basename)
- 		vector--;
- 		irq_num =3D adapter->msix_entries[vector + NONQ_VECS].vector;
- 		irq_set_affinity_notifier(irq_num, NULL);
--		irq_set_affinity_hint(irq_num, NULL);
-+		irq_update_affinity_hint(irq_num, NULL);
- 		free_irq(irq_num, &adapter->q_vectors[vector]);
- 	}
- 	return err;
-@@ -557,7 +557,7 @@ static void iavf_free_traffic_irqs(struct iavf_adapter *a=
-dapter)
- 	for (vector =3D 0; vector < q_vectors; vector++) {
- 		irq_num =3D adapter->msix_entries[vector + NONQ_VECS].vector;
- 		irq_set_affinity_notifier(irq_num, NULL);
--		irq_set_affinity_hint(irq_num, NULL);
-+		irq_update_affinity_hint(irq_num, NULL);
- 		free_irq(irq_num, &adapter->q_vectors[vector]);
- 	}
- }
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethe=
-rnet/intel/ixgbe/ixgbe_main.c
-index 45e2ec4d264d..7068ecb289f3 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -3247,8 +3247,8 @@ static int ixgbe_request_msix_irqs(struct ixgbe_adapter=
- *adapter)
- 		/* If Flow Director is enabled, set interrupt affinity */
- 		if (adapter->flags & IXGBE_FLAG_FDIR_HASH_CAPABLE) {
- 			/* assign the mask for this irq */
--			irq_set_affinity_hint(entry->vector,
--					      &q_vector->affinity_mask);
-+			irq_update_affinity_hint(entry->vector,
-+						 &q_vector->affinity_mask);
- 		}
- 	}
-=20
-@@ -3264,8 +3264,8 @@ static int ixgbe_request_msix_irqs(struct ixgbe_adapter=
- *adapter)
- free_queue_irqs:
- 	while (vector) {
- 		vector--;
--		irq_set_affinity_hint(adapter->msix_entries[vector].vector,
--				      NULL);
-+		irq_update_affinity_hint(adapter->msix_entries[vector].vector,
-+					 NULL);
- 		free_irq(adapter->msix_entries[vector].vector,
- 			 adapter->q_vector[vector]);
- 	}
-@@ -3398,7 +3398,7 @@ static void ixgbe_free_irq(struct ixgbe_adapter *adapte=
-r)
- 			continue;
-=20
- 		/* clear the affinity_mask in the IRQ descriptor */
--		irq_set_affinity_hint(entry->vector, NULL);
-+		irq_update_affinity_hint(entry->vector, NULL);
-=20
- 		free_irq(entry->vector, q_vector);
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/m=
-ellanox/mlx4/eq.c
-index 9e48509ed3b2..414e390e6b48 100644
---- a/drivers/net/ethernet/mellanox/mlx4/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
-@@ -244,9 +244,9 @@ static void mlx4_set_eq_affinity_hint(struct mlx4_priv *p=
-riv, int vec)
- 	    cpumask_empty(eq->affinity_mask))
- 		return;
-=20
--	hint_err =3D irq_set_affinity_hint(eq->irq, eq->affinity_mask);
-+	hint_err =3D irq_update_affinity_hint(eq->irq, eq->affinity_mask);
- 	if (hint_err)
--		mlx4_warn(dev, "irq_set_affinity_hint failed, err %d\n", hint_err);
-+		mlx4_warn(dev, "irq_update_affinity_hint failed, err %d\n", hint_err);
- }
- #endif
-=20
-@@ -1123,9 +1123,7 @@ static void mlx4_free_irqs(struct mlx4_dev *dev)
- 	for (i =3D 0; i < dev->caps.num_comp_vectors + 1; ++i)
- 		if (eq_table->eq[i].have_irq) {
- 			free_cpumask_var(eq_table->eq[i].affinity_mask);
--#if defined(CONFIG_SMP)
--			irq_set_affinity_hint(eq_table->eq[i].irq, NULL);
--#endif
-+			irq_update_affinity_hint(eq_table->eq[i].irq, NULL);
- 			free_irq(eq_table->eq[i].irq, eq_table->eq + i);
- 			eq_table->eq[i].have_irq =3D 0;
- 		}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/pci_irq.c
-index bcee30f5de0a..fd7a671eda33 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -143,11 +143,11 @@ static void irq_release(struct mlx5_irq *irq)
- 	struct mlx5_irq_pool *pool =3D irq->pool;
-=20
- 	xa_erase(&pool->irqs, irq->index);
--	/* free_irq requires that affinity and rmap will be cleared
-+	/* free_irq requires that affinity_hint and rmap will be cleared
- 	 * before calling it. This is why there is asymmetry with set_rmap
- 	 * which should be called after alloc_irq but before request_irq.
- 	 */
--	irq_set_affinity_hint(irq->irqn, NULL);
-+	irq_update_affinity_hint(irq->irqn, NULL);
- 	free_cpumask_var(irq->mask);
- 	free_irq(irq->irqn, &irq->nh);
- 	kfree(irq);
-@@ -316,7 +316,7 @@ static struct mlx5_irq *irq_pool_create_irq(struct mlx5_i=
-rq_pool *pool,
- 	if (IS_ERR(irq))
- 		return irq;
- 	cpumask_copy(irq->mask, affinity);
--	irq_set_affinity_hint(irq->irqn, irq->mask);
-+	irq_set_affinity_and_hint(irq->irqn, irq->mask);
- 	return irq;
- }
-=20
-@@ -399,7 +399,7 @@ irq_pool_request_vector(struct mlx5_irq_pool *pool, int v=
-ecidx,
- 	if (!irq_pool_is_sf_pool(pool) && !pool->xa_num_irqs.max &&
- 	    cpumask_empty(irq->mask))
- 		cpumask_set_cpu(cpumask_first(cpu_online_mask), irq->mask);
--	irq_set_affinity_hint(irq->irqn, irq->mask);
-+	irq_set_affinity_and_hint(irq->irqn, irq->mask);
- unlock:
- 	mutex_unlock(&pool->lock);
- 	return irq;
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index ba17a8f740a9..945755266c49 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -12709,7 +12709,7 @@ lpfc_irq_set_aff(struct lpfc_hba_eq_hdl *eqhdl, unsig=
-ned int cpu)
- 	cpumask_clear(&eqhdl->aff_mask);
- 	cpumask_set_cpu(cpu, &eqhdl->aff_mask);
- 	irq_set_status_flags(eqhdl->irq, IRQ_NO_BALANCING);
--	irq_set_affinity_hint(eqhdl->irq, &eqhdl->aff_mask);
-+	irq_set_affinity(eqhdl->irq, &eqhdl->aff_mask);
- }
-=20
- /**
-@@ -12998,7 +12998,6 @@ lpfc_sli4_enable_msix(struct lpfc_hba *phba)
- 	for (--index; index >=3D 0; index--) {
- 		eqhdl =3D lpfc_get_eq_hdl(index);
- 		lpfc_irq_clear_aff(eqhdl);
--		irq_set_affinity_hint(eqhdl->irq, NULL);
- 		free_irq(eqhdl->irq, eqhdl);
- 	}
-=20
-@@ -13159,7 +13158,6 @@ lpfc_sli4_disable_intr(struct lpfc_hba *phba)
- 		for (index =3D 0; index < phba->cfg_irq_chann; index++) {
- 			eqhdl =3D lpfc_get_eq_hdl(index);
- 			lpfc_irq_clear_aff(eqhdl);
--			irq_set_affinity_hint(eqhdl->irq, NULL);
- 			free_irq(eqhdl->irq, eqhdl);
- 		}
- 	} else {
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megarai=
-d/megaraid_sas_base.c
-index aeb95f409826..82e1e24257bc 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -5720,7 +5720,7 @@ megasas_setup_irqs_msix(struct megasas_instance *instan=
-ce, u8 is_probe)
- 				"Failed to register IRQ for vector %d.\n", i);
- 			for (j =3D 0; j < i; j++) {
- 				if (j < instance->low_latency_index_start)
--					irq_set_affinity_hint(
-+					irq_update_affinity_hint(
- 						pci_irq_vector(pdev, j), NULL);
- 				free_irq(pci_irq_vector(pdev, j),
- 					 &instance->irq_context[j]);
-@@ -5763,7 +5763,7 @@ megasas_destroy_irqs(struct megasas_instance *instance)=
- {
- 	if (instance->msix_vectors)
- 		for (i =3D 0; i < instance->msix_vectors; i++) {
- 			if (i < instance->low_latency_index_start)
--				irq_set_affinity_hint(
-+				irq_update_affinity_hint(
- 				    pci_irq_vector(instance->pdev, i), NULL);
- 			free_irq(pci_irq_vector(instance->pdev, i),
- 				 &instance->irq_context[i]);
-@@ -5894,22 +5894,25 @@ int megasas_get_device_list(struct megasas_instance *=
-instance)
- }
-=20
- /**
-- * megasas_set_high_iops_queue_affinity_hint -	Set affinity hint for high IO=
-PS queues
-- * @instance:					Adapter soft state
-- * return:					void
-+ * megasas_set_high_iops_queue_affinity_and_hint -	Set affinity and hint
-+ *							for high IOPS queues
-+ * @instance:						Adapter soft state
-+ * return:						void
-  */
- static inline void
--megasas_set_high_iops_queue_affinity_hint(struct megasas_instance *instance)
-+megasas_set_high_iops_queue_affinity_and_hint(struct megasas_instance *insta=
-nce)
- {
- 	int i;
--	int local_numa_node;
-+	unsigned int irq;
-+	const struct cpumask *mask;
-=20
- 	if (instance->perf_mode =3D=3D MR_BALANCED_PERF_MODE) {
--		local_numa_node =3D dev_to_node(&instance->pdev->dev);
-+		mask =3D cpumask_of_node(dev_to_node(&instance->pdev->dev));
-=20
--		for (i =3D 0; i < instance->low_latency_index_start; i++)
--			irq_set_affinity_hint(pci_irq_vector(instance->pdev, i),
--				cpumask_of_node(local_numa_node));
-+		for (i =3D 0; i < instance->low_latency_index_start; i++) {
-+			irq =3D pci_irq_vector(instance->pdev, i);
-+			irq_set_affinity_and_hint(irq, mask);
-+		}
- 	}
- }
-=20
-@@ -5998,7 +6001,7 @@ megasas_alloc_irq_vectors(struct megasas_instance *inst=
-ance)
- 		instance->msix_vectors =3D 0;
-=20
- 	if (instance->smp_affinity_enable)
--		megasas_set_high_iops_queue_affinity_hint(instance);
-+		megasas_set_high_iops_queue_affinity_and_hint(instance);
- }
-=20
- /**
-diff --git a/drivers/scsi/mpt3sas/mpt3sas_base.c b/drivers/scsi/mpt3sas/mpt3s=
-as_base.c
-index 81dab9b82f79..511726f92d9a 100644
---- a/drivers/scsi/mpt3sas/mpt3sas_base.c
-+++ b/drivers/scsi/mpt3sas/mpt3sas_base.c
-@@ -3086,6 +3086,7 @@ _base_check_enable_msix(struct MPT3SAS_ADAPTER *ioc)
- void
- mpt3sas_base_free_irq(struct MPT3SAS_ADAPTER *ioc)
- {
-+	unsigned int irq;
- 	struct adapter_reply_queue *reply_q, *next;
-=20
- 	if (list_empty(&ioc->reply_queue_list))
-@@ -3098,9 +3099,10 @@ mpt3sas_base_free_irq(struct MPT3SAS_ADAPTER *ioc)
- 			continue;
- 		}
-=20
--		if (ioc->smp_affinity_enable)
--			irq_set_affinity_hint(pci_irq_vector(ioc->pdev,
--			    reply_q->msix_index), NULL);
-+		if (ioc->smp_affinity_enable) {
-+			irq =3D pci_irq_vector(ioc->pdev, reply_q->msix_index);
-+			irq_update_affinity_hint(irq, NULL);
-+		}
- 		free_irq(pci_irq_vector(ioc->pdev, reply_q->msix_index),
- 			 reply_q);
- 		kfree(reply_q);
-@@ -3167,18 +3169,15 @@ _base_request_irq(struct MPT3SAS_ADAPTER *ioc, u8 ind=
-ex)
-  * @ioc: per adapter object
-  *
-  * The enduser would need to set the affinity via /proc/irq/#/smp_affinity
-- *
-- * It would nice if we could call irq_set_affinity, however it is not
-- * an exported symbol
-  */
- static void
- _base_assign_reply_queues(struct MPT3SAS_ADAPTER *ioc)
- {
--	unsigned int cpu, nr_cpus, nr_msix, index =3D 0;
-+	unsigned int cpu, nr_cpus, nr_msix, index =3D 0, irq;
- 	struct adapter_reply_queue *reply_q;
--	int local_numa_node;
- 	int iopoll_q_count =3D ioc->reply_queue_count -
- 	    ioc->iopoll_q_start_index;
-+	const struct cpumask *mask;
-=20
- 	if (!_base_is_controller_msix_enabled(ioc))
- 		return;
-@@ -3201,11 +3200,11 @@ _base_assign_reply_queues(struct MPT3SAS_ADAPTER *ioc)
- 		 * corresponding to high iops queues.
- 		 */
- 		if (ioc->high_iops_queues) {
--			local_numa_node =3D dev_to_node(&ioc->pdev->dev);
-+			mask =3D cpumask_of_node(dev_to_node(&ioc->pdev->dev));
- 			for (index =3D 0; index < ioc->high_iops_queues;
- 			    index++) {
--				irq_set_affinity_hint(pci_irq_vector(ioc->pdev,
--				    index), cpumask_of_node(local_numa_node));
-+				irq =3D pci_irq_vector(ioc->pdev, index);
-+				irq_set_affinity_and_hint(irq, mask);
- 			}
- 		}
-=20
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index 1f22a30c0963..9367f1cb2e3c 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -329,7 +329,46 @@ extern int irq_force_affinity(unsigned int irq, const st=
-ruct cpumask *cpumask);
- extern int irq_can_set_affinity(unsigned int irq);
- extern int irq_select_affinity(unsigned int irq);
-=20
--extern int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m);
-+extern int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask =
-*m,
-+				     bool setaffinity);
++	msc313e_clkevt.cpumask =3D cpu_possible_mask;
++	msc313e_clkevt.irq =3D to->of_irq.irq;
++	to->clkevt =3D msc313e_clkevt;
 +
-+/**
-+ * irq_update_affinity_hint - Update the affinity hint
-+ * @irq:	Interrupt to update
-+ * @m:		cpumask pointer (NULL to clear the hint)
-+ *
-+ * Updates the affinity hint, but does not change the affinity of the interr=
-upt.
-+ */
-+static inline int
-+irq_update_affinity_hint(unsigned int irq, const struct cpumask *m)
-+{
-+	return __irq_apply_affinity_hint(irq, m, false);
++	clockevents_config_and_register(&to->clkevt, timer_of_rate(to),
++					TIMER_SYNC_TICKS, 0xffffffff);
++	return 0;
 +}
 +
-+/**
-+ * irq_set_affinity_and_hint - Update the affinity hint and apply the provid=
-ed
-+ *			     cpumask to the interrupt
-+ * @irq:	Interrupt to update
-+ * @m:		cpumask pointer (NULL to clear the hint)
-+ *
-+ * Updates the affinity hint and if @m is not NULL it applies it as the
-+ * affinity of that interrupt.
-+ */
-+static inline int
-+irq_set_affinity_and_hint(unsigned int irq, const struct cpumask *m)
++static int __init msc313e_clksrc_init(struct device_node *np)
 +{
-+	return __irq_apply_affinity_hint(irq, m, true);
++	struct timer_of to =3D { 0 };
++	int ret;
++	u16 reg;
++
++	to.flags =3D TIMER_OF_BASE | TIMER_OF_CLOCK;
++	ret =3D timer_of_init(np, &to);
++	if (ret)
++		return ret;
++
++	msc313e_clksrc =3D timer_of_base(&to);
++	reg =3D readw(msc313e_clksrc + MSC313E_REG_CTRL);
++	reg |=3D MSC313E_REG_CTRL_TIMER_EN;
++	writew(reg, msc313e_clksrc + MSC313E_REG_CTRL);
++
++#ifdef CONFIG_ARM
++	msc313e_delay.base =3D timer_of_base(&to);
++	msc313e_delay.delay.read_current_timer =3D msc313e_read_delay_timer_read;
++	msc313e_delay.delay.freq =3D timer_of_rate(&to);
++
++	register_current_timer_delay(&msc313e_delay.delay);
++#endif
++
++	sched_clock_register(msc313e_timer_sched_clock_read, 32, timer_of_rate(&to)=
+);
++	return clocksource_mmio_init(timer_of_base(&to), TIMER_NAME, timer_of_rate(=
+&to), 300, 32,
++				     msc313e_timer_clksrc_read);
 +}
 +
-+/*
-+ * Deprecated. Use irq_update_affinity_hint() or irq_set_affinity_and_hint()
-+ * instead.
-+ */
-+static inline int irq_set_affinity_hint(unsigned int irq, const struct cpuma=
-sk *m)
++static int __init msc313e_timer_init(struct device_node *np)
 +{
-+	return irq_set_affinity_and_hint(irq, m);
++	int ret =3D 0;
++	static int num_called;
++
++	switch (num_called) {
++	case 0:
++		ret =3D msc313e_clksrc_init(np);
++		if (ret)
++			return ret;
++		break;
++
++	default:
++		ret =3D msc313e_clkevt_init(np);
++		if (ret)
++			return ret;
++		break;
++	}
++
++	num_called++;
++
++	return 0;
 +}
 +
- extern int irq_update_affinity_desc(unsigned int irq,
- 				    struct irq_affinity_desc *affinity);
-=20
-@@ -361,6 +400,18 @@ static inline int irq_can_set_affinity(unsigned int irq)
-=20
- static inline int irq_select_affinity(unsigned int irq)  { return 0; }
-=20
-+static inline int irq_update_affinity_hint(unsigned int irq,
-+					   const struct cpumask *m)
-+{
-+	return -EINVAL;
-+}
-+
-+static inline int irq_set_affinity_and_hint(unsigned int irq,
-+					    const struct cpumask *m)
-+{
-+	return -EINVAL;
-+}
-+
- static inline int irq_set_affinity_hint(unsigned int irq,
- 					const struct cpumask *m)
++TIMER_OF_DECLARE(msc313, "mstar,msc313e-timer", msc313e_timer_init);
++TIMER_OF_DECLARE(ssd20xd, "sstar,ssd20xd-timer", msc313e_timer_init);
+diff --git a/drivers/clocksource/timer-pistachio.c b/drivers/clocksource/time=
+r-pistachio.c
+index 6f37181a8c63..69c069e6f0a2 100644
+--- a/drivers/clocksource/timer-pistachio.c
++++ b/drivers/clocksource/timer-pistachio.c
+@@ -71,7 +71,8 @@ static u64 notrace
+ pistachio_clocksource_read_cycles(struct clocksource *cs)
  {
-diff --git a/include/linux/irqchip/arm-gic-v3.h b/include/linux/irqchip/arm-g=
-ic-v3.h
-index 81cbf85f73de..12d91f0dedf9 100644
---- a/include/linux/irqchip/arm-gic-v3.h
-+++ b/include/linux/irqchip/arm-gic-v3.h
-@@ -615,7 +615,7 @@ struct rdists {
- 		void __iomem	*rd_base;
- 		struct page	*pend_page;
- 		phys_addr_t	phys_base;
--		bool		lpi_enabled;
-+		u64             flags;
- 		cpumask_t	*vpe_table_mask;
- 		void		*vpe_l1_base;
- 	} __percpu		*rdist;
-@@ -624,6 +624,7 @@ struct rdists {
- 	u64			flags;
- 	u32			gicd_typer;
- 	u32			gicd_typer2;
-+	int                     cpuhp_memreserve_state;
- 	bool			has_vlpis;
- 	bool			has_rvpeid;
- 	bool			has_direct_lpi;
-@@ -632,6 +633,7 @@ struct rdists {
-=20
- struct irq_domain;
- struct fwnode_handle;
-+int __init its_lpi_memreserve_init(void);
- int its_cpu_init(void);
- int its_init(struct fwnode_handle *handle, struct rdists *rdists,
- 	     struct irq_domain *domain);
-diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
-index 553da4899f55..d476405802e9 100644
---- a/include/linux/irqdomain.h
-+++ b/include/linux/irqdomain.h
-@@ -131,7 +131,7 @@ struct irq_domain_ops {
- #endif
- };
-=20
--extern struct irq_domain_ops irq_generic_chip_ops;
-+extern const struct irq_domain_ops irq_generic_chip_ops;
-=20
- struct irq_domain_chip_generic;
-=20
-diff --git a/kernel/irq/generic-chip.c b/kernel/irq/generic-chip.c
-index 6f29bf4c8515..f0862eb6b506 100644
---- a/kernel/irq/generic-chip.c
-+++ b/kernel/irq/generic-chip.c
-@@ -451,7 +451,7 @@ static void irq_unmap_generic_chip(struct irq_domain *d, =
-unsigned int virq)
-=20
- }
-=20
--struct irq_domain_ops irq_generic_chip_ops =3D {
-+const struct irq_domain_ops irq_generic_chip_ops =3D {
- 	.map	=3D irq_map_generic_chip,
- 	.unmap  =3D irq_unmap_generic_chip,
- 	.xlate	=3D irq_domain_xlate_onetwocell,
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 7405e384e5ed..f23ffd30385b 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -486,7 +486,8 @@ int irq_force_affinity(unsigned int irq, const struct cpu=
-mask *cpumask)
- }
- EXPORT_SYMBOL_GPL(irq_force_affinity);
-=20
--int irq_set_affinity_hint(unsigned int irq, const struct cpumask *m)
-+int __irq_apply_affinity_hint(unsigned int irq, const struct cpumask *m,
-+			      bool setaffinity)
- {
+ 	struct pistachio_clocksource *pcs =3D to_pistachio_clocksource(cs);
+-	u32 counter, overflow;
++	__maybe_unused u32 overflow;
++	u32 counter;
  	unsigned long flags;
- 	struct irq_desc *desc =3D irq_get_desc_lock(irq, &flags, IRQ_GET_DESC_CHECK=
-_GLOBAL);
-@@ -495,12 +496,11 @@ int irq_set_affinity_hint(unsigned int irq, const struc=
-t cpumask *m)
- 		return -EINVAL;
- 	desc->affinity_hint =3D m;
- 	irq_put_desc_unlock(desc, flags);
--	/* set the initial affinity to prevent every interrupt being on CPU0 */
--	if (m)
-+	if (m && setaffinity)
- 		__irq_set_affinity(irq, m, false);
- 	return 0;
- }
--EXPORT_SYMBOL_GPL(irq_set_affinity_hint);
-+EXPORT_SYMBOL_GPL(__irq_apply_affinity_hint);
 =20
- static void irq_affinity_notify(struct work_struct *work)
+ 	/*
+diff --git a/include/linux/reset.h b/include/linux/reset.h
+index db0e6115a2f6..8a21b5756c3e 100644
+--- a/include/linux/reset.h
++++ b/include/linux/reset.h
+@@ -454,6 +454,26 @@ static inline struct reset_control *of_reset_control_get=
+_exclusive(
+ 	return __of_reset_control_get(node, id, 0, false, false, true);
+ }
+=20
++/**
++ * of_reset_control_get_optional_exclusive - Lookup and obtain an optional e=
+xclusive
++ *                                           reference to a reset controller.
++ * @node: device to be reset by the controller
++ * @id: reset line name
++ *
++ * Optional variant of of_reset_control_get_exclusive(). If the requested re=
+set
++ * is not specified in the device tree, this function returns NULL instead of
++ * an error.
++ *
++ * Returns a struct reset_control or IS_ERR() condition containing errno.
++ *
++ * Use of id names is optional.
++ */
++static inline struct reset_control *of_reset_control_get_optional_exclusive(
++				struct device_node *node, const char *id)
++{
++	return __of_reset_control_get(node, id, 0, false, true, true);
++}
++
+ /**
+  * of_reset_control_get_shared - Lookup and obtain a shared reference
+  *                               to a reset controller.
+diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
+index b8a14d2fb5ba..b7e52a642948 100644
+--- a/kernel/time/clocksource.c
++++ b/kernel/time/clocksource.c
+@@ -107,7 +107,7 @@ static u64 suspend_start;
+  * This delay could be due to SMIs, NMIs, or to VCPU preemptions.  Used as
+  * a lower bound for cs->uncertainty_margin values when registering clocks.
+  */
+-#define WATCHDOG_MAX_SKEW (50 * NSEC_PER_USEC)
++#define WATCHDOG_MAX_SKEW (100 * NSEC_PER_USEC)
+=20
+ #ifdef CONFIG_CLOCKSOURCE_WATCHDOG
+ static void clocksource_watchdog_work(struct work_struct *work);
+@@ -199,23 +199,30 @@ void clocksource_mark_unstable(struct clocksource *cs)
+ 	spin_unlock_irqrestore(&watchdog_lock, flags);
+ }
+=20
+-ulong max_cswd_read_retries =3D 3;
++ulong max_cswd_read_retries =3D 2;
+ module_param(max_cswd_read_retries, ulong, 0644);
+ EXPORT_SYMBOL_GPL(max_cswd_read_retries);
+ static int verify_n_cpus =3D 8;
+ module_param(verify_n_cpus, int, 0644);
+=20
+-static bool cs_watchdog_read(struct clocksource *cs, u64 *csnow, u64 *wdnow)
++enum wd_read_status {
++	WD_READ_SUCCESS,
++	WD_READ_UNSTABLE,
++	WD_READ_SKIP
++};
++
++static enum wd_read_status cs_watchdog_read(struct clocksource *cs, u64 *csn=
+ow, u64 *wdnow)
  {
+ 	unsigned int nretries;
+-	u64 wd_end, wd_delta;
+-	int64_t wd_delay;
++	u64 wd_end, wd_end2, wd_delta;
++	int64_t wd_delay, wd_seq_delay;
+=20
+ 	for (nretries =3D 0; nretries <=3D max_cswd_read_retries; nretries++) {
+ 		local_irq_disable();
+ 		*wdnow =3D watchdog->read(watchdog);
+ 		*csnow =3D cs->read(cs);
+ 		wd_end =3D watchdog->read(watchdog);
++		wd_end2 =3D watchdog->read(watchdog);
+ 		local_irq_enable();
+=20
+ 		wd_delta =3D clocksource_delta(wd_end, *wdnow, watchdog->mask);
+@@ -226,13 +233,34 @@ static bool cs_watchdog_read(struct clocksource *cs, u6=
+4 *csnow, u64 *wdnow)
+ 				pr_warn("timekeeping watchdog on CPU%d: %s retried %d times before succe=
+ss\n",
+ 					smp_processor_id(), watchdog->name, nretries);
+ 			}
+-			return true;
++			return WD_READ_SUCCESS;
+ 		}
++
++		/*
++		 * Now compute delay in consecutive watchdog read to see if
++		 * there is too much external interferences that cause
++		 * significant delay in reading both clocksource and watchdog.
++		 *
++		 * If consecutive WD read-back delay > WATCHDOG_MAX_SKEW/2,
++		 * report system busy, reinit the watchdog and skip the current
++		 * watchdog test.
++		 */
++		wd_delta =3D clocksource_delta(wd_end2, wd_end, watchdog->mask);
++		wd_seq_delay =3D clocksource_cyc2ns(wd_delta, watchdog->mult, watchdog->sh=
+ift);
++		if (wd_seq_delay > WATCHDOG_MAX_SKEW/2)
++			goto skip_test;
+ 	}
+=20
+ 	pr_warn("timekeeping watchdog on CPU%d: %s read-back delay of %lldns, attem=
+pt %d, marking unstable\n",
+ 		smp_processor_id(), watchdog->name, wd_delay, nretries);
+-	return false;
++	return WD_READ_UNSTABLE;
++
++skip_test:
++	pr_info("timekeeping watchdog on CPU%d: %s wd-wd read-back delay of %lldns\=
+n",
++		smp_processor_id(), watchdog->name, wd_seq_delay);
++	pr_info("wd-%s-wd read-back delay of %lldns, clock-skew test skipped!\n",
++		cs->name, wd_delay);
++	return WD_READ_SKIP;
+ }
+=20
+ static u64 csnow_mid;
+@@ -356,6 +384,7 @@ static void clocksource_watchdog(struct timer_list *unuse=
+d)
+ 	int next_cpu, reset_pending;
+ 	int64_t wd_nsec, cs_nsec;
+ 	struct clocksource *cs;
++	enum wd_read_status read_ret;
+ 	u32 md;
+=20
+ 	spin_lock(&watchdog_lock);
+@@ -373,9 +402,12 @@ static void clocksource_watchdog(struct timer_list *unus=
+ed)
+ 			continue;
+ 		}
+=20
+-		if (!cs_watchdog_read(cs, &csnow, &wdnow)) {
+-			/* Clock readout unreliable, so give it up. */
+-			__clocksource_unstable(cs);
++		read_ret =3D cs_watchdog_read(cs, &csnow, &wdnow);
++
++		if (read_ret !=3D WD_READ_SUCCESS) {
++			if (read_ret =3D=3D WD_READ_UNSTABLE)
++				/* Clock readout unreliable, so give it up. */
++				__clocksource_unstable(cs);
+ 			continue;
+ 		}
+=20
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-T b/tools/te=
+sting/selftests/rcutorture/configs/rcu/SRCU-T
+index d6557c38dfe4..c70cf0405f24 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-T
++++ b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-T
+@@ -2,6 +2,7 @@ CONFIG_SMP=3Dn
+ CONFIG_PREEMPT_NONE=3Dy
+ CONFIG_PREEMPT_VOLUNTARY=3Dn
+ CONFIG_PREEMPT=3Dn
++CONFIG_PREEMPT_DYNAMIC=3Dn
+ #CHECK#CONFIG_TINY_SRCU=3Dy
+ CONFIG_RCU_TRACE=3Dn
+ CONFIG_DEBUG_LOCK_ALLOC=3Dy
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-U b/tools/te=
+sting/selftests/rcutorture/configs/rcu/SRCU-U
+index 6bc24e99862f..bc9eeabaa1b1 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/SRCU-U
++++ b/tools/testing/selftests/rcutorture/configs/rcu/SRCU-U
+@@ -2,6 +2,7 @@ CONFIG_SMP=3Dn
+ CONFIG_PREEMPT_NONE=3Dy
+ CONFIG_PREEMPT_VOLUNTARY=3Dn
+ CONFIG_PREEMPT=3Dn
++CONFIG_PREEMPT_DYNAMIC=3Dn
+ #CHECK#CONFIG_TINY_SRCU=3Dy
+ CONFIG_RCU_TRACE=3Dn
+ CONFIG_DEBUG_LOCK_ALLOC=3Dn
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TINY01 b/tools/te=
+sting/selftests/rcutorture/configs/rcu/TINY01
+index 6db705e55487..0953c52fcfd7 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TINY01
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TINY01
+@@ -2,6 +2,7 @@ CONFIG_SMP=3Dn
+ CONFIG_PREEMPT_NONE=3Dy
+ CONFIG_PREEMPT_VOLUNTARY=3Dn
+ CONFIG_PREEMPT=3Dn
++CONFIG_PREEMPT_DYNAMIC=3Dn
+ #CHECK#CONFIG_TINY_RCU=3Dy
+ CONFIG_HZ_PERIODIC=3Dn
+ CONFIG_NO_HZ_IDLE=3Dy
+diff --git a/tools/testing/selftests/rcutorture/configs/rcu/TINY02 b/tools/te=
+sting/selftests/rcutorture/configs/rcu/TINY02
+index d8674264318d..30439f6fc20e 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcu/TINY02
++++ b/tools/testing/selftests/rcutorture/configs/rcu/TINY02
+@@ -2,6 +2,7 @@ CONFIG_SMP=3Dn
+ CONFIG_PREEMPT_NONE=3Dy
+ CONFIG_PREEMPT_VOLUNTARY=3Dn
+ CONFIG_PREEMPT=3Dn
++CONFIG_PREEMPT_DYNAMIC=3Dn
+ #CHECK#CONFIG_TINY_RCU=3Dy
+ CONFIG_HZ_PERIODIC=3Dy
+ CONFIG_NO_HZ_IDLE=3Dn
+diff --git a/tools/testing/selftests/rcutorture/configs/rcuscale/TINY b/tools=
+/testing/selftests/rcutorture/configs/rcuscale/TINY
+index fb05ef5279b4..64e9490c1f79 100644
+--- a/tools/testing/selftests/rcutorture/configs/rcuscale/TINY
++++ b/tools/testing/selftests/rcutorture/configs/rcuscale/TINY
+@@ -2,6 +2,7 @@ CONFIG_SMP=3Dn
+ CONFIG_PREEMPT_NONE=3Dy
+ CONFIG_PREEMPT_VOLUNTARY=3Dn
+ CONFIG_PREEMPT=3Dn
++CONFIG_PREEMPT_DYNAMIC=3Dn
+ #CHECK#CONFIG_TINY_RCU=3Dy
+ CONFIG_HZ_PERIODIC=3Dn
+ CONFIG_NO_HZ_IDLE=3Dy
 
