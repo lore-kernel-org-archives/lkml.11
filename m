@@ -2,131 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D96C3C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E24EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:33:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234536AbiAMMd0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 07:33:26 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:50634
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233490AbiAMMdZ (ORCPT
+        id S234541AbiAMMd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 07:33:28 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:38102 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233633AbiAMMd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 07:33:25 -0500
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com [209.85.128.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 5A03D3F1E1
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 12:33:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642077204;
-        bh=nozrRCJhGpJqmbYvCljGg8HZE9Dh507qEQxDTQiFa2Q=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=bvyACTi3VRML/vNzNujIiRL/UNvvEId7jXblbignsf0Gy+mzIYbt1XIaO4cgqL0UA
-         Iu53zNhWnGiF84o7iPCunSalA6u3phH24dhOl+3MbS37Uql2Fg4F7NZJ3Ax2bVEi0C
-         Uj6lNbaWOsAXeM+UAEBadOr3opTZ5GGTHaSULmT+1fUcsleO6av2VtJ45xusKf0/up
-         8N03sLZNfNZSstEWItKtRyujzp3hEvGtd/SljxKp0r0JBojC3tejgoK6pZOCa9+36r
-         RH4A74dhojD7bW3HEt0rkwm81jP367bpgz2T1zWK0e0ZQHCoKdE7vWi/vha166SSPz
-         Wo2WiK2MBcupQ==
-Received: by mail-wm1-f70.google.com with SMTP id s17-20020a7bc0d1000000b00348737ba2a2so3532777wmh.2
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 04:33:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nozrRCJhGpJqmbYvCljGg8HZE9Dh507qEQxDTQiFa2Q=;
-        b=h/keTBUrMRzWSof2qbz5UWCu9OO2Y3dOuBuEQXIwiK085jwL72rH4rsWIYsORFQ+WL
-         97tktZjqGE4d6fhW84NgkU5m2gDKGvEA+jT22bHv9C4r2VxxOrRitfgj25iKXUbKCviY
-         5EcMG8eT4hyNNsfiqDNaXbxFUaKIVqr4TjRzXn7Bv+pnDblUsOuel/iEs5aLh5Aem82B
-         Ufq2jY7EAGu8JRyCMtZ5Jav1WoHDYNKog4UnuPAuEeccdifG3Fe/5EAKwQ81Cq0hqBTI
-         MaoyYmjec+brz945CMSjUnGzXN5+qHaoQ0fV0+lHhEXCYLzQZIh5PfVxlh69CLnE0e0G
-         fKHQ==
-X-Gm-Message-State: AOAM5338YcK0ZGI9Han43iD50+/aUIxf/AeT6TF81nCLN4TkQjNmaYkt
-        LQhoIqIr4BrjkXPl+wYH2jAoox2l7ScDVuaZ6YNuRFN7pNaCx4Re5JOX4jUT1XstoPjq2+PhDSk
-        2lnlnpF1wmmgEvo6hnoiSo4K2wlFatOyEMcsHemnxVw==
-X-Received: by 2002:a1c:9acb:: with SMTP id c194mr8382273wme.89.1642077203729;
-        Thu, 13 Jan 2022 04:33:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzeidcGH6+/SbUKslGVBMnrfh5gtJs/MXVIuoTJHveED+blfQR9Xg8ks+7ZxN0rNokZjqLksw==
-X-Received: by 2002:a1c:9acb:: with SMTP id c194mr8382259wme.89.1642077203579;
-        Thu, 13 Jan 2022 04:33:23 -0800 (PST)
-Received: from [192.168.0.29] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id r205sm1395682wma.26.2022.01.13.04.33.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 04:33:23 -0800 (PST)
-Message-ID: <53c17ddc-a049-72ed-7237-de23db7889da@canonical.com>
-Date:   Thu, 13 Jan 2022 13:33:22 +0100
+        Thu, 13 Jan 2022 07:33:26 -0500
+X-UUID: a357bcd85de4422e9e90e55554a8dd4d-20220113
+X-UUID: a357bcd85de4422e9e90e55554a8dd4d-20220113
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <guangming.cao@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1167861225; Thu, 13 Jan 2022 20:33:19 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Thu, 13 Jan 2022 20:33:17 +0800
+Received: from mszswglt01.gcn.mediatek.inc (10.16.20.20) by
+ mtkcas11.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Thu, 13 Jan 2022 20:33:16 +0800
+From:   <guangming.cao@mediatek.com>
+To:     <sumit.semwal@linaro.org>
+CC:     <benjamin.gaignard@linaro.org>, <bo.song@mediatek.com>,
+        <brian.starkey@arm.com>, <christian.koenig@amd.com>,
+        <dri-devel@lists.freedesktop.org>, <guangming.cao@mediatek.com>,
+        <jianjiao.zeng@mediatek.com>, <john.stultz@linaro.org>,
+        <labbott@redhat.com>, <libo.kang@mediatek.com>,
+        <linaro-mm-sig@lists.linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <lmark@codeaurora.org>,
+        <matthias.bgg@gmail.com>, <mingyuan.ma@mediatek.com>,
+        <wsd_upstream@mediatek.com>, <yf.wang@mediatek.com>,
+        Guangming <Guangming.Cao@mediatek.com>
+Subject: [PATCH v3] dma-buf: dma-heap: Add a size check for allocation
+Date:   Thu, 13 Jan 2022 20:34:06 +0800
+Message-ID: <20220113123406.11520-1-guangming.cao@mediatek.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <CAO_48GF=ttKqSOm9GRoA3Mq+-RQOtRjWp449XPcz-wH=kjaTjw@mail.gmail.com>
+References: <CAO_48GF=ttKqSOm9GRoA3Mq+-RQOtRjWp449XPcz-wH=kjaTjw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 13/23] dt-bindings: arm: add Tesla FSD ARM SoC
-Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, olof@lixom.net,
-        linus.walleij@linaro.org, catalin.marinas@arm.com,
-        robh+dt@kernel.org, s.nawrocki@samsung.com,
-        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
-        linux-fsd@tesla.com
-References: <20220113121143.22280-1-alim.akhtar@samsung.com>
- <CGME20220113122408epcas5p45053d1bf0acf2d8233a98b6c1abab6eb@epcas5p4.samsung.com>
- <20220113121143.22280-14-alim.akhtar@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220113121143.22280-14-alim.akhtar@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/01/2022 13:11, Alim Akhtar wrote:
-> Add device tree bindings for the Tesla FSD ARM SoC.
-> 
-> Cc: linux-fsd@tesla.com
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> ---
->  .../devicetree/bindings/arm/tesla.yaml        | 25 +++++++++++++++++++
->  1 file changed, 25 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/arm/tesla.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/tesla.yaml b/Documentation/devicetree/bindings/arm/tesla.yaml
-> new file mode 100644
-> index 000000000000..9f89cde76c85
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/arm/tesla.yaml
-> @@ -0,0 +1,25 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/arm/tesla.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Tesla Full Self Driving(FSD) platforms device tree bindings
-> +
-> +maintainers:
-> +  - Alim Akhtar <alim.akhtar@samsung.com>
-> +  - linux-fsd@tesla.com
-> +
-> +properties:
-> +  $nodename:
-> +    const: '/'
-> +  compatible:
-> +    oneOf:
-> +
-> +      - description: FSD SoC board
-> +        items:
-> +          - const: tesla,fsd
+From: Guangming <Guangming.Cao@mediatek.com>
 
-Either this is a SoC or a board compatible... Cannot be both.
+Add a size check for allocation since the allocation size is
+always less than the total DRAM size.
 
-> +
-> +additionalProperties: true
-> +
-> +...
-> 
+Without this check, once the invalid size allocation runs on a process that
+can't be killed by OOM flow(such as "gralloc" on Android devices), it will
+cause a kernel exception, and to make matters worse, we can't find who are using
+so many memory with "dma_buf_debug_show" since the relevant dma-buf hasn't exported.
 
+To make OOM issue easier, maybe need dma-buf framework to dump the buffer size
+under allocating in "dma_buf_debug_show".
 
-Best regards,
-Krzysztof
+Signed-off-by: Guangming <Guangming.Cao@mediatek.com>
+Signed-off-by: jianjiao zeng <jianjiao.zeng@mediatek.com>
+---
+v3: 1. update patch, use right shift to replace division.
+    2. update patch, add reason in code and commit message.
+v2: 1. update size limitation as total_dram page size.
+    2. update commit message
+---
+ drivers/dma-buf/dma-heap.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/drivers/dma-buf/dma-heap.c b/drivers/dma-buf/dma-heap.c
+index 56bf5ad01ad5..1fd382712584 100644
+--- a/drivers/dma-buf/dma-heap.c
++++ b/drivers/dma-buf/dma-heap.c
+@@ -55,6 +55,16 @@ static int dma_heap_buffer_alloc(struct dma_heap *heap, size_t len,
+ 	struct dma_buf *dmabuf;
+ 	int fd;
+ 
++	/*
++	 * Invalid size check. The "len" should be less than totalram.
++	 *
++	 * Without this check, once the invalid size allocation runs on a process that
++	 * can't be killed by OOM flow(such as "gralloc" on Android devices), it will
++	 * cause a kernel exception, and to make matters worse, we can't find who are using
++	 * so many memory with "dma_buf_debug_show" since the relevant dma-buf hasn't exported.
++	 */
++	if (len >> PAGE_SHIFT > totalram_pages())
++		return -EINVAL;
+ 	/*
+ 	 * Allocations from all heaps have to begin
+ 	 * and end on page boundaries.
+-- 
+2.17.1
+
