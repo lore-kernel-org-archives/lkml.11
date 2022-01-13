@@ -2,61 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0548C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 02:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC85C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 02:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbiAMCPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 21:15:52 -0500
-Received: from ec2-13-52-33-57.us-west-1.compute.amazonaws.com ([13.52.33.57]:15055
-        "EHLO aurora.tech" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231594AbiAMCPm (ORCPT
+        id S231642AbiAMCRd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 21:17:33 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:38272 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231591AbiAMCRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 21:15:42 -0500
-Received: by aurora.tech (Postfix, from userid 1001)
-        id E6C3E16402F3; Tue, 11 Jan 2022 15:33:15 -0800 (PST)
-From:   Alison Chaiken <achaiken@aurora.tech>
-To:     tglx@linutronix.de
-Cc:     peterz@infradead.org, paulmck@kernel.org,
-        valentin.schneider@arm.com, frederic@kernel.org,
-        linux-kernel@vger.kernel.org, glenn@aurora.tech,
-        alison@she-devel.com, Alison Chaiken <achaiken@aurora.tech>
-Subject: [PATCH 0/5] handle kthread_prio kernel cmdline parameter consistently
-Date:   Tue, 11 Jan 2022 15:32:49 -0800
-Message-Id: <20220111233253.21692-1-achaiken@aurora.tech>
-X-Mailer: git-send-email 2.32.0
+        Wed, 12 Jan 2022 21:17:25 -0500
+X-UUID: 1f0b2121f4214d3982b0d380d1cb5b20-20220113
+X-UUID: 1f0b2121f4214d3982b0d380d1cb5b20-20220113
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
+        (envelope-from <tinghan.shen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 493848900; Thu, 13 Jan 2022 10:17:22 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 13 Jan 2022 10:17:21 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 13 Jan 2022 10:17:21 +0800
+Message-ID: <903a27d5d68dddb23b9ace2708689a55f22714e8.camel@mediatek.com>
+Subject: Re: [PATCH v9 0/3] Add basic SoC support for mediatek mt8195
+From:   Tinghan Shen <tinghan.shen@mediatek.com>
+To:     "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>
+CC:     <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <ryder.lee@kernel.org>, <wenst@chromium.org>,
+        <chunfeng.yun@mediatek.com>, Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        "David Matlack" <dmatlack@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        "Marc Zyngier" <maz@kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Date:   Thu, 13 Jan 2022 10:17:21 +0800
+In-Reply-To: <e4f20498-3685-207f-2b94-0cb0ada725a4@oracle.com>
+References: <20220112114724.1953-1-tinghan.shen@mediatek.com>
+         <e4f20498-3685-207f-2b94-0cb0ada725a4@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_PREEMPT_RT=y, RCU_SOFTIRQ work is moved to dedicated rcuc
-per-core threads.  The rcutree.kthread_prio kernel cmdline parameter
-controls the priority of those threads.
+Hi Maciej,
 
-A provided kthread_prio kernel cmdline parameter also elevates the
-priority of rcuog threads, but only if they are launched from
-rcu_spawn_gp_kthread(), not if they are launched from
-rcu_spawn_one_nocb_kthread().  Fix this inconsistency.
+On Wed, 2022-01-12 at 15:54 +0100, Maciej S. Szmigiero wrote:
+> On 12.01.2022 12:47, Tinghan Shen wrote:
+> > This series adds basic SoC support for Mediatek's SoC MT8195.
+> 
+> Nice patchset Tinghan, however I can't stop wondering why I was CCed
+> on
+> it (and Paolo and Sean, too) - this isn't KVM related at all.
+> 
+> scripts/get_maintainer.pl going wild?
+> 
+Thanks,
+Maciej
 
-When CONFIG_RCU_NOCB_CPU=y, an rcu_nocbs command-line parameter
-offloads the work of rcuc on designated cores to new rcuop threads
-that are not pinned to the cores whose expired grace-period timer
-callbacks they run.  While rcuop threads have the same function as
-rcuc threads, their priority is not controlled by the kthread_prio
-parameter.  Add this feature and update the documentation accordingly.
+I'm sorry. I just find out that the file pattern I used includes
+unrelated files to this series.
 
-Alison Chaiken (4):
-  RCU: move kthread_prio bounds-check to a separate function
-  RCU: make priority of grace-period thread consistent
-  RCU: elevate priority of offloaded callback threads
-  RCU: update documentation regarding kthread_prio cmdline parameter
+I'll clean up the CC list at next version.
 
- .../admin-guide/kernel-parameters.txt         |  2 +
- kernel/rcu/tree.c                             | 42 +++++++++++--------
- kernel/rcu/tree_nocb.h                        |  7 ++++
- 3 files changed, 34 insertions(+), 17 deletions(-)
-
--- 
-2.32.0
+Best regards,
+TingHan
 
