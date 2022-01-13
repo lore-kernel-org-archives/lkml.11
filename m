@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2403CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 01:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C51A3C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 01:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230389AbiAMBKc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 20:10:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
+        id S231150AbiAMBKo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 20:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230226AbiAMBKP (ORCPT
+        with ESMTP id S230315AbiAMBKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 20:10:15 -0500
+        Wed, 12 Jan 2022 20:10:30 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B9FC06118A;
-        Wed, 12 Jan 2022 17:10:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84611C029829;
+        Wed, 12 Jan 2022 17:10:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EF2D61BFD;
-        Thu, 13 Jan 2022 01:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 009BEC36AEC;
-        Thu, 13 Jan 2022 01:10:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64EFE61B7F;
+        Thu, 13 Jan 2022 01:10:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 36464C36AF2;
+        Thu, 13 Jan 2022 01:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642036206;
-        bh=Oi3L6T0Z7c7/LTjIOuBTTR76Edq6/I/nmHwS9okQd2g=;
+        s=k20201202; t=1642036217;
+        bh=2mCzShIAUyN9oZdhX/fnAvRi5ynPsrxLgQJWXIfC6/0=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=uku839bOif2qO5qRuxvSjp5bCDhKeAgAZhd/LTZyh5mj0StgWT+Xltvz9FGuX2tHD
-         tjDpBvsfBhWlgOrBmeu2NQE2bCOl1z2WWzwClH6PCoDiFWJMW7zbN0u+YIA7D3W4xF
-         GqMpS1p31DuMtRHBTvYDkXJHDfd36ZHXnCvIqDysLg8e7DZO/Rm+7VR0j0WzwDZSuP
-         hYISKdMyHmibsqRuVP1v8P8K3MPue8JgR2pUzA0w5hryYlNEfXhjdENI463vO52a3H
-         T63lyhVSy2uMIhTjs2nkVK16VzQzLaZB0qMvseSceLXC4pWy8Buk5Q7jc9CmoPqvBh
-         IbRnhMQ/8h+Kw==
+        b=HoNYQVfO73hsYkDtzYkSb9eA086TGMpEzF1jvt5sH94h1WxbjDc6gO9uU+HWDNq71
+         3eLn+9XPTH34Yrg1E4WKgiwMIZXtvo4Po3seL8svnWFnKUk/iZaKxG4/l63ts6IkxA
+         2Xnrkp78LkBwhrDlKwNZYtnZf939eGj19+JIXkll7cybgD9LdQlGCxllTq0kdSkcLO
+         WFKIDfytTkFmSesGM8ACGVxMTvAV+QnLEsW30ekRO7KBlgbPaCIfyW43EAEBRASf1G
+         cAWT6KubbQb/MZ/Kcop+v40ALAUTs5UuGQO9X82tdhvspHYGSxnu++txERdwY80zgX
+         pnL/WcILOIu5Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E000DF60794;
-        Thu, 13 Jan 2022 01:10:05 +0000 (UTC)
-Subject: Re: [GIT PULL] LEDs changes for v5.17-rc1
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 22F49F60794;
+        Thu, 13 Jan 2022 01:10:17 +0000 (UTC)
+Subject: Re: [GIT PULL] Devicetree updates for v5.17
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220112184611.GA2187@duo.ucw.cz>
-References: <20220112184611.GA2187@duo.ucw.cz>
-X-PR-Tracked-List-Id: <linux-leds.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220112184611.GA2187@duo.ucw.cz>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.17-rc1
-X-PR-Tracked-Commit-Id: 9e87a8da747bf72365abb79e6f64fcca955b4f56
+In-Reply-To: <Yd8zXGvAUrvyw+ki@robh.at.kernel.org>
+References: <Yd8zXGvAUrvyw+ki@robh.at.kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Yd8zXGvAUrvyw+ki@robh.at.kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-for-5.17
+X-PR-Tracked-Commit-Id: e623611b4d3f722b57ceeaf4368ac787837408e7
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d9b5941bb5933932051e315de18a43db7d3c9e13
-Message-Id: <164203620587.494.17294799514865274194.pr-tracker-bot@kernel.org>
-Date:   Thu, 13 Jan 2022 01:10:05 +0000
-To:     Pavel Machek <pavel@ucw.cz>
+X-PR-Merge-Commit-Id: 4eb766f64d120f0b80ec24282df789b7db2ff838
+Message-Id: <164203621713.494.15058005980189418215.pr-tracker-bot@kernel.org>
+Date:   Thu, 13 Jan 2022 01:10:17 +0000
+To:     Rob Herring <robh@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kernel list <linux-kernel@vger.kernel.org>,
-        jacek.anaszewski@gmail.com, linux-leds@vger.kernel.org
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Frank Rowand <frowand.list@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 12 Jan 2022 19:46:11 +0100:
+The pull request you sent on Wed, 12 Jan 2022 14:00:28 -0600:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git/ tags/leds-5.17-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git tags/devicetree-for-5.17
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d9b5941bb5933932051e315de18a43db7d3c9e13
+https://git.kernel.org/torvalds/c/4eb766f64d120f0b80ec24282df789b7db2ff838
 
 Thank you!
 
