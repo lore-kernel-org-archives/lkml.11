@@ -2,88 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60313C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BECFC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:08:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235538AbiAMNyY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56476 "EHLO
+        id S235576AbiAMOIV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 09:08:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiAMNyX (ORCPT
+        with ESMTP id S229611AbiAMOIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:54:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33F9C06173F;
-        Thu, 13 Jan 2022 05:54:22 -0800 (PST)
+        Thu, 13 Jan 2022 09:08:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE8FCC06173F;
+        Thu, 13 Jan 2022 06:08:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C68561873;
-        Thu, 13 Jan 2022 13:54:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 734ABC36AED;
-        Thu, 13 Jan 2022 13:54:21 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="iag1Pjyt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642082058;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=61YSROwWE/Gcp7WTXjpiVvqSydZzak+NmIjnkeum6eQ=;
-        b=iag1Pjyt5hj2O7W99Cq8EWehILGtjwKA5fFqIciqQlDVCeAeFVfVnDT/VFWpNePsajIVJl
-        HhzMdZOagjz91mrG7CzGtTq4CoakhKpL7KxoLT9+/tTGl222fdIX9rutSGgsawnpvyvRWQ
-        KwTYtRZ1o9SRq+hsa+o26HU7pwIgpYM=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 716f9775 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 13 Jan 2022 13:54:18 +0000 (UTC)
-Received: by mail-yb1-f176.google.com with SMTP id p187so15266838ybc.0;
-        Thu, 13 Jan 2022 05:54:17 -0800 (PST)
-X-Gm-Message-State: AOAM5311JJBOC4o92Mm2aN8iI0ox6G6P9nDSnXmlIRNQh1WpQ3C0nWWd
-        q9X3dhYkjpQMu80ojMqy0gGGwtvTXywWVQXBezY=
-X-Google-Smtp-Source: ABdhPJwjbRd36GMfxwrG3pG8iDeZufs5Li2mGATKWmYMFJUbMvilv8ZPwE22YlkQM3JQRSbI4zFZEQJ56ru2gKTVYiA=
-X-Received: by 2002:a25:854f:: with SMTP id f15mr6074236ybn.121.1642082056304;
- Thu, 13 Jan 2022 05:54:16 -0800 (PST)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADB00B82244;
+        Thu, 13 Jan 2022 14:08:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78CE6C36AE9;
+        Thu, 13 Jan 2022 14:08:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642082896;
+        bh=AGXrB6RyRlJGlxXBTGJ56tVcl5sCtnIbd+sOvFKcyCs=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JacG3I6VacRn9ssc1DqBNDh/6vt2laJIPLsgwmfG+tz5afXRM5WWshvos8zBoShl1
+         nCBUJVi5AqhbRox0EAJN5UKOlRPptcJVL/hD0rOW1U3Qrjfem6qu/aFpy9SsB9exK6
+         OfQ11o89t5mB9ZeZihirdKjIikuC9GwFt0cEOLd5y8mGVt27pN8XyX1tNxgBblmnXQ
+         XpKzTNVgF34QoCzwoaw11xD3kv3RXe/1CNh7of3vy99PexXY1SsW6BkW7j5CbOjBZf
+         8nGABQIeFJUGyIRHULR/AM4PaqHlqWtUX605+Pv5LJZlf/m/S8KzGdfa7TT8qg8N+a
+         QODIDMMi48Uvg==
+Received: by mail-ed1-f44.google.com with SMTP id 30so23543712edv.3;
+        Thu, 13 Jan 2022 06:08:16 -0800 (PST)
+X-Gm-Message-State: AOAM5328Ndem5EHAsstTKa8lVRXzkpMGKN0rwEgQ6Ev/AriVjaCFBsIq
+        x/Rg/YAfwVFjebLK7kMDfq+YXoZBhjvG9khO8g==
+X-Google-Smtp-Source: ABdhPJz+GHMwRV43sdBzHOeq12c86XZ9NFpJ+TiS7boAD3AIss0eauOXeqU8D6mHwfFBb9xoSuThXxy1UPREBNztaR4=
+X-Received: by 2002:a50:cf4e:: with SMTP id d14mr4349160edk.2.1642082894743;
+ Thu, 13 Jan 2022 06:08:14 -0800 (PST)
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
- <87r19cftbr.fsf@toke.dk> <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
- <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
- <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
- <87ilung3uo.fsf@toke.dk> <CAHmME9onde38SNBBsmypzr_QDSDiQ_0opPiqJ7sU5X-iMDtncQ@mail.gmail.com>
- <CAMj1kXE0Hhi1kgXx2vNchoKOrQOZEBg1V6c5w7if3yN4_GNn8g@mail.gmail.com>
-In-Reply-To: <CAMj1kXE0Hhi1kgXx2vNchoKOrQOZEBg1V6c5w7if3yN4_GNn8g@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Thu, 13 Jan 2022 14:54:05 +0100
-X-Gmail-Original-Message-ID: <CAHmME9qLPxVSypcMECUjNeFz8qeUpeDe-LiXFoZTBYnGW9=ukQ@mail.gmail.com>
-Message-ID: <CAHmME9qLPxVSypcMECUjNeFz8qeUpeDe-LiXFoZTBYnGW9=ukQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Erik Kline <ek@google.com>,
-        Fernando Gont <fgont@si6networks.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        YOSHIFUJI Hideaki <hideaki.yoshifuji@miraclelinux.com>
+References: <20220110214456.67087-1-sander@svanheule.net> <Yd46ayLnvT/3ch9e@robh.at.kernel.org>
+ <71fffde0704d240f5ec8773fe0e738b6e069a6b8.camel@svanheule.net>
+In-Reply-To: <71fffde0704d240f5ec8773fe0e738b6e069a6b8.camel@svanheule.net>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 13 Jan 2022 08:08:03 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJ--59aMz1YaWTP=ZJDw9=uxRNDG-ZJ1wTCL5gZAKsRSA@mail.gmail.com>
+Message-ID: <CAL_JsqJ--59aMz1YaWTP=ZJDw9=uxRNDG-ZJ1wTCL5gZAKsRSA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: power: reset: gpio-restart: Correct default priority
+To:     Sander Vanheule <sander@svanheule.net>
+Cc:     Sebastian Reichel <sre@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        devicetree@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 2:50 PM Ard Biesheuvel <ardb@kernel.org> wrote:
-> > Then, at some point down the road, we can talk about removing
-> > CONFIG_NET_OBSOLETE_INSECURE_ADDRCONF_HASH too.
-> >
+On Wed, Jan 12, 2022 at 2:49 PM Sander Vanheule <sander@svanheule.net> wrote:
 >
-> What is the point of having CONFIG_OLD_N_CRUSTY if all distros are
-> going to enable it indefinitely?
+> Hi Rob,
+>
+> On Tue, 2022-01-11 at 20:18 -0600, Rob Herring wrote:
+> > On Mon, 10 Jan 2022 22:44:56 +0100, Sander Vanheule wrote:
+> > > Commit bcd56fe1aa97 ("power: reset: gpio-restart: increase priority
+> > > slightly") changed the default restart priority 129, but did not update
+> > > the documentation. Correct this, so the driver and documentation have
+> > > the same default value.
+> > >
+> > > Signed-off-by: Sander Vanheule <sander@svanheule.net>
+> > > ---
+> > > This is a resubmission of RFC:
+> > > https://lore.kernel.org/all/cfcd00257daba5aa30b8d20a62ba542be1a6914c.1640887456.git.sander@svanheule.net/
+> > >
+> > > The commit message for bcd56fe1aa97 mentions that it is a workaround for
+> > > rk3288-veryon boards. However, commit e28ea9dbc52d3 ("ARM: dts:
+> > > rockchip: add shared rk3288-veyron files") later adds a gpio-restart
+> > > node with a priority value of <200> for those boards, effectively
+> > > rendering bcd56fe1aa97 obsolete (for their use case).
+> > >
+> > > Perhaps bcd56fe1aa97 could just be reverted instead of updating the
+> > > documentation.
+> > >
+> > > An argument against reverting (a 6 year old patch) is that other boards
+> > > may have come to depend on the default value of 129. I don't know about
+> > > out-of-tree user of gpio-restart, but there are a few in-tree users of
+> > > gpio-restart /without/ an explicit priority:
+> > >
+> > > arch/arm/boot/dts/imx53-ppd.dts (commit 2952d67637716)
+> > >   DTS submitted after changed default, but DTS copyright predates the
+> > >   changed default.
+> > >
+> > > arch/microblaze/boot/dts/system.dts (commit 7cca9b8b7c5bc)
+> > >   The original DTS commit predates the changed default, but didn't use
+> > >   gpio-restart. The commit adding gpio-restart appears to indicate no
+> > >   other restart handlers are present on this platform, although it could
+> > >   be these were just being shadowed by the custom restart code.
+> > >
+> > > arch/riscv/boot/dts/sifive/hifive-unleashed-a00.dts (commit 0a91330b2af9f)
+> > >   Recently added board; couldn't find any obvious alternative restart
+> > >   handlers.
+> > >
+> > > Best,
+> > > Sander
+> > >
+> > >  .../devicetree/bindings/power/reset/gpio-restart.yaml         | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > >
+> >
+> > Reviewed-by: Rob Herring <robh@kernel.org>
+>
+> Thanks for the review!
+>
+> I've noticed the devicetree patchwork has this patch marked as "Not  applicable", but
+> linux-pm patchwork has it marked "Handled elsewhere". Since you merged the gpio-restart
+> conversion patch, can you also take this one, Rob?
 
-I think there's probably some combination of
-CONFIG_NET_OBSOLETE_INSECURE_ADDRCONF_HASH and CONFIG_OLD_N_CRUSTY and
-maybe even a CONFIG_GOD_MURDERS_KITTENS that might be sufficiently
-disincentivizing? Or this ties into other general ideas on a gradual
-obsolescence->removal flow for things.
+Yes, I'll pick it up.
+
+Rob
