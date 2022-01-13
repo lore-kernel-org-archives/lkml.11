@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D151C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 17:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 963C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 17:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237077AbiAMRHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 12:07:53 -0500
-Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:45760 "EHLO
+        id S237019AbiAMRHy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 12:07:54 -0500
+Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:27518 "EHLO
         mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233652AbiAMRHs (ORCPT
+        by vger.kernel.org with ESMTP id S233696AbiAMRHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 12:07:48 -0500
+        Thu, 13 Jan 2022 12:07:49 -0500
 Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20DGAV40020998;
-        Thu, 13 Jan 2022 11:07:33 -0600
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20DGAV43020998;
+        Thu, 13 Jan 2022 11:07:36 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=HI6bEErhvsZPIb7ephN7Y9393a6abI1s2gAyNDkJZXY=;
- b=AAVok25Aem42bor/3GPosb7Owzp05/4x22OYdTpKbVqaekymMPC8ll7a1A6cixEwXajk
- qv4UgpFBP9DFZf7As1F3IWVuW/o5aHTun4o65BEoExgZE6KJ+EzbjHRqYJ7jGG4FRdf2
- tThu54E6vm6fow7jR9DGB6WkfDodYjl1vxfl16RV/hlfsHZa1tyKQVb+cXOhM44hydKY
- 0VtgMgwrB8jLHv8MdJaOZ33HKnUDViKK/KgmzkF6LCDWaE0Yg7Z65L6IBjvEq7GCdpoe
- e00jgNgK6vVtA8EZSRAD1+ghvWmpfdvej6+kP/wiwmZemhJ4fXmPr1nCDYddu+6GOiLf Bg== 
+ bh=GSiBkVP9UmloE0oIArp77dF5D6A7HQmpsTBzlpdvMyY=;
+ b=VHybBKuHOuMu13cAI/5M7TPpZbLvYs2eSzykmjI8f57kUHaif2g9ZViibiMJjkb0P19u
+ aBOg+nOF+esO59I+eH6mB9c54P/ISMrj8nrh17LWstrUucXs5kvUKRCpE11pdHzaniJB
+ lOQYhp4hv7H+RFqjhoL7NS0mkbaivQEZ0kxBXjl7FwKEEt5cT93OYrHyyWACbqT2JUqo
+ IFwtaUTjuCrtFGjzHhSKYqFFD9/gZOAk+ndrNzHkuUe6H01z2BsK0iae3nnXgIuv37pz
+ RNafqMxCfNakLoUdA2e2znNnnZWW/HnPHPxEK4XquZqNkLmBBwBOs2M90PSIFfL6Ger8 hQ== 
 Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3djqcb026y-1
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3djqcb026y-4
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 13 Jan 2022 11:07:33 -0600
+        Thu, 13 Jan 2022 11:07:35 -0600
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
  (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 13 Jan
- 2022 17:07:31 +0000
+ 2022 17:07:32 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Thu, 13 Jan 2022 17:07:31 +0000
+ Transport; Thu, 13 Jan 2022 17:07:32 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.65.50])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id C7E87B0E;
-        Thu, 13 Jan 2022 17:07:30 +0000 (UTC)
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 23A6AB0E;
+        Thu, 13 Jan 2022 17:07:32 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     "Rafael J . Wysocki" <rafael@kernel.org>,
         Len Brown <lenb@kernel.org>,
@@ -48,66 +48,75 @@ CC:     <alsa-devel@alsa-project.org>, <linux-acpi@vger.kernel.org>,
         <patches@opensource.cirrus.com>,
         <platform-driver-x86@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH 2/5] ALSA: hda: cs35l41: Add calls to newly added test key function
-Date:   Thu, 13 Jan 2022 17:07:25 +0000
-Message-ID: <20220113170728.1953559-2-tanureal@opensource.cirrus.com>
+Subject: [PATCH 5/5] ACPI / scan: Create platform device for CLSA0100
+Date:   Thu, 13 Jan 2022 17:07:28 +0000
+Message-ID: <20220113170728.1953559-5-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220113170728.1953559-1-tanureal@opensource.cirrus.com>
 References: <20220113170728.1953559-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: pmEixx5NJrqnbqps-fMLCBxpSSPyDnrM
-X-Proofpoint-ORIG-GUID: pmEixx5NJrqnbqps-fMLCBxpSSPyDnrM
+X-Proofpoint-GUID: 6hGjFieOBt8Dt08GJJouyJ77KoV70pmi
+X-Proofpoint-ORIG-GUID: 6hGjFieOBt8Dt08GJJouyJ77KoV70pmi
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+The ACPI device with CLSA0100 is a sound card with
+multiple instances of CS35L41 connected by I2C to
+the main CPU.
 
-The test key now needs to be manually held when calling
-cs35l41_register_errata_patch, after patch:
+We add an ID to the i2c_multi_instantiate_idsi list
+to enumerate all I2C slaves correctly.
 
-'commit f517ba4924ad ("ASoC: cs35l41: Add support for
-hibernate memory retention mode")'
-
-Add the missing function calls to this driver.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/acpi/scan.c                          | 2 ++
+ drivers/platform/x86/i2c-multi-instantiate.c | 8 ++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index c47c5f0b4e59..509a380f9be7 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -463,6 +463,10 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 		goto err;
- 	}
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index c215bc8723d0..2a68031d953e 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1753,6 +1753,8 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	 */
+ 		{"BCM4752", },
+ 		{"LNV4752", },
++	/* Non-conforming _HID for Cirrus Logic already released */
++		{"CLSA0100", },
+ 		{}
+ 	};
  
-+	ret = cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
-+	if (ret)
-+		goto err;
-+
- 	ret = cs35l41_register_errata_patch(cs35l41->dev, cs35l41->regmap, reg_revid);
- 	if (ret)
- 		goto err;
-@@ -473,6 +477,10 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
- 		goto err;
- 	}
+diff --git a/drivers/platform/x86/i2c-multi-instantiate.c b/drivers/platform/x86/i2c-multi-instantiate.c
+index 4956a1df5b90..a51a74933fa9 100644
+--- a/drivers/platform/x86/i2c-multi-instantiate.c
++++ b/drivers/platform/x86/i2c-multi-instantiate.c
+@@ -147,6 +147,12 @@ static const struct i2c_inst_data int3515_data[]  = {
+ 	{}
+ };
  
-+	ret = cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);
-+	if (ret)
-+		goto err;
++static const struct i2c_inst_data cs35l41_hda[] = {
++	{ "cs35l41-hda", IRQ_RESOURCE_GPIO, 0 },
++	{ "cs35l41-hda", IRQ_RESOURCE_GPIO, 0 },
++	{}
++};
 +
- 	ret = cs35l41_hda_apply_properties(cs35l41, acpi_hw_cfg);
- 	if (ret)
- 		goto err;
+ /*
+  * Note new device-ids must also be added to i2c_multi_instantiate_ids in
+  * drivers/acpi/scan.c: acpi_device_enumeration_by_parent().
+@@ -155,6 +161,8 @@ static const struct acpi_device_id i2c_multi_inst_acpi_ids[] = {
+ 	{ "BSG1160", (unsigned long)bsg1160_data },
+ 	{ "BSG2150", (unsigned long)bsg2150_data },
+ 	{ "INT3515", (unsigned long)int3515_data },
++	/* Non-conforming _HID for Cirrus Logic already released */
++	{ "CLSA0100", (unsigned long)cs35l41_hda },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, i2c_multi_inst_acpi_ids);
 -- 
 2.34.1
 
