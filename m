@@ -2,93 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 776DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 580BDC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 21:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234991AbiAMVN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 16:13:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43252 "EHLO
+        id S235010AbiAMVS0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 16:18:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiAMVNZ (ORCPT
+        with ESMTP id S229931AbiAMVSZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 16:13:25 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE87CC061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:13:24 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id s30so23992106lfo.7
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 13:13:24 -0800 (PST)
+        Thu, 13 Jan 2022 16:18:25 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4043C061574;
+        Thu, 13 Jan 2022 13:18:24 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id w188so9551536oiw.13;
+        Thu, 13 Jan 2022 13:18:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HmqAYxgpA0scTJAvK7dTWukaikRwll6NfdHgV3FJwSE=;
-        b=cWMt40jsjwER7A5AR26Fw81PawiMyOYQkOmbMQK1h/V+J+quNTA61VI1dxXtxjbbx7
-         L5PIuCaAqT1XPrREVjJF3uUNG5mzo4aC/H1zafdm6YssoUdpoUeQPdsOE+7b4/iBxkDr
-         R/CT05wxx2wWFLPjp2wjkr6/kFhXHFlQueks08IbprrsgEgBZ7msVKjHOE3nXLaM4jL4
-         QunC41morUIb54/tnsr4lqy2O1OuDFpQj7l8YIuoJr7nJ45L5rkC4531rmK95RCYiLAp
-         Im4CNh1Gu3FTpD602hrlF6JFmzxq6VvkBcgAVot06/L+8cdvJ9hXCUbqqWMLdNWExkAd
-         Uacg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3U7xOer6sVly35j98UB0sJ9y2HM48yZDB/QDh60PHbU=;
+        b=JH3d15RUin0nTH8Ayj5BEWgODrPOPrwVEkCsrskOBAC/QKzwqaQuFcT1pW58RiAnb4
+         YJ6Ppu9RVisSHpFYPHyJePiRczvMd2SxJJy0z2Shaa40tbb+VVzu0HuK6C8cZ6tnKJdb
+         xpF/OrgLjm1kIS5FItD8q/x++1jaJTFzqUn36znrghK3hIDGc/6HPlThESC4pUs9Bq21
+         PbDaFbUTmQ0HurqF4vwNltxzOBpJjdApT7vX1IT4s3naZ0DvV9Jw410H5swUQO+WCxRs
+         1uutuhK9pwVmlQRN7vkG2URo5gMHWYuTvdDbLer7ScWwxo3R9vnZXRTQfMq9DWPKy7Z1
+         GVLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=HmqAYxgpA0scTJAvK7dTWukaikRwll6NfdHgV3FJwSE=;
-        b=QZX5fiCjSRCi6HRd1KpPt4qU3jtROUpwD41QRE+JbZxpoRVZk5ge2Bg4fK0oGy7a15
-         Et/MpwnowLxbEa0cUxFPXzKn/nKGdJRrgdbrcbjeDgUJ360DjQeX1yDlTjvJtSXOuOGT
-         fcLYMhQRM26l79txdXFdHtxIX887bbeOAOn7KbCHbYdrE+28XTktp4YOaFPdshPySjVx
-         uZJMoebaTblb5CKU/QhpmV9WSIKrjFAuX4yoR8jjelvqa/ccPe9/galgyK5qXub831yY
-         gIvDNvz4GHFraiRJgz9G0spGVnI8xDkuzvXHZEtAeoNZXNZwh7vfdkQvgetKF0zXrfIF
-         pCiw==
-X-Gm-Message-State: AOAM530spmusueTy1+YaPPOz5dVD3VjGAWVZpbtHMCzvjPn2iGIbsqHp
-        vj1FTsypRy3OAP/G1znXmXE=
-X-Google-Smtp-Source: ABdhPJzo2yBEzqR+x98qeSJ+QK3EJNKY4unSx1UssoA3XS3l68P0mc2CwWCtakAy4/Egc5F8Zn2GHg==
-X-Received: by 2002:a05:6512:33d0:: with SMTP id d16mr4050141lfg.28.1642108403326;
-        Thu, 13 Jan 2022 13:13:23 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id p9sm391807lfu.83.2022.01.13.13.13.22
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Thu, 13 Jan 2022 13:13:22 -0800 (PST)
-Date:   Fri, 14 Jan 2022 00:19:03 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220113211903.tnzyqxb47lf3uw7z@localhost.localdomain>
-User-Agent: mtt
-References: <20210519170357.58410-1-jeremy.szu@canonical.com>
- <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
- <s5ho84h9tit.wl-tiwai@suse.de>
- <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
- <s5hilup9s87.wl-tiwai@suse.de>
- <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
- <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
- <s5h8rvk85uy.wl-tiwai@suse.de>
- <20220113183141.kla37mbqmo4x6wxp@localhost.localdomain>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3U7xOer6sVly35j98UB0sJ9y2HM48yZDB/QDh60PHbU=;
+        b=Qnh0CpoCcD1SOso3gMqVG/r3nHmteGRJAm6uSea1hBl0UabFJhfk/uosX/gjJA17i6
+         e/AE0n1NjieNSGja18/1saFs25eHmQDkKgrUWnXbZBRZHxKntOmy99oFthlzThjCz+kY
+         bwZNtWvKZczVodzQIGte5eyEZoMDqnQxWIL4Nds2aFeidYwaLwWhbwAf0YOEGGcNH9mq
+         Z6Zn+e0h6iqSWafxAvttuCJHEY8+tCLzAtjUoRaBwA6vw3asPyfxhwEPaZlo/XQiBMsR
+         gvW+jzyWB7KVpUFfhmCnDW4RMvuiJTxXqGGKyZj691f7CO4Vlff6L5t/iNcuRhFB+uvN
+         RkOA==
+X-Gm-Message-State: AOAM530IDMu5Zx4alItXWBAPdhh4Ks11Wn1ZlT5gyddPYFG6TJudewwP
+        vYM/WoKwXPv7oHFBOyW3b5M=
+X-Google-Smtp-Source: ABdhPJzXE/1It7WKP+/LtUmegsDmnTpvyMx15/3Iav2IhHGUrEnkgWndiF4moTtfVpUJnGCy8umDlQ==
+X-Received: by 2002:a05:6808:190f:: with SMTP id bf15mr4742157oib.23.1642108704077;
+        Thu, 13 Jan 2022 13:18:24 -0800 (PST)
+Received: from Andrews-MBP-2.attlocal.com ([2600:1700:19e0:3310:f8ba:b1e:54e1:cdfc])
+        by smtp.gmail.com with ESMTPSA id z188sm932015ooa.8.2022.01.13.13.18.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 13 Jan 2022 13:18:23 -0800 (PST)
+From:   Andrew Geissler <geissonator@gmail.com>
+X-Google-Original-From: Andrew Geissler <geissonator@yahoo.com>
+To:     joel@jms.id.au, andrew@aj.id.au, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc:     Andrew Geissler <geissonator@yahoo.com>,
+        linux-gpio@vger.kernel.org, openbmc@lists.ozlabs.org
+Subject: [PATCH 1/2] ARM: dts: aspeed: rainier: add reset-cause-pinhole
+Date:   Thu, 13 Jan 2022 15:17:34 -0600
+Message-Id: <20220113211735.37861-1-geissonator@yahoo.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220113183141.kla37mbqmo4x6wxp@localhost.localdomain>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 09:31:43PM +0300, Alexander Sergeyev wrote:
->This is the only change in /proc/asound after the first arecord run. Overall, 
->seems like a small annoyance, but I'm curious -- is it how it's supposed to 
->work?
+This GPIO is used on the rainier system to indicate the BMC was reset
+due to a physical pinhole reset.
 
-Just to clarify, this particular Digital control behavior is the same on live 
-Ubuntu (which uses modules and supposedly works correctly).
+See the following doc for more information:
+https://github.com/openbmc/docs/blob/master/designs/device-tree-gpio-naming.md
 
-Also, I've posted a patch for review. It adds the quirk for my PCI subdevice id 
-which is not present in the current set of SND_PCI_QUIRK. The former micmute 
-quirk was picked up by the codec SSID and not PCI id. The patch fixes the 
-speakers problem for me (including the built-in drivers usecase).
+Signed-off-by: Andrew Geissler <geissonator@yahoo.com>
+---
+ arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts b/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
+index cfaa606666e2..7ea70c7d698f 100644
+--- a/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
++++ b/arch/arm/boot/dts/aspeed-bmc-ibm-rainier.dts
+@@ -247,7 +247,8 @@ &gpio0 {
+ 	/*C0-C7*/	"","","","","","","","",
+ 	/*D0-D7*/	"","","","","","","","",
+ 	/*E0-E7*/	"","","","","","","","",
+-	/*F0-F7*/	"","","battery-voltage-read-enable","","","","factory-reset-toggle","",
++	/*F0-F7*/	"","","battery-voltage-read-enable","reset-cause-pinhole","","",
++				"factory-reset-toggle","",
+ 	/*G0-G7*/	"","","","","","","","",
+ 	/*H0-H7*/	"","bmc-ingraham0","rear-enc-id0","rear-enc-fault0","","","","",
+ 	/*I0-I7*/	"","","","","","","bmc-secure-boot","",
+-- 
+2.25.1
+
