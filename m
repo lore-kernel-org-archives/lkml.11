@@ -2,119 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7421C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C31AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234559AbiAMMe3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 07:34:29 -0500
-Received: from fanzine2.igalia.com ([213.97.179.56]:48688 "EHLO
-        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231406AbiAMMe1 (ORCPT
+        id S232900AbiAMMfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 07:35:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38096 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229991AbiAMMfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 07:34:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wQtWtM09iBZmv9xk/tKCHMTRNvqGx3TjjRoBe9wm/LU=; b=T/nlGduKLAmP914ehy5z6eigbO
-        HE+Udp55VhMN/ysDgyvboww/3sO6Guh6kuase0068mrKcRuJcMuZOOOYaqkv6teyNLF5IDJzyGRZC
-        SbG1g04uyz0CekByOMKONs4DGkSMVvjntDjmKDaBzpgpyNwi6YSKasSgV7IMAFreDQR8CuVq/dhuS
-        7iVOE3TC824sBA3sX9PMpL1XI8gsX4e5tCk12Ou9Q7QXDsHSSdHhO89NxAXiwGo5jd8mGDnYh66sY
-        PkjyW/la5XPjIbJ+/GV9hAIK1YFxP54O1hZjGQkmlFOYTtWns21tM9g2UMIiJCFGhCwnQCW5oH+G2
-        fVpRJWDQ==;
-Received: from [179.113.53.20] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1n7zJ7-0006eF-Fv; Thu, 13 Jan 2022 13:34:21 +0100
-Message-ID: <ba0e29ba-0e08-df6e-ade5-eb58ae2495e3@igalia.com>
-Date:   Thu, 13 Jan 2022 09:34:01 -0300
+        Thu, 13 Jan 2022 07:35:34 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47474C06173F;
+        Thu, 13 Jan 2022 04:35:34 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id t24so22438622edi.8;
+        Thu, 13 Jan 2022 04:35:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LftLg0r0Faw+W6UND9T0SXsUaqtJ0ZRucKUPsxlKlXc=;
+        b=hYIWlIYnpsLWMFOV8ltzNbs8XDcKpvGbzs+nnSbI/PBIgULVwJ7cEpXfqH+d4nHJh1
+         rEGAf0ZTTkAwky3PhZfJXabZaUcy9Khsn/GsO5ift9lfdrcPPKXOA/TaI+qJKpWNgTjk
+         7H19U57b2TiDXmtRVczH+sYbHveb2BJvXk+OnE69uzL8um5TBqqlKT+Z0Jf2Wj7Vmgt+
+         FwUjaB8v3YVh7zbdqFrC/dSM2qXDz9Tt7MAVKXDcDWza0ttWs+OSWrsHqMOLk4IvCNhv
+         AJhKj+ARGsf+K9wcw11aJzcQ/FVIzdhDvKD1N0WvjOg4NBF+tGTf8iJbQZef2/J6pPIo
+         HZ7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LftLg0r0Faw+W6UND9T0SXsUaqtJ0ZRucKUPsxlKlXc=;
+        b=We8gh/sQhhnaHWIBT+VM9mJ5tas56p/PIVZUWjGs778XTXLAx+GzLZCQ5MmauJoy5u
+         iLhONUcOLsIEb81SlidnoPEie+o5h2PEsfWHhmVdfyOpTwTVr9rMDSOBYr3n+x2xyQ24
+         HGFrTtRy71QaRigQf0PClO9y4PEPFU5KUWGLX4pU8MjPNmkqfXJCZq1dFheFKjoQ8fa0
+         kKGyI78Up6GSC84Z7f6Si6jYsOB8v0wmkH555O4S9F2VTpWBHdAHEs/qqXf1iHPQ4kMQ
+         /ex+ZWCGn3+X/Qo8J2zvOJiu7vk3iVn7GJRAjpOpuCBTQNES+GyewQDIZ9UrmSuY1aZa
+         TCYQ==
+X-Gm-Message-State: AOAM533jeVBDPg1j1Xg60fBVt7Q+OiBTl72aWnbLvmqyIW5d6xuNky5Q
+        24EY8kx0vwRxNT8KLV3+7tQ=
+X-Google-Smtp-Source: ABdhPJyqdzUl4Aa3NbTKIeeuDRq1eL9MwIEfCFaL0CYvjb77VO6b8ZIIh7qD5UrrkpxX6b75E6U1RA==
+X-Received: by 2002:a17:906:4fcc:: with SMTP id i12mr3386976ejw.529.1642077332873;
+        Thu, 13 Jan 2022 04:35:32 -0800 (PST)
+Received: from skbuf ([188.25.255.2])
+        by smtp.gmail.com with ESMTPSA id lb11sm829889ejc.216.2022.01.13.04.35.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 04:35:32 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+X-Google-Original-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Date:   Thu, 13 Jan 2022 14:35:30 +0200
+To:     Maxim Kiselev <bigunclemax@gmail.com>
+Cc:     fido_max@inbox.ru, Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, devicetree@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] powerpc: dts: t104xrdb: fix phy type for FMAN 4/5
+Message-ID: <20220113123530.dn33ze7yvg2jlnfv@skbuf>
+References: <20211230151123.1258321-1-bigunclemax@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V2] panic: Move panic_print before kmsg dumpers
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        kernel@gpiccoli.net, senozhatsky@chromium.org, rostedt@goodmis.org,
-        john.ogness@linutronix.de, feng.tang@intel.com,
-        kexec@lists.infradead.org, dyoung@redhat.com,
-        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com
-References: <20220106212835.119409-1-gpiccoli@igalia.com>
- <Yd/0K1x7ILw3Qa46@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yd/0K1x7ILw3Qa46@alley>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211230151123.1258321-1-bigunclemax@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/01/2022 08:50, Petr Mladek wrote:
->> @@ -249,7 +252,7 @@ void panic(const char *fmt, ...)
->>  	 * show some extra information on kernel log if it was set...
->>  	 */
->>  	if (kexec_crash_loaded())
->> -		panic_print_sys_info();
->> +		panic_print_sys_info(false);
+On Thu, Dec 30, 2021 at 06:11:21PM +0300, Maxim Kiselev wrote:
+> T1040RDB has two RTL8211E-VB phys which requires setting
+> of internal delays for correct work.
 > 
-> panic_print_sys_info(false) will be called twice when both
-> kexec_crash_loaded() and _crash_kexec_post_notifiers are true.
+> Changing the phy-connection-type property to `rgmii-id`
+> will fix this issue.
 > 
-> Do we really need to call panic_print_sys_info() here? All information
-> provided by panic_print_sys_info(false) can be found also in
-> the crash dump.
+> Signed-off-by: Maxim Kiselev <bigunclemax@gmail.com>
+> Reviewed-by: Maxim Kochetkov <fido_max@inbox.ru>
+> ---
+
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+>  arch/powerpc/boot/dts/fsl/t104xrdb.dtsi | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
->>  	/*
->>  	 * If we have crashed and we have a crash kernel loaded let it handle
->> @@ -283,6 +286,8 @@ void panic(const char *fmt, ...)
->>  	 */
->>  	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
->>  
->> +	panic_print_sys_info(false);
+> diff --git a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+> index 099a598c74c00..bfe1ed5be3374 100644
+> --- a/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+> +++ b/arch/powerpc/boot/dts/fsl/t104xrdb.dtsi
+> @@ -139,12 +139,12 @@ pca9546@77 {
+>  		fman@400000 {
+>  			ethernet@e6000 {
+>  				phy-handle = <&phy_rgmii_0>;
+> -				phy-connection-type = "rgmii";
+> +				phy-connection-type = "rgmii-id";
+>  			};
+>  
+>  			ethernet@e8000 {
+>  				phy-handle = <&phy_rgmii_1>;
+> -				phy-connection-type = "rgmii";
+> +				phy-connection-type = "rgmii-id";
+>  			};
+>  
+>  			mdio0: mdio@fc000 {
+> -- 
+> 2.32.0
 > 
-> This is where the info might be printed 2nd time.
-> 
->> +
->>  	kmsg_dump(KMSG_DUMP_PANIC);
->>  
->>  	/*
-> 
-> Otherwise, the change makes sense to me.
-> 
-> Best Regards,
-> Petr
 
-Hi Petr, thanks for your great review!
-I see you also commented in the thread of the patch introducing the
-panic_print_sys_info() before kdump.
-
-Thanks for catching this issue - indeed, if
-"_crash_kexec_post_notifiers" is true, with this patch we print stuff
-twice. I will submit a V3 that guards against that, using a bool, makes
-sense to you?
-
-The interesting question here is:
-> Do we really need to call panic_print_sys_info() here? All information
-> provided by panic_print_sys_info(false) can be found also in
-> the crash dump.
-
-So, we indeed need that in our use case. Crash is meant to be used
-post-mortem, i.e., you made a full vmcore collection and then, of
-course, you have basically all the data you need accessible though the
-crash tool.
-
-Problem is: in our use case, we want more data than a regular dmesg in a
-panic event (hence we use panic_print), but we don't collect a full
-crash dump, due to its big size. Also, as you can imagine, we do favor
-pstore over kdump, but it might fail due to a variety of reasons (like
-not having a free RAM buffer for ramoops), so kdump is our fallback.
-Hence, we'd like to be able to use panic_print with both kdump and
-pstore, and for that, both patches are needed.
-
-Cheers,
-
-
-Guilherme
