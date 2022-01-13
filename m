@@ -2,129 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F7DC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:58:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:59:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235883AbiAMO6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 09:58:54 -0500
-Received: from mga09.intel.com ([134.134.136.24]:45230 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232357AbiAMO6x (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 09:58:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642085933; x=1673621933;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QdalcrLT+EXEFCP4SwYxznovdQL1Uvdbiea5hcb4Qoc=;
-  b=EoBkgmEWWgRQp/MikOgcDuaefaOpXJkU7GnmXRf4ScM61bPoesWyBMU+
-   RZyGMF2C9PrV00NtYh/WqZHnnae27pG6QYx9YcQLjV/4HYO9L7n9UyfEP
-   jWa4/xRXkJJ5VAGHESs5Q55zrpH6FnLs7tPQWT51LPSdSx/W5JaBAkf4j
-   y9p1zrzrqBm+TSsbsn10iUrk2k7ujgrgDR3NrrKJrRK73s5Wl69B8lm4h
-   9e8BZGw1nRkarzT5Lm6ir5ykWvXbtdv1B4Q4PD9QMWQx9zv5BsNnICDN6
-   QoRQ+lgGNnQT208B6mwU0dv0VPlJCCasZnB8ULVujVCmsC8xLDDKL9zxL
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="243820689"
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="243820689"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 06:58:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="593364567"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Jan 2022 06:58:51 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n81Yw-0007Jl-Ri; Thu, 13 Jan 2022 14:58:50 +0000
-Date:   Thu, 13 Jan 2022 22:58:24 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: include/linux/compiler_types.h:319:45: error: call to
- '__compiletime_assert_221' declared with attribute error: BUILD_BUG_ON
- failed: FIX_KMAP_SLOTS > PTRS_PER_PTE
-Message-ID: <202201132244.7zrKls77-lkp@intel.com>
+        id S235893AbiAMO7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 09:59:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38444 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235887AbiAMO7B (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 09:59:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D12261CF5
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 14:59:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B6DDC36AEC;
+        Thu, 13 Jan 2022 14:59:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642085941;
+        bh=9cSTw/jmQFhSGTiDmcNQb3Wo1Aiy5yG6xkZ5iqLIVvQ=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=YMbACkmPJ13w90hJnQbqnYn73GDox+R8nt2lYg46fr9et76jhCTDaPbiqueFH8tdx
+         6MNYf8VsgPkWaEacTy+tXEj9IKknFUnoM0HxkS8XuIMqH2ElNk+s9RdXDjrN3gkUpe
+         UG2m2MhdyU/J4JbAfLDnv2crRGaYqzYMFiO41wBJKDZITen1hNIBRgmcnDwDcWLX24
+         w56kiwwUaFG+gcjwHq876ERArfYIOmlvQSxbYbwKYRXBSu6ATApAOEbld7SNcWF+1O
+         Sf4XkXz2Gbgl8k8g3CjbOjhsXEbUKEhgdekf2m+v6NYNHyMpGzy76DvHF+jGbET7RV
+         I6ayFzWLtoIag==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id B9FB95C00E7; Thu, 13 Jan 2022 06:59:00 -0800 (PST)
+Date:   Thu, 13 Jan 2022 06:59:00 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+4f789823c1abc5accf13@syzkaller.appspotmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Lai Jiangshan <laijs@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        quic_neeraju@quicinc.com, frederic@kernel.org, urezki@gmail.com,
+        boqun.feng@gmail.com
+Subject: Re: [syzbot] KASAN: use-after-free Read in srcu_invoke_callbacks
+Message-ID: <20220113145900.GS947480@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <00000000000081b56205d54c6667@google.com>
+ <20220111134324.1727-1-hdanton@sina.com>
+ <20220112094352.1785-1-hdanton@sina.com>
+ <20220112171247.GM947480@paulmck-ThinkPad-P17-Gen-1>
+ <20220113044938.1881-1-hdanton@sina.com>
+ <20220113131256.1941-1-hdanton@sina.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220113131256.1941-1-hdanton@sina.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Thu, Jan 13, 2022 at 09:12:56PM +0800, Hillf Danton wrote:
+> On Wed, 12 Jan 2022 21:14:59 -0800 Paul E. McKenney wrote:
+> > On Thu, Jan 13, 2022 at 12:49:38PM +0800, Hillf Danton wrote:
+> ...
+> > > > ------------------------------------------------------------------------
+> > > > 
+> > > > commit d730d54e543e5cf7376ff61e3ad407490f08c85e
+> > > > Author: Paul E. McKenney <paulmck@kernel.org>
+> > > > Date:   Wed Jan 12 09:52:44 2022 -0800
+> > > > 
+> > > >     srcu: Tighten cleanup_srcu_struct() GP checks
+> > > >     
+> > > >     Currently, cleanup_srcu_struct() checks for a grace period in progress,
+> > > >     but it does not check for a grace period that has not yet started but
+> > > >     which might start at any time.  Such a situation could result in a
+> > > >     use-after-free bug, so this commit adds a check for a grace period that
+> > > >     is needed but not yet started to cleanup_srcu_struct().
+> > > >     
+> > > >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> > > > 
+> > > > diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
+> > > > index 128034f858897..c78391a5e20dc 100644
+> > > > --- a/kernel/rcu/srcutree.c
+> > > > +++ b/kernel/rcu/srcutree.c
+> > > > @@ -382,9 +382,11 @@ void cleanup_srcu_struct(struct srcu_struct *ssp)
+> > > >  			return; /* Forgot srcu_barrier(), so just leak it! */
+> > > >  	}
+> > > >  	if (WARN_ON(rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)) != SRCU_STATE_IDLE) ||
+> > > > +	    WARN_ON(rcu_seq_current(&ssp->srcu_gp_seq) != ssp->srcu_gp_seq_needed) ||
+> > > >  	    WARN_ON(srcu_readers_active(ssp))) {
+> > > > -		pr_info("%s: Active srcu_struct %p state: %d\n",
+> > > > -			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)));
+> > > > +		pr_info("%s: Active srcu_struct %p read state: %d gp state: %lu/%lu\n",
+> > > > +			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)),
+> > > > +			rcu_seq_current(&ssp->srcu_gp_seq), ssp->srcu_gp_seq_needed);
+> > > >  		return; /* Caller forgot to stop doing call_srcu()? */
+> > > >  	}
+> > > >  	free_percpu(ssp->sda);
+> > > > 
+> > > 
+> > > Without the help from a covid booster, what I can do for the flush_work()
+> > > in cleanup_srcu_struct() is go another round of invoking srcu callbacks
+> > > directly without bothering to queue the work again.
+> > > 
+> > > With the minor change, we are sure work is idle after flush.
+> > 
+> > First, exactly what sequence of events would this change protect against?
+> 
+> It makes sure that work is idle after flush only within cleanup_srcu_struct()
+> regardless of whatever prior to the cleanup.
 
-FYI, the error/warning still remains.
+Nice try, but that answer does not match the question.  ;-)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   455e73a07f6e288b0061dfcf4fcf54fa9fe06458
-commit: 6e799cb69a70eedbb41561b750f7180c12cff280 mm/highmem: Provide and use CONFIG_DEBUG_KMAP_LOCAL
-date:   1 year, 2 months ago
-config: arc-randconfig-r024-20220113 (https://download.01.org/0day-ci/archive/20220113/202201132244.7zrKls77-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=6e799cb69a70eedbb41561b750f7180c12cff280
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 6e799cb69a70eedbb41561b750f7180c12cff280
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash arch/arc/mm/
+I need to know a definite sequence of events corresponding to your
+"whatever prior".
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Otherwise, we are just as likely to be breaking something as we are to be
+fixing something, and the breakage might well be worse than the problem.
 
-All errors (new ones prefixed by >>):
+> > > Hillf
+> > > 
+> > > +++ b/kernel/rcu/srcutree.c
+> > > @@ -1232,12 +1232,6 @@ static void srcu_advance_state(struct sr
+> > >  	}
+> > >  }
+> > >  
+> > > -/*
+> > > - * Invoke a limited number of SRCU callbacks that have passed through
+> > > - * their grace period.  If there are more to do, SRCU will reschedule
+> > > - * the workqueue.  Note that needed memory barriers have been executed
+> > > - * in this task's context by srcu_readers_active_idx_check().
+> > > - */
+> > >  static void srcu_invoke_callbacks(struct work_struct *work)
+> > >  {
+> > >  	long len;
+> > > @@ -1249,6 +1243,7 @@ static void srcu_invoke_callbacks(struct
+> > >  
+> > >  	sdp = container_of(work, struct srcu_data, work);
+> > >  
+> > > +again:
+> > >  	ssp = sdp->ssp;
+> > >  	rcu_cblist_init(&ready_cbs);
+> > >  	spin_lock_irq_rcu_node(sdp);
+> > > @@ -1276,7 +1271,7 @@ static void srcu_invoke_callbacks(struct
+> > >  
+> > >  	/*
+> > >  	 * Update counts, accelerate new callbacks, and if needed,
+> > > -	 * schedule another round of callback invocation.
+> > > +	 * go another round of callback invocation.
+> > >  	 */
+> > >  	spin_lock_irq_rcu_node(sdp);
+> > >  	rcu_segcblist_add_len(&sdp->srcu_cblist, -len);
+> > > @@ -1286,7 +1281,7 @@ static void srcu_invoke_callbacks(struct
+> > >  	more = rcu_segcblist_ready_cbs(&sdp->srcu_cblist);
+> > >  	spin_unlock_irq_rcu_node(sdp);
+> > >  	if (more)
+> > > -		srcu_schedule_cbs_sdp(sdp, 0);
+> > > +		goto again;
+> > >  }
+> > >  
+> > >  /*
+> > 
+> > Second, in non-shutdown conditions, what prevents an infinite loop inside
+> > of srcu_invoke_callbacks()?
+> 
+> That tight loop can be avoid by adding a flushing flag to srcu_data,
+> which is set before flush in cleanup_srcu_struct() and checked at the
+> end of srcu_invoke_callbacks().
+> 
+> Only for thoughts now.
 
-   In file included from <command-line>:
-   arch/arc/mm/highmem.c: In function 'kmap_init':
->> include/linux/compiler_types.h:319:45: error: call to '__compiletime_assert_221' declared with attribute error: BUILD_BUG_ON failed: FIX_KMAP_SLOTS > PTRS_PER_PTE
-     319 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:300:25: note: in definition of macro '__compiletime_assert'
-     300 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:319:9: note: in expansion of macro '_compiletime_assert'
-     319 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   arch/arc/mm/highmem.c:69:9: note: in expansion of macro 'BUILD_BUG_ON'
-      69 |         BUILD_BUG_ON(FIX_KMAP_SLOTS > PTRS_PER_PTE);
-         |         ^~~~~~~~~~~~
+Is the syzbot report reproducible?
 
+							Thanx, Paul
 
-vim +/__compiletime_assert_221 +319 include/linux/compiler_types.h
-
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  305  
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  306  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  307  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  308  
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  309  /**
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  310   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  311   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  312   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  313   *
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  314   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  315   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  316   * compiler has support to do so.
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  317   */
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  318  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2 Will Deacon 2020-07-21 @319  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2 Will Deacon 2020-07-21  320  
-
-:::::: The code at line 319 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> Hillf
+> 
+> +++ b/kernel/rcu/srcutree.c
+> @@ -376,6 +376,9 @@ void cleanup_srcu_struct(struct srcu_str
+>  	for_each_possible_cpu(cpu) {
+>  		struct srcu_data *sdp = per_cpu_ptr(ssp->sda, cpu);
+>  
+> +		spin_lock_irq_rcu_node(sdp);
+> +		sdp->flushing = true;
+> +		spin_unlock_irq_rcu_node(sdp);
+>  		del_timer_sync(&sdp->delay_work);
+>  		flush_work(&sdp->work);
+>  		if (WARN_ON(rcu_segcblist_n_cbs(&sdp->srcu_cblist)))
+> @@ -1232,16 +1235,11 @@ static void srcu_advance_state(struct sr
+>  	}
+>  }
+>  
+> -/*
+> - * Invoke a limited number of SRCU callbacks that have passed through
+> - * their grace period.  If there are more to do, SRCU will reschedule
+> - * the workqueue.  Note that needed memory barriers have been executed
+> - * in this task's context by srcu_readers_active_idx_check().
+> - */
+>  static void srcu_invoke_callbacks(struct work_struct *work)
+>  {
+>  	long len;
+>  	bool more;
+> +	bool flushing;
+>  	struct rcu_cblist ready_cbs;
+>  	struct rcu_head *rhp;
+>  	struct srcu_data *sdp;
+> @@ -1249,6 +1247,7 @@ static void srcu_invoke_callbacks(struct
+>  
+>  	sdp = container_of(work, struct srcu_data, work);
+>  
+> +again:
+>  	ssp = sdp->ssp;
+>  	rcu_cblist_init(&ready_cbs);
+>  	spin_lock_irq_rcu_node(sdp);
+> @@ -1276,17 +1275,21 @@ static void srcu_invoke_callbacks(struct
+>  
+>  	/*
+>  	 * Update counts, accelerate new callbacks, and if needed,
+> -	 * schedule another round of callback invocation.
+> +	 * go another round of callback invocation.
+>  	 */
+>  	spin_lock_irq_rcu_node(sdp);
+>  	rcu_segcblist_add_len(&sdp->srcu_cblist, -len);
+>  	(void)rcu_segcblist_accelerate(&sdp->srcu_cblist,
+>  				       rcu_seq_snap(&ssp->srcu_gp_seq));
+>  	sdp->srcu_cblist_invoking = false;
+> +	flushing = sdp->flushing;
+>  	more = rcu_segcblist_ready_cbs(&sdp->srcu_cblist);
+>  	spin_unlock_irq_rcu_node(sdp);
+>  	if (more)
+> -		srcu_schedule_cbs_sdp(sdp, 0);
+> +		if (flushing)
+> +			goto again;
+> +		else
+> +			srcu_schedule_cbs_sdp(sdp, 0); 
+>  }
+>  
+>  /*
