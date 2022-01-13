@@ -2,55 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF826C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229955AbiAMKGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 05:06:44 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:55137 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiAMKGi (ORCPT
+        id S231278AbiAMKGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:06:46 -0500
+Received: from smtp-fw-80007.amazon.com ([99.78.197.218]:42547 "EHLO
+        smtp-fw-80007.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229762AbiAMKGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 05:06:38 -0500
+        Thu, 13 Jan 2022 05:06:40 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1642068399; x=1673604399;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gRObVb2efQEchpFIfpjUYhaUuaApiy9HH1WsKyStpPI=;
-  b=PMak1J/7JaRcjSIaXbxFY2g59KgUGG51F1kmFGuEpUvi7N68eUl4sWrS
-   7sxkEIpPk/HuRGOD99M3bQa7rWQwFJDVTFmLO+kRHlCFCm53El0vpJ+8X
-   2LFrJfJY2ipB4Ilz6VVTSzees1PVlPBjyqdDKdIraYXMI74PmQ6Hcsuam
-   Q=;
+  t=1642068401; x=1673604401;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Iz+I4bzIGgmHfCHsYZ6rNTtN23uutTDTQTkg7YnpZtM=;
+  b=ZOckOUPVGTvVgg5b4+U24LL0NctugflI7wY7QwH4ObW0dP0QxKKeaBlB
+   OU+nldW/udtFTcTknq15kezP6FfwoeMGREw49ClJ/UqbR4n9eMq9IJunF
+   rxsGxRxbsOlLWYZwbwuK/uSmmA2apj4nqZ0JnQBqcswP2uf2j9rbPQEgD
+   4=;
 X-IronPort-AV: E=Sophos;i="5.88,284,1635206400"; 
-   d="scan'208";a="169823163"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-0085f2c8.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 13 Jan 2022 10:06:25 +0000
+   d="scan'208";a="55067096"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-0085f2c8.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP; 13 Jan 2022 10:06:24 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-0085f2c8.us-west-2.amazon.com (Postfix) with ESMTPS id F072E4129A;
+        by email-inbound-relay-pdx-2b-0085f2c8.us-west-2.amazon.com (Postfix) with ESMTPS id F3F5041557;
         Thu, 13 Jan 2022 10:06:23 +0000 (UTC)
-Received: from EX13D13UWB001.ant.amazon.com (10.43.161.156) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+Received: from EX13D13UWB004.ant.amazon.com (10.43.161.218) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
  id 15.0.1497.28; Thu, 13 Jan 2022 10:06:23 +0000
-Received: from EX13MTAUWC001.ant.amazon.com (10.43.162.135) by
- EX13D13UWB001.ant.amazon.com (10.43.161.156) with Microsoft SMTP Server (TLS)
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13D13UWB004.ant.amazon.com (10.43.161.218) with Microsoft SMTP Server (TLS)
  id 15.0.1497.26; Thu, 13 Jan 2022 10:06:23 +0000
 Received: from dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com
- (172.19.116.181) by mail-relay.amazon.com (10.43.162.232) with Microsoft SMTP
+ (172.19.116.181) by mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP
  Server id 15.0.1497.28 via Frontend Transport; Thu, 13 Jan 2022 10:06:23
  +0000
 Received: by dev-dsk-farbere-1a-46ecabed.eu-west-1.amazon.com (Postfix, from userid 14301484)
-        id 8E2272D48; Thu, 13 Jan 2022 10:06:22 +0000 (UTC)
+        id 9A16C3096; Thu, 13 Jan 2022 10:06:22 +0000 (UTC)
 From:   Eliav Farber <farbere@amazon.com>
 To:     <bp@alien8.de>
 CC:     <mchehab@kernel.org>, <linux-edac@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <ronenk@amazon.com>,
         <talel@amazon.com>, <hhhawa@amazon.com>, <jonnyc@amazon.com>,
         <hanochu@amazon.com>, <farbere@amazon.com>
-Subject: [PATCH 0/4] edac_align_ptr() bug fix and refactoring
-Date:   Thu, 13 Jan 2022 10:06:18 +0000
-Message-ID: <20220113100622.12783-1-farbere@amazon.com>
+Subject: [PATCH 4/4] EDAC: Refactor edac_align_ptr() flow
+Date:   Thu, 13 Jan 2022 10:06:22 +0000
+Message-ID: <20220113100622.12783-5-farbere@amazon.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220113100622.12783-1-farbere@amazon.com>
+References: <20220113100622.12783-1-farbere@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -58,19 +60,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix address alignment and return value casting, modify data types
-and refactor the flow to be more clear and readable.
+Modify flow to be more clear:
+ - Calculate required alignment based on size.
+ - Check if *p is aligned and fix if not.
+ - Set return ptr to to be *p.
+ - Increase *p by new size for the next call.
 
-Eliav Farber (4):
-  EDAC: Fix calculation of returned address and next offset in
-    edac_align_ptr()
-  EDAC: Remove unnecessary cast to char* in edac_align_ptr() function
-  EDAC: Refactor edac_align_ptr() to use u8/u16/u32/u64 data types
-  EDAC: Refactor edac_align_ptr() flow
+Signed-off-by: Eliav Farber <farbere@amazon.com>
+---
+ drivers/edac/edac_mc.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
- drivers/edac/edac_mc.c | 41 ++++++++++++++++++++---------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/edac/edac_mc.c b/drivers/edac/edac_mc.c
+index 3367bf997b73..a3ff5a019fc7 100644
+--- a/drivers/edac/edac_mc.c
++++ b/drivers/edac/edac_mc.c
+@@ -241,9 +241,7 @@ EXPORT_SYMBOL_GPL(edac_mem_types);
+ void *edac_align_ptr(void **p, unsigned size, int n_elems)
+ {
+ 	unsigned align, r;
+-	void *ptr = *p;
+-
+-	*p += size * n_elems;
++	void *ptr;
+ 
+ 	/*
+ 	 * 'p' can possibly be an unaligned item X such that sizeof(X) is
+@@ -258,16 +256,22 @@ void *edac_align_ptr(void **p, unsigned size, int n_elems)
+ 	else if (size > sizeof(u8))
+ 		align = sizeof(u16);
+ 	else
+-		return ptr;
+-
+-	r = (unsigned long)ptr % align;
++		goto out;
+ 
+-	if (r == 0)
+-		return ptr;
++	/* Calculate alignment, and fix *p if not aligned. */
++	r = (unsigned long)*p % align;
++	if (r)
++		*p += align - r;
+ 
+-	*p += align - r;
++out:
++	/*
++	 * Set return ptr to to be *p (after alignment if it was needed),
++	 * and increase *p by new size for the next call.
++	 */
++	ptr = *p;
++	*p += size * n_elems;
+ 
+-	return (void *)(((unsigned long)ptr) + align - r);
++	return ptr;
+ }
+ 
+ static void _edac_mc_free(struct mem_ctl_info *mci)
 -- 
 2.32.0
 
