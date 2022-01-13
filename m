@@ -2,105 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B233DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 23:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 324A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 23:25:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238189AbiAMXNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 18:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235343AbiAMXNJ (ORCPT
+        id S238202AbiAMXZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 18:25:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30742 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238190AbiAMXZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 18:13:09 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1F86C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 15:13:08 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id x193so10040195oix.0
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 15:13:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=sMMqNSDsbwa7yFsyX3bGhmbn1MJoJMBHF2qgWzw9Mzs=;
-        b=e9TkMcxTOSS/64wt9ZC2xTerMvvL1hENNYRBuClFXx/siDYX5i1oCQiJADqjzsbrgy
-         wVjkMUSfXf3YjWKS9PkxJuOKDKB2J9fObDPBExgWBjIHo442CJ3EVE6gtGn5FtgvA6iU
-         bkn2frXC6bFNDtrmo8PI5yibl+vD/9QwcQ1zc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=sMMqNSDsbwa7yFsyX3bGhmbn1MJoJMBHF2qgWzw9Mzs=;
-        b=wpIcIQ3uyvGB20soCi2DRjml+bD7cJAODEkfBdgZ8q+TaN4X737YV6FG1pyQjXUaIz
-         m5/4WP5ZmtEQ27GxXSAx1a46UFb7amcCWmtd48EtkWDzsDOOa4GgWw5x/HJzcU6RrJDR
-         Pm8XW9CaFzoka945AExNHz9BePuw6B9cJJqprs+cEmUa0xTGsoLE74DgRxSv1s5syEkR
-         4viCDL/5DxH2a8avfEZBfFdPqJnmaPlN1+R2//hBpgcAlBSZxZt6DIMP6UBIH39oIv0u
-         zM+Pp1l1qHWHmfA+cEPVCwH9gL3c16aon+ZB6/atfJXMuG8dZHDBr1biuGLcF/Fa0drJ
-         behw==
-X-Gm-Message-State: AOAM532dxJsREmEPSj/2wOqUxPMdpHkwpYkVBcpLQdA+V/Kp2x74pMf5
-        2gufa85JRQia/uFCI+V45GjrJQyY97tK9En5OYmLIw==
-X-Google-Smtp-Source: ABdhPJysPzSfwlVyVdWBKUalOT0iR/oa380Ka2xGSIUkYRdu/+jueIFwVtoKPaDzivQWTPr7woGPCTGrXqUbOmHoLlw=
-X-Received: by 2002:aca:a953:: with SMTP id s80mr10804519oie.164.1642115588114;
- Thu, 13 Jan 2022 15:13:08 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 13 Jan 2022 15:13:07 -0800
+        Thu, 13 Jan 2022 18:25:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642116324;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/cYjdYc1cOu2NaGMgT2On4jE9UFJ7SNdWKgu/5ofk7U=;
+        b=hjHdGyk7Bk3gEdwJQrys2TNLZljqpAvByHzZa+mPduYomFtChlNmNr21eJywMgZSPaNsAF
+        hZzCDQlTXB+7r95ZFud7Z6GuCtULzaCKJo5IrIN3XNHZoWYXA0pxx7mevTVYVs5lYL9mQN
+        aW2pUtYGngjQhv7wx9oJ6jPZ7e5Hv+c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-516-R0N9NBi0MV28KfAFG6CeqQ-1; Thu, 13 Jan 2022 18:25:21 -0500
+X-MC-Unique: R0N9NBi0MV28KfAFG6CeqQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8F1121083F66;
+        Thu, 13 Jan 2022 23:25:20 +0000 (UTC)
+Received: from jmeneghi.bos.com (unknown [10.22.17.136])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4E87F1042A9C;
+        Thu, 13 Jan 2022 23:25:14 +0000 (UTC)
+From:   John Meneghini <jmeneghi@redhat.com>
+To:     linux-scsi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        GR-QLogic-Storage-Upstream@marvell.com, mlombard@redhat.com,
+        skashyap@marvell.com
+Subject: [PATCH] scsi: bnx2fc: flush destroy_work queue before calling bnx2fc_interface_put
+Date:   Thu, 13 Jan 2022 18:24:56 -0500
+Message-Id: <20220113232456.230749-1-jmeneghi@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <c190bd82-b6d3-b6a9-3e58-32c8d9d417c1@quicinc.com>
-References: <1641926606-1012-1-git-send-email-quic_khsieh@quicinc.com>
- <1641926606-1012-2-git-send-email-quic_khsieh@quicinc.com>
- <CAE-0n53hrPYR3ThwxM_+fzyRSB+6W1drFymW5n_RKmg_gf8z-w@mail.gmail.com>
- <84ee17f9-2597-86b6-1517-2358d443f65b@quicinc.com> <CAE-0n5134H0puMicozjdfTY+zXVUZyrebjv7Hto3EWcQAELO4A@mail.gmail.com>
- <338ae657-e8ed-e620-0aa7-4ad05df18ad1@quicinc.com> <CAE-0n51QbJHnOses5sF6xECR0gRZB1Fbi1KqoLG+61ZWH9BtOA@mail.gmail.com>
- <64ad7053-beac-0c28-7d09-ea32a4f7fbad@quicinc.com> <CAE-0n53qxer=shY3LdxzDPFaQb1L65okX9TM0TXYCdD59qau5g@mail.gmail.com>
- <c190bd82-b6d3-b6a9-3e58-32c8d9d417c1@quicinc.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.9.1
-Date:   Thu, 13 Jan 2022 15:13:07 -0800
-Message-ID: <CAE-0n53htQSQuY8ew4xGzKgOwV=YHcgVg+SNRbL17nyYS3mqoA@mail.gmail.com>
-Subject: Re: [PATCH v11 1/4] drm/msm/dp: do not initialize phy until plugin
- interrupt received
-To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
-        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
-        dmitry.baryshkov@linaro.org, dri-devel@lists.freedesktop.org,
-        robdclark@gmail.com, sean@poorly.run, vkoul@kernel.org
-Cc:     quic_abhinavk@quicinc.com, aravindh@codeaurora.org,
-        quic_sbillaka@quicinc.com, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Kuogee Hsieh (2022-01-13 14:14:27)
->
-> On 1/13/2022 1:52 PM, Stephen Boyd wrote:
-> > Quoting Kuogee Hsieh (2022-01-13 12:44:16)
-> >> On 1/13/2022 11:47 AM, Stephen Boyd wrote:
-> >>> Quoting Kuogee Hsieh (2022-01-13 09:51:42)
-> >>>> On 1/12/2022 8:13 PM, Stephen Boyd wrote:
-> >>>>>>>> -       if (dp->usbpd->orientation == ORIENTATION_CC2)
-> >>>>>>>> -               flip = true;
-> >>>>>>>> +       dp_power_init(dp->power, false);
-> >>>>>>>> +       dp_ctrl_reset_irq_ctrl(dp->ctrl, true);
-> >>>>>>>> +
-> >>>>>>>> +       /*
-> >>>>>>>> +        * eDP is the embedded primary display and has its own phy
-> >>>>>>>> +        * initialize phy immediately
-> >>>>>>> Question still stands why we can't wait for hpd high from the eDP panel.
-> >>>>>>> Also, I think "has its own phy" means that it's not part of a combo
-> >>>>>>> USB+DP phy? Can you please clarify?
-> >> Correct, eDP has its dedicated phy which is not part of combo phy.
-> > Why does that mean we can't wait for hpd high from the eDP panel?
->
-> Sorry, missed this one.
->
-> Yes, it can wait for hpd high.
->
-> Since it always presented, I just think it is better to show display
-> sooner not later until hdp high.
->
-> you like it to wait until hpd high?
+  The bnx2fc_destroy functions are removing the interface before calling
+  destroy_work. This results multiple WARNings from sysfs_remove_group
+  as the controller rport device attributes are removed to early.
 
-Yes. The less special cases the easier it is to read and modify later. I
-also worry that someone will decide to connect a DP connector to the eDP
-pins and then not always drive HPD high. In that case this code would
-need to change so it seems better to follow one flow instead of two.
+  The problem is easily reproducible with the following steps.
+
+  Example:
+
+    $ dmesg -w &
+    $ systemctl enable --now fcoe
+    $ fipvlan -s -c ens2f1
+    $ fcoeadm -d ens2f1.802
+    [  583.464488] host2: libfc: Link down on port (7500a1)
+    [  583.472651] bnx2fc: 7500a1 - rport not created Yet!!
+    [  583.490468] ------------[ cut here ]------------
+    [  583.538725] sysfs group 'power' not found for kobject 'rport-2:0-0'
+    [  583.568814] WARNING: CPU: 3 PID: 192 at fs/sysfs/group.c:279 sysfs_remove_group+0x6f/0x80
+    [  583.607130] Modules linked in: dm_service_time 8021q garp mrp stp llc bnx2fc cnic uio rpcsec_gss_krb5 auth_rpcgss nfsv4 ...
+    [  583.942994] CPU: 3 PID: 192 Comm: kworker/3:2 Kdump: loaded Not tainted 5.14.0-39.el9.x86_64 #1
+    [  583.984105] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
+    [  584.016535] Workqueue: fc_wq_2 fc_rport_final_delete [scsi_transport_fc]
+    [  584.050691] RIP: 0010:sysfs_remove_group+0x6f/0x80
+    [  584.074725] Code: ff 5b 48 89 ef 5d 41 5c e9 ee c0 ff ff 48 89 ef e8 f6 b8 ff ff eb d1 49 8b 14 24 48 8b 33 48 c7 c7 ...
+    [  584.162586] RSP: 0018:ffffb567c15afdc0 EFLAGS: 00010282
+    [  584.188225] RAX: 0000000000000000 RBX: ffffffff8eec4220 RCX: 0000000000000000
+    [  584.221053] RDX: ffff8c1586ce84c0 RSI: ffff8c1586cd7cc0 RDI: ffff8c1586cd7cc0
+    [  584.255089] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb567c15afc00
+    [  584.287954] R10: ffffb567c15afbf8 R11: ffffffff8fbe7f28 R12: ffff8c1486326400
+    [  584.322356] R13: ffff8c1486326480 R14: ffff8c1483a4a000 R15: 0000000000000004
+    [  584.355379] FS:  0000000000000000(0000) GS:ffff8c1586cc0000(0000) knlGS:0000000000000000
+    [  584.394419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+    [  584.421123] CR2: 00007fe95a6f7840 CR3: 0000000107674002 CR4: 00000000000606e0
+    [  584.454888] Call Trace:
+    [  584.466108]  device_del+0xb2/0x3e0
+    [  584.481701]  device_unregister+0x13/0x60
+    [  584.501306]  bsg_unregister_queue+0x5b/0x80
+    [  584.522029]  bsg_remove_queue+0x1c/0x40
+    [  584.541884]  fc_rport_final_delete+0xf3/0x1d0 [scsi_transport_fc]
+    [  584.573823]  process_one_work+0x1e3/0x3b0
+    [  584.592396]  worker_thread+0x50/0x3b0
+    [  584.609256]  ? rescuer_thread+0x370/0x370
+    [  584.628877]  kthread+0x149/0x170
+    [  584.643673]  ? set_kthread_struct+0x40/0x40
+    [  584.662909]  ret_from_fork+0x22/0x30
+    [  584.680002] ---[ end trace 53575ecefa942ece ]---
+
+Signed-off-by: John Meneghini <jmeneghi@redhat.com>
+Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
+---
+ drivers/scsi/bnx2fc/bnx2fc_fcoe.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
+index 71fa62bd3083..6e7e40e8ce4a 100644
+--- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
++++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
+@@ -1215,8 +1215,10 @@ static int bnx2fc_vport_destroy(struct fc_vport *vport)
+ 	mutex_unlock(&n_port->lp_mutex);
+ 	bnx2fc_free_vport(interface->hba, port->lport);
+ 	bnx2fc_port_shutdown(port->lport);
+-	bnx2fc_interface_put(interface);
+ 	queue_work(bnx2fc_wq, &port->destroy_work);
++	flush_work(&port->destroy_work);
++	bnx2fc_interface_put(interface);
++
+ 	return 0;
+ }
+ 
+@@ -1653,8 +1655,9 @@ static void __bnx2fc_destroy(struct bnx2fc_interface *interface)
+ 	bnx2fc_interface_cleanup(interface);
+ 	bnx2fc_stop(interface);
+ 	list_del(&interface->list);
+-	bnx2fc_interface_put(interface);
+ 	queue_work(bnx2fc_wq, &port->destroy_work);
++	flush_work(&port->destroy_work);
++	bnx2fc_interface_put(interface);
+ }
+ 
+ /**
+-- 
+2.27.0
+
