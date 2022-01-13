@@ -2,236 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E3D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:59:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D00C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 14:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235893AbiAMO7E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 09:59:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38444 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235887AbiAMO7B (ORCPT
+        id S235907AbiAMO7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 09:59:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37700 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232357AbiAMO7C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 09:59:01 -0500
+        Thu, 13 Jan 2022 09:59:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D12261CF5
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 14:59:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B6DDC36AEC;
-        Thu, 13 Jan 2022 14:59:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAD98B822C7;
+        Thu, 13 Jan 2022 14:59:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49354C36AEB;
+        Thu, 13 Jan 2022 14:58:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642085941;
-        bh=9cSTw/jmQFhSGTiDmcNQb3Wo1Aiy5yG6xkZ5iqLIVvQ=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=YMbACkmPJ13w90hJnQbqnYn73GDox+R8nt2lYg46fr9et76jhCTDaPbiqueFH8tdx
-         6MNYf8VsgPkWaEacTy+tXEj9IKknFUnoM0HxkS8XuIMqH2ElNk+s9RdXDjrN3gkUpe
-         UG2m2MhdyU/J4JbAfLDnv2crRGaYqzYMFiO41wBJKDZITen1hNIBRgmcnDwDcWLX24
-         w56kiwwUaFG+gcjwHq876ERArfYIOmlvQSxbYbwKYRXBSu6ATApAOEbld7SNcWF+1O
-         Sf4XkXz2Gbgl8k8g3CjbOjhsXEbUKEhgdekf2m+v6NYNHyMpGzy76DvHF+jGbET7RV
-         I6ayFzWLtoIag==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id B9FB95C00E7; Thu, 13 Jan 2022 06:59:00 -0800 (PST)
-Date:   Thu, 13 Jan 2022 06:59:00 -0800
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+4f789823c1abc5accf13@syzkaller.appspotmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Lai Jiangshan <laijs@linux.alibaba.com>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        quic_neeraju@quicinc.com, frederic@kernel.org, urezki@gmail.com,
-        boqun.feng@gmail.com
-Subject: Re: [syzbot] KASAN: use-after-free Read in srcu_invoke_callbacks
-Message-ID: <20220113145900.GS947480@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <00000000000081b56205d54c6667@google.com>
- <20220111134324.1727-1-hdanton@sina.com>
- <20220112094352.1785-1-hdanton@sina.com>
- <20220112171247.GM947480@paulmck-ThinkPad-P17-Gen-1>
- <20220113044938.1881-1-hdanton@sina.com>
- <20220113131256.1941-1-hdanton@sina.com>
+        s=k20201202; t=1642085939;
+        bh=0+/Y0CsIVcYpaYWcjiIcMKL5vH+XhHAvce7jccMD//g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=Ten1AGEIZchYGDLcl70PhaCzp5aZnCEEh25RgJDFU4On1fdX9CqAfBMysRaeuLqOp
+         j7oa7IeH8jnEssSY9HXYUf4Vh3z+O8ezQpCr50gfsoP+rhKbienR0+3jUAZ/hlN1M/
+         GIqmACUZfPqODrqUzv9qysO2FFLGWEqvJZOEEB+JVuNRZUiPlrdhFMF/Hl+1amZTNl
+         G2va5P0lu96Fb2nTBn+ftiD3NVU4Lddb5OL4ngskX60FK/OtGFh1Mlt7B8dfPKjsRA
+         bEasHyVIK813Jsv301IqY8q+sN+VrkBT+w4RBnbjmAFJILM82EeR2NP7skYAkxrw6w
+         JSNJlkAs9d83Q==
+Date:   Thu, 13 Jan 2022 08:58:57 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Yao Hongbo <yaohongbo@linux.alibaba.com>
+Cc:     bhelgaas@google.com, lukas@wunner.de,
+        zhangliguang@linux.alibaba.com,
+        alikernel-developer@linux.alibaba.com, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+Subject: Re: [RFC PATCH v2] PCI: Waiting command completed in
+ get_port_device_capability()
+Message-ID: <20220113145857.GA347384@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220113131256.1941-1-hdanton@sina.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d47e5af3-d339-01b6-5925-a2037b177be2@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 09:12:56PM +0800, Hillf Danton wrote:
-> On Wed, 12 Jan 2022 21:14:59 -0800 Paul E. McKenney wrote:
-> > On Thu, Jan 13, 2022 at 12:49:38PM +0800, Hillf Danton wrote:
-> ...
-> > > > ------------------------------------------------------------------------
-> > > > 
-> > > > commit d730d54e543e5cf7376ff61e3ad407490f08c85e
-> > > > Author: Paul E. McKenney <paulmck@kernel.org>
-> > > > Date:   Wed Jan 12 09:52:44 2022 -0800
-> > > > 
-> > > >     srcu: Tighten cleanup_srcu_struct() GP checks
-> > > >     
-> > > >     Currently, cleanup_srcu_struct() checks for a grace period in progress,
-> > > >     but it does not check for a grace period that has not yet started but
-> > > >     which might start at any time.  Such a situation could result in a
-> > > >     use-after-free bug, so this commit adds a check for a grace period that
-> > > >     is needed but not yet started to cleanup_srcu_struct().
-> > > >     
-> > > >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > > > 
-> > > > diff --git a/kernel/rcu/srcutree.c b/kernel/rcu/srcutree.c
-> > > > index 128034f858897..c78391a5e20dc 100644
-> > > > --- a/kernel/rcu/srcutree.c
-> > > > +++ b/kernel/rcu/srcutree.c
-> > > > @@ -382,9 +382,11 @@ void cleanup_srcu_struct(struct srcu_struct *ssp)
-> > > >  			return; /* Forgot srcu_barrier(), so just leak it! */
-> > > >  	}
-> > > >  	if (WARN_ON(rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)) != SRCU_STATE_IDLE) ||
-> > > > +	    WARN_ON(rcu_seq_current(&ssp->srcu_gp_seq) != ssp->srcu_gp_seq_needed) ||
-> > > >  	    WARN_ON(srcu_readers_active(ssp))) {
-> > > > -		pr_info("%s: Active srcu_struct %p state: %d\n",
-> > > > -			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)));
-> > > > +		pr_info("%s: Active srcu_struct %p read state: %d gp state: %lu/%lu\n",
-> > > > +			__func__, ssp, rcu_seq_state(READ_ONCE(ssp->srcu_gp_seq)),
-> > > > +			rcu_seq_current(&ssp->srcu_gp_seq), ssp->srcu_gp_seq_needed);
-> > > >  		return; /* Caller forgot to stop doing call_srcu()? */
-> > > >  	}
-> > > >  	free_percpu(ssp->sda);
-> > > > 
-> > > 
-> > > Without the help from a covid booster, what I can do for the flush_work()
-> > > in cleanup_srcu_struct() is go another round of invoking srcu callbacks
-> > > directly without bothering to queue the work again.
-> > > 
-> > > With the minor change, we are sure work is idle after flush.
+On Thu, Jan 13, 2022 at 03:34:41PM +0800, Yao Hongbo wrote:
+> 在 2022/1/13 上午2:01, Bjorn Helgaas 写道:
+> > On Wed, Jan 12, 2022 at 03:33:25PM +0800, Yao Hongbo wrote:
+> >> 在 2022/1/12 上午2:55, Bjorn Helgaas 写道:
+
+> >>> What kind of system are you seeing the problem on?  It seems like it
+> >>> should be safe to drop the HPIE and CCIE disable here for ACPI
+> >>> systems.  And *likely* we could do the same for non-ACPI systems,
+> >>> though I have no experience there.
+> >>
+> >> Hi, Bjorn
+> >> Thanks for your comments.
+> >>
+> >> The problem occurs on ACPI systems.
+> >>
+> >>  acpi PNP0A08:00: _OSC: OS supports [ExtendedConfig ASPM ClockPM Segments MSI EDR HPX-Type3]
+> >>  acpi PNP0A08:00: _OSC: platform does not support [SHPCHotplug AER LTR DPC]
+> >>  acpi PNP0A08:00: _OSC: OS now controls [PCIeHotplug PME PCIeCapability]
+> >>
+> >> We clear HPIE and CCIE here because the firmware doesn't control
+> >> Hotplug via __OSC.
+> >>
+> >> And on ACPI systems, we can also set pcie_ports=native, which will
+> >> also encounter such problems.
 > > 
-> > First, exactly what sequence of events would this change protect against?
-> 
-> It makes sure that work is idle after flush only within cleanup_srcu_struct()
-> regardless of whatever prior to the cleanup.
-
-Nice try, but that answer does not match the question.  ;-)
-
-I need to know a definite sequence of events corresponding to your
-"whatever prior".
-
-Otherwise, we are just as likely to be breaking something as we are to be
-fixing something, and the breakage might well be worse than the problem.
-
-> > > Hillf
-> > > 
-> > > +++ b/kernel/rcu/srcutree.c
-> > > @@ -1232,12 +1232,6 @@ static void srcu_advance_state(struct sr
-> > >  	}
-> > >  }
-> > >  
-> > > -/*
-> > > - * Invoke a limited number of SRCU callbacks that have passed through
-> > > - * their grace period.  If there are more to do, SRCU will reschedule
-> > > - * the workqueue.  Note that needed memory barriers have been executed
-> > > - * in this task's context by srcu_readers_active_idx_check().
-> > > - */
-> > >  static void srcu_invoke_callbacks(struct work_struct *work)
-> > >  {
-> > >  	long len;
-> > > @@ -1249,6 +1243,7 @@ static void srcu_invoke_callbacks(struct
-> > >  
-> > >  	sdp = container_of(work, struct srcu_data, work);
-> > >  
-> > > +again:
-> > >  	ssp = sdp->ssp;
-> > >  	rcu_cblist_init(&ready_cbs);
-> > >  	spin_lock_irq_rcu_node(sdp);
-> > > @@ -1276,7 +1271,7 @@ static void srcu_invoke_callbacks(struct
-> > >  
-> > >  	/*
-> > >  	 * Update counts, accelerate new callbacks, and if needed,
-> > > -	 * schedule another round of callback invocation.
-> > > +	 * go another round of callback invocation.
-> > >  	 */
-> > >  	spin_lock_irq_rcu_node(sdp);
-> > >  	rcu_segcblist_add_len(&sdp->srcu_cblist, -len);
-> > > @@ -1286,7 +1281,7 @@ static void srcu_invoke_callbacks(struct
-> > >  	more = rcu_segcblist_ready_cbs(&sdp->srcu_cblist);
-> > >  	spin_unlock_irq_rcu_node(sdp);
-> > >  	if (more)
-> > > -		srcu_schedule_cbs_sdp(sdp, 0);
-> > > +		goto again;
-> > >  }
-> > >  
-> > >  /*
+> > What happens if you just drop that call like the patch below?
 > > 
-> > Second, in non-shutdown conditions, what prevents an infinite loop inside
-> > of srcu_invoke_callbacks()?
+> > If that avoids the problem, then we can talk about whether we need to
+> > worry about broken firmware in the non-ACPI or "pcie_ports=native"
+> > cases.
 > 
-> That tight loop can be avoid by adding a flushing flag to srcu_data,
-> which is set before flush in cleanup_srcu_struct() and checked at the
-> end of srcu_invoke_callbacks().
-> 
-> Only for thoughts now.
+> Hi, Bjorn.
+> This can avoid the problem currently.
 
-Is the syzbot report reproducible?
+Thanks for collecting that data!
 
-							Thanx, Paul
+> But i'm not sure if removing this code will introduce other problems,
+> such as suprious hotplug before probing hotplug service.
 
-> Hillf
-> 
-> +++ b/kernel/rcu/srcutree.c
-> @@ -376,6 +376,9 @@ void cleanup_srcu_struct(struct srcu_str
->  	for_each_possible_cpu(cpu) {
->  		struct srcu_data *sdp = per_cpu_ptr(ssp->sda, cpu);
->  
-> +		spin_lock_irq_rcu_node(sdp);
-> +		sdp->flushing = true;
-> +		spin_unlock_irq_rcu_node(sdp);
->  		del_timer_sync(&sdp->delay_work);
->  		flush_work(&sdp->work);
->  		if (WARN_ON(rcu_segcblist_n_cbs(&sdp->srcu_cblist)))
-> @@ -1232,16 +1235,11 @@ static void srcu_advance_state(struct sr
->  	}
->  }
->  
-> -/*
-> - * Invoke a limited number of SRCU callbacks that have passed through
-> - * their grace period.  If there are more to do, SRCU will reschedule
-> - * the workqueue.  Note that needed memory barriers have been executed
-> - * in this task's context by srcu_readers_active_idx_check().
-> - */
->  static void srcu_invoke_callbacks(struct work_struct *work)
->  {
->  	long len;
->  	bool more;
-> +	bool flushing;
->  	struct rcu_cblist ready_cbs;
->  	struct rcu_head *rhp;
->  	struct srcu_data *sdp;
-> @@ -1249,6 +1247,7 @@ static void srcu_invoke_callbacks(struct
->  
->  	sdp = container_of(work, struct srcu_data, work);
->  
-> +again:
->  	ssp = sdp->ssp;
->  	rcu_cblist_init(&ready_cbs);
->  	spin_lock_irq_rcu_node(sdp);
-> @@ -1276,17 +1275,21 @@ static void srcu_invoke_callbacks(struct
->  
->  	/*
->  	 * Update counts, accelerate new callbacks, and if needed,
-> -	 * schedule another round of callback invocation.
-> +	 * go another round of callback invocation.
->  	 */
->  	spin_lock_irq_rcu_node(sdp);
->  	rcu_segcblist_add_len(&sdp->srcu_cblist, -len);
->  	(void)rcu_segcblist_accelerate(&sdp->srcu_cblist,
->  				       rcu_seq_snap(&ssp->srcu_gp_seq));
->  	sdp->srcu_cblist_invoking = false;
-> +	flushing = sdp->flushing;
->  	more = rcu_segcblist_ready_cbs(&sdp->srcu_cblist);
->  	spin_unlock_irq_rcu_node(sdp);
->  	if (more)
-> -		srcu_schedule_cbs_sdp(sdp, 0);
-> +		if (flushing)
-> +			goto again;
-> +		else
-> +			srcu_schedule_cbs_sdp(sdp, 0); 
->  }
->  
->  /*
+I don't think spurious hotplug before probing the hotplug service is
+an issue because there is always a window like this.  It's either
+between:
+
+  A: Handoff from firmware to OS
+  B: get_port_device_capability()
+
+or between:
+
+  A: Handoff from firmware to OS
+  C: pciehp initialization
+
+Either way there is *some* window, and we have to decide how to deal
+with it.  The exact duration is not very important.
+
+Bjorn
