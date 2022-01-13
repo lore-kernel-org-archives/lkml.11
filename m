@@ -2,205 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6962CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233137AbiAMIhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:37:04 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:49193 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233055AbiAMIg4 (ORCPT
+        id S231576AbiAMIlW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:41:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230280AbiAMIlV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:36:56 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R551e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0V1imC6N_1642063002;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1imC6N_1642063002)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 13 Jan 2022 16:36:52 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net v2 2/3] net/smc: Introduce a new conn->lgr validity check helper
-Date:   Thu, 13 Jan 2022 16:36:41 +0800
-Message-Id: <1642063002-45688-3-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1642063002-45688-1-git-send-email-guwen@linux.alibaba.com>
-References: <1642063002-45688-1-git-send-email-guwen@linux.alibaba.com>
+        Thu, 13 Jan 2022 03:41:21 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D483C061748
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 00:41:21 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id n30-20020a17090a5aa100b001b2b6509685so10062592pji.3
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 00:41:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:from:date:subject:to:cc;
+        bh=NeKX+1gLQKYhB0X8obuHvvXl9+4b5UGzNCpMXUeeI7M=;
+        b=EuLWrAWWL34z4THDqjvCl+hOYXkOn4Y5dAt7+FsPmXSAAtt7fvtA0K9qX2/Zhu/K1U
+         qN8uNswHkHpRoHcIKEEzRELN+WTMlpQtgSSB9IWcCUmFsNCLPz4pMZEyMNuUBvXFWmwa
+         GQ8vIGSdEsHkGGEY4Fgq3YwbU0dci8bJNJ9MyKGMWa7UUm5EOs8oNH4r1GGLw2DbJUr3
+         bGLGpEWsJYar+oW9NmdrRj+8W+wYcpGGrLOgX5PGe9JHc/ZydYXStXZEIHmA1zzfUpex
+         3BcpfNKiCSZv+R1fXILlooiT0mhqhPuc4yOmOOyISxcfnEIs8cIPvTkT5GKR3M+Q6vzX
+         EJsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:from:date:subject:to:cc;
+        bh=NeKX+1gLQKYhB0X8obuHvvXl9+4b5UGzNCpMXUeeI7M=;
+        b=gyTi0AuYyFQEZh/lppWd9dHik2IjhZ83bd9AoDJLopHoPyIq+err8JMDt4aU9m8Uuc
+         NZBTBcpVI+K3ulr/I4XyyLQtW+3cDwdsgtGQfqfrHJvAdYW1qOQexlQJT50P/Ij5UUQS
+         oyga9rQ978pACerjnWVlOtOLCMN6AoM2QFPGJWM+cD+39xnoDoYfPSXiG8oOgEIlQLae
+         ucISWJ1S3rHvLHzaxt+dCtbuGtc5cXRKDff3C8LNwzWrx2IXSxWslUv5Si6vTiorFo7w
+         kGC18pJBKB/VvXOvMxsVBN30KQ230QDVkmnIWqhOx3Bn00jUkpwm7Zl2Y0i8Z7Q5OcKt
+         qxtg==
+X-Gm-Message-State: AOAM531zkDH/hBdzemfmTzNCyu8KaspylHju1arVjA0q0XG5UdBbhMHp
+        Vw6rrv9ksY9+h7tQx2Nt3R0+4g==
+X-Google-Smtp-Source: ABdhPJwk9ggoW0sH7LTM1lwbSOp4qCilmpuUzLoJ9HMp9f+NS1JYqbfKLULFnY4W/+uAfyCibfdT8A==
+X-Received: by 2002:a17:90b:33d0:: with SMTP id lk16mr2452797pjb.45.1642063280574;
+        Thu, 13 Jan 2022 00:41:20 -0800 (PST)
+Received: from localhost ([121.99.145.49])
+        by smtp.gmail.com with ESMTPSA id 6sm1704902pgr.88.2022.01.13.00.41.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 00:41:20 -0800 (PST)
+Message-Id: <cover.1642063121.git.daniel.beer@igorinstitute.com>
+From:   Daniel Beer <daniel.beer@igorinstitute.com>
+Date:   Thu, 13 Jan 2022 21:38:41 +1300
+Subject: [PATCH v2 0/2] ASoC: add support for TAS5805M digital amplifier
+To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Andy Liu <andy-liu@ti.com>,
+        Daniel Beer <daniel.beer@igorinstitute.com>,
+        Derek Simkowiak <derek.simkowiak@igorinstitute.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It is no longer suitable to identify whether a smc connection
-is registered in a link group through checking if conn->lgr
-is NULL, because conn->lgr won't be reset even the connection
-is unregistered from a link group.
+This pair of patches implements support for the TAS5805M class D audio
+amplifier. This driver, and the example configuration in the device-tree
+file, were originally based on a 4.19 series kernel and have been
+modified slightly from the tested version.
 
-So this patch introduces a new helper smc_conn_lgr_valid() and
-replaces all the check of conn->lgr in original implementation
-with the new helper to judge if conn->lgr is valid to use.
+This resubmission differs from the first as follows:
 
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
----
- net/smc/af_smc.c   |  6 +++++-
- net/smc/smc_cdc.c  |  3 ++-
- net/smc/smc_clc.c  |  2 +-
- net/smc/smc_core.c | 14 ++++++++------
- net/smc/smc_core.h |  5 +++++
- net/smc/smc_diag.c |  6 +++---
- 6 files changed, 24 insertions(+), 12 deletions(-)
+  - Some explanatory comments and constants have been introduced
+  - The volume control allows L/R to be set independently
+  - gpiod is used, and regmap is used directly
+  - .trigger is used instead of DAPM to coordinate DSP boot
+  - The component is manually registered after power-on, and explicitly
+    deregistered prior to power-off
+  - Corrections have been made to the bindings file
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 61bd002..eb724cb 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -634,9 +634,13 @@ static void smc_conn_abort(struct smc_sock *smc, int local_first)
- {
- 	struct smc_connection *conn = &smc->conn;
- 	struct smc_link_group *lgr = conn->lgr;
-+	bool lgr_valid = false;
-+
-+	if (smc_conn_lgr_valid(conn))
-+		lgr_valid = true;
- 
- 	smc_conn_free(conn);
--	if (local_first)
-+	if (local_first && lgr_valid)
- 		smc_lgr_cleanup_early(lgr);
- }
- 
-diff --git a/net/smc/smc_cdc.c b/net/smc/smc_cdc.c
-index 84c8a43..9d5a971 100644
---- a/net/smc/smc_cdc.c
-+++ b/net/smc/smc_cdc.c
-@@ -197,7 +197,8 @@ int smc_cdc_get_slot_and_msg_send(struct smc_connection *conn)
- {
- 	int rc;
- 
--	if (!conn->lgr || (conn->lgr->is_smcd && conn->lgr->peer_shutdown))
-+	if (!smc_conn_lgr_valid(conn) ||
-+	    (conn->lgr->is_smcd && conn->lgr->peer_shutdown))
- 		return -EPIPE;
- 
- 	if (conn->lgr->is_smcd) {
-diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
-index 8409ab7..5a21108 100644
---- a/net/smc/smc_clc.c
-+++ b/net/smc/smc_clc.c
-@@ -774,7 +774,7 @@ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info, u8 version)
- 	dclc.os_type = version == SMC_V1 ? 0 : SMC_CLC_OS_LINUX;
- 	dclc.hdr.typev2 = (peer_diag_info == SMC_CLC_DECL_SYNCERR) ?
- 						SMC_FIRST_CONTACT_MASK : 0;
--	if ((!smc->conn.lgr || !smc->conn.lgr->is_smcd) &&
-+	if ((!smc_conn_lgr_valid(&smc->conn) || !smc->conn.lgr->is_smcd) &&
- 	    smc_ib_is_valid_local_systemid())
- 		memcpy(dclc.id_for_peer, local_systemid,
- 		       sizeof(local_systemid));
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index d90e0af..bc4c615 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -211,7 +211,7 @@ static void smc_lgr_unregister_conn(struct smc_connection *conn)
- {
- 	struct smc_link_group *lgr = conn->lgr;
- 
--	if (!lgr)
-+	if (!smc_conn_lgr_valid(conn))
- 		return;
- 	write_lock_bh(&lgr->conns_lock);
- 	if (conn->alert_token_local) {
-@@ -1129,7 +1129,7 @@ void smc_conn_free(struct smc_connection *conn)
- 		return;
- 
- 	conn->freed = 1;
--	if (!conn->alert_token_local)
-+	if (!smc_conn_lgr_valid(conn))
- 		/* Connection has already unregistered from
- 		 * link group.
- 		 */
-@@ -2263,14 +2263,16 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 
- void smc_sndbuf_sync_sg_for_cpu(struct smc_connection *conn)
- {
--	if (!conn->lgr || conn->lgr->is_smcd || !smc_link_active(conn->lnk))
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
-+	    !smc_link_active(conn->lnk))
- 		return;
- 	smc_ib_sync_sg_for_cpu(conn->lnk, conn->sndbuf_desc, DMA_TO_DEVICE);
- }
- 
- void smc_sndbuf_sync_sg_for_device(struct smc_connection *conn)
- {
--	if (!conn->lgr || conn->lgr->is_smcd || !smc_link_active(conn->lnk))
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
-+	    !smc_link_active(conn->lnk))
- 		return;
- 	smc_ib_sync_sg_for_device(conn->lnk, conn->sndbuf_desc, DMA_TO_DEVICE);
- }
-@@ -2279,7 +2281,7 @@ void smc_rmb_sync_sg_for_cpu(struct smc_connection *conn)
- {
- 	int i;
- 
--	if (!conn->lgr || conn->lgr->is_smcd)
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
- 		return;
- 	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
- 		if (!smc_link_active(&conn->lgr->lnk[i]))
-@@ -2293,7 +2295,7 @@ void smc_rmb_sync_sg_for_device(struct smc_connection *conn)
- {
- 	int i;
- 
--	if (!conn->lgr || conn->lgr->is_smcd)
-+	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
- 		return;
- 	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
- 		if (!smc_link_active(&conn->lgr->lnk[i]))
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index edbd401..630298b 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -408,6 +408,11 @@ static inline struct smc_connection *smc_lgr_find_conn(
- 	return res;
- }
- 
-+static inline bool smc_conn_lgr_valid(struct smc_connection *conn)
-+{
-+	return conn->lgr && conn->alert_token_local;
-+}
-+
- /* returns true if the specified link is usable */
- static inline bool smc_link_usable(struct smc_link *lnk)
- {
-diff --git a/net/smc/smc_diag.c b/net/smc/smc_diag.c
-index c952986a..25ef26b 100644
---- a/net/smc/smc_diag.c
-+++ b/net/smc/smc_diag.c
-@@ -89,7 +89,7 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 	r->diag_state = sk->sk_state;
- 	if (smc->use_fallback)
- 		r->diag_mode = SMC_DIAG_MODE_FALLBACK_TCP;
--	else if (smc->conn.lgr && smc->conn.lgr->is_smcd)
-+	else if (smc_conn_lgr_valid(&smc->conn) && smc->conn.lgr->is_smcd)
- 		r->diag_mode = SMC_DIAG_MODE_SMCD;
- 	else
- 		r->diag_mode = SMC_DIAG_MODE_SMCR;
-@@ -142,7 +142,7 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 			goto errout;
- 	}
- 
--	if (smc->conn.lgr && !smc->conn.lgr->is_smcd &&
-+	if (smc_conn_lgr_valid(&smc->conn) && !smc->conn.lgr->is_smcd &&
- 	    (req->diag_ext & (1 << (SMC_DIAG_LGRINFO - 1))) &&
- 	    !list_empty(&smc->conn.lgr->list)) {
- 		struct smc_diag_lgrinfo linfo = {
-@@ -162,7 +162,7 @@ static int __smc_diag_dump(struct sock *sk, struct sk_buff *skb,
- 		if (nla_put(skb, SMC_DIAG_LGRINFO, sizeof(linfo), &linfo) < 0)
- 			goto errout;
- 	}
--	if (smc->conn.lgr && smc->conn.lgr->is_smcd &&
-+	if (smc_conn_lgr_valid(&smc->conn) && smc->conn.lgr->is_smcd &&
- 	    (req->diag_ext & (1 << (SMC_DIAG_DMBINFO - 1))) &&
- 	    !list_empty(&smc->conn.lgr->list)) {
- 		struct smc_connection *conn = &smc->conn;
+Daniel Beer (2):
+  ASoC: add support for TAS5805M digital amplifier
+  ASoC: dt-bindings: add bindings for TI TAS5805M.
+
+ .../devicetree/bindings/sound/tas5805m.yaml   | 204 +++++++
+ sound/soc/codecs/Kconfig                      |   9 +
+ sound/soc/codecs/Makefile                     |   2 +
+ sound/soc/codecs/tas5805m.c                   | 554 ++++++++++++++++++
+ 4 files changed, 769 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/tas5805m.yaml
+ create mode 100644 sound/soc/codecs/tas5805m.c
+
 -- 
-1.8.3.1
+2.30.2
 
