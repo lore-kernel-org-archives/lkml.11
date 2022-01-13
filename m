@@ -2,77 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:41:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47FDCC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 10:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231148AbiAMKll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 05:41:41 -0500
-Received: from mga07.intel.com ([134.134.136.100]:24103 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229675AbiAMKlk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 05:41:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642070500; x=1673606500;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=TPBu1IxTu2hZ+dRj8vstJdFYEiXBAWhWrJeYPuKeWZU=;
-  b=XoRoC7R2XzopG211F2Jn8zNZKSmoGPd7vLDYzlzeVRgVV8ivsmSxKHTE
-   oWXYNiv1OkSlvhf7+ppIvf8ks+g39c1f1aCeh7MKFPLilf1PbzQ7rlleS
-   V980bbAI7nJiG5hrRcUPNmsTHwGKgJaRBMY3ILVPpMz2eiTW3EKbXP7um
-   gCzgjHh7fvarGEGZQ02nGo+o7+5cnEZT4ibRYz5Zw09QCNF03xNCJ6x91
-   XoFnPK/slZj69I+3URR4lf9ImgLTaIO43Zzwl+5lz8wo/TWYr6cY+4Q0u
-   sltV0WhMLpGWsV5GyUpSF1DSUsaRqiMB0/Hn4cBlwWU1LPelpPomb0omY
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="307328199"
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="307328199"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 02:41:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="475263020"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 13 Jan 2022 02:41:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n7xY2-00075x-HZ; Thu, 13 Jan 2022 10:41:38 +0000
-Date:   Thu, 13 Jan 2022 18:41:34 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [rmk-arm:sa1100 50/57] ERROR: modpost: "ipaq_micro_tx_msg"
- [arch/arm/mach-sa1100/h3xxx-sleeve.ko] undefined!
-Message-ID: <202201131843.cJPeRhCD-lkp@intel.com>
+        id S232419AbiAMKmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 05:42:53 -0500
+Received: from p3plsmtpa08-02.prod.phx3.secureserver.net ([173.201.193.103]:60451
+        "EHLO p3plsmtpa08-02.prod.phx3.secureserver.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229675AbiAMKmw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 05:42:52 -0500
+X-Greylist: delayed 438 seconds by postgrey-1.27 at vger.kernel.org; Thu, 13 Jan 2022 05:42:52 EST
+Received: from localhost ([82.17.115.212])
+        by :SMTPAUTH: with ESMTPA
+        id 7xS7nVRjASGVw7xS9nNtM1; Thu, 13 Jan 2022 03:35:34 -0700
+X-CMAE-Analysis: v=2.4 cv=Q7IXX66a c=1 sm=1 tr=0 ts=61e00076
+ a=9gipVNR6X1CoIeAWHwLoWw==:117 a=9gipVNR6X1CoIeAWHwLoWw==:17
+ a=IkcTkHD0fZMA:10 a=20KFwNOVAAAA:8 a=3a3v7Zz6WrtaihebJGEA:9 a=QEXdDO2ut3YA:10
+X-SECURESERVER-ACCT: atomlin@atomlin.com
+Date:   Thu, 13 Jan 2022 10:35:31 +0000
+From:   Aaron Tomlin <atomlin@atomlin.com>
+To:     David Vernet <void@manifault.com>
+Cc:     Aaron Tomlin <atomlin@redhat.com>, mcgrof@kernel.org, cl@linux.com,
+        pmladek@suse.com, mbenes@suse.cz, akpm@linux-foundation.org,
+        jeyu@kernel.org, linux-kernel@vger.kernel.org,
+        linux-modules@vger.kernel.org, ghalat@redhat.com,
+        allen.lkml@gmail.com
+Subject: Re: [RFC PATCH v2 03/13] module: Move livepatch support to a
+ separate file
+Message-ID: <20220113103531.sn76g34tfkxscs4e@ava.usersys.com>
+References: <20220106234319.2067842-1-atomlin@redhat.com>
+ <20220106234319.2067842-4-atomlin@redhat.com>
+ <Yd8j/Q2H0zYrAA2c@dev0025.ash9.facebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <Yd8j/Q2H0zYrAA2c@dev0025.ash9.facebook.com>
+X-CMAE-Envelope: MS4xfMRZBsZt9wwkZjMH3N7eq8c6rDjO/mctLzhdDYgLDJ4J5XU2HoVtyeKJPSaWYj9Szc/gFSs8Jx2YTb4RikuCJxhzLeB/ub2EA6ez4mjRe8eK/0xiWKDw
+ f1U3VjrGjnYyTbE1lYNPEEb6PIccnzNOeyR/yuhPi35xSnKzdQNARNdsCiIfpVyCE+JhkXVJtm4kK8ywoNvWPegGZlch8ABpSGrA62qy1TUg8ZqokaILZbhl
+ YztiX5nbPwShbwqn5FhT1Ai0SPfdHAyVro59WlpwsvWrK1+P8EeWyC6NPBWo95IFn8+8AN7usmDRo7mTGK+0zeGKO8eJaJedj/j642OMyCrWrVuN8GoIjSQi
+ BtK0Xo8Hhj30BAYKvbB+MuAamBB5vOY0ZuSORVdmm7n0Ivn3QxL0vdQk4HjtIgW1jFZ+PVacPHXBXwrXxDTAeIRxC2vVSsGOKRcq4a0DlntdJHZ/pAjakTwq
+ yHZWjvNts7OFz4CSc/b/9HZhLfrrJpy4HcLGKkURJlWLfG3p+mef+KxfnPE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.armlinux.org.uk/~rmk/linux-arm sa1100
-head:   7c5e0e177553f8a9ef3424e59fb3ef69c6b71689
-commit: e0903a11cbed3fcc17d26af1d2a9d7f842e60ac7 [50/57] ARM: sa1100/h3xxx: sleeve support
-config: arm-pleb_defconfig (https://download.01.org/0day-ci/archive/20220113/202201131843.cJPeRhCD-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add rmk-arm git://git.armlinux.org.uk/~rmk/linux-arm
-        git fetch --no-tags rmk-arm sa1100
-        git checkout e0903a11cbed3fcc17d26af1d2a9d7f842e60ac7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash
+On Wed 2022-01-12 10:54 -0800, David Vernet wrote:
+> Thanks for doing this refactor. +1 to doing this, though Petr had some
+> suggestions in another thread that I'll wait on before Acking.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+No problem and yes, I will make the suggested modifications then add you on
+Cc.
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+> Aaron Tomlin <atomlin@redhat.com> wrote on Thu [2022-Jan-06 23:43:09 +0000]:
+> > diff --git a/kernel/module/livepatch.c b/kernel/module/livepatch.c
+> > new file mode 100644
+> > index 000000000000..e147f5418327
+> > --- /dev/null
+> > +++ b/kernel/module/livepatch.c
+> > @@ -0,0 +1,75 @@
+> > +// SPDX-License-Identifier: GPL-2.0-or-later
+> > +/*
+> > + * kernel/module/livepatch.c - module livepatch support
+> > + *
+> > + * Copyright (C) 2016 Jessica Yu <jeyu@redhat.com>
+> > + */
+> 
+> Should the copyright year (and possibly author) be updated? Or just removed
+> entirely?
 
->> ERROR: modpost: "ipaq_micro_tx_msg" [arch/arm/mach-sa1100/h3xxx-sleeve.ko] undefined!
+Who should I specify? I'm not entirely sure. If I understand correctly,
+Jessica was the original author of the majority.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+
+Kind regards,
+
+-- 
+Aaron Tomlin
