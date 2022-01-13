@@ -2,81 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 289AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 20:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A105C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 20:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233717AbiAMUYm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 15:24:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232597AbiAMUYl (ORCPT
+        id S233956AbiAMU1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 15:27:25 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:34390 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232562AbiAMU1Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 15:24:41 -0500
-X-Greylist: delayed 1238 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 13 Jan 2022 12:24:40 PST
-Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88499C061574;
-        Thu, 13 Jan 2022 12:24:40 -0800 (PST)
-Received: from p5098d998.dip0.t-ipconnect.de ([80.152.217.152] helo=hermes.fivetechno.de); authenticated
-        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1n86KF-0006EQ-11; Thu, 13 Jan 2022 21:03:59 +0100
-X-Virus-Scanned: by amavisd-new 2.12.1 using newest ClamAV at
-        linuxbbg.five-lan.de
-Received: from odroid-x2.fritz.box (pd9e89d11.dip0.t-ipconnect.de [217.232.157.17])
-        (authenticated bits=0)
-        by hermes.fivetechno.de (8.15.2/8.16.1/SUSE Linux 0.8) with ESMTPSA id 20DK3shg011127
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Thu, 13 Jan 2022 21:03:55 +0100
-From:   Markus Reichl <m.reichl@fivetechno.de>
-To:     Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Martyn Welch <martyn.welch@collabora.com>
-Cc:     Markus Reichl <m.reichl@fivetechno.de>,
-        Gabriel Hojda <ghojda@yo2urs.ro>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: usb: Correct reset handling of smsc95xx
-Date:   Thu, 13 Jan 2022 21:01:11 +0100
-Message-Id: <20220113200113.30702-1-m.reichl@fivetechno.de>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1642105480;11327132;
-X-HE-SMSGID: 1n86KF-0006EQ-11
+        Thu, 13 Jan 2022 15:27:24 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20DJpwAY020538;
+        Thu, 13 Jan 2022 20:27:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=5dWrKAUhgUEBU9SwdPioCU6ft6T7G3y3e0+T9mnYyP4=;
+ b=kIZD/WrhvFL2mOL5QB+2Gk4ZlteCvveJNNd1Bdn006MMNqJ2Lz/YnQuSg2xq/zEbAY6D
+ jxx+QEKdPh3czAER6Elc6kzbIpIPRiwEJ1bM0FyTQ2ybsVhrkJhWiV1SVtnupwJxxUrm
+ 10noQgkdbLnAvMaljzPdBHfS68CcvsOnMDvZTEqcSFxtzRjQ6TcH3oRxIgLB4BNu87aZ
+ V22Q5usZrteX5LYZD8muQNoe/J742Lb//SDaykT1pXwn1TGTV5BAlh0YfdJryEF8QcTG
+ irCbT/xyJb3/qukxeIydHMF7aEBOQ0SBj4vKeE17IfLt4udAryMm6uDTdPOTUdKo4w4/ 5Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3djtm2rt5c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jan 2022 20:27:01 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20DJqQpo022200;
+        Thu, 13 Jan 2022 20:27:00 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3djtm2rt4h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jan 2022 20:27:00 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20DK8Rqs012516;
+        Thu, 13 Jan 2022 20:26:58 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma03ams.nl.ibm.com with ESMTP id 3df28a85q1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 13 Jan 2022 20:26:57 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20DKQs4h23920942
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 13 Jan 2022 20:26:54 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D737F42068;
+        Thu, 13 Jan 2022 20:26:53 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9EDC54204D;
+        Thu, 13 Jan 2022 20:26:51 +0000 (GMT)
+Received: from sig-9-65-68-109.ibm.com (unknown [9.65.68.109])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 13 Jan 2022 20:26:51 +0000 (GMT)
+Message-ID: <150cb51f95c3fe54e94edc5b96b2e15edb3bf399.camel@linux.ibm.com>
+Subject: Re: [PATCH v8 03/19] ima: Move policy related variables into
+ ima_namespace
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Stefan Berger <stefanb@linux.vnet.ibm.com>,
+        linux-integrity@vger.kernel.org
+Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Date:   Thu, 13 Jan 2022 15:26:51 -0500
+In-Reply-To: <20220104170416.1923685-4-stefanb@linux.vnet.ibm.com>
+References: <20220104170416.1923685-1-stefanb@linux.vnet.ibm.com>
+         <20220104170416.1923685-4-stefanb@linux.vnet.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 180RLcFUDhkcHwTM1IEWXECOOOMN0Osl
+X-Proofpoint-ORIG-GUID: Fkrfi4gnFQS76AmMXASepKeK8fahk7XZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-13_09,2022-01-13_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ spamscore=0 malwarescore=0 priorityscore=1501 mlxscore=0 adultscore=0
+ mlxlogscore=999 lowpriorityscore=0 suspectscore=0 impostorscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201130126
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On boards with LAN9514 and no preconfigured MAC address we don't get an
-ip address from DHCP after commit a049a30fc27c ("net: usb: Correct PHY handling
-of smsc95xx") anymore. Adding an explicit reset before starting the phy
-fixes the issue.
+Hi Stefan,
 
-[1]
-https://lore.kernel.org/netdev/199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com/
+On Tue, 2022-01-04 at 12:04 -0500, Stefan Berger wrote:
+> From: Stefan Berger <stefanb@linux.ibm.com>
+> 
+> Move variables related to the IMA policy into the ima_namespace. This way
+> the IMA policy of an IMA namespace can be set and displayed using a
+> front-end like SecurityFS.
+> 
+> Implement ima_ns_from_file() to get the IMA namespace via the user
+> namespace of the SecurityFS superblock that a file belongs to.
+> 
+> To get the current ima_namespace use get_current_ns() when a function
+> that is related to a policy rule is called. In other cases where functions
+> are called due file attribute modifications, use init_ima_ns, since these
+> functions are related to IMA appraisal and changes to file attributes are
+> only relevant to the init_ima_ns until IMA namespaces also support IMA
+> appraisal. In ima_file_free() use init_ima_ns since in this case flags
+> related to file measurements may be affected, which is not supported in
+> IMA namespaces, yet.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
 
-From: Gabriel Hojda <ghojda@yo2urs.ro>
-Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
-Signed-off-by: Gabriel Hojda <ghojda@yo2urs.ro>
-Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
----
- drivers/net/usb/smsc95xx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Please split this patch into "ima: pass through ima namespace", or some
+other name,  and "ima: Move policy related variables into
+ima_namespace".  The other option is to combine the "pass through ima
+namespace" with the 2nd patch, like Christian's example.
 
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index abe0149ed917..bc1e3dd67c04 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1962,7 +1962,8 @@ static const struct driver_info smsc95xx_info = {
- 	.bind		= smsc95xx_bind,
- 	.unbind		= smsc95xx_unbind,
- 	.link_reset	= smsc95xx_link_reset,
--	.reset		= smsc95xx_start_phy,
-+	.reset		= smsc95xx_reset,
-+	.check_connect	= smsc95xx_start_phy,
- 	.stop		= smsc95xx_stop,
- 	.rx_fixup	= smsc95xx_rx_fixup,
- 	.tx_fixup	= smsc95xx_tx_fixup,
--- 
-2.30.2
+> ---
+>  security/integrity/ima/ima.h                 |  49 ++++---
+>  security/integrity/ima/ima_api.c             |   8 +-
+>  security/integrity/ima/ima_appraise.c        |  28 ++--
+>  security/integrity/ima/ima_asymmetric_keys.c |   4 +-
+>  security/integrity/ima/ima_fs.c              |  16 ++-
+>  security/integrity/ima/ima_init.c            |   8 +-
+>  security/integrity/ima/ima_init_ima_ns.c     |   6 +
+>  security/integrity/ima/ima_main.c            |  83 +++++++----
+>  security/integrity/ima/ima_policy.c          | 142 ++++++++++---------
+>  security/integrity/ima/ima_queue_keys.c      |  11 +-
+>  10 files changed, 213 insertions(+), 142 deletions(-)
+> 
+> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+> index c4af3275f015..0b3dc9425076 100644
+> --- a/security/integrity/ima/ima.h
+> +++ b/security/integrity/ima/ima.h
+> @@ -20,6 +20,7 @@
+>  #include <linux/hash.h>
+>  #include <linux/tpm.h>
+>  #include <linux/audit.h>
+> +#include <linux/user_namespace.h>
+>  #include <crypto/hash_info.h>
+>  
+>  #include "../integrity.h"
+> @@ -43,9 +44,6 @@ enum tpm_pcrs { TPM_PCR0 = 0, TPM_PCR8 = 8, TPM_PCR10 = 10 };
+>  
+>  #define NR_BANKS(chip) ((chip != NULL) ? chip->nr_allocated_banks : 0)
+>  
+> -/* current content of the policy */
+> -extern int ima_policy_flag;
+> -
+>  /* bitset of digests algorithms allowed in the setxattr hook */
+>  extern atomic_t ima_setxattr_allowed_hash_algorithms;
+>  
+> @@ -120,6 +118,14 @@ struct ima_kexec_hdr {
+>  };
+>  
+>  struct ima_namespace {
+> +	struct list_head ima_default_rules;
+> +	/* ns's policy rules */
+
+Thank you for adding comments.  Why is the ima_default_rules not
+considered "ns's policy rules"?   Will this come later or is it limited
+to init_ima_ns?
+
+> +	struct list_head ima_policy_rules;
+> +	struct list_head ima_temp_rules;
+> +	/* Pointer to ns's current policy */
+> +	struct list_head __rcu *ima_rules;
+
+Since "Pointer to ns's current policy" only refers to ima_rules, append
+it to the variable definition.
+
+> +	/* current content of the policy */
+> +	int ima_policy_flag;
+
+Similarly here append the comment to the variable definition.
+
+>  } __randomize_layout;
+>  extern struct ima_namespace init_ima_ns;
+
+thanks,
+
+Mimi
+
 
