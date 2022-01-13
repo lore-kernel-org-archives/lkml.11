@@ -2,90 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8167AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DEEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235014AbiAMNNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:13:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46658 "EHLO
+        id S235028AbiAMNPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 08:15:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiAMNNP (ORCPT
+        with ESMTP id S229464AbiAMNPj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:13:15 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2591C06173F;
-        Thu, 13 Jan 2022 05:13:14 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id i68so96362ybg.7;
-        Thu, 13 Jan 2022 05:13:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2g1mOmaucLb7XHs8JQUVqK6opVNl2Di7/j45TJR+WOs=;
-        b=GUkpUVFLcgKxF9APCPN+kpP9/OgHaz3ibPzyeczCSWzl/VApI+iGGZcYDqvSgtz3PP
-         GOYVr9+LmHsvoCh8KyhOxLq8jDf00dyNAoGIqH62Y2flIeUN+Mzsj8Hs6C8g7CHRt8di
-         UGZ+NFc5kCHdgCRoVW4O5s9TWtT8sr4YONnBSXyK5PjVLMxMuN2WbksYpkkomFYy4HwT
-         5Y0LPfRNOkUHbFCWJbf2azHgrxE7NH0qOS7qDJF6Kwa+IBzTfs3M4r4uMPggO1VZzCLZ
-         AGk3DrXcTriTZhqluocUNWIa9s9+fVvuDUt9bI35ghl8pefvyjvGIuV2eYFdTAnPsNwd
-         2WUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2g1mOmaucLb7XHs8JQUVqK6opVNl2Di7/j45TJR+WOs=;
-        b=XZzMaOUQdF2GepUxQZXcDMjEgFutsGz/w0lXr2avjM5qCc1W0JWX6koO5F5OBIqR3v
-         F2dA3lJdP3j+yHnteW/jTVBoG0dJAiBI55B0WGkVzMgV/hP0j2oeQ9KuIRgE/c0Z10Me
-         Jico3jqOHajJ1XlUXOBHs31dqGxixeasKsfY0M0DcwORqMIQwC4IAMIVB74e59xymKwS
-         gHx9KNhN33I02K00yhlKeSm4GBCrd1sSObRbg0fEdbCTKIkBuO8B4SxBeZr0AflGqYWn
-         8sG499UA27MxKM1BSXQDQiS4xsNUf+aDzbRlFy0K0I5lRqP46t2MsJfSTRhSwODRNviL
-         7Npw==
-X-Gm-Message-State: AOAM533SX/qY1izRqHMMvQHBeTc0oLT4piJ6Gwe5RDDcHRiQfk58YY5h
-        Izd5OPfijyLkMaflaQbHKANyhWXolcTB5oYj+88=
-X-Google-Smtp-Source: ABdhPJy6/bFgiqUi0Vw/oTvUtA1ZdJOqxBOpdRCOAxD3OyBZrdffGioQDjLfY1gmbMNtOi5Sw1oQ0oJ7FIxILzyauSs=
-X-Received: by 2002:a5b:281:: with SMTP id x1mr5627475ybl.41.1642079593957;
- Thu, 13 Jan 2022 05:13:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20220111002314.15213-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220111002314.15213-10-prabhakar.mahadev-lad.rj@bp.renesas.com> <d66a7182-825f-b9a3-afc9-c0117ea846a2@xs4all.nl>
-In-Reply-To: <d66a7182-825f-b9a3-afc9-c0117ea846a2@xs4all.nl>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Thu, 13 Jan 2022 13:12:48 +0000
-Message-ID: <CA+V-a8s9s9Q=-NiwZYhpUNuiHyTzREqzMrH60mkdcR9uUYN+2A@mail.gmail.com>
-Subject: Re: [PATCH v2 09/13] media: mtk-vcodec: Drop unnecessary call to platform_get_resource()
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        LAK <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 13 Jan 2022 08:15:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1D9C06173F;
+        Thu, 13 Jan 2022 05:15:39 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D17AE616C9;
+        Thu, 13 Jan 2022 13:15:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E14CEC36AE3;
+        Thu, 13 Jan 2022 13:15:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642079738;
+        bh=xQVTKDZzsFtlhCL8BzwYKaH2UmaQPcZ7CBG/VUdwYIk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=b2gQ9meTpLGrX0Ciip0/ORIKxjmNs3QOgS38E4v6w/yxxEM9WXNY39gU6TQEAXfc6
+         bQoCz3wOuGK88hxIpumnx6F+8/+1uD2N8mpvqKgyhibLwjuq1ShXG3v1getRHfd++b
+         zxSoxdlf2IA07lxAHlNQ2pneVvJU3XpheL5GAssD3EJbxQ1oPaxHYMCF2Eddbn6u34
+         PgDVORFkcAJQKcLwgFJrknnKNKLyikJtzICJKH9nDYx66DWYOwa/9x9sa5ZOX3wQAE
+         pnGk/VPsSBdNpVIffCZIELB0EqrlPFni7FEIp8v6xOdzf4iMB6vP5lmg0oeRx5kKkd
+         vPGKZiPwUuTOQ==
+Date:   Thu, 13 Jan 2022 22:15:32 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 3/8] rethook: Add a generic return hook
+Message-Id: <20220113221532.c48abf7f56d29ba95dcb0dc6@kernel.org>
+In-Reply-To: <YeAaUN8aUip3MUn8@krava>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+        <164199620208.1247129.13021391608719523669.stgit@devnote2>
+        <YeAaUN8aUip3MUn8@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+On Thu, 13 Jan 2022 13:25:52 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-On Thu, Jan 13, 2022 at 1:05 PM Hans Verkuil <hverkuil-cisco@xs4all.nl> wrote:
->
-> Hi Prabhakar,
->
-> I'm skipping this patch since if I am not mistaken this patch fixes this as well
-> (as part of a larger overhaul):
->
-> https://patchwork.linuxtv.org/project/linux-media/patch/20220113041055.25213-9-yunfei.dong@mediatek.com/
->
-> I posted a PR for that series, so that's on the way in.
->
-> Please confirm so I can mark your patch as Superseded.
->
-Ack.
+> On Wed, Jan 12, 2022 at 11:03:22PM +0900, Masami Hiramatsu wrote:
+> > Add a return hook framework which hooks the function
+> > return. Most of the idea came from the kretprobe, but
+> > this is independent from kretprobe.
+> > Note that this is expected to be used with other
+> > function entry hooking feature, like ftrace, fprobe,
+> > adn kprobes. Eventually this will replace the
+> > kretprobe (e.g. kprobe + rethook = kretprobe), but
+> > at this moment, this is just a additional hook.
+> 
+> this looks similar to the code kretprobe is using now
 
-Cheers,
-Prabhakar
+Yes, I've mostly re-typed the code :)
+
+> would it make sense to incrementaly change current code to provide
+> this rethook interface? instead of big switch of current kretprobe
+> to kprobe + new rethook interface in future?
+
+Would you mean modifying the kretprobe instance code to provide
+similar one, and rename it at some point?
+My original idea is to keep the current kretprobe code and build
+up the similar one, and switch to it at some point. Actually,
+I don't want to change the current kretprobe interface itself,
+but the backend will be changed. For example, current kretprobe
+has below interface.
+
+struct kretprobe {
+        struct kprobe kp;
+        kretprobe_handler_t handler;
+        kretprobe_handler_t entry_handler;
+        int maxactive;
+        int nmissed;
+        size_t data_size;
+        struct freelist_head freelist;
+        struct kretprobe_holder *rph;
+};
+
+My idea is switching it to below.
+
+struct kretprobe {
+        struct kprobe kp;
+        kretprobe_handler_t handler;
+        kretprobe_handler_t entry_handler;
+        int maxactive;
+        int nmissed;
+        size_t data_size;
+        struct rethook *rethook;
+};
+
+Of course 'kretprobe_instance' may need to be changed...
+
+struct kretprobe_instance {
+	struct rethook_node;
+	char data[];
+};
+
+But even though, since there is 'get_kretprobe(ri)' wrapper, user
+will be able to access the 'struct kretprobe' from kretprobe_instance
+transparently.
+
+Thank you,
+
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
