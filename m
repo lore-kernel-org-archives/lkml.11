@@ -2,172 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14C47C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FC5C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 08:58:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233249AbiAMI6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 03:58:50 -0500
-Received: from mail-vk1-f170.google.com ([209.85.221.170]:41614 "EHLO
-        mail-vk1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232404AbiAMI5y (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 03:57:54 -0500
-Received: by mail-vk1-f170.google.com with SMTP id n9so2397598vkq.8;
-        Thu, 13 Jan 2022 00:57:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wbBEPLACDWPlnwwenFhgzoqyYNOO9jVGdUxMfFLqZ1s=;
-        b=YDNx9R2PJHTPQRoxOSRCAwrZLZH4IrLLdD1icaHLJmy/AbGjYcfwImjzQ+bX07VNni
-         sCdNNMIYJODD50avJSrUpe1KCZFGpMnzXTA7zRQR6o78lS1FPV4dcrdGNlNm+7dEBAoR
-         0y6D4hsZ7ewszumkynFmnTHId1Ot441RXoE//FlDpn/A4QLqrm9eQXQI2icjFuUePq3L
-         sZ8pp+4nidbOXFI4LUBY0f2KOBygVAxp1uj3SzMrYpJDxOIEYICB4E5NdC+ZQys05O3b
-         SDzXO0TbqpQFMftGAUJ8Tm1zX51paOs67NDud6UrBPnMKVNtt2bl6Uo2E8Q0AVMgPfjv
-         VGcQ==
-X-Gm-Message-State: AOAM532x0yvN9FTloEbHwi0ud93DGg7fiJW0Fl19JQOFNEDG0rwK/oeA
-        DulES3lyJmz8+ok7PuzXcfRzI3zRZX1Qql0I
-X-Google-Smtp-Source: ABdhPJytBiW0pWRPd3E20XdPL953mPOAKx2u0ydk0wECE35NIiIc34qfuJl9Xd4B2Vfprw3HYh/Ejw==
-X-Received: by 2002:a05:6122:90a:: with SMTP id j10mr1686160vka.12.1642064273381;
-        Thu, 13 Jan 2022 00:57:53 -0800 (PST)
-Received: from mail-ua1-f44.google.com (mail-ua1-f44.google.com. [209.85.222.44])
-        by smtp.gmail.com with ESMTPSA id s25sm1312780vsk.20.2022.01.13.00.57.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 13 Jan 2022 00:57:52 -0800 (PST)
-Received: by mail-ua1-f44.google.com with SMTP id m90so9815541uam.2;
-        Thu, 13 Jan 2022 00:57:51 -0800 (PST)
-X-Received: by 2002:a05:6102:3581:: with SMTP id h1mr1708060vsu.5.1642064271439;
- Thu, 13 Jan 2022 00:57:51 -0800 (PST)
+        id S233386AbiAMI6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 03:58:55 -0500
+Received: from mail-dm6nam11on2067.outbound.protection.outlook.com ([40.107.223.67]:58624
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233316AbiAMI6N (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 03:58:13 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HzHHX0TBdlgcBX5pY0upSTyWx9O6U44IeQGrIY8cUYgizpDbWrWfOV2j9YMWWQ388u4cQ3bhJVmr0f1Ge3whzD4fZr8BJYX66otC9txV/ZP8ty4NL1Nxl5DWxfkIqqTHrHfE88jpoX9ItzgfC95KPwXGCypO8vA43McNRgPg1KQ4CNi4f+xvR4H5TmoKwp0PgP9xAoctxBw5VaSyg/TPsOLvGFzbh/cDlkS2gZbCt7ZAbBTi5BlyVorJJnDkizVtopPPmZqhxOkXOuKu9WXRA2l7irrpqctCSV5X0V8jdHzDMM4iwrwL48s3VlJ+PgVddfQM/aE8EQzTh0BJ54ZvfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1aK6ov8zRbVG8S/MtvHDM7CeICXT7XcnjPMy+BeWdfc=;
+ b=Yanhdu8j9v3YBSxbXohpaUMiu67Fag4PwvC7X6Kemt812mhOX6K8z1TtNy5h5dDP1d5mGrSfAhREZXlBFNRzLp1qPVfJfsYVVqv/AsAD1XBTmjY3tc4GzHVeA9Unb+HPcaKLwtXUDbJ5k6fpTfe1U3723xxeTUSpc0V3NwtMI7nqIS4sm4bPr9QanDRAVjptAiHCLuQww0lWjUqjhD91NS/rOCx4j2B/kVv7X4WIs0y1mmP4RtExy295p1Wj2oHzYLCWMi6y7c198efO1zHjWLLm9xURJKDPwTGhrNcZHcxjuzIEeDecHcu2UsS7Xecxl+1XqHvi/gciFbRhC9OJ8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1aK6ov8zRbVG8S/MtvHDM7CeICXT7XcnjPMy+BeWdfc=;
+ b=KmCW71rWmEs5vjH5hcg27mIuBwUuIXrdZ7jf9RiHhJNHZyC7VGQ1Xpf691n5O6ScEeWJ8jJPo83IZmi7efHuDVDjnKEvm0RyEEH+wuFDrpZom7g3OUsZNHk/0Jl3y1Hda82syLAy3OfLkc04gbjI28ijpJFQW456I4MgdWN9Y2Y=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com (2603:10b6:510:ee::19)
+ by CY4PR1101MB2071.namprd11.prod.outlook.com (2603:10b6:910:1a::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4867.9; Thu, 13 Jan
+ 2022 08:56:34 +0000
+Received: from PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4]) by PH0PR11MB5657.namprd11.prod.outlook.com
+ ([fe80::d031:da9e:71a:73e4%5]) with mapi id 15.20.4888.011; Thu, 13 Jan 2022
+ 08:56:34 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>
+Subject: [PATCH 28/31] staging: wfx: fix firmware location
+Date:   Thu, 13 Jan 2022 09:55:21 +0100
+Message-Id: <20220113085524.1110708-29-Jerome.Pouiller@silabs.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com>
+References: <20220113085524.1110708-1-Jerome.Pouiller@silabs.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-ClientProxiedBy: SA0PR11CA0117.namprd11.prod.outlook.com
+ (2603:10b6:806:d1::32) To PH0PR11MB5657.namprd11.prod.outlook.com
+ (2603:10b6:510:ee::19)
 MIME-Version: 1.0
-References: <cover.1641890718.git.zong.li@sifive.com> <78cfa00a02cbd10202040058af22a73caa9c5ae8.1641890718.git.zong.li@sifive.com>
- <CAMuHMdUogbyjU=vBuvocxofGFCwzdQndk9OTnVdP+RNA8HEFZQ@mail.gmail.com>
- <CANXhq0qpkArvELBDqOT=bnVCwvR47cxHN7oH1hYKr1Yt7zaGOQ@mail.gmail.com> <CANXhq0rKsAsm4oSvnVqy385shoY2uTQOGUSqYdf-D=2xJ5vgWg@mail.gmail.com>
-In-Reply-To: <CANXhq0rKsAsm4oSvnVqy385shoY2uTQOGUSqYdf-D=2xJ5vgWg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 13 Jan 2022 09:57:40 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXUa8VCyocHzXGrQevEHiMVs_-p+qGpw_5ZFdOT66pv=Q@mail.gmail.com>
-Message-ID: <CAMuHMdXUa8VCyocHzXGrQevEHiMVs_-p+qGpw_5ZFdOT66pv=Q@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] dmaengine: sf-pdma: Get number of channel by
- device tree
-To:     Zong Li <zong.li@sifive.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Bin Meng <bin.meng@windriver.com>,
-        Green Wan <green.wan@sifive.com>, Vinod <vkoul@kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d4e8539d-cd57-4abe-b40e-08d9d67299a8
+X-MS-TrafficTypeDiagnostic: CY4PR1101MB2071:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1101MB20717D331620A95425F5BD6E93539@CY4PR1101MB2071.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: t8jgKQIQxM69nJSHVx7+rtasFF+rzAmx47gj1JQSqj0ku9/qYPuKOPNA8qEMD7dPeU8U9aAekmV0NLysOgOIiOxXTGar/5pwKvs2IuzuhH4XgtApSHqnf98xgok+TbriGcj53Kl5R/yoXC+5zejteMIZQ50pIeEsrfZkGT++oaYciqSkWCqXsUC6kCQIlTuXdmHDregKRVwB/IuKkzfU7nc3MBDe1hjY9GKIShI6nnpNUhIWGoPEni9CFCcQNhwzZqEGbEqx79Vk1qBZYsNzfNinXGEj8ZmZi4PJb8mqPjTxhWV/rKoGamT9xfHOULGRa1cubi4X053qfAUf/2ZRG0CNWH6R1HzX/SO8hrMudpln8UxhZJVkdhTqvUWpbgkLfwHaKifOrtWzBHjgB938jNDPFkxRu5wMqM9tbqPRnJIIt/LtH9IzD3OuTllDAqyPSGFKo3VKm+V/WiI5Nmuosf60Ja9Z95FVnriv74mfsCkDeCoZltnO4zEv8q0LSAhL2YwDLTFA5gqPUDJW8GAYYgGu2Nwsoe2USz+CsOx/pXWYtgqa9rFf7t5vOpJNIYzKTmA2TuONc1hJZ/pwMJKe6eiaT33q02D2cC2cZ42L2SqzesP9VVwCq/soIkBy4X6yZamofItrG6y/0R/TNuJwKA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5657.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2616005)(66476007)(52116002)(8676002)(6486002)(4326008)(38100700002)(8936002)(83380400001)(6506007)(107886003)(66556008)(6666004)(36756003)(508600001)(2906002)(5660300002)(6512007)(1076003)(86362001)(186003)(316002)(66946007)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?bm83Zm9FQWVOM3VwZk9qZUxVVmNKUDU0SVk2WVhnSitlMk9iTVdpd3pBenJP?=
+ =?utf-8?B?OVd5aHd4ZGtOdWFTamovanpaYkpUNkc5ampPVng2dm51OTdvUlg2TmNFZjlL?=
+ =?utf-8?B?ZTEweUM3WjVXdC9LSnc1dXY0NjAzb0JBdGE5MEZDRjFhS2tscnVGRzNMdCtN?=
+ =?utf-8?B?d3VGQkdua3JmQmtCcTRvNW5qUndURk5FcjJENlFWV3RWczBsK3A1b1JOYzcx?=
+ =?utf-8?B?QlBhZTBITU52WlV3VWxGTmU2Vm5rRVBTaVBxUlJkNTZ5ekFzdjdOclIwM2xy?=
+ =?utf-8?B?dXdISmtrR1J4b2xqVU5yMDM1TG55ZmZHbWxENzFhRWhpWElpTjkwZ0oyeTBv?=
+ =?utf-8?B?VG1NWU43YWtUcmU2bHBqbTc3OUdxVTVmTDNUV0RVT0pBUCs3WDBJaHZJbmxQ?=
+ =?utf-8?B?VGhHN3lmWjFrOWhsZm5JZnYrRHNNOWZyQVpTVDlOU0VqRWl1YVdKZ2tXY0FH?=
+ =?utf-8?B?dFpzV0NMNWRQdlZ5OEZrU3NZaHBkY1dhVk1MK2x2NHBJNko0OTh1dDNGYjYv?=
+ =?utf-8?B?dkhMelBVOVROV0s5bWJ6MW1iejJLYkZCa28zamtqMUZ4SGpwRmg0aG5DSnl6?=
+ =?utf-8?B?bTlBYThaWDlPSDB6a1pyMUNUcGVzVThIdzRoODhabVUyUk1ERndxelVJb0NS?=
+ =?utf-8?B?Q3pMOXlHeFFZV2t4Qy9hakFDRWFjL01LVlFxK1MzcGtpRVYzbVFPSzJVZWV3?=
+ =?utf-8?B?d2JDSmdSK1UvZ0dzcDNwQ21DQUtvODlRL2Vrc0xVYnhNeFR0ZTY4TlhiQ3ZG?=
+ =?utf-8?B?cWhBWnJYbDB1aitBK0hObDN5MUlTSit4WGh4VjRKdGllY3B0eklUTTZvYmtk?=
+ =?utf-8?B?WHBNWGlQcG9oZzJPUUVha0hWRTJqRWJhVkVNZitKVThRM1J3VGZUQlhucXFo?=
+ =?utf-8?B?enV3T2J0eEtqQjhHaytvdHhXaHJ2N1o2aGt3RG42bUIxdkEvZ0svNG5aa3ha?=
+ =?utf-8?B?MFk3K00xVnF6RlZPbHdLd1dnbXRBbkMxNUNsUExXQTdMV2NabE42TlB5aTlM?=
+ =?utf-8?B?bkMwUkJoUzY3VTlqbyswK09tVWxiSDNaK01wcVBiMlVzTHBIajZWSWRrT2Vy?=
+ =?utf-8?B?S3hCY3Z4MHJoc1pHUWNvc1YyelVneDdLYVd3ZHR6TU9LYW5TYWpEeUVxOXU5?=
+ =?utf-8?B?Y3dIaUFYVlRyTFBJb1ZIYWNVSDJLZlFSUnI2aTNDbkIxMGhLNkJmU2xheEZj?=
+ =?utf-8?B?Q1F5UHA4SWkzQktIUnBSb2RJNExNR2ZjV2g5djUwOGdPQWkvSjN0Y25qWHdo?=
+ =?utf-8?B?QXhIMktINDVXS1ZqeE0xaThhVE5NMkhIWVFWMUg3SFBycXRPMlhLV0xYZlJV?=
+ =?utf-8?B?bmMwemZ5Y2poUmJTeURNR2s2QnlYeDU5dzNTTWM1Sk1kWkZ4ZUwxMnpndTlr?=
+ =?utf-8?B?elNjTlB1ZEpHNGh2eHRnRWZ3YTV2V3lzMzZsajM5eElpNDlSeEFidkcvb1d3?=
+ =?utf-8?B?M1E5S0hNZ0huOHZxa3F6SVIxa2FUTWdjV29RTlQxaWxwSnBCUU1QVGRiS29B?=
+ =?utf-8?B?bFkwVzBiYkdsbmJCR2R6ampEeGZRdjllK04vSS85QUFzcVVYajFpamNFSUJY?=
+ =?utf-8?B?MG1xVXNURm9ob2c5cW9IRlVUWEQ3b1pJd0djcmRkVjl1S21CU2JnTVdkWE1n?=
+ =?utf-8?B?dU9zWkxkSmxPRFRLV2h6Z0h3RlVjRDJvOEZhWXRzNzZkNy9LU2JTZXM4UnFD?=
+ =?utf-8?B?b0VTTkNrand2WkJIMzRaeXAzRWNzSXZQeXBrNXllRGRDVkhsYWlqTE1kWno5?=
+ =?utf-8?B?L2REeDRWdkMwbGxqTll6aEVZQ1hvTjVSTVh0ZENqWlUzRlEzazJKbERPODlu?=
+ =?utf-8?B?bm9acXZTTUxZb1Nma21mbDFqQkYwSzd0eW9pSnNEb3Zva08xWURGREx0TFE5?=
+ =?utf-8?B?dTlaTjVtOVZ6bjVuaFVqU2x2WWtxNWVXc0Vuc3Y4SWY4ZmlnZXRHeHhncTZq?=
+ =?utf-8?B?MzlwNnVIQ3BmNmRpaGpjQzFlSE96djBrQ1lMWWVpb0IwY0lYR1lCTE01YWZi?=
+ =?utf-8?B?RmI0alRWRjN1VUdTNFk5UmduNnhTb25yT25odDFIV1I3YzdOQW9GcnVYZHc0?=
+ =?utf-8?B?NUw5d2wrN29xSUk4cERPNVlvN1VaY2wzdkllcmNocEtkNm1JVDJjVDV0MXky?=
+ =?utf-8?B?bkVUNlJKWGovanVWUjE1SDRQTWgrMFJFTWJyTll0SUNEZ1k5clcraG85bjdL?=
+ =?utf-8?B?ZzJpc1RiUi9EKzRQZ0N1STIxbmNpTkc1UThkWXJycGhhbWxXdHc1R2VIME54?=
+ =?utf-8?Q?ELAVdc/FmelfpEAzZFiHvgU5WgudB14mXBaLKWuxLg=3D?=
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d4e8539d-cd57-4abe-b40e-08d9d67299a8
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5657.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 08:56:34.8314
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: AbSBovG3m7O58PVDX0MS0ZnxqRfwN90SyeEQVCotrNsWSm1prga6u0u5/HY4j5GL7Kyc2fJqK/FdAFLojLpJmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2071
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zong,
-
-On Thu, Jan 13, 2022 at 8:26 AM Zong Li <zong.li@sifive.com> wrote:
-> On Thu, Jan 13, 2022 at 2:53 PM Zong Li <zong.li@sifive.com> wrote:
-> > On Wed, Jan 12, 2022 at 4:28 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > On Tue, Jan 11, 2022 at 9:51 AM Zong Li <zong.li@sifive.com> wrote:
-> > > > It currently assumes that there are always four channels, it would
-> > > > cause the error if there is actually less than four channels. Change
-> > > > that by getting number of channel from device tree.
-> > > >
-> > > > For backwards-compatible, it uses the default value (i.e. 4) when there
-> > > > is no 'dma-channels' information in dts.
-> > > >
-> > > > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > >
-> > > Thanks for your patch!
-> > >
-> > > > --- a/drivers/dma/sf-pdma/sf-pdma.c
-> > > > +++ b/drivers/dma/sf-pdma/sf-pdma.c
-> > > > @@ -484,21 +484,24 @@ static int sf_pdma_probe(struct platform_device *pdev)
-> > > >         struct sf_pdma *pdma;
-> > > >         struct sf_pdma_chan *chan;
-> > > >         struct resource *res;
-> > > > -       int len, chans;
-> > > > -       int ret;
-> > > > +       int len, ret;
-> > > >         const enum dma_slave_buswidth widths =
-> > > >                 DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
-> > > >                 DMA_SLAVE_BUSWIDTH_4_BYTES | DMA_SLAVE_BUSWIDTH_8_BYTES |
-> > > >                 DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
-> > > >                 DMA_SLAVE_BUSWIDTH_64_BYTES;
-> > > >
-> > > > -       chans = PDMA_NR_CH;
-> > > > -       len = sizeof(*pdma) + sizeof(*chan) * chans;
-> > > > +       len = sizeof(*pdma) + sizeof(*chan) * PDMA_MAX_NR_CH;
-> > >
-> > > Why is the last part added (yes, this is a pre-existing issue)?
-> > > struct sf_pdma already contains space for chans[PDMA_MAX_NR_CH].
-> > > Either drop the last part, or change sf_pdma.chans[] to a flexible
-> > > array member.
-> > >
-> > > BTW, you can use the struct_size() or flex_array_size() helper
-> > > to calculate len.
-> >
-> > Thanks for your suggestions, let me fix it in the next version.
-> >
-> > >
-> > > >         pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
-> > > >         if (!pdma)
-> > > >                 return -ENOMEM;
-> > > >
-> > > > -       pdma->n_chans = chans;
-> > > > +       ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
-> > > > +                                  &pdma->n_chans);
-> > > > +       if (ret) {
-> > > > +               dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
-> > > > +               pdma->n_chans = PDMA_MAX_NR_CH;
-> > > > +       }
-> > > >
-> > > >         res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > > >         pdma->membase = devm_ioremap_resource(&pdev->dev, res);
-> > > > @@ -556,7 +559,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
-> > > >         struct sf_pdma_chan *ch;
-> > > >         int i;
-> > > >
-> > > > -       for (i = 0; i < PDMA_NR_CH; i++) {
-> > > > +       for (i = 0; i < pdma->n_chans; i++) {
-> > > >                 ch = &pdma->chans[i];
-> > >
-> > > If dma-channels in DT > PDMA_NR_CH, this becomes an out-of-bound
-> > > access.
-> > >
-> >
-> > Okay, let me get the min() between pdma->chans and PDMA_MAX_NR_CH,
-> > please let me know if it isn't good to you.
->
-> Please allow me give more details on it, I would compare the value of
-> pdma->chans with PDMA_MAX_NR_CH in probe function, and set the
-> pdma->chans to PDMA_MAX_NR_CH if the value in DT is bigger than
-> PDMA_MAX_NR_CH.
-
-Silently limiting "dma-channels" to PDMA_MAX_NR_CH is not a good idea,
-as that may lead to hard-to-track problems.
-
-Basically you have two options:
-  1. Just use the value of "dma-channels" if present.
-     This has the advantage that it will work automatically with
-     future variants that have more channels, but allows the
-     developer to trigger memory exhaustion by providing a very large value.
-  2. Return -EINVAL if "dma-channels" is larger than PDMA_MAX_NR_CH.
-     This is the safest, but requires driver changes for a future variant
-      that has more channels.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKVGhl
+cmUgaXMgY3VycmVudGx5LCBhIG1pc21hdGNoIGJldHdlZW4gdGhlIGxvY2F0aW9uIG9mIHRoZSBm
+aXJtd2FyZSBpbgpsaW51eC1maXJtd2FyZSBhbmQgdGhlIHBhdGggd3JpdHRlbiBpbiB0aGUgZHJp
+dmVyLgoKV2UgdGFrZSB0aGlzIG9wcG9ydHVuaXR5IHRvIHJlbG9jYXRlIHRoZSBXRjIwMCBmaXJt
+d2FyZSBpbiB3ZngvIGluc3RlYWQKb2Ygc2lsYWJzLy4KClNpZ25lZC1vZmYtYnk6IErDqXLDtG1l
+IFBvdWlsbGVyIDxqZXJvbWUucG91aWxsZXJAc2lsYWJzLmNvbT4KLS0tCiBkcml2ZXJzL3N0YWdp
+bmcvd2Z4L2J1c19zZGlvLmMgfCAxNiArKysrKysrKy0tLS0tLS0tCiBkcml2ZXJzL3N0YWdpbmcv
+d2Z4L2J1c19zcGkuYyAgfCAxNiArKysrKysrKy0tLS0tLS0tCiAyIGZpbGVzIGNoYW5nZWQsIDE2
+IGluc2VydGlvbnMoKyksIDE2IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvc3Rh
+Z2luZy93ZngvYnVzX3NkaW8uYyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvYnVzX3NkaW8uYwppbmRl
+eCAzNjE1ODU3NjNmMzAuLjZlYWQ2OTU3Yjc1MSAxMDA2NDQKLS0tIGEvZHJpdmVycy9zdGFnaW5n
+L3dmeC9idXNfc2Rpby5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93ZngvYnVzX3NkaW8uYwpAQCAt
+MjIsMjMgKzIyLDIzIEBACiAjaW5jbHVkZSAiYmguaCIKIAogc3RhdGljIGNvbnN0IHN0cnVjdCB3
+ZnhfcGxhdGZvcm1fZGF0YSBwZGF0YV93ZjIwMCA9IHsKLQkuZmlsZV9mdyA9ICJ3Zm1fd2YyMDAi
+LAotCS5maWxlX3BkcyA9ICJ3ZjIwMC5wZHMiLAorCS5maWxlX2Z3ID0gIndmeC93Zm1fd2YyMDAi
+LAorCS5maWxlX3BkcyA9ICJ3Zngvd2YyMDAucGRzIiwKIH07CiAKIHN0YXRpYyBjb25zdCBzdHJ1
+Y3Qgd2Z4X3BsYXRmb3JtX2RhdGEgcGRhdGFfYnJkNDAwMWEgPSB7Ci0JLmZpbGVfZncgPSAid2Zt
+X3dmMjAwIiwKLQkuZmlsZV9wZHMgPSAiYnJkNDAwMWEucGRzIiwKKwkuZmlsZV9mdyA9ICJ3Zngv
+d2ZtX3dmMjAwIiwKKwkuZmlsZV9wZHMgPSAid2Z4L2JyZDQwMDFhLnBkcyIsCiB9OwogCiBzdGF0
+aWMgY29uc3Qgc3RydWN0IHdmeF9wbGF0Zm9ybV9kYXRhIHBkYXRhX2JyZDgwMjJhID0gewotCS5m
+aWxlX2Z3ID0gIndmbV93ZjIwMCIsCi0JLmZpbGVfcGRzID0gImJyZDgwMjJhLnBkcyIsCisJLmZp
+bGVfZncgPSAid2Z4L3dmbV93ZjIwMCIsCisJLmZpbGVfcGRzID0gIndmeC9icmQ4MDIyYS5wZHMi
+LAogfTsKIAogc3RhdGljIGNvbnN0IHN0cnVjdCB3ZnhfcGxhdGZvcm1fZGF0YSBwZGF0YV9icmQ4
+MDIzYSA9IHsKLQkuZmlsZV9mdyA9ICJ3Zm1fd2YyMDAiLAotCS5maWxlX3BkcyA9ICJicmQ4MDIz
+YS5wZHMiLAorCS5maWxlX2Z3ID0gIndmeC93Zm1fd2YyMDAiLAorCS5maWxlX3BkcyA9ICJ3Zngv
+YnJkODAyM2EucGRzIiwKIH07CiAKIC8qIExlZ2FjeSBEVCBkb24ndCB1c2UgaXQgKi8KZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvc3RhZ2luZy93ZngvYnVzX3NwaS5jIGIvZHJpdmVycy9zdGFnaW5nL3dm
+eC9idXNfc3BpLmMKaW5kZXggOWFhNTJkNzZjZGRhLi42YjRmOWZmZjhiNDQgMTAwNjQ0Ci0tLSBh
+L2RyaXZlcnMvc3RhZ2luZy93ZngvYnVzX3NwaS5jCisrKyBiL2RyaXZlcnMvc3RhZ2luZy93Zngv
+YnVzX3NwaS5jCkBAIC0yNCwyNiArMjQsMjYgQEAKICNkZWZpbmUgU0VUX1JFQUQgMHg4MDAwICAg
+ICAgICAgLyogdXNhZ2U6IG9yIG9wZXJhdGlvbiAqLwogCiBzdGF0aWMgY29uc3Qgc3RydWN0IHdm
+eF9wbGF0Zm9ybV9kYXRhIHBkYXRhX3dmMjAwID0gewotCS5maWxlX2Z3ID0gIndmbV93ZjIwMCIs
+Ci0JLmZpbGVfcGRzID0gIndmMjAwLnBkcyIsCisJLmZpbGVfZncgPSAid2Z4L3dmbV93ZjIwMCIs
+CisJLmZpbGVfcGRzID0gIndmeC93ZjIwMC5wZHMiLAogCS51c2VfcmlzaW5nX2NsayA9IHRydWUs
+CiB9OwogCiBzdGF0aWMgY29uc3Qgc3RydWN0IHdmeF9wbGF0Zm9ybV9kYXRhIHBkYXRhX2JyZDQw
+MDFhID0gewotCS5maWxlX2Z3ID0gIndmbV93ZjIwMCIsCi0JLmZpbGVfcGRzID0gImJyZDQwMDFh
+LnBkcyIsCisJLmZpbGVfZncgPSAid2Z4L3dmbV93ZjIwMCIsCisJLmZpbGVfcGRzID0gIndmeC9i
+cmQ0MDAxYS5wZHMiLAogCS51c2VfcmlzaW5nX2NsayA9IHRydWUsCiB9OwogCiBzdGF0aWMgY29u
+c3Qgc3RydWN0IHdmeF9wbGF0Zm9ybV9kYXRhIHBkYXRhX2JyZDgwMjJhID0gewotCS5maWxlX2Z3
+ID0gIndmbV93ZjIwMCIsCi0JLmZpbGVfcGRzID0gImJyZDgwMjJhLnBkcyIsCisJLmZpbGVfZncg
+PSAid2Z4L3dmbV93ZjIwMCIsCisJLmZpbGVfcGRzID0gIndmeC9icmQ4MDIyYS5wZHMiLAogCS51
+c2VfcmlzaW5nX2NsayA9IHRydWUsCiB9OwogCiBzdGF0aWMgY29uc3Qgc3RydWN0IHdmeF9wbGF0
+Zm9ybV9kYXRhIHBkYXRhX2JyZDgwMjNhID0gewotCS5maWxlX2Z3ID0gIndmbV93ZjIwMCIsCi0J
+LmZpbGVfcGRzID0gImJyZDgwMjNhLnBkcyIsCisJLmZpbGVfZncgPSAid2Z4L3dmbV93ZjIwMCIs
+CisJLmZpbGVfcGRzID0gIndmeC9icmQ4MDIzYS5wZHMiLAogCS51c2VfcmlzaW5nX2NsayA9IHRy
+dWUsCiB9OwogCi0tIAoyLjM0LjEKCg==
