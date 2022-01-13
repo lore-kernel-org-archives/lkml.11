@@ -2,149 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF14AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 12:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234357AbiAMMGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 07:06:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiAMMGg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 07:06:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2A2C06173F;
-        Thu, 13 Jan 2022 04:06:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2C90619F7;
-        Thu, 13 Jan 2022 12:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C97FC36AE9;
-        Thu, 13 Jan 2022 12:06:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642075595;
-        bh=RgWni6LqPjl7/Jpt8i2S8g4ZDYjkMn/V4Ho5ACe93Sg=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=oNVpHqPNHOATYSR5XjkS6VOg2OnhzMuQH50/qmDCtZe9oAPiZvlznmwfPcsLn0AcD
-         YWUdQMjzZP0fiJq7xZcsNaGMvjBWpnJP2pHhOWeapFCJpFptd0waFqDLFu5hLG0jJ9
-         xJBL3KkUyrdUX8VQpujKDuMVX40ljpMrh0cc7MIe2lnxbwA4BxH15+WgILRcUbZbeR
-         /hm6GzcBls0KDxy9mKJ2N6G04h86ETlWRYgESpXEsMoo19EXszxd6vxxIxSs1rdoo2
-         RPu8q/W5V4wq9erWlNUsr0p2NFnn7XCt7uXFcbnenGtEBK693w9Sst9KrZgagDs+su
-         qgp1o4z7rslAQ==
-Received: by mail-wr1-f48.google.com with SMTP id h10so9722751wrb.1;
-        Thu, 13 Jan 2022 04:06:35 -0800 (PST)
-X-Gm-Message-State: AOAM53151ymfEd47hbWNWPQdcGg0jGTeDynWGKHZMf/SPPlWLcnLfnup
-        hC82zu/hwHR5+VCwQRbjsZDinQupT+RhCdxTVBg=
-X-Google-Smtp-Source: ABdhPJy0Pn2iuF5yVcjcvxDoW/UYW/fi7cHyKrpSuw+7inPMuZ4pLI4PPSLoo85XQYx26oM7ei6px2KQFxi1oB97Km8=
-X-Received: by 2002:adf:f287:: with SMTP id k7mr3800465wro.417.1642075593549;
- Thu, 13 Jan 2022 04:06:33 -0800 (PST)
+        id S234369AbiAMMG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 07:06:58 -0500
+Received: from mga12.intel.com ([192.55.52.136]:34006 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234385AbiAMMGs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 07:06:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642075607; x=1673611607;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Yq87Afp64FG/fgc06uri6AT2cW3uh4/5BtkWpNNlZ3c=;
+  b=JAO+i9o5LCxctq3Lc8R67iwu4PqI2s3QnzITnRTIAaJDSUwf00Vy710x
+   yrm+mG8tQbOgRzTKRVcz6zpBpzRri2tbKmowpOytGMsVB2HHGIZUdzTcn
+   UNMlQj2X8GuES1+kondZH0swMfza/2cs1uclZXimgQgUfv9AWlG4RKCG9
+   ssvKcOCe/0eVFfX62dNw8KsYObE189wU8AYM9uyrkTqFadlbkjvJJbdd0
+   +VEiT8R2LqZr/Fos26f7Rrw0/gzy73NS50ns5kfcf/1ZTOUpLnvZfFs2U
+   nHoEkgoGgYajzvAwLZUJs+dhDF+whRYxkl0++XLfq6iQx5UDF8r5nxacT
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="223976318"
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="223976318"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 04:06:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
+   d="scan'208";a="576918558"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 13 Jan 2022 04:06:45 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n7ysO-0007AP-Oq; Thu, 13 Jan 2022 12:06:44 +0000
+Date:   Thu, 13 Jan 2022 20:05:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [cel:topic-rpc-with-tls-upcall 18/19] net/sunrpc/xprtsock.c:2257:
+ undefined reference to `tls_client_hello_user'
+Message-ID: <202201131908.bylSNIA1-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
- <87r19cftbr.fsf@toke.dk> <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
- <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
-In-Reply-To: <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 13 Jan 2022 13:06:22 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
-Message-ID: <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
-To:     Hannes Frederic Sowa <hannes@stressinduktion.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Erik Kline <ek@google.com>,
-        Fernando Gont <fgont@si6networks.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        hideaki.yoshifuji@miraclelinux.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 13 Jan 2022 at 12:15, Hannes Frederic Sowa
-<hannes@stressinduktion.org> wrote:
->
-> Hello,
->
-> On 13.01.22 00:31, Jason A. Donenfeld wrote:
-> > On 1/13/22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
-> >> However, if we make this change, systems setting a stable_secret and
-> >> using addr_gen_mode 2 or 3 will come up with a completely different
-> >> address after a kernel upgrade. Which would be bad for any operator
-> >> expecting to be able to find their machine again after a reboot,
-> >> especially if it is accessed remotely.
-> >>
-> >> I haven't ever used this feature myself, though, or seen it in use. So=
- I
-> >> don't know if this is purely a theoretical concern, or if the
-> >> stable_address feature is actually used in this way in practice. If it
-> >> is, I guess the switch would have to be opt-in, which kinda defeats th=
-e
-> >> purpose, no (i.e., we'd have to keep the SHA1 code around
->
-> Yes, it is hard to tell if such a change would have real world impact
-> due to not knowing its actual usage in the field - but I would avoid
-> such a change. The reason for this standard is to have stable addresses
-> across reboots. The standard is widely used but most servers or desktops
-> might get their stable privacy addresses being generated by user space
-> network management systems (NetworkManager/networkd) nowadays. I would
-> guess it could be used in embedded installations.
->
-> The impact of this change could be annoying though: users could suddenly
-> lose connectivity due to e.g. changes to the default gateway after an
-> upgrade.
->
-> > I'm not even so sure that's true. That was my worry at first, but
-> > actually, looking at this more closely, DAD means that the address can
-> > be changed anyway - a byte counter is hashed in - so there's no
-> > gurantee there.
->
-> The duplicate address detection counter is a way to merely provide basic
-> network connectivity in case of duplicate addresses on the network
-> (maybe some kind misconfiguration or L2 attack). Such detected addresses
-> would show up in the kernel log and an administrator should investigate
-> and clean up the situation. Afterwards bringing the interface down and
-> up again should revert the interface to its initial (dad_counter =3D=3D 0=
-)
-> address.
->
-> > There's also the other aspect that open coding sha1_transform like
-> > this and prepending it with the secret (rather than a better
-> > construction) isn't so great... Take a look at the latest version of
-> > this in my branch to see a really nice simplification and security
-> > improvement:
-> >
-> > https://git.zx2c4.com/linux-dev/log/?h=3Dremove-sha1
->
-> All in all, I consider the hash produced here as being part of uAPI
-> unfortunately and thus cannot be changed. It is unfortunate that it
-> can't easily be improved (I assume a separate mode for this is not
-> reasonable). The patches definitely look like a nice cleanup.
->
-> Would this be the only user of sha_transform left?
->
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux topic-rpc-with-tls-upcall
+head:   0fd328ea53e7d539bf8bb160d773e1d027c60fea
+commit: adb54a631895e050da6ed9a18f9b503f927b642d [18/19] SUNRPC: RPC client support for TLS handshake upcall
+config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220113/202201131908.bylSNIA1-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/cel/linux.git/commit/?id=adb54a631895e050da6ed9a18f9b503f927b642d
+        git remote add cel git://git.kernel.org/pub/scm/linux/kernel/git/cel/linux
+        git fetch --no-tags cel topic-rpc-with-tls-upcall
+        git checkout adb54a631895e050da6ed9a18f9b503f927b642d
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-The question is not whether but when we can/will change this.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-SHA-1 is broken and should be removed at *some* point, so unless the
-feature itself is going to be obsolete, its implementation will need
-to switch to a PRF that fulfils the requirements in RFC7217 once SHA-1
-ceases to do so.
+All errors (new ones prefixed by >>):
 
-And I should also point out that the current implementation does not
-even use SHA-1 correctly, as it omits the finalization step. This may
-or may not matter in practice, but it deviates from crypto best
-practices, as well as from RFC7217
+   ld: net/sunrpc/xprtsock.o: in function `xs_tcp_tls_handshake_sync':
+>> net/sunrpc/xprtsock.c:2257: undefined reference to `tls_client_hello_user'
+   ld: net/sunrpc/xprtsock.o: in function `xs_tcp_tls_handshake_async':
+   net/sunrpc/xprtsock.c:2296: undefined reference to `tls_client_hello_user'
+   pahole: .tmp_vmlinux.btf: No such file or directory
+   .btf.vmlinux.bin.o: file not recognized: file format not recognized
 
-I already pointed out to Jason (in private) that the PRF does not need
-to be based on a cryptographic hash, so as far as I can tell, siphash
-would be a suitable candidate here as well, and I already switched the
-TCP fastopen code to that in the past. But SHA-1 definitely has to go.
+
+vim +2257 net/sunrpc/xprtsock.c
+
+  2239	
+  2240	/**
+  2241	 * xs_tcp_tls_handshake_sync - Perform a full TLS client handshake
+  2242	 * @xprt: transport on which to perform handshake
+  2243	 *
+  2244	 * Return values:
+  2245	 *   %0: Handshake completed successfully.
+  2246	 *   Negative errno: handshake not started, or failed.
+  2247	 */
+  2248	static int xs_tcp_tls_handshake_sync(struct rpc_xprt *xprt)
+  2249	{
+  2250		struct sock_xprt *transport =
+  2251					container_of(xprt, struct sock_xprt, xprt);
+  2252		int rc;
+  2253	
+  2254		init_completion(&transport->handshake_done);
+  2255	
+  2256		transport->xprt_err = -ETIMEDOUT;
+> 2257		rc = tls_client_hello_user(transport->sock,
+  2258					   xs_tcp_tls_handshake_done, xprt);
+  2259		if (rc)
+  2260			return rc;
+  2261		rc = wait_for_completion_interruptible_timeout(&transport->handshake_done,
+  2262							       XS_TLS_HANDSHAKE_TO);
+  2263		if (rc < 0)
+  2264			return rc;
+  2265	
+  2266		return transport->xprt_err;
+  2267	}
+  2268	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
