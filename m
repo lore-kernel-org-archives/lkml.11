@@ -2,169 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A221CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:47:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4753FC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236897AbiAMQrj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 11:47:39 -0500
-Received: from mga14.intel.com ([192.55.52.115]:22127 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234714AbiAMQri (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 11:47:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642092458; x=1673628458;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yC1aTVPT0hdsL/SN5OhB5oxW83SlaYQWk3o87ylsEKk=;
-  b=PdlRsv7zG0J5wRAmX3JtAxFm2DSUQ7W6KeUJauOGKFJsQ2I0yxiJH8xM
-   JCB16e543pBk/ZL09Hc/TE5p6G+r8ppvJ1NZ21B61WALnI/PWbfYI2QOI
-   CG34c0jsDqFKeEEms9FagQyvrKSaOJi8U1xjsdBFEKpBbcNWb2TkrWD2i
-   2xeKMKpJC9S1FbieBoN8SPJS/AoaDixJ2jto7EgbH5FHJE89fa26OHSIt
-   ODgUvVIbksmnCfBcDffwOOhj478E6bbt9dcpDuYr+OohHpQZQsW4FvYez
-   kqcfu1Yn06/fziTYOtkgH+VSkaYmIdzyXGE7qoQz4EU7D7QLj/M6ZS2bv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="244255008"
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="244255008"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 08:47:37 -0800
-X-IronPort-AV: E=Sophos;i="5.88,286,1635231600"; 
-   d="scan'208";a="691860033"
-Received: from lmaniak-dev.igk.intel.com ([10.55.249.72])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 08:47:36 -0800
-Date:   Thu, 13 Jan 2022 17:45:38 +0100
-From:   Lukasz Maniak <lukasz.maniak@linux.intel.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?Q?=C5=81ukasz?= Gieryk <lukasz.gieryk@linux.intel.com>
-Subject: Re: [PATCH] PCI: Reset IOV state on FLR to PF
-Message-ID: <20220113164538.GA577231@lmaniak-dev.igk.intel.com>
-References: <20211222191958.955681-1-lukasz.maniak@linux.intel.com>
- <20220112144903.GA253960@bhelgaas>
+        id S236906AbiAMQs4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 11:48:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:22400 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234714AbiAMQsz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 11:48:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642092534;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4CP8RXj45JsrXKvLXobja12t+tuHF1y1kRh+2Obu+Fs=;
+        b=RfO4R6S1sIQJ/DYzaS+KIYT/uVYjU2UPu+3ZOy0ZZv0Lq2JUel02NDol6YUNI3ChHSYo1d
+        WkOi6etAbQB8TSLwj+hEz28brDsFwHF/Cy3eoxwrn5Nh+xmnx+9nkBm9ZabkBRKOLV52av
+        ZwFYKG/vnXygbKdA7yTJ3qDz12Q4TpQ=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-58-ehkqK8ysPAq_x4FRiJSmWw-1; Thu, 13 Jan 2022 11:48:52 -0500
+X-MC-Unique: ehkqK8ysPAq_x4FRiJSmWw-1
+Received: by mail-ed1-f71.google.com with SMTP id o20-20020a056402439400b003f83cf1e472so5875218edc.18
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:48:51 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=4CP8RXj45JsrXKvLXobja12t+tuHF1y1kRh+2Obu+Fs=;
+        b=O4c5X2xnMGNf7mXss2VfZqeN12wVl+1MhQjZCIFwphXaH2KO7rfpp/Wf716dPLfaCU
+         EkBavg1uobTCUsu5rib1zUtIotp4Y/yFYJmArTL9k2pjKf1sbX+h8RcRH/QgMTxUHL8x
+         DgmU3AFem24SOUWRrs+5BK7qKiHggwxW19Rp7VneV74WbR25z9zKTGW/GyJMEQ3Wqx9W
+         QsaDJtE/CoQvuLVZufsxQM5NK3oq6rEgBXznhEsWj9Q/amHgjail5rPrWkc1I1bQU9OY
+         XteDdW/BkVvyP6Lwtmrx2L/WjJpiOklcqU0UcK7QBqkBL5nltBOuvnb27Dlu2sTFY46c
+         /NQg==
+X-Gm-Message-State: AOAM533fApZmce5Bmo3w0AdoROXW72KzdqgkUCXBaA7WMvzWbUpmUfCh
+        y+2fwvsPXKLWfW/U/IGsfNxUuhFtdPIr1OaTAbb0mbh7O1U/ORCDDiJKbayOwQiRbMXxY7Bim7e
+        wIbP5t2yH091i3Mz/xJ3SnVbM
+X-Received: by 2002:aa7:c7cf:: with SMTP id o15mr5019208eds.176.1642092530982;
+        Thu, 13 Jan 2022 08:48:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx/vRcGkOKmm25+gp3DEhhhNaMEVPYdtS7M1Nxz5zxBCvTUiLiq6IyZ0Ch0q2yCk1Lm/iQpPw==
+X-Received: by 2002:aa7:c7cf:: with SMTP id o15mr5019199eds.176.1642092530810;
+        Thu, 13 Jan 2022 08:48:50 -0800 (PST)
+Received: from ?IPV6:2003:cb:c703:e200:8511:ed0f:ac2c:42f7? (p200300cbc703e2008511ed0fac2c42f7.dip0.t-ipconnect.de. [2003:cb:c703:e200:8511:ed0f:ac2c:42f7])
+        by smtp.gmail.com with ESMTPSA id hq35sm1039972ejc.54.2022.01.13.08.48.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 13 Jan 2022 08:48:50 -0800 (PST)
+Message-ID: <172ccfbb-7e24-db21-7d84-8c8d8c3805fd@redhat.com>
+Date:   Thu, 13 Jan 2022 17:48:49 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112144903.GA253960@bhelgaas>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>
+Cc:     Liang Zhang <zhangliang5@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        wangzhigang17@huawei.com
+References: <20220113140318.11117-1-zhangliang5@huawei.com>
+ <YeA5oP/iaxtVPHb3@casper.infradead.org>
+ <CAHk-=wjB0i-B=U-DhpAajQx3f6bp1X==neLOrg0jwq29mgz=3g@mail.gmail.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
+In-Reply-To: <CAHk-=wjB0i-B=U-DhpAajQx3f6bp1X==neLOrg0jwq29mgz=3g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 08:49:03AM -0600, Bjorn Helgaas wrote:
-> On Wed, Dec 22, 2021 at 08:19:57PM +0100, Lukasz Maniak wrote:
-> > As per PCI Express specification, FLR to a PF resets the PF state as
-> > well as the SR-IOV extended capability including VF Enable which means
-> > that VFs no longer exist.
+On 13.01.22 17:37, Linus Torvalds wrote:
+> On Thu, Jan 13, 2022 at 6:39 AM Matthew Wilcox <willy@infradead.org> wrote:
+>>
+>> Let's bring Linus in on this, but I think this reintroduces all of the
+>> mapcount problems that we've been discussing recently.
+>>
+>> How about this as an alternative?
 > 
-> Can you add a specific reference to the spec, please?
+> No, at that point reuse_swap_page() is the better thing to do.
 > 
-Following the Single Root I/O Virtualization and Sharing Specification:
-2.2.3. FLR That Targets a PF
-PFs must support FLR.
-FLR to a PF resets the PF state as well as the SR-IOV extended
-capability including VF Enable which means that VFs no longer exist.
+> Don't play games with page_count() (or even worse games with
+> swap_count). The page count is only stable if it's 1. Any other value
+> means that it can fluctuate due to concurrent lookups, some of which
+> can be done locklessly under RCU.
 
-For PCI Express Base Specification Revision 5.0 and later, this is
-section 9.2.2.3.
+I'm pretty sure the patch as is will reintroduce the CVE. So I think in
+addition to the reuse_swap_page() check we need more.
 
-> > Currently, the IOV state is not updated during FLR, resulting in
-> > non-compliant PCI driver behavior.
-> 
-> And include a little detail about what problem is observed?  How would
-> a user know this problem is occurring?
-> 
-The problem is that the state of the kernel and HW as to the number of
-VFs gets out of sync after FLR.
+I'm wondering if we can get rid of the mapcount checks in
+reuse_swap_page() and instead check for page_count() and swapcount only.
 
-This results in further listing, after the FLR is performed by the HW,
-of VFs that actually no longer exist and should no longer be reported on
-the PCI bus. lspci return FFs for these VFs.
+We don't care if it's unstable in a sense than it will be bigger than
+what we expect. In that case we COW as we would already do.
 
-sriov_numvfs in sysfs returns old invalid value and does not allow
-setting a new value before explicitly setting 0 in the first place.
+Thoughts?
 
-> > This patch introduces a simple function, called on the FLR path, that
-> > removes the virtual function devices from the PCI bus and their
-> > corresponding sysfs links with a final clear of the num_vfs value in IOV
-> > state.
-> > 
-> > Signed-off-by: Lukasz Maniak <lukasz.maniak@linux.intel.com>
-> > ---
-> >  drivers/pci/iov.c | 21 +++++++++++++++++++++
-> >  drivers/pci/pci.c |  2 ++
-> >  drivers/pci/pci.h |  4 ++++
-> >  3 files changed, 27 insertions(+)
-> > 
-> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-> > index 0267977c9f17..69ee321027b4 100644
-> > --- a/drivers/pci/iov.c
-> > +++ b/drivers/pci/iov.c
-> > @@ -1013,6 +1013,27 @@ int pci_iov_bus_range(struct pci_bus *bus)
-> >  	return max ? max - bus->number : 0;
-> >  }
-> >  
-> > +/**
-> > + * pci_reset_iov_state - reset the state of the IOV capability
-> > + * @dev: the PCI device
-> > + */
-> > +void pci_reset_iov_state(struct pci_dev *dev)
-> > +{
-> > +	struct pci_sriov *iov = dev->sriov;
-> > +
-> > +	if (!dev->is_physfn)
-> > +		return;
-> > +	if (!iov->num_VFs)
-> > +		return;
-> > +
-> > +	sriov_del_vfs(dev);
-> > +
-> > +	if (iov->link != dev->devfn)
-> > +		sysfs_remove_link(&dev->dev.kobj, "dep_link");
-> > +
-> > +	iov->num_VFs = 0;
-> > +}
-> > +
-> >  /**
-> >   * pci_enable_sriov - enable the SR-IOV capability
-> >   * @dev: the PCI device
-> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > index 3d2fb394986a..535f19d37e8d 100644
-> > --- a/drivers/pci/pci.c
-> > +++ b/drivers/pci/pci.c
-> > @@ -4694,6 +4694,8 @@ EXPORT_SYMBOL(pci_wait_for_pending_transaction);
-> >   */
-> >  int pcie_flr(struct pci_dev *dev)
-> >  {
-> > +	pci_reset_iov_state(dev);
-> > +
-> >  	if (!pci_wait_for_pending_transaction(dev))
-> >  		pci_err(dev, "timed out waiting for pending transaction; performing function level reset anyway\n");
-> >  
-> > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> > index 3d60cabde1a1..7bb144fbec76 100644
-> > --- a/drivers/pci/pci.h
-> > +++ b/drivers/pci/pci.h
-> > @@ -480,6 +480,7 @@ void pci_iov_update_resource(struct pci_dev *dev, int resno);
-> >  resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno);
-> >  void pci_restore_iov_state(struct pci_dev *dev);
-> >  int pci_iov_bus_range(struct pci_bus *bus);
-> > +void pci_reset_iov_state(struct pci_dev *dev);
-> >  extern const struct attribute_group sriov_pf_dev_attr_group;
-> >  extern const struct attribute_group sriov_vf_dev_attr_group;
-> >  #else
-> > @@ -501,6 +502,9 @@ static inline int pci_iov_bus_range(struct pci_bus *bus)
-> >  {
-> >  	return 0;
-> >  }
-> > +static inline void pci_reset_iov_state(struct pci_dev *dev)
-> > +{
-> > +}
-> >  
-> >  #endif /* CONFIG_PCI_IOV */
-> >  
-> > 
-> > base-commit: fa55b7dcdc43c1aa1ba12bca9d2dd4318c2a0dbf
-> > -- 
-> > 2.25.1
-> > 
+-- 
+Thanks,
+
+David / dhildenb
+
