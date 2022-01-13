@@ -2,402 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56188C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E02C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232226AbiAMQZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 11:25:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34450 "EHLO
+        id S236650AbiAMQ03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 11:26:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236625AbiAMQZU (ORCPT
+        with ESMTP id S236627AbiAMQ00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 11:25:20 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A775C06161C
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:25:20 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id i30so304697pgl.0
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:25:20 -0800 (PST)
+        Thu, 13 Jan 2022 11:26:26 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A37C06161C
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:26:26 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id ie23-20020a17090b401700b001b38a5318easo11682778pjb.2
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:26:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eiPWEprVr2YAmhzLiGhZ4p+kH65VIfO/TgCAH3YeKa8=;
-        b=YVi3rnQGmWRopKqROi35bl2XN+0uR5LFq/BPlbJMc5LxTmYq5C4Mx0kbxdeOeYZP1t
-         +D2/Kk7qWFfGO4ocsoopIUPiQbfREzhg7eHVw85EAxLf0/uRM2ZJxuk+scMQidh2i0SH
-         ME1oLlhuRveHyDREOJItfiVxw2SyCwBdhmoM3iNysohcM1LwU5ILqoJT/8Ii+vrapjpQ
-         CDt9RRvCPvSVvTnciRxhPwMpiNWkx/P64xoSG2mEZKvMZmAfXmveLID7uKJ+Busnko0E
-         tlzvpZ9GmTdGAs26+kMgPb25J8oAAVNVJr/KWKS2grlam7ScT3J987R+1iQh2Ko/PwFY
-         ABLA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Pk/7BdSIsGG0KgW2ujwUXsz/1xkMnjTcC1wzuA0ThFY=;
+        b=tf39qpTYYXTMBM3CObcecGxp3FkDQyEZBRGKBPlHFsR9+29yZB+2/Qq6CYwe2gJd52
+         2rBi8uQQVPuoeS+11OuU+8U0twJynTGbJ/xTpuV9EBwYfO8eFteYsr3uLSDT40umLav3
+         GwVQR2PloZEF5aHo4McuaL2Zb7y/gf5FNFFIlUZnoco5lu1hN1ZyANjzKKgMsKugpGgS
+         HBrWqkJ+B5NkZXfsdSDagsx58gMPGIk2LusHwU/0Z2tgZZMFjUMRzA0uExphH7ozO2nE
+         iQ2zV6TpbvMxRDO6mpsUmviRl5Wq7Qheu1NEVfYeZNcaAiBgo/Ric8KuWCjm/eBAfI8Y
+         aEYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eiPWEprVr2YAmhzLiGhZ4p+kH65VIfO/TgCAH3YeKa8=;
-        b=aththPnG4qvjRUXOqYCEzZL5xGMt0AaVNGXRF1eL5t5Y1dAM/ec3xSIhIcwpwh3Ibi
-         +xxd20Pl65j0Er/Khk83LkBquVanwmkqGTEWM5h4ozcBZdFsWgdiFgU5piqYzcReYb4W
-         tNyDb1EEBESuYxI2Dr29v+0w6ZwKGo97GQBe/rOgTUhZRO4uWq62JobljVD8Ad7KE+2V
-         RMywcT03BoWH3Xhw0x7+4sO6ZEAe6mG5/SdZbn6jeE0jaYBpEFz7GH4l4oh17blimXC+
-         +jPRJJdUb8fdqwxi3u6MzlmUZlk2W9h2h0yVoPJGw3OYy+TNH6MJ7VE83CKr8ONix5Mb
-         Yqfw==
-X-Gm-Message-State: AOAM532FanhZ2BkAZnV7wjtSuEd+4Y2x8tQp2PEn5KEZ4vFrJa4lrqk8
-        h1Qg4ycMZLtt8rpY0pVbiIk=
-X-Google-Smtp-Source: ABdhPJyceF2SXN6Th+RLWWz9Q4vNAt9/0B/d6ZKKkdsVCGf1EyLlywoHG5ZJ7Jpvwz95EW5r8dRKgw==
-X-Received: by 2002:a63:d312:: with SMTP id b18mr4569416pgg.198.1642091119617;
-        Thu, 13 Jan 2022 08:25:19 -0800 (PST)
-Received: from localhost.localdomain ([223.212.58.71])
-        by smtp.gmail.com with ESMTPSA id j14sm3431291pfu.15.2022.01.13.08.25.17
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Pk/7BdSIsGG0KgW2ujwUXsz/1xkMnjTcC1wzuA0ThFY=;
+        b=1JioSDlgwFKQjp7xGY04TANIHXNExR746T3WO5lWyirg8rsOqXjLXn1JHw0dXWFKr9
+         X2teBQqx0Mx3zY9nMONz0kWm6Kt3lAyTBCNf9YRDChPXVJIDjj0swmZlKcAfSKeSZ7KZ
+         MWcqhG7ixcTsE1/M/v1qXoKhq9K/YfxdMAicmhduE+Wlc9XiYaC7YBggYTY58zJUWaBs
+         /Vil0+CLFTkFcxScE0YORi29lSDtZJlHygh0aPoD0UxeU8JRBWPY5REBgwaJCqf7rkfr
+         XHzYbccHA6L6567hQfvAE1Yv+CABzL1o7fkK6MS9DtMcz/zcuOjKU2ZBLuiCBnA7baJk
+         A4Vw==
+X-Gm-Message-State: AOAM532H75ze/J6T9Ug/iXkJ7euKOiMkimWCAnMtwq+8E6v/RIFDUPOW
+        L7YB2xV8tB2hB7xK6zuoLXVQpw==
+X-Google-Smtp-Source: ABdhPJw8++zFFzYtVrDAm00iNYzkqBasNxy1VfOaE+YpTnR/NdbhAr7HE+YmGoL6E7yRfzGFohDzqg==
+X-Received: by 2002:a17:903:228b:b0:14a:8379:bb8b with SMTP id b11-20020a170903228b00b0014a8379bb8bmr1982710plh.110.1642091185545;
+        Thu, 13 Jan 2022 08:26:25 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id t6sm1090279pfg.92.2022.01.13.08.26.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 08:25:19 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH] tracing: Use trace_create_file() to simplify creation of tracefs entry
-Date:   Fri, 14 Jan 2022 00:25:13 +0800
-Message-Id: <20220113162513.422350-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 13 Jan 2022 08:26:24 -0800 (PST)
+Date:   Thu, 13 Jan 2022 16:26:21 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Igor Mammedov <imammedo@redhat.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+Message-ID: <YeBSrcNawgzvTzQ6@google.com>
+References: <877dbbq5om.fsf@redhat.com>
+ <5505d731-cf87-9662-33f3-08844d92877c@redhat.com>
+ <20220111090022.1125ffb5@redhat.com>
+ <87fsptnjic.fsf@redhat.com>
+ <50136685-706e-fc6a-0a77-97e584e74f93@redhat.com>
+ <87bl0gnfy5.fsf@redhat.com>
+ <7e7c7e22f8b1b1695d26d9e19a767b87c679df93.camel@redhat.com>
+ <87zgnzn1nr.fsf@redhat.com>
+ <6ae7e64c53727f9f00537d787e9612c292c4e244.camel@redhat.com>
+ <87wnj3n0k0.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wnj3n0k0.fsf@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Creating tracefs entries with tracefs_create_file() followed by pr_warn()
-is tedious and repetitive, we can use trace_create_file() to simplify
-this process and make the code more readable.
+On Thu, Jan 13, 2022, Vitaly Kuznetsov wrote:
+> Maxim Levitsky <mlevitsk@redhat.com> writes:
+> > For my nested AVIC work I would really want the APIC ID of a VCPU to be read-only
+> > and be equal to vcpu_id.
+> >
+> 
+> Doesn't APIC ID have topology encoded in it?
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- kernel/trace/ftrace.c                 | 17 +++++-------
- kernel/trace/trace.c                  | 16 ++++++------
- kernel/trace/trace_dynevent.c         |  8 ++----
- kernel/trace/trace_events.c           | 37 ++++++++++-----------------
- kernel/trace/trace_hwlat.c            |  2 +-
- kernel/trace/trace_kprobe.c           | 14 +++-------
- kernel/trace/trace_osnoise.c          |  2 +-
- kernel/trace/trace_printk.c           |  2 +-
- kernel/trace/trace_recursion_record.c |  7 ++---
- kernel/trace/trace_stack.c            |  4 +--
- kernel/trace/trace_uprobe.c           |  4 +--
- 11 files changed, 44 insertions(+), 69 deletions(-)
+Yeah, APIC IDs are derived from the topology.  From the SDM (this doesn't
+talk about core/SMT info, but that's included as well):
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 403e485bf091..3c5e3838772d 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -983,11 +983,9 @@ static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
- 		}
- 	}
- 
--	entry = tracefs_create_file("function_profile_enabled",
--				    TRACE_MODE_WRITE, d_tracer, NULL,
--				    &ftrace_profile_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'function_profile_enabled' entry\n");
-+	trace_create_file("function_profile_enabled",
-+			  TRACE_MODE_WRITE, d_tracer, NULL,
-+			  &ftrace_profile_fops);
- }
- 
- #else /* CONFIG_FUNCTION_PROFILER */
-@@ -6366,11 +6364,10 @@ static __init int ftrace_init_dyn_tracefs(struct dentry *d_tracer)
- 
- #ifdef CONFIG_FUNCTION_GRAPH_TRACER
- 	trace_create_file("set_graph_function", TRACE_MODE_WRITE, d_tracer,
--				    NULL,
--				    &ftrace_graph_fops);
-+			  NULL, &ftrace_graph_fops);
-+
- 	trace_create_file("set_graph_notrace", TRACE_MODE_WRITE, d_tracer,
--				    NULL,
--				    &ftrace_graph_notrace_fops);
-+			  NULL, &ftrace_graph_notrace_fops);
- #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
- 
- 	return 0;
-@@ -7744,7 +7741,7 @@ static const struct file_operations ftrace_no_pid_fops = {
- void ftrace_init_tracefs(struct trace_array *tr, struct dentry *d_tracer)
- {
- 	trace_create_file("set_ftrace_pid", TRACE_MODE_WRITE, d_tracer,
--			    tr, &ftrace_pid_fops);
-+			  tr, &ftrace_pid_fops);
- 	trace_create_file("set_ftrace_notrace_pid", TRACE_MODE_WRITE,
- 			  d_tracer, tr, &ftrace_no_pid_fops);
- }
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index a73d78dcda2c..5d66e79f43e7 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -9422,10 +9422,10 @@ init_tracer_tracefs(struct trace_array *tr, struct dentry *d_tracer)
- 	int cpu;
- 
- 	trace_create_file("available_tracers", TRACE_MODE_READ, d_tracer,
--			tr, &show_traces_fops);
-+			  tr, &show_traces_fops);
- 
- 	trace_create_file("current_tracer", TRACE_MODE_WRITE, d_tracer,
--			tr, &set_tracer_fops);
-+			  tr, &set_tracer_fops);
- 
- 	trace_create_file("tracing_cpumask", TRACE_MODE_WRITE, d_tracer,
- 			  tr, &tracing_cpumask_fops);
-@@ -9472,7 +9472,7 @@ init_tracer_tracefs(struct trace_array *tr, struct dentry *d_tracer)
- 	tr->buffer_percent = 50;
- 
- 	trace_create_file("buffer_percent", TRACE_MODE_READ, d_tracer,
--			tr, &buffer_percent_fops);
-+			  tr, &buffer_percent_fops);
- 
- 	create_trace_options_dir(tr);
- 
-@@ -9680,19 +9680,19 @@ static __init int tracer_init_tracefs(void)
- 	ftrace_init_tracefs_toplevel(&global_trace, NULL);
- 
- 	trace_create_file("tracing_thresh", TRACE_MODE_WRITE, NULL,
--			&global_trace, &tracing_thresh_fops);
-+			  &global_trace, &tracing_thresh_fops);
- 
- 	trace_create_file("README", TRACE_MODE_READ, NULL,
--			NULL, &tracing_readme_fops);
-+			  NULL, &tracing_readme_fops);
- 
- 	trace_create_file("saved_cmdlines", TRACE_MODE_READ, NULL,
--			NULL, &tracing_saved_cmdlines_fops);
-+			  NULL, &tracing_saved_cmdlines_fops);
- 
- 	trace_create_file("saved_cmdlines_size", TRACE_MODE_WRITE, NULL,
- 			  NULL, &tracing_saved_cmdlines_size_fops);
- 
- 	trace_create_file("saved_tgids", TRACE_MODE_READ, NULL,
--			NULL, &tracing_saved_tgids_fops);
-+			  NULL, &tracing_saved_tgids_fops);
- 
- 	trace_eval_init();
- 
-@@ -9704,7 +9704,7 @@ static __init int tracer_init_tracefs(void)
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
- 	trace_create_file("dyn_ftrace_total_info", TRACE_MODE_READ, NULL,
--			NULL, &tracing_dyn_info_fops);
-+			  NULL, &tracing_dyn_info_fops);
- #endif
- 
- 	create_trace_instances(NULL);
-diff --git a/kernel/trace/trace_dynevent.c b/kernel/trace/trace_dynevent.c
-index e34e8182ee4b..6f6ee1d9e247 100644
---- a/kernel/trace/trace_dynevent.c
-+++ b/kernel/trace/trace_dynevent.c
-@@ -262,12 +262,8 @@ static __init int init_dynamic_event(void)
- 	if (ret)
- 		return 0;
- 
--	entry = tracefs_create_file("dynamic_events", TRACE_MODE_WRITE, NULL,
--				    NULL, &dynamic_events_ops);
--
--	/* Event list interface */
--	if (!entry)
--		pr_warn("Could not create tracefs 'dynamic_events' entry\n");
-+	trace_create_file("dynamic_events", TRACE_MODE_WRITE, NULL,
-+			  NULL, &dynamic_events_ops);
- 
- 	return 0;
- }
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 3147614c1812..408f8a8a7723 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -3446,12 +3446,10 @@ create_event_toplevel_files(struct dentry *parent, struct trace_array *tr)
- 	struct dentry *d_events;
- 	struct dentry *entry;
- 
--	entry = tracefs_create_file("set_event", TRACE_MODE_WRITE, parent,
--				    tr, &ftrace_set_event_fops);
--	if (!entry) {
--		pr_warn("Could not create tracefs 'set_event' entry\n");
-+	entry = trace_create_file("set_event", TRACE_MODE_WRITE, parent,
-+				  tr, &ftrace_set_event_fops);
-+	if (!entry)
- 		return -ENOMEM;
--	}
- 
- 	d_events = tracefs_create_dir("events", parent);
- 	if (!d_events) {
-@@ -3466,25 +3464,21 @@ create_event_toplevel_files(struct dentry *parent, struct trace_array *tr)
- 
- 	/* There are not as crucial, just warn if they are not created */
- 
--	entry = tracefs_create_file("set_event_pid", TRACE_MODE_WRITE, parent,
--				    tr, &ftrace_set_event_pid_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'set_event_pid' entry\n");
-+	trace_create_file("set_event_pid", TRACE_MODE_WRITE, parent,
-+			  tr, &ftrace_set_event_pid_fops);
- 
--	entry = tracefs_create_file("set_event_notrace_pid",
--				    TRACE_MODE_WRITE, parent, tr,
--				    &ftrace_set_event_notrace_pid_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'set_event_notrace_pid' entry\n");
-+	trace_create_file("set_event_notrace_pid",
-+			  TRACE_MODE_WRITE, parent, tr,
-+			  &ftrace_set_event_notrace_pid_fops);
- 
- 	/* ring buffer internal formats */
- 	trace_create_file("header_page", TRACE_MODE_READ, d_events,
--				  ring_buffer_print_page_header,
--				  &ftrace_show_header_fops);
-+			  ring_buffer_print_page_header,
-+			  &ftrace_show_header_fops);
- 
- 	trace_create_file("header_event", TRACE_MODE_READ, d_events,
--				  ring_buffer_print_entry_header,
--				  &ftrace_show_header_fops);
-+			  ring_buffer_print_entry_header,
-+			  &ftrace_show_header_fops);
- 
- 	tr->event_dir = d_events;
- 
-@@ -3690,17 +3684,14 @@ static __init int event_trace_init_fields(void)
- __init int event_trace_init(void)
- {
- 	struct trace_array *tr;
--	struct dentry *entry;
- 	int ret;
- 
- 	tr = top_trace_array();
- 	if (!tr)
- 		return -ENODEV;
- 
--	entry = tracefs_create_file("available_events", TRACE_MODE_READ,
--				    NULL, tr, &ftrace_avail_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'available_events' entry\n");
-+	trace_create_file("available_events", TRACE_MODE_READ,
-+			  NULL, tr, &ftrace_avail_fops);
- 
- 	ret = early_event_add_tracer(NULL, tr);
- 	if (ret)
-diff --git a/kernel/trace/trace_hwlat.c b/kernel/trace/trace_hwlat.c
-index 56bb7b890578..7bab09a6bd0a 100644
---- a/kernel/trace/trace_hwlat.c
-+++ b/kernel/trace/trace_hwlat.c
-@@ -796,7 +796,7 @@ static int init_tracefs(void)
- 	if (!hwlat_sample_width)
- 		goto err;
- 
--	hwlat_thread_mode = trace_create_file("mode", TRACE_MODE_WRITE,
-+	hwlat_thread_mode = tracefs_create_file("mode", TRACE_MODE_WRITE,
- 					      top_dir,
- 					      NULL,
- 					      &thread_mode_fops);
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index 3d85323278ed..d13826ea490b 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -1912,19 +1912,13 @@ static __init int init_kprobe_trace(void)
- 	if (ret)
- 		return 0;
- 
--	entry = tracefs_create_file("kprobe_events", TRACE_MODE_WRITE,
--				    NULL, NULL, &kprobe_events_ops);
--
- 	/* Event list interface */
--	if (!entry)
--		pr_warn("Could not create tracefs 'kprobe_events' entry\n");
-+	trace_create_file("kprobe_events", TRACE_MODE_WRITE,
-+			  NULL, NULL, &kprobe_events_ops);
- 
- 	/* Profile interface */
--	entry = tracefs_create_file("kprobe_profile", TRACE_MODE_READ,
--				    NULL, NULL, &kprobe_profile_ops);
--
--	if (!entry)
--		pr_warn("Could not create tracefs 'kprobe_profile' entry\n");
-+	trace_create_file("kprobe_profile", TRACE_MODE_READ,
-+			  NULL, NULL, &kprobe_profile_ops);
- 
- 	setup_boot_kprobe_events();
- 
-diff --git a/kernel/trace/trace_osnoise.c b/kernel/trace/trace_osnoise.c
-index 36d9d5be08b4..d0aa23bcbf85 100644
---- a/kernel/trace/trace_osnoise.c
-+++ b/kernel/trace/trace_osnoise.c
-@@ -2075,7 +2075,7 @@ static int init_tracefs(void)
- 	if (!tmp)
- 		goto err;
- 
--	tmp = trace_create_file("cpus", TRACE_MODE_WRITE, top_dir, NULL, &cpus_fops);
-+	tmp = tracefs_create_file("cpus", TRACE_MODE_WRITE, top_dir, NULL, &cpus_fops);
- 	if (!tmp)
- 		goto err;
- 
-diff --git a/kernel/trace/trace_printk.c b/kernel/trace/trace_printk.c
-index 29f6e95439b6..5422ac74537a 100644
---- a/kernel/trace/trace_printk.c
-+++ b/kernel/trace/trace_printk.c
-@@ -385,7 +385,7 @@ static __init int init_trace_printk_function_export(void)
- 		return 0;
- 
- 	trace_create_file("printk_formats", TRACE_MODE_READ, NULL,
--				    NULL, &ftrace_formats_fops);
-+			  NULL, &ftrace_formats_fops);
- 
- 	return 0;
- }
-diff --git a/kernel/trace/trace_recursion_record.c b/kernel/trace/trace_recursion_record.c
-index 4d4b78c8ca25..a520b11afb0d 100644
---- a/kernel/trace/trace_recursion_record.c
-+++ b/kernel/trace/trace_recursion_record.c
-@@ -224,12 +224,9 @@ static const struct file_operations recursed_functions_fops = {
- 
- __init static int create_recursed_functions(void)
- {
--	struct dentry *dentry;
- 
--	dentry = trace_create_file("recursed_functions", TRACE_MODE_WRITE,
--				   NULL, NULL, &recursed_functions_fops);
--	if (!dentry)
--		pr_warn("WARNING: Failed to create recursed_functions\n");
-+	trace_create_file("recursed_functions", TRACE_MODE_WRITE,
-+			  NULL, NULL, &recursed_functions_fops);
- 	return 0;
- }
- 
-diff --git a/kernel/trace/trace_stack.c b/kernel/trace/trace_stack.c
-index 5a48dba912ea..2337470e9ae0 100644
---- a/kernel/trace/trace_stack.c
-+++ b/kernel/trace/trace_stack.c
-@@ -560,10 +560,10 @@ static __init int stack_trace_init(void)
- 		return 0;
- 
- 	trace_create_file("stack_max_size", TRACE_MODE_WRITE, NULL,
--			&stack_trace_max_size, &stack_max_size_fops);
-+			  &stack_trace_max_size, &stack_max_size_fops);
- 
- 	trace_create_file("stack_trace", TRACE_MODE_READ, NULL,
--			NULL, &stack_trace_fops);
-+			  NULL, &stack_trace_fops);
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
- 	trace_create_file("stack_trace_filter", TRACE_MODE_WRITE, NULL,
-diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
-index 08b0e8417302..58feb4ab34d1 100644
---- a/kernel/trace/trace_uprobe.c
-+++ b/kernel/trace/trace_uprobe.c
-@@ -1652,10 +1652,10 @@ static __init int init_uprobe_trace(void)
- 		return 0;
- 
- 	trace_create_file("uprobe_events", TRACE_MODE_WRITE, NULL,
--				    NULL, &uprobe_events_ops);
-+			  NULL, &uprobe_events_ops);
- 	/* Profile interface */
- 	trace_create_file("uprobe_profile", TRACE_MODE_READ, NULL,
--				    NULL, &uprobe_profile_ops);
-+			  NULL, &uprobe_profile_ops);
- 	return 0;
- }
- 
--- 
-2.34.1
+  The hardware assigned APIC ID is based on system topology and includes encoding
+  for socket position and cluster information.
 
+The SDM also says:
+
+  Some processors permit software to modify the APIC ID. However, the ability of
+  software to modify the APIC ID is processor model specific.
+
+So I _think_ we could define KVM behavior to ignore writes from the _guest_, but
+the APIC_ID == vcpu_id requirement won't fly as userspace expects to be able to
+stuff virtual toplogy info into the APIC ID.
