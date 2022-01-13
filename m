@@ -2,176 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A3D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0927C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 13:44:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235430AbiAMNlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 08:41:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
+        id S235430AbiAMNod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 08:44:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229915AbiAMNlJ (ORCPT
+        with ESMTP id S229915AbiAMNoa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 08:41:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE9AFC06173F;
-        Thu, 13 Jan 2022 05:41:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F14D61CDF;
-        Thu, 13 Jan 2022 13:41:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E50C36AE3;
-        Thu, 13 Jan 2022 13:41:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642081268;
-        bh=aI0baOAfGLEbzn1+gJDDb+wqah4YdfQIOCyxUvi/QtQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dmsnjr8EslOCeNV9FtA9wE28oLSjpZ4GryUG3dVO5xjBG9sXMLcrW8SqSa/bH82yy
-         hXQbuIjPWElqQfbyVhL3NBHyAmX8tFH6UBw+Wx80ESmDane1irFG9ypOn/7q1YDnv5
-         WGudccOfQmG/W7Z3gRx7kNFHoseSAATrB+JRGmVuw083o4VMWB2TmewVzzFDoffc94
-         63ki5xOM43VkGP2nTvrk7O1ShWCPUHSEXBz7anVz3Zkv3LlInR9yMAftuIQgWGbuvD
-         e7TZ3oL087/M0O7z81pW+myOAqXFkKN6L3/stHZPiun9w8wJz+bZSobOWJk/ga9Z+g
-         qaXdxX0pLLEZQ==
-Received: by mail-wr1-f42.google.com with SMTP id q8so10100653wra.12;
-        Thu, 13 Jan 2022 05:41:08 -0800 (PST)
-X-Gm-Message-State: AOAM531NlqVPmHxaZb0rYoVWyaWhcHruRMRgnVV0LSIHgBqVWztJaPxH
-        eGS0NPHAaQTpw1lzWNgj25dQv3ZR2CceGWMABSc=
-X-Google-Smtp-Source: ABdhPJww58s7pauhu/LDRd3XbQ6pxAj6eTRRmW8kFxVLKzhyG7nk8rJ9JOkPOsj9VIzSTATnIh8OzIG/TpAgZoF87Fg=
-X-Received: by 2002:a5d:6210:: with SMTP id y16mr3833704wru.454.1642081267090;
- Thu, 13 Jan 2022 05:41:07 -0800 (PST)
+        Thu, 13 Jan 2022 08:44:30 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2757C06173F
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 05:44:30 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id z22so14567852ybi.11
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 05:44:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fooishbar-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t4iOUVFv53bNQSQ/gO0aroSu848/nmRUJMS9RO8UVKs=;
+        b=L3t/7x5E6+oOdmCJJKKVoRGWTgQRkrBeAvTi/BR6XX6Q5XLRVBspgMP0moqqe1UGKu
+         ddfQ5RrHcPahfVgeYOmn5AHJlMWc+TOAeWBWMgyMUnrivvh+PMMHgT209bAyuKNQKk3P
+         k5e1boYAvB/kJ+LnMsQsDhZiHUXhb1sNYO6pAdHkXjVzD2b9imk89CO5pjBTJ1gRqmjn
+         1rGkYILN48K3Xm/0nFyBivNcRKr+prkJFgLFQudXjewMCIb583bksfZpHF2EAupjIetP
+         8tVVIFo+S6Vc8JE8qXdS6cSLm37UHqx/W5t6Ee+cWLutbIkIgEgGhIgQ0VWxA2nXMH26
+         UgGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t4iOUVFv53bNQSQ/gO0aroSu848/nmRUJMS9RO8UVKs=;
+        b=hFGN3SoCs8YElAuv+wvAA94X8OdjjVjgzG0gr+cLCKQGU3kloOmHWNSucfhioKEBmr
+         qQLGYa/apAcJPkNwSmz9lz4vW4lVDsKPyPjGizcY2Cw8+4IIQnNAFn3Cfr1fiVGVZi60
+         NCCMp07joNv9u3vnxwJ7k77EH57z2dA/Q2Jmtnnj7YCLSCltJ84kVfQgF4rcCcAfY7nv
+         x3IiINUqBvGOu28r//EmododetgGi4GCMzbI0/83iACSqmKCABCDZtA/DxcjuVQNyGsk
+         qwPNYDElvahUqWcWqERCD0yinN6hJ1LsiYWEf3Pb4jRlAG80PfZQ/RWWFUIq1XB1Q9MB
+         O8KA==
+X-Gm-Message-State: AOAM53330w0F4I4tOzP2XLUgWuwX7qC/fsHacttt0ceqX9rwOWof8kjy
+        5oqk1UGpnm8G+AmTefPXZ8sivD1B9BgpUFIjA72oNQ==
+X-Google-Smtp-Source: ABdhPJwo6URqBePslK+oKLzNiKNduFsi241hMu0BUXNptg5RSut3Cj4rzAH5lLArTqXi4SXz//NaTZwj4mHiagIizJ4=
+X-Received: by 2002:a25:7b44:: with SMTP id w65mr5871202ybc.59.1642081469812;
+ Thu, 13 Jan 2022 05:44:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-3-Jason@zx2c4.com>
- <87r19cftbr.fsf@toke.dk> <CAHmME9pieaBBhKc1uKABjTmeKAL_t-CZa_WjCVnUr_Y1_D7A0g@mail.gmail.com>
- <55d185a8-31ea-51d0-d9be-debd490cd204@stressinduktion.org>
- <CAMj1kXGz7_98B_b=SJER6-Q2g-nOT5X3cfN=nfhYoH0eHep5bw@mail.gmail.com> <87ilung3uo.fsf@toke.dk>
-In-Reply-To: <87ilung3uo.fsf@toke.dk>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Thu, 13 Jan 2022 14:40:55 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXHg0A_jNsSpjuWizhLubhQEsFQiUfjBB6RpPZg_JsWsQQ@mail.gmail.com>
-Message-ID: <CAMj1kXHg0A_jNsSpjuWizhLubhQEsFQiUfjBB6RpPZg_JsWsQQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 2/3] ipv6: move from sha1 to blake2s in address calculation
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Erik Kline <ek@google.com>,
-        Fernando Gont <fgont@si6networks.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        hideaki.yoshifuji@miraclelinux.com
+References: <20220113094419.12433-1-etom@igel.co.jp>
+In-Reply-To: <20220113094419.12433-1-etom@igel.co.jp>
+From:   Daniel Stone <daniel@fooishbar.org>
+Date:   Thu, 13 Jan 2022 13:44:18 +0000
+Message-ID: <CAPj87rPk3_8LdnwWJ3BhtJnRuR+_WHg2hfdgK2R4SMacPGCrUQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 0/3] Add support modifiers for drivers whose planes
+ only support linear layout
+To:     Tomohito Esaki <etom@igel.co.jp>
+Cc:     dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        =?UTF-8?Q?Michel_D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        Simon Ser <contact@emersion.fr>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Evan Quan <evan.quan@amd.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        nouveau@lists.freedesktop.org,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
+        Takanari Hayama <taki@igel.co.jp>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 13 Jan 2022 at 14:30, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat=
-.com> wrote:
->
-> Ard Biesheuvel <ardb@kernel.org> writes:
->
-> > On Thu, 13 Jan 2022 at 12:15, Hannes Frederic Sowa
-> > <hannes@stressinduktion.org> wrote:
-> >>
-> >> Hello,
-> >>
-> >> On 13.01.22 00:31, Jason A. Donenfeld wrote:
-> >> > On 1/13/22, Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote=
-:
-> >> >> However, if we make this change, systems setting a stable_secret an=
-d
-> >> >> using addr_gen_mode 2 or 3 will come up with a completely different
-> >> >> address after a kernel upgrade. Which would be bad for any operator
-> >> >> expecting to be able to find their machine again after a reboot,
-> >> >> especially if it is accessed remotely.
-> >> >>
-> >> >> I haven't ever used this feature myself, though, or seen it in use.=
- So I
-> >> >> don't know if this is purely a theoretical concern, or if the
-> >> >> stable_address feature is actually used in this way in practice. If=
- it
-> >> >> is, I guess the switch would have to be opt-in, which kinda defeats=
- the
-> >> >> purpose, no (i.e., we'd have to keep the SHA1 code around
-> >>
-> >> Yes, it is hard to tell if such a change would have real world impact
-> >> due to not knowing its actual usage in the field - but I would avoid
-> >> such a change. The reason for this standard is to have stable addresse=
-s
-> >> across reboots. The standard is widely used but most servers or deskto=
-ps
-> >> might get their stable privacy addresses being generated by user space
-> >> network management systems (NetworkManager/networkd) nowadays. I would
-> >> guess it could be used in embedded installations.
-> >>
-> >> The impact of this change could be annoying though: users could sudden=
-ly
-> >> lose connectivity due to e.g. changes to the default gateway after an
-> >> upgrade.
-> >>
-> >> > I'm not even so sure that's true. That was my worry at first, but
-> >> > actually, looking at this more closely, DAD means that the address c=
-an
-> >> > be changed anyway - a byte counter is hashed in - so there's no
-> >> > gurantee there.
-> >>
-> >> The duplicate address detection counter is a way to merely provide bas=
-ic
-> >> network connectivity in case of duplicate addresses on the network
-> >> (maybe some kind misconfiguration or L2 attack). Such detected address=
-es
-> >> would show up in the kernel log and an administrator should investigat=
-e
-> >> and clean up the situation. Afterwards bringing the interface down and
-> >> up again should revert the interface to its initial (dad_counter =3D=
-=3D 0)
-> >> address.
-> >>
-> >> > There's also the other aspect that open coding sha1_transform like
-> >> > this and prepending it with the secret (rather than a better
-> >> > construction) isn't so great... Take a look at the latest version of
-> >> > this in my branch to see a really nice simplification and security
-> >> > improvement:
-> >> >
-> >> > https://git.zx2c4.com/linux-dev/log/?h=3Dremove-sha1
-> >>
-> >> All in all, I consider the hash produced here as being part of uAPI
-> >> unfortunately and thus cannot be changed. It is unfortunate that it
-> >> can't easily be improved (I assume a separate mode for this is not
-> >> reasonable). The patches definitely look like a nice cleanup.
-> >>
-> >> Would this be the only user of sha_transform left?
-> >>
-> >
-> > The question is not whether but when we can/will change this.
-> >
-> > SHA-1 is broken and should be removed at *some* point, so unless the
-> > feature itself is going to be obsolete, its implementation will need
-> > to switch to a PRF that fulfils the requirements in RFC7217 once SHA-1
-> > ceases to do so.
-> >
-> > And I should also point out that the current implementation does not
-> > even use SHA-1 correctly, as it omits the finalization step. This may
-> > or may not matter in practice, but it deviates from crypto best
-> > practices, as well as from RFC7217
->
-> Right, but that implies we need to work on a transition mechanism. For
-> newly deployed systems changing the hash is obviously fine, it's the
-> "reboot and you have a new address" problem.
->
-> We could introduce new values to the addr_gen_mode? I.e. values of 4 and
-> 5 would be equivalent to 2 and 3 (respectively), but with the new
-> hashing algorithm? And then document that 2 and 3 are considered
-> deprecated to be removed at some point in the future...
->
+Hi Esaki-san,
 
-I guess that for the time being, we could use assignments of
-stable_secret by user space as a hint that we should switch to the old
-scheme. We'd also need a knob to opt into the new scheme in that case,
-and maybe print a warning otherwise? That would at least give us a
-path forward where we can rip it out /some/ point in the future.
+On Thu, 13 Jan 2022 at 09:44, Tomohito Esaki <etom@igel.co.jp> wrote:
+> Some drivers whose planes only support linear layout fb do not support format
+> modifiers.
+> These drivers should support modifiers, however the DRM core should handle this
+> rather than open-coding in every driver.
+>
+> In this patch series, these drivers expose format modifiers based on the
+> following suggestion[1].
+
+Thanks for the series, it looks like the right thing to do.
+
+Can you please change the patch ordering though? At the moment there
+will be a bisection break at patch #1, because the legacy drivers will
+suddenly start gaining modifier support, before it is removed in patch
+#2.
+
+I think a better order would be:
+  1: add fb_modifiers_not_supported flag to core and drivers
+  2: add default modifiers (and set allow_fb_modifiers) if
+fb_modifiers_not_supported flag is not set
+  3: remove allow_fb_modifiers flag
+
+Cheers,
+Daniel
