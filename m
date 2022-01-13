@@ -2,236 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFF1C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 00:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 421F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 00:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229515AbiAMAOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 12 Jan 2022 19:14:55 -0500
-Received: from mga05.intel.com ([192.55.52.43]:1278 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229526AbiAMAOx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 12 Jan 2022 19:14:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642032893; x=1673568893;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=y/0xIRJO01WCYcv/IxxYLw14Xe4i+98WUNn/NpPdXXo=;
-  b=i6Er+u2h58JkazgN+HDym3PI6a726pZwZ04NtYhCS5cjvpj8RfyqpErK
-   QFEbSZrFWRvxXCyuUpE4CaOklaA+WQmvJfHxblvOT9ZoJ0h+B3P9qerOP
-   NOAPzls+M72HYbKshs82cmggl7Ng34QKwsCCdkQoYBDb10M/wMfusu9rm
-   BmqT2790SLkSJNIa0CwM7jjN1J8ugNBnt8KEeOqYf85k5xb7wfh2scTLF
-   EaxJNti4ZiMwMpbCc6p3fxpfJ1xHwQTgHH2qS4sIW0ts7JkM1X75XwQP+
-   9oUZ1a5KWfFTM2I+eCgmkkK2g5V/eZLGFpWoSf6KjyNx7vH2guXdQVsJV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10225"; a="330231960"
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="330231960"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2022 16:14:35 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,284,1635231600"; 
-   d="scan'208";a="490933939"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by orsmga002.jf.intel.com with ESMTP; 12 Jan 2022 16:14:35 -0800
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 12 Jan 2022 16:14:34 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Wed, 12 Jan 2022 16:14:34 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.174)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Wed, 12 Jan 2022 16:14:33 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jHHWEmxZ+WTqw8qUJIoh9sbGptMEJYw+Ye/mzvNROkZKlmh/TA9WrllCagBi3Odobfl8L3EvXUeCQQ7C78jxomZ6hC4Uo2UOrkobufVQtIHnb4F2cwNHX14EKojBURb1EybphCjuASHZjKK9chzzwY86nDmLY6mInkr9HuwZYfHXPZm9QTXzNceF7+3FEy6Oa84yP0qiqGHYfXXIGY3xAnVtHtVZeD2+Z/jrsKxJuJvs/9sLnZdvYijDJ2bUCuqyCClqsGlQv4E3SwOkVCAwC/bOa7mcluEgIynE8xHptfUJq8DpQESswNS8EmaCNKsVe5Nxbxw6De/loCMjWeSKFA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UmkpOvizy0p2JGtwIARgRsPotcSL9LuSrqEgBv8uqD8=;
- b=Z0+pCLAjAfgK35DG+BEg7cqxf4ZGx/5xUaC2pwyTKq6cDNf+2uVw3zLX41U3z7gmN7H5y4Z1aJbArlm4ImnOsyrtx8YESVXk6GeicLitCiqWh7Mhu0BK4tqgA4hUpFwYpI52S8JSEowBODCJhbiYE8Ei8c+UrFZo7WJhK45nbaf5E0n2BLKs7JYvobGi2DgJdpLG9ni86aa7WrdYay18+/M5wl2088dNzXhdic7qLGz4EGkgccoDhspYoJGRnhEisbM+eEQKxqcF7MvT0yqupWXe5Z8KlrYVsXJmzcP0joupscKPlL1NgKZASNjV9NdKA02Q8K4CWAcGGLfE0Be+XA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DM6PR11MB3180.namprd11.prod.outlook.com (2603:10b6:5:9::13) by
- DM5PR11MB1913.namprd11.prod.outlook.com (2603:10b6:3:10b::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4888.10; Thu, 13 Jan 2022 00:14:21 +0000
-Received: from DM6PR11MB3180.namprd11.prod.outlook.com
- ([fe80::b47a:6157:f9b5:b01d]) by DM6PR11MB3180.namprd11.prod.outlook.com
- ([fe80::b47a:6157:f9b5:b01d%3]) with mapi id 15.20.4867.012; Thu, 13 Jan 2022
- 00:14:21 +0000
-Message-ID: <2f0fd4a9-4d24-a6b7-12ae-51763f304761@intel.com>
-Date:   Thu, 13 Jan 2022 01:14:14 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.4.1
-Subject: Re: [v8, PATCH 1/3] drm/dsi: transfer DSI HS packets ending at the
- same time
-Content-Language: en-US
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <matthias.bgg@gmail.com>, <narmstrong@baylibre.com>,
-        <robert.foss@linaro.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <p.zabel@pengutronix.de>
-CC:     <xji@analogixsemi.com>, <jitao.shi@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-References: <20220112153639.12343-1-rex-bc.chen@mediatek.com>
- <20220112153639.12343-2-rex-bc.chen@mediatek.com>
-From:   Andrzej Hajda <andrzej.hajda@intel.com>
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173, 80-298
- Gdansk - KRS 101882 - NIP 957-07-52-316
-In-Reply-To: <20220112153639.12343-2-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0458.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:1aa::13) To DM6PR11MB3180.namprd11.prod.outlook.com
- (2603:10b6:5:9::13)
+        id S229540AbiAMAT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 12 Jan 2022 19:19:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44616 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229456AbiAMATY (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 12 Jan 2022 19:19:24 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 061FD61B86;
+        Thu, 13 Jan 2022 00:19:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DFFBC36AE5;
+        Thu, 13 Jan 2022 00:19:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642033163;
+        bh=3kfpqCE7Qm+50A9vsc5KvsoidFP/uN6v2CojK15+/Rc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=QkdkBxP8Ai/Y+QA77IIkt0TIXVFnZ//CpJfCzHWE1bRh40o4Lu33wI9ou/5Zg78s+
+         4N2S/u6xFIS5qvihR2y7U7jagW9wU4J01oUxoTM0k8zUtcjCOTnPr08SRWKMWCQvqo
+         q8pD2/5gqbqaVNmoxsBtKDubk5UhtSaQGCSbLRKIGGXr7Ftkfrz9dhqEkY4A4CGtFa
+         u9CE5X0VB+2GMcewZM7qeUvntHX5hl3NOYc+UL5GsoUSgw81Jv1KrD3cGiXYDaZ6qQ
+         bxVriyBuUkJWlG/jlCOaPUFY1Rtnz1bTTDdOnkpuqxMB4T6Piuk6yBNOb+DHZ2jvOq
+         ugGxH2+BykPyA==
+Date:   Wed, 12 Jan 2022 18:19:21 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 08/15] PCI: mvebu: Propagate errors when updating
+ PCI_IO_BASE and PCI_MEM_BASE registers
+Message-ID: <20220113001921.GA286275@bhelgaas>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d28fd337-ee7f-46a3-9b89-08d9d629a574
-X-MS-TrafficTypeDiagnostic: DM5PR11MB1913:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <DM5PR11MB1913F0D9696C90A3ADF8B955EB539@DM5PR11MB1913.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IXxT+BaGnmSCjIFFgfseB7pQam/pTli0RZsRmNbLcDa+ueWTPnuHF8jA1PZrOxT1olO/TwrdwTkNPxElJi95APjgZL+ZiNDlCPmDncfsI55kFwRB1QB+AmEYJLCV4gbHiS9zYOxDr0qRjqiieoi5j39v4+eQ+mIO/eJYyjRNg/9lZUglO+kCpwJyXXuFaB/c80E4u95AR1h3JAsVRZJlKtb9Ez5KSuUl7E8XU770Ouuz1v43sHbGLziztEJCmCjO4eIWIZLOckQBSwk010U+PcDf7miMQOj3bL9Y1tQ9gJIGKUEACrFIssCOFse3xRPQQwF2QTZaTLOHky3/RncWHDPLVudw+qf49wZOpTcp834Ov82/NCslg5WAjOW2sh4jpbdyxuADdRyGmewaaelWGFpXvT1HiYiFhuAShu1IdBmN9Q7aaq6gYdM3voM44oX3Y4UQouonzy6wiUe4LdxtHQ7aZHlUg/oC/DbJOIShlRWwXnrlQvAyEYcOA77ULHicHUgN3ERIgU3KPM9PPbUosoPNOfApI61gWNZyNpxYUIEO7tMCEVUuvjzIUubSmsfo3FjOmxR4kj/nk8HMrK3uQoYg8wsQzRLlAQKCPpBsl2+M1QsbzVmaOIAAsHBTuKtVtmHm4ssNu8X02dxodAS4ZqH9TxhDtt8zNncEHVDxG+OBg9079dInHC/Fm0GnR1LCBC8wui1ZgWZub/MGFLK3SJX0TyFL/jIYJxHNewpQY+k=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3180.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(186003)(26005)(4326008)(86362001)(44832011)(83380400001)(8676002)(31696002)(2616005)(7416002)(6512007)(6486002)(5660300002)(66946007)(66556008)(66476007)(2906002)(316002)(38100700002)(8936002)(36916002)(6666004)(6506007)(53546011)(36756003)(31686004)(508600001)(82960400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T3JBb0tuZXZTTVJHVHQzNzkzV3VYK045akpWRHZudE9vRnFYTDRGd0xIWDBD?=
- =?utf-8?B?TW5wTkxnd1BYZk4rRFM3dXVsZ3JIaDl0QjU3MXRaUjdjejRQbWVzbENtSmJZ?=
- =?utf-8?B?TkhzNHE3Z0xLVm45djIzMzdIUy9sby9ESnhUVWZITUVNK2lwKzNOQkNyMlV1?=
- =?utf-8?B?REY1TnpMdExOUTZxWHJsQkhWZE5MT2Q1ZmgrTzNXV0txSFRIelY3eDFZckpv?=
- =?utf-8?B?V2grU2tvVjBzWGhhbE95K2NHM2tkZnZFN050KzROWjg2TGJhWWprcjR2RHlr?=
- =?utf-8?B?VTdwOG5aeGkxWitnK2d0RmJiVFZPSWZyRVFrcXdpd20yNzdKWkJpWWVOeVQ2?=
- =?utf-8?B?NlhtSXhPSndBcDh0ZklWeTFUU2pUcVZla21JbDdJdWk0Q243UTBTS25NcG83?=
- =?utf-8?B?QS9ZREplUWxiT2w2UHA3Y3JiMkowMERXUmN5UFZCREpRZXFvTjdqMFdzd2dj?=
- =?utf-8?B?U3hHSjdNejhlUVZ2MWt0T3VmeXhDWTR6c2Y3TnpUWEJ5ZkFsNlNzbGZTL2FS?=
- =?utf-8?B?cFhmcDdFcFVoZ05RclF5S2d1WktpY1FWNzE1MlJBY3NGeldPVmpPV0FjRi9Q?=
- =?utf-8?B?WnBWT3NsR3RtaFFrUit5T1JnWFg3L1Vsc2hURDNXRUVyZm9LZVhyNk8wT1ZY?=
- =?utf-8?B?ZHBKanBDR2hFWFYrYkRvYlk2VFUwRldaOUkweUdkb2FsdXNUcEZSYkVlVEtE?=
- =?utf-8?B?OHFCS3daRTB2eG1rM2ZjUHRXeTZveTJxbjBDVGxyeC9nSEphWnZ5Z1VsVVFt?=
- =?utf-8?B?ZTJSUS9VVVB4bnFiYlpaUzNRMjFhd0twNzBFMWt4RkpLRm5LMDBDeGxnY1Iw?=
- =?utf-8?B?UTBlQ2ZhQW5xMkdES3ErazlSTkJWbWpoaGxOM3VaV3JWcmloQmpJZ2xmV0pR?=
- =?utf-8?B?dlhCNjJYbnBOYnoxTi9nc2kyQTlNTElTWGJQTW1EdHl2Zno0dHl1VEdhTnJr?=
- =?utf-8?B?RHpLSzMvY1ZLMGpaeGZRa3FlOGs2TjFoZHVzQVlPQ1pUVVFJVEsvOHlndEJp?=
- =?utf-8?B?bzlrSURuUFc4RUxQc2RHYnpTZGpoUTR2dktUdCtHU2xtc25vUm5NR3ZsSSs1?=
- =?utf-8?B?MnB6U3N1VEUyVjEvVHlHTU5mSVBRbWJYWTlsOXVpbExURmI3R2FDR2xZUVVG?=
- =?utf-8?B?VXV2bmJ4MUpTV2JvZHZHVW9jeFQxeW9FdFora3QzcVR2Mnl2NCt6WU9jMHNZ?=
- =?utf-8?B?cjQwNmFSclM3R0ZOcUhXVXJhVS9HK0txYThIQUQ1MXMzR0poY1JRNmo5cUdS?=
- =?utf-8?B?RDhhVXVPbjNYVlkvWFhseTgvcEVvYUx1SVh3ZFZIY0lQejhsemVNYk1VdlhI?=
- =?utf-8?B?SllwbC9CODkxaTkvQVlBS1NBbDdhSGxuTGZzR0Yxd0VrN0tvN011WDhGWG93?=
- =?utf-8?B?Y3hTeXNhaTlnWUtSZk9hTEFzRE1od2pNNjN6ZTNFakptcWR5SGRVdFpKZkJi?=
- =?utf-8?B?cm81UGlUMFNBWEh0VjdKOXJ4TlZGSjVXZmVSSTRON0ZGN0g2c01MUjlXQlkw?=
- =?utf-8?B?TVdUZUs0ZXBqRXdaeDF4bW1wbGVDMkJ5REcvQVhYZG9xeWJvNVdmWGUwdy9G?=
- =?utf-8?B?NXMwTmxBK0JheHlrMkYxVnl4VCtMZUpjRVZRS0ppeENDWENlRXdPam1naFhJ?=
- =?utf-8?B?WDlkdUlUOHJjSmdkdEk1aUlJSkM4SVpob3hnOW80Y3lSZjM2QmcxbG5mTzlY?=
- =?utf-8?B?cHgzZ0txS0ttWGJ5UGdsY1Bra3lUa3k2bHB3SW5RMWxUeUM2LzMvbUU0RzJF?=
- =?utf-8?B?cjJLcE02a3M5YkhTdkc0d013bUNTU1JXRlpBMnk0N0hWVkxnNHlmckJMSzBS?=
- =?utf-8?B?UVhHWG9ScnU3dTBxQ3pZWmZ6bmhiTEtEWlRPQm0reVNQbXVITHk2YnlNNUZR?=
- =?utf-8?B?dXYrZlNtbGxyVVpLUWlXZGJja3lLTkxSSGtIdnFPWCsyVnBaaGhndEhLL0lK?=
- =?utf-8?B?N2xKMXJkRVl1YUh3d3FYMjZONExmcXdmeUVaYnphTW5XZXovUENUbFZTYlhk?=
- =?utf-8?B?TkM4aGsxRUxxT2krdkFOdVROSjJIR3U5T1FlK2JFUkM4aXNrNnBGTzFqOUUy?=
- =?utf-8?B?Y083Zm9rbzFOMmtrTVY3TG9QdkJlemV1Vm43Ly9BTldDSFBiOUgxQk1BWndT?=
- =?utf-8?B?d0JpeXRIRFlGVVdXZzJJQTVOL0VsaUdReGxremlDZjFSWStZVHE1dGJlS1FV?=
- =?utf-8?Q?j/7MMH1tUIaRmBAQEvKh4z8=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d28fd337-ee7f-46a3-9b89-08d9d629a574
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3180.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2022 00:14:21.0021
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HJTgJ+qJyaI8PaXaPuVSgP/tWNKulWKacQAZ7T9IU0tbYp9hiCikRci3n7ZT4XWi22Vc/1E4ehNfVFOQAEqLEw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1913
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220107234658.oav7oofcbwa7o6sz@pali>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sat, Jan 08, 2022 at 12:46:58AM +0100, Pali Rohár wrote:
+> On Friday 07 January 2022 17:16:17 Bjorn Helgaas wrote:
+> > On Fri, Jan 07, 2022 at 11:28:26PM +0100, Pali Rohár wrote:
+> > > On Friday 07 January 2022 15:55:04 Bjorn Helgaas wrote:
+> > > > On Thu, Nov 25, 2021 at 01:45:58PM +0100, Pali Rohár wrote:
+> > > > > Properly propagate failure from mvebu_pcie_add_windows() function back to
+> > > > > the caller mvebu_pci_bridge_emul_base_conf_write() and correctly updates
+> > > > > PCI_IO_BASE, PCI_MEM_BASE and PCI_IO_BASE_UPPER16 registers on error.
+> > > > > On error set base value higher than limit value which indicates that
+> > > > > address range is disabled. 
+> > > > 
+> > > > Does the spec say that if software programs something invalid,
+> > > > hardware should proactively set the base and limit registers to
+> > > > disable the window?
+> > > 
+> > > No. But this patch address something totally different. Software can do
+> > > fully valid operation, e.g. try to set forwarding memory window as large
+> > > as possible. But because this driver "emulates" pci bridge by calling
+> > > software/kernel function (mvebu_pcie_add_windows), some operations which
+> > > in real HW cannot happen, are possible in software.
+> > > 
+> > > For example there are limitations in sizes of forwarding memory windows,
+> > > because it is done by mvebu-mbus driver, which is responsible for
+> > > configuring mapping and forwarding of PCIe I/O and MEM windows. And due
+> > > to Marvell HW, there are restrictions which are not in PCIe HW.
+> > > 
+> > > Currently if such error happens, obviously kernel is not able to set
+> > > PCIe windows and it just print warnings to dmesg. Trying to access these
+> > > windows would result in the worst case in crashes.
+> > > 
+> > > With this change when mvebu_pcie_add_windows() function fails then into
+> > > emulated config space is put information that particular forwarding
+> > > window is disabled. I think that it is better to indicate it in config
+> > > space what is the current "reality" of hardware configuration. If window
+> > > is disabled in real-HW (meaning in mvebu-mbus driver) then show it also
+> > > in emulated config space of pci bridge.
+> > > 
+> > > Do you have better idea what should emulated pci bridge do, if software
+> > > try to set fully valid configuration of forwarding window, but it is not
+> > > possible to achieve it (even compliant PCI bridge must be able to do
+> > > it)?
+> > 
+> > On an ACPI system, the host bridge window sizes are constrained by the
+> > host bridge _CRS method.  I assume there's a similar constraint in DT.
+> > 
+> > Is the fact that mvebu_pcie_add_windows() can fail a symptom of a DT
+> > that describes more available space than mvebu-bus can map?
+> 
+> Memory maps for mvebu are more complicated. There is no explicit size in
+> DT ranges property as it is dynamically allocated by mvebu-mbus:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/armada-385.dtsi?h=v5.15#n47
 
-On 12.01.2022 16:36, Rex-BC Chen wrote:
-> Since a HS transmission is composed of an arbitrary number
-> of bytes that may not be an integer multiple of lanes, some
-> lanes may run out of data before others.
-> (Defined in 6.1.3 of mipi_DSI_specification_v.01-02-00)
->
-> However, for some DSI RX devices (for example, anx7625),
-> there is a limitation that packet number should be the same
-> on all DSI lanes. In other words, they need to end a HS at
-> the same time.
+I wish I knew how to really interpret those "ranges" properties.  (Is
+there a good description in Documentation/ somewhere?  All I've found
+so far is https://elinux.org/Device_Tree_Usage, which is good, but
+doesn't match this example completely.)
 
+I see:
 
-Is it documented in anx7625 manual? Is it confirmed with hw team?
+  pciec: pcie {
+    ranges = <...>;
+    pcie1: pcie@1,0 {
+      ranges = <0x82000000 0 0 0x82000000 0x1 0 1 0
+	        0x81000000 0 0 0x81000000 0x1 0 1 0>;
+    };
+    pcie2: pcie@2,0 {
+      ranges = <0x82000000 0 0 0x82000000 0x2 0 1 0
+	        0x81000000 0 0 0x81000000 0x2 0 1 0>;
+    };
+    pcie3: pcie@3,0 {
+      ranges = <0x82000000 0 0 0x82000000 0x3 0 1 0
+	        0x81000000 0 0 0x81000000 0x3 0 1 0>;
+    };
+    pcie4: pcie@4,0 {
+      ranges = <0x82000000 0 0 0x82000000 0x4 0 1 0
+	        0x81000000 0 0 0x81000000 0x4 0 1 0>;
+    };
+  };
 
-If not, how it was detected? Have you tried to find workaround for it by 
-inspecting registers, maybe it is just matter of clock gating deferral, 
-timings or sth similar ???.
+What does this look like in dmesg, i.e., what CPU address ranges are
+mapped to what PCI bus addresses?
 
->
-> Because this limitation is for some specific DSI RX devices,
-> it is more reasonable to put the enable control in these
-> DSI RX drivers. If DSI TX driver knows the information,
-> they can adjust the setting for this situation.
->
-> Therefore, add a flag to control this situation beacuse the
-> mipi DSI specification is not forbidden this situation.
+Are pcie1, pcie2, etc Root Ports?  Or are they each separate host
+bridges (they each have "bus-range = <0x00 0xff>")?
 
+Is space from pciec dynamically assigned to pcie1, pcie2, etc?  If so,
+I assume there are more restrictions on the size and alignment than on
+PCI bridge windows, which allow size/alignment down to 1MB?
 
-I am not sure what you mean here.
+I'm trying to see how this could be described in ACPI because that's a
+fairly general model that accommodates most machines.  Possibly
+describing mvebu in ACPI would involve losing some flexibility.
 
-I have an impression (according t 6.1.3 of spec) that devices should 
-allow transmission of arbitrary number of bytes, so this is bug in hw/fw.
-
-The question if it can be fixed. If not patches are welcome.
-
-
->
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Reviewed-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> ---
->   include/drm/drm_mipi_dsi.h | 2 ++
->   1 file changed, 2 insertions(+)
->
-> diff --git a/include/drm/drm_mipi_dsi.h b/include/drm/drm_mipi_dsi.h
-> index 147e51b6d241..df4d15345326 100644
-> --- a/include/drm/drm_mipi_dsi.h
-> +++ b/include/drm/drm_mipi_dsi.h
-> @@ -177,6 +177,8 @@ struct mipi_dsi_device_info {
->    * @lp_rate: maximum lane frequency for low power mode in hertz, this should
->    * be set to the real limits of the hardware, zero is only accepted for
->    * legacy drivers
-> + * @hs_packet_end_aligned: transfer DSI HS packets ending at the same time
-> + * for all DSI lanes
->    */
->   struct mipi_dsi_device {
->   	struct mipi_dsi_host *host;
-> @@ -189,6 +191,7 @@ struct mipi_dsi_device {
->   	unsigned long mode_flags;
->   	unsigned long hs_rate;
->   	unsigned long lp_rate;
-> +	bool hs_packet_end_aligned;
-
-
-Maybe it would be better to add another mode_flag.
-
-
-Regards
-
-Andrzej
-
-
-
->   };
->   
->   #define MIPI_DSI_MODULE_PREFIX "mipi-dsi:"
+Bjorn
