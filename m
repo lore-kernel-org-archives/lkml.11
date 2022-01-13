@@ -2,78 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9940C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D25C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 16:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236807AbiAMQlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 11:41:24 -0500
-Received: from giacobini.uberspace.de ([185.26.156.129]:34838 "EHLO
-        giacobini.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236805AbiAMQlX (ORCPT
+        id S236822AbiAMQmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 11:42:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236816AbiAMQmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 11:41:23 -0500
-Received: (qmail 25316 invoked by uid 990); 13 Jan 2022 16:41:22 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: fix null ptr deref on hci_sync_conn_complete_evt
-Date:   Thu, 13 Jan 2022 17:40:42 +0100
-Message-Id: <20220113164042.259990-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.34.1
+        Thu, 13 Jan 2022 11:42:04 -0500
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52B1C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:42:03 -0800 (PST)
+Received: by mail-pl1-x633.google.com with SMTP id f13so359667plg.0
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 08:42:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0RghS5in1nYPx/uEnl/bNk9uJrbAUCko5BnNI6t0d7A=;
+        b=bd3akMxtoY9qvnWlzDOgFdInNxVVmO3jCTQLlz+Cnj32CwJ/Sd+XulfUMvK2MYIbDK
+         7PCplGYtZY46Gasvui4ntsgcBBZkej6h3k9GHvHaa7sE6jGx59JWCDaGVT7CA3KpzJU7
+         yHl93n7/RD4QoBPDhY3u3w1pAsrcjwfomlVc+eSMtHdZLUceGAp85X6gloMAtk+GooNA
+         MG/XziYC8b8Ive3teUvzEGvWddQVX4HuwoT+Fqh5EfunOv/Gie4zAeeC2Dro78ZnzhRd
+         G3MQqVYcoqWZR5I85Q9TOhGFHxWFJt0/U66P/53E3RtF79RQiakO+kPK4SSPH8PRNIls
+         m1bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=0RghS5in1nYPx/uEnl/bNk9uJrbAUCko5BnNI6t0d7A=;
+        b=tFSI+HMzxL145R9ePgP+4yNj17rrp9XSmczipWMYJ5k6q7LSzAogBzvRQMtXYOL7aU
+         DEXAeDsDl0BLEBz/0NYY8e9Q/EnhhnmX44igmZbCCyf5WWAb7el5FB+bEgOWREQBPIiG
+         QCiI+kN99F1ll2nRl4ZBaAcchvoWxR+EKLw8fEZ4YnoxJy3qG2oG1DRwOmG1CA+8GuBX
+         iZXCwmOm3SszlTVVRrUgr2Cj3OxrOIWp/K/fj5yAseGC1CTRIZR2K/j854KMlBSeNHDM
+         RDZ+jw5uTmjR9Yg24bF5CD1dB0Dz8UckVPED7hdYoRENe3oifI7FZUPoB8oKtyJbAHZM
+         dWdQ==
+X-Gm-Message-State: AOAM530kD17YU4sfceuzSm+aS7Tak1vN/hhAcmR4HCs/KWTcnvprvfqs
+        KzdTL+0HrGfXsSuf/+P56s3XOuiEj8YRhQ==
+X-Google-Smtp-Source: ABdhPJxLuSieBetOIm6dcQtHfslT5H9JQcUa7G0tZf3pMJQrfLp/pmtvJyCqg1YC06fJYRbB8wg8ng==
+X-Received: by 2002:a17:90a:b281:: with SMTP id c1mr6047150pjr.221.1642092123302;
+        Thu, 13 Jan 2022 08:42:03 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id a14sm3660044pfv.18.2022.01.13.08.42.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 08:42:02 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 13 Jan 2022 06:42:01 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Imran Khan <imran.f.khan@oracle.com>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] kernfs: Reduce contention around global per-fs
+ kernfs_rwsem.
+Message-ID: <YeBWWWa030xTftWe@slm.duckdns.org>
+References: <20220113104259.1584491-1-imran.f.khan@oracle.com>
+ <20220113104259.1584491-3-imran.f.khan@oracle.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: ++
-X-Rspamd-Report: BAYES_HAM(-0.045106) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: 2.854893
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Thu, 13 Jan 2022 17:41:22 +0100
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220113104259.1584491-3-imran.f.khan@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This event is specified just for SCO and eSCO link types.
-On the reception of a HCI_Synchronous_Connection_Complete for a BDADDR
-of an existing LE connection, LE link type and a status that triggers the
-second case of the packet processing a NULL pointer dereference happens,
-as conn->link is NULL.
+Hello,
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
-v2: Fixed the obviously wrong boolean comparison
+On Thu, Jan 13, 2022 at 09:42:59PM +1100, Imran Khan wrote:
+> @@ -748,11 +749,14 @@ int kernfs_add_one(struct kernfs_node *kn)
+>  		goto out_unlock;
+>  
+>  	/* Update timestamps on the parent */
+> +	rwsem = iattr_rwsem_ptr(parent);
+> +	down_write(rwsem);
+>  	ps_iattr = parent->iattr;
+>  	if (ps_iattr) {
+>  		ktime_get_real_ts64(&ps_iattr->ia_ctime);
+>  		ps_iattr->ia_mtime = ps_iattr->ia_ctime;
+>  	}
+> +	up_write(rwsem);
+>  
+>  	up_write(&root->kernfs_rwsem);
 
-I found this null pointer dereference while fuzzing bluetooth-next.
-On the described behaviour, a null ptr deref in line 4723 happens, as
-conn->link is NULL. According to the Core spec, Link_Type must be SCO or eSCO,
-all other values are reserved for future use. Checking that mitigates a null
-pointer dereference.
+Hmmm, so the additions / removals are still fs-global lock protected. Would
+it be possible to synchronize them through hashed locks too? We can provide
+double locking helpers - look up locks for both parent and child and if
+different lock in the defined order (parent first most likely) and record
+what happened in a token so that it can be undone later.
 
- net/bluetooth/hci_event.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Without going through the code carefully, I don't remember whether there's
+something which depends on global locking but I'm sure we can fix them too.
+It'd be really nice if we can make all operations similarly scalable cuz
+with heavy stacking addition/removals can get pretty hot too.
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 05997dff5666..d68f5640fb38 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -4661,6 +4661,11 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev, void *data,
- 	struct hci_ev_sync_conn_complete *ev = data;
- 	struct hci_conn *conn;
- 
-+	if (!(ev->link_type == SCO_LINK || ev->link_type == ESCO_LINK)) {
-+		bt_dev_err(hdev, "Ignoring connect complete event for invalid link type");
-+		return;
-+	}
-+
- 	bt_dev_dbg(hdev, "status 0x%2.2x", ev->status);
- 
- 	hci_dev_lock(hdev);
+Thanks.
+
 -- 
-2.34.1
-
+tejun
