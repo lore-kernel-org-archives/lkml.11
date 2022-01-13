@@ -2,97 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CFFC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32624C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 13 Jan 2022 15:46:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236333AbiAMPpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 10:45:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40164 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232699AbiAMPpX (ORCPT
+        id S233505AbiAMPqi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 10:46:38 -0500
+Received: from h01mx15.reliablemail.org ([173.236.5.211]:39814 "EHLO
+        h01mx15.reliablemail.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232062AbiAMPqh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 10:45:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642088722;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XOQmkcxnHsUnotvr77pJAq4wKyjZXJltLlB+w8uHbjI=;
-        b=KK/gyAfe2hkZR59jS8uWZ5KkJGDPMQpTPZ1ak5G/oKNVFpWR2QsddcwSUKbJKfaqK13PcL
-        40NexyEudGDxx+iKzHwUa4YDu8MwRWQbHDpSG2oOX7rz7xmuaGn+90bWCCa13ZNPifkqtW
-        Q8m/uw+UQui4tcQMcageyvJaFiAzupM=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-364-qjZIfvIVMOWm9lGJEQojQA-1; Thu, 13 Jan 2022 10:45:21 -0500
-X-MC-Unique: qjZIfvIVMOWm9lGJEQojQA-1
-Received: by mail-pg1-f200.google.com with SMTP id t1-20020a6564c1000000b002e7f31cf59fso117775pgv.14
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 07:45:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XOQmkcxnHsUnotvr77pJAq4wKyjZXJltLlB+w8uHbjI=;
-        b=AwqY+dtHCwc+gguV1DmQRRSa82eGRXw4ImAxh94wjjC7B1VNBEOvK1eCsK+JCkmaDT
-         5pAVMzLrXkMbzOX2vKptnAYWF2OluMPUW9sZyZBwkv4hGSIbY/J94UtxT2uM5nuehbJK
-         SLH5zoTUx9fKrDPzGfn9dWvRj4av5EXyeZw0eAitVBmiJvpgYtLJyy2lmyzDabmY/Gbo
-         4tUZKfvbwaXZfJIhCMahXAWAPP2dUK9xVHNVxN2itXffCkFpx0inUlaAhPVVc6MNfiSc
-         YhXb4yOLG5fhubWL3MLri6HrIazmYL+zGN+gE2XGemI8FW2reC20DfaSnFvDB4qNJCAj
-         WkZg==
-X-Gm-Message-State: AOAM531wGWrYx2DZBsE4DtWvr7iCsJkEq6xIGMZCBghfTSOULilHVHow
-        yEsLHbtiaQvsSfHeqpn8puQmQzuXSS/5lHHGCMH4JvobuoYW3B5LzY664KaZCvqtK/vhaC63fPi
-        NUL2MUebEKjM5kAtIO/mztcF9
-X-Received: by 2002:a63:4186:: with SMTP id o128mr4373788pga.450.1642088719908;
-        Thu, 13 Jan 2022 07:45:19 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwoTVzJmaQMaCWyrTgeBzpvTXnZncov7SOddrWkGnSqiIzv5eZXOkdcIXRKCxNIrGEynwLc4Q==
-X-Received: by 2002:a63:4186:: with SMTP id o128mr4373770pga.450.1642088719635;
-        Thu, 13 Jan 2022 07:45:19 -0800 (PST)
-Received: from steredhat (host-79-51-11-180.retail.telecomitalia.it. [79.51.11.180])
-        by smtp.gmail.com with ESMTPSA id n28sm2603973pgl.7.2022.01.13.07.45.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 07:45:19 -0800 (PST)
-Date:   Thu, 13 Jan 2022 16:44:47 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        stefanha@redhat.com, Jason Wang <jasowang@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
-Subject: Re: [RFC PATCH] vhost: cache avail index in vhost_enable_notify()
-Message-ID: <20220113154301.qd3ayuhrcjnsaim7@steredhat>
-References: <20220113145642.205388-1-sgarzare@redhat.com>
- <20220113101922-mutt-send-email-mst@kernel.org>
+        Thu, 13 Jan 2022 10:46:37 -0500
+X-Halon-Out: 25006da8-7487-11ec-90dc-00163c81f1a9
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=grimler.se;
+        s=default; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=E3H2b1siBtWNfs0FHzAhtIUMbRbOex7ugO9PAMm8rUY=; b=tQR5XVOPvCFZKEhYA0goMbE2ep
+        a+D7tdu3nIfTWwJA6mYCVes4bYZFky6OISA5GksfNtzdHPdLu7dhrEQk3wSTDyWJD0OU7i9CqNj40
+        HeYfe4fJRkBudQpewUTYapH1vuJHEDq72OCJAw/MCinjcHIUTZdW9ooJxiKqHWi02S7QykcKQliwA
+        PZdxd6Z0UjWUFOytdOlggGmDM92uySnYgaXFVKsG88kG2WoBdL9mIZnCU6Jr3a7+uo9PlO71hcxQ9
+        /sf3bu3CN6Z/zGGZIc6CTUGa5vjHPlU8eQ0c+43Bc0Xd2vdaG2uP+/55zCM5KLKg+Cut995btJPtN
+        uyMNpXCw==;
+From:   Henrik Grimler <henrik@grimler.se>
+To:     semen.protsenko@linaro.org, virag.david003@gmail.com,
+        martin.juecker@gmail.com, cw00.choi@samsung.com,
+        m.szyprowski@samsung.com, alim.akhtar@samsung.com,
+        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Cc:     Henrik Grimler <henrik@grimler.se>
+Subject: [PATCH 0/3] Add initial support for exynos5420-chagallwifi
+Date:   Thu, 13 Jan 2022 16:40:16 +0100
+Message-Id: <20220113154019.74434-1-henrik@grimler.se>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220113101922-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cpsrv07.misshosting.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - grimler.se
+X-Get-Message-Sender-Via: cpsrv07.misshosting.com: authenticated_id: henrik@grimler.se
+X-Authenticated-Sender: cpsrv07.misshosting.com: henrik@grimler.se
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 10:19:46AM -0500, Michael S. Tsirkin wrote:
->On Thu, Jan 13, 2022 at 03:56:42PM +0100, Stefano Garzarella wrote:
->> In vhost_enable_notify() we enable the notifications and we read
->> the avail index to check if new buffers have become available in
->> the meantime. In this case, the device would go to re-read avail
->> index to access the descriptor.
->>
->> As we already do in other place, we can cache the value in `avail_idx`
->> and compare it with `last_avail_idx` to check if there are new
->> buffers available.
->>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->
->I guess we can ... but what's the point?
->
+Samsung's tablet Galaxy Tab S 10.5" (wifi) has codename chagallwifi
+and is one of several tablets released in 2013 - 2014 based on Exynos
+5420.  This initial devicetree adds support for accessing device over
+USB or UART, and allows using a rootfs in either the internal eMMC or
+an external sdcard.  4 out of 8 CPUs are brought up when device boots,
+which is the same as on the somewhat similar device
+exynos5420-arndale-octa.
 
-That without this patch if avail index is new, then device when will 
-call vhost_get_vq_desc() will find old value in cache and will read it 
-again.
+Patch 2 is necessary after a secure-firmware node is added, otherwise
+device hangs during the CPU1BOOT secure monitor call. Without the
+secure-firmware node we are not able to bring up any secondary CPUs.
 
-With this patch we also do the same path and update the cache every time 
-we read avail index.
+Henrik Grimler (3):
+  dt-bindings: arm: samsung: document chagallwifi board binding
+  ARM: exynos: only do SMC_CMD_CPU1BOOT call on Exynos4
+  ARM: dts: Add support for Samsung Chagallwifi
 
-I marked it RFC because I don't know if it's worth it :-)
+ .../bindings/arm/samsung/samsung-boards.yaml  |   1 +
+ arch/arm/boot/dts/Makefile                    |   1 +
+ arch/arm/boot/dts/exynos5420-chagallwifi.dts  |  57 ++
+ .../dts/exynos5420-galaxy-tab-common.dtsi     | 647 ++++++++++++++++++
+ arch/arm/mach-exynos/firmware.c               |   4 +-
+ 5 files changed, 709 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/exynos5420-chagallwifi.dts
+ create mode 100644 arch/arm/boot/dts/exynos5420-galaxy-tab-common.dtsi
 
-Stefano
+
+base-commit: b1cbda0fc3431b464aa78b5f335a5d35428f10c8
+-- 
+2.34.1
 
