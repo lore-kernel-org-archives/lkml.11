@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AA5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23B73C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239502AbiANIRc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:17:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58454 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239531AbiANIR0 (ORCPT
+        id S239556AbiANIRf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:17:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239560AbiANIRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:17:26 -0500
+        Fri, 14 Jan 2022 03:17:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0932C061749;
+        Fri, 14 Jan 2022 00:17:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B104B823E6;
-        Fri, 14 Jan 2022 08:17:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E18BBC36AEA;
-        Fri, 14 Jan 2022 08:17:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EDCA61E06;
+        Fri, 14 Jan 2022 08:17:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57448C36AEA;
+        Fri, 14 Jan 2022 08:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148244;
-        bh=etBZ/Zm3JQWTYpbzDpQhx8B+oOgjW3fLaT6U3d46yak=;
+        s=korg; t=1642148251;
+        bh=D2T5KC7pIMXthySgIcc1beZzlYUCQFmw4bhDOk5jX38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m2h6N7XpmuOT1XtT4VgCZRQqAckRaVDeK4iAGnbmANxq43Ekm+YMN1Ww50ku0V6jY
-         L0aZjxq881eRdQEn8FgQtFzjvtJJKBm59E74MZBI5A65CypUuIVal8WNH7z8zB8bBs
-         7YidOsHw/fOph6V0wyBULZqG+metf3I1K9gXiCqw=
+        b=iALFba12P0Nr7+FG73FyMy265V3K4ayTNTh/Fn9+5PTRY0HipZqKy0QWroSXsvVjO
+         ywXgJwv02Xm0cVAfNqWSBpm+rbC290GuzjFgEXOALd3BlH28mAQAa611BWP3JW5f8a
+         5rftWXa1ESv+bemJ1ElWe1IQl0YkwlikuXkHKAJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Aditya Garg <gargaditya08@live.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.4 08/18] mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-Date:   Fri, 14 Jan 2022 09:16:15 +0100
-Message-Id: <20220114081541.744831895@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.4 10/18] can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
+Date:   Fri, 14 Jan 2022 09:16:17 +0100
+Message-Id: <20220114081541.816823670@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081541.465841464@linuxfoundation.org>
 References: <20220114081541.465841464@linuxfoundation.org>
@@ -48,61 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit c9e143084d1a602f829115612e1ec79df3727c8b upstream.
+commit 4a8737ff068724f509d583fef404d349adba80d6 upstream.
 
-The runtime PM callback may be called as soon as the runtime PM facility
-is enabled and activated. It means that ->suspend() may be called before
-we finish probing the device in the ACPI case. Hence, NULL pointer
-dereference:
+The received data contains the channel the received data is associated
+with. If the channel number is bigger than the actual number of
+channels assume broken or malicious USB device and shut it down.
 
-  intel-lpss INT34BA:00: IRQ index 0 not found
-  BUG: kernel NULL pointer dereference, address: 0000000000000030
-  ...
-  Workqueue: pm pm_runtime_work
-  RIP: 0010:intel_lpss_suspend+0xb/0x40 [intel_lpss]
+This fixes the error found by clang:
 
-To fix this, first try to register the device and only after that enable
-runtime PM facility.
+| drivers/net/can/usb/gs_usb.c:386:6: error: variable 'dev' is used
+|                                     uninitialized whenever 'if' condition is true
+|         if (hf->channel >= GS_MAX_INTF)
+|             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+| drivers/net/can/usb/gs_usb.c:474:10: note: uninitialized use occurs here
+|                           hf, dev->gs_hf_size, gs_usb_receive_bulk_callback,
+|                               ^~~
 
-Fixes: 4b45efe85263 ("mfd: Add support for Intel Sunrisepoint LPSS devices")
-Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
-Reported-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211101190008.86473-1-andriy.shevchenko@linux.intel.com
+Link: https://lore.kernel.org/all/20211210091158.408326-1-mkl@pengutronix.de
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mfd/intel-lpss-acpi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/gs_usb.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/mfd/intel-lpss-acpi.c
-+++ b/drivers/mfd/intel-lpss-acpi.c
-@@ -102,6 +102,7 @@ static int intel_lpss_acpi_probe(struct
- {
- 	struct intel_lpss_platform_info *info;
- 	const struct acpi_device_id *id;
-+	int ret;
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -320,7 +320,7 @@ static void gs_usb_receive_bulk_callback
  
- 	id = acpi_match_device(intel_lpss_acpi_ids, &pdev->dev);
- 	if (!id)
-@@ -115,10 +116,14 @@ static int intel_lpss_acpi_probe(struct
- 	info->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->irq = platform_get_irq(pdev, 0);
+ 	/* device reports out of range channel id */
+ 	if (hf->channel >= GS_MAX_INTF)
+-		goto resubmit_urb;
++		goto device_detach;
  
-+	ret = intel_lpss_probe(&pdev->dev, info);
-+	if (ret)
-+		return ret;
-+
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
+ 	dev = usbcan->canch[hf->channel];
  
--	return intel_lpss_probe(&pdev->dev, info);
-+	return 0;
- }
+@@ -405,6 +405,7 @@ static void gs_usb_receive_bulk_callback
  
- static int intel_lpss_acpi_remove(struct platform_device *pdev)
+ 	/* USB failure take down all interfaces */
+ 	if (rc == -ENODEV) {
++ device_detach:
+ 		for (rc = 0; rc < GS_MAX_INTF; rc++) {
+ 			if (usbcan->canch[rc])
+ 				netif_device_detach(usbcan->canch[rc]->netdev);
 
 
