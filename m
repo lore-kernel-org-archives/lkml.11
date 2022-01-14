@@ -2,106 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B48C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240059AbiANUgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:36:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:32213 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244517AbiANUdo (ORCPT
+        id S239872AbiANUiD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:38:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235529AbiANUiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:33:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642192424;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3JSMWn4K5l2lYnB0cb+D9eToBHXluoZS4fKlQdOWiSk=;
-        b=Z36ISIVz0QZbl1/eqQz31w3n5bXp6M8MPG7dQmxSPQz/1fxR8n7CdOEADX7ru8Tj3LCdEQ
-        ksiewvzmou4zpsMBdL2TcmKxdfsVfg0qTVsWJFXdrrdy+8MSmCAbUvEtScPNcO1DHch07y
-        a/TcU6HHyMDVcIyXQVU/McJ1AD5AV0s=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-NXrQ9h4EM4mJuP9QXCWvpA-1; Fri, 14 Jan 2022 15:33:38 -0500
-X-MC-Unique: NXrQ9h4EM4mJuP9QXCWvpA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A03AB104FC0D;
-        Fri, 14 Jan 2022 20:33:36 +0000 (UTC)
-Received: from [10.22.33.90] (unknown [10.22.33.90])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A96F4BC41;
-        Fri, 14 Jan 2022 20:33:35 +0000 (UTC)
-Message-ID: <8bda2a8d-7faf-621d-c3c0-6351a49219ea@redhat.com>
-Date:   Fri, 14 Jan 2022 15:33:34 -0500
+        Fri, 14 Jan 2022 15:38:00 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5398DC06173E
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:38:00 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id e3so31208744lfc.9
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:38:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HUGzTTyriTXZ8n39Zh2yraY+YbTAIxFn2aNWIIs8oNQ=;
+        b=lHnbPLnlJnWZf4BOMgmL2WqcLhiNaGPR/dRyJ+W4VokrCg0QyE0qjyGQzu70znnfRN
+         JgnFwglHtOeXECzW+ZZgqy0HEoSeFG5lKatmVX0JLcK5El8sDxc/Ct8e5poffUjcdpcE
+         DMt1jsK2b2xhzdqlUCuoCjI69QqxErIeO3636yS7B7BiWp56sJzMi39LWt2YiSAgPyfQ
+         W/J8cKN7U2ztZfhK34tF9fzmwv7A2tHK3bY77Mp+lgO3GhAb6TM3w9H79V+Rjf0Mfc5z
+         ocNlQgM9I0QO7kTjTNPSGLMy/pb7iz77FLe9OZ5JsnfCR1SEs9GYj4XY/xnRWn60RcHB
+         gHtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HUGzTTyriTXZ8n39Zh2yraY+YbTAIxFn2aNWIIs8oNQ=;
+        b=3t0Io/jRkdEsZj2Dur/8SGr7bbqttDqqWcCQ4cgtmdX1ST/+7rfuRM3e8GXZkUB0wc
+         7KqorlBKLTsAzMRR6o9u7cQSBc018p4ZM6Q2j8AngpPr1bH7KxSrWB05UJfM7mgL271Y
+         C500KqhbqIGrS/yAuUtsR2OdKUNIK4p7sjUt5M2Vw6rqBwR33nEx3QDJZ7I7bY5GV5gy
+         MByTGzvbRLoMBB4auGKg12IPt+C5jodSUae7mT8jIwslq/T0XuEswCgoe4ottX6w9qlR
+         04bQatbYv0MBcD91IOBnc5YBLGgJYKOmCbci98U2/YGhNZab9V49XG4DGzvb9FlkGTIx
+         u+6Q==
+X-Gm-Message-State: AOAM530j5dauWCnlf6FZU9S5Du+k4yy5/i5PHxhLXs2hrRXgTTmd/lH/
+        URpeEhVZADARbivvk+zOcDm2Qw==
+X-Google-Smtp-Source: ABdhPJyeB8FDojDbTY19RElb4UtHYMamhY3DprjLgedvmvQQCZDyifUK3I/wm9pcJvBq8VX6y1Z4jA==
+X-Received: by 2002:a05:6512:3044:: with SMTP id b4mr1614836lfb.7.1642192678674;
+        Fri, 14 Jan 2022 12:37:58 -0800 (PST)
+Received: from localhost ([31.134.121.151])
+        by smtp.gmail.com with ESMTPSA id c3sm371492lff.261.2022.01.14.12.37.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 12:37:58 -0800 (PST)
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Chanho Park <chanho61.park@samsung.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] pinctrl: samsung: Remove EINT handler for Exynos850 ALIVE and CMGP gpios
+Date:   Fri, 14 Jan 2022 22:37:57 +0200
+Message-Id: <20220114203757.4860-1-semen.protsenko@linaro.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [Question] set_cpus_allowed_ptr() call failed at cpuset_attach()
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>, Zhang Qiao <zhangqiao22@huawei.com>
-Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org,
-        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
-References: <09ce5796-798e-83d0-f1a6-ba38a787bfc5@huawei.com>
- <4415cd09-6de3-bb2d-386d-8beb4927fb46@huawei.com>
- <YeGi2yjRi/uZIF/2@slm.duckdns.org>
-From:   Waiman Long <longman@redhat.com>
-In-Reply-To: <YeGi2yjRi/uZIF/2@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/14/22 11:20, Tejun Heo wrote:
-> (cc'ing Waiman and Michal and quoting whole body)
->
-> Seems sane to me but let's hear what Waiman and Michal think.
->
-> On Fri, Jan 14, 2022 at 09:15:06AM +0800, Zhang Qiao wrote:
->> Hello everyone
->>
->> 	I found the following warning log on qemu. I migrated a task from one cpuset cgroup to
->> another, while I also performed the cpu hotplug operation, and got following calltrace.
->>
->> 	This may lead to a inconsistency between the affinity of the task and cpuset.cpus of the
->> dest cpuset, but this task can be successfully migrated to the dest cpuset cgroup.
->>
->> 	Can we use cpus_read_lock()/cpus_read_unlock() to guarantee that set_cpus_allowed_ptr()
->> doesn't fail, as follows:
->>
->> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
->> index d0e163a02099..2535d23d2c51 100644
->> --- a/kernel/cgroup/cpuset.c
->> +++ b/kernel/cgroup/cpuset.c
->> @@ -2265,6 +2265,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
->>          guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
->>
->>          cgroup_taskset_for_each(task, css, tset) {
->> +               cpus_read_lock();
->>                  if (cs != &top_cpuset)
->>                          guarantee_online_cpus(task, cpus_attach);
->>                  else
->> @@ -2274,6 +2275,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
->>                   * fail.  TODO: have a better way to handle failure here
->>                   */
->>                  WARN_ON_ONCE(set_cpus_allowed_ptr(task, cpus_attach));
->> +               cpus_read_unlock();
->>
->>
->> 	Is there a better solution?
->>
->> 	Thanks
+GPIO_ALIVE and GPIO_CMGP blocks in Exynos850 SoC don't have EINT
+capabilities (like EINT_SVC register), and there are no corresponding
+interrupts wired to GIC. Instead those blocks have wake-up interrupts
+for each pin. The ".eint_gpio_init" callbacks were specified by mistake
+for these blocks, when porting pinctrl code from downstream kernel. That
+leads to error messages like this:
 
-The change looks OK to me. However, we may need to run the full set of 
-regression test to make sure that lockdep won't complain about potential 
-deadlock.
+    samsung-pinctrl 11850000.pinctrl: irq number not available
 
-Cheers,
-Longman
+Remove ".eint_gpio_init" for pinctrl_alive and pinctrl_gpmc to fix this
+error. This change doesn't affect proper interrupt handling for related
+pins, as all those pins are handled in ".eint_wkup_init".
+
+Fixes: cdd3d945dcec ("pinctrl: samsung: Add Exynos850 SoC specific data")
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+---
+ drivers/pinctrl/samsung/pinctrl-exynos-arm64.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+index 2e490e7696f4..4102ce955bd7 100644
+--- a/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
++++ b/drivers/pinctrl/samsung/pinctrl-exynos-arm64.c
+@@ -585,13 +585,11 @@ static const struct samsung_pin_ctrl exynos850_pin_ctrl[] __initconst = {
+ 		/* pin-controller instance 0 ALIVE data */
+ 		.pin_banks	= exynos850_pin_banks0,
+ 		.nr_banks	= ARRAY_SIZE(exynos850_pin_banks0),
+-		.eint_gpio_init = exynos_eint_gpio_init,
+ 		.eint_wkup_init = exynos_eint_wkup_init,
+ 	}, {
+ 		/* pin-controller instance 1 CMGP data */
+ 		.pin_banks	= exynos850_pin_banks1,
+ 		.nr_banks	= ARRAY_SIZE(exynos850_pin_banks1),
+-		.eint_gpio_init = exynos_eint_gpio_init,
+ 		.eint_wkup_init = exynos_eint_wkup_init,
+ 	}, {
+ 		/* pin-controller instance 2 AUD data */
+-- 
+2.30.2
 
