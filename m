@@ -2,236 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7401EC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:35:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B48C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240383AbiANUfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:35:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41502 "EHLO
+        id S240059AbiANUgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:36:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:32213 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239834AbiANUf0 (ORCPT
+        by vger.kernel.org with ESMTP id S244517AbiANUdo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:35:26 -0500
+        Fri, 14 Jan 2022 15:33:44 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642192526;
+        s=mimecast20190719; t=1642192424;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=amgtrqtQMjyUksxLoOVhxEX1FtphBXOPchfSfNb8y6E=;
-        b=DqlvhEFzjkMkKhR7F8yN4OGYbwXYTty9YvYhvJAMPdgiYOsIaSRlZqEjBJ4UWHOwBF/6Uz
-        Mos5cSXdQBp0Ko9JeXJnIqZeDiXHb+e3izDmEH7wqLu8bxz2+E/BGr94maU/Gz0WtjsOwi
-        Q2UJ9Ia4wqE8QYXosLAw6GoCsKmFSrw=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3JSMWn4K5l2lYnB0cb+D9eToBHXluoZS4fKlQdOWiSk=;
+        b=Z36ISIVz0QZbl1/eqQz31w3n5bXp6M8MPG7dQmxSPQz/1fxR8n7CdOEADX7ru8Tj3LCdEQ
+        ksiewvzmou4zpsMBdL2TcmKxdfsVfg0qTVsWJFXdrrdy+8MSmCAbUvEtScPNcO1DHch07y
+        a/TcU6HHyMDVcIyXQVU/McJ1AD5AV0s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-543-5000ofk7OVSXNvC07RpKXA-1; Fri, 14 Jan 2022 15:35:24 -0500
-X-MC-Unique: 5000ofk7OVSXNvC07RpKXA-1
-Received: by mail-ed1-f72.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso9075508edt.20
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:35:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:content-transfer-encoding;
-        bh=amgtrqtQMjyUksxLoOVhxEX1FtphBXOPchfSfNb8y6E=;
-        b=2XWHmFQXwBVHmVSTQJgVrVCaAOEFtBay2zSNEXjqZ01aHvk8NpFX+0D19CtSklmtIW
-         373MMBZYntIOHsulGguf+qZ0eYc6pN4G/Q9neM3AOCWf+TYBPnE3g+fyoGOOj2qhdC6w
-         QyqwMLEXCZpeM5aH2V/AkdPb0GtDcbZ9zLyV/1x+bqFMaVwcyjNUN1OEpjYpuhpM0JRO
-         uX0aC++gdiwcU61qOSDNIlFnG9dya3vOZ51ZFjMp6R8pQxzxsGLmFN5hV5iznXi2J3Pc
-         LTnVi9YkoePobvRHvqnWH+T4526sZiX55PBgPPmzOXBcCWu6Q7jRT18GFdI+94j4p4Q6
-         tsyQ==
-X-Gm-Message-State: AOAM5301csV29kFdslzxnRGWyEDCOQ8KmFMfeHSmF89S/aXaJHovsoRF
-        FShhkURiVMN0RUDI5PJId2uKo9J9dZk5G8Q+B2wH/tOst++9orPHqzUjL+nHorVDwjsoN9SKL6T
-        6CRltC9tEqc5SZn9qaey80ji8
-X-Received: by 2002:a17:906:819:: with SMTP id e25mr4853837ejd.63.1642192522650;
-        Fri, 14 Jan 2022 12:35:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwPI8pIhpFi/ZyGwDQrEvy99Xsw6RBcz7cfDlKQfktwhMLpdTccY1eNq0Y8ynYb5emG9NQgwg==
-X-Received: by 2002:a17:906:819:: with SMTP id e25mr4853826ejd.63.1642192522443;
-        Fri, 14 Jan 2022 12:35:22 -0800 (PST)
-Received: from redhat.com ([2.55.154.210])
-        by smtp.gmail.com with ESMTPSA id a20sm2709266eda.21.2022.01.14.12.35.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 12:35:21 -0800 (PST)
-Date:   Fri, 14 Jan 2022 15:35:15 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        christophe.jaillet@wanadoo.fr, dapeng1.mi@intel.com,
-        david@redhat.com, elic@nvidia.com, eperezma@redhat.com,
-        flyingpenghao@gmail.com, flyingpeng@tencent.com,
-        gregkh@linuxfoundation.org, guanjun@linux.alibaba.com,
-        jasowang@redhat.com, jean-philippe@linaro.org,
-        jiasheng@iscas.ac.cn, johan@kernel.org, keescook@chromium.org,
-        labbott@kernel.org, lingshan.zhu@intel.com, lkp@intel.com,
-        luolikang@nsfocus.com, lvivier@redhat.com, mst@redhat.com,
-        pasic@linux.ibm.com, sgarzare@redhat.com, somlo@cmu.edu,
-        trix@redhat.com, wu000273@umn.edu, xianting.tian@linux.alibaba.com,
-        xuanzhuo@linux.alibaba.com, yun.wang@linux.alibaba.com
-Subject: [GIT PULL] virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
-Message-ID: <20220114153515-mutt-send-email-mst@kernel.org>
+ us-mta-433-NXrQ9h4EM4mJuP9QXCWvpA-1; Fri, 14 Jan 2022 15:33:38 -0500
+X-MC-Unique: NXrQ9h4EM4mJuP9QXCWvpA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A03AB104FC0D;
+        Fri, 14 Jan 2022 20:33:36 +0000 (UTC)
+Received: from [10.22.33.90] (unknown [10.22.33.90])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5A96F4BC41;
+        Fri, 14 Jan 2022 20:33:35 +0000 (UTC)
+Message-ID: <8bda2a8d-7faf-621d-c3c0-6351a49219ea@redhat.com>
+Date:   Fri, 14 Jan 2022 15:33:34 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-X-Mutt-Fcc: =sent
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [Question] set_cpus_allowed_ptr() call failed at cpuset_attach()
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>, Zhang Qiao <zhangqiao22@huawei.com>
+Cc:     lizefan.x@bytedance.com, hannes@cmpxchg.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+References: <09ce5796-798e-83d0-f1a6-ba38a787bfc5@huawei.com>
+ <4415cd09-6de3-bb2d-386d-8beb4927fb46@huawei.com>
+ <YeGi2yjRi/uZIF/2@slm.duckdns.org>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YeGi2yjRi/uZIF/2@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
+On 1/14/22 11:20, Tejun Heo wrote:
+> (cc'ing Waiman and Michal and quoting whole body)
+>
+> Seems sane to me but let's hear what Waiman and Michal think.
+>
+> On Fri, Jan 14, 2022 at 09:15:06AM +0800, Zhang Qiao wrote:
+>> Hello everyone
+>>
+>> 	I found the following warning log on qemu. I migrated a task from one cpuset cgroup to
+>> another, while I also performed the cpu hotplug operation, and got following calltrace.
+>>
+>> 	This may lead to a inconsistency between the affinity of the task and cpuset.cpus of the
+>> dest cpuset, but this task can be successfully migrated to the dest cpuset cgroup.
+>>
+>> 	Can we use cpus_read_lock()/cpus_read_unlock() to guarantee that set_cpus_allowed_ptr()
+>> doesn't fail, as follows:
+>>
+>> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+>> index d0e163a02099..2535d23d2c51 100644
+>> --- a/kernel/cgroup/cpuset.c
+>> +++ b/kernel/cgroup/cpuset.c
+>> @@ -2265,6 +2265,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+>>          guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
+>>
+>>          cgroup_taskset_for_each(task, css, tset) {
+>> +               cpus_read_lock();
+>>                  if (cs != &top_cpuset)
+>>                          guarantee_online_cpus(task, cpus_attach);
+>>                  else
+>> @@ -2274,6 +2275,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+>>                   * fail.  TODO: have a better way to handle failure here
+>>                   */
+>>                  WARN_ON_ONCE(set_cpus_allowed_ptr(task, cpus_attach));
+>> +               cpus_read_unlock();
+>>
+>>
+>> 	Is there a better solution?
+>>
+>> 	Thanks
 
-  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
+The change looks OK to me. However, we may need to run the full set of 
+regression test to make sure that lockdep won't complain about potential 
+deadlock.
 
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-for you to fetch changes up to f04ac267029c8063fc35116b385cd37656b3c81a:
-
-  virtio: acknowledge all features before access (2022-01-14 14:58:41 -0500)
-
-----------------------------------------------------------------
-virtio,vdpa,qemu_fw_cfg: features, cleanups, fixes
-
-IOMMU bypass support in virtio-iommu
-partial support for < MAX_ORDER - 1 granularity for virtio-mem
-driver_override for vdpa
-sysfs ABI documentation for vdpa
-multiqueue config support for mlx5 vdpa
-
-Misc fixes, cleanups.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Christophe JAILLET (1):
-      eni_vdpa: Simplify 'eni_vdpa_probe()'
-
-Dapeng Mi (1):
-      virtio: fix a typo in function "vp_modern_remove" comments.
-
-David Hildenbrand (2):
-      virtio-mem: prepare page onlining code for granularity smaller than MAX_ORDER - 1
-      virtio-mem: prepare fake page onlining code for granularity smaller than MAX_ORDER - 1
-
-Eli Cohen (20):
-      net/mlx5_vdpa: Offer VIRTIO_NET_F_MTU when setting MTU
-      vdpa/mlx5: Fix wrong configuration of virtio_version_1_0
-      vdpa: Provide interface to read driver features
-      vdpa/mlx5: Distribute RX virtqueues in RQT object
-      vdpa: Sync calls set/get config/status with cf_mutex
-      vdpa: Read device configuration only if FEATURES_OK
-      vdpa: Allow to configure max data virtqueues
-      vdpa/mlx5: Fix config_attr_mask assignment
-      vdpa/mlx5: Support configuring max data virtqueue
-      vdpa: Add support for returning device configuration information
-      vdpa/mlx5: Restore cur_num_vqs in case of failure in change_num_qps()
-      vdpa: Support reporting max device capabilities
-      vdpa/mlx5: Report max device capabilities
-      vdpa/vdpa_sim: Configure max supported virtqueues
-      vdpa: Use BIT_ULL for bit operations
-      vdpa/vdpa_sim_net: Report max device capabilities
-      vdpa: Avoid taking cf_mutex lock on get status
-      vdpa: Protect vdpa reset with cf_mutex
-      vdpa/mlx5: Fix is_index_valid() to refer to features
-      vdpa/mlx5: Fix tracking of current number of VQs
-
-Eugenio Pérez (2):
-      vdpa: Avoid duplicate call to vp_vdpa get_status
-      vdpa: Mark vdpa_config_ops.get_vq_notification as optional
-
-Guanjun (1):
-      vduse: moving kvfree into caller
-
-Jean-Philippe Brucker (5):
-      iommu/virtio: Add definitions for VIRTIO_IOMMU_F_BYPASS_CONFIG
-      iommu/virtio: Support bypass domains
-      iommu/virtio: Sort reserved regions
-      iommu/virtio: Pass end address to viommu_add_mapping()
-      iommu/virtio: Support identity-mapped domains
-
-Johan Hovold (4):
-      firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
-      firmware: qemu_fw_cfg: fix kobject leak in probe error path
-      firmware: qemu_fw_cfg: fix sysfs information leak
-      firmware: qemu_fw_cfg: remove sysfs entries explicitly
-
-Laura Abbott (1):
-      vdpa: clean up get_config_size ret value handling
-
-Michael S. Tsirkin (5):
-      virtio: wrap config->reset calls
-      hwrng: virtio - unregister device before reset
-      virtio_ring: mark ring unused on error
-      virtio: unexport virtio_finalize_features
-      virtio: acknowledge all features before access
-
-Peng Hao (2):
-      virtio/virtio_mem: handle a possible NULL as a memcpy parameter
-      virtio/virtio_pci_legacy_dev: ensure the correct return value
-
-Stefano Garzarella (2):
-      docs: document sysfs ABI for vDPA bus
-      vdpa: add driver_override support
-
-Xianting Tian (1):
-      vhost/test: fix memory leak of vhost virtqueues
-
-Zhu Lingshan (1):
-      ifcvf/vDPA: fix misuse virtio-net device config size for blk dev
-
-王贇 (1):
-      virtio-pci: fix the confusing error message
-
- Documentation/ABI/testing/sysfs-bus-vdpa   |  57 ++++++++++
- MAINTAINERS                                |   1 +
- arch/um/drivers/virt-pci.c                 |   2 +-
- drivers/block/virtio_blk.c                 |   4 +-
- drivers/bluetooth/virtio_bt.c              |   2 +-
- drivers/char/hw_random/virtio-rng.c        |   2 +-
- drivers/char/virtio_console.c              |   4 +-
- drivers/crypto/virtio/virtio_crypto_core.c |   8 +-
- drivers/firmware/arm_scmi/virtio.c         |   2 +-
- drivers/firmware/qemu_fw_cfg.c             |  21 ++--
- drivers/gpio/gpio-virtio.c                 |   2 +-
- drivers/gpu/drm/virtio/virtgpu_kms.c       |   2 +-
- drivers/i2c/busses/i2c-virtio.c            |   2 +-
- drivers/iommu/virtio-iommu.c               | 115 ++++++++++++++++----
- drivers/net/caif/caif_virtio.c             |   2 +-
- drivers/net/virtio_net.c                   |   4 +-
- drivers/net/wireless/mac80211_hwsim.c      |   2 +-
- drivers/nvdimm/virtio_pmem.c               |   2 +-
- drivers/rpmsg/virtio_rpmsg_bus.c           |   2 +-
- drivers/scsi/virtio_scsi.c                 |   2 +-
- drivers/vdpa/alibaba/eni_vdpa.c            |  28 +++--
- drivers/vdpa/ifcvf/ifcvf_base.c            |  41 ++++++--
- drivers/vdpa/ifcvf/ifcvf_base.h            |   9 +-
- drivers/vdpa/ifcvf/ifcvf_main.c            |  40 +++----
- drivers/vdpa/mlx5/net/mlx5_vnet.c          | 156 ++++++++++++++++-----------
- drivers/vdpa/vdpa.c                        | 163 +++++++++++++++++++++++++----
- drivers/vdpa/vdpa_sim/vdpa_sim.c           |  21 ++--
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c       |   2 +
- drivers/vdpa/vdpa_user/vduse_dev.c         |  19 +++-
- drivers/vdpa/virtio_pci/vp_vdpa.c          |  16 ++-
- drivers/vhost/test.c                       |   1 +
- drivers/vhost/vdpa.c                       |  12 +--
- drivers/virtio/virtio.c                    |  40 ++++---
- drivers/virtio/virtio_balloon.c            |   2 +-
- drivers/virtio/virtio_input.c              |   2 +-
- drivers/virtio/virtio_mem.c                | 114 +++++++++++++-------
- drivers/virtio/virtio_pci_legacy.c         |   2 +-
- drivers/virtio/virtio_pci_legacy_dev.c     |   4 +-
- drivers/virtio/virtio_pci_modern_dev.c     |   2 +-
- drivers/virtio/virtio_ring.c               |   4 +-
- drivers/virtio/virtio_vdpa.c               |   7 +-
- fs/fuse/virtio_fs.c                        |   4 +-
- include/linux/vdpa.h                       |  39 +++++--
- include/linux/virtio.h                     |   2 +-
- include/uapi/linux/vdpa.h                  |   6 ++
- include/uapi/linux/virtio_iommu.h          |   8 +-
- net/9p/trans_virtio.c                      |   2 +-
- net/vmw_vsock/virtio_transport.c           |   4 +-
- sound/virtio/virtio_card.c                 |   4 +-
- 49 files changed, 706 insertions(+), 286 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-vdpa
+Cheers,
+Longman
 
