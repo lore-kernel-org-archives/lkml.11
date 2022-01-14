@@ -2,169 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D754C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BAFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239794AbiANJSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:18:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35484 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239787AbiANJR6 (ORCPT
+        id S239799AbiANJS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:18:58 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:17347 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236423AbiANJS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:17:58 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A408C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:17:58 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id hv15so12844215pjb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:17:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UnDHOgPgHxrpEfq7DGKwHo/JXpf5Q25m6hL15BhwKxo=;
-        b=niPVQetGLY/pUlNg30eKEQ/IYzZi4OmcTVvIzI0ERhmfvbGC8tWx782CbK2myBiWXh
-         dmzulVUdZMrKW47do7EuMg6wUDNXv71UCjEbNTFKIO7SdOeIfCSjmqWv4+plJOE/2Nki
-         1tOU3eImAfPdcEO1IzToFlneunoUKpMmvlBmlJ7dgLSJH7kcJhSac2WMRzTksKJuDVX2
-         xUP74Td3sketHGJhWiqo4o6+yymg+fw4M+AqLdaPMbqrD33oyirXdSaROio6fM7YpQJm
-         Q27snM7DzwdyrU632YbM8zvumymhdPZ1W/tiNff6HxXyn/bKh0VlSM1XUyb7673CULw7
-         FSMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UnDHOgPgHxrpEfq7DGKwHo/JXpf5Q25m6hL15BhwKxo=;
-        b=edIJlQMvw/a6+/II3Yz1rSalawJOJXasrDZgaACCkkb2HMV/7MoWDPXhEyMzOPGUFw
-         WNbL1xV6kw1jLv9R2qNHTi8ul1+uYfJ+Y3brK1MQSpuZsF2KMNQCy7f7OB1U3xR8Fr7o
-         GBa1lpXTQkqPLcF0wcoLUB0oszotk8dgEw3+AC5tSW+4BDURCXj8unGFrRYLLsO1/ZlC
-         1tyjR2KnweLyQuPhYylsbMH/doZgzNq28VHF5LGl9jZIp3TdJS5JizJhBNVBSwrLfAcQ
-         g4XvRiswcIwTlb4rVLCTl2fMPXu/vH/etPkWHEydsQyWBchpVk2QfBVyGVfZ0g10QFoW
-         BcKg==
-X-Gm-Message-State: AOAM5339XH70lHO3q5HnQ72HNbDGVnBxec/LEmnDDYwthxrw2YhnCb98
-        nVUWIcuswCkYhWtifXw9CYeO1Q==
-X-Google-Smtp-Source: ABdhPJyzg2ZT4GxwLjdse984P77qAjIRC7yU7HACLQpYCuRh79FQtcfOgBxIrntqjqdoRZkaHFHl3Q==
-X-Received: by 2002:a17:90a:3846:: with SMTP id l6mr19256262pjf.7.1642151877575;
-        Fri, 14 Jan 2022 01:17:57 -0800 (PST)
-Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id z3sm4237179pgc.45.2022.01.14.01.17.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 01:17:57 -0800 (PST)
-From:   Zong Li <zong.li@sifive.com>
-To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
-        conor.dooley@microchip.com, geert@linux-m68k.org,
-        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
-        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Cc:     Zong Li <zong.li@sifive.com>
-Subject: [PATCH v3 3/3] dmaengine: sf-pdma: Get number of channel by device tree
-Date:   Fri, 14 Jan 2022 17:17:41 +0800
-Message-Id: <91a8fb6dff811b36db951ee98d955ad14a2a30eb.1642151791.git.zong.li@sifive.com>
+        Fri, 14 Jan 2022 04:18:56 -0500
+Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JZwgX5M9xz9sBr;
+        Fri, 14 Jan 2022 17:17:44 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 14 Jan 2022 17:18:54 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 14 Jan
+ 2022 17:18:53 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <tj@kernel.org>, <axboe@kernel.dk>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
+        <yi.zhang@huawei.com>
+Subject: [PATCH -next] blk-throttle: enable io throttle for root in cgroup v2
+Date:   Fri, 14 Jan 2022 17:30:00 +0800
+Message-ID: <20220114093000.3323470-1-yukuai3@huawei.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <cover.1642151791.git.zong.li@sifive.com>
-References: <cover.1642151791.git.zong.li@sifive.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It currently assumes that there are always four channels, it would
-cause the error if there is actually less than four channels. Change
-that by getting number of channel from device tree.
+RFC patch: https://lkml.org/lkml/2021/9/9/1432
 
-For backwards-compatible, it uses the default value (i.e. 4) when there
-is no 'dma-channels' information in dts.
+There is a proformance problem in our environment:
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
+A host can provide a remote device to difierent client. If one client is
+under high io pressure, other clients might be affected.
+
+Limit the overall iops/bps(io.max) from the client can fix the problem,
+however, config files do not exist in root cgroup currently, which makes
+it impossible.
+
+This patch enables io throttle for root cgroup:
+ - enable "io.max" and "io.low" in root
+ - don't skip root group in tg_iops_limit() and tg_bps_limit()
+ - don't skip root group in tg_conf_updated()
+
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 ---
- drivers/dma/sf-pdma/Makefile  |  2 ++
- drivers/dma/sf-pdma/sf-pdma.c | 20 +++++++++++++-------
- drivers/dma/sf-pdma/sf-pdma.h |  8 ++------
- 3 files changed, 17 insertions(+), 13 deletions(-)
+ block/blk-throttle.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/dma/sf-pdma/Makefile b/drivers/dma/sf-pdma/Makefile
-index 764552ab8d0a..cf1daff7e445 100644
---- a/drivers/dma/sf-pdma/Makefile
-+++ b/drivers/dma/sf-pdma/Makefile
-@@ -1 +1,3 @@
- obj-$(CONFIG_SF_PDMA)   += sf-pdma.o
-+
-+CFLAGS_sf-pdma.o += -O0
-diff --git a/drivers/dma/sf-pdma/sf-pdma.c b/drivers/dma/sf-pdma/sf-pdma.c
-index f12606aeff87..1264add9897e 100644
---- a/drivers/dma/sf-pdma/sf-pdma.c
-+++ b/drivers/dma/sf-pdma/sf-pdma.c
-@@ -482,9 +482,7 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
- static int sf_pdma_probe(struct platform_device *pdev)
- {
- 	struct sf_pdma *pdma;
--	struct sf_pdma_chan *chan;
- 	struct resource *res;
--	int len, chans;
- 	int ret;
- 	const enum dma_slave_buswidth widths =
- 		DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
-@@ -492,13 +490,21 @@ static int sf_pdma_probe(struct platform_device *pdev)
- 		DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
- 		DMA_SLAVE_BUSWIDTH_64_BYTES;
+diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+index 7c462c006b26..ac25bfbbfe7f 100644
+--- a/block/blk-throttle.c
++++ b/block/blk-throttle.c
+@@ -156,9 +156,6 @@ static uint64_t tg_bps_limit(struct throtl_grp *tg, int rw)
+ 	struct throtl_data *td;
+ 	uint64_t ret;
  
--	chans = PDMA_NR_CH;
--	len = sizeof(*pdma) + sizeof(*chan) * chans;
--	pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
-+	pdma = devm_kzalloc(&pdev->dev, sizeof(*pdma), GFP_KERNEL);
- 	if (!pdma)
- 		return -ENOMEM;
- 
--	pdma->n_chans = chans;
-+	ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
-+				   &pdma->n_chans);
-+	if (ret) {
-+		dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
-+		pdma->n_chans = PDMA_MAX_NR_CH;
-+	}
-+
-+	if (pdma->n_chans > PDMA_MAX_NR_CH) {
-+		dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
-+		return -EINVAL;
-+	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	pdma->membase = devm_ioremap_resource(&pdev->dev, res);
-@@ -556,7 +562,7 @@ static int sf_pdma_remove(struct platform_device *pdev)
- 	struct sf_pdma_chan *ch;
- 	int i;
- 
--	for (i = 0; i < PDMA_NR_CH; i++) {
-+	for (i = 0; i < pdma->n_chans; i++) {
- 		ch = &pdma->chans[i];
- 
- 		devm_free_irq(&pdev->dev, ch->txirq, ch);
-diff --git a/drivers/dma/sf-pdma/sf-pdma.h b/drivers/dma/sf-pdma/sf-pdma.h
-index 0c20167b097d..8127d792f639 100644
---- a/drivers/dma/sf-pdma/sf-pdma.h
-+++ b/drivers/dma/sf-pdma/sf-pdma.h
-@@ -22,11 +22,7 @@
- #include "../dmaengine.h"
- #include "../virt-dma.h"
- 
--#define PDMA_NR_CH					4
+-	if (cgroup_subsys_on_dfl(io_cgrp_subsys) && !blkg->parent)
+-		return U64_MAX;
 -
--#if (PDMA_NR_CH != 4)
--#error "Please define PDMA_NR_CH to 4"
--#endif
-+#define PDMA_MAX_NR_CH					4
+ 	td = tg->td;
+ 	ret = tg->bps[rw][td->limit_index];
+ 	if (ret == 0 && td->limit_index == LIMIT_LOW) {
+@@ -186,9 +183,6 @@ static unsigned int tg_iops_limit(struct throtl_grp *tg, int rw)
+ 	struct throtl_data *td;
+ 	unsigned int ret;
  
- #define PDMA_BASE_ADDR					0x3000000
- #define PDMA_CHAN_OFFSET				0x1000
-@@ -118,7 +114,7 @@ struct sf_pdma {
- 	void __iomem            *membase;
- 	void __iomem            *mappedbase;
- 	u32			n_chans;
--	struct sf_pdma_chan	chans[PDMA_NR_CH];
-+	struct sf_pdma_chan	chans[PDMA_MAX_NR_CH];
- };
+-	if (cgroup_subsys_on_dfl(io_cgrp_subsys) && !blkg->parent)
+-		return UINT_MAX;
+-
+ 	td = tg->td;
+ 	ret = tg->iops[rw][td->limit_index];
+ 	if (ret == 0 && tg->td->limit_index == LIMIT_LOW) {
+@@ -1284,9 +1278,8 @@ static void tg_conf_updated(struct throtl_grp *tg, bool global)
+ 		struct throtl_grp *parent_tg;
  
- #endif /* _SF_PDMA_H */
+ 		tg_update_has_rules(this_tg);
+-		/* ignore root/second level */
+-		if (!cgroup_subsys_on_dfl(io_cgrp_subsys) || !blkg->parent ||
+-		    !blkg->parent->parent)
++		/* ignore root level */
++		if (!cgroup_subsys_on_dfl(io_cgrp_subsys) || !blkg->parent)
+ 			continue;
+ 		parent_tg = blkg_to_tg(blkg->parent);
+ 		/*
+@@ -1625,7 +1618,6 @@ static struct cftype throtl_files[] = {
+ #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
+ 	{
+ 		.name = "low",
+-		.flags = CFTYPE_NOT_ON_ROOT,
+ 		.seq_show = tg_print_limit,
+ 		.write = tg_set_limit,
+ 		.private = LIMIT_LOW,
+@@ -1633,7 +1625,6 @@ static struct cftype throtl_files[] = {
+ #endif
+ 	{
+ 		.name = "max",
+-		.flags = CFTYPE_NOT_ON_ROOT,
+ 		.seq_show = tg_print_limit,
+ 		.write = tg_set_limit,
+ 		.private = LIMIT_MAX,
 -- 
 2.31.1
 
