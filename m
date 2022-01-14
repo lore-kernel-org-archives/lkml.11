@@ -2,77 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A34C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:25:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F70C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237897AbiANIZl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:25:41 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:58302 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229874AbiANIWy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:22:54 -0500
-Received: from localhost.localdomain (unknown [124.16.141.244])
-        by APP-05 (Coremail) with SMTP id zQCowACXe0HKMuFhEsoxBg--.41354S2;
-        Fri, 14 Jan 2022 16:22:34 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     minghsiu.tsai@mediatek.com, houlong.wei@mediatek.com,
-        andrew-ct.chen@mediatek.com, mchehab@kernel.org,
-        matthias.bgg@gmail.com
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: mtk-mdp: Remove redundant 'flush_workqueue()' calls
-Date:   Fri, 14 Jan 2022 08:22:14 +0000
-Message-Id: <20220114082214.41817-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S232562AbiANIZp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:25:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33374 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237904AbiANIXF (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:23:05 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C16D61E47;
+        Fri, 14 Jan 2022 08:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42531C36AE9;
+        Fri, 14 Jan 2022 08:23:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642148582;
+        bh=NnOyuba6l82M94bGQAATXauFmTaOA9YOgogUdTNMgw0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DYcpY0WQVoAzkfUtvmzNKvVXOLf8PB8fy5FwY8BPsA/Aeefc0FnOgVMciADqUQWcg
+         KN1df6nJ4C7rJm7ZFkd80FKYoPl2WDr+RfubT75h2J/w03A5vBRGgc/UlP9wR5N3+C
+         B2Aw4dAPkS+gVldYm3EeaLekI6D+qboSx4tmMJDM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.16 36/37] staging: greybus: fix stack size warning with UBSAN
+Date:   Fri, 14 Jan 2022 09:16:50 +0100
+Message-Id: <20220114081546.027956854@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
+References: <20220114081544.849748488@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowACXe0HKMuFhEsoxBg--.41354S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKF17Xw17ZF1DZF4rKr1xKrg_yoWDWrb_Cr
-        WIgF4xWrWfGwnYkryxtF1fuFyjy3yq9r1FyaySgr4qg3yrWw1UtrZrZr4DX3yDXa1jvF1U
-        AFW2gayxurnxGjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2kYjsxI4VWkCwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6r43MxAIw28I
-        cxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2
-        IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI
-        42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42
-        IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
-        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU8Hv3UUUUUU==
-X-Originating-IP: [124.16.141.244]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgkGA10Tf6iqfAAAsF
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'destroy_workqueue()' already drains the queue before destroying it, so
-there is no need to flush it explicitly.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Remove the redundant 'flush_workqueue()' calls.
+commit 144779edf598e0896302c35a0926ef0b68f17c4b upstream.
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+clang warns about excessive stack usage in this driver when
+UBSAN is enabled:
+
+drivers/staging/greybus/audio_topology.c:977:12: error: stack frame size of 1836 bytes in function 'gbaudio_tplg_create_widget' [-Werror,-Wframe-larger-than=]
+
+Rework this code to no longer use compound literals for
+initializing the structure in each case, but instead keep
+the common bits in a preallocated constant array and copy
+them as needed.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1535
+Link: https://lore.kernel.org/r/20210103223541.2790855-1-arnd@kernel.org/
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Reviewed-by: Alex Elder <elder@linaro.org>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+[nathan: Address review comments from v1]
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20211209195141.1165233-1-nathan@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/mtk-mdp/mtk_mdp_core.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/staging/greybus/audio_topology.c |   92 +++++++++++++++----------------
+ 1 file changed, 45 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c b/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
-index 3d38793aaa25..fbd6e06a0567 100644
---- a/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
-+++ b/drivers/media/platform/mtk-mdp/mtk_mdp_core.c
-@@ -246,10 +246,8 @@ static int mtk_mdp_remove(struct platform_device *pdev)
- 	mtk_mdp_unregister_m2m_device(mdp);
- 	v4l2_device_unregister(&mdp->v4l2_dev);
+--- a/drivers/staging/greybus/audio_topology.c
++++ b/drivers/staging/greybus/audio_topology.c
+@@ -974,6 +974,44 @@ static int gbaudio_widget_event(struct s
+ 	return ret;
+ }
  
--	flush_workqueue(mdp->wdt_wq);
- 	destroy_workqueue(mdp->wdt_wq);
++static const struct snd_soc_dapm_widget gbaudio_widgets[] = {
++	[snd_soc_dapm_spk]	= SND_SOC_DAPM_SPK(NULL, gbcodec_event_spk),
++	[snd_soc_dapm_hp]	= SND_SOC_DAPM_HP(NULL, gbcodec_event_hp),
++	[snd_soc_dapm_mic]	= SND_SOC_DAPM_MIC(NULL, gbcodec_event_int_mic),
++	[snd_soc_dapm_output]	= SND_SOC_DAPM_OUTPUT(NULL),
++	[snd_soc_dapm_input]	= SND_SOC_DAPM_INPUT(NULL),
++	[snd_soc_dapm_switch]	= SND_SOC_DAPM_SWITCH_E(NULL, SND_SOC_NOPM,
++					0, 0, NULL,
++					gbaudio_widget_event,
++					SND_SOC_DAPM_PRE_PMU |
++					SND_SOC_DAPM_POST_PMD),
++	[snd_soc_dapm_pga]	= SND_SOC_DAPM_PGA_E(NULL, SND_SOC_NOPM,
++					0, 0, NULL, 0,
++					gbaudio_widget_event,
++					SND_SOC_DAPM_PRE_PMU |
++					SND_SOC_DAPM_POST_PMD),
++	[snd_soc_dapm_mixer]	= SND_SOC_DAPM_MIXER_E(NULL, SND_SOC_NOPM,
++					0, 0, NULL, 0,
++					gbaudio_widget_event,
++					SND_SOC_DAPM_PRE_PMU |
++					SND_SOC_DAPM_POST_PMD),
++	[snd_soc_dapm_mux]	= SND_SOC_DAPM_MUX_E(NULL, SND_SOC_NOPM,
++					0, 0, NULL,
++					gbaudio_widget_event,
++					SND_SOC_DAPM_PRE_PMU |
++					SND_SOC_DAPM_POST_PMD),
++	[snd_soc_dapm_aif_in]	= SND_SOC_DAPM_AIF_IN_E(NULL, NULL, 0,
++					SND_SOC_NOPM, 0, 0,
++					gbaudio_widget_event,
++					SND_SOC_DAPM_PRE_PMU |
++					SND_SOC_DAPM_POST_PMD),
++	[snd_soc_dapm_aif_out]	= SND_SOC_DAPM_AIF_OUT_E(NULL, NULL, 0,
++					SND_SOC_NOPM, 0, 0,
++					gbaudio_widget_event,
++					SND_SOC_DAPM_PRE_PMU |
++					SND_SOC_DAPM_POST_PMD),
++};
++
+ static int gbaudio_tplg_create_widget(struct gbaudio_module_info *module,
+ 				      struct snd_soc_dapm_widget *dw,
+ 				      struct gb_audio_widget *w, int *w_size)
+@@ -1052,77 +1090,37 @@ static int gbaudio_tplg_create_widget(st
  
--	flush_workqueue(mdp->job_wq);
- 	destroy_workqueue(mdp->job_wq);
+ 	switch (w->type) {
+ 	case snd_soc_dapm_spk:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_SPK(w->name, gbcodec_event_spk);
++		*dw = gbaudio_widgets[w->type];
+ 		module->op_devices |= GBAUDIO_DEVICE_OUT_SPEAKER;
+ 		break;
+ 	case snd_soc_dapm_hp:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_HP(w->name, gbcodec_event_hp);
++		*dw = gbaudio_widgets[w->type];
+ 		module->op_devices |= (GBAUDIO_DEVICE_OUT_WIRED_HEADSET
+ 					| GBAUDIO_DEVICE_OUT_WIRED_HEADPHONE);
+ 		module->ip_devices |= GBAUDIO_DEVICE_IN_WIRED_HEADSET;
+ 		break;
+ 	case snd_soc_dapm_mic:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_MIC(w->name, gbcodec_event_int_mic);
++		*dw = gbaudio_widgets[w->type];
+ 		module->ip_devices |= GBAUDIO_DEVICE_IN_BUILTIN_MIC;
+ 		break;
+ 	case snd_soc_dapm_output:
+-		*dw = (struct snd_soc_dapm_widget)SND_SOC_DAPM_OUTPUT(w->name);
+-		break;
+ 	case snd_soc_dapm_input:
+-		*dw = (struct snd_soc_dapm_widget)SND_SOC_DAPM_INPUT(w->name);
+-		break;
+ 	case snd_soc_dapm_switch:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_SWITCH_E(w->name, SND_SOC_NOPM, 0, 0,
+-					      widget_kctls,
+-					      gbaudio_widget_event,
+-					      SND_SOC_DAPM_PRE_PMU |
+-					      SND_SOC_DAPM_POST_PMD);
+-		break;
+ 	case snd_soc_dapm_pga:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_PGA_E(w->name, SND_SOC_NOPM, 0, 0, NULL, 0,
+-					   gbaudio_widget_event,
+-					   SND_SOC_DAPM_PRE_PMU |
+-					   SND_SOC_DAPM_POST_PMD);
+-		break;
+ 	case snd_soc_dapm_mixer:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_MIXER_E(w->name, SND_SOC_NOPM, 0, 0, NULL,
+-					     0, gbaudio_widget_event,
+-					     SND_SOC_DAPM_PRE_PMU |
+-					     SND_SOC_DAPM_POST_PMD);
+-		break;
+ 	case snd_soc_dapm_mux:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_MUX_E(w->name, SND_SOC_NOPM, 0, 0,
+-					   widget_kctls, gbaudio_widget_event,
+-					   SND_SOC_DAPM_PRE_PMU |
+-					   SND_SOC_DAPM_POST_PMD);
++		*dw = gbaudio_widgets[w->type];
+ 		break;
+ 	case snd_soc_dapm_aif_in:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_AIF_IN_E(w->name, w->sname, 0,
+-					      SND_SOC_NOPM,
+-					      0, 0, gbaudio_widget_event,
+-					      SND_SOC_DAPM_PRE_PMU |
+-					      SND_SOC_DAPM_POST_PMD);
+-		break;
+ 	case snd_soc_dapm_aif_out:
+-		*dw = (struct snd_soc_dapm_widget)
+-			SND_SOC_DAPM_AIF_OUT_E(w->name, w->sname, 0,
+-					       SND_SOC_NOPM,
+-					       0, 0, gbaudio_widget_event,
+-					       SND_SOC_DAPM_PRE_PMU |
+-					       SND_SOC_DAPM_POST_PMD);
++		*dw = gbaudio_widgets[w->type];
++		dw->sname = w->sname;
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+ 		goto error;
+ 	}
++	dw->name = w->name;
  
- 	list_for_each_entry_safe(comp, comp_temp, &mdp->comp_list, node) {
--- 
-2.25.1
+ 	dev_dbg(module->dev, "%s: widget of type %d created\n", dw->name,
+ 		dw->id);
+
 
