@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20494C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8ED5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:24:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240444AbiANIX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:23:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240146AbiANIWT (ORCPT
+        id S240145AbiANIYD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:24:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:32798 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237668AbiANIWT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 14 Jan 2022 03:22:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83BEC0617BD;
-        Fri, 14 Jan 2022 00:21:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8E56B8243B;
-        Fri, 14 Jan 2022 08:21:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF65BC36B01;
-        Fri, 14 Jan 2022 08:21:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E69F961E76;
+        Fri, 14 Jan 2022 08:22:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9F28C36AE9;
+        Fri, 14 Jan 2022 08:22:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148509;
-        bh=9/N4BaNjin+okbQTdC62u02A2fP7O1ok2ZrHO+liqTw=;
+        s=korg; t=1642148538;
+        bh=PLztWWGoxe/we/VIlN1Q5aGpVgkGVASfZp8LlotDLa8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BaBXIMpjNzANNDk1ugnajeZU/akGiYqhPF7EmpiptoX5wDmSrVPTQTNmDpUl1R/jk
-         gX564oylgBNpycIuuBReSOMz1Xbdscumg6U6E8zCgu6oOJDC3BG7J4oF2Mh3ZElO3Q
-         0crbnoJb88TKrMxzNKKNQp5vvgFzDOdl3CGs1mLg=
+        b=tWtypDKWRs6CHfnkZqJcX3mQDEiWjC8q4Dz7SCppKcASt1XE9rdGajCKhJX4C95+W
+         TP1OFUTzAKNeUlsrETR8xtyWeEqMlZ6m5g6PZ/uZyCVfdaU8HzYZV2efGKyVnXLxjB
+         UIZlQ9B6ZNHdzeJLuDg9lH31VpNJ/TRUMyc+eXtE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
+        stable@vger.kernel.org, Aditya Garg <gargaditya08@live.com>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
         Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.16 13/37] Bluetooth: btintel: Fix broken LED quirk for legacy ROM devices
-Date:   Fri, 14 Jan 2022 09:16:27 +0100
-Message-Id: <20220114081545.296079204@linuxfoundation.org>
+Subject: [PATCH 5.16 21/37] Bluetooth: add quirk disabling LE Read Transmit Power
+Date:   Fri, 14 Jan 2022 09:16:35 +0100
+Message-Id: <20220114081545.542147427@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -48,127 +46,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tedd Ho-Jeong An <tedd.an@intel.com>
+From: Aditya Garg <gargaditya08@live.com>
 
-commit 95655456e7cee858a23793f67025765b4c4c227b upstream.
+commit d2f8114f9574509580a8506d2ef72e7e43d1a5bd upstream.
 
-This patch fixes the broken LED quirk for Intel legacy ROM devices.
-To fix the LED issue that doesn't turn off immediately, the host sends
-the SW RFKILL command while shutting down the interface and it puts the
-devices in SW RFKILL state.
+Some devices have a bug causing them to not work if they query
+LE tx power on startup. Thus we add a quirk in order to not query it
+and default min/max tx power values to HCI_TX_POWER_INVALID.
 
-Once the device is in SW RFKILL state, it can only accept HCI_Reset to
-exit from the SW RFKILL state. This patch checks the quirk for broken
-LED and sends the HCI_Reset before sending the HCI_Intel_Read_Version
-command.
-
-The affected legacy ROM devices are
- - 8087:07dc
- - 8087:0a2a
- - 8087:0aa7
-
-Fixes: ffcba827c0a1d ("Bluetooth: btintel: Fix the LED is not turning off immediately")
-Signed-off-by: Tedd Ho-Jeong An <tedd.an@intel.com>
+Signed-off-by: Aditya Garg <gargaditya08@live.com>
+Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
+Tested-by: Orlando Chamberlain <redecorating@protonmail.com>
+Link:
+https://lore.kernel.org/r/4970a940-211b-25d6-edab-21a815313954@protonmail.com
+Fixes: 7c395ea521e6 ("Bluetooth: Query LE tx power on startup")
+Cc: stable@vger.kernel.org
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btintel.c |   20 +++++++++++---------
- drivers/bluetooth/btintel.h |    2 +-
- drivers/bluetooth/btusb.c   |   13 ++++++++++---
- 3 files changed, 22 insertions(+), 13 deletions(-)
+ include/net/bluetooth/hci.h |    9 +++++++++
+ net/bluetooth/hci_core.c    |    3 ++-
+ 2 files changed, 11 insertions(+), 1 deletion(-)
 
---- a/drivers/bluetooth/btintel.c
-+++ b/drivers/bluetooth/btintel.c
-@@ -2353,8 +2353,15 @@ static int btintel_setup_combined(struct
- 	 * As a workaround, send HCI Reset command first which will reset the
- 	 * number of completed commands and allow normal command processing
- 	 * from now on.
-+	 *
-+	 * Regarding the INTEL_BROKEN_SHUTDOWN_LED flag, these devices maybe
-+	 * in the SW_RFKILL ON state as a workaround of fixing LED issue during
-+	 * the shutdown() procedure, and once the device is in SW_RFKILL ON
-+	 * state, the only way to exit out of it is sending the HCI_Reset
-+	 * command.
+--- a/include/net/bluetooth/hci.h
++++ b/include/net/bluetooth/hci.h
+@@ -246,6 +246,15 @@ enum {
+ 	 * HCI after resume.
  	 */
--	if (btintel_test_flag(hdev, INTEL_BROKEN_INITIAL_NCMD)) {
-+	if (btintel_test_flag(hdev, INTEL_BROKEN_INITIAL_NCMD) ||
-+	    btintel_test_flag(hdev, INTEL_BROKEN_SHUTDOWN_LED)) {
- 		skb = __hci_cmd_sync(hdev, HCI_OP_RESET, 0, NULL,
- 				     HCI_INIT_TIMEOUT);
- 		if (IS_ERR(skb)) {
-@@ -2426,12 +2433,6 @@ static int btintel_setup_combined(struct
- 				set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED,
- 					&hdev->quirks);
- 
--			/* These devices have an issue with LED which doesn't
--			 * go off immediately during shutdown. Set the flag
--			 * here to send the LED OFF command during shutdown.
--			 */
--			btintel_set_flag(hdev, INTEL_BROKEN_LED);
--
- 			err = btintel_legacy_rom_setup(hdev, &ver);
- 			break;
- 		case 0x0b:      /* SfP */
-@@ -2562,9 +2563,10 @@ static int btintel_shutdown_combined(str
- 
- 	/* Some platforms have an issue with BT LED when the interface is
- 	 * down or BT radio is turned off, which takes 5 seconds to BT LED
--	 * goes off. This command turns off the BT LED immediately.
-+	 * goes off. As a workaround, sends HCI_Intel_SW_RFKILL to put the
-+	 * device in the RFKILL ON state which turns off the BT LED immediately.
- 	 */
--	if (btintel_test_flag(hdev, INTEL_BROKEN_LED)) {
-+	if (btintel_test_flag(hdev, INTEL_BROKEN_SHUTDOWN_LED)) {
- 		skb = __hci_cmd_sync(hdev, 0xfc3f, 0, NULL, HCI_INIT_TIMEOUT);
- 		if (IS_ERR(skb)) {
- 			ret = PTR_ERR(skb);
---- a/drivers/bluetooth/btintel.h
-+++ b/drivers/bluetooth/btintel.h
-@@ -150,7 +150,7 @@ enum {
- 	INTEL_FIRMWARE_FAILED,
- 	INTEL_BOOTING,
- 	INTEL_BROKEN_INITIAL_NCMD,
--	INTEL_BROKEN_LED,
-+	INTEL_BROKEN_SHUTDOWN_LED,
- 	INTEL_ROM_LEGACY,
- 
- 	__INTEL_NUM_FLAGS,
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -59,6 +59,7 @@ static struct usb_driver btusb_driver;
- #define BTUSB_WIDEBAND_SPEECH	0x400000
- #define BTUSB_VALID_LE_STATES   0x800000
- #define BTUSB_QCA_WCN6855	0x1000000
-+#define BTUSB_INTEL_BROKEN_SHUTDOWN_LED	0x2000000
- #define BTUSB_INTEL_BROKEN_INITIAL_NCMD 0x4000000
- 
- static const struct usb_device_id btusb_table[] = {
-@@ -380,10 +381,13 @@ static const struct usb_device_id blackl
- 	{ USB_DEVICE(0x8087, 0x0033), .driver_info = BTUSB_INTEL_COMBINED },
- 	{ USB_DEVICE(0x8087, 0x07da), .driver_info = BTUSB_CSR },
- 	{ USB_DEVICE(0x8087, 0x07dc), .driver_info = BTUSB_INTEL_COMBINED |
--						     BTUSB_INTEL_BROKEN_INITIAL_NCMD },
--	{ USB_DEVICE(0x8087, 0x0a2a), .driver_info = BTUSB_INTEL_COMBINED },
-+						     BTUSB_INTEL_BROKEN_INITIAL_NCMD |
-+						     BTUSB_INTEL_BROKEN_SHUTDOWN_LED },
-+	{ USB_DEVICE(0x8087, 0x0a2a), .driver_info = BTUSB_INTEL_COMBINED |
-+						     BTUSB_INTEL_BROKEN_SHUTDOWN_LED },
- 	{ USB_DEVICE(0x8087, 0x0a2b), .driver_info = BTUSB_INTEL_COMBINED },
--	{ USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL_COMBINED },
-+	{ USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL_COMBINED |
-+						     BTUSB_INTEL_BROKEN_SHUTDOWN_LED },
- 	{ USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_COMBINED },
- 
- 	/* Other Intel Bluetooth devices */
-@@ -3888,6 +3892,9 @@ static int btusb_probe(struct usb_interf
- 
- 		if (id->driver_info & BTUSB_INTEL_BROKEN_INITIAL_NCMD)
- 			btintel_set_flag(hdev, INTEL_BROKEN_INITIAL_NCMD);
+ 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
 +
-+		if (id->driver_info & BTUSB_INTEL_BROKEN_SHUTDOWN_LED)
-+			btintel_set_flag(hdev, INTEL_BROKEN_SHUTDOWN_LED);
- 	}
++	/*
++	 * When this quirk is set, LE tx power is not queried on startup
++	 * and the min/max tx power values default to HCI_TX_POWER_INVALID.
++	 *
++	 * This quirk can be set before hci_register_dev is called or
++	 * during the hdev->setup vendor callback.
++	 */
++	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
+ };
  
- 	if (id->driver_info & BTUSB_MARVELL)
+ /* HCI device flags */
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -619,7 +619,8 @@ static int hci_init3_req(struct hci_requ
+ 			hci_req_add(req, HCI_OP_LE_READ_ADV_TX_POWER, 0, NULL);
+ 		}
+ 
+-		if (hdev->commands[38] & 0x80) {
++		if ((hdev->commands[38] & 0x80) &&
++		    !test_bit(HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER, &hdev->quirks)) {
+ 			/* Read LE Min/Max Tx Power*/
+ 			hci_req_add(req, HCI_OP_LE_READ_TRANSMIT_POWER,
+ 				    0, NULL);
 
 
