@@ -2,231 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DD5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 01:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CEE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 01:15:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235888AbiANBLl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 20:11:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230237AbiANBLk (ORCPT
+        id S235923AbiANBPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 20:15:12 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30276 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230237AbiANBPL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 20:11:40 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39062C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 17:11:40 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id f8so1430902pgf.8
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 17:11:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Iax6Fync+gAPcYtUklGk2UcMbt5whDvR49NUg6FEsXA=;
-        b=O2ZOAYXtBksrXbaN+QOmlMswIUs8NsG8jH3mU4UvfP+z4ZhPp/h90ztPs/vdgUhng/
-         ClCk+teSJZrz6+NR80W+E8U48HKgCosDlucTim/csDUp7QfpxVf/lWbguLG6YjDtsjac
-         ZdCvSIZljVzX77rQtBJExKhrW5RQvYoOOQT+5V70q6+zF7sOo/YmbL4LoMBuZlUgXlL5
-         GfPijUhi7gRXnceFZNhjcUA/ewv1q7vupWy/Qb9u5PNsD3u9HMJQt6cgYqFHRT/jZMJK
-         kaFk3kHX5eyxg8Vta+Ej4N4EfzOOMUtYuSmTJXnKjSW2lKYhFhWMSvhiJnxxZNvXeJuz
-         5cSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Iax6Fync+gAPcYtUklGk2UcMbt5whDvR49NUg6FEsXA=;
-        b=Vo3960hQCzSTqjbICGEFNB92agsIpRqm4n8moGx2mPcgFWcBmhSbUTjsrxGbkT1vmT
-         oftL9HcgKp+QJWcMImR75ZjnFXEhMot4109S4V2R3Peu/XU/V0PDk8GksZAyy0oXgFlI
-         GxJluW5FRoD50FgKg8fllc3uLHF0dujfnYJzO5PX4oK+VzCJTTGQUzKZ4ljKvuK7N1Sn
-         MRjdaT3KDz0ju52rHbNBb//pEEXBSjdaIgIHRfSKBQkhcUvlKrY8n3lqV/u3vxSLfiGG
-         3YxYkO9Z6zqhfGUe1A8+oxxFgLvwdoQH4YfS/Ka24iBEjKrq1e74EAB273m78b4CzzSo
-         U5Hg==
-X-Gm-Message-State: AOAM532NIJISGF+GspN8BVz58A0lqVafqAagKpkCtx+kbze7m1doIiBS
-        sHSdevQCeuHr2BsT9XrxBD8=
-X-Google-Smtp-Source: ABdhPJx09qhEIk1XEiyb3MbTETC3qeOqRNZgtOhW50IlAAMXQuDhzMGs+PUIhzkaVcR1xqoRNj17Yg==
-X-Received: by 2002:a63:6f8c:: with SMTP id k134mr6133546pgc.35.1642122699657;
-        Thu, 13 Jan 2022 17:11:39 -0800 (PST)
-Received: from vultr.guest ([141.164.42.249])
-        by smtp.gmail.com with ESMTPSA id e7sm3732362pfc.106.2022.01.13.17.11.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 17:11:39 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH v2] tracing: Use trace_create_file() to simplify creation of tracefs entries
-Date:   Fri, 14 Jan 2022 01:07:12 +0000
-Message-Id: <20220114010712.1771145-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220113142314.2bd7eebe@gandalf.local.home>
-References: <20220113142314.2bd7eebe@gandalf.local.home>
+        Thu, 13 Jan 2022 20:15:11 -0500
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JZjxv121Wzbjxn;
+        Fri, 14 Jan 2022 09:14:27 +0800 (CST)
+Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 14 Jan 2022 09:15:07 +0800
+Received: from [10.67.111.186] (10.67.111.186) by
+ dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 14 Jan 2022 09:15:07 +0800
+Message-ID: <4415cd09-6de3-bb2d-386d-8beb4927fb46@huawei.com>
+Date:   Fri, 14 Jan 2022 09:15:06 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+From:   Zhang Qiao <zhangqiao22@huawei.com>
+Subject: [Question] set_cpus_allowed_ptr() call failed at cpuset_attach()
+References: <09ce5796-798e-83d0-f1a6-ba38a787bfc5@huawei.com>
+To:     Tejun Heo <tj@kernel.org>, <lizefan.x@bytedance.com>,
+        <hannes@cmpxchg.org>
+CC:     <cgroups@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <09ce5796-798e-83d0-f1a6-ba38a787bfc5@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.186]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500018.china.huawei.com (7.185.36.186)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Creating tracefs entries with tracefs_create_file() followed by pr_warn()
-is tedious and repetitive, we can use trace_create_file() to simplify
-this process and make the code more readable.
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
-Changes since v1:
-- Remove format change updates
+Hello everyone
 
- kernel/trace/ftrace.c                 |  8 +++-----
- kernel/trace/trace_dynevent.c         |  8 ++------
- kernel/trace/trace_events.c           | 29 +++++++++------------------
- kernel/trace/trace_kprobe.c           | 14 ++++---------
- kernel/trace/trace_recursion_record.c |  7 ++-----
- 5 files changed, 21 insertions(+), 45 deletions(-)
+	I found the following warning log on qemu. I migrated a task from one cpuset cgroup to
+another, while I also performed the cpu hotplug operation, and got following calltrace.
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 403e485bf091..83072cd9bdca 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -983,11 +983,9 @@ static __init void ftrace_profile_tracefs(struct dentry *d_tracer)
- 		}
- 	}
- 
--	entry = tracefs_create_file("function_profile_enabled",
--				    TRACE_MODE_WRITE, d_tracer, NULL,
--				    &ftrace_profile_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'function_profile_enabled' entry\n");
-+	trace_create_file("function_profile_enabled",
-+			  TRACE_MODE_WRITE, d_tracer, NULL,
-+			  &ftrace_profile_fops);
- }
- 
- #else /* CONFIG_FUNCTION_PROFILER */
-diff --git a/kernel/trace/trace_dynevent.c b/kernel/trace/trace_dynevent.c
-index e34e8182ee4b..6f6ee1d9e247 100644
---- a/kernel/trace/trace_dynevent.c
-+++ b/kernel/trace/trace_dynevent.c
-@@ -262,12 +262,8 @@ static __init int init_dynamic_event(void)
- 	if (ret)
- 		return 0;
- 
--	entry = tracefs_create_file("dynamic_events", TRACE_MODE_WRITE, NULL,
--				    NULL, &dynamic_events_ops);
--
--	/* Event list interface */
--	if (!entry)
--		pr_warn("Could not create tracefs 'dynamic_events' entry\n");
-+	trace_create_file("dynamic_events", TRACE_MODE_WRITE, NULL,
-+			  NULL, &dynamic_events_ops);
- 
- 	return 0;
- }
-diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 3147614c1812..718518b3c491 100644
---- a/kernel/trace/trace_events.c
-+++ b/kernel/trace/trace_events.c
-@@ -3446,12 +3446,10 @@ create_event_toplevel_files(struct dentry *parent, struct trace_array *tr)
- 	struct dentry *d_events;
- 	struct dentry *entry;
- 
--	entry = tracefs_create_file("set_event", TRACE_MODE_WRITE, parent,
--				    tr, &ftrace_set_event_fops);
--	if (!entry) {
--		pr_warn("Could not create tracefs 'set_event' entry\n");
-+	entry = trace_create_file("set_event", TRACE_MODE_WRITE, parent,
-+				  tr, &ftrace_set_event_fops);
-+	if (!entry)
- 		return -ENOMEM;
--	}
- 
- 	d_events = tracefs_create_dir("events", parent);
- 	if (!d_events) {
-@@ -3466,16 +3464,12 @@ create_event_toplevel_files(struct dentry *parent, struct trace_array *tr)
- 
- 	/* There are not as crucial, just warn if they are not created */
- 
--	entry = tracefs_create_file("set_event_pid", TRACE_MODE_WRITE, parent,
--				    tr, &ftrace_set_event_pid_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'set_event_pid' entry\n");
-+	trace_create_file("set_event_pid", TRACE_MODE_WRITE, parent,
-+			  tr, &ftrace_set_event_pid_fops);
- 
--	entry = tracefs_create_file("set_event_notrace_pid",
--				    TRACE_MODE_WRITE, parent, tr,
--				    &ftrace_set_event_notrace_pid_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'set_event_notrace_pid' entry\n");
-+	trace_create_file("set_event_notrace_pid",
-+			  TRACE_MODE_WRITE, parent, tr,
-+			  &ftrace_set_event_notrace_pid_fops);
- 
- 	/* ring buffer internal formats */
- 	trace_create_file("header_page", TRACE_MODE_READ, d_events,
-@@ -3690,17 +3684,14 @@ static __init int event_trace_init_fields(void)
- __init int event_trace_init(void)
- {
- 	struct trace_array *tr;
--	struct dentry *entry;
- 	int ret;
- 
- 	tr = top_trace_array();
- 	if (!tr)
- 		return -ENODEV;
- 
--	entry = tracefs_create_file("available_events", TRACE_MODE_READ,
--				    NULL, tr, &ftrace_avail_fops);
--	if (!entry)
--		pr_warn("Could not create tracefs 'available_events' entry\n");
-+	trace_create_file("available_events", TRACE_MODE_READ,
-+			  NULL, tr, &ftrace_avail_fops);
- 
- 	ret = early_event_add_tracer(NULL, tr);
- 	if (ret)
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index 3d85323278ed..d13826ea490b 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -1912,19 +1912,13 @@ static __init int init_kprobe_trace(void)
- 	if (ret)
- 		return 0;
- 
--	entry = tracefs_create_file("kprobe_events", TRACE_MODE_WRITE,
--				    NULL, NULL, &kprobe_events_ops);
--
- 	/* Event list interface */
--	if (!entry)
--		pr_warn("Could not create tracefs 'kprobe_events' entry\n");
-+	trace_create_file("kprobe_events", TRACE_MODE_WRITE,
-+			  NULL, NULL, &kprobe_events_ops);
- 
- 	/* Profile interface */
--	entry = tracefs_create_file("kprobe_profile", TRACE_MODE_READ,
--				    NULL, NULL, &kprobe_profile_ops);
--
--	if (!entry)
--		pr_warn("Could not create tracefs 'kprobe_profile' entry\n");
-+	trace_create_file("kprobe_profile", TRACE_MODE_READ,
-+			  NULL, NULL, &kprobe_profile_ops);
- 
- 	setup_boot_kprobe_events();
- 
-diff --git a/kernel/trace/trace_recursion_record.c b/kernel/trace/trace_recursion_record.c
-index 4d4b78c8ca25..a520b11afb0d 100644
---- a/kernel/trace/trace_recursion_record.c
-+++ b/kernel/trace/trace_recursion_record.c
-@@ -224,12 +224,9 @@ static const struct file_operations recursed_functions_fops = {
- 
- __init static int create_recursed_functions(void)
- {
--	struct dentry *dentry;
- 
--	dentry = trace_create_file("recursed_functions", TRACE_MODE_WRITE,
--				   NULL, NULL, &recursed_functions_fops);
--	if (!dentry)
--		pr_warn("WARNING: Failed to create recursed_functions\n");
-+	trace_create_file("recursed_functions", TRACE_MODE_WRITE,
-+			  NULL, NULL, &recursed_functions_fops);
- 	return 0;
- }
- 
--- 
-2.34.1
+	This may lead to a inconsistency between the affinity of the task and cpuset.cpus of the
+dest cpuset, but this task can be successfully migrated to the dest cpuset cgroup.
 
+	Can we use cpus_read_lock()/cpus_read_unlock() to guarantee that set_cpus_allowed_ptr()
+doesn't fail, as follows:
+
+diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
+index d0e163a02099..2535d23d2c51 100644
+--- a/kernel/cgroup/cpuset.c
++++ b/kernel/cgroup/cpuset.c
+@@ -2265,6 +2265,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+        guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
+
+        cgroup_taskset_for_each(task, css, tset) {
++               cpus_read_lock();
+                if (cs != &top_cpuset)
+                        guarantee_online_cpus(task, cpus_attach);
+                else
+@@ -2274,6 +2275,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
+                 * fail.  TODO: have a better way to handle failure here
+                 */
+                WARN_ON_ONCE(set_cpus_allowed_ptr(task, cpus_attach));
++               cpus_read_unlock();
+
+
+	Is there a better solution?
+
+	Thanks
+
+log:
+[   43.853794] ------------[ cut here ]------------
+[   43.853798] WARNING: CPU: 7 PID: 463 at ../kernel/cgroup/cpuset.c:2279 cpuset_attach+0xee/0x1f0
+[   43.853806] Modules linked in:
+[   43.853807] CPU: 7 PID: 463 Comm: bash Not tainted 5.16.0-rc4+ #10
+[   43.853810] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.13.0-48-gd9c812dda519-prebuilt.qemu.org 04/01/2014
+[   43.853811] RIP: 0010:cpuset_attach+0xee/0x1f0
+[   43.853814] Code: ff ff 48 85 c0 48 89 c3 74 24 48 81 fd 40 42 54 82 75 96 80 bb 38 07 00 00 6f 48 8b 05 93 b3 55 01 48 89 05 bc 05 bb 01 75 97 <0f> 0b eb b3 48 8b 85 e8 00 00 00 48 85
+[   43.853816] RSP: 0018:ffffc90000623c30 EFLAGS: 00010246
+[   43.853818] RAX: 0000000000000000 RBX: ffff888101f39c80 RCX: 0000000000000001
+[   43.853819] RDX: 0000000000007fff RSI: ffffffff82cd5708 RDI: ffff888101f39c80
+[   43.853821] RBP: ffff8881001afe00 R08: 0000000000000000 R09: ffffc90000623d00
+[   43.853822] R10: ffffc900000a3de8 R11: 0000000000000001 R12: ffffc90000623cf0
+[   43.853823] R13: ffffffff82cd56d0 R14: ffffffff82544240 R15: 0000000000000001
+[   43.853824] FS:  00007f012414d740(0000) GS:ffff8882b5bc0000(0000) knlGS:0000000000000000
+[   43.853828] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   43.853829] CR2: 000055cfdb27de28 CR3: 00000001020cc000 CR4: 00000000000006e0
+[   43.853830] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[   43.853831] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[   43.853832] Call Trace:
+[   43.853846]  <TASK>
+[   43.853848]  cgroup_migrate_execute+0x319/0x410
+[   43.853853]  cgroup_attach_task+0x159/0x200
+[   43.853857]  ? __cgroup1_procs_write.constprop.21+0x10d/0x170
+[   43.853858]  __cgroup1_procs_write.constprop.21+0x10d/0x170
+[   43.853860]  cgroup_file_write+0x65/0x160
+[   43.853863]  kernfs_fop_write_iter+0x12a/0x1a0
+[   43.853870]  new_sync_write+0x11d/0x1b0
+[   43.853877]  vfs_write+0x232/0x290
+[   43.853880]  ksys_write+0x9c/0xd0
+[   43.853882]  ? fpregs_assert_state_consistent+0x19/0x40
+[   43.853886]  do_syscall_64+0x3a/0x80
+[   43.853896]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[   43.853902] RIP: 0033:0x7f012381f224
+[   43.853904] Code: 89 02 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 8d 05 c1 07 2e 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 54 f3 c3 66 90 45
+[   43.853906] RSP: 002b:00007ffd3f411f28 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+[   43.853908] RAX: ffffffffffffffda RBX: 0000000000000004 RCX: 00007f012381f224
+[   43.853909] RDX: 0000000000000004 RSI: 000055cfdb297a70 RDI: 0000000000000001
+[   43.853910] RBP: 000055cfdb297a70 R08: 000000000000000a R09: 0000000000000003
+[   43.853911] R10: 000000000000000a R11: 0000000000000246 R12: 00007f0123afb760
+[   43.853913] R13: 0000000000000004 R14: 00007f0123af72a0 R15: 00007f0123af6760
+[   43.853914]  </TASK>
+[   43.853915] ---[ end trace 8292bcee7ea90403 ]---
