@@ -2,85 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E34C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDAFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:43:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242614AbiANPm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:42:58 -0500
-Received: from mail-4323.proton.ch ([185.70.43.23]:59659 "EHLO
-        mail-4323.proton.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiANPm5 (ORCPT
+        id S242808AbiANPnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:43:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57268 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242634AbiANPm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:42:57 -0500
-Date:   Fri, 14 Jan 2022 15:42:54 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=emersion.fr;
-        s=protonmail; t=1642174975;
-        bh=EDKmMDpJ4aF8Jp9f8mriWffkkG6VIvSJs4wR/AP+ggA=;
-        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:In-Reply-To:
-         References:From:To:Cc;
-        b=m5aL4UXJkpjG0FRD9uFetuEs+xpH+kXIMKqxUSkXtD9HMRy8geRSGttKTRj9N6qHf
-         sUfn1Sip08X5dbDnVeC3bHDbv0dIsUXfFMs70iR6N1s+DPNEQCS1S1IPJny7HNDnz0
-         CbgAp5WmoKrU2W2dF20PQYvmFTHaYgx9S+o4NP/suE1AAOnoZ5la2zx3F1sjzzBIYL
-         mNTPnhJK7tzj0E6324hNyzhxEnE42IUE6Y2ORoHzfZs0zze3CVghcaxDAiDfrtt38M
-         K442F2rVZkm8DcV0ikY1XLCz3MMuc5av/OizhUhgJRh2Lm/6RcHyIWgMiniuxCcIz5
-         ZqRULRIgThSXg==
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-From:   Simon Ser <contact@emersion.fr>
-Cc:     Tomohito Esaki <etom@igel.co.jp>, dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?utf-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        =?utf-8?Q?Michel_D=C3=A4nzer?= <mdaenzer@redhat.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
-        Takanari Hayama <taki@igel.co.jp>
-Reply-To: Simon Ser <contact@emersion.fr>
-Subject: Re: [RFC PATCH v3 2/3] drm: add support modifiers for drivers whose planes only support linear layout
-Message-ID: <HlAWH76EJyftP63YJq3RteG0352axOjZgfftI2FwvQSapuSXn_sN1j3XhBXcql0GZbLe4YTQ5KO0R-TdtBC-SUCf8Br6j__CoU5GpT9ln8g=@emersion.fr>
-In-Reply-To: <YeGUIYK3hYo7wLJt@smile.fi.intel.com>
-References: <20220114101753.24996-1-etom@igel.co.jp> <20220114101753.24996-3-etom@igel.co.jp> <YeGFugZvwbF7l2I/@smile.fi.intel.com> <7eljcd3F4aWL2jjBRwr3DISmyt0XPWFIH1_kebFGqZTJXLZRx0bm_8c8yaIuEuH8rS0MaJhU6SY1y-fc6U_zCLaKgoLM124nZpr0H91nSjw=@emersion.fr> <YeGUIYK3hYo7wLJt@smile.fi.intel.com>
+        Fri, 14 Jan 2022 10:42:58 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2124461F38;
+        Fri, 14 Jan 2022 15:42:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17B9FC36AEA;
+        Fri, 14 Jan 2022 15:42:57 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="J50NzVoQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642174976;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=jHAjYaJLduk1oUVrq3t+bswqqI+Vo9Ud2UlUUNOhc3w=;
+        b=J50NzVoQ/cbnu7PvlAljPB2adxPxtTbcpV518xAwKtnnFVteirroyQHFH+QvrwXAmjdH6r
+        kcSh/aS4PEL2p/SQzdlILejpqte0HhIlABh9U3fcFBdV8kzZkpfMAXZ3rlH8MFDFUzuA1j
+        2qkerbMEh9m/2OaeYQxR6pbZBHXKuFM=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 92ac44a4 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 14 Jan 2022 15:42:55 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        geert@linux-m68k.org, herbert@gondor.apana.org.au
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and other small platforms
+Date:   Fri, 14 Jan 2022 16:42:45 +0100
+Message-Id: <20220114154247.99773-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Friday, January 14th, 2022 at 16:17, Andy Shevchenko <andriy.shevchenko@=
-linux.intel.com> wrote:
+[ Resending this v3, because the previous one was so deeply nested
+  inside other patchset threads that b4 was unable to extract it without
+  getting terribly confused. And if b4 was confused, probably human
+  readers were too. This new cover letter is a new root thread. ]
 
-> On Fri, Jan 14, 2022 at 03:07:21PM +0000, Simon Ser wrote:
-> > On Friday, January 14th, 2022 at 15:16, Andy Shevchenko <andriy.shevche=
-nko@linux.intel.com> wrote:
-> >
-> > > Why not enum?
-> >
-> > There is no enum for DRM format modifiers.
->
-> I'm not sure how this prevents to use enum in the code instead of const u=
-64.
-> Any specific reason for that?
+Hi,
 
-I'm not sure how one would use an enum as the array item type, when there i=
-s no
-defined enum type.
+Geert emailed me this afternoon concerned about blake2s codesize on m68k
+and other small systems. We identified two effective ways of chopping
+down the size. One of them moves some wireguard-specific things into
+wireguard proper. The other one adds a slower codepath for small
+machines to blake2s. This worked, and was v1 of this patchset, but I
+wasn't so much of a fan. Then someone pointed out that the generic C
+SHA-1 implementation is still unrolled, which is a *lot* of extra code.
+Simply rerolling that saves about as much as v1 did. So, we instead do
+that in this patchset. SHA-1 is being phased out, and soon it won't
+be included at all (hopefully). And nothing performance-oriented has
+anything to do with it anyway.
 
-Moreover, all the rest of DRM uses uint64 for modifiers.
+The result of these two patches mitigates Geert's feared code size
+increase for 5.17.
+
+v3 improves on v2 by making the re-rolling of SHA-1 much simpler,
+resulting in even larger code size reduction and much better
+performance. The reason I'm sending yet a third version in such a short
+amount of time is because the trick here feels obvious and substantial
+enough that I'd hate for Geert to waste time measuring the impact of the
+previous commit.
+
+Thanks,
+Jason
+
+Jason A. Donenfeld (2):
+  lib/crypto: blake2s: move hmac construction into wireguard
+  lib/crypto: sha1: re-roll loops to reduce code size
+
+ drivers/net/wireguard/noise.c | 45 ++++++++++++++---
+ include/crypto/blake2s.h      |  3 --
+ lib/crypto/blake2s-selftest.c | 31 ------------
+ lib/crypto/blake2s.c          | 37 --------------
+ lib/sha1.c                    | 95 ++++++-----------------------------
+ 5 files changed, 53 insertions(+), 158 deletions(-)
+
+-- 
+2.34.1
+
