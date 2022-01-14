@@ -2,134 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E32C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:09:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F16F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243143AbiANQJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 11:09:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243135AbiANQI5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 11:08:57 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E6EC06161C
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:08:57 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso22354866pjo.5
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:08:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ahkubcrgcnWjiRruY+cbCIcOcMw/nGOD40THRvByTZ4=;
-        b=rtZ+WdwbQ/+MOMGU2toCDBOaxzzP5jVuX9NI+4NetFHGHeM2k4yYW94cFWQFAZim+d
-         kImeCZNMQplwGO/A2Ce1YeDiqkteZQ6rqEYq68Fcc4IdoE+HcWQWXqj3zn5OPlr/OquN
-         1JcgOySDNy5lGKONy5k/023Xq8/YjwqdMch/Lwx+uHmldJqaNIBh8UbWEeZSKI5yE2Pq
-         FhDfiRqxvJn18Xt2VWC32tbRW8ff+mS49slbdlSpqs4PsmpgYlR6vln2vuNQPU0i6sfc
-         VjzZxQnUxS9XmuIASvm60rs6+lYQ/LtPPDBBCIKU+sMkjmRCFabLyxXwCkabZ+MO0XTu
-         Ho4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ahkubcrgcnWjiRruY+cbCIcOcMw/nGOD40THRvByTZ4=;
-        b=jb+Jcn++RXQrrkQVYhyBlvTeZE+cAT9LiODFKGozIsinbmJXTrSe1MLyqADRrpR+YY
-         rd2ZrOlSvX5mFx0SVMGEYR/a2rCp7MJN8yy8KOyRBz4/PhChUQ8Tln+bhiBYPGFi8H7T
-         +02SOG5QjH4AUBwUz4TfVSqP5jxCNAkbGWT62Grlh19UBGuBdNkQoXS5fnLYvL0vSJmZ
-         awUJ3mg4iHYEp2oX3gGOUdK5U34a/djPS8iF41u5hH9UGvjGTpvbrNBtiTuqnrTJZfsD
-         s/2yo/wQkUm81bBRG9f5h/4ZiJNedEpLTkeWV01NfO4m9R5j5oPAp5T+RYeGrn4+kDsg
-         5gkg==
-X-Gm-Message-State: AOAM533TbIajpThBXS/wSalLYjWOO4LgtdNB2nUXceFEtUHz8bNVA8/n
-        g2ojkzewsPBqce1QEW5U+jNmVJhbBhaVQw==
-X-Google-Smtp-Source: ABdhPJwOfS8tgYcL4QiB8ma4W1mxpMQOR/ylxwTDksnDxhP/Q3iW6PW0pHD0A6A1ielZnQucLXadBA==
-X-Received: by 2002:a17:90b:4d0f:: with SMTP id mw15mr8150705pjb.65.1642176536637;
-        Fri, 14 Jan 2022 08:08:56 -0800 (PST)
-Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id 13sm6485615pfm.161.2022.01.14.08.08.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 08:08:56 -0800 (PST)
-Date:   Fri, 14 Jan 2022 16:08:52 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Igor Mammedov <imammedo@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
-Message-ID: <YeGgFP3VmMldszgh@google.com>
-References: <20211122175818.608220-1-vkuznets@redhat.com>
- <20211122175818.608220-3-vkuznets@redhat.com>
- <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
- <20211227183253.45a03ca2@redhat.com>
- <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com>
- <87mtkdqm7m.fsf@redhat.com>
- <20220103104057.4dcf7948@redhat.com>
- <YeCowpPBEHC6GJ59@google.com>
- <5b516b51f81874fe7cafe8ce6846bc9936d83cc7.camel@redhat.com>
+        id S243146AbiANQKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 11:10:21 -0500
+Received: from mga01.intel.com ([192.55.52.88]:62406 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232390AbiANQKT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 11:10:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642176619; x=1673712619;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VuM59CA5P02uN+pfSy6KjURQRN07fGepNkmo2Y2bY9w=;
+  b=kt6s+rNLj+6pfqoqgFXdFhIr/AUsPc0oEeIBpvObr2sZ6grpgay/+IXV
+   C3T7VCvQ4WbxEwp8vIu+hZ/Uqr9Ei6L3Hyt1nhT35HqDjGzSA6uighgUr
+   epalW+YAD+2nR7trjI0QX86yCB+FntkbA6qmkvGAEsD4s1AW+cWmIKQbh
+   3Qr0uyt02UWXn5cYEqZvERHSmEQFmLHkq0qg6r6ddX1e9cMzkWU9bOKZf
+   0rEgtr8xmJw1QovY/NrleIC9l3JkZNge/Jom8w1teXlgVu8Y21JIeZZsV
+   PXwuL/iDl6XpwofmREMItY2j3Pe5LIUrRwFVpSs02y8F4FBo6vavWZsB7
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="268637630"
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="268637630"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 08:10:19 -0800
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="577316857"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 08:10:12 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n8P6O-00AiC0-2o;
+        Fri, 14 Jan 2022 18:06:56 +0200
+Date:   Fri, 14 Jan 2022 18:06:55 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Simon Ser <contact@emersion.fr>
+Cc:     Tomohito Esaki <etom@igel.co.jp>, dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Michel =?iso-8859-1?Q?D=E4nzer?= <mdaenzer@redhat.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
+        Takanari Hayama <taki@igel.co.jp>
+Subject: Re: [RFC PATCH v3 2/3] drm: add support modifiers for drivers whose
+ planes only support linear layout
+Message-ID: <YeGfn6/LmKtXly8Q@smile.fi.intel.com>
+References: <20220114101753.24996-1-etom@igel.co.jp>
+ <20220114101753.24996-3-etom@igel.co.jp>
+ <YeGFugZvwbF7l2I/@smile.fi.intel.com>
+ <7eljcd3F4aWL2jjBRwr3DISmyt0XPWFIH1_kebFGqZTJXLZRx0bm_8c8yaIuEuH8rS0MaJhU6SY1y-fc6U_zCLaKgoLM124nZpr0H91nSjw=@emersion.fr>
+ <YeGUIYK3hYo7wLJt@smile.fi.intel.com>
+ <HlAWH76EJyftP63YJq3RteG0352axOjZgfftI2FwvQSapuSXn_sN1j3XhBXcql0GZbLe4YTQ5KO0R-TdtBC-SUCf8Br6j__CoU5GpT9ln8g=@emersion.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5b516b51f81874fe7cafe8ce6846bc9936d83cc7.camel@redhat.com>
+In-Reply-To: <HlAWH76EJyftP63YJq3RteG0352axOjZgfftI2FwvQSapuSXn_sN1j3XhBXcql0GZbLe4YTQ5KO0R-TdtBC-SUCf8Br6j__CoU5GpT9ln8g=@emersion.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022, Maxim Levitsky wrote:
-> On Thu, 2022-01-13 at 22:33 +0000, Sean Christopherson wrote:
-> > On Mon, Jan 03, 2022, Igor Mammedov wrote:
-> > > On Mon, 03 Jan 2022 09:04:29 +0100
-> > > Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
-> > > 
-> > > > Paolo Bonzini <pbonzini@redhat.com> writes:
-> > > > 
-> > > > > On 12/27/21 18:32, Igor Mammedov wrote:  
-> > > > > > > Tweaked and queued nevertheless, thanks.  
-> > > > > > it seems this patch breaks VCPU hotplug, in scenario:
-> > > > > > 
-> > > > > >    1. hotunplug existing VCPU (QEMU stores VCPU file descriptor in parked cpus list)
-> > > > > >    2. hotplug it again (unsuspecting QEMU reuses stored file descriptor when recreating VCPU)
-> > > > > > 
-> > > > > > RHBZ:https://bugzilla.redhat.com/show_bug.cgi?id=2028337#c11
-> > > > > >   
-> > > > > 
-> > > > > The fix here would be (in QEMU) to not call KVM_SET_CPUID2 again. 
-> > > > > However, we need to work around it in KVM, and allow KVM_SET_CPUID2 if 
-> > > > > the data passed to the ioctl is the same that was set before.  
-> > > > 
-> > > > Are we sure the data is going to be *exactly* the same? In particular,
-> > > > when using vCPU fds from the parked list, do we keep the same
-> > > > APIC/x2APIC id when hotplugging? Or can we actually hotplug with a
-> > > > different id?
-> > > 
-> > > If I recall it right, it can be a different ID easily.
-> > 
-> > No, it cannot.  KVM doesn't provide a way for userspace to change the APIC ID of
-> > a vCPU after the vCPU is created.  x2APIC flat out disallows changing the APIC ID,
-> > and unless there's magic I'm missing, apic_mmio_write() => kvm_lapic_reg_write()
-> > is not reachable from userspace.
+On Fri, Jan 14, 2022 at 03:42:54PM +0000, Simon Ser wrote:
+> On Friday, January 14th, 2022 at 16:17, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
-> So after all, it is true that vcpu_id == initial APIC_ID,
-> and if we don't let guest change it, it will be always like that?
-
-Except for kvm_apic_set_state(), which I forgot existed, yes.
-
-> You said that its not true in the other mail in the thread. 
-
-I was wrong, I was thinking that userspace could reach kvm_lapic_reg_write(), but
-I forgot that there would be no connection without x2apic.  But I forgot about
-kvm_apic_set_state()...
-
-> I haven't checked it in the code yet, as I never was much worried about
-> userspace changing, but I will check it soon.
+> > On Fri, Jan 14, 2022 at 03:07:21PM +0000, Simon Ser wrote:
+> > > On Friday, January 14th, 2022 at 15:16, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > >
+> > > > Why not enum?
+> > >
+> > > There is no enum for DRM format modifiers.
+> >
+> > I'm not sure how this prevents to use enum in the code instead of const u64.
+> > Any specific reason for that?
 > 
-> I did a quick look and I see that at least the userspace can call
-> 'kvm_apic_set_state' and it contains snapshot of all apic registers,
-> including apic id.  However it would be very easy to add a check there and
-> fail if userspace attempts to set APIC_ID != vcpu_id.
+> I'm not sure how one would use an enum as the array item type, when there is no
+> defined enum type.
+> 
+> Moreover, all the rest of DRM uses uint64 for modifiers.
 
-Yeah, hopefully that doesn't break any userspace.  I can't imagine it would,
-because if the guest disabled and re-enabled the APIC, kvm_lapic_set_base() would
-restore the APIC ID to vcpu_id.
+Ah, I see now. This is an array that filled by predefined values.
+Thanks for explanation.
 
-With luck, that's the last hole we need to close...
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
