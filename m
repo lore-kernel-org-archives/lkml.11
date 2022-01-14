@@ -2,41 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BF2C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B76C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240212AbiANIVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:21:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiANIUN (ORCPT
+        id S240234AbiANIVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:21:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59256 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239918AbiANIUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:20:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7435CC061775;
-        Fri, 14 Jan 2022 00:20:12 -0800 (PST)
+        Fri, 14 Jan 2022 03:20:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1247C61E22;
-        Fri, 14 Jan 2022 08:20:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1702C36AEA;
-        Fri, 14 Jan 2022 08:20:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBA7361E03;
+        Fri, 14 Jan 2022 08:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C36F7C36AEA;
+        Fri, 14 Jan 2022 08:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148411;
-        bh=mSpILCvNSI6hsV69h7+xbuxcENkMxGPeZv86P3OiMTs=;
+        s=korg; t=1642148414;
+        bh=5uYvaj/o8FSbuW51F4u+/4dDvv0Mwq76hIX63flRWg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJRDe5EF4Vwd+ARAc2d8FRItFDl50CdpEVVsOiTbCJ5gOhZutaxeouxAzYF7guOSm
-         FrGGuu176Y/XNIe6lOtuzep81tNfb0pQ7uUGA7Y8UZIGzIZNfi7x/OmuGQl2X/TzSX
-         hLUlWoqf2295wAf1RAgfUtNMuPtrYE4eOF/rlOro=
+        b=Quqkh8eTyzOqbgN7JEBXIg3BuIn5a7I8rm2wTnwiD476E33DFKr+5w+IOCfZKKmtH
+         T7axuswLNGDUwt1O8vbvkjpNo6tmOfGn7exGgnvjsn+d2gy7NoCh7jI5OBxfFbh8Vr
+         iza8rbxpzrVc/IP/1+2rCIaEc4uznnGHvP0zxlt0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.15 23/41] ath11k: Fix buffer overflow when scanning with extraie
-Date:   Fri, 14 Jan 2022 09:16:23 +0100
-Message-Id: <20220114081545.932563648@linuxfoundation.org>
+        stable@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>
+Subject: [PATCH 5.15 03/41] staging: r8188eu: switch the led off during deinit
+Date:   Fri, 14 Jan 2022 09:16:03 +0100
+Message-Id: <20220114081545.274454653@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
 References: <20220114081545.158363487@linuxfoundation.org>
@@ -48,76 +44,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Martin Kaiser <martin@kaiser.cx>
 
-commit a658c929ded7ea3aee324c8c2a9635a5e5a38e7f upstream.
+commit 9d36de31130542fc060f7cd17e72db670202c682 upstream.
 
-If cfg80211 is providing extraie's for a scanning process then ath11k will
-copy that over to the firmware. The extraie.len is a 32 bit value in struct
-element_info and describes the amount of bytes for the vendor information
-elements.
+When the driver is unloaded or when the system goes into standby mode,
+DeInitLed871x is called to stop the led layer. In this case, we stop
+the blinking worker but we do not switch the led off explicitly. On my
+system, I can go into standby mode with the LED enabled.
 
-The WMI_TLV packet is having a special WMI_TAG_ARRAY_BYTE section. This
-section can have a (payload) length up to 65535 bytes because the
-WMI_TLV_LEN can store up to 16 bits. The code was missing such a check and
-could have created a scan request which cannot be parsed correctly by the
-firmware.
+Add a call to SwLedOff to fix this.
 
-But the bigger problem was the allocation of the buffer. It has to align
-the TLV sections by 4 bytes. But the code was using an u8 to store the
-newly calculated length of this section (with alignment). And the new
-calculated length was then used to allocate the skbuff. But the actual code
-to copy in the data is using the extraie.len and not the calculated
-"aligned" length.
-
-The length of extraie with IEEE80211_HW_SINGLE_SCAN_ON_ALL_BANDS enabled
-was 264 bytes during tests with a QCA Milan card. But it only allocated 8
-bytes (264 bytes % 256) for it. As consequence, the code to memcpy the
-extraie into the skb was then just overwriting data after skb->end. Things
-like shinfo were therefore corrupted. This could usually be seen by a crash
-in skb_zcopy_clear which tried to call a ubuf_info callback (using a bogus
-address).
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-02892.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
+Fixes: 15865124feed ("staging: r8188eu: introduce new core dir for RTL8188eu driver")
 Cc: stable@vger.kernel.org
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211207142913.1734635-1-sven@narfation.org
+Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+Link: https://lore.kernel.org/r/20211226195556.159471-2-martin@kaiser.cx
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/r8188eu/core/rtw_led.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2051,7 +2051,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
- 	void *ptr;
- 	int i, ret, len;
- 	u32 *tmp_ptr;
--	u8 extraie_len_with_pad = 0;
-+	u16 extraie_len_with_pad = 0;
- 	struct hint_short_ssid *s_ssid = NULL;
- 	struct hint_bssid *hint_bssid = NULL;
+--- a/drivers/staging/r8188eu/core/rtw_led.c
++++ b/drivers/staging/r8188eu/core/rtw_led.c
+@@ -74,6 +74,7 @@ void DeInitLed871x(struct LED_871x *pLed
+ 	_cancel_workitem_sync(&pLed->BlinkWorkItem);
+ 	_cancel_timer_ex(&pLed->BlinkTimer);
+ 	ResetLedStatus(pLed);
++	SwLedOff(pLed->padapter, pLed);
+ }
  
-@@ -2070,7 +2070,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
- 		len += sizeof(*bssid) * params->num_bssid;
- 
- 	len += TLV_HDR_SIZE;
--	if (params->extraie.len)
-+	if (params->extraie.len && params->extraie.len <= 0xFFFF)
- 		extraie_len_with_pad =
- 			roundup(params->extraie.len, sizeof(u32));
- 	len += extraie_len_with_pad;
-@@ -2177,7 +2177,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
- 		      FIELD_PREP(WMI_TLV_LEN, len);
- 	ptr += TLV_HDR_SIZE;
- 
--	if (params->extraie.len)
-+	if (extraie_len_with_pad)
- 		memcpy(ptr, params->extraie.ptr,
- 		       params->extraie.len);
- 
+ /*  */
 
 
