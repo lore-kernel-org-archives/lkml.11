@@ -2,353 +2,347 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F84C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:28:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244312AbiANUZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:25:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244303AbiANUZl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:25:41 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D95C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:25:40 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8T5w-0000w6-8j; Fri, 14 Jan 2022 21:22:44 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8T5j-00AJbK-DJ; Fri, 14 Jan 2022 21:22:30 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8T5h-0002Jl-M3; Fri, 14 Jan 2022 21:22:29 +0100
-Date:   Fri, 14 Jan 2022 21:22:26 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
-References: <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
+        id S244166AbiANU2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:28:07 -0500
+Received: from mga03.intel.com ([134.134.136.65]:34023 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232761AbiANU2G (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 15:28:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642192086; x=1673728086;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NBtuZOCI/VvXKB7yr72RHMvqEhb3Bk1Y/6yE42Illw8=;
+  b=QHZbrroiDeONOBl7dBwTcp+I+r44QDann1p3FG/7kBACqJ9gq3L7eDbh
+   HQyPitoJaolmoFLHaJvrqMY8OkRRnzZ8ef18W5VOsAztE9VUbllADSp+A
+   lEWo7pkyI3/wLACOdE4qjYRR8uSane/xPDiBGlhcITOAFqWwPZ7cxg4Tk
+   s4PXRjkpJsWK+3wz0+/tlExJ/4qYToreMcV8ycJ219rdwRjeZ0oUsVusx
+   ScDNWNEXQpE81fMUJ4+yiplHLUVB4T7Cm1WhbLuhxY7GuSQlEbvgnuQCg
+   OuEkFApy7NPbl6ttbBlLLTaVQ3Ol2R7T15blQJFtasVM4PgEk/vQdav2I
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="244282797"
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="244282797"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 12:28:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="473767991"
+Received: from spandruv-desk.jf.intel.com ([10.54.75.8])
+  by orsmga003.jf.intel.com with ESMTP; 14 Jan 2022 12:28:05 -0800
+From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To:     rafael@kernel.org, lenb@kernel.org
+Cc:     linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [UPDATE][PATCH v2] ACPI / fan: Properly handle fine grain control
+Date:   Fri, 14 Jan 2022 12:28:05 -0800
+Message-Id: <20220114202805.103233-1-srinivas.pandruvada@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uk3tmcd6neo3zuxi"
-Content-Disposition: inline
-In-Reply-To: <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+When _FIF object specifies support for fine grain control, then fan speed
+can be set from 0 to 100% with the recommended minimum "step size" via
+_FSL object. Here the control value doesn't need to match any value from
+_FPS object.
 
---uk3tmcd6neo3zuxi
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Currently we have a simple solution implemented which just pick maximum
+control value from _FPS to display the actual state, but this is not
+optimal when there is a big window between two control values in
+_FPS. Also there is no way to set to any speed which doesn't match
+control values in _FPS. The system firmware can start the fan at speed
+which doesn't match any control value.
 
-On Fri, Jan 14, 2022 at 10:14:10PM +0300, Sergey Shtylyov wrote:
-> On 1/14/22 12:25 PM, Uwe Kleine-K=F6nig wrote:
->=20
-> >>>>> To me it sounds much more logical for the driver to check if an
-> >>>>> optional irq is non-zero (available) or zero (not available), than =
-to
-> >>>>> sprinkle around checks for -ENXIO. In addition, you have to remember
-> >>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -ENOS=
-YS
-> >>>>> (or some other error code) to indicate absence. I thought not having
-> >>>>> to care about the actual error code was the main reason behind the
-> >>>>> introduction of the *_optional() APIs.
-> >>>
-> >>>> No, the main benefit of gpiod_get_optional() (and clk_get_optional()=
-) is
-> >>>> that you can handle an absent GPIO (or clk) as if it were available.
-> >>
-> >>    Hm, I've just looked at these and must note that they match 1:1 with
-> >> platform_get_irq_optional(). Unfortunately, we can't however behave the
-> >> same way in request_irq() -- because it has to support IRQ0 for the sa=
-ke
-> >> of i8253 drivers in arch/...
-> >=20
-> > Let me reformulate your statement to the IMHO equivalent:
-> >=20
-> > 	If you set aside the differences between
-> > 	platform_get_irq_optional() and gpiod_get_optional(),
->=20
->    Sorry, I should make it clear this is actually the diff between a woul=
-d-be
-> platform_get_irq_optional() after my patch, not the current code...
+To support fine grain control via thermal sysfs:
+- cooling device max state is not _FPS state count but it will be
+100 / _FIF.step_size
+- cooling device current state is 100 / _FIF.step_size
+- cooling device set state will set the control value
+curr_state * _FIF.step_size plus any adjustment for 100%.
+By the spec, when control value do not sum to 100% because of
+_FIF.step_size, OSPM may select an appropriate ending Level increment
+to reach 100%.
 
-The similarity is that with your patch both gpiod_get_optional() and
-platform_get_irq_optional() return NULL and 0 on not-found. The relevant
-difference however is that for a gpiod NULL is a dummy value, while for
-irqs it's not. So the similarity is only syntactically, but not
-semantically.
+Also publish the actual fan rpm in sysfs in the same place where
+_FIF objects are displayed. Knowing fan rpm is helpful to reduce noise
+level and use passive control instead. Also fan performance may not be
+same over time, so the same control value may not be enough to run the
+fan at a speed. So a feedback value of speed is helpful. This sysfs
+attribute is called "fan_speed_rpm".
 
-> > 	platform_get_irq_optional() is like gpiod_get_optional().
-> >=20
-> > The introduction of gpiod_get_optional() made it possible to simplify
-> > the following code:
-> >=20
-> > 	reset_gpio =3D gpiod_get(...)
-> > 	if IS_ERR(reset_gpio):
-> > 		error =3D PTR_ERR(reset_gpio)
-> > 		if error !=3D -ENDEV:
->=20
->    ENODEV?
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+v2-update
+Change log is missed for v2.
+Missed one kfree(obj) on failure.
+v2
+Fix for build issue as reported by Reported-by: kernel test robot <lkp@intel.com>
 
-Yes, typo.
+ .../acpi/fan_performance_states.rst           |  10 ++
+ drivers/acpi/fan.c                            | 142 ++++++++++++++----
+ 2 files changed, 125 insertions(+), 27 deletions(-)
 
-> > 			return error
-> > 	else:
-> > 		gpiod_set_direction(reset_gpiod, INACTIVE)
-> >=20
-> > to
-> >=20
-> > 	reset_gpio =3D gpiod_get_optional(....)
-> > 	if IS_ERR(reset_gpio):
-> > 		return reset_gpio
-> > 	gpiod_set_direction(reset_gpiod, INACTIVE)
-> >=20
-> > and I never need to actually know if the reset_gpio actually exists.
-> > Either the line is put into its inactive state, or it doesn't exist and
-> > then gpiod_set_direction is a noop. For a regulator or a clk this works
-> > in a similar way.
-> >=20
-> > However for an interupt this cannot work. You will always have to check
-> > if the irq is actually there or not because if it's not you cannot just
-> > ignore that. So there is no benefit of an optional irq.
-> >=20
-> > Leaving error message reporting aside, the introduction of
-> > platform_get_irq_optional() allows to change
-> >=20
-> > 	irq =3D platform_get_irq(...);
-> > 	if (irq < 0 && irq !=3D -ENXIO) {
-> > 		return irq;
-> > 	} else if (irq >=3D 0) {
->=20
->    Rather (irq > 0) actually, IRQ0 is considered invalid (but still retur=
-ned).
+diff --git a/Documentation/admin-guide/acpi/fan_performance_states.rst b/Documentation/admin-guide/acpi/fan_performance_states.rst
+index 98fe5c333121..2a5988d747e5 100644
+--- a/Documentation/admin-guide/acpi/fan_performance_states.rst
++++ b/Documentation/admin-guide/acpi/fan_performance_states.rst
+@@ -60,3 +60,13 @@ For example::
+ 
+ When a given field is not populated or its value provided by the platform
+ firmware is invalid, the "not-defined" string is shown instead of the value.
++
++ACPI Fan Performance Feedback
++=============================
++
++The optional _FST object provides status information for the fan device.
++This includes field to provide current fan speed in revolutions per minute
++at which the fan is rotating.
++
++This speed is presented in the sysfs using the attribute "fan_speed_rpm",
++in the same directory as performance states.
+diff --git a/drivers/acpi/fan.c b/drivers/acpi/fan.c
+index 5cd0ceb50bc8..b1ca5530c16c 100644
+--- a/drivers/acpi/fan.c
++++ b/drivers/acpi/fan.c
+@@ -64,12 +64,19 @@ struct acpi_fan_fif {
+ 	u64 low_speed_notification;
+ };
+ 
++struct acpi_fan_fst {
++	u64 revision;
++	u64 control;
++	u64 speed;
++};
++
+ struct acpi_fan {
+ 	bool acpi4;
+ 	struct acpi_fan_fif fif;
+ 	struct acpi_fan_fps *fps;
+ 	int fps_count;
+ 	struct thermal_cooling_device *cdev;
++	struct device_attribute fst_speed;
+ };
+ 
+ static struct platform_driver acpi_fan_driver = {
+@@ -89,20 +96,23 @@ static int fan_get_max_state(struct thermal_cooling_device *cdev, unsigned long
+ 	struct acpi_device *device = cdev->devdata;
+ 	struct acpi_fan *fan = acpi_driver_data(device);
+ 
+-	if (fan->acpi4)
+-		*state = fan->fps_count - 1;
+-	else
++	if (fan->acpi4) {
++		if (fan->fif.fine_grain_ctrl)
++			*state = 100 / (int)fan->fif.step_size;
++		else
++			*state = fan->fps_count - 1;
++	} else {
+ 		*state = 1;
++	}
++
+ 	return 0;
+ }
+ 
+-static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
++static int fan_get_fps(struct acpi_device *device, struct acpi_fan_fst *fst)
+ {
+ 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
+-	struct acpi_fan *fan = acpi_driver_data(device);
+ 	union acpi_object *obj;
+ 	acpi_status status;
+-	int control, i;
+ 
+ 	status = acpi_evaluate_object(device->handle, "_FST", NULL, &buffer);
+ 	if (ACPI_FAILURE(status)) {
+@@ -119,31 +129,51 @@ static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
+ 		goto err;
+ 	}
+ 
+-	control = obj->package.elements[1].integer.value;
++	fst->revision = obj->package.elements[0].integer.value;
++	fst->control = obj->package.elements[1].integer.value;
++	fst->speed = obj->package.elements[2].integer.value;
++
++	status = 0;
++err:
++	kfree(obj);
++	return status;
++}
++
++static int fan_get_state_acpi4(struct acpi_device *device, unsigned long *state)
++{
++	struct acpi_fan *fan = acpi_driver_data(device);
++	struct acpi_fan_fst fst;
++	int status;
++	int control, i;
++
++	status = fan_get_fps(device, &fst);
++	if (status)
++		return status;
++
++	control = fst.control;
++
++	if (fan->fif.fine_grain_ctrl) {
++		/* This control should be same what we set using _FSL by spec */
++		if (control > 100) {
++			dev_dbg(&device->dev, "Invalid control value returned\n");
++			return -EINVAL;
++		}
++
++		*state = control / (int)fan->fif.step_size;
++		return 0;
++	}
++
+ 	for (i = 0; i < fan->fps_count; i++) {
+-		/*
+-		 * When Fine Grain Control is set, return the state
+-		 * corresponding to maximum fan->fps[i].control
+-		 * value compared to the current speed. Here the
+-		 * fan->fps[] is sorted array with increasing speed.
+-		 */
+-		if (fan->fif.fine_grain_ctrl && control < fan->fps[i].control) {
+-			i = (i > 0) ? i - 1 : 0;
+-			break;
+-		} else if (control == fan->fps[i].control) {
++		if (control == fan->fps[i].control)
+ 			break;
+-		}
+ 	}
+ 	if (i == fan->fps_count) {
+ 		dev_dbg(&device->dev, "Invalid control value returned\n");
+-		status = -EINVAL;
+-		goto err;
++		return -EINVAL;
+ 	}
+ 
+ 	*state = i;
+ 
+-err:
+-	kfree(obj);
+ 	return status;
+ }
+ 
+@@ -187,12 +217,36 @@ static int fan_set_state_acpi4(struct acpi_device *device, unsigned long state)
+ {
+ 	struct acpi_fan *fan = acpi_driver_data(device);
+ 	acpi_status status;
++	u64 value = state;
++	int max_state;
++
++	if (fan->fif.fine_grain_ctrl)
++		max_state = 100 / (int)fan->fif.step_size;
++	else
++		max_state = fan->fps_count - 1;
+ 
+-	if (state >= fan->fps_count)
++	if (state > max_state)
+ 		return -EINVAL;
+ 
+-	status = acpi_execute_simple_method(device->handle, "_FSL",
+-					    fan->fps[state].control);
++	if (fan->fif.fine_grain_ctrl) {
++		int rem;
++
++		value *= fan->fif.step_size;
++
++		/*
++		 * In the event OSPM’s incremental selections of Level
++		 * using the StepSize field value do not sum to 100%,
++		 * OSPM may select an appropriate ending Level
++		 * increment to reach 100%.
++		 */
++		rem = 100 - value;
++		if (rem && rem < fan->fif.step_size)
++			value = 100;
++	} else {
++		value = fan->fps[state].control;
++	}
++
++	status = acpi_execute_simple_method(device->handle, "_FSL", value);
+ 	if (ACPI_FAILURE(status)) {
+ 		dev_dbg(&device->dev, "Failed to set state by _FSL\n");
+ 		return status;
+@@ -258,6 +312,12 @@ static int acpi_fan_get_fif(struct acpi_device *device)
+ 		status = -EINVAL;
+ 	}
+ 
++	/* If there is a bug in step size and set as 0, change to 1 */
++	if (!fan->fif.step_size)
++		fan->fif.step_size = 1;
++	/* If step size > 9, change to 9 (by spec valid values 1-9) */
++	if (fan->fif.step_size > 9)
++		fan->fif.step_size = 9;
+ err:
+ 	kfree(obj);
+ 	return status;
+@@ -303,6 +363,19 @@ static ssize_t show_state(struct device *dev, struct device_attribute *attr, cha
+ 	return count;
+ }
+ 
++static ssize_t show_fan_speed(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct acpi_device *acpi_dev = container_of(dev, struct acpi_device, dev);
++	struct acpi_fan_fst fst;
++	int status;
++
++	status = fan_get_fps(acpi_dev, &fst);
++	if (status)
++		return status;
++
++	return sprintf(buf, "%lld\n", fst.speed);
++}
++
+ static int acpi_fan_get_fps(struct acpi_device *device)
+ {
+ 	struct acpi_fan *fan = acpi_driver_data(device);
+@@ -311,15 +384,25 @@ static int acpi_fan_get_fps(struct acpi_device *device)
+ 	acpi_status status;
+ 	int i;
+ 
++	/* _FST is present if we are here */
++	sysfs_attr_init(&fan->fst_speed.attr);
++	fan->fst_speed.show = show_fan_speed;
++	fan->fst_speed.store = NULL;
++	fan->fst_speed.attr.name = "fan_speed_rpm";
++	fan->fst_speed.attr.mode = 0444;
++	status = sysfs_create_file(&device->dev.kobj, &fan->fst_speed.attr);
++	if (status)
++		return status;
++
+ 	status = acpi_evaluate_object(device->handle, "_FPS", NULL, &buffer);
+ 	if (ACPI_FAILURE(status))
+-		return status;
++		goto rem_attr;
+ 
+ 	obj = buffer.pointer;
+ 	if (!obj || obj->type != ACPI_TYPE_PACKAGE || obj->package.count < 2) {
+ 		dev_err(&device->dev, "Invalid _FPS data\n");
+ 		status = -EINVAL;
+-		goto err;
++		goto rem_attr;
+ 	}
+ 
+ 	fan->fps_count = obj->package.count - 1; /* minus revision field */
+@@ -368,6 +451,11 @@ static int acpi_fan_get_fps(struct acpi_device *device)
+ 
+ err:
+ 	kfree(obj);
++	if (!status)
++		return 0;
++rem_attr:
++	sysfs_remove_file(&device->dev.kobj, &fan->fst_speed.attr);
++
+ 	return status;
+ }
+ 
+-- 
+2.34.1
 
-This is a topic I don't feel strong for, so I'm sloppy here. If changing
-this is all that is needed to convince you of my point ...
-
-> > 		... setup irq operation ...
-> > 	} else { /* irq =3D=3D -ENXIO */
-> > 		... setup polling ...
-> > 	}
-> >=20
-> > to
-> > =09
-> > 	irq =3D platform_get_irq_optional(...);
-> > 	if (irq < 0 && irq !=3D -ENXIO) {
-> > 		return irq;
-> > 	} else if (irq >=3D 0) {
-> > 		... setup irq operation ...
-> > 	} else { /* irq =3D=3D -ENXIO */
-> > 		... setup polling ...
-> > 	}
-> >=20
-> > which isn't a win. When changing the return value as you suggest, it can
-> > be changed instead to:
-> >=20
-> > 	irq =3D platform_get_irq_optional(...);
-> > 	if (irq < 0) {
-> > 		return irq;
-> > 	} else if (irq > 0) {
-> > 		... setup irq operation ...
-> > 	} else { /* irq =3D=3D 0 */
-> > 		... setup polling ...
-> > 	}
-> >=20
-> > which is a tad nicer. If that is your goal however I ask you to also
-> > change the semantic of platform_get_irq() to return 0 on "not found".
->=20
->     Well, I'm not totally opposed to that... but would there be a conside=
-rable win?
-
-Well, compared to your suggestion of making platform_get_irq_optional()
-return 0 on "not-found" the considerable win would be that
-platform_get_irq_optional() and platform_get_irq() are not different
-just because platform_get_irq() is to hard to change.
-
-> Anyway, we should 1st stop returning 0 for "valid" IRQs -- this is done b=
-y my patch
-> the discussed patch series are atop of.
->=20
-> > Note the win is considerably less compared to gpiod_get_optional vs
->=20
->    If there's any at all... We'd basically have to touch /all/ platform_g=
-et_irq()
-> calls (and get an even larger CC list ;-)).
-
-You got me wrong here. I meant that even if you change both
-platform_get_irq() and platform_get_irq_optional() to return 0 on
-"not-found", the win is small compared to the benefit of having both
-clk_get() and clk_get_optional().
-
-> > gpiod_get however. And then it still lacks the semantic of a dummy irq
-> > which IMHO forfeits the right to call it ..._optional().
->=20
->    Not quite grasping it... Why e.g. clk_get() doesn't return 0 for a not=
- found clock?
-
-Because NULL is not an error value for clk and when calling clk_get()
-you want a failure when the clk you asked for isn't available.
-
-Sure you could do the following in a case where you want to insist the
-clk to be actually available:
-
-	clk =3D clk_get_optional(...)
-	if (IS_ERR_OR_NULL(clk)) {
-		err =3D PTR_ERR(clk) || -ENODEV;
-		return dev_err_probe(dev, err, ....);
-	}
-
-but this is more ugly than
-
-	clk =3D clk_get(...)
-	if (IS_ERR(clk)) {
-		err =3D PTR_ERR(clk);
-		return dev_err_probe(dev, err, ....);
-	}
-
-Additionally the first usage would hard-code in the drivers that NULL is
-the dummy value which you might want to consider a layer violation.
-
-You have to understand that for clk (and regulator and gpiod) NULL is a
-valid descriptor that can actually be used, it just has no effect. So
-this is a convenience value for the case "If the clk/regulator/gpiod in
-question isn't available, there is nothing to do". This is what makes
-clk_get_optional() and the others really useful and justifies their
-existence. This doesn't apply to platform_get_irq_optional().
-
-So clk_get() is sane and sensible for cases where you need the clk to be
-there. It doesn't emit an error message, because the caller knows better
-if it's worth an error message and in some cases the caller can also
-emit a better error message than clk_get() itself.
-
-clk_get_optional() is sane and sensible for cases where the clk might be
-absent and it helps you because you don't have to differentiate between
-"not found" and "there is an actual resource".
-
-The reason for platform_get_irq_optional()'s existence is just that
-platform_get_irq() emits an error message which is wrong or suboptimal
-in some cases (and IMHO is platform_get_irq() root fault). It doesn't
-simplify handling the "not found" case. So let's not pretend by the
-choice of function names that there is a similarity between clk_get() +
-clk_get_optional() and platform_get_irq() + platform_get_irq_optional().
-
-And as you cannot change platform_get_irq_optional() to return a working
-dummy value, IMHO the only sane way out is renaming it.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---uk3tmcd6neo3zuxi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHh230ACgkQwfwUeK3K
-7AlWNwf/bRFJlZD6u0VGoy9sl0BdPd/mUmPL35/vP2hJR8x4u+01YZ3J5DPX9kIK
-pE1ufbhwUnqJgelbz3N4R/r7kog28Jsz6cHn+cw2adtMIJQfl/xpk1C2Rsk6K3bO
-KHClfmbHJxl7kNt7wdN0jocSaun5fy8o5qNdvZ3+tvShyZNbWFPRHeiAhVTQxKCn
-qLNOfy/yFDXAUKKLTeXBnSCb8PbfjnDYhbGZpNiXgwHirXAc3aUM2PL9LSJdJeyb
-MlXBBJWUwdu7JXIo6+5KJI3txCmuKSByoERP3yu9BirMSfvEu+0QBc8IvwL1/j4z
-FjtcKcDXPQ/+lDBRPl94fRT8j8cK5Q==
-=uAhV
------END PGP SIGNATURE-----
-
---uk3tmcd6neo3zuxi--
