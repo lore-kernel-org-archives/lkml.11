@@ -2,104 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E33CC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 13:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCE7C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 13:38:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241376AbiANNid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 08:38:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22537 "EHLO
+        id S241332AbiANNih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 08:38:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53270 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230472AbiANNic (ORCPT
+        by vger.kernel.org with ESMTP id S230472AbiANNie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 08:38:32 -0500
+        Fri, 14 Jan 2022 08:38:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642167511;
+        s=mimecast20190719; t=1642167513;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=YhO8ftDsk4+jW9Ti1jjOdqgLJ1dfN2h8UN/qErYWEn4=;
-        b=eqA6B3a5PWfUoSYxM4GrzF1IpSaoyDFfOsvUWLD/kJR1lBGnqpTde7QtSGc/1tE2f/xp+B
-        w93Odnziw/vjvJ0NqWgzu+2GXFjtG2oi6F21vIlHsSYhQF/6PcgWbBlAPhbAy7oTbTX7vt
-        /lpULM5b94ndDWWFNNa9jnIe15fKJOg=
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com
- [209.85.216.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=NbLWpbs04Fbr52VNRcUjKYlBXFjrwmcMdjglRxFIjmA=;
+        b=IIvHHkH4DDbSJYx3DZcZxj+vKTflV1xhkV/lcVuxZhQIbBKqb4pZKtxdzA4OJCtQLPJqR7
+        sJ+YHELayk4+J1jZ4XmNrW6jpZHmcDHpNdcmRQ208V7MA411nqk3smDNCxst+Tw1bGItg7
+        a0gm30Z76kJo09L1Tva3WkwXx+VL/f4=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-589-3MftssAzMHSvbVaFc9JYpA-1; Fri, 14 Jan 2022 08:38:30 -0500
-X-MC-Unique: 3MftssAzMHSvbVaFc9JYpA-1
-Received: by mail-pj1-f70.google.com with SMTP id f1-20020a17090a8e8100b001b44bb75678so1272195pjo.0
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 05:38:30 -0800 (PST)
+ us-mta-488-7vjjeoUKMhOC11O146_8wA-1; Fri, 14 Jan 2022 08:38:32 -0500
+X-MC-Unique: 7vjjeoUKMhOC11O146_8wA-1
+Received: by mail-ed1-f69.google.com with SMTP id z8-20020a056402274800b003f8580bfb99so8386338edd.11
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 05:38:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YhO8ftDsk4+jW9Ti1jjOdqgLJ1dfN2h8UN/qErYWEn4=;
-        b=4Q6/pB4theNRdSl2eLPUIwqPhb14oXYopxLKfqx60Atz0La6j5ab3OLdYzGfZbyxCr
-         zCs+uKOJsdyFnpx1YYanMnbeY85BP/WKEh8xIB0ujxK/HF5HIBrbXZAOrj0jGu6oGwRG
-         AHfHiHtksYByUW9z2f+qEapx7GbXm+EFPShlOrkrlTbgy/BGfvy0YStuYnarHpIsulrb
-         29Fz7IIG76raqXspgvPLkeErRb5tkO33Fj2pq9JjhXHp85TBEtTejCQ1LFDcm94PpJP3
-         6X/QpfllPE/i0c7GhkGkJOhQEEvFrwlTKnmn2VIrg7MfkZcq6Ogjb9R1pTRYaYKZbguL
-         LRag==
-X-Gm-Message-State: AOAM533LVqcPlc7P+Gv30c7KH2qnuWPPPqHWHrW/hRxEoZAaPsLLhzCD
-        4DzB0y6FtwcxApqbHZG+Ot9QnTkFJEQ9Jc+Hag9NdUIZBrDKQtKwj4+2zq+2yyaM9HylZNyZ7/4
-        iXdKOqnUHJS/evt/Y4Z40n11M
-X-Received: by 2002:a17:902:a502:b0:149:c5a5:5329 with SMTP id s2-20020a170902a50200b00149c5a55329mr9559621plq.164.1642167509353;
-        Fri, 14 Jan 2022 05:38:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxILsnBPX9TsvIa9qO8Uq+U+Jo4SOThql41KRmDC+m0uXyl0MuvIPYYRITKGIUaFyG3qpSUrA==
-X-Received: by 2002:a17:902:a502:b0:149:c5a5:5329 with SMTP id s2-20020a170902a50200b00149c5a55329mr9559603plq.164.1642167509120;
-        Fri, 14 Jan 2022 05:38:29 -0800 (PST)
-Received: from steredhat (host-95-238-125-214.retail.telecomitalia.it. [95.238.125.214])
-        by smtp.gmail.com with ESMTPSA id g7sm5820333pfu.61.2022.01.14.05.38.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 05:38:28 -0800 (PST)
-Date:   Fri, 14 Jan 2022 14:38:16 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, stefanha@redhat.com,
-        kvm@vger.kernel.org, netdev@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v1] vhost: cache avail index in vhost_enable_notify()
-Message-ID: <20220114133816.7niyaqygvdveddmi@steredhat>
-References: <20220114090508.36416-1-sgarzare@redhat.com>
- <20220114074454-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=NbLWpbs04Fbr52VNRcUjKYlBXFjrwmcMdjglRxFIjmA=;
+        b=o5p8xTbfP35eHuS/FjMLrx3Hlkp09PQSSDvsv7LeJP3p2CBfmXUB/EicArAmEM3sDp
+         5bc8e27OVPPz0JRplduRGt1GTi7uh9HnVJGS6QsReRPvzwqPFF0AzuqGrq5r/K9yz3tP
+         3TwBiq1YIGUJAP1pbP0ab1D+RjMKJ5GES5ZF9Q5uiDkHNaToSpUXj8+GWyHAtO9BRBqM
+         rs07v0CYLAj5Ikq4r6d9tkaWO5B/fRye8ohVLVy41KW1Zo63LaQC+DT1nHK0eqSF5bu9
+         7+wntcxM1bfhNF7mfaoFxKa3ypgpQwu7V1b3BB+0CfOccZl5veLYzQ24XcOOvRFUT5Vw
+         jJsw==
+X-Gm-Message-State: AOAM532W/pzZgKFwTkef+/yuMu99HNrE/3KonWYBrrjJYvmo+YBXW7iU
+        x+ApxEerAlD/Le+w5O+E71CpgsW7cfSiqS5RbKdlM6wo3ogDW2A2CzOfCCOcN4CYgu3wMqXCxeC
+        8ys39Aj4hhRflU0QSMze7H83k
+X-Received: by 2002:a05:6402:22f5:: with SMTP id dn21mr8277776edb.195.1642167511645;
+        Fri, 14 Jan 2022 05:38:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwHvYz3VQ9C1aagG3+wcF6jvkOYHX0vhK+bpyMkPVNgdDNTqGPKVyjbaru5jr4nQAEJhmT6JQ==
+X-Received: by 2002:a05:6402:22f5:: with SMTP id dn21mr8277761edb.195.1642167511469;
+        Fri, 14 Jan 2022 05:38:31 -0800 (PST)
+Received: from ?IPV6:2003:cb:c701:9d00:ff87:1c9b:108a:9702? (p200300cbc7019d00ff871c9b108a9702.dip0.t-ipconnect.de. [2003:cb:c701:9d00:ff87:1c9b:108a:9702])
+        by smtp.gmail.com with ESMTPSA id c13sm1900839ejj.144.2022.01.14.05.38.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 05:38:31 -0800 (PST)
+Message-ID: <ead90b32-da2b-4d66-f103-6fbec0937e93@redhat.com>
+Date:   Fri, 14 Jan 2022 14:38:30 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220114074454-mutt-send-email-mst@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC PATCH v3 5/8] mm: page_isolation: check specified range for
+ unmovable pages during isolation.
+Content-Language: en-US
+To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        linuxppc-dev@lists.ozlabs.org,
+        virtualization@lists.linux-foundation.org,
+        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Eric Ren <renzhengeek@gmail.com>
+References: <20220105214756.91065-1-zi.yan@sent.com>
+ <20220105214756.91065-6-zi.yan@sent.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+In-Reply-To: <20220105214756.91065-6-zi.yan@sent.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 07:45:35AM -0500, Michael S. Tsirkin wrote:
->On Fri, Jan 14, 2022 at 10:05:08AM +0100, Stefano Garzarella wrote:
->> In vhost_enable_notify() we enable the notifications and we read
->> the avail index to check if new buffers have become available in
->> the meantime.
->>
->> We are not caching the avail index, so when the device will call
->> vhost_get_vq_desc(), it will find the old value in the cache and
->> it will read the avail index again.
->>
->> It would be better to refresh the cache every time we read avail
->> index, so let's change vhost_enable_notify() caching the value in
->> `avail_idx` and compare it with `last_avail_idx` to check if there
->> are new buffers available.
->>
->> Anyway, we don't expect a significant performance boost because
->> the above path is not very common, indeed vhost_enable_notify()
->> is often called with unlikely(), expecting that avail index has
->> not been updated.
->>
->> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
->
->... and can in theory even hurt due to an extra memory write.
->So ... performance test restults pls?
+On 05.01.22 22:47, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
+> 
+> Enable set_migratetype_isolate() to check specified sub-range for
+> unmovable pages during isolation. Page isolation is done
+> at max(MAX_ORDER_NR_PAEGS, pageblock_nr_pages) granularity, but not all
+> pages within that granularity are intended to be isolated. For example,
+> alloc_contig_range(), which uses page isolation, allows ranges without
+> alignment. This commit makes unmovable page check only look for
+> interesting pages, so that page isolation can succeed for any
+> non-overlapping ranges.
 
-Right, could be.
+Are you handling if we start checking in the middle of a compound page
+and actually have to lookup the head to figure out if movable or not?
 
-I'll run some perf test with vsock, about net, do you have a test suite 
-or common step to follow to test it?
+> 
+> has_unmovable_pages() is moved to mm/page_isolation.c since it is only
+> used by page isolation.
 
+Please move that into a separate patch upfront, makes this patch much
+easier to review.
+
+-- 
 Thanks,
-Stefano
+
+David / dhildenb
 
