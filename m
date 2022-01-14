@@ -2,147 +2,332 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB6EAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 10:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E82C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 10:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240348AbiANK1s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 05:27:48 -0500
-Received: from mail-mw2nam12on2097.outbound.protection.outlook.com ([40.107.244.97]:7689
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237771AbiANK1q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 05:27:46 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MztEM3Ksb0RYsIOKg9gIofj1YX7viw+0DASo9mVbEVKsaFLobD5eXPsFoKrz716soZt967aDGJA8zfy/ZC9AkmbdtTxXdXLFxfRncoiT+oxZXRwBgiD4UpdtuCqsfX105Zx7s0k8d1cpobKTWdjEvsLVCzvNe2JxraKwSlvDNjoH9FGMoZXhKmmp1wFblIi986uuXjYp05a+vxHlPy+WMr2vWUx8wmWajQt1B5jwHQEBiBxAyTy9ukoW9syWT+w/VV9sSrnJdK2XPVIDUUMVosX2M1eRjitPX67KDuVeLZM+++70Vz6GVbsr/y/7aH/haRDCwi19cwUf3bz312FZ5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UlX1HRp7HoCNrW3RTH57kofOhAzlqYeFwkmouvWYDwk=;
- b=HLdtaw8OGP+c+Oipm4HXkliUH9VLCiibIlp0Q+G4NVzMI0buHRvm+9PEN6aHOJyoBJsh6Xr/TNPsW6soj0kMfazCjkcZFUMMrqXcGE/hpuQa4D5KJrB8Pzrwbpdbgm2l/+HbhWn2UzdjI+9v6TNdSmV709Z6feKxJb5VFE0HRzipcS+uGdOKqDWiwPPqACwCjFNwBQPNw1OCSIkwrwWTh73Q9AmCSMA34/Z2NCTAUcpfvzJSxGSkX1LAQzh432zmC0K9WFSRXdjFUnGCr5ARiCSfYujecHTkeMwLqMWTlFEu/VSlwOU5lJ9WYhkiyrR5dOxcsnIb9/CZtC7FUtNiYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
- header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UlX1HRp7HoCNrW3RTH57kofOhAzlqYeFwkmouvWYDwk=;
- b=G5BPPmVq8wnv4Q2QSTk4JbDfJqeeTu8qqP8QnBdaegs+XkR+C4Imi2mjlccbxDx55v0ag7xS19dzS3vtdlIoaF+tiEbGjKFlG3cmLm3NUjEOYdiVCCYdEuoIEptCr4Bw2kRoiiztVSqCIHVjUoML3xv9IhBKcVa37Bt7Luiynfo=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analogixsemi.com;
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
- by SN6PR04MB3983.namprd04.prod.outlook.com (2603:10b6:805:4c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Fri, 14 Jan
- 2022 10:27:44 +0000
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::8c2c:1b0f:8516:a941]) by BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::8c2c:1b0f:8516:a941%4]) with mapi id 15.20.4888.011; Fri, 14 Jan 2022
- 10:27:44 +0000
-Date:   Fri, 14 Jan 2022 18:27:37 +0800
-From:   Xin Ji <xji@analogixsemi.com>
-To:     Rex-BC Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
-        matthias.bgg@gmail.com, narmstrong@baylibre.com,
-        robert.foss@linaro.org, daniel@ffwll.ch, airlied@linux.ie,
-        p.zabel@pengutronix.de
-Cc:     jitao.shi@mediatek.com, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [v9,3/3] drm/bridge: anx7625: config hs packets end aligned to
- avoid screen shift
-Message-ID: <20220114102737.GA2606309@anxtwsw-Precision-3640-Tower>
-References: <20220114092110.12137-1-rex-bc.chen@mediatek.com>
- <20220114092110.12137-4-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220114092110.12137-4-rex-bc.chen@mediatek.com>
-X-ClientProxiedBy: HK2PR02CA0193.apcprd02.prod.outlook.com
- (2603:1096:201:21::29) To BY5PR04MB6739.namprd04.prod.outlook.com
- (2603:10b6:a03:229::8)
+        id S240370AbiANK3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 05:29:19 -0500
+Received: from mail-il1-f198.google.com ([209.85.166.198]:54256 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240089AbiANK3S (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 05:29:18 -0500
+Received: by mail-il1-f198.google.com with SMTP id s10-20020a056e02216a00b002b7877fab0cso5831966ilv.20
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 02:29:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Xhtd++bGYYni/HGfTlGdkYA8U2FdFKBk4MtD1cFOLQU=;
+        b=5r23B9a1wwcyLtdtUEmHGwMD8u7lgSK0QaHLIKLEQQk+u/3hGObfRxS0gFsliVvsos
+         SuX6FhvaoLl7YjysANkaDz1rxvwPhluKV8UBefDmCXtaMoULOCqgcTber5fUXnaMAekM
+         H5N6E5Q++eBNnyjDxBwwJbNl1cjsLxqwXR3OFwZWzIbpu0M32S4BNtxNvJhXu1RmO86j
+         HMZy2s45h/aZM2FX5ycPbtMCOz0fbAIkE/N71OngA3KczQ5pMcgqPNZcL+7GvOjEJXbx
+         RaorpugrUMRxJRo548Py9nCRRemZ0uIn6lp5wHRXC1f6bsx5XYzKhdYGGEwc1rWXCtOO
+         V39w==
+X-Gm-Message-State: AOAM533BuC/GpggmCYvpVFqD2wn070FVAJWRIYAKGYKWeZ6FrS1PnOzl
+        rseBK4YKfwiWk2SyAkUbzJ3Y52/6mbc064Hy46f+CR4JIvVy
+X-Google-Smtp-Source: ABdhPJybTfEbeWpPjC5V6OZySuyfjWJz2BvKcXEvRGTbIHTq5E4Gr7jG2crU3qcB5VpWD+ea2i/ZfDMOjifT4YZtFWFRrliu0fRa
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8359c436-6dec-4405-c79e-08d9d748800a
-X-MS-TrafficTypeDiagnostic: SN6PR04MB3983:EE_
-X-Microsoft-Antispam-PRVS: <SN6PR04MB39831B71F2C0F233AF902312C7549@SN6PR04MB3983.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dsZqnvgE2hs+3S3sasFfUwrHgVBDRwkTwujRrhPg2nstVKdI1bwCK9yEyxqZ8hCUp65Bd7se08LHug+skAzqBjE1Ql9nNcwpYyoPBBsadgQz5SLP9IAluFvj5JCszxLi5TCBH4271wPgD3yG3gC2DxZRN+lenNIVnBf4Y7nATG97R9t3gOf3W6wlhXFNn9Jx0HFaU1zbd875ATrYXiN9XRk5PvgFgtmVPQQOcHecDRVnDOH/QeyLzJeMNrB5AAT10hc4nQIKe9BtgkrzWB3NDawmmG92QKQl3aTH6uxeV4R2TY+jUWJ/o73kHYMK7Jfyl/AKGGhpvfST4WAa07mc87OJ9RJFYXFW7fAfxnMWy6YD1NmMkdR6ef4GnQIUByGgbVRqwMIMhybk/x4aXMi+BqgkPG2XqSJjC6EJeUQhjG1n+Q5FXkSny+N4wovVhNWyNrWKV5Yo4ph2mdxG3mxkfib7OTwMCSxjWiGglB+MRyeYoOHXH0otIeAdtrgUJO1gAnAv2LtyyZkMZB/ngfAzW/Kg9iOD5Jadi35FZeAYmSo8bp7n0VEcX4/h9ddGTqFDGAEbhviXXeJQDzu/CFsRdTLsKQkgfKkGOiF1uWhK0Iojncf3ZwWFM0k/6itxyPpAuTtvl+p7ie6mmNHEfHiCEg2HE9GoqsFNGXVVe7IkP6Zs4zz7fPf5/Vp0VItzkvyab1qhBxwktH4/L2A6a6bHng==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(366004)(316002)(4326008)(38100700002)(33656002)(52116002)(7416002)(38350700002)(6666004)(8936002)(8676002)(33716001)(5660300002)(6512007)(66946007)(66476007)(55236004)(66556008)(9686003)(83380400001)(1076003)(508600001)(6506007)(2906002)(26005)(186003)(6486002)(86362001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?r35j+CeLSusYAPkz6fUiW+0Io5F5+E5vpa+6dDJFRFUZ8m1mYP9+uyJK2gE/?=
- =?us-ascii?Q?fNYBE0BZNJxoDOq7i0NToYxzi/xyGV4oYAZhxOjRh8XNeG23nyitur/6IxKj?=
- =?us-ascii?Q?ZVO7deWTa2Dtl3W4AW8WN1mIpCpaemT8Swu9LvrjxrghGaAq4qimhsY8k2WA?=
- =?us-ascii?Q?m8kEbhIcIv6WBZNN2NDul9UY3qRLgk9aIG0NOLfenfdb9WJQpOdymlv+JWEY?=
- =?us-ascii?Q?vUO5m+GQ9SYUoRSfoaMxFt6zHH++LV8OR7frX15FW6l/on/4HSaI36XBSsqf?=
- =?us-ascii?Q?fvWPdY4tLRS31Xw1D+HKz+nCyiHdmSlTkFt9HGs3XMirmGRlFhNSFgu0kr8u?=
- =?us-ascii?Q?aZiUcpkaiNDBQ5dxUnlLi5Oj/kZVO0RxiihWJi+XEJvl58Yzz01Z+FC8039T?=
- =?us-ascii?Q?Ib/3sFwLSxq2ammd/kFSPc83os/mqXxEOCBnkdlUJBORl+k5FsmtexJDinkH?=
- =?us-ascii?Q?UiKVboWs64NnkAs5pdvXpVbOq+WHq5cBvVuEC5K5NdoWeKLgCdSX6QN6RY4A?=
- =?us-ascii?Q?vd9rsw7dMNKBOmvpEA7Gizi2wgI/zp/OSkm72TaQy/W3pv2cv1egxv72LdTB?=
- =?us-ascii?Q?1oTUDg/tcvq8l9DXkO7RoH/eY0CkEHn8T63N+/RuL0H6aXn09q7aC3mTLhjM?=
- =?us-ascii?Q?A3VnOT7mscZzP6fXkqlOn3ZtErJtzSpw1RDhU8w5W1LjIYIXkoOpTIVTeImf?=
- =?us-ascii?Q?AvCLLEVwmioQULZb09GWD5yhXObmmceknAw/3sPyC11iQF0TDoZ2UBowLSKq?=
- =?us-ascii?Q?coHCMnlMO4NwUSueLYFCMCEQ2tkyOxUXsQOqQOlsRbCXdQxX+WQ9QYShUQV+?=
- =?us-ascii?Q?qh51H/C/on2woeHsfygbQ8V4nyzmlY6N5msoQbyVLaHhmbj5wC/tIdmDK0lt?=
- =?us-ascii?Q?J8+5Iz00AE3r4jbyqxkyKaRCIo4ymWEUeqR7Rsb1wyb4Bfzmtibhhu5xSEMm?=
- =?us-ascii?Q?ltvOzlvBynCZSCoUjhD3FRZHXJpw0Sb1YwJBqnFdgQyrBLzC36N2o8HnfjSO?=
- =?us-ascii?Q?/bBrMfTZiqdy5btua0aGLcGA2N1aJ0xyM4Vvvqb4jzxJkz6Wv90KIYEjnmMC?=
- =?us-ascii?Q?fMrTtwMIsNnh8E54rFdOa9v0Xt8Y3m6x4n/bMdd80nAAk7OYzrynpc3WMlN+?=
- =?us-ascii?Q?0Zk6NJqVADcS8f+3M2nhdSMAcYvBdou931u7HE2E6FY3yfZJ/binahveQhGU?=
- =?us-ascii?Q?q7OSD8IckLxFcc2LoCtZfZRXFcyvxIYnZa0i5Lq849uTuvCt1jU0f52mtKGh?=
- =?us-ascii?Q?P2WmKNMFJYiNlbDDeFO1jxCukPcpqB2M8212wEEASW9KMv4vpHRT7HOeuJs2?=
- =?us-ascii?Q?KsJ+8YM7kpFsIG7YzpOi53EaNhf+Q2aoukvXFuVzykRvIhxdj+o1+w0Vs8Qf?=
- =?us-ascii?Q?WFQJOwQGyu6v9OTE+YN6UEGLahHHGhxd+t7rI3YB6LGnaxY/+8mZUrJ2iDRm?=
- =?us-ascii?Q?kqiq5Kl7ttuUkxlsZhzgK0C8J4m6gEf2Fj3GsnCjqlEmqmI2mRUyZiidTwyY?=
- =?us-ascii?Q?JLrtvfaKCJzqYqPSkkfMr5aH8wQiW+Y9ta1boKDyYYu1tuO+pGzd9gJhU6g7?=
- =?us-ascii?Q?LCVNTnYX5Z5BZFwV0blwo6X9zyseC8s1lrh4pvFvTkQ+yCvsX1gKnpcP2xnk?=
- =?us-ascii?Q?t+G12hsncUDtAhyI+Qef7q8=3D?=
-X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8359c436-6dec-4405-c79e-08d9d748800a
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 10:27:43.9673
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rRlsgD3YScJTyPfnVOVFnOWNStw6gInkjaMbwQMxy7sAjMKnji/HVAilQ7RiCTLEByRU8Sz2p3HEVqb25JqtwA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR04MB3983
+X-Received: by 2002:a05:6e02:1c2e:: with SMTP id m14mr4494524ilh.189.1642156158148;
+ Fri, 14 Jan 2022 02:29:18 -0800 (PST)
+Date:   Fri, 14 Jan 2022 02:29:18 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000078e7bb05d588464b@google.com>
+Subject: [syzbot] KASAN: use-after-free Write in _atomic_dec_and_lock_irqsave (2)
+From:   syzbot <syzbot+87b6a258f2769007f504@syzkaller.appspotmail.com>
+To:     ebiederm@xmission.com, legion@kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Rex-BC Chen, thanks for your patch, it is OK for me.
+Hello,
 
-Reviewed-by: Xin Ji <xji@analogixsemi.com>
+syzbot found the following issue on:
 
-Thanks,
-Xin
+HEAD commit:    57c149e506d5 Add linux-next specific files for 20220110
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13374c1bb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2f1cca5543ac6349
+dashboard link: https://syzkaller.appspot.com/bug?extid=87b6a258f2769007f504
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-On Fri, Jan 14, 2022 at 05:21:10PM +0800, Rex-BC Chen wrote:
-> This device requires the packets on lanes aligned at the end to fix
-> screen shift or scroll.
-> 
-> Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
-> Signed-off-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
-> ---
->  drivers/gpu/drm/bridge/analogix/anx7625.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> index 2346dbcc505f..fe32ab0878ae 100644
-> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> @@ -1673,7 +1673,8 @@ static int anx7625_attach_dsi(struct anx7625_data *ctx)
->  	dsi->format = MIPI_DSI_FMT_RGB888;
->  	dsi->mode_flags = MIPI_DSI_MODE_VIDEO	|
->  		MIPI_DSI_MODE_VIDEO_SYNC_PULSE	|
-> -		MIPI_DSI_MODE_VIDEO_HSE;
-> +		MIPI_DSI_MODE_VIDEO_HSE	|
-> +		MIPI_DSI_HS_PKT_END_ALIGNED;
->  
->  	ret = devm_mipi_dsi_attach(dev, dsi);
->  	if (ret) {
-> -- 
-> 2.18.0
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+87b6a258f2769007f504@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+BUG: KASAN: use-after-free in atomic_add_unless include/linux/atomic/atomic-instrumented.h:607 [inline]
+BUG: KASAN: use-after-free in _atomic_dec_and_lock_irqsave+0x27/0x150 lib/dec_and_lock.c:41
+Write of size 4 at addr ffff888147cb7b1c by task udevd/2975
+
+CPU: 0 PID: 2975 Comm: udevd Not tainted 5.16.0-rc8-next-20220110-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_address_description.constprop.0.cold+0xa5/0x3e0 mm/kasan/report.c:255
+ __kasan_report mm/kasan/report.c:442 [inline]
+ kasan_report.cold+0x83/0xdf mm/kasan/report.c:459
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
+ instrument_atomic_read_write include/linux/instrumented.h:101 [inline]
+ atomic_add_unless include/linux/atomic/atomic-instrumented.h:607 [inline]
+ _atomic_dec_and_lock_irqsave+0x27/0x150 lib/dec_and_lock.c:41
+ put_ucounts+0x73/0x1c0 kernel/ucount.c:206
+ put_cred_rcu+0x27a/0x520 kernel/cred.c:124
+ rcu_do_batch kernel/rcu/tree.c:2536 [inline]
+ rcu_core+0x7b8/0x1540 kernel/rcu/tree.c:2787
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
+ invoke_softirq kernel/softirq.c:432 [inline]
+ __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
+ irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
+ sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
+ </IRQ>
+ <TASK>
+ asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:638
+RIP: 0010:unwind_next_frame+0xcbe/0x1ce0 arch/x86/kernel/unwind_orc.c:534
+Code: 0f f5 ff ff 4c 89 ff 4c 89 44 24 20 e8 bb f1 8e 00 4c 8b 44 24 20 e9 2c f7 ff ff e8 b3 de cb ff e9 aa f7 ff ff 48 8b 44 24 60 <4c> 89 e2 4c 89 f7 48 89 4c 24 30 4c 89 44 24 28 48 8d 70 f8 48 89
+RSP: 0018:ffffc90001a3f5c0 EFLAGS: 00000246
+RAX: ffffc90001a3fa78 RBX: 1ffff92000347ec0 RCX: ffffffff8e3dc5a9
+RDX: ffffc90001a3fa48 RSI: 0000000000000000 RDI: 0000000000000001
+RBP: 0000000000000001 R08: ffffffff8e3dc5a4 R09: 0000000000000001
+R10: fffff52000347ede R11: 0000000000088078 R12: ffffc90001a3f6e0
+R13: ffffc90001a3f6cd R14: ffffc90001a3f698 R15: ffffffff8e3dc5a8
+ arch_stack_walk+0x7d/0xe0 arch/x86/kernel/stacktrace.c:25
+ stack_trace_save+0x8c/0xc0 kernel/stacktrace.c:122
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
+ kasan_slab_alloc include/linux/kasan.h:260 [inline]
+ slab_post_alloc_hook mm/slab.h:738 [inline]
+ slab_alloc_node mm/slub.c:3230 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ kmem_cache_alloc+0x202/0x3a0 mm/slub.c:3243
+ kmem_cache_zalloc include/linux/slab.h:705 [inline]
+ lsm_file_alloc security/security.c:572 [inline]
+ security_file_alloc+0x34/0x170 security/security.c:1508
+ __alloc_file+0xd8/0x280 fs/file_table.c:137
+ alloc_empty_file+0x6d/0x170 fs/file_table.c:181
+ path_openat+0xe4/0x2940 fs/namei.c:3595
+ do_filp_open+0x1aa/0x400 fs/namei.c:3636
+ do_sys_openat2+0x16d/0x4d0 fs/open.c:1214
+ do_sys_open fs/open.c:1230 [inline]
+ __do_sys_openat fs/open.c:1246 [inline]
+ __se_sys_openat fs/open.c:1241 [inline]
+ __x64_sys_openat+0x13f/0x1f0 fs/open.c:1241
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f9ff4696697
+Code: 25 00 00 41 00 3d 00 00 41 00 74 37 64 8b 04 25 18 00 00 00 85 c0 75 5b 44 89 e2 48 89 ee bf 9c ff ff ff b8 01 01 00 00 0f 05 <48> 3d 00 f0 ff ff 0f 87 85 00 00 00 48 83 c4 68 5d 41 5c c3 0f 1f
+RSP: 002b:00007ffe78ddb200 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f9ff4696697
+RDX: 00000000000a0800 RSI: 00007f9ff4b4cb40 RDI: 00000000ffffff9c
+RBP: 00007f9ff4b4cb40 R08: 0000000000000008 R09: 00007f9ff4b7b7b0
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000000a0800
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+Allocated by task 9924:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:45 [inline]
+ set_alloc_info mm/kasan/common.c:436 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+ ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+ __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+ kmalloc include/linux/slab.h:581 [inline]
+ kzalloc include/linux/slab.h:715 [inline]
+ alloc_ucounts+0x1c3/0x590 kernel/ucount.c:175
+ set_cred_ucounts+0x163/0x320 kernel/cred.c:682
+ copy_creds+0x708/0xb50 kernel/cred.c:373
+ copy_process+0x1440/0x7300 kernel/fork.c:2034
+ kernel_clone+0xe7/0xab0 kernel/fork.c:2557
+ __do_sys_clone+0xc8/0x110 kernel/fork.c:2674
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Freed by task 7654:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+ kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+ ____kasan_slab_free mm/kasan/common.c:366 [inline]
+ ____kasan_slab_free+0x166/0x1a0 mm/kasan/common.c:328
+ kasan_slab_free include/linux/kasan.h:236 [inline]
+ slab_free_hook mm/slub.c:1728 [inline]
+ slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1754
+ slab_free mm/slub.c:3509 [inline]
+ kfree+0xce/0x380 mm/slub.c:4562
+ put_ucounts+0x153/0x1c0 kernel/ucount.c:209
+ do_dec_rlimit_put_ucounts+0xfb/0x1a0 kernel/ucount.c:299
+ __sigqueue_free kernel/signal.c:455 [inline]
+ __sigqueue_free kernel/signal.c:450 [inline]
+ flush_sigqueue+0x18e/0x280 kernel/signal.c:469
+ __exit_signal kernel/exit.c:155 [inline]
+ release_task+0xbd0/0x17e0 kernel/exit.c:200
+ wait_task_zombie kernel/exit.c:1116 [inline]
+ wait_consider_task+0x2fa6/0x3b80 kernel/exit.c:1343
+ do_wait_thread kernel/exit.c:1406 [inline]
+ do_wait+0x6ca/0xce0 kernel/exit.c:1523
+ kernel_wait4+0x14c/0x260 kernel/exit.c:1686
+ __do_sys_wait4+0x13f/0x150 kernel/exit.c:1714
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ insert_work+0x48/0x370 kernel/workqueue.c:1368
+ __queue_work+0x5ca/0xf30 kernel/workqueue.c:1534
+ queue_work_on+0xee/0x110 kernel/workqueue.c:1562
+ queue_work include/linux/workqueue.h:502 [inline]
+ netdevice_queue_work drivers/infiniband/core/roce_gid_mgmt.c:659 [inline]
+ netdevice_event+0x42f/0x8a0 drivers/infiniband/core/roce_gid_mgmt.c:802
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1919
+ call_netdevice_notifiers_extack net/core/dev.c:1931 [inline]
+ call_netdevice_notifiers net/core/dev.c:1945 [inline]
+ __dev_notify_flags+0x110/0x2b0 net/core/dev.c:8176
+ dev_change_flags+0x112/0x170 net/core/dev.c:8214
+ do_setlink+0x96d/0x3a10 net/core/rtnetlink.c:2729
+ __rtnl_newlink+0xde5/0x1750 net/core/rtnetlink.c:3412
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3527
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5592
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x904/0xdf0 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ __sys_sendto+0x21c/0x320 net/socket.c:2040
+ __do_sys_sendto net/socket.c:2052 [inline]
+ __se_sys_sendto net/socket.c:2048 [inline]
+ __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Second to last potentially related work creation:
+ kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+ __kasan_record_aux_stack+0xbe/0xd0 mm/kasan/generic.c:348
+ insert_work+0x48/0x370 kernel/workqueue.c:1368
+ __queue_work+0x5ca/0xf30 kernel/workqueue.c:1534
+ queue_work_on+0xee/0x110 kernel/workqueue.c:1562
+ queue_work include/linux/workqueue.h:502 [inline]
+ addr_event.part.0+0x326/0x4e0 drivers/infiniband/core/roce_gid_mgmt.c:853
+ addr_event drivers/infiniband/core/roce_gid_mgmt.c:824 [inline]
+ inet6addr_event+0x13e/0x1b0 drivers/infiniband/core/roce_gid_mgmt.c:883
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
+ atomic_notifier_call_chain+0x70/0x180 kernel/notifier.c:199
+ ipv6_add_addr+0x16bf/0x1f30 net/ipv6/addrconf.c:1161
+ addrconf_add_linklocal+0x1ca/0x590 net/ipv6/addrconf.c:3197
+ addrconf_addr_gen+0x387/0x3d0 net/ipv6/addrconf.c:3328
+ addrconf_dev_config+0x255/0x420 net/ipv6/addrconf.c:3373
+ addrconf_notify+0xdb5/0x1ba0 net/ipv6/addrconf.c:3613
+ notifier_call_chain+0xb5/0x200 kernel/notifier.c:84
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1919
+ call_netdevice_notifiers_extack net/core/dev.c:1931 [inline]
+ call_netdevice_notifiers net/core/dev.c:1945 [inline]
+ __dev_notify_flags+0x110/0x2b0 net/core/dev.c:8176
+ dev_change_flags+0x112/0x170 net/core/dev.c:8214
+ do_setlink+0x96d/0x3a10 net/core/rtnetlink.c:2729
+ __rtnl_newlink+0xde5/0x1750 net/core/rtnetlink.c:3412
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3527
+ rtnetlink_rcv_msg+0x413/0xb80 net/core/rtnetlink.c:5592
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1317 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1343
+ netlink_sendmsg+0x904/0xdf0 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:705 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:725
+ __sys_sendto+0x21c/0x320 net/socket.c:2040
+ __do_sys_sendto net/socket.c:2052 [inline]
+ __se_sys_sendto net/socket.c:2048 [inline]
+ __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2048
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The buggy address belongs to the object at ffff888147cb7b00
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 28 bytes inside of
+ 192-byte region [ffff888147cb7b00, ffff888147cb7bc0)
+The buggy address belongs to the page:
+page:ffffea00051f2dc0 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x147cb7
+flags: 0x57ff00000000200(slab|node=1|zone=2|lastcpupid=0x7ff)
+raw: 057ff00000000200 ffffea000511fa00 dead000000000004 ffff888010c41a00
+raw: 0000000000000000 0000000080100010 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12cc0(GFP_KERNEL|__GFP_NOWARN|__GFP_NORETRY), pid 1, ts 8603444765, free_ts 0
+ prep_new_page mm/page_alloc.c:2434 [inline]
+ get_page_from_freelist+0xa72/0x2f40 mm/page_alloc.c:4165
+ __alloc_pages+0x1b2/0x500 mm/page_alloc.c:5381
+ alloc_page_interleave+0x1e/0x200 mm/mempolicy.c:2116
+ alloc_pages+0x2b1/0x310 mm/mempolicy.c:2266
+ alloc_slab_page mm/slub.c:1799 [inline]
+ allocate_slab mm/slub.c:1944 [inline]
+ new_slab+0x28d/0x380 mm/slub.c:2004
+ ___slab_alloc+0x6be/0xd60 mm/slub.c:3018
+ __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3105
+ slab_alloc_node mm/slub.c:3196 [inline]
+ slab_alloc mm/slub.c:3238 [inline]
+ kmem_cache_alloc_trace+0x289/0x2c0 mm/slub.c:3255
+ kmalloc include/linux/slab.h:581 [inline]
+ kzalloc include/linux/slab.h:715 [inline]
+ call_usermodehelper_setup+0x97/0x340 kernel/umh.c:365
+ kobject_uevent_env+0xf28/0x1600 lib/kobject_uevent.c:614
+ driver_register+0x2db/0x3a0 drivers/base/driver.c:179
+ hwsim_init_module+0xf9/0x174 drivers/net/ieee802154/mac802154_hwsim.c:904
+ do_one_initcall+0x103/0x650 init/main.c:1303
+ do_initcall_level init/main.c:1378 [inline]
+ do_initcalls init/main.c:1394 [inline]
+ do_basic_setup init/main.c:1413 [inline]
+ kernel_init_freeable+0x6b1/0x73a init/main.c:1618
+ kernel_init+0x1a/0x1d0 init/main.c:1507
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
+page_owner free stack trace missing
+
+Memory state around the buggy address:
+ ffff888147cb7a00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888147cb7a80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+>ffff888147cb7b00: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                            ^
+ ffff888147cb7b80: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff888147cb7c00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+----------------
+Code disassembly (best guess):
+   0:	0f f5 ff             	pmaddwd %mm7,%mm7
+   3:	ff 4c 89 ff          	decl   -0x1(%rcx,%rcx,4)
+   7:	4c 89 44 24 20       	mov    %r8,0x20(%rsp)
+   c:	e8 bb f1 8e 00       	callq  0x8ef1cc
+  11:	4c 8b 44 24 20       	mov    0x20(%rsp),%r8
+  16:	e9 2c f7 ff ff       	jmpq   0xfffff747
+  1b:	e8 b3 de cb ff       	callq  0xffcbded3
+  20:	e9 aa f7 ff ff       	jmpq   0xfffff7cf
+  25:	48 8b 44 24 60       	mov    0x60(%rsp),%rax
+* 2a:	4c 89 e2             	mov    %r12,%rdx <-- trapping instruction
+  2d:	4c 89 f7             	mov    %r14,%rdi
+  30:	48 89 4c 24 30       	mov    %rcx,0x30(%rsp)
+  35:	4c 89 44 24 28       	mov    %r8,0x28(%rsp)
+  3a:	48 8d 70 f8          	lea    -0x8(%rax),%rsi
+  3e:	48                   	rex.W
+  3f:	89                   	.byte 0x89
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
