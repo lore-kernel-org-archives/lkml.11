@@ -2,111 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CA1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69815C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:49:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243587AbiANQpy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 11:45:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54936 "EHLO
+        id S243580AbiANQt0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 11:49:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235625AbiANQpp (ORCPT
+        with ESMTP id S235625AbiANQtZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 11:45:45 -0500
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DEDEC06173E
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:45:45 -0800 (PST)
-Received: by mail-ua1-x92f.google.com with SMTP id r15so17966314uao.3
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:45:45 -0800 (PST)
+        Fri, 14 Jan 2022 11:49:25 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95120C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:49:25 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id i8-20020a17090a138800b001b3936fb375so22659038pja.1
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:49:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QBnfwH/s1nckEtFwwtwXrNqBglJnciIYNyoP3vBmMcA=;
-        b=pzwJuFX+HKtuEM3O2uSUMWy3ssg3sY0XvaR5uq8tD+I1oYR+tqD1NZEVjA6w21HiUv
-         zAJqF6r8tL8KUoxOQ+7aRb8AkFixLGrwTyJWNbC8IFlFzn+Ghq8AymP91Wn3F17zLD5V
-         3zG+0tuiZkYHIExXJvYdqvjuWCYMIjA3WhUsG7nFa+Ah1V1ZBnoiFautvzLKfriFOmYq
-         3a3Ik2PVPlGSzadMumWRpA6We5mOqtUYlGEfGsN5aMz405ClWxNDF4z3m8O7HbHtihA1
-         3FG7rGWYfY8ESkAvrEmyU/9tuijbF6jpOBzzCMeCYco7/DuEi0H3tKGBWAmagmTcLsvf
-         RiqQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=A9GSJbbyUEooumrboslZcyMcawaKEGAeavwi+WIG2HU=;
+        b=gvzvuaOhiMwelFKjT2eA3SuvMgjgCVJCB5Fn4zi0b7WuenQMWW1B3q0JFT3Cc/9k4B
+         FjfTSy/Rig4rJMnkgbJobqN0LBkuvIPnzr9PP1Vj4i3YfeJ+wowpLkvkbIQt6VEVqbsB
+         MeNZ691pqSk+okT9m4klCxY3Rvn33C0GVpIHCqkdnTor5vyGfMCY8yRyHs8E4PBTgn3O
+         VJ0dWuSnshJb5Tlth8KiRF2syz2qdjXk1ANDhP+it3Nzk4dNZUwiysocuqoVjF+RG5WD
+         4HlkwN2qU9v4t637p2Z/UYCbmbB2Iju7gOCyYY05CPez7qRuGpBiiyHxWHnifS3c7JoS
+         GZCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QBnfwH/s1nckEtFwwtwXrNqBglJnciIYNyoP3vBmMcA=;
-        b=y77AscqdHmovuL4UF+UNIXYm6A75Bu7vq89OOJSCHDvTL0UjaFg1hBj0YxvO8lF7a8
-         kc93exf/5rmrlSgzDUYKmzfvGKk0AB7WalvYvk8FXBWK7tk/8wAx8iQqOI/G3y+HLIF/
-         Ox/0GGLtubT7WxMqEKV+SePK/F/i+BENNhnVIP9shIRZfWwOaDgBaBAaeSJRDQK0OWuc
-         YVLMRxWP7boscnILzCAo1d3nl5iI5F/u+uFMHdee1zkHpNfV4rXDDeDNv13/Pm3sfK2o
-         mKUMiCM70NAfVDbnntYEqODuNWe0ZFTWC9C8hDMxhk0ieNF8RWBlKTuOaiRyIEmw2456
-         waxg==
-X-Gm-Message-State: AOAM531v/0CB8ohMyJbVIpQfDceByNy33OJXOFh2paGlMwlUkzRyF9rJ
-        t9mHTZ8tuAKBtIJ1Yz5nWDHSI1qTWsavkgiKx3Rxyw==
-X-Google-Smtp-Source: ABdhPJxzbfwYXhLllqrfdBNTSZmo9/053hCIb0yZepZ92/AN16+ukkFuVGElSNY083XDNxtnOPe+ngaILZ18SxEfGUE=
-X-Received: by 2002:a67:dd90:: with SMTP id i16mr4444764vsk.86.1642178744464;
- Fri, 14 Jan 2022 08:45:44 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=A9GSJbbyUEooumrboslZcyMcawaKEGAeavwi+WIG2HU=;
+        b=gguEd9sETN366Gyzv/B1ujJLhwkgtuxXbPe/rJ+hSXaYo/zIr2WifCp0BlN+9S00aH
+         b3d4wjcEYaLS44mOtmrqR6qNbRcv3taymL9CIQpkc5CEHK7Ktf68Bei80JoSWkR9tvPY
+         CJCszKtbu+EkdCi5P2dHFdXNgM9hFx+M9+QTdcHZ5sFAwWnOCcBVzd2pTyxEWIh06Nuq
+         nsMcqLB4xK9rbRHnFlORRQLwumutPBVzCnPO0jKERw8k9noEtlGWBYGj4XtWSqEULv/K
+         AJbZLv4fjTHRVpSo+xegLXWKRJFcvNITv2brwNpBQM7ZPe4tCs4Aw337FBbjaXUi36QD
+         AK2w==
+X-Gm-Message-State: AOAM533+IwDvYZqZj+xRAUUNwkWaE/nZJrt8gyDSzdk7ECA6G6Yoeo0K
+        4UW0FKxv8NaGPkcWZlqdwFIDRA==
+X-Google-Smtp-Source: ABdhPJwH1fVcm9KJ73Qv/1wtWK15LbuLjx35G9q+OO+bqipocVWKgp1D7JHRA1ZHzmLIoZCbfH/yRQ==
+X-Received: by 2002:a17:903:2284:b0:14a:61b8:618c with SMTP id b4-20020a170903228400b0014a61b8618cmr10521345plh.127.1642178964921;
+        Fri, 14 Jan 2022 08:49:24 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id k19sm6152051pff.5.2022.01.14.08.49.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 08:49:24 -0800 (PST)
+Date:   Fri, 14 Jan 2022 16:49:21 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
+        alexandru.elisei@arm.com, anup.patel@wdc.com,
+        aou@eecs.berkeley.edu, atish.patra@wdc.com,
+        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
+        catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, david@redhat.com,
+        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
+        hca@linux.ibm.com, imbrenda@linux.ibm.com, james.morse@arm.com,
+        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        maz@kernel.org, mingo@redhat.com, mpe@ellerman.id.au,
+        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
+        paulus@samba.org, paul.walmsley@sifive.com, pbonzini@redhat.com,
+        suzuki.poulose@arm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+Subject: Re: [PATCH 5/5] kvm/x86: rework guest entry logic
+Message-ID: <YeGpkQymsl4SbLRy@google.com>
+References: <20220111153539.2532246-1-mark.rutland@arm.com>
+ <20220111153539.2532246-6-mark.rutland@arm.com>
+ <YeCQeHbswboaosoV@google.com>
+ <YeFnD8l/OoMtPYvh@FVFF77S0Q05N>
 MIME-Version: 1.0
-References: <20220111101338.58630-1-krzysztof.kozlowski@canonical.com> <20220111101338.58630-4-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220111101338.58630-4-krzysztof.kozlowski@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Fri, 14 Jan 2022 18:45:32 +0200
-Message-ID: <CAPLW+4m5+BXD0vDi6YxvE7XYWZ5ej+QdL3OzzSCWG=mqX_sTqA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] spi: dt-bindings: samsung: allow controller-data
- to be optional
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Pratyush Yadav <p.yadav@ti.com>, linux-spi@vger.kernel.org,
-        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YeFnD8l/OoMtPYvh@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022 at 12:13, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> The Samsung SoC SPI bindings requires to provide controller-data node
-> for each of SPI peripheral device nodes.  Make this controller-data node
-> optional, so DTS could be simpler.
->
-> Suggested-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
+On Fri, Jan 14, 2022, Mark Rutland wrote:
+> I assume that other than the naming of the entry/exit functions you're happy
+> with this patch?
 
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
-
->  .../devicetree/bindings/spi/samsung,spi-peripheral-props.yaml  | 1 +
->  Documentation/devicetree/bindings/spi/samsung,spi.yaml         | 3 ---
->  2 files changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
-> index aa5a1f48494b..cadc8a5f061f 100644
-> --- a/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
-> +++ b/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
-> @@ -28,6 +28,7 @@ properties:
->             - 3: 270 degree phase shift sampling.
->          $ref: /schemas/types.yaml#/definitions/uint32
->          enum: [0, 1, 2, 3]
-> +        default: 0
->
->      required:
->        - samsung,spi-feedback-delay
-> diff --git a/Documentation/devicetree/bindings/spi/samsung,spi.yaml b/Documentation/devicetree/bindings/spi/samsung,spi.yaml
-> index da4533feb946..322558818a43 100644
-> --- a/Documentation/devicetree/bindings/spi/samsung,spi.yaml
-> +++ b/Documentation/devicetree/bindings/spi/samsung,spi.yaml
-> @@ -75,9 +75,6 @@ patternProperties:
->      allOf:
->        - $ref: spi-peripheral-props.yaml
->
-> -    required:
-> -      - controller-data
-> -
->      unevaluatedProperties: false
->
->  required:
-> --
-> 2.32.0
->
+Yep!
