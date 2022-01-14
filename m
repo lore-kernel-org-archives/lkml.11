@@ -2,91 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABEEC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 00:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D032AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 00:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238503AbiANAp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 19:45:57 -0500
-Received: from mout.kundenserver.de ([212.227.17.13]:53311 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229816AbiANApz (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 19:45:55 -0500
-Received: from mail-wm1-f44.google.com ([209.85.128.44]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MhCq4-1mdniy0CUU-00eLMS; Fri, 14 Jan 2022 01:45:54 +0100
-Received: by mail-wm1-f44.google.com with SMTP id q9-20020a7bce89000000b00349e697f2fbso5808385wmj.0;
-        Thu, 13 Jan 2022 16:45:53 -0800 (PST)
-X-Gm-Message-State: AOAM530IseZt5Cd1ojFne4E5sd3mKnagXNvf0T7o892i5AZ0w/nXKVHp
-        U/8z0swTeoPudeNshluO69zLnG7JNaGgA/8vQCs=
-X-Google-Smtp-Source: ABdhPJwV4G3A5mpFnAW11HwlY/Tf7y1xRC36rwdQkkqDkkOWfKAxxiuv8Puk8O7tRRiiu1Ah39q+R3OAJUeOa6nnmfM=
-X-Received: by 2002:a05:600c:287:: with SMTP id 7mr6081734wmk.98.1642121153661;
- Thu, 13 Jan 2022 16:45:53 -0800 (PST)
+        id S238524AbiANAr2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 19:47:28 -0500
+Received: from mga07.intel.com ([134.134.136.100]:29285 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229816AbiANAr2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 19:47:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642121248; x=1673657248;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=nG4HRJHAoVChSdrA7YfUThhGqm64uQvf4SjHfzChLu4=;
+  b=OiY7B3enkLtmW2WpH9Xx1+HG4WMTwxrfknPRImMuKETWbXYuTZZXVfXE
+   asu042Kfd8dPfdhXZfo8wlKTFQTae1V2MCCXtw7r6FmI0A91hPojHmddJ
+   lIq3KpwWbDUTJdkRjlthayQyaiRdkuJBnJLetyrSGxhiu7prvQsscWuJV
+   DVDBz0HVsziVWEpGvGPZ61CD89Fbl/bt7O/g+sUsRwXmZ0SVhXD0O13cn
+   Lx0p+f0csfx/RaTem0KzHwjkC/rq+wU47qLu+VCmXRUJRgLBw+qAh6w7D
+   QsNiX5IB3I16a00i2gFFpeeQfPpucVIMvD+P6fK0xXvN1RqadEXKhWP6B
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="307495129"
+X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
+   d="scan'208";a="307495129"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 16:47:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
+   d="scan'208";a="559305514"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 13 Jan 2022 16:47:15 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n8AkN-0007py-7l; Fri, 14 Jan 2022 00:47:15 +0000
+Date:   Fri, 14 Jan 2022 08:46:36 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [ardb:for-kernelci 7/32] undefined reference to
+ `generic_handle_arch_irq'
+Message-ID: <202201140816.NP44eEC3-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220113171921.17466-1-philippe.cornu@foss.st.com> <20220113171921.17466-2-philippe.cornu@foss.st.com>
-In-Reply-To: <20220113171921.17466-2-philippe.cornu@foss.st.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 14 Jan 2022 01:45:37 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0Nn3fwEMtb9f0DZhbyY+mLva5XR332XfXqX=WSmB9a8w@mail.gmail.com>
-Message-ID: <CAK8P3a0Nn3fwEMtb9f0DZhbyY+mLva5XR332XfXqX=WSmB9a8w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] MAINTAINERS: Update Benjamin Gaignard maintainer status
-To:     Philippe Cornu <philippe.cornu@foss.st.com>
-Cc:     Yannick Fertre <yannick.fertre@foss.st.com>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Alain Volmat <alain.volmat@foss.st.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Christian Konig <christian.koenig@amd.com>,
-        SoC Team <soc@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:214a73NjFh8gp4Qg1UmUh7s6YWPisKC8VfpqQQIsyvQo2AMqWLk
- W/actafV9S3p75x8tZatcLm14aHoiMZhR8FQlwUD0Rhlpyd1kv941DI6jlQIKkJRCrp+d1q
- QQ5QEO+M/S6XXtDG9R6CLA9SxKLVqRlMBTwFtKDe2aEBwCF69EP1XzptR354JSr7W7XQzKE
- hNOesE61wS96qOWn4zJnA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:AhqHA3kxghE=:tAvJ+cxH3TRypMG55ZoCYd
- k1ow0WoWlgKdWm5oSimoYfDnHNrYdgK7G02EnKrdcnDvioHFwFpkjfReYrAnJDS4BIhKWijuD
- WTPGHNZY/OeZH0zfXQadcZ30HtcYdTXKojw/SYtawbbrOwu9herpAEWLMRpIPwDVDsUCIK5Y9
- g9B6NXd/Np1fQWTEQoLhnicjuc3WdbSNC1MLd3hmF7TddO3YKi/W4TiUJaYK03PDab4N0zdJ6
- PjxNVtEzw85tgYiXTcfmD+yZU1tkaVWYYXnArRlqKLUNQhDmFvinKMui/4W0Yn+Nei5BnbEGY
- Y8bXEzvsfCj35FgEaKfuYaL74dsS3jVUYbmrnnGxI1z+FNAWWqE/l017bAT7BhyOO+JdkfEDp
- zU4uBw/meBUaGXIldeSeLNHUoIPjdJwLVUju1hpAPddrxIWuWGBk5/spN9ISua4Dr4GC7xGk7
- bq5cvCirqHytAIIsostIHvH24F8eOmT7EzrrAb8ToNMyP8IWl2vE1ZuuU3tdTGby6y2t+uTK5
- JB07uXKIRkxq4HxpHkstsQyfuAW6d8qhIQuVqkrArzz8T3cQZcelI6CQREg/Y/EkKPue8epdu
- aGdsqkIWQbZiBnl0IbyU+xNYefJKVZneIl/HNiWaqDSljuzECYa1pDwUK3nFg1dLoNO8l2YDQ
- lWeCdMw2RowWM5/Jgs95iMw3EAUtDIgIMlNwQBQ8LCQTSouZfnvLcCaBkzr9st76a70Glqvxr
- rLNnr7uL9osHrFkATxNKv+HkuOC1bf09dJYeDsmFC/7/1eiEzBiLewx5I37UH+QMEAWXOxtuP
- nM9pnz3+3RXmVOdGYJWBE99aqeJMe+8iEQW0y/CbDGc7ro9Crw=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 6:19 PM Philippe Cornu
-<philippe.cornu@foss.st.com> wrote:
->
->  DRM DRIVERS FOR STI
-> -M:     Benjamin Gaignard <benjamin.gaignard@linaro.org>
->  L:     dri-devel@lists.freedesktop.org
->  S:     Maintained
->  T:     git git://anongit.freedesktop.org/drm/drm-misc
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git for-kernelci
+head:   852d1768db03fbc19f5bd643d2e4c8f34c4343a2
+commit: 67375b8991dfdaee8738584a1621a47d27b5a9b7 [7/32] ARM: remove old-style irq entry
+config: arm-randconfig-s031-20220113 (https://download.01.org/0day-ci/archive/20220114/202201140816.NP44eEC3-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=67375b8991dfdaee8738584a1621a47d27b5a9b7
+        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
+        git fetch --no-tags ardb for-kernelci
+        git checkout 67375b8991dfdaee8738584a1621a47d27b5a9b7
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash
 
-If there is no longer a maintainer, I suppose it should also be marked as
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-S: Orphaned
+All errors (new ones prefixed by >>):
 
-         Arnd
+   arm-linux-gnueabi-ld: arch/arm/kernel/entry-armv.o: in function `__irq_svc':
+>> (.entry.text+0x120): undefined reference to `generic_handle_arch_irq'
+   arm-linux-gnueabi-ld: arch/arm/kernel/entry-armv.o: in function `__irq_usr':
+   (.entry.text+0x3ec): undefined reference to `generic_handle_arch_irq'
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
