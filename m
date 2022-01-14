@@ -2,95 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A954C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:48:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 626BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:49:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233621AbiANGsd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 01:48:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
+        id S232599AbiANGtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 01:49:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233576AbiANGsc (ORCPT
+        with ESMTP id S230223AbiANGtA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 01:48:32 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D968C061574;
-        Thu, 13 Jan 2022 22:48:32 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id p14so12568128plf.3;
-        Thu, 13 Jan 2022 22:48:32 -0800 (PST)
+        Fri, 14 Jan 2022 01:49:00 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8758FC061574;
+        Thu, 13 Jan 2022 22:49:00 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id 82so10011254qki.10;
+        Thu, 13 Jan 2022 22:49:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=i9LyRM/Cvn/+ZP3AQxRWnhMX0KWeMjk3mtcIWGDqIOY=;
-        b=Yu+SIb7UPWWNf98D86v7vRcE53pixxEAAUzjpQsuI98UZloflGLRvoFkiVzFHocyGU
-         OqLrJmE8XMYqUKsxrMv+/QY2H4zTkj26a5AUVqKkgeBx/kzguZjJzL6zIp+Wok4+YZJW
-         WsmjToMMq371jWtupX73Km4F40GewrZA+MF4VetPFPDXSz6zm+TxV1LydLiXs9ERfCEY
-         /3Rbsh32aHRnVmSgPTiPXk22CrqGXU3JGvZgkKgIvT34bqjMG3IbAS6hH1aOiaPr2IRx
-         hxyOxWGVa1VSy32mSGKhCtKfFP9YmWYK+HJ6fQXfuJoQm4fPL/KWIcX2VENAG4BSpOly
-         dHQg==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=B+fcba0guNJe05QgbJXwe+sMQe2m5ccQ8ajqhjcvHAE=;
+        b=ecmU7hZRNGjPS2XiyC0x8KenUkgVcZzEzqPlRh5jPDVUOuLvmP8aKk9OkWhIdvwWCJ
+         T097GxzoxSze7MoQR9hVpF2UxBYH+TFUbAAqX1ffTCXIBTbnTit4Nvc4CBhn4bRvCxs+
+         6rO9P6L12CyL5KAhjyTwPxanbieM7dAMSx2vBPpIyxZNywCUhEFYvh++oljd1vYNqgS4
+         0EglfMrjsN3+Ywy1gGHALjWmtsf6vDsbES7K9bJRIF/gFWZKRmiaPGGD2C0+IIDZDFEA
+         khuEOJcEYWOrWASuBwJEmEH7ruvVVejYu7UozhUMKCLeHseJbr5EtfqhhgMAABF4HVla
+         owVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=i9LyRM/Cvn/+ZP3AQxRWnhMX0KWeMjk3mtcIWGDqIOY=;
-        b=iAmPmzLHVDJK1fJe8g588PrsIOtB8l3+vS3QRrm4ttVUjTDJ/grpKKESpuJ0ggHWci
-         fcNCxTgdPChCwp8zezH6ZFMqR1Vr7UI1CSaFeNaXPQVU8f2ezU03+Iirk0wbqxatLqF0
-         mqQ7Recxxi06zgZ5qZ/DEGv6yDk8cOXBHX42quY3qhYqSEtOyojffr/f0wynnaeywRqt
-         36PzgLTKulJUYHPC2n5tcyhiGnBmM2hx6i5BqAerPKDYFaUPdMhl5Z0IV1OoWXWaXj1M
-         jGk8oatRBFsr/RUp4rawfCt90HCBwM6JSZEWB0M7iiggIECdVZ2TA54DWWGKH0PADSs3
-         QcDg==
-X-Gm-Message-State: AOAM532NXlfwNuZ6sUtjIpiXhnsE3rpSFWlbQ7XU1K5GPTvu4Ll4/ZQg
-        gLwb8cU9XRQGyjJummMX06VMJ377LyMQ67uL5vo=
-X-Google-Smtp-Source: ABdhPJxr3Eu7BCOij8hAseKJMFyZ5bBaDFUsQeVAYjhRhQ2HbzVBrf/L7t1Y743sFpvYe3fPkgjLtQ==
-X-Received: by 2002:a17:90a:d901:: with SMTP id c1mr18430192pjv.204.1642142911621;
-        Thu, 13 Jan 2022 22:48:31 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id q9sm11679568pjg.1.2022.01.13.22.48.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=B+fcba0guNJe05QgbJXwe+sMQe2m5ccQ8ajqhjcvHAE=;
+        b=1KhQDO5VL0DicffcZZEyjANJKYpa5R8tl4jCuZ4rK1R+E7sCheDyF9Lx9seV89Zxbm
+         08twJD3CyC3D9ggwsaz0M5QNml7Q56NZrdMQajQQHGVAzHOmReIMnVYqGclJI4q+L/TJ
+         c+b6V2h39eOjvjnNUwrtoCcGYEVso4vZ4LhQ32etO13Oe6Ttf5zlazjVzUgA9VnNJPgn
+         sFdJxlIqa2poGcT3VsAKyPD7H/QASnVg7m+IgGL5ePfmhHQpPNYDPHoxY4K9lGjS/b52
+         3aqZutr5BP2PtWU35bUBuXvCecAycFvum84ibQPl/qc5pMDBOSOF5ApY/HzXn7IyFMNl
+         PQGQ==
+X-Gm-Message-State: AOAM530cgX8zEymAiWEY/38LMLxjhMWfAVvUkAPDrubEi6CpeHtU3hsA
+        eGnwpJGA5Za5md9AZRwe/sk8i38TgrE=
+X-Google-Smtp-Source: ABdhPJxpLJfkcIKmkzQboS/h9TEkXvXV4sh4EWp3uO/wDl8oH9bNtbWjfmEvNMtuTjduCYallcj9BA==
+X-Received: by 2002:a05:620a:f10:: with SMTP id v16mr5485570qkl.626.1642142939650;
+        Thu, 13 Jan 2022 22:48:59 -0800 (PST)
+Received: from vps.qemfd.net (vps.qemfd.net. [173.230.130.29])
+        by smtp.gmail.com with ESMTPSA id w9sm563358qkp.89.2022.01.13.22.48.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jan 2022 22:48:31 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Ran Wang <ran.wang_1@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] gpio: mpc8xxx: Fix IRQ check in mpc8xxx_probe
-Date:   Fri, 14 Jan 2022 06:48:20 +0000
-Message-Id: <20220114064821.20200-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 13 Jan 2022 22:48:59 -0800 (PST)
+Received: from schwarzgerat.orthanc (schwarzgerat.danknet [192.168.128.2])
+        by vps.qemfd.net (Postfix) with ESMTP id 7A6DA2B5D4;
+        Fri, 14 Jan 2022 01:48:58 -0500 (EST)
+Received: by schwarzgerat.orthanc (Postfix, from userid 1000)
+        id 75B24600305; Fri, 14 Jan 2022 01:48:58 -0500 (EST)
+Date:   Fri, 14 Jan 2022 01:48:58 -0500
+From:   nick black <dankamongmen@gmail.com>
+To:     linux-man@vger.kernel.org
+Cc:     Alejandro Colomar <alx.manpages@gmail.com>,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [patch] console_codes.4: ffix
+Message-ID: <YeEc2pYvKEckcAmv@schwarzgerat.orthanc>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+Fix up the busted OSC command list (reset palette and
+set palette). Remove CSI prefix from the list of non-CSI
+escapes. End all items of said list with periods,
+matching other sections of the page.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: 76c47d1449fc ("gpio: mpc8xxx: Add ACPI support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: nick black <nickblack@linux.com>
 ---
- drivers/gpio/gpio-mpc8xxx.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ man4/console_codes.4 | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpio/gpio-mpc8xxx.c b/drivers/gpio/gpio-mpc8xxx.c
-index 70d6ae20b1da..01634c8d27b3 100644
---- a/drivers/gpio/gpio-mpc8xxx.c
-+++ b/drivers/gpio/gpio-mpc8xxx.c
-@@ -388,8 +388,8 @@ static int mpc8xxx_probe(struct platform_device *pdev)
- 	}
- 
- 	mpc8xxx_gc->irqn = platform_get_irq(pdev, 0);
--	if (!mpc8xxx_gc->irqn)
--		return 0;
-+	if (mpc8xxx_gc->irqn < 0)
-+		return mpc8xxx_gc->irqn;
- 
- 	mpc8xxx_gc->irq = irq_domain_create_linear(fwnode,
- 						   MPC8XXX_GPIO_PINS,
+diff --git man4/console_codes.4 man4/console_codes.4
+index d549b76a9..001de1955 100644
+--- man4/console_codes.4
++++ man4/console_codes.4
+@@ -139,29 +139,28 @@ T}
+ ESC 8	DECRC	T{
+ Restore state most recently saved by ESC 7.
+ T}
+-ESC [	CSI	Control sequence introducer
+ ESC %		Start sequence selecting character set
+ ESC % @		\0\0\0Select default (ISO 646 / ISO 8859-1)
+ ESC % G		\0\0\0Select UTF-8
+ ESC % 8		\0\0\0Select UTF-8 (obsolete)
+ ESC # 8	DECALN	T{
+-DEC screen alignment test \- fill screen with E's
++DEC screen alignment test \- fill screen with E's.
+ T}
+ ESC (		T{
+ Start sequence defining G0 character set
+ (followed by one of B, 0, U, K, as below)
+ T}
+ ESC ( B		T{
+-Select default (ISO 8859-1 mapping)
++Select default (ISO 8859-1 mapping).
+ T}
+ ESC ( 0		T{
+-Select VT100 graphics mapping
++Select VT100 graphics mapping.
+ T}
+ ESC ( U		T{
+-Select null mapping \- straight to character ROM
++Select null mapping \- straight to character ROM.
+ T}
+ ESC ( K		T{
+-Select user mapping \- the map that is loaded by the utility \fBmapscrn\fP(8)
++Select user mapping \- the map that is loaded by the utility \fBmapscrn\fP(8).
+ T}
+ ESC )		T{
+ Start sequence defining G1 (followed by one of B, 0, U, K, as above).
+@@ -169,12 +168,13 @@ T}
+ ESC >	DECPNM	Set numeric keypad mode
+ ESC =	DECPAM	Set application keypad mode
+ ESC ]	OSC	T{
+-(Should be: Operating system command)
+-ESC ] P \fInrrggbb\fP: set palette, with parameter
+-given in 7 hexadecimal digits after the final P :-(.
+-Here \fIn\fP is the color (0\(en15), and \fIrrggbb\fP indicates
++Operating System Command prefix.
++T}
++ESC ] R		Reset palette.
++ESC ] P		T{
++Set palette, with parameter given in 7 hexadecimal digits \fInrrggbb\fP after
++the final P. Here \fIn\fP is the color (0\(en15), and \fIrrggbb\fP indicates
+ the red/green/blue values (0\(en255).
+-ESC ] R: reset palette
+ T}
+ .TE
+ .ad
 -- 
-2.17.1
+2.34.1
 
+
+-- 
+nick black -=- https://www.nick-black.com
+to make an apple pie from scratch,
+you need first invent a universe.
