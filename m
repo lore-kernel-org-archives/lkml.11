@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFF75C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239710AbiANITK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:19:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58034 "EHLO
+        id S237133AbiANITN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:19:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57992 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237090AbiANISl (ORCPT
+        with ESMTP id S237085AbiANISi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:18:41 -0500
+        Fri, 14 Jan 2022 03:18:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5CBA61E2D;
-        Fri, 14 Jan 2022 08:18:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A51A2C36AFF;
-        Fri, 14 Jan 2022 08:18:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E82161E19;
+        Fri, 14 Jan 2022 08:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64608C36AEA;
+        Fri, 14 Jan 2022 08:18:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148320;
-        bh=HxavA+cJQOKS/3747jgcNdzlPomayvzaDkDybccxg2U=;
+        s=korg; t=1642148317;
+        bh=rN7q0Y5f4ObpEYOzUHGMoS50Dgt2Kinpa0LnakvmDuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1SNvcnhXMRvdDN0zoElmFcXm3hbqOgPHKmhgx7rPwXw0fH7zYjYuDKzpP3+uYfFFw
-         sktzOQY+xBLGCPu5XyXsgUBwWguOgIoKbvcHPone5yBKgmNqfyZ2qLfbY/7gGTb0xc
-         NfqnBvaMmBDNNQxU8om0mp2eK31FmYjohvG/q+2o=
+        b=BJBjxUi1xceaEQavLzZ+D0q7aHw76ctpT5Vm/+VhgspLtX8mMlrldLdiPD9cfKggc
+         l+SFpbGPUmmp4Bq47x97Y6+jlPUksQHC726qFpGHfb5FRbnNJ1oSZqEpaNDpV4L7YN
+         poK0mvMQHRl4DjZUtlYsT4J4h27o8F3OtT0ZxohE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Aaron Ma <aaron.ma@canonical.com>,
         Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.10 07/25] Bluetooth: btusb: Add support for Foxconn QCA 0xe0d0
-Date:   Fri, 14 Jan 2022 09:16:15 +0100
-Message-Id: <20220114081542.945339817@linuxfoundation.org>
+Subject: [PATCH 5.10 06/25] Bluetooth: btusb: Add support for Foxconn MT7922A
+Date:   Fri, 14 Jan 2022 09:16:14 +0100
+Message-Id: <20220114081542.907645608@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
@@ -47,25 +47,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Aaron Ma <aaron.ma@canonical.com>
 
-commit 1cd563ebd0dc062127a85e84f934f4c697bb43ef upstream.
+commit 6932627425d6d3849aecd43c02158a5312895ad4 upstream.
 
-Add an ID of Qualcomm Bluetooth SoC WCN6855.
+Add 2 USB IDs for MT7922A chip.
+These 2 devices got the same description.
 
-T:  Bus=05 Lev=01 Prnt=01 Port=03 Cnt=02 Dev#=  4 Spd=12   MxCh= 0
-D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=0489 ProdID=e0d0 Rev= 0.01
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
+T:  Bus=01 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=480  MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=0489 ProdID=e0d8 Rev= 1.00
+
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=02 Dev#=  3 Spd=480  MxCh= 0
+D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=0489 ProdID=e0d9 Rev= 1.00
+S:  Manufacturer=MediaTek Inc.
+S:  Product=Wireless_Device
+S:  SerialNumber=000000000
+C:* #Ifs= 3 Cfg#= 1 Atr=e0 MxPwr=100mA
+A:  FirstIf#= 0 IfCount= 3 Cls=e0(wlcon) Sub=01 Prot=01
 I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:  If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=125us
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
 E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
 E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
 I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
 E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
 E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:* If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
 E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
 E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
 I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
@@ -80,28 +89,36 @@ E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
 E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
 E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+I:* If#= 2 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
+E:  Ad=8a(I) Atr=03(Int.) MxPS=  64 Ivl=125us
+E:  Ad=0a(O) Atr=03(Int.) MxPS=  64 Ivl=125us
+I:  If#= 2 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
+E:  Ad=8a(I) Atr=03(Int.) MxPS= 512 Ivl=125us
+E:  Ad=0a(O) Atr=03(Int.) MxPS= 512 Ivl=125us
 
 Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/bluetooth/btusb.c |    8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 --- a/drivers/bluetooth/btusb.c
 +++ b/drivers/bluetooth/btusb.c
-@@ -385,6 +385,9 @@ static const struct usb_device_id blackl
- 	{ USB_DEVICE(0x10ab, 0x9409), .driver_info = BTUSB_QCA_WCN6855 |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x0489, 0xe0d0), .driver_info = BTUSB_QCA_WCN6855 |
+@@ -406,6 +406,14 @@ static const struct usb_device_id blackl
+ 			 BTUSB_WIDEBAND_SPEECH |
+ 			 BTUSB_VALID_LE_STATES },
+ 
++	/* MediaTek MT7922A Bluetooth devices */
++	{ USB_DEVICE(0x0489, 0xe0d8), .driver_info = BTUSB_MEDIATEK |
 +						     BTUSB_WIDEBAND_SPEECH |
 +						     BTUSB_VALID_LE_STATES },
- 
- 	/* Other Intel Bluetooth devices */
- 	{ USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
++	{ USB_DEVICE(0x0489, 0xe0d9), .driver_info = BTUSB_MEDIATEK |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
++
+ 	/* Additional Realtek 8723AE Bluetooth devices */
+ 	{ USB_DEVICE(0x0930, 0x021d), .driver_info = BTUSB_REALTEK },
+ 	{ USB_DEVICE(0x13d3, 0x3394), .driver_info = BTUSB_REALTEK },
 
 
