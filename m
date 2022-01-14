@@ -2,79 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E54C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7181FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242765AbiANPjL convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:39:11 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:49052 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229884AbiANPjJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:39:09 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-312-5jlSIvp6O4S49Qxj-dKL-Q-1; Fri, 14 Jan 2022 15:39:06 +0000
-X-MC-Unique: 5jlSIvp6O4S49Qxj-dKL-Q-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.26; Fri, 14 Jan 2022 15:39:06 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.026; Fri, 14 Jan 2022 15:39:06 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "tytso@mit.edu" <tytso@mit.edu>
-Subject: RE: [PATCH] random: cleanup fractional entropy shift constants
-Thread-Topic: [PATCH] random: cleanup fractional entropy shift constants
-Thread-Index: AQHYCVwNJeBTmh3+qEWqVcWV8TuSV6xipq1A
-Date:   Fri, 14 Jan 2022 15:39:06 +0000
-Message-ID: <18ec4b57aecc4fa18d8e3bb6e090af1b@AcuMS.aculab.com>
-References: <20220113154413.29513-1-Jason@zx2c4.com>
- <20220114153305.98505-1-Jason@zx2c4.com>
-In-Reply-To: <20220114153305.98505-1-Jason@zx2c4.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S242795AbiANPkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:40:45 -0500
+Received: from mga12.intel.com ([192.55.52.136]:65044 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229884AbiANPko (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 10:40:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642174844; x=1673710844;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EmTaqi0mb1+xAu+Z1chEH+YXcMOWdceEHA+qZobfcY8=;
+  b=f3FL2sGOfuYQyw9kgF46IcC0yHFumrVj2dgTg003DdmOm9ADQqsY0AOF
+   01RRmoLMEo/ptxqg4fxZ9r0Wo8Id8nEHXnlAxyRScfB7S4WCi3tqi9uhj
+   oTV4oZQ7DonL1DF3MUWqiV9mCps/Z1/Ge1h8n1fpeB57/F9v8og3niTWm
+   EIKql0Toh6TkaR4dzwu94nPpWwyEtbULLkxm/Gn09EREjvW1Dv9L2U6ep
+   cD+7ukJJiDRcm9gIdpC8HsEvkA9BtnU0TZYD34Mb0pqvKKtebyY2yIQCz
+   Abim3J2uTM8Fra2sNaHWn/RO1iaI8Ro2CRSTTffmNXnmSRFCgbLwAjYoX
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="224250939"
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="224250939"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:40:44 -0800
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="529368285"
+Received: from alliang-mobl1.amr.corp.intel.com (HELO [10.212.42.120]) ([10.212.42.120])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:40:41 -0800
+Message-ID: <037f9a23-6a90-bacb-5f9c-05f9a8be3be7@linux.intel.com>
+Date:   Fri, 14 Jan 2022 15:40:40 +0000
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH][RESEND] i915: make array flex_regs static const
 Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+To:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Colin Ian King <colin.i.king@gmail.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220112223435.949071-1-colin.i.king@gmail.com>
+ <87h7a86lf8.fsf@intel.com>
+From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
+Organization: Intel Corporation UK Plc
+In-Reply-To: <87h7a86lf8.fsf@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld
-> Sent: 14 January 2022 15:33
+
+On 13/01/2022 09:21, Jani Nikula wrote:
+> On Wed, 12 Jan 2022, Colin Ian King <colin.i.king@gmail.com> wrote:
+>> Don't populate the read-only array flex_regs on the stack but
+>> instead it static const. Also makes the object code a little smaller.
+>>
+>> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+>>
+>> ---
+>>
+>> RESEND: Use correct e-mail address for sign-off and From: in e-mail.
 > 
-> The entropy estimator is calculated in terms of 1/8 bits, which means
-> there are various constants where things are shifted by 3. Move these
-> into our pool info enum with the other relevant constants, and normalize
-> the name a bit, prepending a POOL_ like the rest. While we're at it,
-> move an English assertion about sizes into a proper BUILD_BUG_ON so
-> that the compiler can ensure this invariant.
+> There are a number of things at play here:
 > 
-...
-> -#define ENTROPY_SHIFT 3
-> -#define ENTROPY_BITS() (input_pool.entropy_count >> ENTROPY_SHIFT)
-..
-> +	POOL_ENTROPY_SHIFT = 3,
-> +#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
+> - Our tooling checks for certain things, such as author/signed-off-by
+>    match, after applying the patch.
+> 
+> - You have an entry in the kernel git .mailmap.
+> 
+> - The git log.mailmap config default has changed from false to true.
+> 
+> We apply the patch, and, with the default options, git show will display
+> a different author than the signed-off-by.
+> 
+> We should use --no-use-mailmap when examining a commit to ensure the
+> commit is internally consistent, regardless of .mailmap.
 
-The rename ought to be a different patch.
+Yes that sounds like the right thing to do.
 
-	David
+In the meantime I have pushed this patch.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Regards,
+
+Tvrtko
 
