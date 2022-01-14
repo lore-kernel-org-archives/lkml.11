@@ -2,105 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 006BBC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:42:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DCDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243490AbiANQmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 11:42:15 -0500
-Received: from foss.arm.com ([217.140.110.172]:35704 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235625AbiANQmN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 11:42:13 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CBBF76D;
-        Fri, 14 Jan 2022 08:42:12 -0800 (PST)
-Received: from [10.57.67.190] (unknown [10.57.67.190])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4A2F13F766;
-        Fri, 14 Jan 2022 08:42:11 -0800 (PST)
-Message-ID: <d2d54776-b4ee-2cda-334d-f868a6bbdf8b@arm.com>
-Date:   Fri, 14 Jan 2022 16:42:06 +0000
+        id S243529AbiANQn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 11:43:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235625AbiANQn0 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 11:43:26 -0500
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C882AC061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:43:25 -0800 (PST)
+Received: by mail-lf1-x136.google.com with SMTP id br17so32048055lfb.6
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:43:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:user-agent:mime-version
+         :content-disposition;
+        bh=u50us0AD3nwGYBzCMwJX7WF8TLsdut+YHsrfo8CJPWQ=;
+        b=a3CJyZ/jLU+cLlc4mE7a17qTVo6dS8r1yJT4nLU2EjLDne0kM8tuyzg8e9wWe8Y1rZ
+         3AXxcWkjz0JMQQcUCCR6PJbQDnZAeBNIWcKqImx3Pa5L56hGimc/3ORnnApaoP894PdK
+         4rXCMZQJHWmJmNJkolRra+cze7ZgjxSnGA4gjjLJa5m8XCSFDCFE86xBWE8AWmespNMk
+         yJyXCtmfidb3+QLyY1CnUdJ3TSngGut+5JFcvtOEeIIE2WFYOVlUAoA6ALWgnZScIXqL
+         lsHTm2r9wNTqPUXDkb//zbLZf8sWShuNhg/HxM4Tp7utxuJilgkPmAImhNDMpv635j5G
+         PL3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :mime-version:content-disposition;
+        bh=u50us0AD3nwGYBzCMwJX7WF8TLsdut+YHsrfo8CJPWQ=;
+        b=eoFIUoJYEqJ0bQSRlBB9/Ax7fvem3cY4HZiNBOaFa3XfgjOWchZjBTVpO1TgAarvH3
+         +WiJN0iZqc63YD9RF+WTMllM93Xc27TO37b/f6G2J6+NOH8AH+qOdUGHaDIhmPmpaNdD
+         AXMbZxKFXZZuFAwm7qA7kNw5Cb0VWX8CFgOrrubKkqc2ueavWkpmswJPaXVu7x9AiNhL
+         mEKVGpIgdCtiKwp36xoM2mc0zRGRRzGVnfE+CDAHNYVJwJFbAdghQbGMYtIDot5B8ksa
+         NUl4OerPBZj2SUud0anO70CgLafsmsEAiZ9Zs6PRAmp/v53lFgsOHt2/nyChCZkxeX+0
+         1G3g==
+X-Gm-Message-State: AOAM531GQJ6FqYzEj3pudAZrNeW3O6sp4a9iviFq/ABH/Ul9JE5sVsrN
+        JhdQw0DYAmNkLcajwgtKwNE=
+X-Google-Smtp-Source: ABdhPJy8oRBd9adSSDaJ1p5ffaklWXFU0PbvMzO4ZwJ2by8ZODfckkMB6FgQBA1GYupkLKeHr6Vacg==
+X-Received: by 2002:a2e:b4b8:: with SMTP id q24mr2950046ljm.482.1642178604185;
+        Fri, 14 Jan 2022 08:43:24 -0800 (PST)
+Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
+        by smtp.gmail.com with ESMTPSA id cf42sm627703lfb.251.2022.01.14.08.43.23
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Fri, 14 Jan 2022 08:43:23 -0800 (PST)
+Date:   Fri, 14 Jan 2022 19:49:05 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Jeremy Szu <jeremy.szu@canonical.com>,
+        Werner Sembach <wse@tuxedocomputers.com>,
+        Hui Wang <hui.wang@canonical.com>,
+        Cameron Berkenpas <cam@neo-zeon.de>,
+        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
+        Elia Devito <eliadevito@gmail.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/1] ALSA: hda/realtek: fix speakers and micmute on HP 855
+Message-ID: <20220114164904.lgj7yimbei6fmloe@localhost.localdomain>
+User-Agent: mtt
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 4/4] arm64: dts: rockchip: Enable the GPU on Quartz64
- Model A
-Content-Language: en-GB
-To:     Piotr Oniszczuk <piotr.oniszczuk@gmail.com>,
-        Alex Bee <knaerzche@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
-        linux-rockchip@lists.infradead.org,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Ezequiel Garcia <ezequiel@collabora.com>
-References: <20211126151729.1026566-1-knaerzche@gmail.com>
- <20211126151729.1026566-5-knaerzche@gmail.com>
- <EB2E04F1-BACA-4A4F-97F9-0257F29D57B5@gmail.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <EB2E04F1-BACA-4A4F-97F9-0257F29D57B5@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-14 16:25, Piotr Oniszczuk wrote:
-> 
-> 
->> Wiadomość napisana przez Alex Bee <knaerzche@gmail.com> w dniu 26.11.2021, o godz. 16:17:
->>
->> From: Ezequiel Garcia <ezequiel@collabora.com>
->>
->> Enable the GPU core on the Pine64 Quartz64 Model A.
->>
->> Signed-off-by: Ezequiel Garcia <ezequiel@collabora.com>
->> Signed-off-by: Alex Bee <knaerzche@gmail.com>
->> ---
->> arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts | 5 +++++
->> 1 file changed, 5 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
->> index 4d4b2a301b1a..625489c60622 100644
->> --- a/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
->> +++ b/arch/arm64/boot/dts/rockchip/rk3566-quartz64-a.dts
->> @@ -205,6 +205,11 @@ &gmac1m0_clkinout
->> 	status = "okay";
->> };
->>
->> +&gpu {
->> +	mali-supply = <&vdd_gpu>;
->> +	status = "okay";
->> +};
->> +
->> &i2c0 {
->> 	status = "okay";
->>
->> -- 
->>
-> 
-> Alex, Ezequiel
-> 
-> I'm playing with 5.16 mainline on rk3566 based tvbox (x96-x6)
-> 
-> Box boots and I have working SD card, Eth, HDMI.
-> 
-> I applied this series as I want to get GPU working but I'm getting:
-> 
-> [    3.169144] panfrost fde60000.gpu: get clock failed -517
-> [    3.169646] panfrost fde60000.gpu: clk init failed -517
-> [    3.213653] panfrost fde60000.gpu: get clock failed -517
-> [    3.214156] panfrost fde60000.gpu: clk init failed -517
-> [    3.230505] panfrost fde60000.gpu: get clock failed -517
-> [    3.231006] panfrost fde60000.gpu: clk init failed -517
-> [    3.258072] panfrost fde60000.gpu: get clock failed -517
-> [    3.258575] panfrost fde60000.gpu: clk init failed -517
-> 
-> Maybe you have some hints here?
+Rebased and re-tested on the latest sound.git tree.
 
-517 is EPROBE_DEFER, which implies it's waiting for the relevant clock 
-provider to show up. I see from patch #2 that SCMI is involved, so I'd 
-check that that's working and you have CONFIG_COMMON_CLOCK_SCMI enabled.
+Alexander Sergeyev (1):
+  ALSA: hda/realtek: fix speakers and micmute on HP 855 G8
 
-Robin.
+ sound/pci/hda/patch_realtek.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+-- 
+2.34.1
+
