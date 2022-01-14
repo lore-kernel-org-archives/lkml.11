@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB10C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE66C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237177AbiANISx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:18:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57808 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239773AbiANISZ (ORCPT
+        id S239656AbiANIS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:18:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239635AbiANIS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:18:25 -0500
+        Fri, 14 Jan 2022 03:18:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C64C061749;
+        Fri, 14 Jan 2022 00:18:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EACD661E06;
-        Fri, 14 Jan 2022 08:18:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7101AC36AEA;
-        Fri, 14 Jan 2022 08:18:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AB0661E1E;
+        Fri, 14 Jan 2022 08:18:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02E3AC36AEA;
+        Fri, 14 Jan 2022 08:18:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148304;
-        bh=bwY1J0+2FxiQIAXC8w5Wtk4azTdHcn+x77aWhc5xcfM=;
+        s=korg; t=1642148307;
+        bh=z2GKoe1ITUkmG3HGNX3ZtDY3JzUzn/yv3i6EMOGz600=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FGM76jFQG93RgDyy8NWGJ3aSsxNyoK0f39wZ8JZmEOrOIpCSSH85ocFR4eYVc9XtL
-         HVo3sAvC1ju8XE8Cc1j/PoBni7yalqR8EJdw8hbU0aWzPDVXdlc9b2ncYA9FFS9dIb
-         Que3CeE5fQb4yV4pNoK4R4J+XJrxyG/1EMUi8EtY=
+        b=ZDGnTRkPu/MdEu5JQFfqSv5bTbnEzjBaF18+BCTh5VOZ3IHxUzgcb37hIlpoAR+vS
+         P4Jw7nzM0a/LEaiPCfIJ9YNbjvT6SU4iIXXfePsVgVsMRnxRG5JzfsWAS/Vmafv2XP
+         0BWbUq/7GIa9wDPEHXeTPD9YMl702SosSkqlZNPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.10 02/25] workqueue: Fix unbind_workers() VS wq_worker_running() race
-Date:   Fri, 14 Jan 2022 09:16:10 +0100
-Message-Id: <20220114081542.775427055@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH 5.10 03/25] bpf: Fix out of bounds access from invalid *_or_null type verification
+Date:   Fri, 14 Jan 2022 09:16:11 +0100
+Message-Id: <20220114081542.816191961@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
@@ -52,101 +47,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-commit 07edfece8bcb0580a1828d939e6f8d91a8603eb2 upstream.
+[ no upstream commit given implicitly fixed through the larger refactoring
+  in c25b2ae136039ffa820c26138ed4a5e5f3ab3841 ]
 
-At CPU-hotplug time, unbind_worker() may preempt a worker while it is
-waking up. In that case the following scenario can happen:
+While auditing some other code, I noticed missing checks inside the pointer
+arithmetic simulation, more specifically, adjust_ptr_min_max_vals(). Several
+*_OR_NULL types are not rejected whereas they are _required_ to be rejected
+given the expectation is that they get promoted into a 'real' pointer type
+for the success case, that is, after an explicit != NULL check.
 
-        unbind_workers()                     wq_worker_running()
-        --------------                      -------------------
-        	                      if (!(worker->flags & WORKER_NOT_RUNNING))
-        	                          //PREEMPTED by unbind_workers
-        worker->flags |= WORKER_UNBOUND;
-        [...]
-        atomic_set(&pool->nr_running, 0);
-        //resume to worker
-		                              atomic_inc(&worker->pool->nr_running);
+One case which stands out and is accessible from unprivileged (iff enabled
+given disabled by default) is BPF ring buffer. From crafting a PoC, the NULL
+check can be bypassed through an offset, and its id marking will then lead
+to promotion of mem_or_null to a mem type.
 
-After unbind_worker() resets pool->nr_running, the value is expected to
-remain 0 until the pool ever gets rebound in case cpu_up() is called on
-the target CPU in the future. But here the race leaves pool->nr_running
-with a value of 1, triggering the following warning when the worker goes
-idle:
+bpf_ringbuf_reserve() helper can trigger this case through passing of reserved
+flags, for example.
 
-	WARNING: CPU: 3 PID: 34 at kernel/workqueue.c:1823 worker_enter_idle+0x95/0xc0
-	Modules linked in:
-	CPU: 3 PID: 34 Comm: kworker/3:0 Not tainted 5.16.0-rc1+ #34
-	Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba527-rebuilt.opensuse.org 04/01/2014
-	Workqueue:  0x0 (rcu_par_gp)
-	RIP: 0010:worker_enter_idle+0x95/0xc0
-	Code: 04 85 f8 ff ff ff 39 c1 7f 09 48 8b 43 50 48 85 c0 74 1b 83 e2 04 75 99 8b 43 34 39 43 30 75 91 8b 83 00 03 00 00 85 c0 74 87 <0f> 0b 5b c3 48 8b 35 70 f1 37 01 48 8d 7b 48 48 81 c6 e0 93  0
-	RSP: 0000:ffff9b7680277ed0 EFLAGS: 00010086
-	RAX: 00000000ffffffff RBX: ffff93465eae9c00 RCX: 0000000000000000
-	RDX: 0000000000000000 RSI: ffff9346418a0000 RDI: ffff934641057140
-	RBP: ffff934641057170 R08: 0000000000000001 R09: ffff9346418a0080
-	R10: ffff9b768027fdf0 R11: 0000000000002400 R12: ffff93465eae9c20
-	R13: ffff93465eae9c20 R14: ffff93465eae9c70 R15: ffff934641057140
-	FS:  0000000000000000(0000) GS:ffff93465eac0000(0000) knlGS:0000000000000000
-	CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-	CR2: 0000000000000000 CR3: 000000001cc0c000 CR4: 00000000000006e0
-	DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-	DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-	Call Trace:
-	  <TASK>
-	  worker_thread+0x89/0x3d0
-	  ? process_one_work+0x400/0x400
-	  kthread+0x162/0x190
-	  ? set_kthread_struct+0x40/0x40
-	  ret_from_fork+0x22/0x30
-	  </TASK>
+  func#0 @0
+  0: R1=ctx(id=0,off=0,imm=0) R10=fp0
+  0: (7a) *(u64 *)(r10 -8) = 0
+  1: R1=ctx(id=0,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm
+  1: (18) r1 = 0x0
+  3: R1_w=map_ptr(id=0,off=0,ks=0,vs=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm
+  3: (b7) r2 = 8
+  4: R1_w=map_ptr(id=0,off=0,ks=0,vs=0,imm=0) R2_w=invP8 R10=fp0 fp-8_w=mmmmmmmm
+  4: (b7) r3 = 0
+  5: R1_w=map_ptr(id=0,off=0,ks=0,vs=0,imm=0) R2_w=invP8 R3_w=invP0 R10=fp0 fp-8_w=mmmmmmmm
+  5: (85) call bpf_ringbuf_reserve#131
+  6: R0_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  6: (bf) r6 = r0
+  7: R0_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R6_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  7: (07) r0 += 1
+  8: R0_w=mem_or_null(id=2,ref_obj_id=2,off=1,imm=0) R6_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  8: (15) if r0 == 0x0 goto pc+4
+   R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  9: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  9: (62) *(u32 *)(r6 +0) = 0
+   R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  10: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  10: (bf) r1 = r6
+  11: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R1_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  11: (b7) r2 = 0
+  12: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R1_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R2_w=invP0 R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
+  12: (85) call bpf_ringbuf_submit#132
+  13: R6=invP(id=0) R10=fp0 fp-8=mmmmmmmm
+  13: (b7) r0 = 0
+  14: R0_w=invP0 R6=invP(id=0) R10=fp0 fp-8=mmmmmmmm
+  14: (95) exit
 
-Also due to this incorrect "nr_running == 1", further queued work may
-end up not being served, because no worker is awaken at work insert time.
-This raises rcutorture writer stalls for example.
+  from 8 to 13: safe
+  processed 15 insns (limit 1000000) max_states_per_insn 0 total_states 1 peak_states 1 mark_read 0
+  OK
 
-Fix this with disabling preemption in the right place in
-wq_worker_running().
+All three commits, that is b121b341e598 ("bpf: Add PTR_TO_BTF_ID_OR_NULL support"),
+457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it"), and the
+afbf21dce668 ("bpf: Support readonly/readwrite buffers in verifier") suffer the same
+cause and their *_OR_NULL type pendants must be rejected in adjust_ptr_min_max_vals().
 
-It's worth noting that if the worker migrates and runs concurrently with
-unbind_workers(), it is guaranteed to see the WORKER_UNBOUND flag update
-due to set_cpus_allowed_ptr() acquiring/releasing rq->lock.
+Make the test more robust by reusing reg_type_may_be_null() helper such that we catch
+all *_OR_NULL types we have today and in future.
 
-Fixes: 6d25be5782e4 ("sched/core, workqueues: Distangle worker accounting from rq lock")
-Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
-Tested-by: Paul E. McKenney <paulmck@kernel.org>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
+Note that pointer arithmetic on PTR_TO_BTF_ID, PTR_TO_RDONLY_BUF, and PTR_TO_RDWR_BUF
+is generally allowed.
+
+Fixes: b121b341e598 ("bpf: Add PTR_TO_BTF_ID_OR_NULL support")
+Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
+Fixes: afbf21dce668 ("bpf: Support readonly/readwrite buffers in verifier")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/workqueue.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ kernel/bpf/verifier.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -850,8 +850,17 @@ void wq_worker_running(struct task_struc
- 
- 	if (!worker->sleeping)
- 		return;
-+
-+	/*
-+	 * If preempted by unbind_workers() between the WORKER_NOT_RUNNING check
-+	 * and the nr_running increment below, we may ruin the nr_running reset
-+	 * and leave with an unexpected pool->nr_running == 1 on the newly unbound
-+	 * pool. Protect against such race.
-+	 */
-+	preempt_disable();
- 	if (!(worker->flags & WORKER_NOT_RUNNING))
- 		atomic_inc(&worker->pool->nr_running);
-+	preempt_enable();
- 	worker->sleeping = 0;
- }
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -6037,16 +6037,16 @@ static int adjust_ptr_min_max_vals(struc
+ 		fallthrough;
+ 	case PTR_TO_PACKET_END:
+ 	case PTR_TO_SOCKET:
+-	case PTR_TO_SOCKET_OR_NULL:
+ 	case PTR_TO_SOCK_COMMON:
+-	case PTR_TO_SOCK_COMMON_OR_NULL:
+ 	case PTR_TO_TCP_SOCK:
+-	case PTR_TO_TCP_SOCK_OR_NULL:
+ 	case PTR_TO_XDP_SOCK:
++reject:
+ 		verbose(env, "R%d pointer arithmetic on %s prohibited\n",
+ 			dst, reg_type_str[ptr_reg->type]);
+ 		return -EACCES;
+ 	default:
++		if (reg_type_may_be_null(ptr_reg->type))
++			goto reject;
+ 		break;
+ 	}
  
 
 
