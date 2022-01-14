@@ -2,186 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF9C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B542AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243722AbiANRFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 12:05:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:52598 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243708AbiANRFF (ORCPT
+        id S243734AbiANRI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 12:08:27 -0500
+Received: from mx0a-00069f02.pphosted.com ([205.220.165.32]:52460 "EHLO
+        mx0a-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243708AbiANRI0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 12:05:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642179904;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=NVYKjhnkLV/svSI6KvkwlE+spjnGNnsoSLgbeYPEv9I=;
-        b=WcUWiH9rqnwhjzgix4WYjb6iQgmuNUtVEMNk6HH/BJes0jTxa6XpNFwcFxh9CoH4bGMyJq
-        uEJpI9XvWlHq1fQigzB6YJ+naS+aFNZ+A+CKveCKkCN14NiVILC7Fl1iPRxGz4QWRrqLWl
-        sn9MWc+psJGFO4MmLMmYz8WtfsIizxo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-287-06Hw7hyYMZSdqkBAsC7yAA-1; Fri, 14 Jan 2022 12:05:03 -0500
-X-MC-Unique: 06Hw7hyYMZSdqkBAsC7yAA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C96ED18B62A8;
-        Fri, 14 Jan 2022 17:05:01 +0000 (UTC)
-Received: from jmeneghi.bos.com (unknown [10.22.17.136])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F25825B2EC;
-        Fri, 14 Jan 2022 17:05:00 +0000 (UTC)
-From:   John Meneghini <jmeneghi@redhat.com>
-To:     linux-scsi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        GR-QLogic-Storage-Upstream@marvell.com, mlombard@redhat.com,
-        skashyap@marvell.com
-Subject: [PATCH V2] scsi: bnx2fc: flush destroy_work queue before calling bnx2fc_interface_put
-Date:   Fri, 14 Jan 2022 12:04:25 -0500
-Message-Id: <20220114170424.871391-1-jmeneghi@redhat.com>
+        Fri, 14 Jan 2022 12:08:26 -0500
+Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20EFvZls005696;
+        Fri, 14 Jan 2022 17:08:23 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=cU2R+YPVYqvyFggU86iq/c2pWG9uIt/g8Rx/L+I82kw=;
+ b=ZDRE1eBWU1bGgvMJ+aO0eEDnU7vLNCUpluI0N5sGGxqR1sgPxq1NGi+JkjUoqe3AVHUO
+ 5fLbkVIxhNHkf53Qa58jE2yxiJizi8G3i/c5xGj9wNbLxOgTXdHyqnnUglTZItefqHOB
+ mAfeGwwuctCC//xjZ/5u+KNGjkbn7JiMavbBcmbh5mlUV5ZbJiVLZNIMFaFdNQrTuRkQ
+ rQXL+M+UPFL7WjqZEh4o6z6IctJtuovJ64hBfs+/ILA2mLL7kYtdnAX1qZe6EJoJeijp
+ ZGBYpdUz15PY4eAC2VR/BnmS8//tu9eCrUK+BZ+Gv9a6oDJGbew6zqVRrlGAf7DYvE4X JA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3djkwjbyyb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Jan 2022 17:08:22 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20EGkK0B152479;
+        Fri, 14 Jan 2022 17:08:21 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2170.outbound.protection.outlook.com [104.47.58.170])
+        by userp3030.oracle.com with ESMTP id 3deyr3tq96-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 14 Jan 2022 17:08:21 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ebDpKiX0FDKcf/h8RthEnB/4td0JFb+Qw/r+JOGMTsqW0G7Uz0FlRjV/R0GJpisOTizVodfzNq7O59LSA+lJ10DNTdaUlN8SQSphSvDRnFnYNJXsc7FhTgrwaYV3Evea+Rbgo1hWmWbk8HfJvLpIG2do+zwgxUrhb+KO1reuESsgaRsTYXscZxJvkLlpg5Bn6WaqMARme8vp8v9bQcZvv3DAqAv9LsmxTpDVt1+Be+JCqWEd8p+4qwd2p9qQ4z17CiDXqE6O4RxsJ6YWysE7+fJ7PPQdfHwfudg4g7+7fElrBgZYXjklPa+sB4wlCsTDbfaOU0fWG8K8fuWGHSVJMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cU2R+YPVYqvyFggU86iq/c2pWG9uIt/g8Rx/L+I82kw=;
+ b=IYNtc4XXAfcZ+lhB4J01786yoAo4pxvDtrQEnnsi9sG249/0yM85lwi81g7DwZBfDQaKffN3Nb5GEmzbZei4uKgtcsf7CM/ApEloXuadmz0msn2NN4eaegeCksgEmHxQq7ri5tQzFj5VoOseIKEN9qJMmHHxRiCELmJtLWXdJzvKf0stjozJCR8ysxrKxfgIH7UCzdhrfrLBdoT3xB/pBBCZY2ME1PDkdRlech0iVA3OyDFrRmFU6t/s1Q2ARd2V4IBHgxWfu9YeXnPeQQr81ShfNIEJcNbBuGs12NedXXbWZOQ6XP/OebazZzGWhWKCjS3/v9S2SRVj2EjbSxw9Ug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cU2R+YPVYqvyFggU86iq/c2pWG9uIt/g8Rx/L+I82kw=;
+ b=GgWSIhOSjB5suIJwSr2kGY3Ru2pkAsr1nUuA3NRHtw9JOjHCpXzsV70+ylbcJYxT1f/fnKOcHSv8a+zjsNoBuVQoFc7a62irJm/1OmDqcGaij2jqtGlHzZwozvEruNzCU3hak3ANstDACXVX8QJl2Dlwd+lnT7pIanbyk24ckBo=
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
+ by MN2PR10MB3406.namprd10.prod.outlook.com (2603:10b6:208:128::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Fri, 14 Jan
+ 2022 17:08:19 +0000
+Received: from CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::183a:8dd0:6d9f:596f]) by CO1PR10MB4468.namprd10.prod.outlook.com
+ ([fe80::183a:8dd0:6d9f:596f%4]) with mapi id 15.20.4888.012; Fri, 14 Jan 2022
+ 17:08:19 +0000
+Message-ID: <84861be0-519a-233d-9c6c-482f12e33328@oracle.com>
+Date:   Sat, 15 Jan 2022 04:08:10 +1100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.4.1
+Subject: Re: [PATCH v3 2/2] kernfs: Reduce contention around global per-fs
+ kernfs_rwsem.
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org
+References: <20220113104259.1584491-1-imran.f.khan@oracle.com>
+ <20220113104259.1584491-3-imran.f.khan@oracle.com>
+ <YeBWWWa030xTftWe@slm.duckdns.org>
+From:   Imran Khan <imran.f.khan@oracle.com>
+In-Reply-To: <YeBWWWa030xTftWe@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SY4P282CA0001.AUSP282.PROD.OUTLOOK.COM
+ (2603:10c6:10:a0::11) To CO1PR10MB4468.namprd10.prod.outlook.com
+ (2603:10b6:303:6c::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 817ee782-d316-417b-dd7e-08d9d7807636
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3406:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR10MB3406C5785E282F065D3E550AB0549@MN2PR10MB3406.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5Qdx5wMKQDGz4+wRkljy/c0v59uLx0zlatDFtIzFIxsx1qdy24+zeq6kJopeRzip7uzbdrlUkYLQqd7hXRaVO/iUglz1tamO0oxDBSj6mZz/tTTZq2Nj9uo8tC4CtD83Nh3cpzfV/X8ioki+eWupLhmI+AfokiAvWIyqsAmFqo/N1+VXA9OKYSgGo0qa2MhA545912rrHPlwI2o32UP8Yydi4FYXIqfXtJvGCM6KKJv/3fhIyEu3q5lWL6/6PztZ3xkDNxsU4zMjNFXkjvpjban3OymTnAtjS8fvQqSBI/StPz+o9egO+Qq/qarSTzwxbVNssvlp2dJ1OIG9pUVf/ohALNLoDVWkhyg80NJ2qLPXdJfik0h0NCXXDnnmTJ1IUEQEtaiKtT66smM1sgFAso3ajKwS0Hvjf8D4JToWNf3iX+f07EFHZE5Gl9B4hfFemeN2iOuKJuZm5dhnkQNr1HOJf5kkpZ5T3ZB4BCURhopcuFuvqc1WrZ/loUTkIRQUazreEUQUjmtCvuKba5w5cdycC6Lc66AQCmdKy4jYV4Nw46zkEkaXkzTq3iJuAw5ICY/g5BaBqhaZvPT2Vof0R1ZqwgFKm80c1MkAsN9VEkSUshhmsdRnJiboObDFRE2d6uMIz0WXlHtB6Ilv3DU6Y9AIdGm0LMKBo//3+Muku2ah7AKTQ1B3h2YDG1CgFpsQ8xDd1pjwAAA8pWy2yHXIn6gHR1f5DlEfbyhQcM90OJU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(38100700002)(4326008)(31686004)(66556008)(66476007)(6666004)(6916009)(2906002)(508600001)(83380400001)(316002)(86362001)(186003)(8936002)(66946007)(26005)(31696002)(6506007)(6512007)(36756003)(5660300002)(2616005)(8676002)(53546011)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZW9YZ0NiNnZvSTdyZlZ3ZGJxekh3VGRleTQvekQ2bDQxVCsyUUVOL2FjL3Qr?=
+ =?utf-8?B?QWM0azNnelBTdi8yR1AxWWU4UTk3c3RNNlNwQnlGTk4zYWUyc09McFBUcUFO?=
+ =?utf-8?B?eWJmdC9JSzBYbUZVc01VLzQ5bkFmWStpNWp6Vm9sSmk2bDlaK0RoUnQwZHVR?=
+ =?utf-8?B?dmVoR0tGUXpNa29XUjQwekRmUHJlbThYVHVFVE9vL2dNcWRvdFN3MGV0T3JH?=
+ =?utf-8?B?bEttUG4rTlBGcWp0NUZvYkRNOGFXa2dOQzlFZmRrSTlnQTVkcktsQ3d0Nnpp?=
+ =?utf-8?B?T3daTjMwNTNTUGhXMGhvMENUdkdsSVlIWHcxYWtqMy9GeTBqanBGVkc4WDlr?=
+ =?utf-8?B?bjlXYTRNZ3c2clYrMThoN2phaHFvZmhHYmxQWVJMNUxsZ09yRjl2c1Erb0Rj?=
+ =?utf-8?B?TFFnNUVLN1dUOFl5bDZMRGp0Rm9UcGVBeEMzZDl4MDQwcVowalNGYUNPbFVR?=
+ =?utf-8?B?b3lsVy8zc09ydi85cmIydml2S0RnL1pDM0V2N1M3dWdQVUY5S3Y5RmFSRFpS?=
+ =?utf-8?B?U2wyb0QxcC80OGRCS0FzWHZzNjR2VjZoUDlhMXJZYlN4YnV4U3VUVHBwY3E5?=
+ =?utf-8?B?YUx3NHdPOXNXNm8xa2xpVEJWNnkwQkp1clhCZlhzQ0pjaWw1cXJrNE9FbVVw?=
+ =?utf-8?B?SkU2cTBqVVJ2WndYdzJXSzdPVG5KWFduR1BFeFZpcDFkYzJuN04zYzJVRnNK?=
+ =?utf-8?B?R0lNZzdycnZVb3ZiYmlWK3dTL05rL3ozUDlsTjh6djBuWWdsQWFmREpkbzQr?=
+ =?utf-8?B?WGF6anYwVkVQZWc4WGd0aG1ZK1VwVkw4b1FKMmgvUVl2TGZVRlQwVnNUMk9s?=
+ =?utf-8?B?Vi9tS1RUajM5RlZ1U3psRlQyejdDakJHQVROYjNiMkNVcjNJZk1ITVNyOTRU?=
+ =?utf-8?B?dzdDY3FRcGxFZHo5Tk0vL2V1MG5VV0tPRENJRjFIZXUrOGlRRmoyRUpmVEZY?=
+ =?utf-8?B?RkxLS0JHdmNab3JCUU1PQ2RmSm03SkZKTHZNZkNYNFZwZjZwRTJOYk54S0FQ?=
+ =?utf-8?B?ZlJhTllWMHJNZXR2d0tUQ1U0WC9iUWtHaWJWdjV3QlZMVklUTU5Sd2NZWllS?=
+ =?utf-8?B?aklUTVd1RXhwKzdxck5VaXZ6UGdnN2d4c0lINFlvOU1KMlY2SXhyZTd0MEc3?=
+ =?utf-8?B?WTZHVVN4QjRRb01GeTkxbGZhY29MN054NS9CK0lrdzFhQ05PNWdLQnhjd0NG?=
+ =?utf-8?B?WTFCajk2cU1nSDJick1BMWxCSU1nVXlTZ0JSZmNlM0pqR0g3ZUJJTm00VXB5?=
+ =?utf-8?B?T3VSMUFiTURVUGFTaGxNeXFHRUwyNURpWnpFeVZ6aXNKQXhxNWp2SGVIaldx?=
+ =?utf-8?B?Z3BLUU80M1dHOXRQdVFnK0JTME1YWTJuZEVXTTR1eU1FUmlNWFA3K1dpa0Zk?=
+ =?utf-8?B?YjBqbDJ6TXBZek1FNUtJU1QveW9ZTURmU2NIMVRkLzNjdE9UU3I4UXlhZWMv?=
+ =?utf-8?B?WDIwNE5YN2VxUkxQYU5CT0hGVVRFUmVJNS9tZzBBazVUZjUvNmFpcmxqMFIv?=
+ =?utf-8?B?cmRxMU90YUFmZFRESVZhbVhoZmtZclNRWGNNS1c1UUNpd1BmVytPVnB6RWwv?=
+ =?utf-8?B?aFNZTzg4cTMrOW05U2pzZGFmVHowQzJHd2d5NzFWWFFhSGRjekRPTGpUcUR1?=
+ =?utf-8?B?dWs2amI2Vlg3L0JCczJRRmlTWmtJNXZQOEtMSTR1SWRSZWlZTjFSb3Z2NmI0?=
+ =?utf-8?B?QnMrTC92SllvSlY2QWorOTR2TW9XZHgvS3YxU0Q1L1VqWDg1TUVyQnZMbkZL?=
+ =?utf-8?B?NXQ3TndEUkdvRU9YSFZGMTJqRWp4MDNVbmxBUktKT2cvNGFOYjNMTThCV09n?=
+ =?utf-8?B?b2NhSVZFZDZPNzZYR2t1Y3Rpc3UyejZZL05zUUpwcjdmUHhzY0VUTkc2cVRL?=
+ =?utf-8?B?dHBKR0owaDNKdkNXZmpPNVp0d3pGTGU4eExtUUthdUlPbHpraHZoQnp1ekZy?=
+ =?utf-8?B?VG50bDlMM0poS1ZXZU1XbktONnpLSW5SMHdlc0IzYndGY053ZW9zV3lZa0ND?=
+ =?utf-8?B?WjkxL3ZUOVpGV2YzcWd2OW5UTitBNHBJNmxELzF3cTJHWjBvaHd4U1hjK2cz?=
+ =?utf-8?B?MzRBdkh4cXdUNUQ3RkY1QTZjS3FRL0hZUTBVaGpTbnJMRDFrUEtWekltRlRJ?=
+ =?utf-8?B?NXN6dHNwMGlyeEFnNENFajhvejRGRzFieXRsSisrZGh2T3h5dVl1MEVEbjBQ?=
+ =?utf-8?Q?t+yBIt/z4Y38JNZZnXdcJoY=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 817ee782-d316-417b-dd7e-08d9d7807636
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 17:08:19.2165
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U4aJYuCerPRuwWZxv4gbgV0oqKMjbQSGIREnLHxACosNQQQ5Hu2UeeJYNDG1hqyWlLMFI3yi+cqkFZpyQEo7SA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3406
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10227 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 spamscore=0
+ mlxlogscore=647 adultscore=0 phishscore=0 malwarescore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201140109
+X-Proofpoint-ORIG-GUID: RGpAeyydlHbku-eiMluwae_B9Gtwphup
+X-Proofpoint-GUID: RGpAeyydlHbku-eiMluwae_B9Gtwphup
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  The bnx2fc_destroy functions are removing the interface before calling
-  destroy_work. This results multiple WARNings from sysfs_remove_group
-  as the controller rport device attributes are removed to early.
+Hi Tejun,
 
-  Replace the fcoe_port's destroy_work queue.  It's not needed.
+Thanks for the review.
 
-  The problem is easily reproducible with the following steps.
+On 14/1/22 3:42 am, Tejun Heo wrote:
+> Hello,
+> 
+> On Thu, Jan 13, 2022 at 09:42:59PM +1100, Imran Khan wrote:
+>> @@ -748,11 +749,14 @@ int kernfs_add_one(struct kernfs_node *kn)
+>>  		goto out_unlock;
+>>  
+>>  	/* Update timestamps on the parent */
+>> +	rwsem = iattr_rwsem_ptr(parent);
+>> +	down_write(rwsem);
+>>  	ps_iattr = parent->iattr;
+>>  	if (ps_iattr) {
+>>  		ktime_get_real_ts64(&ps_iattr->ia_ctime);
+>>  		ps_iattr->ia_mtime = ps_iattr->ia_ctime;
+>>  	}
+>> +	up_write(rwsem);
+>>  
+>>  	up_write(&root->kernfs_rwsem);
+> 
+> Hmmm, so the additions / removals are still fs-global lock protected. Would
+> it be possible to synchronize them through hashed locks too? We can provide
+> double locking helpers - look up locks for both parent and child and if
+> different lock in the defined order (parent first most likely) and record
+> what happened in a token so that it can be undone later.
+> 
+I have made changes inline with your suggestion to synchronize
+addition/removal through hashed locks but so far I am not using tokens.
+I am currently testing these changes (so far no issues seen). Before
+floating next version for review I wanted to understand the reason
+behind need of tokens. Could you please elaborate a bit about what needs
+/ may have to be recorded in tokens. Just one example will do. It would
+help me consolidate the next version of this change without overlooking
+something.
 
-  Example:
-
-    $ dmesg -w &
-    $ systemctl enable --now fcoe
-    $ fipvlan -s -c ens2f1
-    $ fcoeadm -d ens2f1.802
-    [  583.464488] host2: libfc: Link down on port (7500a1)
-    [  583.472651] bnx2fc: 7500a1 - rport not created Yet!!
-    [  583.490468] ------------[ cut here ]------------
-    [  583.538725] sysfs group 'power' not found for kobject 'rport-2:0-0'
-    [  583.568814] WARNING: CPU: 3 PID: 192 at fs/sysfs/group.c:279 sysfs_remove_group+0x6f/0x80
-    [  583.607130] Modules linked in: dm_service_time 8021q garp mrp stp llc bnx2fc cnic uio rpcsec_gss_krb5 auth_rpcgss nfsv4 ...
-    [  583.942994] CPU: 3 PID: 192 Comm: kworker/3:2 Kdump: loaded Not tainted 5.14.0-39.el9.x86_64 #1
-    [  583.984105] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-    [  584.016535] Workqueue: fc_wq_2 fc_rport_final_delete [scsi_transport_fc]
-    [  584.050691] RIP: 0010:sysfs_remove_group+0x6f/0x80
-    [  584.074725] Code: ff 5b 48 89 ef 5d 41 5c e9 ee c0 ff ff 48 89 ef e8 f6 b8 ff ff eb d1 49 8b 14 24 48 8b 33 48 c7 c7 ...
-    [  584.162586] RSP: 0018:ffffb567c15afdc0 EFLAGS: 00010282
-    [  584.188225] RAX: 0000000000000000 RBX: ffffffff8eec4220 RCX: 0000000000000000
-    [  584.221053] RDX: ffff8c1586ce84c0 RSI: ffff8c1586cd7cc0 RDI: ffff8c1586cd7cc0
-    [  584.255089] RBP: 0000000000000000 R08: 0000000000000000 R09: ffffb567c15afc00
-    [  584.287954] R10: ffffb567c15afbf8 R11: ffffffff8fbe7f28 R12: ffff8c1486326400
-    [  584.322356] R13: ffff8c1486326480 R14: ffff8c1483a4a000 R15: 0000000000000004
-    [  584.355379] FS:  0000000000000000(0000) GS:ffff8c1586cc0000(0000) knlGS:0000000000000000
-    [  584.394419] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-    [  584.421123] CR2: 00007fe95a6f7840 CR3: 0000000107674002 CR4: 00000000000606e0
-    [  584.454888] Call Trace:
-    [  584.466108]  device_del+0xb2/0x3e0
-    [  584.481701]  device_unregister+0x13/0x60
-    [  584.501306]  bsg_unregister_queue+0x5b/0x80
-    [  584.522029]  bsg_remove_queue+0x1c/0x40
-    [  584.541884]  fc_rport_final_delete+0xf3/0x1d0 [scsi_transport_fc]
-    [  584.573823]  process_one_work+0x1e3/0x3b0
-    [  584.592396]  worker_thread+0x50/0x3b0
-    [  584.609256]  ? rescuer_thread+0x370/0x370
-    [  584.628877]  kthread+0x149/0x170
-    [  584.643673]  ? set_kthread_struct+0x40/0x40
-    [  584.662909]  ret_from_fork+0x22/0x30
-    [  584.680002] ---[ end trace 53575ecefa942ece ]---
-
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
-Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
----
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-index 71fa62bd3083..9be273c320e2 100644
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -82,7 +82,7 @@ static int bnx2fc_bind_pcidev(struct bnx2fc_hba *hba);
- static void bnx2fc_unbind_pcidev(struct bnx2fc_hba *hba);
- static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
- 				  struct device *parent, int npiv);
--static void bnx2fc_destroy_work(struct work_struct *work);
-+static void bnx2fc_port_destroy(struct fcoe_port *port);
- 
- static struct bnx2fc_hba *bnx2fc_hba_lookup(struct net_device *phys_dev);
- static struct bnx2fc_interface *bnx2fc_interface_lookup(struct net_device
-@@ -907,9 +907,6 @@ static void bnx2fc_indicate_netevent(void *context, unsigned long event,
- 				__bnx2fc_destroy(interface);
- 		}
- 		mutex_unlock(&bnx2fc_dev_lock);
--
--		/* Ensure ALL destroy work has been completed before return */
--		flush_workqueue(bnx2fc_wq);
- 		return;
- 
- 	default:
-@@ -1215,8 +1212,8 @@ static int bnx2fc_vport_destroy(struct fc_vport *vport)
- 	mutex_unlock(&n_port->lp_mutex);
- 	bnx2fc_free_vport(interface->hba, port->lport);
- 	bnx2fc_port_shutdown(port->lport);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- 	return 0;
- }
- 
-@@ -1525,7 +1522,6 @@ static struct fc_lport *bnx2fc_if_create(struct bnx2fc_interface *interface,
- 	port->lport = lport;
- 	port->priv = interface;
- 	port->get_netdev = bnx2fc_netdev;
--	INIT_WORK(&port->destroy_work, bnx2fc_destroy_work);
- 
- 	/* Configure fcoe_port */
- 	rc = bnx2fc_lport_config(lport);
-@@ -1653,8 +1649,8 @@ static void __bnx2fc_destroy(struct bnx2fc_interface *interface)
- 	bnx2fc_interface_cleanup(interface);
- 	bnx2fc_stop(interface);
- 	list_del(&interface->list);
-+	bnx2fc_port_destroy(port);
- 	bnx2fc_interface_put(interface);
--	queue_work(bnx2fc_wq, &port->destroy_work);
- }
- 
- /**
-@@ -1694,15 +1690,12 @@ static int bnx2fc_destroy(struct net_device *netdev)
- 	return rc;
- }
- 
--static void bnx2fc_destroy_work(struct work_struct *work)
-+static void bnx2fc_port_destroy(struct fcoe_port *port)
- {
--	struct fcoe_port *port;
- 	struct fc_lport *lport;
- 
--	port = container_of(work, struct fcoe_port, destroy_work);
- 	lport = port->lport;
--
--	BNX2FC_HBA_DBG(lport, "Entered bnx2fc_destroy_work\n");
-+	BNX2FC_HBA_DBG(lport, "Entered %s, destroying lport %p\n", __func__, lport);
- 
- 	bnx2fc_if_destroy(lport);
- }
-@@ -2556,9 +2549,6 @@ static void bnx2fc_ulp_exit(struct cnic_dev *dev)
- 			__bnx2fc_destroy(interface);
- 	mutex_unlock(&bnx2fc_dev_lock);
- 
--	/* Ensure ALL destroy work has been completed before return */
--	flush_workqueue(bnx2fc_wq);
--
- 	bnx2fc_ulp_stop(hba);
- 	/* unregister cnic device */
- 	if (test_and_clear_bit(BNX2FC_CNIC_REGISTERED, &hba->reg_with_cnic))
--- 
-2.27.0
-
+Thanks
+ -- Imran
