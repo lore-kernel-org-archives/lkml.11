@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:15:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B90C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241440AbiANOPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:15:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241393AbiANOPq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:15:46 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DC2C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:15:46 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id e19so13360534plc.10
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:15:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gIos4GkO2iqYWjr5mhM1is7Azpf5/j6Jd0z5PdzqEZM=;
-        b=FhPhOVrgiQIgjwrvUl8LqJ3TpxdvbrH15EqUtc2jTWLZRmsKG3S1do6NwptiB4+n4Y
-         NcFfh4IlLyleLTi7TwVu4IqDq3kPeQAvTFzxTptLwMWCecZFccZngybfR7nKxbVjRB3/
-         +9bpTkD8HSlEylA7FfQtuICHaRHh8fTh4qjqM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gIos4GkO2iqYWjr5mhM1is7Azpf5/j6Jd0z5PdzqEZM=;
-        b=0LnC1Ms9NQttB7axAGObWy+FIrqZejGILM7QRiV7QMO6jv6pM21UKQUdgBucUnV8EX
-         qYmprpDDwcF+QNo/ByeKOiisobrRsZv5zaSxi1Vm8AnasHvjALuP38AcqUjLbOV95MJe
-         Vw+3KQPNc91W5+ah54B6tpKtc1SDeILzbcP+jOgbmXCROxvlORTe4H+zbIxbbpuhVoPm
-         Si7vwMfUWKe4j7FCTie79NdcM15whTlIGcg78zn9xbk1SBa/bf5ZaJxJUl3Lcy7q92O8
-         3OAWi8OdjBZ5DYZp9sAVV3l/mQPKBgU9kHHqCLHoivCzpmQhNKlwGvOzSwgdNSgvfqcc
-         Tpbg==
-X-Gm-Message-State: AOAM531iIwVNdO4x2P09dx22CM8w9vCngqbZZHHItztMn2FipkddZPg1
-        6DH2+Y2AqNXDWUQVbIq7Xxhd8E/NWyjNJQ==
-X-Google-Smtp-Source: ABdhPJxTTJQRzasKLq5iWQnNgDSmZDI0ri1UAx7npHnhGH5WObJT3xk9wMvWJ+uOQ2KFU/Cl6ALYCA==
-X-Received: by 2002:a17:903:2311:b0:14a:8068:a6d with SMTP id d17-20020a170903231100b0014a80680a6dmr6860296plh.70.1642169745841;
-        Fri, 14 Jan 2022 06:15:45 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:d9fc:bf52:3ca:199b])
-        by smtp.gmail.com with UTF8SMTPSA id i13sm4785019pgl.81.2022.01.14.06.15.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 06:15:45 -0800 (PST)
-Date:   Fri, 14 Jan 2022 06:15:43 -0800
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        quic_rjendra@quicinc.com, sibis@codeaurora.org,
-        kgodara1@codeaurora.org, swboyd@chromium.org,
-        pmaliset@codeaurora.org, Andy Gross <agross@kernel.org>,
+        id S241451AbiANOPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:15:51 -0500
+Received: from mout.perfora.net ([74.208.4.197]:59577 "EHLO mout.perfora.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241444AbiANOPu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 09:15:50 -0500
+Received: from localhost.localdomain ([81.221.144.115]) by mrelay.perfora.net
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MA82J-1n1XkS28s5-00BN6P;
+ Fri, 14 Jan 2022 15:15:33 +0100
+From:   Marcel Ziswiler <marcel@ziswiler.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Marek Vasut <marek.vasut@gmail.com>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Rob Herring <robh@kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] arm64: dts: qcom: sc7280: Move herobrine-r0 to its
- own dts
-Message-ID: <YeGFj/lfCLn79yzw@google.com>
-References: <20220114004303.905808-1-dianders@chromium.org>
- <20220113164233.2.Id9716db8c133bcb14c9413144048f8d00ae2674f@changeid>
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 02/11] dt-bindings: gpio: fix gpio-hog example
+Date:   Fri, 14 Jan 2022 15:14:58 +0100
+Message-Id: <20220114141507.395271-3-marcel@ziswiler.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220114141507.395271-1-marcel@ziswiler.com>
+References: <20220114141507.395271-1-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220113164233.2.Id9716db8c133bcb14c9413144048f8d00ae2674f@changeid>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:xFK4LGuItNGSNTma0SMQ7RSr3e4uAb9RyHyRiJaV7Rm55JquVNP
+ 4H9TEkjq/YFvBUEIxp5kqPwnuY8/qU0WbXmx3+sUhycuV6X3m2Ic0C64aKxHnNAbaDSoXC6
+ MS9QFMRnWtq6qJo6JjnVOsMug2bya63AyKq/QppzD8xoixp24CiqpTGgh1ab6q4RzTmRMwp
+ lLHSaS3JDfd0AwV2g1/2Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4ekKvrQAY8Y=:aDvkCu0gy8aAhHqnEsoYgN
+ qUum0Q4W9Q8mgfL/EzUZljc3z715TVPC3aP5c2nC5AbAM8VNnklGvDSsqmVkvjAU/GJk+Qbhc
+ DmydSLuuhcThG4w8/tOSQsT/3x4SPFVyNlVpRcTQRnl70a9Mq8CfznXAbv8qreRTRLcSPb68T
+ k/rpqfp/60mXFQA6ZElppgLuiR6qMNL9Iuf6/CfFhf+H3vDkY0Hsniwlvg5bDubywynsbcKzY
+ 6EDJ5eVbuFSWOG+9vwP6GaPcMRFV9uk3Ojx2QR3d0aDCfXFNzLUQCCvMs4sIKRPXE6KDbL2rl
+ BIbwCJ60WMef0/uvRGmgrd4/+042dirkBfq1nqeHWekJwo99hnYom69mMfTDIUAUDfuRMIMXS
+ 2Ih4/dlq/CZ7DyEjAfJFTJN3vTgs5QEcC/LcaTyojJ/99sTPEAQi7at46etuAphjFCw7c6H6g
+ PjeHwC4Rwghd/xR/68NH92Is7mTQWNX7eTtxtLGISeyKuoRUX9tf+244ea4uwDM3aajnJdGbC
+ PO5PZ/I2IaYwR1C/Ab3H/BdhTP5xKzAg2JLXrkiDP0DU5zx/Nr20N6szMBcCsNdowt7AjfM0B
+ kIX7ELuywRdmta2kR4Fmz1grm9EJ4G6CEge4nxON+h0iH5WdkUGECkVsGPPmmcQNnYeccuyr6
+ n14OCB99focr6zD/zpDi9kTWeINN0nS5Zl6zYKWPOpfoXrJBCq97z0xgwUCt4koa1wcA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 04:43:01PM -0800, Douglas Anderson wrote:
-> The upcoming herobrine-r1 board is really not very similar to
-> herobrine-r0. Let's get rid of the "herobrine.dtsi" file and stick all
-> the content in the -r0 dts file directly. We'll also rename the dts so
-> it's obvious that it's just for -r0.
-> 
-> While renaming, let's actually name the file so it's obvious that
-> "herobrine" is both the name of the board and the name of the
-> "baseboard". In other words "herobrine" is an actual board but also
-> often used as the name of a whole class of similar boards that forked
-> from a design. While "herobrine-herobrine" is a bit of mouthful it
-> makes it more obvious which things are part of an actual board rather
-> than the baseboard.
-> 
-> NOTE: herobrine-rev0's days are likely doomed and this device tree is
-> likely to be deleted in the future.
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Even if this is no yaml yet at least fix the example to be compliant to
+later schema as e.g. found in gpio-pca95xx.yaml, fairchild,74hc595.yaml
+and gpio/fsl-imx-gpio.yaml.
+
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+Acked-by: Rob Herring <robh@kernel.org>
+
+---
+
+Changes in v2:
+- Added Rob's ack.
+
+ Documentation/devicetree/bindings/gpio/gpio.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/gpio/gpio.txt b/Documentation/devicetree/bindings/gpio/gpio.txt
+index a8895d339bfe..5663e71b751f 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio.txt
++++ b/Documentation/devicetree/bindings/gpio/gpio.txt
+@@ -213,7 +213,7 @@ Example of two SOC GPIO banks defined as gpio-controller nodes:
+ 		gpio-controller;
+ 		#gpio-cells = <2>;
+ 
+-		line_b {
++		line_b-hog {
+ 			gpio-hog;
+ 			gpios = <6 0>;
+ 			output-low;
+-- 
+2.33.1
+
