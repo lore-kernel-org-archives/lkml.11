@@ -2,102 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BBDC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 03:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5888DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 03:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238988AbiANDGm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 22:06:42 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:33416 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236150AbiANDGl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 22:06:41 -0500
-X-UUID: 775fc08edc90494a9341dded806c18e1-20220114
-X-UUID: 775fc08edc90494a9341dded806c18e1-20220114
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <axe.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1888334197; Fri, 14 Jan 2022 11:06:39 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 14 Jan 2022 11:06:37 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 14 Jan 2022 11:06:36 +0800
-Message-ID: <52901ebe0db555f8e58dc0d59cfd703c5a0fc2de.camel@mediatek.com>
-Subject: Re: [PATCH v2 3/3] mmc: mediatek: add support for SDIO eint irq
-From:   Axe Yang <axe.yang@mediatek.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-CC:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        "Yoshihiro Shimoda" <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        "Lucas Stach" <dev@lynxeye.de>, Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Fri, 14 Jan 2022 11:06:36 +0800
-In-Reply-To: <YeADWXPGPW253ssR@smile.fi.intel.com>
-References: <20220111014046.5864-1-axe.yang@mediatek.com>
-         <20220111014046.5864-4-axe.yang@mediatek.com>
-         <Yd1uJ+dX2CTEJfYY@smile.fi.intel.com>
-         <83670f12a4eda1d8aecde3c0bf225642106d1267.camel@mediatek.com>
-         <YeADWXPGPW253ssR@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S238998AbiANDGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 22:06:47 -0500
+Received: from mga03.intel.com ([134.134.136.65]:8463 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236150AbiANDGq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 13 Jan 2022 22:06:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642129606; x=1673665606;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=6aJ6oA9KZ9H5+yC8/t8/dEXbjQd4pxgYYBjq4dVBGz4=;
+  b=ZKW18vlzOghny866oBDb3iI/KJXPOI0PYBtV3lFWh4xDi85kn/HvHq1x
+   f91O6wGqirQyeBC0IQi3MFKmWbv/u9GU/BU6QUCbLNHv9qYgslhRIGn9g
+   v/PexDd8tamZyjRYyXmDBBQmnBSZM3UO0lQycWY7KXHxEpVDyMRrz2LKZ
+   g7iRz6sgPRvxDyE+3EXqOuIca8X7E6eXCQ6hYh1KBu2aUz97Q3Cf7Jld4
+   S3MSQV/+30s1cy//UsEdnRGN/UnDPnR6yAiTFsZFRHC3/TIkqxvxzJN9v
+   QIfFUyqvJdnlYI26LHS/pYyxGHQwaYG1oW5E/WRB4SNacU2Jyctrk9uVX
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244128025"
+X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
+   d="scan'208";a="244128025"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 19:06:45 -0800
+X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
+   d="scan'208";a="670725195"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2022 19:06:45 -0800
+Date:   Thu, 13 Jan 2022 19:11:22 -0800
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Fix PCI bus rescan device hot add
+Message-ID: <20220113191122.53bc6ac0@jacob-builder>
+In-Reply-To: <b2139255-2463-c62f-4746-8df7f3f49221@linux.intel.com>
+References: <1642080198-10971-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <b2139255-2463-c62f-4746-8df7f3f49221@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-01-13 at 12:47 +0200, Andy Shevchenko wrote:
-> On Thu, Jan 13, 2022 at 03:58:52PM +0800, Axe Yang wrote:
+Hi BaoLu,
+
+On Fri, 14 Jan 2022 08:58:53 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
+
+> Hi Jacob,
 > 
-> > But for the comment for 'dev_dbg', can you explain more about that?
-> 
-> Sure.
-> 
-> > On Tue, 2022-01-11 at 13:46 +0200, Andy Shevchenko wrote:
-> > > On Tue, Jan 11, 2022 at 09:40:46AM +0800, Axe Yang wrote:
-> 
-> ..
-> 
-> > > > +		host->pins_eint = pinctrl_lookup_state(host-
-> > > > >pinctrl,
-> > > > "state_eint");
-> > > > +		if (IS_ERR(host->pins_eint)) {
-> > > > +			dev_dbg(&pdev->dev, "Cannot find
-> > > > pinctrl
-> > > > eint!\n");
-> > > 
-> > > In debug mode of pin control this will bring a duplicate message.
+> On 1/13/22 9:23 PM, Jacob Pan wrote:
+> > During PCI bus rescan, adding new devices involve two notifiers.
+> > 1. dmar_pci_bus_notifier()
+> > 2. iommu_bus_notifier()
+> > The current code sets #1 as low priority (INT_MIN) which resulted in #2
+> > being invoked first. The result is that struct device pointer cannot be
+> > found in DRHD search for the new device's DMAR/IOMMU. Subsequently, the
+> > device is put under the "catch-all" IOMMU instead of the correct one.
 > > 
-> > Can you explain more about this comment?
-> > I don't understand what the 'duplicate message' refers for.
+> > This could cause system hang when device TLB invalidation is sent to the
+> > wrong IOMMU. Invalidation timeout error or hard lockup can be observed.
+> > 
+> > This patch fixes the issue by setting a higher priority for
+> > dmar_pci_bus_notifier. DRHD search for a new device will find the
+> > correct IOMMU.
+> > 
+> > Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
+> > Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >   drivers/iommu/intel/dmar.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> > index 915bff76fe96..5d07e5b89c2e 100644
+> > --- a/drivers/iommu/intel/dmar.c
+> > +++ b/drivers/iommu/intel/dmar.c
+> > @@ -385,7 +385,7 @@ static int dmar_pci_bus_notifier(struct
+> > notifier_block *nb, 
+> >   static struct notifier_block dmar_pci_bus_nb = {
+> >   	.notifier_call = dmar_pci_bus_notifier,
+> > -	.priority = INT_MIN,
+> > +	.priority = INT_MAX,
+> >   };
+> >   
+> >   static struct dmar_drhd_unit *
+> >   
 > 
-> Have you chance to read the implementation of pinctrl_lookup_state()?
+> Nice catch! dmar_pci_bus_add_dev() should take place *before*
+> iommu_probe_device(). This change enforces this with a higher notifier
+> priority for dmar callback.
+> 
+> Comparably, dmar_pci_bus_del_dev() should take place *after*
+> iommu_release_device(). Perhaps we can use two notifiers, one for
+> ADD_DEVICE (with .priority=INT_MAX) and the other for REMOVE_DEVICE
+> (with .priority=INT_MIN)?
+> 
 
-I have read pinctrl_lookup_state(), and if the 'duplicate message' you
-were talking about is 'using pinctrl dummy state...':
+Since device_to_iommu() lookup in intel_iommu_release_device() only
+checks if device is under "an" IOMMU, not "the" IOMMU. Then the remove path
+order is not needed, right?
 
-https://elixir.bootlin.com/linux/latest/source/drivers/pinctrl/core.c#L1214
-No, this message will not appear in debug mode if pins_eint not found
-because pinctrl_dummy_state is always FALSE. MTK Soc do not need dummy
-state support.
+I know this is not robust, but having so many notifiers with implicit
+priority is not clean either.
 
---
-Best Regard,
-Axe Yang
+Perhaps, we should have explicit priority defined around iommu_bus
+notifier? i.e.
 
+@@ -1841,6 +1841,7 @@ static int iommu_bus_init(struct bus_type *bus, const
+struct iommu_ops *ops) return -ENOMEM; 
+        nb->notifier_call = iommu_bus_notifier;
+                       
++       nb->priority = IOMMU_BUS_NOTIFY_PRIORITY;
+                       
+
+ static struct notifier_block dmar_pci_bus_add_nb = {  
+        .notifier_call = dmar_pci_bus_notifier,    
+-       .priority = INT_MIN,                       
++       .priority = IOMMU_BUS_NOTIFY_PRIORITY + 1,                       
+ };    
+
+ static struct notifier_block dmar_pci_bus_remove_nb = {  
+        .notifier_call = dmar_pci_bus_notifier,    
+-       .priority = INT_MIN,                       
++       .priority = IOMMU_BUS_NOTIFY_PRIORITY - 1,                       
+ };   
+               
+
+> Best regards,
+> baolu
+
+
+Thanks,
+
+Jacob
