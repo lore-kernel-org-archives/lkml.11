@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F1CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79763C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240505AbiANI0g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:26:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
+        id S240627AbiANI0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240811AbiANIYm (ORCPT
+        with ESMTP id S240917AbiANIYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:24:42 -0500
+        Fri, 14 Jan 2022 03:24:48 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F1DC06175B;
-        Fri, 14 Jan 2022 00:23:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DC74C06177B;
+        Fri, 14 Jan 2022 00:23:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F7C0B82448;
-        Fri, 14 Jan 2022 08:23:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8072FC36AE9;
-        Fri, 14 Jan 2022 08:23:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D680B82455;
+        Fri, 14 Jan 2022 08:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D022C36AEC;
+        Fri, 14 Jan 2022 08:23:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148586;
-        bh=gqA5DvM7iufFFeKiwPPhmqQ/Opiz/rJd18h1wVAhjDI=;
+        s=korg; t=1642148599;
+        bh=jlGfr1kFuovHKauLgNuqptQsEupk2mZKFS8sVqP2bqQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FDCMeyZa+IarRm7OVQ45NReqNzDiJBlCMzneDFSXMBRWaw+nsddiMeecBOGCk2j2d
-         FUPQEoxEJestoVINHaHfA0ttjQLXo+qEP/31/kbTSsLQvYOTji1Kf4d3EbO8dAJBTa
-         Khx79O1sa7s3+Osl+0U3mrfUYYgmNXcMM1bAoIrI=
+        b=pxfdkrkZOmBhHVW5SJwq45HR/sxxsdS6bOJnoCY8sxqbnQS0srX7cwFd6x8TsMYbn
+         mWh37XkIVCa4tgig+2IvV9BqFwBFxL+bI1uJgjqOaUScXeGLOC5ttTHPrWFOMGJ9ZU
+         p3FPnAX3o8seHFhtPKAXmTxYaL0jZBGoMb7MswOY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.16 37/37] parisc: Fix pdc_toc_pim_11 and pdc_toc_pim_20 definitions
-Date:   Fri, 14 Jan 2022 09:16:51 +0100
-Message-Id: <20220114081546.057590359@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Brian Silverman <brian.silverman@bluerivertech.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 29/37] can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
+Date:   Fri, 14 Jan 2022 09:16:43 +0100
+Message-Id: <20220114081545.802808097@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -47,112 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Brian Silverman <brian.silverman@bluerivertech.com>
 
-commit 712a270d2db967b387338c26c3dc04ccac3fcec3 upstream.
+commit 89d58aebe14a365c25ba6645414afdbf4e41cea4 upstream.
 
-The definitions for pdc_toc_pim_11 and pdc_toc_pim_20 are wrong since they
-include an entry for a hversion field which doesn't exist in the specification.
+No information is deliberately sent in hf->flags in host -> device
+communications, but the open-source candleLight firmware echoes it
+back, which can result in the GS_CAN_FLAG_OVERFLOW flag being set and
+generating spurious ERRORFRAMEs.
 
-Fix this and clean up some whitespaces so that the whole file will be in
-sync with it's copy in the SeaBIOS-hppa sources.
+While there also initialize the reserved member with 0.
 
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org # v5.16
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Link: https://lore.kernel.org/all/20220106002952.25883-1-brian.silverman@bluerivertech.com
+Link: https://github.com/candle-usb/candleLight_fw/issues/87
+Cc: stable@vger.kernel.org
+Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
+[mkl: initialize the reserved member, too]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/uapi/asm/pdc.h |   32 +++++++++++++++++++++++---------
- 1 file changed, 23 insertions(+), 9 deletions(-)
+ drivers/net/can/usb/gs_usb.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/arch/parisc/include/uapi/asm/pdc.h
-+++ b/arch/parisc/include/uapi/asm/pdc.h
-@@ -4,7 +4,7 @@
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -508,6 +508,8 @@ static netdev_tx_t gs_can_start_xmit(str
  
- /*
-  *	PDC return values ...
-- *	All PDC calls return a subset of these errors. 
-+ *	All PDC calls return a subset of these errors.
-  */
+ 	hf->echo_id = idx;
+ 	hf->channel = dev->channel;
++	hf->flags = 0;
++	hf->reserved = 0;
  
- #define PDC_WARN		  3	/* Call completed with a warning */
-@@ -165,7 +165,7 @@
- #define PDC_PSW_GET_DEFAULTS	1	/* Return defaults              */
- #define PDC_PSW_SET_DEFAULTS	2	/* Set default                  */
- #define PDC_PSW_ENDIAN_BIT	1	/* set for big endian           */
--#define PDC_PSW_WIDE_BIT	2	/* set for wide mode            */ 
-+#define PDC_PSW_WIDE_BIT	2	/* set for wide mode            */
+ 	cf = (struct can_frame *)skb->data;
  
- #define PDC_SYSTEM_MAP	22		/* find system modules		*/
- #define PDC_FIND_MODULE 	0
-@@ -274,7 +274,7 @@
- #define PDC_PCI_PCI_INT_ROUTE_SIZE	13
- #define PDC_PCI_GET_INT_TBL_SIZE	PDC_PCI_PCI_INT_ROUTE_SIZE
- #define PDC_PCI_PCI_INT_ROUTE		14
--#define PDC_PCI_GET_INT_TBL		PDC_PCI_PCI_INT_ROUTE 
-+#define PDC_PCI_GET_INT_TBL		PDC_PCI_PCI_INT_ROUTE
- #define PDC_PCI_READ_MON_TYPE		15
- #define PDC_PCI_WRITE_MON_TYPE		16
- 
-@@ -345,7 +345,7 @@
- 
- /* constants for PDC_CHASSIS */
- #define OSTAT_OFF		0
--#define OSTAT_FLT		1 
-+#define OSTAT_FLT		1
- #define OSTAT_TEST		2
- #define OSTAT_INIT		3
- #define OSTAT_SHUT		4
-@@ -403,7 +403,7 @@ struct zeropage {
- 	int	vec_pad1[6];
- 
- 	/* [0x040] reserved processor dependent */
--	int	pad0[112];
-+	int	pad0[112];              /* in QEMU pad0[0] holds "SeaBIOS\0" */
- 
- 	/* [0x200] reserved */
- 	int	pad1[84];
-@@ -691,6 +691,22 @@ struct pdc_hpmc_pim_20 { /* PDC_PIM */
- 	unsigned long long fr[32];
- };
- 
-+struct pim_cpu_state_cf {
-+	union {
-+	unsigned int
-+		iqv : 1,	/* IIA queue Valid */
-+		iqf : 1,	/* IIA queue Failure */
-+		ipv : 1,	/* IPRs Valid */
-+		grv : 1,	/* GRs Valid */
-+		crv : 1,	/* CRs Valid */
-+		srv : 1,	/* SRs Valid */
-+		trv : 1,	/* CR24 through CR31 valid */
-+		pad : 24,	/* reserved */
-+		td  : 1;	/* TOC did not cause any damage to the system state */
-+	unsigned int val;
-+	};
-+};
-+
- struct pdc_toc_pim_11 {
- 	unsigned int gr[32];
- 	unsigned int cr[32];
-@@ -698,8 +714,7 @@ struct pdc_toc_pim_11 {
- 	unsigned int iasq_back;
- 	unsigned int iaoq_back;
- 	unsigned int check_type;
--	unsigned int hversion;
--	unsigned int cpu_state;
-+	struct pim_cpu_state_cf cpu_state;
- };
- 
- struct pdc_toc_pim_20 {
-@@ -709,8 +724,7 @@ struct pdc_toc_pim_20 {
- 	unsigned long long iasq_back;
- 	unsigned long long iaoq_back;
- 	unsigned int check_type;
--	unsigned int hversion;
--	unsigned int cpu_state;
-+	struct pim_cpu_state_cf cpu_state;
- };
- 
- #endif /* !defined(__ASSEMBLY__) */
 
 
