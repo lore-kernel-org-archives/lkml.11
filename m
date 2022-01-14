@@ -2,146 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C78C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90295C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:32:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237172AbiANJb4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:31:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:22083 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231882AbiANJbz (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:31:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642152714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4HBgz8OwU/mU5OrM0Gwxwm6qrWMg9a0UmRfWZIj1Z94=;
-        b=QyBYN2rdmsF8AKokTmKgdpnuxaXioB5OvSzj+e9d5I6CTPeIAIH1f/Kk9yi9Fpv7t83wV0
-        uKOtzyCu3t3m6C1nknA5NxunpfDgAgaZeVa35AMIQPQX5eyQYMuNQqKrtkkclMx0GtA7Eh
-        V1/6yQ3KEw+wCo64ZUmnmiHj87rhiAE=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-583-kHel8v-lMTCII2wDL5oEsg-1; Fri, 14 Jan 2022 04:31:53 -0500
-X-MC-Unique: kHel8v-lMTCII2wDL5oEsg-1
-Received: by mail-ed1-f71.google.com with SMTP id z8-20020a056402274800b003f8580bfb99so7874406edd.11
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:31:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=4HBgz8OwU/mU5OrM0Gwxwm6qrWMg9a0UmRfWZIj1Z94=;
-        b=bnX5qL0mzRNRtQNCMCrxpqkNxLd12ohW4w/dqivZ5t8/x3Yvne0Yp+S1bRHI2xMNOH
-         hl5IW28Rs0rvgq+eywBgr9OXeh0ePx5fYsv2KWxmxPJRRvztxMJ0FpO6c6zP0TGgpwDC
-         qgH3ncfey3YmjkYuic95zyxFdicvBW4ZyQH8e2+302GR8rHjvnSIuWrNBAOc8+sZi30O
-         CRQ+h8g5+RmYRG2AfCylQzOLHN9wbiu3vAwl6iSMZ9MVHwB93HXCkbHlCNA/klEPqP7W
-         PS9ZI9MlHpVe7MoghJjuUNF6fiBLUlha8MQ+PEhrweb2JHGOW1mrbO+yBea3n68SkyPt
-         /Qyw==
-X-Gm-Message-State: AOAM532q+mpTUZsMAjzcZJFyDr+ICpx/xJ7Eq8H7HZui2B59n4ugE0CU
-        WaMOjxjYnEhppElvxjTazC1STr1ZeMbCYrAFI+1+bPREsjP4ETqwUH5dkkJte0XoHu8ks7j1eyz
-        BfPpT27GD3B4W7CKE1j2V/6Td
-X-Received: by 2002:a17:906:12c7:: with SMTP id l7mr6547779ejb.648.1642152711976;
-        Fri, 14 Jan 2022 01:31:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyB+u9F0i5ZOwZvvAmolu1OmUAo0EEgaS2J8+AhnOUmWoFgW41SQ+6okJCPoKrUBsp8FewU7w==
-X-Received: by 2002:a17:906:12c7:: with SMTP id l7mr6547769ejb.648.1642152711768;
-        Fri, 14 Jan 2022 01:31:51 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id hq29sm1720490ejc.141.2022.01.14.01.31.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 01:31:51 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Igor Mammedov <imammedo@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-kernel@vger.kernel.org,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
-In-Reply-To: <20220114095535.0f498707@redhat.com>
-References: <20211122175818.608220-1-vkuznets@redhat.com>
- <20211122175818.608220-3-vkuznets@redhat.com>
- <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
- <20211227183253.45a03ca2@redhat.com>
- <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com>
- <87mtkdqm7m.fsf@redhat.com> <20220103104057.4dcf7948@redhat.com>
- <YeCowpPBEHC6GJ59@google.com> <20220114095535.0f498707@redhat.com>
-Date:   Fri, 14 Jan 2022 10:31:50 +0100
-Message-ID: <87ilummznd.fsf@redhat.com>
+        id S239494AbiANJcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:32:08 -0500
+Received: from foss.arm.com ([217.140.110.172]:58832 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231882AbiANJcH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 04:32:07 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA5A7101E;
+        Fri, 14 Jan 2022 01:32:06 -0800 (PST)
+Received: from [10.57.34.164] (unknown [10.57.34.164])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 155F83F766;
+        Fri, 14 Jan 2022 01:32:05 -0800 (PST)
+Subject: Re: [PATCH 0/2] perf: arm_spe: make the PMSCR CX bit[3] consistent
+ across the session
+To:     linux-eng@arm.com
+Cc:     james.clark@arm.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+References: <20220113175417.5523-1-german.gomez@arm.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <4f28367f-f6a2-fcca-dd33-c98daeb6bc11@arm.com>
+Date:   Fri, 14 Jan 2022 09:31:58 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20220113175417.5523-1-german.gomez@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Igor Mammedov <imammedo@redhat.com> writes:
+Apologies everyone, this was a missend.
 
-> On Thu, 13 Jan 2022 22:33:38 +0000
-> Sean Christopherson <seanjc@google.com> wrote:
+On 13/01/2022 17:54, German Gomez wrote:
+> The value of the CX bit of the PMSCR register is not consistent across
+> a perf session. There is an example in [1/2] to reproduce the issue.
 >
->> On Mon, Jan 03, 2022, Igor Mammedov wrote:
->> > On Mon, 03 Jan 2022 09:04:29 +0100
->> > Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
->> >   
->> > > Paolo Bonzini <pbonzini@redhat.com> writes:
->> > >   
->> > > > On 12/27/21 18:32, Igor Mammedov wrote:    
->> > > >>> Tweaked and queued nevertheless, thanks.    
->> > > >> it seems this patch breaks VCPU hotplug, in scenario:
->> > > >> 
->> > > >>    1. hotunplug existing VCPU (QEMU stores VCPU file descriptor in parked cpus list)
->> > > >>    2. hotplug it again (unsuspecting QEMU reuses stored file descriptor when recreating VCPU)
->> > > >> 
->> > > >> RHBZ:https://bugzilla.redhat.com/show_bug.cgi?id=2028337#c11
->> > > >>     
->> > > >
->> > > > The fix here would be (in QEMU) to not call KVM_SET_CPUID2 again. 
->> > > > However, we need to work around it in KVM, and allow KVM_SET_CPUID2 if 
->> > > > the data passed to the ioctl is the same that was set before.    
->> > > 
->> > > Are we sure the data is going to be *exactly* the same? In particular,
->> > > when using vCPU fds from the parked list, do we keep the same
->> > > APIC/x2APIC id when hotplugging? Or can we actually hotplug with a
->> > > different id?  
->> > 
->> > If I recall it right, it can be a different ID easily.  
->> 
->> No, it cannot.  KVM doesn't provide a way for userspace to change the APIC ID of
->> a vCPU after the vCPU is created.  x2APIC flat out disallows changing the APIC ID,
->> and unless there's magic I'm missing, apic_mmio_write() => kvm_lapic_reg_write()
->> is not reachable from userspace.
->> 
->> The only way for userspace to set the APIC ID is to change vcpu->vcpu_id, and that
->> can only be done at KVM_VCPU_CREATE.
->> 
->> So, reusing a parked vCPU for hotplug must reuse the same APIC ID.  QEMU handles
->> this by stashing the vcpu_id, a.k.a. APIC ID, when parking a vCPU, and reuses a
->> parked vCPU if and only if it has the same APIC ID.  And because QEMU derives the
->> APIC ID from topology, that means all the topology CPUID leafs must remain the
->> same, otherwise the guest is hosed because it will send IPIs to the wrong vCPUs.
+> This cset applies a small correction to fix the consistency issue.
 >
-> Indeed, I was wrong.
-> I just checked all cpu unplug history in qemu. It was introduced in qemu-2.7
-> and from the very beginning it did stash vcpu_id,
-> so there is no old QEMU that would re-plug VCPU with different apic_id.
-> Though tells us nothing about what other userspace implementations might do.
+> - [PATCH 1/2] Makes the CX bit consistent by caching the value during
+>   the initialization of the SPE PMU event.
+> - [PATCH 2/2] Allows CONTEXT packets when profiling in CPU mode.
 >
-
-The genie is out of the bottle already, 5.16 is released with the change
-(which was promissed for some time, KVM was complaining with
-pr_warn_ratelimited()). I'd be brave and say that if QEMU doesn't need
-it then nobody else does (out of curiosity, are there KVM VMMs besides
-QEMU which support CPU hotplug out there?).
-
-> However, a problem of failing KVM_SET_CPUID2 during VCPU re-plug
-> is still there and re-plug will fail if KVM rejects repeated KVM_SET_CPUID2
-> even if ioctl called with exactly the same CPUID leafs as the 1st call.
+> German Gomez (2):
+>   perf: arm_spe: make the PMSCR CX bit[3] consistent across the session
+>   perf: arm_spe: Enable CONTEXT packets if profiling in CPU mode
 >
-
-Assuming APIC id change doesn not need to be supported, I can send v2
-here with an empty allowlist.
-
--- 
-Vitaly
-
+>  drivers/perf/arm_spe_pmu.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>
