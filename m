@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE66C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239656AbiANIS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:18:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239635AbiANIS2 (ORCPT
+        id S239698AbiANITA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:19:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57912 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239627AbiANISb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:18:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C64C061749;
-        Fri, 14 Jan 2022 00:18:28 -0800 (PST)
+        Fri, 14 Jan 2022 03:18:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AB0661E1E;
-        Fri, 14 Jan 2022 08:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02E3AC36AEA;
-        Fri, 14 Jan 2022 08:18:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6561D61E09;
+        Fri, 14 Jan 2022 08:18:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 380F2C36AE9;
+        Fri, 14 Jan 2022 08:18:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148307;
-        bh=z2GKoe1ITUkmG3HGNX3ZtDY3JzUzn/yv3i6EMOGz600=;
+        s=korg; t=1642148310;
+        bh=xVyVq1eMSYL4IfDOUoFOpK98Wdd/hiA0GovqU1V4Lw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZDGnTRkPu/MdEu5JQFfqSv5bTbnEzjBaF18+BCTh5VOZ3IHxUzgcb37hIlpoAR+vS
-         P4Jw7nzM0a/LEaiPCfIJ9YNbjvT6SU4iIXXfePsVgVsMRnxRG5JzfsWAS/Vmafv2XP
-         0BWbUq/7GIa9wDPEHXeTPD9YMl702SosSkqlZNPk=
+        b=EggK+rWwn+ccAktZ9aZFod8Be/O3Hsc34Mc5WX8pq0+F7ZaOEztwIUPaL+LOG0hZT
+         x+5919UcluTSpcBon+aEhTvSu7493wM/+F3sVmPob0/sElPE1NkGQ7jnMfUwD+vQKF
+         LbbJ8yBIQM5q5Hi37xq2ToD3pKU5VnNSvPxV06W8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.10 03/25] bpf: Fix out of bounds access from invalid *_or_null type verification
-Date:   Fri, 14 Jan 2022 09:16:11 +0100
-Message-Id: <20220114081542.816191961@linuxfoundation.org>
+        stable@vger.kernel.org, "Mark-YW.Chen" <mark-yw.chen@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.10 04/25] Bluetooth: btusb: fix memory leak in btusb_mtk_submit_wmt_recv_urb()
+Date:   Fri, 14 Jan 2022 09:16:12 +0100
+Message-Id: <20220114081542.845951314@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
@@ -47,102 +45,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: Mark-YW.Chen <mark-yw.chen@mediatek.com>
 
-[ no upstream commit given implicitly fixed through the larger refactoring
-  in c25b2ae136039ffa820c26138ed4a5e5f3ab3841 ]
+commit 60c6a63a3d3080a62f3e0e20084f58dbeff16748 upstream.
 
-While auditing some other code, I noticed missing checks inside the pointer
-arithmetic simulation, more specifically, adjust_ptr_min_max_vals(). Several
-*_OR_NULL types are not rejected whereas they are _required_ to be rejected
-given the expectation is that they get promoted into a 'real' pointer type
-for the success case, that is, after an explicit != NULL check.
+Driver should free `usb->setup_packet` to avoid the leak.
 
-One case which stands out and is accessible from unprivileged (iff enabled
-given disabled by default) is BPF ring buffer. From crafting a PoC, the NULL
-check can be bypassed through an offset, and its id marking will then lead
-to promotion of mem_or_null to a mem type.
+$ cat /sys/kernel/debug/kmemleak
+unreferenced object 0xffffffa564a58080 (size 128):
+    backtrace:
+        [<000000007eb8dd70>] kmem_cache_alloc_trace+0x22c/0x384
+        [<000000008a44191d>] btusb_mtk_hci_wmt_sync+0x1ec/0x994
+    [btusb]
+        [<00000000ca7189a3>] btusb_mtk_setup+0x6b8/0x13cc
+    [btusb]
+        [<00000000c6105069>] hci_dev_do_open+0x290/0x974
+    [bluetooth]
+        [<00000000a583f8b8>] hci_power_on+0xdc/0x3cc [bluetooth]
+        [<000000005d80e687>] process_one_work+0x514/0xc80
+        [<00000000f4d57637>] worker_thread+0x818/0xd0c
+        [<00000000dc7bdb55>] kthread+0x2f8/0x3b8
+        [<00000000f9999513>] ret_from_fork+0x10/0x30
 
-bpf_ringbuf_reserve() helper can trigger this case through passing of reserved
-flags, for example.
-
-  func#0 @0
-  0: R1=ctx(id=0,off=0,imm=0) R10=fp0
-  0: (7a) *(u64 *)(r10 -8) = 0
-  1: R1=ctx(id=0,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm
-  1: (18) r1 = 0x0
-  3: R1_w=map_ptr(id=0,off=0,ks=0,vs=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm
-  3: (b7) r2 = 8
-  4: R1_w=map_ptr(id=0,off=0,ks=0,vs=0,imm=0) R2_w=invP8 R10=fp0 fp-8_w=mmmmmmmm
-  4: (b7) r3 = 0
-  5: R1_w=map_ptr(id=0,off=0,ks=0,vs=0,imm=0) R2_w=invP8 R3_w=invP0 R10=fp0 fp-8_w=mmmmmmmm
-  5: (85) call bpf_ringbuf_reserve#131
-  6: R0_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  6: (bf) r6 = r0
-  7: R0_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R6_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  7: (07) r0 += 1
-  8: R0_w=mem_or_null(id=2,ref_obj_id=2,off=1,imm=0) R6_w=mem_or_null(id=2,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  8: (15) if r0 == 0x0 goto pc+4
-   R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  9: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  9: (62) *(u32 *)(r6 +0) = 0
-   R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  10: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  10: (bf) r1 = r6
-  11: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R1_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  11: (b7) r2 = 0
-  12: R0_w=mem(id=0,ref_obj_id=0,off=0,imm=0) R1_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R2_w=invP0 R6_w=mem(id=0,ref_obj_id=2,off=0,imm=0) R10=fp0 fp-8_w=mmmmmmmm refs=2
-  12: (85) call bpf_ringbuf_submit#132
-  13: R6=invP(id=0) R10=fp0 fp-8=mmmmmmmm
-  13: (b7) r0 = 0
-  14: R0_w=invP0 R6=invP(id=0) R10=fp0 fp-8=mmmmmmmm
-  14: (95) exit
-
-  from 8 to 13: safe
-  processed 15 insns (limit 1000000) max_states_per_insn 0 total_states 1 peak_states 1 mark_read 0
-  OK
-
-All three commits, that is b121b341e598 ("bpf: Add PTR_TO_BTF_ID_OR_NULL support"),
-457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it"), and the
-afbf21dce668 ("bpf: Support readonly/readwrite buffers in verifier") suffer the same
-cause and their *_OR_NULL type pendants must be rejected in adjust_ptr_min_max_vals().
-
-Make the test more robust by reusing reg_type_may_be_null() helper such that we catch
-all *_OR_NULL types we have today and in future.
-
-Note that pointer arithmetic on PTR_TO_BTF_ID, PTR_TO_RDONLY_BUF, and PTR_TO_RDWR_BUF
-is generally allowed.
-
-Fixes: b121b341e598 ("bpf: Add PTR_TO_BTF_ID_OR_NULL support")
-Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
-Fixes: afbf21dce668 ("bpf: Support readonly/readwrite buffers in verifier")
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Fixes: a1c49c434e150 ("Bluetooth: btusb: Add protocol support for MediaTek MT7668U USB devices")
+Signed-off-by: Mark-YW.Chen <mark-yw.chen@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/verifier.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/bluetooth/btusb.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -6037,16 +6037,16 @@ static int adjust_ptr_min_max_vals(struc
- 		fallthrough;
- 	case PTR_TO_PACKET_END:
- 	case PTR_TO_SOCKET:
--	case PTR_TO_SOCKET_OR_NULL:
- 	case PTR_TO_SOCK_COMMON:
--	case PTR_TO_SOCK_COMMON_OR_NULL:
- 	case PTR_TO_TCP_SOCK:
--	case PTR_TO_TCP_SOCK_OR_NULL:
- 	case PTR_TO_XDP_SOCK:
-+reject:
- 		verbose(env, "R%d pointer arithmetic on %s prohibited\n",
- 			dst, reg_type_str[ptr_reg->type]);
- 		return -EACCES;
- 	default:
-+		if (reg_type_may_be_null(ptr_reg->type))
-+			goto reject;
- 		break;
- 	}
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -2845,6 +2845,7 @@ static void btusb_mtk_wmt_recv(struct ur
+ 		skb = bt_skb_alloc(HCI_WMT_MAX_EVENT_SIZE, GFP_ATOMIC);
+ 		if (!skb) {
+ 			hdev->stat.err_rx++;
++			kfree(urb->setup_packet);
+ 			return;
+ 		}
  
+@@ -2865,6 +2866,7 @@ static void btusb_mtk_wmt_recv(struct ur
+ 			data->evt_skb = skb_clone(skb, GFP_ATOMIC);
+ 			if (!data->evt_skb) {
+ 				kfree_skb(skb);
++				kfree(urb->setup_packet);
+ 				return;
+ 			}
+ 		}
+@@ -2873,6 +2875,7 @@ static void btusb_mtk_wmt_recv(struct ur
+ 		if (err < 0) {
+ 			kfree_skb(data->evt_skb);
+ 			data->evt_skb = NULL;
++			kfree(urb->setup_packet);
+ 			return;
+ 		}
+ 
+@@ -2883,6 +2886,7 @@ static void btusb_mtk_wmt_recv(struct ur
+ 			wake_up_bit(&data->flags,
+ 				    BTUSB_TX_WAIT_VND_EVT);
+ 		}
++		kfree(urb->setup_packet);
+ 		return;
+ 	} else if (urb->status == -ENOENT) {
+ 		/* Avoid suspend failed when usb_kill_urb */
+@@ -2903,6 +2907,7 @@ static void btusb_mtk_wmt_recv(struct ur
+ 	usb_anchor_urb(urb, &data->ctrl_anchor);
+ 	err = usb_submit_urb(urb, GFP_ATOMIC);
+ 	if (err < 0) {
++		kfree(urb->setup_packet);
+ 		/* -EPERM: urb is being killed;
+ 		 * -ENODEV: device got disconnected
+ 		 */
 
 
