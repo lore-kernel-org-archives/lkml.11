@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E4CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 740ABC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240782AbiANIYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:24:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33082 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240192AbiANIWk (ORCPT
+        id S240656AbiANI0e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:26:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49932 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240879AbiANIYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:22:40 -0500
+        Fri, 14 Jan 2022 03:24:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ACC6C06176A;
+        Fri, 14 Jan 2022 00:23:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38A3761E2C;
-        Fri, 14 Jan 2022 08:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19659C36AEC;
-        Fri, 14 Jan 2022 08:22:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A12361E2D;
+        Fri, 14 Jan 2022 08:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB903C36AEA;
+        Fri, 14 Jan 2022 08:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148557;
-        bh=MFJZOy3GRMX4/xbzCsR2FxLlhKoMFHSYMCGxzsfZ1jk=;
+        s=korg; t=1642148592;
+        bh=gjGfHJiIeV7KvNpZ7lvn+o782xiLOMBLcdwsR8r31Vo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nIlTHIloiOKVwFrzYGq/GFoPp0H0lTuJgeqO9rz0GNuDcgORIqKbOFaK5tXBnxux7
-         upZ3C51we9C+HkGnRrhB8DH32nkBl84rXcB3hu13jPGfyw2QVnOuYW+w6x/suiYX0o
-         /EcHPri5ENhxEkjoVHnC6UUY0LPvuadzEVy4+gWI=
+        b=nHM0t+0ByLIiZtHNPaTLkQBnLgykK4aw5tqXJvQOi44QhBzuOsujhfCql1C5PQ25r
+         jJ6fTtflRhLRTgmcLOJ44JfHS4jka/H9YIXU/FA4D4Ks+JNZZh9OhOzGncFTmiyeZV
+         pCCS1A5JrAPn3DoW5+ELf1Cxu0Sf3TZ1GdaM1qiA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        David Yang <davidcomponentone@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.16 06/37] Bluetooth: btusb: Fix application of sizeof to pointer
-Date:   Fri, 14 Jan 2022 09:16:20 +0100
-Message-Id: <20220114081545.066721531@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 27/37] can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
+Date:   Fri, 14 Jan 2022 09:16:41 +0100
+Message-Id: <20220114081545.740747617@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -46,34 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Yang <davidcomponentone@gmail.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit dc1650fc94a8566fb89f3fd14a26d1cec7865f16 upstream.
+commit 4a8737ff068724f509d583fef404d349adba80d6 upstream.
 
-The coccinelle check report:
-"./drivers/bluetooth/btusb.c:2239:36-42:
-ERROR: application of sizeof to pointer".
-Using the real size to fix it.
+The received data contains the channel the received data is associated
+with. If the channel number is bigger than the actual number of
+channels assume broken or malicious USB device and shut it down.
 
-Fixes: 5a87679ffd443 ("Bluetooth: btusb: Support public address configuration for MediaTek Chip.")
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: David Yang <davidcomponentone@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+This fixes the error found by clang:
+
+| drivers/net/can/usb/gs_usb.c:386:6: error: variable 'dev' is used
+|                                     uninitialized whenever 'if' condition is true
+|         if (hf->channel >= GS_MAX_INTF)
+|             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+| drivers/net/can/usb/gs_usb.c:474:10: note: uninitialized use occurs here
+|                           hf, dev->gs_hf_size, gs_usb_receive_bulk_callback,
+|                               ^~~
+
+Link: https://lore.kernel.org/all/20211210091158.408326-1-mkl@pengutronix.de
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/usb/gs_usb.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -2238,7 +2238,7 @@ static int btusb_set_bdaddr_mtk(struct h
- 	struct sk_buff *skb;
- 	long ret;
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -321,7 +321,7 @@ static void gs_usb_receive_bulk_callback
  
--	skb = __hci_cmd_sync(hdev, 0xfc1a, sizeof(bdaddr), bdaddr, HCI_INIT_TIMEOUT);
-+	skb = __hci_cmd_sync(hdev, 0xfc1a, 6, bdaddr, HCI_INIT_TIMEOUT);
- 	if (IS_ERR(skb)) {
- 		ret = PTR_ERR(skb);
- 		bt_dev_err(hdev, "changing Mediatek device address failed (%ld)",
+ 	/* device reports out of range channel id */
+ 	if (hf->channel >= GS_MAX_INTF)
+-		goto resubmit_urb;
++		goto device_detach;
+ 
+ 	dev = usbcan->canch[hf->channel];
+ 
+@@ -406,6 +406,7 @@ static void gs_usb_receive_bulk_callback
+ 
+ 	/* USB failure take down all interfaces */
+ 	if (rc == -ENODEV) {
++ device_detach:
+ 		for (rc = 0; rc < GS_MAX_INTF; rc++) {
+ 			if (usbcan->canch[rc])
+ 				netif_device_detach(usbcan->canch[rc]->netdev);
 
 
