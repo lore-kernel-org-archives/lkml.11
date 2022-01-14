@@ -2,116 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E0FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 21:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53AB6C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 21:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230037AbiANV5f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 16:57:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27639 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230001AbiANV5d (ORCPT
+        id S230022AbiANV6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 16:58:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230001AbiANV6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 16:57:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642197452;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0wOvJxanjv8dJh5us8ooGzpb/lM+VsWX3ZsU7uSOCqY=;
-        b=BbbzC1QWvLFkLm0przHgaiEssyvFXWbObc/7qcWgMpRtKwL7z8YJYZjaPN0xyx3qjnBuoI
-        ELFfrMGl2Gr0GP/u9oGi9IX/mFnK7r+/ZELRJvPvQMh+rPxWLMe16xRDV+BlF4VfqaHmwB
-        rwX/fAalxBh1gEGJ0pZbDmtAAov2tcQ=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-300-44Pu1O30N3KqjY7B0gl_Fg-1; Fri, 14 Jan 2022 16:57:31 -0500
-X-MC-Unique: 44Pu1O30N3KqjY7B0gl_Fg-1
-Received: by mail-ed1-f71.google.com with SMTP id l10-20020a056402124a00b0040186fbe40dso717157edw.7
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 13:57:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0wOvJxanjv8dJh5us8ooGzpb/lM+VsWX3ZsU7uSOCqY=;
-        b=FL0wExhWXZtsFUnn+JBSu+8cZ/9B3BPUGHozkDHU25Z2LFSN4quw19z5Tq1JsVtsTG
-         2tMtRiKedyxVWAIv81qZntMT6P7BNwtXfgOPj/rmIS9M2BpSITyj9Us+e/asa1FF24A2
-         vizxVZ2caHUKgBWZ+hap/Th/ZB9vjSsUD75tUgDGYWOgVea9qbY4sAM++nJvc/JONXC9
-         kOwoW+QiPAu4zKLvYcxWTxAaMFF0EViGnLsDRUrhiQe2TN2qvI/7hftOLPF7AC9bE8AC
-         BAGtoGv9/ewqAt6nXCG8cqD5ZCClH+AeXZm9RXjFMUDjW4MDJH5AujABOSlwH66ag+3P
-         TNgA==
-X-Gm-Message-State: AOAM531XbjuOY+FdFW7MeaYCGm6v82TwHeF1j68M2wUxyN4gzH0k6dHd
-        k9reVwPqYrCWHrRQsldbcYuWzl9oXTmFs5v7e+a7Q/QAhCXsZjMUC03mjpUedRoK0lAZ9XcIj4t
-        MDTEqnnX6XWyWTMN8pRoy3Ic6hMrw3cgt1zN13uIMWXqh/vBR/h7jUoC/ctzbPxwGzRzB8A==
-X-Received: by 2002:aa7:db41:: with SMTP id n1mr10643172edt.307.1642197449930;
-        Fri, 14 Jan 2022 13:57:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxPcMkPHRedToYHc/SYw7TuOGuXM5aNzWoT0JmhpwS9rK3yCFyfEvKXtgc7v8dDKX/rq3pNmQ==
-X-Received: by 2002:aa7:db41:: with SMTP id n1mr10643153edt.307.1642197449573;
-        Fri, 14 Jan 2022 13:57:29 -0800 (PST)
-Received: from redhat.com ([2.55.154.210])
-        by smtp.gmail.com with ESMTPSA id hd16sm2084204ejc.62.2022.01.14.13.57.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 13:57:29 -0800 (PST)
-Date:   Fri, 14 Jan 2022 16:57:27 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 2/3] virtio_console: break out of buf poll on remove
-Message-ID: <20220114215641.239984-3-mst@redhat.com>
-References: <20220114215641.239984-1-mst@redhat.com>
+        Fri, 14 Jan 2022 16:58:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2FD0C061574;
+        Fri, 14 Jan 2022 13:58:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A13D4B825F5;
+        Fri, 14 Jan 2022 21:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB69C36AE5;
+        Fri, 14 Jan 2022 21:58:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642197495;
+        bh=Jr2Ws/7KkYBcH0vohjYnfd7dG+f39RHSmRkVh2v3P7g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XEaY6vYuBVWQqB25SsYheOYw6RMoQv9SkZdketD5hGkYl2XfRkvBMGqwYx2qIYXNQ
+         sX9Bf7yLoFo0rLIxgw2E5KscruN2r4JzkyuWJaiIB/57nnR7vIfOAcd4YtYQjWrWut
+         OW78h2w411h8aK3n6rd8kU500lVFgEThfIZucnkTEpgimTirE5IfYkCUlI8SAV8t5A
+         JDtFWvOEpVEj7TVI1z1aKD5nD07NTodcRjHD4jI2/6n4dolHTLQ4yfcuF4upda3Atv
+         nOAqdVEptZ/xd9zRfmlhMVls+2PitALnp61iDJERXNjSKn7HnL1MEgVp3ekaqqgT74
+         b/2aEkakjWNbA==
+Date:   Fri, 14 Jan 2022 14:58:10 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile &
+ __COUNTER__
+Message-ID: <YeHx8qaHiJie3xdL@archlinux-ax161>
+References: <20220114010526.1776605-1-ndesaulniers@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220114215641.239984-1-mst@redhat.com>
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220114010526.1776605-1-ndesaulniers@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A common pattern for device reset is currently:
-vdev->config->reset(vdev);
-.. cleanup ..
+On Thu, Jan 13, 2022 at 05:05:26PM -0800, Nick Desaulniers wrote:
+> commit dcce50e6cc4d ("compiler.h: Fix annotation macro misplacement with Clang")
+> mentions:
+> 
+> > 'volatile' is ignored for some reason and Clang feels free to move the
+> > reachable() annotation away from its intended location.
 
-reset prevents new interrupts from arriving and waits for interrupt
-handlers to finish.
+Perhaps it is worth mentioning in the next paragraph that this does not
+contradict GCC's own documentation that you link to below, which
+mentions that asm volatile statements can be reordered.
 
-However if - as is common - the handler queues a work request which is
-flushed during the cleanup stage, we have code adding buffers / trying
-to get buffers while device is reset. Not good.
+"Note that the compiler can move even volatile asm instructions relative
+to other code, including across jump instructions."
 
-This was reproduced by running
-	modprobe virtio_console
-	modprobe -r virtio_console
-in a loop.
+No strong opinion though.
 
-Fix this up by calling virtio_break_device + flush before reset.
+> Indeed, volatile is not a compiler barrier. Particularly once `-march=`
+> flags are used under certain configs, LLVM's machine-scheduler can be
+> observed moving instructions across the asm statement meant to point to
+> known reachable or unreachable code, as reported by 0day bot.
+> 
+> Prefer a memory clobber which is a compiler barrier that prevents these
+> re-orderings and remove the volatile qualifier.
+> 
+> Looking closer, the use of __COUNTER__ seems to have been used to
+> prevent de-duplication of these asm statements. The GCC manual mentions:
+> 
+> > Under certain circumstances, GCC may duplicate (or remove duplicates
+> > of) your assembly code when optimizing. This can lead to unexpected
+> > duplicate symbol errors during compilation if your asm code defines
+> > symbols or labels. Using ‘%=’ (see AssemblerTemplate) may help resolve
+> > this problem.
+> >
+> > ‘%=’ Outputs a number that is unique to each instance of the asm
+> > statement in the entire compilation. This option is useful when
+> > creating local labels and referring to them multiple times in a single
+> > template that generates multiple assembler instructions.
+> 
+> commit 3d1e236022cc ("objtool: Prevent GCC from merging annotate_unreachable()")
+> 
+> Mentions that
+> 
+> > The inline asm ‘%=’ token could be used for that, but unfortunately
+> > older versions of GCC don't support it.
+> 
+> From testing all versions of GCC available on godbolt.org, GCC 4.1+
+> seems to support 4.1. Since the minimum supported version of GCC at the
+> moment is GCC 5.1, it sounds like this is no longer a concern.
+> 
+> Prefer the %= assembler template to having to stringify __COUNTER__.
+> 
+> This commit is effectively a revert of the following commits:
+> commit dcce50e6cc4d ("compiler.h: Fix annotation macro misplacement with Clang")
+> commit f1069a8756b9 ("compiler.h: Avoid using inline asm operand modifiers")
+> commit c199f64ff93c ("instrumentation.h: Avoid using inline asm operand modifiers")
+> commit d0c2e691d1cb ("objtool: Add a comment for the unreachable annotation macros")
+> commit ec1e1b610917 ("objtool: Prevent GCC from merging annotate_unreachable(), take 2")
+> commit 3d1e236022cc ("objtool: Prevent GCC from merging annotate_unreachable()")
+> 
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1566
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#Volatile
+> Link: https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#AssemblerTemplate
+> Link: https://lore.kernel.org/llvm/202112080834.XFYU8b5Q-lkp@intel.com/
+> Link: https://lore.kernel.org/llvm/202111300857.IyINAyJk-lkp@intel.com/
+> Reported-by: kernel test robot <lkp@intel.com>
+> Debugged-by: Nathan Chancellor <nathan@kernel.org>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=1786239
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/char/virtio_console.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+This resolves the original spew of warnings and does not regress a
+couple of other configurations that I tested.
 
-diff --git a/drivers/char/virtio_console.c b/drivers/char/virtio_console.c
-index 2359889a35a0..e3c430539a17 100644
---- a/drivers/char/virtio_console.c
-+++ b/drivers/char/virtio_console.c
-@@ -1957,6 +1957,13 @@ static void virtcons_remove(struct virtio_device *vdev)
- 	list_del(&portdev->list);
- 	spin_unlock_irq(&pdrvdata_lock);
- 
-+	/* Device is going away, exit any polling for buffers */
-+	virtio_break_device(vdev);
-+	if (use_multiport(portdev))
-+		flush_work(&portdev->control_work);
-+	else
-+		flush_work(&portdev->config_work);
-+
- 	/* Disable interrupts for vqs */
- 	virtio_reset_device(vdev);
- 	/* Finish up work that's lined up */
--- 
-MST
+Tested-by: Nathan Chancellor <nathan@kernel.org>
 
+Not sure I am qualified enough to give a reviewed-by.
+
+> ---
+>  include/linux/compiler.h        | 31 +++++++++++--------------------
+>  include/linux/instrumentation.h | 24 ++++++++++--------------
+>  2 files changed, 21 insertions(+), 34 deletions(-)
+> 
+> diff --git a/include/linux/compiler.h b/include/linux/compiler.h
+> index 429dcebe2b99..3ac21b888d20 100644
+> --- a/include/linux/compiler.h
+> +++ b/include/linux/compiler.h
+> @@ -108,30 +108,21 @@ void ftrace_likely_update(struct ftrace_likely_data *f, int val,
+>  # define barrier_before_unreachable() do { } while (0)
+>  #endif
+>  
+> -/* Unreachable code */
+> +/* These macros help objtool understand GCC code flow for unreachable code. */
+>  #ifdef CONFIG_STACK_VALIDATION
+> -/*
+> - * These macros help objtool understand GCC code flow for unreachable code.
+> - * The __COUNTER__ based labels are a hack to make each instance of the macros
+> - * unique, to convince GCC not to merge duplicate inline asm statements.
+> - */
+> -#define __stringify_label(n) #n
+> -
+> -#define __annotate_reachable(c) ({					\
+> -	asm volatile(__stringify_label(c) ":\n\t"			\
+> -		     ".pushsection .discard.reachable\n\t"		\
+> -		     ".long " __stringify_label(c) "b - .\n\t"		\
+> -		     ".popsection\n\t" : : "i" (c));			\
+> +#define annotate_reachable() ({			\
+> +	asm (".Lreachable%=:\n\t"			\
+> +	     ".pushsection .discard.reachable\n\t"	\
+> +	     ".long .Lreachable%= - .\n\t"		\
+> +	     ".popsection\n\t" ::: "memory");		\
+>  })
+> -#define annotate_reachable() __annotate_reachable(__COUNTER__)
+>  
+> -#define __annotate_unreachable(c) ({					\
+> -	asm volatile(__stringify_label(c) ":\n\t"			\
+> -		     ".pushsection .discard.unreachable\n\t"		\
+> -		     ".long " __stringify_label(c) "b - .\n\t"		\
+> -		     ".popsection\n\t" : : "i" (c));			\
+> +#define annotate_unreachable() ({			\
+> +	asm (".Lunreachable%=:\n\t"			\
+> +	     ".pushsection .discard.unreachable\n\t"	\
+> +	     ".long .Lunreachable%= - .\n\t"		\
+> +	     ".popsection\n\t" ::: "memory");		\
+>  })
+> -#define annotate_unreachable() __annotate_unreachable(__COUNTER__)
+>  
+>  #define ASM_UNREACHABLE							\
+>  	"999:\n\t"							\
+> diff --git a/include/linux/instrumentation.h b/include/linux/instrumentation.h
+> index 24359b4a9605..0dae9c08764f 100644
+> --- a/include/linux/instrumentation.h
+> +++ b/include/linux/instrumentation.h
+> @@ -4,16 +4,13 @@
+>  
+>  #if defined(CONFIG_DEBUG_ENTRY) && defined(CONFIG_STACK_VALIDATION)
+>  
+> -#include <linux/stringify.h>
+> -
+>  /* Begin/end of an instrumentation safe region */
+> -#define __instrumentation_begin(c) ({					\
+> -	asm volatile(__stringify(c) ": nop\n\t"				\
+> -		     ".pushsection .discard.instr_begin\n\t"		\
+> -		     ".long " __stringify(c) "b - .\n\t"		\
+> -		     ".popsection\n\t" : : "i" (c));			\
+> +#define instrumentation_begin() ({			\
+> +	asm (".Linstbegin%=: nop\n\t"			\
+> +	     ".pushsection .discard.instr_begin\n\t"	\
+> +	     ".long .Linstbegin%= - .\n\t"		\
+> +	     ".popsection\n\t" ::: "memory");		\
+>  })
+> -#define instrumentation_begin() __instrumentation_begin(__COUNTER__)
+>  
+>  /*
+>   * Because instrumentation_{begin,end}() can nest, objtool validation considers
+> @@ -46,13 +43,12 @@
+>   * To avoid this, have _end() be a NOP instruction, this ensures it will be
+>   * part of the condition block and does not escape.
+>   */
+> -#define __instrumentation_end(c) ({					\
+> -	asm volatile(__stringify(c) ": nop\n\t"				\
+> -		     ".pushsection .discard.instr_end\n\t"		\
+> -		     ".long " __stringify(c) "b - .\n\t"		\
+> -		     ".popsection\n\t" : : "i" (c));			\
+> +#define instrumentation_end() ({			\
+> +	asm (".Linstend%=: nop\n\t"			\
+> +	     ".pushsection .discard.instr_end\n\t"	\
+> +	     ".long .Linstend%= - .\n\t"		\
+> +	     ".popsection\n\t" ::: "memory");		\
+>  })
+> -#define instrumentation_end() __instrumentation_end(__COUNTER__)
+>  #else
+>  # define instrumentation_begin()	do { } while(0)
+>  # define instrumentation_end()		do { } while(0)
+> 
+> base-commit: dcce50e6cc4d86a63dc0a9a6ee7d4f948ccd53a1
+> -- 
+> 2.34.1.703.g22d0c6ccf7-goog
+> 
