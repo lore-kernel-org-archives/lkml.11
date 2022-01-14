@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C55C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239758AbiANISV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:18:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59058 "EHLO
+        id S239307AbiANISZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:18:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59010 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236932AbiANISH (ORCPT
+        with ESMTP id S239655AbiANISE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:18:07 -0500
+        Fri, 14 Jan 2022 03:18:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F160B8243E;
-        Fri, 14 Jan 2022 08:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8C7AC36AEA;
-        Fri, 14 Jan 2022 08:18:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BB53B82439;
+        Fri, 14 Jan 2022 08:18:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9255C36AEA;
+        Fri, 14 Jan 2022 08:18:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148285;
-        bh=s/Q4l82k1upX46sgPgNljuLkfBQAwTmvwq6LTPr4kuQ=;
+        s=korg; t=1642148282;
+        bh=qEKH8Hv6tCFOyHN7M0/KuxWJ4wmjMiLR2Q83GKs74Ec=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cxKYP8TdFsWtRyVOHX3foBDzLbIGCx5JiOvAm2N8qGDFN/LRDE2iAPaxv5a0VuHJi
-         HGB1U+kSVeKSNyyDPp7hxsCiRGQ/AHj+TuvxMXy6RuXJzXuhIc9gWdIKm9j2MU9JE+
-         H+doflFAbLLzxPM6Olpn7jrHdByCw7o7mh1BY5Pg=
+        b=Hw8O/nUlLnbLLETkKpLQeao5PK8BFAH9wghbAPzcoefG8Ham2u3tbwAtU0g0dyr5C
+         Mm/3XkkmnjAejnO1m2bNwpupR97N2alKzSKfenPAewQJErM2cRFJzxp6awR/mNovTY
+         UR2k3w7Vy7xl0MhXyce73aoT1biL/6XvopKHc28U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan McDowell <noodles@earth.li>,
-        Alan Stern <stern@rowland.harvard.edu>
-Subject: [PATCH 5.10 10/25] USB: core: Fix bug in resuming hubs handling of wakeup requests
-Date:   Fri, 14 Jan 2022 09:16:18 +0100
-Message-Id: <20220114081543.044645701@linuxfoundation.org>
+        stable@vger.kernel.org, Guoqing Jiang <jiangguoqing@kylinos.cn>,
+        Song Liu <song@kernel.org>,
+        Guillaume Morin <guillaume@morinfr.org>
+Subject: [PATCH 5.10 01/25] md: revert io stats accounting
+Date:   Fri, 14 Jan 2022 09:16:09 +0100
+Message-Id: <20220114081542.746291845@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -45,69 +48,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Guoqing Jiang <jgq516@gmail.com>
 
-commit 0f663729bb4afc92a9986b66131ebd5b8a9254d1 upstream.
+commit ad3fc798800fb7ca04c1dfc439dba946818048d8 upstream.
 
-Bugzilla #213839 reports a 7-port hub that doesn't work properly when
-devices are plugged into some of the ports; the kernel goes into an
-unending disconnect/reinitialize loop as shown in the bug report.
+The commit 41d2d848e5c0 ("md: improve io stats accounting") could cause
+double fault problem per the report [1], and also it is not correct to
+change ->bi_end_io if md don't own it, so let's revert it.
 
-This "7-port hub" comprises two four-port hubs with one plugged into
-the other; the failures occur when a device is plugged into one of the
-downstream hub's ports.  (These hubs have other problems too.  For
-example, they bill themselves as USB-2.0 compliant but they only run
-at full speed.)
+And io stats accounting will be replemented in later commits.
 
-It turns out that the failures are caused by bugs in both the kernel
-and the hub.  The hub's bug is that it reports a different
-bmAttributes value in its configuration descriptor following a remote
-wakeup (0xe0 before, 0xc0 after -- the wakeup-support bit has
-changed).
+[1]. https://lore.kernel.org/linux-raid/3bf04253-3fad-434a-63a7-20214e38cf26@gmail.com/T/#t
 
-The kernel's bug is inside the hub driver's resume handler.  When
-hub_activate() sees that one of the hub's downstream ports got a
-wakeup request from a child device, it notes this fact by setting the
-corresponding bit in the hub->change_bits variable.  But this variable
-is meant for connection changes, not wakeup events; setting it causes
-the driver to believe the downstream port has been disconnected and
-then connected again (in addition to having received a wakeup
-request).
-
-Because of this, the hub driver then tries to check whether the device
-currently plugged into the downstream port is the same as the device
-that had been attached there before.  Normally this check succeeds and
-wakeup handling continues with no harm done (which is why the bug
-remained undetected until now).  But with these dodgy hubs, the check
-fails because the config descriptor has changed.  This causes the hub
-driver to reinitialize the child device, leading to the
-disconnect/reinitialize loop described in the bug report.
-
-The proper way to note reception of a downstream wakeup request is
-to set a bit in the hub->event_bits variable instead of
-hub->change_bits.  That way the hub driver will realize that something
-has happened to the port but will not think the port and child device
-have been disconnected.  This patch makes that change.
-
-Cc: <stable@vger.kernel.org>
-Tested-by: Jonathan McDowell <noodles@earth.li>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YdCw7nSfWYPKWQoD@rowland.harvard.edu
+Fixes: 41d2d848e5c0 ("md: improve io stats accounting")
+Signed-off-by: Guoqing Jiang <jiangguoqing@kylinos.cn>
+Signed-off-by: Song Liu <song@kernel.org>
+[GM: backport to 5.10-stable]
+Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/hub.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/md.c |   57 +++++++++++---------------------------------------------
+ drivers/md/md.h |    1 
+ 2 files changed, 12 insertions(+), 46 deletions(-)
 
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1224,7 +1224,7 @@ static void hub_activate(struct usb_hub
- 			 */
- 			if (portchange || (hub_is_superspeed(hub->hdev) &&
- 						port_resumed))
--				set_bit(port1, hub->change_bits);
-+				set_bit(port1, hub->event_bits);
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -459,34 +459,12 @@ check_suspended:
+ }
+ EXPORT_SYMBOL(md_handle_request);
  
- 		} else if (udev->persist_enabled) {
- #ifdef CONFIG_PM
+-struct md_io {
+-	struct mddev *mddev;
+-	bio_end_io_t *orig_bi_end_io;
+-	void *orig_bi_private;
+-	unsigned long start_time;
+-	struct hd_struct *part;
+-};
+-
+-static void md_end_io(struct bio *bio)
+-{
+-	struct md_io *md_io = bio->bi_private;
+-	struct mddev *mddev = md_io->mddev;
+-
+-	part_end_io_acct(md_io->part, bio, md_io->start_time);
+-
+-	bio->bi_end_io = md_io->orig_bi_end_io;
+-	bio->bi_private = md_io->orig_bi_private;
+-
+-	mempool_free(md_io, &mddev->md_io_pool);
+-
+-	if (bio->bi_end_io)
+-		bio->bi_end_io(bio);
+-}
+-
+ static blk_qc_t md_submit_bio(struct bio *bio)
+ {
+ 	const int rw = bio_data_dir(bio);
++	const int sgrp = op_stat_group(bio_op(bio));
+ 	struct mddev *mddev = bio->bi_disk->private_data;
++	unsigned int sectors;
+ 
+ 	if (mddev == NULL || mddev->pers == NULL) {
+ 		bio_io_error(bio);
+@@ -507,26 +485,21 @@ static blk_qc_t md_submit_bio(struct bio
+ 		return BLK_QC_T_NONE;
+ 	}
+ 
+-	if (bio->bi_end_io != md_end_io) {
+-		struct md_io *md_io;
+-
+-		md_io = mempool_alloc(&mddev->md_io_pool, GFP_NOIO);
+-		md_io->mddev = mddev;
+-		md_io->orig_bi_end_io = bio->bi_end_io;
+-		md_io->orig_bi_private = bio->bi_private;
+-
+-		bio->bi_end_io = md_end_io;
+-		bio->bi_private = md_io;
+-
+-		md_io->start_time = part_start_io_acct(mddev->gendisk,
+-						       &md_io->part, bio);
+-	}
+-
++	/*
++	 * save the sectors now since our bio can
++	 * go away inside make_request
++	 */
++	sectors = bio_sectors(bio);
+ 	/* bio could be mergeable after passing to underlayer */
+ 	bio->bi_opf &= ~REQ_NOMERGE;
+ 
+ 	md_handle_request(mddev, bio);
+ 
++	part_stat_lock();
++	part_stat_inc(&mddev->gendisk->part0, ios[sgrp]);
++	part_stat_add(&mddev->gendisk->part0, sectors[sgrp], sectors);
++	part_stat_unlock();
++
+ 	return BLK_QC_T_NONE;
+ }
+ 
+@@ -5636,7 +5609,6 @@ static void md_free(struct kobject *ko)
+ 
+ 	bioset_exit(&mddev->bio_set);
+ 	bioset_exit(&mddev->sync_set);
+-	mempool_exit(&mddev->md_io_pool);
+ 	kfree(mddev);
+ }
+ 
+@@ -5732,11 +5704,6 @@ static int md_alloc(dev_t dev, char *nam
+ 		 */
+ 		mddev->hold_active = UNTIL_STOP;
+ 
+-	error = mempool_init_kmalloc_pool(&mddev->md_io_pool, BIO_POOL_SIZE,
+-					  sizeof(struct md_io));
+-	if (error)
+-		goto abort;
+-
+ 	error = -ENOMEM;
+ 	mddev->queue = blk_alloc_queue(NUMA_NO_NODE);
+ 	if (!mddev->queue)
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -487,7 +487,6 @@ struct mddev {
+ 	struct bio_set			sync_set; /* for sync operations like
+ 						   * metadata and bitmap writes
+ 						   */
+-	mempool_t			md_io_pool;
+ 
+ 	/* Generic flush handling.
+ 	 * The last to finish preflush schedules a worker to submit
 
 
