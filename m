@@ -2,117 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4380EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239502AbiANIxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:53:32 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35884 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S239410AbiANIxb (ORCPT
+        id S239524AbiANIzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:55:42 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:37825 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230160AbiANIzl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:53:31 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20E6PDAM006968;
-        Fri, 14 Jan 2022 09:53:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=gtiMw+AjYwKRQijtvO+tqdQ46WboA1+9BaWCAalpETA=;
- b=N3hjNMJLw4PAcChzVe0eLdgwzS+KbmOdH4FVDZdu0TfjSF5BWfh9DsvnlwCNqg7ACsGI
- WDqR0eej8fCLz9KXayX9esqP5bUia7ARSZrceTeaR42n1fCwUUSfSQ22oeOxLDrdNwzW
- pDYWT0YOlnbDrZepNuMOp5jBrkGxwyfWSBGMNuVoC3iosG1X1k40mX6yBRA0Nlk6ddeJ
- liT+aTJW05KeFxzuQTjSLZND0zEtqlC+NaoZM3HPskjLLGel1nv9F6Rr4WnwdtZsVIN5
- U2eTAieduxMsqETheEo/GQ4KhAYtvCS1qnE4MInTYXw1ukeG4uJjlAamryF1lcshIJUX dQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dk3vygrqf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 14 Jan 2022 09:53:05 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1663710002A;
-        Fri, 14 Jan 2022 09:53:05 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0B10520ED1F;
-        Fri, 14 Jan 2022 09:53:05 +0100 (CET)
-Received: from lmecxl0993.lme.st.com (10.75.127.50) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Fri, 14 Jan
- 2022 09:53:03 +0100
-Subject: Re: [PATCH 1/2] MAINTAINERS: Update Benjamin Gaignard maintainer
- status
-To:     Arnd Bergmann <arnd@arndb.de>
-CC:     Yannick Fertre <yannick.fertre@foss.st.com>,
-        Raphael Gallais-Pou <raphael.gallais-pou@foss.st.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Alain Volmat <alain.volmat@foss.st.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Christian Konig <christian.koenig@amd.com>,
-        SoC Team <soc@kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        <linaro-mm-sig@lists.linaro.org>
-References: <20220113171921.17466-1-philippe.cornu@foss.st.com>
- <20220113171921.17466-2-philippe.cornu@foss.st.com>
- <CAK8P3a0Nn3fwEMtb9f0DZhbyY+mLva5XR332XfXqX=WSmB9a8w@mail.gmail.com>
-From:   Philippe CORNU <philippe.cornu@foss.st.com>
-Message-ID: <0733379c-65b7-c9a8-4dc5-c84502426e9f@foss.st.com>
-Date:   Fri, 14 Jan 2022 09:53:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 14 Jan 2022 03:55:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642150540;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=UO215vY0TsZ7UGo51cf2geQhbDmO34SD1bUwZDInbqI=;
+        b=Jhrwfc9oAxExFcRLG/DJWwBIKkbw13wSs7L2jS1HlgO5Oqv2j9KOqvvNhN7uyjio7NQczK
+        FOH13btCervn1rE0sbRfR+7K/9Jazj/gEUwROyh2JO8+6QM0z/PeRiki0D87OCZ18ftWLt
+        avPKogEG/aj8D8mnWPxltfp5mMu1sE4=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-205-pisTjhReM86TkfQVcsjB3w-1; Fri, 14 Jan 2022 03:55:39 -0500
+X-MC-Unique: pisTjhReM86TkfQVcsjB3w-1
+Received: by mail-wm1-f70.google.com with SMTP id n13-20020a05600c3b8d00b0034979b7e200so2043987wms.4
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 00:55:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=UO215vY0TsZ7UGo51cf2geQhbDmO34SD1bUwZDInbqI=;
+        b=DsawF+oR4oqe5SqLzRWKEcSch1knN+0pBEkcpISZ6VAztBhhadfT8/BnBE2A+9yc7A
+         VV/6CbIca2cz/N2b7HjPwxHem/aafI/OsFEqSvovXV34JMwQ+XzTIatAV46KyXQYhiJh
+         7iqMQ2mdrhZeYRUO6LBcMCsU/EGCStdg8c5oZY53W4RyKPMP4xJlkgdeUYDqV7CGaY8H
+         YyxOfcFMbiA2Z/mRu3+nu5+1wmnyaPAlLKbWOGnGKGuUFqqXFutdbhU7e22NgUoawuFz
+         SQlz+DANlt2EQBEmsuXmE1HnXE+TSeEPDfno0tyFe2sbIxWcalcQ56Wwe/NRdfBfDvHG
+         eg0A==
+X-Gm-Message-State: AOAM53087o0pHm25rGR37N9gfbVNFE6PxGdwnO6/IfNHlQitghjs6j96
+        eH0orY2ZX5SJYutXvdvUFa18Tnf0Fx+jracpwsmusqes/KeB5H3zrYujxj68aqGeoZh0bgVhnVO
+        Fs03H30M/S/VZWPM6PPcmWJ8p
+X-Received: by 2002:a1c:770b:: with SMTP id t11mr7386900wmi.61.1642150537774;
+        Fri, 14 Jan 2022 00:55:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzIO5huFyW3FnXxDXwl3aS4/QSRgEkcnYKKgfAejE8iqE1Tc9WIb6Q1yxCQ6lkdhH96uPNJYA==
+X-Received: by 2002:a1c:770b:: with SMTP id t11mr7386870wmi.61.1642150537479;
+        Fri, 14 Jan 2022 00:55:37 -0800 (PST)
+Received: from localhost (nat-pool-brq-t.redhat.com. [213.175.37.10])
+        by smtp.gmail.com with ESMTPSA id h10sm5961643wmh.0.2022.01.14.00.55.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 00:55:36 -0800 (PST)
+Date:   Fri, 14 Jan 2022 09:55:35 +0100
+From:   Igor Mammedov <imammedo@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+Message-ID: <20220114095535.0f498707@redhat.com>
+In-Reply-To: <YeCowpPBEHC6GJ59@google.com>
+References: <20211122175818.608220-1-vkuznets@redhat.com>
+        <20211122175818.608220-3-vkuznets@redhat.com>
+        <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
+        <20211227183253.45a03ca2@redhat.com>
+        <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com>
+        <87mtkdqm7m.fsf@redhat.com>
+        <20220103104057.4dcf7948@redhat.com>
+        <YeCowpPBEHC6GJ59@google.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a0Nn3fwEMtb9f0DZhbyY+mLva5XR332XfXqX=WSmB9a8w@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-14_03,2022-01-13_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, 13 Jan 2022 22:33:38 +0000
+Sean Christopherson <seanjc@google.com> wrote:
 
-
-On 1/14/22 1:45 AM, Arnd Bergmann wrote:
-> On Thu, Jan 13, 2022 at 6:19 PM Philippe Cornu
-> <philippe.cornu@foss.st.com> wrote:
->>
->>   DRM DRIVERS FOR STI
->> -M:     Benjamin Gaignard <benjamin.gaignard@linaro.org>
->>   L:     dri-devel@lists.freedesktop.org
->>   S:     Maintained
->>   T:     git git://anongit.freedesktop.org/drm/drm-misc
+> On Mon, Jan 03, 2022, Igor Mammedov wrote:
+> > On Mon, 03 Jan 2022 09:04:29 +0100
+> > Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+> >   
+> > > Paolo Bonzini <pbonzini@redhat.com> writes:
+> > >   
+> > > > On 12/27/21 18:32, Igor Mammedov wrote:    
+> > > >>> Tweaked and queued nevertheless, thanks.    
+> > > >> it seems this patch breaks VCPU hotplug, in scenario:
+> > > >> 
+> > > >>    1. hotunplug existing VCPU (QEMU stores VCPU file descriptor in parked cpus list)
+> > > >>    2. hotplug it again (unsuspecting QEMU reuses stored file descriptor when recreating VCPU)
+> > > >> 
+> > > >> RHBZ:https://bugzilla.redhat.com/show_bug.cgi?id=2028337#c11
+> > > >>     
+> > > >
+> > > > The fix here would be (in QEMU) to not call KVM_SET_CPUID2 again. 
+> > > > However, we need to work around it in KVM, and allow KVM_SET_CPUID2 if 
+> > > > the data passed to the ioctl is the same that was set before.    
+> > > 
+> > > Are we sure the data is going to be *exactly* the same? In particular,
+> > > when using vCPU fds from the parked list, do we keep the same
+> > > APIC/x2APIC id when hotplugging? Or can we actually hotplug with a
+> > > different id?  
+> > 
+> > If I recall it right, it can be a different ID easily.  
 > 
-> If there is no longer a maintainer, I suppose it should also be marked as
+> No, it cannot.  KVM doesn't provide a way for userspace to change the APIC ID of
+> a vCPU after the vCPU is created.  x2APIC flat out disallows changing the APIC ID,
+> and unless there's magic I'm missing, apic_mmio_write() => kvm_lapic_reg_write()
+> is not reachable from userspace.
 > 
-> S: Orphaned
+> The only way for userspace to set the APIC ID is to change vcpu->vcpu_id, and that
+> can only be done at KVM_VCPU_CREATE.
 > 
->           Arnd
+> So, reusing a parked vCPU for hotplug must reuse the same APIC ID.  QEMU handles
+> this by stashing the vcpu_id, a.k.a. APIC ID, when parking a vCPU, and reuses a
+> parked vCPU if and only if it has the same APIC ID.  And because QEMU derives the
+> APIC ID from topology, that means all the topology CPUID leafs must remain the
+> same, otherwise the guest is hosed because it will send IPIs to the wrong vCPUs.
+
+Indeed, I was wrong.
+I just checked all cpu unplug history in qemu. It was introduced in qemu-2.7
+and from the very beginning it did stash vcpu_id,
+so there is no old QEMU that would re-plug VCPU with different apic_id.
+Though tells us nothing about what other userspace implementations might do.
+
+However, a problem of failing KVM_SET_CPUID2 during VCPU re-plug
+is still there and re-plug will fail if KVM rejects repeated KVM_SET_CPUID2
+even if ioctl called with exactly the same CPUID leafs as the 1st call.
+
+
+>   static int do_kvm_destroy_vcpu(CPUState *cpu)
+>   {
+>     struct KVMParkedVcpu *vcpu = NULL;
+> 
+>     ...
+> 
+>     vcpu = g_malloc0(sizeof(*vcpu));
+>     vcpu->vcpu_id = kvm_arch_vcpu_id(cpu); <=== stash the APIC ID when parking
+>     vcpu->kvm_fd = cpu->kvm_fd;
+>     QLIST_INSERT_HEAD(&kvm_state->kvm_parked_vcpus, vcpu, node);
+> err:
+>     return ret;
+>   }
+> 
+>   static int kvm_get_vcpu(KVMState *s, unsigned long vcpu_id)
+>   {
+>     struct KVMParkedVcpu *cpu;
+> 
+>     QLIST_FOREACH(cpu, &s->kvm_parked_vcpus, node) {
+>         if (cpu->vcpu_id == vcpu_id) {  <=== reuse if APIC ID matches
+>             int kvm_fd;
+> 
+>             QLIST_REMOVE(cpu, node);
+>             kvm_fd = cpu->kvm_fd;
+>             g_free(cpu);
+>             return kvm_fd;
+>         }
+>     }
+> 
+>     return kvm_vm_ioctl(s, KVM_CREATE_VCPU, (void *)vcpu_id);
+>   }
 > 
 
-
-Hi Arnd,
-I sent a serie of 2 patches containing first the original/unmodified 
-patch from Benjamin (see [1]) + a new patch to avoid this "orphaned 
-driver" situation.
-
-Many thanks
-Philippe :-)
-
-[1] 
-https://lore.kernel.org/lkml/20210706163033.795805-1-benjamin.gaignard@collabora.com/
