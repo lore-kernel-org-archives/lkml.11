@@ -2,175 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E811EC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E778C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239817AbiANJcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230141AbiANJcq (ORCPT
+        id S239803AbiANJfM convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:35:12 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:53078 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230141AbiANJfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:32:46 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BBFC061574;
-        Fri, 14 Jan 2022 01:32:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=rMcUu/K1sVGV/SWZES0Ey2qPe4iMY0WZ61fzFjW8Z3Q=; b=IDAmrVXzL/LxmcKSyBrPlQgbz6
-        6aaGrIfS399/ajMDcn64iRN6xaBwNuCgA00UiZuWdwgPxT0qtgE93Qk8sOAwzHK2ZoQk6bqOvXNxw
-        6zHptXyExgi2eEPvpB3Lp0bw7Bqnq6xMyjOoFr48etOfHS8IgVv2bPofPzZ2lo7s0FfQkEiv+ZB3l
-        tleIUV1QVRU+yGF657jrdb5Mfhk+CLthBju+LnBgHDIdL5yUwefiOCa3YNhWGAt+ITbOCgClk4J+U
-        c/sGgmAyUgd0saINUBOcO8/VScYvtRpIel/uJkEKE1jFzqYaUPNy/IqyaNigVqKr3ZIZQAOwpWFO2
-        uRCdApUA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n8IwA-005gcN-Tb; Fri, 14 Jan 2022 09:31:59 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 41C903001C0;
-        Fri, 14 Jan 2022 10:31:55 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 22952203C24E7; Fri, 14 Jan 2022 10:31:55 +0100 (CET)
-Date:   Fri, 14 Jan 2022 10:31:55 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Daniel Jordan <daniel.m.jordan@oracle.com>
-Cc:     Alexander Duyck <alexanderduyck@fb.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
+        Fri, 14 Jan 2022 04:35:11 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-113-N-IQipKrO-i71OVc75YCcg-1; Fri, 14 Jan 2022 09:35:09 +0000
+X-MC-Unique: N-IQipKrO-i71OVc75YCcg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.26; Fri, 14 Jan 2022 09:35:08 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.026; Fri, 14 Jan 2022 09:35:08 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Steven Rostedt' <rostedt@goodmis.org>,
+        Sven Schnelle <svens@linux.ibm.com>
+CC:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Ben Segall <bsegall@google.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Michal Hocko <mhocko@suse.com>, Nico Pache <npache@redhat.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Steve Sistare <steven.sistare@oracle.com>,
-        Tejun Heo <tj@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-mm@kvack.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [RFC 15/16] sched/fair: Account kthread runtime debt for CFS
- bandwidth
-Message-ID: <YeFDC0mV3yurUFbl@hirez.programming.kicks-ass.net>
-References: <20220106004656.126790-1-daniel.m.jordan@oracle.com>
- <20220106004656.126790-16-daniel.m.jordan@oracle.com>
+        Pingfan Liu <kernelfans@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Tom Zanussi <zanussi@kernel.org>,
+        "hca@linux.ibm.com" <hca@linux.ibm.com>,
+        "deller@gmx.de" <deller@gmx.de>
+Subject: RE: [PATCH v2] tracing: Add test for user space strings when
+ filtering on  string pointers
+Thread-Topic: [PATCH v2] tracing: Add test for user space strings when
+ filtering on  string pointers
+Thread-Index: AQHYBkLm7AQ+C6qOvkCW4jNyMLz0qKxce3DQgAAF6wCAAEoUEIAFASf/gAB6SdA=
+Date:   Fri, 14 Jan 2022 09:35:08 +0000
+Message-ID: <0a249160215a44ee8789f12727667a42@AcuMS.aculab.com>
+References: <20220110115532.536088fd@gandalf.local.home>
+        <31c11a47a8bc4e34a1a64d54a54bb944@AcuMS.aculab.com>
+        <20220110122436.5302128f@gandalf.local.home>
+        <7a0fefb7ed3542b4a49dee1e78b1668b@AcuMS.aculab.com>
+        <yt9d8rvmt2jq.fsf@linux.ibm.com>
+        <20220113125754.0cb5273f@gandalf.local.home>
+        <yt9dwnj3wcke.fsf@linux.ibm.com>
+        <20220113165115.0c844df9@gandalf.local.home>
+ <20220113211501.473ab5ca@gandalf.local.home>
+In-Reply-To: <20220113211501.473ab5ca@gandalf.local.home>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220106004656.126790-16-daniel.m.jordan@oracle.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 07:46:55PM -0500, Daniel Jordan wrote:
-> As before, helpers in multithreaded jobs don't honor the main thread's
-> CFS bandwidth limits, which could lead to the group exceeding its quota.
+From: Steven Rostedt
+> Sent: 14 January 2022 02:15
 > 
-> Fix it by having helpers remote charge their CPU time to the main
-> thread's task group.  A helper calls a pair of new interfaces
-> cpu_cgroup_remote_begin() and cpu_cgroup_remote_charge() (see function
-> header comments) to achieve this.
+> On Thu, 13 Jan 2022 16:51:15 -0500
+> Steven Rostedt <rostedt@goodmis.org> wrote:
 > 
-> This is just supposed to start a discussion, so it's pretty simple.
-> Once a kthread has finished a remote charging period with
-> cpu_cgroup_remote_charge(), its runtime is subtracted from the target
-> task group's runtime (cfs_bandwidth::runtime) and any remainder is saved
-> as debt (cfs_bandwidth::debt) to pay off in later periods.
+> > We could add something later. As it is currently the merge window, and this
+> > is a real bug, I'm going to just leave it as is, and we can work to fix the
+> > other archs later. I need to get a pull request ready by tomorrow.
 > 
-> Remote charging tasks aren't throttled when the group reaches its quota,
-> and a task group doesn't run at all until its debt is completely paid,
-> but these shortcomings can be addressed if the approach ends up being
-> taken.
+> Actually I got this working, and looks like a reasonable answer to the
+> problem. It basically requires that the user specify that the pointer
+> points into user space for the kernel to read it.
 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 44c452072a1b..3c2d7f245c68 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -4655,10 +4655,19 @@ static inline u64 sched_cfs_bandwidth_slice(void)
->   */
->  void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b)
->  {
-> -	if (unlikely(cfs_b->quota == RUNTIME_INF))
-> +	u64 quota = cfs_b->quota;
-> +	u64 payment;
-> +
-> +	if (unlikely(quota == RUNTIME_INF))
->  		return;
->  
-> -	cfs_b->runtime += cfs_b->quota;
-> +	if (cfs_b->debt) {
-> +		payment = min(quota, cfs_b->debt);
-> +		cfs_b->debt -= payment;
-> +		quota -= payment;
-> +	}
-> +
-> +	cfs_b->runtime += quota;
->  	cfs_b->runtime = min(cfs_b->runtime, cfs_b->quota + cfs_b->burst);
->  }
+Certainly look better.
 
-It might be easier to make cfs_bandwidth::runtime an s64 and make it go
-negative.
+I'm not sure about the difference between the _inatomic() and _nocheck()
+user access functions though.
 
-> @@ -5406,6 +5415,32 @@ static void __maybe_unused unthrottle_offline_cfs_rqs(struct rq *rq)
->  	rcu_read_unlock();
->  }
->  
-> +static void incur_cfs_debt(struct rq *rq, struct sched_entity *se,
-> +			   struct task_group *tg, u64 debt)
-> +{
-> +	if (!cfs_bandwidth_used())
-> +		return;
-> +
-> +	while (tg != &root_task_group) {
-> +		struct cfs_rq *cfs_rq = tg->cfs_rq[cpu_of(rq)];
-> +
-> +		if (cfs_rq->runtime_enabled) {
-> +			struct cfs_bandwidth *cfs_b = &tg->cfs_bandwidth;
-> +			u64 payment;
-> +
-> +			raw_spin_lock(&cfs_b->lock);
-> +
-> +			payment = min(cfs_b->runtime, debt);
-> +			cfs_b->runtime -= payment;
+	David
 
-At this point it might hit 0 (or go negative if/when you do the above)
-and you'll need to throttle the group.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
-> +			cfs_b->debt += debt - payment;
-> +
-> +			raw_spin_unlock(&cfs_b->lock);
-> +		}
-> +
-> +		tg = tg->parent;
-> +	}
-> +}
-
-So part of the problem I have with this is that these external things
-can consume all the bandwidth and basically indefinitely starve the
-group.
-
-This is doulby so if you're going to account things like softirq network
-processing.
-
-Also, why does the whole charging API have a task argument? It either is
-current or NULL in case of things like softirq, neither really make
-sense as an argument.
-
-Also, by virtue of this being a start-stop annotation interface, the
-accrued time might be arbitrarily large and arbitrarily delayed. I'm not
-sure that's sensible.
-
-For tasks it might be better to mark the task and have the tick DTRT
-instead of later trying to 'migrate' the time.
