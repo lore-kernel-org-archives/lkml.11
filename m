@@ -2,158 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CD5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1084C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240879AbiANLq4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 06:46:56 -0500
-Received: from smtp2.axis.com ([195.60.68.18]:4161 "EHLO smtp2.axis.com"
+        id S240888AbiANLsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 06:48:18 -0500
+Received: from foss.arm.com ([217.140.110.172]:60442 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237600AbiANLq4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 06:46:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1642160816;
-  x=1673696816;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AMs+u9nkmpDZ5lxA/fLhYjA5QxFXQFce1TTDfia+q9o=;
-  b=prxnNYcOGGmim/hX7bJaOw0U9IHxVljTedagnTFSF7/qctkZakI54WWK
-   RlM6AWHnhDj/ULGTxKWnKayKUvqYjLEeaGdTzsQBiVNGOcLEu2hqSrWZI
-   vpdH/Bx/jenFQxulF3VtI4OSTXaEZc5Sb86g7IN3BTYVJugQW6GQKkWlx
-   nJPuODvDeCGImPG9JuqurCHBYIaA7KTMCBAIvSeY2lQQgKDwmlDc9T8Mj
-   q/crapUg10o4os+ZXmQCSk5WGHexbmrCwUCOTIE+QO5+tZBK68ntsIFIY
-   ENdJMW4zl0yMtJuu7Xit1OBwLMRKLiSMzlUatAw0HgoUPzvEpa89hPeR1
-   g==;
-Date:   Fri, 14 Jan 2022 12:46:54 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jim Cromie <jim.cromie@gmail.com>
-CC:     "jbaron@akamai.com" <jbaron@akamai.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux@rasmusvillemoes.dk" <linux@rasmusvillemoes.dk>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mathieu.desnoyers@efficios.com" <mathieu.desnoyers@efficios.com>,
-        "daniel.vetter@ffwll.ch" <daniel.vetter@ffwll.ch>,
-        "seanpaul@chromium.org" <seanpaul@chromium.org>,
-        "robdclark@gmail.com" <robdclark@gmail.com>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
-        "intel-gvt-dev@lists.freedesktop.org" 
-        <intel-gvt-dev@lists.freedesktop.org>,
-        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "quic_saipraka@quicinc.com" <quic_saipraka@quicinc.com>,
-        "will@kernel.org" <will@kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "quic_psodagud@quicinc.com" <quic_psodagud@quicinc.com>,
-        "maz@kernel.org" <maz@kernel.org>, "arnd@arndb.de" <arnd@arndb.de>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>
-Subject: Re: [PATCH v11 03/19] dyndbg: add write-to-tracefs code
-Message-ID: <20220114114654.GA23983@axis.com>
-References: <20220107052942.1349447-1-jim.cromie@gmail.com>
- <20220107052942.1349447-4-jim.cromie@gmail.com>
+        id S234679AbiANLsR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 06:48:17 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A95BDED1;
+        Fri, 14 Jan 2022 03:48:16 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.2.91])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BFF7F3F5A1;
+        Fri, 14 Jan 2022 03:48:10 -0800 (PST)
+Date:   Fri, 14 Jan 2022 11:48:04 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
+        alexandru.elisei@arm.com, anup.patel@wdc.com,
+        aou@eecs.berkeley.edu, atish.patra@wdc.com,
+        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
+        catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, david@redhat.com,
+        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
+        hca@linux.ibm.com, imbrenda@linux.ibm.com, james.morse@arm.com,
+        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
+        maz@kernel.org, mingo@redhat.com, mpe@ellerman.id.au,
+        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
+        paulus@samba.org, paul.walmsley@sifive.com, pbonzini@redhat.com,
+        suzuki.poulose@arm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+Subject: Re: [PATCH 1/5] kvm: add exit_to_guest_mode() and
+ enter_from_guest_mode()
+Message-ID: <YeFi9FTPSyLbQytu@FVFF77S0Q05N>
+References: <20220111153539.2532246-1-mark.rutland@arm.com>
+ <20220111153539.2532246-2-mark.rutland@arm.com>
+ <YeCMVGqiVfTKESzy@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220107052942.1349447-4-jim.cromie@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YeCMVGqiVfTKESzy@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 06:29:26AM +0100, Jim Cromie wrote:
-> adds: dynamic_trace()
->  uses trace_console() temporarily to issue printk:console event
->  uses internal-ish __ftrace_trace_stack code:
->       4-context buffer stack, barriers per Steve
+On Thu, Jan 13, 2022 at 08:32:20PM +0000, Sean Christopherson wrote:
+> On Tue, Jan 11, 2022, Mark Rutland wrote:
+> > Atop this, new exit_to_guest_mode() and enter_from_guest_mode() helpers
+> > are added to handle the ordering of lockdep, tracing, and RCU manageent.
+> > These are named to align with exit_to_user_mode() and
+> > enter_from_user_mode().
+> > 
+> > Subsequent patches will migrate architectures over to the new helpers,
+> > following a sequence:
+> > 
+> > 	guest_timing_enter_irqoff();
+> > 
+> > 	exit_to_guest_mode();
 > 
-> call it from new funcs:
->   dynamic_printk() - print to both syslog/tracefs
->   dynamic_dev_printk() - dev-print to both syslog/tracefs
-> 
-> These handle both _DPRINTK_FLAGS_PRINTK and _DPRINTK_FLAGS_TRACE
-> cases, allowing to vsnprintf the message once and use it for both,
-> skipping past the KERN_DEBUG character for tracing.
-> 
-> Finally, adjust the callers: __dynamic_{pr_debug,{,net,ib}dev_dbg},
-> replacing printk and dev_printk with the new funcs above.
-> 
-> The _DPRINTK_FLAGS_TRACE flag character s 'T', so the following finds
-> all callsites enabled for tracing:
-> 
->   grep -P =p?T /proc/dynamic_debug/control
-> 
-> Enabling debug-to-tracefs is 2 steps:
-> 
->   # event enable
->   echo 1 > /sys/kernel/tracing/events/dyndbg/enable
->   # callsite enable
->   echo module foo +T > /proc/dynamic_debug/control
-> 
-> This patch,~1,~2 are based upon:
->   https://lore.kernel.org/lkml/20200825153338.17061-1-vincent.whitchurch@axis.com/
-> 
-> .. with simplification of temporarily reusing trace_console() rather
-> than adding a new printk:dyndbg event.  Soon, add 2 new events
-> capturing the pr_debug & dev_dbg() args.
+> I'm not a fan of this nomenclature.  First and foremost, virtualization refers to
+> transfers to guest mode as VM-Enter, and transfers from guest mode as VM-Exit.
+> It's really, really confusing to read this code from a virtualization perspective.
+> The functions themselves are contradictory as the "enter" helper calls functions
+> with "exit" in their name, and vice versa.
 
-The example above does not match the code in this patch since the
-dyndbg:* events are only added in a later patch.  Perhaps you could
-reorder this patch stack so that you don't use trace_console() in this
-patch just to replace it with the new events in the next patch?
+Sure; FWIW I wasn't happy with the naming either, but I couldn't find anything
+that was entirely clear, because it depends on whether you consider this an
+entry..exit of guest context or an exit..entry of regular kernel context. I
+went with exit_to_guest_mode() and enter_from_guest_mode() because that clearly
+corresponded to exit_to_user_mode() and enter_from_user_mode(), and the
+convention in the common entry code is to talk in terms of the regular kernel
+context.
 
-> 
-> CC: vincent.whitchurch@axis.com
-> Signed-off-by: Jim Cromie <jim.cromie@gmail.com>
-> ---
->  .../admin-guide/dynamic-debug-howto.rst       |   1 +
->  lib/dynamic_debug.c                           | 155 +++++++++++++++---
->  2 files changed, 130 insertions(+), 26 deletions(-)
-> 
-> diff --git a/Documentation/admin-guide/dynamic-debug-howto.rst b/Documentation/admin-guide/dynamic-debug-howto.rst
-[...]
-> @@ -723,29 +822,33 @@ void __dynamic_ibdev_dbg(struct _ddebug *descriptor,
->  {
->  	struct va_format vaf;
->  	va_list args;
-> +	unsigned int flags;
->  
->  	va_start(args, fmt);
->  
->  	vaf.fmt = fmt;
->  	vaf.va = &args;
-> +	flags = descriptor->flags;
->  
->  	if (ibdev && ibdev->dev.parent) {
->  		char buf[PREFIX_SIZE] = "";
->  
-> -		dev_printk_emit(LOGLEVEL_DEBUG, ibdev->dev.parent,
-> -				"%s%s %s %s: %pV",
-> -				dynamic_emit_prefix(descriptor, buf),
-> -				dev_driver_string(ibdev->dev.parent),
-> -				dev_name(ibdev->dev.parent),
-> -				dev_name(&ibdev->dev),
-> -				&vaf);
-> +		dynamic_dev_printk(flags, ibdev->dev.parent,
-> +				   "%s%s %s %s: %pV",
-> +				   dynamic_emit_prefix(descriptor, buf),
-> +				   dev_driver_string(ibdev->dev.parent),
-> +				   dev_name(ibdev->dev.parent),
-> +				   dev_name(&ibdev->dev),
-> +				   &vaf);
->  	} else if (ibdev) {
-> -		printk(KERN_DEBUG "%s: %pV", dev_name(&ibdev->dev), &vaf);
-> +		dynamic_printk(flags, KERN_DEBUG "%s%s: %pV",
-> +			       dev_name(&ibdev->dev), &vaf);
->  	} else {
-> -		printk(KERN_DEBUG "(NULL ib_device): %pV", &vaf);
-> +		dynamic_printk(flags, KERN_DEBUG "(NULL ip_device): %pV",
-> +			       &vaf);
->  	}
->  
-> -	va_end(args);
-> +va_end(args);
+While I was working on this, I had guest_context_enter_irqoff() for
+kernel->guest and guest_context_exit_irqoff() for guest->kernel, which also
+matched the style of guest_timing_{enter,exit}_irqoff().
 
-This looks like an unintentional whitespace change?
+I'm happy to change to that, if that works for you?
+
+> We settled on xfer_to_guest_mode_work() for a similar conundrum in the past, though
+> I don't love using xfer_to/from_guest_mode() as that makes it sound like those
+> helpers handle the actual transition into guest mode, i.e. runs the vCPU.
+> 
+> To avoid too much bikeshedding, what about reusing the names we all compromised
+> on when we did this for x86 and call them kvm_guest_enter/exit_irqoff()?  If x86
+> is converted in the first patch then we could even avoid temporary #ifdefs.
+
+I'd like to keep this somewhat orthogonal to the x86 changes (e.g. as other
+architectures will need backports to stable at least for the RCU bug fix), so
+I'd rather use a name that isn't immediately coupled with x86 changes.
+
+Does the guest_context_{enter,exit}_irqoff() naming above work for you?
+
+Thanks,
+Mark.
