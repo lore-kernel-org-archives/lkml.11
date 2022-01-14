@@ -2,159 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B40FC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233296AbiANPSf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:18:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55759 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242959AbiANPST (ORCPT
+        id S243039AbiANPSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:18:37 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:50786 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242435AbiANPSR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:18:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642173498;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mq7Qsa4OmDK/Jlw1qDgigFZECUU5BuQWP0ItOaVJNWo=;
-        b=ZeucIdIgmkF3cWpS9V0GN147mip9/F55mgfksqSQlqfGm4e5vdzVdhsoMyd1XlQIBfkRKd
-        uoAeLztpyC7Kc6UK7GnhEIM3tY2t7CyMbgceFavhgOMhPAD2XUECKwNRruuQMKkVG4BLb0
-        +r48shTFmoQpcTe++Nbg3ZJa8Ln/Xk0=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-144-6CJ-6FwWPaWasv5g_ttmSA-1; Fri, 14 Jan 2022 10:18:17 -0500
-X-MC-Unique: 6CJ-6FwWPaWasv5g_ttmSA-1
-Received: by mail-wr1-f72.google.com with SMTP id d24-20020adf9b98000000b001c7e34c40bbso1162236wrc.16
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:18:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mq7Qsa4OmDK/Jlw1qDgigFZECUU5BuQWP0ItOaVJNWo=;
-        b=fOBeoy7i/IOzOW7DdyV0ziF2fg0J52KWcrMAtsP/MpKT9XgA5gjaw4L77OkefC9ITz
-         8nKv4HRZJJ8MJ9guSEY9aOorzXU4RVHZOThe4w2pExDGoq/ir5pUCt3eAnVFCj3cPD5K
-         kQWySXE6D2bk27sS3cynUvQUSEyiLvfoj47lwVuYaU/VhDZSQeUoFtAWoLUTSz3vDB1m
-         nvnFFGlkn40QeT6OCbXhGcPcL3FPssvVoaDF9tBsDQfx4bmFL1Sez30T8jT6pzOcHdyQ
-         hLPimX321uAnNe2t9EQBSiFEedPCZ6q9GbMQgrCWs+8y9WObKVgAs6ZWXdNlCZN1F837
-         NSLQ==
-X-Gm-Message-State: AOAM532fMSMnY8E6rZdketwcfvyIu0Tv/FJNKBJWEsdQcGkAbFFzHsFv
-        mAJUtRUhwYbkTQZoqJ94O5eqqjexuQxBiTDrmFoNPwtBk2Qp1VBJn6/4xdVj0eKe7fofVYQ/B+R
-        h56vK9B9+1GLitF4heCE0zL5g
-X-Received: by 2002:a50:a6ce:: with SMTP id f14mr9121093edc.105.1642173495967;
-        Fri, 14 Jan 2022 07:18:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzjr7yvapJIW0T2i5iOaYEHpkb6rYZHAjzU2WPIV4ZnLbIP4s8FBNjhllvcQ2T9V9ot8o/TdQ==
-X-Received: by 2002:a50:a6ce:: with SMTP id f14mr9121072edc.105.1642173495809;
-        Fri, 14 Jan 2022 07:18:15 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id u1sm2488013edp.19.2022.01.14.07.18.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 07:18:15 -0800 (PST)
-Date:   Fri, 14 Jan 2022 16:18:13 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v2 3/8] rethook: Add a generic return hook
-Message-ID: <YeGUNRH9MiF7dgVs@krava>
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
- <164199620208.1247129.13021391608719523669.stgit@devnote2>
- <YeAaUN8aUip3MUn8@krava>
- <20220113221532.c48abf7f56d29ba95dcb0dc6@kernel.org>
+        Fri, 14 Jan 2022 10:18:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1642173497; x=1673709497;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=raOPInPiNpoFYNkwMgusjdwrbKTRJG+aT7u9K7/NxHA=;
+  b=gPxIQ9NE9Q2L2/TckQMPVAJTxdlePIeLqS84z/5QPH6sHfgEqz1KzVXC
+   4ZIrqSk7/apcKiFYrMVe6zhZa9WeW5mdOum6O7gv09b+bJOnSk4PRnDKh
+   wK3ej4E/JHBJCBPW4ZUJQdf1D/t9af4PXgpICKSEInyENHjc1ydUi3eU0
+   ZnA/taSOPnW19CJ1AxA+K2Lu1qV3vruDnxl4AjlnFHbebL5f1RHwfViXr
+   NptbQXlRD+Fw5VjghfrTKQ9bInQcJwxOx2MxCYqFgaTIxIQqZmTHAJZ32
+   rFxoL9aB4DTw6DR2LJLGNVCS95dIvgi4JiJ/CoeEAbybi36KhdIKEmtoH
+   A==;
+IronPort-SDR: PX/LMa5zroMvcheRMvJmmSuZSQ4sURh5136X1G6xQgzxW+k26UjOZuRymXExNiqT9MCt5VX4W+
+ AITDwg3MLwbCnItLQFpO/R+A9JMURhbkHUw4cDD1w20+qK621kaXO0imVRuudpe0ht0LdeslGR
+ H7JI6VySU4LTBFkJHiDczDH8KiRWEiUTurnx64EtRNyL9r54En3q5d1QEP//8ZqwWLLUL+sIR7
+ NZ7YeM+nd/fNB4GkOb7mogKwvEwd1Jar8nxRkLZsMPBPHcRqvwC284lX5xB2ew4f4wryjeHDUC
+ PQhuzBuwhVlxjnPA0qPqREqZ
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="142730993"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2022 08:18:15 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 14 Jan 2022 08:18:13 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 14 Jan 2022 08:18:07 -0700
+From:   <conor.dooley@microchip.com>
+To:     <linus.walleij@linaro.org>, <bgolaszewski@baylibre.com>,
+        <robh+dt@kernel.org>, <jassisinghbrar@gmail.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <a.zummo@towertech.it>,
+        <alexandre.belloni@bootlin.com>, <broonie@kernel.org>,
+        <gregkh@linuxfoundation.org>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-crypto@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
+CC:     <krzysztof.kozlowski@canonical.com>, <geert@linux-m68k.org>,
+        <bin.meng@windriver.com>, <heiko@sntech.de>,
+        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
+        <atishp@rivosinc.com>
+Subject: [PATCH v3 15/15] MAINTAINERS: update riscv/microchip entry
+Date:   Fri, 14 Jan 2022 15:17:27 +0000
+Message-ID: <20220114151727.2319915-16-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220114151727.2319915-1-conor.dooley@microchip.com>
+References: <20220114151727.2319915-1-conor.dooley@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220113221532.c48abf7f56d29ba95dcb0dc6@kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 10:15:32PM +0900, Masami Hiramatsu wrote:
-> On Thu, 13 Jan 2022 13:25:52 +0100
-> Jiri Olsa <jolsa@redhat.com> wrote:
-> 
-> > On Wed, Jan 12, 2022 at 11:03:22PM +0900, Masami Hiramatsu wrote:
-> > > Add a return hook framework which hooks the function
-> > > return. Most of the idea came from the kretprobe, but
-> > > this is independent from kretprobe.
-> > > Note that this is expected to be used with other
-> > > function entry hooking feature, like ftrace, fprobe,
-> > > adn kprobes. Eventually this will replace the
-> > > kretprobe (e.g. kprobe + rethook = kretprobe), but
-> > > at this moment, this is just a additional hook.
-> > 
-> > this looks similar to the code kretprobe is using now
-> 
-> Yes, I've mostly re-typed the code :)
-> 
-> > would it make sense to incrementaly change current code to provide
-> > this rethook interface? instead of big switch of current kretprobe
-> > to kprobe + new rethook interface in future?
-> 
-> Would you mean modifying the kretprobe instance code to provide
-> similar one, and rename it at some point?
-> My original idea is to keep the current kretprobe code and build
-> up the similar one, and switch to it at some point. Actually,
-> I don't want to change the current kretprobe interface itself,
-> but the backend will be changed. For example, current kretprobe
-> has below interface.
-> 
-> struct kretprobe {
->         struct kprobe kp;
->         kretprobe_handler_t handler;
->         kretprobe_handler_t entry_handler;
->         int maxactive;
->         int nmissed;
->         size_t data_size;
->         struct freelist_head freelist;
->         struct kretprobe_holder *rph;
-> };
-> 
-> My idea is switching it to below.
-> 
-> struct kretprobe {
->         struct kprobe kp;
->         kretprobe_handler_t handler;
->         kretprobe_handler_t entry_handler;
->         int maxactive;
->         int nmissed;
->         size_t data_size;
->         struct rethook *rethook;
-> };
+From: Conor Dooley <conor.dooley@microchip.com>
 
-looks good, will this be a lot of changes?
-could you include it in the patchset?
+Update the RISC-V/Microchip entry by adding the microchip dts
+directory and myself as maintainer
 
-thanks,
-jirka
+Reviewed-by: Lewis Hanly <lewis.hanly@microchip.com>
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> 
-> Of course 'kretprobe_instance' may need to be changed...
-> 
-> struct kretprobe_instance {
-> 	struct rethook_node;
-> 	char data[];
-> };
-> 
-> But even though, since there is 'get_kretprobe(ri)' wrapper, user
-> will be able to access the 'struct kretprobe' from kretprobe_instance
-> transparently.
-> 
-> Thank you,
-> 
-> 
-> -- 
-> Masami Hiramatsu <mhiramat@kernel.org>
-> 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7a2345ce8521..3b1d6be7bd56 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16348,8 +16348,10 @@ K:	riscv
+ 
+ RISC-V/MICROCHIP POLARFIRE SOC SUPPORT
+ M:	Lewis Hanly <lewis.hanly@microchip.com>
++M:	Conor Dooley <conor.dooley@microchip.com>
+ L:	linux-riscv@lists.infradead.org
+ S:	Supported
++F:	arch/riscv/boot/dts/microchip/
+ F:	drivers/mailbox/mailbox-mpfs.c
+ F:	drivers/soc/microchip/
+ F:	include/soc/microchip/mpfs.h
+-- 
+2.32.0
 
