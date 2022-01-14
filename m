@@ -2,67 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C6AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:39:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A2BFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241900AbiANOjW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:39:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52894 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241883AbiANOjU (ORCPT
+        id S242165AbiANOjY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:39:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35980 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241884AbiANOjV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:39:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A60AEC061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:39:20 -0800 (PST)
+        Fri, 14 Jan 2022 09:39:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4202461E50
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 14:39:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A3018C36AEA;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 93DF3B8242E;
+        Fri, 14 Jan 2022 14:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E2C5C36AE5;
         Fri, 14 Jan 2022 14:39:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1642171159;
-        bh=4C38YhUgb/KZQ/qjGcuGXVtS6g87CnQILQHxKeBF1uo=;
+        bh=Ilz8hwWyxpVkIT37w2Dn9+zvbRhwuNB5NglxBqWAed0=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=NJ9X8WgDTvkR8cvC/u8G6EHugo8xT5eLhnOS3vxSM9194pibXiK2XPMZbDY79Xul3
-         5CMXVD4oFbZO4lkkauW1HwWOpDXW7Yuu+trOnLBiKNU8S2YPmqwtMp4SoRSL6Zo2kV
-         TMPWpUqG938GC3KEW8uUseVaZsEtOSEKkfLyQJ1bVpxvC7nk/tT2fG7flo0ZT+RyQ4
-         B9zK7kNaJfxWHUkC4uTevy+9WER8x2tdfciY5HZI415N8ggdecqk46NbUZbEfNZ2tu
-         rfdm8mNUro2tU/uUaC+iy4gs1Yj+9OHp5+IRftMYoKuRIkeb809c1TLOqjWP+by5lB
-         MT0ikNFIgMboQ==
+        b=uNgtCrAQRiq0KkuV7n9SmOvpyXNDsMdPoTsqi/kBpmWy6WvSBcQVrH22DnlymEWXW
+         Sz6QCR1VRnD8esW9k2zX/pmZO4lNShfIHyUW5j08QgQjZ0AywXDPkuIZdGLB3m5KWE
+         NVXrCkAu8UNVOsqyx/V124m4HDStg74eeZ62eo+wR7J6rkGLSds4nkoGxoWRImv4ij
+         mpurdM91qjwNqzw4Kgm2GxshF0PqgI2W9DGaPc8nbiYvuQFDHtZS9Dm1OnDnwE4LEx
+         PIwbOyAoU3MO+wGWGcD02WV+hTXrXF+df0MuB2V7aiojw3Dj6PE/oWT6VCiT4NnXg/
+         oPPUbad/wlvAA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 924E7F60797;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5897BF60797;
         Fri, 14 Jan 2022 14:39:19 +0000 (UTC)
-Subject: Re: [GIT PULL] sound updates for 5.17-rc1
+Subject: Re: [GIT PULL] first round of SCSI updates for the 5.15+ merge window
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <s5hwnj24p6x.wl-tiwai@suse.de>
-References: <s5hwnj24p6x.wl-tiwai@suse.de>
+In-Reply-To: <31f8716fbb4f1e2a332b2b3e3243a170e8b01145.camel@HansenPartnership.com>
+References: <31f8716fbb4f1e2a332b2b3e3243a170e8b01145.camel@HansenPartnership.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <s5hwnj24p6x.wl-tiwai@suse.de>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.17-rc1
-X-PR-Tracked-Commit-Id: 081c73701ef0c2a4f6a127da824a641ae6505fbe
+X-PR-Tracked-Message-Id: <31f8716fbb4f1e2a332b2b3e3243a170e8b01145.camel@HansenPartnership.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-misc
+X-PR-Tracked-Commit-Id: c77b1f8a8faeeba43c694d9d09d0b25a4f52cf37
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 3ceff4ea07410763d5d4cccd60349bf7691e7e61
-Message-Id: <164217115959.3976.7859271880368210587.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: e1a7aa25ff45636a6c1930bf2430c8b802e93d9c
+Message-Id: <164217115935.3976.6135264390120710165.pr-tracker-bot@kernel.org>
 Date:   Fri, 14 Jan 2022 14:39:19 +0000
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To:     James Bottomley <James.Bottomley@HansenPartnership.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 14 Jan 2022 10:55:02 +0100:
+The pull request you sent on Thu, 13 Jan 2022 15:22:42 -0500:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-5.17-rc1
+> git://git.kernel.org/pub/scm/linux/kernel/git/jejb/scsi.git scsi-misc
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/3ceff4ea07410763d5d4cccd60349bf7691e7e61
+https://git.kernel.org/torvalds/c/e1a7aa25ff45636a6c1930bf2430c8b802e93d9c
 
 Thank you!
 
