@@ -2,257 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA169C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 13:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD2C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 13:31:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241311AbiANN31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 08:29:27 -0500
-Received: from mout.kundenserver.de ([212.227.17.24]:40577 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241267AbiANN3U (ORCPT
+        id S236366AbiANNbt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 08:31:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:54516 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231860AbiANNbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 08:29:20 -0500
-Received: from quad ([82.142.23.158]) by mrelayeu.kundenserver.de (mreue109
- [212.227.15.183]) with ESMTPSA (Nemesis) id 1MMGZM-1msLgk0s5u-00JK5H; Fri, 14
- Jan 2022 14:28:56 +0100
-From:   Laurent Vivier <laurent@vivier.eu>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-m68k@lists.linux-m68k.org, Stephen Boyd <sboyd@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        John Stultz <john.stultz@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-rtc@vger.kernel.org, Laurent Vivier <laurent@vivier.eu>
-Subject: [PATCH v7 3/4] clocksource/drivers: Add a goldfish-timer clocksource
-Date:   Fri, 14 Jan 2022 14:28:49 +0100
-Message-Id: <20220114132850.3433263-4-laurent@vivier.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114132850.3433263-1-laurent@vivier.eu>
-References: <20220114132850.3433263-1-laurent@vivier.eu>
+        Fri, 14 Jan 2022 08:31:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642167107;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yxr/XstrAzeQLi8uDC+TRq+V7XRk5DwwZZtj12iW9lk=;
+        b=WHVR2Prg04v7Zhb1pBDeaQo6n+unUWqD6CPmjgiOoWURM9On674U728+tsro8Hjz5+pzbu
+        J1cKOMTwyrjVO7eOdFjKZFBw5ZZMKIjQX7t/fpsMznvSI1CtNoWGlxOWBqyUcw/W0o9nJa
+        6qdCMmjcXilcY+hQ+/XxTQ8tEiEVndg=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-144-N0bMTf_SMiGLh-nqeDctig-1; Fri, 14 Jan 2022 08:31:46 -0500
+X-MC-Unique: N0bMTf_SMiGLh-nqeDctig-1
+Received: by mail-ed1-f72.google.com with SMTP id h1-20020aa7cdc1000000b0040042dd2fe4so7090706edw.17
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 05:31:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=yxr/XstrAzeQLi8uDC+TRq+V7XRk5DwwZZtj12iW9lk=;
+        b=q+vpGn/bEVo5J9fJuOwHYsQ1zUd14OTv72JPn8Ee/eBEQwFZxW+wF9nTsdh+r6rnMm
+         c8Pe+538gEIcCIYhc+2OLCEY2g0v9DMwz19/JY6hpXsQeQI3Thjb2ILv9NrSZzH2kxQB
+         IMs32Dr12DHhukI4aLnmFcR7RD9ZdwQntz7BVLl3dMvMk/LOpCLRNKJkXciQaMHdxF2D
+         J0WZbBzf0mTaUn8HbRNtgJdv7P3Wc3WGU1xCYdEChuEX1REeeMHL9PuwDlCM6TadbBQf
+         EoyWi0xpkNeZoicAcMUsDSQpoq2nY80tshfPbnBdGoUve9Y9KdZeZeG+4XwWNRge4hdi
+         HepA==
+X-Gm-Message-State: AOAM530liWbNnJBrDiS/8r37CvcYqV2MIDZNWwwQ8oPtJAcQf73sOqu5
+        a+3uA/o1ihFc5Q5V4qiLsipyMpCKkDNBdR4fOpVufIJNOlImMATL2DupqjWXV0c2pUlafB80Y5z
+        mmgayDF3zo7eZ1YaqxWcY0Oci
+X-Received: by 2002:aa7:de82:: with SMTP id j2mr8655127edv.389.1642167105073;
+        Fri, 14 Jan 2022 05:31:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzakzeesCkpJ7UV6aJeTYrmBFV3QBHlRzQjOzKBk+Co/dc44VgV0Gf3BNT0wJjq7R6B2iKmyg==
+X-Received: by 2002:aa7:de82:: with SMTP id j2mr8655111edv.389.1642167104861;
+        Fri, 14 Jan 2022 05:31:44 -0800 (PST)
+Received: from ?IPV6:2003:cb:c701:9d00:ff87:1c9b:108a:9702? (p200300cbc7019d00ff871c9b108a9702.dip0.t-ipconnect.de. [2003:cb:c701:9d00:ff87:1c9b:108a:9702])
+        by smtp.gmail.com with ESMTPSA id g21sm2356765edt.12.2022.01.14.05.31.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 05:31:44 -0800 (PST)
+Message-ID: <35d7f27c-44e3-3921-c8d3-b6dee3b01238@redhat.com>
+Date:   Fri, 14 Jan 2022 14:31:43 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:a0TKHDbvCRegAVZL5K2QiFqYCtr8cnI7T3+Ubho+DsZ1in+fYYX
- fg8Hw0UYlwzO3231dqt+87/D6m7JzJgO5BCINKUJxjddWy6MxiBClHFoulD8s6glDSb1ngX
- OL0sODXCBK5dd8p/pJzLleo+Zl+drB2Ab4XsZlENdaQQLSOjN21JPOYrAe1lrn9cl2xY91v
- CgPHZfpLgvge/7Dj9RUPg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:bx4idyGdExw=:p3P4ekXAph2paduWRRLeGD
- B00MrqgXdV9p7kTA8UdudmmLRzmswHGGK6PV2OYYc/8UbROZC0VggNkWMP4vTOuxr1oavGc/U
- jsyR6L7WQSm0CjhfJzriXYyqxtrWbyu9CZXqRRrO+FfoenrAyMnAJ7G6PbP/yKqhrfxG++Bdr
- APXTyMBUQC4o6e25/sz1Y25QrPLYyqiAh+9GUqxxGBIhNBc+H46fbbn2iZ/dzRUetpXZTHtoN
- QP7f+VKNJ5jjt5NArHorVTfVKexY9BdW2wWQSN9WK8HJsp+dPTPeZeC6LdeEdzk4ecA5wCn3O
- Db5scobpg1o4KB0aKujDqTxR/M84npOnc3DZ+VHAIlt2YU57k0MPkrJhrnpPPPdEFk1AWZesf
- nW5O7W6gSU4UFFcl8a+lgEEtECrzPhDeTJoxixfs3V7YmspEwbQxRnnDaiAdgNcJdd1A+YMDV
- zfyyoHjiXXJneqWomvXxCyl982JOoxkFW+p6GTFcqlpYJFJUlbcn6Zf45pA+fQVgu1Oa/Ei+/
- JbHWVhZaGtATOLX62QNSgeCnquqG+5Spkh3AiepPVlScARDNsFpzgpIUcbzvTliJ9gxypGWi4
- NaR4S6cDxcgKgbw0uyqB+BLyEyUIWw2hQuBv+W0p2qK1+Ln/FwARcmObL5dNi6b+XOF7g9lmc
- tz2vqW/FIgUluC9NWUddr82JQt03LQObinmD4VDk14TWxglVtctWwDAO0zpKaWbGIhCY=
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@suse.com>, linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        John Dias <joaodias@google.com>, huww98@outlook.com,
+        John Hubbard <jhubbard@nvidia.com>
+References: <20211228175904.3739751-1-minchan@kernel.org>
+ <cf596fdc-6599-7c53-26e8-1524c5f214f7@redhat.com>
+ <Yd8AYViR6vuBVU2L@google.com>
+ <c9c97e6a-5bb6-475e-2d0e-d791f11d2cf9@redhat.com>
+ <Yd884YERYI+UvXbj@google.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [RFC v2] mm: introduce page pin owner
+In-Reply-To: <Yd884YERYI+UvXbj@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a clocksource based on the goldfish-rtc device.
+On 12.01.22 21:41, Minchan Kim wrote:
+> On Wed, Jan 12, 2022 at 06:42:21PM +0100, David Hildenbrand wrote:
+>>>>
+>>>> What about something like:
+>>>>
+>>>> "mm: selective tracing of page reference holders on unref"
+>>>>
+>>>> PAGE_EXT_PIN_OWNER -> PAGE_EXT_TRACE_UNREF
+>>>>
+>>>> $whatever feature/user can then set the bit, for example, when migration
+>>>> fails.
+>>>
+>>> I couldn't imagine put_page tracking is generally useful except
+>>> migration failure. Do you have reasonable usecase in your mind
+>>> to make the feature general to be used?
+>>
+>> HWpoison etc. purposes maybe? Trace who still held a reference a page
+>> that was poisoned and couldn't be removed?  Or in general, tracking
+> 
+> I am not familiar with hwpoison so here dumb question goes:
+> Is that different one with __soft_offline_page?
+> It uses migrate_pages so current interface supports it with filter.
 
-Signed-off-by: Laurent Vivier <laurent@vivier.eu>
----
- drivers/clocksource/Kconfig          |   7 ++
- drivers/clocksource/Makefile         |   1 +
- drivers/clocksource/timer-goldfish.c | 139 +++++++++++++++++++++++++++
- include/clocksource/timer-goldfish.h |  11 +++
- 4 files changed, 158 insertions(+)
- create mode 100644 drivers/clocksource/timer-goldfish.c
- create mode 100644 include/clocksource/timer-goldfish.h
+__soft_offline_page() won't kill the target and try to migrate because
+the pages are about to be damaged and we can still access them.
 
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index f65e31bab9ae..fa66fb7156da 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -711,4 +711,11 @@ config MICROCHIP_PIT64B
- 	  modes and high resolution. It is used as a clocksource
- 	  and a clockevent.
- 
-+config GOLDFISH_TIMER
-+	bool "Clocksource using goldfish-rtc"
-+	depends on M68K || COMPILE_TEST
-+	depends on RTC_DRV_GOLDFISH
-+	help
-+	  Support for the timer/counter of goldfish-rtc
-+
- endmenu
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index c17ee32a7151..e624a1a27027 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -88,3 +88,4 @@ obj-$(CONFIG_CSKY_MP_TIMER)		+= timer-mp-csky.o
- obj-$(CONFIG_GX6605S_TIMER)		+= timer-gx6605s.o
- obj-$(CONFIG_HYPERV_TIMER)		+= hyperv_timer.o
- obj-$(CONFIG_MICROCHIP_PIT64B)		+= timer-microchip-pit64b.o
-+obj-$(CONFIG_GOLDFISH_TIMER)		+= timer-goldfish.o
-diff --git a/drivers/clocksource/timer-goldfish.c b/drivers/clocksource/timer-goldfish.c
-new file mode 100644
-index 000000000000..9bf9ac8c4f5c
---- /dev/null
-+++ b/drivers/clocksource/timer-goldfish.c
-@@ -0,0 +1,139 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/interrupt.h>
-+#include <linux/ioport.h>
-+#include <linux/clocksource.h>
-+#include <linux/clockchips.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <clocksource/timer-goldfish.h>
-+
-+#define TIMER_TIME_LOW		0x00	/* get low bits of current time  */
-+					/*   and update TIMER_TIME_HIGH  */
-+#define TIMER_TIME_HIGH		0x04	/* get high bits of time at last */
-+					/*   TIMER_TIME_LOW read         */
-+#define TIMER_ALARM_LOW		0x08	/* set low bits of alarm and     */
-+					/*   activate it                 */
-+#define TIMER_ALARM_HIGH	0x0c	/* set high bits of next alarm   */
-+#define TIMER_IRQ_ENABLED	0x10
-+#define TIMER_CLEAR_ALARM	0x14
-+#define TIMER_ALARM_STATUS	0x18
-+#define TIMER_CLEAR_INTERRUPT	0x1c
-+
-+/* goldfish endianness depends on CPU endianness */
-+#ifdef CONFIG_CPU_BIG_ENDIAN
-+#define goldfish_ioread32 ioread32be
-+#define goldfish_iowrite32 iowrite32be
-+#else
-+#define goldfish_ioread32 ioread32
-+#define goldfish_iowrite32 iowrite32
-+#endif
-+
-+struct goldfish_timer {
-+	struct clock_event_device ced;
-+	struct resource res;
-+	void __iomem *base;
-+	int irq;
-+};
-+
-+static struct goldfish_timer *ced_to_gf(struct clock_event_device *ced)
-+{
-+	return container_of(ced, struct goldfish_timer, ced);
-+}
-+
-+static int goldfish_timer_set_oneshot(struct clock_event_device *evt)
-+{
-+	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-+	void __iomem *base = timerdrv->base;
-+
-+	goldfish_iowrite32(0, base + TIMER_ALARM_HIGH);
-+	goldfish_iowrite32(0, base + TIMER_ALARM_LOW);
-+	goldfish_iowrite32(1, base + TIMER_IRQ_ENABLED);
-+
-+	return 0;
-+}
-+
-+static int goldfish_timer_shutdown(struct clock_event_device *evt)
-+{
-+	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-+	void __iomem *base = timerdrv->base;
-+
-+	goldfish_iowrite32(0, base + TIMER_IRQ_ENABLED);
-+
-+	return 0;
-+}
-+
-+static int goldfish_timer_next_event(unsigned long delta,
-+				     struct clock_event_device *evt)
-+{
-+	struct goldfish_timer *timerdrv = ced_to_gf(evt);
-+	void __iomem *base = timerdrv->base;
-+	u64 now;
-+
-+	goldfish_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
-+
-+	/*
-+	 * time_low: get low bits of current time and update time_high
-+	 * time_high: get high bits of time at last time_low read
-+	 */
-+	now = goldfish_ioread32(base + TIMER_TIME_LOW);
-+	now += (u64)goldfish_ioread32(base + TIMER_TIME_HIGH) << 32;
-+
-+	now += delta;
-+
-+	goldfish_iowrite32(upper_32_bits(now), base + TIMER_ALARM_HIGH);
-+	goldfish_iowrite32(lower_32_bits(now), base + TIMER_ALARM_LOW);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t golfish_timer_tick(int irq, void *dev_id)
-+{
-+	struct clock_event_device *evt = dev_id;
-+
-+	evt->event_handler(evt);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+void __init goldfish_timer_init(int irq, void __iomem *base)
-+{
-+	struct goldfish_timer *timerdrv;
-+	int ret;
-+
-+	timerdrv = kzalloc(sizeof(*timerdrv), GFP_KERNEL);
-+	if (!timerdrv)
-+		return;
-+
-+	timerdrv->base = base;
-+	timerdrv->irq = irq;
-+
-+	timerdrv->ced = (struct clock_event_device){
-+		.name			= "goldfish_timer",
-+		.features		= CLOCK_EVT_FEAT_ONESHOT,
-+		.set_state_shutdown	= goldfish_timer_shutdown,
-+		.set_state_oneshot      = goldfish_timer_set_oneshot,
-+		.set_next_event		= goldfish_timer_next_event,
-+		.shift			= 32,
-+	};
-+	timerdrv->res = (struct resource){
-+		.name  = "goldfish_timer",
-+		.start = (unsigned long)base,
-+		.end   = (unsigned long)base + 0xfff,
-+	};
-+
-+	if (request_resource(&iomem_resource, &timerdrv->res)) {
-+		pr_err("Cannot allocate goldfish-timer resource\n");
-+		return;
-+	}
-+
-+	ret = request_irq(timerdrv->irq, golfish_timer_tick, IRQF_TIMER,
-+			  "goldfish_timer", &timerdrv->ced);
-+	if (ret) {
-+		pr_err("Couldn't register goldfish-timer interrupt\n");
-+		return;
-+	}
-+
-+	clockevents_config_and_register(&timerdrv->ced, NSEC_PER_SEC,
-+					1, 0xffffffff);
-+}
-diff --git a/include/clocksource/timer-goldfish.h b/include/clocksource/timer-goldfish.h
-new file mode 100644
-index 000000000000..b237267844f1
---- /dev/null
-+++ b/include/clocksource/timer-goldfish.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * goldfish-timer clocksource
-+ */
-+
-+#ifndef _CLOCKSOURCE_GOLDFISH_TIMER_H
-+#define _CLOCKSOURCE_GOLDFISH_TIMER_H
-+
-+extern void goldfish_timer_init(int irq, void __iomem *base);
-+
-+#endif /* _CLOCKSOURCE_GOLDFISH_TIMER_H */
+ordinary memory errors mean we kill the target because we cannot access
+the page anymore without triggering MCEs (or worse IIUC) again.
+
+So in my thinking, after memory_failure(), it could eventually be
+helpful to figure out who still has a (temporary) reference to such a
+broken page, even after killing the process. But that's just one idea I
+quickly came up with.
+
+> 
+> echo "memory_failure" > $trace_dir/events/page_pin_owner/report_page_pinners/filter
+> 
+>> references to something that should have a refcount of 0 because it
+>> should have been freed, but for some reason there are still references
+>> around?
+> 
+> Sounds like you are talking about memory leak? What's the purpose
+> with trace, not using other existing tool to find memory leak?
+> 
+
+IIRC, kmemleak can find objects that are no longer referenced, and we
+cannot track buddy allocations, but only kmalloc and friends.
+
+>>
+>>> Otherwise, I'd like to have feature naming more higher level
+>>> to represent page migration failure and then tracking unref of
+>>> the page. In the sense, PagePinOwner John suggested was good
+>>> candidate(Even, my original naming PagePinner was worse) since
+>>
+>> Personally, I dislike both variants.
+>>
+>>> I was trouble to abstract the feature with short word.
+>>> If we approach "what feature is doing" rather than "what's
+>>> the feature's goal"(I feel the your suggestion would be close
+>>> to what feature is doing), I'd like to express "unreference on
+>>> migraiton failed page" so PAGE_EXT_UNMIGRATED_UNREF
+>>> (However, I prefer the feature naming more "what we want to achieve")
+>>>
+>> E.g., PAGE_EXT_TRACE_UNREF will trace unref to the page once the bit is
+>> set. The functionality itself is completely independent of migration
+>> failures. That's just the code that sets it to enable the underlying
+>> tracing for that specific page.
+> 
+> I agree that make something general is great but I also want to avoid
+> create something too big from the beginning with just imagination.
+> So, I'd like to hear more concrete and appealing usecases and then
+> we could think over this trace approach is really the best one to
+> achieve the goal. Once it's agreed, the naming you suggested would
+> make sense. 
+
+At least for me it's a lot cleaner if a feature clearly expresses what
+it actually does. Staring at PAGE_EXT_PIN_OWNER I initially had no clue.
+I was assuming we would actually track (not trace!) all active FOLL_PIN
+(not unref callers!). Maybe that makes it clearer why I'd prefer a
+clearer name.
+
+>>
+>> Makes sense, I was expecting the output to be large, but possible it's
+>> going to be way too large.
+>>
+>> Would it also make sense to track for a flagged page new taken
+>> references, such that you can differentiate between new (e.g.,
+>> temporary) ones and previous ones? Feels like a reasonable addition.
+> 
+> I actually tried it and it showed 2x times bigger output.
+
+Is 2x that bad? Or would it be worth making it configurable?
+
+> For me to debug CMA alloation failure, the new get_page callstack
+> after migration failure were waste since they repeated from lru
+> adding, isolate from the LRU something. Rather than get callsite,
+> I needed only put call sites since I could deduce where the pair-get
+> came from.
+
+Could maybe some filters help that exclude such LRU activity?
+
 -- 
-2.34.1
+Thanks,
+
+David / dhildenb
 
