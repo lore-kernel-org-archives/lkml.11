@@ -2,112 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED20BC43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46584C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:18:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243239AbiANQQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 11:16:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47899 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243221AbiANQQG (ORCPT
+        id S243242AbiANQSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 11:18:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239095AbiANQSd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 11:16:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642176965;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cn45XU5PW6NrZeSvkaw9e57q5ICMQUEETi8oMfHT3VQ=;
-        b=O7NAHrheV7IkIP9aI6O7/ast650N43n1uzSFrta0ePMM1aQgcg5vz4sRIJ4qgMtP7K2lku
-        Alvab6Ue3KQQp89WHQbCw7dqioYqCAP3M1jXslRyIm1wGqJ36xCDKaqGuDWmr27WX+PS1I
-        Kp5wK5BKb3mj0bYH1+Xe6xoHkjd5Y0k=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-435-7m0oU4tCPjC_L8zC3OxOvg-1; Fri, 14 Jan 2022 11:16:02 -0500
-X-MC-Unique: 7m0oU4tCPjC_L8zC3OxOvg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B38E18C8C00;
-        Fri, 14 Jan 2022 16:16:00 +0000 (UTC)
-Received: from T590 (ovpn-8-19.pek2.redhat.com [10.72.8.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 96C89753F8;
-        Fri, 14 Jan 2022 16:15:51 +0000 (UTC)
-Date:   Sat, 15 Jan 2022 00:15:46 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Boqun Feng <boqun.feng@gmail.com>, Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+4f789823c1abc5accf13@syzkaller.appspotmail.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Lai Jiangshan <laijs@linux.alibaba.com>,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        quic_neeraju@quicinc.com, frederic@kernel.org, urezki@gmail.com,
-        Jens Axboe <axboe@kernel.dk>
-Subject: Re: [syzbot] KASAN: use-after-free Read in srcu_invoke_callbacks
-Message-ID: <YeGhsmztTUcY46Ex@T590>
-References: <00000000000081b56205d54c6667@google.com>
- <20220111134324.1727-1-hdanton@sina.com>
- <20220111190500.GG947480@paulmck-ThinkPad-P17-Gen-1>
- <YeGK8gUziDoa/IYL@boqun-archlinux>
- <20220114152752.GU947480@paulmck-ThinkPad-P17-Gen-1>
- <YeGdoAFYGhg3viPZ@T590>
- <20220114161138.GW947480@paulmck-ThinkPad-P17-Gen-1>
+        Fri, 14 Jan 2022 11:18:33 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDAF8C06161C
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:18:32 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id f8so3141579pgf.8
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:18:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7VMdD/jG1OhLf0ccWBGGvDrHOZitMiDuwr1tmbzaiPk=;
+        b=dtsLpROvyW71vMsAeyUDpkELOk3IIZsyrBrQaMpABVKaCHSph5MPHi31CrLCVeFCfb
+         qAC8978AT1Bv5z7usNwPhes62xlyu6fWhXnwKyXTmJavoREl5nY0j+RfLOSKddAbTqdj
+         LYGlpYwRYf5bA/XS28pQ1V6/seMux030uA/Hf6VJF3ShDFU3OvNV8TiwSagntC0z1q43
+         KfvTqyoCJFhpjhe1qjy+ZS6RsNEVqWo1FcwAsKrWyP9er3vkh3pF+r2I8z1BllSkoWYS
+         gwf4XuPebfTzvVx22RBy0MsH8/gwrfnKt6wCT6WLLZWZh+E3wRBL8j6/U/y+zS0L3gVL
+         cDcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7VMdD/jG1OhLf0ccWBGGvDrHOZitMiDuwr1tmbzaiPk=;
+        b=CjkVWKDlcceLqfM+aPC+U2auz49A19sXLe/+flhRVuHhfknjRTEz3AH9PgSGGSXF4+
+         kaHOYw/v8C8jXuaZ7+lhwsDIoiFfxyDaMBY+LrLofSNwBgBb8cNNT436rjy9rGWsH1+y
+         MKXj+osrbDnTXKvUuKyv35TCLIwpOV3ihaB4Amh8A3tQOQnoqzLsOwIWURv44r/vC45N
+         dc4MzYw49UlQrzW6JKkOxl7tgAHLHzFSEZYDNjyjmJuRyaUrFNIjLk9FKLl22+wNSoqC
+         R/RJd4CAYVo8pcuIFLqsmMApnsGg4EujhIpGUd9F6uQVOqtg8RP1Gl6Hp6PkC5Bhvoxc
+         z0WQ==
+X-Gm-Message-State: AOAM530obucSrspEAMrdYqE9WTveQ8fttqW12X3pF24x/EyPiLOLCtI5
+        s/jOsEbI5HrZG2PqAPWYT3kDfQ==
+X-Google-Smtp-Source: ABdhPJw8er2uWFApX4KapuD5tBwh7MswU/QprQpkNs5xP88OBelj+H2tdzEm9pgcSKcQ4Kwt7Xhxrw==
+X-Received: by 2002:a63:8548:: with SMTP id u69mr6595782pgd.306.1642177112043;
+        Fri, 14 Jan 2022 08:18:32 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id m14sm5985121pff.151.2022.01.14.08.18.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 08:18:31 -0800 (PST)
+Date:   Fri, 14 Jan 2022 16:18:28 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Zeng Guang <guang.zeng@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>,
+        "Gao, Chao" <chao.gao@intel.com>
+Subject: Re: [PATCH v5 8/8] KVM: VMX: Resize PID-ponter table on demand for
+ IPI virtualization
+Message-ID: <YeGiVCn0wNH9eqxX@google.com>
+References: <20211231142849.611-1-guang.zeng@intel.com>
+ <20211231142849.611-9-guang.zeng@intel.com>
+ <YeCjHbdAikyIFQc9@google.com>
+ <43200b86-aa40-f7a3-d571-dc5fc3ebd421@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220114161138.GW947480@paulmck-ThinkPad-P17-Gen-1>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+In-Reply-To: <43200b86-aa40-f7a3-d571-dc5fc3ebd421@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 08:11:38AM -0800, Paul E. McKenney wrote:
-> On Fri, Jan 14, 2022 at 11:58:24PM +0800, Ming Lei wrote:
-> > On Fri, Jan 14, 2022 at 07:27:52AM -0800, Paul E. McKenney wrote:
-> > > On Fri, Jan 14, 2022 at 10:38:42PM +0800, Boqun Feng wrote:
-> > > > Hi,
-> > > > 
-> > > > On Tue, Jan 11, 2022 at 11:05:00AM -0800, Paul E. McKenney wrote:
-> > > > [...]
-> > > > > > > The buggy address belongs to the object at ffff8880189b5c70
-> > > > > > >  which belongs to the cache request_queue_srcu of size 3816
-> > > > 
-> > > > This cache name drew my attention when I was trying to look into this,
-> > > > because I couldn't find it in v5.16, later on I realized the UAF was
-> > > > found in linux-next and the commit introducing the cache was merged into
-> > > > mainline if 5.17 merge window:
-> > > > 
-> > > > 	704b914f15fb blk-mq: move srcu from blk_mq_hw_ctx to request_queue
-> > > > 
-> > > > I think the UAF is actually a bug introduced by the commit, because in
-> > > > that commit srcu structure was moved from blk_mq_hw_ctx to
-> > > > request_queue, and therefore the cleanup_srcu_struct() should be moved
-> > > > from blk_mq_hw_sysfs_release() to blk_release_queue(), however the above
-> > > > commit only deleted the one in blk_mq_hw_sysfs_release() but didn't add
-> > > > a new one in blk_release_queue(). As a result when a request queue is
-> > > > freed, the srcu structure is not fully clean up, therefore the UAF.
-> > > > 
-> > > > IOW, something like below (untested) should fix this. Copy the auther
-> > > > and block maintainers.
-> > > 
-> > > One question for the author and block maintainers...  Why not simply have
-> > > a single srcu_struct for all of the queues?  Or is there some situation
-> > > where you need one queue's reader to avoid blocking other queues' SRCU
-> > > grace periods?
+On Fri, Jan 14, 2022, Zeng Guang wrote:
+> On 1/14/2022 6:09 AM, Sean Christopherson wrote:
+> > On Fri, Dec 31, 2021, Zeng Guang wrote:
+> > > +static int vmx_expand_pid_table(struct kvm_vmx *kvm_vmx, int entry_idx)
+> > > +{
+> > > +	u64 *last_pid_table;
+> > > +	int last_table_size, new_order;
+> > > +
+> > > +	if (entry_idx <= kvm_vmx->pid_last_index)
+> > > +		return 0;
+> > > +
+> > > +	last_pid_table = kvm_vmx->pid_table;
+> > > +	last_table_size = table_index_to_size(kvm_vmx->pid_last_index + 1);
+> > > +	new_order = get_order(table_index_to_size(entry_idx + 1));
+> > > +
+> > > +	if (vmx_alloc_pid_table(kvm_vmx, new_order))
+> > > +		return -ENOMEM;
+> > > +
+> > > +	memcpy(kvm_vmx->pid_table, last_pid_table, last_table_size);
+> > > +	kvm_make_all_cpus_request(&kvm_vmx->kvm, KVM_REQ_PID_TABLE_UPDATE);
+> > > +
+> > > +	/* Now old PID table can be freed safely as no vCPU is using it. */
+> > > +	free_pages((unsigned long)last_pid_table, get_order(last_table_size));
+> > This is terrifying.  I think it's safe?  But it's still terrifying.
+> 
+> Free old PID table here is safe as kvm making request KVM_REQ_PI_TABLE_UPDATE
+> with KVM_REQUEST_WAIT flag force all vcpus trigger vm-exit to update vmcs
+> field to new allocated PID table. At this time, it makes sure old PID table
+> not referenced by any vcpu.
+> Do you mean it still has potential problem?
+
+No, I do think it's safe, but it is still terrifying :-)
+
+> > Rather than dynamically react as vCPUs are created, what about we make max_vcpus
+> > common[*], extend KVM_CAP_MAX_VCPUS to allow userspace to override max_vcpus,
+> > and then have the IPIv support allocate the PID table on first vCPU creation
+> > instead of in vmx_vm_init()?
 > > 
-> > Because srcu_struct is too fat, and only few drivers need it, and
-> > most block drivers needn't it.
-> 
-> Fair points.
-> 
-> But would it make sense to dynamically allocate a single srcu_struct
-> when the first need arose, and only remove it when the last need passed?
+> > That will give userspace an opportunity to lower max_vcpus to reduce memory
+> > consumption without needing to dynamically muck with the table in KVM.  Then
+> > this entire patch goes away.
+> IIUC, it's risky if relying on userspace .
 
-q->srcu is referred in fast IO path, we want to avoid to add indirect
-reference so not allocating it dynamically.
+That's why we have cgroups, rlimits, etc...
 
+> In this way userspace also have chance to assign large max_vcpus but not use
+> them at all. This cannot approach the goal to save memory as much as possible
+> just similar as using KVM_MAX_VCPU_IDS to allocate PID table.
 
-Thanks,
-Ming
-
+Userspace can simply do KVM_CREATE_VCPU until it hits KVM_MAX_VCPU_IDS...
