@@ -2,70 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4CCFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 22:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47927C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 22:22:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230408AbiANWVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 17:21:33 -0500
-Received: from mga14.intel.com ([192.55.52.115]:23289 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230381AbiANWVb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 17:21:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642198891; x=1673734891;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=NDObU3+Yl16UQmYX4QqpeATBk95upk8QyG1bPd1Td0k=;
-  b=aOUFPzpwr9DIoJPcWTXij7Af7e9xasLSPkbhiGMqjEDawnMB1wl3oHdk
-   vsIUBFbH1jiU2I6yK0TO0wb/SwlOYvJvT7tYh2poeLKFLbXIzIGCBE0Ia
-   8hSN9eRCH32id7vwjvvT19IhwGePIkPAI0ovmho4us1oJLQBkZuXdkGye
-   gfgpUoPuBqKKYMjD2jA9mo57hs7LWjan0OUpiEgNYWnkFJzFxjuAlNeMr
-   zlYT6woHKAjnr7SYZMUGzRbPvyZMOue0Ke0YDtyecs3nxFvz2j1uCI7hC
-   OLWVSXQx6p8Ew/Ykq4OwtUW+Dj7NPYpdgDfigLA6cm4MI+kP7OELODjh1
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="244540960"
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="244540960"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 14:21:30 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="516557132"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 14 Jan 2022 14:21:29 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8Uwq-000945-S0; Fri, 14 Jan 2022 22:21:28 +0000
-Date:   Sat, 15 Jan 2022 06:20:41 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andi Kleen <ak@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Subject: [intel-tdx:tdx/guest-rebased 82/133] arch/x86/kernel/kvmclock.c:
- linux/cc_platform.h is included more than once.
-Message-ID: <202201150608.2hRxJ21f-lkp@intel.com>
+        id S230413AbiANWW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 17:22:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230081AbiANWW1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 17:22:27 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D51C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 14:22:27 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id s22so14153587oie.10
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 14:22:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OuFqSaMxaXSA3AG2hrBWHPE80p6dOgVotZ/6HyoHHDQ=;
+        b=DInweyXhj+pq4R0V0wEKu4edGsSit9iMrD9zEnh+MSBExEn8lPa7LJnvF+fyZsPx3P
+         AW4nKVFqc2/+znfySiTSmQ1L7lG/CFCyPwrzZt/gabEZ04jPhgN9NirWhIfboMrWhOgi
+         6tfPgyogxPf22ql8cWDG3HgK2j/aO9VYWqeh3bBmD6LO0w0rFnLgrxtyHrO8A58OKAEF
+         0Sd/hq7D9nQYkpTJmWHh/9biy+L/lGXtZVPtUziJEJ/Ji5RmZwGMlSgPe0HEuzpzgbbG
+         aM8Tuh4DFw06C6TScuQ1A7f3cdXIg3YhDMKvVZ4DbrqR5glCFds+r/BbMh7Z376Owp5d
+         fdmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OuFqSaMxaXSA3AG2hrBWHPE80p6dOgVotZ/6HyoHHDQ=;
+        b=6tQCwLb//Vd68KB4DXLEJYO0Y5WHaoOG2yvp1ew8Zt2iWKs4LXTst0ZDUwwvpiJoiX
+         pAbJP0SHP8BgSQZzgjWG162Ohiuon5CPJbFSwbOokpeBJ5VSsmfGzWbHMci8eLzs1O08
+         0TWBYoPYae4aq0uEi+au4j6ajkJ7tDFM+Ng05iP382a2NQ25nHgHL7kj/RbuVeN5uyC1
+         AuWVHdteZcirFavfoAivomEpA5zd/UsdqN0mtf3BPcIZmUPwFoGo1hCYQaXpHejFxmfW
+         QqC9avX0iIk/kbJ+Bw6XC15RbT7YJTbZTG8o17/Po2XHaJP+B4+bGtwiZAzSijC1pre8
+         ZoKQ==
+X-Gm-Message-State: AOAM532nNGonCwzCmXvvNZN5iDQgDtDyFoevxHEZk/tYKMzs1uqcTv3f
+        eqj0AuyWeEX+mTEgOdsG1hOzt/LxOGXKEd36swuouiMs
+X-Google-Smtp-Source: ABdhPJyvgK+CZsm//lGNrHCH6ev3Ik3D8iP9ufTbc7sMAeJopB8avoD4Em0aJ/WF3OYVj7+qmcyUuAz690RTSGGAwCE=
+X-Received: by 2002:a05:6808:68f:: with SMTP id k15mr14140437oig.5.1642198946853;
+ Fri, 14 Jan 2022 14:22:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220114104352.6107-1-jiapeng.chong@linux.alibaba.com>
+In-Reply-To: <20220114104352.6107-1-jiapeng.chong@linux.alibaba.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Fri, 14 Jan 2022 17:22:15 -0500
+Message-ID: <CADnq5_Nn2BzODYyUZBq5Qy-7WURbejMi4amBeu3gvg5AdY9SdA@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display: Remove redundant initialization of dpg_width
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     xinhui pan <Xinhui.Pan@amd.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        Christian Koenig <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git tdx/guest-rebased
-head:   e3995864d37c56f431c93fc3dc454d9c65f5e9ea
-commit: 4a3880b5341dcd044ac45b1483342f005d1ec083 [82/133] x86/tdx: Disable kvmclock in TDX
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+Applied.  Thanks!
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-includecheck warnings: (new ones prefixed by >>)
->> arch/x86/kernel/kvmclock.c: linux/cc_platform.h is included more than once.
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+On Fri, Jan 14, 2022 at 5:44 AM Jiapeng Chong
+<jiapeng.chong@linux.alibaba.com> wrote:
+>
+> dpg_width is being initialized to width but this is never read
+> as dpg_width is overwritten later on. Remove the redundant
+> initialization.
+>
+> Cleans up the following clang-analyzer warning:
+>
+> drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:6020:8:
+> warning: Value stored to 'dpg_width' during its initialization is never
+> read [clang-analyzer-deadcode.DeadStores].
+>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+> index 497470513e76..1f8831156bc4 100644
+> --- a/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+> +++ b/drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c
+> @@ -6017,7 +6017,7 @@ static void set_crtc_test_pattern(struct dc_link *link,
+>                 else if (link->dc->hwss.set_disp_pattern_generator) {
+>                         struct pipe_ctx *odm_pipe;
+>                         int opp_cnt = 1;
+> -                       int dpg_width = width;
+> +                       int dpg_width;
+>
+>                         for (odm_pipe = pipe_ctx->next_odm_pipe; odm_pipe; odm_pipe = odm_pipe->next_odm_pipe)
+>                                 opp_cnt++;
+> --
+> 2.20.1.7.g153144c
+>
