@@ -2,162 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A2D4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5052AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240549AbiANLgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 06:36:23 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:41726 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234586AbiANLgV (ORCPT
+        id S234717AbiANLnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 06:43:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232850AbiANLnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 06:36:21 -0500
-Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220114113619epoutp04f3a78433417e10a32c973100842e9829~KH-uuRrHX2694926949epoutp04L
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 11:36:19 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220114113619epoutp04f3a78433417e10a32c973100842e9829~KH-uuRrHX2694926949epoutp04L
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1642160179;
-        bh=ldgDTIYJIP1P8SsZdmNML1GNaShxKbRNmOuT6WfsyN4=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=YKKomgPG4UyO65wdjkn+P1m1xe+ijpWEA3dJUzgvyFE3PmaZsFFf/icv90V/YWO5B
-         9L9j6GNLuL4ZtNoa03uNHR165TM2h5nL3MUi/JqUdEg5iX614yu+wWFeLX6Izwnk4g
-         hYL8K9pYfZjksKa0SaOEeL3qaEvGXvKokiEOeMQc=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTP id
-        20220114113619epcas1p474f7fe7f5d8387bdb51c0f3038232fd3~KH-t-w6J31357213572epcas1p42;
-        Fri, 14 Jan 2022 11:36:19 +0000 (GMT)
-Received: from epsmges1p5.samsung.com (unknown [182.195.38.233]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4JZzlL4Fckz4x9Pw; Fri, 14 Jan
-        2022 11:36:14 +0000 (GMT)
-Received: from epcas1p2.samsung.com ( [182.195.41.46]) by
-        epsmges1p5.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D7.0F.28648.E2061E16; Fri, 14 Jan 2022 20:36:14 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220114113613epcas1p142ecd07beda2e089ef396337bef33430~KH-pFrFO20920009200epcas1p1J;
-        Fri, 14 Jan 2022 11:36:13 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220114113613epsmtrp20e515ca91ebf90c07c355577956604ba~KH-pEzF461051610516epsmtrp2j;
-        Fri, 14 Jan 2022 11:36:13 +0000 (GMT)
-X-AuditID: b6c32a39-003ff70000006fe8-78-61e1602e1a32
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        55.4B.08738.D2061E16; Fri, 14 Jan 2022 20:36:13 +0900 (KST)
-Received: from [10.113.221.211] (unknown [10.113.221.211]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220114113613epsmtip287078b9706440aaa79f3d601cb9987d3~KH-om5nca0503005030epsmtip2G;
-        Fri, 14 Jan 2022 11:36:13 +0000 (GMT)
-Subject: Re: [PATCH 0/5] drm/exynos: Use platform_get_irq*() variants to
- fetch IRQ's
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Joonyoung Shim <jy0922.shim@samsung.com>,
-        Seung-Woo Kim <sw0312.kim@samsung.com>,
-        Kyungmin Park <kyungmin.park@samsung.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        dri-devel@lists.freedesktop.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>
-From:   Inki Dae <inki.dae@samsung.com>
-Message-ID: <6f044839-e1d8-b9a8-90c3-7e929d498838@samsung.com>
-Date:   Fri, 14 Jan 2022 20:47:48 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
-        Thunderbird/78.14.0
+        Fri, 14 Jan 2022 06:43:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFC3C061574;
+        Fri, 14 Jan 2022 03:43:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BDF6B825C7;
+        Fri, 14 Jan 2022 11:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 431F4C36AEB;
+        Fri, 14 Jan 2022 11:43:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642160609;
+        bh=bgmAhxQsVVgxRzj2THs9lrv78RfoWXCLdTlRB3+Zats=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D1mn2vqUD2BXCpYE0h8pk23H+u7UvwHfpA+zYovyknErHV1CC4+IcQ6F715d78sPO
+         YxIfWCvIH/0/Lv91iKXfPgvNSHKnKJLqHVtr9gfv8v4PhwWDLiFvbD3FyYgjMrqeeO
+         6N9sH9d0CJsVeLHfhfh5hSPt6CeX7Es4oIpIBAKaz9/wyYHuJdZb5q7ep5dFq68F96
+         LgiBA8rnT22mhRwuXwT5DCWX7zWJbj0ApzsXCyxWzg9EOqEiKb/E+yGVzT1DtPx3+g
+         OATxfYpIxmzGQhuOOJjhKPE27ll8DnBcxgx9oQadXBJCYXecJG3J4V9s2nhrjgjhz/
+         Atl9yO0yy3qNw==
+Date:   Fri, 14 Jan 2022 12:43:21 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Stefan Berger <stefanb@linux.vnet.ibm.com>
+Cc:     linux-integrity@vger.kernel.org, zohar@linux.ibm.com,
+        serge@hallyn.com, christian.brauner@ubuntu.com,
+        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
+        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
+        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
+        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
+        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
+        paul@paul-moore.com, rgb@redhat.com,
+        linux-security-module@vger.kernel.org, jmorris@namei.org,
+        Stefan Berger <stefanb@linux.ibm.com>
+Subject: Re: [PATCH v8 13/19] ima: Add functions for creation and freeing of
+ an ima_namespace
+Message-ID: <20220114114321.7prnt72ukvch4wxa@wittgenstein>
+References: <20220104170416.1923685-1-stefanb@linux.vnet.ibm.com>
+ <20220104170416.1923685-14-stefanb@linux.vnet.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20211222190134.24866-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrHJsWRmVeSWpSXmKPExsWy7bCmnq5ewsNEg3trZC16z51ksvi/bSKz
-        xZWv79ksXty7yGKx8e0PJouzTW/YLTY9vsZqcXnXHDaLGef3MVm8vL+C2aLvzTpmi9a9R9gt
-        Zkx+yebA67HyxWx2j1kNvWwee78tYPHYOesuu8emVZ1sHtu/PWD1uN99nMlj85J6j74tqxg9
-        Pm+SC+CKyrbJSE1MSS1SSM1Lzk/JzEu3VfIOjneONzUzMNQ1tLQwV1LIS8xNtVVy8QnQdcvM
-        ATpeSaEsMacUKBSQWFyspG9nU5RfWpKqkJFfXGKrlFqQklNgWqBXnJhbXJqXrpeXWmJlaGBg
-        ZApUmJCd8WDaROaCvVwVqz8cYWxgPMHRxcjBISFgItEx17CLkYtDSGAHo8TRlU9Yuhg5gZxP
-        jBLt9xwhEp8ZJf6tP8MMkgBpOHWkhQ0isYtR4vSRrywQzntGicOT/jGCVAkLhEm0PbzHDJIQ
-        EVjOLPGw6QTYXGaBHIkpPcvARrEJqEpMXHGfDcTmFbCTWHLiKjuIzQIU/9C/nRXEFhWIlLj/
-        Yzk7RI2gxMmZIPdxcHAK+ErMW+QDMVJc4taT+UwQtrxE89bZYHslBG5wSPxoncUGcbaLxMHd
-        h9ghbGGJV8e3QNlSEp/f7WWDaNjHKLF810l2COcwo0TzzmYmiCpjif1LJzOBbGYW0JRYv0sf
-        IqwosfP3XEaIzXwS7772sEIClVeio00IokRJ4tjFG4wQtoTEhSUToe7xkJj8YiX7BEbFWUhe
-        m4Xkn1lI/pmFsHgBI8sqRrHUguLc9NRiwwJTeGwn5+duYgQnbC3LHYzT337QO8TIxMF4iFGC
-        g1lJhLe/6H6iEG9KYmVValF+fFFpTmrxIUZTYGBPZJYSTc4H5oy8knhDE0sDEzMjYxMLQzND
-        JXHeVdNOJwoJpCeWpGanphakFsH0MXFwSjUwFXzRLV/3vntaVmVlOLsUm/SCe/XPFe+/8Y8r
-        v+FYz37I0y9L6/ppA3uVD3sPnOv1Zyn7svKDY3R8hfLiOxmsag+/qm3X27frdkhsdUSgZG/U
-        x0/HylQ3K67N9qjb/smAfcrViFrJu+IHJxfvbF1zYjlLA9P5xoM2YYar7pz9YPZ5pnFb8MQ/
-        62cr7a0O/TyvRdKjbOmjK27GTDKKv8w3+qasbRb6smj/+V1LtNweb9umXV3BZiUk/HXzbFVX
-        08cnxfcqCm6Rl0o717LzR/m3vSE8n728or5M3KL540UTlyD7fWPn2O8ZT03P1087JH/4j0/a
-        U99Tu15d58xj3CGnJONrWvrmlIboo1u9v8/nKLEUZyQaajEXFScCAAVyIPthBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrNIsWRmVeSWpSXmKPExsWy7bCSvK5uwsNEg4VnDSx6z51ksvi/bSKz
-        xZWv79ksXty7yGKx8e0PJouzTW/YLTY9vsZqcXnXHDaLGef3MVm8vL+C2aLvzTpmi9a9R9gt
-        Zkx+yebA67HyxWx2j1kNvWwee78tYPHYOesuu8emVZ1sHtu/PWD1uN99nMlj85J6j74tqxg9
-        Pm+SC+CK4rJJSc3JLEst0rdL4Mp4MG0ic8FerorVH44wNjCe4Ohi5OSQEDCROHWkha2LkYtD
-        SGAHo8SP002MXYwcQAkJiS1bOSBMYYnDh4shSt4ySrx4e4UFJC4sECbx5YEvSFxEYDWzxPnT
-        f1hBZjIL5Eg0zVzFBNGwgFHi06wt7CAJNgFViYkr7rOB2LwCdhJLTlwFi7MAxT/0bwdrFhWI
-        lFh3fBk7RI2gxMmZT8CWcQr4Ssxb5AMxX13iz7xLzBC2uMStJ/OZIGx5ieats5knMArNQtI9
-        C0nLLCQts5C0LGBkWcUomVpQnJueW2xYYJSXWq5XnJhbXJqXrpecn7uJERyfWlo7GPes+qB3
-        iJGJg/EQowQHs5IIb3/R/UQh3pTEyqrUovz4otKc1OJDjNIcLErivBe6TsYLCaQnlqRmp6YW
-        pBbBZJk4OKUamNa/fFFxbiun/NQIPd6ge3xJEkzNEl9PLuMITS6Pam7+M9ua8+X+V3MaVpT5
-        rMqNNrDK28sxxSvtvnC0OP8SO801S978jhCvP764/7prVfSBL6sOtuWFbN1UXLbfy/Cva6uo
-        qvjDXfNU2iWCHFj2p64UXXP7WL3hiqLEs2Etn7bZWyYo1rZsqz6lYZ/GJnOIbbLB3AeXZOPD
-        3zzVtz66jVX8k2KaQOXEpS8aeT/EJ9zri/2WxMCg6/Pug/Z9jn3bUyKsSrtXG2ge3Ja5YmOk
-        vu2l2RN33Mvbn1RZvnY3i0/GJPcDdbqP125KDj2U+k6r0CGk7uG/vwcZ7FiO7rs55YiY6xch
-        2UfVL9ma2OqClViKMxINtZiLihMBRM9FvD4DAAA=
-X-CMS-MailID: 20220114113613epcas1p142ecd07beda2e089ef396337bef33430
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20211222190157epcas1p1d556269940101a49ab245a4f1d7d45c0
-References: <CGME20211222190157epcas1p1d556269940101a49ab245a4f1d7d45c0@epcas1p1.samsung.com>
-        <20211222190134.24866-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220104170416.1923685-14-stefanb@linux.vnet.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Jan 04, 2022 at 12:04:10PM -0500, Stefan Berger wrote:
+> From: Stefan Berger <stefanb@linux.ibm.com>
+> 
+> Implement create_ima_ns() to create and initialize an ima_namespace
+> and implement free_ima_ns() to free it.
+> 
+> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+> ---
+>  include/linux/ima.h                      | 13 +++++
+>  security/integrity/ima/Makefile          |  1 +
+>  security/integrity/ima/ima.h             | 16 +++++++
+>  security/integrity/ima/ima_init_ima_ns.c |  2 +-
+>  security/integrity/ima/ima_ns.c          | 61 ++++++++++++++++++++++++
+>  5 files changed, 92 insertions(+), 1 deletion(-)
+>  create mode 100644 security/integrity/ima/ima_ns.c
+> 
+> diff --git a/include/linux/ima.h b/include/linux/ima.h
+> index e1d65162d1fb..06c88cb17b21 100644
+> --- a/include/linux/ima.h
+> +++ b/include/linux/ima.h
+> @@ -226,4 +226,17 @@ static inline bool ima_appraise_signature(enum kernel_read_file_id func)
+>  	return false;
+>  }
+>  #endif /* CONFIG_IMA_APPRAISE && CONFIG_INTEGRITY_TRUSTED_KEYRING */
+> +
+> +#ifdef CONFIG_IMA_NS
+> +
+> +void free_ima_ns(struct user_namespace *ns);
+> +
+> +#else
+> +
+> +static inline void free_ima_ns(struct user_namespace *user_ns)
+> +{
+> +}
+> +
+> +#endif /* CONFIG_IMA_NS */
+> +
+>  #endif /* _LINUX_IMA_H */
+> diff --git a/security/integrity/ima/Makefile b/security/integrity/ima/Makefile
+> index f8a5e5f3975d..b86a35fbed60 100644
+> --- a/security/integrity/ima/Makefile
+> +++ b/security/integrity/ima/Makefile
+> @@ -14,6 +14,7 @@ ima-$(CONFIG_HAVE_IMA_KEXEC) += ima_kexec.o
+>  ima-$(CONFIG_IMA_BLACKLIST_KEYRING) += ima_mok.o
+>  ima-$(CONFIG_IMA_MEASURE_ASYMMETRIC_KEYS) += ima_asymmetric_keys.o
+>  ima-$(CONFIG_IMA_QUEUE_EARLY_BOOT_KEYS) += ima_queue_keys.o
+> +ima-$(CONFIG_IMA_NS) += ima_ns.o
+>  
+>  ifeq ($(CONFIG_EFI),y)
+>  ima-$(CONFIG_IMA_SECURE_AND_OR_TRUSTED_BOOT) += ima_efi.o
+> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
+> index f63c6f22b853..4255301e5b96 100644
+> --- a/security/integrity/ima/ima.h
+> +++ b/security/integrity/ima/ima.h
+> @@ -163,6 +163,7 @@ extern bool ima_canonical_fmt;
+>  int ima_init(void);
+>  int ima_fs_init(void);
+>  int ima_ns_init(void);
+> +int ima_init_namespace(struct ima_namespace *ns);
+>  int ima_add_template_entry(struct ima_namespace *ns,
+>  			   struct ima_template_entry *entry, int violation,
+>  			   const char *op, struct inode *inode,
+> @@ -503,4 +504,19 @@ static inline struct ima_namespace *get_current_ns(void)
+>  	return &init_ima_ns;
+>  }
+>  
+> +#ifdef CONFIG_IMA_NS
+> +
+> +struct ima_namespace *create_ima_ns(struct user_namespace *user_ns);
+> +
+> +#else
+> +
+> +static inline struct ima_namespace *
+> +create_ima_ns(struct user_namespace *user_ns)
 
-21. 12. 23. 오전 4:01에 Lad Prabhakar 이(가) 쓴 글:
-> Hi All,
-> 
-> This patch series aims to drop using platform_get_resource() for IRQ types
-> in preparation for removal of static setup of IRQ resource from DT core
-> code.
-> 
-> Dropping usage of platform_get_resource() was agreed based on
-> the discussion [0].
-> 
-> [0] https://patchwork.kernel.org/project/linux-renesas-soc/
-> patch/20211209001056.29774-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
->
+Why are you introducing these functions in 13/19 when you're first using
+it in the last patch of this series?
 
-Applied.
+> +{
+> +	WARN(1, "Cannot create an IMA namespace\n");
+> +	return ERR_PTR(-EFAULT);
+> +}
 
-Thanks,
-Inki Dae
+I think I pointed this out earlier or made illustrated it in my draft
+patch earlier. This function should not return a ptr to an ima
+namespace. That's just not necessary: the ima namespace _is stashed in
+struct user namespace_:
 
- 
-> Cheers,
-> Prabhakar
-> 
-> Lad Prabhakar (5):
->   drm/exynos/exynos7_drm_decon: Use platform_get_irq_byname() to get the
->     interrupt
->   drm/exynos: mixer: Use platform_get_irq() to get the interrupt
->   drm/exynos/exynos_drm_fimd: Use platform_get_irq_byname() to get the
->     interrupt
->   drm/exynos/fimc: Use platform_get_irq() to get the interrupt
->   drm/exynos: gsc: Use platform_get_irq() to get the interrupt
-> 
->  drivers/gpu/drm/exynos/exynos7_drm_decon.c | 12 +++---------
->  drivers/gpu/drm/exynos/exynos_drm_fimc.c   | 13 +++++--------
->  drivers/gpu/drm/exynos/exynos_drm_fimd.c   | 13 ++++---------
->  drivers/gpu/drm/exynos/exynos_drm_gsc.c    | 10 +++-------
->  drivers/gpu/drm/exynos/exynos_mixer.c      | 14 ++++++--------
->  5 files changed, 21 insertions(+), 41 deletions(-)
-> 
+static int create_ima_ns(struct uesr_namespace *user_ns)
+{
+	[...]
+
+	/* Pairs with [...] */
+	smp_store_release(&user_ns->ima_ns, ns);
+	return 0;
+}
+
+and in the other case:
+
+static inline create_ima_ns(struct user_namespace *user_ns)
+{
+	return -EINVAL;
+}
