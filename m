@@ -2,92 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D80C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AAC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242021AbiANOrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:47:53 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:58570 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241999AbiANOrt (ORCPT
+        id S242024AbiANOtF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:49:05 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4412 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235613AbiANOtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:47:49 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id A6C881F46A72
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642171668;
-        bh=cTHqww4IZbi5PdxScVJ5RmgEFWGNWZU4AMAqnvnN1vM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=D8AJQ4G4r14QCgGUpRCWn6AKwg2pAfphNZFKn9dWfT35vWJoI66KVSW7wOn/gXH8F
-         8+A7uBI3Sn2tDAHAu12zTel7evWbULUfMEnbsbcxcD7qYOmoOwRj5QuEa6f11pCGRl
-         5TKGmqC9UO3H/KHxP4s6DO9sC+IGFySuqpp0mit5cnsdk9mYk37bFOnzi4dGPnKHZv
-         ANmplostgKQQYVTggvCRI3XtxFzRbJFVi+xojzgODipky/Se7m9u57A3wmx0z3RvM+
-         VgAMkZairRwIwTkLmvYFbS+bM97KSZJjTomHxGawqHkf0W88KMMwmKbb8P1u8d1H3U
-         7bYait9ekDf5w==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     bjorn.andersson@linaro.org
-Cc:     mathieu.poirier@linaro.org, matthias.bgg@gmail.com,
-        pihsun@chromium.org, linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH] rpmsg: mtk_rpmsg: Fix circular locking dependency
-Date:   Fri, 14 Jan 2022 15:47:37 +0100
-Message-Id: <20220114144737.375621-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.33.1
+        Fri, 14 Jan 2022 09:49:05 -0500
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jb3yS2vrCz67Cp2;
+        Fri, 14 Jan 2022 22:46:08 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 14 Jan 2022 15:49:02 +0100
+Received: from [10.47.83.126] (10.47.83.126) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 14 Jan
+ 2022 14:49:01 +0000
+Subject: Re: [PATCH] perf util: Fix use after free in metric__new
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Ian Rogers <irogers@google.com>
+CC:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        <peterz@infradead.org>, <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>, <jolsa@redhat.com>,
+        <namhyung@kernel.org>, <ak@linux.intel.com>,
+        <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <20211208171113.22089-1-jose.exposito89@gmail.com>
+ <CAP-5=fUAR9uSAQGkukqafkoX+jz1fE8f-ziU5WeG59XT53jMWw@mail.gmail.com>
+ <YeGNDskRtgpIFmzU@kernel.org>
+From:   John Garry <john.garry@huawei.com>
+Message-ID: <44b8de2c-b976-a396-2363-61a014d7e71f@huawei.com>
+Date:   Fri, 14 Jan 2022 14:48:35 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
+In-Reply-To: <YeGNDskRtgpIFmzU@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.47.83.126]
+X-ClientProxiedBy: lhreml722-chm.china.huawei.com (10.201.108.73) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During execution of the worker that's used to register rpmsg devices
-we are safely locking the channels mutex but, when creating a new
-endpoint for such devices, we are registering a IPI on the SCP, which
-then makes the SCP to trigger an interrupt, lock its own mutex and in
-turn register more subdevices.
-This creates a circular locking dependency situation, as the mtk_rpmsg
-channels_lock will then depend on the SCP IPI lock.
+On 14/01/2022 14:47, Arnaldo Carvalho de Melo wrote:
+>>> Addresses-Coverity-ID: 1494000
+>>> Signed-off-by: José Expósito<jose.exposito89@gmail.com>
+>> Acked-by: Ian Rogers <irogers@google,com>
+>>
+>> This can only happen in the ENOMEM case, but it is a good fix.
+>>
+>> Fixes: b85a4d61d302 (perf metric: Allow modifiers on metrics)
+> Sorry, I missed this one_as well_, sigh...
+> 
+> - Arnaldo
+>   
 
-[   18.014514]  Possible unsafe locking scenario:
-[   18.014515]        CPU0                    CPU1
-[   18.014517]        ----                    ----
-[   18.045467]   lock(&mtk_subdev->channels_lock);
-[   18.045474]                                lock(&scp->ipi_desc[i].lock);
-[   18.228399]                                lock(&mtk_subdev->channels_lock);
-[   18.228405]   lock(&scp->ipi_desc[i].lock);
-[   18.264405]
 
-To solve this, simply unlock the channels_lock mutex before calling
-mtk_rpmsg_register_device() and relock it right after, as safety is
-still ensured by the locking mechanism that happens right after
-through SCP.
-Notably, mtk_rpmsg_register_device() does not even require locking.
+Isn't there a v3 out there? Not sure if you noticed...
 
-Fixes: 7017996951fd ("rpmsg: add rpmsg support for mt8183 SCP.")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/rpmsg/mtk_rpmsg.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/rpmsg/mtk_rpmsg.c b/drivers/rpmsg/mtk_rpmsg.c
-index 5b4404b8be4c..d1213c33da20 100644
---- a/drivers/rpmsg/mtk_rpmsg.c
-+++ b/drivers/rpmsg/mtk_rpmsg.c
-@@ -234,7 +234,9 @@ static void mtk_register_device_work_function(struct work_struct *register_work)
- 		if (info->registered)
- 			continue;
- 
-+		mutex_unlock(&subdev->channels_lock);
- 		ret = mtk_rpmsg_register_device(subdev, &info->info);
-+		mutex_lock(&subdev->channels_lock);
- 		if (ret) {
- 			dev_err(&pdev->dev, "Can't create rpmsg_device\n");
- 			continue;
--- 
-2.33.1
-
+Cheers
