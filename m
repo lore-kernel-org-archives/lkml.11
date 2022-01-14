@@ -2,114 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E843BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:48:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233481AbiANGsG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 01:48:06 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:59254
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229955AbiANGsD (ORCPT
+        id S233497AbiANGs3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 01:48:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229560AbiANGs1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 01:48:03 -0500
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com [209.85.167.198])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 90C1A402A4
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:48:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642142881;
-        bh=PKBAkmJ7or0T/bxHU0Wvyq29ugXtwBBaF+RK3mybysU=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=hDIiylRN/BhR3ijiiWn2wBFPyRwRb06nqYpmUx4C+aV6dTp5xI2nRrJGZ3n50E7O0
-         CbS1pO8x86DkqH4QUbPue5kg/sSXD9bqZpvAf6m2k82QB941iO2baagLssj9WarLQp
-         KLMiSonoqyTJSWEY/X1fHx6nD9jrRmdvDsSCvcQA131JdAOjfBHyzZEDjO6GLgkrRv
-         T4f0LMD1m9xLE6iEabDWROdRNcJxN7SJ1YiYOJpqX0/n+K9GaTyTVxQWEqYSQ/CYe/
-         G1NT0CiQdqFfO09vj0y7XGfVyJ8KK1+hN7FARhe5AJ5XMiXttlAht6j3CNnkTUH50B
-         CeV74hekx6AnQ==
-Received: by mail-oi1-f198.google.com with SMTP id v72-20020acaac4b000000b002c8dd559f44so5452753oie.8
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:48:01 -0800 (PST)
+        Fri, 14 Jan 2022 01:48:27 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72BAFC06161C
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:48:27 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id e18-20020a255012000000b00611b9fa7078so9448560ybb.4
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:48:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=HMm6lw8fmCzwK/qAm0rnyqsh44zJLqbdDkWenpmSRLk=;
+        b=AGp8bk4dNYz2YbKjz9F6ldM9V3L5xbYpFX1f0d3EF53J+qNT62etz0c8sX1TGsKpE4
+         qG00hl7piKfpBWc4BCmhN1suswNqET6HwzK7lVQZcsTAhW/VaqmJunyk/JS5z++hTrYv
+         h4Lg/3oWROm1BxNDxodMmPdPbgs4V1KvKzW+/gRJz/8h/KV8Jc+K3fCAHp9cYurcHDpD
+         43JqK/bqieDuu9eBrTfG6CCiHIegCRxtZ2khankhOKtueslTns8LvHRKsmi0T3Z7VPdM
+         q19KRFfX/FGRi4Tp+i2kdfrirlbGiFyVZE8E+CeVSgqcvBN6fMLQwMmbH9dPRh0pSEoJ
+         Pj4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PKBAkmJ7or0T/bxHU0Wvyq29ugXtwBBaF+RK3mybysU=;
-        b=IGmwkoJBKGfvGGlEi6o62XDZK6rBthDbbJl/Ud6ZnMqgFQUqkTZEErIxeClgrUKxFr
-         8v/cRmLAUVk8Cb8qiCulx268NDmRoPLh/DhXW964R7ZYYVGEGp15YrHbrR6XaSpsaRHN
-         YGkqoxCVIn+m7Bsloa8lzj2/ERcZ9jDtBIyw4FNPMyz3HxJvNVaxrtvpIq7wtNkO7Cfu
-         DALi3uuwmc7lDG58jShslhi0CtXlxwwR9VFpcK75+aSmr+lAWnN0dCJuxKHYyYs3WeP9
-         JU9tHlKPK7kvtoqona2+XdpjJhPyslTtQQn+/aE3W1xNQdfnE711eEB1KbO/7Ixc2A2X
-         8M1w==
-X-Gm-Message-State: AOAM530GLl+XvsqEUtoLnY5IRIzJEHsofUM65GOxsYZQGjVIExde1dsL
-        Z28/YvV0BMvSulnNC23XGpBthoVg4rSiW/xVWywjojwHWNZzpvcCfyHpDI60OxK+CDE4iVPTGkQ
-        g4YOwwEWjp3RRGlCWx7k/Lle+z0dxsWkzJ1cJ92+mClPUoEhvelxpjMeyjg==
-X-Received: by 2002:a05:6808:293:: with SMTP id z19mr10972604oic.41.1642142879353;
-        Thu, 13 Jan 2022 22:47:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJye/IK1OGddDRHlpoRSRDwJDrr3evy3FfczWQgU60l1SslTO9lJxeMi9V5rBVY0jKXg6Ly5r0DmOwSH1F8j5i0=
-X-Received: by 2002:a05:6808:293:: with SMTP id z19mr10972566oic.41.1642142878837;
- Thu, 13 Jan 2022 22:47:58 -0800 (PST)
-MIME-Version: 1.0
-References: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
- <20220114040755.1314349-2-kai.heng.feng@canonical.com> <20220113203523.310e13d3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220113203523.310e13d3@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 14 Jan 2022 14:47:47 +0800
-Message-ID: <CAAd53p6rW7PcugY7okKsXybK2O=pS8qAhctMzsa-MEgJrKhEdg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] stmmac: intel: Honor phy LED set by system firmware
- on a Dell hardware
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=HMm6lw8fmCzwK/qAm0rnyqsh44zJLqbdDkWenpmSRLk=;
+        b=n94Ldi8z4ecXFHoxJCl4M61lqYIgm2fQfi3DAyodPW7GKKdkxgHWpGqQ7oL19t0x5+
+         QiSj4fs9bHWU8MzmxSWySJnuj+Uklgl9LoQ7Ai4hsUCCNKRmBRLATlyouAWyeZAaisMH
+         t4Hh/CcUWKSDs33uWmvz0O0YtNkDACPo/Givs9pebnjvCQZbx4mSGSjIsaDmqXh5gp+u
+         uDaAsTjUgAEteP3EbtE1Jv/f6pXDyS0aJD4Wi2Ua/jx6aG9mw4ME/pzTrZWcv35fSv4X
+         8eAS8H3ofRJzDzlL/PYt6v+QANA7B+2SSzm3mSrpvxpGr+KJOcIS8JU09i5t3rYJf2Kk
+         kq4g==
+X-Gm-Message-State: AOAM532ABGRy3UQWsitZPh22axsEocu534Omex9gCARL5qimW8xjxIhm
+        cE4JBNI7YP9+kgALStzbZOCb8OaGcHQ1
+X-Google-Smtp-Source: ABdhPJwhxSzCg2gZ8CBq5yz4UF4rfjyY6GWEipaxURLLLH8fw6VkrsGuN1NI99Vv8zva8uUfdQyNniXroQFK
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:de36:7cc:6c7a:b7cd])
+ (user=irogers job=sendgmr) by 2002:a25:d648:: with SMTP id
+ n69mr4603717ybg.371.1642142906649; Thu, 13 Jan 2022 22:48:26 -0800 (PST)
+Date:   Thu, 13 Jan 2022 22:48:22 -0800
+Message-Id: <20220114064822.1806019-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+Subject: [PATCH] perf arm: Fix off-by-one directory path.
+From:   Ian Rogers <irogers@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        German Gomez <german.gomez@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 12:35 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 14 Jan 2022 12:07:54 +0800 Kai-Heng Feng wrote:
-> > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-> > instead of setting another value, keep it untouched and restore the saved
-> > value on system resume.
-> >
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->
-> I defer to PHY experts for review. Coincidentally the first Marvell
-> flag appears dead, nobody sets it:
->
-> $ git grep MARVELL_PHY_M1145_FLAGS_RESISTANCE
-> drivers/net/phy/marvell.c:      if (phydev->dev_flags & MARVELL_PHY_M1145_FLAGS_RESISTANCE) {
-> include/linux/marvell_phy.h:#define MARVELL_PHY_M1145_FLAGS_RESISTANCE  0x00000001
-> $
->
-> unless it's read from DT under different name or something.
+Relative path include works in the regular build due to -I paths but may
+fail in other situations.
 
-It was introduced by 95d21ff4c645 without any user. Should we keep it?
+Fixes: 83869019c74c ("perf arch: Support register names from all archs")
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/util/arm64-frame-pointer-unwind-support.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->
->
-> Once you get some reviews please wait for net-next to open:
->
-> http://vger.kernel.org/~davem/net-next.html
->
-> and repost. It should happen the week of Jan 24th. When you repost
-> please drop the first patch, I believe Russell does not like the BIT()
-> macro, his opinion overrides checkpatch.
+diff --git a/tools/perf/util/arm64-frame-pointer-unwind-support.c b/tools/perf/util/arm64-frame-pointer-unwind-support.c
+index 4f5ecf51ed38..2242a885fbd7 100644
+--- a/tools/perf/util/arm64-frame-pointer-unwind-support.c
++++ b/tools/perf/util/arm64-frame-pointer-unwind-support.c
+@@ -6,7 +6,7 @@
+ #include "unwind.h"
+ 
+ #define perf_event_arm_regs perf_event_arm64_regs
+-#include "../arch/arm64/include/uapi/asm/perf_regs.h"
++#include "../../arch/arm64/include/uapi/asm/perf_regs.h"
+ #undef perf_event_arm_regs
+ 
+ struct entries {
+-- 
+2.34.1.703.g22d0c6ccf7-goog
 
-Of course. I'll wait for the review and resubmit the 2nd patch.
-
-Kai-Heng
-
->
-> Thanks!
