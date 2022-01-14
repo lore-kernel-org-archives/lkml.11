@@ -2,137 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8795C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 19:59:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E16C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244194AbiANT7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 14:59:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiANT7z (ORCPT
+        id S244200AbiANUJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:09:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21921 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244139AbiANUJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 14:59:55 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067C6C061574;
-        Fri, 14 Jan 2022 11:59:55 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id f13so3705169plg.0;
-        Fri, 14 Jan 2022 11:59:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=D0wKk3vGKLq9UCyFJhVh9PflC/XZziG3O4cSoYLFQ14=;
-        b=CMGGmJ6D3NMsRS4cRVv7aywNPWWrW3P/NYH+BuqdX73hVb24Xw4ruWbjUtGgua+dDa
-         g7HSHshblLY2yOYIwtAWsouqlwb4tu38D2UL1hM2fC/N3T8kLA8i1VXQ8CO430ag2B5M
-         mfm2TwS+IPJ/KnkbQAq7cA/+3PB0PMr+XAjINM7eL1u7YKRlOBTYVQ9xWpVXG/jaBLn2
-         +x7GvAulvRNdRhrmSieJjNEwxKTzeN5ZP6PF1LvJhBRrdsGdUmm0pSL+Ap8HyVLBWVvL
-         ySuqjvBYN9OK0enYKzEOksdLASixmODRrAsAjhjILS/rrtVZRBJBG8Z8aq2l4vSOUQwx
-         3ssg==
+        Fri, 14 Jan 2022 15:09:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642190961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=thU4qAN6AqgkO3iygUwszvm6XkxjVvqIM4JafM153Ro=;
+        b=DJtr9zVBPyzVKrZtIPZ7pPYeHyVCk+sUffpWr8saWdQPby/f6q0tSNCDllprErYPxX5Ink
+        kviAZzNV/dprrvhJ+/su8G0TACjsgeSmrmfWBExY5NYOZUoHyea7ckY3HcotZIM+2qcV6y
+        +9ZODnYdHwowIP5iZiwnICCUy5BRoSc=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-490-O9gS_7CVMgalOytoM89AyA-1; Fri, 14 Jan 2022 15:09:20 -0500
+X-MC-Unique: O9gS_7CVMgalOytoM89AyA-1
+Received: by mail-wm1-f71.google.com with SMTP id z13-20020a05600c0a0d00b003457d6619f8so6175638wmp.1
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:09:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=D0wKk3vGKLq9UCyFJhVh9PflC/XZziG3O4cSoYLFQ14=;
-        b=izF2V6qIdAmZEIIX+v0z/k3o8pHf5izlB+S90xxs6gsmkvxh8tF5Iscn3QS3mCfuqc
-         HCYNpKQGD73ipDRlaUv2ENR0YdIcayDv5FsbVybOtna+w4Ky4EHU527Icu9yXSR8EeWh
-         Uk/k4SEvyyFpdytMkgPv2YgbzP4LRP+sDApe+2i0XjSyqoOkYupFbCJXG5CSOXlZh61H
-         X2fNLmreZntkrUvg207M9lHwy3tf1d0lBU8QaBQiwMArtdzfTgTeY78k7Nz28Gx6ay47
-         JZrFKRv4frgFSWruIKvoACdlSUu2oJ2/RGHxF9xTf07siyaoQjl3NnJFMzJfa4eLCx3m
-         WP4w==
-X-Gm-Message-State: AOAM533m9YbHorvGkn/fMKVXXpe6QRzFPTIQfwyBvz5JSKOjf27osBRr
-        jyI0fjHtoqH96DCrtZcLZt8=
-X-Google-Smtp-Source: ABdhPJydHKeHi0WAuDG7E8O8JcRh2QkqgprHJfyoPXoR9K601QF4x+ZcgLz720gFAD+4TaRmv1aK0w==
-X-Received: by 2002:a17:90a:4214:: with SMTP id o20mr12625102pjg.80.1642190394344;
-        Fri, 14 Jan 2022 11:59:54 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:20f0:3cd3:13fc:6b46])
-        by smtp.gmail.com with ESMTPSA id n15sm11813121pjj.12.2022.01.14.11.59.52
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=thU4qAN6AqgkO3iygUwszvm6XkxjVvqIM4JafM153Ro=;
+        b=oCaVj8KkdpBPTCA0wAOpGcnBodVP0aArrykgVKVn+P5VaYY8NjGjvUOiZ8pknqbTLk
+         97/kAnHSByZa7K1F1r06fYyCKJ+blMgcfU3qitUsZ5if/saWxVM0AMDbPG51yPwd2oxU
+         /YFXrofjD4IOfXAGDeVDDNSeRBzwaeQEYag6alHQNDhzu5hbuL+pJSuAIOjBHJBuSof+
+         K+XfqmTGqH1mASiTVK6jZgHjkA0wgNirL5F73ySR24a9Pazi2YP3jImHhYsZ6jeOrn0q
+         D9rK49yIy6HWbyWGXsGZGiMZGwcEJBzM88sp3pG445joY/NsOBP84f6xjBgmq9h83ve6
+         ei6w==
+X-Gm-Message-State: AOAM533mYtuy3rvjIKVdPIQO1B+8A+NCvxNB+nCBM+JwwFGtSs+CTJgh
+        AGhDpQRCjpY+z2l5zJ8FZWb+wvg31UsnhCGkz2oWvrMot3eh5GmL+Iyah9CwXDtxf3oJa/PFnJb
+        XeyygkrvPY4MMHiZ2VOUtzwt9TtVWVZr+1n6nm6FIMpWp0yfwQ+iP2x4YazYSDubYKyZC3w==
+X-Received: by 2002:a1c:f414:: with SMTP id z20mr9703375wma.17.1642190957930;
+        Fri, 14 Jan 2022 12:09:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyEuXU7Zkd1anD16Nt37T1Zc+NsfqyKtrzn9R+BerhveX99jnGTLsev2YBwd+P+dVVUjg2/0A==
+X-Received: by 2002:a1c:f414:: with SMTP id z20mr9703360wma.17.1642190957631;
+        Fri, 14 Jan 2022 12:09:17 -0800 (PST)
+Received: from redhat.com ([2.55.154.210])
+        by smtp.gmail.com with ESMTPSA id h14sm6071433wrz.31.2022.01.14.12.09.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 11:59:53 -0800 (PST)
-Date:   Fri, 14 Jan 2022 11:59:50 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>,
-        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dianders@chromium.org,
-        Wei-Ning Huang <wnhuang@google.com>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Sean O'Brien <seobrien@chromium.org>, phoenixshen@chromium.org
-Subject: Re: [PATCH v2] HID: google: modify HID device groups of eel
-Message-ID: <YeHWNtl0Or1dgadz@google.com>
-References: <20220107091357.28960-1-xiazhengqiao@huaqin.corp-partner.google.com>
- <nycvar.YFH.7.76.2201140935460.28059@cbobk.fhfr.pm>
- <CAE-0n53M723sZ7H-f0SF=AoTrwznmTRhKPapgHe5H7Mw6bPb7Q@mail.gmail.com>
+        Fri, 14 Jan 2022 12:09:17 -0800 (PST)
+Date:   Fri, 14 Jan 2022 15:09:14 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH] virtio: acknowledge all features before access
+Message-ID: <20220114200744.150325-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAE-0n53M723sZ7H-f0SF=AoTrwznmTRhKPapgHe5H7Mw6bPb7Q@mail.gmail.com>
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 01:25:12PM -0600, Stephen Boyd wrote:
-> Quoting Jiri Kosina (2022-01-14 00:38:23)
-> > On Fri, 7 Jan 2022, Zhengqiao Xia wrote:
-> >
-> > > If HID_GROUP of eel is set to HID_GROUP_GENERIC, Whiskers Tablet
-> > > Mode Switch of eel hammer will not be detected by system. when it
-> > > is set to HID_GROUP_VIVALDI, system will detect Whiskers Tablet
-> > > Mode Switch successfully.
-> > >
-> > > Signed-off-by: Zhengqiao Xia <xiazhengqiao@huaqin.corp-partner.google.com>
-> > > ---
-> > >  drivers/hid/hid-google-hammer.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/hid/hid-google-hammer.c b/drivers/hid/hid-google-hammer.c
-> > > index 0403beb3104b..e5acd15f4a55 100644
-> > > --- a/drivers/hid/hid-google-hammer.c
-> > > +++ b/drivers/hid/hid-google-hammer.c
-> > > @@ -585,7 +585,7 @@ static void hammer_remove(struct hid_device *hdev)
-> > >  static const struct hid_device_id hammer_devices[] = {
-> > >       { HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
-> > >                    USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_DON) },
-> > > -     { HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
-> > > +     { HID_DEVICE(BUS_USB, HID_GROUP_VIVALDI,
-> > >                    USB_VENDOR_ID_GOOGLE, USB_DEVICE_ID_GOOGLE_EEL) },
-> > >       { HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
-> >
-> > Color me confused, but anything with HID_GROUP_VIVALDI should be matched
-> > by hid-vivaldi driver, so what is this about?
+The feature negotiation was designed in a way that
+makes it possible for devices to know which config
+fields will be accessed by drivers.
 
-We need this particular chunk because hid_scan_collection() forces all
-devices that declare usage 0x01 from the Google Vendor page to be marked
-as HID_GROUP_VIVALDI, so without it the hammer driver will not match
-eel.
+This is broken since commit 404123c2db79 ("virtio: allow drivers to
+validate features") with fallout in at least block and net.
+We have a partial work-around in commit 2f9a174f918e ("virtio: write
+back F_VERSION_1 before validate") which at least lets devices
+find out which format should config space have, but this
+is a partial fix: guests should not access config space
+without acknowledging features since otherwise we'll never
+be able to change the config space format.
 
-However this change (I believe) will break vivaldi functionality
-(reporting of the top row map) so we can't apply this as is.
+As a side effect, this also reduces the amount of hypervisor accesses -
+we now only acknowledge features once unless we are clearing any
+features when validating.
 
-> >
-> 
-> My understanding is that 'vivaldi' is mostly a keyboard layout and
-> 'hammer' is a detachable keyboard. We want to prevent the hid-vivaldi
-> driver from probing this particular device because the hid-vivaldi
-> driver doesn't know about detachable keyboards. Hammer devices also
-> support 360 degree wraparound so we know that the keyboard has been put
-> behind the screen or that it's being used to stand up the device on a
-> table.
-> 
-> Given all that, I'm still confused. If we make the hid-google-hammer
-> driver probe this device and the keyboard layout is vivaldi then we'd
-> want the part of the vivaldi driver that exposes the
-> function_row_physmap through sysfs. Otherwise userspace won't know how
-> to handle the function row properly. I think we need the device to stack
-> two drivers here. Does that happen with HID?
+Cc: stable@vger.kernel.org
+Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
+Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
+Cc: "Halil Pasic" <pasic@linux.ibm.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
-As far as I know HID does not easily allow "stacking" drivers like that.
+Halil, I thought hard about our situation with transitional and
+today I finally thought of something I am happy with.
+Pls let me know what you think. Testing on big endian would
+also be much appreciated!
 
-Probably the easiest way would be to export vivaldi_feature_mapping()
-and the show method for the physical row map and call them from the
-hammer driver.
+ drivers/virtio/virtio.c | 31 +++++++++++++++++--------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
-Thanks.
-
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index d891b0a354b0..2ed6e2451fd8 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -168,12 +168,10 @@ EXPORT_SYMBOL_GPL(virtio_add_status);
+ 
+ static int virtio_finalize_features(struct virtio_device *dev)
+ {
+-	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
++	int ret;
+ 
+ 	might_sleep();
+-	if (ret)
+-		return ret;
+ 
+ 	ret = arch_has_restricted_virtio_memory_access();
+ 	if (ret) {
+@@ -244,17 +242,6 @@ static int virtio_dev_probe(struct device *_d)
+ 		driver_features_legacy = driver_features;
+ 	}
+ 
+-	/*
+-	 * Some devices detect legacy solely via F_VERSION_1. Write
+-	 * F_VERSION_1 to force LE config space accesses before FEATURES_OK for
+-	 * these when needed.
+-	 */
+-	if (drv->validate && !virtio_legacy_is_little_endian()
+-			  && device_features & BIT_ULL(VIRTIO_F_VERSION_1)) {
+-		dev->features = BIT_ULL(VIRTIO_F_VERSION_1);
+-		dev->config->finalize_features(dev);
+-	}
+-
+ 	if (device_features & (1ULL << VIRTIO_F_VERSION_1))
+ 		dev->features = driver_features & device_features;
+ 	else
+@@ -265,10 +252,22 @@ static int virtio_dev_probe(struct device *_d)
+ 		if (device_features & (1ULL << i))
+ 			__virtio_set_bit(dev, i);
+ 
++	err = dev->config->finalize_features(dev);
++	if (err)
++		goto err;
++
+ 	if (drv->validate) {
++		u64 features = dev->features;
++
+ 		err = drv->validate(dev);
+ 		if (err)
+ 			goto err;
++
++		if (features != dev->features) {
++			err = dev->config->finalize_features(dev);
++			if (err)
++				goto err;
++		}
+ 	}
+ 
+ 	err = virtio_finalize_features(dev);
+@@ -495,6 +494,10 @@ int virtio_device_restore(struct virtio_device *dev)
+ 	/* We have a driver! */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
+ 
++	ret = dev->config->finalize_features(dev);
++	if (ret)
++		goto err;
++
+ 	ret = virtio_finalize_features(dev);
+ 	if (ret)
+ 		goto err;
 -- 
-Dmitry
+MST
+
