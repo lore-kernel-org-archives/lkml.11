@@ -2,241 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A07C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D4EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240100AbiANIWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:22:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
+        id S240125AbiANIWH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:22:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237178AbiANIUh (ORCPT
+        with ESMTP id S239950AbiANIUt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:20:37 -0500
+        Fri, 14 Jan 2022 03:20:49 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1637EC061778;
-        Fri, 14 Jan 2022 00:20:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3101C0613EE;
+        Fri, 14 Jan 2022 00:20:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB494B8243E;
-        Fri, 14 Jan 2022 08:20:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE563C36AE9;
-        Fri, 14 Jan 2022 08:20:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE23FB82436;
+        Fri, 14 Jan 2022 08:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B45E3C36AEA;
+        Fri, 14 Jan 2022 08:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148434;
-        bh=zDn1/PJm2N69QrPPtAudaZAm4P2Jzkduh9gWsQsyqYM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WWjmMoZ6QwbfHgkYi3FmX/i/+ur7d4yjwWe412f0pJd1OCg9SjZ97bIwNLpGvkyhE
-         aBj9loRoHwGiMP8mBFBUbdNOw7YgIc+pRvL1sPfbwO12lBnBGu89Asaz4YG5b+wcFW
-         Y3LK4X31zrJyRLfm2mYJ12ASnKrFT2eSyJqDMLUA=
+        s=korg; t=1642148446;
+        bh=8iKIb85u6ipfes5d+CNyFzUf/X0fNPURJcuud1v18+U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C/EbLcchRYF3D+640BzTyBIzK8HoMO0GLAiFdP3M93IDGXAuJuCKPK7RIp7ihOrYY
+         w94ysFKDQWw9EKFAlfm5omG4mDvKrXv5P+d7cYvA/Efrn1YRGbxzlD0D6qwP4I4+IV
+         HysLmgyC174yq7/hc5mEo+8Ljw4gn78N6+zKTbTc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-Subject: [PATCH 5.15 00/41] 5.15.15-rc1 review
-Date:   Fri, 14 Jan 2022 09:16:00 +0100
-Message-Id: <20220114081545.158363487@linuxfoundation.org>
+        stable@vger.kernel.org, "Ivan T. Ivanov" <iivanov@suse.de>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 36/41] random: fix crash on multiple early calls to add_bootloader_randomness()
+Date:   Fri, 14 Jan 2022 09:16:36 +0100
+Message-Id: <20220114081546.372351334@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
+References: <20220114081545.158363487@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.15.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.15.15-rc1
-X-KernelTest-Deadline: 2022-01-16T08:15+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.15.15 release.
-There are 41 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
-Anything received after that time might be too late.
+commit f7e67b8e803185d0aabe7f29d25a35c8be724a78 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-and the diffstat can be found below.
+Currently, if CONFIG_RANDOM_TRUST_BOOTLOADER is enabled, multiple calls
+to add_bootloader_randomness() are broken and can cause a NULL pointer
+dereference, as noted by Ivan T. Ivanov. This is not only a hypothetical
+problem, as qemu on arm64 may provide bootloader entropy via EFI and via
+devicetree.
 
-thanks,
+On the first call to add_hwgenerator_randomness(), crng_fast_load() is
+executed, and if the seed is long enough, crng_init will be set to 1.
+On subsequent calls to add_bootloader_randomness() and then to
+add_hwgenerator_randomness(), crng_fast_load() will be skipped. Instead,
+wait_event_interruptible() and then credit_entropy_bits() will be called.
+If the entropy count for that second seed is large enough, that proceeds
+to crng_reseed().
 
-greg k-h
+However, both wait_event_interruptible() and crng_reseed() depends
+(at least in numa_crng_init()) on workqueues. Therefore, test whether
+system_wq is already initialized, which is a sufficient indicator that
+workqueue_init_early() has progressed far enough.
 
--------------
-Pseudo-Shortlog of commits:
+If we wind up hitting the !system_wq case, we later want to do what
+would have been done there when wqs are up, so set a flag, and do that
+work later from the rand_initialize() call.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.15.15-rc1
+Reported-by: Ivan T. Ivanov <iivanov@suse.de>
+Fixes: 18b915ac6b0a ("efi/random: Treat EFI_RNG_PROTOCOL output as bootloader randomness")
+Cc: stable@vger.kernel.org
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+[Jason: added crng_need_done state and related logic.]
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/char/random.c |   56 ++++++++++++++++++++++++++++++++------------------
+ 1 file changed, 36 insertions(+), 20 deletions(-)
 
-Arnd Bergmann <arnd@arndb.de>
-    staging: greybus: fix stack size warning with UBSAN
-
-Nathan Chancellor <nathan@kernel.org>
-    drm/i915: Avoid bitwise vs logical OR warning in snb_wm_latency_quirk()
-
-Nathan Chancellor <nathan@kernel.org>
-    staging: wlan-ng: Avoid bitwise vs logical OR warning in hfa384x_usb_throttlefn()
-
-Ricardo Ribalda <ribalda@chromium.org>
-    media: Revert "media: uvcvideo: Set unique vdev name based in type"
-
-Alex Hung <alex.hung@canonical.com>
-    platform/x86/intel: hid: add quirk to support Surface Go 3
-
-Dominik Brodowski <linux@dominikbrodowski.net>
-    random: fix crash on multiple early calls to add_bootloader_randomness()
-
-Eric Biggers <ebiggers@google.com>
-    random: fix data race on crng init time
-
-Eric Biggers <ebiggers@google.com>
-    random: fix data race on crng_node_pool
-
-Brian Silverman <brian.silverman@bluerivertech.com>
-    can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
-
-Marc Kleine-Budde <mkl@pengutronix.de>
-    can: isotp: convert struct tpcon::{idx,len} to unsigned int
-
-Marc Kleine-Budde <mkl@pengutronix.de>
-    can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
-
-Borislav Petkov <bp@suse.de>
-    x86/mce: Remove noinstr annotation from mce_setup()
-
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-    mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-
-Daniel Borkmann <daniel@iogearbox.net>
-    veth: Do not record rx queue hint in veth_xmit
-
-Aditya Garg <gargaditya08@live.com>
-    Bluetooth: btbcm: disable read tx power for MacBook Air 8,1 and 8,2
-
-Aditya Garg <gargaditya08@live.com>
-    Bluetooth: btbcm: disable read tx power for some Macs with the T2 Security chip
-
-Aditya Garg <gargaditya08@live.com>
-    Bluetooth: add quirk disabling LE Read Transmit Power
-
-Adrian Hunter <adrian.hunter@intel.com>
-    mmc: sdhci-pci: Add PCI ID for Intel ADL
-
-Sven Eckelmann <sven@narfation.org>
-    ath11k: Fix buffer overflow when scanning with extraie
-
-Alan Stern <stern@rowland.harvard.edu>
-    USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
-
-Alan Stern <stern@rowland.harvard.edu>
-    USB: core: Fix bug in resuming hub's handling of wakeup requests
-
-Paul Cercueil <paul@crapouillou.net>
-    ARM: dts: exynos: Fix BCM4330 Bluetooth reset polarity in I9100
-
-Johan Hovold <johan@kernel.org>
-    Bluetooth: bfusb: fix division by zero in send path
-
-Aaron Ma <aaron.ma@canonical.com>
-    Bluetooth: btusb: Add support for Foxconn QCA 0xe0d0
-
-Tedd Ho-Jeong An <tedd.an@intel.com>
-    Bluetooth: btintel: Fix broken LED quirk for legacy ROM devices
-
-Aaron Ma <aaron.ma@canonical.com>
-    Bluetooth: btusb: Add support for Foxconn MT7922A
-
-Zijun Hu <quic_zijuhu@quicinc.com>
-    Bluetooth: btusb: Add two more Bluetooth parts for WCN6855
-
-Zijun Hu <quic_zijuhu@quicinc.com>
-    Bluetooth: btusb: Add one more Bluetooth part for WCN6855
-
-Linus Torvalds <torvalds@linux-foundation.org>
-    fget: clarify and improve __fget_files() implementation
-
-tjiang@codeaurora.org <tjiang@codeaurora.org>
-    Bluetooth: btusb: Add the new support IDs for WCN6855
-
-Larry Finger <Larry.Finger@lwfinger.net>
-    Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
-
-mark-yw.chen <mark-yw.chen@mediatek.com>
-    Bluetooth: btusb: enable Mediatek to support AOSP extension
-
-Mark-YW.Chen <mark-yw.chen@mediatek.com>
-    Bluetooth: btusb: fix memory leak in btusb_mtk_submit_wmt_recv_urb()
-
-Larry Finger <Larry.Finger@lwfinger.net>
-    Bbluetooth: btusb: Add another Bluetooth part for Realtek 8852AE
-
-mark-yw.chen <mark-yw.chen@mediatek.com>
-    Bluetooth: btusb: Add support for IMC Networks Mediatek Chip(MT7921)
-
-Max Chou <max.chou@realtek.com>
-    Bluetooth: btusb: Add the new support ID for Realtek RTL8852A
-
-mark-yw.chen <mark-yw.chen@mediatek.com>
-    Bluetooth: btusb: Add protocol for MediaTek bluetooth devices(MT7922)
-
-Daniel Borkmann <daniel@iogearbox.net>
-    bpf: Fix out of bounds access from invalid *_or_null type verification
-
-Martin Kaiser <martin@kaiser.cx>
-    staging: r8188eu: switch the led off during deinit
-
-Frederic Weisbecker <frederic@kernel.org>
-    workqueue: Fix unbind_workers() VS wq_worker_running() race
-
-Alexander Egorenkov <egorenar@linux.ibm.com>
-    s390/kexec: handle R_390_PLT32DBL rela in arch_kexec_apply_relocations_add()
-
-
--------------
-
-Diffstat:
-
- Makefile                                 |   4 +-
- arch/arm/boot/dts/exynos4210-i9100.dts   |   2 +-
- arch/s390/kernel/machine_kexec_file.c    |   4 ++
- arch/x86/kernel/cpu/mce/core.c           |  26 +++++--
- drivers/bluetooth/bfusb.c                |   3 +
- drivers/bluetooth/btbcm.c                |  51 ++++++++++++++
- drivers/bluetooth/btintel.c              |  20 +++---
- drivers/bluetooth/btintel.h              |   2 +-
- drivers/bluetooth/btusb.c                |  61 ++++++++++++++--
- drivers/char/random.c                    | 117 ++++++++++++++++++-------------
- drivers/gpu/drm/i915/intel_pm.c          |   6 +-
- drivers/media/usb/uvc/uvc_driver.c       |   7 +-
- drivers/mfd/intel-lpss-acpi.c            |   7 +-
- drivers/mmc/host/sdhci-pci-core.c        |   1 +
- drivers/mmc/host/sdhci-pci.h             |   1 +
- drivers/net/can/usb/gs_usb.c             |   5 +-
- drivers/net/veth.c                       |   1 -
- drivers/net/wireless/ath/ath11k/wmi.c    |   6 +-
- drivers/platform/x86/intel/hid.c         |   7 ++
- drivers/staging/greybus/audio_topology.c |  92 ++++++++++++------------
- drivers/staging/r8188eu/core/rtw_led.c   |   1 +
- drivers/staging/wlan-ng/hfa384x_usb.c    |  22 +++---
- drivers/usb/core/hcd.c                   |   9 ++-
- drivers/usb/core/hub.c                   |   2 +-
- fs/file.c                                |  72 ++++++++++++++-----
- include/net/bluetooth/hci.h              |   9 +++
- kernel/bpf/verifier.c                    |   6 +-
- kernel/workqueue.c                       |   9 +++
- net/bluetooth/hci_core.c                 |   3 +-
- net/can/isotp.c                          |   4 +-
- 30 files changed, 389 insertions(+), 171 deletions(-)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -461,6 +461,7 @@ static struct crng_state primary_crng =
+  * its value (from 0->1->2).
+  */
+ static int crng_init = 0;
++static bool crng_need_final_init = false;
+ #define crng_ready() (likely(crng_init > 1))
+ static int crng_init_cnt = 0;
+ static unsigned long crng_global_init_time = 0;
+@@ -828,6 +829,36 @@ static void __init crng_initialize_prima
+ 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
+ }
+ 
++static void crng_finalize_init(struct crng_state *crng)
++{
++	if (crng != &primary_crng || crng_init >= 2)
++		return;
++	if (!system_wq) {
++		/* We can't call numa_crng_init until we have workqueues,
++		 * so mark this for processing later. */
++		crng_need_final_init = true;
++		return;
++	}
++
++	invalidate_batched_entropy();
++	numa_crng_init();
++	crng_init = 2;
++	process_random_ready_list();
++	wake_up_interruptible(&crng_init_wait);
++	kill_fasync(&fasync, SIGIO, POLL_IN);
++	pr_notice("crng init done\n");
++	if (unseeded_warning.missed) {
++		pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
++			  unseeded_warning.missed);
++		unseeded_warning.missed = 0;
++	}
++	if (urandom_warning.missed) {
++		pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
++			  urandom_warning.missed);
++		urandom_warning.missed = 0;
++	}
++}
++
+ #ifdef CONFIG_NUMA
+ static void do_numa_crng_init(struct work_struct *work)
+ {
+@@ -982,25 +1013,7 @@ static void crng_reseed(struct crng_stat
+ 	memzero_explicit(&buf, sizeof(buf));
+ 	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+-	if (crng == &primary_crng && crng_init < 2) {
+-		invalidate_batched_entropy();
+-		numa_crng_init();
+-		crng_init = 2;
+-		process_random_ready_list();
+-		wake_up_interruptible(&crng_init_wait);
+-		kill_fasync(&fasync, SIGIO, POLL_IN);
+-		pr_notice("crng init done\n");
+-		if (unseeded_warning.missed) {
+-			pr_notice("%d get_random_xx warning(s) missed due to ratelimiting\n",
+-				  unseeded_warning.missed);
+-			unseeded_warning.missed = 0;
+-		}
+-		if (urandom_warning.missed) {
+-			pr_notice("%d urandom warning(s) missed due to ratelimiting\n",
+-				  urandom_warning.missed);
+-			urandom_warning.missed = 0;
+-		}
+-	}
++	crng_finalize_init(crng);
+ }
+ 
+ static void _extract_crng(struct crng_state *crng,
+@@ -1780,6 +1793,8 @@ static void __init init_std_data(struct
+ int __init rand_initialize(void)
+ {
+ 	init_std_data(&input_pool);
++	if (crng_need_final_init)
++		crng_finalize_init(&primary_crng);
+ 	crng_initialize_primary(&primary_crng);
+ 	crng_global_init_time = jiffies;
+ 	if (ratelimit_disable) {
+@@ -2288,7 +2303,8 @@ void add_hwgenerator_randomness(const ch
+ 	 * We'll be woken up again once below random_write_wakeup_thresh,
+ 	 * or when the calling thread is about to terminate.
+ 	 */
+-	wait_event_interruptible(random_write_wait, kthread_should_stop() ||
++	wait_event_interruptible(random_write_wait,
++			!system_wq || kthread_should_stop() ||
+ 			ENTROPY_BITS(&input_pool) <= random_write_wakeup_bits);
+ 	mix_pool_bytes(poolp, buffer, count);
+ 	credit_entropy_bits(poolp, entropy);
 
 
