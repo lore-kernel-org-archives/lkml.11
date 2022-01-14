@@ -2,38 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF38C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83302C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240392AbiANIXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:23:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60854 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239950AbiANIWJ (ORCPT
+        id S240138AbiANIXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:23:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33730 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239875AbiANIWO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:22:09 -0500
+        Fri, 14 Jan 2022 03:22:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5479361E22;
-        Fri, 14 Jan 2022 08:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65692C36AE9;
-        Fri, 14 Jan 2022 08:22:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32C6DB8242B;
+        Fri, 14 Jan 2022 08:22:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A928C36AE9;
+        Fri, 14 Jan 2022 08:22:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148528;
-        bh=Oi2oClVJM5knELY+Fm+YVV6da2xCRCdQrg1wMOiurkc=;
+        s=korg; t=1642148531;
+        bh=R8LDtVgPNv61s3p1d6o/xuHFihm2tCTiq1Wa8DMMXPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bOEb2WTUZ77C2Ivx4++1eq08K+aizrWPhg90yTYpO9H9S2GjgQqsMSS1V6fjD74tP
-         kP3tq1xWleiSr+CDkmpYWLtLWnvfKSDZaPCzTJmSVXQE8d3tP3H+xI3L2QblbEf8nn
-         ZJUhKq4PzL9KhN8ZF97nPxcBoBi0EumoedeGW3sc=
+        b=G66OKCbUIr4Ao8BzlXq9g6rJRfbVBMsemkPhF9v1vbZKiMILjt9oyfFM9G57YPMqY
+         5XymBWqND7nWSTJvfW7VP5pgACKCT0vs/+cerCH41D+0exCUbKiGT3rSlxfnWuonjU
+         q2OoIOeXjgsjUNEAvI9AcnsIgvjbVTVFCiKA7cM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [PATCH 5.16 19/37] ath11k: Fix buffer overflow when scanning with extraie
-Date:   Fri, 14 Jan 2022 09:16:33 +0100
-Message-Id: <20220114081545.480201757@linuxfoundation.org>
+        stable@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.16 02/37] workqueue: Fix unbind_workers() VS wq_worker_sleeping() race
+Date:   Fri, 14 Jan 2022 09:16:16 +0100
+Message-Id: <20220114081544.937905971@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -45,76 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sven Eckelmann <sven@narfation.org>
+From: Frederic Weisbecker <frederic@kernel.org>
 
-commit a658c929ded7ea3aee324c8c2a9635a5e5a38e7f upstream.
+commit 45c753f5f24d2d4717acb38ce35e604ff9abcb50 upstream.
 
-If cfg80211 is providing extraie's for a scanning process then ath11k will
-copy that over to the firmware. The extraie.len is a 32 bit value in struct
-element_info and describes the amount of bytes for the vendor information
-elements.
+At CPU-hotplug time, unbind_workers() may preempt a worker while it is
+going to sleep. In that case the following scenario can happen:
 
-The WMI_TLV packet is having a special WMI_TAG_ARRAY_BYTE section. This
-section can have a (payload) length up to 65535 bytes because the
-WMI_TLV_LEN can store up to 16 bits. The code was missing such a check and
-could have created a scan request which cannot be parsed correctly by the
-firmware.
+    unbind_workers()                     wq_worker_sleeping()
+    --------------                      -------------------
+                                      if (worker->flags & WORKER_NOT_RUNNING)
+                                          return;
+                                      //PREEMPTED by unbind_workers
+    worker->flags |= WORKER_UNBOUND;
+    [...]
+    atomic_set(&pool->nr_running, 0);
+    //resume to worker
+                                       atomic_dec_and_test(&pool->nr_running);
 
-But the bigger problem was the allocation of the buffer. It has to align
-the TLV sections by 4 bytes. But the code was using an u8 to store the
-newly calculated length of this section (with alignment). And the new
-calculated length was then used to allocate the skbuff. But the actual code
-to copy in the data is using the extraie.len and not the calculated
-"aligned" length.
+After unbind_worker() resets pool->nr_running, the value is expected to
+remain 0 until the pool ever gets rebound in case cpu_up() is called on
+the target CPU in the future. But here the race leaves pool->nr_running
+with a value of -1, triggering the following warning when the worker goes
+idle:
 
-The length of extraie with IEEE80211_HW_SINGLE_SCAN_ON_ALL_BANDS enabled
-was 264 bytes during tests with a QCA Milan card. But it only allocated 8
-bytes (264 bytes % 256) for it. As consequence, the code to memcpy the
-extraie into the skb was then just overwriting data after skb->end. Things
-like shinfo were therefore corrupted. This could usually be seen by a crash
-in skb_zcopy_clear which tried to call a ubuf_info callback (using a bogus
-address).
+        WARNING: CPU: 3 PID: 34 at kernel/workqueue.c:1823 worker_enter_idle+0x95/0xc0
+        Modules linked in:
+        CPU: 3 PID: 34 Comm: kworker/3:0 Not tainted 5.16.0-rc1+ #34
+        Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba527-rebuilt.opensuse.org 04/01/2014
+        Workqueue:  0x0 (rcu_par_gp)
+        RIP: 0010:worker_enter_idle+0x95/0xc0
+        Code: 04 85 f8 ff ff ff 39 c1 7f 09 48 8b 43 50 48 85 c0 74 1b 83 e2 04 75 99 8b 43 34 39 43 30 75 91 8b 83 00 03 00 00 85 c0 74 87 <0f> 0b 5b c3 48 8b 35 70 f1 37 01 48 8d 7b 48 48 81 c6 e0 93  0
+        RSP: 0000:ffff9b7680277ed0 EFLAGS: 00010086
+        RAX: 00000000ffffffff RBX: ffff93465eae9c00 RCX: 0000000000000000
+        RDX: 0000000000000000 RSI: ffff9346418a0000 RDI: ffff934641057140
+        RBP: ffff934641057170 R08: 0000000000000001 R09: ffff9346418a0080
+        R10: ffff9b768027fdf0 R11: 0000000000002400 R12: ffff93465eae9c20
+        R13: ffff93465eae9c20 R14: ffff93465eae9c70 R15: ffff934641057140
+        FS:  0000000000000000(0000) GS:ffff93465eac0000(0000) knlGS:0000000000000000
+        CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+        CR2: 0000000000000000 CR3: 000000001cc0c000 CR4: 00000000000006e0
+        DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+        DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+        Call Trace:
+          <TASK>
+          worker_thread+0x89/0x3d0
+          ? process_one_work+0x400/0x400
+          kthread+0x162/0x190
+          ? set_kthread_struct+0x40/0x40
+          ret_from_fork+0x22/0x30
+          </TASK>
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-02892.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
+Also due to this incorrect "nr_running == -1", all sorts of hazards can
+happen, starting with queued works being ignored because no workers are
+awaken at insert_work() time.
 
-Cc: stable@vger.kernel.org
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211207142913.1734635-1-sven@narfation.org
+Fix this with checking again the worker flags while pool->lock is locked.
+
+Fixes: b945efcdd07d ("sched: Remove pointless preemption disable in sched_submit_work()")
+Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
+Tested-by: Paul E. McKenney <paulmck@kernel.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Paul E. McKenney <paulmck@kernel.org>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/workqueue.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2069,7 +2069,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
- 	void *ptr;
- 	int i, ret, len;
- 	u32 *tmp_ptr;
--	u8 extraie_len_with_pad = 0;
-+	u16 extraie_len_with_pad = 0;
- 	struct hint_short_ssid *s_ssid = NULL;
- 	struct hint_bssid *hint_bssid = NULL;
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -913,6 +913,16 @@ void wq_worker_sleeping(struct task_stru
+ 	raw_spin_lock_irq(&pool->lock);
  
-@@ -2088,7 +2088,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
- 		len += sizeof(*bssid) * params->num_bssid;
- 
- 	len += TLV_HDR_SIZE;
--	if (params->extraie.len)
-+	if (params->extraie.len && params->extraie.len <= 0xFFFF)
- 		extraie_len_with_pad =
- 			roundup(params->extraie.len, sizeof(u32));
- 	len += extraie_len_with_pad;
-@@ -2195,7 +2195,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
- 		      FIELD_PREP(WMI_TLV_LEN, len);
- 	ptr += TLV_HDR_SIZE;
- 
--	if (params->extraie.len)
-+	if (extraie_len_with_pad)
- 		memcpy(ptr, params->extraie.ptr,
- 		       params->extraie.len);
- 
+ 	/*
++	 * Recheck in case unbind_workers() preempted us. We don't
++	 * want to decrement nr_running after the worker is unbound
++	 * and nr_running has been reset.
++	 */
++	if (worker->flags & WORKER_NOT_RUNNING) {
++		raw_spin_unlock_irq(&pool->lock);
++		return;
++	}
++
++	/*
+ 	 * The counterpart of the following dec_and_test, implied mb,
+ 	 * worklist not empty test sequence is in insert_work().
+ 	 * Please read comment there.
 
 
