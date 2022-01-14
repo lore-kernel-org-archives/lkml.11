@@ -2,131 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B020C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72906C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 21:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229569AbiANU6c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:58:32 -0500
-Received: from mga05.intel.com ([192.55.52.43]:49727 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229515AbiANU63 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:58:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642193908; x=1673729908;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JmzRu99xoPHOIUL6oRvMiGQeumz3p9hDCpTCwXUwDDU=;
-  b=jaAq9CAgMDVJ3qyaDARNDbilD09mvQf+iNJzk5rwsW/Z/B1jbtaVBOYe
-   w9nacrQg/rcyGg0zapBJjXkkMwSfOq1ggThVcqdtPJc6xL4NkUJLZHaKg
-   B0pvSxdlIrpJxPHegI9EX/8VvzBuVE1j+b1bmHwhRUAlYz12DtJilsSgv
-   JOPiFoQgkkyLAk2GEhjQb4QS18TfNvbAxYJr1ZjU6Or9y+mXVisjMpRmH
-   iDGXKabMhOyds/1vJAA/rx6QlbKuOcS7qz18jSLy8QVpjfxls/jVI8tU9
-   /rJieK/f0TjJ3z+ENZoRKubQY33Jzkf0iwc3P+esSDWl8gpWwIuRxlr++
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="330678355"
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="330678355"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 12:58:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="624475691"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 14 Jan 2022 12:58:26 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8TeU-0008za-4n; Fri, 14 Jan 2022 20:58:26 +0000
-Date:   Sat, 15 Jan 2022 04:58:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [peterz-queue:perf/wip.self 9/9] arch/x86/events/core.c:2725:48:
- error: use of undeclared identifier 'PERF_X86_EVENT_RDPMC_ALLOWED'
-Message-ID: <202201150418.32fAKxxq-lkp@intel.com>
+        id S229601AbiANVHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 16:07:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57662 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229515AbiANVHc (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 16:07:32 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 106B8C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 13:07:32 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id q3so11308185qvc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 13:07:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ev8VAWLABgcwjAWOJiwrx2eFMwjFEQ1Ark3f35TvFjs=;
+        b=M2yojZLr84nstQZUzNRXprG2/FlU5DJXCa/4lDGpMbgAipBAIr2iB5N9qqsMfwqQkT
+         g4yO681gHnyAaJL2H39tZR29z9AG/zWpTNG5WQvh3V4qvQUnEZJgbHJLq89a6QFbmj7U
+         T13OJuE02K3CvAEpRN/RzVBWxyp6maN+0PkJo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ev8VAWLABgcwjAWOJiwrx2eFMwjFEQ1Ark3f35TvFjs=;
+        b=Lq3XS1A1zeOVkuqZ4TV42P9+h/fRKWzoYV910k3MY930X7tW5BBXGy+qEcFJ+rs5Ld
+         L/v+cTIn73NeHeYznLJqWRgy37yxF5cpzZAPJBAGsQMKqZ7q/2DNbYghvyLZ8msKd0nV
+         CqYdVex8YgQT8nd13MDwVM30ZB6B61gcaniJx88++88q8bPviaRjFDGXcMA1dJRC7D1V
+         ph/NGjKg9K5oJu0VCKwYwjiJrdwMUCScr+WBqvhTLFJRwjsqZoPZiWpnuMVEXx707Lho
+         MgzNl3ZiJ6/uJ4ncrDFzNqMVVh+dCpwQS4fJcERgXKgnB40oZxnMPO45ZVeZHGou8SlS
+         qplA==
+X-Gm-Message-State: AOAM532NSjU8eKraS8BqMMo4/uaB22NljCajsMmCXL1fqOiHJSr2dtpK
+        xpFoXZ8+Q3/9e1liG1ElH5clm0JLIBWZew==
+X-Google-Smtp-Source: ABdhPJxXQVZKrHlEjlWhOUmUciHkk4rXUGlnrqK76jOgMaQPCaML4tbGsxNW2EO7tJycAnN1GhtBBA==
+X-Received: by 2002:a05:6214:ca1:: with SMTP id s1mr3215398qvs.59.1642194450895;
+        Fri, 14 Jan 2022 13:07:30 -0800 (PST)
+Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
+        by smtp.gmail.com with ESMTPSA id u6sm4187569qki.129.2022.01.14.13.07.30
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 13:07:30 -0800 (PST)
+Received: by mail-yb1-f180.google.com with SMTP id c6so27239444ybk.3
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 13:07:30 -0800 (PST)
+X-Received: by 2002:a9d:5908:: with SMTP id t8mr7723553oth.186.1642194095619;
+ Fri, 14 Jan 2022 13:01:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220114201652.3875838-1-briannorris@chromium.org> <20220114121515.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid>
+In-Reply-To: <20220114121515.1.I46f64b00508d9dff34abe1c3e8d2defdab4ea1e5@changeid>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Fri, 14 Jan 2022 13:01:22 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXMO3sPta-vhMCqAPRFFkNa-nmY+wK6PXJaSUEXBHETG+A@mail.gmail.com>
+Message-ID: <CA+ASDXMO3sPta-vhMCqAPRFFkNa-nmY+wK6PXJaSUEXBHETG+A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
+To:     Heiko Stuebner <heiko@sntech.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     alsa-devel@alsa-project.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Sandy Huang <hjc@rock-chips.com>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Lin Huang <hl@rock-chips.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git perf/wip.self
-head:   1b4635e33f629e20b5bbecd62d27c9191d5ec390
-commit: 1b4635e33f629e20b5bbecd62d27c9191d5ec390 [9/9] perf: Better track self-monitoring events
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220115/202201150418.32fAKxxq-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 82c8aca93488730ce8f66101e0f3538f14b551dd)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git/commit/?id=1b4635e33f629e20b5bbecd62d27c9191d5ec390
-        git remote add peterz-queue https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git
-        git fetch --no-tags peterz-queue perf/wip.self
-        git checkout 1b4635e33f629e20b5bbecd62d27c9191d5ec390
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Sorry to send a self-reply so quickly, but I noticed an error and want
+to make sure this doesn't get merged _too_ quickly before I get to
+send a revision! See below:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On Fri, Jan 14, 2022 at 12:17 PM Brian Norris <briannorris@chromium.org> wrote:
+>
+> Commit b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
+> switched the platform to SPDIF, but we didn't fix up the device tree.
+>
+> Fixes: b18c6c3c7768 ("ASoC: rockchip: cdn-dp sound output use spdif")
+> Signed-off-by: Brian Norris <briannorris@chromium.org>
+> ---
+>
+>  arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+> index 45a5ae5d2027..21ec073f4d51 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3399-gru.dtsi
 
-All errors (new ones prefixed by >>):
+> +&spdif {
+> +       status = "okay";
 
->> arch/x86/events/core.c:2725:48: error: use of undeclared identifier 'PERF_X86_EVENT_RDPMC_ALLOWED'
-           userpg->cap_user_rdpmc = !!(event->hw.flags & PERF_X86_EVENT_RDPMC_ALLOWED);
-                                                         ^
-   1 error generated.
+I need to fix up the pinctrl settings here. rk3399.dtsi has a default
+that is incorrect. That's OK for several variants (Kevin and Bob,
+where the pin is actually unconnected), but it breaks Scarlet (where
+the pin in question is actually connected to something else).
 
+I'll send a v2 after waiting a bit, in case there are other comments
+worth addressing at the same time.
 
-vim +/PERF_X86_EVENT_RDPMC_ALLOWED +2725 arch/x86/events/core.c
+Brian
 
-  2718	
-  2719	void arch_perf_update_userpage(struct perf_event *event,
-  2720				       struct perf_event_mmap_page *userpg, u64 now)
-  2721	{
-  2722		struct cyc2ns_data data;
-  2723		u64 offset;
-  2724	
-> 2725		userpg->cap_user_rdpmc = !!(event->hw.flags & PERF_X86_EVENT_RDPMC_ALLOWED);
-  2726		userpg->pmc_width = x86_pmu.cntval_bits;
-  2727	
-  2728		if (unlikely(!using_native_sched_clock() || !sched_clock_stable())) {
-  2729			userpg->cap_user_time = 0;
-  2730			userpg->cap_user_time_zero = 0;
-  2731			return;
-  2732		}
-  2733	
-  2734		/* already set the time fields before */
-  2735		if (likely(userpg->cap_user_time))
-  2736			return;
-  2737	
-  2738		cyc2ns_read_begin(&data);
-  2739	
-  2740		offset = data.cyc2ns_offset + __sched_clock_offset;
-  2741	
-  2742		/*
-  2743		 * Internal timekeeping for enabled/running/stopped times
-  2744		 * is always in the local_clock domain.
-  2745		 */
-  2746		userpg->cap_user_time = 1;
-  2747		userpg->time_mult = data.cyc2ns_mul;
-  2748		userpg->time_shift = data.cyc2ns_shift;
-  2749		userpg->time_offset = offset - now;
-  2750	
-  2751		/*
-  2752		 * cap_user_time_zero doesn't make sense when we're using a different
-  2753		 * time base for the records.
-  2754		 */
-  2755		if (!event->attr.use_clockid) {
-  2756			userpg->cap_user_time_zero = 1;
-  2757			userpg->time_zero = offset;
-  2758		}
-  2759	
-  2760		cyc2ns_read_end();
-  2761	}
-  2762	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +};
