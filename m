@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79774C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3DBC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231339AbiANIVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:21:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239703AbiANIT2 (ORCPT
+        id S240017AbiANIVT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:21:19 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60476 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239868AbiANIUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:19:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA80C061753;
-        Fri, 14 Jan 2022 00:19:27 -0800 (PST)
+        Fri, 14 Jan 2022 03:20:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43582B82434;
-        Fri, 14 Jan 2022 08:19:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762B6C36AEA;
-        Fri, 14 Jan 2022 08:19:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CA0BB8242B;
+        Fri, 14 Jan 2022 08:20:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6D3FC36AEA;
+        Fri, 14 Jan 2022 08:20:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148366;
-        bh=1flfSfRoaivljG0UplxuwrG6XKUGJPjjvXsbdRvGmAk=;
+        s=korg; t=1642148408;
+        bh=ODmlybYA1X7PI5hQpMANYj3jMI3VYtYjGZ0QCd3yevE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X/sIOMK23U+Kgsu5XDXqF/yoZMUeuLQ1wjs03kvcwQzoddaiZVKhI2ffI9i9OOnK2
-         fhOcRAAdIIa3ek+h5Bof5+aPdUxIhdQsWiZ9x1/kAOLs4Zg/xdJQ9U4u4DsYzKyRX9
-         Mpsmgyk7gSR35wbpy1+1ChBdNWcSmv3/jHOc828w=
+        b=MNDuqDhS6riwuih4eS+LTWygkQHNQl50jgnBHU8Sc9kKOIyzyUWE221bW627gSHp9
+         0gf9DOdtqeKjujd6jvD8/zdaFkoVRVK3/J3cAnweTevqNcTqz5W/3VWA3LL+CfP4IS
+         lwe4gRd8vxqwdlHlFrxlzGARHhaVinoZnM/Q4sbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Tao Liu <ltao@redhat.com>, Philipp Rudo <prudo@redhat.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.15 01/41] s390/kexec: handle R_390_PLT32DBL rela in arch_kexec_apply_relocations_add()
-Date:   Fri, 14 Jan 2022 09:16:01 +0100
-Message-Id: <20220114081545.207536135@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 22/41] USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
+Date:   Fri, 14 Jan 2022 09:16:22 +0100
+Message-Id: <20220114081545.899865905@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
 References: <20220114081545.158363487@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,79 +45,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Egorenkov <egorenar@linux.ibm.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit abf0e8e4ef25478a4390115e6a953d589d1f9ffd upstream.
+commit 1d7d4c07932e04355d6e6528d44a2f2c9e354346 upstream.
 
-Starting with gcc 11.3, the C compiler will generate PLT-relative function
-calls even if they are local and do not require it. Later on during linking,
-the linker will replace all PLT-relative calls to local functions with
-PC-relative ones. Unfortunately, the purgatory code of kexec/kdump is
-not being linked as a regular executable or shared library would have been,
-and therefore, all PLT-relative addresses remain in the generated purgatory
-object code unresolved. This leads to the situation where the purgatory
-code is being executed during kdump with all PLT-relative addresses
-unresolved. And this results in endless loops within the purgatory code.
+When the USB core code for getting root-hub status reports was
+originally written, it was assumed that the hub driver would be its
+only caller.  But this isn't true now; user programs can use usbfs to
+communicate with root hubs and get status reports.  When they do this,
+they may use a transfer_buffer that is smaller than the data returned
+by the HCD, which will lead to a buffer overflow error when
+usb_hcd_poll_rh_status() tries to store the status data.  This was
+discovered by syzbot:
 
-Furthermore, the clang C compiler has always behaved like described above
-and this commit should fix kdump for kernels built with the latter.
+BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+BUG: KASAN: slab-out-of-bounds in usb_hcd_poll_rh_status+0x5f4/0x780 drivers/usb/core/hcd.c:776
+Write of size 2 at addr ffff88801da403c0 by task syz-executor133/4062
 
-Because the purgatory code is no regular executable or shared library,
-contains only calls to local functions and has no PLT, all R_390_PLT32DBL
-relocation entries can be resolved just like a R_390_PC32DBL one.
+This patch fixes the bug by reducing the amount of status data if it
+won't fit in the transfer_buffer.  If some data gets discarded then
+the URB's completion status is set to -EOVERFLOW rather than 0, to let
+the user know what happened.
 
-* https://refspecs.linuxfoundation.org/ELF/zSeries/lzsabi0_zSeries/x1633.html#AEN1699
-
-Relocation entries of purgatory code generated with gcc 11.3
-------------------------------------------------------------
-
-$ readelf -r linux/arch/s390/purgatory/purgatory.o
-
-Relocation section '.rela.text' at offset 0x370 contains 5 entries:
-  Offset          Info           Type           Sym. Value    Sym. Name + Addend
-00000000005c  000c00000013 R_390_PC32DBL     0000000000000000 purgatory_sha_regions + 2
-00000000007a  000d00000014 R_390_PLT32DBL    0000000000000000 sha256_update + 2
-00000000008c  000e00000014 R_390_PLT32DBL    0000000000000000 sha256_final + 2
-000000000092  000800000013 R_390_PC32DBL     0000000000000000 .LC0 + 2
-0000000000a0  000f00000014 R_390_PLT32DBL    0000000000000000 memcmp + 2
-
-Relocation entries of purgatory code generated with gcc 11.2
-------------------------------------------------------------
-
-$ readelf -r linux/arch/s390/purgatory/purgatory.o
-
-Relocation section '.rela.text' at offset 0x368 contains 5 entries:
-  Offset          Info           Type           Sym. Value    Sym. Name + Addend
-00000000005c  000c00000013 R_390_PC32DBL     0000000000000000 purgatory_sha_regions + 2
-00000000007a  000d00000013 R_390_PC32DBL     0000000000000000 sha256_update + 2
-00000000008c  000e00000013 R_390_PC32DBL     0000000000000000 sha256_final + 2
-000000000092  000800000013 R_390_PC32DBL     0000000000000000 .LC0 + 2
-0000000000a0  000f00000013 R_390_PC32DBL     0000000000000000 memcmp + 2
-
-Signed-off-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Reported-by: Tao Liu <ltao@redhat.com>
-Suggested-by: Philipp Rudo <prudo@redhat.com>
-Reviewed-by: Philipp Rudo <prudo@redhat.com>
+Reported-and-tested-by: syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20211209073817.82196-1-egorenar@linux.ibm.com
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Link: https://lore.kernel.org/r/Yc+3UIQJ2STbxNua@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kernel/machine_kexec_file.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/usb/core/hcd.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/arch/s390/kernel/machine_kexec_file.c
-+++ b/arch/s390/kernel/machine_kexec_file.c
-@@ -312,6 +312,10 @@ int arch_kexec_apply_relocations_add(str
- 		addr = section->sh_addr + relas[i].r_offset;
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -753,6 +753,7 @@ void usb_hcd_poll_rh_status(struct usb_h
+ {
+ 	struct urb	*urb;
+ 	int		length;
++	int		status;
+ 	unsigned long	flags;
+ 	char		buffer[6];	/* Any root hubs with > 31 ports? */
  
- 		r_type = ELF64_R_TYPE(relas[i].r_info);
-+
-+		if (r_type == R_390_PLT32DBL)
-+			r_type = R_390_PC32DBL;
-+
- 		ret = arch_kexec_do_relocs(r_type, loc, val, addr);
- 		if (ret) {
- 			pr_err("Unknown rela relocation: %d\n", r_type);
+@@ -770,11 +771,17 @@ void usb_hcd_poll_rh_status(struct usb_h
+ 		if (urb) {
+ 			clear_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
+ 			hcd->status_urb = NULL;
++			if (urb->transfer_buffer_length >= length) {
++				status = 0;
++			} else {
++				status = -EOVERFLOW;
++				length = urb->transfer_buffer_length;
++			}
+ 			urb->actual_length = length;
+ 			memcpy(urb->transfer_buffer, buffer, length);
+ 
+ 			usb_hcd_unlink_urb_from_ep(hcd, urb);
+-			usb_hcd_giveback_urb(hcd, urb, 0);
++			usb_hcd_giveback_urb(hcd, urb, status);
+ 		} else {
+ 			length = 0;
+ 			set_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
 
 
