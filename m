@@ -2,71 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF833C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:52:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA4E6C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237971AbiANIwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:52:37 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:36752 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S230177AbiANIwg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:52:36 -0500
-Received: from localhost.localdomain (unknown [124.16.141.244])
-        by APP-05 (Coremail) with SMTP id zQCowAB3VxTAOeFhNRsyBg--.57158S2;
-        Fri, 14 Jan 2022 16:52:16 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] tty: serial: max3100: Remove redundant 'flush_workqueue()' calls
-Date:   Fri, 14 Jan 2022 08:51:56 +0000
-Message-Id: <20220114085156.43041-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S238000AbiANIxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:53:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230177AbiANIxL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:53:11 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0A7C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 00:53:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=XDdFiFYcMGjCRySrjyxXHgb42tImQV0MD5bVeKoPEFU=; b=U7F/KxmsVN8BvK8HHguJBC5oND
+        ZjWbpqt+Jb0lYCWHk3f+4H2bPtpy08rL/7ImuspsyEqzM3FAKdBdKHrvzprUlXew8zugXXoXtbkT+
+        do9Eop2wMDfMK0k7+isOSyGetFbnNBy1T2hR8Gf41MEgmv6DrwAWsNAl8ozO/wBiQGv7KBNf91NXq
+        bUD2Pb9T575+cToGoIs4UlHUSlINnRZvkLGlMi2JG9Bsqxwi6pJBo1mAjZ4IPhm8/yuZ4rwueESQl
+        tchc3b/yKGFDURRX5yNRGIAV1QTuP4heE90zBba4NIf9F72mo3JYEB9keMaP4wvyTGFLNvnzKJ9dZ
+        UV2UqBCw==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n8IKa-0017Cv-3Q; Fri, 14 Jan 2022 08:53:08 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id BC3D23002C1;
+        Fri, 14 Jan 2022 09:53:07 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id A0C9B3023C766; Fri, 14 Jan 2022 09:53:07 +0100 (CET)
+Date:   Fri, 14 Jan 2022 09:53:07 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Sergei Trofimovich <slyich@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH] objtool: check: give big enough buffer for pv_ops
+Message-ID: <YeE588tXLrgWoUu4@hirez.programming.kicks-ass.net>
+References: <20220114075756.838243-1-slyich@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowAB3VxTAOeFhNRsyBg--.57158S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKF17ZFW7AF1DXryfGr4xCrg_yoW3JFg_KF
-        Z7GasrKrW8CF1Yka4DKF15uF9av34qvF1kXFsaqr93trWUXws2yFWvvr1DW3y7X3yrG3W7
-        Z3y2g347Jrn7CjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb28YjsxI4VWkCwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I
-        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVW8JVWxJw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lc2xSY4AK67AK6r43MxAIw28I
-        cxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2
-        IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI
-        42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42
-        IY6xAIw20EY4v20xvaj40_Zr0_Wr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2
-        jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jI7KsUUUUU=
-X-Originating-IP: [124.16.141.244]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCggGA1z4kSyk7QABsW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114075756.838243-1-slyich@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'destroy_workqueue()' already drains the queue before destroying it, so
-there is no need to flush it explicitly.
+On Fri, Jan 14, 2022 at 07:57:56AM +0000, Sergei Trofimovich wrote:
+> On gcc-12 build fails flagging possible buffer overflow:
+> 
+>     check.c: In function 'validate_call':
+>     check.c:2865:58: error: '%d' directive output may be truncated writing between 1 and 10 bytes into a region of size 9 [-Werror=format-truncation=]
+>      2865 |                 snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+>           |                                                          ^~
+> 
+> I think it's a valid warning:
+> 
+>     static char pvname[16];
+>     int idx;
+>     ...
+>     idx = (rel->addend / sizeof(void *));
+>     snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+> 
+> we have only 7 chars for %d while it could take up to 9.
 
-Remove the redundant 'flush_workqueue()' calls.
+Right, very unlikely to have that many pv_ops, but it doesn't hurt to
+fix this.
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/tty/serial/max3100.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/tty/serial/max3100.c b/drivers/tty/serial/max3100.c
-index 3c92d4e01488..9494690dcfe2 100644
---- a/drivers/tty/serial/max3100.c
-+++ b/drivers/tty/serial/max3100.c
-@@ -554,7 +554,6 @@ static void max3100_shutdown(struct uart_port *port)
- 		del_timer_sync(&s->timer);
- 
- 	if (s->workqueue) {
--		flush_workqueue(s->workqueue);
- 		destroy_workqueue(s->workqueue);
- 		s->workqueue = NULL;
- 	}
--- 
-2.25.1
-
+Thanks!
