@@ -2,235 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A944C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF44C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236728AbiANRLU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 12:11:20 -0500
-Received: from mga04.intel.com ([192.55.52.120]:8844 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235260AbiANRLN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 12:11:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642180273; x=1673716273;
-  h=from:to:cc:subject:date:message-id;
-  bh=5bMRkSbwda2W++UDW9AENUPPKl67d4aXOGbqSNY+4Dc=;
-  b=hglb4laAUwvKXj4N5Vq1l/VX0+7RSRuUzGt16Lo4ItGmwmYpDDdayyCZ
-   B5mkIg9e6gtuqr0J5yHhg/wTap+GMavyMVuJQlSQ/RvbyAAMQEFEo2WB4
-   NEAHMuSSi5k7iazJoH5ZjZytX8tcsbPzoreJQ7ftLdy3dpVytFkYOJf74
-   Dgs5TjVdICtVnxS8DGfb6hT7bEag4gdHY6cqfVm7ZnL5vsOiZadukjLPG
-   sIJaS05Vj9h+TJGqFocM1NPsPfFFrjiVcd/B8u+3POZmOcS/pEJc96Gqn
-   QeSbWob57uC3TIUiLeTTbOJYFxL+K1RmMJmtjJ4KlCmDXr6jOPtU4wWO/
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="243102028"
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="243102028"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 09:11:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="594121048"
-Received: from otc-wp-03.jf.intel.com ([10.54.39.79])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Jan 2022 09:11:13 -0800
-From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
-To:     iommu@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Lu Baolu" <baolu.lu@linux.intel.com>
-Cc:     Jacob Pan <jacob.jun.pan@intel.com>,
-        Raj Ashok <ashok.raj@intel.com>,
-        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>
-Subject: [PATCH v2] iommu/vt-d: Fix PCI bus rescan device hot add
-Date:   Fri, 14 Jan 2022 00:21:10 -0800
-Message-Id: <1642148470-11949-1-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
+        id S243777AbiANRLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 12:11:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235260AbiANRLh (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 12:11:37 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991DAC061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 09:11:37 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id o3so13955321pjs.1
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 09:11:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CRZUvior4qSuMl2PMYXMAWiEwViGY4hYBcxCDilxVC8=;
+        b=nal068ypEOFzYl2TSNavDQWBYctnmTFE/lmauGthQ8xs0uEmhlPGDMIVblS9xI2VyR
+         BNKVai7x8r0wVEKZDi08Yai5aVWwBXUnoubwRBq4urzhHzmequjGwMq1IILEKIHnPBaX
+         MwvDq9m5+ftg3gLfY9/rS0Q3tsWio3Nt1YGbU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CRZUvior4qSuMl2PMYXMAWiEwViGY4hYBcxCDilxVC8=;
+        b=p/noPV9LCoQAosBDQATD+3x1j6biMKJbP+Ve+Zp6qcqGezPUyWO7mNC4g9BDXPiwC7
+         gILFwjcxrHr3xGx+9bIqGznJyYlKR+ZJTtTDrrbr23AbGCf5LZGPcbT1F1lmtBlYk1Fa
+         1oX914CE5GVhuSOuJeX5tFr1PEJ3KHbB9dl1bt7P7NZu1I26jaSatfs4aB6iowL/hDUg
+         J8X/qfRcNKtjYK3LcuVHWR5Dh1m12kTYgUKps3Kfu4ZVKww096SyHlQY7kypuXhRKavq
+         ENk9tMiFFBHf0TSder0YosJmmaF0bHhtZXVJjBzV9EEyxpCa9ZnLGlO8sX3c19M9nYUt
+         1qvQ==
+X-Gm-Message-State: AOAM532+2c60i2b3zf+3vbNtAKxQzi1HEflV0JfkQGfaU17kiWcngXqm
+        opoxu6pNxtSxe2o1yqR4HNQDUg==
+X-Google-Smtp-Source: ABdhPJxbSLJmdoDiI5pqCuWWl/53bI6sPZAQa6CRffZQrpW2sHun3FflGcKOwGyfVfR1N99qVTwzSA==
+X-Received: by 2002:a17:90a:c303:: with SMTP id g3mr21275081pjt.74.1642180297211;
+        Fri, 14 Jan 2022 09:11:37 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:a0bd:cd39:e43:7570])
+        by smtp.gmail.com with UTF8SMTPSA id l21sm5066532pgk.41.2022.01.14.09.11.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 09:11:36 -0800 (PST)
+Date:   Fri, 14 Jan 2022 09:11:35 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        quic_rjendra@quicinc.com, sibis@codeaurora.org,
+        kgodara1@codeaurora.org, swboyd@chromium.org,
+        pmaliset@codeaurora.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] arm64: dts: qcom: sc7280: Add herobrine-r1
+Message-ID: <YeGuxzO3q/9S6VmO@google.com>
+References: <20220114004303.905808-1-dianders@chromium.org>
+ <20220113164233.4.I5604b7af908e8bbe709ac037a6a8a6ba8a2bfa94@changeid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220113164233.4.I5604b7af908e8bbe709ac037a6a8a6ba8a2bfa94@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During PCI bus rescan, adding new devices involve two notifiers.
-1. dmar_pci_bus_notifier()
-2. iommu_bus_notifier()
-The current code sets #1 as low priority (INT_MIN) which resulted in #2
-being invoked first. The result is that struct device pointer cannot be
-found in DRHD search for the new device's DMAR/IOMMU. Subsequently, the
-device is put under the "catch-all" IOMMU instead of the correct one.
+On Thu, Jan 13, 2022 at 04:43:03PM -0800, Douglas Anderson wrote:
+> Add the new herobrine-r1. Note that this is pretty much a re-design
+> compared to herobrine-r0 so we don't attempt any dtsi to share stuff
+> between them.
+> 
+> This patch attempts to define things at 3 levels:
+> 
+> 1. The Qcard level. Herobrine includes a Qcard PCB and the Qcard PCB
+>    is supposed to be the same (modulo stuffing options) across
+>    multiple boards, so trying to define what's there hopefully makes
+>    sense. NOTE that newer "CRD" boards from Qualcomm also use
+>    Qcard. When support for CRD3 is added hopefully it can use the
+>    Qcard include (and perhaps we should even evaluate it using
+>    herobrine.dtsi?)
+> 2. The herobrine "baseboard" level. Right now most stuff is here with
+>    the exception of things that we _know_ will be different per
+>    board. We know that not all boards will have the same set of eMMC,
+>    nvme, and SD. We also know that the exact pin names are likely to
+>    be different.
+> 3. The actual "board" level, AKA herobrine-rev1.
+> 
+> NOTES:
+> - This boots to command prompt, but no eDP yet since eDP hasn't
+>   been added to sc7280.dtsi yet.
+> - This assumes LTE for now. Once it's clear how WiFi-only SKUs will
+>   work we expect some small changes.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-This could cause system hang when device TLB invalidation is sent to the
-wrong IOMMU. Invalidation timeout error and hard lockup have been observed.
-
-On the reverse direction for device removal, the order should be #2-#1
-such that DMAR cleanup is done after IOMMU.
-
-This patch fixes the issue by setting proper priorities for
-dmar_pci_bus_notifier around IOMMU bus notifier. DRHD search for a new
-device will find the correct IOMMU. The order with this patch is the
-following:
-1. dmar_pci_bus_add_dev()
-2. iommu_probe_device()
-3. iommu_release_device()
-4. dmar_pci_bus_remove_dev()
-
-Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
-Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
-Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/intel/dmar.c | 69 ++++++++++++++++++++++++++++----------
- drivers/iommu/iommu.c      |  1 +
- include/linux/iommu.h      |  1 +
- 3 files changed, 53 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 915bff76fe96..5f4751ba6bb1 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -340,15 +340,19 @@ static inline void vf_inherit_msi_domain(struct pci_dev *pdev)
- 	dev_set_msi_domain(&pdev->dev, dev_get_msi_domain(&physfn->dev));
- }
- 
--static int dmar_pci_bus_notifier(struct notifier_block *nb,
-+static int dmar_pci_bus_add_notifier(struct notifier_block *nb,
- 				 unsigned long action, void *data)
- {
- 	struct pci_dev *pdev = to_pci_dev(data);
- 	struct dmar_pci_notify_info *info;
- 
--	/* Only care about add/remove events for physical functions.
-+	if (action != BUS_NOTIFY_ADD_DEVICE)
-+		return NOTIFY_DONE;
-+
-+	/*
- 	 * For VFs we actually do the lookup based on the corresponding
--	 * PF in device_to_iommu() anyway. */
-+	 * PF in device_to_iommu() anyway.
-+	 */
- 	if (pdev->is_virtfn) {
- 		/*
- 		 * Ensure that the VF device inherits the irq domain of the
-@@ -358,13 +362,34 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
- 		 * from the PF device, but that's yet another x86'sism to
- 		 * inflict on everybody else.
- 		 */
--		if (action == BUS_NOTIFY_ADD_DEVICE)
--			vf_inherit_msi_domain(pdev);
-+		vf_inherit_msi_domain(pdev);
- 		return NOTIFY_DONE;
- 	}
- 
--	if (action != BUS_NOTIFY_ADD_DEVICE &&
--	    action != BUS_NOTIFY_REMOVED_DEVICE)
-+	info = dmar_alloc_pci_notify_info(pdev, action);
-+	if (!info)
-+		return NOTIFY_DONE;
-+
-+	down_write(&dmar_global_lock);
-+	dmar_pci_bus_add_dev(info);
-+	up_write(&dmar_global_lock);
-+	dmar_free_pci_notify_info(info);
-+
-+	return NOTIFY_OK;
-+}
-+
-+static struct notifier_block dmar_pci_bus_add_nb = {
-+	.notifier_call = dmar_pci_bus_add_notifier,
-+	.priority = IOMMU_BUS_NOTIFY_PRIORITY + 1,
-+};
-+
-+static int dmar_pci_bus_remove_notifier(struct notifier_block *nb,
-+				 unsigned long action, void *data)
-+{
-+	struct pci_dev *pdev = to_pci_dev(data);
-+	struct dmar_pci_notify_info *info;
-+
-+	if (pdev->is_virtfn || action != BUS_NOTIFY_REMOVED_DEVICE)
- 		return NOTIFY_DONE;
- 
- 	info = dmar_alloc_pci_notify_info(pdev, action);
-@@ -372,10 +397,7 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
- 		return NOTIFY_DONE;
- 
- 	down_write(&dmar_global_lock);
--	if (action == BUS_NOTIFY_ADD_DEVICE)
--		dmar_pci_bus_add_dev(info);
--	else if (action == BUS_NOTIFY_REMOVED_DEVICE)
--		dmar_pci_bus_del_dev(info);
-+	dmar_pci_bus_del_dev(info);
- 	up_write(&dmar_global_lock);
- 
- 	dmar_free_pci_notify_info(info);
-@@ -383,11 +405,10 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
- 	return NOTIFY_OK;
- }
- 
--static struct notifier_block dmar_pci_bus_nb = {
--	.notifier_call = dmar_pci_bus_notifier,
--	.priority = INT_MIN,
-+static struct notifier_block dmar_pci_bus_remove_nb = {
-+	.notifier_call = dmar_pci_bus_remove_notifier,
-+	.priority = IOMMU_BUS_NOTIFY_PRIORITY - 1,
- };
--
- static struct dmar_drhd_unit *
- dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
- {
-@@ -835,7 +856,17 @@ int __init dmar_dev_scope_init(void)
- 
- void __init dmar_register_bus_notifier(void)
- {
--	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_nb);
-+	/*
-+	 * We need two notifiers in that we need to make sure the ordering
-+	 * is enforced as the following:
-+	 * 1. dmar_pci_bus_add_dev()
-+	 * 2. iommu_probe_device()
-+	 * 3. iommu_release_device()
-+	 * 4. dmar_pci_bus_remove_dev()
-+	 * Notifier block priority is used to enforce the order
-+	 */
-+	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_add_nb);
-+	bus_register_notifier(&pci_bus_type, &dmar_pci_bus_remove_nb);
- }
- 
- 
-@@ -2151,8 +2182,10 @@ static int __init dmar_free_unused_resources(void)
- 	if (dmar_in_use())
- 		return 0;
- 
--	if (dmar_dev_scope_status != 1 && !list_empty(&dmar_drhd_units))
--		bus_unregister_notifier(&pci_bus_type, &dmar_pci_bus_nb);
-+	if (dmar_dev_scope_status != 1 && !list_empty(&dmar_drhd_units)) {
-+		bus_unregister_notifier(&pci_bus_type, &dmar_pci_bus_add_nb);
-+		bus_unregister_notifier(&pci_bus_type, &dmar_pci_bus_remove_nb);
-+	}
- 
- 	down_write(&dmar_global_lock);
- 	list_for_each_entry_safe(dmaru, dmaru_n, &dmar_drhd_units, list) {
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b86406b7162..6103bcde1f65 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1841,6 +1841,7 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
- 		return -ENOMEM;
- 
- 	nb->notifier_call = iommu_bus_notifier;
-+	nb->priority = IOMMU_BUS_NOTIFY_PRIORITY;
- 
- 	err = bus_register_notifier(bus, nb);
- 	if (err)
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index de0c57a567c8..8e13c69980be 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -403,6 +403,7 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
- 	};
- }
- 
-+#define IOMMU_BUS_NOTIFY_PRIORITY		0
- #define IOMMU_GROUP_NOTIFY_ADD_DEVICE		1 /* Device added */
- #define IOMMU_GROUP_NOTIFY_DEL_DEVICE		2 /* Pre Device removed */
- #define IOMMU_GROUP_NOTIFY_BIND_DRIVER		3 /* Pre Driver bind */
--- 
-2.25.1
-
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
