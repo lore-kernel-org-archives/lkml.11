@@ -2,83 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6199AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30A55C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236779AbiANIMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:12:34 -0500
-Received: from mga09.intel.com ([134.134.136.24]:51782 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235937AbiANIMc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:12:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642147952; x=1673683952;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nPR9NTNmHo57PMwfZBShEgqqVxXrKsF4EaJy1sAERr8=;
-  b=MuqL6ImgyQPJAn30kO1Wi9Df8A7S9G+KJQYUaty/muRm9ZbB+R5ILTPt
-   HQqGPGNDoSKQTiPxA9NBf+UBfuuqv4ksyomsIvz+ArZ4+L+d3giEH928m
-   v/ZvE9BU7902f1lrxNOQWf7RryCBZwx2BygZIC6SQmWP7R/bQUld6dX36
-   7GzGf+qjw5t8YahUXa3HH8CSAyurcG2onLzV9+m+/SQBopLCkeL5E3g1F
-   rRehholn0lIwQBDCUuG/ja4AAobf1tjY0Mvpgnhn1kByzNqP+xi1ntnNF
-   baLuR95HrQHvFZeyawxMIIacUAfxjPZlln0S6X5K11/uhiH7umQuXI2yV
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244000918"
-X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
-   d="scan'208";a="244000918"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 00:12:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,287,1635231600"; 
-   d="scan'208";a="475697163"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 Jan 2022 00:12:30 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8HhG-0008HM-8A; Fri, 14 Jan 2022 08:12:30 +0000
-Date:   Fri, 14 Jan 2022 16:11:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 1502/2382]
- ./usr/include/asm-generic/bpf_perf_event.h:4:10: fatal error:
- uapi/linux/ptrace.h: No such file or directory
-Message-ID: <202201141653.fspoYEEZ-lkp@intel.com>
+        id S236847AbiANIMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:12:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48201 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236790AbiANIMm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:12:42 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642147961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dwuxbIX1i5Dfm9gk8fkBbEk0Kx7vWseXfNpMD4fzRhg=;
+        b=LerQaxZYEwsB+fJc2Yy26XiSYXvSVZuDChqnuvSBfbEMsL1JHGg2h35gt8GqST7lSxV79D
+        GE4XAx9le4Zg8tbViM6FV9M2zi1agLn8cOy+mxXHU2oK1fesWIFb+nXDdQspFJCsce/R8n
+        hknbuoQi0GBP0g8a2+2HG0n7epXRUIE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-Sz1_lUJ7OsCMNu3F1LIAjQ-1; Fri, 14 Jan 2022 03:12:40 -0500
+X-MC-Unique: Sz1_lUJ7OsCMNu3F1LIAjQ-1
+Received: by mail-wm1-f69.google.com with SMTP id a3-20020a05600c348300b0034a0dfc86aaso4936169wmq.6
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 00:12:40 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=dwuxbIX1i5Dfm9gk8fkBbEk0Kx7vWseXfNpMD4fzRhg=;
+        b=B/kbx6I3jVjXSEiapKsgAr82p6p9eR+tGCKIvLHAJFkinscg+RWrv9ARTkN8sF/gzy
+         fWZ809V1oHqwuVhVtI+0+OrhQlKa/Pt3/CETn1B1/J3a/QOkr46u+2jl7YtJ6Y/e2SrQ
+         ShauYnCYORBp122UqGjyt4XY0dNGOuAfssuNHFKrNHjdO9PpPtvRAW68i+QxBfxog5On
+         qKNG1QxNA6GyiX3DFwjEEC/sjRs2R9a4AsMk8/NGk9Tsh7qxQw4ZYnOU542x4QTvE0U0
+         LATQT02I/eMYAl4oyn9fQBENUrVTD5JB36NzL9j1Xoq+ctFuDN2WD0mXQfFjHmj+bziE
+         eWNg==
+X-Gm-Message-State: AOAM533D4BM+LBY8nFSnM7YkO1g7MAf3Hys+LJ/bNx5/8Oh5waqJVY6P
+        VKuVhT+4uqeErfTIkXpOzyegi0MG5NF7YOacSNziAMSqpLGuDTSe2xnDEvj6Kj/fttgt+Mm3Pnk
+        9lD6O9Jj39GbJrEw3tKXz1rbDbd9ZuwsUI8KKnP2B/XNppohxOkS6KNJQoiewFXYMDh4HQpuQkj
+        VF
+X-Received: by 2002:a5d:6586:: with SMTP id q6mr7426430wru.62.1642147958989;
+        Fri, 14 Jan 2022 00:12:38 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyYS3u4Ps5fXTlLgsznvhnty33P7q3kjewzPzh1N7ViZUtbk0nln9x6reL1Wi8sEumeVB28mQ==
+X-Received: by 2002:a5d:6586:: with SMTP id q6mr7426403wru.62.1642147958704;
+        Fri, 14 Jan 2022 00:12:38 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id e4sm1807548wrq.51.2022.01.14.00.12.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 00:12:37 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] KVM: x86: Partially allow KVM_SET_CPUID{,2} after
+ KVM_RUN for CPU hotplug
+In-Reply-To: <YeCEyNz/xqcJBcU/@google.com>
+References: <20220113133703.1976665-1-vkuznets@redhat.com>
+ <YeCEyNz/xqcJBcU/@google.com>
+Date:   Fri, 14 Jan 2022 09:12:37 +0100
+Message-ID: <87o84en3be.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   1a880941a087613ed42f77001229edfcf75ea8a5
-commit: b5253c772f85973787772c6bd4ee3026cd5d9386 [1502/2382] headers/deps: bpf: Use <uapi/linux/ptrace.h> in <uapi/asm-generic/bpf_perf_event.h>
-config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220114/202201141653.fspoYEEZ-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=b5253c772f85973787772c6bd4ee3026cd5d9386
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout b5253c772f85973787772c6bd4ee3026cd5d9386
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Sean Christopherson <seanjc@google.com> writes:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On Thu, Jan 13, 2022, Vitaly Kuznetsov wrote:
+>> Recently, KVM made it illegal to change CPUID after KVM_RUN but
+>> unfortunately this change is not fully compatible with existing VMMs.
+>> In particular, QEMU reuses vCPU fds for CPU hotplug after unplug and it
+>> calls KVM_SET_CPUID2. Relax the requirement by implementing an allowlist
+>> of entries which are allowed to change.
+>
+> Honestly, I'd prefer we give up and just revert feb627e8d6f6 ("KVM: x86: Forbid
+> KVM_SET_CPUID{,2} after KVM_RUN").  Attempting to retroactively restrict the
+> existing ioctls is becoming a mess, and I'm more than a bit concerned that this
+> will be a maintenance nightmare in the future, without all that much benefit to
+> anyone.
 
-All errors (new ones prefixed by >>):
+I cannot say I disagree)
 
-   In file included from ./usr/include/asm/bpf_perf_event.h:1,
-                    from ./usr/include/linux/bpf_perf_event.h:11,
-                    from <command-line>:32:
->> ./usr/include/asm-generic/bpf_perf_event.h:4:10: fatal error: uapi/linux/ptrace.h: No such file or directory
-       4 | #include <uapi/linux/ptrace.h>
-         |          ^~~~~~~~~~~~~~~~~~~~~
-   compilation terminated.
+>
+> I also don't love that the set of volatile entries is nothing more than "this is
+> what QEMU needs today".  There's no architectural justification, and the few cases
+> that do architecturally allow CPUID bits to change are disallowed.  E.g. OSXSAVE,
+> MONITOR/MWAIT, CPUID.0x12.EAX.SGX1 are all _architecturally_ defined scenarios
+> where CPUID can change, yet none of those appear in this list.  Some of those are
+> explicitly handled by KVM (runtime CPUID updates), but why should it be illegal
+> for userspace to intercept writes to MISC_ENABLE and do its own CPUID emulation?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I see. Another approach would be to switch from the current allowlist
+approach to a blocklist of things which we forbid to change
+("MAXPHYADDR, GBPAGES support, AMD reserved bit behavior, ...") after the
+first KVM_RUN.
+
+-- 
+Vitaly
+
