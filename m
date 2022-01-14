@@ -2,80 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B5A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 01:31:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16794C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 01:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238680AbiANBbm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 20:31:42 -0500
-Received: from 113.196.136.162.ll.static.sparqnet.net ([113.196.136.162]:33994
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233397AbiANBbl (ORCPT
+        id S238679AbiANBnv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 20:43:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233397AbiANBnv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 20:31:41 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.112
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(23036:0:AUTH_RELAY)
-        (envelope-from <lh.Kuo@sunplus.com>); Fri, 14 Jan 2022 09:31:46 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx02.sunplus.com.tw (172.17.9.112) with Microsoft SMTP Server (TLS) id
- 15.0.1497.26; Fri, 14 Jan 2022 09:31:41 +0800
-Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
- sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
- 15.00.1497.026; Fri, 14 Jan 2022 09:31:41 +0800
-From:   =?utf-8?B?TGggS3VvIOmDreWKm+ixqg==?= <lh.Kuo@sunplus.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Li-hao Kuo <lhjeff911@gmail.com>
-CC:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        =?utf-8?B?V2VsbHMgTHUg5ZGC6Iqz6aiw?= <wells.lu@sunplus.com>
-Subject: RE: [PATCH v5 1/2] SPI: Add SPI driver for Sunplus SP7021
-Thread-Topic: [PATCH v5 1/2] SPI: Add SPI driver for Sunplus SP7021
-Thread-Index: AQHYBe35Zwa2WzVv80Wn8GSy7nUw5qxbkCcAgAYwGJA=
-Date:   Fri, 14 Jan 2022 01:31:41 +0000
-Message-ID: <7d79c45a37f64a41947f05b6cae96bd6@sphcmbx02.sunplus.com.tw>
-References: <cover.1641797029.git.lhjeff911@gmail.com>
- <761604f7aa4d4df16637103ba10d34674faf3d9b.1641797029.git.lhjeff911@gmail.com>
- <CAHp75VecMe_KxgV1adr5Z7_EDz0s9MWB_RNeS4nY0m6e_eZ9Yw@mail.gmail.com>
-In-Reply-To: <CAHp75VecMe_KxgV1adr5Z7_EDz0s9MWB_RNeS4nY0m6e_eZ9Yw@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.51]
+        Thu, 13 Jan 2022 20:43:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCBEC061574;
+        Thu, 13 Jan 2022 17:43:50 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE3BEB823E5;
+        Fri, 14 Jan 2022 01:43:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 947F3C36AE3;
+        Fri, 14 Jan 2022 01:43:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642124626;
+        bh=VbYaOOUNdvRi/6OFam1hc6qimqnMsLtwWXOXwTZSL3U=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=sWKaXi7qF4iopRYzdN15QLGrGhGF/kwtPEENjGcbdL0NsMafA0r6NVXr60gPv2W/t
+         doSkyoIzcbtQIvNVFlzaJ9B9aIIE8hO0L8l28e1X3GEbnaGkvOiBeD7jxiFjBxvrNt
+         ffDIn/LpEYu4viI0oyq1QVRd6Gk9ZREMYbjOooc/bbgFYiYGaZwm+mAm3tmTMIluX/
+         DjRIXksfktFdhintICbLKz1ausK9jcPk6G2H8uRCenhKBQp4nLW4vklA5Es9YXY7S3
+         tvugfZ84NX6RrWUnWXq5dPy+wJRK7yRAbfkpbAtfZ2eFUpMqqGn4TWJHnf2NMWvRpt
+         TAwRC7Ulxb/IQ==
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <0f3836a37d36dece52213d4b33e2b666cb187fc2.camel@mediatek.com>
+References: <CAKXUXMy8ywQXqqmOvvm9wKL_ikixRJOFgCcgu4OdPUPhjq6MhA@mail.gmail.com> <0f3836a37d36dece52213d4b33e2b666cb187fc2.camel@mediatek.com>
+Subject: Re: GPL-1.0-licensed code for files drivers/clk/mediatek/clk-mt7986* included with commit ec97d23c8e22 ("clk: mediatek: add mt7986 clock support")
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-spdx@vger.kernel.org,
+        kernel-janitors <kernel-janitors@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Ryder Lee <ryder.lee@kernel.org>,
+        Sam Shih <sam.shih@mediatek.com>
+Date:   Thu, 13 Jan 2022 17:43:45 -0800
+User-Agent: alot/0.9.1
+Message-Id: <20220114014346.947F3C36AE3@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiA+ICsgICAgICAgICAgICAgICB3cml0ZWwocmVhZGwocHNwaW0tPm1fYmFzZSArIFNQNzAyMV9J
-TlRfQlVTWV9SRUcpDQo+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgfCBTUDcwMjFfQ0xSX01B
-U19JTlQsIHBzcGltLT5tX2Jhc2UgKw0KPiA+ICsgU1A3MDIxX0lOVF9CVVNZX1JFRyk7DQo+IA0K
-PiBJdCdzIGJldHRlciB0byByZWFkIHdpdGggdGVtcG9yYXJ5IHZhcmlhYmxlIGJlaW5nIHVzZWQ6
-DQo+IA0KPiAgICAgICAgICAgICAgdmFsdWUgPSByZWFkbChwc3BpbS0+bV9iYXNlICsgU1A3MDIx
-X0lOVF9CVVNZX1JFRyk7DQo+ICAgICAgICAgICAgICB2YWx1ZSB8PSBTUDcwMjFfQ0xSX01BU19J
-TlQ7DQo+ICAgICAgICAgICAgICB3cml0ZWwodmFsdWUsIHBzcGltLT5tX2Jhc2UgKyBTUDcwMjFf
-SU5UX0JVU1lfUkVHKTsNCg0KSSB3aWxsIGFkZCBpdCBpbiBuZXh0IG5leHQgc3VibWlzc2lvbg0K
-DQo+ID4gKyAgICAgICBwc3BpbS0+eGZlcl9jb25mIHw9ICgoY2xrX3NlbCAmIDB4ZmZmZikgPDwg
-MTYpOw0KPiANCj4gSXMgeGZlcl9jb25mIGJpZ2dlciB0aGFuIDMyLWJpdD8gSWYgbm90LCB3aHkg
-ZG8geW91IG5lZWQgdGhlICcgJiAweGZmZmYnIHBhcnQ/DQo+IA0KPiAuLi4NCg0KSSB3aWxsIGFk
-ZCBpdCBpbiBuZXh0IG5leHQgc3VibWlzc2lvbg0KDQo+ID4gKyAgICAgICAgICAgICAgIG1vZGUg
-PSBTUDcwMjFfU0xBVkVfTU9ERTsNCj4gDQo+IC4uLmJlbG9uZ3MgdG8gdGhpcyBjb25kaXRpb24s
-IHNvIGRvIG5vdCBpbnRlcmxlYXZlIHRoZW0uDQo+IA0KPiBPbiB0b3Agb2YgdGhhdCB5b3UgbWF5
-IHVzZSBkZXZpY2UgcHJvcGVydHkgQVBJOg0KPiANCj4gICAgIGlmIChkZXZpY2VfcHJvcGVydHlf
-cmVhZF9ib29sKCZwZGV2LT5kZXYsICJzcGktc2xhdmUiKSkNCj4gICAgICAgICBtb2RlID0gU1A3
-MDIxX1NMQVZFX01PREU7DQo+ICAgICBlbHNlDQo+ICAgICAgICAgbW9kZSA9IFNQNzAyMV9NQVNU
-RVJfTU9ERTsNCg0KDQpJIHdpbGwgYWRkIGl0IGluIG5leHQgbmV4dCBzdWJtaXNzaW9uDQoNCg0K
-PiA+ICsgICAgICAgICAgICAgICByZXR1cm4gZGV2X2Vycl9wcm9iZShkZXYsIHJldCwgInNwaV9y
-ZWdpc3Rlcl9tYXN0ZXIgZmFpbFxuIik7DQo+ID4gKyAgICAgICB9DQo+ID4gKw0KPiA+ICsgICAg
-ICAgcmV0dXJuIHJldDsNCj4gDQo+IHJldHVybiAwOw0KPiANCj4gLi4uDQo+IA0KPiA+ICtNT0RV
-TEVfTElDRU5TRSgiR1BMIHYyIik7DQo+IA0KPiAiR1BMIiwgdGhlIG9uZSB5b3UgdXNlZCBpcyBs
-ZWdhY3kuDQo+DQoNCg0KSSB3aWxsIGFkZCBpdCBpbiBuZXh0IG5leHQgc3VibWlzc2lvbg0KDQoN
-Cg==
+Quoting Sam Shih (2022-01-10 04:12:57)
+> Hi Luka/Stephen,
+>=20
+> This is my mistake, I seem to use an old license header on it.
+> Just like "clk-mt7986-eth.c" in the same patch series,
+>=20
+>=20
+> https://lore.kernel.org/all/20211217121148.6753-4-sam.shih@mediatek.com/
+>=20
+> I intend to license "clk-mt7986-apmixed.c", "clk-mt7986-infracfg.c",
+> and "clk-mt7986-topckgen" under the kernel's standard GPL-2.0.
+>=20
+> Should I need to resend this patch?
+> Or I can just send a follow-up patch to fix it?
+>=20
+
+Please send a followup to fix it.
