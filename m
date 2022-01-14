@@ -2,118 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A07C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234110AbiANIVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:21:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
+        id S240100AbiANIWD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239849AbiANIUo (ORCPT
+        with ESMTP id S237178AbiANIUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:20:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0EBC0613E5;
-        Fri, 14 Jan 2022 00:20:44 -0800 (PST)
+        Fri, 14 Jan 2022 03:20:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1637EC061778;
+        Fri, 14 Jan 2022 00:20:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB46661E47;
-        Fri, 14 Jan 2022 08:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B348C36AE9;
-        Fri, 14 Jan 2022 08:20:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB494B8243E;
+        Fri, 14 Jan 2022 08:20:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE563C36AE9;
+        Fri, 14 Jan 2022 08:20:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148443;
-        bh=ysRFBnjopZxuhZmldSUFoLDWnqU2wzQqUwr8J0HSqcY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NRhP+81WrUlsok+6JBk7QAUmOfmoabWvC0eIKJv2Dd1PWRbyklE6Eag7VxAacEU3y
-         +/yGkZXmo38kcA03QyC02tALfKrJENaKZw89fy/w6oLf/zCBMTTqfE4jNjs3S1N+DH
-         NbO0AzM6ewpahlKecuesJ9KFo6g7cZOtKXMUNYLQ=
+        s=korg; t=1642148434;
+        bh=zDn1/PJm2N69QrPPtAudaZAm4P2Jzkduh9gWsQsyqYM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WWjmMoZ6QwbfHgkYi3FmX/i/+ur7d4yjwWe412f0pJd1OCg9SjZ97bIwNLpGvkyhE
+         aBj9loRoHwGiMP8mBFBUbdNOw7YgIc+pRvL1sPfbwO12lBnBGu89Asaz4YG5b+wcFW
+         Y3LK4X31zrJyRLfm2mYJ12ASnKrFT2eSyJqDMLUA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.15 35/41] random: fix data race on crng init time
-Date:   Fri, 14 Jan 2022 09:16:35 +0100
-Message-Id: <20220114081546.339812970@linuxfoundation.org>
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+Subject: [PATCH 5.15 00/41] 5.15.15-rc1 review
+Date:   Fri, 14 Jan 2022 09:16:00 +0100
+Message-Id: <20220114081545.158363487@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
-References: <20220114081545.158363487@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.15.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.15.15-rc1
+X-KernelTest-Deadline: 2022-01-16T08:15+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+This is the start of the stable review cycle for the 5.15.15 release.
+There are 41 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit 009ba8568be497c640cab7571f7bfd18345d7b24 upstream.
+Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
+Anything received after that time might be too late.
 
-_extract_crng() does plain loads of crng->init_time and
-crng_global_init_time, which causes undefined behavior if
-crng_reseed() and RNDRESEEDCRNG modify these corrently.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+and the diffstat can be found below.
 
-Use READ_ONCE() and WRITE_ONCE() to make the behavior defined.
+thanks,
 
-Don't fix the race on crng->init_time by protecting it with crng->lock,
-since it's not a problem for duplicate reseedings to occur.  I.e., the
-lockless access with READ_ONCE() is fine.
+greg k-h
 
-Fixes: d848e5f8e1eb ("random: add new ioctl RNDRESEEDCRNG")
-Fixes: e192be9d9a30 ("random: replace non-blocking pool with a Chacha20-based CRNG")
-Cc: stable@vger.kernel.org
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+-------------
+Pseudo-Shortlog of commits:
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -980,7 +980,7 @@ static void crng_reseed(struct crng_stat
- 		crng->state[i+4] ^= buf.key[i] ^ rv;
- 	}
- 	memzero_explicit(&buf, sizeof(buf));
--	crng->init_time = jiffies;
-+	WRITE_ONCE(crng->init_time, jiffies);
- 	spin_unlock_irqrestore(&crng->lock, flags);
- 	if (crng == &primary_crng && crng_init < 2) {
- 		invalidate_batched_entropy();
-@@ -1006,12 +1006,15 @@ static void crng_reseed(struct crng_stat
- static void _extract_crng(struct crng_state *crng,
- 			  __u8 out[CHACHA_BLOCK_SIZE])
- {
--	unsigned long v, flags;
-+	unsigned long v, flags, init_time;
- 
--	if (crng_ready() &&
--	    (time_after(crng_global_init_time, crng->init_time) ||
--	     time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL)))
--		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
-+	if (crng_ready()) {
-+		init_time = READ_ONCE(crng->init_time);
-+		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
-+		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
-+			crng_reseed(crng, crng == &primary_crng ?
-+				    &input_pool : NULL);
-+	}
- 	spin_lock_irqsave(&crng->lock, flags);
- 	if (arch_get_random_long(&v))
- 		crng->state[14] ^= v;
-@@ -1951,7 +1954,7 @@ static long random_ioctl(struct file *f,
- 		if (crng_init < 2)
- 			return -ENODATA;
- 		crng_reseed(&primary_crng, &input_pool);
--		crng_global_init_time = jiffies - 1;
-+		WRITE_ONCE(crng_global_init_time, jiffies - 1);
- 		return 0;
- 	default:
- 		return -EINVAL;
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.15.15-rc1
+
+Arnd Bergmann <arnd@arndb.de>
+    staging: greybus: fix stack size warning with UBSAN
+
+Nathan Chancellor <nathan@kernel.org>
+    drm/i915: Avoid bitwise vs logical OR warning in snb_wm_latency_quirk()
+
+Nathan Chancellor <nathan@kernel.org>
+    staging: wlan-ng: Avoid bitwise vs logical OR warning in hfa384x_usb_throttlefn()
+
+Ricardo Ribalda <ribalda@chromium.org>
+    media: Revert "media: uvcvideo: Set unique vdev name based in type"
+
+Alex Hung <alex.hung@canonical.com>
+    platform/x86/intel: hid: add quirk to support Surface Go 3
+
+Dominik Brodowski <linux@dominikbrodowski.net>
+    random: fix crash on multiple early calls to add_bootloader_randomness()
+
+Eric Biggers <ebiggers@google.com>
+    random: fix data race on crng init time
+
+Eric Biggers <ebiggers@google.com>
+    random: fix data race on crng_node_pool
+
+Brian Silverman <brian.silverman@bluerivertech.com>
+    can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
+
+Marc Kleine-Budde <mkl@pengutronix.de>
+    can: isotp: convert struct tpcon::{idx,len} to unsigned int
+
+Marc Kleine-Budde <mkl@pengutronix.de>
+    can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
+
+Borislav Petkov <bp@suse.de>
+    x86/mce: Remove noinstr annotation from mce_setup()
+
+Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+    mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
+
+Daniel Borkmann <daniel@iogearbox.net>
+    veth: Do not record rx queue hint in veth_xmit
+
+Aditya Garg <gargaditya08@live.com>
+    Bluetooth: btbcm: disable read tx power for MacBook Air 8,1 and 8,2
+
+Aditya Garg <gargaditya08@live.com>
+    Bluetooth: btbcm: disable read tx power for some Macs with the T2 Security chip
+
+Aditya Garg <gargaditya08@live.com>
+    Bluetooth: add quirk disabling LE Read Transmit Power
+
+Adrian Hunter <adrian.hunter@intel.com>
+    mmc: sdhci-pci: Add PCI ID for Intel ADL
+
+Sven Eckelmann <sven@narfation.org>
+    ath11k: Fix buffer overflow when scanning with extraie
+
+Alan Stern <stern@rowland.harvard.edu>
+    USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
+
+Alan Stern <stern@rowland.harvard.edu>
+    USB: core: Fix bug in resuming hub's handling of wakeup requests
+
+Paul Cercueil <paul@crapouillou.net>
+    ARM: dts: exynos: Fix BCM4330 Bluetooth reset polarity in I9100
+
+Johan Hovold <johan@kernel.org>
+    Bluetooth: bfusb: fix division by zero in send path
+
+Aaron Ma <aaron.ma@canonical.com>
+    Bluetooth: btusb: Add support for Foxconn QCA 0xe0d0
+
+Tedd Ho-Jeong An <tedd.an@intel.com>
+    Bluetooth: btintel: Fix broken LED quirk for legacy ROM devices
+
+Aaron Ma <aaron.ma@canonical.com>
+    Bluetooth: btusb: Add support for Foxconn MT7922A
+
+Zijun Hu <quic_zijuhu@quicinc.com>
+    Bluetooth: btusb: Add two more Bluetooth parts for WCN6855
+
+Zijun Hu <quic_zijuhu@quicinc.com>
+    Bluetooth: btusb: Add one more Bluetooth part for WCN6855
+
+Linus Torvalds <torvalds@linux-foundation.org>
+    fget: clarify and improve __fget_files() implementation
+
+tjiang@codeaurora.org <tjiang@codeaurora.org>
+    Bluetooth: btusb: Add the new support IDs for WCN6855
+
+Larry Finger <Larry.Finger@lwfinger.net>
+    Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
+
+mark-yw.chen <mark-yw.chen@mediatek.com>
+    Bluetooth: btusb: enable Mediatek to support AOSP extension
+
+Mark-YW.Chen <mark-yw.chen@mediatek.com>
+    Bluetooth: btusb: fix memory leak in btusb_mtk_submit_wmt_recv_urb()
+
+Larry Finger <Larry.Finger@lwfinger.net>
+    Bbluetooth: btusb: Add another Bluetooth part for Realtek 8852AE
+
+mark-yw.chen <mark-yw.chen@mediatek.com>
+    Bluetooth: btusb: Add support for IMC Networks Mediatek Chip(MT7921)
+
+Max Chou <max.chou@realtek.com>
+    Bluetooth: btusb: Add the new support ID for Realtek RTL8852A
+
+mark-yw.chen <mark-yw.chen@mediatek.com>
+    Bluetooth: btusb: Add protocol for MediaTek bluetooth devices(MT7922)
+
+Daniel Borkmann <daniel@iogearbox.net>
+    bpf: Fix out of bounds access from invalid *_or_null type verification
+
+Martin Kaiser <martin@kaiser.cx>
+    staging: r8188eu: switch the led off during deinit
+
+Frederic Weisbecker <frederic@kernel.org>
+    workqueue: Fix unbind_workers() VS wq_worker_running() race
+
+Alexander Egorenkov <egorenar@linux.ibm.com>
+    s390/kexec: handle R_390_PLT32DBL rela in arch_kexec_apply_relocations_add()
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                 |   4 +-
+ arch/arm/boot/dts/exynos4210-i9100.dts   |   2 +-
+ arch/s390/kernel/machine_kexec_file.c    |   4 ++
+ arch/x86/kernel/cpu/mce/core.c           |  26 +++++--
+ drivers/bluetooth/bfusb.c                |   3 +
+ drivers/bluetooth/btbcm.c                |  51 ++++++++++++++
+ drivers/bluetooth/btintel.c              |  20 +++---
+ drivers/bluetooth/btintel.h              |   2 +-
+ drivers/bluetooth/btusb.c                |  61 ++++++++++++++--
+ drivers/char/random.c                    | 117 ++++++++++++++++++-------------
+ drivers/gpu/drm/i915/intel_pm.c          |   6 +-
+ drivers/media/usb/uvc/uvc_driver.c       |   7 +-
+ drivers/mfd/intel-lpss-acpi.c            |   7 +-
+ drivers/mmc/host/sdhci-pci-core.c        |   1 +
+ drivers/mmc/host/sdhci-pci.h             |   1 +
+ drivers/net/can/usb/gs_usb.c             |   5 +-
+ drivers/net/veth.c                       |   1 -
+ drivers/net/wireless/ath/ath11k/wmi.c    |   6 +-
+ drivers/platform/x86/intel/hid.c         |   7 ++
+ drivers/staging/greybus/audio_topology.c |  92 ++++++++++++------------
+ drivers/staging/r8188eu/core/rtw_led.c   |   1 +
+ drivers/staging/wlan-ng/hfa384x_usb.c    |  22 +++---
+ drivers/usb/core/hcd.c                   |   9 ++-
+ drivers/usb/core/hub.c                   |   2 +-
+ fs/file.c                                |  72 ++++++++++++++-----
+ include/net/bluetooth/hci.h              |   9 +++
+ kernel/bpf/verifier.c                    |   6 +-
+ kernel/workqueue.c                       |   9 +++
+ net/bluetooth/hci_core.c                 |   3 +-
+ net/can/isotp.c                          |   4 +-
+ 30 files changed, 389 insertions(+), 171 deletions(-)
 
 
