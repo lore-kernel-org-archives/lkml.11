@@ -2,115 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E288C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB049C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:25:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237978AbiANIZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:25:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34616 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240352AbiANIX1 (ORCPT
+        id S239988AbiANIZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:25:55 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:35840 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240101AbiANIXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:23:27 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70C53B82444;
-        Fri, 14 Jan 2022 08:23:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A7EFC36AEA;
-        Fri, 14 Jan 2022 08:23:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148605;
-        bh=ysRFBnjopZxuhZmldSUFoLDWnqU2wzQqUwr8J0HSqcY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DK1mj1LFW0bQf2QHimuRGipGlqcDKbIHfHCNCpuhKHRhVyarGDoIosvc3hcXQJy0W
-         Tp/g32AZhButzE1nTkFcPb0McBny5PTzrdIXMBBWHovLHfc3z0GS6sITXSIEboiZXe
-         /bumdgZqko92ib0dLclq5+izOoCgoiDz35ptbSeY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.16 31/37] random: fix data race on crng init time
-Date:   Fri, 14 Jan 2022 09:16:45 +0100
-Message-Id: <20220114081545.864830098@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
-References: <20220114081544.849748488@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 14 Jan 2022 03:23:40 -0500
+Received: from kwepemi100005.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JZvSK1lpXzccXY;
+        Fri, 14 Jan 2022 16:22:57 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100005.china.huawei.com (7.221.188.155) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 14 Jan 2022 16:23:37 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 14 Jan 2022 16:23:37 +0800
+Subject: Re: [PATCH v2 0/3] block, bfq: minor cleanup and fix
+From:   "yukuai (C)" <yukuai3@huawei.com>
+To:     <jack@suse.cz>, <tj@kernel.org>, <axboe@kernel.dk>,
+        <paolo.valente@linaro.org>
+CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20211231032354.793092-1-yukuai3@huawei.com>
+ <5696c767-8248-09a4-f04e-ac93138d30ef@huawei.com>
+Message-ID: <1cdb99ba-ed52-c755-fec4-86ee5f9bc61d@huawei.com>
+Date:   Fri, 14 Jan 2022 16:23:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <5696c767-8248-09a4-f04e-ac93138d30ef@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+在 2022/01/11 9:40, yukuai (C) 写道:
+> 在 2021/12/31 11:23, Yu Kuai 写道:
+>> Chagnes in v2:
+>>   - add comment in patch 2
+>>   - remove patch 4, since the problem do not exist.
+>>
+> friendly ping ...
 
-commit 009ba8568be497c640cab7571f7bfd18345d7b24 upstream.
+Hi, Jens
 
-_extract_crng() does plain loads of crng->init_time and
-crng_global_init_time, which causes undefined behavior if
-crng_reseed() and RNDRESEEDCRNG modify these corrently.
+Can this patchset be applied?
 
-Use READ_ONCE() and WRITE_ONCE() to make the behavior defined.
-
-Don't fix the race on crng->init_time by protecting it with crng->lock,
-since it's not a problem for duplicate reseedings to occur.  I.e., the
-lockless access with READ_ONCE() is fine.
-
-Fixes: d848e5f8e1eb ("random: add new ioctl RNDRESEEDCRNG")
-Fixes: e192be9d9a30 ("random: replace non-blocking pool with a Chacha20-based CRNG")
-Cc: stable@vger.kernel.org
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/char/random.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -980,7 +980,7 @@ static void crng_reseed(struct crng_stat
- 		crng->state[i+4] ^= buf.key[i] ^ rv;
- 	}
- 	memzero_explicit(&buf, sizeof(buf));
--	crng->init_time = jiffies;
-+	WRITE_ONCE(crng->init_time, jiffies);
- 	spin_unlock_irqrestore(&crng->lock, flags);
- 	if (crng == &primary_crng && crng_init < 2) {
- 		invalidate_batched_entropy();
-@@ -1006,12 +1006,15 @@ static void crng_reseed(struct crng_stat
- static void _extract_crng(struct crng_state *crng,
- 			  __u8 out[CHACHA_BLOCK_SIZE])
- {
--	unsigned long v, flags;
-+	unsigned long v, flags, init_time;
- 
--	if (crng_ready() &&
--	    (time_after(crng_global_init_time, crng->init_time) ||
--	     time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL)))
--		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
-+	if (crng_ready()) {
-+		init_time = READ_ONCE(crng->init_time);
-+		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
-+		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
-+			crng_reseed(crng, crng == &primary_crng ?
-+				    &input_pool : NULL);
-+	}
- 	spin_lock_irqsave(&crng->lock, flags);
- 	if (arch_get_random_long(&v))
- 		crng->state[14] ^= v;
-@@ -1951,7 +1954,7 @@ static long random_ioctl(struct file *f,
- 		if (crng_init < 2)
- 			return -ENODATA;
- 		crng_reseed(&primary_crng, &input_pool);
--		crng_global_init_time = jiffies - 1;
-+		WRITE_ONCE(crng_global_init_time, jiffies - 1);
- 		return 0;
- 	default:
- 		return -EINVAL;
-
-
+Thanks
+>> Yu Kuai (3):
+>>    block, bfq: cleanup bfq_bfqq_to_bfqg()
+>>    block, bfq: avoid moving bfqq to it's parent bfqg
+>>    block, bfq: don't move oom_bfqq
+>>
+>>   block/bfq-cgroup.c  | 16 +++++++++++++++-
+>>   block/bfq-iosched.c |  4 ++--
+>>   block/bfq-iosched.h |  1 -
+>>   block/bfq-wf2q.c    | 15 ---------------
+>>   4 files changed, 17 insertions(+), 19 deletions(-)
+>>
