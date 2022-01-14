@@ -2,47 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C842C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D15C43217
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237789AbiANIWk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:22:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60078 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239923AbiANIVO (ORCPT
+        id S240255AbiANIWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:22:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33208 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240254AbiANIV0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:21:14 -0500
+        Fri, 14 Jan 2022 03:21:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87A4061E2E;
-        Fri, 14 Jan 2022 08:21:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16CB1C36AEC;
-        Fri, 14 Jan 2022 08:21:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22713B82436;
+        Fri, 14 Jan 2022 08:21:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D3CAC36AE9;
+        Fri, 14 Jan 2022 08:21:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148474;
-        bh=qWhcnjyAyWFlL8CpcsVi9ihC8tPNLMx+ZrWtr3iEnGo=;
+        s=korg; t=1642148484;
+        bh=gjGfHJiIeV7KvNpZ7lvn+o782xiLOMBLcdwsR8r31Vo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S2kjiwIEsuqWuxraoXjwEG3vPp6jbgVPWTA9JiYRj/abnG445MGiMzqMoMYYz9KXi
-         3MGY90FVq58oUIB3QWb76jmGoDj3+xT9GCOcN5WGv1iJWCszQzORpMwFffYE/x/YrS
-         BIFKz3uxzaKPKd71myosW017/G/bBsIzLw7yNCZk=
+        b=VtamezizJMOR5ERjCwGmATUHPw5REIp9IwqD2ebFfZ1KZrfNqerVnsJL2itxwKZ1C
+         gn9RM7qid7abGc+meuAp5Xj6p7TEt1PRzhN5k6tlSFLMYw+lnOYk5isUbmnfu7NrON
+         wnS28C4xbbf5PQrJT6oIkN0F2jXNncQPGYnkiFvY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurent Bernaille <laurent.bernaille@datadoghq.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 28/41] veth: Do not record rx queue hint in veth_xmit
-Date:   Fri, 14 Jan 2022 09:16:28 +0100
-Message-Id: <20220114081546.093902853@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 31/41] can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
+Date:   Fri, 14 Jan 2022 09:16:31 +0100
+Message-Id: <20220114081546.197540711@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
 References: <20220114081545.158363487@linuxfoundation.org>
@@ -54,68 +44,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 710ad98c363a66a0cd8526465426c5c5f8377ee0 upstream.
+commit 4a8737ff068724f509d583fef404d349adba80d6 upstream.
 
-Laurent reported that they have seen a significant amount of TCP retransmissions
-at high throughput from applications residing in network namespaces talking to
-the outside world via veths. The drops were seen on the qdisc layer (fq_codel,
-as per systemd default) of the phys device such as ena or virtio_net due to all
-traffic hitting a _single_ TX queue _despite_ multi-queue device. (Note that the
-setup was _not_ using XDP on veths as the issue is generic.)
+The received data contains the channel the received data is associated
+with. If the channel number is bigger than the actual number of
+channels assume broken or malicious USB device and shut it down.
 
-More specifically, after edbea9220251 ("veth: Store queue_mapping independently
-of XDP prog presence") which made it all the way back to v4.19.184+,
-skb_record_rx_queue() would set skb->queue_mapping to 1 (given 1 RX and 1 TX
-queue by default for veths) instead of leaving at 0.
+This fixes the error found by clang:
 
-This is eventually retained and callbacks like ena_select_queue() will also pick
-single queue via netdev_core_pick_tx()'s ndo_select_queue() once all the traffic
-is forwarded to that device via upper stack or other means. Similarly, for others
-not implementing ndo_select_queue() if XPS is disabled, netdev_pick_tx() might
-call into the skb_tx_hash() and check for prior skb_rx_queue_recorded() as well.
+| drivers/net/can/usb/gs_usb.c:386:6: error: variable 'dev' is used
+|                                     uninitialized whenever 'if' condition is true
+|         if (hf->channel >= GS_MAX_INTF)
+|             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+| drivers/net/can/usb/gs_usb.c:474:10: note: uninitialized use occurs here
+|                           hf, dev->gs_hf_size, gs_usb_receive_bulk_callback,
+|                               ^~~
 
-In general, it is a _bad_ idea for virtual devices like veth to mess around with
-queue selection [by default]. Given dev->real_num_tx_queues is by default 1,
-the skb->queue_mapping was left untouched, and so prior to edbea9220251 the
-netdev_core_pick_tx() could do its job upon __dev_queue_xmit() on the phys device.
-
-Unbreak this and restore prior behavior by removing the skb_record_rx_queue()
-from veth_xmit() altogether.
-
-If the veth peer has an XDP program attached, then it would return the first RX
-queue index in xdp_md->rx_queue_index (unless configured in non-default manner).
-However, this is still better than breaking the generic case.
-
-Fixes: edbea9220251 ("veth: Store queue_mapping independently of XDP prog presence")
-Fixes: 638264dc9022 ("veth: Support per queue XDP ring")
-Reported-by: Laurent Bernaille <laurent.bernaille@datadoghq.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/all/20211210091158.408326-1-mkl@pengutronix.de
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/veth.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/can/usb/gs_usb.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -342,7 +342,6 @@ static netdev_tx_t veth_xmit(struct sk_b
- 		 */
- 		use_napi = rcu_access_pointer(rq->napi) &&
- 			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
--		skb_record_rx_queue(skb, rxq);
- 	}
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -321,7 +321,7 @@ static void gs_usb_receive_bulk_callback
  
- 	skb_tx_timestamp(skb);
+ 	/* device reports out of range channel id */
+ 	if (hf->channel >= GS_MAX_INTF)
+-		goto resubmit_urb;
++		goto device_detach;
+ 
+ 	dev = usbcan->canch[hf->channel];
+ 
+@@ -406,6 +406,7 @@ static void gs_usb_receive_bulk_callback
+ 
+ 	/* USB failure take down all interfaces */
+ 	if (rc == -ENODEV) {
++ device_detach:
+ 		for (rc = 0; rc < GS_MAX_INTF; rc++) {
+ 			if (usbcan->canch[rc])
+ 				netif_device_detach(usbcan->canch[rc]->netdev);
 
 
