@@ -2,102 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E52C8C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239803AbiANJWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:22:52 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:60467 "EHLO
+        id S239542AbiANJZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:25:15 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38539 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237209AbiANJWu (ORCPT
+        by vger.kernel.org with ESMTP id S237310AbiANJZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:22:50 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id D6D1B5C00DB;
-        Fri, 14 Jan 2022 04:22:49 -0500 (EST)
+        Fri, 14 Jan 2022 04:25:13 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id 7EA975C0181;
+        Fri, 14 Jan 2022 04:25:13 -0500 (EST)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 14 Jan 2022 04:22:49 -0500
+  by compute1.internal (MEProxy); Fri, 14 Jan 2022 04:25:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=cQmLUW4L1FEJoG2i78hQInelQBw
-        j9IPgEIxv1HzyOnQ=; b=Kkhko+aLF18aWSTBVP/JIdJhX7jRp3g9gabM0ilBFDb
-        jfQM4BteZRuJq1n1UH62IS0LZSs3YrDM826dyWSOVsy1wll9DdK8Sh+nfJRe3tD7
-        DL+w0xuFyqxvBsgdEwkBjQlZXF1sEGbE0/sIuQPlFZCz+h9E7g+f05nYZcGJX0PR
-        zDkphLPiCqQd68shJVe3+QLbCOUSjyCpRhE3dGVvtGRWQ95I50s9mOLoYPIBfqUw
-        lWQFA5APNHAB/X04ifxxHjJmfgM4mZs/9f93VlBPw/78Oj2v5o5laoWlcPPHxGwf
-        uFduc+3P+NN4mfsA/63cPHmK6B8MVeKlXcuOEa47ykg==
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-type:content-transfer-encoding; s=fm1; bh=
+        jkIcsTRJpq5h4+8FEvPP1ydZO44aBTg/S08RqPx/CXo=; b=SMnoU/NR0yrdWUSt
+        HpV1LkLanzcPgF8KEh3lPFh60n6kbiHjsTeA1S78AwU02QonYyKlnY8K+dscSHDY
+        CpZA9CELoKxvR+WPrQf9MJBG+30SrNFRUjBvYQFBjJ/hy4nr2B5aV65Xjlm2CVnQ
+        WI3MkfVNBLbN4fngfQAh/mGCZOb9V5sPU5Buq91+JYA9Nta4wvzVej4Dj4oeF1wn
+        tk1Eliud/EFgJjVcNn8ayzJ6ZrI1xxHlbpjdOpy1ZeGa2zrmHNQ57MwqxezaxXhm
+        EbCuAg9MTx0l7Z6jDaK2rGCaQwjyIIDD+CtPLeN2UoxeaRZSraImNa4EhXQQB2he
+        dbTh5Q==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=cQmLUW
-        4L1FEJoG2i78hQInelQBwj9IPgEIxv1HzyOnQ=; b=gvfhQSnP7KIInyriGsSrsG
-        VrvXXyZ6XKYSe+c7sYgBJd/YVAS01EGCNuzuM4AySb+oGT7+6mZWG6EGLuxtp5Xr
-        u+XgP0nLD0bH8jcQTRGValojMXdofPJKDENh2ur6eC0oDCn5jdwQaBFHqqn4E8OI
-        2XNzhr6o4CjUx17+WkmRlvY0cvT9J6jZ4G5nhx2Raw0+YxiOUJ7nzyrfMPA+oWK4
-        QUrn3xP3QoCUMwAMivp6mgkYOekFIGtHt856bysQ/WApQkhjDwvmdEB2/rUtU5i0
-        DUV8i6tC5QaQ2gCYzPxNXR7dOlzVpxDy6+KRy8BKuwdgCzOZlLD1SazQkwzxY7vA
-        ==
-X-ME-Sender: <xms:6EDhYXR3jc8qJLPTY53rX0Q8c1sezQGVbQ6vYd4t9JE80JkTbner_w>
-    <xme:6EDhYYwwdHfO3KO9X8AJKnrgdRxycto0-INEGVw4Iz_FKaeqsdmgj3QZ7bYCSvOmW
-    6y3abFYC5lh_r-cbps>
-X-ME-Received: <xmr:6EDhYc3LhmDjW8QNjUo01OdgcQuit3jViWzTRdiy5frY5lpbokJD2qHaYrNngoX-3wwz7fIHLwTkZwabss3pPipVopfRporTCbUSMJE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdehgddtfecutefuodetggdotefrodftvf
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=jkIcsTRJpq5h4+8FEvPP1ydZO44aBTg/S08RqPx/C
+        Xo=; b=l7LjrJnNBfAKQAe2LJywd74qGhtUo0APkghslLN8slOF6OIO/xmE68rMZ
+        GtsFjVE1c1o7mton8v1uIgvNGqtRLRQk923UZVhcXjQAFIJtfeK1MfzRw1MicciK
+        3E1FrVuLNO1AoP2Wg4I8qO0sD/yp9uQX3za8+IcFvaqY4abmOuRaKILxchdWZrsC
+        +mtB1TtTJj/RSJ10mwyt7+AHvRYCqA1fegT3odZJSLl0Ids9hf9DN2unLusDOfjI
+        /v4cF+e8SK0td/ux3xm5ZXHhb3OZrheEGbjZ0KY/gjd//pj6wg3GegkXduBMqNIz
+        QMTH5rn3PVgaFFTz9u+F+29cs7rhw==
+X-ME-Sender: <xms:eUHhYZ2_S0jo6IwcMYUtRIByFWkX7ZSbtw7jtB3l2QGHcW_qXsgwhA>
+    <xme:eUHhYQHAGelgNAStZf2Yu3HEL1_l3uqzee-tVF75Dtk8MN6zv20i4hilk7VGoUMd2
+    IoECIcW72BgY-EkbPo>
+X-ME-Received: <xmr:eUHhYZ7-wzghir2A4edhTOzZT5uxfEi0LvoY71KYAnBoC5UZy8ela086dUxxjf-ZFq9OWfAYhUnRzcqqpJlVh1DnAkmYysRAt2Y3lac>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdehgddtgecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
-    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
-    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
-    igihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:6EDhYXBgXiCiY0082cTCJzBVFO9ODL2Cop1YDGC3GjbZHBMSMTvqfw>
-    <xmx:6EDhYQh0V9a8_4HvNS4VDkV6A0XfeaMmUCj1ut29sklOF76EK-BaIA>
-    <xmx:6EDhYbozwj3oEaBYNFwV7qfUgv7RHrFwXsMeka-E0_DLQ7sHRoUAuw>
-    <xmx:6UDhYZuWs3nO0Bm_hiXpP3IBzbsxHSOcwI1MBOkCnyUw8e77YAWV0A>
+    fjughrpefhvffufffkofgjfhggtgfgsehtkeertdertdejnecuhfhrohhmpeforgigihhm
+    vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+    htvghrnhepjeeugfegkeffgfeuvedtvddufffhjeffjeejvddvudduteehhfefhfefgeei
+    keeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    grgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:eUHhYW3JwET1wnRbkZJAzatEz5z5VtaVAiv0PKkRHvX854-eS9bGrg>
+    <xmx:eUHhYcF1ze3CD1WYbVN8z_lyUTUILdJPzPEmyh4oOHpBHg-UiFt_ww>
+    <xmx:eUHhYX8lGUVMA388DzxGOVA-JsFwp2EsARW9TRhU21P5dVQzHR4EPw>
+    <xmx:eUHhYROP_q2SeBYz-kTKoHp7XWGrzitbchDipIrA7SB2n0Fj5aLstQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 14 Jan 2022 04:22:48 -0500 (EST)
-Date:   Fri, 14 Jan 2022 10:22:47 +0100
+ 14 Jan 2022 04:25:12 -0500 (EST)
 From:   Maxime Ripard <maxime@cerno.tech>
-To:     Conley Lee <conleylee@foxmail.com>
-Cc:     wens@csie.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] sunxi.yaml: add HAOYU Electronics Marsboard A20
-Message-ID: <20220114092247.rp6ym4jvsdqdrkib@houat>
-References: <tencent_DC7B4D416B69D6D6789356010B5B9647C606@qq.com>
- <20220112031347.2492813-1-conleylee@foxmail.com>
- <tencent_A92DC943F79DB360AE14672BB749BFE08A05@qq.com>
+To:     Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Mans Rullgard <mans@mansr.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: (subset) [PATCH] ARM: dts: sunxi: h3/h5: add r_uart node
+Date:   Fri, 14 Jan 2022 10:25:10 +0100
+Message-Id: <164215230543.14932.4092617393834141243.b4-ty@cerno.tech>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220112173327.26317-1-mans@mansr.com>
+References: <20220112173327.26317-1-mans@mansr.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="udown3pb3uwkp7mh"
-Content-Disposition: inline
-In-Reply-To: <tencent_A92DC943F79DB360AE14672BB749BFE08A05@qq.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, 12 Jan 2022 17:33:27 +0000, Mans Rullgard wrote:
+> There is an additional UART in the PL I/O block.
+> Add a node and pinmux for it.
+> 
+> 
 
---udown3pb3uwkp7mh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied to local tree (sunxi/dt-for-5.18).
 
-On Wed, Jan 12, 2022 at 11:13:47AM +0800, Conley Lee wrote:
-> add haoyu,a20-marsboard bindings
->=20
-> Signed-off-by: Conley Lee <conleylee@foxmail.com>
-
-The prefix should be dt-bindings: arm: sunxi
-
+Thanks!
 Maxime
-
---udown3pb3uwkp7mh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYeFA5wAKCRDj7w1vZxhR
-xQVDAP4uGnwAKIXC/n4kDI8zrWYe34MlaPqsw9SmTEqOIN/2jQD/T2JSkEisGBpm
-CadSdeGnrp42O7MLucn/aaPr/TtTjQA=
-=89hF
------END PGP SIGNATURE-----
-
---udown3pb3uwkp7mh--
