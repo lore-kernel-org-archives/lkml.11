@@ -2,85 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B90C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241451AbiANOPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:15:51 -0500
-Received: from mout.perfora.net ([74.208.4.197]:59577 "EHLO mout.perfora.net"
+        id S241467AbiANOP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:15:59 -0500
+Received: from mout.perfora.net ([74.208.4.197]:51671 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241444AbiANOPu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:15:50 -0500
+        id S241454AbiANOP6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 09:15:58 -0500
 Received: from localhost.localdomain ([81.221.144.115]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MA82J-1n1XkS28s5-00BN6P;
- Fri, 14 Jan 2022 15:15:33 +0100
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0MStu7-1mitu345cz-00RnWn;
+ Fri, 14 Jan 2022 15:15:39 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Rob Herring <robh@kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 02/11] dt-bindings: gpio: fix gpio-hog example
-Date:   Fri, 14 Jan 2022 15:14:58 +0100
-Message-Id: <20220114141507.395271-3-marcel@ziswiler.com>
+        Arnd Bergmann <arnd@arndb.de>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Olof Johansson <olof@lixom.net>,
+        Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 04/11] arm64: defconfig: enable pcieaer configuration
+Date:   Fri, 14 Jan 2022 15:15:00 +0100
+Message-Id: <20220114141507.395271-5-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220114141507.395271-1-marcel@ziswiler.com>
 References: <20220114141507.395271-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:xFK4LGuItNGSNTma0SMQ7RSr3e4uAb9RyHyRiJaV7Rm55JquVNP
- 4H9TEkjq/YFvBUEIxp5kqPwnuY8/qU0WbXmx3+sUhycuV6X3m2Ic0C64aKxHnNAbaDSoXC6
- MS9QFMRnWtq6qJo6JjnVOsMug2bya63AyKq/QppzD8xoixp24CiqpTGgh1ab6q4RzTmRMwp
- lLHSaS3JDfd0AwV2g1/2Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:4ekKvrQAY8Y=:aDvkCu0gy8aAhHqnEsoYgN
- qUum0Q4W9Q8mgfL/EzUZljc3z715TVPC3aP5c2nC5AbAM8VNnklGvDSsqmVkvjAU/GJk+Qbhc
- DmydSLuuhcThG4w8/tOSQsT/3x4SPFVyNlVpRcTQRnl70a9Mq8CfznXAbv8qreRTRLcSPb68T
- k/rpqfp/60mXFQA6ZElppgLuiR6qMNL9Iuf6/CfFhf+H3vDkY0Hsniwlvg5bDubywynsbcKzY
- 6EDJ5eVbuFSWOG+9vwP6GaPcMRFV9uk3Ojx2QR3d0aDCfXFNzLUQCCvMs4sIKRPXE6KDbL2rl
- BIbwCJ60WMef0/uvRGmgrd4/+042dirkBfq1nqeHWekJwo99hnYom69mMfTDIUAUDfuRMIMXS
- 2Ih4/dlq/CZ7DyEjAfJFTJN3vTgs5QEcC/LcaTyojJ/99sTPEAQi7at46etuAphjFCw7c6H6g
- PjeHwC4Rwghd/xR/68NH92Is7mTQWNX7eTtxtLGISeyKuoRUX9tf+244ea4uwDM3aajnJdGbC
- PO5PZ/I2IaYwR1C/Ab3H/BdhTP5xKzAg2JLXrkiDP0DU5zx/Nr20N6szMBcCsNdowt7AjfM0B
- kIX7ELuywRdmta2kR4Fmz1grm9EJ4G6CEge4nxON+h0iH5WdkUGECkVsGPPmmcQNnYeccuyr6
- n14OCB99focr6zD/zpDi9kTWeINN0nS5Zl6zYKWPOpfoXrJBCq97z0xgwUCt4koa1wcA=
+X-Provags-ID: V03:K1:ZEgfcZo7BP3gaPpucSPM3d+cRtxRR94tlwZBOr5jNpfLM1g69os
+ zP7qIDUM/ofV3aHRv/WOhHLLLwJSOKg56XC5wk3EXkNQo3rPISqENgy5+dJrnCyUDxuCG/x
+ A2+Djon9KX8/SdVI80RnxlexxGbV8dLHUB+gzjvBNssiZOU0mB/LvbjvO9m8Ul7wPMjVzGw
+ PPnzlMw1q/A1WaHoxg2CA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Ob6a+xxIvtU=:enGOaLwNztFY9P8UL04Buj
+ gxyXX3l9/W1s09OnRxBPwT1JOOOXs/TxrzHFGT6raH8/vTMgafuuE/yallGhWpERdOrgiYkOM
+ 00V84fRivTLTxQtrEFWEvPkc10wnAM36nScdSfQlKPl9qxpdoT9iUAY8/33dOKoPGTRJ+zYpZ
+ ZKIf1Aq4p+QvHZyVNkHhhkSQS36ZysfX2JkNB1Lv6vNsDMc6cXZ7FK+y/AShNFhjpX24rnnBM
+ o/5xXVXM40ZxropsM4HWMvX8tgUG082mWs0lL5iLmcaVZO7/IyjirLEL6XE1zEGJjU906vmDq
+ PzQWqeOJXxrWSGJr1A8HNqgIoMKvTeTgNkTYndI66sCbCibZB8LKbx5mTePotKLgXWlnFs88Y
+ GFmoVNGxVVOBqNhKzwowVMY+GYSWSH9GKUPypfCRqE3kzKbniUfpa5HN4dXjI66fm8hGp5iCL
+ tLXSvXgdo/etO/47tsidKLJxY4mh3ee7/cwIXo4uAzO77QwAeMwrFBx7GnkXdIyk9fx7GGEKB
+ JcvTs04c1AeFaJlFohdUorZfXd6TE3tJxvUa5eD3kwauk7IeV2kdMF5dwWJZbIAXS1/BT4YRs
+ OBmV2/0xh1lG+LgM5LsEYI+IS80UIQwqHQFsCI2F6XRGqq84HDJplIWUR6qXfVqRD8Mzs/CH5
+ qsPnHUzeFw8fpyvCrnwkNs2WQgy9ruOi/KvGFKuDXz4auiegS+w3tJt1cI0CsrC/aOUJtNgzb
+ g+pBykIF7/cEyTNW
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-Even if this is no yaml yet at least fix the example to be compliant to
-later schema as e.g. found in gpio-pca95xx.yaml, fairchild,74hc595.yaml
-and gpio/fsl-imx-gpio.yaml.
+Enable CONFIG_PCIEAER which is required for CONFIG_ACPI_APEI_PCIEAER.
+Commit 8c8ff55b4da7 ("PCI/AER: Don't select CONFIG_PCIEAER by default")
+changed it to no longer being enabled by default.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
-Acked-by: Rob Herring <robh@kernel.org>
 
 ---
 
 Changes in v2:
-- Added Rob's ack.
+- New patch following full defconfig analysis as requested by Krzysztof.
 
- Documentation/devicetree/bindings/gpio/gpio.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/gpio/gpio.txt b/Documentation/devicetree/bindings/gpio/gpio.txt
-index a8895d339bfe..5663e71b751f 100644
---- a/Documentation/devicetree/bindings/gpio/gpio.txt
-+++ b/Documentation/devicetree/bindings/gpio/gpio.txt
-@@ -213,7 +213,7 @@ Example of two SOC GPIO banks defined as gpio-controller nodes:
- 		gpio-controller;
- 		#gpio-cells = <2>;
- 
--		line_b {
-+		line_b-hog {
- 			gpio-hog;
- 			gpios = <6 0>;
- 			output-low;
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index dec189229c0a..7daf2de6c31a 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -211,6 +211,7 @@ CONFIG_NFC_NCI=m
+ CONFIG_NFC_S3FWRN5_I2C=m
+ CONFIG_PCI=y
+ CONFIG_PCIEPORTBUS=y
++CONFIG_PCIEAER=y
+ CONFIG_PCI_IOV=y
+ CONFIG_PCI_PASID=y
+ CONFIG_HOTPLUG_PCI=y
 -- 
 2.33.1
 
