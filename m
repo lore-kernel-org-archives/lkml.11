@@ -2,172 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74D1BC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:00:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:03:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243683AbiANRAx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 12:00:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58426 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243672AbiANRAw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 12:00:52 -0500
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26652C06173F
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 09:00:52 -0800 (PST)
-Received: by mail-ua1-x92b.google.com with SMTP id y4so18019955uad.1
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 09:00:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oKmCN3yojMQ2wi56P4UR8ruDKIpKUs7zR5mIdUilTLs=;
-        b=c/em2xklv+/oiPVG3wTsLIBI/PYz+iiwoQwDyRu0z2WGsetY8k58VlWYjZ74jknml7
-         6Km598wDrpzl0CGzCrAAR0yygQgYzQ70RNZmob1m3aoLEx7l4GAI2MsvP59jQoQuy2Ev
-         q4UZ6uROQCaS4wDF1vEQWhZr42h6gvMrUReP4y2T+g/YFirmZyzn1NT0at9oT5nU6Mwz
-         ONVcyHYScnayivUGaX9SjAgUUCbcHcJ27ckCH4T659y6ApgoD7aJZfjZVgfJLKDKLY7m
-         BahChZQZ20cJ2K/Iq7ycKTmXSrs5eMoA4S3dRodPxwbKWs+uKs15irLcXcp0Ub6akDqb
-         BGxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oKmCN3yojMQ2wi56P4UR8ruDKIpKUs7zR5mIdUilTLs=;
-        b=HTruWq1njO5mZbKHsJlyZmb0G9n86ooYfWK2jOPwjv5gPhbT8KbKA8EV0LwUDd2mR/
-         45lE7X0MiVZKKi+9XObfQW44EVx/Uk98t+57Nac6wSIpI5OEKEcWGUbkEfAXB3GEd97M
-         kkpmtt54gsNtyPC2+eseswJa27RQjd0BWydyFa6Pswb28ixkjtgL4Nadz1GtBl27hZJi
-         0v8IfK2Mu6RZQaxp+Ulhl/VW7nu7x8r8h/krVMjCf6fAU3vPysPAxn93UshG9Ahrsffi
-         CtZle9tSg/RGKEssT25TIbg6klHgxHTciTXSZ07TadrHPBq7RPDyQDdfGadNzp0FpGjq
-         i+QA==
-X-Gm-Message-State: AOAM533fUKfc0RVmdwlQWT4xFW2PWAxliQ9AgL+GUBsEiXxcXwU8vSEV
-        39RNcjvzch000Ix2Up+qoFFXoNnf38yxVLlbzkZEow==
-X-Google-Smtp-Source: ABdhPJzfMi5FAUwNLZJsBuj9+B3iYoKBkW9szO1rxl+UwYt/p1RLjf/xabkqjabSLUaCla5a0sBWNjE9cL/zlpKHmDk=
-X-Received: by 2002:ab0:5a46:: with SMTP id m6mr4357760uad.104.1642179651179;
- Fri, 14 Jan 2022 09:00:51 -0800 (PST)
+        id S243704AbiANRDS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 12:03:18 -0500
+Received: from mga14.intel.com ([192.55.52.115]:62738 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236077AbiANRDR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 12:03:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642179797; x=1673715797;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Bv+v544jxOPRG12AeiNErwVYo2ovoSUeee46VfmNq4A=;
+  b=WEpf3fpu28/+KiMlj61b3hMPjPkjfVSBcLlwmeTue67Ntr85QL7AjfJ1
+   /9Qlz5dVQxff78OavmI9hbZBPNouHjj4lbmxm7gnv2cjBmI/qTyNEpZhl
+   W+3GFbvsvvn0xWx+5vJuPCJ7wq922IGfmCmX7b6mdxcJUPMo+hH3SQepz
+   xP0chuxGF9XPh0mwho4W+6D6BTSzHjUAq82qXNpoWD7oIS5bwOUnNZ5Yx
+   +7a/hStEN84a1aKOiU8dA6RLxhZHO7goiE4OT7NoV+jGH55lKY0qyNCID
+   bY3kpuI5uMrYVKy41QEakFje22M4PgnZAejwfZ7E9YAn/DoLFpRTvnb2q
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="244485582"
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="244485582"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 09:02:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="614394801"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 14 Jan 2022 09:02:14 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n8Pxu-0008o4-2Q; Fri, 14 Jan 2022 17:02:14 +0000
+Date:   Sat, 15 Jan 2022 01:01:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 1593/2383]
+ ./usr/include/linux/if_bonding.h:47:10: fatal error: uapi/linux/sockios.h:
+ No such file or directory
+Message-ID: <202201150043.5fTxWerJ-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220111201426.326777-1-krzysztof.kozlowski@canonical.com> <20220111201426.326777-3-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220111201426.326777-3-krzysztof.kozlowski@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Fri, 14 Jan 2022 19:00:39 +0200
-Message-ID: <CAPLW+4=TMyytDPO0t4c0Kayy9HAAja6dVq9L8_ic3vf_1LpSRA@mail.gmail.com>
-Subject: Re: [PATCH v2 02/28] pinctrl: samsung: accept GPIO bank nodes with a suffix
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Alim Akhtar <alim.akhtar@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022 at 22:15, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> Existing dt-bindings expected that each GPIO/pin bank within pin
-> controller has its own node with name matching the bank (e.g. gpa0,
-> gpx2) and "gpio-controller" property.  The node name is then used for
-> matching between driver data and DTS.
->
-> Newly introduced dtschema expects to have nodes ending with "-gpio-bank"
-> suffix, so rewrite bank-devicetree matching to look for old and new
-> style of naming.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   d772004cd069a1947a890ccc8346e922f866ba1e
+commit: eb4b43a3bb224895dcd3976b63def55ee42203f5 [1593/2383] headers/deps: net: Optimize the header dependencies of <uapi/linux/if_bonding.h>
+config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220115/202201150043.5fTxWerJ-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=eb4b43a3bb224895dcd3976b63def55ee42203f5
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout eb4b43a3bb224895dcd3976b63def55ee42203f5
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
->  drivers/pinctrl/samsung/pinctrl-samsung.c | 57 ++++++++++++++++++-----
->  1 file changed, 45 insertions(+), 12 deletions(-)
->
-> diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
-> index b19ebc43d886..b3a5bc473841 100644
-> --- a/drivers/pinctrl/samsung/pinctrl-samsung.c
-> +++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
-> @@ -1012,13 +1012,56 @@ static void samsung_banks_of_node_put(struct samsung_pinctrl_drv_data *d)
->                 of_node_put(bank->of_node);
->  }
->
-> +/*
-> + * Iterate over all driver pin banks to find one matching the name of node,
-> + * skipping optional "-gpio" node suffix. When found, assign node to the bank.
-> + */
-> +static void samsung_banks_of_node_get(struct device *dev,
-> +                                     struct samsung_pinctrl_drv_data *d,
-> +                                     struct device_node *node)
-> +{
-> +       const char *suffix = "-gpio-bank";
-> +       struct samsung_pin_bank *bank;
-> +       struct device_node *child;
-> +       /* Pin bank names are up to 4 characters */
-> +       char node_name[20];
-> +       unsigned int i;
-> +       size_t len;
-> +
-> +       bank = d->pin_banks;
-> +       for (i = 0; i < d->nr_banks; ++i, ++bank) {
-> +               strscpy(node_name, bank->name, sizeof(node_name));
-> +               len = strlcat(node_name, suffix, sizeof(node_name));
-> +               if (len >= sizeof(node_name)) {
-> +                       dev_err(dev, "Too long pin bank name '%s', ignoring\n",
-> +                               bank->name);
-> +                       continue;
-> +               }
-> +
-> +               for_each_child_of_node(node, child) {
-> +                       if (!of_find_property(child, "gpio-controller", NULL))
-> +                               continue;
-> +                       if (of_node_name_eq(child, node_name))
-> +                               break;
-> +                       else if (of_node_name_eq(child, bank->name))
-> +                               break;
-> +               }
-> +
-> +               if (child)
-> +                       bank->of_node = child;
-> +               else
-> +                       dev_warn(dev, "Missing node for bank %s - invalid DTB\n",
-> +                                bank->name);
-> +               /* child reference dropped in samsung_drop_banks_of_node() */
-> +       }
-> +}
-> +
->  /* retrieve the soc specific data */
->  static const struct samsung_pin_ctrl *
->  samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
->                              struct platform_device *pdev)
->  {
->         struct device_node *node = pdev->dev.of_node;
-> -       struct device_node *np;
->         const struct samsung_pin_bank_data *bdata;
->         const struct samsung_pin_ctrl *ctrl;
->         struct samsung_pin_bank *bank;
-> @@ -1082,17 +1125,7 @@ samsung_pinctrl_get_soc_data(struct samsung_pinctrl_drv_data *d,
->          */
->         d->virt_base = virt_base[0];
->
-> -       for_each_child_of_node(node, np) {
-> -               if (!of_find_property(np, "gpio-controller", NULL))
-> -                       continue;
-> -               bank = d->pin_banks;
-> -               for (i = 0; i < d->nr_banks; ++i, ++bank) {
-> -                       if (of_node_name_eq(np, bank->name)) {
-> -                               bank->of_node = np;
-> -                               break;
-> -                       }
-> -               }
-> -       }
-> +       samsung_banks_of_node_get(&pdev->dev, d, node);
->
->         d->pin_base = pin_base;
->         pin_base += d->nr_pins;
-> --
-> 2.32.0
->
+All errors (new ones prefixed by >>):
+
+   In file included from <command-line>:32:
+>> ./usr/include/linux/if_bonding.h:47:10: fatal error: uapi/linux/sockios.h: No such file or directory
+      47 | #include <uapi/linux/sockios.h>
+         |          ^~~~~~~~~~~~~~~~~~~~~~
+   compilation terminated.
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
