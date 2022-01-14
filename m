@@ -2,135 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B130C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 18:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA40C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 18:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241285AbiANSbo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 13:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236305AbiANSbm (ORCPT
+        id S242795AbiANSbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 13:31:48 -0500
+Received: from fanzine2.igalia.com ([213.97.179.56]:56774 "EHLO
+        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242195AbiANSbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 13:31:42 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE59C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 10:31:41 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id o12so16279798lfu.12
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 10:31:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0QoMS9tW+FujbuAvwpX64y12Q6x1wpjN/ARJKsGQ958=;
-        b=RTsqqX8PvMOztDxaNDcdDU1pO8eta9X4w+YyBwKqTLjYQGdTfwiazHVEjJNBF6BZPO
-         sfujMT8JKv78tLu3B1uEuHkJSCOVYkPp8hAcn0+kiSsfe+B7ZLmP/e4/sLHZzvbkBNlP
-         YDJaXSHOeRTNKr94l5gk+XCz3gwiL7Qw3TeebK+FyXaFrhNV/ynCQ9A6EVYUGF3J02sk
-         zAZjEWfFL9YPImddE3po5Maa8Z2TKh9r6vtzLkbl8iZMS7/rSLtzybqSDWg0aageQQmz
-         H2qwVasI8sr0WUOHw7TBkhBvv1pDMQEdmyNGRoqp9ig/+uvpsZirKPFdUX7cbjNiWUXi
-         Us1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=0QoMS9tW+FujbuAvwpX64y12Q6x1wpjN/ARJKsGQ958=;
-        b=aXtiakl/7Ldo170M+ngoXXaYp+5q2TjuqR5axYKNYO2BooXL3YRJPNKEEdKy5A769F
-         KQQhOjxDWI4oSJO6xcPoBkYquorAOXC8GYqcw4hEEZ/vSKJNdXrsBBaSzAyNS7x12iSF
-         B2qm2pw/T++eEC+a9B3un90orjB3HajEWD5ZJQuma7pD9DDrEFjzwhyTZRINrS7h4ev1
-         iC4YcSmQW+L4dciIpmI+PO01gDGyDo9p6Qb2VevJzpBi4QZiUtDGBXFSZAKyZ7fSo0mq
-         k6Whv14Cks42oDck93v5o/xNquBPGmovneKuDOTe4jQktNq3HGau6NBeqKfYue1MMYyF
-         CuSw==
-X-Gm-Message-State: AOAM530uHXMgfZeuMaF0cHMExgEldHUV5Etx4IAGfMuJOtUAgFeBCm3i
-        igL3NJhs2EUouRJXsksuUFU=
-X-Google-Smtp-Source: ABdhPJyEKAfJfJEbAwR6p75nS+3fcsqesPn/gPeHmm5NpF9OkZ2jlOTSBmqydTpPa/OVQEatvwt11A==
-X-Received: by 2002:a05:651c:11d0:: with SMTP id z16mr161948ljo.13.1642185100240;
-        Fri, 14 Jan 2022 10:31:40 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id c9sm652951lfv.180.2022.01.14.10.31.39
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Fri, 14 Jan 2022 10:31:39 -0800 (PST)
-Date:   Fri, 14 Jan 2022 21:37:20 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
-        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
-        Kailang Yang <kailang@realtek.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Huacai Chen <chenhuacai@kernel.org>,
-        Jian-Hong Pan <jhp@endlessos.org>,
-        Hui Wang <hui.wang@canonical.com>,
-        PeiSen Hou <pshou@realtek.com>
-Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
- G8
-Message-ID: <20220114183720.n46wealclg6spxkp@localhost.localdomain>
-User-Agent: mtt
-References: <20210519170357.58410-1-jeremy.szu@canonical.com>
- <20220111195229.a77wrpjclqwrx4bx@localhost.localdomain>
- <s5ho84h9tit.wl-tiwai@suse.de>
- <20220112101249.ya73jvpmqmeh4ggg@localhost.localdomain>
- <s5hilup9s87.wl-tiwai@suse.de>
- <20220112104827.4aymoth7ua65nwge@localhost.localdomain>
- <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
- <s5h8rvk85uy.wl-tiwai@suse.de>
- <20220113183141.kla37mbqmo4x6wxp@localhost.localdomain>
- <s5ha6fy46jt.wl-tiwai@suse.de>
+        Fri, 14 Jan 2022 13:31:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=RTzI+d+fMBcYInPYiT4CX8GwWa7IMrsmasiltAjndlM=; b=WP6rf8fS1YOOJR1rMGrP4Pzyia
+        OZirfWdCjlO5B2/gvw73TjANJSM/B4pmejtWBRQwz+kRgUHriClZF4mht3/eUjW3+Fv/GPNlttNyN
+        ajKcP+YkJNx6aIePUEAz4X+myaHZeRtkFwbiO+RX4IrPLXjdFtsEVDlUmIyGYB5X7D+1dYrrzheBz
+        tJ1kbU6V5q97N62GD6d+SvQEW1CmGVDst07mF/3MC0yMXKqRP2iXKB/dvITUUPj8jqOcZm+oaKvul
+        1z//7peftuOzsoPe0Vjzb9qrgcggcSXBrw2tHacZsxp61XPrJcWfly7W99kX1S8gCmXefw2xBHEeN
+        Sb2Qo65A==;
+Received: from [177.215.76.11] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1n8RMR-0003yM-Ix; Fri, 14 Jan 2022 19:31:40 +0100
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        pmladek@suse.com
+Cc:     gpiccoli@igalia.com, kernel@gpiccoli.net, senozhatsky@chromium.org,
+        rostedt@goodmis.org, john.ogness@linutronix.de,
+        feng.tang@intel.com, kexec@lists.infradead.org, dyoung@redhat.com,
+        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
+        tony.luck@intel.com
+Subject: [PATCH V3] panic: Move panic_print before kmsg dumpers
+Date:   Fri, 14 Jan 2022 15:30:46 -0300
+Message-Id: <20220114183046.428796-1-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <s5ha6fy46jt.wl-tiwai@suse.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 05:37:42PM +0100, Takashi Iwai wrote:
-> > I assume that the referred repository is the one at [1]. I've tried
-> > 081c73701ef0 "ALSA: hda: intel-dsp-config: reorder the config
-> > table". It crashed with nearly identical logs.
->
-> OK, then it's still something to do with the led cdev
-> unregisteration.
->
-> Could you try the patch below?
+The panic_print setting allows users to collect more information in a
+panic event, like memory stats, tasks, CPUs backtraces, etc.
+This is a pretty interesting debug mechanism, but currently the print
+event happens *after* kmsg_dump(), meaning that pstore, for example,
+cannot collect a dmesg with the panic_print information.
 
-This patch solved the BUG problem. But after unbind/bind micmute LED stopped 
-working. Speakers and mute LED are fine though.
+This patch changes that in 2 ways:
 
-Dmesg:
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff800 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff820 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff820 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff820 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff820 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff840 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffff840 flags=0x0020]
-...
-snd_hda_codec_realtek hdaudioC1D0: out of range cmd 0:20:400:90170118
-snd_hda_codec_realtek hdaudioC1D0: out of range cmd 0:20:400:411111f0
-snd_hda_codec_realtek hdaudioC1D0: out of range cmd 0:20:400:270300
-...
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffb80 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffb80 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffba0 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffba0 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffba0 flags=0x0020]
-snd_hda_codec_realtek hdaudioC1D0: out of range cmd 0:20:400:80000000
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffba0 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffbc0 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffbc0 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffbc0 flags=0x0020]
-snd_hda_intel 0000:05:00.6: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0015 address=0x1fffffbc0 flags=0x0020]
-snd_hda_codec_realtek hdaudioC1D0: out of range cmd 0:20:400:20010b
+(a) First, after a good discussion with Petr in the mailing-list[0],
+he noticed that one specific setting of panic_print (the console replay,
+bit 5) should not be executed before console proper flushing; hence we
+hereby split the panic_print_sys_info() function in upper and lower
+portions: if the parameter "after_kmsg_dumpers" is passed, only bit 5
+(the console replay thing) is evaluated and the function returns - this
+is the lower portion. Otherwise all other bits are checked and the
+function prints the user required information; this is the upper/earlier
+mode.
 
-> > I got some time to poke the internal microphone. It works, but
-> > oddities are there as well. Initially I get "Mic Boost", "Capture" and
-> > "Internal Mic Boost" controls in alsamixer. When I run arecord,
-> > "Digital" control appears, but it cannot be changed until arecord is
-> > stopped. Subsequent arecord calls do not lock "Digital" control. This
-> > control affects sensitivity of the microphone and seems useful.
->
-> That's presumably an alsa-lib softvol stuff.  It's created
-> dynamically.  So not really a kernel problem.
+(b) With the above change, we can safely insert a panic_print_sys_info()
+call up some lines, in order kmsg_dump() accounts this new information
+and exposes it through pstore or other kmsg dumpers. Notice that this
+new earlier call doesn't set "after_kmsg_dumpers" so we print the
+information set by user in panic_print, except the console replay that,
+if set, will be executed after the console flushing.
+Also, worth to notice we needed to guard the panic_print_sys_info(false)
+calls against double print - we use kexec_crash_loaded() helper for that
+(see discussion [1] for more details).
 
-Okay, that's good to know.
+In the first version of this patch we discussed the risks in the
+mailing-list [0], and seems this approach is the least terrible,
+despite still having risks of polluting the log with the bulk of
+information that panic_print may bring, losing older messages.
+In order to attenuate that, we've added a warning in the
+kernel-parameters.txt so that users enabling this mechanism consider
+to increase the log buffer size via "log_buf_len" as well.
+
+Finally, another decision was to keep 2 panic_print_sys_info(false)
+calls (instead of just bringing it up some code lines and keep a single
+call) due to the panic notifiers: if kdump is not set, currently the
+panic_print information is collected after the notifiers and since
+it's a bit safer this way, we decided to keep it as is, only modifying
+the kdump case as per the previous commit [2] (see more details about
+this discussion also in thread [1]).
+
+[0] https://lore.kernel.org/lkml/20211230161828.121858-1-gpiccoli@igalia.com
+[1] https://lore.kernel.org/lkml/f25672a4-e4dd-29e8-b2db-f92dd9ff9f8a@igalia.com
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=5613b7538f69
+
+Cc: Feng Tang <feng.tang@intel.com>
+Cc: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
+
+
+V3: Added a guard in the 2nd panic_print_sys_info(false) to prevent
+double print - thanks for catching this Petr!
+
+I didn't implement your final suggestion Petr, i.e., putting the first
+panic_print_sys_info(false) inside the if (!_crash_kexec_post_notifiers)
+block, and the reason is that when we do this, there's 4 cases to consider:
+
+!kexec_crash_load() && !_crash_kexec_post_notifiers
+kexec_crash_load() && !_crash_kexec_post_notifiers
+kexec_crash_load() && _crash_kexec_post_notifiers
+!kexec_crash_load() && _crash_kexec_post_notifiers
+
+The 3rd case, which means user enabled kdump and set the post_notifiers
+in the cmdline fails - we end-up not reaching panic_print_sys_info(false)
+in this case, unless we add another variable to track the function call
+and prevent double print. My preference was to keep the first call
+as introduced by commit [2] (mentioned above) and not rely in another
+variable.
+Thanks again for the great reviews,
+
+Guilherme
+
+
+V2: https://lore.kernel.org/lkml/20220106212835.119409-1-gpiccoli@igalia.com
+
+
+
+ .../admin-guide/kernel-parameters.txt         |  4 ++++
+ kernel/panic.c                                | 22 ++++++++++++++-----
+ 2 files changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index a069d8fe2fee..0f5cbe141bfd 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -3727,6 +3727,10 @@
+ 			bit 4: print ftrace buffer
+ 			bit 5: print all printk messages in buffer
+ 			bit 6: print all CPUs backtrace (if available in the arch)
++			*Be aware* that this option may print a _lot_ of lines,
++			so there are risks of losing older messages in the log.
++			Use this option carefully, maybe worth to setup a
++			bigger log buffer with "log_buf_len" along with this.
+ 
+ 	panic_on_taint=	Bitmask for conditionally calling panic() in add_taint()
+ 			Format: <hex>[,nousertaint]
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 41ecf9ab824a..4ae712665f75 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -148,10 +148,13 @@ void nmi_panic(struct pt_regs *regs, const char *msg)
+ }
+ EXPORT_SYMBOL(nmi_panic);
+ 
+-static void panic_print_sys_info(void)
++static void panic_print_sys_info(bool after_kmsg_dumpers)
+ {
+-	if (panic_print & PANIC_PRINT_ALL_PRINTK_MSG)
+-		console_flush_on_panic(CONSOLE_REPLAY_ALL);
++	if (after_kmsg_dumpers) {
++		if (panic_print & PANIC_PRINT_ALL_PRINTK_MSG)
++			console_flush_on_panic(CONSOLE_REPLAY_ALL);
++		return;
++	}
+ 
+ 	if (panic_print & PANIC_PRINT_ALL_CPU_BT)
+ 		trigger_all_cpu_backtrace();
+@@ -249,7 +252,7 @@ void panic(const char *fmt, ...)
+ 	 * show some extra information on kernel log if it was set...
+ 	 */
+ 	if (kexec_crash_loaded())
+-		panic_print_sys_info();
++		panic_print_sys_info(false);
+ 
+ 	/*
+ 	 * If we have crashed and we have a crash kernel loaded let it handle
+@@ -283,6 +286,15 @@ void panic(const char *fmt, ...)
+ 	 */
+ 	atomic_notifier_call_chain(&panic_notifier_list, 0, buf);
+ 
++	/*
++	 * If kexec_crash_loaded() is true and we still reach this point,
++	 * kernel would double print the information from panic_print; so
++	 * let's guard against that possibility (it happens if kdump users
++	 * also set crash_kexec_post_notifiers in the command-line).
++	 */
++	if (!kexec_crash_loaded())
++		panic_print_sys_info(false);
++
+ 	kmsg_dump(KMSG_DUMP_PANIC);
+ 
+ 	/*
+@@ -313,7 +325,7 @@ void panic(const char *fmt, ...)
+ 	debug_locks_off();
+ 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
+ 
+-	panic_print_sys_info();
++	panic_print_sys_info(true);
+ 
+ 	if (!panic_blink)
+ 		panic_blink = no_blink;
+-- 
+2.34.1
+
