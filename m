@@ -2,334 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F36C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:07:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AF99C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239574AbiANJHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:07:18 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.228]:54845 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S231254AbiANJHR (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:07:17 -0500
-HMM_SOURCE_IP: 172.18.0.218:33104.234707419
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.11.244 (unknown [172.18.0.218])
-        by chinatelecom.cn (HERMES) with SMTP id 1BD3B280161;
-        Fri, 14 Jan 2022 17:07:07 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.218])
-        by app0025 with ESMTP id 799b1b2ff01c400f9c4affa3954a96b0 for jay.vosburgh@canonical.com;
-        Fri, 14 Jan 2022 17:07:10 CST
-X-Transaction-ID: 799b1b2ff01c400f9c4affa3954a96b0
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.218
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-Message-ID: <5c8a286b-932b-135f-5da4-68d18cfcb891@chinatelecom.cn>
-Date:   Fri, 14 Jan 2022 17:07:04 +0800
+        id S239613AbiANJHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:07:44 -0500
+Received: from mga05.intel.com ([192.55.52.43]:29351 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231254AbiANJHn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 04:07:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642151263; x=1673687263;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=P6a7MGar2Rg8ifSaUbEYyz7wwax7DUKswFAABctDBH4=;
+  b=DGomPT6UEfrVQCgVgNEGn0KWdiZ3qbBeY3NpCaVTNUXtc5uLGbJIEhQd
+   IOns877zfhRlt9vmBNwEHF5+JqQgfraelJpH+5aZSO545hIP6OMX1k1Nm
+   7SBv8QSR68DzSCztDmRW8yXT+gp6vgd5HpH4455o37DXZnQwyY7cKEfQ8
+   q4ZvBo7KJzeS8MVaOkqFXupcDJE9qyAnd8vuHqzYf93hG4B4ftwsdKQVm
+   s2RvaDRrwOS0B+Paa1KFd1olAUzsIZnJOlJA9lLDENPSxP3BXG2TALsw8
+   dV9ggJt6lxCLuYpBa3jgmeBqrDXjbI34JSnFIlzV/gGliCZmF0PnMzpAv
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="330561939"
+X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
+   d="scan'208";a="330561939"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 01:07:43 -0800
+X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
+   d="scan'208";a="475710448"
+Received: from rjastrzx-mobl.ger.corp.intel.com (HELO [10.237.180.117]) ([10.237.180.117])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 01:01:45 -0800
+Message-ID: <e815d582-bd7d-6ec0-05ca-97d633ef9e13@linux.intel.com>
+Date:   Fri, 14 Jan 2022 10:01:42 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [RESEND PATCH v5] net: bonding: Add support for IPV6 ns/na to
- balance-alb/balance-tlb mode
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, huyd12@chinatelecom.cn
-References: <20220110090410.70176-1-sunshouxin@chinatelecom.cn>
- <11285.1641842636@famine>
-From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
-In-Reply-To: <11285.1641842636@famine>
+Subject: Re: [PATCH v2 4/6] ASoC: amd: acp: Add ACP init()/deinit() callback
+ for Renoir.
+Content-Language: en-US
+To:     Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>, broonie@kernel.org,
+        alsa-devel@alsa-project.org
+Cc:     Sunil-kumar.Dommati@amd.com,
+        open list <linux-kernel@vger.kernel.org>,
+        Basavaraj.Hiregoudar@amd.com, Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>, Vijendar.Mukunda@amd.com,
+        Alexander.Deucher@amd.com
+References: <20220113163348.434108-1-AjitKumar.Pandey@amd.com>
+ <20220113163348.434108-5-AjitKumar.Pandey@amd.com>
+From:   =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>
+In-Reply-To: <20220113163348.434108-5-AjitKumar.Pandey@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-在 2022/1/11 3:23, Jay Vosburgh 写道:
-> 	I'm getting back to this after the holiday break, and have some
-> follow up from our prior discussions that I'll paste in below.
->
-> Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
->
->> Since ipv6 neighbor solicitation and advertisement messages
->> isn't handled gracefully in bonding6 driver, we can see packet
->> drop due to inconsistency bewteen mac address in the option
->> message and source MAC .
->>
->> Another examples is ipv6 neighbor solicitation and advertisement
->> messages from VM via tap attached to host brighe, the src mac
->> mighe be changed through balance-alb mode, but it is not synced
->> with Link-layer address in the option message.
->>
->> The patch implements bond6's tx handle for ipv6 neighbor
->> solicitation and advertisement messages.
->>> 	I'm not sure what you've changed here for v5 as there's no
->>> changelog, but I believe the observed problems to be a transmit side
->>> effect (i.e., it is induced by the balance-tlb mode balancing of
->>> outgoing traffic).  As such, the tlb side will rebalance all of the
->>> traffic every ten seconds, so any MAC ND_OPT_*_LL_ADDR option
->>> assignments in the outgoing NS/NA datagrams will only be valid for that
->>> length of time, correct?
->> Yes,  MAC ND_OPT_*_LL_ADDR option assignments in the outgoing NS/NA
->> datagrams will only be valid for that length of time ,and then,
->> it will be inconsistensy in the next ten seconds.
-> 	So, presumably then the original issue (with the topology
-> diagram that's now omitted) can recur 10 seconds later (after a TLB
-> rebalance)?  If so, I don't understand why this patch is an improvement.
->
->>> 	In any event, my real question is whether simply disabling tlb
->>> balancing for NS/NA datagrams will resolve the observed issues (i.e.,
->>> have bond_xmit_tlb_slave_get return NULL for IPv6 NS/NA datagrams).
->>> Doing so will cause all NS/NA traffic to egress through the active
->>> interface.  There's already a test in your logic to check for the
->>> tx_slave != bond->curr_active_slave, so presumably everything works
->>> correctly if the NS/NA goes out on the curr_active_slave.  If the "edit
->>> NS/NA datagrams" solution works even in the face of rebalance of
->>> traffic, then would simply assigning all NS/NA traffic to the
->>> curr_active_slave eliminate the problem?
->> Yes, assigning all Ns/Na traffic to the curr_active_slave can resolve the
->> difference between mac in the Ns/Na options with the source mac.
->> But this makes the rlb doesn't work in the alb mode,
->> one interface with bond6 will not receive any ingress packets.
->> It is mismatch Bond6 specification.
-> 	Does assigning all NS/NA to the curr_active_slave avoid the
-> inconsistency when a TLB side rebalance occurs?  I believe it should,
-> but want to confirm.
->
-> 	As for the RLB functionality (i.e., the balance-alb remote to
-> local load balance), that is not implemented for IPv6 and this patch is
-> not providing an implementation of the RLB logic for IPv6, so I'm
-> unclear why you expect it to work, or what the "mismatch Bond6
-> specification" is.
->
-> 	To be clear, implementing RLB for IPv6 would include what this
-> patch is doing (adjusting the content of NS/NA datagrams), but a
-> complete implementation requires additional logic that isn't here, e.g.,
-> adding IPv6 logic to the RLB rebalance code, connecting NS/NA
-> manipulation to rlb_choose_channel(), and likely other things that don't
-> come immediately to mind.
->
-> 	In summary, it sounds to me like the actual bug originally
-> reported (with the now-omitted diagram) would be resolved by assigning
-> NS/NA datagrams to the curr_active_slave, and supporting RLB for IPv6 is
-> a larger project than what's provided by this patch.  Am I understanding
-> correctly?
-
-
-Thanks your comment.
-For the simplify, I would like to resolve the inconsistent mac at first 
-by assigning NS/NA datagrams to the curr_active_slave by V6 soon.
-Supporting RLB for IPv6, it looks like hard a bit and I wonder if we can 
-resolve it in another patch？
-any comments?
-
-
->
-> 	-J
->
->> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
->> Reported-by: kernel test robot <lkp@intel.com>
->> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
->> ---
->> drivers/net/bonding/bond_alb.c | 149 +++++++++++++++++++++++++++++++++
->> 1 file changed, 149 insertions(+)
->>
->> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
->> index 533e476988f2..485e4863a365 100644
->> --- a/drivers/net/bonding/bond_alb.c
->> +++ b/drivers/net/bonding/bond_alb.c
->> @@ -22,6 +22,8 @@
->> #include <asm/byteorder.h>
->> #include <net/bonding.h>
->> #include <net/bond_alb.h>
->> +#include <net/ndisc.h>
->> +#include <net/ip6_checksum.h>
->>
->> static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
->> 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
->> @@ -1269,6 +1271,137 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
->> 	return res;
->> }
->>
->> +/*determine if the packet is NA or NS*/
->> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
->> +{
->> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
->> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
->> +		return true;
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> +static void alb_change_nd_option(struct sk_buff *skb, void *data)
->> +{
->> +	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
->> +	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
->> +	struct net_device *dev = skb->dev;
->> +	struct icmp6hdr *icmp6h = icmp6_hdr(skb);
->> +	struct ipv6hdr *ip6hdr = ipv6_hdr(skb);
->> +	u8 *lladdr = NULL;
->> +	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
->> +				offsetof(struct nd_msg, opt));
->> +
->> +	while (ndoptlen) {
->> +		int l;
->> +
->> +		switch (nd_opt->nd_opt_type) {
->> +		case ND_OPT_SOURCE_LL_ADDR:
->> +		case ND_OPT_TARGET_LL_ADDR:
->> +			lladdr = ndisc_opt_addr_data(nd_opt, dev);
->> +			break;
->> +
->> +		default:
->> +			lladdr = NULL;
->> +			break;
->> +		}
->> +
->> +		l = nd_opt->nd_opt_len << 3;
->> +
->> +		if (ndoptlen < l || l == 0)
->> +			return;
->> +
->> +		if (lladdr) {
->> +			memcpy(lladdr, data, dev->addr_len);
->> +			icmp6h->icmp6_cksum = 0;
->> +
->> +			icmp6h->icmp6_cksum = csum_ipv6_magic(&ip6hdr->saddr,
->> +							      &ip6hdr->daddr,
->> +						ntohs(ip6hdr->payload_len),
->> +						IPPROTO_ICMPV6,
->> +						csum_partial(icmp6h,
->> +							     ntohs(ip6hdr->payload_len), 0));
->> +			return;
->> +		}
->> +		ndoptlen -= l;
->> +		nd_opt = ((void *)nd_opt) + l;
->> +	}
->> +}
->> +
->> +static u8 *alb_get_lladdr(struct sk_buff *skb)
->> +{
->> +	struct nd_msg *msg = (struct nd_msg *)skb_transport_header(skb);
->> +	struct nd_opt_hdr *nd_opt = (struct nd_opt_hdr *)msg->opt;
->> +	struct net_device *dev = skb->dev;
->> +	u8 *lladdr = NULL;
->> +	u32 ndoptlen = skb_tail_pointer(skb) - (skb_transport_header(skb) +
->> +				offsetof(struct nd_msg, opt));
->> +
->> +	while (ndoptlen) {
->> +		int l;
->> +
->> +		switch (nd_opt->nd_opt_type) {
->> +		case ND_OPT_SOURCE_LL_ADDR:
->> +		case ND_OPT_TARGET_LL_ADDR:
->> +			lladdr = ndisc_opt_addr_data(nd_opt, dev);
->> +			break;
->> +
->> +		default:
->> +			break;
->> +		}
->> +
->> +		l = nd_opt->nd_opt_len << 3;
->> +
->> +		if (ndoptlen < l || l == 0)
->> +			return NULL;
->> +
->> +		if (lladdr)
->> +			return lladdr;
->> +
->> +		ndoptlen -= l;
->> +		nd_opt = ((void *)nd_opt) + l;
->> +	}
->> +
->> +	return lladdr;
->> +}
->> +
->> +static void alb_set_nd_option(struct sk_buff *skb, struct bonding *bond,
->> +			      struct slave *tx_slave)
->> +{
->> +	struct ipv6hdr *ip6hdr;
->> +	struct icmp6hdr *hdr;
->> +
->> +	if (skb->protocol == htons(ETH_P_IPV6)) {
->> +		if (tx_slave && tx_slave !=
->> +		    rcu_access_pointer(bond->curr_active_slave)) {
->> +			ip6hdr = ipv6_hdr(skb);
->> +			if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +				hdr = icmp6_hdr(skb);
->> +				if (__alb_determine_nd(hdr))
->> +					alb_change_nd_option(skb, tx_slave->dev->dev_addr);
->> +			}
->> +		}
->> +	}
->> +}
->> +
->> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
->> +{
->> +	struct ipv6hdr *ip6hdr;
->> +	struct icmp6hdr *hdr;
->> +
->> +	if (skb->protocol == htons(ETH_P_IPV6)) {
->> +		ip6hdr = ipv6_hdr(skb);
->> +		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
->> +			hdr = icmp6_hdr(skb);
->> +			if (__alb_determine_nd(hdr))
->> +				return true;
->> +		}
->> +	}
->> +
->> +	return false;
->> +}
->> +
->> /************************ exported alb functions ************************/
->>
->> int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
->> @@ -1350,6 +1483,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
->> 		switch (skb->protocol) {
->> 		case htons(ETH_P_IP):
->> 		case htons(ETH_P_IPV6):
->> +			if (alb_determine_nd(skb, bond))
->> +				break;
->> +
->> 			hash_index = bond_xmit_hash(bond, skb);
->> 			if (bond->params.tlb_dynamic_lb) {
->> 				tx_slave = tlb_choose_channel(bond,
->> @@ -1446,6 +1582,18 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
->> 			break;
->> 		}
->>
->> +		if (alb_determine_nd(skb, bond)) {
->> +			u8 *lladdr;
->> +
->> +			lladdr = alb_get_lladdr(skb);
->> +			if (lladdr) {
->> +				if (!bond_slave_has_mac_rx(bond, lladdr)) {
->> +					do_tx_balance = false;
->> +					break;
->> +				}
->> +			}
->> +		}
->> +
->> 		hash_start = (char *)&ip6hdr->daddr;
->> 		hash_size = sizeof(ip6hdr->daddr);
->> 		break;
->> @@ -1489,6 +1637,7 @@ netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
->> 	struct slave *tx_slave = NULL;
->>
->> 	tx_slave = bond_xmit_alb_slave_get(bond, skb);
->> +	alb_set_nd_option(skb, bond, tx_slave);
->> 	return bond_do_alb_xmit(skb, bond, tx_slave);
->> }
->>
->>
->> base-commit: 7a29b11da9651ef6a970e2f6bfd276f053aeb06a
->> -- 
->> 2.27.0
->>
+On 1/13/2022 5:33 PM, Ajit Kumar Pandey wrote:
+> ACP hardware has PGFSM control registers that can be configured to
+> power On/Off the ACP IP block. Add acp init()/de_init() callbacks
+> in renoir platform driver probe()/remove() respectively to power
+> on and off ACP IP block on ACP3X device.
+> 
+> Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 > ---
-> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+>   sound/soc/amd/acp/acp-renoir.c       | 170 +++++++++++++++++++++++++++
+>   sound/soc/amd/acp/chip_offset_byte.h |   6 +
+>   2 files changed, 176 insertions(+)
+> 
+> diff --git a/sound/soc/amd/acp/acp-renoir.c b/sound/soc/amd/acp/acp-renoir.c
+> index 770a57a0677b..a29f910f25d1 100644
+> --- a/sound/soc/amd/acp/acp-renoir.c
+> +++ b/sound/soc/amd/acp/acp-renoir.c
+> @@ -25,6 +25,19 @@
+>   
+>   #define DRV_NAME "acp_asoc_renoir"
+>   
+> +#define ACP_SOFT_RST_DONE_MASK	0x00010001
+> +
+> +#define ACP_PWR_ON_MASK		0x01
+> +#define ACP_PWR_OFF_MASK	0x00
+> +#define ACP_PGFSM_STAT_MASK	0x03
+> +#define ACP_POWERED_ON		0x00
+> +#define ACP_PWR_ON_IN_PROGRESS	0x01
+> +#define ACP_POWERED_OFF		0x02
+> +
+> +
+> +#define ACP_ERROR_MASK 0x20000000
+> +#define ACP_EXT_INTR_STAT_CLEAR_MASK 0xFFFFFFFF
+> +
+>   static struct snd_soc_acpi_codecs amp_rt1019 = {
+>   	.num_codecs = 1,
+>   	.codecs = {"10EC1019"}
+> @@ -112,11 +125,154 @@ static struct snd_soc_dai_driver acp_renoir_dai[] = {
+>   },
+>   };
+>   
+> +static int acp3x_power_on(void __iomem *base)
+> +{
+> +	u32 val;
+> +	int timeout = 0;
+> +
+> +	val = readl(base + ACP_PGFSM_STATUS);
+> +
+> +	if (val == ACP_POWERED_ON)
+> +		return 0;
+> +
+> +	if ((val & ACP_PGFSM_STAT_MASK) != ACP_PWR_ON_IN_PROGRESS)
+> +		writel(ACP_PWR_ON_MASK, base + ACP_PGFSM_CONTROL);
+> +
+> +	while (++timeout < 500) {
+> +		val = readl(base + ACP_PGFSM_STATUS);
+> +		if (!val)
+> +			return 0;
+> +		udelay(1);
+> +	}
+
+Can this while loop perhaps be replaced with readl_poll_timeout?
+Similarly for cases below?
+
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static int acp3x_power_off(void __iomem *base)
+> +{
+> +	u32 val;
+> +	int timeout = 0;
+> +
+> +	writel(ACP_PWR_OFF_MASK, base + ACP_PGFSM_CONTROL);
+> +
+> +	while (++timeout < 500) {
+> +		val = readl(base + ACP_PGFSM_STATUS);
+> +		if ((val & ACP_PGFSM_STAT_MASK) == ACP_POWERED_OFF)
+> +			return 0;
+> +		udelay(1);
+> +	}
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static int acp3x_reset(void __iomem *base)
+> +{
+> +	u32 val;
+> +	int timeout = 0;
+> +
+> +	writel(1, base + ACP_SOFT_RESET);
+> +
+> +	while (++timeout < 500) {
+> +		val = readl(base + ACP_SOFT_RESET);
+> +		if (val & ACP_SOFT_RST_DONE_MASK)
+> +			break;
+> +		cpu_relax();
+> +	}
+> +
+> +	writel(0, base + ACP_SOFT_RESET);
+> +
+> +	timeout = 0;
+> +	while (++timeout < 500) {
+> +		val = readl(base + ACP_SOFT_RESET);
+> +		if (!val)
+> +			return 0;
+> +		cpu_relax();
+> +	}
+> +
+> +	return -ETIMEDOUT;
+> +}
+> +
+> +static void acp3x_enable_interrupts(void __iomem *base)
+> +{
+> +	u32 ext_intr_ctrl;
+> +
+> +	writel(0x01, base + ACP_EXTERNAL_INTR_ENB);
+> +	ext_intr_ctrl = readl(base + ACP_EXTERNAL_INTR_CNTL);
+> +	ext_intr_ctrl |= ACP_ERROR_MASK;
+> +	writel(ext_intr_ctrl, base + ACP_EXTERNAL_INTR_CNTL);
+> +}
+> +
+> +static void acp3x_disable_interrupts(void __iomem *base)
+> +{
+> +	writel(ACP_EXT_INTR_STAT_CLEAR_MASK, base + ACP_EXTERNAL_INTR_STAT);
+> +	writel(0x00, base + ACP_EXTERNAL_INTR_ENB);
+> +}
+> +
+> +static int rn_acp_init(void __iomem *base)
+> +{
+> +	int ret;
+> +
+> +	/* power on */
+> +	ret = acp3x_power_on(base);
+> +	if (ret)
+> +		return ret;
+> +
+> +	writel(0x01, base + ACP_CONTROL);
+> +
+> +	/* Reset */
+> +	ret = acp3x_reset(base);
+> +	if (ret)
+> +		return ret;
+> +
+> +	acp3x_enable_interrupts(base);
+> +
+> +	return 0;
+> +}
+> +
+> +static int rn_acp_deinit(void __iomem *base)
+> +{
+> +	int ret = 0;
+> +
+> +	acp3x_disable_interrupts(base);
+> +
+> +	/* Reset */
+> +	ret = acp3x_reset(base);
+> +	if (ret)
+> +		return ret;
+> +
+> +	writel(0x00, base + ACP_CONTROL);
+> +
+> +	/* power off */
+> +	ret = acp3x_power_off(base);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+>   static int renoir_audio_probe(struct platform_device *pdev)
+>   {
+>   	struct device *dev = &pdev->dev;
+> +	struct acp_chip_info *chip;
+>   	struct acp_dev_data *adata;
+>   	struct resource *res;
+> +	int ret;
+> +
+> +	chip = dev_get_platdata(&pdev->dev);
+> +	if (!chip || !chip->base) {
+> +		dev_err(&pdev->dev, "ACP chip data is NULL\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	if (chip->acp_rev != ACP3X_DEV) {
+> +		dev_err(&pdev->dev, "Un-supported ACP Revision %d\n", chip->acp_rev);
+> +		return -ENODEV;
+> +	}
+> +
+> +	ret = rn_acp_init(chip->base);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "ACP Init failed\n");
+> +		return -EINVAL;
+> +	}
+>   
+>   	adata = devm_kzalloc(dev, sizeof(struct acp_dev_data), GFP_KERNEL);
+>   	if (!adata)
+> @@ -155,6 +311,20 @@ static int renoir_audio_probe(struct platform_device *pdev)
+>   static int renoir_audio_remove(struct platform_device *pdev)
+>   {
+>   	struct device *dev = &pdev->dev;
+> +	struct acp_chip_info *chip;
+> +	int ret;
+> +
+> +	chip = dev_get_platdata(&pdev->dev);
+> +	if (!chip || !chip->base) {
+> +		dev_err(&pdev->dev, "ACP chip data is NULL\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	ret = rn_acp_deinit(chip->base);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "ACP de-init Failed\n");
+> +		return -EINVAL;
+> +	}
+>   
+>   	acp_platform_unregister(dev);
+>   	return 0;
+> diff --git a/sound/soc/amd/acp/chip_offset_byte.h b/sound/soc/amd/acp/chip_offset_byte.h
+> index e38589a142e9..88f6fa597cd6 100644
+> --- a/sound/soc/amd/acp/chip_offset_byte.h
+> +++ b/sound/soc/amd/acp/chip_offset_byte.h
+> @@ -14,6 +14,12 @@
+>   #define ACPAXI2AXI_ATU_CTRL                           0xC40
+>   #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_5                0xC20
+>   #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_5                0xC24
+> +
+> +#define ACP_PGFSM_CONTROL			0x141C
+> +#define ACP_PGFSM_STATUS                        0x1420
+> +#define ACP_SOFT_RESET                          0x1000
+> +#define ACP_CONTROL                             0x1004
+> +
+>   #define ACP_EXTERNAL_INTR_ENB                         0x1800
+>   #define ACP_EXTERNAL_INTR_CNTL                        0x1804
+>   #define ACP_EXTERNAL_INTR_STAT                        0x1808
+
