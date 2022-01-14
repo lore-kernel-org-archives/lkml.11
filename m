@@ -2,76 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADE7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 10:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CAB2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 10:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240564AbiANKue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 05:50:34 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17351 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237830AbiANKud (ORCPT
+        id S240574AbiANKvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 05:51:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230311AbiANKvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 05:50:33 -0500
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JZyjF4cKjz9sH9;
-        Fri, 14 Jan 2022 18:49:21 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 14 Jan 2022 18:50:31 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Fri, 14 Jan 2022 18:50:30 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <arnd@arndb.de>, <catalin.marinas@arm.com>
-CC:     <linux-arch@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangxiongfeng2@huawei.com>, <huangguangbin2@huawei.com>
-Subject: [PATCH] asm-generic: Add missing brackets for io_stop_wc macro
-Date:   Fri, 14 Jan 2022 18:58:57 +0800
-Message-ID: <20220114105857.126300-1-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        Fri, 14 Jan 2022 05:51:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBBBC061574;
+        Fri, 14 Jan 2022 02:51:04 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0555561EDC;
+        Fri, 14 Jan 2022 10:51:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D30C36AEA;
+        Fri, 14 Jan 2022 10:51:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642157463;
+        bh=bwrKb5nAY1yxA7hO1VfpRRfXBzaaN35Y7HZsuMZ/sQA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AroH/H9LPZJM5aRxed34qf1Wxr4EkTk9guDLhEoBlZWeTLfpwb4Vbw266zUyaf1UG
+         iAaAgZU01LvZnWwimunky3+Z2UFB1OiVtLkrTW9pJiDC7F/eMJXZCPz210Q55U+ftv
+         qLwPa6zLtdy+67nABXZ631xy0e8itMSmn2/nW9toG7FSDsuGSaE3q7frpa8Vt5xg9z
+         BATbOHb+iSz08HU3nySD8uw6HxURgTAoJU5n3ucfTOASa0PdlJXd/qSyrK5CE/cks1
+         WWN6AOP4Xy+XHBLUsyCAtBLknQ8BaLBd77/43tQmniFddyyJNXITf+uhiX2bt5dVXw
+         KVJppvIThR4wQ==
+Received: by pali.im (Postfix)
+        id DF3EC7D1; Fri, 14 Jan 2022 11:51:00 +0100 (CET)
+Date:   Fri, 14 Jan 2022 11:51:00 +0100
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Stephen Boyd <sboyd@kernel.org>
+Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Vladimir Vid <vladimir.vid@sartura.hr>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-clk@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v7 0/6] serial: mvebu-uart: Support for higher baudrates
+Message-ID: <20220114105100.im6gmkt6fjl2aiwl@pali>
+References: <20210930095838.28145-1-pali@kernel.org>
+ <20211103214209.azo2z3z4gy7aj5hu@pali>
+ <87ee6bm9hn.fsf@BL-laptop>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+In-Reply-To: <87ee6bm9hn.fsf@BL-laptop>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After using io_stop_wc(), drivers reports following compile error when
-compiled on X86.
+Hello Stephen!
 
-  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c: In function ‘hns3_tx_push_bd’:
-  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:2058:12: error: expected ‘;’ before ‘(’ token
-    io_stop_wc();
-              ^
-It is because I missed to add the brackets after io_stop_wc macro. So
-let's add the missing brackets.
+On Friday 17 December 2021 18:23:00 Gregory CLEMENT wrote:
+> Hello Pali,
+> 
+> > On Thursday 30 September 2021 11:58:32 Pali Rohár wrote:
+> >> This patch series add support for baudrates higher than 230400 on
+> >> Marvell Armada 37xx boards.
+> >
+> > Stephen, Gregory, are there any issues with this patch series?
+> 
+> I am not found of these changes but let's apply it as I didn't take time
+> to do a better review.
+> 
+> However I can't apply the dt part if the driver is not merged.
 
-Fixes: d5624bb29f49 ("asm-generic: introduce io_stop_wc() and add implementation for ARM64")
-Reported-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- include/asm-generic/barrier.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Stephen, are there any issues with driver (non-DT) part changes in this
+patch series? If not, could you please merge them? This patch series is
+here on the list since September without any request for change...
 
-diff --git a/include/asm-generic/barrier.h b/include/asm-generic/barrier.h
-index 3d503e74037f..fd7e8fbaeef1 100644
---- a/include/asm-generic/barrier.h
-+++ b/include/asm-generic/barrier.h
-@@ -285,7 +285,7 @@ do {									\
-  * write-combining memory accesses before this macro with those after it.
-  */
- #ifndef io_stop_wc
--#define io_stop_wc do { } while (0)
-+#define io_stop_wc() do { } while (0)
- #endif
- 
- #endif /* !__ASSEMBLY__ */
--- 
-2.20.1
+We would really like to see support for higher baudrates for Armada 3720
+platforms in mainline kernel.
 
+> Gregory
+> 
+> > If not, could you take them?
+> >
+> >> Changes in v7:
+> >> * fixed lint errors in yaml binding file
+> >> 
+> >> Changes in v6:
+> >> * fixed yaml binding file and dts files
+> >> 
+> >> Changes in v5:
+> >> * fixed yaml binding file
+> >> 
+> >> Changes in v4:
+> >> * converted armada3700-uart-clock documentation to YAML
+> >> * split documentation changes into two commits:
+> >>   - first which adds clock documentation
+> >>   - second which updates UART documentation
+> >> 
+> >> Changes in v3:
+> >> v3 is rebased on top of Linus master branch and all already applied patches
+> >> were dropped. There are no changes in patches itself since v2.
+> >> 
+> >> Pali Rohár (6):
+> >>   math64: New DIV_U64_ROUND_CLOSEST helper
+> >>   serial: mvebu-uart: implement UART clock driver for configuring UART
+> >>     base clock
+> >>   dt-bindings: mvebu-uart: document DT bindings for
+> >>     marvell,armada-3700-uart-clock
+> >>   dt-bindings: mvebu-uart: update information about UART clock
+> >>   arm64: dts: marvell: armada-37xx: add device node for UART clock and
+> >>     use it
+> >>   serial: mvebu-uart: implement support for baudrates higher than 230400
+> >> 
+> >>  .../clock/marvell,armada-3700-uart-clock.yaml |  59 ++
+> >>  .../devicetree/bindings/serial/mvebu-uart.txt |   9 +-
+> >>  arch/arm64/boot/dts/marvell/armada-37xx.dtsi  |  14 +-
+> >>  drivers/tty/serial/Kconfig                    |   1 +
+> >>  drivers/tty/serial/mvebu-uart.c               | 592 +++++++++++++++++-
+> >>  include/linux/math64.h                        |  13 +
+> >>  6 files changed, 667 insertions(+), 21 deletions(-)
+> >>  create mode 100644 Documentation/devicetree/bindings/clock/marvell,armada-3700-uart-clock.yaml
+> >> 
+> >> -- 
+> >> 2.20.1
+> >> 
+> 
+> -- 
+> Gregory Clement, Bootlin
+> Embedded Linux and Kernel engineering
+> http://bootlin.com
