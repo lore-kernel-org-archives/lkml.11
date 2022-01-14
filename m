@@ -2,71 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B991AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:28:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6401CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240049AbiANI2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:28:04 -0500
-Received: from mga14.intel.com ([192.55.52.115]:33017 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240705AbiANI04 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:26:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642148816; x=1673684816;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RZuFfgnNrTLSM579LxhI3jYodEOF6qNjDrhHiRDoTL4=;
-  b=kf/nxjrRJxbIwn4GVmnNa7T+XRhT8Qnh7Cje7azhZqqeGAl84aqVp5DL
-   TqGhs/c554D2EHDQJeExG3sVhRm9Cqg3IVlgEx3rx3jo0T3AhcHTU6eB1
-   PjWw6cXbygTqZ+E7stjnVcOGrPLOvnLEUZH+jmQ+8rhgmMW6U2PBGidn6
-   EuM4QkESOFl2vgXWbDPExykeyZChbweHrHLou9THyGmK0P+7iMC7pUGEM
-   mr2OeKZgr0Y/g6mP0Uq69QWw33qfxIIvEcdq0YSvtjo3lWDIWWNiVeuCS
-   DYdv/VLsDkHuygVcna2xKFKGaP2iYzK8MwEk3BPhyU3FbS/IVnG60PV28
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244407851"
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="244407851"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 00:22:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="614266907"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 14 Jan 2022 00:22:31 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8Hqw-0008Hp-HL; Fri, 14 Jan 2022 08:22:30 +0000
-Date:   Fri, 14 Jan 2022 16:22:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Andi Kleen <ak@linux.intel.com>
-Subject: [intel-tdx:tdx/guest-rebased 58/133]
- tools/tdx/attest/tdx-attest-test.c: unistd.h is included more than once.
-Message-ID: <202201141606.Grxph5GP-lkp@intel.com>
+        id S239969AbiANI31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:29:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26129 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S240294AbiANI2N (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:28:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642148893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Toq/pcDDykYr7QxIBUh+EwJlcrNHxSEe3MwKZ5YvLWg=;
+        b=DTyx72UzrYm6yISFDzK2LwUOoUelU+t9CJmIsnisms+GFGKNy4d1PoyLQHRkNKsLwoinFm
+        4km0sx7JbBV/4IOe83ejL47ieUqi0ewVRIv9Mvoj2/HDN/4D16Ocb8sEdbfudeUz1xAKNv
+        E++s8gtH4VNQvcmJ595rEgUtTDHl8C4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-634-wTWZ0GwMOOOwT6gfIkH5GQ-1; Fri, 14 Jan 2022 03:28:10 -0500
+X-MC-Unique: wTWZ0GwMOOOwT6gfIkH5GQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D7A5E1019983;
+        Fri, 14 Jan 2022 08:28:08 +0000 (UTC)
+Received: from starship (unknown [10.40.192.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id DAA586E1EF;
+        Fri, 14 Jan 2022 08:28:01 +0000 (UTC)
+Message-ID: <5b516b51f81874fe7cafe8ce6846bc9936d83cc7.camel@redhat.com>
+Subject: Re: [PATCH 2/2] KVM: x86: Forbid KVM_SET_CPUID{,2} after KVM_RUN
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Igor Mammedov <imammedo@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Date:   Fri, 14 Jan 2022 10:28:00 +0200
+In-Reply-To: <YeCowpPBEHC6GJ59@google.com>
+References: <20211122175818.608220-1-vkuznets@redhat.com>
+         <20211122175818.608220-3-vkuznets@redhat.com>
+         <16368a89-99ea-e52c-47b6-bd006933ec1f@redhat.com>
+         <20211227183253.45a03ca2@redhat.com>
+         <61325b2b-dc93-5db2-2d0a-dd0900d947f2@redhat.com>
+         <87mtkdqm7m.fsf@redhat.com> <20220103104057.4dcf7948@redhat.com>
+         <YeCowpPBEHC6GJ59@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel/tdx.git tdx/guest-rebased
-head:   e3995864d37c56f431c93fc3dc454d9c65f5e9ea
-commit: 10cf59c2590afd8c342994cd885e4b0c40f1666e [58/133] tools/tdx: Add a sample attestation user app
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+On Thu, 2022-01-13 at 22:33 +0000, Sean Christopherson wrote:
+> On Mon, Jan 03, 2022, Igor Mammedov wrote:
+> > On Mon, 03 Jan 2022 09:04:29 +0100
+> > Vitaly Kuznetsov <vkuznets@redhat.com> wrote:
+> > 
+> > > Paolo Bonzini <pbonzini@redhat.com> writes:
+> > > 
+> > > > On 12/27/21 18:32, Igor Mammedov wrote:  
+> > > > > > Tweaked and queued nevertheless, thanks.  
+> > > > > it seems this patch breaks VCPU hotplug, in scenario:
+> > > > > 
+> > > > >    1. hotunplug existing VCPU (QEMU stores VCPU file descriptor in parked cpus list)
+> > > > >    2. hotplug it again (unsuspecting QEMU reuses stored file descriptor when recreating VCPU)
+> > > > > 
+> > > > > RHBZ:https://bugzilla.redhat.com/show_bug.cgi?id=2028337#c11
+> > > > >   
+> > > > 
+> > > > The fix here would be (in QEMU) to not call KVM_SET_CPUID2 again. 
+> > > > However, we need to work around it in KVM, and allow KVM_SET_CPUID2 if 
+> > > > the data passed to the ioctl is the same that was set before.  
+> > > 
+> > > Are we sure the data is going to be *exactly* the same? In particular,
+> > > when using vCPU fds from the parked list, do we keep the same
+> > > APIC/x2APIC id when hotplugging? Or can we actually hotplug with a
+> > > different id?
+> > 
+> > If I recall it right, it can be a different ID easily.
+> 
+> No, it cannot.  KVM doesn't provide a way for userspace to change the APIC ID of
+> a vCPU after the vCPU is created.  x2APIC flat out disallows changing the APIC ID,
+> and unless there's magic I'm missing, apic_mmio_write() => kvm_lapic_reg_write()
+> is not reachable from userspace.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+So after all, it is true that vcpu_id == initial APIC_ID,
+and if we don't let guest change it, it will be always like that? 
 
 
-includecheck warnings: (new ones prefixed by >>)
->> tools/tdx/attest/tdx-attest-test.c: unistd.h is included more than once.
+You said that its not true in the other mail in the thread. 
+I haven't checked it in the code yet, as I never was much worried about userspace changing,
+but I will check it soon.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+I did a quick look and I see that at least the userspace can call 'kvm_apic_set_state' and it 
+contains snapshot of all apic registers, including apic id.
+However it would be very easy to add a check
+there and fail if userspace attempts to
+set APIC_ID != vcpu_id.
+
+
+Best regards,
+	Maxim Levitsky
+> 
+> The only way for userspace to set the APIC ID is to change vcpu->vcpu_id, and that
+> can only be done at KVM_VCPU_CREATE.
+> 
+> So, reusing a parked vCPU for hotplug must reuse the same APIC ID.  QEMU handles
+> this by stashing the vcpu_id, a.k.a. APIC ID, when parking a vCPU, and reuses a
+> parked vCPU if and only if it has the same APIC ID.  And because QEMU derives the
+> APIC ID from topology, that means all the topology CPUID leafs must remain the
+> same, otherwise the guest is hosed because it will send IPIs to the wrong vCPUs.
+> 
+>   static int do_kvm_destroy_vcpu(CPUState *cpu)
+>   {
+>     struct KVMParkedVcpu *vcpu = NULL;
+> 
+>     ...
+> 
+>     vcpu = g_malloc0(sizeof(*vcpu));
+>     vcpu->vcpu_id = kvm_arch_vcpu_id(cpu); <=== stash the APIC ID when parking
+>     vcpu->kvm_fd = cpu->kvm_fd;
+>     QLIST_INSERT_HEAD(&kvm_state->kvm_parked_vcpus, vcpu, node);
+> err:
+>     return ret;
+>   }
+> 
+>   static int kvm_get_vcpu(KVMState *s, unsigned long vcpu_id)
+>   {
+>     struct KVMParkedVcpu *cpu;
+> 
+>     QLIST_FOREACH(cpu, &s->kvm_parked_vcpus, node) {
+>         if (cpu->vcpu_id == vcpu_id) {  <=== reuse if APIC ID matches
+>             int kvm_fd;
+> 
+>             QLIST_REMOVE(cpu, node);
+>             kvm_fd = cpu->kvm_fd;
+>             g_free(cpu);
+>             return kvm_fd;
+>         }
+>     }
+> 
+>     return kvm_vm_ioctl(s, KVM_CREATE_VCPU, (void *)vcpu_id);
+>   }
+> 
+
+
