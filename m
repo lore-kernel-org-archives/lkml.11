@@ -2,156 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:23:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237951AbiANIXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:23:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239770AbiANIVk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:21:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B004C06176D;
-        Fri, 14 Jan 2022 00:21:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19892B823EB;
-        Fri, 14 Jan 2022 08:21:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 045D8C36AEA;
-        Fri, 14 Jan 2022 08:21:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148496;
-        bh=/XyRly+7y2sPvMTKrZuvM4zw99DP2Ky0lkevHGyRWCs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wB9UF8RI5RUTzokAMA/BAgIxlcd/rJ9Hb/NJz5Vhhu2F/ZkA3YU0WSAMQOp/0sEvF
-         7yvJgjZQm5cYSMV5grueqXfFhvjoTwsEhgKsrRrtDzWhewZKqkqW8qCpvK4OqTNDwR
-         sRGrs+SyIaaVpJ5sq/tpjwI5ykPTW1quyz0J4X48=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshanlai@gmail.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.16 01/37] workqueue: Fix unbind_workers() VS wq_worker_running() race
-Date:   Fri, 14 Jan 2022 09:16:15 +0100
-Message-Id: <20220114081544.899493450@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
-References: <20220114081544.849748488@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        id S237647AbiANIXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:23:17 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:48726 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S237202AbiANIVm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:21:42 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowAD3_S2AMuFh4HuGBQ--.10268S2;
+        Fri, 14 Jan 2022 16:21:20 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     keescook@chromium.org, arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] lkdtm/bugs: Check for the NULL pointer after calling kmalloc
+Date:   Fri, 14 Jan 2022 16:21:19 +0800
+Message-Id: <20220114082119.1270966-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowAD3_S2AMuFh4HuGBQ--.10268S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Wr4UGw4UJFyxAr4xtw4xJFb_yoWDCrc_Ga
+        n5Jr98JryYkF1Skwn7tr97urZFka1DuF4FqF9xt3y3A34xZr12vFyqgrn3Xw43GayvqFsx
+        CrWDZay0vr129jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbckFF20E14v26r1j6r4UM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
+        Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_GFyl
+        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
+        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
+        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
+        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF
+        0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUIzuXUUUUU=
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+As the possible failure of the kmalloc(), the not_checked and checked
+could be NULL pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer.
+And since it is just a test, it may directly return without error
+number.
 
-commit 07edfece8bcb0580a1828d939e6f8d91a8603eb2 upstream.
-
-At CPU-hotplug time, unbind_worker() may preempt a worker while it is
-waking up. In that case the following scenario can happen:
-
-        unbind_workers()                     wq_worker_running()
-        --------------                      -------------------
-        	                      if (!(worker->flags & WORKER_NOT_RUNNING))
-        	                          //PREEMPTED by unbind_workers
-        worker->flags |= WORKER_UNBOUND;
-        [...]
-        atomic_set(&pool->nr_running, 0);
-        //resume to worker
-		                              atomic_inc(&worker->pool->nr_running);
-
-After unbind_worker() resets pool->nr_running, the value is expected to
-remain 0 until the pool ever gets rebound in case cpu_up() is called on
-the target CPU in the future. But here the race leaves pool->nr_running
-with a value of 1, triggering the following warning when the worker goes
-idle:
-
-	WARNING: CPU: 3 PID: 34 at kernel/workqueue.c:1823 worker_enter_idle+0x95/0xc0
-	Modules linked in:
-	CPU: 3 PID: 34 Comm: kworker/3:0 Not tainted 5.16.0-rc1+ #34
-	Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba527-rebuilt.opensuse.org 04/01/2014
-	Workqueue:  0x0 (rcu_par_gp)
-	RIP: 0010:worker_enter_idle+0x95/0xc0
-	Code: 04 85 f8 ff ff ff 39 c1 7f 09 48 8b 43 50 48 85 c0 74 1b 83 e2 04 75 99 8b 43 34 39 43 30 75 91 8b 83 00 03 00 00 85 c0 74 87 <0f> 0b 5b c3 48 8b 35 70 f1 37 01 48 8d 7b 48 48 81 c6 e0 93  0
-	RSP: 0000:ffff9b7680277ed0 EFLAGS: 00010086
-	RAX: 00000000ffffffff RBX: ffff93465eae9c00 RCX: 0000000000000000
-	RDX: 0000000000000000 RSI: ffff9346418a0000 RDI: ffff934641057140
-	RBP: ffff934641057170 R08: 0000000000000001 R09: ffff9346418a0080
-	R10: ffff9b768027fdf0 R11: 0000000000002400 R12: ffff93465eae9c20
-	R13: ffff93465eae9c20 R14: ffff93465eae9c70 R15: ffff934641057140
-	FS:  0000000000000000(0000) GS:ffff93465eac0000(0000) knlGS:0000000000000000
-	CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-	CR2: 0000000000000000 CR3: 000000001cc0c000 CR4: 00000000000006e0
-	DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-	DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-	Call Trace:
-	  <TASK>
-	  worker_thread+0x89/0x3d0
-	  ? process_one_work+0x400/0x400
-	  kthread+0x162/0x190
-	  ? set_kthread_struct+0x40/0x40
-	  ret_from_fork+0x22/0x30
-	  </TASK>
-
-Also due to this incorrect "nr_running == 1", further queued work may
-end up not being served, because no worker is awaken at work insert time.
-This raises rcutorture writer stalls for example.
-
-Fix this with disabling preemption in the right place in
-wq_worker_running().
-
-It's worth noting that if the worker migrates and runs concurrently with
-unbind_workers(), it is guaranteed to see the WORKER_UNBOUND flag update
-due to set_cpus_allowed_ptr() acquiring/releasing rq->lock.
-
-Fixes: 6d25be5782e4 ("sched/core, workqueues: Distangle worker accounting from rq lock")
-Reviewed-by: Lai Jiangshan <jiangshanlai@gmail.com>
-Tested-by: Paul E. McKenney <paulmck@kernel.org>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ae2e1aad3e48 ("drivers/misc/lkdtm/bugs.c: add arithmetic overflow and array bounds checks")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
- kernel/workqueue.c |    9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/misc/lkdtm/bugs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -868,8 +868,17 @@ void wq_worker_running(struct task_struc
+diff --git a/drivers/misc/lkdtm/bugs.c b/drivers/misc/lkdtm/bugs.c
+index f4cb94a9aa9c..12c474a38494 100644
+--- a/drivers/misc/lkdtm/bugs.c
++++ b/drivers/misc/lkdtm/bugs.c
+@@ -325,6 +325,8 @@ void lkdtm_ARRAY_BOUNDS(void)
  
- 	if (!worker->sleeping)
- 		return;
-+
-+	/*
-+	 * If preempted by unbind_workers() between the WORKER_NOT_RUNNING check
-+	 * and the nr_running increment below, we may ruin the nr_running reset
-+	 * and leave with an unexpected pool->nr_running == 1 on the newly unbound
-+	 * pool. Protect against such race.
-+	 */
-+	preempt_disable();
- 	if (!(worker->flags & WORKER_NOT_RUNNING))
- 		atomic_inc(&worker->pool->nr_running);
-+	preempt_enable();
- 	worker->sleeping = 0;
- }
+ 	not_checked = kmalloc(sizeof(*not_checked) * 2, GFP_KERNEL);
+ 	checked = kmalloc(sizeof(*checked) * 2, GFP_KERNEL);
++	if (!not_checked || !checked)
++		return;
  
-
+ 	pr_info("Array access within bounds ...\n");
+ 	/* For both, touch all bytes in the actual member size. */
+-- 
+2.25.1
 
