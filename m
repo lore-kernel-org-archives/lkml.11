@@ -2,227 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B54A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240330AbiANIZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:25:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
+        id S240396AbiANI0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:26:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237231AbiANIYM (ORCPT
+        with ESMTP id S240646AbiANIYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:24:12 -0500
+        Fri, 14 Jan 2022 03:24:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDB1C06135B;
-        Fri, 14 Jan 2022 00:22:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 105E9C061756;
+        Fri, 14 Jan 2022 00:22:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97B0FB82448;
-        Fri, 14 Jan 2022 08:22:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE01FC36AE9;
-        Fri, 14 Jan 2022 08:22:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD87FB8243F;
+        Fri, 14 Jan 2022 08:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D53CBC36AE9;
+        Fri, 14 Jan 2022 08:22:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148570;
-        bh=NMkYOV7m1yBGUTFp2ummXBf0Rc3h+fSC5Swv2FjcldQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FVgLXAJEITzQRhYr9QfESvpQGkesoe0F3jIBblXZHGPmq/03gMxAo+3svV+cd18aW
-         7S5Bcjp7F6g3TlrZ+juC7irsKkPTCt4t0kUJIAy82f5vCZhv3A+BTfq6XZBp3F8hDN
-         m1aNhv5YF8QOU6Z+L/N0Aq0rnNTJHrvVjuWexhS4=
+        s=korg; t=1642148567;
+        bh=VVfheN7Z1g2MM6wFrNFUj1NxCpfl1wgNFD1u1+I3bfA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mMaZz2iKXIEk88idfzV+SrgkliopH2gJRwhXTj3Q5uzDWQe/GcgQdNG45M/HvrBnV
+         4jc3pY9Th2Q+fzZCNxwCC5S7d3NgfIesVeZjnjbF5SrsA1SG+wI66dSHWVOASTXK9U
+         sOHWTf15+gSoOPPVlJscZr/HXp99l7PGSQraYR/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-Subject: [PATCH 5.16 00/37] 5.16.1-rc1 review
-Date:   Fri, 14 Jan 2022 09:16:14 +0100
-Message-Id: <20220114081544.849748488@linuxfoundation.org>
+        stable@vger.kernel.org, Tim Jiang <tjiang@codeaurora.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.16 09/37] Bluetooth: btusb: Add the new support IDs for WCN6855
+Date:   Fri, 14 Jan 2022 09:16:23 +0100
+Message-Id: <20220114081545.165123226@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
+In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
+References: <20220114081544.849748488@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.1-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.16.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.16.1-rc1
-X-KernelTest-Deadline: 2022-01-16T08:15+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.16.1 release.
-There are 37 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: tjiang@codeaurora.org <tjiang@codeaurora.org>
 
-Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
-Anything received after that time might be too late.
+commit 21a241b3bc153b346987a28cc132674646589e02 upstream.
 
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.1-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-and the diffstat can be found below.
+Add the more IDs of HP to usb_device_id table for WCN6855.
 
-thanks,
+-Device(0489:e0cc) from /sys/kernel/debug/usb/devices
+T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=0489 ProdID=e0cc Rev= 0.01
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
 
-greg k-h
+-Device(0489:e0d6) from /sys/kernel/debug/usb/devices
+T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=0489 ProdID=e0d6 Rev= 0.01
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
+I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
 
--------------
-Pseudo-Shortlog of commits:
+Signed-off-by: Tim Jiang <tjiang@codeaurora.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/bluetooth/btusb.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.16.1-rc1
-
-Helge Deller <deller@gmx.de>
-    parisc: Fix pdc_toc_pim_11 and pdc_toc_pim_20 definitions
-
-Arnd Bergmann <arnd@arndb.de>
-    staging: greybus: fix stack size warning with UBSAN
-
-Nathan Chancellor <nathan@kernel.org>
-    drm/i915: Avoid bitwise vs logical OR warning in snb_wm_latency_quirk()
-
-Ricardo Ribalda <ribalda@chromium.org>
-    media: Revert "media: uvcvideo: Set unique vdev name based in type"
-
-Alex Hung <alex.hung@canonical.com>
-    platform/x86/intel: hid: add quirk to support Surface Go 3
-
-Dominik Brodowski <linux@dominikbrodowski.net>
-    random: fix crash on multiple early calls to add_bootloader_randomness()
-
-Eric Biggers <ebiggers@google.com>
-    random: fix data race on crng init time
-
-Eric Biggers <ebiggers@google.com>
-    random: fix data race on crng_node_pool
-
-Brian Silverman <brian.silverman@bluerivertech.com>
-    can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
-
-Marc Kleine-Budde <mkl@pengutronix.de>
-    can: isotp: convert struct tpcon::{idx,len} to unsigned int
-
-Marc Kleine-Budde <mkl@pengutronix.de>
-    can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
-
-Orlando Chamberlain <redecorating@protonmail.com>
-    mfd: intel-lpss-pci: Fix clock speed for 38a8 UART
-
-Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-    mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-
-Daniel Borkmann <daniel@iogearbox.net>
-    veth: Do not record rx queue hint in veth_xmit
-
-Aditya Garg <gargaditya08@live.com>
-    Bluetooth: btbcm: disable read tx power for MacBook Air 8,1 and 8,2
-
-Aditya Garg <gargaditya08@live.com>
-    Bluetooth: btbcm: disable read tx power for some Macs with the T2 Security chip
-
-Aditya Garg <gargaditya08@live.com>
-    Bluetooth: add quirk disabling LE Read Transmit Power
-
-Adrian Hunter <adrian.hunter@intel.com>
-    mmc: sdhci-pci: Add PCI ID for Intel ADL
-
-Sven Eckelmann <sven@narfation.org>
-    ath11k: Fix buffer overflow when scanning with extraie
-
-Alan Stern <stern@rowland.harvard.edu>
-    USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
-
-Alan Stern <stern@rowland.harvard.edu>
-    USB: core: Fix bug in resuming hub's handling of wakeup requests
-
-Paul Cercueil <paul@crapouillou.net>
-    ARM: dts: exynos: Fix BCM4330 Bluetooth reset polarity in I9100
-
-Johan Hovold <johan@kernel.org>
-    Bluetooth: bfusb: fix division by zero in send path
-
-Aaron Ma <aaron.ma@canonical.com>
-    Bluetooth: btusb: Add support for Foxconn QCA 0xe0d0
-
-Tedd Ho-Jeong An <tedd.an@intel.com>
-    Bluetooth: btintel: Fix broken LED quirk for legacy ROM devices
-
-Aaron Ma <aaron.ma@canonical.com>
-    Bluetooth: btusb: Add support for Foxconn MT7922A
-
-Zijun Hu <quic_zijuhu@quicinc.com>
-    Bluetooth: btusb: Add two more Bluetooth parts for WCN6855
-
-Zijun Hu <quic_zijuhu@quicinc.com>
-    Bluetooth: btusb: Add one more Bluetooth part for WCN6855
-
-tjiang@codeaurora.org <tjiang@codeaurora.org>
-    Bluetooth: btusb: Add the new support IDs for WCN6855
-
-mark-yw.chen <mark-yw.chen@mediatek.com>
-    Bluetooth: btusb: enable Mediatek to support AOSP extension
-
-Mark-YW.Chen <mark-yw.chen@mediatek.com>
-    Bluetooth: btusb: fix memory leak in btusb_mtk_submit_wmt_recv_urb()
-
-David Yang <davidcomponentone@gmail.com>
-    Bluetooth: btusb: Fix application of sizeof to pointer
-
-Larry Finger <Larry.Finger@lwfinger.net>
-    Bluetooth: btusb: Add one more Bluetooth part for the Realtek RTL8852AE
-
-Daniel Borkmann <daniel@iogearbox.net>
-    bpf: Fix out of bounds access from invalid *_or_null type verification
-
-Martin Kaiser <martin@kaiser.cx>
-    staging: r8188eu: switch the led off during deinit
-
-Frederic Weisbecker <frederic@kernel.org>
-    workqueue: Fix unbind_workers() VS wq_worker_sleeping() race
-
-Frederic Weisbecker <frederic@kernel.org>
-    workqueue: Fix unbind_workers() VS wq_worker_running() race
-
-
--------------
-
-Diffstat:
-
- Makefile                                 |   4 +-
- arch/arm/boot/dts/exynos4210-i9100.dts   |   2 +-
- arch/parisc/include/uapi/asm/pdc.h       |  32 ++++++---
- drivers/bluetooth/bfusb.c                |   3 +
- drivers/bluetooth/btbcm.c                |  51 ++++++++++++++
- drivers/bluetooth/btintel.c              |  20 +++---
- drivers/bluetooth/btintel.h              |   2 +-
- drivers/bluetooth/btusb.c                |  49 +++++++++++--
- drivers/char/random.c                    | 117 ++++++++++++++++++-------------
- drivers/gpu/drm/i915/intel_pm.c          |   6 +-
- drivers/media/usb/uvc/uvc_driver.c       |   7 +-
- drivers/mfd/intel-lpss-acpi.c            |   7 +-
- drivers/mfd/intel-lpss-pci.c             |   2 +-
- drivers/mmc/host/sdhci-pci-core.c        |   1 +
- drivers/mmc/host/sdhci-pci.h             |   1 +
- drivers/net/can/usb/gs_usb.c             |   5 +-
- drivers/net/veth.c                       |   1 -
- drivers/net/wireless/ath/ath11k/wmi.c    |   6 +-
- drivers/platform/x86/intel/hid.c         |   7 ++
- drivers/staging/greybus/audio_topology.c |  92 ++++++++++++------------
- drivers/staging/r8188eu/core/rtw_led.c   |   1 +
- drivers/usb/core/hcd.c                   |   9 ++-
- drivers/usb/core/hub.c                   |   2 +-
- include/net/bluetooth/hci.h              |   9 +++
- kernel/bpf/verifier.c                    |   6 +-
- kernel/workqueue.c                       |  19 +++++
- net/bluetooth/hci_core.c                 |   3 +-
- net/can/isotp.c                          |   4 +-
- 28 files changed, 323 insertions(+), 145 deletions(-)
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -295,6 +295,12 @@ static const struct usb_device_id blackl
+ 	{ USB_DEVICE(0x0cf3, 0xe600), .driver_info = BTUSB_QCA_WCN6855 |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe0cc), .driver_info = BTUSB_QCA_WCN6855 |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe0d6), .driver_info = BTUSB_QCA_WCN6855 |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
+ 
+ 	/* Broadcom BCM2035 */
+ 	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
 
 
