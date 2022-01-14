@@ -2,133 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8618FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:33:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237505AbiANIcE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:32:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:47066 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233270AbiANIcB (ORCPT
+        id S232836AbiANIdV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:33:21 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:34186 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231472AbiANIdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:32:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642149120;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4e3R0cGDEuzfJCTMeYBZ008JX3SkTwc1ShwrpVRZ6sY=;
-        b=Ic8tZhd+tdHq0swuzkL607OV4PxiFkUrEfLUVDEw41zHOM5pNRf0m5JVFqgrYsDenlZWfJ
-        iDOJviDs3LI21/9NtmIv9CKbNlGFpXn+TqF48hJI17u5tlnPnQfrBpDdhcZIXp1ikoBNbe
-        gvayDGXZ9Whp5uPi2WvVU08YAiCawmw=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-370-arcgUfW3OvOYkra2FIuutQ-1; Fri, 14 Jan 2022 03:31:59 -0500
-X-MC-Unique: arcgUfW3OvOYkra2FIuutQ-1
-Received: by mail-ed1-f69.google.com with SMTP id z8-20020a056402274800b003f8580bfb99so7735813edd.11
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 00:31:59 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4e3R0cGDEuzfJCTMeYBZ008JX3SkTwc1ShwrpVRZ6sY=;
-        b=k/kmJnNuODhHKo6xRDmY7B9yinpeBZpMBozQI31yjkpEmPIrzSDYInF3YeSd08Ngiu
-         slcd5tw1MO+BKik+h/mtlJIoydvHHyEAPrWrst/tZTcJslU7revbR9Hv3Eeipak0lH1b
-         Qs9G/l64wcdWOPXTFD6FGL0RI8RNbus5rpABG1sNXJcIiWOPs/BgFm8sux4ROsG6rwUs
-         J92j/48sZyvUMP5dZzLiw5a6CT+72Tk5PJ+uXy12UsYNO+oDjQZWCVaIO1W3LaCUvA3s
-         tW4JUApwxtFLNkrWcTYuAqfFLyI9vXjqSiWa+wQpiNGoqgec7mKcBCZwT+dIdp4t0TOj
-         I6Fg==
-X-Gm-Message-State: AOAM533pXYb/4+F34o4k5KZCa1g9A65Bo/0CsXDhxS2fHp1hmpzNudEo
-        ueb0yFKW8mliwp3gAuBvEkiqfu3E7BSJjr+7yYzuhr0JjpqCbFVIcgnrvTlxPlAoOrUz6szRyW3
-        IjDoGfry2g5HlwZrvWLJyaiGe
-X-Received: by 2002:a17:907:7b9a:: with SMTP id ne26mr6794417ejc.24.1642149117765;
-        Fri, 14 Jan 2022 00:31:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyc7ZUjSZiOi4vR7JBwLNXvaLjQlMFxrVHe1I54Rh0HNGyN31qRHcwp/dgJR+l4YdLADSfyPQ==
-X-Received: by 2002:a17:907:7b9a:: with SMTP id ne26mr6794377ejc.24.1642149117132;
-        Fri, 14 Jan 2022 00:31:57 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id 17sm1623091ejo.27.2022.01.14.00.31.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 00:31:56 -0800 (PST)
-Message-ID: <2d6ab8ab-79c8-681b-a898-a88b48fceb55@redhat.com>
-Date:   Fri, 14 Jan 2022 09:31:55 +0100
+        Fri, 14 Jan 2022 03:33:20 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7B6A8CE2184;
+        Fri, 14 Jan 2022 08:33:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57A63C36AE9;
+        Fri, 14 Jan 2022 08:33:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642149196;
+        bh=Svwyq65BGMvvbbIkTvnv43hNqr5O7jjy9V6Rmaw2jUY=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=gHJo52TScjwc3U4B8s1aLQei7JnkP3zJuGrfuYP1Mweo2ibjJX6df6jnasGUdAAxo
+         bnh0k/9NhYTGjME0W4szIHyZ7ZgShaFhARgjZ0YPECvwUiA5s3xwyStMeH+2vuOex+
+         iKMir/qaAPM1CD50lC5bsIWEyQiV1YvZE0ovlMhvH333eO4ycWFdp9NmnvYHWK1P+h
+         dcS7F8B1rOqDejLERR8vPLz2wyZb8LtOLmhhJ7qX+HSCX7VH8m87zatUE2l/Edec4e
+         zCI+CpeAmuxS09zirQaSKKkgxfXtR6/flfnYf7+mCNi1qkjjg4lSo6RBLlHRhG8G8r
+         bxvk5f6wYKg/A==
+Date:   Fri, 14 Jan 2022 09:33:12 +0100 (CET)
+From:   Jiri Kosina <jikos@kernel.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Sean O'Brien <seobrien@chromium.org>,
+        Ting Shen <phoenixshen@google.com>,
+        Stephen Boyd <swboyd@google.com>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] HID: vivaldi: fix handling devices not using numbered
+ reports
+In-Reply-To: <YdieAFj0ppmAtQxS@google.com>
+Message-ID: <nycvar.YFH.7.76.2201140932160.28059@cbobk.fhfr.pm>
+References: <YdieAFj0ppmAtQxS@google.com>
+User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 2/5] platform: surface: Propagate ACPI Dependency
-Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Jarrett Schultz <jaschultzms@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mark Gross <markgross@kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        platform-driver-x86@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Jarrett Schultz <jaschultz@microsoft.com>
-References: <20211202191630.12450-1-jaschultz@microsoft.com>
- <20211202191630.12450-3-jaschultz@microsoft.com>
- <CAMuHMdUPwo7pCSwY8_9xTaDruTHt6d=wHiNHvRmE71k8hWeLBw@mail.gmail.com>
- <87czku4z2i.fsf@kernel.org>
- <CAMuHMdWEh07zXZZesuY0sksXaa6ptDvv3Fv4UC1RDkf7_KUv8w@mail.gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <CAMuHMdWEh07zXZZesuY0sksXaa6ptDvv3Fv4UC1RDkf7_KUv8w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, 7 Jan 2022, Dmitry Torokhov wrote:
 
-On 1/14/22 09:29, Geert Uytterhoeven wrote:
-> Hi Felipe,
+> Unfortunately details of USB HID transport bled into HID core and
+> handling of numbered/unnumbered reports is quite a mess, with
+> hid_report_len() calculating the length according to USB rules,
+> and hid_hw_raw_request() adding report ID to the buffer for both
+> numbered and unnumbered reports.
+
+Yeah, I agree that's unfortunate, and untangling this has been on my TODO 
+for quite some time :/
+
+> Fixes: 14c9c014babe ("HID: add vivaldi HID driver")
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
 > 
-> On Fri, Jan 14, 2022 at 7:21 AM Felipe Balbi <balbi@kernel.org> wrote:
->> Geert Uytterhoeven <geert@linux-m68k.org> writes:
->>> On Mon, Dec 6, 2021 at 4:03 PM Jarrett Schultz <jaschultzms@gmail.com> wrote:
->>>> Since the Surface XBL Driver does not depend on ACPI, the
->>>> platform/surface directory as a whole no longer depends on ACPI. With
->>>> respect to this, the ACPI dependency is moved into each config that depends
->>>> on ACPI individually.
->>>>
->>>> Signed-off-by: Jarrett Schultz <jaschultz@microsoft.com>
->>>
->>> Thanks for your patch, which is now commit 272479928172edf0 ("platform:
->>> surface: Propagate ACPI Dependency").
->>>
->>>> --- a/drivers/platform/surface/Kconfig
->>>> +++ b/drivers/platform/surface/Kconfig
->>>> @@ -5,7 +5,6 @@
->>>>
->>>>  menuconfig SURFACE_PLATFORMS
->>>>         bool "Microsoft Surface Platform-Specific Device Drivers"
->>>> -       depends on ACPI
->>>>         default y
->>>>         help
->>>>           Say Y here to get to see options for platform-specific device drivers
->>>
->>> Without any dependency, all users configuring a kernel are now asked
->>> about this. Is there any other platform dependency that can be used
->>> instead?
->>
->> there's probably no symbol that would be true for x86 and arm64 while
->> being false for everything else. Any ideas?
+> CrOS folks, please help testing this as I do not have the affected
+> hardware.
 > 
-> depends on ARM64 || X86 || COMPILE_TEST?
+> Thanks!
+> 
+>  drivers/hid/hid-vivaldi.c | 34 ++++++++++++++++++++++++++++------
+>  1 file changed, 28 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/hid/hid-vivaldi.c b/drivers/hid/hid-vivaldi.c
+> index cd7ada48b1d9..1804de1ef9b8 100644
+> --- a/drivers/hid/hid-vivaldi.c
+> +++ b/drivers/hid/hid-vivaldi.c
+> @@ -71,10 +71,11 @@ static void vivaldi_feature_mapping(struct hid_device *hdev,
+>  				    struct hid_usage *usage)
+>  {
+>  	struct vivaldi_data *drvdata = hid_get_drvdata(hdev);
+> +	struct hid_report *report = field->report;
+>  	int fn_key;
+>  	int ret;
+>  	u32 report_len;
+> -	u8 *buf;
+> +	u8 *report_data, *buf;
+>  
+>  	if (field->logical != HID_USAGE_FN_ROW_PHYSMAP ||
+>  	    (usage->hid & HID_USAGE_PAGE) != HID_UP_ORDINAL)
+> @@ -86,12 +87,24 @@ static void vivaldi_feature_mapping(struct hid_device *hdev,
+>  	if (fn_key > drvdata->max_function_row_key)
+>  		drvdata->max_function_row_key = fn_key;
+>  
+> -	buf = hid_alloc_report_buf(field->report, GFP_KERNEL);
+> -	if (!buf)
+> +	report_data = buf = hid_alloc_report_buf(report, GFP_KERNEL);
+> +	if (!report_data)
+>  		return;
+>  
+> -	report_len = hid_report_len(field->report);
+> -	ret = hid_hw_raw_request(hdev, field->report->id, buf,
+> +	report_len = hid_report_len(report);
+> +	if (!report->id) {
+> +		/*
+> +		 * hid_hw_raw_request() will stuff report ID (which will be 0)
+> +		 * into the first byte of the buffer even for unnumbered
+> +		 * reports, so we need to account for this to avoid getting
+> +		 * -EOVERFLOW in return.
+> +		 * Note that hid_alloc_report_buf() adds 7 bytes to the size
+> +		 * so we can safely say that we have space for an extra byte.
+> +		 */
+> +		report_len++;
+> +	}
+> +
+> +	ret = hid_hw_raw_request(hdev, field->report->id, report_data,
 
-That sounds reasonable to me, I would be happy to take a patch for that.
+I've changed this to report->id and applied, thanks.
 
-Regards,
-
-Hans
-
+-- 
+Jiri Kosina
+SUSE Labs
 
