@@ -2,95 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39120C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237686AbiANIrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:47:10 -0500
-Received: from mga12.intel.com ([192.55.52.136]:42426 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229798AbiANIrJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:47:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642150029; x=1673686029;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=v21ohnzTmhcgJ7DWRkgSfaRtN9DyPgyjLHvUcQ+azvg=;
-  b=DHkYjK7ozXOuJUaZEuSEFcQEdPLATYUZu7W/tlNWw6qsp5Rd26+Lu003
-   b5DvOg2thJAjO4rM1jBJSTqNk7izGLDEOWKs9gIy4vCh1jlT3BL5IdnvQ
-   MQi2548oU9d8iJyAl2xlQ18SO3/6J1K4onzXN32umzmCaYj1uN29hil99
-   4Nj0XFHshQ+87Cp13dkXNKsTeBCogkQHcYNNdpinkYaJ6T1dvPHr1LROD
-   eDo/MulUhEfzLdU7alUGtLOzRuvLTU2n0OPVjgv0NBzhTEYdbZhEQZ7Y9
-   WibBUhSXjwON1TsvhZKPPT1Gdnyquv5EOm1gOznbh++Viv3Km8tyRN7Ho
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="224193022"
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="224193022"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 00:47:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="475706119"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 Jan 2022 00:43:35 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8IBL-0008KM-3G; Fri, 14 Jan 2022 08:43:35 +0000
-Date:   Fri, 14 Jan 2022 16:42:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        rafael@kernel.org, lenb@kernel.org
-Cc:     kbuild-all@lists.01.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: Re: [PATCH] ACPI / fan: Properly handle fine grain control
-Message-ID: <202201141638.lm8dtLqR-lkp@intel.com>
-References: <20220113224713.90092-1-srinivas.pandruvada@linux.intel.com>
+        id S237892AbiANIsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:48:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233954AbiANIr7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:47:59 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CA80C061574;
+        Fri, 14 Jan 2022 00:47:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=aQfD5GKz9bWzncLC4xptw+tsOF5qGfNZ6C5SakVX528=; b=TYlEPOvKvJNQjd8poLzSIb7AYR
+        BzKqI+ZG2q+OsXutWYlctjA0Op4JKteJP5Aef59/UFf7sVYtVPhJiiZL216jofRGJmSB+1nycza1q
+        bQKg7C+IkWimB0gyIrCC+bshTPicJvUEsghan2P8xSQfr4dftP9xPoDY4X0iHiqx3e+jMV47r7+xL
+        qM0/iGgge8uFybYJBJqTONKFYhxhlYdNOEaNGq8yzFoNGNn1Frr6/5+Uz4Df0P1nBbZg0H5F0xxSB
+        yMTQLqcgx/b+msA3p3I9/7NuQSWKGK1emzkUyDI/0UeyxNIYvNZDNivdS8ujqtTgWAxheq2FNmUW/
+        2+rQ51QQ==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n8IFM-0017AP-NF; Fri, 14 Jan 2022 08:47:44 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6B7503002C1;
+        Fri, 14 Jan 2022 09:47:42 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4BE82266305C3; Fri, 14 Jan 2022 09:47:42 +0100 (CET)
+Date:   Fri, 14 Jan 2022 09:47:42 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>
+Subject: Re: earlyprintk=xdbc seems broken
+Message-ID: <YeE4rtq6t73OxOi+@hirez.programming.kicks-ass.net>
+References: <YajkzwmWQua3Kh6A@hirez.programming.kicks-ass.net>
+ <105f35d2-3c53-b550-bfb4-aa340d31128e@linux.intel.com>
+ <88f466ff-a065-1e9a-4226-0abe2e71b686@linux.intel.com>
+ <972a0e28-ad63-9766-88da-02743f80181b@intel.com>
+ <Yao35lElOkwtBYEb@kroah.com>
+ <c2b5c9bb-1b75-bf56-3754-b5b18812d65e@linux.intel.com>
+ <YbyWuxoBSicFBGuv@hirez.programming.kicks-ass.net>
+ <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220113224713.90092-1-srinivas.pandruvada@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YcGhIm7yqYPk4Nuu@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Srinivas,
+On Tue, Dec 21, 2021 at 10:40:50AM +0100, Peter Zijlstra wrote:
+> On Fri, Dec 17, 2021 at 02:55:07PM +0100, Peter Zijlstra wrote:
+> > On Fri, Dec 17, 2021 at 01:01:43PM +0200, Mathias Nyman wrote:
+> > > I can reproduce this.
+> > > Looks like problems started when driver converted to readl_poll_timeout_atomic() in:
+> > > 
+> > > 796eed4b2342 usb: early: convert to readl_poll_timeout_atomic()
+> > 
+> > I can confirm, reverting that solves the boot hang, things aren't quite
+> > working for me though.
+> 
+> I've been poking at this a little, find debug patch and full dmesg
+> below. The TL;DR version of the dmesg seems to be:
+> 
+> [    4.984148] xhci_dbc:xdbc_start: waiting for connection timed out
+> [    4.984149] xhci_dbc:early_xdbc_setup_hardware: failed to setup the connection to host
+> 
+> Initially I thought this was due to delay not being set up properly, but
+> I 'fixed' that, and I've ran out of ideas. I really don't know anything
+> about USB :/
 
-I love your patch! Yet something to improve:
-
-[auto build test ERROR on rafael-pm/linux-next]
-[also build test ERROR on linux/master linus/master v5.16 next-20220114]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/Srinivas-Pandruvada/ACPI-fan-Properly-handle-fine-grain-control/20220114-064818
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git linux-next
-config: i386-defconfig (https://download.01.org/0day-ci/archive/20220114/202201141638.lm8dtLqR-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/f30ef71d0435cd8735ee418eeb0bfc71a58a4554
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Srinivas-Pandruvada/ACPI-fan-Properly-handle-fine-grain-control/20220114-064818
-        git checkout f30ef71d0435cd8735ee418eeb0bfc71a58a4554
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   ld: drivers/acpi/fan.o: in function `fan_get_max_state':
->> fan.c:(.text+0x28): undefined reference to `__udivdi3'
-   ld: drivers/acpi/fan.o: in function `fan_set_cur_state':
-   fan.c:(.text+0x18e): undefined reference to `__udivdi3'
-   ld: drivers/acpi/fan.o: in function `fan_get_cur_state':
-   fan.c:(.text+0x3d5): undefined reference to `__udivdi3'
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Any thoughts on this? I'd really like to be able to use this machine but
+can't due to lack of console.
