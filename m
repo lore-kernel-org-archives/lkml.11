@@ -2,123 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF53AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:27:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BACEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240230AbiANI1X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:27:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51210 "EHLO
+        id S232182AbiANI1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241217AbiANIZ0 (ORCPT
+        with ESMTP id S240174AbiANI0W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:25:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C32C0612EB;
-        Fri, 14 Jan 2022 00:23:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 39CD961D0C;
-        Fri, 14 Jan 2022 08:23:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B5CC36AEA;
-        Fri, 14 Jan 2022 08:23:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148614;
-        bh=qWhcnjyAyWFlL8CpcsVi9ihC8tPNLMx+ZrWtr3iEnGo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gaDtJvfqIS8z9NUWPnSROHHCBIJTWmpyVBdKOs4c+kGgt5GEWH1cpepyWaWGPHl4I
-         9KZsQ2lsiWkmYB1ABLzE/vjLlaaS2qr2AmMhbdy+hTZmTmMDl9XWfJ4RTHVWOXmKIr
-         8Xrkpsr6sKGkqqyAIIEQZ7YoQ6pckBRUk+ssjK3M=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Laurent Bernaille <laurent.bernaille@datadoghq.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 24/37] veth: Do not record rx queue hint in veth_xmit
-Date:   Fri, 14 Jan 2022 09:16:38 +0100
-Message-Id: <20220114081545.642671879@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
-References: <20220114081544.849748488@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 14 Jan 2022 03:26:22 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08FD8C0613EE
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 00:23:55 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id v6so14250551wra.8
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 00:23:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2SXNoXMdnGaSfy4KnO5GzxkSIdaPrK9msaNZUkt3T8Y=;
+        b=TyRi88oeaki7bUJT9yoFyv6wUj9fpeayXEzTbacbcpowHz8FPfwCEa5pPeNp4hic2A
+         1LUiMChZ/JgR4XfavZjb1aUuuO2byzLkGj1zOXheJtN63skSUHN8+KmF8d19GagVbsrr
+         3fmQKuhufkBrR7HLsFJkJOrO+niqCVoiY6pXytGHfK3Z/P2h4xZlwMO0M6mfyCp643jF
+         mVBK4R++pEHgYWm8fqj840V0Bd7FVUMAC9/gMdKD2vUoCfCbBcTjHl4ISxc5ELSpzHNM
+         hEOssy1EdHg2qUjygRA/8pzlYYvPdaPBs1bBkE4hJnxLCH+S/QkVvPnwozU/+o0Z1GpP
+         y65A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=2SXNoXMdnGaSfy4KnO5GzxkSIdaPrK9msaNZUkt3T8Y=;
+        b=Z+6frKUSNdTDhic4C/uD4QBeq00pREGnWSLX7sfeyqjIgPgjGVf3Scmc6ClfssVB8e
+         en3ucdY8BF8zaUya+5TsWljYD50zzvZfvI5zLI7MZPgQC17RVdIR3xur/yG9bBoFcp7K
+         G8gq6qFCgq29vIWL6FpZms51ECS8r2s9q4rJvE5LGWMNSYBUNGHipxu30BVolRLXj+HY
+         SbU/aRU6E9T4fBgtYM2gkkHtgryzYl2sslLMrFYmklb9c0ECKEx4fNBemxeOjtvd7y5W
+         wHptcuUC6KdWqiwk+0O4fTnoLERLRe2eiA1yJ5oSWktdtkOX8VyuKSfm0wwwJJGQRnGf
+         akfQ==
+X-Gm-Message-State: AOAM533B6Dey9VVpsuuJDNTgQZg7q2Tnla2omPj/JVAkicDi7V+HqIbw
+        qM8O5eBwUWnqhrQF1YK5AFDszf/co+zr7Q==
+X-Google-Smtp-Source: ABdhPJwtTLFQyCczvzEvPARkSbWXpC8Q4vilLBDbd9n7KTtKKzr0kpI3M6BrzPhUDH5NWo5f3LRQ0Q==
+X-Received: by 2002:a5d:6781:: with SMTP id v1mr2909142wru.714.1642148633286;
+        Fri, 14 Jan 2022 00:23:53 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:a3fc:c40b:5afc:88ee? ([2001:861:44c0:66c0:a3fc:c40b:5afc:88ee])
+        by smtp.gmail.com with ESMTPSA id i82sm5990464wma.23.2022.01.14.00.23.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 00:23:52 -0800 (PST)
+Subject: Re: dw_hdmi is showing wrong colour after commit
+ 7cd70656d1285b79("drm/bridge: display-connector: implement bus fmts
+ callbacks")
+To:     Fabio Estevam <festevam@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "Laurent.pinchart@ideasonboard.com" 
+        <Laurent.pinchart@ideasonboard.com>,
+        "robert.foss@linaro.org" <robert.foss@linaro.org>,
+        "jonas@kwiboo.se" <jonas@kwiboo.se>,
+        "jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux-amlogic@lists.infradead.org" 
+        <linux-amlogic@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <OS0PR01MB59221ED76B74231F5836D5FB86539@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+ <CAOMZO5DJiCb5bJN5_nxnYa-FsK-u7QtFghWNzs_-udE42XPDeA@mail.gmail.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <502f3ec4-fea4-8e14-c7a9-39418fc05d6d@baylibre.com>
+Date:   Fri, 14 Jan 2022 09:23:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOMZO5DJiCb5bJN5_nxnYa-FsK-u7QtFghWNzs_-udE42XPDeA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Borkmann <daniel@iogearbox.net>
+Hi,
 
-commit 710ad98c363a66a0cd8526465426c5c5f8377ee0 upstream.
+On 13/01/2022 21:01, Fabio Estevam wrote:
+> Hi Biju,
+> 
+> On Thu, Jan 13, 2022 at 2:45 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+>>
+>> Hi All,
+>>
+>> RZ/G2{H, M, N} SoC has dw_hdmi IP and it was working ok(colour) till the commit
+>> 7cd70656d1285b79("drm/bridge: display-connector: implement bus fmts callbacks").
+>>
+>> After this patch, the screen becomes greenish(may be it is setting it into YUV format??).
+>>
+>> By checking the code, previously it used to call get_input_fmt callback and set colour as RGB24.
+>>
+>> After this commit, it calls get_output_fmt_callbck and returns 3 outputformats(YUV16, YUV24 and RGB24)
+>> And get_input_fmt callback, I see the outputformat as YUV16 instead of RGB24.
+>>
+>> Not sure, I am the only one seeing this issue with dw_HDMI driver.
 
-Laurent reported that they have seen a significant amount of TCP retransmissions
-at high throughput from applications residing in network namespaces talking to
-the outside world via veths. The drops were seen on the qdisc layer (fq_codel,
-as per systemd default) of the phys device such as ena or virtio_net due to all
-traffic hitting a _single_ TX queue _despite_ multi-queue device. (Note that the
-setup was _not_ using XDP on veths as the issue is generic.)
+This patch was introduced to maintain the bridge color format negotiation after using DRM_BRIDGE_ATTACH_NO_CONNECTOR,
+but it seems it behaves incorrectly if the first bridge doesn't implement the negotiation callbacks.
 
-More specifically, after edbea9220251 ("veth: Store queue_mapping independently
-of XDP prog presence") which made it all the way back to v4.19.184+,
-skb_record_rx_queue() would set skb->queue_mapping to 1 (given 1 RX and 1 TX
-queue by default for veths) instead of leaving at 0.
+Let me check the code to see how to fix that.
 
-This is eventually retained and callbacks like ena_select_queue() will also pick
-single queue via netdev_core_pick_tx()'s ndo_select_queue() once all the traffic
-is forwarded to that device via upper stack or other means. Similarly, for others
-not implementing ndo_select_queue() if XPS is disabled, netdev_pick_tx() might
-call into the skb_tx_hash() and check for prior skb_rx_queue_recorded() as well.
+> 
+> I have tested linux-next 20220112 on a imx6q-sabresd board, which shows:
+> 
+> dwhdmi-imx 120000.hdmi: Detected HDMI TX controller v1.30a with HDCP
+> (DWC HDMI 3D TX PHY)
+> 
+> The colors are shown correctly here.
+> 
 
-In general, it is a _bad_ idea for virtual devices like veth to mess around with
-queue selection [by default]. Given dev->real_num_tx_queues is by default 1,
-the skb->queue_mapping was left untouched, and so prior to edbea9220251 the
-netdev_core_pick_tx() could do its job upon __dev_queue_xmit() on the phys device.
+The imx doesn't use DRM_BRIDGE_ATTACH_NO_CONNECTOR so the negotiation fails and use the RGB fallback input & output format.
 
-Unbreak this and restore prior behavior by removing the skb_record_rx_queue()
-from veth_xmit() altogether.
+Anyway thanks for testing
 
-If the veth peer has an XDP program attached, then it would return the first RX
-queue index in xdp_md->rx_queue_index (unless configured in non-default manner).
-However, this is still better than breaking the generic case.
-
-Fixes: edbea9220251 ("veth: Store queue_mapping independently of XDP prog presence")
-Fixes: 638264dc9022 ("veth: Support per queue XDP ring")
-Reported-by: Laurent Bernaille <laurent.bernaille@datadoghq.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc: Eric Dumazet <eric.dumazet@gmail.com>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/veth.c |    1 -
- 1 file changed, 1 deletion(-)
-
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -342,7 +342,6 @@ static netdev_tx_t veth_xmit(struct sk_b
- 		 */
- 		use_napi = rcu_access_pointer(rq->napi) &&
- 			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
--		skb_record_rx_queue(skb, rxq);
- 	}
- 
- 	skb_tx_timestamp(skb);
-
-
+Neil
