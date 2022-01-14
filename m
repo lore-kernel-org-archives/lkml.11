@@ -2,88 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAABC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 10:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC40C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 10:17:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240275AbiANKQN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 05:16:13 -0500
-Received: from smtp25.cstnet.cn ([159.226.251.25]:53910 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S239765AbiANKQL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 05:16:11 -0500
-Received: from localhost.localdomain (unknown [124.16.138.126])
-        by APP-05 (Coremail) with SMTP id zQCowADnxxRTTeFh7l8zBg--.54455S2;
-        Fri, 14 Jan 2022 18:15:47 +0800 (CST)
-From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
-To:     robert.moore@intel.com, rafael.j.wysocki@intel.com, lenb@kernel.org
-Cc:     linux-acpi@vger.kernel.org, devel@acpica.org,
-        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Subject: [PATCH] ACPI/ACPICA: Check for NULL pointer after calling alloc
-Date:   Fri, 14 Jan 2022 18:15:46 +0800
-Message-Id: <20220114101546.1368163-1-jiasheng@iscas.ac.cn>
-X-Mailer: git-send-email 2.25.1
+        id S240285AbiANKRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 05:17:52 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31160 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236985AbiANKRw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 05:17:52 -0500
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4JZxxj5YSZz8wP0;
+        Fri, 14 Jan 2022 18:15:05 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500020.china.huawei.com
+ (7.185.36.88) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 14 Jan
+ 2022 18:17:50 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <richard@nod.at>, <dwmw2@infradead.org>,
+        <linux-mtd@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+CC:     <libaokun1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH -next v3 0/2] jffs2: fix two memory leak when mount jffs2
+Date:   Fri, 14 Jan 2022 18:28:52 +0800
+Message-ID: <20220114102854.3399585-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: zQCowADnxxRTTeFh7l8zBg--.54455S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw1UWw1fWw4DXw45KFW7Jwb_yoW8Xr43p3
-        yaqFy7ArWxXF42ka1kXr4kWFW3GaykZry7KFWS9w1ava4rWFs8A3WqyryqvFy8Jrs7Ka18
-        ZFsFkan8WFs093DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkm14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_Gw1l
-        42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJV
-        WUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAK
-        I48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r
-        4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI
-        42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUonmRUUUUU
-X-Originating-IP: [124.16.138.126]
-X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpeml500020.china.huawei.com (7.185.36.88)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As the possible failure of the allocation, object_info could be NULL
-pointer.
-Therefore, it should be better to check it in order to avoid the
-dereference of the NULL pointer.
-If fails, we should return 'AE_NON_MEMORY' and the caller
-acpi_db_command_dispatch() will deal with the return status of
-acpi_db_display_objects().
-Also, the comment of the acpi_db_display_objects() is wrong.
-So we need to correct it too.
+V1->V2:
+	In jffs2_scan_medium,
+	if s = kzalloc(sizeof(struct jffs2_summary), GFP_KERNEL);
+	returns error, go to "out" to do clear. Null pointer dereference
+	occurs when if (s->sum_list_head) is executed in "out".
 
-Fixes: 995751025572 ("ACPICA: Linuxize: Export debugger files to Linux")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
----
- drivers/acpi/acpica/dbnames.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+V2->V3:
+	Sorry for the noise, but there seems to be a more elegant way to
+	fix the memory leak in jffs2_scan_medium. When memory allocation
+	fails or CONFIG_JFFS2_SUMMARY is N, s is NULL.For the former case,
+	add the new tag "out_buf" to avoid it.In the latter case,
+	jffs2_sum_reset_collected is also an empty function and does nothing.
 
-diff --git a/drivers/acpi/acpica/dbnames.c b/drivers/acpi/acpica/dbnames.c
-index 3615e1a6efd8..d8e5852fadb1 100644
---- a/drivers/acpi/acpica/dbnames.c
-+++ b/drivers/acpi/acpica/dbnames.c
-@@ -632,7 +632,7 @@ acpi_db_walk_for_specific_objects(acpi_handle obj_handle,
-  * PARAMETERS:  obj_type_arg        - Type of object to display
-  *              display_count_arg   - Max depth to display
-  *
-- * RETURN:      None
-+ * RETURN:      Status
-  *
-  * DESCRIPTION: Display objects in the namespace of the requested type
-  *
-@@ -651,6 +651,8 @@ acpi_status acpi_db_display_objects(char *obj_type_arg, char *display_count_arg)
- 	if (!obj_type_arg) {
- 		object_info =
- 		    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_object_info));
-+		if (!object_info)
-+			return (AE_NO_MEMORY);
- 
- 		/* Walk the namespace from the root */
- 
+Baokun Li (2):
+  jffs2: fix memory leak in jffs2_do_mount_fs
+  jffs2: fix memory leak in jffs2_scan_medium
+
+ fs/jffs2/build.c | 4 +++-
+ fs/jffs2/scan.c  | 6 ++++--
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
 -- 
-2.25.1
+2.31.1
 
