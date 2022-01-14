@@ -2,100 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7274C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:14:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE550C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:17:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239734AbiANJOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:14:07 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:54251 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237505AbiANJOF (ORCPT
+        id S236834AbiANJRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:17:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232626AbiANJRs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:14:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642151644;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+pWvo2OEmMNI1tZRpROSSx7Oe7LhQALrcOqQAzgndTM=;
-        b=DNaWPwS8TzD6qkX8AhspsImAC8Q4TCFRI1Hj5L1GAXfO1Aaaa52pxDfM6zxHEYLAJrdwwQ
-        0CHGuxJ9Vyi587gY/KrVbBczpJd98Ld8ezOOw2rWSF959uVkrc4KF1TkOn2r3QH2A8iIJg
-        6ZJOLuxAx/D1Mx2CcV0ZlnPEmiAgDZI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-655-fA-idSohO9WuTczASIBNLQ-1; Fri, 14 Jan 2022 04:14:03 -0500
-X-MC-Unique: fA-idSohO9WuTczASIBNLQ-1
-Received: by mail-wr1-f71.google.com with SMTP id j19-20020adfa553000000b001a375e473d8so1572799wrb.4
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:14:03 -0800 (PST)
+        Fri, 14 Jan 2022 04:17:48 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E7FC061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:17:48 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id b3so3705709plc.7
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:17:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FJ9jWVX1cVZCB+AdFkPwR6feqDBzuwKx9n9aDB+L7eU=;
+        b=I2yvcth0kmZOxW74KiHSV0WxKJxUyNqtsCVuC3+JWwo9CpTjnYKAhYjNx+JMQR2X6O
+         zmb4ao5EvvaOvpoyaFAHNSWRRjyx3SgRX6Q6aQ6OWC/BiiHQBmJkXWjjlXlLF87LtJae
+         vvSEtbNxr4E1hLssV3cz822trWugBc6hG1XiT81y9V/9gw5O99sLMFJ/PQbou4w9hMYm
+         8caGnt1+98lhATlKi0v8eHzTWn9rY9KfvCCCNA7H4MwFsOMsBV+xvGJb02CL5qpvfiT+
+         F5v53Ja4zmjWIZRLGGwxmh9oI8lnrhKnxcjtU0evKie/DiVDH69Ik/RzhRkA5/CtV0WW
+         TbXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+pWvo2OEmMNI1tZRpROSSx7Oe7LhQALrcOqQAzgndTM=;
-        b=Au0hi/yG0U1vkLp4p7+UfjLbtYH8mA5EC/WhaAyyuMrZYPELZhSOkVFJadAIPSz4N7
-         mb0b6d0uwT4TASf3026r/EMy91UAw6BU2E8nU8GFly5I54e20Cnh9yC+cFuQTZpTt5Sx
-         Bpr8C7AiZG3MugRoyfmtXJcyq2rJ4pIyz+Kpmu2BY4lZ7opBLXn+m3S+bQAu23Dilhfx
-         sMYmoDNeCeVzzLUGKG/t2D/iq188/HqWBFXQmqWAll2/k39UWwEDEHPtjhJBKtPkzlFL
-         NHvuj7aoU2l41Hl3p8wxBLXH8h5/eDQlJAlIRKPG/O9Udr7qX8st0vS2kvYPGA+A498U
-         6ECg==
-X-Gm-Message-State: AOAM533VaHxB0kJZa5CsTP6hJFhteICbjBZ3HhP8SkphcPuSoIyk/PHT
-        IAl3tXF+uGyXAjyxV+7p9l1JyvD6fsIyCftUF9xRdusViwt+faSuPJIkzumtF+Ksx+nKgXBSLi4
-        yxODnp2jnOy2OeyjcJ8vhZb8=
-X-Received: by 2002:adf:e2c4:: with SMTP id d4mr7449728wrj.247.1642151642192;
-        Fri, 14 Jan 2022 01:14:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyRWSX6LUT9jDBPafrWdsVXhH8natyGtUEoDRAx4Eqym1QjMxZ7ScRzSJ2TMS04IjlUfo2Tyw==
-X-Received: by 2002:adf:e2c4:: with SMTP id d4mr7449692wrj.247.1642151641814;
-        Fri, 14 Jan 2022 01:14:01 -0800 (PST)
-Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
-        by smtp.gmail.com with ESMTPSA id d16sm5347116wrq.27.2022.01.14.01.14.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FJ9jWVX1cVZCB+AdFkPwR6feqDBzuwKx9n9aDB+L7eU=;
+        b=zFkdKmgzUzOuX5c3vd1qWFhNst7eZrYOEeHL9FoTWlr1DRxXduVJ0+RBNEaJN9RA9U
+         k08BfbQnEPzQpXo6hLL73fgWMiEmlX3a0azABEnc2JPY51YlhWN+G7CIqeyKkzY/WrOX
+         uSCG4jZUfVtkYP2X/n6dtIMMW5Z62WHEcuqjKJEnssMHEWTsljdRZYjr8zVuQVEKcqBo
+         fbtxuTcNX+2cc5LM1z05UT6qQFP0RhTR7M0b/E+SlOulEXp1WaZnZcLXvSTqX7JSrKHd
+         boTfM9fiOc/NBeRy6AEX3u+3DkB7lGwCH4Zm4HjIqmfaAFWFC3/bDwo7aiTJEQ4fKL8u
+         /J0g==
+X-Gm-Message-State: AOAM531bxpGqOUCgWkANRVO0CyFcmg5tE3D7udLkZiz7k4iyFU0m77FR
+        WL9KJ6JEZgr71Tv3dS500uvSmg==
+X-Google-Smtp-Source: ABdhPJx75BSifsQTkjSXcEqinHM6jB1Blts8AJKZqvpt94lFvVTRer5DSG20FM2kQzE3HdQKFYRzWA==
+X-Received: by 2002:a17:902:c10c:b0:14a:922d:39d5 with SMTP id 12-20020a170902c10c00b0014a922d39d5mr457595pli.66.1642151868162;
+        Fri, 14 Jan 2022 01:17:48 -0800 (PST)
+Received: from hsinchu16.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id z3sm4237179pgc.45.2022.01.14.01.17.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 01:14:01 -0800 (PST)
-Date:   Fri, 14 Jan 2022 09:14:00 +0000
-From:   Aaron Tomlin <atomlin@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     mcgrof@kernel.org, cl@linux.com, mbenes@suse.cz,
-        akpm@linux-foundation.org, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
-        atomlin@atomlin.com, ghalat@redhat.com, allen.lkml@gmail.com,
-        live-patching@vger.kernel.org
-Subject: Re: [RFC PATCH v2 03/13] module: Move livepatch support to a
- separate file
-Message-ID: <20220114091400.3jyiohxh26bzjzvi@ava.usersys.com>
-X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
-X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
-References: <20220106234319.2067842-1-atomlin@redhat.com>
- <20220106234319.2067842-4-atomlin@redhat.com>
- <Yd8HpK44aWhhNI/Q@alley>
+        Fri, 14 Jan 2022 01:17:47 -0800 (PST)
+From:   Zong Li <zong.li@sifive.com>
+To:     robh+dt@kernel.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, krzysztof.kozlowski@canonical.com,
+        conor.dooley@microchip.com, geert@linux-m68k.org,
+        bin.meng@windriver.com, green.wan@sifive.com, vkoul@kernel.org,
+        dmaengine@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Zong Li <zong.li@sifive.com>
+Subject: [PATCH v3 0/3] Determine the number of DMA channels by 'dma-channels' property
+Date:   Fri, 14 Jan 2022 17:17:38 +0800
+Message-Id: <cover.1642151791.git.zong.li@sifive.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yd8HpK44aWhhNI/Q@alley>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 2022-01-12 17:53 +0100, Petr Mladek wrote:
-> It would be better to have the two variants close each other. I mean
-> to have it somewhere like:
-> 
-> #ifdef CONFIG_LIVEPATCH
-> 
->    variant A
-> 
-> #else
-> 
->    variant B
-> 
-> #endif
+The PDMA driver currently assumes there are four channels by default, it
+might cause the error if there is actually less than four channels.
+Change that by getting number of channel dynamically from device tree.
+For backwards-compatible, it uses the default value (i.e. 4) when there
+is no 'dma-channels' information in dts.
 
-Petr,
+This patch set contains the dts and dt-bindings change.
 
-I agree. I'll incorporate this approach into RFC PATCH v3.
+Changed in v3:
+ - Fix allocating wrong size
+ - Return error if 'dma-channels' is larger than maximum
 
+Changed in v2:
+ - Rebase on tag v5.16
+ - Use 4 as default value of dma-channels
 
-Kind regards,
+Zong Li (3):
+  riscv: dts: Add dma-channels property in dma node
+  dt-bindings: Add dma-channels for pdma device node
+  dmaengine: sf-pdma: Get number of channel by device tree
+
+ .../bindings/dma/sifive,fu540-c000-pdma.yaml  |  7 +++++++
+ .../boot/dts/microchip/microchip-mpfs.dtsi    |  1 +
+ arch/riscv/boot/dts/sifive/fu540-c000.dtsi    |  1 +
+ drivers/dma/sf-pdma/Makefile                  |  2 ++
+ drivers/dma/sf-pdma/sf-pdma.c                 | 20 ++++++++++++-------
+ drivers/dma/sf-pdma/sf-pdma.h                 |  8 ++------
+ 6 files changed, 26 insertions(+), 13 deletions(-)
 
 -- 
-Aaron Tomlin
+2.31.1
 
