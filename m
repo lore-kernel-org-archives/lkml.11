@@ -2,167 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C508DC4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:17:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4194C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242862AbiANPRj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:17:39 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:45331 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242976AbiANPRX (ORCPT
+        id S238966AbiANPRl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:17:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242585AbiANPR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:17:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1642173443; x=1673709443;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=m4uG6fn9Ja8wYJxOVT09ajA8/irJHQR89DHN80WIHNs=;
-  b=gyffGj0B6q7n3ROkDKo5lScO/ptwk2l/Nl0Pd9xadJdG7TE75eVaLWp9
-   o8F6Putd1SbdppybzPvKwQu1VteaVJHyTIWxPbg/KCZhIBPH1JHPKAPTa
-   GjeFOpRNm+t5VlpBWSALfNVHWy44rBl9NeIMC/GUqms8psze8paa2NMTu
-   5YF+o6uWSGic0FF9dU3kE6x0QTe6mDRU9vvPuGGOcPtanpYagIIyfrWiq
-   snePOoEffywLxDheXB3JvTWRuAqjlbOJcqhp2ghSThS3jqOdDwzfALr3q
-   PV1P2JwoqoWR/1QpDCBL95UPSzUIalJmOkkztqlDxcW3Lsxo76MUBblnl
-   w==;
-IronPort-SDR: 7WWftUvpn13G7qKUhXOz04JEV8/kCBG7ebs/rTJS2i4v2zFKV3EqpZTDzTaw808lER9PFlVDBb
- nY41tojVN326tiTitHsZ9Ou6NjITYOtdXPSeUJNoiCOpOUeLsrsmUyzFiDx6+hHqkNUpklNHTW
- ZItxpo+7ZALCCY5lPXVyXj6VIuL8NepKh8cDQg3bvY/l2i963o4oFHyPuyNLejrVQY4ULMSNZo
- vGS03LN+E/YAPHvGdN8C/gDFhZoCebIK5uwoZl0ANnn+spb1hNwVzk9DddQNMMJGJZJ3X7172m
- eMHce+RQ43VbhHaWwr4fvC1d
-X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="150236722"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2022 08:17:21 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 14 Jan 2022 08:17:21 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Fri, 14 Jan 2022 08:17:15 -0700
-From:   <conor.dooley@microchip.com>
-To:     <linus.walleij@linaro.org>, <bgolaszewski@baylibre.com>,
-        <robh+dt@kernel.org>, <jassisinghbrar@gmail.com>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <a.zummo@towertech.it>,
-        <alexandre.belloni@bootlin.com>, <broonie@kernel.org>,
-        <gregkh@linuxfoundation.org>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
-        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-crypto@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-CC:     <krzysztof.kozlowski@canonical.com>, <geert@linux-m68k.org>,
-        <bin.meng@windriver.com>, <heiko@sntech.de>,
-        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
-        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
-        <atishp@rivosinc.com>
-Subject: [PATCH v3 09/15] dt-bindings: pwm: add microchip corepwm binding
-Date:   Fri, 14 Jan 2022 15:17:21 +0000
-Message-ID: <20220114151727.2319915-10-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220114151727.2319915-1-conor.dooley@microchip.com>
-References: <20220114151727.2319915-1-conor.dooley@microchip.com>
+        Fri, 14 Jan 2022 10:17:26 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC8DC06173F;
+        Fri, 14 Jan 2022 07:17:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=HIRvcwlSl4Hp1A2rT9yMEOxIWfhwKnmROPnxOG/25YE=; b=MLdEMXb4SCvNvAol4jQBhoZrDw
+        ls0LbGXaMsBPr5myQwSrS7mm891UDbP7d0aB9f4apmNBECNtiID+VWfx52VHds1RymMbnwNkWl3UZ
+        uXqRMmCE7eCW15t3NcyRYgr40FR9PAbyMpDMKo+4VVqlAo6j3Za51gppGoB6xxlmWLgexYnbKyFOX
+        FQssGbBTPx6anq/Gxt2YEa+gHIqTTeO/DpsQLsAiLPvbwHucX3ZFedtzFE04M0xVHMJJmtGuB3QtZ
+        0YORWbZUwdCE60GdjX4gvo5ZhMwkhQ84SmqyNXAk5H+iQhQdIYyGA07EH7KLCc24+jKSIgsY3CCIQ
+        wGoiQw4g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n8OK0-005tS8-Ou; Fri, 14 Jan 2022 15:16:57 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id D88AD3002C1;
+        Fri, 14 Jan 2022 16:16:53 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B4C2923CDA75B; Fri, 14 Jan 2022 16:16:53 +0100 (CET)
+Date:   Fri, 14 Jan 2022 16:16:53 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Peter Oskolkov <posk@posk.io>
+Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
+        pjt@google.com, posk@google.com, avagin@google.com,
+        jannh@google.com, tdelisle@uwaterloo.ca
+Subject: Re: [RFC][PATCH 3/3] sched: User Mode Concurency Groups
+Message-ID: <YeGT5dvA8KFeW+69@hirez.programming.kicks-ass.net>
+References: <20211214204445.665580974@infradead.org>
+ <20211214205358.701701555@infradead.org>
+ <20211221171900.GA580323@dev-hv>
+ <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+On Fri, Jan 14, 2022 at 03:09:55PM +0100, Peter Zijlstra wrote:
 
-Add device tree bindings for the Microchip fpga fabric based "core" PWM controller.
+> > I think the assumption is based on the idea that a process
+> > using UMCG will get affined to N CPUs, will have N servers and
+> > a number of workers, and they will all happily cooperate and not
+> > get any extra threads running.
+> > 
+> > Of course the pretty picture was not completely true, as the unblocked
+> > tasks do consume extra threads in the kernel, though never in the
+> > userspace.
+> 
+> Right, there is some unmanaged time anyway.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- .../bindings/pwm/microchip,corepwm.yaml       | 75 +++++++++++++++++++
- 1 file changed, 75 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-
-diff --git a/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-new file mode 100644
-index 000000000000..26a77cde2465
---- /dev/null
-+++ b/Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
-@@ -0,0 +1,75 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/pwm/microchip,corepwm.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Microchip ip core PWM controller bindings
-+
-+maintainers:
-+  - Conor Dooley <conor.dooley@microchip.com>
-+
-+description: |
-+  corePWM is an 16 channel pulse width modulator FPGA IP
-+
-+  https://www.microsemi.com/existing-parts/parts/152118
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: microchip,corepwm-rtl-v4
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  "#pwm-cells":
-+    const: 2
-+
-+  microchip,sync-update:
-+    description: |
-+      In synchronous mode, all channels are updated at the beginning of the PWM period.
-+      Asynchronous mode is relevant to applications such as LED control, where
-+      synchronous updates are not required. Asynchronous mode lowers the area size,
-+      reducing shadow register requirements. This can be set at run time, provided
-+      SHADOW_REG_EN is asserted. SHADOW_REG_EN is set by the FPGA bitstream programmed
-+      to the device.
-+      Each bit corresponds to a PWM channel & represents whether synchronous mode is
-+      possible for the PWM channel.
-+
-+    $ref: /schemas/types.yaml#/definitions/uint16
-+    default: 0
-+
-+  microchip,dac-mode:
-+    description: |
-+      Optional, per-channel Low Ripple DAC mode is possible on this IP core. It creates
-+      a minimum period pulse train whose High/Low average is that of the chosen duty
-+      cycle. This "DAC" will have far better bandwidth and ripple performance than the
-+      standard PWM algorithm can achieve.
-+      Each bit corresponds to a PWM channel & represents whether dac mode is enabled
-+      that PWM channel.
-+
-+    $ref: /schemas/types.yaml#/definitions/uint16
-+    default: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - "#pwm-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include "dt-bindings/clock/microchip,mpfs-clock.h"
-+    pwm@41000000 {
-+      compatible = "microchip,corepwm-rtl-v4";
-+      microchip,sync-update = /bits/ 16 <0>;
-+      clocks = <&clkcfg CLK_FIC3>;
-+      reg = <0x41000000 0xF0>;
-+      #pwm-cells = <2>;
-+    };
--- 
-2.32.0
-
+Also, since we force wake to the same CPU, and overlapping runtime is
+'short', they should all stick to the same CPU, even if we don't pin.
