@@ -2,120 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5BAFC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74C5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:20:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239799AbiANJS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:18:58 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17347 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236423AbiANJS4 (ORCPT
+        id S234157AbiANJUO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:20:14 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:50949 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230124AbiANJUM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:18:56 -0500
-Received: from kwepemi100006.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JZwgX5M9xz9sBr;
-        Fri, 14 Jan 2022 17:17:44 +0800 (CST)
-Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
- kwepemi100006.china.huawei.com (7.221.188.165) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 14 Jan 2022 17:18:54 +0800
-Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
- (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Fri, 14 Jan
- 2022 17:18:53 +0800
-From:   Yu Kuai <yukuai3@huawei.com>
-To:     <tj@kernel.org>, <axboe@kernel.dk>
-CC:     <cgroups@vger.kernel.org>, <linux-block@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <yukuai3@huawei.com>,
-        <yi.zhang@huawei.com>
-Subject: [PATCH -next] blk-throttle: enable io throttle for root in cgroup v2
-Date:   Fri, 14 Jan 2022 17:30:00 +0800
-Message-ID: <20220114093000.3323470-1-yukuai3@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Fri, 14 Jan 2022 04:20:12 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id CEBBF5C0184;
+        Fri, 14 Jan 2022 04:20:11 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Fri, 14 Jan 2022 04:20:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=cxGeAwcSjcL8VU9JBG8vAUhRx6Y
+        PVJOrfbXubDbWanA=; b=GiHP/4JAs1XrQ6axffzBCNgHu0qz4spwcBfwkQy6SpM
+        C1J1qpWuGJbiGUZCYTD6zInKzxjxrPYMRnHQbMueQ8ccxTwMuqpXcCeO9Zlirji6
+        BokB3R8NkfWADVVQh8H7fd1Q2SXU/2UfRLwamdn0Kpf8vNkIi/L+OiyRsluen8wX
+        h6HMCjwi9SkUGB3s3EDipFbRDBBDQH5BMMiIDDrhH5SeVxiEriYaAkvrJ1cb8JAk
+        SiiH9NtlWOxU8VN5dTF2ljbK32KKNSqK29RP8BKIceG4LBHpevx9hRauAflJRjvA
+        S82NTfmR45xtUBPBKklzf54UCGZ4lKCf0wZ4i+O5ZzQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=cxGeAw
+        cSjcL8VU9JBG8vAUhRx6YPVJOrfbXubDbWanA=; b=Z1tk1s5kejmw7oqN2ssnIA
+        SBMwLcxtBgqz7+4gIK15HuYaHbcZoouETgjpuXSLE1eQ2pUVUQFiQBNF003Tb5lU
+        9gJEjlOgf4FglgIXyBHaWfjm+unAE/dZd9k6rmh7hYD9RepTyZPKC0qoZco8PKIn
+        OLqupUWnFdSHTwzS7X+HSvaNLTtY4e4TMMQ4VsZTkTeucj29AvVVWfj58DzdFtY0
+        lVeoQ1jgSyDNwQSKU3fLSb7vMfxUIC76kGPeWgRGTgnQwlUaKdLlweGodGA0OV1g
+        QQrbZlB3GZz490XndfTAR5p7r/JBdopDg4DBKSVEKvdMpCGLITWpjxc3GR1qCiwA
+        ==
+X-ME-Sender: <xms:SkDhYRwAAru-usMpKBcphJ7tBHQJc0AOwTEdkVGnoV8JqjVbKjWMbw>
+    <xme:SkDhYRRQuRUJVU2XtfSpMvgWqwrMUkbk4odRhWMYYbTzCgPGD30IWkj8Li6-LNGkq
+    eqfo-QNbFXfQbi1w2w>
+X-ME-Received: <xmr:SkDhYbVoqd_JYJld7CyFjUYCTlwMJJzFLV7Lwcbi_Gx0670GwASdhpcSHcRAh6uspAQ83gJi703IxaOfQ2TEnRdNO6jSjvlfhD_pkDk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdehgddtvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesghdtreertddtjeenucfhrhhomhepofgrgihimhgv
+    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
+    gvrhhnpeeutdfgjeeuudehvefgvedvtedtudelfffgffekledtffekgedukeejueevieeg
+    udenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehmrg
+    igihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:SkDhYTif8zAmN1dJofEoHml8n-pF-qD9lWymPyDYK9NvTTOefR8zhQ>
+    <xmx:SkDhYTDfqkyWg0Jer-uD0uPUMeytnYaN6AGu3X55gdzPrp7WMQWW0Q>
+    <xmx:SkDhYcLDbAqqZT20fZvtbMTAvh6caW26ifN9uK7GNZzC8curZAD-bw>
+    <xmx:S0DhYe-JGsyQKNNExG-i_XoEUzbEh3xX4sfppov243Qzzg5k7KLl6g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 14 Jan 2022 04:20:10 -0500 (EST)
+Date:   Fri, 14 Jan 2022 10:20:07 +0100
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Conley Lee <conleylee@foxmail.com>
+Cc:     robh@kernel.org, wens@csie.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] sun7i-a20-marsboard.dts: add marsboard-a20 support
+Message-ID: <20220114092007.7nf5m5cunbifmo5d@houat>
+References: <YdS1GVkRopRSoD5S@robh.at.kernel.org>
+ <tencent_13C536D91764B05D794CBCF3156C963E6C0A@qq.com>
+ <20220111103542.f7ilg2ugqklpztr5@houat>
+ <tencent_361798B1357958BC1B1694977A6C9935CD0A@qq.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600009.china.huawei.com (7.193.23.164)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7wslry4pvqogojtw"
+Content-Disposition: inline
+In-Reply-To: <tencent_361798B1357958BC1B1694977A6C9935CD0A@qq.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RFC patch: https://lkml.org/lkml/2021/9/9/1432
 
-There is a proformance problem in our environment:
+--7wslry4pvqogojtw
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-A host can provide a remote device to difierent client. If one client is
-under high io pressure, other clients might be affected.
+Hi,
 
-Limit the overall iops/bps(io.max) from the client can fix the problem,
-however, config files do not exist in root cgroup currently, which makes
-it impossible.
+On Wed, Jan 12, 2022 at 10:37:55AM +0800, Conley Lee wrote:
+> On 01/11/22 at 11:35=E4=B8=8A=E5=8D=88, Maxime Ripard wrote:
+> > Date: Tue, 11 Jan 2022 11:35:42 +0100
+> > From: Maxime Ripard <maxime@cerno.tech>
+> > To: conleylee@foxmail.com
+> > Cc: robh@kernel.org, wens@csie.org, devicetree@vger.kernel.org,
+> >  linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+> > Subject: Re: [PATCH v2 1/2] sun7i-a20-marsboard.dts: add marsboard-a20
+> >  support
+> >=20
+> > Hi,
+> >=20
+> > On Wed, Jan 05, 2022 at 10:45:50AM +0800, conleylee@foxmail.com wrote:
+> > > From: conley <conleylee@foxmail.com>
+> >=20
+> > This should be your full name in the author and signed-off-by
+> >=20
+> > > ARM dts: sun7i: Add Marsboard A20 board
+> > >=20
+> > > This patch add support for Marsboard A20 board.
+> > >=20
+> > > The Marsboard A20 is a A20 based SBC with 1G RAM, 8G Flash, micro SD
+> > > card slot , SATA socketm 10/100 ethernet, HDMI port, 4 USB2.0 ports, 2
+> > > USB2.0 OTG, USB WIFI(RTL8188EU) with antenna.
+> > >=20
+> > > Change since v1.
+> > >   - Spearate biddings and dts as two patches.
+> > >   - use SPDX tag
+> >=20
+> > And the changelog should be after the --- below
+> >=20
+> > > Signed-off-by: conley <conleylee@foxmail.com>
+> > > ---
+> > >  arch/arm/boot/dts/Makefile                |   1 +
+> > >  arch/arm/boot/dts/sun7i-a20-marsboard.dts | 183 ++++++++++++++++++++=
+++
+> > >  2 files changed, 184 insertions(+)
+> > >  create mode 100644 arch/arm/boot/dts/sun7i-a20-marsboard.dts
+> > >=20
+> > > diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> > > index 0de64f237cd8..4628a2617313 100644
+> > > --- a/arch/arm/boot/dts/Makefile
+> > > +++ b/arch/arm/boot/dts/Makefile
+> > > @@ -1219,6 +1219,7 @@ dtb-$(CONFIG_MACH_SUN7I) +=3D \
+> > >  	sun7i-a20-icnova-swac.dtb \
+> > >  	sun7i-a20-lamobo-r1.dtb \
+> > >  	sun7i-a20-linutronix-testbox-v2.dtb \
+> > > +	sun7i-a20-marsboard.dtb \
+> > >  	sun7i-a20-m3.dtb \
+> > >  	sun7i-a20-mk808c.dtb \
+> > >  	sun7i-a20-olimex-som-evb.dtb \
+> > > diff --git a/arch/arm/boot/dts/sun7i-a20-marsboard.dts b/arch/arm/boo=
+t/dts/sun7i-a20-marsboard.dts
+> > > new file mode 100644
+> > > index 000000000000..7ab6aa30fee6
+> > > --- /dev/null
+> > > +++ b/arch/arm/boot/dts/sun7i-a20-marsboard.dts
+> > > @@ -0,0 +1,183 @@
+> > > +// SPDX-License-Identifier: LGPL-2.1+
+> >=20
+> > The license for DT files is usually a dual-license with GPL and MIT,
+> > which would be:
+> >=20
+> > SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+> >=20
+> > You can't link to a DT, so GPL and LGPL should be equivalent here, and
+> > MIT is useful for other projects (like the *BSD) that reuse the DT.
+> >=20
+> > > +/*
+> > > + * Copyright 2021 Conley Lee
+> > > + * Conley Lee <conleylee@foxmail.com>
+> > > + */
+> > > +
+> > > +/dts-v1/;
+> > > +#include "sun7i-a20.dtsi"
+> > > +#include "sunxi-common-regulators.dtsi"
+> > > +
+> > > +#include <dt-bindings/gpio/gpio.h>
+> > > +#include <dt-bindings/interrupt-controller/irq.h>
+> > > +
+> > > +/ {
+> > > +	model =3D "HAOYU Electronics Marsboard A20";
+> > > +	compatible =3D "haoyu,a20-marsboard", "allwinner,sun7i-a20";
+> >=20
+> > Is there multiple boards called marsboard?
+> >=20
+> > If not, then the compatible should be haoyu,marsboard.
+> >=20
+> > The file name should be sun7i-a20-haoyu-marsboard too.
+> >=20
+> > > +	aliases {
+> > > +		serial0 =3D &uart0;
+> > > +	};
+> > > +
+> > > +	chosen {
+> > > +		stdout-path =3D "serial0:115200n8";
+> > > +	};
+> > > +
+> > > +	hdmi-connector {
+> > > +		compatible =3D "hdmi-connector";
+> > > +		type =3D "a";
+> > > +
+> > > +		port {
+> > > +			hdmi_con_in: endpoint {
+> > > +				remote-endpoint =3D <&hdmi_out_con>;
+> > > +			};
+> > > +		};
+> > > +	};
+> > > +};
+> > > +
+> > > +&ahci {
+> > > +	target-supply =3D <&reg_ahci_5v>;
+> > > +	status =3D "okay";
+> > > +};
+> > > +
+> > > +&codec {
+> > > +	status =3D "okay";
+> > > +};
+> > > +
+> > > +&cpu0 {
+> > > +	cpu-supply =3D <&reg_dcdc2>;
+> > > +};
+> > > +
+> > > +&de {
+> > > +	status =3D "okay";
+> > > +};
+> > > +
+> > > +&ehci0 {
+> > > +	status =3D "okay";
+> > > +};
+> > > +
+> > > +&ehci1 {
+> > > +	status =3D "okay";
+> > > +};
+> > > +
+> > > +&gmac_mii_pins {
+> > > +	pins =3D "PA0", "PA1", "PA2",
+> > > +	"PA3", "PA4", "PA5", "PA6",
+> > > +	"PA7", "PA8", "PA9", "PA10",
+> > > +	"PA11", "PA12", "PA13", "PA14",
+> > > +	"PA15", "PA16", "PA17";
+> > > +};
+> >=20
+> > Why do you need that node?
+>
+> 1. There are two boards called marsboard, another one is based on
+>    sun4i-a10.
 
-This patch enables io throttle for root cgroup:
- - enable "io.max" and "io.low" in root
- - don't skip root group in tg_iops_limit() and tg_bps_limit()
- - don't skip root group in tg_conf_updated()
+Ok
 
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/blk-throttle.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+> 2. About the gmac_mii_pins node: the pin PA17 is connected to PHY
+>    as EXTERR signal on sun7i-a20-marsboard, it's different from=20
+>    the definetion in dtsi.
 
-diff --git a/block/blk-throttle.c b/block/blk-throttle.c
-index 7c462c006b26..ac25bfbbfe7f 100644
---- a/block/blk-throttle.c
-+++ b/block/blk-throttle.c
-@@ -156,9 +156,6 @@ static uint64_t tg_bps_limit(struct throtl_grp *tg, int rw)
- 	struct throtl_data *td;
- 	uint64_t ret;
- 
--	if (cgroup_subsys_on_dfl(io_cgrp_subsys) && !blkg->parent)
--		return U64_MAX;
--
- 	td = tg->td;
- 	ret = tg->bps[rw][td->limit_index];
- 	if (ret == 0 && td->limit_index == LIMIT_LOW) {
-@@ -186,9 +183,6 @@ static unsigned int tg_iops_limit(struct throtl_grp *tg, int rw)
- 	struct throtl_data *td;
- 	unsigned int ret;
- 
--	if (cgroup_subsys_on_dfl(io_cgrp_subsys) && !blkg->parent)
--		return UINT_MAX;
--
- 	td = tg->td;
- 	ret = tg->iops[rw][td->limit_index];
- 	if (ret == 0 && tg->td->limit_index == LIMIT_LOW) {
-@@ -1284,9 +1278,8 @@ static void tg_conf_updated(struct throtl_grp *tg, bool global)
- 		struct throtl_grp *parent_tg;
- 
- 		tg_update_has_rules(this_tg);
--		/* ignore root/second level */
--		if (!cgroup_subsys_on_dfl(io_cgrp_subsys) || !blkg->parent ||
--		    !blkg->parent->parent)
-+		/* ignore root level */
-+		if (!cgroup_subsys_on_dfl(io_cgrp_subsys) || !blkg->parent)
- 			continue;
- 		parent_tg = blkg_to_tg(blkg->parent);
- 		/*
-@@ -1625,7 +1618,6 @@ static struct cftype throtl_files[] = {
- #ifdef CONFIG_BLK_DEV_THROTTLING_LOW
- 	{
- 		.name = "low",
--		.flags = CFTYPE_NOT_ON_ROOT,
- 		.seq_show = tg_print_limit,
- 		.write = tg_set_limit,
- 		.private = LIMIT_LOW,
-@@ -1633,7 +1625,6 @@ static struct cftype throtl_files[] = {
- #endif
- 	{
- 		.name = "max",
--		.flags = CFTYPE_NOT_ON_ROOT,
- 		.seq_show = tg_print_limit,
- 		.write = tg_set_limit,
- 		.private = LIMIT_MAX,
--- 
-2.31.1
+The A20-Olinuxino-Micro has the same thing then, please do it like they did.
 
+Maxime
+
+--7wslry4pvqogojtw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYeFAQwAKCRDj7w1vZxhR
+xZpLAQDgx17qKKn50MvjPu2w1aATa9Rzu2Yicq3GzM8ucVVOmgD+IWqqfFJb3jee
+necOjJSqyC04y6SGC6pFW1YSRAv4tgs=
+=wfqu
+-----END PGP SIGNATURE-----
+
+--7wslry4pvqogojtw--
