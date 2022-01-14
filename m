@@ -2,98 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 500FCC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB22C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242692AbiANPT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:19:26 -0500
-Received: from mga01.intel.com ([192.55.52.88]:57555 "EHLO mga01.intel.com"
+        id S242633AbiANPTe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:19:34 -0500
+Received: from mga03.intel.com ([134.134.136.65]:7202 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239340AbiANPTO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:19:14 -0500
+        id S239376AbiANPTb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 10:19:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642173554; x=1673709554;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gQypZeKb20iK6V4Fo2vqovMOcW37eXRpK9D4ZpMA80M=;
-  b=BtH88BUhEmWlwFXXte+qLw3Vvhv3gqQk8ax+w+tSh2xstShTBvIDV56V
-   PUsCKlImoNoj6t9b8S+UNiO0BR3jgJ7IY/cbAugfXLJNoOW4Sprdt2JsP
-   zl6J1rREoHd4keoQ3+fBLgZH9RcNG/GdtqpMUxE2Q1U5X7k/QtPu23Gx4
-   PbVH6zuztG2ajbheN8fq/nneNzygRZ+qXiALSn5Ql8FXpYrMcHGWJYick
-   c+osJESBMt+vxSnZqnCajDT8Hsw7+1MUBnfB8t8SovAWIECC6uh3Ksm4J
-   xeUbUHUZ81YgYvHNGcjjd94PPxp7dHS3EwB+rm4QYWW/T6BxeZ8lbtHit
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="268628145"
+  t=1642173571; x=1673709571;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qowLRleV7CksEzwRd59cyb0/LxsFQr8gPBqQKIbcK5c=;
+  b=EXt8v70+q6m2THRpnpSwViRnC4s13fZBpv4er5u9aQCwkVYr6y4G1pCI
+   QtLduMnfql/WIp8fddhnihPtE++pX6kcd0sboOPtkQnZcZL+60ZhyZKpe
+   GQsoTzoYCfoOq9+RvrmyomtaK/i2CGgpDhdEI+lluzRx+xiTiQSbr0e4j
+   nZg7MH9PErPrR/cn6AD+lO2HgDp/hhtUjeoNMrPgGoiRXZOVOz9MljPQN
+   MhkHFaQSYW/vBYb6HRs1K69G1i+jwPzUCC/XKHbajcW8FEiFanRC+nUrS
+   yKBOr4jMEjp7TLgDf7aTm63pMZrm8kL/vlflVhXq9B1pfWgD1S0b4RsaC
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="244218732"
 X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="268628145"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:19:13 -0800
+   d="scan'208";a="244218732"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:19:30 -0800
 X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
-   d="scan'208";a="594058641"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:19:07 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n8OKv-00AgJa-UJ;
-        Fri, 14 Jan 2022 17:17:53 +0200
-Date:   Fri, 14 Jan 2022 17:17:53 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Simon Ser <contact@emersion.fr>
-Cc:     Tomohito Esaki <etom@igel.co.jp>, dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Michel =?iso-8859-1?Q?D=E4nzer?= <mdaenzer@redhat.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
-        Takanari Hayama <taki@igel.co.jp>
-Subject: Re: [RFC PATCH v3 2/3] drm: add support modifiers for drivers whose
- planes only support linear layout
-Message-ID: <YeGUIYK3hYo7wLJt@smile.fi.intel.com>
-References: <20220114101753.24996-1-etom@igel.co.jp>
- <20220114101753.24996-3-etom@igel.co.jp>
- <YeGFugZvwbF7l2I/@smile.fi.intel.com>
- <7eljcd3F4aWL2jjBRwr3DISmyt0XPWFIH1_kebFGqZTJXLZRx0bm_8c8yaIuEuH8rS0MaJhU6SY1y-fc6U_zCLaKgoLM124nZpr0H91nSjw=@emersion.fr>
+   d="scan'208";a="530279733"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:19:30 -0800
+Date:   Fri, 14 Jan 2022 07:24:07 -0800
+From:   Jacob Pan <jacob.jun.pan@linux.intel.com>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     iommu@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Joerg Roedel <joro@8bytes.org>,
+        Jacob Pan <jacob.jun.pan@intel.com>,
+        Raj Ashok <ashok.raj@intel.com>,
+        "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+        jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] iommu/vt-d: Fix PCI bus rescan device hot add
+Message-ID: <20220114072407.290691fa@jacob-builder>
+In-Reply-To: <1b8d3145-c404-e952-e61e-5cdc2f6a92a6@linux.intel.com>
+References: <1642080198-10971-1-git-send-email-jacob.jun.pan@linux.intel.com>
+        <b2139255-2463-c62f-4746-8df7f3f49221@linux.intel.com>
+        <20220113191122.53bc6ac0@jacob-builder>
+        <1b8d3145-c404-e952-e61e-5cdc2f6a92a6@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7eljcd3F4aWL2jjBRwr3DISmyt0XPWFIH1_kebFGqZTJXLZRx0bm_8c8yaIuEuH8rS0MaJhU6SY1y-fc6U_zCLaKgoLM124nZpr0H91nSjw=@emersion.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 03:07:21PM +0000, Simon Ser wrote:
-> On Friday, January 14th, 2022 at 15:16, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+Hi Lu,
+
+On Fri, 14 Jan 2022 11:12:45 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+wrote:
+
+> On 1/14/22 11:11 AM, Jacob Pan wrote:
+> > On Fri, 14 Jan 2022 08:58:53 +0800, Lu Baolu<baolu.lu@linux.intel.com>
+> > wrote:
+> >   
+> >> Hi Jacob,
+> >>
+> >> On 1/13/22 9:23 PM, Jacob Pan wrote:  
+> >>> During PCI bus rescan, adding new devices involve two notifiers.
+> >>> 1. dmar_pci_bus_notifier()
+> >>> 2. iommu_bus_notifier()
+> >>> The current code sets #1 as low priority (INT_MIN) which resulted in
+> >>> #2 being invoked first. The result is that struct device pointer
+> >>> cannot be found in DRHD search for the new device's DMAR/IOMMU.
+> >>> Subsequently, the device is put under the "catch-all" IOMMU instead
+> >>> of the correct one.
+> >>>
+> >>> This could cause system hang when device TLB invalidation is sent to
+> >>> the wrong IOMMU. Invalidation timeout error or hard lockup can be
+> >>> observed.
+> >>>
+> >>> This patch fixes the issue by setting a higher priority for
+> >>> dmar_pci_bus_notifier. DRHD search for a new device will find the
+> >>> correct IOMMU.
+> >>>
+> >>> Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
+> >>> Reported-by: Zhang, Bernice<bernice.zhang@intel.com>
+> >>> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
+> >>> ---
+> >>>    drivers/iommu/intel/dmar.c | 2 +-
+> >>>    1 file changed, 1 insertion(+), 1 deletion(-)
+> >>>
+> >>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> >>> index 915bff76fe96..5d07e5b89c2e 100644
+> >>> --- a/drivers/iommu/intel/dmar.c
+> >>> +++ b/drivers/iommu/intel/dmar.c
+> >>> @@ -385,7 +385,7 @@ static int dmar_pci_bus_notifier(struct
+> >>> notifier_block *nb,
+> >>>    static struct notifier_block dmar_pci_bus_nb = {
+> >>>    	.notifier_call = dmar_pci_bus_notifier,
+> >>> -	.priority = INT_MIN,
+> >>> +	.priority = INT_MAX,
+> >>>    };
+> >>>    
+> >>>    static struct dmar_drhd_unit *
+> >>>      
+> >> Nice catch! dmar_pci_bus_add_dev() should take place*before*
+> >> iommu_probe_device(). This change enforces this with a higher notifier
+> >> priority for dmar callback.
+> >>
+> >> Comparably, dmar_pci_bus_del_dev() should take place*after*
+> >> iommu_release_device(). Perhaps we can use two notifiers, one for
+> >> ADD_DEVICE (with .priority=INT_MAX) and the other for REMOVE_DEVICE
+> >> (with .priority=INT_MIN)?
+> >>  
+> > Since device_to_iommu() lookup in intel_iommu_release_device() only
+> > checks if device is under "an" IOMMU, not "the" IOMMU. Then the remove
+> > path order is not needed, right?
+> > 
+> > I know this is not robust, but having so many notifiers with implicit
+> > priority is not clean either.
+> > 
+> > Perhaps, we should have explicit priority defined around iommu_bus
+> > notifier? i.e.
+> > 
+> > @@ -1841,6 +1841,7 @@ static int iommu_bus_init(struct bus_type *bus,
+> > const struct iommu_ops *ops) return -ENOMEM;
+> >          nb->notifier_call = iommu_bus_notifier;
+> >                         
+> > +       nb->priority = IOMMU_BUS_NOTIFY_PRIORITY;
+> >                         
+> > 
+> >   static struct notifier_block dmar_pci_bus_add_nb = {
+> >          .notifier_call = dmar_pci_bus_notifier,
+> > -       .priority = INT_MIN,
+> > +       .priority = IOMMU_BUS_NOTIFY_PRIORITY + 1,
+> >   };
+> > 
+> >   static struct notifier_block dmar_pci_bus_remove_nb = {
+> >          .notifier_call = dmar_pci_bus_notifier,
+> > -       .priority = INT_MIN,
+> > +       .priority = IOMMU_BUS_NOTIFY_PRIORITY - 1,
+> >   };  
 > 
-> > Why not enum?
+> IOMMU_BUS_NOTIFY_PRIORITY by default is 0. So you can simply use 1 and
+> -1? Adding a comment around it will be helpful.
 > 
-> There is no enum for DRM format modifiers.
-
-I'm not sure how this prevents to use enum in the code instead of const u64.
-Any specific reason for that?
-
--- 
-With Best Regards,
-Andy Shevchenko
+Yeah, I will add comment.
 
 
+Thanks,
+
+Jacob
