@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C55C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF99C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239307AbiANISZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:18:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59010 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239655AbiANISE (ORCPT
+        id S239700AbiANISb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239603AbiANISL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:18:04 -0500
+        Fri, 14 Jan 2022 03:18:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33AF9C061749;
+        Fri, 14 Jan 2022 00:18:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BB53B82439;
-        Fri, 14 Jan 2022 08:18:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9255C36AEA;
-        Fri, 14 Jan 2022 08:18:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E447FB8243B;
+        Fri, 14 Jan 2022 08:18:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F246DC36AE9;
+        Fri, 14 Jan 2022 08:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148282;
-        bh=qEKH8Hv6tCFOyHN7M0/KuxWJ4wmjMiLR2Q83GKs74Ec=;
+        s=korg; t=1642148288;
+        bh=H17Xnnsx9bUNzRTd4XZiYuNbuQ+ZTEduKVlF/IISWFQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hw8O/nUlLnbLLETkKpLQeao5PK8BFAH9wghbAPzcoefG8Ham2u3tbwAtU0g0dyr5C
-         Mm/3XkkmnjAejnO1m2bNwpupR97N2alKzSKfenPAewQJErM2cRFJzxp6awR/mNovTY
-         UR2k3w7Vy7xl0MhXyce73aoT1biL/6XvopKHc28U=
+        b=OxJBZBMlZiMmsQtepBJrCAGeQ1nnYn2rsR7MZwohK4jOs+Nk7NCspUlLYjCUIQo5A
+         Pz0DOEibxbzj1d9KPYL3sdK0h9lqAuBF+QhELkz2ZS8zcGnx+2nYN+6v0Cast+SdY2
+         CRFBlXg5txweh407H3wQnr5DyxtQKbJaW8NzOSd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guoqing Jiang <jiangguoqing@kylinos.cn>,
-        Song Liu <song@kernel.org>,
-        Guillaume Morin <guillaume@morinfr.org>
-Subject: [PATCH 5.10 01/25] md: revert io stats accounting
-Date:   Fri, 14 Jan 2022 09:16:09 +0100
-Message-Id: <20220114081542.746291845@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 11/25] USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
+Date:   Fri, 14 Jan 2022 09:16:19 +0100
+Message-Id: <20220114081543.075142856@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,134 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guoqing Jiang <jgq516@gmail.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit ad3fc798800fb7ca04c1dfc439dba946818048d8 upstream.
+commit 1d7d4c07932e04355d6e6528d44a2f2c9e354346 upstream.
 
-The commit 41d2d848e5c0 ("md: improve io stats accounting") could cause
-double fault problem per the report [1], and also it is not correct to
-change ->bi_end_io if md don't own it, so let's revert it.
+When the USB core code for getting root-hub status reports was
+originally written, it was assumed that the hub driver would be its
+only caller.  But this isn't true now; user programs can use usbfs to
+communicate with root hubs and get status reports.  When they do this,
+they may use a transfer_buffer that is smaller than the data returned
+by the HCD, which will lead to a buffer overflow error when
+usb_hcd_poll_rh_status() tries to store the status data.  This was
+discovered by syzbot:
 
-And io stats accounting will be replemented in later commits.
+BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+BUG: KASAN: slab-out-of-bounds in usb_hcd_poll_rh_status+0x5f4/0x780 drivers/usb/core/hcd.c:776
+Write of size 2 at addr ffff88801da403c0 by task syz-executor133/4062
 
-[1]. https://lore.kernel.org/linux-raid/3bf04253-3fad-434a-63a7-20214e38cf26@gmail.com/T/#t
+This patch fixes the bug by reducing the amount of status data if it
+won't fit in the transfer_buffer.  If some data gets discarded then
+the URB's completion status is set to -EOVERFLOW rather than 0, to let
+the user know what happened.
 
-Fixes: 41d2d848e5c0 ("md: improve io stats accounting")
-Signed-off-by: Guoqing Jiang <jiangguoqing@kylinos.cn>
-Signed-off-by: Song Liu <song@kernel.org>
-[GM: backport to 5.10-stable]
-Signed-off-by: Guillaume Morin <guillaume@morinfr.org>
+Reported-and-tested-by: syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/Yc+3UIQJ2STbxNua@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/md.c |   57 +++++++++++---------------------------------------------
- drivers/md/md.h |    1 
- 2 files changed, 12 insertions(+), 46 deletions(-)
+ drivers/usb/core/hcd.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/drivers/md/md.c
-+++ b/drivers/md/md.c
-@@ -459,34 +459,12 @@ check_suspended:
- }
- EXPORT_SYMBOL(md_handle_request);
- 
--struct md_io {
--	struct mddev *mddev;
--	bio_end_io_t *orig_bi_end_io;
--	void *orig_bi_private;
--	unsigned long start_time;
--	struct hd_struct *part;
--};
--
--static void md_end_io(struct bio *bio)
--{
--	struct md_io *md_io = bio->bi_private;
--	struct mddev *mddev = md_io->mddev;
--
--	part_end_io_acct(md_io->part, bio, md_io->start_time);
--
--	bio->bi_end_io = md_io->orig_bi_end_io;
--	bio->bi_private = md_io->orig_bi_private;
--
--	mempool_free(md_io, &mddev->md_io_pool);
--
--	if (bio->bi_end_io)
--		bio->bi_end_io(bio);
--}
--
- static blk_qc_t md_submit_bio(struct bio *bio)
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -754,6 +754,7 @@ void usb_hcd_poll_rh_status(struct usb_h
  {
- 	const int rw = bio_data_dir(bio);
-+	const int sgrp = op_stat_group(bio_op(bio));
- 	struct mddev *mddev = bio->bi_disk->private_data;
-+	unsigned int sectors;
+ 	struct urb	*urb;
+ 	int		length;
++	int		status;
+ 	unsigned long	flags;
+ 	char		buffer[6];	/* Any root hubs with > 31 ports? */
  
- 	if (mddev == NULL || mddev->pers == NULL) {
- 		bio_io_error(bio);
-@@ -507,26 +485,21 @@ static blk_qc_t md_submit_bio(struct bio
- 		return BLK_QC_T_NONE;
- 	}
+@@ -771,11 +772,17 @@ void usb_hcd_poll_rh_status(struct usb_h
+ 		if (urb) {
+ 			clear_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
+ 			hcd->status_urb = NULL;
++			if (urb->transfer_buffer_length >= length) {
++				status = 0;
++			} else {
++				status = -EOVERFLOW;
++				length = urb->transfer_buffer_length;
++			}
+ 			urb->actual_length = length;
+ 			memcpy(urb->transfer_buffer, buffer, length);
  
--	if (bio->bi_end_io != md_end_io) {
--		struct md_io *md_io;
--
--		md_io = mempool_alloc(&mddev->md_io_pool, GFP_NOIO);
--		md_io->mddev = mddev;
--		md_io->orig_bi_end_io = bio->bi_end_io;
--		md_io->orig_bi_private = bio->bi_private;
--
--		bio->bi_end_io = md_end_io;
--		bio->bi_private = md_io;
--
--		md_io->start_time = part_start_io_acct(mddev->gendisk,
--						       &md_io->part, bio);
--	}
--
-+	/*
-+	 * save the sectors now since our bio can
-+	 * go away inside make_request
-+	 */
-+	sectors = bio_sectors(bio);
- 	/* bio could be mergeable after passing to underlayer */
- 	bio->bi_opf &= ~REQ_NOMERGE;
- 
- 	md_handle_request(mddev, bio);
- 
-+	part_stat_lock();
-+	part_stat_inc(&mddev->gendisk->part0, ios[sgrp]);
-+	part_stat_add(&mddev->gendisk->part0, sectors[sgrp], sectors);
-+	part_stat_unlock();
-+
- 	return BLK_QC_T_NONE;
- }
- 
-@@ -5636,7 +5609,6 @@ static void md_free(struct kobject *ko)
- 
- 	bioset_exit(&mddev->bio_set);
- 	bioset_exit(&mddev->sync_set);
--	mempool_exit(&mddev->md_io_pool);
- 	kfree(mddev);
- }
- 
-@@ -5732,11 +5704,6 @@ static int md_alloc(dev_t dev, char *nam
- 		 */
- 		mddev->hold_active = UNTIL_STOP;
- 
--	error = mempool_init_kmalloc_pool(&mddev->md_io_pool, BIO_POOL_SIZE,
--					  sizeof(struct md_io));
--	if (error)
--		goto abort;
--
- 	error = -ENOMEM;
- 	mddev->queue = blk_alloc_queue(NUMA_NO_NODE);
- 	if (!mddev->queue)
---- a/drivers/md/md.h
-+++ b/drivers/md/md.h
-@@ -487,7 +487,6 @@ struct mddev {
- 	struct bio_set			sync_set; /* for sync operations like
- 						   * metadata and bitmap writes
- 						   */
--	mempool_t			md_io_pool;
- 
- 	/* Generic flush handling.
- 	 * The last to finish preflush schedules a worker to submit
+ 			usb_hcd_unlink_urb_from_ep(hcd, urb);
+-			usb_hcd_giveback_urb(hcd, urb, 0);
++			usb_hcd_giveback_urb(hcd, urb, status);
+ 		} else {
+ 			length = 0;
+ 			set_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
 
 
