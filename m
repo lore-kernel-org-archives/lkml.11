@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96D52C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C66C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbiANIWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50358 "EHLO
+        id S239734AbiANIWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:22:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240279AbiANIV1 (ORCPT
+        with ESMTP id S239947AbiANIV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:21:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0002C06161C;
-        Fri, 14 Jan 2022 00:21:19 -0800 (PST)
+        Fri, 14 Jan 2022 03:21:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3341C06174E;
+        Fri, 14 Jan 2022 00:21:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CE56B82440;
-        Fri, 14 Jan 2022 08:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E8FDC36AEA;
-        Fri, 14 Jan 2022 08:21:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4637961E36;
+        Fri, 14 Jan 2022 08:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C51BC36AE9;
+        Fri, 14 Jan 2022 08:21:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148477;
-        bh=46tSODd3bKTz4lai4mtnMZJFQXBXOmrf5iaLfeO4rI8=;
+        s=korg; t=1642148480;
+        bh=zVUjk13QbjHnnbgJiUT99EkoDLe1UTJi0lqaOp0nuOA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LfZ30xq+jKiSwpWiPFxPLtDjrQTLU03cPnmcgc5wBF8Niv6hJ8drde3V6L6tyg1zQ
-         /a1ZSY7CrSMBbGEaw2MRw6SwnxNq+ucFk+5ZkfITYg6Aj6as9GqXxx147WwGLwW92q
-         EFpDA5K0ounNpkChJG5aRy4v8yjW1E3G22QHmQ88=
+        b=b0W2OPTofZHqY7Egv3AiNTEWm1vl/GM2i8joZ3P/eDM89BhKE/fNa99TzWN0BN4gc
+         7ZjN3tPCuHvYaXReqDbRmB1lc8jZAmSFPQn3DQw3RwzJzWSRlskmaRj+HrlOeOA/2j
+         7cYfFQBiEEM+iDBfTbwxRBOdWQxPyPlhg3ysC5Hw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Aditya Garg <gargaditya08@live.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.15 29/41] mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-Date:   Fri, 14 Jan 2022 09:16:29 +0100
-Message-Id: <20220114081546.130992699@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 30/41] x86/mce: Remove noinstr annotation from mce_setup()
+Date:   Fri, 14 Jan 2022 09:16:30 +0100
+Message-Id: <20220114081546.160146929@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
 References: <20220114081545.158363487@linuxfoundation.org>
@@ -51,61 +47,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Borislav Petkov <bp@suse.de>
 
-commit c9e143084d1a602f829115612e1ec79df3727c8b upstream.
+commit 487d654db3edacc31dee86b10258cc740640fad8 upstream.
 
-The runtime PM callback may be called as soon as the runtime PM facility
-is enabled and activated. It means that ->suspend() may be called before
-we finish probing the device in the ACPI case. Hence, NULL pointer
-dereference:
+Instead, sandwitch around the call which is done in noinstr context and
+mark the caller - mce_gather_info() - as noinstr.
 
-  intel-lpss INT34BA:00: IRQ index 0 not found
-  BUG: kernel NULL pointer dereference, address: 0000000000000030
-  ...
-  Workqueue: pm pm_runtime_work
-  RIP: 0010:intel_lpss_suspend+0xb/0x40 [intel_lpss]
+Also, document what the whole instrumentation strategy with #MC is going
+to be in the future and where it all is supposed to be going to.
 
-To fix this, first try to register the device and only after that enable
-runtime PM facility.
-
-Fixes: 4b45efe85263 ("mfd: Add support for Intel Sunrisepoint LPSS devices")
-Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
-Reported-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211101190008.86473-1-andriy.shevchenko@linux.intel.com
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-5-bp@alien8.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mfd/intel-lpss-acpi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/kernel/cpu/mce/core.c |   26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
---- a/drivers/mfd/intel-lpss-acpi.c
-+++ b/drivers/mfd/intel-lpss-acpi.c
-@@ -136,6 +136,7 @@ static int intel_lpss_acpi_probe(struct
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -130,7 +130,7 @@ static void (*quirk_no_way_out)(int bank
+ BLOCKING_NOTIFIER_HEAD(x86_mce_decoder_chain);
+ 
+ /* Do initial initialization of a struct mce */
+-noinstr void mce_setup(struct mce *m)
++void mce_setup(struct mce *m)
  {
- 	struct intel_lpss_platform_info *info;
- 	const struct acpi_device_id *id;
-+	int ret;
+ 	memset(m, 0, sizeof(struct mce));
+ 	m->cpu = m->extcpu = smp_processor_id();
+@@ -479,9 +479,15 @@ static noinstr void mce_wrmsrl(u32 msr,
+  * check into our "mce" struct so that we can use it later to assess
+  * the severity of the problem as we read per-bank specific details.
+  */
+-static inline void mce_gather_info(struct mce *m, struct pt_regs *regs)
++static noinstr void mce_gather_info(struct mce *m, struct pt_regs *regs)
+ {
++	/*
++	 * Enable instrumentation around mce_setup() which calls external
++	 * facilities.
++	 */
++	instrumentation_begin();
+ 	mce_setup(m);
++	instrumentation_end();
  
- 	id = acpi_match_device(intel_lpss_acpi_ids, &pdev->dev);
- 	if (!id)
-@@ -149,10 +150,14 @@ static int intel_lpss_acpi_probe(struct
- 	info->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->irq = platform_get_irq(pdev, 0);
- 
-+	ret = intel_lpss_probe(&pdev->dev, info);
-+	if (ret)
-+		return ret;
-+
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
- 
--	return intel_lpss_probe(&pdev->dev, info);
-+	return 0;
+ 	m->mcgstatus = mce_rdmsrl(MSR_IA32_MCG_STATUS);
+ 	if (regs) {
+@@ -1327,11 +1333,11 @@ static void queue_task_work(struct mce *
  }
  
- static int intel_lpss_acpi_remove(struct platform_device *pdev)
+ /*
+- * The actual machine check handler. This only handles real
+- * exceptions when something got corrupted coming in through int 18.
++ * The actual machine check handler. This only handles real exceptions when
++ * something got corrupted coming in through int 18.
+  *
+- * This is executed in NMI context not subject to normal locking rules. This
+- * implies that most kernel services cannot be safely used. Don't even
++ * This is executed in #MC context not subject to normal locking rules.
++ * This implies that most kernel services cannot be safely used. Don't even
+  * think about putting a printk in there!
+  *
+  * On Intel systems this is entered on all CPUs in parallel through
+@@ -1343,6 +1349,14 @@ static void queue_task_work(struct mce *
+  * issues: if the machine check was due to a failure of the memory
+  * backing the user stack, tracing that reads the user stack will cause
+  * potentially infinite recursion.
++ *
++ * Currently, the #MC handler calls out to a number of external facilities
++ * and, therefore, allows instrumentation around them. The optimal thing to
++ * have would be to do the absolutely minimal work required in #MC context
++ * and have instrumentation disabled only around that. Further processing can
++ * then happen in process context where instrumentation is allowed. Achieving
++ * that requires careful auditing and modifications. Until then, the code
++ * allows instrumentation temporarily, where required. *
+  */
+ noinstr void do_machine_check(struct pt_regs *regs)
+ {
 
 
