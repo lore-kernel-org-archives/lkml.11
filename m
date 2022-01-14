@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33089C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:20:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B84C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:20:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239714AbiANIUB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:20:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
+        id S239787AbiANIUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:20:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239600AbiANITU (ORCPT
+        with ESMTP id S239836AbiANITf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:19:20 -0500
+        Fri, 14 Jan 2022 03:19:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1674EC06175B;
-        Fri, 14 Jan 2022 00:19:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55704C0613E5;
+        Fri, 14 Jan 2022 00:19:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC697B82448;
-        Fri, 14 Jan 2022 08:19:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC406C36AEA;
-        Fri, 14 Jan 2022 08:19:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FDC7B82436;
+        Fri, 14 Jan 2022 08:19:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5077FC36AE9;
+        Fri, 14 Jan 2022 08:19:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148357;
-        bh=NnOyuba6l82M94bGQAATXauFmTaOA9YOgogUdTNMgw0=;
+        s=korg; t=1642148368;
+        bh=/HzMlIO/lVsRC60BZw0AIy2OfdnGqzptletOqeUm+Pg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1IKRAnCLXl3m26xnqsqGtFtFx/pkBwNCnjsvz5GvlCdhpYTna4ZRFPb7W+uJZLfO6
-         Conq265BOdnBmmPxpJDG2eElEndXaQoOcujanmo6IDdqwfsgicy1B1QXiHG8jb66EE
-         mn5dUkT7U6G09F2VfdL1Xf6qJehIGuXflh30bEpI=
+        b=ACZ8y7alLW3815Zo1X2w6zEo9EUX/idRAlHtMgRT/H8VyFMRHdA637k+rDQHkYii6
+         uFszvBOGfL3Jmj9o+MZYUnaqRGwCh2k596+pKISMZAaUA//ChTZPqfvjzx66q6cI9l
+         MGyTYi7RigFj5tbD3VQDUWTnW5jI0m9NCBZvDbWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
-        Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 5.10 25/25] staging: greybus: fix stack size warning with UBSAN
-Date:   Fri, 14 Jan 2022 09:16:33 +0100
-Message-Id: <20220114081543.553008185@linuxfoundation.org>
+        stable@vger.kernel.org, "mark-yw.chen" <mark-yw.chen@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 5.15 10/41] Bluetooth: btusb: enable Mediatek to support AOSP extension
+Date:   Fri, 14 Jan 2022 09:16:10 +0100
+Message-Id: <20220114081545.507226490@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
-References: <20220114081542.698002137@linuxfoundation.org>
+In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
+References: <20220114081545.158363487@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,164 +48,28 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: mark-yw.chen <mark-yw.chen@mediatek.com>
 
-commit 144779edf598e0896302c35a0926ef0b68f17c4b upstream.
+commit 28491d7ef4af471841e454f8c1f77384f93c6fef upstream.
 
-clang warns about excessive stack usage in this driver when
-UBSAN is enabled:
+This patch enables AOSP extension for Mediatek Chip (MT7921 & MT7922).
 
-drivers/staging/greybus/audio_topology.c:977:12: error: stack frame size of 1836 bytes in function 'gbaudio_tplg_create_widget' [-Werror,-Wframe-larger-than=]
-
-Rework this code to no longer use compound literals for
-initializing the structure in each case, but instead keep
-the common bits in a preallocated constant array and copy
-them as needed.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1535
-Link: https://lore.kernel.org/r/20210103223541.2790855-1-arnd@kernel.org/
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Reviewed-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-[nathan: Address review comments from v1]
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20211209195141.1165233-1-nathan@kernel.org
+Signed-off-by: mark-yw.chen <mark-yw.chen@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/greybus/audio_topology.c |   92 +++++++++++++++----------------
- 1 file changed, 45 insertions(+), 47 deletions(-)
+ drivers/bluetooth/btusb.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/staging/greybus/audio_topology.c
-+++ b/drivers/staging/greybus/audio_topology.c
-@@ -974,6 +974,44 @@ static int gbaudio_widget_event(struct s
- 	return ret;
- }
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -2843,6 +2843,7 @@ static int btusb_mtk_setup(struct hci_de
+ 		}
  
-+static const struct snd_soc_dapm_widget gbaudio_widgets[] = {
-+	[snd_soc_dapm_spk]	= SND_SOC_DAPM_SPK(NULL, gbcodec_event_spk),
-+	[snd_soc_dapm_hp]	= SND_SOC_DAPM_HP(NULL, gbcodec_event_hp),
-+	[snd_soc_dapm_mic]	= SND_SOC_DAPM_MIC(NULL, gbcodec_event_int_mic),
-+	[snd_soc_dapm_output]	= SND_SOC_DAPM_OUTPUT(NULL),
-+	[snd_soc_dapm_input]	= SND_SOC_DAPM_INPUT(NULL),
-+	[snd_soc_dapm_switch]	= SND_SOC_DAPM_SWITCH_E(NULL, SND_SOC_NOPM,
-+					0, 0, NULL,
-+					gbaudio_widget_event,
-+					SND_SOC_DAPM_PRE_PMU |
-+					SND_SOC_DAPM_POST_PMD),
-+	[snd_soc_dapm_pga]	= SND_SOC_DAPM_PGA_E(NULL, SND_SOC_NOPM,
-+					0, 0, NULL, 0,
-+					gbaudio_widget_event,
-+					SND_SOC_DAPM_PRE_PMU |
-+					SND_SOC_DAPM_POST_PMD),
-+	[snd_soc_dapm_mixer]	= SND_SOC_DAPM_MIXER_E(NULL, SND_SOC_NOPM,
-+					0, 0, NULL, 0,
-+					gbaudio_widget_event,
-+					SND_SOC_DAPM_PRE_PMU |
-+					SND_SOC_DAPM_POST_PMD),
-+	[snd_soc_dapm_mux]	= SND_SOC_DAPM_MUX_E(NULL, SND_SOC_NOPM,
-+					0, 0, NULL,
-+					gbaudio_widget_event,
-+					SND_SOC_DAPM_PRE_PMU |
-+					SND_SOC_DAPM_POST_PMD),
-+	[snd_soc_dapm_aif_in]	= SND_SOC_DAPM_AIF_IN_E(NULL, NULL, 0,
-+					SND_SOC_NOPM, 0, 0,
-+					gbaudio_widget_event,
-+					SND_SOC_DAPM_PRE_PMU |
-+					SND_SOC_DAPM_POST_PMD),
-+	[snd_soc_dapm_aif_out]	= SND_SOC_DAPM_AIF_OUT_E(NULL, NULL, 0,
-+					SND_SOC_NOPM, 0, 0,
-+					gbaudio_widget_event,
-+					SND_SOC_DAPM_PRE_PMU |
-+					SND_SOC_DAPM_POST_PMD),
-+};
-+
- static int gbaudio_tplg_create_widget(struct gbaudio_module_info *module,
- 				      struct snd_soc_dapm_widget *dw,
- 				      struct gb_audio_widget *w, int *w_size)
-@@ -1052,77 +1090,37 @@ static int gbaudio_tplg_create_widget(st
- 
- 	switch (w->type) {
- 	case snd_soc_dapm_spk:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_SPK(w->name, gbcodec_event_spk);
-+		*dw = gbaudio_widgets[w->type];
- 		module->op_devices |= GBAUDIO_DEVICE_OUT_SPEAKER;
- 		break;
- 	case snd_soc_dapm_hp:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_HP(w->name, gbcodec_event_hp);
-+		*dw = gbaudio_widgets[w->type];
- 		module->op_devices |= (GBAUDIO_DEVICE_OUT_WIRED_HEADSET
- 					| GBAUDIO_DEVICE_OUT_WIRED_HEADPHONE);
- 		module->ip_devices |= GBAUDIO_DEVICE_IN_WIRED_HEADSET;
- 		break;
- 	case snd_soc_dapm_mic:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_MIC(w->name, gbcodec_event_int_mic);
-+		*dw = gbaudio_widgets[w->type];
- 		module->ip_devices |= GBAUDIO_DEVICE_IN_BUILTIN_MIC;
- 		break;
- 	case snd_soc_dapm_output:
--		*dw = (struct snd_soc_dapm_widget)SND_SOC_DAPM_OUTPUT(w->name);
--		break;
- 	case snd_soc_dapm_input:
--		*dw = (struct snd_soc_dapm_widget)SND_SOC_DAPM_INPUT(w->name);
--		break;
- 	case snd_soc_dapm_switch:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_SWITCH_E(w->name, SND_SOC_NOPM, 0, 0,
--					      widget_kctls,
--					      gbaudio_widget_event,
--					      SND_SOC_DAPM_PRE_PMU |
--					      SND_SOC_DAPM_POST_PMD);
--		break;
- 	case snd_soc_dapm_pga:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_PGA_E(w->name, SND_SOC_NOPM, 0, 0, NULL, 0,
--					   gbaudio_widget_event,
--					   SND_SOC_DAPM_PRE_PMU |
--					   SND_SOC_DAPM_POST_PMD);
--		break;
- 	case snd_soc_dapm_mixer:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_MIXER_E(w->name, SND_SOC_NOPM, 0, 0, NULL,
--					     0, gbaudio_widget_event,
--					     SND_SOC_DAPM_PRE_PMU |
--					     SND_SOC_DAPM_POST_PMD);
--		break;
- 	case snd_soc_dapm_mux:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_MUX_E(w->name, SND_SOC_NOPM, 0, 0,
--					   widget_kctls, gbaudio_widget_event,
--					   SND_SOC_DAPM_PRE_PMU |
--					   SND_SOC_DAPM_POST_PMD);
-+		*dw = gbaudio_widgets[w->type];
- 		break;
- 	case snd_soc_dapm_aif_in:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_AIF_IN_E(w->name, w->sname, 0,
--					      SND_SOC_NOPM,
--					      0, 0, gbaudio_widget_event,
--					      SND_SOC_DAPM_PRE_PMU |
--					      SND_SOC_DAPM_POST_PMD);
--		break;
- 	case snd_soc_dapm_aif_out:
--		*dw = (struct snd_soc_dapm_widget)
--			SND_SOC_DAPM_AIF_OUT_E(w->name, w->sname, 0,
--					       SND_SOC_NOPM,
--					       0, 0, gbaudio_widget_event,
--					       SND_SOC_DAPM_PRE_PMU |
--					       SND_SOC_DAPM_POST_PMD);
-+		*dw = gbaudio_widgets[w->type];
-+		dw->sname = w->sname;
- 		break;
+ 		hci_set_msft_opcode(hdev, 0xFD30);
++		hci_set_aosp_capable(hdev);
+ 		goto done;
  	default:
- 		ret = -EINVAL;
- 		goto error;
- 	}
-+	dw->name = w->name;
- 
- 	dev_dbg(module->dev, "%s: widget of type %d created\n", dw->name,
- 		dw->id);
+ 		bt_dev_err(hdev, "Unsupported hardware variant (%08x)",
 
 
