@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF55C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 469DFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:20:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbiANITz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:19:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239716AbiANITD (ORCPT
+        id S237116AbiANIT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:19:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59862 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239757AbiANITL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:19:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC0CC061574;
-        Fri, 14 Jan 2022 00:19:03 -0800 (PST)
+        Fri, 14 Jan 2022 03:19:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E18EB61E1A;
-        Fri, 14 Jan 2022 08:19:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF09AC36AE9;
-        Fri, 14 Jan 2022 08:19:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AA76B823E6;
+        Fri, 14 Jan 2022 08:19:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDFBAC36AE9;
+        Fri, 14 Jan 2022 08:19:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148342;
-        bh=YtKawqdXJpNajjN826LV9wNuisL90T2K85ZRzfXt1cI=;
+        s=korg; t=1642148348;
+        bh=8S1hAOaCE0nuCTYKqPbrUYjfJ4XAy3sfQgAufqi6aas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TxjbAT+UVw4CbASYb4kwmnBMF+COzq2Kqj8VYc00T4qR75G67ltw21uVqxqqnqIwj
-         o3YvtExVA0bIRFnlQ+CQ8pNaZtlhiVFmBOXSTz7PsPuN+81SQ3ix6lzTxXhxqNJpVA
-         YJulsdjBwKwWzTWvgaQ68I/4k+TDotLOcgmDNJJE=
+        b=o/KsCbZw+kvoRWjthJ/x3CyOcFxcGwfqTP9bvui4kXjzQIitbIT5zpAzss2jTa0pj
+         GF3VxQmE47FkgoFJPCt/DUyke7SxR1wIxnxdSkndKR9fWlih6XGogkgeFPi2OaS2vj
+         X3gNss/2xUAVZCIvl7qPf8dwjpItpSMtSJJZdjZY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 5.10 20/25] random: fix data race on crng init time
-Date:   Fri, 14 Jan 2022 09:16:28 +0100
-Message-Id: <20220114081543.383548627@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.10 22/25] media: Revert "media: uvcvideo: Set unique vdev name based in type"
+Date:   Fri, 14 Jan 2022 09:16:30 +0100
+Message-Id: <20220114081543.457330482@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
@@ -49,71 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Ricardo Ribalda <ribalda@chromium.org>
 
-commit 009ba8568be497c640cab7571f7bfd18345d7b24 upstream.
+commit f66dcb32af19faf49cc4a9222c3152b10c6ec84a upstream.
 
-_extract_crng() does plain loads of crng->init_time and
-crng_global_init_time, which causes undefined behavior if
-crng_reseed() and RNDRESEEDCRNG modify these corrently.
+A lot of userspace depends on a descriptive name for vdev. Without this
+patch, users have a hard time figuring out which camera shall they use
+for their video conferencing.
 
-Use READ_ONCE() and WRITE_ONCE() to make the behavior defined.
+This reverts commit e3f60e7e1a2b451f538f9926763432249bcf39c4.
 
-Don't fix the race on crng->init_time by protecting it with crng->lock,
-since it's not a problem for duplicate reseedings to occur.  I.e., the
-lockless access with READ_ONCE() is fine.
-
-Fixes: d848e5f8e1eb ("random: add new ioctl RNDRESEEDCRNG")
-Fixes: e192be9d9a30 ("random: replace non-blocking pool with a Chacha20-based CRNG")
-Cc: stable@vger.kernel.org
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Link: https://lore.kernel.org/linux-media/20211207003840.1212374-2-ribalda@chromium.org
+Cc: <stable@vger.kernel.org>
+Fixes: e3f60e7e1a2b ("media: uvcvideo: Set unique vdev name based in type")
+Reported-by: Nicolas Dufresne <nicolas@ndufresne.ca>
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/media/usb/uvc/uvc_driver.c |    7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -990,7 +990,7 @@ static void crng_reseed(struct crng_stat
- 		crng->state[i+4] ^= buf.key[i] ^ rv;
- 	}
- 	memzero_explicit(&buf, sizeof(buf));
--	crng->init_time = jiffies;
-+	WRITE_ONCE(crng->init_time, jiffies);
- 	spin_unlock_irqrestore(&crng->lock, flags);
- 	if (crng == &primary_crng && crng_init < 2) {
- 		invalidate_batched_entropy();
-@@ -1016,12 +1016,15 @@ static void crng_reseed(struct crng_stat
- static void _extract_crng(struct crng_state *crng,
- 			  __u8 out[CHACHA_BLOCK_SIZE])
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -2065,7 +2065,6 @@ int uvc_register_video_device(struct uvc
+ 			      const struct v4l2_file_operations *fops,
+ 			      const struct v4l2_ioctl_ops *ioctl_ops)
  {
--	unsigned long v, flags;
-+	unsigned long v, flags, init_time;
+-	const char *name;
+ 	int ret;
  
--	if (crng_ready() &&
--	    (time_after(crng_global_init_time, crng->init_time) ||
--	     time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL)))
--		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
-+	if (crng_ready()) {
-+		init_time = READ_ONCE(crng->init_time);
-+		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
-+		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
-+			crng_reseed(crng, crng == &primary_crng ?
-+				    &input_pool : NULL);
-+	}
- 	spin_lock_irqsave(&crng->lock, flags);
- 	if (arch_get_random_long(&v))
- 		crng->state[14] ^= v;
-@@ -1975,7 +1978,7 @@ static long random_ioctl(struct file *f,
- 		if (crng_init < 2)
- 			return -ENODATA;
- 		crng_reseed(&primary_crng, &input_pool);
--		crng_global_init_time = jiffies - 1;
-+		WRITE_ONCE(crng_global_init_time, jiffies - 1);
- 		return 0;
+ 	/* Initialize the video buffers queue. */
+@@ -2094,20 +2093,16 @@ int uvc_register_video_device(struct uvc
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
  	default:
- 		return -EINVAL;
+ 		vdev->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
+-		name = "Video Capture";
+ 		break;
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
+ 		vdev->device_caps = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
+-		name = "Video Output";
+ 		break;
+ 	case V4L2_BUF_TYPE_META_CAPTURE:
+ 		vdev->device_caps = V4L2_CAP_META_CAPTURE | V4L2_CAP_STREAMING;
+-		name = "Metadata";
+ 		break;
+ 	}
+ 
+-	snprintf(vdev->name, sizeof(vdev->name), "%s %u", name,
+-		 stream->header.bTerminalLink);
++	strscpy(vdev->name, dev->name, sizeof(vdev->name));
+ 
+ 	/*
+ 	 * Set the driver data before calling video_register_device, otherwise
 
 
