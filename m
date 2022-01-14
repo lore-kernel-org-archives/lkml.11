@@ -2,189 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED460C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 18:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14914C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 18:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244090AbiANSZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 13:25:49 -0500
-Received: from foss.arm.com ([217.140.110.172]:36686 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236376AbiANSZs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 13:25:48 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF795ED1;
-        Fri, 14 Jan 2022 10:25:47 -0800 (PST)
-Received: from e113632-lin (e113632-lin.cambridge.arm.com [10.1.196.57])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 657E23F766;
-        Fri, 14 Jan 2022 10:25:46 -0800 (PST)
-From:   Valentin Schneider <valentin.schneider@arm.com>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        John Keeping <john@metanate.com>
-Cc:     linux-rt-users@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RT] BUG in sched/cpupri.c
-In-Reply-To: <f2d50e78-dc7b-6851-f12e-d702fbfea826@arm.com>
-References: <Yb3vXx3DcqVOi+EA@donbot> <71ddbe51-2b7f-2b13-5f22-9013506471dc@arm.com> <87zgou6iq1.mognet@arm.com> <20211221164528.3c84543f.john@metanate.com> <31a47e99-6de3-76ec-62ad-9c98d092ead5@arm.com> <87r1a4775a.mognet@arm.com> <f2d50e78-dc7b-6851-f12e-d702fbfea826@arm.com>
-Date:   Fri, 14 Jan 2022 18:25:35 +0000
-Message-ID: <87h7a66uow.mognet@arm.com>
+        id S238679AbiANSbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 13:31:22 -0500
+Received: from mail-ua1-f46.google.com ([209.85.222.46]:38855 "EHLO
+        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229717AbiANSbW (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 13:31:22 -0500
+Received: by mail-ua1-f46.google.com with SMTP id h11so18441271uar.5;
+        Fri, 14 Jan 2022 10:31:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ia/9q2E3tSjqPvHPFubkiPIGbF6QBSNFRiW9j/QalMo=;
+        b=DWgdUAXK+zqhjgodeqIvt8csbouUVo6gEibhZi7IhSiqyjvRscK2TSlJgKjCv3R0e/
+         tWCeB3ems3gaPWt+vd8vLYyG5wN64iBv/eQzhmbkfIrhPw+A6lr4jP8o4pgiW1knWhs9
+         fIQo9gfrqEm8ubPF+BIT08qcJwoRPkq/0XY0kDbLgOn86YMaiwiLZ1EavEvflFxxhOwK
+         iHNvrM9Th/f9wI2kvDP3SbGOfVBB5N4kDdzQsdUkjexIt3/7C2URXY6FnJ93+oNpwKzP
+         HxVxbmlpwafajj8v+jlVWEONgxX3KThBKkEzFXWvkj1Zl5Jir9C3rUi8/lyOu8y7NyNY
+         Aypw==
+X-Gm-Message-State: AOAM533hD3Cgckq9pPdAYGd6OI1R2/evFkz55mxH8nV/3RMvsL1sA91w
+        oxMAXeamwPQqutUpZUs0uqO5oN8v/Q9MKP0M
+X-Google-Smtp-Source: ABdhPJw5zR72GeLcKWBQpvlWAQ/C/SHUE3jf8tEfopq9XERJ2+kZTTnr9thfAK9cUvDGXg1ZmMPGEA==
+X-Received: by 2002:ab0:13c3:: with SMTP id n3mr4673460uae.39.1642185081230;
+        Fri, 14 Jan 2022 10:31:21 -0800 (PST)
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
+        by smtp.gmail.com with ESMTPSA id u137sm2248766vku.42.2022.01.14.10.31.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 10:31:20 -0800 (PST)
+Received: by mail-vk1-f180.google.com with SMTP id h16so6359109vkp.5;
+        Fri, 14 Jan 2022 10:31:20 -0800 (PST)
+X-Received: by 2002:a1f:384b:: with SMTP id f72mr4877434vka.0.1642185080729;
+ Fri, 14 Jan 2022 10:31:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <YeG8ydoJNWWkGrTb@ls3530>
+In-Reply-To: <YeG8ydoJNWWkGrTb@ls3530>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 14 Jan 2022 19:31:09 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWNzDb--Ud1DzGyoqWsgFU9m8YZ6fa1TqfBWtg4pkd==A@mail.gmail.com>
+Message-ID: <CAMuHMdWNzDb--Ud1DzGyoqWsgFU9m8YZ6fa1TqfBWtg4pkd==A@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+To:     Helge Deller <deller@gmx.de>
+Cc:     Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Helge,
 
-Trying to page this back in...
+On Fri, Jan 14, 2022 at 7:12 PM Helge Deller <deller@gmx.de> wrote:
+> The fbdev layer is orphaned, but seems to need some care.
+> So I'd like to step up as new maintainer.
+>
+> Signed-off-by: Helge Deller <deller@gmx.de>
 
-On 07/01/22 11:46, Dietmar Eggemann wrote:
-> On 22/12/2021 20:48, Valentin Schneider wrote:
->> On 22/12/21 18:46, Dietmar Eggemann wrote:
->>> On 21.12.21 17:45, John Keeping wrote:
->>>> On Tue, 21 Dec 2021 16:11:34 +0000
->>>> Valentin Schneider <valentin.schneider@arm.com> wrote:
->>>>
->>>>> On 20/12/21 18:35, Dietmar Eggemann wrote:
->
-> [...]
->
->>> switched_from_rt() -> rt_queue_pull_task(, pull_rt_task)
->>>   pull_rt_task()->tell_cpu_to_push()->irq_work_queue_on(&rq->rd->rto_push_work,)
->>>     rto_push_irq_work_func() -> push_rt_task(rq, true)
->>>
->>> seems to be the only way with pull=true.
->>>
->>> In my tests, rq->rt.rt_nr_running seems to be 0 when it happens.
->>>
->>> [   22.288537] CPU3 switched_to_rt: p=[ksoftirqd/3 35]
->>> [   22.288554] rt_mutex_setprio: CPU3 p=[ksoftirqd/3 35] pi_task=[rcu_preempt 11] queued=1 running=0 prio=98 oldprio=120
->>> [   22.288636] CPU3 switched_from_rt: p=[ksoftirqd/3 35] rq->rt.rt_nr_running=0
->>>                                                          ^^^^^^^^^^^^^^^^^^^^^^
->>> [   22.288649] rt_mutex_setprio: CPU3 p=[ksoftirqd/3 35] queued=1 running=1 prio=120 oldprio=98
->>> [   22.288681] CPU3 push_rt_task: next_task=[rcu_preempt 11] migr_dis=1 rq->curr=[ksoftirqd/3 35] pull=1
->>>                                                              ^^^^^^^^^^                           ^^^^^^
->> 
->> mark_wakeup_next_waiter() first deboosts the previous owner and then
->> wakeups the next top waiter. Seems like you somehow have the wakeup happen
->> before the push_rt_task IRQ work is run. Also, tell_cpu_to_push() should
->> only pick a CPU that is in rq->rd->rto_mask, which requires having at least
->> 2 RT tasks there...
->
-> True, this_cpu has rt_nr_running = 0 and *cpu* has rt_nr_running >= 2:
->
->   mark_wakeup_next_waiter()
->
->     (1) /* deboost */
->     rt_mutex_adjust_prio()
->
->       rt_mutex_setprio(current, ...)
->
->         rq = __task_rq_lock(current, );
->         check_class_changed(rq, p, prev_class, oldprio)
->
->           switched_from_rt()
->
->             if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
->               return;
->
->             rt_queue_pull_task(rq)
->
->               queue_balance_callback(rq, ..., pull_rt_task);
->
->                 pull_rt_task()
->
->                   tell_cpu_to_push()
->
->                     *cpu* = rto_next_cpu(rq->rd)
->                     irq_work_queue_on(&rq->rd->rto_push_work, *cpu*)
->
->                       rto_push_irq_work_func()
->                         push_rt_task(rq, true) <-- !!!
->
->     (2) /* waking the top waiter */
->     rt_mutex_wake_q_add(wqh, waiter);
->
->> Now, that wakeup from the rtmutex unlock would give us a resched_curr() via
->> check_preempt_curr() if required, which is good, though I think we are
->> still missing some for sched_setscheduler() (there are no wakeups
->> there). So if we just have to live with an IRQ work popping in before we
->> get to preempt_schedule_irq() (or somesuch), then perhaps the below would
->> be sufficient.
->
-> I think that's the case here but we are on the RT overloaded CPU (*cpu*).
->
+Thanks a lot!
 
-So one thing I wasn't entirely clear on (and holidays didn't fix that) is
-the rt_queue_pull_task() from switched_from_rt() only happens if that rq
-has no other runnable RT tasks, so I don't quite see how the
-irq_work_queue_on() can end up as a self-IPI...
+Acked-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
->> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
->> index ef8228d19382..8f3e3a1367b6 100644
->> --- a/kernel/sched/rt.c
->> +++ b/kernel/sched/rt.c
->> @@ -1890,6 +1890,16 @@ static int push_rt_task(struct rq *rq, bool pull)
->>  	if (!next_task)
->>  		return 0;
->>  
->> +	/*
->> +	 * It's possible that the next_task slipped in of higher priority than
->> +	 * current, or current has *just* changed priority.  If that's the case
->> +	 * just reschedule current.
->> +	 */
->> +	if (unlikely(next_task->prio < rq->curr->prio)) {
->> +		resched_curr(rq);
->> +		return 0;
->> +	}
->
-> IMHO, that's the bit which prevents the BUG.
->
-> But this would also prevent the case in which rq->curr is an RT task
-> with lower prio than next_task.
->
+Gr{oetje,eeting}s,
 
-I think that's what we want - if current isn't the (logical) highest
-priority task on the runqueue, we should forgo push/pull and reschedule
-ASAP.
+                        Geert
 
-> Also `rq->curr = migration/X` goes still though which is somehow fine
-> since find_lowest_rq() bails out for if (task->nr_cpus_allowed == 1).
->
-> And DL tasks (like sugov:X go through and they can have
-> task->nr_cpus_allowed > 1 (arm64 slow-switching boards with shared
-> freuency domains with schedutil). cpupri_find_fitness()->convert_prio()
-> can handle  task_pri, p->prio = -1 (CPUPRI_INVALID) although its somehow
-> by coincidence.
->
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-Right. This reminds me of:
-https://lore.kernel.org/lkml/jhjblbx7glh.mognet@arm.com/
-
-
-> So maybe something like this:
->
-
-Ah, so you explicitely prevent rt.c::find_lowest_rq() invocations with a
-non-RT task... But what if current is an RT task that just got deboosted,
-so that next_task->prio < rq->curr->prio? IMO we should reschedule ASAP (as
-I already blabbered about above). If next_task is migration_disabled but
-higher (logical) prio than current, we don't need to do any of the
-migration_disabled specific crud, we just reschedule.
-
-> @ -1898,6 +1898,11 @@ static int push_rt_task(struct rq *rq, bool pull)
->                 if (!pull || rq->push_busy)
->                         return 0;
->
-> +               if (rq->curr->sched_class != &rt_sched_class) {
-> +                       resched_curr(rq);
-> +                       return 0;
-> +               }
-> +
->                 cpu = find_lowest_rq(rq->curr);
->
-> [...]
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
