@@ -2,127 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F054C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28359C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233430AbiANIdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:33:40 -0500
-Received: from mga05.intel.com ([192.55.52.43]:26713 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231472AbiANIdj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:33:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642149219; x=1673685219;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SP5uKYsWvxtFx7YjJ4PgaYlzJmeTwx2UzB3SXbUqZS8=;
-  b=nz5zyhE/0UhTyp5YNEZYsU02f7bWfq5XGuTVvf74+lqy/Nd6QyA8PuRo
-   i8p50Onx7f7A9aJ5YNKqdDzubmmFKGBBAoYd/+ce077T7TuHQbDZ7HMTn
-   XwGjLlLmrt0GyJI8zIU52sGLS32rVjNzKSwoYz9e+syKk5Hcd58yQ9m8A
-   7N3f0XhX4a+1NKQG2/m+eAd8fWb/8qWJKMeZKY/1cL0c/j7olDLz/NraF
-   2w9iV00Jg/Jh3soeYZkPNrt/CebXG5MQ/K6sx71U/awK/9kKde/PxJ4fJ
-   /qeBACekV21itEnQOKhb9dslFsUUsYqQX4qDrhfSXMjhTRrufKJw37S4+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="330557516"
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="330557516"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 00:33:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="529266915"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 14 Jan 2022 00:33:35 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8I1e-0008Ir-KT; Fri, 14 Jan 2022 08:33:34 +0000
-Date:   Fri, 14 Jan 2022 16:32:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Laurent Vivier <laurent@vivier.eu>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Thomas Gleixner <tglx@linutronix.de>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-m68k@lists.linux-m68k.org,
-        John Stultz <john.stultz@linaro.org>,
-        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: Re: [PATCH v6 3/4] clocksource/drivers: Add a goldfish-timer
- clocksource
-Message-ID: <202201141640.iSJ8IkCj-lkp@intel.com>
-References: <20220113201920.3201760-4-laurent@vivier.eu>
+        id S234544AbiANIdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:33:54 -0500
+Received: from mail-ua1-f52.google.com ([209.85.222.52]:40820 "EHLO
+        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233622AbiANIdt (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 03:33:49 -0500
+Received: by mail-ua1-f52.google.com with SMTP id w21so6260022uan.7;
+        Fri, 14 Jan 2022 00:33:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sy7lT+eK8ipvfv0Ofk1ldO/tYfoiahfm+fHSJgI7+Xs=;
+        b=CxrkKtDb0bQBRSg8bGzObzfkMdWdLj+QaLq822JccgbrkrtZJ9qsALhOtRkSxpnAlJ
+         +LztWhgqlj+q0gde1w9ZTIWrepAi+U+Zv54+5uM047NoVi43FkAVp28d2X20DwgfN+sO
+         OdVftcRsaD4JmuvNDHnlIsTIfczli/RvobUGFa+UzTxo4qIr0sEicHl1W9e41ZTaJWlg
+         baWu3JFEUz6l06Hh5IvRvCKwltDZo0ZP1vOKz3+V6GUzsrk+606t9HFPwbnAJAQeqHKc
+         U4FqQMa7ZQY9LVVMaqVodT7e8Gm1Pgfhlye+WYllSPsaDKLGQ+5oHP9q3dF5KK1lzSBJ
+         n31A==
+X-Gm-Message-State: AOAM5314EITKksdxyh/QwVSin2Bx9CxICv01OJ2vqGKTgu2fdt8fkAPo
+        BDGNPd/TrI4OPZRK/Mr6WchoYdt35/C8pA==
+X-Google-Smtp-Source: ABdhPJznBeXDe9YRtuIahv0G00H8XbqbgcbaGO0fg9iFPtOdW6MJAg7mNOptcVSx7GL9N5nXHk4bQA==
+X-Received: by 2002:a05:6102:807:: with SMTP id g7mr3435871vsb.65.1642149228403;
+        Fri, 14 Jan 2022 00:33:48 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id c25sm2446948vsk.32.2022.01.14.00.33.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 00:33:47 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id o1so15732561uap.4;
+        Fri, 14 Jan 2022 00:33:47 -0800 (PST)
+X-Received: by 2002:a67:e905:: with SMTP id c5mr3691251vso.68.1642149227718;
+ Fri, 14 Jan 2022 00:33:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220113201920.3201760-4-laurent@vivier.eu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
+ <87tue8ftrm.fsf@toke.dk> <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
+ <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com> <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
+In-Reply-To: <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 14 Jan 2022 09:33:36 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV_4HjvbpDsbhomxO3JSv-MOWDzb-8vc2=prc_KgTPA1g@mail.gmail.com>
+Message-ID: <CAMuHMdV_4HjvbpDsbhomxO3JSv-MOWDzb-8vc2=prc_KgTPA1g@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Laurent,
+Hi Alexei,
 
-Thank you for the patch! Yet something to improve:
+On Thu, Jan 13, 2022 at 11:45 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+> On Thu, Jan 13, 2022 at 4:27 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> > On 1/13/22, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> > > Nack.
+> > > It's part of api. We cannot change it.
+> >
+> > This is an RFC patchset, so there's no chance that it'll actually be
+> > applied as-is, and hence there's no need for the strong hammer nack.
+> > The point of "request for comments" is comments. Specifically here,
+> > I'm searching for information on the ins and outs of *why* it might be
+> > hard to change. How does userspace use this? Why must this 64-bit
+> > number be unchanged? Why did you do things this way originally? Etc.
+> > If you could provide a bit of background, we might be able to shake
+> > out a solution somewhere in there.
+>
+> There is no problem with the code and nothing to be fixed.
 
-[auto build test ERROR on geert-m68k/for-next]
-[also build test ERROR on linux/master v5.16]
-[cannot apply to tip/timers/core linus/master next-20220114]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+"Your Jedi mind tricks don't work on me."
 
-url:    https://github.com/0day-ci/linux/commits/Laurent-Vivier/m68k-Add-Virtual-M68k-Machine/20220114-042103
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/geert/linux-m68k.git for-next
-config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20220114/202201141640.iSJ8IkCj-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/7e887e6ec0d7193083a2f0020007688db2318c76
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Laurent-Vivier/m68k-Add-Virtual-M68k-Machine/20220114-042103
-        git checkout 7e887e6ec0d7193083a2f0020007688db2318c76
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash drivers/
+The "problem" is that this is one of the few last users of SHA-1 in
+the kernel.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Can you please answer the questions above, so we can get a better
+understanding?
+Thanks!
 
-All errors (new ones prefixed by >>):
+Gr{oetje,eeting}s,
 
-   drivers/clocksource/timer-goldfish.c: In function 'goldfish_timer_init':
->> drivers/clocksource/timer-goldfish.c:94:20: error: implicit declaration of function 'kzalloc'; did you mean 'vzalloc'? [-Werror=implicit-function-declaration]
-      94 |         timerdrv = kzalloc(sizeof(*timerdrv), GFP_KERNEL);
-         |                    ^~~~~~~
-         |                    vzalloc
-   drivers/clocksource/timer-goldfish.c:94:18: warning: assignment to 'struct goldfish_timer *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
-      94 |         timerdrv = kzalloc(sizeof(*timerdrv), GFP_KERNEL);
-         |                  ^
-   cc1: some warnings being treated as errors
+                        Geert
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for RTC_CLASS
-   Depends on !S390
-   Selected by
-   - GOLDFISH_TIMER && GENERIC_CLOCKEVENTS
-   WARNING: unmet direct dependencies detected for RTC_DRV_GOLDFISH
-   Depends on RTC_CLASS && HAS_IOMEM
-   Selected by
-   - GOLDFISH_TIMER && GENERIC_CLOCKEVENTS
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-
-vim +94 drivers/clocksource/timer-goldfish.c
-
-    88	
-    89	void __init goldfish_timer_init(int irq, void __iomem *base)
-    90	{
-    91		struct goldfish_timer *timerdrv;
-    92		int ret;
-    93	
-  > 94		timerdrv = kzalloc(sizeof(*timerdrv), GFP_KERNEL);
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
