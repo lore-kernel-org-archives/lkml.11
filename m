@@ -2,195 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D00C5C4167B
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 23:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE765C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 23:49:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231380AbiANXtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 18:49:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231185AbiANXs4 (ORCPT
+        id S231372AbiANXtN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 18:49:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55764 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231278AbiANXtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 18:48:56 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C8AC061574;
-        Fri, 14 Jan 2022 15:48:56 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id ay4-20020a05600c1e0400b0034a81a94607so7518745wmb.1;
-        Fri, 14 Jan 2022 15:48:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZYFhsrkPrDaI7lwyyln6Ae8gj83V6alxweKHKFm4f+A=;
-        b=JSL8FM+GsgePxacg49pCRuZ/CUkofU0ywNyKPNV0APiLos8dVF9EL5rgBUIBq5GTQb
-         W20OSwpmMxTSEpVm0ZXi87xFd/kWNRZJNAKgikQMhW8/p2K542KZUzahLhR2fkhVCf9k
-         w5dtXdgNK7stGolRhEHVnKMVwrRsriDmy/Rh1hji9ZWTK6vGg6pQ1Ng7m8zfI/WAKL7e
-         z+7OkzwRMP6f5iNMmgdB2M0Y36Iq3wKes765u1X3l43+j3LimV0+Y6tFAVyTRq01L6z9
-         KvHrOJr618f0WwU3ISgmgRM//rneqrZaxVA+zI4ng8nX9M3KQhrgsD7YvbISv4X2CXVl
-         jNSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZYFhsrkPrDaI7lwyyln6Ae8gj83V6alxweKHKFm4f+A=;
-        b=BOF53khrmsPACtjffJjQolqqDUCFXDo8zTAauhC4OJFkkMJw1DO3AdeqxRvw7X7ZR2
-         52TkMaAcHEHzP7ARKsdXwhibFhNGwmdA0C527pVLl5l6fVNwg6Z0V40mdoUSRiuU0rgl
-         vylCjc0ozvcLmkjn0vwqohK8MN+YZLEI0yfFEq+EmWTRZSTQ5QJEWVCG4JH8bnP2FBs7
-         YGh857G95Mk/c1KdbB2KfMcogaeHlMhIgrq8KwCeKVENO0B/+PmVYYZFCjGmFelDvdoG
-         WHNUsLLKrSSQBCEuiJimmEvHbPfd6iwLPa/ngIfYBUfpWfYCtRtdMdr/tdUjoxQLW+gP
-         ZSBQ==
-X-Gm-Message-State: AOAM532/zLVVd1X8q+DiUO1GgIDCgfYRb/e9oK6JTLwIS0RsXknOcRq0
-        9w5IbSR76+Bf6hjoKFhrHQvy6ZF3duc=
-X-Google-Smtp-Source: ABdhPJwVNkrZbm6qLx8MbY43Zmb6jXlKsBObROSx5JUTnx2Fylr/k27C6KCf3FC8xYnJjipiLMAM0g==
-X-Received: by 2002:adf:ebd2:: with SMTP id v18mr8698232wrn.502.1642204134687;
-        Fri, 14 Jan 2022 15:48:54 -0800 (PST)
-Received: from localhost.localdomain (dynamic-2a01-0c22-7684-7400-f22f-74ff-fe21-0725.c22.pool.telefonica.de. [2a01:c22:7684:7400:f22f:74ff:fe21:725])
-        by smtp.googlemail.com with ESMTPSA id i3sm5788533wmq.21.2022.01.14.15.48.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 15:48:54 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-wireless@vger.kernel.org
-Cc:     tony0620emma@gmail.com, kvalo@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Pkshih <pkshih@realtek.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 3/4] rtw88: Move enum rtw_tx_queue_type mapping code to tx.{c,h}
-Date:   Sat, 15 Jan 2022 00:48:24 +0100
-Message-Id: <20220114234825.110502-4-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
-References: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 14 Jan 2022 18:49:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19F806208C
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 23:49:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29AF9C36AED;
+        Fri, 14 Jan 2022 23:49:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642204140;
+        bh=VGzZ1qktjWK63n+TD+u6C6vymHdhmpsegEuCfaqnW5A=;
+        h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+        b=bY8KYlFKe6qELH8Yew4liDpGOgphdLcWnXINN6rCo265iZr2ZUv8C39F9gM7FHa3t
+         k36XyF4MSqppJgoT/fsps+/FwriT4NZokNu0s5M9EBB/Dji1B382l/aScjJNoAz/M3
+         ZZDmLpd82GbxdsF35CwYT52r2gfvWgzB32bHnc9VmSwkUWpNwbstZkIw0NfeGtoXxv
+         HFQ2PMJWyfPVutPLYhWb0PlRKSvrwTjyouyZExIpgzVUZwlyw+fhPWXkhTwUz+Eidq
+         D0MQ6nH5I7nGgI1m3PeXIEmp3FM9nfitJ4OMMhs6EreOW+IvBqhgl+GbLWEK1uv3g0
+         a32jmheQLhoNw==
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailauth.nyi.internal (Postfix) with ESMTP id DC49C27C005A;
+        Fri, 14 Jan 2022 18:48:58 -0500 (EST)
+Received: from imap48 ([10.202.2.98])
+  by compute5.internal (MEProxy); Fri, 14 Jan 2022 18:48:58 -0500
+X-ME-Sender: <xms:6gviYcJ509WqYhUGwgPf5bGZtjM9ooxNSTufb_-Vhmow9OuZccB1eA>
+    <xme:6gviYcI_Pc1gFLkwex1-l9zIMrbQJ_mhHC4QHUfjXL8CJf-a56k8xm-dUx_nedmQx
+    6Yr5ATvnStn9A6rIMI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrtdeigddugecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedftehnugih
+    ucfnuhhtohhmihhrshhkihdfuceolhhuthhosehkvghrnhgvlhdrohhrgheqnecuggftrf
+    grthhtvghrnhephfelhfdugeetvdfhfeeuveevtdegueekhfffheetffdtleevtdehtdei
+    vdeuvedunecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrnhguhidomhgvshhmthhprghuthhh
+    phgvrhhsohhnrghlihhthidqudduiedukeehieefvddqvdeifeduieeitdekqdhluhhtoh
+    eppehkvghrnhgvlhdrohhrgheslhhinhhugidrlhhuthhordhush
+X-ME-Proxy: <xmx:6gviYcvJlGSO_ZzFgqYXgkjryt2wurwTfAVcmFZSRdcx5wOuCdIOWg>
+    <xmx:6gviYZa5rdZruiwAjYgDDodAYKSKcGxuWa-8mkPnYWovXrP2Iz95mw>
+    <xmx:6gviYTaNQONzbew0nDcGO4cdZJG6BkuoyBPCL5NBJyvaNUhx1QkgCg>
+    <xmx:6gviYYPT-ohoK-Gs9jBdaah-p1hXQrtvtqQVowKrkRIVTFzItGbzFw>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 4A15821E0073; Fri, 14 Jan 2022 18:48:58 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4569-g891f756243-fm-20220111.001-g891f7562
+Mime-Version: 1.0
+Message-Id: <760ea801-8394-4e0c-9ec3-23e36e436551@www.fastmail.com>
+In-Reply-To: <YeFdeZsTWDt9WU8f@zn.tnic>
+References: <20220106083523.GB32167@xsang-OptiPlex-9020>
+ <Yd1l0gInc4zRcnt/@hirez.programming.kicks-ass.net>
+ <Yd4u2rVVSdpEpwwM@google.com>
+ <Yd6zrbFBzSn3ducx@hirez.programming.kicks-ass.net> <Yd724f1Uv1GTZ+46@zn.tnic>
+ <73020277-d49f-7aae-22db-945e040a31a2@kernel.org>
+ <YeCDudla868Ipf++@hirez.programming.kicks-ass.net> <YeFdeZsTWDt9WU8f@zn.tnic>
+Date:   Fri, 14 Jan 2022 15:48:31 -0800
+From:   "Andy Lutomirski" <luto@kernel.org>
+To:     "Borislav Petkov" <bp@alien8.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Cc:     "Sean Christopherson" <seanjc@google.com>,
+        "kernel test robot" <oliver.sang@intel.com>,
+        "Josh Poimboeuf" <jpoimboe@redhat.com>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>, lkp@lists.01.org,
+        lkp@intel.com
+Subject: Re: [PATCH] x86/entry_32: Fix segment exceptions
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This code is not specific to the PCIe bus type but can be re-used by USB
-and SDIO bus types. Move it to tx.{c,h} to avoid code-duplication in the
-future.
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/wireless/realtek/rtw88/pci.c | 32 ++--------------------
- drivers/net/wireless/realtek/rtw88/tx.c  | 35 ++++++++++++++++++++++++
- drivers/net/wireless/realtek/rtw88/tx.h  |  3 ++
- 3 files changed, 40 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index 2da057d18188..945411a5947b 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -670,34 +670,6 @@ static void rtw_pci_deep_ps(struct rtw_dev *rtwdev, bool enter)
- 	spin_unlock_bh(&rtwpci->irq_lock);
- }
- 
--static enum rtw_tx_queue_type ac_to_hwq[] = {
--	[IEEE80211_AC_VO] = RTW_TX_QUEUE_VO,
--	[IEEE80211_AC_VI] = RTW_TX_QUEUE_VI,
--	[IEEE80211_AC_BE] = RTW_TX_QUEUE_BE,
--	[IEEE80211_AC_BK] = RTW_TX_QUEUE_BK,
--};
--
--static_assert(ARRAY_SIZE(ac_to_hwq) == IEEE80211_NUM_ACS);
--
--static enum rtw_tx_queue_type rtw_hw_queue_mapping(struct sk_buff *skb)
--{
--	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
--	__le16 fc = hdr->frame_control;
--	u8 q_mapping = skb_get_queue_mapping(skb);
--	enum rtw_tx_queue_type queue;
--
--	if (unlikely(ieee80211_is_beacon(fc)))
--		queue = RTW_TX_QUEUE_BCN;
--	else if (unlikely(ieee80211_is_mgmt(fc) || ieee80211_is_ctl(fc)))
--		queue = RTW_TX_QUEUE_MGMT;
--	else if (WARN_ON_ONCE(q_mapping >= ARRAY_SIZE(ac_to_hwq)))
--		queue = ac_to_hwq[IEEE80211_AC_BE];
--	else
--		queue = ac_to_hwq[q_mapping];
--
--	return queue;
--}
--
- static void rtw_pci_release_rsvd_page(struct rtw_pci *rtwpci,
- 				      struct rtw_pci_tx_ring *ring)
- {
-@@ -795,7 +767,7 @@ static void rtw_pci_flush_queues(struct rtw_dev *rtwdev, u32 queues, bool drop)
- 	} else {
- 		for (i = 0; i < rtwdev->hw->queues; i++)
- 			if (queues & BIT(i))
--				pci_queues |= BIT(ac_to_hwq[i]);
-+				pci_queues |= BIT(rtw_tx_ac_to_hwq(i));
- 	}
- 
- 	__rtw_pci_flush_queues(rtwdev, pci_queues, drop);
-@@ -949,7 +921,7 @@ static int rtw_pci_tx_write(struct rtw_dev *rtwdev,
- 			    struct rtw_tx_pkt_info *pkt_info,
- 			    struct sk_buff *skb)
- {
--	enum rtw_tx_queue_type queue = rtw_hw_queue_mapping(skb);
-+	enum rtw_tx_queue_type queue = rtw_tx_queue_mapping(skb);
- 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
- 	struct rtw_pci_tx_ring *ring;
- 	int ret;
-diff --git a/drivers/net/wireless/realtek/rtw88/tx.c b/drivers/net/wireless/realtek/rtw88/tx.c
-index efcc1b0371a8..ec6a3683c3f8 100644
---- a/drivers/net/wireless/realtek/rtw88/tx.c
-+++ b/drivers/net/wireless/realtek/rtw88/tx.c
-@@ -665,3 +665,38 @@ void rtw_txq_cleanup(struct rtw_dev *rtwdev, struct ieee80211_txq *txq)
- 		list_del_init(&rtwtxq->list);
- 	spin_unlock_bh(&rtwdev->txq_lock);
- }
-+
-+static enum rtw_tx_queue_type ac_to_hwq[] = {
-+	[IEEE80211_AC_VO] = RTW_TX_QUEUE_VO,
-+	[IEEE80211_AC_VI] = RTW_TX_QUEUE_VI,
-+	[IEEE80211_AC_BE] = RTW_TX_QUEUE_BE,
-+	[IEEE80211_AC_BK] = RTW_TX_QUEUE_BK,
-+};
-+
-+static_assert(ARRAY_SIZE(ac_to_hwq) == IEEE80211_NUM_ACS);
-+
-+enum rtw_tx_queue_type rtw_tx_ac_to_hwq(enum ieee80211_ac_numbers ac)
-+{
-+	return ac_to_hwq[ac];
-+}
-+EXPORT_SYMBOL(rtw_tx_ac_to_hwq);
-+
-+enum rtw_tx_queue_type rtw_tx_queue_mapping(struct sk_buff *skb)
-+{
-+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
-+	__le16 fc = hdr->frame_control;
-+	u8 q_mapping = skb_get_queue_mapping(skb);
-+	enum rtw_tx_queue_type queue;
-+
-+	if (unlikely(ieee80211_is_beacon(fc)))
-+		queue = RTW_TX_QUEUE_BCN;
-+	else if (unlikely(ieee80211_is_mgmt(fc) || ieee80211_is_ctl(fc)))
-+		queue = RTW_TX_QUEUE_MGMT;
-+	else if (WARN_ON_ONCE(q_mapping >= ARRAY_SIZE(ac_to_hwq)))
-+		queue = ac_to_hwq[IEEE80211_AC_BE];
-+	else
-+		queue = ac_to_hwq[q_mapping];
-+
-+	return queue;
-+}
-+EXPORT_SYMBOL(rtw_tx_queue_mapping);
-diff --git a/drivers/net/wireless/realtek/rtw88/tx.h b/drivers/net/wireless/realtek/rtw88/tx.h
-index 56371eff9f7f..940f944fd39c 100644
---- a/drivers/net/wireless/realtek/rtw88/tx.h
-+++ b/drivers/net/wireless/realtek/rtw88/tx.h
-@@ -119,4 +119,7 @@ rtw_tx_write_data_h2c_get(struct rtw_dev *rtwdev,
- 			  struct rtw_tx_pkt_info *pkt_info,
- 			  u8 *buf, u32 size);
- 
-+enum rtw_tx_queue_type rtw_tx_ac_to_hwq(enum ieee80211_ac_numbers ac);
-+enum rtw_tx_queue_type rtw_tx_queue_mapping(struct sk_buff *skb);
-+
- #endif
--- 
-2.34.1
+On Fri, Jan 14, 2022, at 3:24 AM, Borislav Petkov wrote:
+> On Thu, Jan 13, 2022 at 08:55:37PM +0100, Peter Zijlstra wrote:
+>> On IRC Andrew also noted that these EX_REG_* things should be __i386__
+>> only. Previosly when they lived as open-coded EX_DATA_REG() usage in
+>> entry_32.S that was implied, but now ...
+>
+> I guess that then below.
+>
+> amluto, I'd love it if we (and by that I mean you :-)) could document
+> the rules for GS on 32-bit so that it is clear what's going on there...
+>
+> entry_32.S is only hinting at what's going on, we have comments here and
+> there but not all concentrated into a single location.
 
+Acked-by: Andy Lutomirski <luto@kernel.org>
+
+>
+> Thx.
+>
+> ---
+> From: Borislav Petkov <bp@suse.de>
+> Date: Fri, 14 Jan 2022 12:15:21 +0100
+> Subject: [PATCH] x86/entry_32: Remove GS from the pt_regs offsets and fixup
+>  regs
+>
+> GS is special on 32-bit and segment exceptions fixup through it won't
+> work. Leave breadcrumbs for others not to walk into the same nasty.
+>
+> Fixes: 9cdbeec40968 ("x86/entry_32: Fix segment exceptions")
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+> ---
+>  arch/x86/include/asm/extable_fixup_types.h | 5 +++--
+>  arch/x86/lib/insn-eval.c                   | 5 ++++-
+>  2 files changed, 7 insertions(+), 3 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/extable_fixup_types.h 
+> b/arch/x86/include/asm/extable_fixup_types.h
+> index 503622627400..0aa5f4d3234f 100644
+> --- a/arch/x86/include/asm/extable_fixup_types.h
+> +++ b/arch/x86/include/asm/extable_fixup_types.h
+> @@ -20,11 +20,12 @@
+>  #define EX_DATA_FLAG(flag)		((flag) << EX_DATA_FLAG_SHIFT)
+>  #define EX_DATA_IMM(imm)		((imm) << EX_DATA_IMM_SHIFT)
+> 
+> -/* segment regs */
+> +#ifdef CONFIG_X86_32
+> +/* segment regs, valid only for 32-bit code, see pt_regoff */
+>  #define EX_REG_DS			EX_DATA_REG(8)
+>  #define EX_REG_ES			EX_DATA_REG(9)
+>  #define EX_REG_FS			EX_DATA_REG(10)
+> -#define EX_REG_GS			EX_DATA_REG(11)
+> +#endif
+> 
+>  /* flags */
+>  #define EX_FLAG_CLEAR_AX		EX_DATA_FLAG(1)
+> diff --git a/arch/x86/lib/insn-eval.c b/arch/x86/lib/insn-eval.c
+> index b781d324211b..34001eee7482 100644
+> --- a/arch/x86/lib/insn-eval.c
+> +++ b/arch/x86/lib/insn-eval.c
+> @@ -432,7 +432,10 @@ static const int pt_regoff[] = {
+>  	offsetof(struct pt_regs, ds),
+>  	offsetof(struct pt_regs, es),
+>  	offsetof(struct pt_regs, fs),
+> -	offsetof(struct pt_regs, gs),
+> +	/*
+> +	 * Can't use that one - it is special - see entry_32.S
+> +	 * offsetof(struct pt_regs, gs),
+> +	 */
+>  #endif
+>  };
+> 
+> -- 
+> 2.29.2
+>
+>
+> -- 
+> Regards/Gruss,
+>     Boris.
+>
+> https://people.kernel.org/tglx/notes-about-netiquette
