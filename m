@@ -2,169 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C3CC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C328FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238016AbiANOU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:20:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56628 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237549AbiANOUp (ORCPT
+        id S235288AbiANOXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:23:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230020AbiANOXT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:20:45 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6AD05B825FD;
-        Fri, 14 Jan 2022 14:20:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC6F8C36AF3;
-        Fri, 14 Jan 2022 14:20:41 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UpmILH5D"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642170040;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cncAl1lhYlaogYKmR5zQjCe3rwFoN6Y6kAe4crZ9kvU=;
-        b=UpmILH5DoSXmwuy6cHRdFXeBPVq/cj/NSwzm10lYJ3bJ5PSjhNLkisMY3OxAnV0Ue73wTs
-        +r5+f8RZURvO9Zxq59N7Qb4WUOmzKZcYP+Savgy+8IB7WwC/ZWhyq+a8yt9CJlpKno2dMw
-        81DdppmXajYhlwMDlAX/KZezx1DdFds=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 378e8146 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 14 Jan 2022 14:20:40 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-crypto@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Fernando Gont <fgont@si6networks.com>,
-        Erik Kline <ek@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>
-Subject: [PATCH RFC v2 2/3] ipv6: move from sha1 to blake2s in address calculation
-Date:   Fri, 14 Jan 2022 15:20:14 +0100
-Message-Id: <20220114142015.87974-3-Jason@zx2c4.com>
-In-Reply-To: <20220114142015.87974-1-Jason@zx2c4.com>
-References: <20220114142015.87974-1-Jason@zx2c4.com>
+        Fri, 14 Jan 2022 09:23:19 -0500
+Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E662C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:23:19 -0800 (PST)
+Received: by mail-qv1-xf2d.google.com with SMTP id c2so711830qvw.3
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:23:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qUKuxAJ4vvXBnCZ5Cp++Kv0NqUtoyv7zDYvbU0ZGaLw=;
+        b=RDWJf9flKRrinMxBPIFfoLLbdVo46nSdNeQ+UEzh3IvceAnpuhHQvInGStZr+FcAvI
+         J4niq/Pp4MkhCgcMgb6gMI7OzEYN1kPwTpI4R5XvinhYJejIjBdsDKjiRZwPDz5s+RNR
+         UNfHZTG1LthFn3Be7tFyYi5R2L6LVsrj9OHkTLV9EmQWh72vBOdkn8nzo9s0x4EbdkGl
+         jLlLnkNCgOV4/FgYwwrcWDVqcAVmJM2zvRIf1XOdY/eNMyAuUhbIWbEXG9vKyGuo+fAJ
+         gxjsQWQb4nfl6amJ3F2rk2h24VDsqFqyPM/tYUFUe+zsDk40J5GMp5Odvv72jI/Jwc2n
+         fwiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qUKuxAJ4vvXBnCZ5Cp++Kv0NqUtoyv7zDYvbU0ZGaLw=;
+        b=ofQ4eorlJRHwt/sw4sBccRa5PjxZWkQ4A5p7s5pbbdR/HPtxQpM9WPuEJGuRk3QuBI
+         +Y9r/pP94IyoO0R4Jv65VpoV4ww/Ks4JlUZ7jMOmJLomeDUGao5syyUNWOIlF5Do73TU
+         mHoSJLVYrqFvXuv/UCqDp1rpwCSJGn9eyvoOJkNNZBinJy8yLZ8OWSGTZwwtMN31YnA3
+         dDFB3vaF3/NfsEuZolxN5Sv3pK8+MHup4Zc526Rz4oecvxmKVtTTSbi19+sf/9PJua3R
+         SSEQtW4iiQsTZklh1sXEp4oYCxwiciZ9tpElXbt++hXwCpOfzMpr7ROmRXmcTwaT0ard
+         Hqfw==
+X-Gm-Message-State: AOAM531kEq1f15lQIdO1xxHoasL1XXNvAWMR+I33iImxAjKmw2wO2Z79
+        YjGCpP0Bbh5x5y3peqXSEzn9FESq7Coing==
+X-Google-Smtp-Source: ABdhPJx4uwU/lSnmRMoxFtg9xl0TNm2N+VOsVuU2zK1e5nlMJ4J56l/MKaiUPzmFAp+bw0FrF0Ohrg==
+X-Received: by 2002:ad4:5f4b:: with SMTP id p11mr8402085qvg.46.1642170197973;
+        Fri, 14 Jan 2022 06:23:17 -0800 (PST)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id y16sm3337315qki.41.2022.01.14.06.23.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 06:23:17 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Antoine Tenart <atenart@kernel.org>
+Subject: [PATCH] mm: slub: fix a deadlock warning in kmem_cache_destroy
+Date:   Fri, 14 Jan 2022 09:23:16 -0500
+Message-Id: <388098b2c03fbf0a732834fc01b2d875c335bc49.1642170196.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-BLAKE2s is faster and more secure. SHA-1 has been broken for a long time
-now. This also removes some code complexity, and lets us potentially
-remove sha1 from lib, which would further reduce vmlinux size. This also
-lets us use the secret in the proper field for a secret, rather than the
-prepending done in the prior construction.
+cpus_read_lock() is introduced into kmem_cache_destroy() by
+commit 5a836bf6b09f ("mm: slub: move flush_cpu_slab() invocations
+__free_slab() invocations out of IRQ context"), and it could cause
+a deadlock.
 
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Andy Lutomirski <luto@amacapital.net>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
-Cc: Hannes Frederic Sowa <hannes@stressinduktion.org>
-Cc: Fernando Gont <fgont@si6networks.com>
-Cc: Erik Kline <ek@google.com>
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+As Antoine pointed out, when one thread calls kmem_cache_destroy(), it is
+blocking until kn->active becomes 0 in kernfs_drain() after holding
+cpu_hotplug_lock. While in another thread, when calling kernfs_fop_write(),
+it may try to hold cpu_hotplug_lock after incrementing kn->active by
+calling kernfs_get_active():
+
+        CPU0                        CPU1
+        ----                        ----
+  cpus_read_lock()
+                                   kn->active++
+                                   cpus_read_lock() [a]
+  wait until kn->active == 0
+
+Although cpu_hotplug_lock is a RWSEM, [a] will not block in there. But as
+lockdep annotations are added for cpu_hotplug_lock, a deadlock warning
+would be detected:
+
+  ======================================================
+  WARNING: possible circular locking dependency detected
+  ------------------------------------------------------
+  dmsetup/1832 is trying to acquire lock:
+  ffff986f5a0f9f20 (kn->count#144){++++}-{0:0}, at: kernfs_remove+0x1d/0x30
+
+  but task is already holding lock:
+  ffffffffa43817c0 (slab_mutex){+.+.}-{3:3}, at: kmem_cache_destroy+0x2a/0x120
+
+  which lock already depends on the new lock.
+
+  the existing dependency chain (in reverse order) is:
+
+  -> #2 (slab_mutex){+.+.}-{3:3}:
+         lock_acquire+0xe8/0x470
+         mutex_lock_nested+0x47/0x80
+         kmem_cache_destroy+0x2a/0x120
+         bioset_exit+0xb5/0x100
+         cleanup_mapped_device+0x26/0xf0 [dm_mod]
+         free_dev+0x43/0xb0 [dm_mod]
+         __dm_destroy+0x153/0x1b0 [dm_mod]
+         dev_remove+0xe4/0x1a0 [dm_mod]
+         ctl_ioctl+0x1af/0x3f0 [dm_mod]
+         dm_ctl_ioctl+0xa/0x10 [dm_mod]
+         do_vfs_ioctl+0xa5/0x760
+         ksys_ioctl+0x60/0x90
+         __x64_sys_ioctl+0x16/0x20
+         do_syscall_64+0x8c/0x240
+         entry_SYSCALL_64_after_hwframe+0x6a/0xdf
+
+  -> #1 (cpu_hotplug_lock){++++}-{0:0}:
+         lock_acquire+0xe8/0x470
+         cpus_read_lock+0x39/0x100
+         cpu_partial_store+0x44/0x80
+         slab_attr_store+0x20/0x30
+         kernfs_fop_write+0x101/0x1b0
+         vfs_write+0xd4/0x1e0
+         ksys_write+0x52/0xc0
+         do_syscall_64+0x8c/0x240
+         entry_SYSCALL_64_after_hwframe+0x6a/0xdf
+
+  -> #0 (kn->count#144){++++}-{0:0}:
+         check_prevs_add+0x185/0xb80
+         __lock_acquire+0xd8f/0xe90
+         lock_acquire+0xe8/0x470
+         __kernfs_remove+0x25e/0x320
+         kernfs_remove+0x1d/0x30
+         kobject_del+0x28/0x60
+         kmem_cache_destroy+0xf1/0x120
+         bioset_exit+0xb5/0x100
+         cleanup_mapped_device+0x26/0xf0 [dm_mod]
+         free_dev+0x43/0xb0 [dm_mod]
+         __dm_destroy+0x153/0x1b0 [dm_mod]
+         dev_remove+0xe4/0x1a0 [dm_mod]
+         ctl_ioctl+0x1af/0x3f0 [dm_mod]
+         dm_ctl_ioctl+0xa/0x10 [dm_mod]
+         do_vfs_ioctl+0xa5/0x760
+         ksys_ioctl+0x60/0x90
+         __x64_sys_ioctl+0x16/0x20
+         do_syscall_64+0x8c/0x240
+         entry_SYSCALL_64_after_hwframe+0x6a/0xdf
+
+  other info that might help us debug this:
+
+  Chain exists of:
+    kn->count#144 --> cpu_hotplug_lock --> slab_mutex
+
+   Possible unsafe locking scenario:
+
+         CPU0                    CPU1
+         ----                    ----
+    lock(slab_mutex);
+                                 lock(cpu_hotplug_lock);
+                                 lock(slab_mutex);
+    lock(kn->count#144);
+
+   *** DEADLOCK ***
+
+  3 locks held by dmsetup/1832:
+   #0: ffffffffa43fe5c0 (bio_slab_lock){+.+.}-{3:3}, at: bioset_exit+0x62/0x100
+   #1: ffffffffa3e87c20 (cpu_hotplug_lock){++++}-{0:0}, at: kmem_cache_destroy+0x1c/0x120
+   #2: ffffffffa43817c0 (slab_mutex){+.+.}-{3:3}, at: kmem_cache_destroy+0x2a/0x120
+
+  stack backtrace:
+  Call Trace:
+   dump_stack+0x5c/0x80
+   check_noncircular+0xff/0x120
+   check_prevs_add+0x185/0xb80
+   __lock_acquire+0xd8f/0xe90
+   lock_acquire+0xe8/0x470
+   __kernfs_remove+0x25e/0x320
+   kernfs_remove+0x1d/0x30
+   kobject_del+0x28/0x60
+   kmem_cache_destroy+0xf1/0x120
+   bioset_exit+0xb5/0x100
+   cleanup_mapped_device+0x26/0xf0 [dm_mod]
+   free_dev+0x43/0xb0 [dm_mod]
+   __dm_destroy+0x153/0x1b0 [dm_mod]
+   dev_remove+0xe4/0x1a0 [dm_mod]
+   ctl_ioctl+0x1af/0x3f0 [dm_mod]
+   dm_ctl_ioctl+0xa/0x10 [dm_mod]
+   do_vfs_ioctl+0xa5/0x760
+   ksys_ioctl+0x60/0x90
+   __x64_sys_ioctl+0x16/0x20
+   do_syscall_64+0x8c/0x240
+   entry_SYSCALL_64_after_hwframe+0x6a/0xdf
+
+Since cpus_read_lock() is supposed to protect the cpu related data, it
+makes sense to fix this issue by moving cpus_read_lock() from
+kmem_cache_destroy() to __kmem_cache_shutdown(). While at it,
+add the missing cpus_read_lock() in slab_mem_going_offline_callback().
+
+Fixes: 5a836bf6b09f ("mm: slub: move flush_cpu_slab() invocations __free_slab() invocations out of IRQ context")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/ipv6/addrconf.c | 56 ++++++++++++---------------------------------
- 1 file changed, 14 insertions(+), 42 deletions(-)
+ mm/slab_common.c | 2 --
+ mm/slub.c        | 4 ++--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 3eee17790a82..47048aafebd3 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -61,7 +61,7 @@
- #include <linux/delay.h>
- #include <linux/notifier.h>
- #include <linux/string.h>
--#include <linux/hash.h>
-+#include <crypto/blake2s.h>
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index e5d080a93009..06ec3fa585e6 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -494,7 +494,6 @@ void kmem_cache_destroy(struct kmem_cache *s)
+ 	if (unlikely(!s))
+ 		return;
  
- #include <net/net_namespace.h>
- #include <net/sock.h>
-@@ -3224,61 +3224,33 @@ static int ipv6_generate_stable_address(struct in6_addr *address,
- 					u8 dad_count,
- 					const struct inet6_dev *idev)
- {
--	static DEFINE_SPINLOCK(lock);
--	static __u32 digest[SHA1_DIGEST_WORDS];
--	static __u32 workspace[SHA1_WORKSPACE_WORDS];
--
--	static union {
--		char __data[SHA1_BLOCK_SIZE];
--		struct {
--			struct in6_addr secret;
--			__be32 prefix[2];
--			unsigned char hwaddr[MAX_ADDR_LEN];
--			u8 dad_count;
--		} __packed;
--	} data;
--
--	struct in6_addr secret;
--	struct in6_addr temp;
- 	struct net *net = dev_net(idev->dev);
--
--	BUILD_BUG_ON(sizeof(data.__data) != sizeof(data));
-+	const struct in6_addr *secret;
-+	struct blake2s_state hash;
-+	struct in6_addr proposal;
+-	cpus_read_lock();
+ 	mutex_lock(&slab_mutex);
  
- 	if (idev->cnf.stable_secret.initialized)
--		secret = idev->cnf.stable_secret.secret;
-+		secret = &idev->cnf.stable_secret.secret;
- 	else if (net->ipv6.devconf_dflt->stable_secret.initialized)
--		secret = net->ipv6.devconf_dflt->stable_secret.secret;
-+		secret = &net->ipv6.devconf_dflt->stable_secret.secret;
- 	else
- 		return -1;
- 
- retry:
--	spin_lock_bh(&lock);
--
--	sha1_init(digest);
--	memset(&data, 0, sizeof(data));
--	memset(workspace, 0, sizeof(workspace));
--	memcpy(data.hwaddr, idev->dev->perm_addr, idev->dev->addr_len);
--	data.prefix[0] = address->s6_addr32[0];
--	data.prefix[1] = address->s6_addr32[1];
--	data.secret = secret;
--	data.dad_count = dad_count;
--
--	sha1_transform(digest, data.__data, workspace);
--
--	temp = *address;
--	temp.s6_addr32[2] = (__force __be32)digest[0];
--	temp.s6_addr32[3] = (__force __be32)digest[1];
--
--	spin_unlock_bh(&lock);
-+	blake2s_init_key(&hash, sizeof(proposal.s6_addr32[2]) * 2, secret, sizeof(*secret));
-+	blake2s_update(&hash, (u8 *)&address->s6_addr32[0], sizeof(address->s6_addr32[0]) * 2);
-+	blake2s_update(&hash, idev->dev->perm_addr, idev->dev->addr_len);
-+	blake2s_update(&hash, (u8 *)&dad_count, sizeof(dad_count));
-+	blake2s_final(&hash, (u8 *)&proposal.s6_addr32[2]);
- 
--	if (ipv6_reserved_interfaceid(temp)) {
-+	if (ipv6_reserved_interfaceid(proposal)) {
- 		dad_count++;
--		if (dad_count > dev_net(idev->dev)->ipv6.sysctl.idgen_retries)
-+		if (dad_count > net->ipv6.sysctl.idgen_retries)
- 			return -1;
- 		goto retry;
+ 	s->refcount--;
+@@ -509,7 +508,6 @@ void kmem_cache_destroy(struct kmem_cache *s)
  	}
- 
--	*address = temp;
-+	*address = proposal;
- 	return 0;
+ out_unlock:
+ 	mutex_unlock(&slab_mutex);
+-	cpus_read_unlock();
  }
+ EXPORT_SYMBOL(kmem_cache_destroy);
  
+diff --git a/mm/slub.c b/mm/slub.c
+index abe7db581d68..754f020235ee 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -4311,7 +4311,7 @@ int __kmem_cache_shutdown(struct kmem_cache *s)
+ 	int node;
+ 	struct kmem_cache_node *n;
+ 
+-	flush_all_cpus_locked(s);
++	flush_all(s);
+ 	/* Attempt to free all objects */
+ 	for_each_kmem_cache_node(s, node, n) {
+ 		free_partial(s, n);
+@@ -4646,7 +4646,7 @@ static int slab_mem_going_offline_callback(void *arg)
+ 
+ 	mutex_lock(&slab_mutex);
+ 	list_for_each_entry(s, &slab_caches, list) {
+-		flush_all_cpus_locked(s);
++		flush_all(s);
+ 		__kmem_cache_do_shrink(s);
+ 	}
+ 	mutex_unlock(&slab_mutex);
 -- 
-2.34.1
+2.27.0
 
