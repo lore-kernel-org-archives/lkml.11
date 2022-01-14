@@ -2,95 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB7D5C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:25:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 765F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239342AbiANGZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 01:25:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52354 "EHLO
+        id S239361AbiANG2q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 01:28:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiANGZX (ORCPT
+        with ESMTP id S233322AbiANG2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 01:25:23 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED829C06161C
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:25:22 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id x193so11067054oix.0
-        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:25:22 -0800 (PST)
+        Fri, 14 Jan 2022 01:28:45 -0500
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB62CC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:28:45 -0800 (PST)
+Received: by mail-pj1-x102a.google.com with SMTP id m13so12557826pji.3
+        for <linux-kernel@vger.kernel.org>; Thu, 13 Jan 2022 22:28:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=P31p+kFVwmOiI3/+SfJ1eDPjKnj+4NHA/QnHEDI8vD4=;
-        b=Tc2Ij+r2dRStuwdA2z8k/QMP6qz7UzufJqbZuBNmt1dVz9OGE+Gqvdt2IBChmrOzmZ
-         sgUJH1uFjqrEblArY8TN8c1ZRl/NJ1pcUnPnpMcYdfOXhYwOmZJTY1IXAIR/C6wfeRLb
-         hMDdAM4AnwBziapK/xqYecBGcFHQECgyZFwPY=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=NHdX/Idy0KSD2nLQQy9QrFMUow7MTGBG5BMRWRzqKuQ=;
+        b=pezoYFhDt474cgpvwzLmfLq36Go0YbSUqzB51UNhKvFun3Y9jKS9NcpnB6Q/RtSDeE
+         K6COUJUvl2OfMbc2SWx6Mmys/6sP5A+m5mqXlvCTOg/epVYuoYEPYW/w66KP22U+m5rL
+         8rkOq4R7zE16I9nFwGl38p09fDxZRHNzQTKJsBN2Us7FTkrK6MgUuVUHfsXEMrUD/zR7
+         CKWIVwbRR33NGPSjln4HtgkNivJ8bbiT9KMsVCPCUjCULXCnJLdBt/DwcxklMzdxgXXZ
+         dy7gImPjDMuS362wQF7Vo3zgxdJQmyinjOWAawjh5l0BPTpfenJlvDlTtl9Ug07Dn7pO
+         2XMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=P31p+kFVwmOiI3/+SfJ1eDPjKnj+4NHA/QnHEDI8vD4=;
-        b=Vfhrdg2PTFBX9X5w/Brm9mje7seYwTLNt4YQ8vHDNp4UVaqzcxI1tv5ShAr+iZqn5d
-         MyI0zKxpzoop0tY0brMka/q66oLAQ6IWwS2KXdgsK4FKCvkscGK1Po+BQLmH/U37HYPk
-         Y0NVX2gUGtW5Bl3k+Lth4l/oilWmRi7hw3HvtyHAYCDf5uIpQAJVmYyYp1Xwz4EhcmpM
-         HSvW0FtjAzPZAVU6DtpJZfpJwKEgYdeU5BFelKdHyIOjWaKGSeS62ps5SPJYsAMg3IRO
-         hE8ZU3P0mPp3yRbyjHf3wRNvWgrVm+uQ3WhaJhsSzeZ+6cGowLn4UjIq0iXaABAtZaqb
-         eGlQ==
-X-Gm-Message-State: AOAM533uSqndO/ExW9e5iqhDh6RSm3+rn9DKOzqLB+mrzwdfjMlDl07u
-        KsyLwYibPSPNbT40g1Kfzsu3xUIcPU1LTsLZpJNvpQ==
-X-Google-Smtp-Source: ABdhPJyNhHiiWL0ga7Yjo6ha5I+du9/9cd9L6+5J2+Yl7zVxUoL7i5Wlm7/epPqhp50BL5TwXwGR8sSzD3FdYLj0MT0=
-X-Received: by 2002:aca:a953:: with SMTP id s80mr11793776oie.164.1642141522376;
- Thu, 13 Jan 2022 22:25:22 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Thu, 13 Jan 2022 22:25:21 -0800
-MIME-Version: 1.0
-In-Reply-To: <20220113164233.4.I5604b7af908e8bbe709ac037a6a8a6ba8a2bfa94@changeid>
-References: <20220114004303.905808-1-dianders@chromium.org> <20220113164233.4.I5604b7af908e8bbe709ac037a6a8a6ba8a2bfa94@changeid>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Thu, 13 Jan 2022 22:25:21 -0800
-Message-ID: <CAE-0n53Y=GzBxbkbG=Vj+5gcrDreZYL1qMwnu4X1FdKJ78Ky-Q@mail.gmail.com>
-Subject: Re: [PATCH 4/4] arm64: dts: qcom: sc7280: Add herobrine-r1
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>
-Cc:     quic_rjendra@quicinc.com, sibis@codeaurora.org,
-        kgodara1@codeaurora.org, mka@chromium.org, pmaliset@codeaurora.org,
-        Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=NHdX/Idy0KSD2nLQQy9QrFMUow7MTGBG5BMRWRzqKuQ=;
+        b=r1aMA3lqngHxrC5wXHQjcFItDnJ6uRYueB7Ob0M0CGBqatR1aVLVBJGYcxUf3xQG2m
+         zFj6ZWM9LT9LJdCl3UvpTaPym1CGAuMUMokyZiSskYJ+Bhf8wS3wIZfGu72nAo3k8Vfj
+         qq6OvnLUgLVxIC+MDP9oxWSY0Sf/QuuG3vyw+/mXePE1s+1bLVp7cPJ+vQloxJEjIbeu
+         4er0TenZ2ks1BndbrBgdcBphssBTEu4OazzB3Ca1efgQhR9G9SdjCw9gNhCvTvEUVlfL
+         xCQFWIKoADNHeXsUUnDSThoKSgV+riklwe/6w5PdTblLEqa/KN8JAF/jShwvIQOVrGXY
+         RyIA==
+X-Gm-Message-State: AOAM5312/OlfTmm8tRDilCuukJGDXJ0pa+4i2xHih6GwLNTKaMbUMxLt
+        d30g1K27vV8u7UviU5TaE5E=
+X-Google-Smtp-Source: ABdhPJzTCERieBADXgI0ocsue7F2NLdXSjQ9ctZymjodYFfhCh9umta1NfjscP6PU8LRgGVxF8SXwA==
+X-Received: by 2002:a17:90b:1c91:: with SMTP id oo17mr18602407pjb.58.1642141725333;
+        Thu, 13 Jan 2022 22:28:45 -0800 (PST)
+Received: from localhost.localdomain ([159.226.95.43])
+        by smtp.googlemail.com with ESMTPSA id ng7sm4612262pjb.41.2022.01.13.22.28.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 13 Jan 2022 22:28:45 -0800 (PST)
+From:   Miaoqian Lin <linmq006@gmail.com>
+To:     Nishanth Menon <nm@ti.com>,
+        Santosh Shilimkar <ssantosh@kernel.org>,
+        Dave Gerlach <d-gerlach@ti.com>,
+        Tony Lindgren <tony@atomide.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     linmq006@gmail.com
+Subject: [PATCH] soc: ti: wkup_m3_ipc: Fix IRQ check in wkup_m3_ipc_probe
+Date:   Fri, 14 Jan 2022 06:28:40 +0000
+Message-Id: <20220114062840.16620-1-linmq006@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Douglas Anderson (2022-01-13 16:43:03)
-> Add the new herobrine-r1. Note that this is pretty much a re-design
-> compared to herobrine-r0 so we don't attempt any dtsi to share stuff
-> between them.
->
-> This patch attempts to define things at 3 levels:
->
-> 1. The Qcard level. Herobrine includes a Qcard PCB and the Qcard PCB
->    is supposed to be the same (modulo stuffing options) across
->    multiple boards, so trying to define what's there hopefully makes
->    sense. NOTE that newer "CRD" boards from Qualcomm also use
->    Qcard. When support for CRD3 is added hopefully it can use the
->    Qcard include (and perhaps we should even evaluate it using
->    herobrine.dtsi?)
-> 2. The herobrine "baseboard" level. Right now most stuff is here with
->    the exception of things that we _know_ will be different per
->    board. We know that not all boards will have the same set of eMMC,
->    nvme, and SD. We also know that the exact pin names are likely to
->    be different.
-> 3. The actual "board" level, AKA herobrine-rev1.
->
-> NOTES:
-> - This boots to command prompt, but no eDP yet since eDP hasn't
->   been added to sc7280.dtsi yet.
-> - This assumes LTE for now. Once it's clear how WiFi-only SKUs will
->   work we expect some small changes.
->
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
+
+Fix the check of return value to catch errors correctly.
+
+Fixes: cdd5de500b2c ("soc: ti: Add wkup_m3_ipc driver")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+---
+ drivers/soc/ti/wkup_m3_ipc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/soc/ti/wkup_m3_ipc.c b/drivers/soc/ti/wkup_m3_ipc.c
+index 72386bd393fe..2f03ced0f411 100644
+--- a/drivers/soc/ti/wkup_m3_ipc.c
++++ b/drivers/soc/ti/wkup_m3_ipc.c
+@@ -450,9 +450,9 @@ static int wkup_m3_ipc_probe(struct platform_device *pdev)
+ 		return PTR_ERR(m3_ipc->ipc_mem_base);
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (!irq) {
++	if (irq < 0) {
+ 		dev_err(&pdev->dev, "no irq resource\n");
+-		return -ENXIO;
++		return irq;
+ 	}
+ 
+ 	ret = devm_request_irq(dev, irq, wkup_m3_txev_handler,
+-- 
+2.17.1
+
