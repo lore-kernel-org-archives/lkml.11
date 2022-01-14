@@ -2,111 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCE7C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 13:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C799EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 13:38:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241332AbiANNih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 08:38:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53270 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230472AbiANNie (ORCPT
+        id S241391AbiANNi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 08:38:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230472AbiANNi4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 08:38:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642167513;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NbLWpbs04Fbr52VNRcUjKYlBXFjrwmcMdjglRxFIjmA=;
-        b=IIvHHkH4DDbSJYx3DZcZxj+vKTflV1xhkV/lcVuxZhQIbBKqb4pZKtxdzA4OJCtQLPJqR7
-        sJ+YHELayk4+J1jZ4XmNrW6jpZHmcDHpNdcmRQ208V7MA411nqk3smDNCxst+Tw1bGItg7
-        a0gm30Z76kJo09L1Tva3WkwXx+VL/f4=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-488-7vjjeoUKMhOC11O146_8wA-1; Fri, 14 Jan 2022 08:38:32 -0500
-X-MC-Unique: 7vjjeoUKMhOC11O146_8wA-1
-Received: by mail-ed1-f69.google.com with SMTP id z8-20020a056402274800b003f8580bfb99so8386338edd.11
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 05:38:32 -0800 (PST)
+        Fri, 14 Jan 2022 08:38:56 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68B5EC061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 05:38:56 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id br17so30342235lfb.6
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 05:38:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fm/m3hhYi8USgiEU3N02TwzoT6Lhf/h0pQPibfSrZZQ=;
+        b=HUKDG5fAEr+kRVIfFS9wNG2zI/eiySiSKmv+MgH0I8+xhYNV4kJSgcsCJmZmbSWfJB
+         lvVG1pYw39g/4oIb/F+k2fOzCpSrlTAS2gr9ltL/T6S2PXS5Gdy4KZzSF3MucOrzF5tA
+         xtYzZ8kBPoaYoHPhM2Hg2uF1ibuTZSk5wNofetIGoNguVkgGAI3WLxW0s7B3uedgVzmk
+         do7oqAqpe4sDAbAiN4yTk6O8SHPS0gr6rOMf8p9PTJoZ9e9aB0e+mzlpHaT9CKkB+6Rk
+         5ZPowLDjb74IEbWMohJA4RSz8is2DGvPXNu2nxfNT4O3MDSwt51H2dOKM/eD94VxaGOL
+         HLAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=NbLWpbs04Fbr52VNRcUjKYlBXFjrwmcMdjglRxFIjmA=;
-        b=o5p8xTbfP35eHuS/FjMLrx3Hlkp09PQSSDvsv7LeJP3p2CBfmXUB/EicArAmEM3sDp
-         5bc8e27OVPPz0JRplduRGt1GTi7uh9HnVJGS6QsReRPvzwqPFF0AzuqGrq5r/K9yz3tP
-         3TwBiq1YIGUJAP1pbP0ab1D+RjMKJ5GES5ZF9Q5uiDkHNaToSpUXj8+GWyHAtO9BRBqM
-         rs07v0CYLAj5Ikq4r6d9tkaWO5B/fRye8ohVLVy41KW1Zo63LaQC+DT1nHK0eqSF5bu9
-         7+wntcxM1bfhNF7mfaoFxKa3ypgpQwu7V1b3BB+0CfOccZl5veLYzQ24XcOOvRFUT5Vw
-         jJsw==
-X-Gm-Message-State: AOAM532W/pzZgKFwTkef+/yuMu99HNrE/3KonWYBrrjJYvmo+YBXW7iU
-        x+ApxEerAlD/Le+w5O+E71CpgsW7cfSiqS5RbKdlM6wo3ogDW2A2CzOfCCOcN4CYgu3wMqXCxeC
-        8ys39Aj4hhRflU0QSMze7H83k
-X-Received: by 2002:a05:6402:22f5:: with SMTP id dn21mr8277776edb.195.1642167511645;
-        Fri, 14 Jan 2022 05:38:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwHvYz3VQ9C1aagG3+wcF6jvkOYHX0vhK+bpyMkPVNgdDNTqGPKVyjbaru5jr4nQAEJhmT6JQ==
-X-Received: by 2002:a05:6402:22f5:: with SMTP id dn21mr8277761edb.195.1642167511469;
-        Fri, 14 Jan 2022 05:38:31 -0800 (PST)
-Received: from ?IPV6:2003:cb:c701:9d00:ff87:1c9b:108a:9702? (p200300cbc7019d00ff871c9b108a9702.dip0.t-ipconnect.de. [2003:cb:c701:9d00:ff87:1c9b:108a:9702])
-        by smtp.gmail.com with ESMTPSA id c13sm1900839ejj.144.2022.01.14.05.38.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 05:38:31 -0800 (PST)
-Message-ID: <ead90b32-da2b-4d66-f103-6fbec0937e93@redhat.com>
-Date:   Fri, 14 Jan 2022 14:38:30 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fm/m3hhYi8USgiEU3N02TwzoT6Lhf/h0pQPibfSrZZQ=;
+        b=2BHQsntBM+Mu+K3Tx9+ep1tQeJ3CF+rQ8bBteXVPkQvAbdH8FT3gtXpJ6TXuefq4my
+         yVATrZfim6jNB+L+/p/UUU+LrN0XNnwWt0jHIbFNMVe0Td3rjCwRDPjICH2pKLEZnTtd
+         SMkSOmxRWYpuHk6sPp8ndodk8cfR8tmEUzH6Al5icuyZpljhDLrqwRn37duul7nbEbBn
+         b9bR7qSgamtiDHxnnw2cKhRbFOiv7zvi/ySb91t47hKN9zydzi367QXLQCxsaDFGtJSw
+         zWU49PqlxPfVe504MGBWU5R7VBBd/R578cQBFUbIE2c77xQfWXQT7YvoPMHf5XD/S0bQ
+         7l2g==
+X-Gm-Message-State: AOAM5318nYQwuNgHZUdm21jNrohGUSl9R6hmdPBzG0z+Y0NCK0yXhf+u
+        HpYXhTDxxTGfQ1HQRqJdEs+TgmbKo5bQk8+lglz6Jw==
+X-Google-Smtp-Source: ABdhPJwU75v+PDeGlfsjylWxQOTH/0+OJYuUCddEMAGNjxc4X3KiKPSVleT14H/MDGd6Wyw44lujhS0zZl2BgsqaRRg=
+X-Received: by 2002:a2e:947:: with SMTP id 68mr6892116ljj.300.1642167534811;
+ Fri, 14 Jan 2022 05:38:54 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [RFC PATCH v3 5/8] mm: page_isolation: check specified range for
- unmovable pages during isolation.
-Content-Language: en-US
-To:     Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>
-References: <20220105214756.91065-1-zi.yan@sent.com>
- <20220105214756.91065-6-zi.yan@sent.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220105214756.91065-6-zi.yan@sent.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1641749107-31979-1-git-send-email-quic_mkshah@quicinc.com> <1641749107-31979-9-git-send-email-quic_mkshah@quicinc.com>
+In-Reply-To: <1641749107-31979-9-git-send-email-quic_mkshah@quicinc.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Fri, 14 Jan 2022 14:38:18 +0100
+Message-ID: <CAPDyKFpqdRveupZ-jnZ82OdRW32tHA37TTaWpQgHSrmodK0FeQ@mail.gmail.com>
+Subject: Re: [PATCH 08/10] PM: domains: Store the closest hrtimer event of the
+ domain CPUs
+To:     Maulik Shah <quic_mkshah@quicinc.com>
+Cc:     bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org, daniel.lezcano@linaro.org,
+        quic_lsrao@quicinc.com, quic_rjendra@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 05.01.22 22:47, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> Enable set_migratetype_isolate() to check specified sub-range for
-> unmovable pages during isolation. Page isolation is done
-> at max(MAX_ORDER_NR_PAEGS, pageblock_nr_pages) granularity, but not all
-> pages within that granularity are intended to be isolated. For example,
-> alloc_contig_range(), which uses page isolation, allows ranges without
-> alignment. This commit makes unmovable page check only look for
-> interesting pages, so that page isolation can succeed for any
-> non-overlapping ranges.
+On Sun, 9 Jan 2022 at 18:26, Maulik Shah <quic_mkshah@quicinc.com> wrote:
+>
+> The arch timer can not wake up the Qualcomm Technologies, Inc. (QTI)
+> SoCs when the deepest CPUidle modes results in the SoC also to enter
+> the low power mode.
+>
+> RSC is part of CPU subsystem and APSS rsc device is attached to cluster
+> power domain. RSC has to setup next hrtimer wakeup in CONTROL_TCS which
+> can wakeup the SoC from deepest low power states. The CONTROL_TCS does
+> this by writing next wakeup in always on domain timer when the SoC is
+> entering the low power state.
+>
+> Store the domain wakeup time from all the CPUs which can be used from
+> domain power off callback by RSC device.
+>
+> Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
 
-Are you handling if we start checking in the middle of a compound page
-and actually have to lookup the head to figure out if movable or not?
+I need to think a little bit more about this one, so I have to get
+back with some more detailed comments next week.
 
-> 
-> has_unmovable_pages() is moved to mm/page_isolation.c since it is only
-> used by page isolation.
+Kind regards
+Uffe
 
-Please move that into a separate patch upfront, makes this patch much
-easier to review.
-
--- 
-Thanks,
-
-David / dhildenb
-
+> ---
+>  drivers/base/power/domain_governor.c | 1 +
+>  include/linux/pm_domain.h            | 1 +
+>  2 files changed, 2 insertions(+)
+>
+> diff --git a/drivers/base/power/domain_governor.c b/drivers/base/power/domain_governor.c
+> index cd08c58..a4c7dd8 100644
+> --- a/drivers/base/power/domain_governor.c
+> +++ b/drivers/base/power/domain_governor.c
+> @@ -363,6 +363,7 @@ static bool cpu_power_down_ok(struct dev_pm_domain *pd)
+>                                 domain_wakeup = next_hrtimer;
+>                 }
+>         }
+> +       genpd->next_hrtimer = domain_wakeup;
+>
+>         /* The minimum idle duration is from now - until the next wakeup. */
+>         idle_duration_ns = ktime_to_ns(ktime_sub(domain_wakeup, now));
+> diff --git a/include/linux/pm_domain.h b/include/linux/pm_domain.h
+> index 67017c9..682b372 100644
+> --- a/include/linux/pm_domain.h
+> +++ b/include/linux/pm_domain.h
+> @@ -136,6 +136,7 @@ struct generic_pm_domain {
+>         struct gpd_dev_ops dev_ops;
+>         s64 max_off_time_ns;    /* Maximum allowed "suspended" time. */
+>         ktime_t next_wakeup;    /* Maintained by the domain governor */
+> +       ktime_t next_hrtimer;   /* Closest hrtimer event of the domain CPUs */
+>         bool max_off_time_changed;
+>         bool cached_power_down_ok;
+>         bool cached_power_down_state_idx;
+> --
+> 2.7.4
+>
