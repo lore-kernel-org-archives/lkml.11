@@ -2,108 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A72C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:56:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A74C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242098AbiANO4j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:56:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56952 "EHLO
+        id S242111AbiANO6G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:58:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242005AbiANO4i (ORCPT
+        with ESMTP id S242086AbiANO6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:56:38 -0500
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AD2C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:56:38 -0800 (PST)
-Received: by mail-ot1-x335.google.com with SMTP id t6-20020a9d7746000000b005917e6b96ffso10307672otl.7
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:56:38 -0800 (PST)
+        Fri, 14 Jan 2022 09:58:05 -0500
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D59C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:58:04 -0800 (PST)
+Received: by mail-wr1-x430.google.com with SMTP id e9so16103705wra.2
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:58:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HXQISz6uUvwg8Vwt1+DIrxstrllwfzEuYjBo3yyTGQk=;
-        b=KvyUbQkcGR3KApmkiZfu8C5xmBmzwpDOMQhR6WXG3miM86IPV6nfbAa3aqFSmkFIT4
-         Io0wuqtpSpPfNvf2LkobGgtBXIiwpomuyI+x1Co09hZAF0EukRzWIEXi2XhrJZbThuWm
-         UaJiYglKy6n6Yo1uw5Pqak6Ypb3N5cauggsXotdIs9wGfgXMjKqhcOwTSfFu4BFKaxEH
-         kRQt0iOHxYWNkvVJPOBQNq1f356aEXVVIRTYJzY7C5+fKyVicWrLJALyIE831d4J85AM
-         AKHNBV6dSiTSsKankfwnDqKPgqXdWyjIIw4JUt9kYQvtN9XfGuEqLx703FctdeIE4NgB
-         mJqw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=6vf0U5q3YvBeFSP6ko6F5Omy2TYNCgDxRvUcHVhEYQ0=;
+        b=pd/Sc/ymoFhHtUDJbKUIFmJbTZs7ISdAwc/Z/4CtN3v9WiV8GkRuofTlTWTc4KHk2f
+         RsnhyOCpwHcLsYotx9lqgV3q8OoB+Q9ycRNBt4VSUGccMCFGDv0z9G+We8al2dwQQDLY
+         wAkC6KTN26MeXtT+8vldnrpnHKJjalrGcvh0SVSZFT6Qj3vFeyDyI1bNW+0QfxKRhXKy
+         XYWQvHxG3sTil6A5HJqTC6d8DaycxwcfNWzvReiJj+0yHWD3hnLJjCcvtdA8LuZcJxG/
+         BrN7DiuqrBCe2HqxYg8lDDPbJJ/6Kkpfey2aWeXcJ6YUTbftXFpgTG5OUMaAT+nMiTxZ
+         mykg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HXQISz6uUvwg8Vwt1+DIrxstrllwfzEuYjBo3yyTGQk=;
-        b=g46BzvAYODEtXbrzhcLwgtxkkm0Zc1yHfJhYimIhXcdp8tIqzdL0VcbQpUznsEBOlU
-         9AGl8VlDc8t2prcYftbHiZuZCnWzDhVMuH/K9hCJm/xtEUS4yYJ6cgZVYmp7rBDojIQp
-         8t3oRVLKq1FItoXC8SLrG0LzSy3cfvPqdzHrZfgpMUbcXkCzKHTS5tH031IkvOHXvnhh
-         pwI0c6bnCb6So4L+BxWmTLUDNX9ro2kAEuLS8OLarOn7hY9kCUNgJofgCRtSFJuClPvK
-         ioR/qAplDU7awc7V/znPYZh3zPmfmJBTXgBX3TEyUdayKHQ6d5XekAOQy4m2Ml27QjKy
-         QSsw==
-X-Gm-Message-State: AOAM530omM7XEZiKccVMO0VlZnEGJj0eUW57sUhp1usuCHs8cWF5pv4K
-        gbi44jKxRjiiMB7DrqaNMJqiMYv5XbGqcyEsn1zXsSU4
-X-Google-Smtp-Source: ABdhPJzDS22hiVXyfeCFx1bY6D/SQdYj6JjBOobUXzm4JrBhml3GZ+MsD+6xfd1BH+kWL3QLJAIFLT+r2hQC+tMsiGY=
-X-Received: by 2002:a05:6830:19e6:: with SMTP id t6mr4712317ott.357.1642172197491;
- Fri, 14 Jan 2022 06:56:37 -0800 (PST)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=6vf0U5q3YvBeFSP6ko6F5Omy2TYNCgDxRvUcHVhEYQ0=;
+        b=DEPq892Lnv7My35UAHnvDw+gNv0G1Z70CGGViLWxOI0TDURtH85yQYTGcdoSh2SkBi
+         /vjNePH8kMFH2XZCC/uLiwHHh2IHsCbLkv+JJezyXyRxq8kJcCI7XFMnsG+GuMT8xyXg
+         +azaYT/yt7RTGnXnGxuUGJ/Ebssmq0rf4UyPc75fotEa+aE/DNBBcxpFhUcqH+GvZPoV
+         wq6IGpzmQTrEKLPZ5iRN4db8o8LEvibFFjpQWdNJaM40dQia1RLof+uKsm2Rz2sUfmTw
+         uD56n7Mg32AGhZivd4yvDShrX3f8IUWVv2L2p57iNDBFeNc69R/Fh7FSrZemtYaESR9v
+         72Pg==
+X-Gm-Message-State: AOAM5336JXkwiyvXqO4a8wWNYK4aGFIr7tr14eis4Clit+Glmrd5NOTJ
+        x5zlqQZ33KiN3Up9gR4qTQW8qQ==
+X-Google-Smtp-Source: ABdhPJwaCzxyfoZDVfCEAjJ6QGAdsVMhSBHArLgqdn2cWeUg0VmXCTSfPWbGVZ4NDt21+LmaYPHROg==
+X-Received: by 2002:a05:6000:1686:: with SMTP id y6mr2609775wrd.320.1642172283314;
+        Fri, 14 Jan 2022 06:58:03 -0800 (PST)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id 9sm2380504wrb.77.2022.01.14.06.58.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Jan 2022 06:58:02 -0800 (PST)
+References: <20220114090753.34873-1-Jiayi.Zhou@amlogic.com>
+User-agent: mu4e 1.6.10; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Jiayi.Zhou@amlogic.com, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lee.jones@linaro.org,
+        khilman@baylibre.com, martin.blumenstingl@googlemail.com
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] pwm: meson: external clock configuration for s4
+Date:   Fri, 14 Jan 2022 15:53:58 +0100
+In-reply-to: <20220114090753.34873-1-Jiayi.Zhou@amlogic.com>
+Message-ID: <1jmtjybc05.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
-References: <20220114065141.14506-1-lukas.fink1@gmail.com>
-In-Reply-To: <20220114065141.14506-1-lukas.fink1@gmail.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Fri, 14 Jan 2022 09:56:26 -0500
-Message-ID: <CADnq5_PBt9-x9d9TuW7_0Yrarpmp2bMTdDPXFv2ep=p89sULkg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: Fix rejecting Tahiti GPUs
-To:     Lukas Fink <lukas.fink1@gmail.com>
-Cc:     "Deucher, Alexander" <alexander.deucher@amd.com>,
-        Christian Koenig <christian.koenig@amd.com>,
-        xinhui pan <Xinhui.Pan@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 3:27 AM Lukas Fink <lukas.fink1@gmail.com> wrote:
->
-> eb4fd29afd4a ("drm/amdgpu: bind to any 0x1002 PCI diplay class device") added
-> generic bindings to amdgpu so that that it binds to all display class devices
-> with VID 0x1002 and then rejects those in amdgpu_pci_probe.
->
-> Unfortunately it reuses a driver_data value of 0 to detect those new bindings,
-> which is already used to denote CHIP_TAHITI ASICs.
->
-> The driver_data value given to those new bindings was changed in
-> dd0761fd24ea1 ("drm/amdgpu: set CHIP_IP_DISCOVERY as the asic type by default")
-> to CHIP_IP_DISCOVERY (=36), but it seems that the check in amdgpu_pci_probe
-> was forgotten to be changed. Therefore, it still rejects Tahiti GPUs.
->
-> Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1860
-> Fixes: eb4fd29afd4a ("drm/amdgpu: bind to any 0x1002 PCI diplay class device")
->
-> Signed-off-by: Lukas Fink <lukas.fink1@gmail.com>
-> ---
->  drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> index 9ec58bf74012..224d073022ac 100644
-> --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-> @@ -1903,7 +1903,7 @@ static int amdgpu_pci_probe(struct pci_dev *pdev,
->                         return -ENODEV;
->         }
->
-> -       if (flags == 0) {
-> +       if (flags == CHIP_IP_DISCOVERY) {
->                 DRM_INFO("Unsupported asic.  Remove me when IP discovery init is in place.\n");
->                 return -ENODEV;
->         }
 
-Thanks.  Actually this entire check can be removed at this point.  The
-IP discovery support is in place.  I'll send a patch.
+On Fri 14 Jan 2022 at 17:07, <Jiayi.Zhou@amlogic.com> wrote:
 
-Alex
-
-
-> --
-> 2.34.1
+> From: "Jiayi.zhou" <jiayi.zhou@amlogic.com>
 >
+> For PWM controller in the Meson-S4 SoC,
+> PWM needs to obtain an external clock source.
+> This patch tries to describe them in the DT compatible data.
+>
+
+I'm sorry but I have already commented on v1 that all the mess in here
+don't seem necessary. For Reference:
+
+"""
+ You trying to bypass the input selection mux. There is no reason to do
+ so.
+
+ Your input clocks should be
+ * OSC
+ * vid_pll
+ * fdiv3
+ * fdiv4
+
+ While the pwm driver could welcome a rework around how it deal with DT
+ and the clocks, this S4 chip does not warrant any change compared to
+ previous generation (AFAICT)
+
+ All the stuff around "extern_clk" should go away IMO.
+"""
+
+Unless you can *really* justify why this approach is required, it is
+firm Nack.
