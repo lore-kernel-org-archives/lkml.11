@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DF4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA296C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240036AbiANIVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:21:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59600 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237335AbiANIUi (ORCPT
+        id S240052AbiANIVx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:21:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239834AbiANIUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:20:38 -0500
+        Fri, 14 Jan 2022 03:20:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B481FC061771;
+        Fri, 14 Jan 2022 00:20:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 120E661E3C;
-        Fri, 14 Jan 2022 08:20:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC240C36AE9;
-        Fri, 14 Jan 2022 08:20:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EB9BB8243E;
+        Fri, 14 Jan 2022 08:20:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C01FFC36AEA;
+        Fri, 14 Jan 2022 08:20:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148437;
-        bh=mtGQdNUmJGXJ3Z+IhjXfdAWu7wOPEfHxyVDRmkJdbXM=;
+        s=korg; t=1642148440;
+        bh=nXA5uw1BJBunp6rPpvxLD5f0Asl2qjtB4n828pX/x0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o4ezfkD13fevYEsSq7N5/Xz5Qouu8LbCiafTdnxNZzw+cKdwSR6725/h821a0AXgm
-         gTbHA6OhxA6RYqEPGTDoVDBXshrWYLZgBZpcY3FjF9zPWHa68xyZqM0JdPeJQ0tNAA
-         /TkJlJYujhUJsSrWGmw8UyvBrgSDsr7bAMC3bzUE=
+        b=KDwyGfoAAubly9akiouucQpyRY6IYqCo60K+2qMD+sbZr8hPLgBzieinP0bb34Bej
+         4g/2OHnPgZcpYa9aGLSdKaYJKmBiog/DQ4Xv8TkFvGLY+EEH43x7ILRx36epfOeIN8
+         pU8OgOCOBdeVrigLZ6dLcM98ES0recjDwvMoeUuY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aditya Garg <gargaditya08@live.com>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.15 25/41] Bluetooth: add quirk disabling LE Read Transmit Power
-Date:   Fri, 14 Jan 2022 09:16:25 +0100
-Message-Id: <20220114081545.992518490@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.15 34/41] random: fix data race on crng_node_pool
+Date:   Fri, 14 Jan 2022 09:16:34 +0100
+Message-Id: <20220114081546.300941483@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
 References: <20220114081545.158363487@linuxfoundation.org>
@@ -46,57 +49,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aditya Garg <gargaditya08@live.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit d2f8114f9574509580a8506d2ef72e7e43d1a5bd upstream.
+commit 5d73d1e320c3fd94ea15ba5f79301da9a8bcc7de upstream.
 
-Some devices have a bug causing them to not work if they query
-LE tx power on startup. Thus we add a quirk in order to not query it
-and default min/max tx power values to HCI_TX_POWER_INVALID.
+extract_crng() and crng_backtrack_protect() load crng_node_pool with a
+plain load, which causes undefined behavior if do_numa_crng_init()
+modifies it concurrently.
 
-Signed-off-by: Aditya Garg <gargaditya08@live.com>
-Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
-Tested-by: Orlando Chamberlain <redecorating@protonmail.com>
-Link:
-https://lore.kernel.org/r/4970a940-211b-25d6-edab-21a815313954@protonmail.com
-Fixes: 7c395ea521e6 ("Bluetooth: Query LE tx power on startup")
+Fix this by using READ_ONCE().  Note: as per the previous discussion
+https://lore.kernel.org/lkml/20211219025139.31085-1-ebiggers@kernel.org/T/#u,
+READ_ONCE() is believed to be sufficient here, and it was requested that
+it be used here instead of smp_load_acquire().
+
+Also change do_numa_crng_init() to set crng_node_pool using
+cmpxchg_release() instead of mb() + cmpxchg(), as the former is
+sufficient here but is more lightweight.
+
+Fixes: 1e7f583af67b ("random: make /dev/urandom scalable for silly userspace programs")
 Cc: stable@vger.kernel.org
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/hci.h |    9 +++++++++
- net/bluetooth/hci_core.c    |    3 ++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/char/random.c |   42 ++++++++++++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -246,6 +246,15 @@ enum {
- 	 * HCI after resume.
- 	 */
- 	HCI_QUIRK_NO_SUSPEND_NOTIFIER,
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -843,8 +843,8 @@ static void do_numa_crng_init(struct wor
+ 		crng_initialize_secondary(crng);
+ 		pool[i] = crng;
+ 	}
+-	mb();
+-	if (cmpxchg(&crng_node_pool, NULL, pool)) {
++	/* pairs with READ_ONCE() in select_crng() */
++	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
+ 		for_each_node(i)
+ 			kfree(pool[i]);
+ 		kfree(pool);
+@@ -857,8 +857,26 @@ static void numa_crng_init(void)
+ {
+ 	schedule_work(&numa_crng_init_work);
+ }
 +
-+	/*
-+	 * When this quirk is set, LE tx power is not queried on startup
-+	 * and the min/max tx power values default to HCI_TX_POWER_INVALID.
-+	 *
-+	 * This quirk can be set before hci_register_dev is called or
-+	 * during the hdev->setup vendor callback.
-+	 */
-+	HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER,
- };
++static struct crng_state *select_crng(void)
++{
++	struct crng_state **pool;
++	int nid = numa_node_id();
++
++	/* pairs with cmpxchg_release() in do_numa_crng_init() */
++	pool = READ_ONCE(crng_node_pool);
++	if (pool && pool[nid])
++		return pool[nid];
++
++	return &primary_crng;
++}
+ #else
+ static void numa_crng_init(void) {}
++
++static struct crng_state *select_crng(void)
++{
++	return &primary_crng;
++}
+ #endif
  
- /* HCI device flags */
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -742,7 +742,8 @@ static int hci_init3_req(struct hci_requ
- 			hci_req_add(req, HCI_OP_LE_READ_ADV_TX_POWER, 0, NULL);
- 		}
+ /*
+@@ -1005,15 +1023,7 @@ static void _extract_crng(struct crng_st
  
--		if (hdev->commands[38] & 0x80) {
-+		if ((hdev->commands[38] & 0x80) &&
-+		    !test_bit(HCI_QUIRK_BROKEN_READ_TRANSMIT_POWER, &hdev->quirks)) {
- 			/* Read LE Min/Max Tx Power*/
- 			hci_req_add(req, HCI_OP_LE_READ_TRANSMIT_POWER,
- 				    0, NULL);
+ static void extract_crng(__u8 out[CHACHA_BLOCK_SIZE])
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_extract_crng(crng, out);
++	_extract_crng(select_crng(), out);
+ }
+ 
+ /*
+@@ -1042,15 +1052,7 @@ static void _crng_backtrack_protect(stru
+ 
+ static void crng_backtrack_protect(__u8 tmp[CHACHA_BLOCK_SIZE], int used)
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_crng_backtrack_protect(crng, tmp, used);
++	_crng_backtrack_protect(select_crng(), tmp, used);
+ }
+ 
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 
 
