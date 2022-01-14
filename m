@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AE8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E325DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234400AbiANI0y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:26:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237976AbiANIXP (ORCPT
+        id S240713AbiANI05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:26:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60506 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239922AbiANIXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:23:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6617FC0617A9;
-        Fri, 14 Jan 2022 00:22:43 -0800 (PST)
+        Fri, 14 Jan 2022 03:23:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 267FCB823E6;
-        Fri, 14 Jan 2022 08:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EE26C36AE9;
-        Fri, 14 Jan 2022 08:22:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CBC161E42;
+        Fri, 14 Jan 2022 08:23:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79942C36AEA;
+        Fri, 14 Jan 2022 08:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148561;
-        bh=g9nDPkBpKX1zbGktkUdzHRAmEHWN2ncICI7433EXq/w=;
+        s=korg; t=1642148602;
+        bh=nXA5uw1BJBunp6rPpvxLD5f0Asl2qjtB4n828pX/x0c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GvGdGW0OttHIMagI9B251qJq5Ahq4LmBihirZtD07aQCJ4x9T8PlGhx49uoHuDJr1
-         pX3bLxD56mJl3a1I4jk8V9d+KVvPNG3oSD9jzsiEYBMqn9yTgC5nWavLXCvT1yGRL7
-         N82I52CRwNxuHIwjjMbDO/RYzcBJDer7y8SjEglk=
+        b=FEYQau9kpvbpRMrImKn2Rra4/eoylxZo+Y+BLBvPnxUsd6KyxeqxSxqAULS0INxzZ
+         Owk45Ss1CiJ7WrmLjI4UTJMviJ+KsQd5xR1WX6FqFP2JrStCn8BFKX2689ps3j84mn
+         eDssPiaCoL6ONrFxXR0kAk/KWCnd2ucz7sG3YPic=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Mark-YW.Chen" <mark-yw.chen@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.16 07/37] Bluetooth: btusb: fix memory leak in btusb_mtk_submit_wmt_recv_urb()
-Date:   Fri, 14 Jan 2022 09:16:21 +0100
-Message-Id: <20220114081545.098672752@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 5.16 30/37] random: fix data race on crng_node_pool
+Date:   Fri, 14 Jan 2022 09:16:44 +0100
+Message-Id: <20220114081545.834975066@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -48,77 +46,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark-YW.Chen <mark-yw.chen@mediatek.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit 60c6a63a3d3080a62f3e0e20084f58dbeff16748 upstream.
+commit 5d73d1e320c3fd94ea15ba5f79301da9a8bcc7de upstream.
 
-Driver should free `usb->setup_packet` to avoid the leak.
+extract_crng() and crng_backtrack_protect() load crng_node_pool with a
+plain load, which causes undefined behavior if do_numa_crng_init()
+modifies it concurrently.
 
-$ cat /sys/kernel/debug/kmemleak
-unreferenced object 0xffffffa564a58080 (size 128):
-    backtrace:
-        [<000000007eb8dd70>] kmem_cache_alloc_trace+0x22c/0x384
-        [<000000008a44191d>] btusb_mtk_hci_wmt_sync+0x1ec/0x994
-    [btusb]
-        [<00000000ca7189a3>] btusb_mtk_setup+0x6b8/0x13cc
-    [btusb]
-        [<00000000c6105069>] hci_dev_do_open+0x290/0x974
-    [bluetooth]
-        [<00000000a583f8b8>] hci_power_on+0xdc/0x3cc [bluetooth]
-        [<000000005d80e687>] process_one_work+0x514/0xc80
-        [<00000000f4d57637>] worker_thread+0x818/0xd0c
-        [<00000000dc7bdb55>] kthread+0x2f8/0x3b8
-        [<00000000f9999513>] ret_from_fork+0x10/0x30
+Fix this by using READ_ONCE().  Note: as per the previous discussion
+https://lore.kernel.org/lkml/20211219025139.31085-1-ebiggers@kernel.org/T/#u,
+READ_ONCE() is believed to be sufficient here, and it was requested that
+it be used here instead of smp_load_acquire().
 
-Fixes: a1c49c434e150 ("Bluetooth: btusb: Add protocol support for MediaTek MT7668U USB devices")
-Signed-off-by: Mark-YW.Chen <mark-yw.chen@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Also change do_numa_crng_init() to set crng_node_pool using
+cmpxchg_release() instead of mb() + cmpxchg(), as the former is
+sufficient here but is more lightweight.
+
+Fixes: 1e7f583af67b ("random: make /dev/urandom scalable for silly userspace programs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/char/random.c |   42 ++++++++++++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -2267,6 +2267,7 @@ static void btusb_mtk_wmt_recv(struct ur
- 		skb = bt_skb_alloc(HCI_WMT_MAX_EVENT_SIZE, GFP_ATOMIC);
- 		if (!skb) {
- 			hdev->stat.err_rx++;
-+			kfree(urb->setup_packet);
- 			return;
- 		}
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -843,8 +843,8 @@ static void do_numa_crng_init(struct wor
+ 		crng_initialize_secondary(crng);
+ 		pool[i] = crng;
+ 	}
+-	mb();
+-	if (cmpxchg(&crng_node_pool, NULL, pool)) {
++	/* pairs with READ_ONCE() in select_crng() */
++	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
+ 		for_each_node(i)
+ 			kfree(pool[i]);
+ 		kfree(pool);
+@@ -857,8 +857,26 @@ static void numa_crng_init(void)
+ {
+ 	schedule_work(&numa_crng_init_work);
+ }
++
++static struct crng_state *select_crng(void)
++{
++	struct crng_state **pool;
++	int nid = numa_node_id();
++
++	/* pairs with cmpxchg_release() in do_numa_crng_init() */
++	pool = READ_ONCE(crng_node_pool);
++	if (pool && pool[nid])
++		return pool[nid];
++
++	return &primary_crng;
++}
+ #else
+ static void numa_crng_init(void) {}
++
++static struct crng_state *select_crng(void)
++{
++	return &primary_crng;
++}
+ #endif
  
-@@ -2287,6 +2288,7 @@ static void btusb_mtk_wmt_recv(struct ur
- 			data->evt_skb = skb_clone(skb, GFP_ATOMIC);
- 			if (!data->evt_skb) {
- 				kfree_skb(skb);
-+				kfree(urb->setup_packet);
- 				return;
- 			}
- 		}
-@@ -2295,6 +2297,7 @@ static void btusb_mtk_wmt_recv(struct ur
- 		if (err < 0) {
- 			kfree_skb(data->evt_skb);
- 			data->evt_skb = NULL;
-+			kfree(urb->setup_packet);
- 			return;
- 		}
+ /*
+@@ -1005,15 +1023,7 @@ static void _extract_crng(struct crng_st
  
-@@ -2305,6 +2308,7 @@ static void btusb_mtk_wmt_recv(struct ur
- 			wake_up_bit(&data->flags,
- 				    BTUSB_TX_WAIT_VND_EVT);
- 		}
-+		kfree(urb->setup_packet);
- 		return;
- 	} else if (urb->status == -ENOENT) {
- 		/* Avoid suspend failed when usb_kill_urb */
-@@ -2325,6 +2329,7 @@ static void btusb_mtk_wmt_recv(struct ur
- 	usb_anchor_urb(urb, &data->ctrl_anchor);
- 	err = usb_submit_urb(urb, GFP_ATOMIC);
- 	if (err < 0) {
-+		kfree(urb->setup_packet);
- 		/* -EPERM: urb is being killed;
- 		 * -ENODEV: device got disconnected
- 		 */
+ static void extract_crng(__u8 out[CHACHA_BLOCK_SIZE])
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_extract_crng(crng, out);
++	_extract_crng(select_crng(), out);
+ }
+ 
+ /*
+@@ -1042,15 +1052,7 @@ static void _crng_backtrack_protect(stru
+ 
+ static void crng_backtrack_protect(__u8 tmp[CHACHA_BLOCK_SIZE], int used)
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_crng_backtrack_protect(crng, tmp, used);
++	_crng_backtrack_protect(select_crng(), tmp, used);
+ }
+ 
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 
 
