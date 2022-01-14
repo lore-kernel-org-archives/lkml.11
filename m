@@ -2,80 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DCDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED89C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:44:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243529AbiANQn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 11:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235625AbiANQn0 (ORCPT
+        id S243551AbiANQoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 11:44:20 -0500
+Received: from giacobini.uberspace.de ([185.26.156.129]:52290 "EHLO
+        giacobini.uberspace.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235625AbiANQoT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 11:43:26 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C882AC061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:43:25 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id br17so32048055lfb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 08:43:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:mime-version
-         :content-disposition;
-        bh=u50us0AD3nwGYBzCMwJX7WF8TLsdut+YHsrfo8CJPWQ=;
-        b=a3CJyZ/jLU+cLlc4mE7a17qTVo6dS8r1yJT4nLU2EjLDne0kM8tuyzg8e9wWe8Y1rZ
-         3AXxcWkjz0JMQQcUCCR6PJbQDnZAeBNIWcKqImx3Pa5L56hGimc/3ORnnApaoP894PdK
-         4rXCMZQJHWmJmNJkolRra+cze7ZgjxSnGA4gjjLJa5m8XCSFDCFE86xBWE8AWmespNMk
-         yJyXCtmfidb3+QLyY1CnUdJ3TSngGut+5JFcvtOEeIIE2WFYOVlUAoA6ALWgnZScIXqL
-         lsHTm2r9wNTqPUXDkb//zbLZf8sWShuNhg/HxM4Tp7utxuJilgkPmAImhNDMpv635j5G
-         PL3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :mime-version:content-disposition;
-        bh=u50us0AD3nwGYBzCMwJX7WF8TLsdut+YHsrfo8CJPWQ=;
-        b=eoFIUoJYEqJ0bQSRlBB9/Ax7fvem3cY4HZiNBOaFa3XfgjOWchZjBTVpO1TgAarvH3
-         +WiJN0iZqc63YD9RF+WTMllM93Xc27TO37b/f6G2J6+NOH8AH+qOdUGHaDIhmPmpaNdD
-         AXMbZxKFXZZuFAwm7qA7kNw5Cb0VWX8CFgOrrubKkqc2ueavWkpmswJPaXVu7x9AiNhL
-         mEKVGpIgdCtiKwp36xoM2mc0zRGRRzGVnfE+CDAHNYVJwJFbAdghQbGMYtIDot5B8ksa
-         NUl4OerPBZj2SUud0anO70CgLafsmsEAiZ9Zs6PRAmp/v53lFgsOHt2/nyChCZkxeX+0
-         1G3g==
-X-Gm-Message-State: AOAM531GQJ6FqYzEj3pudAZrNeW3O6sp4a9iviFq/ABH/Ul9JE5sVsrN
-        JhdQw0DYAmNkLcajwgtKwNE=
-X-Google-Smtp-Source: ABdhPJy8oRBd9adSSDaJ1p5ffaklWXFU0PbvMzO4ZwJ2by8ZODfckkMB6FgQBA1GYupkLKeHr6Vacg==
-X-Received: by 2002:a2e:b4b8:: with SMTP id q24mr2950046ljm.482.1642178604185;
-        Fri, 14 Jan 2022 08:43:24 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id cf42sm627703lfb.251.2022.01.14.08.43.23
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Fri, 14 Jan 2022 08:43:23 -0800 (PST)
-Date:   Fri, 14 Jan 2022 19:49:05 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        Elia Devito <eliadevito@gmail.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/1] ALSA: hda/realtek: fix speakers and micmute on HP 855
-Message-ID: <20220114164904.lgj7yimbei6fmloe@localhost.localdomain>
-User-Agent: mtt
+        Fri, 14 Jan 2022 11:44:19 -0500
+Received: (qmail 16780 invoked by uid 990); 14 Jan 2022 16:44:17 -0000
+Authentication-Results: giacobini.uberspace.de;
+        auth=pass (plain)
+From:   Soenke Huster <soenke.huster@eknoes.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Soenke Huster <soenke.huster@eknoes.de>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] Bluetooth: fix null ptr deref on hci_sync_conn_complete_evt
+Date:   Fri, 14 Jan 2022 17:44:02 +0100
+Message-Id: <20220114164401.330248-1-soenke.huster@eknoes.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-Rspamd-Bar: /
+X-Rspamd-Report: BAYES_HAM(-3) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
+X-Rspamd-Score: -0.1
+Received: from unknown (HELO unkown) (::1)
+        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Fri, 14 Jan 2022 17:44:17 +0100
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rebased and re-tested on the latest sound.git tree.
+This event is just specified for SCO and eSCO link types.
+On the reception of a HCI_Synchronous_Connection_Complete for a BDADDR
+of an existing LE connection, LE link type and a status that triggers the
+second case of the packet processing a NULL pointer dereference happens,
+as conn->link is NULL.
 
-Alexander Sergeyev (1):
-  ALSA: hda/realtek: fix speakers and micmute on HP 855 G8
+Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+---
+v3: Replace if with switch, reference spec
 
- sound/pci/hda/patch_realtek.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+I found this null pointer dereference while fuzzing bluetooth-next.
+On the described behaviour, a null ptr deref in line 4723 happens, as
+conn->link is NULL. According to the Core spec, Link_Type must be SCO or eSCO,
+all other values are reserved for future use. Checking that mitigates a null
+pointer dereference.
 
+ net/bluetooth/hci_event.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index fc30f4c03d29..e47cde778b1c 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4661,6 +4661,19 @@ static void hci_sync_conn_complete_evt(struct hci_dev *hdev, void *data,
+ 	struct hci_ev_sync_conn_complete *ev = data;
+ 	struct hci_conn *conn;
+ 
++	switch (ev->link_type) {
++	case SCO_LINK:
++	case ESCO_LINK:
++		break;
++	default:
++		/* As per Core 5.3 Vol 4 Part E 7.7.35 (p.2219), Link_Type
++		 * for HCI_Synchronous_Connection_Complete is limited to
++		 * either SCO or eSCO
++		 */
++		bt_dev_err(hdev, "Ignoring connect complete event for invalid link type");
++		return;
++	}
++
+ 	bt_dev_dbg(hdev, "status 0x%2.2x", ev->status);
+ 
+ 	hci_dev_lock(hdev);
 -- 
 2.34.1
 
