@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03671C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A84C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242270AbiANPIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:08:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59708 "EHLO
+        id S242304AbiANPIw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:08:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235794AbiANPIn (ORCPT
+        with ESMTP id S242247AbiANPIn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 14 Jan 2022 10:08:43 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7D2C061746
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:08:42 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id x11so5463252lfa.2
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:08:42 -0800 (PST)
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A69DC061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:08:43 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id o12so14499678lfu.12
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:08:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4dui9+NpX4w52rrVA0g43taTTsULBafA6eRdbjyTa0s=;
-        b=rD4w4QP10UDyrS9EQ5coM1KCAFC9PxRPJ9d9lH+BANBIoZQkYN1mZUCY/MUm5E9Qry
-         1wLzrMKT0O+F524Qx07gOZCBpDVamGz+r/VWiGT81TyQhXzxeNHVajeaW0jeDtXtbbtY
-         TwrLh0yEEdk1qCV9CVetAJqHRE+rVcDBu5j+YkQhlvqBaXRarqeu/0bhT+oGWsZ9c8xm
-         8ZoF3e/vx7WE2RM/C0pJac76Qk8t7FVqhQD8MhoniX8t+60HKHL9S5t8SJHqlva2NnDS
-         VXlnotD/BRXqyI4dXsTqLT27BUVFPhMifVhqPTTf9LDyMWnJbFO2P+DQBDZU/FfRTgDb
-         VrMQ==
+        bh=kkaQ+ilU28pNJN/7SN9SP94ch7HastDd6BRVCG2d0i4=;
+        b=t4Qxcaw29ddTpIY1GIQo/VNupFBYlv49gkZXf5Z+dchvERgY8PNd135R8OriOBLprv
+         rGc0sZOW8unQcFW6eUw2vgcMsoAVXmHKJibRhubP9ZGRteTP6kMH3DLocCh8WyN7H37R
+         t5uEQ+L/61IRXqV7hbRlTMUBV0mB8mQYHRXEcC2aEUdsS1J7wTjPqAnUzJqsTfnIvtUm
+         L8AKMqGX32sGfvQmxZkKYhwxt8MAKN5MMYYMrrSIQEvR9fiQBa5r5a/bjOZPgh7ZKQEh
+         0OuPjpEdzJI/U69mBnYnD71ypu47cTqKv07t6UjAj5VF/hO3Tw8cXiVB2OSpqxCB4+qp
+         PuaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4dui9+NpX4w52rrVA0g43taTTsULBafA6eRdbjyTa0s=;
-        b=UjX3EOVWKIGWVifq+mBNyQqd0DUXt36rYTQq44aMKfvtQmoEioKgh04wzyaRhTGuTW
-         65vpYAw5JEb0YKiJbxc7WCegqo8lp4f3h4QdSwmI+RZBhD+3FPS2Ymy6FfnMGq+uTG5V
-         te+fUt5G5kIH0Hb3lBAoOdN6wX5eEbfK7xyWP8vQ5QOa4U6NuawlYZtn6t+1SBfePrA1
-         Q8h2bUmXqZFckB5W1rIrfmn7jJISRZQhxTCawTVYeKeEUjbWLoRH0CGjt3rW/rsLz6wb
-         EJ/VPNOZlvf48MsR60tidYx7EZGMGZ+IyKnL2irNFGVG3zJyZS1PQFu6G9koG4itevT5
-         hVZA==
-X-Gm-Message-State: AOAM530vrdfoOru095cznIWOjMMofXj3Qka4vjmLCNUihdKHkT4BXz6+
-        7Mh1rtD2CQW0/HehhWQbNdxM+kBIO7UtLA==
-X-Google-Smtp-Source: ABdhPJx+G+1RC9jl681kZrchzosFEWuHX+TYTIeHYMiaCzuOta6YAeCce9VzoM9rOK9s44WwJYo+qg==
-X-Received: by 2002:a2e:9609:: with SMTP id v9mr5847790ljh.45.1642172920876;
-        Fri, 14 Jan 2022 07:08:40 -0800 (PST)
+        bh=kkaQ+ilU28pNJN/7SN9SP94ch7HastDd6BRVCG2d0i4=;
+        b=xn9gNywmdihZIupja+bTlZVMv68eGHO39OzXCkFW7279McxM+CPRE/4AboRXs3zpIi
+         ImmxibJltOVEhstWJyJWVF659UIanf8ExoxUqHyyvXyoGX3QkQwT+Mgz8I7EkJFHOCOZ
+         uS4zB7hdibPJQR8GHb45UKz0EqO0HA7YYUOJG9ZQXusW8XcoQfTepGhrblL/qUAIQ2kx
+         HJ3ITWtMZMw+GUKxu5nTq12QGcpm1vP73aMDlwknnKAroYd0CPDK/G9ZjdVaeE69VXla
+         Envj+ljxkHkznfrPuS6Idf52LWKClY05rRuJt99A3Fkdcs6r7TDBLKHfehUnedqwSsD2
+         ajSA==
+X-Gm-Message-State: AOAM533KFJHr/EY8kfF3tlKLlQSdWIVQXekBx9hc5Pq9/8LVHCU0vhDp
+        1gAbEA6iyhmjSMzJWKr4H/dF4WIVMX+c5w==
+X-Google-Smtp-Source: ABdhPJxPOJWCHT1fugAixWFFYnPcwdNVZyAgtU5RcZTq8Jve1Q46caSwMBvHnm02PH0pxdrq/0iRqw==
+X-Received: by 2002:a2e:86c7:: with SMTP id n7mr3943474ljj.102.1642172921646;
+        Fri, 14 Jan 2022 07:08:41 -0800 (PST)
 Received: from jade.urgonet (h-94-254-48-165.A175.priv.bahnhof.se. [94.254.48.165])
         by smtp.gmail.com with ESMTPSA id i31sm40517lfv.67.2022.01.14.07.08.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 07:08:40 -0800 (PST)
+        Fri, 14 Jan 2022 07:08:41 -0800 (PST)
 From:   Jens Wiklander <jens.wiklander@linaro.org>
 To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
 Cc:     Sumit Garg <sumit.garg@linaro.org>,
@@ -57,9 +57,9 @@ Cc:     Sumit Garg <sumit.garg@linaro.org>,
         David Howells <dhowells@redhat.com>,
         Tyler Hicks <tyhicks@linux.microsoft.com>,
         Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v2 02/12] tee: remove unused tee_shm_pool_alloc_res_mem()
-Date:   Fri, 14 Jan 2022 16:08:14 +0100
-Message-Id: <20220114150824.3578829-3-jens.wiklander@linaro.org>
+Subject: [PATCH v2 03/12] tee: add tee_shm_alloc_user_buf()
+Date:   Fri, 14 Jan 2022 16:08:15 +0100
+Message-Id: <20220114150824.3578829-4-jens.wiklander@linaro.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220114150824.3578829-1-jens.wiklander@linaro.org>
 References: <20220114150824.3578829-1-jens.wiklander@linaro.org>
@@ -69,123 +69,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-None of the drivers in the TEE subsystem uses
-tee_shm_pool_alloc_res_mem() so remove the function.
+Adds a new function tee_shm_alloc_user_buf() or user mode allocations,
+replacing passing the flags TEE_SHM_MAPPED | TEE_SHM_DMA_BUF to
+tee_shm_alloc().
 
 Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 ---
- drivers/tee/tee_shm_pool.c | 56 --------------------------------------
- include/linux/tee_drv.h    | 30 --------------------
- 2 files changed, 86 deletions(-)
+ drivers/tee/tee_core.c     |  2 +-
+ drivers/tee/tee_shm.c      | 18 ++++++++++++++++++
+ drivers/tee/tee_shm_pool.c |  2 +-
+ include/linux/tee_drv.h    |  3 ++-
+ 4 files changed, 22 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+index 3fc426dad2df..a15812baaeb1 100644
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -297,7 +297,7 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
+ 	if (data.flags)
+ 		return -EINVAL;
+ 
+-	shm = tee_shm_alloc(ctx, data.size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
++	shm = tee_shm_alloc_user_buf(ctx, data.size);
+ 	if (IS_ERR(shm))
+ 		return PTR_ERR(shm);
+ 
+diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
+index 499fccba3d74..b43178986985 100644
+--- a/drivers/tee/tee_shm.c
++++ b/drivers/tee/tee_shm.c
+@@ -127,6 +127,24 @@ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
+ }
+ EXPORT_SYMBOL_GPL(tee_shm_alloc);
+ 
++/**
++ * tee_shm_alloc_user_buf() - Allocate shared memory for user space
++ * @ctx:	Context that allocates the shared memory
++ * @size:	Requested size of shared memory
++ *
++ * Memory allocated as user space shared memory is automatically freed when
++ * the TEE file pointer is closed. The primary usage of this function is
++ * when the TEE driver doesn't support registering ordinary user space
++ * memory.
++ *
++ * @returns a pointer to 'struct tee_shm'
++ */
++struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
++{
++	return tee_shm_alloc(ctx, size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
++}
++EXPORT_SYMBOL_GPL(tee_shm_alloc_user_buf);
++
+ /**
+  * tee_shm_alloc_kernel_buf() - Allocate shared memory for kernel buffer
+  * @ctx:	Context that allocates the shared memory
 diff --git a/drivers/tee/tee_shm_pool.c b/drivers/tee/tee_shm_pool.c
-index fcbb461fc59c..a9f9d50fd181 100644
+index a9f9d50fd181..0e460347138a 100644
 --- a/drivers/tee/tee_shm_pool.c
 +++ b/drivers/tee/tee_shm_pool.c
-@@ -47,62 +47,6 @@ static const struct tee_shm_pool_mgr_ops pool_ops_generic = {
- 	.destroy_poolmgr = pool_op_gen_destroy_poolmgr,
- };
- 
--/**
-- * tee_shm_pool_alloc_res_mem() - Create a shared memory pool from reserved
-- * memory range
-- * @priv_info:	Information for driver private shared memory pool
-- * @dmabuf_info: Information for dma-buf shared memory pool
-- *
-- * Start and end of pools will must be page aligned.
-- *
-- * Allocation with the flag TEE_SHM_DMA_BUF set will use the range supplied
-- * in @dmabuf, others will use the range provided by @priv.
-- *
-- * @returns pointer to a 'struct tee_shm_pool' or an ERR_PTR on failure.
-- */
--struct tee_shm_pool *
--tee_shm_pool_alloc_res_mem(struct tee_shm_pool_mem_info *priv_info,
--			   struct tee_shm_pool_mem_info *dmabuf_info)
--{
--	struct tee_shm_pool_mgr *priv_mgr;
--	struct tee_shm_pool_mgr *dmabuf_mgr;
--	void *rc;
--
--	/*
--	 * Create the pool for driver private shared memory
--	 */
--	rc = tee_shm_pool_mgr_alloc_res_mem(priv_info->vaddr, priv_info->paddr,
--					    priv_info->size,
--					    3 /* 8 byte aligned */);
--	if (IS_ERR(rc))
--		return rc;
--	priv_mgr = rc;
--
--	/*
--	 * Create the pool for dma_buf shared memory
--	 */
--	rc = tee_shm_pool_mgr_alloc_res_mem(dmabuf_info->vaddr,
--					    dmabuf_info->paddr,
--					    dmabuf_info->size, PAGE_SHIFT);
--	if (IS_ERR(rc))
--		goto err_free_priv_mgr;
--	dmabuf_mgr = rc;
--
--	rc = tee_shm_pool_alloc(priv_mgr, dmabuf_mgr);
--	if (IS_ERR(rc))
--		goto err_free_dmabuf_mgr;
--
--	return rc;
--
--err_free_dmabuf_mgr:
--	tee_shm_pool_mgr_destroy(dmabuf_mgr);
--err_free_priv_mgr:
--	tee_shm_pool_mgr_destroy(priv_mgr);
--
--	return rc;
--}
--EXPORT_SYMBOL_GPL(tee_shm_pool_alloc_res_mem);
--
- struct tee_shm_pool_mgr *tee_shm_pool_mgr_alloc_res_mem(unsigned long vaddr,
- 							phys_addr_t paddr,
- 							size_t size,
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Copyright (c) 2015, Linaro Limited
++ * Copyright (c) 2015, 2017, 2022 Linaro Limited
+  */
+ #include <linux/device.h>
+ #include <linux/dma-buf.h>
 diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-index 5e1533ee3785..6b0f0d01ebdf 100644
+index 6b0f0d01ebdf..26b450484ac1 100644
 --- a/include/linux/tee_drv.h
 +++ b/include/linux/tee_drv.h
-@@ -278,36 +278,6 @@ static inline void tee_shm_pool_mgr_destroy(struct tee_shm_pool_mgr *poolm)
- 	poolm->ops->destroy_poolmgr(poolm);
- }
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+- * Copyright (c) 2015-2016, Linaro Limited
++ * Copyright (c) 2015-2022 Linaro Limited
+  */
  
--/**
-- * struct tee_shm_pool_mem_info - holds information needed to create a shared
-- * memory pool
-- * @vaddr:	Virtual address of start of pool
-- * @paddr:	Physical address of start of pool
-- * @size:	Size in bytes of the pool
-- */
--struct tee_shm_pool_mem_info {
--	unsigned long vaddr;
--	phys_addr_t paddr;
--	size_t size;
--};
--
--/**
-- * tee_shm_pool_alloc_res_mem() - Create a shared memory pool from reserved
-- * memory range
-- * @priv_info:	 Information for driver private shared memory pool
-- * @dmabuf_info: Information for dma-buf shared memory pool
-- *
-- * Start and end of pools will must be page aligned.
-- *
-- * Allocation with the flag TEE_SHM_DMA_BUF set will use the range supplied
-- * in @dmabuf, others will use the range provided by @priv.
-- *
-- * @returns pointer to a 'struct tee_shm_pool' or an ERR_PTR on failure.
-- */
--struct tee_shm_pool *
--tee_shm_pool_alloc_res_mem(struct tee_shm_pool_mem_info *priv_info,
--			   struct tee_shm_pool_mem_info *dmabuf_info);
--
+ #ifndef __TEE_DRV_H
+@@ -308,6 +308,7 @@ void *tee_get_drvdata(struct tee_device *teedev);
+  * @returns a pointer to 'struct tee_shm'
+  */
+ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags);
++struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size);
+ struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size);
+ 
  /**
-  * tee_shm_pool_free() - Free a shared memory pool
-  * @pool:	The shared memory pool to free
 -- 
 2.31.1
 
