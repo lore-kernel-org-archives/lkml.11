@@ -2,353 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A863C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E45FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbiANPJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:09:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242283AbiANPIv (ORCPT
+        id S238390AbiANPKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:10:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:55884 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235516AbiANPKx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:08:51 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E7B6C061401
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:08:50 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id x7so31181523lfu.8
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:08:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lelFyeI0Hlo2H4BqExX4eucwovYbO0If2EaOhEho04Y=;
-        b=KGJXd2rTnJV9pwu3LFrpOS8NehmSMDqgdieojdBxRQe1mr9Kb2SNGvNERwWj1eeqQZ
-         aC25AU45U9r0+Ro46J2veHfDGglcQFUI9WpvhTJDLhoYJpeDcaxXeOyyPyk4oqHGo8Gp
-         dcHadoTBMugq989z5vxos579grbLWRQX698NjZhi3kGnSN6AITs+GTjFl5gzVMuh4UCp
-         TaVOgpIqYbeNZz7WYsxH68Ms0vw35AM1LLGKa8FPbNI6pYdwmktALbogU3iQ8Fdm3k7f
-         t7SPhR+0JSfE4PjpoBmJIHkzlgRgyHNI3FBzI04YoY+f5fjz7IhGPBAb6H4CYyJpCNIg
-         FfVw==
+        Fri, 14 Jan 2022 10:10:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642173052;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=oWNup3WEK+Z5PYvEX6Ms7ECgpaqQd6Nt47Sgqvp9kdY=;
+        b=I65dKPgnES/YwWS9eeBGkO0aP2nEC4F91YSrAFnf86BWqsRcIiJ2Osz7FM51vu6qw+nmyF
+        3K8POd5lGyJzA0eRJedDJY6ei7Ls+OVxHWeIL79thzOkyuQiEBgckhr03r1+K/L4Ko9TxW
+        DcN798rliUG2A7c5OtJTAQMfBhwSd8I=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-G3duCLxxMcCAFSFz7xPQcw-1; Fri, 14 Jan 2022 10:10:51 -0500
+X-MC-Unique: G3duCLxxMcCAFSFz7xPQcw-1
+Received: by mail-wm1-f69.google.com with SMTP id v190-20020a1cacc7000000b0034657bb6a66so2387668wme.6
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 07:10:51 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lelFyeI0Hlo2H4BqExX4eucwovYbO0If2EaOhEho04Y=;
-        b=nyYdVZcvpiTJnkPDmXsBdg3kxQ0C2kdABCrnhtyBIG3p7xvUTzOfMqnaLtoygUYzZZ
-         XKgUrrcB6HcdDelkEMr8+2/1sBjMVddzXnT8TJ8d6Nh5y8h+a+URSWRPnPd631LRZGPw
-         hvhU01oWv8N7QALkFVO0oRytOebR7rZA8TfRNwFaTqMmPSQ8qkU5Ns8dTz6EcNv/i5cf
-         oZGlASJINh4LRlyPBYMgflTBWW4ZVDQDyBCBlh8YzoYMYemFenS/xp+Qiwd9x4xkwXlZ
-         ADsqLCj3vE/gqxNPLXdtEoeK5dwdXQvlzKZDZMe6oBCIo3ifsS4m5YtvdBLRU3dLsSUZ
-         90Jg==
-X-Gm-Message-State: AOAM531QL8l73YdWADV6d+NePEKbk/f7UgDfnCOTFqcS3zRtgC+L4ict
-        GVo3jlNKQmD7p5BzcZHxOV75SPGFq3bAAQ==
-X-Google-Smtp-Source: ABdhPJzI4YZc6yhE2VX4MiClgbiV8kuPD9/cbVO4HOElnZODOR2c3SEtrDHnVcegJ1R/0vzftrHsXw==
-X-Received: by 2002:a2e:a7c7:: with SMTP id x7mr2350905ljp.226.1642172928579;
-        Fri, 14 Jan 2022 07:08:48 -0800 (PST)
-Received: from jade.urgonet (h-94-254-48-165.A175.priv.bahnhof.se. [94.254.48.165])
-        by smtp.gmail.com with ESMTPSA id i31sm40517lfv.67.2022.01.14.07.08.47
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=oWNup3WEK+Z5PYvEX6Ms7ECgpaqQd6Nt47Sgqvp9kdY=;
+        b=Ij6y/FaU9KGi3ADHAmDz6Zr+AtmvYCz/A+12++hv3Zgfmy+1anL7qTbLO3CB5SDP1i
+         s5mv1FVrrzFwKpoO+3nzK0l91D0uZrp17xxHCpV65gf5Berxt2KVAMmW2nFDmt/XevdL
+         v7i50jJH/XAroM4lTkMyE8pFhuKugBcdNnlecNuQ2MRKGvIlQRFcpOJtZxbHKtM6IrPw
+         87gAP9YDriTMj4Y/xgcyjwmJLJKl8f+xJANOk1l1bt3Crf+IvxWqbrXtCuLB6Sq0Eoi5
+         gI5ihfQV0JCJZUk6i00ZsEDA4oK5TJDRQhHG+TWgk/C8jNiaDQ0i/MVbkU4pA8dkPJc6
+         qibQ==
+X-Gm-Message-State: AOAM530c+3g3VKZUpCNiqbM00Vr7AJyDYXrXPIfrtTZ6LfCghLLGdGwA
+        IJIrbz61J9DZcGaXkKaOSY0JzohBboDGVO6YWMFomlljDbvptFXrgb9GokibGoePPs25Th5Dcgh
+        8NtMHqmZbF5v0ER2zZgBe8CZg
+X-Received: by 2002:a05:6000:1b89:: with SMTP id r9mr8674437wru.21.1642173050397;
+        Fri, 14 Jan 2022 07:10:50 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzIxW0LiuEHZAvE09eBmv2dyUKtwMR7glNZj7KgwqRqhx1HI+o0ZcrknrMO+E1oJUHtv91AhQ==
+X-Received: by 2002:a05:6000:1b89:: with SMTP id r9mr8674412wru.21.1642173050166;
+        Fri, 14 Jan 2022 07:10:50 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id p18sm5136909wma.40.2022.01.14.07.10.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 07:08:48 -0800 (PST)
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-To:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org
-Cc:     Sumit Garg <sumit.garg@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Jens Wiklander <jens.wiklander@linaro.org>
-Subject: [PATCH v2 11/12] tee: replace tee_shm_register()
-Date:   Fri, 14 Jan 2022 16:08:23 +0100
-Message-Id: <20220114150824.3578829-12-jens.wiklander@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220114150824.3578829-1-jens.wiklander@linaro.org>
-References: <20220114150824.3578829-1-jens.wiklander@linaro.org>
+        Fri, 14 Jan 2022 07:10:49 -0800 (PST)
+Date:   Fri, 14 Jan 2022 16:10:48 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-ID: <YeGSeGVnBnEHXTtj@krava>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+ <Yd77SYWgtrkhFIYz@krava>
+ <YeAatqQTKsrxmUkS@krava>
+ <20220114234704.41f28e8b5e63368c655d848e@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114234704.41f28e8b5e63368c655d848e@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tee_shm_register() is replaced by the previously introduced functions
-tee_shm_register_user_buf() and tee_shm_register_kernel_buf().
+On Fri, Jan 14, 2022 at 11:47:04PM +0900, Masami Hiramatsu wrote:
+> Hi Jiri and Alexei,
+> 
+> On Thu, 13 Jan 2022 13:27:34 +0100
+> Jiri Olsa <jolsa@redhat.com> wrote:
+> 
+> > On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
+> > > On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
+> > > > Hi Jiri and Alexei,
+> > > > 
+> > > > Here is the 2nd version of fprobe. This version uses the
+> > > > ftrace_set_filter_ips() for reducing the registering overhead.
+> > > > Note that this also drops per-probe point private data, which
+> > > > is not used anyway.
+> > > > 
+> > > > This introduces the fprobe, the function entry/exit probe with
+> > > > multiple probe point support. This also introduces the rethook
+> > > > for hooking function return as same as kretprobe does. This
+> > > 
+> > > nice, I was going through the multi-user-graph support 
+> > > and was wondering that this might be a better way
+> > > 
+> > > > abstraction will help us to generalize the fgraph tracer,
+> > > > because we can just switch it from rethook in fprobe, depending
+> > > > on the kernel configuration.
+> > > > 
+> > > > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
+> > > > patches will not be affected by this change.
+> > > 
+> > > I'll try the bpf selftests on top of this
+> > 
+> > I'm getting crash and stall when running bpf selftests,
+> > the fprobe sample module works fine, I'll check on that
+> 
+> I've tried to build tools/testing/selftests/bpf on my machine,
+> but I got below errors. Would you know how I can setup to build
+> the bpf selftests correctly? (I tried "make M=samples/bpf", but same result)
 
-Since there are not external callers left we can remove tee_shm_register()
-and refactor the remains.
+what's your clang version? your distro might be behind,
+I'm using clang 14 compiled from sources:
 
-Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
----
- drivers/tee/tee_shm.c   | 157 +++++++++++++++++++++++-----------------
- include/linux/tee_drv.h |  11 ---
- 2 files changed, 91 insertions(+), 77 deletions(-)
+	$ /opt/clang/bin/clang --version
+	clang version 14.0.0 (https://github.com/llvm/llvm-project.git 9f8ffaaa0bddcefeec15a3df9858fd50b05fcbae)
+	Target: x86_64-unknown-linux-gnu
+	Thread model: posix
+	InstalledDir: /opt/clang/bin
 
-diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-index 6a1dbce75616..fe3e5977dd7c 100644
---- a/drivers/tee/tee_shm.c
-+++ b/drivers/tee/tee_shm.c
-@@ -12,17 +12,43 @@
- #include <linux/uio.h>
- #include "tee_private.h"
- 
-+static void shm_put_kernel_pages(struct page **pages, unsigned long npages)
-+{
-+	unsigned long n;
-+
-+	for (n = 0; n < npages; n++)
-+		put_page(pages[n]);
-+}
-+
-+static int shm_get_kernel_pages(unsigned long start, int page_count,
-+				struct page **pages)
-+{
-+	struct kvec *kiov;
-+	unsigned int n;
-+	int rc;
-+
-+	kiov = kcalloc(page_count, sizeof(*kiov), GFP_KERNEL);
-+	if (!kiov)
-+		return -ENOMEM;
-+
-+	for (n = 0; n < page_count; n++) {
-+		kiov[n].iov_base = (void *)(start + n * PAGE_SIZE);
-+		kiov[n].iov_len = PAGE_SIZE;
-+	}
-+
-+	rc = get_kernel_pages(kiov, page_count, 0, pages);
-+	kfree(kiov);
-+
-+	return rc;
-+}
-+
- static void release_registered_pages(struct tee_shm *shm)
- {
- 	if (shm->pages) {
--		if (shm->flags & TEE_SHM_USER_MAPPED) {
-+		if (shm->flags & TEE_SHM_USER_MAPPED)
- 			unpin_user_pages(shm->pages, shm->num_pages);
--		} else {
--			size_t n;
--
--			for (n = 0; n < shm->num_pages; n++)
--				put_page(shm->pages[n]);
--		}
-+		else
-+			shm_put_kernel_pages(shm->pages, shm->num_pages);
- 
- 		kfree(shm->pages);
- 	}
-@@ -191,28 +217,24 @@ struct tee_shm *tee_shm_alloc_priv_kernel_buf(struct tee_context *ctx,
- }
- EXPORT_SYMBOL_GPL(tee_shm_alloc_priv_kernel_buf);
- 
--struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
--				 size_t length, u32 flags)
-+static struct tee_shm *
-+register_shm_helper(struct tee_context *ctx, unsigned long addr,
-+		    size_t length, u32 flags, int id)
- {
- 	struct tee_device *teedev = ctx->teedev;
--	const u32 req_user_flags = TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED;
--	const u32 req_kernel_flags = TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED;
- 	struct tee_shm *shm;
-+	unsigned long start;
-+	int num_pages;
- 	void *ret;
- 	int rc;
--	int num_pages;
--	unsigned long start;
--
--	if (flags != req_user_flags && flags != req_kernel_flags)
--		return ERR_PTR(-ENOTSUPP);
- 
- 	if (!tee_device_get(teedev))
- 		return ERR_PTR(-EINVAL);
- 
- 	if (!teedev->desc->ops->shm_register ||
- 	    !teedev->desc->ops->shm_unregister) {
--		tee_device_put(teedev);
--		return ERR_PTR(-ENOTSUPP);
-+		ret = ERR_PTR(-ENOTSUPP);
-+		goto err_dev_put;
- 	}
- 
- 	teedev_ctx_get(ctx);
-@@ -220,13 +242,13 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
- 	shm = kzalloc(sizeof(*shm), GFP_KERNEL);
- 	if (!shm) {
- 		ret = ERR_PTR(-ENOMEM);
--		goto err;
-+		goto err_ctx_put;
- 	}
- 
- 	refcount_set(&shm->refcount, 1);
--	shm->flags = flags | TEE_SHM_REGISTER;
-+	shm->flags = flags;
- 	shm->ctx = ctx;
--	shm->id = -1;
-+	shm->id = id;
- 	addr = untagged_addr(addr);
- 	start = rounddown(addr, PAGE_SIZE);
- 	shm->offset = addr - start;
-@@ -235,71 +257,45 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
- 	shm->pages = kcalloc(num_pages, sizeof(*shm->pages), GFP_KERNEL);
- 	if (!shm->pages) {
- 		ret = ERR_PTR(-ENOMEM);
--		goto err;
-+		goto err_free_shm;
- 	}
- 
--	if (flags & TEE_SHM_USER_MAPPED) {
-+	if (flags & TEE_SHM_USER_MAPPED)
- 		rc = pin_user_pages_fast(start, num_pages, FOLL_WRITE,
- 					 shm->pages);
--	} else {
--		struct kvec *kiov;
--		int i;
--
--		kiov = kcalloc(num_pages, sizeof(*kiov), GFP_KERNEL);
--		if (!kiov) {
--			ret = ERR_PTR(-ENOMEM);
--			goto err;
--		}
--
--		for (i = 0; i < num_pages; i++) {
--			kiov[i].iov_base = (void *)(start + i * PAGE_SIZE);
--			kiov[i].iov_len = PAGE_SIZE;
--		}
--
--		rc = get_kernel_pages(kiov, num_pages, 0, shm->pages);
--		kfree(kiov);
--	}
-+	else
-+		rc = shm_get_kernel_pages(start, num_pages, shm->pages);
- 	if (rc > 0)
- 		shm->num_pages = rc;
- 	if (rc != num_pages) {
- 		if (rc >= 0)
- 			rc = -ENOMEM;
- 		ret = ERR_PTR(rc);
--		goto err;
--	}
--
--	mutex_lock(&teedev->mutex);
--	shm->id = idr_alloc(&teedev->idr, shm, 1, 0, GFP_KERNEL);
--	mutex_unlock(&teedev->mutex);
--
--	if (shm->id < 0) {
--		ret = ERR_PTR(shm->id);
--		goto err;
-+		goto err_put_shm_pages;
- 	}
- 
- 	rc = teedev->desc->ops->shm_register(ctx, shm, shm->pages,
- 					     shm->num_pages, start);
- 	if (rc) {
- 		ret = ERR_PTR(rc);
--		goto err;
-+		goto err_put_shm_pages;
- 	}
- 
- 	return shm;
--err:
--	if (shm) {
--		if (shm->id >= 0) {
--			mutex_lock(&teedev->mutex);
--			idr_remove(&teedev->idr, shm->id);
--			mutex_unlock(&teedev->mutex);
--		}
--		release_registered_pages(shm);
--	}
-+err_put_shm_pages:
-+	if (flags & TEE_SHM_USER_MAPPED)
-+		unpin_user_pages(shm->pages, shm->num_pages);
-+	else
-+		shm_put_kernel_pages(shm->pages, shm->num_pages);
-+	kfree(shm->pages);
-+err_free_shm:
- 	kfree(shm);
-+err_ctx_put:
- 	teedev_ctx_put(ctx);
-+err_dev_put:
- 	tee_device_put(teedev);
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(tee_shm_register);
- 
- /**
-  * tee_shm_register_user_buf() - Register a userspace shared memory buffer
-@@ -312,8 +308,36 @@ EXPORT_SYMBOL_GPL(tee_shm_register);
- struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
- 					  unsigned long addr, size_t length)
- {
--	return tee_shm_register(ctx, addr, length,
--				TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
-+	u32 f = TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED | TEE_SHM_REGISTER;
-+	struct tee_device *teedev = ctx->teedev;
-+	struct tee_shm *shm;
-+	void *ret;
-+	int id;
-+
-+	mutex_lock(&teedev->mutex);
-+	id = idr_alloc(&teedev->idr, NULL, 1, 0, GFP_KERNEL);
-+	mutex_unlock(&teedev->mutex);
-+
-+	if (id < 0)
-+		return ERR_PTR(id);
-+
-+	shm = register_shm_helper(ctx, addr, length, f, id);
-+	if (IS_ERR(shm)) {
-+		mutex_lock(&teedev->mutex);
-+		idr_remove(&teedev->idr, id);
-+		mutex_unlock(&teedev->mutex);
-+		return shm;
-+	}
-+
-+	mutex_lock(&teedev->mutex);
-+	ret = idr_replace(&teedev->idr, shm, id);
-+	mutex_unlock(&teedev->mutex);
-+	if (IS_ERR(ret)) {
-+		tee_shm_free(shm);
-+		return ret;
-+	}
-+
-+	return shm;
- }
- EXPORT_SYMBOL_GPL(tee_shm_register_user_buf);
- 
-@@ -330,8 +354,9 @@ EXPORT_SYMBOL_GPL(tee_shm_register_user_buf);
- struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
- 					    void *addr, size_t length)
- {
--	return tee_shm_register(ctx, (unsigned long)addr, length,
--				TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED);
-+	u32 f = TEE_SHM_REGISTER | TEE_SHM_KERNEL_MAPPED;
-+
-+	return register_shm_helper(ctx, (unsigned long)addr, length, f, -1);
- }
- EXPORT_SYMBOL_GPL(tee_shm_register_kernel_buf);
- 
-diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-index 029c9a0590cc..e4f32885e273 100644
---- a/include/linux/tee_drv.h
-+++ b/include/linux/tee_drv.h
-@@ -278,17 +278,6 @@ struct tee_shm *tee_shm_alloc_priv_kernel_buf(struct tee_context *ctx,
- 					      size_t size);
- struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size);
- 
--/**
-- * tee_shm_register() - Register shared memory buffer
-- * @ctx:	Context that registers the shared memory
-- * @addr:	Address is userspace of the shared buffer
-- * @length:	Length of the shared buffer
-- * @flags:	Flags setting properties for the requested shared memory.
-- *
-- * @returns a pointer to 'struct tee_shm'
-- */
--struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
--				 size_t length, u32 flags);
- struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
- 					  unsigned long addr, size_t length);
- struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
--- 
-2.31.1
+and compiling bpf selftests with:
+
+	$ CLANG=/opt/clang/bin/clang make
+
+jirka
+
+
+> 
+> ~/ksrc/linux/tools/testing/selftests/bpf$ make 
+> [...]
+>   CLANG   /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool/pid_iter.bpf.o
+> skeleton/pid_iter.bpf.c:35:10: error: incomplete definition of type 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:403:2: note: expanded from macro 'BPF_CORE_READ'
+>         ___type((src), a, ##__VA_ARGS__) __r;                               \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:274:29: note: expanded from macro '___type'
+> #define ___type(...) typeof(___arrow(__VA_ARGS__))
+>                             ^~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:272:23: note: expanded from macro '___arrow'
+> #define ___arrow(...) ___apply(___arrow, ___narg(__VA_ARGS__))(__VA_ARGS__)
+>                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> note: (skipping 1 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:223:25: note: expanded from macro '___concat'
+> #define ___concat(a, b) a ## b
+>                         ^
+> <scratch space>:16:1: note: expanded from here
+> ___arrow2
+> ^
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:263:26: note: expanded from macro '___arrow2'
+> #define ___arrow2(a, b) a->b
+>                         ~^
+> skeleton/pid_iter.bpf.c:35:32: note: forward declaration of 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                                              ^
+> skeleton/pid_iter.bpf.c:35:10: error: incomplete definition of type 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:404:2: note: expanded from macro 'BPF_CORE_READ'
+>         BPF_CORE_READ_INTO(&__r, (src), a, ##__VA_ARGS__);                  \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:311:2: note: expanded from macro 'BPF_CORE_READ_INTO'
+>         ___core_read(bpf_core_read, bpf_core_read,                          \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:302:2: note: expanded from macro '___core_read'
+>         ___apply(___core_read, ___empty(__VA_ARGS__))(fn, fn_ptr, dst,      \
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:296:2: note: expanded from macro '___core_read0'
+>         ___read(fn, dst, ___type(src), src, a);
+>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:277:59: note: expanded from macro '___read'
+>         read_fn((void *)(dst), sizeof(*(dst)), &((src_type)(src))->accessor)
+>         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:206:79: note: expanded from macro 'bpf_core_read'
+>         bpf_probe_read_kernel(dst, sz, (const void *)__builtin_preserve_access_index(src))
+>                                                                                      ^~~
+> skeleton/pid_iter.bpf.c:35:32: note: forward declaration of 'struct bpf_link'
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                                              ^
+> skeleton/pid_iter.bpf.c:35:10: error: returning 'void' from a function with incompatible result type '__u32' (aka 'unsigned int')
+>                 return BPF_CORE_READ((struct bpf_link *)ent, id);
+>                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool//bootstrap/libbpf//include/bpf/bpf_core_read.h:402:36: note: expanded from macro 'BPF_CORE_READ'
+> #define BPF_CORE_READ(src, a, ...) ({                                       \
+>                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> skeleton/pid_iter.bpf.c:42:17: warning: declaration of 'struct bpf_iter__task_file' will not be visible outside of this function [-Wvisibility]
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> skeleton/pid_iter.bpf.c:44:25: error: incomplete definition of type 'struct bpf_iter__task_file'
+>         struct file *file = ctx->file;
+>                             ~~~^
+> skeleton/pid_iter.bpf.c:42:17: note: forward declaration of 'struct bpf_iter__task_file'
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> skeleton/pid_iter.bpf.c:45:32: error: incomplete definition of type 'struct bpf_iter__task_file'
+>         struct task_struct *task = ctx->task;
+>                                    ~~~^
+> skeleton/pid_iter.bpf.c:42:17: note: forward declaration of 'struct bpf_iter__task_file'
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> skeleton/pid_iter.bpf.c:76:19: error: incomplete definition of type 'struct bpf_iter__task_file'
+>         bpf_seq_write(ctx->meta->seq, &e, sizeof(e));
+>                       ~~~^
+> skeleton/pid_iter.bpf.c:42:17: note: forward declaration of 'struct bpf_iter__task_file'
+> int iter(struct bpf_iter__task_file *ctx)
+>                 ^
+> 1 warning and 6 errors generated.
+> make[1]: *** [Makefile:188: /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/build/bpftool/pid_iter.bpf.o] Error 1
+> make: *** [Makefile:219: /home/mhiramat/ksrc/linux/tools/testing/selftests/bpf/tools/sbin/bpftool] Error 2
+> 
+> 
+> Thank you,
+> 
+> -- 
+> Masami Hiramatsu <mhiramat@kernel.org>
+> 
 
