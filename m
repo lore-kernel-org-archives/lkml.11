@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF38C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240064AbiANIXg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:23:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33612 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240034AbiANIV7 (ORCPT
+        id S240392AbiANIXq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:23:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60854 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239950AbiANIWJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:21:59 -0500
+        Fri, 14 Jan 2022 03:22:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F859B8243B;
-        Fri, 14 Jan 2022 08:21:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C793C36AFC;
-        Fri, 14 Jan 2022 08:21:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5479361E22;
+        Fri, 14 Jan 2022 08:22:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65692C36AE9;
+        Fri, 14 Jan 2022 08:22:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148516;
-        bh=g57pxS2bCc3tWqe1XaCKL+bvkppkDCofhbjkD5BZP84=;
+        s=korg; t=1642148528;
+        bh=Oi2oClVJM5knELY+Fm+YVV6da2xCRCdQrg1wMOiurkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cl4krdD75uE8kZ3TYn9mXxCOiEvff+dBVWxYJNUpfQNB4TUPo9J9yD1OcEiVMoFCA
-         P1VsaYI4Gg1HK1qYFM2qX80YdUSx1iGv4S/qPf3/eQstQx6ssM2YpTX0oAPbDNemqp
-         rNHWAV5FgL3YMCg25kfyzB7ciouK0M/Df77yNZAk=
+        b=bOEb2WTUZ77C2Ivx4++1eq08K+aizrWPhg90yTYpO9H9S2GjgQqsMSS1V6fjD74tP
+         kP3tq1xWleiSr+CDkmpYWLtLWnvfKSDZaPCzTJmSVXQE8d3tP3H+xI3L2QblbEf8nn
+         ZJUhKq4PzL9KhN8ZF97nPxcBoBi0EumoedeGW3sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.16 15/37] Bluetooth: bfusb: fix division by zero in send path
-Date:   Fri, 14 Jan 2022 09:16:29 +0100
-Message-Id: <20220114081545.355871368@linuxfoundation.org>
+        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.16 19/37] ath11k: Fix buffer overflow when scanning with extraie
+Date:   Fri, 14 Jan 2022 09:16:33 +0100
+Message-Id: <20220114081545.480201757@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -45,38 +45,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Sven Eckelmann <sven@narfation.org>
 
-commit b5e6fa7a12572c82f1e7f2f51fbb02a322291291 upstream.
+commit a658c929ded7ea3aee324c8c2a9635a5e5a38e7f upstream.
 
-Add the missing bulk-out endpoint sanity check to probe() to avoid
-division by zero in bfusb_send_frame() in case a malicious device has
-broken descriptors (or when doing descriptor fuzz testing).
+If cfg80211 is providing extraie's for a scanning process then ath11k will
+copy that over to the firmware. The extraie.len is a 32 bit value in struct
+element_info and describes the amount of bytes for the vendor information
+elements.
 
-Note that USB core will reject URBs submitted for endpoints with zero
-wMaxPacketSize but that drivers doing packet-size calculations still
-need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
-endpoint descriptors with maxpacket=0")).
+The WMI_TLV packet is having a special WMI_TAG_ARRAY_BYTE section. This
+section can have a (payload) length up to 65535 bytes because the
+WMI_TLV_LEN can store up to 16 bits. The code was missing such a check and
+could have created a scan request which cannot be parsed correctly by the
+firmware.
+
+But the bigger problem was the allocation of the buffer. It has to align
+the TLV sections by 4 bytes. But the code was using an u8 to store the
+newly calculated length of this section (with alignment). And the new
+calculated length was then used to allocate the skbuff. But the actual code
+to copy in the data is using the extraie.len and not the calculated
+"aligned" length.
+
+The length of extraie with IEEE80211_HW_SINGLE_SCAN_ON_ALL_BANDS enabled
+was 264 bytes during tests with a QCA Milan card. But it only allocated 8
+bytes (264 bytes % 256) for it. As consequence, the code to memcpy the
+extraie into the skb was then just overwriting data after skb->end. Things
+like shinfo were therefore corrupted. This could usually be seen by a crash
+in skb_zcopy_clear which tried to call a ubuf_info callback (using a bogus
+address).
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-02892.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211207142913.1734635-1-sven@narfation.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/bfusb.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/ath/ath11k/wmi.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/bluetooth/bfusb.c
-+++ b/drivers/bluetooth/bfusb.c
-@@ -628,6 +628,9 @@ static int bfusb_probe(struct usb_interf
- 	data->bulk_out_ep   = bulk_out_ep->desc.bEndpointAddress;
- 	data->bulk_pkt_size = le16_to_cpu(bulk_out_ep->desc.wMaxPacketSize);
+--- a/drivers/net/wireless/ath/ath11k/wmi.c
++++ b/drivers/net/wireless/ath/ath11k/wmi.c
+@@ -2069,7 +2069,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
+ 	void *ptr;
+ 	int i, ret, len;
+ 	u32 *tmp_ptr;
+-	u8 extraie_len_with_pad = 0;
++	u16 extraie_len_with_pad = 0;
+ 	struct hint_short_ssid *s_ssid = NULL;
+ 	struct hint_bssid *hint_bssid = NULL;
  
-+	if (!data->bulk_pkt_size)
-+		goto done;
-+
- 	rwlock_init(&data->lock);
+@@ -2088,7 +2088,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
+ 		len += sizeof(*bssid) * params->num_bssid;
  
- 	data->reassembly = NULL;
+ 	len += TLV_HDR_SIZE;
+-	if (params->extraie.len)
++	if (params->extraie.len && params->extraie.len <= 0xFFFF)
+ 		extraie_len_with_pad =
+ 			roundup(params->extraie.len, sizeof(u32));
+ 	len += extraie_len_with_pad;
+@@ -2195,7 +2195,7 @@ int ath11k_wmi_send_scan_start_cmd(struc
+ 		      FIELD_PREP(WMI_TLV_LEN, len);
+ 	ptr += TLV_HDR_SIZE;
+ 
+-	if (params->extraie.len)
++	if (extraie_len_with_pad)
+ 		memcpy(ptr, params->extraie.ptr,
+ 		       params->extraie.len);
+ 
 
 
