@@ -2,145 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF06AC43219
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86097C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239428AbiANG5l convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 01:57:41 -0500
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:48213 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229761AbiANG5i (ORCPT
+        id S239425AbiANG5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 01:57:49 -0500
+Received: from mout.kundenserver.de ([212.227.126.130]:55947 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239408AbiANG5q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 01:57:38 -0500
-Received: (Authenticated sender: peter@korsgaard.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 6952FFF805;
-        Fri, 14 Jan 2022 06:57:08 +0000 (UTC)
-Received: from peko by dell.be.48ers.dk with local (Exim 4.92)
-        (envelope-from <peter@korsgaard.com>)
-        id 1n8GWI-0002SW-Ku; Fri, 14 Jan 2022 07:57:06 +0100
-From:   Peter Korsgaard <peter@korsgaard.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list\:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list\:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] driver core: platform: Rename platform_get_irq_optional() to platform_get_irq_silent()
-References: <20220110195449.12448-2-s.shtylyov@omp.ru>
-        <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
-        <YdyilpjC6rtz6toJ@lunn.ch>
-        <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
-        <20220112085009.dbasceh3obfok5dc@pengutronix.de>
-        <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
-        <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
-        <Yd9L9SZ+g13iyKab@sirena.org.uk>
-        <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
-        <YeA7CjOyJFkpuhz/@sirena.org.uk>
-        <20220113194358.xnnbhsoyetihterb@pengutronix.de>
-Date:   Fri, 14 Jan 2022 07:57:06 +0100
-In-Reply-To: <20220113194358.xnnbhsoyetihterb@pengutronix.de> ("Uwe
-        =?utf-8?Q?Kleine-K=C3=B6nig=22's?= message of "Thu, 13 Jan 2022 20:43:58
- +0100")
-Message-ID: <87ilum954t.fsf@dell.be.48ers.dk>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Fri, 14 Jan 2022 01:57:46 -0500
+Received: from mail-wm1-f53.google.com ([209.85.128.53]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MnaY1-1mRGGb1eKr-00jcWt; Fri, 14 Jan 2022 07:57:44 +0100
+Received: by mail-wm1-f53.google.com with SMTP id c126-20020a1c9a84000000b00346f9ebee43so5051962wme.4;
+        Thu, 13 Jan 2022 22:57:44 -0800 (PST)
+X-Gm-Message-State: AOAM531Th2sMFHwb2/hxVNdC6Gg8x5+6Quk0UDxckvBoVdC2qoLQCDTk
+        m/5lM+SgpJ/M3B1oqYe16VD8y04zjwv/yefUm8s=
+X-Google-Smtp-Source: ABdhPJwwQhITLnWsKboPk0/GB6llV0E9xXAfPiCmzUJOvXgqzfiwsoK69qPL6kniPU2RdMPLej4odQ7iw1aqRAhtEyo=
+X-Received: by 2002:a05:600c:5c1:: with SMTP id p1mr14161704wmd.1.1642143464069;
+ Thu, 13 Jan 2022 22:57:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+References: <20220113201920.3201760-1-laurent@vivier.eu> <20220113201920.3201760-3-laurent@vivier.eu>
+In-Reply-To: <20220113201920.3201760-3-laurent@vivier.eu>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 14 Jan 2022 07:57:27 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1H6-sd_+FqnOq0Zhj=L51EWuW5VCcYeTENcp3+PkTC4Q@mail.gmail.com>
+Message-ID: <CAK8P3a1H6-sd_+FqnOq0Zhj=L51EWuW5VCcYeTENcp3+PkTC4Q@mail.gmail.com>
+Subject: Re: [PATCH v6 2/4] rtc: goldfish: use __raw_writel()/__raw_readl()
+To:     Laurent Vivier <laurent@vivier.eu>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:CKcd6D42JC/5gSKbPK/ekaSQVq+Jk+wk09ytaypJ68IosfXhLPT
+ V3IhT0Bkq9RUg5o2gPV1iMl1PiPJqxmskYvBNq9T1chZV29RuCPg6DUkfjwWwfLU5cNROKv
+ Pks8tPYWIbVYR4Z9SPUSXU+l+GiF/JYpdeuOsokNIAOYdDilyg4VUk4q9I2uz1Mb2MnqViS
+ vIGmfvX/2QQzsSPuPpDHw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LPFayMPwSQs=:9VFd7+3KUClzVkTo0VsIvr
+ UkzioUsBzFerJBzcsrMitM7PERfOx1aW7Q7eirg6ZNr2qIQbX+Wjeo16Hl7Ez2AjfOf19TZrw
+ LUaHNjISuM+jCAobun6olH0xFF2GBrs+mUWO8s2I2ipiCnDq4SGYHm1RZ+qvdSZnHNeMtxflY
+ 10XnkSo0iP9J2jBreaAdE3kRr2GW4jgLQ+uTrOgG6vakYPH5YP5MjT60FokFYqwrMVBQJtUvS
+ U1YcpCMQIsFY7pW+mHHvihr25/U7ma9nOIoiiiCCXxfVLWkJHC+Zvmt1L/Mb0GLiszJyL11k5
+ 4DxBgEci/hu6XhF4tkHaj+cKrRzARWxvHcTmVmEnFhQ/subMlWPi76avuInOC5KTTTUDOZYVq
+ TlnZpGHV7tKopqcYpWdGORGc7YiJRHGMhAcA8nU5aY+OrHpXRbq54YXyIvvavqEL+6Q5xspu+
+ NACAu547Vl6oHZ6mJlbV9rYBpQNvX4HIFDo1EnkZcIaq/VuSX6VjQbr5XVqntD1CRVBf4DEH9
+ cyUiPDEW9bKdGaYrIBR8yiXrG0EO7r+HI9GufFy2/oBLC286x7weTf/s87vHfWNrLdA4ecO0/
+ sGpXKVos9Z3bFsSC0yJyy6FJK2F1YCvXRF0eFLndTofVf/LyX1r2uxmj7PjCom3kYPnToWCQf
+ gdTqSsM+Qqx7voVIviQO1DDC2T4fK19pAar/zPEIW6/HOFRkGWuFgEQf5Vce4fMHZPUo=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
->>>>> "Uwe" == Uwe Kleine-König <u.kleine-koenig@pengutronix.de> writes:
+On Thu, Jan 13, 2022 at 9:19 PM Laurent Vivier <laurent@vivier.eu> wrote:
+>
+> As android implementation defines the endianness of the device is the one
+> of the architecture replace all writel()/readl() by
+> __raw_writel()/__raw_readl()
+>
+> https://android.googlesource.com/platform/external/qemu/+/refs/heads/emu-master-dev/hw/timer/goldfish_timer.c#177
+>
+> The same change has been done for goldfish-tty:
+>
+>   commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
+>
+> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
 
- > The subsystems regulator, clk and gpio have the concept of a dummy
- > resource. For regulator, clk and gpio there is a semantic difference
- > between the regular _get() function and the _get_optional() variant.
- > (One might return the dummy resource, the other won't. Unfortunately
- > which one implements which isn't the same for these three.) The
- > difference between platform_get_irq() and platform_get_irq_optional() is
- > only that the former might emit an error message and the later won't.
+__raw_readl() isn't really the correct interface though, this is not
+well-defined to have
+a particular meaning at all, and doesn't guarantee atomicity or a
+particular endianess
+across architectures.
 
- > To prevent people's expectations that there is a semantic difference
- > between these too, rename platform_get_irq_optional() to
- > platform_get_irq_silent() to make the actual difference more obvious.
+I'd suggest defining a set of goldfish specific accessors per
+architecture that turn
+into either readl() or swabl(readl()), to allow future architectures
+to define this
+properly in qemu.
 
- > The #define for the old name can and should be removed once all patches
- > currently in flux still relying on platform_get_irq_optional() are
- > fixed.
-
- > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-
-For i2c-ocores.c:
-
-Acked-by: Peter Korsgaard <peter@korsgaard.com>
-
--- 
-Bye, Peter Korsgaard
+         Arnd
