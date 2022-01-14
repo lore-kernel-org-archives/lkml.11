@@ -2,101 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32613C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 12:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F7DC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 12:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241032AbiANMhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 07:37:54 -0500
-Received: from mga05.intel.com ([192.55.52.43]:8148 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230379AbiANMhx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 07:37:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642163873; x=1673699873;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=+tI1YiGuy+svjnvQcW47NrzwkaMl0BBQKleSydyar/U=;
-  b=GUbPUynUbeqHUbHx7dqsZwn9AT/aB0JWhMWO7peTi78CThRgv1WyjuGj
-   KByYNlo5CsWsyKZT18g9fMHeA+HijIgcFnvY1FuY4FlIGs9FRyLA3tV8t
-   DK76qIAoUJsaGbugg1FTAf40AqSE0MwblZPOvD5XhvgZpnYfbPeqe8YUW
-   d6abm3wlgu+cDa/iyUrf7UryWY4nbPk5JLTQw0wQHTK0m//7+p5PZraps
-   LdynGcgeDG0nV55OJ9C5cr3RE9W5kxqKLe/hhHvFv77LE2K3/i4EyP6fa
-   5oOyR2dZO3jSlbszXtQP28lAhG7mq7S5ygZGfnDkQhu9QOwQmudO5rJ3n
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="330586353"
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="330586353"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 04:37:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,288,1635231600"; 
-   d="scan'208";a="491507519"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga002.jf.intel.com with ESMTP; 14 Jan 2022 04:37:51 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8Lq2-0008Wq-V6; Fri, 14 Jan 2022 12:37:50 +0000
-Date:   Fri, 14 Jan 2022 20:37:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [mingo-tip:master 921/2382] ./usr/include/linux/rds.h:38:10: fatal
- error: 'uapi/linux/sockios.h' file not found
-Message-ID: <202201142031.bnR0Yamb-lkp@intel.com>
+        id S241099AbiANMiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 07:38:17 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:36567 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230379AbiANMiQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 07:38:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642163714;
+    s=strato-dkim-0002; d=chronox.de;
+    h=References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=MVCvrZ0qGCj7cjjsy9nHGn6+Uf8Jvh4gB/rTb3Zx58g=;
+    b=GLqvNwS8sx2IgnDr1NV+of4whcVgYUV4hmtHLDlb51qDBaTRLB8sZ3W63MOr7alBt3
+    0vzrvMM9GS751bybgNyCnxQ9sdZsAxf8QbbK5OyLlLgpXIRGIh0zC8ZVEsusLVzWyu8h
+    ZJG0SgafDI2fwr5NM7NOJ0QjguTEwwu030J/+RM3c82+Qry3I9Kp4Q0q/Ls9+Oetvwe+
+    342tdS5baH7DDH87cfkztcBE0xAe3s4H2PPuve6nd9k0Y7G2l7zT9V/kgGySkYHLYIfR
+    dS16rBXjTWaB/VJoVkG8tC5VbReK0etf3Ihm067OPDZL0L5O7ToBfVfLyT5mWi29OhE1
+    4wAw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2ERcEykfu11Y98lp/T7+hdri+uKZK8TKWEqNyiHySGSa9k9xmwdNnzGHXPbL/ScDv37"
+X-RZG-CLASS-ID: mo00
+Received: from tauon.chronox.de
+    by smtp.strato.de (RZmta 47.37.6 DYNA|AUTH)
+    with ESMTPSA id t60e2cy0ECZDZEJ
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Fri, 14 Jan 2022 13:35:13 +0100 (CET)
+From:   Stephan Mueller <smueller@chronox.de>
+To:     Nicolai Stange <nstange@suse.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Hannes Reinecke <hare@suse.de>, Torsten Duwe <duwe@suse.de>,
+        Zaibo Xu <xuzaibo@huawei.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        qat-linux@intel.com, keyrings@vger.kernel.org, simo@redhat.com,
+        Eric Biggers <ebiggers@kernel.org>, Petr Vorel <pvorel@suse.cz>
+Subject: Re: [v2 PATCH] crypto: api - Disallow sha1 in FIPS-mode while allowing hmac(sha1)
+Date:   Fri, 14 Jan 2022 13:35:12 +0100
+Message-ID: <1765621.jvH33SIsIh@tauon.chronox.de>
+In-Reply-To: <YeFWnscvXtv73KBl@gondor.apana.org.au>
+References: <20211209090358.28231-1-nstange@suse.de> <87k0f2hefl.fsf@suse.de> <YeFWnscvXtv73KBl@gondor.apana.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git master
-head:   1a880941a087613ed42f77001229edfcf75ea8a5
-commit: 9242d9709c29db37d2bc947467661f1817d0f8a6 [921/2382] headers/deps: Add header dependencies to .h files: <uapi/linux/sockios.h>
-config: i386-randconfig-a006 (https://download.01.org/0day-ci/archive/20220114/202201142031.bnR0Yamb-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d1021978b8e7e35dcc30201ca1731d64b5a602a8)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=9242d9709c29db37d2bc947467661f1817d0f8a6
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip master
-        git checkout 9242d9709c29db37d2bc947467661f1817d0f8a6
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+Am Freitag, 14. Januar 2022, 11:55:26 CET schrieb Herbert Xu:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Hi Herbert,
 
-All errors (new ones prefixed by >>):
+> > On an unrelated note, this will break trusted_key_tpm_ops->init() in
+> > FIPS mode, because trusted_shash_alloc() would fail to get a hold of
+> > sha1. AFAICT, this could potentially make the init_trusted() module_init
+> > to fail, and, as encrypted-keys.ko imports key_type_trusted, prevent the
+> > loading of that one as well. Not sure that's desired...
+> 
+> Well if sha1 is supposed to be forbidden in FIPS mode why should
 
-   In file included from <built-in>:1:
->> ./usr/include/linux/rds.h:38:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
-   In file included from <built-in>:1:
->> ./usr/include/linux/kcm.h:18:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
-   In file included from <built-in>:1:
->> ./usr/include/linux/if_tunnel.h:5:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
-   In file included from <built-in>:1:
->> ./usr/include/linux/x25.h:15:10: fatal error: 'uapi/linux/sockios.h' file not found
-   #include <uapi/linux/sockios.h>
-            ^~~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
+SHA-1 is approved in all use cases except signatures.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Ciao
+Stephan
+
+
