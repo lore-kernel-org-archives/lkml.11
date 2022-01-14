@@ -2,109 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B841DC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68EE4C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240488AbiANIWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:22:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239984AbiANIVG (ORCPT
+        id S240500AbiANIW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:22:26 -0500
+Received: from szxga02-in.huawei.com ([45.249.212.188]:30279 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240158AbiANIVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:21:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45F3C06178A;
-        Fri, 14 Jan 2022 00:20:55 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5585861E04;
-        Fri, 14 Jan 2022 08:20:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EF8C36AE9;
-        Fri, 14 Jan 2022 08:20:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148454;
-        bh=yfxZPi4xmnKIPAh259PxlfYe0OoOXPnGjXMUYBhX7Sc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IK8wdIWli41cFx1j++gLaGmFxfO0WVPIHjaxQ1DBBlCC1JSVqw7iiOZgAXqsWIVG1
-         S+uczPA5072ZZZvz9iblptBm+5gQ4C5tzPoYA8FIJw1Yn9pCal+wLuFq3+bU4xnxFT
-         2+ap9azIAWqQ/kDjWfNdwzN2OEJkE4NkRBF2eIMo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 38/41] media: Revert "media: uvcvideo: Set unique vdev name based in type"
-Date:   Fri, 14 Jan 2022 09:16:38 +0100
-Message-Id: <20220114081546.432276837@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
-References: <20220114081545.158363487@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 14 Jan 2022 03:21:09 -0500
+Received: from kwepemi100004.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JZvPP3kd7zbk0J;
+        Fri, 14 Jan 2022 16:20:25 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100004.china.huawei.com (7.221.188.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 14 Jan 2022 16:21:06 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Fri, 14 Jan 2022 16:21:05 +0800
+Subject: Re: [PATCH v6 2/2] block: cancel all throttled bios in del_gendisk()
+To:     Ming Lei <ming.lei@redhat.com>
+CC:     <mkoutny@suse.com>, <paulmck@kernel.org>, <tj@kernel.org>,
+        Jens Axboe <axboe@kernel.dk>, <cgroups@vger.kernel.org>,
+        linux-block <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220110134758.2233758-1-yukuai3@huawei.com>
+ <20220110134758.2233758-3-yukuai3@huawei.com> <Yd5FkuhYX9YcgQkZ@T590>
+ <2221953d-be40-3433-d46c-f40acd044482@huawei.com>
+ <CAFj5m9KmHB6FtUZ3E42BMZo+=aNNfn2bLu=kNhBOsRdxbfT6nw@mail.gmail.com>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <c5d1d7b5-b815-0dda-b7d3-8151189a8203@huawei.com>
+Date:   Fri, 14 Jan 2022 16:21:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CAFj5m9KmHB6FtUZ3E42BMZo+=aNNfn2bLu=kNhBOsRdxbfT6nw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricardo Ribalda <ribalda@chromium.org>
+在 2022/01/14 11:05, Ming Lei 写道:
+> On Thu, Jan 13, 2022 at 04:46:18PM +0800, yukuai (C) wrote:
+>> 在 2022/01/12 11:05, Ming Lei 写道:
+>>> Hello Yu Kuai,
+>>>
+>>> On Mon, Jan 10, 2022 at 09:47:58PM +0800, Yu Kuai wrote:
+>>>> Throttled bios can't be issued after del_gendisk() is done, thus
+>>>> it's better to cancel them immediately rather than waiting for
+>>>> throttle is done.
+>>>>
+>>>> For example, if user thread is throttled with low bps while it's
+>>>> issuing large io, and the device is deleted. The user thread will
+>>>> wait for a long time for io to return.
+>>>>
+>>>> Noted this patch is mainly from revertion of commit 32e3374304c7
+>>>> ("blk-throttle: remove tg_drain_bios") and commit b77412372b68
+>>>> ("blk-throttle: remove blk_throtl_drain").
+>>>>
+>>>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+>>>> ---
+>>>>    block/blk-throttle.c | 77 ++++++++++++++++++++++++++++++++++++++++++++
+>>>>    block/blk-throttle.h |  2 ++
+>>>>    block/genhd.c        |  2 ++
+>>>>    3 files changed, 81 insertions(+)
+>>>
+>>> Just wondering why not take the built-in way in throtl_upgrade_state() for
+>>> canceling throttled bios? Something like the following, then we can avoid
+>>> to re-invent the wheel.
+>>>
+>>>    block/blk-throttle.c | 38 +++++++++++++++++++++++++++++++-------
+>>>    block/blk-throttle.h |  2 ++
+>>>    block/genhd.c        |  3 +++
+>>>    3 files changed, 36 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/block/blk-throttle.c b/block/blk-throttle.c
+>>> index cf7e20804f1b..17e56b2e44c4 100644
+>>> --- a/block/blk-throttle.c
+>>> +++ b/block/blk-throttle.c
+>>> @@ -1816,16 +1816,11 @@ static void throtl_upgrade_check(struct throtl_grp *tg)
+>>>              throtl_upgrade_state(tg->td);
+>>>    }
+>>> -static void throtl_upgrade_state(struct throtl_data *td)
+>>> +static void __throtl_cancel_bios(struct throtl_data *td)
+>>>    {
+>>>      struct cgroup_subsys_state *pos_css;
+>>>      struct blkcg_gq *blkg;
+>>> -   throtl_log(&td->service_queue, "upgrade to max");
+>>> -   td->limit_index = LIMIT_MAX;
+>>> -   td->low_upgrade_time = jiffies;
+>>> -   td->scale = 0;
+>>> -   rcu_read_lock();
+>>>      blkg_for_each_descendant_post(blkg, pos_css, td->queue->root_blkg) {
+>>>              struct throtl_grp *tg = blkg_to_tg(blkg);
+>>>              struct throtl_service_queue *sq = &tg->service_queue;
+>>> @@ -1834,12 +1829,41 @@ static void throtl_upgrade_state(struct throtl_data *td)
+>>>              throtl_select_dispatch(sq);
+>>>              throtl_schedule_next_dispatch(sq, true);
+>> Hi, Ming Lei
+>>
+>> I'm confused that how can bios be canceled here?
+>> tg->iops and tg->bps stay untouched, how can throttled bios
+>> dispatch?
+> 
+> I thought that throttled bios will be canceled by 'tg->disptime = jiffies - 1;'
+> and the following dispatch schedule.
+> 
+> But looks it isn't enough, since tg_update_disptime() updates
+> ->disptime. However,
+> this problem can be solved easily by not updating ->disptime in case that we are
+> canceling.
+> 
+>>>      }
+>>> -   rcu_read_unlock();
+>>>      throtl_select_dispatch(&td->service_queue);
+>>>      throtl_schedule_next_dispatch(&td->service_queue, true);
+>>>      queue_work(kthrotld_workqueue, &td->dispatch_work);
+>>>    }
+>>> +void blk_throtl_cancel_bios(struct request_queue *q)
+>>> +{
+>>> +   struct cgroup_subsys_state *pos_css;
+>>> +   struct blkcg_gq *blkg;
+>>> +
+>>> +   rcu_read_lock();
+>>> +   spin_lock_irq(&q->queue_lock);
+>>> +   __throtl_cancel_bios(q->td);
+>>> +   spin_unlock_irq(&q->queue_lock);
+>>> +   rcu_read_unlock();
+>>> +
+>>> +   blkg_for_each_descendant_post(blkg, pos_css, q->root_blkg)
+>>> +           del_timer_sync(&blkg_to_tg(blkg)->service_queue.pending_timer);
+>>> +   del_timer_sync(&q->td->service_queue.pending_timer);
+>>
+>> By the way, I think delete timer will end up io hung here if there are
+>> some bios still be throttled.
+> 
+> Firstly ->queue_lock is held by blk_throtl_cancel_bios(), so no new bios
+> will be throttled.
+> 
+> Also if we don't update ->disptime, any new bios throttled after releasing
+> ->queue_lock will be dispatched soon.
 
-commit f66dcb32af19faf49cc4a9222c3152b10c6ec84a upstream.
+Hi, Ming Lei
 
-A lot of userspace depends on a descriptive name for vdev. Without this
-patch, users have a hard time figuring out which camera shall they use
-for their video conferencing.
+Just to be curiosity, I'm still trying to understand the logic here:
 
-This reverts commit e3f60e7e1a2b451f538f9926763432249bcf39c4.
+For example, if bps is set to 1k, and a io with size 16k is just
+dispatched, then io throtle should wait for 16s untill new io can be 
+dispatched. (details in tg_with_in_bps_limit）.
 
-Link: https://lore.kernel.org/linux-media/20211207003840.1212374-2-ribalda@chromium.org
-Cc: <stable@vger.kernel.org>
-Fixes: e3f60e7e1a2b ("media: uvcvideo: Set unique vdev name based in type")
-Reported-by: Nicolas Dufresne <nicolas@ndufresne.ca>
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/media/usb/uvc/uvc_driver.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+How does such mechanism bypassed here?
 
---- a/drivers/media/usb/uvc/uvc_driver.c
-+++ b/drivers/media/usb/uvc/uvc_driver.c
-@@ -2194,7 +2194,6 @@ int uvc_register_video_device(struct uvc
- 			      const struct v4l2_file_operations *fops,
- 			      const struct v4l2_ioctl_ops *ioctl_ops)
- {
--	const char *name;
- 	int ret;
- 
- 	/* Initialize the video buffers queue. */
-@@ -2223,20 +2222,16 @@ int uvc_register_video_device(struct uvc
- 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
- 	default:
- 		vdev->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
--		name = "Video Capture";
- 		break;
- 	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
- 		vdev->device_caps = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
--		name = "Video Output";
- 		break;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
- 		vdev->device_caps = V4L2_CAP_META_CAPTURE | V4L2_CAP_STREAMING;
--		name = "Metadata";
- 		break;
- 	}
- 
--	snprintf(vdev->name, sizeof(vdev->name), "%s %u", name,
--		 stream->header.bTerminalLink);
-+	strscpy(vdev->name, dev->name, sizeof(vdev->name));
- 
- 	/*
- 	 * Set the driver data before calling video_register_device, otherwise
-
-
+Thanks,
+Kuai
