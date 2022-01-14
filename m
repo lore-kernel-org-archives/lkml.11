@@ -2,90 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86097C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05502C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 06:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239425AbiANG5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 01:57:49 -0500
-Received: from mout.kundenserver.de ([212.227.126.130]:55947 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239408AbiANG5q (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 01:57:46 -0500
-Received: from mail-wm1-f53.google.com ([209.85.128.53]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MnaY1-1mRGGb1eKr-00jcWt; Fri, 14 Jan 2022 07:57:44 +0100
-Received: by mail-wm1-f53.google.com with SMTP id c126-20020a1c9a84000000b00346f9ebee43so5051962wme.4;
-        Thu, 13 Jan 2022 22:57:44 -0800 (PST)
-X-Gm-Message-State: AOAM531Th2sMFHwb2/hxVNdC6Gg8x5+6Quk0UDxckvBoVdC2qoLQCDTk
-        m/5lM+SgpJ/M3B1oqYe16VD8y04zjwv/yefUm8s=
-X-Google-Smtp-Source: ABdhPJwwQhITLnWsKboPk0/GB6llV0E9xXAfPiCmzUJOvXgqzfiwsoK69qPL6kniPU2RdMPLej4odQ7iw1aqRAhtEyo=
-X-Received: by 2002:a05:600c:5c1:: with SMTP id p1mr14161704wmd.1.1642143464069;
- Thu, 13 Jan 2022 22:57:44 -0800 (PST)
+        id S239246AbiANG5v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 01:57:51 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:56906 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229761AbiANG5s (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 01:57:48 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-03 (Coremail) with SMTP id rQCowADX3FjKHuFh69iFBQ--.22556S2;
+        Fri, 14 Jan 2022 14:57:14 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     broonie@kernel.org
+Cc:     cezary.rojewski@intel.com, srinivas.kandagatla@linaro.org,
+        bgoswami@codeaurora.org, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH v2] ASoC: codecs: Check for error pointer after calling devm_regmap_init_mmio
+Date:   Fri, 14 Jan 2022 14:57:13 +0800
+Message-Id: <20220114065713.1246619-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220113201920.3201760-1-laurent@vivier.eu> <20220113201920.3201760-3-laurent@vivier.eu>
-In-Reply-To: <20220113201920.3201760-3-laurent@vivier.eu>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 14 Jan 2022 07:57:27 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1H6-sd_+FqnOq0Zhj=L51EWuW5VCcYeTENcp3+PkTC4Q@mail.gmail.com>
-Message-ID: <CAK8P3a1H6-sd_+FqnOq0Zhj=L51EWuW5VCcYeTENcp3+PkTC4Q@mail.gmail.com>
-Subject: Re: [PATCH v6 2/4] rtc: goldfish: use __raw_writel()/__raw_readl()
-To:     Laurent Vivier <laurent@vivier.eu>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        John Stultz <john.stultz@linaro.org>,
-        linux-rtc@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:CKcd6D42JC/5gSKbPK/ekaSQVq+Jk+wk09ytaypJ68IosfXhLPT
- V3IhT0Bkq9RUg5o2gPV1iMl1PiPJqxmskYvBNq9T1chZV29RuCPg6DUkfjwWwfLU5cNROKv
- Pks8tPYWIbVYR4Z9SPUSXU+l+GiF/JYpdeuOsokNIAOYdDilyg4VUk4q9I2uz1Mb2MnqViS
- vIGmfvX/2QQzsSPuPpDHw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:LPFayMPwSQs=:9VFd7+3KUClzVkTo0VsIvr
- UkzioUsBzFerJBzcsrMitM7PERfOx1aW7Q7eirg6ZNr2qIQbX+Wjeo16Hl7Ez2AjfOf19TZrw
- LUaHNjISuM+jCAobun6olH0xFF2GBrs+mUWO8s2I2ipiCnDq4SGYHm1RZ+qvdSZnHNeMtxflY
- 10XnkSo0iP9J2jBreaAdE3kRr2GW4jgLQ+uTrOgG6vakYPH5YP5MjT60FokFYqwrMVBQJtUvS
- U1YcpCMQIsFY7pW+mHHvihr25/U7ma9nOIoiiiCCXxfVLWkJHC+Zvmt1L/Mb0GLiszJyL11k5
- 4DxBgEci/hu6XhF4tkHaj+cKrRzARWxvHcTmVmEnFhQ/subMlWPi76avuInOC5KTTTUDOZYVq
- TlnZpGHV7tKopqcYpWdGORGc7YiJRHGMhAcA8nU5aY+OrHpXRbq54YXyIvvavqEL+6Q5xspu+
- NACAu547Vl6oHZ6mJlbV9rYBpQNvX4HIFDo1EnkZcIaq/VuSX6VjQbr5XVqntD1CRVBf4DEH9
- cyUiPDEW9bKdGaYrIBR8yiXrG0EO7r+HI9GufFy2/oBLC286x7weTf/s87vHfWNrLdA4ecO0/
- sGpXKVos9Z3bFsSC0yJyy6FJK2F1YCvXRF0eFLndTofVf/LyX1r2uxmj7PjCom3kYPnToWCQf
- gdTqSsM+Qqx7voVIviQO1DDC2T4fK19pAar/zPEIW6/HOFRkGWuFgEQf5Vce4fMHZPUo=
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: rQCowADX3FjKHuFh69iFBQ--.22556S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cr43GFW5KFy8urWDJF15twb_yoW8KF43pa
+        n5KFWkGasxGrW3Aryftw18JF1xt34293WrXw48G3s09r1DXF1Uury5CF4UXFZ5trWv9FZx
+        GrWSk3y8C345ZFUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9j14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+        0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6r47MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1l
+        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
+        C2KfnxnUUI43ZEXa7VUjHUDJUUUUU==
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 9:19 PM Laurent Vivier <laurent@vivier.eu> wrote:
->
-> As android implementation defines the endianness of the device is the one
-> of the architecture replace all writel()/readl() by
-> __raw_writel()/__raw_readl()
->
-> https://android.googlesource.com/platform/external/qemu/+/refs/heads/emu-master-dev/hw/timer/goldfish_timer.c#177
->
-> The same change has been done for goldfish-tty:
->
->   commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
->
-> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Since the possible failure of the devm_regmap_init_mmio(), it will
+return error pointer and be assigned to the regmap.
+Then the error pointer will be dereferenced.
+For example rx->regmap will be used in rx_macro_mclk_enable().
+Therefore, it should be better to check it.
 
-__raw_readl() isn't really the correct interface though, this is not
-well-defined to have
-a particular meaning at all, and doesn't guarantee atomicity or a
-particular endianess
-across architectures.
+Fixes: af3d54b99764 ("ASoC: codecs: lpass-rx-macro: add support for lpass rx macro")
+Fixes: c39667ddcfc5 ("ASoC: codecs: lpass-tx-macro: add support for lpass tx macro")
+Fixes: 809bcbcecebf ("ASoC: codecs: lpass-wsa-macro: Add support to WSA Macro")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+---
+Changelog
 
-I'd suggest defining a set of goldfish specific accessors per
-architecture that turn
-into either readl() or swabl(readl()), to allow future architectures
-to define this
-properly in qemu.
+v1 -> v2
 
-         Arnd
+* Change 1. Refine the commit message.
+---
+ sound/soc/codecs/lpass-rx-macro.c  | 2 ++
+ sound/soc/codecs/lpass-tx-macro.c  | 2 ++
+ sound/soc/codecs/lpass-wsa-macro.c | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/sound/soc/codecs/lpass-rx-macro.c b/sound/soc/codecs/lpass-rx-macro.c
+index 07894ec5e7a6..2adbf2e2697f 100644
+--- a/sound/soc/codecs/lpass-rx-macro.c
++++ b/sound/soc/codecs/lpass-rx-macro.c
+@@ -3542,6 +3542,8 @@ static int rx_macro_probe(struct platform_device *pdev)
+ 		return PTR_ERR(base);
+ 
+ 	rx->regmap = devm_regmap_init_mmio(dev, base, &rx_regmap_config);
++	if (IS_ERR(rx->regmap))
++		return PTR_ERR(rx->regmap);
+ 
+ 	dev_set_drvdata(dev, rx);
+ 
+diff --git a/sound/soc/codecs/lpass-tx-macro.c b/sound/soc/codecs/lpass-tx-macro.c
+index 27a0d5defd27..e4bbc6bd4925 100644
+--- a/sound/soc/codecs/lpass-tx-macro.c
++++ b/sound/soc/codecs/lpass-tx-macro.c
+@@ -1803,6 +1803,8 @@ static int tx_macro_probe(struct platform_device *pdev)
+ 		return PTR_ERR(base);
+ 
+ 	tx->regmap = devm_regmap_init_mmio(dev, base, &tx_regmap_config);
++	if (IS_ERR(tx->regmap))
++		return PTR_ERR(tx->regmap);
+ 
+ 	dev_set_drvdata(dev, tx);
+ 
+diff --git a/sound/soc/codecs/lpass-wsa-macro.c b/sound/soc/codecs/lpass-wsa-macro.c
+index d3ac318fd6b6..dd1a8b7bc794 100644
+--- a/sound/soc/codecs/lpass-wsa-macro.c
++++ b/sound/soc/codecs/lpass-wsa-macro.c
+@@ -2405,6 +2405,8 @@ static int wsa_macro_probe(struct platform_device *pdev)
+ 		return PTR_ERR(base);
+ 
+ 	wsa->regmap = devm_regmap_init_mmio(dev, base, &wsa_regmap_config);
++	if (IS_ERR(wsa->regmap))
++		return PTR_ERR(wsa->regmap);
+ 
+ 	dev_set_drvdata(dev, wsa);
+ 
+-- 
+2.25.1
+
