@@ -2,242 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4809BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 04:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E39C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 04:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239114AbiANEIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 13 Jan 2022 23:08:25 -0500
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:57270
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239095AbiANEIX (ORCPT
+        id S239084AbiANEMd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 13 Jan 2022 23:12:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229778AbiANEMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 13 Jan 2022 23:08:23 -0500
-Received: from HP-EliteBook-840-G7.. (223-140-209-80.emome-ip.hinet.net [223.140.209.80])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id CFC7E40D48;
-        Fri, 14 Jan 2022 04:08:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642133302;
-        bh=gR2rWv4Rs5xoIZe6hJeo4oK3gVvpoLRh+lUPZPgU6kM=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=o85ieK+2Iya7Vv2JWErShAzs7tu9R1RKLrVIckit+MKTAey6kgGd4LBeR0VsMNN8H
-         9xcYyimdFKyqftwJM+MMGpYQ29GKP9piL4lhGFX0v4Pa+KkoewfoyNYmPkICq5b7X9
-         1Mkk8+DWyPhhNz69xS4fsBBFUzWTdZx+3JaVf0sXiYW9YZUTZcVqGvZlOaqtFdMiuE
-         m3dnXn940wEvkHo20UPNEQLYOerJBXcQnfWfkBcHp7Pveq4xEaAa6xBYFCq2S74up3
-         /72o0nWyLW3aM4Dbd3gmrivuIZjrKQDzagE06A/n3DwW6U8xGuQRfsJaasxPkFtXlB
-         e3SzBKeENy+9g==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] stmmac: intel: Honor phy LED set by system firmware on a Dell hardware
-Date:   Fri, 14 Jan 2022 12:07:54 +0800
-Message-Id: <20220114040755.1314349-2-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
-References: <20220114040755.1314349-1-kai.heng.feng@canonical.com>
+        Thu, 13 Jan 2022 23:12:32 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDFBC061574;
+        Thu, 13 Jan 2022 20:12:32 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id l13so7527419qvz.10;
+        Thu, 13 Jan 2022 20:12:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=HCdJ4uc7ZQKFPkllkV4dH50qtsfh07hAIcC6QGtjAjo=;
+        b=CGvzn0YiAiQClsUz38hGqQu+zgaIWQEk6d+nRVyWGjDvmJyjVKSfepejFcd/cpZu/u
+         KFoDNe3JopPL3J1iCDsxSquL95/wxHAMcVSTkK6L1KaQK4QgkhDChsch2SnyEXQHoaIV
+         4WhQQRmri3d53aWDjT1f+yQBxML7xO4k2Z7EA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=HCdJ4uc7ZQKFPkllkV4dH50qtsfh07hAIcC6QGtjAjo=;
+        b=qCpxA2du+RCcL2KXl5lPWDOCgLX928Qwar7O3uHFOQfoGb4ZS67ni2H4jC9E3h0axG
+         6DikSWXij0zPwtrHPeZqSM/4QVdP8DKpPW91DA8uileeJh4cp7vjmFAwKeyDpEMBDjKu
+         VxngjUNG2lU8zxQTdtpjkjwsnC6MUY1qSj4Ce3X80mxHUmtB63B3QUsmr6nWkeLzzsIG
+         ahkVn5hvJ5grKH85JPJ06L75aH14mo342jtE0YEdCYNZqXurpTwdlIMezvjt7qetfjP3
+         OOy0jxLugPzggc/hMt/wN4ZH5GU+PqwSD5ck/CLdYINpHVEiJ0wnXnjj137+ooaUbGhr
+         kNpA==
+X-Gm-Message-State: AOAM531hh146pZljlAkIB9gJwKU40kUuhJis6megHwi5PuJm06xXmCji
+        XiRGctQTfsOGbm9GviXNsJvQcOkAwh0z9tBth7wjX0PfuXR+rw==
+X-Google-Smtp-Source: ABdhPJwdCGiKluxxPzuPKnAKD3FVrtW7ibv78sHE21tQel2iej6Ek+Nbf4oL4BrNxQ7KjEDWC9MacNzSY07j67xZ71s=
+X-Received: by 2002:ad4:594b:: with SMTP id eo11mr6609927qvb.21.1642133551635;
+ Thu, 13 Jan 2022 20:12:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211104140211.6258-1-amirmizi6@gmail.com> <20211104140211.6258-5-amirmizi6@gmail.com>
+In-Reply-To: <20211104140211.6258-5-amirmizi6@gmail.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Fri, 14 Jan 2022 04:12:18 +0000
+Message-ID: <CACPK8Xe8Y35Jf4o8gG=+BHRQN=Y+yo12uW7RFFva3bNvna3OUA@mail.gmail.com>
+Subject: Re: [PATCH v19 4/5] tpm: tpm_tis: Add tpm_tis_i2c driver
+To:     amirmizi6@gmail.com
+Cc:     Eyal.Cohen@nuvoton.com, jarkko@kernel.org, oshrialkoby85@gmail.com,
+        alexander.steffen@infineon.com, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, peterhuewe@gmx.de,
+        jgg@ziepe.ca, Arnd Bergmann <arnd@arndb.de>,
+        Greg KH <gregkh@linuxfoundation.org>, benoit.houyere@st.com,
+        Eddie James <eajames@linux.ibm.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-integrity@vger.kernel.org, oshri.alkoby@nuvoton.com,
+        Tomer Maimon <tmaimon77@gmail.com>, gcwilson@us.ibm.com,
+        kgoldman@us.ibm.com, Dan.Morav@nuvoton.com,
+        oren.tanami@nuvoton.com, shmulik.hager@nuvoton.com,
+        amir.mizinski@nuvoton.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
-instead of setting another value, keep it untouched and restore the saved
-value on system resume.
+On Thu, 4 Nov 2021 at 14:04, <amirmizi6@gmail.com> wrote:
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 16 +++++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  2 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 ++
- drivers/net/phy/marvell.c                     | 58 ++++++++++++-------
- include/linux/marvell_phy.h                   |  1 +
- 5 files changed, 61 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 8e8778cfbbadd..f8a2879e0264a 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -857,6 +857,16 @@ static const struct dmi_system_id quark_pci_dmi[] = {
- 	{}
- };
- 
-+static const struct dmi_system_id use_preset_led[] = {
-+	{
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
-+		},
-+	},
-+	{}
-+};
-+
- static int quark_default_data(struct pci_dev *pdev,
- 			      struct plat_stmmacenet_data *plat)
- {
-@@ -989,6 +999,7 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 	struct intel_priv_data *intel_priv;
- 	struct plat_stmmacenet_data *plat;
- 	struct stmmac_resources res;
-+	struct stmmac_priv *priv;
- 	int ret;
- 
- 	intel_priv = devm_kzalloc(&pdev->dev, sizeof(*intel_priv), GFP_KERNEL);
-@@ -1075,6 +1086,11 @@ static int intel_eth_pci_probe(struct pci_dev *pdev,
- 		goto err_dvr_probe;
- 	}
- 
-+	if (dmi_check_system(use_preset_led)) {
-+		priv = netdev_priv(dev_get_drvdata(&pdev->dev));
-+		priv->use_preset_led = true;
-+	}
-+
- 	return 0;
- 
- err_dvr_probe:
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 40b5ed94cb54a..525701acbbdbb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -319,6 +319,8 @@ struct stmmac_priv {
- 	/* XDP BPF Program */
- 	unsigned long *af_xdp_zc_qps;
- 	struct bpf_prog *xdp_prog;
-+
-+	bool use_preset_led;
- };
- 
- enum stmmac_state {
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 63ff2dad8c85f..155412656b8bf 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -49,6 +49,7 @@
- #include "dwmac1000.h"
- #include "dwxgmac2.h"
- #include "hwif.h"
-+#include <linux/marvell_phy.h>
- 
- /* As long as the interface is active, we keep the timestamping counter enabled
-  * with fine resolution and binary rollover. This avoid non-monotonic behavior
-@@ -1236,6 +1237,9 @@ static int stmmac_init_phy(struct net_device *dev)
- 			return -ENODEV;
- 		}
- 
-+		if (priv->use_preset_led)
-+			phydev->dev_flags |= MARVELL_PHY_USE_PRESET_LED;
-+
- 		ret = phylink_connect_phy(priv->phylink, phydev);
- 	}
- 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 739859c0dfb18..45be432188781 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -304,6 +304,7 @@ struct marvell_priv {
- 	u32 last;
- 	u32 step;
- 	s8 pair;
-+	u16 led_def_config;
- };
- 
- static int marvell_read_page(struct phy_device *phydev)
-@@ -748,32 +749,49 @@ static int m88e1510_config_aneg(struct phy_device *phydev)
- 
- static void marvell_config_led(struct phy_device *phydev)
- {
--	u16 def_config;
-+	struct marvell_priv *priv = phydev->priv;
- 	int err;
- 
--	switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
--	/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
--	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1121R):
--	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1318S):
--		def_config = MII_88E1121_PHY_LED_DEF;
--		break;
--	/* Default PHY LED config:
--	 * LED[0] .. 1000Mbps Link
--	 * LED[1] .. 100Mbps Link
--	 * LED[2] .. Blink, Activity
--	 */
--	case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1510):
--		if (phydev->dev_flags & MARVELL_PHY_LED0_LINK_LED1_ACTIVE)
--			def_config = MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE;
--		else
--			def_config = MII_88E1510_PHY_LED_DEF;
--		break;
--	default:
-+	if (priv->led_def_config == -1)
- 		return;
-+
-+	if (priv->led_def_config)
-+		goto write;
-+
-+	if (phydev->dev_flags & MARVELL_PHY_USE_PRESET_LED) {
-+		priv->led_def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE,
-+						      MII_PHY_LED_CTRL);
-+		if (priv->led_def_config < 0) {
-+			priv->led_def_config = -1;
-+			return;
-+		}
-+	} else {
-+		switch (MARVELL_PHY_FAMILY_ID(phydev->phy_id)) {
-+		/* Default PHY LED config: LED[0] .. Link, LED[1] .. Activity */
-+		case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1121R):
-+		case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1318S):
-+			priv->led_def_config = MII_88E1121_PHY_LED_DEF;
-+			break;
-+		/* Default PHY LED config:
-+		 * LED[0] .. 1000Mbps Link
-+		 * LED[1] .. 100Mbps Link
-+		 * LED[2] .. Blink, Activity
-+		 */
-+		case MARVELL_PHY_FAMILY_ID(MARVELL_PHY_ID_88E1510):
-+			if (phydev->dev_flags & MARVELL_PHY_LED0_LINK_LED1_ACTIVE)
-+				priv->led_def_config = MII_88E1510_PHY_LED0_LINK_LED1_ACTIVE;
-+			else
-+				priv->led_def_config = MII_88E1510_PHY_LED_DEF;
-+			break;
-+		default:
-+			priv->led_def_config = -1;
-+			return;
-+		}
- 	}
- 
-+write:
- 	err = phy_write_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL,
--			      def_config);
-+			      priv->led_def_config);
- 	if (err < 0)
- 		phydev_warn(phydev, "Fail to config marvell phy LED.\n");
- }
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index ea5995d9ad6c1..492f07620b6c0 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -43,5 +43,6 @@
- #define MARVELL_PHY_M1145_FLAGS_RESISTANCE	BIT(0)
- #define MARVELL_PHY_M1118_DNS323_LEDS		BIT(1)
- #define MARVELL_PHY_LED0_LINK_LED1_ACTIVE	BIT(2)
-+#define MARVELL_PHY_USE_PRESET_LED		BIT(3)
- 
- #endif /* _MARVELL_PHY_H */
--- 
-2.33.1
+> +static int tpm_tis_i2c_write_bytes(struct tpm_tis_data *data, u32 addr,
+> +                                  u16 len, const u8 *value)
+> +{
+> +       struct tpm_tis_i2c_phy *phy =3D to_tpm_tis_i2c_phy(data);
+> +       int ret =3D 0;
+> +       int i =3D 0;
+> +
+> +       if (phy->iobuf) {
+> +               if (len > TPM_BUFSIZE - 1)
+> +                       return -EIO;
+> +
+> +               phy->iobuf[0] =3D address_to_register(addr);
+> +               memcpy(phy->iobuf + 1, value, len);
+> +
+> +               struct i2c_msg msgs[] =3D {
+> +                       {
+> +                               .addr =3D phy->i2c_client->addr,
+> +                               .len =3D len + 1,
+> +                               .buf =3D phy->iobuf,
+> +                       },
+> +               };
 
+I see this warning with GCC 11.2:
+
+../drivers/char/tpm/tpm_tis_i2c.c: In function =E2=80=98tpm_tis_i2c_write_b=
+ytes=E2=80=99:
+../drivers/char/tpm/tpm_tis_i2c.c:114:17: warning: ISO C90 forbids
+mixed declarations and code [-Wdeclaration-after-statement]
+
+> +
+> +               do {
+> +                       ret =3D i2c_transfer(phy->i2c_client->adapter,
+> +                                          msgs, ARRAY_SIZE(msgs));
+> +                       // wait default GUARD_TIME of 250=C2=B5s
+> +                       usleep_range(250, 300);
+> +               } while (ret < 0 && i++ < TPM_RETRY);
+> +       } else {
+> +               u8 reg =3D address_to_register(addr);
+> +
+> +               struct i2c_msg msgs[] =3D {
+> +                       {
+> +                               .addr =3D phy->i2c_client->addr,
+> +                               .len =3D sizeof(reg),
+> +                               .buf =3D &reg,
+> +                       },
+> +                       {
+> +                               .addr =3D phy->i2c_client->addr,
+> +                               .len =3D len,
+> +                               .buf =3D (u8 *)value,
+> +                               .flags =3D I2C_M_NOSTART,
+> +                       },
+> +               };
+> +
+> +               do {
+> +                       ret =3D i2c_transfer(phy->i2c_client->adapter, ms=
+gs,
+> +                                          ARRAY_SIZE(msgs));
+> +                       // wait default GUARD_TIME of 250=C2=B5s
+> +                       usleep_range(250, 300);
+> +               } while (ret < 0 && i++ < TPM_RETRY);
+> +       }
+> +
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       return 0;
+> +}
+> +
+> +int tpm_tis_i2c_read16(struct tpm_tis_data *data, u32 addr, u16 *result)
+> +{
+> +       __le16 result_le;
+> +       int rc;
+> +
+> +       rc =3D data->phy_ops->read_bytes(data, addr, sizeof(u16),
+> +                                      (u8 *)&result_le);
+> +       if (!rc)
+> +               *result =3D le16_to_cpu(result_le);
+> +
+> +       return rc;
+> +}
+> +
+> +int tpm_tis_i2c_read32(struct tpm_tis_data *data, u32 addr, u32 *result)
+> +{
+> +       __le32 result_le;
+> +       int rc;
+> +
+> +       rc =3D data->phy_ops->read_bytes(data, addr, sizeof(u32),
+> +                                      (u8 *)&result_le);
+> +       if (!rc)
+> +               *result =3D le32_to_cpu(result_le);
+> +
+> +       return rc;
+> +}
+> +
+> +int tpm_tis_i2c_write32(struct tpm_tis_data *data, u32 addr, u32 value)
+> +{
+> +       __le32 value_le;
+> +       int rc;
+> +
+> +       value_le =3D cpu_to_le32(value);
+> +
+> +       rc =3D data->phy_ops->write_bytes(data, addr, sizeof(u32),
+> +                                       (u8 *)&value_le);
+> +
+> +       return rc;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(tpm_tis_pm, tpm_pm_suspend, tpm_tis_resume);
+> +
+> +static const struct tpm_tis_phy_ops tpm_i2c_phy_ops =3D {
+> +       .read_bytes =3D tpm_tis_i2c_read_bytes,
+> +       .write_bytes =3D tpm_tis_i2c_write_bytes,
+> +       .read16 =3D tpm_tis_i2c_read16,
+> +       .read32 =3D tpm_tis_i2c_read32,
+> +       .write32 =3D tpm_tis_i2c_write32,
+> +};
+> +
+> +static int tpm_tis_i2c_probe(struct i2c_client *dev, const struct i2c_de=
+vice_id *id)
+> +{
+> +       struct tpm_tis_i2c_phy *phy;
+> +       const u8 loc_init =3D 0;
+> +       int rc;
+> +
+> +       phy =3D devm_kzalloc(&dev->dev, sizeof(struct tpm_tis_i2c_phy),
+> +                          GFP_KERNEL);
+> +       if (!phy)
+> +               return -ENOMEM;
+> +
+> +       phy->i2c_client =3D dev;
+> +
+> +       if (!i2c_check_functionality(dev->adapter, I2C_FUNC_NOSTART)) {
+> +               phy->iobuf =3D devm_kmalloc(&dev->dev, TPM_BUFSIZE, GFP_K=
+ERNEL);
+> +               if (!phy->iobuf)
+> +                       return -ENOMEM;
+> +       }
+> +
+> +       /*select locality 0 (the driver will access only via locality 0)*=
+/
+> +       rc =3D tpm_tis_i2c_write_bytes(&phy->priv, TPM_LOC_SEL, 1, &loc_i=
+nit);
+> +       if (rc < 0)
+> +               return rc;
+> +
+> +       return tpm_tis_core_init(&dev->dev, &phy->priv, -1, &tpm_i2c_phy_=
+ops,
+> +                                       NULL);
+> +}
+> +
+> +static const struct i2c_device_id tpm_tis_i2c_id[] =3D {
+> +       {"tpm_tis_i2c", 0},
+> +       {}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, tpm_tis_i2c_id);
+> +
+> +static const struct of_device_id of_tis_i2c_match[] =3D {
+> +       { .compatible =3D "nuvoton,npct75x", },
+> +       { .compatible =3D "tcg,tpm-tis-i2c", },
+> +       {}
+> +};
+> +MODULE_DEVICE_TABLE(of, of_tis_i2c_match);
+> +
+> +static struct i2c_driver tpm_tis_i2c_driver =3D {
+> +       .driver =3D {
+> +               .owner =3D THIS_MODULE,
+> +               .name =3D "tpm_tis_i2c",
+> +               .pm =3D &tpm_tis_pm,
+> +               .of_match_table =3D of_match_ptr(of_tis_i2c_match),
+> +       },
+> +       .probe =3D tpm_tis_i2c_probe,
+> +       .id_table =3D tpm_tis_i2c_id,
+> +};
+> +
+> +module_i2c_driver(tpm_tis_i2c_driver);
+> +
+> +MODULE_DESCRIPTION("TPM Driver");
+> +MODULE_LICENSE("GPL");
+> --
+> 2.7.4
+>
