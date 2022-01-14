@@ -2,178 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F6E1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10052C433F5
 	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242521AbiANPPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:15:37 -0500
-Received: from mail-bn7nam10on2048.outbound.protection.outlook.com ([40.107.92.48]:11479
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S242460AbiANPP3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:15:29 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TA2qNpuU9PuUmqmYrS9kTwgqW5XzYf7y3hWKU6Rtkxehpx5JIxcqO7VQQztI6m3QDHhzBemiyIsIRf/WfyuUNTKadKHdmZNfZztj82bKZ7y5XJnlkFNoppn/fUOykgJq4wHAlX3Qx2QOghLhWjwqMUL3YjMDHseVV8eqHuZJ20M0O7PYj+StyZT7Q3mRqpgWneHZbA7ReMKFc4ubhLnS7+pWw/Wbj3OSllO3CscjRMI6hMB4ZTMHM2HZ1aUnlW9P9sXkWBvQS2PJIvEehRuvUPYgVpr3mT+Up3Gv/Lh7X6SSs4sCj50RO+GPGd8wMa3MXNlzTOZHQhFnrOXzTb2RMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ks5QtkzLF/4RgmW1WDyADIc8xUV6vXyMMmEvuZGqSwc=;
- b=Kd2tuYFLUSsfA5QjX93JAX9htJQPH2j7fgEdr5Dz2e2sb8QJI6SZhVLK5O8L5YuTetYipGyZheaLmD2UIGijyMklHylVXOvxlxj6Gy5BF/bHeKjMhVDb/LQXC0IhayVAY2YlK9W6z9fiaPEFdErO5sIRppHvV++w1zraqi+D6dpPSpgLJEofguuEZOACLNU8F7+C8NRGy8woV4DMTP0AcJ0SlQ69cb3z1nc9nIJNua+X/QAeM6YNg3i6UJ6d3YZBTz9D3CZnxCz5vfyvTSlvmp+08LnxDCb74jnIb99uGlHG9RH/PnYb9Q7GVjxQOaSH8/SqgMb0uMEpQJFdVMoIYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ks5QtkzLF/4RgmW1WDyADIc8xUV6vXyMMmEvuZGqSwc=;
- b=JO2YlFJmlWnILD4EDfrevAb9It8ZYGxjUnWSz45Eg+pNdbMQSqI6Gxm3tqpVR1FLWwNxuzeRd8N89L5N1rvOHW+u2DKq0+5kLavGCy+n9TuJu8FOAzHy/gr9lQtV2S+41kAEHqJ2Eg/w9fiXeSwHqzXc5IpE3S5NhfzGTiBoTMwvbRKaGlYNwY994m3sSEZtvJM/lm6Yx0n1twNTvc2Qf8BrqiaWDZFfyYQgILOC6IMiH8dtpp6hT4VWxm8O+YRihhcMgdJUGZ8V9bL2Ij/2yYJTcBfYnCRE7i/ZTcAH9FIaA5xAR0xp/XK/YT/KrH5eH9OQ0q5ok0ecFI0F1cZ0DQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com (2603:10b6:208:168::26)
- by BL1PR12MB5078.namprd12.prod.outlook.com (2603:10b6:208:313::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Fri, 14 Jan
- 2022 15:15:27 +0000
-Received: from MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::a9db:9c46:183e:c213]) by MN2PR12MB3823.namprd12.prod.outlook.com
- ([fe80::a9db:9c46:183e:c213%3]) with mapi id 15.20.4888.012; Fri, 14 Jan 2022
- 15:15:27 +0000
-From:   Zi Yan <ziy@nvidia.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christoph Hellwig <hch@lst.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        virtualization@lists.linux-foundation.org,
-        iommu@lists.linux-foundation.org, Vlastimil Babka <vbabka@suse.cz>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Eric Ren <renzhengeek@gmail.com>
-Subject: Re: [RFC PATCH v3 7/8] drivers: virtio_mem: use pageblock size as the minimum virtio_mem size.
-Date:   Fri, 14 Jan 2022 10:15:25 -0500
-X-Mailer: MailMate (1.14r5853)
-Message-ID: <FC7DE076-4FB5-44ED-9A57-9112136AE2AC@nvidia.com>
-In-Reply-To: <60778775-b5f5-0837-092f-9911cec84854@redhat.com>
-References: <20220105214756.91065-1-zi.yan@sent.com>
- <20220105214756.91065-8-zi.yan@sent.com>
- <60778775-b5f5-0837-092f-9911cec84854@redhat.com>
-Content-Type: multipart/signed;
- boundary="=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=";
- micalg=pgp-sha512; protocol="application/pgp-signature"
-X-ClientProxiedBy: BL1PR13CA0426.namprd13.prod.outlook.com
- (2603:10b6:208:2c3::11) To MN2PR12MB3823.namprd12.prod.outlook.com
- (2603:10b6:208:168::26)
+        id S242253AbiANPPR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:15:17 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:1499 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242295AbiANPPP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 10:15:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1642173315; x=1673709315;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=scvS3ncjwqYao/YGwe70xpmeP3AaUlpv9xiTi+7gh/Y=;
+  b=Y8sdnxoz0vfmapGkrHwSKrn8UOH3sZ8E8DTU47DtEYCJZFBtlax2EAAK
+   ijaHcRsUfTsnkMW6yDYz+d+bKRDrVDRQz539MAQNYbfiuBD+0FpHpWjTd
+   uRi827D1IUtIkK7sfdgF0j0RhVaRnBFi8rOcxRtBR+dEK+TsBr2W089rC
+   3upFBWtU4ZdpCzQ+iuyn67Ur8HzK8HUwwumlDUqV84atAKpf/t1U6OFXg
+   xGmkfKxBjk61nGbN9SPwRtQe0a5RF7j9MQeEU+5IxuBcjkFLRIU9/adZ2
+   6EfvfobzZyWA5J3imug1CH+j+VErtKWmDMMIigD5ec18vIpGutS4AsOVI
+   w==;
+IronPort-SDR: D0VJuxheRQlQxnDJvUwZmrOQdlMCXyBfp66n+aFXHp40sGZCnkpREKhRmvmdetUWjAxwuF6X6O
+ ay5SZ0Ggte4T2XwFLMuiFCxgYHCvk3FxfxFx4Vfe6iupjQSSOH2Pjy8VG4nblmi46kpLEgQr8G
+ g2UL5SMCHBGSOKtfBzDtqxU7Pg7d+pI9rgej5xvBIADuwrdJ+NqPRSB8naYdpiCZAIYlo8hBkn
+ CrQPDUArOA1mR9jp7RybhiH8ESqSNLG+2YuHi4uC9LjOrBrRXByrzz49rCPX+GHdaukebjfOkD
+ f9k5bCycIN0e82GX7OJsP1HV
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="145454941"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jan 2022 08:15:13 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 14 Jan 2022 08:15:13 -0700
+Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
+ Transport; Fri, 14 Jan 2022 08:15:07 -0700
+From:   <conor.dooley@microchip.com>
+To:     <linus.walleij@linaro.org>, <bgolaszewski@baylibre.com>,
+        <robh+dt@kernel.org>, <jassisinghbrar@gmail.com>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <a.zummo@towertech.it>,
+        <alexandre.belloni@bootlin.com>, <broonie@kernel.org>,
+        <gregkh@linuxfoundation.org>, <thierry.reding@gmail.com>,
+        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
+        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-crypto@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
+CC:     <krzysztof.kozlowski@canonical.com>, <geert@linux-m68k.org>,
+        <bin.meng@windriver.com>, <heiko@sntech.de>,
+        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
+        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
+        <atishp@rivosinc.com>
+Subject: [PATCH v3 00/15] Update the Icicle Kit device tree
+Date:   Fri, 14 Jan 2022 15:17:12 +0000
+Message-ID: <20220114151727.2319915-1-conor.dooley@microchip.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bc722e2b-0a17-4ffb-60ea-08d9d770b1f1
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5078:EE_
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5078021DF4A0EF94C652634BC2549@BL1PR12MB5078.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cpdx5Y9PBg8fnb+wqAnL3kUd1q4Xl33sMWFzlZFc9+WJGxAWWFgobINeif0zL7saCuD7EerJAFNLChd7xLU6jxrlUlpnMUQpCCaUJElTbbXYSsVpffSg0SNifrn+cuGCAIYbCUm0XRGfT9CgrRLc9/DB/FPXb4lf+7DORx5oDKhJ7N2kQJ5Cww8owgiGnpX5wyYHSs6LqDgm0lhBtKdkf5NmU+us1PVh+N2n79vzFtNZOyCAUXxJWSznuuNqd4wrPVzNYh/kHoySaegw+V0/+i2vtuYmgoPo2hNC6bud4QDpNpYuR5zfIekOQbPsaU2Fm/XoRVQ2nUoz6lndvIPy1ijbsaDYK4VeWvZYX5Ip9vSQjR6vZrBtLpLoQ39sA8PE4Spg7gGGxcY0cnieWdAvEyBprpUCA2wlrKmnQAG+ADZuADfYSrJ5nEHLtTQSsrwHjDiJkfn0pH1Bgm2z9Nr9ePdXuUOR8hfRav+HWgQG4jVGrp+WkVFBK6Fo1sAK8zDiNklwjGGQHxAU908+pNT+pxOty3ewT987okn+9QfOmbkMEO4nD6x04+Oui+haJ+FfxzXhjbufWh130xVgiOoc0U04yKUChoI9yNEe5RZrFFFyzsH9KBFv/wrdZmp60sS8EvP7/eQkdSZVUauoS/ktaVoPJ36OYDaSIMvHBc6XFhM1A2i+QacF1TFQvO3jNiFJXs+zod37musz2AzgRtAMiw58+YoPY7sMZg5aPsvZJs8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3823.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(66946007)(66556008)(7416002)(508600001)(316002)(235185007)(6916009)(2616005)(8676002)(8936002)(54906003)(5660300002)(66476007)(36756003)(26005)(38100700002)(21480400003)(83380400001)(2906002)(86362001)(33656002)(6506007)(53546011)(4326008)(186003)(6512007)(6486002)(72826004)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/FUHBoOzcZ59htlqJc/G+sDElTtrz8gX5pCDUP0Kmt2HAYIO72B6z+pkNVc9?=
- =?us-ascii?Q?H2WRcIN6PqT4j2/N4l5GDiN4KDrzlIzLcM5+Om1bgmetPmgjxrmdmCCSZlcS?=
- =?us-ascii?Q?QEih8q7SCMi0MZl8O9L7IfuZOsRqpNTzqi7m9BXzL6Y4uwMguyPDc2NV4apw?=
- =?us-ascii?Q?EumtDVUuUB6h/ihPU/B+BF7L2OXcI2wgm6V+xWPYtx/X+V1n9YNYcbk95M8Q?=
- =?us-ascii?Q?ItpKcySTqG1hbqzfcaxoC59ejZh2ED0mosmOZMzlUEjLJkGjyvz7PGPyS5mw?=
- =?us-ascii?Q?82Eb9AjYVCaIqqzfouZ9kRpbm+h1RqTVV5ExxbAtrjkOL/RDYjuzGdbftvWL?=
- =?us-ascii?Q?i+qXZwO/e199TlfNHV7go+aqnAfHHvt1+Ze3H9YSWYF2zhBTcJR32cGvcnju?=
- =?us-ascii?Q?FGEmHH/7zBj+NGX4LYRUJTFdhCtkiSFnyynNbxGcd1NI6a4zVGrwBm566U/7?=
- =?us-ascii?Q?j2G1yPrz9u3NX6iw0uUb3ZlJ77dAyYEmHKxCKgGpT46T9ZD7E9OzsKbPBjWu?=
- =?us-ascii?Q?3vmMclXCWjHToHX1/Pw7yeI/th/YVjKkSLKhvq8c3FP3NJ0mpte5XFnc49cy?=
- =?us-ascii?Q?k5203+Zbd8sHFlvVZ9i4VWxoiSutzVcfmozNaEbMtfpoVn7yDX9TWW47L0hl?=
- =?us-ascii?Q?m4WxPGcWVjfT+/M/7iVxfMu2u1I6emoholoEN0WurpFaEaBPx19LGAFzHm/l?=
- =?us-ascii?Q?07W+pPmLvzJ8Je9swSXIYQpCp6uaXtvXpO0YDG3sN3MUUBMlnAnSE99YHJc2?=
- =?us-ascii?Q?4G2UL4NxlQWmE5oNZctJEDqYVXya/At6hCr/pJPJOZlv/lRO/ajI9mCSUePw?=
- =?us-ascii?Q?3CUOXEkLr2cbqUefwjpUHktER6FGbIq35WymmL8wP1sg1Qzogo4mE71v8YtP?=
- =?us-ascii?Q?9ivzkDQaB/2s3vMYU5NiHwDCUy6r0/sS/Y9E7diVkMVGky9KoqxJW8bnJu66?=
- =?us-ascii?Q?RRlzwuN/zGAhJUk/bXykQsYxqxN0d/WYgAORk3p8Ga37ozGLEjhJ4PllecrE?=
- =?us-ascii?Q?sTFU0/3OPkYh+pr0VBXGNjvDNhwmDEtghTMaXkO5vCGpSdk1kEcNzScAkzS3?=
- =?us-ascii?Q?w8rPdqEXb+nb09RQnehGR7S5lyD+Ei/7MYptA8T3hIPNY5CDef+6S1HpllyW?=
- =?us-ascii?Q?BULgdcsM8AYtVXi5x0T0SnOE/2v8CLx9ZLRN6AbvDKxkiQp1fbxbXfyz43JS?=
- =?us-ascii?Q?em5dTEGZgdfpSVd9FkvCO4pWJvra3MTN83Y0hlvCDj+OX8U6bLHmtMb0Ew91?=
- =?us-ascii?Q?BiInNGx16uHkgmIfmStQz35dylggaMmZTDFWP49VOdl9ZyHnEwldRgYE3TL6?=
- =?us-ascii?Q?MfbZp79ibQvg8VyYyvavIT7z5LldCG1h+TydlF1wK01J3jpXsH/FU2MrXPAQ?=
- =?us-ascii?Q?xpXQ5Ro1wyQk3Kh8ZxhA8znNahSX+W8uebjPfCPkTV+JiCOdbN35g60tY9qv?=
- =?us-ascii?Q?Z2zYmSogTsU6TwvQYWKlZ2Ze1kY7sceYjG00jAVliXI24dKY0Qnx3ekITtqC?=
- =?us-ascii?Q?VAAj5ZgrmCr+F0/PQ0Z34ci9AqAArD/+0J5q5daS+oAet/THx0MbbxKGTMCV?=
- =?us-ascii?Q?dvb0H2uJaTOb9QZlKrY=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc722e2b-0a17-4ffb-60ea-08d9d770b1f1
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3823.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 15:15:27.2737
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EIGrIAwuQRBHYKoxZn8zJ6QaeR2lWQdZT9SvpqzAjh1/N28jjouGBEjHQhXz5/qU
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5078
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=
-Content-Type: text/plain
+From: Conor Dooley <conor.dooley@microchip.com>
 
-On 14 Jan 2022, at 8:44, David Hildenbrand wrote:
+This series updates the Microchip Icicle Kit device tree by adding a
+host of peripherals, and some updates to the memory map. In addition,
+the device tree has been split into a third part, which contains "soft"
+peripherals that are in the fpga fabric.
 
-> On 05.01.22 22:47, Zi Yan wrote:
->> From: Zi Yan <ziy@nvidia.com>
->>
->> alloc_contig_range() now only needs to be aligned to pageblock_order,
->> drop virtio_mem size requirement that it needs to be the max of
->> pageblock_order and MAX_ORDER.
->>
->> Signed-off-by: Zi Yan <ziy@nvidia.com>
->> ---
->>  drivers/virtio/virtio_mem.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
->> index a6a78685cfbe..2664dc16d0f9 100644
->> --- a/drivers/virtio/virtio_mem.c
->> +++ b/drivers/virtio/virtio_mem.c
->> @@ -2481,8 +2481,7 @@ static int virtio_mem_init_hotplug(struct virtio_mem *vm)
->>  	 * - Is required for now for alloc_contig_range() to work reliably -
->>  	 *   it doesn't properly handle smaller granularity on ZONE_NORMAL.
->>  	 */
->
-> Please also update this comment.
+Several of the entries are for peripherals that have not get had their
+drivers upstreamed, so in those cases the dt bindings are included where
+appropriate in order to avoid the many "DT compatible string <x> appears
+un-documented" errors.
 
-No problem. Thanks for pointing this out.
+Depends on mpfs clock driver series [1] to provide:
+dt-bindings/clock/microchip,mpfs-clock.h
+and on the other changes to the icicle/mpfs device tree from geert
+that are already in linux/riscv/for-next.
 
+Additionally, the interrupt-extended warnings on the plic/clint are 
+cleared by [2] & [3].
 
---
-Best Regards,
-Yan, Zi
+[1] https://lore.kernel.org/linux-clk/20211216140022.16146-1-conor.dooley@microchip.com/T/
+[2] https://lore.kernel.org/linux-riscv/cover.1639744468.git.geert@linux-m68k.org/
+[3] https://lore.kernel.org/linux-riscv/cover.1639744106.git.geert@linux-m68k.org/
 
---=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-Content-Type: application/pgp-signature; name="signature.asc"
+Changes from v2:
+- dropped plic int header & corresponding defines in dts{,i}
+- use $ref to drmode in mpfs-musb binding
+- split changes to dts{,i} again: functional changes to existing
+  elements now are in a new patch
+- drop num-cs property in mpfs-spi binding
+- dont make the system controller a simple-mfd
+- move the separate bindings for rng/generic system services into the 
+  system controller binding
+- added an instance corei2c as i2c2 in the fabric dtsi
+- add version numbering to corepwm and corei2c compat string (-rtl-vN)
 
------BEGIN PGP SIGNATURE-----
+Conor Dooley (15):
+  dt-bindings: soc/microchip: update syscontroller compatibles
+  dt-bindings: soc/microchip: add services as children of sys ctrlr
+  mailbox: change mailbox-mpfs compatible string
+  dt-bindings: i2c: add bindings for microchip mpfs i2c
+  dt-bindings: rtc: add bindings for microchip mpfs rtc
+  dt-bindings: gpio: add bindings for microchip mpfs gpio
+  dt-bindings: spi: add bindings for microchip mpfs spi
+  dt-bindings: usb: add bindings for microchip mpfs musb
+  dt-bindings: pwm: add microchip corepwm binding
+  riscv: dts: microchip: use clk defines for icicle kit
+  riscv: dts: microchip: add fpga fabric section to icicle kit
+  riscv: dts: microchip: refactor icicle kit device tree
+  riscv: dts: microchip: update peripherals in icicle kit device tree
+  riscv: dts: microchip: add new peripherals to icicle kit device tree
+  MAINTAINERS: update riscv/microchip entry
 
-iQJDBAEBCgAtFiEEh7yFAW3gwjwQ4C9anbJR82th+ooFAmHhk40PHHppeUBudmlk
-aWEuY29tAAoJEJ2yUfNrYfqKSkEP/jaAvAcYFO5gI5Q7dXBn9mlVUbq0RjRXMjbq
-FPo6FfBH+UZjHfjq3MrkPdlPjBOMc0Tgat5mQJRWPI4sKn2FuycNv1cy5H+jA/0+
-P28LCSaYfKzBIW8BOeBtNvCeYkpKEudmzNacWH9TFkZUyB4ML9Ny3VqqNbHWDXXQ
-saQ+ICJ4m1S9AfcaWI+6j8zR1JL6BKhzcb1qzvwgAbjeggd2D6IgDBESUn3FA8u6
-HVCWcdyoIbaH7/mJYhRwoBY1Kce8fQBfhPwcylJqWQQDg/aWeDFYAG46x8VlX/y1
-F/vrvziyB5VhSKYdYMV9Zwe2p2IP0cfJ09+zjqMLMfAey7fx8vDqr3OJ2n+AvNQ1
-+wM7pLvWr/gMoHcbjan0Mve72ZjNMc/531gXzGLitfZoFMGD3L64hQbvoNb4fUJt
-ulrNQWvLpRNxRSUo6EqpGeClQKyeQYyenCO/nESKTuEwLAJbtAvQ3TE0wxRcWYAW
-XgsGVchFB3bzOXRlJ6lFLKvjbXeDh7Xw+lbUp5+eKeMzsdEi25ekGYNtLyRH4koC
-C7xlY67JMTlnoG0LW94+QKm3PS4n4QuyLjYEvQe0j7FQGZuWlF+FxT/kIGiCG5CS
-K3Tw5j3OuxDGE6Ywlw3gpJbi7zTvlnQh75zU4XWcEJg6RNxb0C9R+G2v++Fr2qdv
-I+5DtVna
-=xKpA
------END PGP SIGNATURE-----
+ .../bindings/gpio/microchip,mpfs-gpio.yaml    |  80 ++++++
+ .../bindings/i2c/microchip,mpfs-i2c.yaml      |  55 ++++
+ ...ilbox.yaml => microchip,mpfs-mailbox.yaml} |   6 +-
+ .../bindings/pwm/microchip,corepwm.yaml       |  75 +++++
+ .../bindings/rtc/microchip,mfps-rtc.yaml      |  63 +++++
+ .../microchip,mpfs-sys-controller.yaml        |  73 +++++
+ ...icrochip,polarfire-soc-sys-controller.yaml |  35 ---
+ .../bindings/spi/microchip,mpfs-spi.yaml      |  52 ++++
+ .../bindings/usb/microchip,mpfs-musb.yaml     |  59 ++++
+ MAINTAINERS                                   |   2 +
+ .../dts/microchip/microchip-mpfs-fabric.dtsi  |  25 ++
+ .../microchip/microchip-mpfs-icicle-kit.dts   | 115 ++++++--
+ .../boot/dts/microchip/microchip-mpfs.dtsi    | 262 +++++++++++++++---
+ arch/riscv/configs/icicle_kit_defconfig       | 134 +++++++++
+ drivers/mailbox/mailbox-mpfs.c                |   2 +-
+ 15 files changed, 933 insertions(+), 105 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
+ create mode 100644 Documentation/devicetree/bindings/i2c/microchip,mpfs-i2c.yaml
+ rename Documentation/devicetree/bindings/mailbox/{microchip,polarfire-soc-mailbox.yaml => microchip,mpfs-mailbox.yaml} (82%)
+ create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+ create mode 100644 Documentation/devicetree/bindings/rtc/microchip,mfps-rtc.yaml
+ create mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,mpfs-sys-controller.yaml
+ delete mode 100644 Documentation/devicetree/bindings/soc/microchip/microchip,polarfire-soc-sys-controller.yaml
+ create mode 100644 Documentation/devicetree/bindings/spi/microchip,mpfs-spi.yaml
+ create mode 100644 Documentation/devicetree/bindings/usb/microchip,mpfs-musb.yaml
+ create mode 100644 arch/riscv/boot/dts/microchip/microchip-mpfs-fabric.dtsi
+ create mode 100644 arch/riscv/configs/icicle_kit_defconfig
 
---=_MailMate_C438F204-3693-4696-9E76-A1C6EFF005F6_=--
+-- 
+2.32.0
+
