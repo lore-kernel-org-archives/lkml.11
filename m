@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E912BC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13A9DC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240091AbiANI0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:26:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S234466AbiANI0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:26:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240686AbiANIYR (ORCPT
+        with ESMTP id S240802AbiANIYl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:24:17 -0500
+        Fri, 14 Jan 2022 03:24:41 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90089C061363;
-        Fri, 14 Jan 2022 00:22:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE0EC061751;
+        Fri, 14 Jan 2022 00:22:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CEE661E2D;
-        Fri, 14 Jan 2022 08:22:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F345DC36AE9;
-        Fri, 14 Jan 2022 08:22:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D05C61E64;
+        Fri, 14 Jan 2022 08:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A766C36AE9;
+        Fri, 14 Jan 2022 08:22:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148573;
-        bh=46tSODd3bKTz4lai4mtnMZJFQXBXOmrf5iaLfeO4rI8=;
+        s=korg; t=1642148576;
+        bh=a97yzrHeaYRB2rNIwWbcsigwKog41mk+bvC7o3RBMF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MkjnRTif6g+Jc82A6AhSJV3jNPo9CnY4r/jQdvcsUu+dA0vbxkXr+HQ9le8H09dw0
-         o8J5uCDWseamf3+9iPTuTl4Jn1ItwMfV/l/+rgVkhCQCDm6AgxJfzV1B7LhGPbjWBV
-         u5wo9ZJoF8juVp3ac7TiHuYlu01XRN7jjjwGLFYc=
+        b=u2pggxnx++UeWeSgOuHDrxotVSzsA1W0qmDALSiM+B8markbR7RM8vWvf8n9vujBr
+         rBoBSFju+eLjXhSAev5v7YEJw8G/9WT63rZBfFXcw6TT3CBmcrqmZpXRHR08fWhuDP
+         L7feDyQHdlA8N9MrY0ZrbNQ5Mb3KC5+kGSR+BHvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        Aditya Garg <gargaditya08@live.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 5.16 25/37] mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
-Date:   Fri, 14 Jan 2022 09:16:39 +0100
-Message-Id: <20220114081545.679814065@linuxfoundation.org>
+        stable@vger.kernel.org, Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Ricardo Ribalda <ribalda@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 34/37] media: Revert "media: uvcvideo: Set unique vdev name based in type"
+Date:   Fri, 14 Jan 2022 09:16:48 +0100
+Message-Id: <20220114081545.965296560@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -51,61 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Ricardo Ribalda <ribalda@chromium.org>
 
-commit c9e143084d1a602f829115612e1ec79df3727c8b upstream.
+commit f66dcb32af19faf49cc4a9222c3152b10c6ec84a upstream.
 
-The runtime PM callback may be called as soon as the runtime PM facility
-is enabled and activated. It means that ->suspend() may be called before
-we finish probing the device in the ACPI case. Hence, NULL pointer
-dereference:
+A lot of userspace depends on a descriptive name for vdev. Without this
+patch, users have a hard time figuring out which camera shall they use
+for their video conferencing.
 
-  intel-lpss INT34BA:00: IRQ index 0 not found
-  BUG: kernel NULL pointer dereference, address: 0000000000000030
-  ...
-  Workqueue: pm pm_runtime_work
-  RIP: 0010:intel_lpss_suspend+0xb/0x40 [intel_lpss]
+This reverts commit e3f60e7e1a2b451f538f9926763432249bcf39c4.
 
-To fix this, first try to register the device and only after that enable
-runtime PM facility.
-
-Fixes: 4b45efe85263 ("mfd: Add support for Intel Sunrisepoint LPSS devices")
-Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
-Reported-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tested-by: Aditya Garg <gargaditya08@live.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211101190008.86473-1-andriy.shevchenko@linux.intel.com
+Link: https://lore.kernel.org/linux-media/20211207003840.1212374-2-ribalda@chromium.org
+Cc: <stable@vger.kernel.org>
+Fixes: e3f60e7e1a2b ("media: uvcvideo: Set unique vdev name based in type")
+Reported-by: Nicolas Dufresne <nicolas@ndufresne.ca>
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mfd/intel-lpss-acpi.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/media/usb/uvc/uvc_driver.c |    7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
---- a/drivers/mfd/intel-lpss-acpi.c
-+++ b/drivers/mfd/intel-lpss-acpi.c
-@@ -136,6 +136,7 @@ static int intel_lpss_acpi_probe(struct
+--- a/drivers/media/usb/uvc/uvc_driver.c
++++ b/drivers/media/usb/uvc/uvc_driver.c
+@@ -2193,7 +2193,6 @@ int uvc_register_video_device(struct uvc
+ 			      const struct v4l2_file_operations *fops,
+ 			      const struct v4l2_ioctl_ops *ioctl_ops)
  {
- 	struct intel_lpss_platform_info *info;
- 	const struct acpi_device_id *id;
-+	int ret;
+-	const char *name;
+ 	int ret;
  
- 	id = acpi_match_device(intel_lpss_acpi_ids, &pdev->dev);
- 	if (!id)
-@@ -149,10 +150,14 @@ static int intel_lpss_acpi_probe(struct
- 	info->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->irq = platform_get_irq(pdev, 0);
+ 	/* Initialize the video buffers queue. */
+@@ -2222,20 +2221,16 @@ int uvc_register_video_device(struct uvc
+ 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
+ 	default:
+ 		vdev->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
+-		name = "Video Capture";
+ 		break;
+ 	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
+ 		vdev->device_caps = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
+-		name = "Video Output";
+ 		break;
+ 	case V4L2_BUF_TYPE_META_CAPTURE:
+ 		vdev->device_caps = V4L2_CAP_META_CAPTURE | V4L2_CAP_STREAMING;
+-		name = "Metadata";
+ 		break;
+ 	}
  
-+	ret = intel_lpss_probe(&pdev->dev, info);
-+	if (ret)
-+		return ret;
-+
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
+-	snprintf(vdev->name, sizeof(vdev->name), "%s %u", name,
+-		 stream->header.bTerminalLink);
++	strscpy(vdev->name, dev->name, sizeof(vdev->name));
  
--	return intel_lpss_probe(&pdev->dev, info);
-+	return 0;
- }
- 
- static int intel_lpss_acpi_remove(struct platform_device *pdev)
+ 	/*
+ 	 * Set the driver data before calling video_register_device, otherwise
 
 
