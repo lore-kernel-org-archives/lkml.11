@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4ECDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE458C4332F
 	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240818AbiANLaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 06:30:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52978 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231225AbiANLaM (ORCPT
+        id S240839AbiANLaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 06:30:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240785AbiANLaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 14 Jan 2022 06:30:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 828C3C061574;
+        Fri, 14 Jan 2022 03:30:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7606C61F15;
-        Fri, 14 Jan 2022 11:30:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C6D44C36AF4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04DCC61F19;
+        Fri, 14 Jan 2022 11:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D4255C36AF8;
         Fri, 14 Jan 2022 11:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1642159810;
-        bh=rULjxzkiXqPAXqFsnEPUzq2HriQyRVhf6KcpST4HMbg=;
+        bh=gURMWjjcQAIYtK0XBHscJTqO17bvPfXKd7/Gxz6rx1Y=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W/fSQyTV2Eq0Bdv40FDq0AL8rqK60fghlU0k8YR5EQrbExiqu96DXHlEK03dcwPZ5
-         q5Zbr4tSyuAdMB8OyWLy6XrDZ2Qgtnj2WYR4FrJUFtrb325SvaqwQcKfUPTtUb1TGA
-         D+mWxHXFJMrWCw+6Py1L1/4vrb1nd4zeSMqH16Bpstgq+Ca7HP9Rs7KNwhqWMIGrS/
-         llVitxPHbdoaODKn7jXdA4L9tsN5GAGW3fGax2tWufvjr/oEoWdsnqpWkw7H8O+Z3p
-         zGrl1R850QXVb5Kig7sLSPD0Q7yrF6QmiDZO5sshDGxqCBsrTNEE871PYTQHiwTZN8
-         CgCGrPPXSgM7g==
+        b=Ir9fvL7uF/vKsNLu3Z9kBM5pHSobZyvZRQxZf3zqVdoy3aDGPkhvfBSGt1bGLgaiS
+         hJaKtHdt3AuM5BovSAGZ2v5WjXj6XkVrF/U9bODVd6rfh/3MS2l+n1CWUIyvDVdzSr
+         VUfJh0k0uoCloHLe7MloYf1duT6bz1ADwdO8AD7fZ1ZGM2SMqkUAGckYmw9F8ossln
+         JfQOGhJ7+Og4KGM2HM0OjFFyTaoxwggH5yvks0VaOtnMmbyZ3g2i8M76Ah7HwzDH2Z
+         UB9+IL1aw203P+mNuvFGaYZiDfwvUdVxTJFJU28odIe/ji+x6x8N8wKMGQ1wFdvtXE
+         dGZ0KzA8nUSJA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 84695F6079D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 99983F6079F;
         Fri, 14 Jan 2022 11:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] lib82596: Fix IRQ check in sni_82596_probe
+Subject: Re: [PATCH v2] kselftests/net: list all available tests in usage()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164215981053.30922.8077951298767216747.git-patchwork-notify@kernel.org>
+Message-Id: <164215981062.30922.10007153006606910064.git-patchwork-notify@kernel.org>
 Date:   Fri, 14 Jan 2022 11:30:10 +0000
-References: <20220114065727.22920-1-linmq006@gmail.com>
-In-Reply-To: <20220114065727.22920-1-linmq006@gmail.com>
-To:     Miaoqian Lin <linmq006@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, jeffrey.t.kirsher@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220114030246.4437-1-lizhijian@fujitsu.com>
+In-Reply-To: <20220114030246.4437-1-lizhijian@fujitsu.com>
+To:     Li Zhijian <lizhijian@fujitsu.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dsahern@gmail.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -53,19 +57,24 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by David S. Miller <davem@davemloft.net>:
 
-On Fri, 14 Jan 2022 06:57:24 +0000 you wrote:
-> platform_get_irq() returns negative error number instead 0 on failure.
-> And the doc of platform_get_irq() provides a usage example:
+On Fri, 14 Jan 2022 11:02:46 +0800 you wrote:
+> So that users can run/query them easily.
 > 
->     int irq = platform_get_irq(pdev, 0);
->     if (irq < 0)
->         return irq;
+> $ ./fcnal-test.sh -h
+> usage: fcnal-test.sh OPTS
+> 
+> 	-4          IPv4 tests only
+> 	-6          IPv6 tests only
+> 	-t <test>   Test name/set to run
+> 	-p          Pause on fail
+> 	-P          Pause after each test
+> 	-v          Be verbose
 > 
 > [...]
 
 Here is the summary with links:
-  - lib82596: Fix IRQ check in sni_82596_probe
-    https://git.kernel.org/netdev/net/c/99218cbf81bf
+  - [v2] kselftests/net: list all available tests in usage()
+    https://git.kernel.org/netdev/net/c/2255634100bf
 
 You are awesome, thank you!
 -- 
