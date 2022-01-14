@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE67C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20554C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241532AbiANOQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:16:22 -0500
-Received: from mout.perfora.net ([74.208.4.197]:33835 "EHLO mout.perfora.net"
+        id S241557AbiANOQZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:16:25 -0500
+Received: from mout.perfora.net ([74.208.4.194]:54187 "EHLO mout.perfora.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241523AbiANOQL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:16:11 -0500
+        id S241494AbiANOQP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 09:16:15 -0500
 Received: from localhost.localdomain ([81.221.144.115]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M07WU-1mKoYK32Bo-00uIey;
- Fri, 14 Jan 2022 15:15:49 +0100
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0Mdb8U-1myZDK1ypQ-00PLca;
+ Fri, 14 Jan 2022 15:15:54 +0100
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marek Vasut <marek.vasut@gmail.com>,
@@ -28,68 +28,133 @@ Cc:     Marek Vasut <marek.vasut@gmail.com>,
         Olof Johansson <olof@lixom.net>,
         Shawn Guo <shawnguo@kernel.org>, Will Deacon <will@kernel.org>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/11] arm64: defconfig: build imx-sdma as a module
-Date:   Fri, 14 Jan 2022 15:15:03 +0100
-Message-Id: <20220114141507.395271-8-marcel@ziswiler.com>
+Subject: [PATCH v2 09/11] arm64: defconfig: enable verdin-imx8mm relevant drivers as modules
+Date:   Fri, 14 Jan 2022 15:15:05 +0100
+Message-Id: <20220114141507.395271-10-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220114141507.395271-1-marcel@ziswiler.com>
 References: <20220114141507.395271-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:IWfyprK7dIRVwplw/Wn+YVTSDILM+Hjtll4N94MsUR8+v8WnXjC
- VUW7Z//z5cYex6i7y8xnMNcjtc8DZWCdjHiQGVT2r3oODOI32w6/JmJk5W00PEXgRQzuApY
- IVdeQzt8jA4TFAOd+Dp8BG55Jys/BDb0j8gOOOxdLKf9EJN0en5lvWM3O+YodpJeOcNmDyX
- a3G3sgNbGUXgmHsqGeshA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:xSNnQfjSrrw=:2dyH8HATRUqiwbyj08up9w
- AJpn+tRnK8PzDU2qBsGMEPfmMPZmaWRwxQAGWK/SvxLZNJAqu+pA0D9n+/mJYcIJRvoi96/w2
- zSTHY28H9gD9QP77ohfVV0LEiftm+mikLzoTYrivtf8MTJAIYDIt098uSDdi1MsOzYbv38OP1
- 5F2Ebj8pqhNE8pQrMOvxgjJCDBbHpibwo63Ei6p9H/1/qnchDFn3wTYjsytwK6OE50MfXdLtw
- cuatb7/iDmmVU22oqxBdZ808pSA+TZojQK72hBGrcQ2vFE3aMedKOncCw1wTgoeySPeH5A9K6
- mMeu3aPtlGORdcfbhe2IchmEPj4/kJTUVGVeUt/aJhafZn5khx+5S1RcKvNQte+r4qw+cqQMW
- vtwER565UC4renL/pWEtkiV039Zz2dJMhATMPjsBJDrPucT8MjTiGjXEApwZGuL9VpFJPWDNR
- Bq74wjtpTByoxg+WIKgm1WnJyAE5dC0V2eGEnpy+uirRm2S1Bx/oU4SP7odGSNCy/l40O7VjA
- a3k7XDkW3rQI2Xc67gIykWr/QR/DJrTKCSWFZH1ikt3M/VhB9am0Cscru/xc2kUNZblQn/8+G
- Dfd7YsfYbQNkASrExKQwd8IX+uM9xvrqRQCdmP3fKFZWYj0TwzLDQlK/lAVg21rGwJHFrVYZp
- yreIr6+Onag/EH6Xg4VjH6wlszu297Q2B3qSBglcMVM2HVoTNgwPKHAnKwcFlEouqmKCB5nKZ
- zi+JVIg3DOe3MTUg
+X-Provags-ID: V03:K1:i1HkJBh8IEppau3Wg2gYlMqFBt7n+Khd328siNanzh4MGIyTl6m
+ d5j2u06DjXPFglXVjXOAv8AHm4nwt1b0w2HafqDn9vgg6S6NlbJkhIN77ehLWTsLxUHpX+D
+ XZEvb35FhgLh1UKgEfXrY0FOriV3m/a7xOwBgnzGt5mdNqG0rhPAJxlAfNtJ4Pc35CwZrJ3
+ 7Q7p8lVnqDsZQYcM5gzIg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:1fHTbDG3mCc=:oyuGq8mVQbmn2eUXSH1TBa
+ IcoLRWrFWwlfLCo/UX5C5O+hNTYtht5fp8QZp/vXNQ28GYmH8J6kboaj3QJO8Mre7pkcT6qUy
+ A35Z0VL6E2/xLLpxHucIuoR2uUJ3X6bJ+8On4BMjvadDJHRLhUdodz7wDRXjgE4AorMrSPvST
+ 6CYR75gALkgFd3tTD4/p8Bdyeuh8q2xg3YfLt5uyUwE+29g+N0San5l3XNM+HwLp5Ue/ncX71
+ W6n0/nf9up+vbHXWStezrlFuE0yRcBO6IIRDbAuvnMJOZZYto12ystNO7AYkQTMYoAk6OF2bE
+ IGXUwLHa1gDT0WOsGzMMnZ+QmEiF02M9iyWkAC6dt8qqrBds06kj9GsKPsFyRzUmDvMDn2zPr
+ crAquW7mOfUcK+LVV6hOoHIIhL7IGYWtKHha6+ou8qOPg2lNIywZDRlkJCF/TbVxwQEwPuESf
+ ug+3YII3w6XO1jmhjbqkTPMEiu5B78caqZFLTCdZMpzAJEDjT8lFYN2pYeo0fS0NOuUr2uj9v
+ P9NmPOA6hqRT44iNjeiAYTW+LAjt4QtQL5GB/HxDx+C3xXda1GWj7UnV01tWW5lMSs0HeukzK
+ g2vUO5RYQkYLlpRGkBA8JPYJaLilP3wZDz5bOE9ql+nsanftIOMBdn2JICWR6qmTCMSkRsca3
+ Oh8M+h02jGQQNlqVPJ4kZiN3RA9ScAmlw1TnxjAiWXNwkfJIWTl0T8SYc+GS2qtl0DmY4+zU2
+ 3YtuJrOgc4zisAGS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-This avoids firmware load error and sysfs fallback reported as follows:
+Enable various drivers which support peripherals as found on the
+Verdin iMX8M Mini et al. computer/system on modules:
 
-[    0.199448] imx-sdma 302c0000.dma-controller: Direct firmware load
- for imx/sdma/sdma-imx7d.bin failed with error -2
-[    0.199487] imx-sdma 302c0000.dma-controller: Falling back to sysfs
- fallback for: imx/sdma/sdma-imx7d.bin
+- CONFIG_CAN_MCP251XFD
+At least one Microchip MCP2518FDT SPI CAN controller which this driver
+also supports may be found on the Verdin iMX8M Mini computer/system on
+module.
+
+- CONFIG_BT_HCIUART_MRVL, CONFIG_BT_MRVL, CONFIG_BT_MRVL_SDIO and
+  CONFIG_MWIFIEX_SDIO
+The AzureWave AW-CM276NF which these Bluetooth and Wi-Fi drivers also
+support may be found on the Verdin iMX8M Mini (as well as the Apalis
+iMX8, Colibri iMX8X and Verdin iMX8M Plus for that matter) computer/
+system on module.
+
+- CONFIG_SENSORS_LM75
+The TI TMP75C temperature sensor which this driver also supports may be
+found on the Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for
+that matter) computer/system on module.
+
+- CONFIG_SND_SOC_NAU8822
+The Nuvoton Technology Corporation (NTC) NAU88C22YG which this driver
+also supports may be found on the Verdin Development Board a carrier
+board for the Verdin family of computer/system on module which the
+Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
+may be mated in.
+
+- CONFIG_TI_ADS1015
+The TLA2024 ADC which this driver also supports may be found on the
+Verdin iMX8M Mini (as well as the Verdin iMX8M Plus for that matter)
+computer/system on module.
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
 ---
 
 Changes in v2:
-- A similar change got accepted for imx_v6_v7_defconfig. Further
-discussion may be found in [1].
-[1] https://lore.kernel.org/lkml/20210920144938.314588-6-marcel@ziswiler.com/
+- Explain why enabling these may make sense and squash them relevant
+  changes as requested by Krzysztof.
 
- arch/arm64/configs/defconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/configs/defconfig | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 872b38613c6c..3d200a149a88 100644
+index f80d7fb53b7e..6f4507b30916 100644
 --- a/arch/arm64/configs/defconfig
 +++ b/arch/arm64/configs/defconfig
-@@ -927,7 +927,7 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_BCM2835=y
- CONFIG_DMA_SUN6I=m
- CONFIG_FSL_EDMA=y
--CONFIG_IMX_SDMA=y
-+CONFIG_IMX_SDMA=m
- CONFIG_K3_DMA=y
- CONFIG_MV_XOR=y
- CONFIG_MV_XOR_V2=y
+@@ -178,6 +178,7 @@ CONFIG_CAN=m
+ CONFIG_CAN_FLEXCAN=m
+ CONFIG_CAN_RCAR=m
+ CONFIG_CAN_RCAR_CANFD=m
++CONFIG_CAN_MCP251XFD=m
+ CONFIG_BT=m
+ CONFIG_BT_HIDP=m
+ # CONFIG_BT_LE is not set
+@@ -188,6 +189,9 @@ CONFIG_BT_HCIUART=m
+ CONFIG_BT_HCIUART_LL=y
+ CONFIG_BT_HCIUART_BCM=y
+ CONFIG_BT_HCIUART_QCA=y
++CONFIG_BT_HCIUART_MRVL=y
++CONFIG_BT_MRVL=m
++CONFIG_BT_MRVL_SDIO=m
+ CONFIG_BT_QCOMSMD=m
+ CONFIG_CFG80211=m
+ CONFIG_MAC80211=m
+@@ -379,6 +383,7 @@ CONFIG_ATH10K_SNOC=m
+ CONFIG_WCN36XX=m
+ CONFIG_BRCMFMAC=m
+ CONFIG_MWIFIEX=m
++CONFIG_MWIFIEX_SDIO=m
+ CONFIG_MWIFIEX_PCIE=m
+ CONFIG_WL18XX=m
+ CONFIG_WLCORE_SDIO=m
+@@ -554,6 +559,7 @@ CONFIG_CHARGER_BQ25980=m
+ CONFIG_SENSORS_ARM_SCMI=y
+ CONFIG_SENSORS_ARM_SCPI=y
+ CONFIG_SENSORS_JC42=m
++CONFIG_SENSORS_LM75=m
+ CONFIG_SENSORS_LM90=m
+ CONFIG_SENSORS_PWM_FAN=m
+ CONFIG_SENSORS_RASPBERRYPI_HWMON=m
+@@ -796,6 +802,7 @@ CONFIG_SND_SOC_WM8960=m
+ CONFIG_SND_SOC_WM8962=m
+ CONFIG_SND_SOC_WM8978=m
+ CONFIG_SND_SOC_WSA881X=m
++CONFIG_SND_SOC_NAU8822=m
+ CONFIG_SND_SOC_LPASS_WSA_MACRO=m
+ CONFIG_SND_SOC_LPASS_VA_MACRO=m
+ CONFIG_SND_SIMPLE_CARD=m
+@@ -1087,6 +1094,7 @@ CONFIG_QCOM_SPMI_VADC=m
+ CONFIG_QCOM_SPMI_ADC5=m
+ CONFIG_ROCKCHIP_SARADC=m
+ CONFIG_RZG2L_ADC=m
++CONFIG_TI_ADS1015=m
+ CONFIG_IIO_CROS_EC_SENSORS_CORE=m
+ CONFIG_IIO_CROS_EC_SENSORS=m
+ CONFIG_IIO_ST_LSM6DSX=m
 -- 
 2.33.1
 
