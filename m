@@ -2,85 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242066AbiANOwo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:52:44 -0500
-Received: from mail-vk1-f178.google.com ([209.85.221.178]:35803 "EHLO
-        mail-vk1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237563AbiANOwm (ORCPT
+        id S242087AbiANOzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:55:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37868 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242005AbiANOzW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:52:42 -0500
-Received: by mail-vk1-f178.google.com with SMTP id 19so5978315vkl.2
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:52:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3QRaBnJTvGqh7hLfXU44RUcKijdj4LoBD709NrcoVmE=;
-        b=MC8VBMVCwFQubYVSl/thYybVTS0vJzT/vZla03lOFn9M1IjogBSwn81jUBTwuKrFjA
-         QAN5Hkr4mDozw67iBTK8/o08qyhtecK4xsMGs1ayDSElUjE+4IcYscTs2PhNtOZnxcTn
-         8WNMxj5RqvoBulZEE1VD4rp7lBGClfhtuaRMbF4MlOgmmnx1x499hPV4WYM2qmm5oH4I
-         P/aoaSuRZXz+d7nwhsobhAU3SC8wd4xSEqbApri9zK1HcboUL779wc7Xdg8/Ou9EWyFZ
-         Q1S8jdXrK5osh8i+pCgsi8Hiu2Z7mW/4cI20jfxm9ukLxd/dSzYFlqo4U+baOpG3Ku1A
-         4Amg==
-X-Gm-Message-State: AOAM530dKJ34uemIE0coLqAn+AorJnykTkGUJyVto9zdbvQEyIAkzKnG
-        oEBz7OTnWpFkKJZcAb/TXDW3f9Ez/zwfE26e
-X-Google-Smtp-Source: ABdhPJyESelLZoscq737/y1Zj/oLS/YyDxrVAuya3Z6dUs5nmY0OLK/Ehlm0CRd21Y3JJTQmKfez7Q==
-X-Received: by 2002:a05:6122:2027:: with SMTP id l39mr3036972vkd.32.1642171962108;
-        Fri, 14 Jan 2022 06:52:42 -0800 (PST)
-Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
-        by smtp.gmail.com with ESMTPSA id b14sm2063173vkk.22.2022.01.14.06.52.41
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 06:52:41 -0800 (PST)
-Received: by mail-ua1-f48.google.com with SMTP id p1so17303867uap.9
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:52:41 -0800 (PST)
-X-Received: by 2002:a05:6102:3581:: with SMTP id h1mr4118256vsu.5.1642171960897;
- Fri, 14 Jan 2022 06:52:40 -0800 (PST)
+        Fri, 14 Jan 2022 09:55:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642172122;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ULSBCTiB85+pd++faKqH2i+l6ecH+2tEYKM+evo+AMI=;
+        b=Bq4ULdU4zGl7jR/EuV6tqkMF5sydz6wV9vWqKDiSq4oOH9Vb55z6rPKsqD3YhSHPwJpaao
+        IWG6XbajIP7RNLj46ZOUloj7+wmsBEuhsITr/C9XihVR8QNJuP85sV4VtF3qN+nyIqmJi2
+        6cJIMCpiFw11/ydQf5qeKYVyXb3McbI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-32-uJVMGmcoOgW_PRLrS0aanQ-1; Fri, 14 Jan 2022 09:55:19 -0500
+X-MC-Unique: uJVMGmcoOgW_PRLrS0aanQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80A2E801B04;
+        Fri, 14 Jan 2022 14:55:17 +0000 (UTC)
+Received: from [10.22.33.90] (unknown [10.22.33.90])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6B35A753F6;
+        Fri, 14 Jan 2022 14:55:10 +0000 (UTC)
+Message-ID: <eee96817-1814-5849-65b8-0038235f2617@redhat.com>
+Date:   Fri, 14 Jan 2022 09:55:10 -0500
 MIME-Version: 1.0
-References: <20220113160115.5375-1-bp@alien8.de> <YeBzxuO0wLn/B2Ew@mit.edu> <YeCuNapJLK4M5sat@zn.tnic>
-In-Reply-To: <YeCuNapJLK4M5sat@zn.tnic>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 14 Jan 2022 15:52:29 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUbTNNr16YY1TFe=-uRLjg6yGzgw_RqtAFpyhnOMM5Pvw@mail.gmail.com>
-Message-ID: <CAMuHMdUbTNNr16YY1TFe=-uRLjg6yGzgw_RqtAFpyhnOMM5Pvw@mail.gmail.com>
-Subject: Re: [PATCH] x86: Remove a.out support
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, X86 ML <x86@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] mm/oom_kill: wake futex waiters before annihilating
+ victim shared mutex
+Content-Language: en-US
+To:     Joel Savitz <jsavitz@redhat.com>, Michal Hocko <mhocko@suse.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        Nico Pache <npache@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@collabora.com>
+References: <20211207214902.772614-1-jsavitz@redhat.com>
+ <20211207154759.3f3fe272349c77e0c4aca36f@linux-foundation.org>
+ <YbB0d6T8RbHW48sZ@dhcp22.suse.cz> <YbDX16LAkvzgYHpH@dhcp22.suse.cz>
+ <CAL1p7m4ka1v-Zoi-RpDy5ME-bMikGPX5V_4Hod-Y0KHOq_G8zA@mail.gmail.com>
+ <YbG1mu0CLONo+Z7l@dhcp22.suse.cz>
+ <CAL1p7m7mWxLE-7Qf_QjmREJ2AvfSexPvybPyHvxTUugxsPPxjQ@mail.gmail.com>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <CAL1p7m7mWxLE-7Qf_QjmREJ2AvfSexPvybPyHvxTUugxsPPxjQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Boris,
+On 1/14/22 09:39, Joel Savitz wrote:
+>> What has happened to the oom victim and why it has never exited?
+> What appears to happen is that the oom victim is sent SIGKILL by the
+> process that triggers the oom while also being marked as an oom
+> victim.
+>
+> As you mention in your patchset introducing the oom reaper in commit
+> aac4536355496 ("mm, oom: introduce oom reaper"), the purpose the the
+> oom reaper is to try and free more memory more quickly than it
+> otherwise would have been by assuming anonymous or swapped out pages
+> won't be needed in the exit path as the owner is already dying.
+> However, this assumption is violated by the futex_cleanup() path,
+> which needs access to userspace in fetch_robust_entry() when it is
+> called in exit_robust_list(). Trace_printk()s in this failure path
+> reveal an apparent race between the oom reaper thread reaping the
+> victim's mm and the futex_cleanup() path. There may be other ways that
+> this race manifests but we have been most consistently able to trace
+> that one.
+>
+> Since in the case of an oom victim using robust futexes the core
+> assumption of the oom reaper is violated, we propose to solve this
+> problem by either canceling or delaying the waking of the oom reaper
+> thread by wake_oom_reaper in the case that tsk->robust_list is
+> non-NULL.
+>
+> e.g. the bug does not reproduce with this patch (from npache@redhat.com):
+>
+> diff --git a/mm/oom_kill.c b/mm/oom_kill.c
+> index 989f35a2bbb1..b8c518fdcf4d 100644
+> --- a/mm/oom_kill.c
+> +++ b/mm/oom_kill.c
+> @@ -665,6 +665,19 @@ static void wake_oom_reaper(struct task_struct *tsk)
+>          if (test_and_set_bit(MMF_OOM_REAP_QUEUED, &tsk->signal->oom_mm->flags))
+>                  return;
+>
+> +#ifdef CONFIG_FUTEX
+> +       /*
+> +        * don't wake the oom_reaper thread if we still have a robust
+> list to handle
+> +        * This will then rely on the sigkill to handle the cleanup of memory
+> +        */
+> +       if(tsk->robust_list)
+> +               return;
+> +#ifdef CONFIG_COMPAT
+> +       if(tsk->compat_robust_list)
+> +               return;
+> +#endif
+> +#endif
+> +
+>          get_task_struct(tsk);
+>
+>          spin_lock(&oom_reaper_lock);
 
-On Fri, Jan 14, 2022 at 3:36 PM Borislav Petkov <bp@alien8.de> wrote:
-> Btw, pls do note that this is removing only the x86 a.out support -
-> other arches (m68k and alpha) still select HAVE_AOUT and thus the
-> respective glue in fs/binfmt_aout.c
+OK, that can explain why the robust futex is not properly cleaned up. 
+Could you post a more formal v2 patch with description about the 
+possible race condition?
 
-Quoting myself (do I need a canned response for this? ;-):
-   "I think it's safe to assume no one still runs a.out binaries on m68k."
+Cheers,
+Longman
 
-https://lore.kernel.org/r/CAMuHMdVGT1QN8WUqNcU8ihPLncUGfrjV49wb-8nHUgHhOzLeNw@mail.gmail.com/
-https://lore.kernel.org/r/CAMuHMdW+m0Q+j3rsQdMXnrEPm+XB5Y2AQrxW5sD1mZAKgmEqoA@mail.gmail.com
-
-Of course, m68k is not encumbered by a.out Netscape binaries, unlike
-ia32 and alpha ;-)
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
