@@ -2,151 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9206C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FAFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241393AbiANOMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:12:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
+        id S241440AbiANOPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:15:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230191AbiANOMy (ORCPT
+        with ESMTP id S241393AbiANOPq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:12:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C348C061574;
-        Fri, 14 Jan 2022 06:12:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD7C861CB0;
-        Fri, 14 Jan 2022 14:12:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE92AC36AEC;
-        Fri, 14 Jan 2022 14:12:52 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="FN49HvIi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642169570;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LIMH262hTr1jVdFOs326DIRgfGVgp0+2qWG3fNbUYe0=;
-        b=FN49HvIikRDwacVw+jUnmDgVYcLelNrJn6xdc3L00w4crPBYyNsMYLqjINzqIHNbYf59TJ
-        rHLePFEWS6PBSSFZbgFPz9Z3naOs8TTB4bfFHn3pMp2cGZrsE1mTdzsVIb5x3vyLmqaXo3
-        aeo9UqGrMg7CilyInPMwdReEE58rE54=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 9a5dd7a9 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 14 Jan 2022 14:12:49 +0000 (UTC)
-Received: by mail-yb1-f182.google.com with SMTP id c10so24307987ybb.2;
-        Fri, 14 Jan 2022 06:12:49 -0800 (PST)
-X-Gm-Message-State: AOAM532wJ36Dti313ntlYd7xM3bHE5KMZlUB4MB9H1/9u4iZAdGEMbsk
-        vT0wi3jfBHrQRzRJ4jA4Vq4eBCe4aWqc0BKvjy8=
-X-Google-Smtp-Source: ABdhPJyK1aAnC+0tJZUV+DCA0RieE3QpF7oJw379/gdehyvjAagEN9wrY6yMkVRSf7JT1ik4kf+4v/JTpiaLNxm2gpY=
-X-Received: by 2002:a25:a0c4:: with SMTP id i4mr13252823ybm.457.1642169568253;
- Fri, 14 Jan 2022 06:12:48 -0800 (PST)
+        Fri, 14 Jan 2022 09:15:46 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DC2C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:15:46 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id e19so13360534plc.10
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 06:15:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gIos4GkO2iqYWjr5mhM1is7Azpf5/j6Jd0z5PdzqEZM=;
+        b=FhPhOVrgiQIgjwrvUl8LqJ3TpxdvbrH15EqUtc2jTWLZRmsKG3S1do6NwptiB4+n4Y
+         NcFfh4IlLyleLTi7TwVu4IqDq3kPeQAvTFzxTptLwMWCecZFccZngybfR7nKxbVjRB3/
+         +9bpTkD8HSlEylA7FfQtuICHaRHh8fTh4qjqM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gIos4GkO2iqYWjr5mhM1is7Azpf5/j6Jd0z5PdzqEZM=;
+        b=0LnC1Ms9NQttB7axAGObWy+FIrqZejGILM7QRiV7QMO6jv6pM21UKQUdgBucUnV8EX
+         qYmprpDDwcF+QNo/ByeKOiisobrRsZv5zaSxi1Vm8AnasHvjALuP38AcqUjLbOV95MJe
+         Vw+3KQPNc91W5+ah54B6tpKtc1SDeILzbcP+jOgbmXCROxvlORTe4H+zbIxbbpuhVoPm
+         Si7vwMfUWKe4j7FCTie79NdcM15whTlIGcg78zn9xbk1SBa/bf5ZaJxJUl3Lcy7q92O8
+         3OAWi8OdjBZ5DYZp9sAVV3l/mQPKBgU9kHHqCLHoivCzpmQhNKlwGvOzSwgdNSgvfqcc
+         Tpbg==
+X-Gm-Message-State: AOAM531iIwVNdO4x2P09dx22CM8w9vCngqbZZHHItztMn2FipkddZPg1
+        6DH2+Y2AqNXDWUQVbIq7Xxhd8E/NWyjNJQ==
+X-Google-Smtp-Source: ABdhPJxTTJQRzasKLq5iWQnNgDSmZDI0ri1UAx7npHnhGH5WObJT3xk9wMvWJ+uOQ2KFU/Cl6ALYCA==
+X-Received: by 2002:a17:903:2311:b0:14a:8068:a6d with SMTP id d17-20020a170903231100b0014a80680a6dmr6860296plh.70.1642169745841;
+        Fri, 14 Jan 2022 06:15:45 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:d9fc:bf52:3ca:199b])
+        by smtp.gmail.com with UTF8SMTPSA id i13sm4785019pgl.81.2022.01.14.06.15.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 14 Jan 2022 06:15:45 -0800 (PST)
+Date:   Fri, 14 Jan 2022 06:15:43 -0800
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Douglas Anderson <dianders@chromium.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        quic_rjendra@quicinc.com, sibis@codeaurora.org,
+        kgodara1@codeaurora.org, swboyd@chromium.org,
+        pmaliset@codeaurora.org, Andy Gross <agross@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] arm64: dts: qcom: sc7280: Move herobrine-r0 to its
+ own dts
+Message-ID: <YeGFj/lfCLn79yzw@google.com>
+References: <20220114004303.905808-1-dianders@chromium.org>
+ <20220113164233.2.Id9716db8c133bcb14c9413144048f8d00ae2674f@changeid>
 MIME-Version: 1.0
-References: <20220112131204.800307-1-Jason@zx2c4.com> <20220112131204.800307-2-Jason@zx2c4.com>
- <87tue8ftrm.fsf@toke.dk> <CAADnVQJqoHy+EQ-G5fUtkPpeHaA6YnqsOjjhUY6UW0v7eKSTZw@mail.gmail.com>
- <CAHmME9ork6wh-T=sRfX6X0B4j-Vb36GVO0v=Yda0Hac1hiN_KA@mail.gmail.com> <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
-In-Reply-To: <CAADnVQLF_tmNmNk+H+jP1Ubmw-MBhG1FevFmtZY6yw5xk2314g@mail.gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Fri, 14 Jan 2022 15:12:37 +0100
-X-Gmail-Original-Message-ID: <CAHmME9oq36JdV8ap9sPZ=CDfNyaQd6mXd21ztAaZiL7pJh8RCw@mail.gmail.com>
-Message-ID: <CAHmME9oq36JdV8ap9sPZ=CDfNyaQd6mXd21ztAaZiL7pJh8RCw@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 1/3] bpf: move from sha1 to blake2s in tag calculation
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220113164233.2.Id9716db8c133bcb14c9413144048f8d00ae2674f@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Alexei,
+On Thu, Jan 13, 2022 at 04:43:01PM -0800, Douglas Anderson wrote:
+> The upcoming herobrine-r1 board is really not very similar to
+> herobrine-r0. Let's get rid of the "herobrine.dtsi" file and stick all
+> the content in the -r0 dts file directly. We'll also rename the dts so
+> it's obvious that it's just for -r0.
+> 
+> While renaming, let's actually name the file so it's obvious that
+> "herobrine" is both the name of the board and the name of the
+> "baseboard". In other words "herobrine" is an actual board but also
+> often used as the name of a whole class of similar boards that forked
+> from a design. While "herobrine-herobrine" is a bit of mouthful it
+> makes it more obvious which things are part of an actual board rather
+> than the baseboard.
+> 
+> NOTE: herobrine-rev0's days are likely doomed and this device tree is
+> likely to be deleted in the future.
+> 
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
 
-On Thu, Jan 13, 2022 at 11:45 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
-> On Thu, Jan 13, 2022 at 4:27 AM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
-> >
-> > Hi Alexei,
-> >
-> > On 1/13/22, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > > Nack.
-> > > It's part of api. We cannot change it.
-> >
-> > This is an RFC patchset, so there's no chance that it'll actually be
-> > applied as-is, and hence there's no need for the strong hammer nack.
-> > The point of "request for comments" is comments. Specifically here,
-> > I'm searching for information on the ins and outs of *why* it might be
-> > hard to change. How does userspace use this? Why must this 64-bit
-> > number be unchanged? Why did you do things this way originally? Etc.
-> > If you could provide a bit of background, we might be able to shake
-> > out a solution somewhere in there.
->
-> There is no problem with the code and nothing to be fixed.
-
-Yes yes, my mama says I'm the specialist snowflake of a boy too. That
-makes two of us ice crystals, falling from the winter heavens,
-blessing vim with our beautiful shapes and frosty code.
-
-Anyway, back to reality, as Geert points out, we're hoping to be able
-to remove lib/sha1.c from vmlinux (see 3/3 of this series) for
-codesize, and this bpf usage here is one of two remaining usages of
-it. So I was hoping that by sending this RFC, it might elicit a bit
-more information about the ecosystem around the usage of the function,
-so that we can start trying to think of creative solutions to sunset
-it.
-
-I started trying to figure out what's up there and wound up with some
-more questions. My primary one is why you're okay with such a weak
-"checksum" -- the thing is only 64-bits, and as you told Andy Polyakov
-in 2016 when he tried to stop you from using SHA-1, "Andy, please read
-the code. \ we could have used jhash there just as well. \ Collisions
-are fine."
-
-Looking at https://github.com/iovisor/bcc/blob/e17c4f7324d8fc5cc24ba8ee1db451666cd7ced3/src/cc/bpf_module.cc#L571
-I see:
-
-  err = bpf_prog_compute_tag(insns, prog_len, &tag1);
-  if (err)
-    return err;
-  err = bpf_prog_get_tag(prog_fd, &tag2);
-  if (err)
-    return err;
-  if (tag1 != tag2) {
-    fprintf(stderr, "prog tag mismatch %llx %llx\n", tag1, tag2);
-
-So it's clearly a check for something. A collision there might prove pesky:
-
-  char buf[128];
-  ::snprintf(buf, sizeof(buf), BCC_PROG_TAG_DIR "/bpf_prog_%llx", tag1);
-  err = mkdir(buf, 0777);
-
-Maybe you don't really see a security problem here, because these
-programs are root loadable anyway? But I imagine things will
-ultimately get more complicated later on down the road when bpf
-becomes more modular and less privileged and more namespaced -- the
-usual evolution of these sorts of features.
-
-So I'm wondering - why not just do this in a more robust way entirely,
-and always export a sufficiently sized blake2s hash? That way we'll
-never have these sorts of shenanigans to care about. If that's not a
-sensible thing to do, it's likely that I _still_ don't quite grok the
-purpose of the program tag, in which case, I'd be all ears to an
-explanation.
-
-Jason
-
-[ PS: As an aside, I noticed some things in the userspace tag
-calculation code at
-https://github.com/iovisor/bcc/blob/aa7200b9b2a7a2ce2e8a6f0dc1f456f3f93af1da/src/cc/libbpf.c#L536
-- you probably shouldn't use AF_ALG for things that are software based
-and can be done in userspace faster. And the unconditional
-__builtin_bswap64 there means that the code will fail on big endian
-systems. I know you mostly only care about x86 and all, but <endian.h>
-might make this easy to fix. ]
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
