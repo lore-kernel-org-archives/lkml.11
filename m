@@ -2,152 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EDAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 500FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 15:19:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242648AbiANPTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 10:19:24 -0500
-Received: from mail-gv0che01on2108.outbound.protection.outlook.com ([40.107.23.108]:64257
-        "EHLO CHE01-GV0-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235681AbiANPTN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 10:19:13 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lTEAjQw9iNnEd0ZxAmIHOjMF34ojAXxyZ7jAaIrYiN7ts9nLbUlCoHWqBqZvyqnPZ/p1VEVT6fzDMs3fmUcR+jNHervzJ7ar6xvrfn11Yjkf9uC4GIjSRnnv0OBIkVdScVFCxKy4Dimc/rkrO2fGkVuCaxAdjI3Y38c0ICpZinQpRL4YgdYFwYOwyUuy3FslAF9PfOpfT0mXJZmFapmzbBO1w2IRSppnvrOkDsXWafXHI8th3oOgVa0bXu+GzYK02n76BvWu7n94n3yD0bkBm6B2MPtmiLFP6xlsif2XJXrrY4Zc5J5niKolrIJm3qFwr/MZHZ9WXFAWPJPQG6RS5g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iqzNVp++vLnkPZ3x2sQjCax3A8kzgFudflQGOPaUzcc=;
- b=K4W79c1iSHwiKLn24A78P2jj7lXqXxtGhzfFkwYhNXmBupLmdbIoGkmdt8WAigvLI3NNvAu0m4xgtKklIK5Y8wjLV4BuK94bfya0ET7fAa2XsZYaw7XF23S5MIvHW9wPoMSKA8RJHmD6w1yxE5432zdiFLE022XSD4HFqST7nwaEYe0iQUpEBGfHtGAvVnLTp6HMEH4ptE2hdrnyeDQ6RcenzNRhOJvAWcL4kLeBxVeeepcHQgr19TFYqZZtsv+DbnlAOy2AWcVTGVdl2u5Ql41+6nfo2/enr73Bo9MTLheeSKlLhjYI1PtBElX4GErYsy6vwQVUtB77OBYKPq+zjw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toradex.com; dmarc=pass action=none header.from=toradex.com;
- dkim=pass header.d=toradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=toradex.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iqzNVp++vLnkPZ3x2sQjCax3A8kzgFudflQGOPaUzcc=;
- b=IAKqD8KxvWT9LoNo80B2ZH1GxFdFqviropB3spjUDMI7lD7XK33vndt7hKbEsTmYTFnCpyQu0N086x7jY3hHyo4tVBhqQr5Inc2i/dEeqJEU0UfRlvxZfEVzlGcpNI46W/6V2wK7HsiGx+rNSSHw8KeYdRxE7fSrH7A/147Av0o=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=toradex.com;
-Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:3d::11)
- by ZRAP278MB0080.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:13::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Fri, 14 Jan
- 2022 15:19:05 +0000
-Received: from ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
- ([fe80::d837:7398:e400:25f0]) by ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
- ([fe80::d837:7398:e400:25f0%2]) with mapi id 15.20.4888.012; Fri, 14 Jan 2022
- 15:19:05 +0000
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Stefan Agner <stefan.agner@toradex.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Stefan Agner <stefan@agner.ch>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>
-Subject: [PATCH v1 2/2] cpufreq: Add i.MX7S to cpufreq-dt-platdev blocklist
-Date:   Fri, 14 Jan 2022 16:18:47 +0100
-Message-Id: <20220114151847.290518-3-francesco.dolcini@toradex.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220114151847.290518-1-francesco.dolcini@toradex.com>
-References: <20220114151847.290518-1-francesco.dolcini@toradex.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: GV0P278CA0085.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:710:2b::18) To ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:3d::11)
+        id S242692AbiANPT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 10:19:26 -0500
+Received: from mga01.intel.com ([192.55.52.88]:57555 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239340AbiANPTO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 10:19:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642173554; x=1673709554;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gQypZeKb20iK6V4Fo2vqovMOcW37eXRpK9D4ZpMA80M=;
+  b=BtH88BUhEmWlwFXXte+qLw3Vvhv3gqQk8ax+w+tSh2xstShTBvIDV56V
+   PUsCKlImoNoj6t9b8S+UNiO0BR3jgJ7IY/cbAugfXLJNoOW4Sprdt2JsP
+   zl6J1rREoHd4keoQ3+fBLgZH9RcNG/GdtqpMUxE2Q1U5X7k/QtPu23Gx4
+   PbVH6zuztG2ajbheN8fq/nneNzygRZ+qXiALSn5Ql8FXpYrMcHGWJYick
+   c+osJESBMt+vxSnZqnCajDT8Hsw7+1MUBnfB8t8SovAWIECC6uh3Ksm4J
+   xeUbUHUZ81YgYvHNGcjjd94PPxp7dHS3EwB+rm4QYWW/T6BxeZ8lbtHit
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10226"; a="268628145"
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="268628145"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:19:13 -0800
+X-IronPort-AV: E=Sophos;i="5.88,289,1635231600"; 
+   d="scan'208";a="594058641"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 07:19:07 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n8OKv-00AgJa-UJ;
+        Fri, 14 Jan 2022 17:17:53 +0200
+Date:   Fri, 14 Jan 2022 17:17:53 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Simon Ser <contact@emersion.fr>
+Cc:     Tomohito Esaki <etom@igel.co.jp>, dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Michel =?iso-8859-1?Q?D=E4nzer?= <mdaenzer@redhat.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
+        Takanari Hayama <taki@igel.co.jp>
+Subject: Re: [RFC PATCH v3 2/3] drm: add support modifiers for drivers whose
+ planes only support linear layout
+Message-ID: <YeGUIYK3hYo7wLJt@smile.fi.intel.com>
+References: <20220114101753.24996-1-etom@igel.co.jp>
+ <20220114101753.24996-3-etom@igel.co.jp>
+ <YeGFugZvwbF7l2I/@smile.fi.intel.com>
+ <7eljcd3F4aWL2jjBRwr3DISmyt0XPWFIH1_kebFGqZTJXLZRx0bm_8c8yaIuEuH8rS0MaJhU6SY1y-fc6U_zCLaKgoLM124nZpr0H91nSjw=@emersion.fr>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0e94f3f5-cb45-4df7-620d-08d9d77133b1
-X-MS-TrafficTypeDiagnostic: ZRAP278MB0080:EE_
-X-Microsoft-Antispam-PRVS: <ZRAP278MB00801563131A6BB31078656CE2549@ZRAP278MB0080.CHEP278.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: bUbw5BRIwxSp6tz/XCDQ+2FMn/WJ2Dnfhgl/lP65n4OcTQupjMvC/WTi20o5KQkOf34+erm9qrwT6aTxI8BzT6/36zlpkpgwdpPQz8cQLpls+AElT2TcDFN91mNKoQiN1RJY8TMQ8nyx6+QHjo/XJNxCYPOiiLyz87a3Brc9I4B7Sfb9AJEfE6rvMyavXIZcxeCsY7+OsEklnB7TSEzkLljMbCSp6qZUas8Z2S1G+lc78w6bAUgfJRTRNLnLoOXCk8N2JFC1SJE1XI8EnRED0sEP8m7kK37K2VvlGlUAI4dmdJqEZfKhUNa+PwZhceWWNTbbo7u+V9VdODa3hXCCtZ3l77tJkWfqyMwNohc2TgguapjUYiY5KaX8VPJcxN0oLTtJllhoefCXWXCCoVFulLTOzutqjQywSLrFhj+UksLkedwzboA37wCyV/7EUniQ5XuVesid7TwVSL4kw6BjMSFv/kAvuSXAGAcqTQp7q/Xpqqf1D7SRn94+0DB7Kv5O+SzqMtLNwrKIYZXZRimNO5W5fPCtIyFBNEn8j8DEEXEArqxy5Jpxc4AvLBzilQRezr+AJBNhHjz8afa0fEs4vMjH1dH3LEVAqhKL0J8vUns6AIp4b2rxt88LaVcHlVjd7lCC+dooxlOJYk0XgPuJ/DZVtHQGHZCO3E2B8ReCIsO74c9HkssIIPOg0i8lrXx5+Q1nRY/wONK+vtVuub0iQQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(376002)(39850400004)(396003)(366004)(36756003)(110136005)(86362001)(5660300002)(2616005)(316002)(54906003)(38350700002)(6506007)(26005)(52116002)(8676002)(66946007)(66476007)(66556008)(186003)(44832011)(83380400001)(1076003)(107886003)(6512007)(7416002)(6666004)(6486002)(38100700002)(508600001)(4326008)(2906002)(8936002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?YKJDa4BzM7kTre8yOeymrpTPsl8uoy2HxNIAfaoRx9B/rTthQPm0qFIVYP0s?=
- =?us-ascii?Q?VyZYqDacBWbunxjp1IZjsERGGk0cQJsF/gXEdX1FjJeOwLNSla7+oCTIsugv?=
- =?us-ascii?Q?aVibtcFjpgvlMCtIMMUx5QqrAnRNn49F3nV5Yj2dmMttbgLdMNJlRjV7ZzXb?=
- =?us-ascii?Q?8vjTtP0KJiW4gZDq0qJPIw6Vlwyf7QUUOvqoXqVJSbzFF/IhquJsjzBJ46Xq?=
- =?us-ascii?Q?SMcks4HfPU+qvpOLcD9kDCelRpuABTScWmi/6S3VbzY4+w4A+9zinkOa1I5f?=
- =?us-ascii?Q?e8yDOWpaOMYHFJw6qi0oUt7u+0HFkjOoseKs7mNd/fEK/sZ8tTrTdDvA/+Xr?=
- =?us-ascii?Q?a7ZohKW0veLWpWawoNiZS7ZmIG8NXSBteqFNRmoXOdIqlfKL8dmG1VZwl3+V?=
- =?us-ascii?Q?IK6XLgumZTQ0EQaiP/ujaYvh/HVdr25Oeu1VkGCTYZ9xv7HjgBkA3XA2YOCE?=
- =?us-ascii?Q?eJQHt+/v3/F0vDMhqG/G+v4h10flN7H0zdKrQISmYZVij/2+HuN4nMw5rOv1?=
- =?us-ascii?Q?ncK3HyBUOslvGa+BRuLvuOCU7rxQh1Mjk+rE4NSOJWh6rtkQ+wu0cCsnSmH3?=
- =?us-ascii?Q?kzAQdYNPIvqKJkttj1/2Jw40YjJQJ/xIJFa4gVuCKAwfOTatk+u0Octyx9xh?=
- =?us-ascii?Q?Ge6h9WICHIgq/yN2EVHPlJsLrjPj4+qIvnnOCTudL4uEs4quWuOsnilEMe76?=
- =?us-ascii?Q?yO3Rq0oG2j423OaDPZIIDXv+18MMYLgVELJZM1zc5V2SMSWjeNTMIlyLGobV?=
- =?us-ascii?Q?sW9F3/30/eDDufeX80WPdIUQReGDkjvLJewcEl0OmsX61r30NnDuthwhiWwY?=
- =?us-ascii?Q?2somJCDogg6UhZcLMuZZ2lkupZISJiFqfKj/uqHE7aUOOOJdD5SGH/dvgq29?=
- =?us-ascii?Q?bFvjQaaNVHRGZyqoCaZ4NUT1Na4Ij2tk1Wxn/S9EHw+gizBm+Z/V5ERMvoPV?=
- =?us-ascii?Q?5oOJJIoOp+gMG4JUWBd1S9rEBjEIuSgdhwPzzAjvrIRmuOybL855/G9CmqjI?=
- =?us-ascii?Q?AwrcvXSgKTizcrvZNfYckBDf7oyxR1zZZtVNAsshu9HH/r/Tk5DXZGqxejCZ?=
- =?us-ascii?Q?mvKH+czdTo4BoAgdtXUJSc2YsfSFW1fq6r5S67u6c3zReQa4Cyc0fZnvIHcj?=
- =?us-ascii?Q?O3+6z5wnrmd+wgXr2VfvpHIrLP2Bm+bGqn7qNIrUZ1/q8w1eNkjYswMobTLQ?=
- =?us-ascii?Q?4ggNILdMqMU3JCTFCi8btmammdB0TZ1wb9h6/yidSIAYZt0cfmqJCcoii410?=
- =?us-ascii?Q?LIxTVjbJSQAF10HqW/H5mCazsdfPDq7gAQLhDnSf7seYQSzXEUX5ATm/k5IS?=
- =?us-ascii?Q?4AN1gps9rXogLOqtbzuh5tmuq9kqKY4ZVWtLlSE8SKRI80BAjRnAqKv2Z09j?=
- =?us-ascii?Q?cQdNa8TCUC6SaK5/4f4sDNEd+b5CcJbdV+vblqKk3RIAGO+RpCJfNoE2mMlH?=
- =?us-ascii?Q?ceScijBg74v3ZfzApap1zNFCdSYiEbVNgzIrNaqHXhzwsqVOvqilqX1qzv7O?=
- =?us-ascii?Q?b9fv9bMgVYf1jshgSDIruWCuKwzbp7ft5X+Fmq8RHvJZvOULFEbNgboBev6T?=
- =?us-ascii?Q?jzULjEVg0zNvawBoTDsmuCUQz6YT4Zdz690IZ2j+kVzljqGYaHf/ysC+yOBg?=
- =?us-ascii?Q?zalhFUz/hpPSKcyyAVLWUvSt4IlUKj46xc/g3o/wnp/fwg79+e5jJHkqvlCq?=
- =?us-ascii?Q?4ZImjA=3D=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e94f3f5-cb45-4df7-620d-08d9d77133b1
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0642.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2022 15:19:04.8941
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HtANcMkTvQ28a3GWShcAcw+3gq00eOmkWjG6yYQOhZUTTS9Rf1FLKVNEBacpbUWbvbeknCHzkuufpYpzronyp7tH8aU1H4SZ9JnnQpqrNMo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0080
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7eljcd3F4aWL2jjBRwr3DISmyt0XPWFIH1_kebFGqZTJXLZRx0bm_8c8yaIuEuH8rS0MaJhU6SY1y-fc6U_zCLaKgoLM124nZpr0H91nSjw=@emersion.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Agner <stefan.agner@toradex.com>
+On Fri, Jan 14, 2022 at 03:07:21PM +0000, Simon Ser wrote:
+> On Friday, January 14th, 2022 at 15:16, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> 
+> > Why not enum?
+> 
+> There is no enum for DRM format modifiers.
 
-The i.MX 7Solo currently does not have multiple operating points,
-however, in order for the i.MX Thermal driver to successfully probe
-a cpufreq device is required. Add it to the cpufreq-dt-platdev
-driver's blocklist to allow using imx-cpufreq-dt.
+I'm not sure how this prevents to use enum in the code instead of const u64.
+Any specific reason for that?
 
-Signed-off-by: Stefan Agner <stefan.agner@toradex.com>
-Cc: Stefan Agner <stefan@agner.ch>
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
----
- drivers/cpufreq/cpufreq-dt-platdev.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
-index ca1d103ec449..2e08f8564a12 100644
---- a/drivers/cpufreq/cpufreq-dt-platdev.c
-+++ b/drivers/cpufreq/cpufreq-dt-platdev.c
-@@ -110,6 +110,8 @@ static const struct of_device_id blocklist[] __initconst = {
- 
- 	{ .compatible = "fsl,imx7ulp", },
- 	{ .compatible = "fsl,imx7d", },
-+	{ .compatible = "fsl,imx7s", },
-+
- 	{ .compatible = "fsl,imx8mq", },
- 	{ .compatible = "fsl,imx8mm", },
- 	{ .compatible = "fsl,imx8mn", },
 -- 
-2.25.1
+With Best Regards,
+Andy Shevchenko
+
 
