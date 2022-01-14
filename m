@@ -2,26 +2,25 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F6A0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FA1C43217
 	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243971AbiANRzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 12:55:07 -0500
+        id S243957AbiANRzG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 12:55:06 -0500
 Received: from alexa-out.qualcomm.com ([129.46.98.28]:46153 "EHLO
         alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243945AbiANRzF (ORCPT
+        with ESMTP id S243937AbiANRzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 12:55:05 -0500
+        Fri, 14 Jan 2022 12:55:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
   t=1642182905; x=1673718905;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=z+JIuWKxJODjguXs3yWrhfZnFZJClraM9Lc/R80g5pc=;
-  b=P9M5TP2Mx1iGJiNFo7fvPY2TrnoPJmJhnStLqUurOhH5+CGvPxH/2Lad
-   xCIoZ0gfE7bAns99P9BmZBlPfDRTm4GenxyOaeW2+6Ww74bJyoClfAwJ4
-   /zgDgduHapOzaeYXUk6wh7rPAFQixQUqavJrvC6bvsvcmro/lbB844HOl
-   k=;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=uqJ5CmOT3PvUyNa00Cv5sc/GONEvZmWWJpcg0wzd2HA=;
+  b=miMm3KUOooaB7mTOv1oMTR2mqFeHb1F+gt7tdc4UzNxoz5Xl88pPJkCB
+   xEzuX2MYz1HSajNeim7VdwgF3WMsMWofNUTwQEFZmSUMR3IR+egjvDjog
+   b/ETyEcBwTbaNqlJBxEGBvKdWnYZ4mhidqyjCOer3fh4/xE5AUbHpf9I2
+   g=;
 Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
   by alexa-out.qualcomm.com with ESMTP; 14 Jan 2022 09:55:04 -0800
 X-QCInternal: smtphost
@@ -30,11 +29,11 @@ Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 14 Jan 2022 09:54:51 -0800
+ 15.2.922.19; Fri, 14 Jan 2022 09:54:43 -0800
 Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 14 Jan 2022 09:54:50 -0800
+ 15.2.922.19; Fri, 14 Jan 2022 09:54:43 -0800
 From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
 To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
         <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
@@ -44,12 +43,10 @@ CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
         <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
         <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
         <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v14 4/4] drm/msm/dp: stop link training after link training 2 failed
-Date:   Fri, 14 Jan 2022 09:54:34 -0800
-Message-ID: <1642182874-27296-5-git-send-email-quic_khsieh@quicinc.com>
+Subject: [PATCH v14 0/4] group dp driver related patches into one series
+Date:   Fri, 14 Jan 2022 09:54:30 -0800
+Message-ID: <1642182874-27296-1-git-send-email-quic_khsieh@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1642182874-27296-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1642182874-27296-1-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -59,40 +56,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Each DP link training contains link training 1 followed by link
-training 2.  There is maximum of 5 retries of DP link training
-before declared link training failed. It is required to stop link
-training at end of link training 2 if it is failed so that next
-link training 1 can start freshly. This patch fixes link compliance
-test  case 4.3.1.13 (Source Device Link Training EQ Fallback Test).
+Group below 4 dp driver related patches into one series.
 
-Changes in v10:
---  group into one series
+Kuogee Hsieh (4):
+  drm/msm/dp: do not initialize phy until plugin interrupt received
+  drm/msm/dp:  populate connector of struct  dp_panel
+  drm/msm/dp: add support of tps4 (training pattern 4) for HBR3
+  drm/msm/dp: stop link training after link training 2 failed
 
-Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
+ drivers/gpu/drm/msm/dp/dp_catalog.c |  12 ++---
+ drivers/gpu/drm/msm/dp/dp_catalog.h |   2 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 100 ++++++++++++++++--------------------
+ drivers/gpu/drm/msm/dp/dp_ctrl.h    |   8 +--
+ drivers/gpu/drm/msm/dp/dp_display.c |  97 +++++++++++++++++++++-------------
+ 5 files changed, 118 insertions(+), 101 deletions(-)
 
-Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index f98df93..245e1b9 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1755,6 +1755,9 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
- 				/* end with failure */
- 				break; /* lane == 1 already */
- 			}
-+
-+			/* stop link training before start re training  */
-+			dp_ctrl_clear_training_pattern(ctrl);
- 		}
- 	}
- 
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
