@@ -2,135 +2,353 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1120AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F84C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244259AbiANUXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:23:43 -0500
-Received: from qproxy1-pub.mail.unifiedlayer.com ([173.254.64.10]:54843 "EHLO
-        qproxy1-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232761AbiANUXn (ORCPT
+        id S244312AbiANUZn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:25:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47546 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244303AbiANUZl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:23:43 -0500
-X-Greylist: delayed 1419 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Jan 2022 15:23:43 EST
-Received: from alt-proxy28.mail.unifiedlayer.com (unknown [74.220.216.123])
-        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 5549D8033194
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 20:00:01 +0000 (UTC)
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by progateway1.mail.pro1.eigbox.com (Postfix) with ESMTP id B74101003FA0B
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 20:00:00 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id 8SjwnwyPpEaNC8SjwnpxBA; Fri, 14 Jan 2022 20:00:00 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=dJtjJMVb c=1 sm=1 tr=0 ts=61e1d640
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=DghFqjY3_ZEA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=HGw1mVhBy2YoFkOnSw0A:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:In-Reply-To:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3ZZ8Z3lXC4EgxEaTFM+fFaZa06WIHcyvU419ouZNh5A=; b=m79quRX1zeKrb4l7z7LrO+5slh
-        nd2+r1WjqvQCL2BP8Y0FuWUl6UycKd4bomXlyQtUEG5bufu2LzxkuLti/eCvvbFoZ2XJ6nEaj+B26
-        kI36JYbpGaooHyQ73q2VcjZyb;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:60958 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        Fri, 14 Jan 2022 15:25:41 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D95C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:25:40 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n8T5w-0000w6-8j; Fri, 14 Jan 2022 21:22:44 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1n8Sjv-001Fm6-D5; Fri, 14 Jan 2022 12:59:59 -0700
-Subject: Re: [PATCH 5.15 00/41] 5.15.15-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-References: <20220114081545.158363487@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
-Message-ID: <b94bd7bd-0c8b-1697-f4af-27e99ca9e62f@w6rz.net>
-Date:   Fri, 14 Jan 2022 11:59:57 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n8T5j-00AJbK-DJ; Fri, 14 Jan 2022 21:22:30 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n8T5h-0002Jl-M3; Fri, 14 Jan 2022 21:22:29 +0100
+Date:   Fri, 14 Jan 2022 21:22:26 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        "David S. Miller" <davem@davemloft.net>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        platform-driver-x86@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+Message-ID: <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
+References: <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
+ <YdyilpjC6rtz6toJ@lunn.ch>
+ <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
+ <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
+ <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
+ <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1n8Sjv-001Fm6-D5
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:60958
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="uk3tmcd6neo3zuxi"
+Content-Disposition: inline
+In-Reply-To: <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/14/22 12:16 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.15 release.
-> There are 41 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+--uk3tmcd6neo3zuxi
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Warnings:
+On Fri, Jan 14, 2022 at 10:14:10PM +0300, Sergey Shtylyov wrote:
+> On 1/14/22 12:25 PM, Uwe Kleine-K=F6nig wrote:
+>=20
+> >>>>> To me it sounds much more logical for the driver to check if an
+> >>>>> optional irq is non-zero (available) or zero (not available), than =
+to
+> >>>>> sprinkle around checks for -ENXIO. In addition, you have to remember
+> >>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -ENOS=
+YS
+> >>>>> (or some other error code) to indicate absence. I thought not having
+> >>>>> to care about the actual error code was the main reason behind the
+> >>>>> introduction of the *_optional() APIs.
+> >>>
+> >>>> No, the main benefit of gpiod_get_optional() (and clk_get_optional()=
+) is
+> >>>> that you can handle an absent GPIO (or clk) as if it were available.
+> >>
+> >>    Hm, I've just looked at these and must note that they match 1:1 with
+> >> platform_get_irq_optional(). Unfortunately, we can't however behave the
+> >> same way in request_irq() -- because it has to support IRQ0 for the sa=
+ke
+> >> of i8253 drivers in arch/...
+> >=20
+> > Let me reformulate your statement to the IMHO equivalent:
+> >=20
+> > 	If you set aside the differences between
+> > 	platform_get_irq_optional() and gpiod_get_optional(),
+>=20
+>    Sorry, I should make it clear this is actually the diff between a woul=
+d-be
+> platform_get_irq_optional() after my patch, not the current code...
 
-fs/jffs2/xattr.c: In function 'jffs2_build_xattr_subsystem':
-fs/jffs2/xattr.c:887:1: warning: the frame size of 1104 bytes is larger 
-than 1024 bytes [-Wframe-larger-than=]
-   887 | }
-       | ^
-lib/crypto/curve25519-hacl64.c: In function 'ladder_cmult.constprop':
-lib/crypto/curve25519-hacl64.c:601:1: warning: the frame size of 1040 
-bytes is larger than 1024 bytes [-Wframe-larger-than=]
-   601 | }
-       | ^
-drivers/net/wireguard/allowedips.c: In function 'root_remove_peer_lists':
-drivers/net/wireguard/allowedips.c:77:1: warning: the frame size of 1040 
-bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    77 | }
-       | ^
-drivers/net/wireguard/allowedips.c: In function 'root_free_rcu':
-drivers/net/wireguard/allowedips.c:64:1: warning: the frame size of 1040 
-bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    64 | }
-       | ^
-drivers/vhost/scsi.c: In function 'vhost_scsi_flush':
-drivers/vhost/scsi.c:1444:1: warning: the frame size of 1040 bytes is 
-larger than 1024 bytes [-Wframe-larger-than=]
-  1444 | }
-       | ^
+The similarity is that with your patch both gpiod_get_optional() and
+platform_get_irq_optional() return NULL and 0 on not-found. The relevant
+difference however is that for a gpiod NULL is a dummy value, while for
+irqs it's not. So the similarity is only syntactically, but not
+semantically.
 
-Tested-by: Ron Economos <re@w6rz.net>
+> > 	platform_get_irq_optional() is like gpiod_get_optional().
+> >=20
+> > The introduction of gpiod_get_optional() made it possible to simplify
+> > the following code:
+> >=20
+> > 	reset_gpio =3D gpiod_get(...)
+> > 	if IS_ERR(reset_gpio):
+> > 		error =3D PTR_ERR(reset_gpio)
+> > 		if error !=3D -ENDEV:
+>=20
+>    ENODEV?
 
+Yes, typo.
+
+> > 			return error
+> > 	else:
+> > 		gpiod_set_direction(reset_gpiod, INACTIVE)
+> >=20
+> > to
+> >=20
+> > 	reset_gpio =3D gpiod_get_optional(....)
+> > 	if IS_ERR(reset_gpio):
+> > 		return reset_gpio
+> > 	gpiod_set_direction(reset_gpiod, INACTIVE)
+> >=20
+> > and I never need to actually know if the reset_gpio actually exists.
+> > Either the line is put into its inactive state, or it doesn't exist and
+> > then gpiod_set_direction is a noop. For a regulator or a clk this works
+> > in a similar way.
+> >=20
+> > However for an interupt this cannot work. You will always have to check
+> > if the irq is actually there or not because if it's not you cannot just
+> > ignore that. So there is no benefit of an optional irq.
+> >=20
+> > Leaving error message reporting aside, the introduction of
+> > platform_get_irq_optional() allows to change
+> >=20
+> > 	irq =3D platform_get_irq(...);
+> > 	if (irq < 0 && irq !=3D -ENXIO) {
+> > 		return irq;
+> > 	} else if (irq >=3D 0) {
+>=20
+>    Rather (irq > 0) actually, IRQ0 is considered invalid (but still retur=
+ned).
+
+This is a topic I don't feel strong for, so I'm sloppy here. If changing
+this is all that is needed to convince you of my point ...
+
+> > 		... setup irq operation ...
+> > 	} else { /* irq =3D=3D -ENXIO */
+> > 		... setup polling ...
+> > 	}
+> >=20
+> > to
+> > =09
+> > 	irq =3D platform_get_irq_optional(...);
+> > 	if (irq < 0 && irq !=3D -ENXIO) {
+> > 		return irq;
+> > 	} else if (irq >=3D 0) {
+> > 		... setup irq operation ...
+> > 	} else { /* irq =3D=3D -ENXIO */
+> > 		... setup polling ...
+> > 	}
+> >=20
+> > which isn't a win. When changing the return value as you suggest, it can
+> > be changed instead to:
+> >=20
+> > 	irq =3D platform_get_irq_optional(...);
+> > 	if (irq < 0) {
+> > 		return irq;
+> > 	} else if (irq > 0) {
+> > 		... setup irq operation ...
+> > 	} else { /* irq =3D=3D 0 */
+> > 		... setup polling ...
+> > 	}
+> >=20
+> > which is a tad nicer. If that is your goal however I ask you to also
+> > change the semantic of platform_get_irq() to return 0 on "not found".
+>=20
+>     Well, I'm not totally opposed to that... but would there be a conside=
+rable win?
+
+Well, compared to your suggestion of making platform_get_irq_optional()
+return 0 on "not-found" the considerable win would be that
+platform_get_irq_optional() and platform_get_irq() are not different
+just because platform_get_irq() is to hard to change.
+
+> Anyway, we should 1st stop returning 0 for "valid" IRQs -- this is done b=
+y my patch
+> the discussed patch series are atop of.
+>=20
+> > Note the win is considerably less compared to gpiod_get_optional vs
+>=20
+>    If there's any at all... We'd basically have to touch /all/ platform_g=
+et_irq()
+> calls (and get an even larger CC list ;-)).
+
+You got me wrong here. I meant that even if you change both
+platform_get_irq() and platform_get_irq_optional() to return 0 on
+"not-found", the win is small compared to the benefit of having both
+clk_get() and clk_get_optional().
+
+> > gpiod_get however. And then it still lacks the semantic of a dummy irq
+> > which IMHO forfeits the right to call it ..._optional().
+>=20
+>    Not quite grasping it... Why e.g. clk_get() doesn't return 0 for a not=
+ found clock?
+
+Because NULL is not an error value for clk and when calling clk_get()
+you want a failure when the clk you asked for isn't available.
+
+Sure you could do the following in a case where you want to insist the
+clk to be actually available:
+
+	clk =3D clk_get_optional(...)
+	if (IS_ERR_OR_NULL(clk)) {
+		err =3D PTR_ERR(clk) || -ENODEV;
+		return dev_err_probe(dev, err, ....);
+	}
+
+but this is more ugly than
+
+	clk =3D clk_get(...)
+	if (IS_ERR(clk)) {
+		err =3D PTR_ERR(clk);
+		return dev_err_probe(dev, err, ....);
+	}
+
+Additionally the first usage would hard-code in the drivers that NULL is
+the dummy value which you might want to consider a layer violation.
+
+You have to understand that for clk (and regulator and gpiod) NULL is a
+valid descriptor that can actually be used, it just has no effect. So
+this is a convenience value for the case "If the clk/regulator/gpiod in
+question isn't available, there is nothing to do". This is what makes
+clk_get_optional() and the others really useful and justifies their
+existence. This doesn't apply to platform_get_irq_optional().
+
+So clk_get() is sane and sensible for cases where you need the clk to be
+there. It doesn't emit an error message, because the caller knows better
+if it's worth an error message and in some cases the caller can also
+emit a better error message than clk_get() itself.
+
+clk_get_optional() is sane and sensible for cases where the clk might be
+absent and it helps you because you don't have to differentiate between
+"not found" and "there is an actual resource".
+
+The reason for platform_get_irq_optional()'s existence is just that
+platform_get_irq() emits an error message which is wrong or suboptimal
+in some cases (and IMHO is platform_get_irq() root fault). It doesn't
+simplify handling the "not found" case. So let's not pretend by the
+choice of function names that there is a similarity between clk_get() +
+clk_get_optional() and platform_get_irq() + platform_get_irq_optional().
+
+And as you cannot change platform_get_irq_optional() to return a working
+dummy value, IMHO the only sane way out is renaming it.
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--uk3tmcd6neo3zuxi
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHh230ACgkQwfwUeK3K
+7AlWNwf/bRFJlZD6u0VGoy9sl0BdPd/mUmPL35/vP2hJR8x4u+01YZ3J5DPX9kIK
+pE1ufbhwUnqJgelbz3N4R/r7kog28Jsz6cHn+cw2adtMIJQfl/xpk1C2Rsk6K3bO
+KHClfmbHJxl7kNt7wdN0jocSaun5fy8o5qNdvZ3+tvShyZNbWFPRHeiAhVTQxKCn
+qLNOfy/yFDXAUKKLTeXBnSCb8PbfjnDYhbGZpNiXgwHirXAc3aUM2PL9LSJdJeyb
+MlXBBJWUwdu7JXIo6+5KJI3txCmuKSByoERP3yu9BirMSfvEu+0QBc8IvwL1/j4z
+FjtcKcDXPQ/+lDBRPl94fRT8j8cK5Q==
+=uAhV
+-----END PGP SIGNATURE-----
+
+--uk3tmcd6neo3zuxi--
