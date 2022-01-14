@@ -2,121 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5CCC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 12:26:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 12:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241032AbiANM04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 07:26:56 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:46006 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240922AbiANM0y (ORCPT
+        id S241049AbiANMas (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 07:30:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241036AbiANMaq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 07:26:54 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id CC7AD21995;
-        Fri, 14 Jan 2022 12:26:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642163212; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5FKY5OS8cYg5DAHvwLUhsHaD7LBWzxeEJ9udOdcFioc=;
-        b=A+18NqmM1Geo8fvTEgMWOq0H9obdjOZmE7JiZJQJWVs6EdBI+OFfj6bCpzRNP7RWit3prU
-        h/GBRcbWLVpyRrbyqBbAm+wpmeb4z3Lkrv2jO7YW5r/Nzt7SNBMnRPoxyFZJzMRK2HmYx8
-        FgCQq5PeLyWVugVTewKNRkumTCd2O+Q=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 64599A3B85;
-        Fri, 14 Jan 2022 12:26:51 +0000 (UTC)
-Date:   Fri, 14 Jan 2022 13:26:51 +0100
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        kernel@gpiccoli.net, senozhatsky@chromium.org, rostedt@goodmis.org,
-        john.ogness@linutronix.de, feng.tang@intel.com,
-        kexec@lists.infradead.org, dyoung@redhat.com,
-        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com
-Subject: Re: [PATCH V2] panic: Move panic_print before kmsg dumpers
-Message-ID: <20220114122651.GB17817@pathway.suse.cz>
-References: <20220106212835.119409-1-gpiccoli@igalia.com>
- <Yd/0K1x7ILw3Qa46@alley>
- <ba0e29ba-0e08-df6e-ade5-eb58ae2495e3@igalia.com>
- <YeA1pXz7f0wqSnah@alley>
- <f25672a4-e4dd-29e8-b2db-f92dd9ff9f8a@igalia.com>
+        Fri, 14 Jan 2022 07:30:46 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D12F8C06173E
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 04:30:45 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id x22so29668204lfd.10
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 04:30:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dFRXtZZJM1w8961wsdhrLcj24zD7zb34E9qEnauBJXU=;
+        b=idPRQ8dlVpadyH1EnirRdmBZfw36VmY5JeDrBgyETgygFDTDNjO3OicMzeXhdzNjHX
+         ZDn6mUnyfs3HzMQG7yaW2qR2ih94hpk5bb2omZNNsCljHWruVgHiVJbJmX86H7CY44kT
+         /odSrXFwMtcxBoGbj1nS62G1dCqrpZdpUdL4JZqn1YyqQgC9bY5QUH2t1uHHnjiGNspf
+         KyGle92on+jBisHCxaFBGI+pjfxka9i3nnBSHe8a3auq9EcP58O6YoEz+SvelslkSKnB
+         TRDwhpLZ1OtpeZQjp/rSUBAUVxHsdgPoNirq+rGKlLTOvkpkAvS8J81AeXnJkkrle9ob
+         JKtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dFRXtZZJM1w8961wsdhrLcj24zD7zb34E9qEnauBJXU=;
+        b=u/pBt1W2k00uZ4B+7oj1PdwH84GKYCEVvWYXNk/2CfqjhEtkTK6pal85+Rs7B47p0g
+         IYY02SAfvWt5EFaT38646M43Y5apo7yhZ9rpM4OT/LdnIwMaoq7QN/ZzZu3CMai6OEtB
+         XNfoFwMa/RJjfam3bSKx2K/DQvYm8AEedYQroazg+kYpizp+fkJDTYo+nVK/zyf+4ubm
+         BavxH7zUL4N4YhK1jKZmEmfeZ536oIsYbpQlhRiI8A7H1oU67U04Dx8s+5ltLlZehGcc
+         Rx4ZRIiuWzttilTEsL3K9QxRp6CenZyDIOt2h14PgYRTu0zf/8Us3cDCNgCSSiB3CTDr
+         TMbA==
+X-Gm-Message-State: AOAM5323ItNbaySMQXl/SMUbNU36uv0N6I80875sZbwnT+z8W0fJ4XIp
+        IUbBaU28iKgu/ryfcKGs7aWEtlmn6T3ch3MkF+2ceA==
+X-Google-Smtp-Source: ABdhPJyWQeFWRdC1re5kRbvMitOb6K7LNOupUy6c8ve0Xxr9HTyFtNXTC7xc5QWnESF9qUEg9Ikn6HYvX3IjDLt4aEU=
+X-Received: by 2002:a05:651c:98f:: with SMTP id b15mr6534836ljq.367.1642163442620;
+ Fri, 14 Jan 2022 04:30:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f25672a4-e4dd-29e8-b2db-f92dd9ff9f8a@igalia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <1641749107-31979-1-git-send-email-quic_mkshah@quicinc.com> <1641749107-31979-7-git-send-email-quic_mkshah@quicinc.com>
+In-Reply-To: <1641749107-31979-7-git-send-email-quic_mkshah@quicinc.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Fri, 14 Jan 2022 13:30:06 +0100
+Message-ID: <CAPDyKFrYKRz=S_9_6RNGWn4p3K1MLP63rRfVDSKvH_o8SjZCeQ@mail.gmail.com>
+Subject: Re: [PATCH 06/10] soc: qcom: rpmh-rsc: Attach RSC to cluster PM domain
+To:     Maulik Shah <quic_mkshah@quicinc.com>
+Cc:     bjorn.andersson@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rafael@kernel.org, daniel.lezcano@linaro.org,
+        quic_lsrao@quicinc.com, quic_rjendra@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-01-13 12:15:08, Guilherme G. Piccoli wrote:
-> On 13/01/2022 11:22, Petr Mladek wrote:
-> > [...]
-> > OK, do we have any specific reason why panic_print_sys_info()
-> > should get called right before kmsg_dump() when this code patch
-> > is used?
-> > 
-> > Alternative solution would be to remove the check of
-> > kexec_crash_loaded() and always call panic_print_sys_info(false)
-> > at the beginning (after kgdb_panic(buf)).
-> > 
-> > The advantage is that panic_print_sys_info(false) will be always
-> > called on the same location. It will give the same results
-> > in all code paths so that it will be easier to interpret them.
-> > And it will have the same problems so it should be easier
-> > to debug and maintain.
-> > 
-> > It is possible that it will not work for some users. Also it is
-> > possible that it might cause some problems. But it is hard to
-> > guess at least for me.
-> > 
-> > I think that we might try it and see if anyone complains.
-> > Honestly, I think that only few people use panic_printk_sys_info().
-> > And your use-case makes sense.
-> > 
-> > Best Regards,
-> > Petr
-> 
-> Hi Petr, thanks for your idea - it's simple and effective, would resolve
-> the problems in a straightforward way. But there are some cons, let me
-> detail more.
-> 
-> Currently (in linux-next), if users set panic_print but not kdump, the
-> panic_print_sys_info() is called *after* the panic notifiers. If user
-> has kdump configured and still sets panic_print (which is our use case),
-> then panic_print_sys_info() is called _before_ the panic notifiers. In
-> other words, the behavior for non-kdump users is the same as before,
-> since the merge of panic_print functionality.
-> 
-> Your idea brings the printing earlier, always before the panic
-> notifiers. This isn't terrible, but might lead to unfortunate and
-> hard-to-debug problems; for example, some panic notifiers are
-> rcu_panic() and hung_task_panic(), both are simple functions to disable
-> RCU warnings and hung task detector in panic scenarios. If we go with
-> your idea, these won't get called before panic_print_sys_info(), even if
-> kdump is not set. So, since the panic_print triggers a lot of printing
-> in the console, we could face a stall and trigger RCU messages, maybe
-> intermixed with the panic_print information.
+On Sun, 9 Jan 2022 at 18:26, Maulik Shah <quic_mkshah@quicinc.com> wrote:
+>
+> From: Lina Iyer <ilina@codeaurora.org>
+>
+> RSC is part the CPU subsystem and powers off the CPU domains when all
+> the CPUs and no RPMH transactions are pending from any of the drivers.
+> The RSC needs to flush the 'sleep' and 'wake' votes that are critical
+> for saving power when all the CPUs are in idle.
+>
+> Let's make RSC part of the CPU PM domains, by attaching it to the
+> cluster power domain. Registering for PM domain notifications, RSC
+> driver can be notified that the last CPU is powering down. When the last
+> CPU is powering down the domain, let's flush the 'sleep' and 'wake'
+> votes that are stored in the data buffers into the hardware and also
+> write next wakeup in CONTROL_TCS.
+>
+> Signed-off-by: Lina Iyer <ilina@codeaurora.org>
+> Signed-off-by: Maulik Shah <quic_mkshah@quicinc.com>
+> ---
+>  drivers/soc/qcom/rpmh-internal.h |  6 +++-
+>  drivers/soc/qcom/rpmh-rsc.c      | 60 ++++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 62 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/soc/qcom/rpmh-internal.h b/drivers/soc/qcom/rpmh-internal.h
+> index 344ba68..32ac117 100644
+> --- a/drivers/soc/qcom/rpmh-internal.h
+> +++ b/drivers/soc/qcom/rpmh-internal.h
+> @@ -97,7 +97,9 @@ struct rpmh_ctrlr {
+>   * @rsc_pm:             CPU PM notifier for controller.
+>   *                      Used when solver mode is not present.
+>   * @cpus_in_pm:         Number of CPUs not in idle power collapse.
+> - *                      Used when solver mode is not present.
+> + *                      Used when solver mode and "power-domains" is not present.
+> + * @genpd_nb:           PM Domain notifier for cluster genpd notifications.
+> + * @genpdb:             PM Domain for cluster genpd.
 
-I see. OK, it makes sense to call it after the panic notifiers when
-they are used. It would be nice to mention the above in the commit
-message and explain why the 2nd call is there.
+/s/genpdb/genpd
 
-Just an idea. It might be better to move the 1st call below
-if (!_crash_kexec_post_notifiers). It would make it more
-clear that it is intended for this code path. I mean:
+>   * @tcs:                TCS groups.
+>   * @tcs_in_use:         S/W state of the TCS; only set for ACTIVE_ONLY
+>   *                      transfers, but might show a sleep/wake TCS in use if
+> @@ -117,6 +119,8 @@ struct rsc_drv {
+>         int id;
+>         int num_tcs;
+>         struct notifier_block rsc_pm;
+> +       struct notifier_block genpd_nb;
+> +       struct generic_pm_domain *genpd;
+>         atomic_t cpus_in_pm;
+>         struct tcs_group tcs[TCS_TYPE_NR];
+>         DECLARE_BITMAP(tcs_in_use, MAX_TCS_NR);
+> diff --git a/drivers/soc/qcom/rpmh-rsc.c b/drivers/soc/qcom/rpmh-rsc.c
+> index 01c2f50c..5875ad5 100644
+> --- a/drivers/soc/qcom/rpmh-rsc.c
+> +++ b/drivers/soc/qcom/rpmh-rsc.c
+> @@ -14,10 +14,13 @@
+>  #include <linux/kernel.h>
+>  #include <linux/list.h>
+>  #include <linux/module.h>
+> +#include <linux/notifier.h>
+>  #include <linux/of.h>
+>  #include <linux/of_irq.h>
+>  #include <linux/of_platform.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/pm_domain.h>
+> +#include <linux/pm_runtime.h>
+>  #include <linux/slab.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/wait.h>
+> @@ -834,6 +837,51 @@ static int rpmh_rsc_cpu_pm_callback(struct notifier_block *nfb,
+>         return ret;
+>  }
+>
+> +/**
+> + * rpmh_rsc_pd_callback() - Check if any of the AMCs are busy.
+> + * @nfb:    Pointer to the genpd notifier block in struct rsc_drv.
+> + * @action: GENPD_NOTIFY_PRE_OFF, GENPD_NOTIFY_OFF, GENPD_NOTIFY_PRE_ON or GENPD_NOTIFY_ON.
+> + * @v:      Unused
+> + *
+> + * This function is given to dev_pm_genpd_add_notifier() so we can be informed
+> + * about when cluster-pd is going down. When cluster go down we know no more active
+> + * transfers will be started so we write sleep/wake sets. This function gets
+> + * called from cpuidle code paths and also at system suspend time.
+> + *
+> + * If AMCs are not busy then writes cached sleep and wake messages to TCSes.
+> + * The firmware then takes care of triggering them when entering deepest low power modes.
+> + *
+> + * Return:
+> + * * NOTIFY_OK          - success
+> + * * NOTIFY_BAD         - failure
+> + */
+> +static int rpmh_rsc_pd_callback(struct notifier_block *nfb,
+> +                               unsigned long action, void *v)
+> +{
+> +       struct rsc_drv *drv = container_of(nfb, struct rsc_drv, genpd_nb);
+> +
+> +       /* We don't need to lock as domin on/off are serialized */
 
-	if (!_crash_kexec_post_notifiers) {
-		/* ... */
-		if (kexec_crash_loaded())
-			panic_print_sys_info(false);
+/s/domin/genpd
 
-		__crash_kexec(NULL);
-	...
+> +       if ((action == GENPD_NOTIFY_PRE_OFF) &&
+> +           (rpmh_rsc_ctrlr_is_busy(drv) || rpmh_flush(&drv->client)))
+> +               return NOTIFY_BAD;
+> +
+> +       return NOTIFY_OK;
+> +}
+> +
+> +static int rpmh_rsc_pd_attach(struct rsc_drv *drv, struct device *dev)
+> +{
+> +       int ret;
+> +
+> +       pm_runtime_enable(dev);
+> +       ret = dev_pm_domain_attach(dev, false);
 
-Best Regards,
-Petr
+Unless I have missed something, this should not be needed.
+
+This is because it's a regular platform driver and we only have a
+single PM domain to attach for the rsc device. In this case, the
+platform bus is capable of managing the attach to the genpd. See
+platform_probe() in drivers/base/platform.c.
+
+> +       if (ret)
+> +               return ret;
+ > +
+> +       drv->genpd = pd_to_genpd(dev->pm_domain);
+
+I couldn't find where this pointer is being used later in the driver.
+In any case, you can probably use dev->pm_domain directly wherever
+needed instead.
+
+> +       drv->genpd_nb.notifier_call = rpmh_rsc_pd_callback;
+> +       return dev_pm_genpd_add_notifier(dev, &drv->genpd_nb);
+
+You should call pm_runtime_disable() in the error path.
+
+> +}
+> +
+>  static int rpmh_probe_tcs_config(struct platform_device *pdev,
+>                                  struct rsc_drv *drv, void __iomem *base)
+>  {
+> @@ -963,7 +1011,7 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
+>                 return ret;
+>
+>         /*
+> -        * CPU PM notification are not required for controllers that support
+> +        * CPU PM/genpd notification are not required for controllers that support
+>          * 'HW solver' mode where they can be in autonomous mode executing low
+>          * power mode to power down.
+>          */
+> @@ -971,8 +1019,14 @@ static int rpmh_rsc_probe(struct platform_device *pdev)
+>         solver_config &= DRV_HW_SOLVER_MASK << DRV_HW_SOLVER_SHIFT;
+>         solver_config = solver_config >> DRV_HW_SOLVER_SHIFT;
+>         if (!solver_config) {
+> -               drv->rsc_pm.notifier_call = rpmh_rsc_cpu_pm_callback;
+> -               cpu_pm_register_notifier(&drv->rsc_pm);
+> +               if (of_find_property(dn, "power-domains", NULL)) {
+
+Rather than parsing the DT, I think it's better to check if
+"dev->pm_domain" has been assigned. As I indicated above, the platform
+bus manages the attach before the driver's ->probe() callback is
+invoked.
+
+> +                       ret = rpmh_rsc_pd_attach(drv, &pdev->dev);
+> +                       if (ret)
+> +                               return ret;
+> +               } else {
+> +                       drv->rsc_pm.notifier_call = rpmh_rsc_cpu_pm_callback;
+> +                       cpu_pm_register_notifier(&drv->rsc_pm);
+> +               }
+>         }
+>
+>         /* Enable the active TCS to send requests immediately */
+
+Beyond this point, you need to call the below to manage the error path
+correctly:
+dev_pm_genpd_remove_notifier()
+pm_runtime_disable()
+
+> --
+> 2.7.4
+>
+
+Kind regards
+Uffe
