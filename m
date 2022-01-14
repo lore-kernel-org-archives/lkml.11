@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A014C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:19:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239694AbiANIT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:19:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59704 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239645AbiANIS6 (ORCPT
+        id S239816AbiANITd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:19:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58226 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237179AbiANISy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:18:58 -0500
+        Fri, 14 Jan 2022 03:18:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74F90B82436;
-        Fri, 14 Jan 2022 08:18:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87F09C36AEC;
-        Fri, 14 Jan 2022 08:18:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4D2E61E06;
+        Fri, 14 Jan 2022 08:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E829C36AEA;
+        Fri, 14 Jan 2022 08:18:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148336;
-        bh=85Kcfw8vTwj+pY6QwdAIxIwot8i01a9g6DfIQWnDcjc=;
+        s=korg; t=1642148333;
+        bh=PWIEp0SwuyloDQYdOwsvlH39NhqCKMKAkhMQuOyesRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SiYOgjTaL5PAp4XI5epaWevl8CZCeEBbA3b8dPh5wN0Erplrw0trVKyM1JUk5j4BM
-         Vnt+IGOVOekAKyQKHfB8jfIdZZA7HIhLxgv4oQH75NmMwu92IAR9+wmkyI0QhW+GAp
-         W/zu2iOJHJ5vwDqVYuq9g7d+9HG+4hSg6JwnWjD4=
+        b=bNIIH/hruYxcjH8UbMbV3imbNmjWDqQdADfnVpAxKLPxqHGOuuKx+qVm8L7tNLNU8
+         g8ze3nrVQTfji1EU/w36WZbDG//0PrTRxSZQPqnkY9BQBNGw2yABsCcP0sX96sMKPI
+         jHnYnYmDtY3I7yGQrk2QGjvzdSF4f07556A5M5SY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Brian Silverman <brian.silverman@bluerivertech.com>,
+        stable@vger.kernel.org, Oliver Hartkopp <socketcan@hartkopp.net>,
+        syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.10 18/25] can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
-Date:   Fri, 14 Jan 2022 09:16:26 +0100
-Message-Id: <20220114081543.321915062@linuxfoundation.org>
+Subject: [PATCH 5.10 17/25] can: isotp: convert struct tpcon::{idx,len} to unsigned int
+Date:   Fri, 14 Jan 2022 09:16:25 +0100
+Message-Id: <20220114081543.288480718@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081542.698002137@linuxfoundation.org>
 References: <20220114081542.698002137@linuxfoundation.org>
@@ -46,39 +46,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Silverman <brian.silverman@bluerivertech.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit 89d58aebe14a365c25ba6645414afdbf4e41cea4 upstream.
+commit 5f33a09e769a9da0482f20a6770a342842443776 upstream.
 
-No information is deliberately sent in hf->flags in host -> device
-communications, but the open-source candleLight firmware echoes it
-back, which can result in the GS_CAN_FLAG_OVERFLOW flag being set and
-generating spurious ERRORFRAMEs.
+In isotp_rcv_ff() 32 bit of data received over the network is assigned
+to struct tpcon::len. Later in that function the length is checked for
+the maximal supported length against MAX_MSG_LENGTH.
 
-While there also initialize the reserved member with 0.
+As struct tpcon::len is an "int" this check does not work, if the
+provided length overflows the "int".
 
-Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
-Link: https://lore.kernel.org/all/20220106002952.25883-1-brian.silverman@bluerivertech.com
-Link: https://github.com/candle-usb/candleLight_fw/issues/87
+Later on struct tpcon::idx is compared against struct tpcon::len.
+
+To fix this problem this patch converts both struct tpcon::{idx,len}
+to unsigned int.
+
+Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+Link: https://lore.kernel.org/all/20220105132429.1170627-1-mkl@pengutronix.de
 Cc: stable@vger.kernel.org
-Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
-[mkl: initialize the reserved member, too]
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/gs_usb.c |    2 ++
- 1 file changed, 2 insertions(+)
+ net/can/isotp.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -507,6 +507,8 @@ static netdev_tx_t gs_can_start_xmit(str
+--- a/net/can/isotp.c
++++ b/net/can/isotp.c
+@@ -119,8 +119,8 @@ enum {
+ };
  
- 	hf->echo_id = idx;
- 	hf->channel = dev->channel;
-+	hf->flags = 0;
-+	hf->reserved = 0;
- 
- 	cf = (struct can_frame *)skb->data;
- 
+ struct tpcon {
+-	int idx;
+-	int len;
++	unsigned int idx;
++	unsigned int len;
+ 	u32 state;
+ 	u8 bs;
+ 	u8 sn;
 
 
