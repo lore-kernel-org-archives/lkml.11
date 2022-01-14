@@ -2,97 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940F3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E59C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 17:43:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243911AbiANRjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 12:39:39 -0500
-Received: from bedivere.hansenpartnership.com ([96.44.175.130]:36398 "EHLO
-        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230300AbiANRjj (ORCPT
+        id S243915AbiANRnL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 12:43:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230300AbiANRnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 12:39:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1642181978;
-        bh=JdsUGUUKmEd5jQvS8fN5dkon4a1934IBBuFUHQPqYtg=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=HmgXAK4PfwiG+ghvLZtu6MAoirwUAhgkyDSvY6M+7gz4dy6tyR/khnoDYvz2RLrEO
-         5ipHVEQ5xeeQZr8wUi/WFtsmfyiqUpjll1JRnM2UsVfy3lMH6IaW9JzAFQNE8HaQnK
-         9AGxvKMenqgpYa+Fg7YW2RzbCixmEFdjtISB8LMY=
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id D0D2D1280639;
-        Fri, 14 Jan 2022 12:39:38 -0500 (EST)
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id C3-_Nm4Kcfcs; Fri, 14 Jan 2022 12:39:38 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-        d=hansenpartnership.com; s=20151216; t=1642181978;
-        bh=JdsUGUUKmEd5jQvS8fN5dkon4a1934IBBuFUHQPqYtg=;
-        h=Message-ID:Subject:From:To:Date:In-Reply-To:References:From;
-        b=HmgXAK4PfwiG+ghvLZtu6MAoirwUAhgkyDSvY6M+7gz4dy6tyR/khnoDYvz2RLrEO
-         5ipHVEQ5xeeQZr8wUi/WFtsmfyiqUpjll1JRnM2UsVfy3lMH6IaW9JzAFQNE8HaQnK
-         9AGxvKMenqgpYa+Fg7YW2RzbCixmEFdjtISB8LMY=
-Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:5c4:4300:c551::527])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 5301F1280636;
-        Fri, 14 Jan 2022 12:39:38 -0500 (EST)
-Message-ID: <04ddb0c8f6bcaf67e137ee758d56d4482a382c49.camel@HansenPartnership.com>
-Subject: Re: [GIT PULL] first round of SCSI updates for the 5.15+ merge
- window
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Fri, 14 Jan 2022 12:39:37 -0500
-In-Reply-To: <CAHk-=wjx_q9Aa=o5kiiSpCC_4U+H2D1=H3umFOwVMUbFmdQjGA@mail.gmail.com>
-References: <31f8716fbb4f1e2a332b2b3e3243a170e8b01145.camel@HansenPartnership.com>
-         <CAHk-=wjx_q9Aa=o5kiiSpCC_4U+H2D1=H3umFOwVMUbFmdQjGA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        Fri, 14 Jan 2022 12:43:09 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 235E3C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 09:43:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=p/a5sC8wCu6QRDPDeSoazAGcfWn/EQU27wXVoKv6HDE=; b=yrRF1LMIPSF4YoxoTtfB4vstpd
+        e+UML2knqn2aSgdNakEzx150lxccbItspIZ2QhooXV4TpbqNCi4ukFGA1f1yvO5Skcl7e28SM7yev
+        iEfZimQrMDHb/cU39Eu/pFXxpNMvKRJQwbQza6EJkRyilgSUK8zKdD6ybnZAtpamZ7VkmCKe3/EYA
+        a0YY3/YLdKROsP92gP3Sbc5qpWnRe6TNxdp6ro6AqEDm7Bd4waXABXSXYMZ9hWwu41utbepcaZC8f
+        IO9puCyxnQu9lXSUcv8LdmiPbgKFqo+3DwK56gSbWpBfv1q1iTDj3MG/xtMbddCQ/tiQ+u5tlCzi5
+        JmGtObqg==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n8QbT-009xOM-Qc; Fri, 14 Jan 2022 17:43:07 +0000
+Date:   Fri, 14 Jan 2022 09:43:07 -0800
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Jessica Yu <jeyu@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] module: fix signature check failures when using
+ in-kernel decompression
+Message-ID: <YeG2Ky8nLGMIyqe3@bombadil.infradead.org>
+References: <YeDJKNTYVu/Fe9VS@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YeDJKNTYVu/Fe9VS@google.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-01-14 at 14:46 +0100, Linus Torvalds wrote:
-> On Thu, Jan 13, 2022 at 9:22 PM James Bottomley
-> <James.Bottomley@hansenpartnership.com> wrote:
-> > Adrian Hunter (4):
-> >       scsi: ufs: ufs-pci: Add support for Intel ADL
-> >       scsi: ufs: Let devices remain runtime suspended during system
-> > suspend
-> >       scsi: ufs: core: Fix another task management completion race
-> >       scsi: ufs: core: Fix task management completion timeout race
-> [...]
+On Thu, Jan 13, 2022 at 04:51:52PM -0800, Dmitry Torokhov wrote:
+> The new flag MODULE_INIT_COMPRESSED_FILE unintentionally trips check in
+> module_sig_check(). The check was supposed to catch case when version
+> info or magic was removed from a signed module, making signature
+> invalid, but it was coded too broadly and was catching this new flag as
+> well.
 > 
-> You seem to have forgotten to fetch my upstream tree, so your
-> shortlog (or diffstat) doesn't seem to take the various fixes pulls
-> you did for 5.16 into account.
+> Change the check to only test the 2 particular flags affecting signature
+> validity.
 > 
-> The only actual new commit I got from Adrian was
-> 
-> Adrian Hunter (1):
->       scsi: ufs: Let devices remain runtime suspended during system
-> suspend
-> 
-> and the same for other fixes..
-> 
-> Not a big deal, but when the shortlog and diffstat don't match what I
-> get, I waste time figuring out why. So please do a "git fetch linus"
-> or whatever so that git can take all your previous pulls into
-> account..
+> Fixes: b1ae6dc41eaa ("module: add in-kernel support for decompressing")
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 
-Sorry about that.  We actually have a merge in the middle of the misc
-tree this time (commit: 87f77d37d398d92a9963890b14f336dc394f6fa0) and
-the scripts I run to generate the shortlog and diffstat failed to cope
-with it.  I'll investigate and fix them before next time.
+Queued on to modules-next.
 
-Regards,
-
-James
-
-
+  Luis
