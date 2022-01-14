@@ -2,119 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A54EC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 18:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43940C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 18:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243099AbiANSec (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 13:34:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237016AbiANSeb (ORCPT
+        id S243173AbiANSpo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 13:45:44 -0500
+Received: from lithops.sigma-star.at ([195.201.40.130]:53236 "EHLO
+        lithops.sigma-star.at" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236181AbiANSpm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 13:34:31 -0500
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B756C06173F
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 10:34:30 -0800 (PST)
-Received: by mail-ua1-x931.google.com with SMTP id i5so18366149uaq.10
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 10:34:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V96mUntwkVD/M9voiZYXRxUZ8PDxNZwCxxuws9P238g=;
-        b=E0npOSjXYRBaFiksAYRhQcEwQvl2+tzb1kLGuZBhdagf12ZqUBxzVbNKt0DGkYnlNt
-         jZCeJ+vMXPEAMRoO08nhm37POLYrlfALYsRa/RvjwCcSQ2VHjr38ED3vnPD8G1W17956
-         8pp+fZ/I5PdHzb+UcHPiZRvONLVxCI58tRiBft2a59l2DkoWRiSfpxEni862ZUt5Vd+Y
-         3Baz7WUcb9h8nlrCpUoJESyBBe0fWFiPiGvQRw+RJsP/tJc5MfKIBCHYEY6qnE0FnfQc
-         R2WzNBrlPk0SpgxCiDH5wt0y5UmMnZ6wSP2Ca5Am6cDx4QDsRCBePq5j0flPkT38wBWb
-         uJRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V96mUntwkVD/M9voiZYXRxUZ8PDxNZwCxxuws9P238g=;
-        b=Yrpei+rLJiEOL3JiZ1v0qL7zTnEn6UVOoxKk8PQ0oSBZLI1eB0NEDS+zTsfCOwgybS
-         Dy1wmvcTe2dB5AC0rBS3w7wyCyq+K+zIwTwSXa+mCQDullUXh4KjfZyEC6oA9Z3x7TUs
-         xEtAMt5dG0pZiXdgDvcm6zX04tX4fQ+0pZrxav0U2OjgXLSQfBVzKdqtG/2UwzuTqOGU
-         5BNuixJk4xmHKKK+n5PGROxXWGTtpV0r00aRvf5dbqQTZg1usx/t0IAW0tNDLSGasu9m
-         b3U3fe7dc/lsqaYghGpdNlYMoh0fhQElp7VrPvn1IP3JxO2+NasJxBNILMW4nxwNdaqc
-         DKXQ==
-X-Gm-Message-State: AOAM533cdLDpVGoHR7Q/jfqF3ZTtikXCpFsWtkpkvT1YxI+CYNjWrABQ
-        8ABmSVCvbBOVqXa17/7hOV7iw8T+HgB9oOMZCfDS2A==
-X-Google-Smtp-Source: ABdhPJzlbpQpwJ+6thPQ2vI0/TXRKqjGSerRJn43cDtBUJbDhQUr2X3qeYtuI5mIMCLVTfqVsamzTx6shhsQLAWBtE8=
-X-Received: by 2002:a9f:3e09:: with SMTP id o9mr4730368uai.114.1642185269608;
- Fri, 14 Jan 2022 10:34:29 -0800 (PST)
+        Fri, 14 Jan 2022 13:45:42 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 8538062DA5EE;
+        Fri, 14 Jan 2022 19:45:40 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 2yi8__Y-zI1Z; Fri, 14 Jan 2022 19:45:39 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by lithops.sigma-star.at (Postfix) with ESMTP id B1DCB62DA5F5;
+        Fri, 14 Jan 2022 19:45:39 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+        by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id NHvsiMO3jAHb; Fri, 14 Jan 2022 19:45:39 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+        by lithops.sigma-star.at (Postfix) with ESMTP id 850F462DA5EE;
+        Fri, 14 Jan 2022 19:45:39 +0100 (CET)
+Date:   Fri, 14 Jan 2022 19:45:39 +0100 (CET)
+From:   Richard Weinberger <richard@nod.at>
+To:     chengzhihao1 <chengzhihao1@huawei.com>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        mcoquelin stm32 <mcoquelin.stm32@gmail.com>,
+        kirill shutemov <kirill.shutemov@linux.intel.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-mtd <linux-mtd@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <23886736.260777.1642185939371.JavaMail.zimbra@nod.at>
+In-Reply-To: <6815e4af-9b5b-313f-5828-644722dd4d1f@huawei.com>
+References: <20211227032246.2886878-1-chengzhihao1@huawei.com> <6f7df7ba-9557-58a3-7978-e5d14a72f234@huawei.com> <244238061.248369.1641886066066.JavaMail.zimbra@nod.at> <420c7567-8926-2e8b-4da0-a9bfc8379642@huawei.com> <11976804.249069.1641902225370.JavaMail.zimbra@nod.at> <0a7a5cce-1ee1-70b6-d368-615dfa0a617a@huawei.com> <1492514284.249466.1641909382867.JavaMail.zimbra@nod.at> <6815e4af-9b5b-313f-5828-644722dd4d1f@huawei.com>
+Subject: Re: [PATCH v6 12/15] ubi: fastmap: Add all fastmap pebs into
+ 'ai->fastmap' when fm->used_blocks>=2
 MIME-Version: 1.0
-References: <20220111201426.326777-1-krzysztof.kozlowski@canonical.com> <20220111201722.327219-21-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220111201722.327219-21-krzysztof.kozlowski@canonical.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Fri, 14 Jan 2022 20:34:17 +0200
-Message-ID: <CAPLW+4m-_GSPFAOOaxkBQ7z5M6KcCm9jDKnfgCvgsKfLKKoM+g@mail.gmail.com>
-Subject: Re: [PATCH v2 27/28] arm64: dts: exynos: use dedicated wake-up
- pinctrl compatible in Exynos850
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Alim Akhtar <alim.akhtar@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [195.201.40.130]
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF96 (Linux)/8.8.12_GA_3809)
+Thread-Topic: fastmap: Add all fastmap pebs into 'ai->fastmap' when fm->used_blocks>=2
+Thread-Index: qjDxBwu4U/Pr6n7nEomfbCBiAoFFQQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022 at 22:19, Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
->
-> Older Samsung Exynos SoC pin controller nodes (Exynos3250, Exynos4,
-> Exynos5, Exynos5433) with external wake-up interrupts, expected to have
-> one interrupt for multiplexing these wake-up interrupts.  Also they
-> expected to have exactly one pin controller capable of external wake-up
-> interrupts.
->
-> It seems however that newer ARMv8 Exynos SoC like Exynos850 and
-> ExynosAutov9 have differences:
-> 1. No multiplexed external wake-up interrupt, only direct,
-> 2. More than one pin controller capable of external wake-up interrupts.
->
-> Use dedicated Exynos850 compatible for its external wake-up interrupts
-> controller to indicate the differences.
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> ---
+----- Ursprüngliche Mail -----
+> Von: "chengzhihao1" <chengzhihao1@huawei.com>
+> An: "richard" <richard@nod.at>
+> CC: "Miquel Raynal" <miquel.raynal@bootlin.com>, "Vignesh Raghavendra" <vigneshr@ti.com>, "mcoquelin stm32"
+> <mcoquelin.stm32@gmail.com>, "kirill shutemov" <kirill.shutemov@linux.intel.com>, "Sascha Hauer"
+> <s.hauer@pengutronix.de>, "linux-mtd" <linux-mtd@lists.infradead.org>, "linux-kernel" <linux-kernel@vger.kernel.org>
+> Gesendet: Mittwoch, 12. Januar 2022 04:46:28
+> Betreff: Re: [PATCH v6 12/15] ubi: fastmap: Add all fastmap pebs into 'ai->fastmap' when fm->used_blocks>=2
 
-Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+>>>> ubi_wl_init() is called in both cases, with and without fastmap.
+>>> I agree.
+>>>
+>>>> And ai->fastmap contains all anchor PEBs that scan_fast() found.
+>>>> This can be the most recent but also outdated anchor PEBs.
+>>> Is it exists a case that outdated fastmap PEBs are neither counted into
+>>> 'fmhdr->erase_peb_count' nor scanned into 'ai->fastmap' after attaching
+>>> by fastmap.
+>>>
+>> 
+>> [...]
+>>   
+>>> I think UBI attaches failed by fastmap if kernel goes here.
+>>> 1870                         err = erase_aeb(ubi, aeb, sync);
+>> 
+>> Hmm, I think the paranoia check in fastmap.c is too strict these days.
+>>          if (WARN_ON(count_fastmap_pebs(ai) != ubi->peb_count -
+>>                      ai->bad_peb_count - fm->used_blocks))
+>>                  goto fail_bad;
+>> 
+>> It does not account ai->fastmap. So if ai->fastmap contains old anchor PEBs
+>> this check will trigger and force falling back to scanning mode.
+>> With this check fixed, ubi_wl_init() will erase all old PEBs from ai->fastmap.
+> Forgive my stubbornness, I think this strict check is good, could you
+> show me a process to trigger this WARN_ON, it would be nice to provide a
+> reproducer.
 
->  arch/arm64/boot/dts/exynos/exynos850.dtsi | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/exynos/exynos850.dtsi b/arch/arm64/boot/dts/exynos/exynos850.dtsi
-> index 4f0a40de5e67..bcae772e8d91 100644
-> --- a/arch/arm64/boot/dts/exynos/exynos850.dtsi
-> +++ b/arch/arm64/boot/dts/exynos/exynos850.dtsi
-> @@ -346,7 +346,7 @@ pinctrl_alive: pinctrl@11850000 {
->                         reg = <0x11850000 0x1000>;
->
->                         wakeup-interrupt-controller {
-> -                               compatible = "samsung,exynos7-wakeup-eint";
-> +                               compatible = "samsung,exynos850-wakeup-eint";
->                         };
->                 };
->
-> @@ -355,7 +355,7 @@ pinctrl_cmgp: pinctrl@11c30000 {
->                         reg = <0x11c30000 0x1000>;
->
->                         wakeup-interrupt-controller {
-> -                               compatible = "samsung,exynos7-wakeup-eint";
-> +                               compatible = "samsung,exynos850-wakeup-eint";
->                         };
->                 };
->
-> --
-> 2.32.0
->
+You can trigger this by interrupting UBI.
+e.g. When UBI writes a new fastmap to the NAND, it schedules the old fastmap
+PEBs for erasure. PEB erasure is asynchronous in UBI. So this can be delayed
+for a very long time.
+While developing UBI fastmap and performing powercut tests I saw this often
+on targets.
+
+> I still insist the point(after my fix patch applied): All outdated
+> fastmap PEBs are added into 'ai->fastmap'(full scanning case) or counted
+> into 'fmhdr->erase_peb_count'(fast attached case).
+
+Yes. But if you look into ubi_wl_init() you see that fastmap anchor PEBs
+get erases synchronously(!). The comment before the erasure explains why.
+To complicate things, this code is currently unreachable because the WARN_ON()
+is not right. I misses to count ai->fastmap.
+So, when there are old fastmap PEBs found, the counter does not match
+and UBI falls back to full scanning while it could to an attach by fastmap.
+
+Fastmap is full with corner cases that have been found by massive amount of testing, sadly.
+
+Thanks,
+//richard
