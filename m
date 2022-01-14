@@ -2,124 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1475C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA573C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:30:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237985AbiANJ2V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:28:21 -0500
-Received: from mail-io1-f71.google.com ([209.85.166.71]:57088 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiANJ2U (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:28:20 -0500
-Received: by mail-io1-f71.google.com with SMTP id d125-20020a6bb483000000b006051f7a8573so5269119iof.23
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:28:20 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=al7eFBuh4sFwLCL4GiOXmiXiy1H4469bZvRRUWVvLdA=;
-        b=NekbblI/WhRWSaUWQSlrm2FrSdeNtxmA+2G+A5ZFc2UqlvfDLs67A6z6Xo1mhtbTYo
-         e1ZxaK4UEOtFaMSV05ugzAESKSKdDBiPiYf2aWQIMLSOySx+M056MLK7Mz5EejddIvzl
-         voIHZpzYBMY5fIbrrgijlSGu5YmJR+1/W9eR9bC0qReu9vyJrGhkeCRzoq96RvhKsJrc
-         awkBKLXpAfUzb57mCb7OGrOC8ZG3mUv6KgkKM6ITIZoCmBikDBpPFXTHOptPUMy8y52Z
-         Kty+qI6c1PqPU1keaBONW2OzbPfkTqTZ0vnKIQ4MJORTWJJ+d8zUa+YFMJq2ioLxrc3y
-         TbZQ==
-X-Gm-Message-State: AOAM5334IzUHmxXOi1ntgj2yi4gs0q0zODAart8bhhqDcmMt/8q9cXB3
-        mHhUGezjh9J5eMemdo3UqOTutZ3rBeEFbS+Adyd4w1uT7bCz
-X-Google-Smtp-Source: ABdhPJxyXr0SBcgR05CtxsGITEYhHVGsVTH3amDHmbiFuXEEPQXjM4u7Ifq2Z/daTNoBSH+81dLAkvlbNRIQ74v76uwVeMr2DQ8S
+        id S240017AbiANJam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:30:42 -0500
+Received: from smtp25.cstnet.cn ([159.226.251.25]:45542 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233615AbiANJal (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 04:30:41 -0500
+Received: from localhost.localdomain (unknown [124.16.138.126])
+        by APP-05 (Coremail) with SMTP id zQCowAD3_wOoQuFhWawyBg--.47397S2;
+        Fri, 14 Jan 2022 17:30:16 +0800 (CST)
+From:   Jiasheng Jiang <jiasheng@iscas.ac.cn>
+To:     hjc@rock-chips.com, heiko@sntech.de, airlied@linux.ie,
+        daniel@ffwll.ch, p.zabel@pengutronix.de
+Cc:     dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Subject: [PATCH] drm/rockchip: Check for NULL pointer after calling kzalloc
+Date:   Fri, 14 Jan 2022 17:30:15 +0800
+Message-Id: <20220114093015.1295274-1-jiasheng@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a02:9108:: with SMTP id a8mr3729402jag.284.1642152499779;
- Fri, 14 Jan 2022 01:28:19 -0800 (PST)
-Date:   Fri, 14 Jan 2022 01:28:19 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006aa20b05d5876c1f@google.com>
-Subject: [syzbot] KASAN: null-ptr-deref Write in kcm_tx_work (2)
-From:   syzbot <syzbot+25ca556057c68f8a03a2@syzkaller.appspotmail.com>
-To:     aahringo@redhat.com, andrii@kernel.org, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, paskripkin@gmail.com,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
-        unixbhaskar@gmail.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: zQCowAD3_wOoQuFhWawyBg--.47397S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJF1rWrWfWF48tr1UCw4kJFb_yoW8Gr17pr
+        s7JrW2qr409r4DWwsrJw1q93yfKan0y34xGrs7Gw13uF1fKrnxAan5ZrZ5Xr47XrWxXr15
+        trs7A345ZF4j93JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6r4fMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
+        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
+        evJa73UjIFyTuYvjfUeLvtDUUUU
+X-Originating-IP: [124.16.138.126]
+X-CM-SenderInfo: pmld2xxhqjqxpvfd2hldfou0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+As the possible failure of the kzalloc(), crtc_state could be NULL
+pointer.
+Therefore, it should be better to check it in order to avoid the
+dereference of the NULL pointer, like the kzalloc() in
+vop_crtc_duplicate_state().
+If fails, we can directly use the 'NULL' instead of the
+'&crtc_state->base' and __drm_atomic_helper_crtc_duplicate_state() will
+deal with it correctly.
 
-syzbot found the following issue on:
-
-HEAD commit:    df0cc57e057f Linux 5.16
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a89d2db00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ea1f52f5503d3ac3
-dashboard link: https://syzkaller.appspot.com/bug?extid=25ca556057c68f8a03a2
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+25ca556057c68f8a03a2@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: null-ptr-deref in instrument_atomic_write include/linux/instrumented.h:86 [inline]
-BUG: KASAN: null-ptr-deref in clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
-BUG: KASAN: null-ptr-deref in kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:741
-Write of size 8 at addr 0000000000000008 by task kworker/u4:47/7955
-
-CPU: 1 PID: 7955 Comm: kworker/u4:47 Not tainted 5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: kkcmd kcm_tx_work
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- __kasan_report mm/kasan/report.c:437 [inline]
- kasan_report.cold+0x66/0xdf mm/kasan/report.c:450
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_write include/linux/instrumented.h:86 [inline]
- clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
- kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:741
- process_one_work+0x9b2/0x1660 kernel/workqueue.c:2298
- worker_thread+0x65d/0x1130 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-==================================================================
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 7955 Comm: kworker/u4:47 Tainted: G    B             5.16.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: kkcmd kcm_tx_work
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- panic+0x2b0/0x6dd kernel/panic.c:232
- end_report.cold+0x63/0x6f mm/kasan/report.c:128
- __kasan_report mm/kasan/report.c:440 [inline]
- kasan_report.cold+0x71/0xdf mm/kasan/report.c:450
- check_region_inline mm/kasan/generic.c:183 [inline]
- kasan_check_range+0x13d/0x180 mm/kasan/generic.c:189
- instrument_atomic_write include/linux/instrumented.h:86 [inline]
- clear_bit include/asm-generic/bitops/instrumented-atomic.h:41 [inline]
- kcm_tx_work+0xff/0x160 net/kcm/kcmsock.c:741
- process_one_work+0x9b2/0x1660 kernel/workqueue.c:2298
- worker_thread+0x65d/0x1130 kernel/workqueue.c:2445
- kthread+0x405/0x4f0 kernel/kthread.c:327
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:295
- </TASK>
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
+Fixes: dc0b408f5a87 ("drm/rockchip: allocate correct crtc state structure on reset")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/gpu/drm/rockchip/rockchip_drm_vop.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+index 3e8d9e2d1b67..db672ff5e37b 100644
+--- a/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
++++ b/drivers/gpu/drm/rockchip/rockchip_drm_vop.c
+@@ -1577,7 +1577,10 @@ static void vop_crtc_reset(struct drm_crtc *crtc)
+ 	if (crtc->state)
+ 		vop_crtc_destroy_state(crtc, crtc->state);
+ 
+-	__drm_atomic_helper_crtc_reset(crtc, &crtc_state->base);
++	if (!crtc_state)
++		__drm_atomic_helper_crtc_reset(crtc, NULL);
++	else
++		__drm_atomic_helper_crtc_reset(crtc, &crtc_state->base);
+ }
+ 
+ #ifdef CONFIG_DRM_ANALOGIX_DP
+-- 
+2.25.1
+
