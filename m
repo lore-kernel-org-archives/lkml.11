@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1850C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3831C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239612AbiANIR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:17:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58810 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239582AbiANIRt (ORCPT
+        id S239651AbiANISD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:18:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236951AbiANIRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 03:17:49 -0500
+        Fri, 14 Jan 2022 03:17:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8176DC06175B;
+        Fri, 14 Jan 2022 00:17:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA523B8243C;
-        Fri, 14 Jan 2022 08:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD377C36AE9;
-        Fri, 14 Jan 2022 08:17:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21BA661E09;
+        Fri, 14 Jan 2022 08:17:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6086C36AEC;
+        Fri, 14 Jan 2022 08:17:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148266;
-        bh=fkWBs+tHg381zRy0d/uSCHjtDaY/THjnHkR65O3vJXI=;
+        s=korg; t=1642148269;
+        bh=Uh/Bhv7AqgNt1MvA67kKhA3mQZvo44UFqagmaBRB8yc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k3CY9pDoYZILfxHOLdfglYB+f6cJl70e7d3c1Q8BFzvPXqZ45ZE7vRHHlDzRB7br/
-         onvs5xvlM8sb8HSe4iCJVSDbU84yqrmzd9EgcvkqMYTjZZRP+/QOe402fkOoUYCzfd
-         CvURhaUabkXBc+F2Z1u+G2hLle5MCVr67Q7GXXc4=
+        b=a2fORLKBpwZaXf/mrKz3E71SdTQXYfjiK/NPunAFpg1QcY3jVVkyXizWw52ry7fl7
+         v1vcQ9RPboWUhGNBreiTls4oIB1hY5AlM+bZgxfYny7UCXPA0G0ixpL1Sfi06ejOKL
+         IlLqrToeM7YbgtL1Go3VJy2nIeDtLW43YpK1cuq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 15/18] media: Revert "media: uvcvideo: Set unique vdev name based in type"
-Date:   Fri, 14 Jan 2022 09:16:22 +0100
-Message-Id: <20220114081541.982054932@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.4 16/18] staging: wlan-ng: Avoid bitwise vs logical OR warning in hfa384x_usb_throttlefn()
+Date:   Fri, 14 Jan 2022 09:16:23 +0100
+Message-Id: <20220114081542.013458658@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081541.465841464@linuxfoundation.org>
 References: <20220114081541.465841464@linuxfoundation.org>
@@ -48,60 +47,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricardo Ribalda <ribalda@chromium.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit f66dcb32af19faf49cc4a9222c3152b10c6ec84a upstream.
+commit 502408a61f4b7eb4713f44bd77f4a48e6cb1b59a upstream.
 
-A lot of userspace depends on a descriptive name for vdev. Without this
-patch, users have a hard time figuring out which camera shall they use
-for their video conferencing.
+A new warning in clang points out a place in this file where a bitwise
+OR is being used with boolean expressions:
 
-This reverts commit e3f60e7e1a2b451f538f9926763432249bcf39c4.
+In file included from drivers/staging/wlan-ng/prism2usb.c:2:
+drivers/staging/wlan-ng/hfa384x_usb.c:3787:7: warning: use of bitwise '|' with boolean operands [-Wbitwise-instead-of-logical]
+            ((test_and_clear_bit(THROTTLE_RX, &hw->usb_flags) &&
+            ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/staging/wlan-ng/hfa384x_usb.c:3787:7: note: cast one or both operands to int to silence this warning
+1 warning generated.
 
-Link: https://lore.kernel.org/linux-media/20211207003840.1212374-2-ribalda@chromium.org
-Cc: <stable@vger.kernel.org>
-Fixes: e3f60e7e1a2b ("media: uvcvideo: Set unique vdev name based in type")
-Reported-by: Nicolas Dufresne <nicolas@ndufresne.ca>
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Reviewed-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+The comment explains that short circuiting here is undesirable, as the
+calls to test_and_{clear,set}_bit() need to happen for both sides of the
+expression.
+
+Clang's suggestion would work to silence the warning but the readability
+of the expression would suffer even more. To clean up the warning and
+make the block more readable, use a variable for each side of the
+bitwise expression.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1478
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20211014215703.3705371-1-nathan@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/uvc/uvc_driver.c |    7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/staging/wlan-ng/hfa384x_usb.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/drivers/media/usb/uvc/uvc_driver.c
-+++ b/drivers/media/usb/uvc/uvc_driver.c
-@@ -1972,7 +1972,6 @@ int uvc_register_video_device(struct uvc
- 			      const struct v4l2_file_operations *fops,
- 			      const struct v4l2_ioctl_ops *ioctl_ops)
- {
--	const char *name;
- 	int ret;
+--- a/drivers/staging/wlan-ng/hfa384x_usb.c
++++ b/drivers/staging/wlan-ng/hfa384x_usb.c
+@@ -3779,18 +3779,18 @@ static void hfa384x_usb_throttlefn(struc
  
- 	/* Initialize the video buffers queue. */
-@@ -2001,20 +2000,16 @@ int uvc_register_video_device(struct uvc
- 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
- 	default:
- 		vdev->device_caps = V4L2_CAP_VIDEO_CAPTURE | V4L2_CAP_STREAMING;
--		name = "Video Capture";
- 		break;
- 	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
- 		vdev->device_caps = V4L2_CAP_VIDEO_OUTPUT | V4L2_CAP_STREAMING;
--		name = "Video Output";
- 		break;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
- 		vdev->device_caps = V4L2_CAP_META_CAPTURE | V4L2_CAP_STREAMING;
--		name = "Metadata";
- 		break;
+ 	spin_lock_irqsave(&hw->ctlxq.lock, flags);
+ 
+-	/*
+-	 * We need to check BOTH the RX and the TX throttle controls,
+-	 * so we use the bitwise OR instead of the logical OR.
+-	 */
+ 	pr_debug("flags=0x%lx\n", hw->usb_flags);
+-	if (!hw->wlandev->hwremoved &&
+-	    ((test_and_clear_bit(THROTTLE_RX, &hw->usb_flags) &&
+-	      !test_and_set_bit(WORK_RX_RESUME, &hw->usb_flags)) |
+-	     (test_and_clear_bit(THROTTLE_TX, &hw->usb_flags) &&
+-	      !test_and_set_bit(WORK_TX_RESUME, &hw->usb_flags))
+-	    )) {
+-		schedule_work(&hw->usb_work);
++	if (!hw->wlandev->hwremoved) {
++		bool rx_throttle = test_and_clear_bit(THROTTLE_RX, &hw->usb_flags) &&
++				   !test_and_set_bit(WORK_RX_RESUME, &hw->usb_flags);
++		bool tx_throttle = test_and_clear_bit(THROTTLE_TX, &hw->usb_flags) &&
++				   !test_and_set_bit(WORK_TX_RESUME, &hw->usb_flags);
++		/*
++		 * We need to check BOTH the RX and the TX throttle controls,
++		 * so we use the bitwise OR instead of the logical OR.
++		 */
++		if (rx_throttle | tx_throttle)
++			schedule_work(&hw->usb_work);
  	}
  
--	snprintf(vdev->name, sizeof(vdev->name), "%s %u", name,
--		 stream->header.bTerminalLink);
-+	strscpy(vdev->name, dev->name, sizeof(vdev->name));
- 
- 	/*
- 	 * Set the driver data before calling video_register_device, otherwise
+ 	spin_unlock_irqrestore(&hw->ctlxq.lock, flags);
 
 
