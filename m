@@ -2,203 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EBFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE65C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240076AbiANJpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:45:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiANJpJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:45:09 -0500
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01710C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:45:08 -0800 (PST)
-Received: (Authenticated sender: alex@ghiti.fr)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 1870AC0012;
-        Fri, 14 Jan 2022 09:45:00 +0000 (UTC)
-Message-ID: <e649ef4c-a149-8b84-07d1-7e3b0c74bafa@ghiti.fr>
-Date:   Fri, 14 Jan 2022 10:45:00 +0100
+        id S240090AbiANJqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:46:42 -0500
+Received: from mx1.tq-group.com ([93.104.207.81]:5167 "EHLO mx1.tq-group.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229785AbiANJqk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 04:46:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1642153600; x=1673689600;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=NNHPlTD0ftd7Yo4ZkVXD/Gn+srTlO5apnHVNSJQo2B8=;
+  b=lrOjnFoEAQd2pTzpTHiRuJ6lC69NAkEWne9iyx9K24HzBc+xzaB6l1Tr
+   CCvidFMKncewl2UdJYGTg8xgOzdO6tRbpEbqysTdZtE0z/ZomdpX1v7tZ
+   8mgUSRfkXqrSJYJMqmtLTrBqT2KfkUr46sALGYIRUijYjlZG95JisZRM7
+   FBJQcvhJNbiEozNzWi8rlhTReeEtOQVpxmZSQo+34p5CRqn1GERCX2iWT
+   cJpN8KmHMcIv0D08g1ccHwTS0ZpWSELBLdbesMcNlGPImSJfx7dDVhyLm
+   8CyaX6T3dv1LMiDW5EdXUReCR21e8dfBWq6OC/BAz1Qf3wShQxNEgtw6k
+   g==;
+X-IronPort-AV: E=Sophos;i="5.88,288,1635199200"; 
+   d="scan'208";a="21502572"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 14 Jan 2022 10:46:39 +0100
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Fri, 14 Jan 2022 10:46:39 +0100
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Fri, 14 Jan 2022 10:46:39 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1642153599; x=1673689599;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=NNHPlTD0ftd7Yo4ZkVXD/Gn+srTlO5apnHVNSJQo2B8=;
+  b=XmH3xUwV8P37+HKt9OalpH9XzYJRsNr6i4PkhGoMUQtzIDfOwVCgQYzn
+   NkW344cf1M3I73f1xkZ9dz32vTmfWEewYGJEWEqxeAHDjgCObHPvBmwf1
+   Wl98uasJbrTMMakM2U9vb0qbHLNNsujhzAnxt8LE5cZR0N5S1uyXUMR5G
+   9ZVfRMI+8znpaz14wRQo7C3QeM/NFQtoldcs4zPfcQnYca684iKYuTfbh
+   3XHwmuTimjiBmhz69VMic8bQ48haxgUQ8QTPTTOxFBwHL58iffP0SlD7H
+   EY32LZyDliGcvQVxW02fpxxIMJxXkqju1nnJrPeTYhm32VNnavtAaAdRH
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,288,1635199200"; 
+   d="scan'208";a="21502571"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 14 Jan 2022 10:46:39 +0100
+Received: from steina-w.localnet (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id B843E280065;
+        Fri, 14 Jan 2022 10:46:38 +0100 (CET)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Markus Reichl <m.reichl@fivetechno.de>
+Cc:     Markus Reichl <m.reichl@fivetechno.de>,
+        Gabriel Hojda <ghojda@yo2urs.ro>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: Correct reset handling of smsc95xx
+Date:   Fri, 14 Jan 2022 10:46:38 +0100
+Message-ID: <3127264.ElGaqSPkdT@steina-w>
+Organization: TQ-Systems GmbH
+In-Reply-To: <20220113200113.30702-1-m.reichl@fivetechno.de>
+References: <20220113200113.30702-1-m.reichl@fivetechno.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH 02/12] RISC-V: MAXPHYSMEM_2GB doesn't depend on
- CMODEL_MEDLOW
-Content-Language: en-US
-To:     Conor.Dooley@microchip.com, geert@linux-m68k.org,
-        palmer@rivosinc.com
-Cc:     linux-riscv@lists.infradead.org, paul.walmsley@sifive.com,
-        palmer@dabbelt.com, aou@eecs.berkeley.edu,
-        heinrich.schuchardt@canonical.com, bin.meng@windriver.com,
-        sagar.kadam@sifive.com, damien.lemoal@wdc.com, axboe@kernel.dk,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20211119164413.29052-1-palmer@rivosinc.com>
- <20211119164413.29052-3-palmer@rivosinc.com>
- <CAMuHMdXQg942-DwDBJANsFiOCqyAwCt_GwW4HuC1nh0_DNmyEQ@mail.gmail.com>
- <232b8a0d-b25d-b942-eeec-9a67b66b81ce@microchip.com>
- <d95094f8-2407-7e93-490d-94fce2af21a3@ghiti.fr>
- <23d570fe-e91f-aebc-e4e8-c0fdacab22b8@microchip.com>
-From:   Alexandre Ghiti <alex@ghiti.fr>
-In-Reply-To: <23d570fe-e91f-aebc-e4e8-c0fdacab22b8@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/14/22 10:41, Conor.Dooley@microchip.com wrote:
-> On 14/01/2022 09:09, Alexandre ghiti wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know
->> the content is safe
->>
->> Hi Conor,
->>
->> On 1/14/22 09:40, Conor.Dooley@microchip.com wrote:
->>> On 11/01/2022 16:04, Geert Uytterhoeven wrote:
->>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
->>>> know the content is safe
->>>>
->>>> Hi Palmer,
->>>>
->>>> On Fri, Nov 19, 2021 at 5:47 PM Palmer Dabbelt <palmer@rivosinc.com>
->>>> wrote:
->>>>> From: Palmer Dabbelt <palmer@rivosinc.com>
->>>>>
->>>>> For non-relocatable kernels we need to be able to link the kernel at
->>>>> approximately PAGE_OFFSET, thus requiring medany (as medlow requires
->>>>> the
->>>>> code to be linked within 2GiB of 0).  The inverse doesn't apply,
->>>>> though:
->>>>> since medany code can be linked anywhere it's fine to link it close to
->>>>> 0, so we can support the smaller memory config.
->>>>>
->>>>> Fixes: de5f4b8f634b ("RISC-V: Define MAXPHYSMEM_1GB only for RV32")
->>>>> Cc: stable@vger.kernel.org
->>>>> Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
->>>> Thanks for your patch, which is now commit 9f36b96bc70f9707 ("RISC-V:
->>>> MAXPHYSMEM_2GB doesn't depend on CMODEL_MEDLOW").
->>>>
->>>>> I found this when going through the savedefconfig diffs for the K210
->>>>> defconfigs.  I'm not entirely sure they're doing the right thing here
->>>>> (they should probably be setting CMODEL_LOW to take advantage of the
->>>>> better code generation), but I don't have any way to test those
->>>>> platforms so I don't want to change too much.
->>>> I can confirm MAXPHYSMEM_2GB works on K210 with CMODEL_MEDANY.
->>>>
->>>> As the Icicle has 1760 MiB of RAM, I gave it a try with MAXPHYSMEM_2GB
->>>> (and CMODEL_MEDANY), too.  Unfortunately it crashes very early
->>>> (needs earlycon to see):
->>> Given you said 1760 MiB I assume you're not running the device tree
->>> currently in the kernel?
->>> But the defconfig is /arch/riscv/configs/defconfig?
->>>
->>> I tested it w/ my newer version of the dts, using both 1760 & 736 MiB
->>> (ddrc_cache_lo only) w/ MAXPHYSMEM_2GB.
->>> Enabling MAXPHYSMEM_2GB with either CMODEL_MEDANY or CMODEL_MEDLOW
->>> lead to the same boot failure as you got.
->>
->> Any chance you can give a try to [1] so that I can extract it from my
->> sv48 patchset and propose it to fixes if it works?
-> Applied, tested with 1760 & 736 MiB - booted fine. :)
+Hi Markus,
+
+Am Donnerstag, 13. Januar 2022, 21:01:11 CET schrieb Markus Reichl:
+> On boards with LAN9514 and no preconfigured MAC address we don't get an
+> ip address from DHCP after commit a049a30fc27c ("net: usb: Correct PHY
+> handling of smsc95xx") anymore. Adding an explicit reset before starting
+> the phy fixes the issue.
+> 
+> [1]
+> https://lore.kernel.org/netdev/199eebbd6b97f52b9119c9fa4fd8504f8a34de18.came
+> l@collabora.com/
+> 
+> From: Gabriel Hojda <ghojda@yo2urs.ro>
+> Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
+> Signed-off-by: Gabriel Hojda <ghojda@yo2urs.ro>
+> Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
+> ---
+>  drivers/net/usb/smsc95xx.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+> index abe0149ed917..bc1e3dd67c04 100644
+> --- a/drivers/net/usb/smsc95xx.c
+> +++ b/drivers/net/usb/smsc95xx.c
+> @@ -1962,7 +1962,8 @@ static const struct driver_info smsc95xx_info = {
+>  	.bind		= smsc95xx_bind,
+>  	.unbind		= smsc95xx_unbind,
+>  	.link_reset	= smsc95xx_link_reset,
+> -	.reset		= smsc95xx_start_phy,
+> +	.reset		= smsc95xx_reset,
+> +	.check_connect	= smsc95xx_start_phy,
+>  	.stop		= smsc95xx_stop,
+>  	.rx_fixup	= smsc95xx_rx_fixup,
+>  	.tx_fixup	= smsc95xx_tx_fixup,
+
+Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+
+This should go into stable-5.15!
+
+Tested on a TQMa6x on MBa6 which uses a SMSC9500 as a second ethernet 
+interface.
+For the record: I noticed the problem as ARP replies were sent from the wrong 
+interface. Thus my PC got the wrong MAC address which failed ping in the end.
+
+Best regards,
+Alexander
 
 
-Great, I'll extract it, rephrase it (since it is not a suspicion 
-anymore), add Geert Reported-by and your Tested-by.
 
-Thanks!
-
-Alex
-
-
->> Thanks,
->>
->> Alex
->>
->> https://patchwork.kernel.org/project/linux-riscv/patch/20211206104657.433304-6-alexandre.ghiti@canonical.com/
->>
->>
->>
->>>>        OF: fdt: Ignoring memory range 0x80000000 - 0x80200000
->>>>        Machine model: Microchip PolarFire-SoC Icicle Kit
->>>>        printk: debug: ignoring loglevel setting.
->>>>        earlycon: ns16550a0 at MMIO32 0x0000000020100000 (options
->>>> '115200n8')
->>>>        printk: bootconsole [ns16550a0] enabled
->>>>        printk: debug: skip boot console de-registration.
->>>>        efi: UEFI not found.
->>>>        Unable to handle kernel paging request at virtual address
->>>> ffffffff87e00001
->>>>        Oops [#1]
->>>>        Modules linked in:
->>>>        CPU: 0 PID: 0 Comm: swapper Not tainted
->>>> 5.16.0-08771-g85515233477d #56
->>>>        Hardware name: Microchip PolarFire-SoC Icicle Kit (DT)
->>>>        epc : fdt_check_header+0x14/0x208
->>>>         ra : early_init_dt_verify+0x16/0x94
->>>>        epc : ffffffff802ddacc ra : ffffffff8082415a sp : ffffffff81203ee0
->>>>         gp : ffffffff812ec3a8 tp : ffffffff8120cd80 t0 : 0000000000000005
->>>>         t1 : 0000001040000000 t2 : ffffffff80000000 s0 : ffffffff81203f00
->>>>         s1 : ffffffff87e00000 a0 : ffffffff87e00000 a1 : 000000040ffffce7
->>>>         a2 : 00000000000000e7 a3 : ffffffff8080394c a4 : 0000000000000000
->>>>         a5 : 0000000000000000 a6 : 0000000000000000 a7 : 0000000000000000
->>>>         s2 : ffffffff81203f98 s3 : 8000000a00006800 s4 : fffffffffffffff3
->>>>         s5 : 0000000000000000 s6 : 0000000000000001 s7 : 0000000000000000
->>>>         s8 : 0000000020236c20 s9 : 0000000000000000 s10: 0000000000000000
->>>>         s11: 0000000000000000 t3 : 0000000000000018 t4 : 00ff000000000000
->>>>         t5 : 0000000000000000 t6 : 0000000000000010
->>>>        status: 0000000200000100 badaddr: ffffffff87e00001 cause:
->>>> 000000000000000d
->>>>        [<ffffffff802ddacc>] fdt_check_header+0x14/0x208
->>>>        [<ffffffff8082415a>] early_init_dt_verify+0x16/0x94
->>>>        [<ffffffff80802dee>] setup_arch+0xec/0x4ec
->>>>        [<ffffffff80800700>] start_kernel+0x88/0x6d6
->>>>        random: get_random_bytes called from
->>>> print_oops_end_marker+0x22/0x44 with crng_init=0
->>>>        ---[ end trace 903df1a0ade0b876 ]---
->>>>        Kernel panic - not syncing: Attempted to kill the idle task!
->>>>        ---[ end Kernel panic - not syncing: Attempted to kill the idle
->>>> task! ]---
->>>>
->>>> So the FDT is at 0xffffffff87e00000, i.e. at 0x7e00000 from the start
->>>> of virtual memory (CONFIG_PAGE_OFFSET=0xffffffff80000000), and thus
->>>> within the 2 GiB range.
->>>>
->>>>> --- a/arch/riscv/Kconfig
->>>>> +++ b/arch/riscv/Kconfig
->>>>> @@ -280,7 +280,7 @@ choice
->>>>>                    depends on 32BIT
->>>>>                    bool "1GiB"
->>>>>            config MAXPHYSMEM_2GB
->>>>> -               depends on 64BIT && CMODEL_MEDLOW
->>>>> +               depends on 64BIT
->>>>>                    bool "2GiB"
->>>>>            config MAXPHYSMEM_128GB
->>>>>                    depends on 64BIT && CMODEL_MEDANY
->>>> Gr{oetje,eeting}s,
->>>>
->>>>                            Geert
->>>>
->>>> -- 
->>>> Geert Uytterhoeven -- There's lots of Linux beyond ia32 --
->>>> geert@linux-m68k.org
->>>>
->>>> In personal conversations with technical people, I call myself a
->>>> hacker. But
->>>> when I'm talking to journalists I just say "programmer" or something
->>>> like that.
->>>>                                    -- Linus Torvalds
->>>>
->>>> _______________________________________________
->>>> linux-riscv mailing list
->>>> linux-riscv@lists.infradead.org
->>>> http://lists.infradead.org/mailman/listinfo/linux-riscv
->>>>
->>> _______________________________________________
->>> linux-riscv mailing list
->>> linux-riscv@lists.infradead.org
->>> http://lists.infradead.org/mailman/listinfo/linux-riscv
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
