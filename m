@@ -2,120 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72BB8C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1120AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 20:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244265AbiANURV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:17:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244251AbiANURR (ORCPT
+        id S244259AbiANUXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 15:23:43 -0500
+Received: from qproxy1-pub.mail.unifiedlayer.com ([173.254.64.10]:54843 "EHLO
+        qproxy1-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232761AbiANUXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 15:17:17 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1342C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:17:17 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id x83so3736259pfc.0
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 12:17:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=10U/YKtex+AND9dtDxjk3FYBvBwLFUl9f2fbhlUXUs0=;
-        b=XQy4pyO/wUwsYqGsKtflTgY0GMz4pfjd2qpY31JHWTpxrdp5kycdY6uXSFa3MXVWe6
-         wq/hlaXeACBG7Euq/bmzfc3SM6AC4Pu4laUwxAAWlVJsx2bVy0Izg+KtkO5gPiaBeCOw
-         LsILH7rVPeqwj+OUGJjnT/KYlOKhVhKT8tdiA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=10U/YKtex+AND9dtDxjk3FYBvBwLFUl9f2fbhlUXUs0=;
-        b=kUhC9XJteLpi7IL+AM8aPmIut2mPAqilKjOuKQirMErplll02L4ALq7tIa70wTqAXE
-         loRpcYqffKbrXobvub0em5f8NByUE4Gw/TdegtuYxn+k/QZ0a0lcqF7Xnm9nU/LHTQ19
-         InPuELmWgYWw87zv0btQ0b6dtXKHDoE3FHDg2zMbQ9pmj2KL6OJuhZpFsJvu9XcXPx/N
-         ckRo6JgHY7ueQqleX+/c1MZfD6/y91DeXmU58ObVCqhPsM40iIARvLj0sF5QpfmSj24j
-         ZElR4MJSWKy9DchZqJSSxw2OJKNx6E4VX7L/HqJyeFIzc6/TOqssGtq4ou5O7zy88JWG
-         mCjA==
-X-Gm-Message-State: AOAM5327tvmkCiV82fxAADTUUq91jJ9FQCM90I929djo1i7SuxxnVaHY
-        8HkJ0m/Aq33vQgbSBRLzcZxbbQ==
-X-Google-Smtp-Source: ABdhPJxqbQOjbira1atGPpNHzh9Q82DXtSjtZWs+75WZcndu3r13+lzxdf+ODqr/TYUZIBqpyhshZg==
-X-Received: by 2002:a63:6b81:: with SMTP id g123mr9615156pgc.140.1642191437321;
-        Fri, 14 Jan 2022 12:17:17 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:76ab:ede1:503d:1c39])
-        by smtp.gmail.com with UTF8SMTPSA id g15sm2354365pfm.142.2022.01.14.12.17.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 12:17:16 -0800 (PST)
-From:   Brian Norris <briannorris@chromium.org>
-To:     Heiko Stuebner <heiko@sntech.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, Sandy Huang <hjc@rock-chips.com>,
-        linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Lin Huang <hl@rock-chips.com>,
-        Brian Norris <briannorris@chromium.org>
-Subject: [PATCH 3/3] ASoC: rk3399_gru_sound: Wire up DP jack detection
-Date:   Fri, 14 Jan 2022 12:16:52 -0800
-Message-Id: <20220114121515.3.I3c79b1466c14b02980071221e5b99283cd26ec77@changeid>
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-In-Reply-To: <20220114201652.3875838-1-briannorris@chromium.org>
-References: <20220114201652.3875838-1-briannorris@chromium.org>
+        Fri, 14 Jan 2022 15:23:43 -0500
+X-Greylist: delayed 1419 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Jan 2022 15:23:43 EST
+Received: from alt-proxy28.mail.unifiedlayer.com (unknown [74.220.216.123])
+        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 5549D8033194
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 20:00:01 +0000 (UTC)
+Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
+        by progateway1.mail.pro1.eigbox.com (Postfix) with ESMTP id B74101003FA0B
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 20:00:00 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 8SjwnwyPpEaNC8SjwnpxBA; Fri, 14 Jan 2022 20:00:00 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=dJtjJMVb c=1 sm=1 tr=0 ts=61e1d640
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=DghFqjY3_ZEA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=HGw1mVhBy2YoFkOnSw0A:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:In-Reply-To:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=3ZZ8Z3lXC4EgxEaTFM+fFaZa06WIHcyvU419ouZNh5A=; b=m79quRX1zeKrb4l7z7LrO+5slh
+        nd2+r1WjqvQCL2BP8Y0FuWUl6UycKd4bomXlyQtUEG5bufu2LzxkuLti/eCvvbFoZ2XJ6nEaj+B26
+        kI36JYbpGaooHyQ73q2VcjZyb;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:60958 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1n8Sjv-001Fm6-D5; Fri, 14 Jan 2022 12:59:59 -0700
+Subject: Re: [PATCH 5.15 00/41] 5.15.15-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+References: <20220114081545.158363487@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+In-Reply-To: <20220114081545.158363487@linuxfoundation.org>
+Message-ID: <b94bd7bd-0c8b-1697-f4af-27e99ca9e62f@w6rz.net>
+Date:   Fri, 14 Jan 2022 11:59:57 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1n8Sjv-001Fm6-D5
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:60958
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now that the cdn-dp driver supports plug-change callbacks, let's wire it
-up.
+On 1/14/22 12:16 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.15 release.
+> There are 41 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Brian Norris <briannorris@chromium.org>
----
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
- sound/soc/rockchip/rk3399_gru_sound.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+Warnings:
 
-diff --git a/sound/soc/rockchip/rk3399_gru_sound.c b/sound/soc/rockchip/rk3399_gru_sound.c
-index e2d52d8d0ff9..eeef3ed70037 100644
---- a/sound/soc/rockchip/rk3399_gru_sound.c
-+++ b/sound/soc/rockchip/rk3399_gru_sound.c
-@@ -164,6 +164,25 @@ static int rockchip_sound_da7219_hw_params(struct snd_pcm_substream *substream,
- 	return 0;
- }
- 
-+static struct snd_soc_jack cdn_dp_card_jack;
-+
-+static int rockchip_sound_cdndp_init(struct snd_soc_pcm_runtime *rtd)
-+{
-+	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
-+	struct snd_soc_card *card = rtd->card;
-+	int ret;
-+
-+	/* Enable jack detection. */
-+	ret = snd_soc_card_jack_new(card, "DP Jack", SND_JACK_LINEOUT,
-+				    &cdn_dp_card_jack, NULL, 0);
-+	if (ret) {
-+		dev_err(card->dev, "Can't create DP Jack %d\n", ret);
-+		return ret;
-+	}
-+
-+	return snd_soc_component_set_jack(component, &cdn_dp_card_jack, NULL);
-+}
-+
- static int rockchip_sound_da7219_init(struct snd_soc_pcm_runtime *rtd)
- {
- 	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
-@@ -315,6 +334,7 @@ static const struct snd_soc_dai_link rockchip_dais[] = {
- 	[DAILINK_CDNDP] = {
- 		.name = "DP",
- 		.stream_name = "DP PCM",
-+		.init = rockchip_sound_cdndp_init,
- 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
- 			SND_SOC_DAIFMT_CBS_CFS,
- 		SND_SOC_DAILINK_REG(cdndp),
--- 
-2.34.1.703.g22d0c6ccf7-goog
+fs/jffs2/xattr.c: In function 'jffs2_build_xattr_subsystem':
+fs/jffs2/xattr.c:887:1: warning: the frame size of 1104 bytes is larger 
+than 1024 bytes [-Wframe-larger-than=]
+   887 | }
+       | ^
+lib/crypto/curve25519-hacl64.c: In function 'ladder_cmult.constprop':
+lib/crypto/curve25519-hacl64.c:601:1: warning: the frame size of 1040 
+bytes is larger than 1024 bytes [-Wframe-larger-than=]
+   601 | }
+       | ^
+drivers/net/wireguard/allowedips.c: In function 'root_remove_peer_lists':
+drivers/net/wireguard/allowedips.c:77:1: warning: the frame size of 1040 
+bytes is larger than 1024 bytes [-Wframe-larger-than=]
+    77 | }
+       | ^
+drivers/net/wireguard/allowedips.c: In function 'root_free_rcu':
+drivers/net/wireguard/allowedips.c:64:1: warning: the frame size of 1040 
+bytes is larger than 1024 bytes [-Wframe-larger-than=]
+    64 | }
+       | ^
+drivers/vhost/scsi.c: In function 'vhost_scsi_flush':
+drivers/vhost/scsi.c:1444:1: warning: the frame size of 1040 bytes is 
+larger than 1024 bytes [-Wframe-larger-than=]
+  1444 | }
+       | ^
+
+Tested-by: Ron Economos <re@w6rz.net>
 
