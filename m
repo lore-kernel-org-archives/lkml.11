@@ -2,81 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F786C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 09:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239880AbiANJZj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 04:25:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236096AbiANJZi (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 04:25:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448C6C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 01:25:38 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D63DE61E8B
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 09:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E934BC36AE9;
-        Fri, 14 Jan 2022 09:25:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642152337;
-        bh=P/bm0LGDZJvi20w4ynwHGaO4gRrS312I6XLwmwXc6zE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=G2IxCYzqi2axbQfsMiqaGE9avzhCxdxeX9gDAYHVb06FszPue07LTJDwA1cqj/28R
-         XODwpvQImT1J76cvDRBWk1egDyAeNluNucCkbsanqFLjWdZkRu+VhlDm37Cj5aL3Np
-         lpEu06z+FWKYVMoKC5bsbrd6ceuuywqFwKUS9HlgNuGO7gk0zTssf2QDVXQr2X7QEB
-         bc+wZL5ZjMrdZ5pdvTNAnnCbLpH3feH4PCRsDvsp+Hd49P5JCortO6t/Ci9xq461N6
-         ZYAclPi3Rz6HTogHx56dmuOpewpmhRqHLOoi1Ij16F6YjYHtF2lLdMamY7TI5zaAmB
-         ghurcsi8Gk8hw==
-Date:   Fri, 14 Jan 2022 11:25:30 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Karolina Drobnik <karolinadrobnik@gmail.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        Mike Rapoport <rppt@linux.ibm.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] memblock: Remove #ifdef __KERNEL__ from memblock.h
-Message-ID: <YeFBiiDO0FUz3mpZ@kernel.org>
+        id S239897AbiANJ0l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 04:26:41 -0500
+Received: from foss.arm.com ([217.140.110.172]:58742 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239692AbiANJ0k (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 04:26:40 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 509D01FB;
+        Fri, 14 Jan 2022 01:26:40 -0800 (PST)
+Received: from [10.57.34.164] (unknown [10.57.34.164])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 753183F766;
+        Fri, 14 Jan 2022 01:26:38 -0800 (PST)
+Subject: Re: [PATCH] perf arm: Fix off-by-one directory path.
+To:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexandre Truong <alexandre.truong@arm.com>,
+        James Clark <james.clark@arm.com>,
+        Athira Jajeev <atrajeev@linux.vnet.ibm.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220114064822.1806019-1-irogers@google.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <42fbdd13-c8a8-404b-a452-1e796c2e5a8b@arm.com>
+Date:   Fri, 14 Jan 2022 09:26:29 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220114064822.1806019-1-irogers@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+Hi Ian,
 
-Please pull this small cleanup in memblock.h.
+I think there's another include in "utils/intel-pt.c" that may need the same treatment.
 
-The following changes since commit df0cc57e057f18e44dac8e6c18aba47ab53202f9:
+On 14/01/2022 06:48, Ian Rogers wrote:
+> Relative path include works in the regular build due to -I paths but may
+> fail in other situations.
+>
+> Fixes: 83869019c74c ("perf arch: Support register names from all archs")
+> Signed-off-by: Ian Rogers <irogers@google.com>
+Reviewed-by: German Gomez <german.gomez@arm.com>
 
-  Linux 5.16 (2022-01-09 14:55:34 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/rppt/memblock tags/memblock-v5.17-rc1
-
-for you to fetch changes up to a59466ee91aaa9d43889a4c51e01de087d188448:
-
-  memblock: Remove #ifdef __KERNEL__ from memblock.h (2022-01-11 12:36:47 +0200)
-
-----------------------------------------------------------------
-memblock: Remove #ifdef __KERNEL__ from memblock.h
-
-memblock.h is not a uAPI header, so __KERNEL__ guard can be deleted
-
-----------------------------------------------------------------
-Karolina Drobnik (1):
-      memblock: Remove #ifdef __KERNEL__ from memblock.h
-
- include/linux/memblock.h | 2 --
- 1 file changed, 2 deletions(-)
-
--- 
-Sincerely yours,
-Mike.
+Thanks,
+German
+> ---
+>  tools/perf/util/arm64-frame-pointer-unwind-support.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/perf/util/arm64-frame-pointer-unwind-support.c b/tools/perf/util/arm64-frame-pointer-unwind-support.c
+> index 4f5ecf51ed38..2242a885fbd7 100644
+> --- a/tools/perf/util/arm64-frame-pointer-unwind-support.c
+> +++ b/tools/perf/util/arm64-frame-pointer-unwind-support.c
+> @@ -6,7 +6,7 @@
+>  #include "unwind.h"
+>  
+>  #define perf_event_arm_regs perf_event_arm64_regs
+> -#include "../arch/arm64/include/uapi/asm/perf_regs.h"
+> +#include "../../arch/arm64/include/uapi/asm/perf_regs.h"
+>  #undef perf_event_arm_regs
+>  
+>  struct entries {
