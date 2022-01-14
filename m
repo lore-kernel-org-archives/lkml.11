@@ -2,100 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1084C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A41AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 11:56:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240888AbiANLsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 06:48:18 -0500
-Received: from foss.arm.com ([217.140.110.172]:60442 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234679AbiANLsR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 06:48:17 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A95BDED1;
-        Fri, 14 Jan 2022 03:48:16 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.2.91])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BFF7F3F5A1;
-        Fri, 14 Jan 2022 03:48:10 -0800 (PST)
-Date:   Fri, 14 Jan 2022 11:48:04 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
-        alexandru.elisei@arm.com, anup.patel@wdc.com,
-        aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        benh@kernel.crashing.org, borntraeger@linux.ibm.com, bp@alien8.de,
-        catalin.marinas@arm.com, chenhuacai@kernel.org,
-        dave.hansen@linux.intel.com, david@redhat.com,
-        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
-        hca@linux.ibm.com, imbrenda@linux.ibm.com, james.morse@arm.com,
-        jmattson@google.com, joro@8bytes.org, kvm@vger.kernel.org,
-        maz@kernel.org, mingo@redhat.com, mpe@ellerman.id.au,
-        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
-        paulus@samba.org, paul.walmsley@sifive.com, pbonzini@redhat.com,
-        suzuki.poulose@arm.com, tglx@linutronix.de,
-        tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-Subject: Re: [PATCH 1/5] kvm: add exit_to_guest_mode() and
- enter_from_guest_mode()
-Message-ID: <YeFi9FTPSyLbQytu@FVFF77S0Q05N>
-References: <20220111153539.2532246-1-mark.rutland@arm.com>
- <20220111153539.2532246-2-mark.rutland@arm.com>
- <YeCMVGqiVfTKESzy@google.com>
+        id S240906AbiANL4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 06:56:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35104 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229579AbiANL4o (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 06:56:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9AFF61EFA;
+        Fri, 14 Jan 2022 11:56:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A65FC36AE5;
+        Fri, 14 Jan 2022 11:56:42 +0000 (UTC)
+Date:   Fri, 14 Jan 2022 11:56:39 +0000
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Xiongfeng Wang <wangxiongfeng2@huawei.com>
+Cc:     arnd@arndb.de, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, huangguangbin2@huawei.com
+Subject: Re: [PATCH] asm-generic: Add missing brackets for io_stop_wc macro
+Message-ID: <YeFk9w9AFJxkZziq@arm.com>
+References: <20220114105857.126300-1-wangxiongfeng2@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YeCMVGqiVfTKESzy@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220114105857.126300-1-wangxiongfeng2@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 08:32:20PM +0000, Sean Christopherson wrote:
-> On Tue, Jan 11, 2022, Mark Rutland wrote:
-> > Atop this, new exit_to_guest_mode() and enter_from_guest_mode() helpers
-> > are added to handle the ordering of lockdep, tracing, and RCU manageent.
-> > These are named to align with exit_to_user_mode() and
-> > enter_from_user_mode().
-> > 
-> > Subsequent patches will migrate architectures over to the new helpers,
-> > following a sequence:
-> > 
-> > 	guest_timing_enter_irqoff();
-> > 
-> > 	exit_to_guest_mode();
+On Fri, Jan 14, 2022 at 06:58:57PM +0800, Xiongfeng Wang wrote:
+> After using io_stop_wc(), drivers reports following compile error when
+> compiled on X86.
 > 
-> I'm not a fan of this nomenclature.  First and foremost, virtualization refers to
-> transfers to guest mode as VM-Enter, and transfers from guest mode as VM-Exit.
-> It's really, really confusing to read this code from a virtualization perspective.
-> The functions themselves are contradictory as the "enter" helper calls functions
-> with "exit" in their name, and vice versa.
-
-Sure; FWIW I wasn't happy with the naming either, but I couldn't find anything
-that was entirely clear, because it depends on whether you consider this an
-entry..exit of guest context or an exit..entry of regular kernel context. I
-went with exit_to_guest_mode() and enter_from_guest_mode() because that clearly
-corresponded to exit_to_user_mode() and enter_from_user_mode(), and the
-convention in the common entry code is to talk in terms of the regular kernel
-context.
-
-While I was working on this, I had guest_context_enter_irqoff() for
-kernel->guest and guest_context_exit_irqoff() for guest->kernel, which also
-matched the style of guest_timing_{enter,exit}_irqoff().
-
-I'm happy to change to that, if that works for you?
-
-> We settled on xfer_to_guest_mode_work() for a similar conundrum in the past, though
-> I don't love using xfer_to/from_guest_mode() as that makes it sound like those
-> helpers handle the actual transition into guest mode, i.e. runs the vCPU.
+>   drivers/net/ethernet/hisilicon/hns3/hns3_enet.c: In function ‘hns3_tx_push_bd’:
+>   drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:2058:12: error: expected ‘;’ before ‘(’ token
+>     io_stop_wc();
+>               ^
+> It is because I missed to add the brackets after io_stop_wc macro. So
+> let's add the missing brackets.
 > 
-> To avoid too much bikeshedding, what about reusing the names we all compromised
-> on when we did this for x86 and call them kvm_guest_enter/exit_irqoff()?  If x86
-> is converted in the first patch then we could even avoid temporary #ifdefs.
+> Fixes: d5624bb29f49 ("asm-generic: introduce io_stop_wc() and add implementation for ARM64")
+> Reported-by: Guangbin Huang <huangguangbin2@huawei.com>
+> Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+> ---
+>  include/asm-generic/barrier.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/asm-generic/barrier.h b/include/asm-generic/barrier.h
+> index 3d503e74037f..fd7e8fbaeef1 100644
+> --- a/include/asm-generic/barrier.h
+> +++ b/include/asm-generic/barrier.h
+> @@ -285,7 +285,7 @@ do {									\
+>   * write-combining memory accesses before this macro with those after it.
+>   */
+>  #ifndef io_stop_wc
+> -#define io_stop_wc do { } while (0)
+> +#define io_stop_wc() do { } while (0)
 
-I'd like to keep this somewhat orthogonal to the x86 changes (e.g. as other
-architectures will need backports to stable at least for the RCU bug fix), so
-I'd rather use a name that isn't immediately coupled with x86 changes.
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
 
-Does the guest_context_{enter,exit}_irqoff() naming above work for you?
+Arnd, do you plan to take this fix or you'd like me to?
 
-Thanks,
-Mark.
+Thanks.
+
+-- 
+Catalin
