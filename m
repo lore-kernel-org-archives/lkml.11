@@ -2,97 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 694AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:16:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED20BC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 16:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243248AbiANQQN convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 11:16:13 -0500
-Received: from mail-4018.proton.ch ([185.70.40.18]:38115 "EHLO
-        mail-4018.proton.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243218AbiANQQG (ORCPT
+        id S243239AbiANQQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 11:16:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47899 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243221AbiANQQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 14 Jan 2022 11:16:06 -0500
-Date:   Fri, 14 Jan 2022 16:15:58 +0000
-Authentication-Results: mail-4018.proton.ch; dkim=none
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-From:   conor dooley <mail@conchuod.ie>
-Cc:     Conor Dooley <conor.dooley@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?utf-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-rtc@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Bin Meng <bin.meng@windriver.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        daire.mcnamara@microchip.com, ivan.griffin@microchip.com,
-        Atish Patra <atishp@rivosinc.com>
-Reply-To: conor dooley <mail@conchuod.ie>
-Subject: Re: [PATCH v3 03/15] mailbox: change mailbox-mpfs compatible string
-Message-ID: <MzSOUvHzeH0svo7uoPc_rfCs1BVTByRKAZ_EftQ5Qk2sheETSbE_NFPRVzFd8YmKMQ_9uIggomOqyQUD9clIwabiKrVp4F2Gw4nOnJkXv2M=@conchuod.ie>
-In-Reply-To: <CAMuHMdUXD8CHqoaygXzcC0YpsbRT_KAUni1hD4sMn=k=WD+DuQ@mail.gmail.com>
-References: <20220114151727.2319915-1-conor.dooley@microchip.com> <20220114151727.2319915-4-conor.dooley@microchip.com> <CAMuHMdUXD8CHqoaygXzcC0YpsbRT_KAUni1hD4sMn=k=WD+DuQ@mail.gmail.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642176965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Cn45XU5PW6NrZeSvkaw9e57q5ICMQUEETi8oMfHT3VQ=;
+        b=O7NAHrheV7IkIP9aI6O7/ast650N43n1uzSFrta0ePMM1aQgcg5vz4sRIJ4qgMtP7K2lku
+        Alvab6Ue3KQQp89WHQbCw7dqioYqCAP3M1jXslRyIm1wGqJ36xCDKaqGuDWmr27WX+PS1I
+        Kp5wK5BKb3mj0bYH1+Xe6xoHkjd5Y0k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-435-7m0oU4tCPjC_L8zC3OxOvg-1; Fri, 14 Jan 2022 11:16:02 -0500
+X-MC-Unique: 7m0oU4tCPjC_L8zC3OxOvg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8B38E18C8C00;
+        Fri, 14 Jan 2022 16:16:00 +0000 (UTC)
+Received: from T590 (ovpn-8-19.pek2.redhat.com [10.72.8.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 96C89753F8;
+        Fri, 14 Jan 2022 16:15:51 +0000 (UTC)
+Date:   Sat, 15 Jan 2022 00:15:46 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Boqun Feng <boqun.feng@gmail.com>, Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+4f789823c1abc5accf13@syzkaller.appspotmail.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Lai Jiangshan <laijs@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        quic_neeraju@quicinc.com, frederic@kernel.org, urezki@gmail.com,
+        Jens Axboe <axboe@kernel.dk>
+Subject: Re: [syzbot] KASAN: use-after-free Read in srcu_invoke_callbacks
+Message-ID: <YeGhsmztTUcY46Ex@T590>
+References: <00000000000081b56205d54c6667@google.com>
+ <20220111134324.1727-1-hdanton@sina.com>
+ <20220111190500.GG947480@paulmck-ThinkPad-P17-Gen-1>
+ <YeGK8gUziDoa/IYL@boqun-archlinux>
+ <20220114152752.GU947480@paulmck-ThinkPad-P17-Gen-1>
+ <YeGdoAFYGhg3viPZ@T590>
+ <20220114161138.GW947480@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220114161138.GW947480@paulmck-ThinkPad-P17-Gen-1>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Hi Conor,
->
-> On Fri, Jan 14, 2022 at 4:16 PM <conor.dooley@microchip.com> wrote:
-> > From: Conor Dooley <conor.dooley@microchip.com>
-> >
-> > The Polarfire SoC is currently using two different compatible string
-> > prefixes. Fix this by changing "polarfire-soc-*" strings to "mpfs-*" in
-> > its system controller in order to match the compatible string used in
-> > the soc binding and device tree.
-> >
-> > Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
->
-> This is already upstream, commit f10b1fc0161cd99e ("mailbox: change
-> mailbox-mpfs compatible string").
+On Fri, Jan 14, 2022 at 08:11:38AM -0800, Paul E. McKenney wrote:
+> On Fri, Jan 14, 2022 at 11:58:24PM +0800, Ming Lei wrote:
+> > On Fri, Jan 14, 2022 at 07:27:52AM -0800, Paul E. McKenney wrote:
+> > > On Fri, Jan 14, 2022 at 10:38:42PM +0800, Boqun Feng wrote:
+> > > > Hi,
+> > > > 
+> > > > On Tue, Jan 11, 2022 at 11:05:00AM -0800, Paul E. McKenney wrote:
+> > > > [...]
+> > > > > > > The buggy address belongs to the object at ffff8880189b5c70
+> > > > > > >  which belongs to the cache request_queue_srcu of size 3816
+> > > > 
+> > > > This cache name drew my attention when I was trying to look into this,
+> > > > because I couldn't find it in v5.16, later on I realized the UAF was
+> > > > found in linux-next and the commit introducing the cache was merged into
+> > > > mainline if 5.17 merge window:
+> > > > 
+> > > > 	704b914f15fb blk-mq: move srcu from blk_mq_hw_ctx to request_queue
+> > > > 
+> > > > I think the UAF is actually a bug introduced by the commit, because in
+> > > > that commit srcu structure was moved from blk_mq_hw_ctx to
+> > > > request_queue, and therefore the cleanup_srcu_struct() should be moved
+> > > > from blk_mq_hw_sysfs_release() to blk_release_queue(), however the above
+> > > > commit only deleted the one in blk_mq_hw_sysfs_release() but didn't add
+> > > > a new one in blk_release_queue(). As a result when a request queue is
+> > > > freed, the srcu structure is not fully clean up, therefore the UAF.
+> > > > 
+> > > > IOW, something like below (untested) should fix this. Copy the auther
+> > > > and block maintainers.
+> > > 
+> > > One question for the author and block maintainers...  Why not simply have
+> > > a single srcu_struct for all of the queues?  Or is there some situation
+> > > where you need one queue's reader to avoid blocking other queues' SRCU
+> > > grace periods?
+> > 
+> > Because srcu_struct is too fat, and only few drivers need it, and
+> > most block drivers needn't it.
+> 
+> Fair points.
+> 
+> But would it make sense to dynamically allocate a single srcu_struct
+> when the first need arose, and only remove it when the last need passed?
 
-I would say great, but that means the new string is now in the driver
-but the new dt-binding is not (and I just noticed contains an error).
-Conor.
+q->srcu is referred in fast IO path, we want to avoid to add indirect
+reference so not allocating it dynamically.
 
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
->
-> _______________________________________________
-> linux-riscv mailing list
-> linux-riscv@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-riscv
+
+Thanks,
+Ming
+
