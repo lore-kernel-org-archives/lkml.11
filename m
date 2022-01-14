@@ -2,235 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54910C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA21C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 14:47:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242003AbiANOrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 09:47:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40226 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238709AbiANOrM (ORCPT
+        id S242006AbiANOrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 09:47:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233727AbiANOrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 09:47:12 -0500
+        Fri, 14 Jan 2022 09:47:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B350CC061574;
+        Fri, 14 Jan 2022 06:47:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3D84B825EC
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 14:47:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66AA7C36AEA;
-        Fri, 14 Jan 2022 14:47:08 +0000 (UTC)
-Date:   Fri, 14 Jan 2022 09:47:06 -0500
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Pingfan Liu <kernelfans@gmail.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>
-Subject: [for-next][PATCH] tracing: Add ustring operation to filtering
- string pointers
-Message-ID: <20220114094706.31d7a2ef@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7674CB821B8;
+        Fri, 14 Jan 2022 14:47:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C2B1C36AE5;
+        Fri, 14 Jan 2022 14:47:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642171664;
+        bh=27uxthPRWS3BTbs9jsMyrj3qXiQA2+lLgqw7CVx3CBI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XRmdGq+lpq7UuP59DXn86gYzHIEWbvzbwl93c78/Nu+aAsZaEo5BvoL0PeDedAB/s
+         VuaPIxWAQeIm3YK5+QaymzX3UjSrDGsOdV6G89zyRjM0jLJWqvWxe2Sg15ELaggaeF
+         FNmEC2RTRbBAHwTCKu3ykt/i1Xz8U9H83731F1uO5oYYb7N5Mw9vCx93xeZoSOkjnY
+         GowTykrtQ61Xmyef50CmQ32OONFKZoLtkLI5k6j3bMv0jCdQ7dozf4Cn2fSMBgvWna
+         GoUvYKoAws3go5LYgr8RLgHMYAKo3W7QDhzqRQzmBUI8IeZz8JelBwCsDDhBQqAckr
+         hqXUYjVHH8Cdw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id CBB8240714; Fri, 14 Jan 2022 11:47:42 -0300 (-03)
+Date:   Fri, 14 Jan 2022 11:47:42 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
+        peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
+        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
+        namhyung@kernel.org, ak@linux.intel.com, john.garry@huawei.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] perf util: Fix use after free in metric__new
+Message-ID: <YeGNDskRtgpIFmzU@kernel.org>
+References: <20211208171113.22089-1-jose.exposito89@gmail.com>
+ <CAP-5=fUAR9uSAQGkukqafkoX+jz1fE8f-ziU5WeG59XT53jMWw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAP-5=fUAR9uSAQGkukqafkoX+jz1fE8f-ziU5WeG59XT53jMWw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Em Wed, Dec 08, 2021 at 09:33:14AM -0800, Ian Rogers escreveu:
+> On Wed, Dec 8, 2021 at 9:11 AM José Expósito <jose.exposito89@gmail.com> wrote:
+> >
+> > Addresses-Coverity-ID: 1494000
+> > Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+> 
+> Acked-by: Ian Rogers <irogers@google,com>
+> 
+> This can only happen in the ENOMEM case, but it is a good fix.
+> 
+> Fixes: b85a4d61d302 (perf metric: Allow modifiers on metrics)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/rostedt/linux-trace.git
-for-next
+Sorry, I missed this one _as well_, sigh...
 
-Head SHA1: f37c3bbc635994eda203a6da4ba0f9d05165a8d6
+- Arnaldo
+ 
+> Thanks,
+> Ian
+> 
+> > ---
+> >  tools/perf/util/metricgroup.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/perf/util/metricgroup.c b/tools/perf/util/metricgroup.c
+> > index fffe02aae3ed..4d2fed3aefd1 100644
+> > --- a/tools/perf/util/metricgroup.c
+> > +++ b/tools/perf/util/metricgroup.c
+> > @@ -209,8 +209,8 @@ static struct metric *metric__new(const struct pmu_event *pe,
+> >         m->metric_name = pe->metric_name;
+> >         m->modifier = modifier ? strdup(modifier) : NULL;
+> >         if (modifier && !m->modifier) {
+> > -               free(m);
+> >                 expr__ctx_free(m->pctx);
+> > +               free(m);
+> >                 return NULL;
+> >         }
+> >         m->metric_expr = pe->metric_expr;
+> > --
+> > 2.25.1
+> >
 
+-- 
 
-Steven Rostedt (1):
-      tracing: Add ustring operation to filtering string pointers
-
-----
- Documentation/trace/events.rst     |  9 +++++
- kernel/trace/trace_events_filter.c | 81 +++++++++++++++++++++++++++-----------
- 2 files changed, 66 insertions(+), 24 deletions(-)
----------------------------
-commit f37c3bbc635994eda203a6da4ba0f9d05165a8d6
-Author: Steven Rostedt <rostedt@goodmis.org>
-Date:   Thu Jan 13 20:08:40 2022 -0500
-
-    tracing: Add ustring operation to filtering string pointers
-    
-    Since referencing user space pointers is special, if the user wants to
-    filter on a field that is a pointer to user space, then they need to
-    specify it.
-    
-    Add a ".ustring" attribute to the field name for filters to state that the
-    field is pointing to user space such that the kernel can take the
-    appropriate action to read that pointer.
-    
-    Link: https://lore.kernel.org/all/yt9d8rvmt2jq.fsf@linux.ibm.com/
-    
-    Fixes: 77360f9bbc7e ("tracing: Add test for user space strings when filtering on string pointers")
-    Tested-by: Sven Schnelle <svens@linux.ibm.com>
-    Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-
-diff --git a/Documentation/trace/events.rst b/Documentation/trace/events.rst
-index 45e66a60a816..c47f381d0c00 100644
---- a/Documentation/trace/events.rst
-+++ b/Documentation/trace/events.rst
-@@ -198,6 +198,15 @@ The glob (~) accepts a wild card character (\*,?) and character classes
-   prev_comm ~ "*sh*"
-   prev_comm ~ "ba*sh"
- 
-+If the field is a pointer that points into user space (for example
-+"filename" from sys_enter_openat), then you have to append ".ustring" to the
-+field name::
-+
-+  filename.ustring ~ "password"
-+
-+As the kernel will have to know how to retrieve the memory that the pointer
-+is at from user space.
-+
- 5.2 Setting filters
- -------------------
- 
-diff --git a/kernel/trace/trace_events_filter.c b/kernel/trace/trace_events_filter.c
-index 2e9ef64e9ee9..b458a9afa2c0 100644
---- a/kernel/trace/trace_events_filter.c
-+++ b/kernel/trace/trace_events_filter.c
-@@ -665,6 +665,23 @@ struct ustring_buffer {
- static __percpu struct ustring_buffer *ustring_per_cpu;
- 
- static __always_inline char *test_string(char *str)
-+{
-+	struct ustring_buffer *ubuf;
-+	char *kstr;
-+
-+	if (!ustring_per_cpu)
-+		return NULL;
-+
-+	ubuf = this_cpu_ptr(ustring_per_cpu);
-+	kstr = ubuf->buffer;
-+
-+	/* For safety, do not trust the string pointer */
-+	if (!strncpy_from_kernel_nofault(kstr, str, USTRING_BUF_SIZE))
-+		return NULL;
-+	return kstr;
-+}
-+
-+static __always_inline char *test_ustring(char *str)
- {
- 	struct ustring_buffer *ubuf;
- 	char __user *ustr;
-@@ -676,23 +693,11 @@ static __always_inline char *test_string(char *str)
- 	ubuf = this_cpu_ptr(ustring_per_cpu);
- 	kstr = ubuf->buffer;
- 
--	/*
--	 * We use TASK_SIZE to denote user or kernel space, but this will
--	 * not work for all architectures. If it picks the wrong one, it may
--	 * just fail the filter (but will not bug).
--	 *
--	 * TODO: Have a way to properly denote which one this is for.
--	 */
--	if (likely((unsigned long)str >= TASK_SIZE)) {
--		/* For safety, do not trust the string pointer */
--		if (!strncpy_from_kernel_nofault(kstr, str, USTRING_BUF_SIZE))
--			return NULL;
--	} else {
--		/* user space address? */
--		ustr = (char __user *)str;
--		if (!strncpy_from_user_nofault(kstr, ustr, USTRING_BUF_SIZE))
--			return NULL;
--	}
-+	/* user space address? */
-+	ustr = (char __user *)str;
-+	if (!strncpy_from_user_nofault(kstr, ustr, USTRING_BUF_SIZE))
-+		return NULL;
-+
- 	return kstr;
- }
- 
-@@ -709,24 +714,42 @@ static int filter_pred_string(struct filter_pred *pred, void *event)
- 	return match;
- }
- 
-+static __always_inline int filter_pchar(struct filter_pred *pred, char *str)
-+{
-+	int cmp, match;
-+	int len;
-+
-+	len = strlen(str) + 1;	/* including tailing '\0' */
-+	cmp = pred->regex.match(str, &pred->regex, len);
-+
-+	match = cmp ^ pred->not;
-+
-+	return match;
-+}
- /* Filter predicate for char * pointers */
- static int filter_pred_pchar(struct filter_pred *pred, void *event)
- {
- 	char **addr = (char **)(event + pred->offset);
- 	char *str;
--	int cmp, match;
--	int len;
- 
- 	str = test_string(*addr);
- 	if (!str)
- 		return 0;
- 
--	len = strlen(str) + 1;	/* including tailing '\0' */
--	cmp = pred->regex.match(str, &pred->regex, len);
-+	return filter_pchar(pred, str);
-+}
- 
--	match = cmp ^ pred->not;
-+/* Filter predicate for char * pointers in user space*/
-+static int filter_pred_pchar_user(struct filter_pred *pred, void *event)
-+{
-+	char **addr = (char **)(event + pred->offset);
-+	char *str;
- 
--	return match;
-+	str = test_ustring(*addr);
-+	if (!str)
-+		return 0;
-+
-+	return filter_pchar(pred, str);
- }
- 
- /*
-@@ -1232,6 +1255,7 @@ static int parse_pred(const char *str, void *data,
- 	struct filter_pred *pred = NULL;
- 	char num_buf[24];	/* Big enough to hold an address */
- 	char *field_name;
-+	bool ustring = false;
- 	char q;
- 	u64 val;
- 	int len;
-@@ -1266,6 +1290,12 @@ static int parse_pred(const char *str, void *data,
- 		return -EINVAL;
- 	}
- 
-+	/* See if the field is a user space string */
-+	if ((len = str_has_prefix(str + i, ".ustring"))) {
-+		ustring = true;
-+		i += len;
-+	}
-+
- 	while (isspace(str[i]))
- 		i++;
- 
-@@ -1405,7 +1435,10 @@ static int parse_pred(const char *str, void *data,
- 					goto err_mem;
- 			}
- 
--			pred->fn = filter_pred_pchar;
-+			if (ustring)
-+				pred->fn = filter_pred_pchar_user;
-+			else
-+				pred->fn = filter_pred_pchar;
- 		}
- 		/* go past the last quote */
- 		i++;
+- Arnaldo
