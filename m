@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D04C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC70C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 14 Jan 2022 08:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240670AbiANIYP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 03:24:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        id S240695AbiANIYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 03:24:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240502AbiANIW2 (ORCPT
+        with ESMTP id S240507AbiANIW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 14 Jan 2022 03:22:28 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EAAC0613F0;
-        Fri, 14 Jan 2022 00:21:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9579BC061783;
+        Fri, 14 Jan 2022 00:22:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02DB6B823E6;
-        Fri, 14 Jan 2022 08:21:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17781C36AE9;
-        Fri, 14 Jan 2022 08:21:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 613DBB823E6;
+        Fri, 14 Jan 2022 08:22:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73201C36AEA;
+        Fri, 14 Jan 2022 08:21:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642148512;
-        bh=VNzPFPMEhf+S2CCLpzL5i7Xso5htWvvgc37mXbhWpRc=;
+        s=korg; t=1642148519;
+        bh=BNMTFU6P4QdWciYzDW3oJwN/NGJ92jdsHhDtFTld0mY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c5yTFjner6nslCGgzu8uvdM+ywX6g6KMSPtEa9HKsT6rgYpaMgsp1kgosccgiZKic
-         mfs9AHJtmeDn9MGCBLTIeXEFGTFSuSn00Ujss5/RkoeNsLv0NoVSavUieHPTyyJ73C
-         Zj8gzM50fCL4Y1XWl5zAC7hyzq0J7m4CDRnaTkqE=
+        b=QDc/ccsb4DoU/JaLfefMJKy2MfzMevgqhIdzyiDBxsbow37qJIdgEECu1EpOrleH6
+         JS1J2nCUfcDa6tNLibN8fRVkt7d63NcAMdPT3/J/Ua0WYJ/ErrJAwpLmfvGKflOQgx
+         rdnDwQCoT0/WiLaFCfO4rN3GsBWcMuruW6X61B+c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aaron Ma <aaron.ma@canonical.com>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 5.16 14/37] Bluetooth: btusb: Add support for Foxconn QCA 0xe0d0
-Date:   Fri, 14 Jan 2022 09:16:28 +0100
-Message-Id: <20220114081545.325089165@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5.16 16/37] ARM: dts: exynos: Fix BCM4330 Bluetooth reset polarity in I9100
+Date:   Fri, 14 Jan 2022 09:16:30 +0100
+Message-Id: <20220114081545.385733210@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
 References: <20220114081544.849748488@linuxfoundation.org>
@@ -48,63 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aaron Ma <aaron.ma@canonical.com>
+From: Paul Cercueil <paul@crapouillou.net>
 
-commit 1cd563ebd0dc062127a85e84f934f4c697bb43ef upstream.
+commit 9cb6de45a006a9799ec399bce60d64b6d4fcc4af upstream.
 
-Add an ID of Qualcomm Bluetooth SoC WCN6855.
+The reset GPIO was marked active-high, which is against what's specified
+in the documentation. Mark the reset GPIO as active-low. With this
+change, Bluetooth can now be used on the i9100.
 
-T:  Bus=05 Lev=01 Prnt=01 Port=03 Cnt=02 Dev#=  4 Spd=12   MxCh= 0
-D:  Ver= 1.10 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=0489 ProdID=e0d0 Rev= 0.01
-C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
-I:  If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:* If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-I:  If#= 1 Alt= 7 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  65 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  65 Ivl=1ms
-
-Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 8620cc2f99b7 ("ARM: dts: exynos: Add devicetree file for the Galaxy S2")
+Cc: stable@vger.kernel.org
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Link: https://lore.kernel.org/r/20211031234137.87070-1-paul@crapouillou.net
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/arm/boot/dts/exynos4210-i9100.dts |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -311,6 +311,9 @@ static const struct usb_device_id blackl
- 	{ USB_DEVICE(0x10ab, 0x9409), .driver_info = BTUSB_QCA_WCN6855 |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x0489, 0xe0d0), .driver_info = BTUSB_QCA_WCN6855 |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
+--- a/arch/arm/boot/dts/exynos4210-i9100.dts
++++ b/arch/arm/boot/dts/exynos4210-i9100.dts
+@@ -828,7 +828,7 @@
+ 		compatible = "brcm,bcm4330-bt";
  
- 	/* Broadcom BCM2035 */
- 	{ USB_DEVICE(0x0a5c, 0x2009), .driver_info = BTUSB_BCM92035 },
+ 		shutdown-gpios = <&gpl0 4 GPIO_ACTIVE_HIGH>;
+-		reset-gpios = <&gpl1 0 GPIO_ACTIVE_HIGH>;
++		reset-gpios = <&gpl1 0 GPIO_ACTIVE_LOW>;
+ 		device-wakeup-gpios = <&gpx3 1 GPIO_ACTIVE_HIGH>;
+ 		host-wakeup-gpios = <&gpx2 6 GPIO_ACTIVE_HIGH>;
+ 	};
 
 
