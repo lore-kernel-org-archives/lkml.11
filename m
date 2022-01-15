@@ -2,157 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33EE9C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:39:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232495AbiAOEjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 23:39:18 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46010 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232483AbiAOEjQ (ORCPT
+        id S232120AbiAOEsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 23:48:40 -0500
+Received: from qproxy4-pub.mail.unifiedlayer.com ([66.147.248.250]:38175 "EHLO
+        qproxy4-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229579AbiAOEsj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 23:39:16 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8EC9B82A3F;
-        Sat, 15 Jan 2022 04:39:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB737C36AE3;
-        Sat, 15 Jan 2022 04:39:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642221553;
-        bh=Lmw0vnQYmWnz1sy8w6vxj9DD1VhxFXZBl4P4Jg4yq/w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZCQYVVEZGKXxUXg07KpzKKYBf449x8VFMf4m6GuD2mqoi+QiHmDAOu8vU6moy9CK8
-         zWTxMxTX5/L5M1Ka2gA2sgmMS+oRyeecauqGf8wD0v+E8EEv9o5GjQ4720OUKadL6Z
-         0FrUNOWwuWnUatKXjZtLVwcFZOBmH97XizYRIgt4BXmGVEEnXK1OGANfounfdyJexz
-         odmNVhmDZ3OV5IJY+c8b+oCSjd6zWHfDixXtEjFiTGGa8/Y8aYgfxnMt5FQ4IQvIOa
-         Gw1wVApnGt2fXnW+QOBPH7KaYzvvDjROUPMFhWLYKfXipl4anZz3Gv0lr3GW06ERkc
-         YGpyCsbdkLiWw==
-Date:   Sat, 15 Jan 2022 13:39:07 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v2 3/8] rethook: Add a generic return hook
-Message-Id: <20220115133907.2a713806100fc0f7a562a96b@kernel.org>
-In-Reply-To: <YeGUNRH9MiF7dgVs@krava>
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
-        <164199620208.1247129.13021391608719523669.stgit@devnote2>
-        <YeAaUN8aUip3MUn8@krava>
-        <20220113221532.c48abf7f56d29ba95dcb0dc6@kernel.org>
-        <YeGUNRH9MiF7dgVs@krava>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Fri, 14 Jan 2022 23:48:39 -0500
+X-Greylist: delayed 1408 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Jan 2022 23:48:39 EST
+Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
+        by qproxy4.mail.unifiedlayer.com (Postfix) with ESMTP id DE1438034106
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 04:25:09 +0000 (UTC)
+Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
+        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id 2EB581004870D
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 04:25:09 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 8acmnCmRX2s5d8acnnqj9U; Sat, 15 Jan 2022 04:25:09 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=BOh2EHcG c=1 sm=1 tr=0 ts=61e24ca5
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=DghFqjY3_ZEA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=-Qcm0AZxhyoZnww38z8A:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=2ytazBcu1/WEpQe+c3RwgbycMvD43iurYN7PpL6wsLc=; b=fb0YPheNQsk8n8tjAuXrqr/8nq
+        d7f9/bFZmaSNLxsROFQ6ccY7wFIgPkQztrgC0qXfP7ljZtTA9Cn4eAAqoXFI0iS7X0wFJKRrbejC4
+        aeaNtpNAGUK9QisRV+b/LRJW5;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:60982 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1n8acl-000TEm-Us; Fri, 14 Jan 2022 21:25:08 -0700
+Subject: Re: [PATCH 5.16 00/37] 5.16.1-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+References: <20220114081544.849748488@linuxfoundation.org>
+In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <7da2da48-33a8-6448-6906-03e1661b50b4@w6rz.net>
+Date:   Fri, 14 Jan 2022 20:25:06 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1n8acl-000TEm-Us
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:60982
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 16:18:13 +0100
-Jiri Olsa <jolsa@redhat.com> wrote:
-
-> On Thu, Jan 13, 2022 at 10:15:32PM +0900, Masami Hiramatsu wrote:
-> > On Thu, 13 Jan 2022 13:25:52 +0100
-> > Jiri Olsa <jolsa@redhat.com> wrote:
-> > 
-> > > On Wed, Jan 12, 2022 at 11:03:22PM +0900, Masami Hiramatsu wrote:
-> > > > Add a return hook framework which hooks the function
-> > > > return. Most of the idea came from the kretprobe, but
-> > > > this is independent from kretprobe.
-> > > > Note that this is expected to be used with other
-> > > > function entry hooking feature, like ftrace, fprobe,
-> > > > adn kprobes. Eventually this will replace the
-> > > > kretprobe (e.g. kprobe + rethook = kretprobe), but
-> > > > at this moment, this is just a additional hook.
-> > > 
-> > > this looks similar to the code kretprobe is using now
-> > 
-> > Yes, I've mostly re-typed the code :)
-> > 
-> > > would it make sense to incrementaly change current code to provide
-> > > this rethook interface? instead of big switch of current kretprobe
-> > > to kprobe + new rethook interface in future?
-> > 
-> > Would you mean modifying the kretprobe instance code to provide
-> > similar one, and rename it at some point?
-> > My original idea is to keep the current kretprobe code and build
-> > up the similar one, and switch to it at some point. Actually,
-> > I don't want to change the current kretprobe interface itself,
-> > but the backend will be changed. For example, current kretprobe
-> > has below interface.
-> > 
-> > struct kretprobe {
-> >         struct kprobe kp;
-> >         kretprobe_handler_t handler;
-> >         kretprobe_handler_t entry_handler;
-> >         int maxactive;
-> >         int nmissed;
-> >         size_t data_size;
-> >         struct freelist_head freelist;
-> >         struct kretprobe_holder *rph;
-> > };
-> > 
-> > My idea is switching it to below.
-> > 
-> > struct kretprobe {
-> >         struct kprobe kp;
-> >         kretprobe_handler_t handler;
-> >         kretprobe_handler_t entry_handler;
-> >         int maxactive;
-> >         int nmissed;
-> >         size_t data_size;
-> >         struct rethook *rethook;
-> > };
-> 
-> looks good, will this be a lot of changes?
-
-Yes and no, we can easily replace the kretprobe generic trampoline
-callback (since it almost same, and have same feature), but it also
-needs to update per-arch kretprobe trampoline to rethook trampoline.
-
-> could you include it in the patchset?
-
-Let me try, but since it involves many archs (which support kretprobes)
-it may take a time to be merged.
-
-Thank you,
-
-> 
+On 1/14/22 12:16 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.16.1 release.
+> There are 37 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.1-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
+> and the diffstat can be found below.
+>
 > thanks,
-> jirka
-> 
-> > 
-> > Of course 'kretprobe_instance' may need to be changed...
-> > 
-> > struct kretprobe_instance {
-> > 	struct rethook_node;
-> > 	char data[];
-> > };
-> > 
-> > But even though, since there is 'get_kretprobe(ri)' wrapper, user
-> > will be able to access the 'struct kretprobe' from kretprobe_instance
-> > transparently.
-> > 
-> > Thank you,
-> > 
-> > 
-> > -- 
-> > Masami Hiramatsu <mhiramat@kernel.org>
-> > 
-> 
+>
+> greg k-h
 
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
--- 
-Masami Hiramatsu <mhiramat@kernel.org>
+Warnings:
+
+fs/jffs2/xattr.c: In function ‘jffs2_build_xattr_subsystem’:
+fs/jffs2/xattr.c:887:1: warning: the frame size of 1104 bytes is larger 
+than 1024 bytes [-Wframe-larger-than=]
+   887 | }
+       | ^
+lib/crypto/curve25519-hacl64.c: In function ‘ladder_cmult.constprop’:
+lib/crypto/curve25519-hacl64.c:601:1: warning: the frame size of 1040 
+bytes is larger than 1024 bytes [-Wframe-larger-than=]
+   601 | }
+       | ^
+drivers/net/wireguard/allowedips.c: In function ‘root_remove_peer_lists’:
+drivers/net/wireguard/allowedips.c:77:1: warning: the frame size of 1040 
+bytes is larger than 1024 bytes [-Wframe-larger-than=]
+    77 | }
+       | ^
+drivers/net/wireguard/allowedips.c: In function ‘root_free_rcu’:
+drivers/net/wireguard/allowedips.c:64:1: warning: the frame size of 1040 
+bytes is larger than 1024 bytes [-Wframe-larger-than=]
+    64 | }
+       | ^
+drivers/vhost/scsi.c: In function ‘vhost_scsi_flush’:
+drivers/vhost/scsi.c:1444:1: warning: the frame size of 1040 bytes is 
+larger than 1024 bytes [-Wframe-larger-than=]
+  1444 | }
+       | ^
+
+Tested-by: Ron Economos <re@w6rz.net>
+
