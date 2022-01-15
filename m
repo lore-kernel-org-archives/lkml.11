@@ -2,273 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A217C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55F3BC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 05:31:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232523AbiAOE7o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 23:59:44 -0500
-Received: from mga03.intel.com ([134.134.136.65]:52808 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230197AbiAOE7n (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 23:59:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642222783; x=1673758783;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Y7vHzljmhWmZs4NuLlIJ2mDabFIEbEZUNhxDv2TKE+A=;
-  b=iDlskJNoSubCGjXuTYxLbYn8utCqiRzbibbQFlNXCnxl9m5G5hOQl8aU
-   GDG5eSMEzyQy2PiJENDCKqMHB8pRxPaO60zXw51Fpe1aHQQeAsLyeS8JD
-   7Rwd7K/TwmOOiyYoNga0uM3q8YPqlKpWbxKVaID6MN33mmk48OdOe2q+7
-   2tuR6kf1hN6Dun3OLypKIJzeQXi9Y+kO8L16UGNLp2IB/GAWF+qVluUe2
-   e5WyUA6baNdylnZJkBlHJaWp44b6KSxXPvrcnpKMrCc85OnSI2RdCgQx5
-   XCUL4xKgErXYX9GGoTtVh8dslT5tAbLGJ0vsw8WR6yZk0anoQCYQN7Xeo
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="244335390"
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="244335390"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 20:59:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="476013428"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 Jan 2022 20:59:40 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8bAC-0009PD-9n; Sat, 15 Jan 2022 04:59:40 +0000
-Date:   Sat, 15 Jan 2022 12:58:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>, stable@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.4.y] Revert "ia64: kprobes: Use generic kretprobe
- trampoline handler"
-Message-ID: <202201151231.g2sW8oWt-lkp@intel.com>
-References: <164215559880.1662358.1475310445318313122.stgit@devnote2>
+        id S232287AbiAOFbE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 00:31:04 -0500
+Received: from vmicros1.altlinux.org ([194.107.17.57]:34312 "EHLO
+        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231184AbiAOFbD (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 15 Jan 2022 00:31:03 -0500
+Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
+        by vmicros1.altlinux.org (Postfix) with ESMTP id 8C9A972C8DC;
+        Sat, 15 Jan 2022 08:31:01 +0300 (MSK)
+Received: from altlinux.org (sole.flsd.net [185.75.180.6])
+        by imap.altlinux.org (Postfix) with ESMTPSA id 73E714A46FE;
+        Sat, 15 Jan 2022 08:31:01 +0300 (MSK)
+Date:   Sat, 15 Jan 2022 08:31:01 +0300
+From:   Vitaly Chikunov <vt@altlinux.org>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 4/5] ima: support fs-verity file digest based
+ signatures
+Message-ID: <20220115053101.36xoy2bc7ypozo6l@altlinux.org>
+References: <20211202215507.298415-1-zohar@linux.ibm.com>
+ <20211202215507.298415-5-zohar@linux.ibm.com>
+ <YalDvGjq0inMFKln@sol.localdomain>
+ <56c53b027ae8ae6909d38904bf089e73011657d7.camel@linux.ibm.com>
+ <YdYrw4eiQPryOMkZ@gmail.com>
+ <20220109204537.oueokvvkrkyy3ipq@altlinux.org>
+ <YdtOhsv/A5dqlApY@sol.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=koi8-r
 Content-Disposition: inline
-In-Reply-To: <164215559880.1662358.1475310445318313122.stgit@devnote2>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YdtOhsv/A5dqlApY@sol.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masami,
+Eric,
 
-I love your patch! Perhaps something to improve:
+On Sun, Jan 09, 2022 at 01:07:18PM -0800, Eric Biggers wrote:
+> On Sun, Jan 09, 2022 at 11:45:37PM +0300, Vitaly Chikunov wrote:
+> > On Wed, Jan 05, 2022 at 03:37:39PM -0800, Eric Biggers wrote:
+> > > On Fri, Dec 31, 2021 at 10:35:00AM -0500, Mimi Zohar wrote:
+> > > > On Thu, 2021-12-02 at 14:07 -0800, Eric Biggers wrote:
+> > > > > On Thu, Dec 02, 2021 at 04:55:06PM -0500, Mimi Zohar wrote:
+> > > > > >  	case IMA_VERITY_DIGSIG:
+> > > > > > -		fallthrough;
+> > > > > > +		set_bit(IMA_DIGSIG, &iint->atomic_flags);
+> > > > > > +
+> > > > > > +		/*
+> > > > > > +		 * The IMA signature is based on a hash of IMA_VERITY_DIGSIG
+> > > > > > +		 * and the fs-verity file digest, not directly on the
+> > > > > > +		 * fs-verity file digest.  Both digests should probably be
+> > > > > > +		 * included in the IMA measurement list, but for now this
+> > > > > > +		 * digest is only used for verifying the IMA signature.
+> > > > > > +		 */
+> > > > > > +		verity_digest[0] = IMA_VERITY_DIGSIG;
+> > > > > > +		memcpy(verity_digest + 1, iint->ima_hash->digest,
+> > > > > > +		       iint->ima_hash->length);
+> > > > > > +
+> > > > > > +		hash.hdr.algo = iint->ima_hash->algo;
+> > > > > > +		hash.hdr.length = iint->ima_hash->length;
+> > > > > 
+> > > > > This is still wrong because the bytes being signed don't include the hash
+> > > > > algorithm.  Unless you mean for it to be implicitly always SHA-256?  fs-verity
+> > > > > supports SHA-512 too, and it may support other hash algorithms in the future.
+> > > > 
+> > > > IMA assumes that the file hash algorithm and the signature algorithm
+> > > > are the same.   If they're not the same, for whatever reason, the
+> > > > signature verification would simply fail.
+> > > > 
+> > > > Based on the v2 signature header 'type' field, IMA can differentiate
+> > > > between regular IMA file hash based signatures and fs-verity file
+> > > > digest based signatures.  The digest field (d-ng) in the IMA
+> > > > meausrement list prefixes the digest with the hash algorithm. I'm
+> > > > missing the reason for needing to hash fs-verity's file digest with
+> > > > other metadata, and sign that hash rather than fs-verity's file digest
+> > > > directly.
+> > > 
+> > > Because if someone signs a raw hash, then they also implicitly sign the same
+> > > hash value for all supported hash algorithms that produce the same length hash.
+> > 
+> > Unless there is broken hash algorithm allowing for preimage attacks this
+> > is irrelevant. If there is two broken algorithms allowing for collisions,
+> > colliding hashes could be prepared even if algo id is hashed too.
+> > 
+> 
+> Only one algorithm needs to be broken.  For example, SM3 has the same hash
+> length as SHA-256.  If SM3 support were to be added to fs-verity, and if someone
+> were to find a way to find an input that has a specific SM3 digest, then they
+> could also make it match a specific SHA-256 digest.  Someone might intend to
+> sign a SHA-256 digest, but if they are only signing the raw 32 bytes of the
+> digest, then they would also be signing the corresponding SM3 digest.  That's
+> why the digest that is signed *must* also include the algorithm used in the
+> digest (not the algorithm(s) used in the signature, which is different).
 
-[auto build test WARNING on stable/linux-5.4.y]
+I think it will be beneficial if we pass hash algo id to the
+akcipher_alg::verify. In fact, ecrdsa should only be used with streebog.
+And perhaps, sm2 with sm3, pkcs1 with md/sha/sm3, and ecdsa with sha family
+hashes.
 
-url:    https://github.com/0day-ci/linux/commits/Masami-Hiramatsu/Revert-ia64-kprobes-Use-generic-kretprobe-trampoline-handler/20220114-182111
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
-config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220115/202201151231.g2sW8oWt-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/514059de80b018e0edcf434519ff6bf41b4a519b
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Masami-Hiramatsu/Revert-ia64-kprobes-Use-generic-kretprobe-trampoline-handler/20220114-182111
-        git checkout 514059de80b018e0edcf434519ff6bf41b4a519b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=ia64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   arch/ia64/kernel/kprobes.c: In function 'get_kprobe_inst':
-   arch/ia64/kernel/kprobes.c:325:22: warning: variable 'template' set but not used [-Wunused-but-set-variable]
-     325 |         unsigned int template;
-         |                      ^~~~~~~~
-   arch/ia64/kernel/kprobes.c: At top level:
-   arch/ia64/kernel/kprobes.c:407:15: warning: no previous prototype for 'trampoline_probe_handler' [-Wmissing-prototypes]
-     407 | int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
-         |               ^~~~~~~~~~~~~~~~~~~~~~~~
-   arch/ia64/kernel/kprobes.c: In function 'trampoline_probe_handler':
->> arch/ia64/kernel/kprobes.c:414:17: warning: initialization of 'long unsigned int' from 'void *' makes integer from pointer without a cast [-Wint-conversion]
-     414 |                 dereference_function_descriptor(kretprobe_trampoline);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for FRAME_POINTER
-   Depends on DEBUG_KERNEL && (M68K || UML || SUPERH) || ARCH_WANT_FRAME_POINTERS
-   Selected by
-   - FAULT_INJECTION_STACKTRACE_FILTER && FAULT_INJECTION_DEBUG_FS && STACKTRACE_SUPPORT && !X86_64 && !MIPS && !PPC && !S390 && !MICROBLAZE && !ARM && !ARC && !X86
+Thanks,
 
 
-vim +414 arch/ia64/kernel/kprobes.c
-
-   320	
-   321	static void __kprobes get_kprobe_inst(bundle_t *bundle, uint slot,
-   322		       	unsigned long *kprobe_inst, uint *major_opcode)
-   323	{
-   324		unsigned long kprobe_inst_p0, kprobe_inst_p1;
- > 325		unsigned int template;
-   326	
-   327		template = bundle->quad0.template;
-   328	
-   329		switch (slot) {
-   330		  case 0:
-   331			*major_opcode = (bundle->quad0.slot0 >> SLOT0_OPCODE_SHIFT);
-   332			*kprobe_inst = bundle->quad0.slot0;
-   333			  break;
-   334		  case 1:
-   335			*major_opcode = (bundle->quad1.slot1_p1 >> SLOT1_p1_OPCODE_SHIFT);
-   336			kprobe_inst_p0 = bundle->quad0.slot1_p0;
-   337			kprobe_inst_p1 = bundle->quad1.slot1_p1;
-   338			*kprobe_inst = kprobe_inst_p0 | (kprobe_inst_p1 << (64-46));
-   339			break;
-   340		  case 2:
-   341			*major_opcode = (bundle->quad1.slot2 >> SLOT2_OPCODE_SHIFT);
-   342			*kprobe_inst = bundle->quad1.slot2;
-   343			break;
-   344		}
-   345	}
-   346	
-   347	/* Returns non-zero if the addr is in the Interrupt Vector Table */
-   348	static int __kprobes in_ivt_functions(unsigned long addr)
-   349	{
-   350		return (addr >= (unsigned long)__start_ivt_text
-   351			&& addr < (unsigned long)__end_ivt_text);
-   352	}
-   353	
-   354	static int __kprobes valid_kprobe_addr(int template, int slot,
-   355					       unsigned long addr)
-   356	{
-   357		if ((slot > 2) || ((bundle_encoding[template][1] == L) && slot > 1)) {
-   358			printk(KERN_WARNING "Attempting to insert unaligned kprobe "
-   359					"at 0x%lx\n", addr);
-   360			return -EINVAL;
-   361		}
-   362	
-   363		if (in_ivt_functions(addr)) {
-   364			printk(KERN_WARNING "Kprobes can't be inserted inside "
-   365					"IVT functions at 0x%lx\n", addr);
-   366			return -EINVAL;
-   367		}
-   368	
-   369		return 0;
-   370	}
-   371	
-   372	static void __kprobes save_previous_kprobe(struct kprobe_ctlblk *kcb)
-   373	{
-   374		unsigned int i;
-   375		i = atomic_add_return(1, &kcb->prev_kprobe_index);
-   376		kcb->prev_kprobe[i-1].kp = kprobe_running();
-   377		kcb->prev_kprobe[i-1].status = kcb->kprobe_status;
-   378	}
-   379	
-   380	static void __kprobes restore_previous_kprobe(struct kprobe_ctlblk *kcb)
-   381	{
-   382		unsigned int i;
-   383		i = atomic_read(&kcb->prev_kprobe_index);
-   384		__this_cpu_write(current_kprobe, kcb->prev_kprobe[i-1].kp);
-   385		kcb->kprobe_status = kcb->prev_kprobe[i-1].status;
-   386		atomic_sub(1, &kcb->prev_kprobe_index);
-   387	}
-   388	
-   389	static void __kprobes set_current_kprobe(struct kprobe *p,
-   390				struct kprobe_ctlblk *kcb)
-   391	{
-   392		__this_cpu_write(current_kprobe, p);
-   393	}
-   394	
-   395	static void kretprobe_trampoline(void)
-   396	{
-   397	}
-   398	
-   399	/*
-   400	 * At this point the target function has been tricked into
-   401	 * returning into our trampoline.  Lookup the associated instance
-   402	 * and then:
-   403	 *    - call the handler function
-   404	 *    - cleanup by marking the instance as unused
-   405	 *    - long jump back to the original return address
-   406	 */
-   407	int __kprobes trampoline_probe_handler(struct kprobe *p, struct pt_regs *regs)
-   408	{
-   409		struct kretprobe_instance *ri = NULL;
-   410		struct hlist_head *head, empty_rp;
-   411		struct hlist_node *tmp;
-   412		unsigned long flags, orig_ret_address = 0;
-   413		unsigned long trampoline_address =
- > 414			dereference_function_descriptor(kretprobe_trampoline);
-   415	
-   416		INIT_HLIST_HEAD(&empty_rp);
-   417		kretprobe_hash_lock(current, &head, &flags);
-   418	
-   419		/*
-   420		 * It is possible to have multiple instances associated with a given
-   421		 * task either because an multiple functions in the call path
-   422		 * have a return probe installed on them, and/or more than one return
-   423		 * return probe was registered for a target function.
-   424		 *
-   425		 * We can handle this because:
-   426		 *     - instances are always inserted at the head of the list
-   427		 *     - when multiple return probes are registered for the same
-   428		 *       function, the first instance's ret_addr will point to the
-   429		 *       real return address, and all the rest will point to
-   430		 *       kretprobe_trampoline
-   431		 */
-   432		hlist_for_each_entry_safe(ri, tmp, head, hlist) {
-   433			if (ri->task != current)
-   434				/* another task is sharing our hash bucket */
-   435				continue;
-   436	
-   437			orig_ret_address = (unsigned long)ri->ret_addr;
-   438			if (orig_ret_address != trampoline_address)
-   439				/*
-   440				 * This is the real return address. Any other
-   441				 * instances associated with this task are for
-   442				 * other calls deeper on the call stack
-   443				 */
-   444				break;
-   445		}
-   446	
-   447		regs->cr_iip = orig_ret_address;
-   448	
-   449		hlist_for_each_entry_safe(ri, tmp, head, hlist) {
-   450			if (ri->task != current)
-   451				/* another task is sharing our hash bucket */
-   452				continue;
-   453	
-   454			if (ri->rp && ri->rp->handler)
-   455				ri->rp->handler(ri, regs);
-   456	
-   457			orig_ret_address = (unsigned long)ri->ret_addr;
-   458			recycle_rp_inst(ri, &empty_rp);
-   459	
-   460			if (orig_ret_address != trampoline_address)
-   461				/*
-   462				 * This is the real return address. Any other
-   463				 * instances associated with this task are for
-   464				 * other calls deeper on the call stack
-   465				 */
-   466				break;
-   467		}
-   468		kretprobe_assert(ri, orig_ret_address, trampoline_address);
-   469	
-   470		kretprobe_hash_unlock(current, &flags);
-   471	
-   472		hlist_for_each_entry_safe(ri, tmp, &empty_rp, hlist) {
-   473			hlist_del(&ri->hlist);
-   474			kfree(ri);
-   475		}
-   476		/*
-   477		 * By returning a non-zero value, we are telling
-   478		 * kprobe_handler() that we don't want the post_handler
-   479		 * to run (and have re-enabled preemption)
-   480		 */
-   481		return 1;
-   482	}
-   483	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+> - Eric
