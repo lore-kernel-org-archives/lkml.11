@@ -2,139 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66010C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 03:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D5E7C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232311AbiAODux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 22:50:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
+        id S232330AbiAOEBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 23:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232230AbiAODuu (ORCPT
+        with ESMTP id S232316AbiAOEBD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 22:50:50 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373ABC06161C
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 19:50:50 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id o1so3004692pjr.2
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 19:50:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=glwqqOEdn91POaZx9czNGi+z/EIMYXyhx0ZODvWOkR0=;
-        b=PXUM6ip1gn1+Z5jW8swrOLF3BV9itUCEcLYQCp2orcK9jlHRTk3DxMwbP1tpEoV8cM
-         OFw2h/5ar5N+aZNXlFTMqh6v4aXrZYK2X6tWvJECiz81Gi4v9qKd/dIO6eQ0KiGWpTef
-         +hkdnHieyMv2NqxMz8B9Kz3n90NaG333FbQgE=
+        Fri, 14 Jan 2022 23:01:03 -0500
+Received: from mail-ot1-x363.google.com (mail-ot1-x363.google.com [IPv6:2607:f8b0:4864:20::363])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DFDC06161C
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 20:01:03 -0800 (PST)
+Received: by mail-ot1-x363.google.com with SMTP id c3-20020a9d6c83000000b00590b9c8819aso12457810otr.6
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 20:01:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=glwqqOEdn91POaZx9czNGi+z/EIMYXyhx0ZODvWOkR0=;
-        b=yKIxi3sFYPSUdwoGlcCQV5sBp35xFVtKl132VyULXdL/+hIq4sscu/mc0ijw4I2sLR
-         N3cO6l34jwY2VOh7XcTddT/8d3P6uLjDhtb+oOouZWfaIaSptDikRbtci7uAsRi0SaM0
-         Gl59oUJQ55hawH7/CIwBa/odxDP/nyxdcbtBCIB1mMn6eIOWBmF7x5k1JwFfs+5kwRp1
-         ZG0WghBaitEKwB2rNTp2Qr+M8370ccMQnecufpnL9vPFtsErseO0YsU/gWMDpoBFKxjp
-         wzpiFQsdlYvdCO2fk1xdmmv3CrjDHXn20ilr4sgAnqDj/huzD7atZ3/l2M++84/I4SY4
-         J+CA==
-X-Gm-Message-State: AOAM531IRkp+DHmb0um109gTNzp4FwkktNzJ0EQwzTqNs4Wi3+jZlScN
-        Efmo7rASIRokYCGFjFBiGpLQt7aYQAm94g==
-X-Google-Smtp-Source: ABdhPJxT6ZBYuQcmSXlrAijE8o8SdFMgz49AbsQ0GuEiNixlYic8K09k0PM5BtkBV5vPPez4AxqUVw==
-X-Received: by 2002:a17:90a:bb86:: with SMTP id v6mr23685422pjr.152.1642218648520;
-        Fri, 14 Jan 2022 19:50:48 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w4sm11628101pjq.7.2022.01.14.19.50.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 14 Jan 2022 19:50:48 -0800 (PST)
-Date:   Fri, 14 Jan 2022 19:50:47 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Xiu Jianfeng <xiujianfeng@huawei.com>, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, gustavoars@kernel.org,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH -next, v2] sched: Use struct_size() helper in
- task_numa_group()
-Message-ID: <202201141935.A3F2ED1CF@keescook>
-References: <20220110012354.144394-1-xiujianfeng@huawei.com>
- <Ydy3N577YD0JJr2N@hirez.programming.kicks-ass.net>
- <20220110193158.31e1eaea@gandalf.local.home>
- <Yd1qYsFcgcp/uHSa@hirez.programming.kicks-ass.net>
- <20220111101425.7c59de5b@rorschach.local.home>
- <Yd/ugQ8kUmcceuex@hirez.programming.kicks-ass.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yd/ugQ8kUmcceuex@hirez.programming.kicks-ass.net>
+        h=x-gm-message-state:dkim-signature:from:to:cc:subject:date
+         :message-id:content-transfer-encoding;
+        bh=nh4o6XQm9tR0N195qdrYZ8+lan2fXEvj16Vw678Ovcw=;
+        b=gKmGtZb2iW+vQ3Fte9Q8ddT8/np6xl956671EYG/AsWanBGhXn/B8bzA7Epb9s3kZM
+         aM4iaARfikJ9TeojABoAVmuhmWx3wxc1h722Mxe+VNapYw0/Zkks169q60QefytJAKdj
+         mtb3Yww64yHsiIqby9GsX+/wKg0mQ9zQuL29VSixNZU79D+11OqLr6t8ly+jf6BIEFme
+         GZM2Is10Mrkts4nfld0Qm2YcF+e1PcWllxvvzMGE+sb69BEKkWvD9zYqJGLzO/DZmBKj
+         Y1/aepgwuZEypsMfyOxwP3JSv+rCHaDCL3uIA+AS587fIBppgGVPV07G2XQpODE5l6ZJ
+         JNTw==
+X-Gm-Message-State: AOAM5317HoG35P/JeWMkSNiKZ0DqxPfpWDIHyX6/PT9Ne4JLRHYklvym
+        L0UJMA77diQwB7R35CqMhMk+uEsI5KhWKoN4ET6YtMw79YrT
+X-Google-Smtp-Source: ABdhPJw77JwOULtfHeEIG/MmWXyl9YtxtQVBD+jc5b0qJ4VdqJslSpncp2iFo1KyGEw+WPn5DWem5ZzIP2x4
+X-Received: by 2002:a05:6830:31a4:: with SMTP id q4mr675575ots.345.1642219262377;
+        Fri, 14 Jan 2022 20:01:02 -0800 (PST)
+Received: from smtp.aristanetworks.com (smtp.aristanetworks.com. [54.193.82.35])
+        by smtp-relay.gmail.com with ESMTPS id m17sm464074oop.18.2022.01.14.20.01.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 14 Jan 2022 20:01:02 -0800 (PST)
+X-Relaying-Domain: arista.com
+Received: from chmeee (unknown [10.95.70.41])
+        by smtp.aristanetworks.com (Postfix) with ESMTPS id 73614301B604;
+        Fri, 14 Jan 2022 20:01:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
+        s=Arista-A; t=1642219261;
+        bh=nh4o6XQm9tR0N195qdrYZ8+lan2fXEvj16Vw678Ovcw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=XbOP3bbbd7CB6C5+TEM/QVwAmcVhK9SFZzQl+vXK28Wuw72PE31qWYF97zmmxOEfq
+         /a919t9Yr30Ef7CtPenpUzPYTADuzkgis605IB57MCoFOolbkkkWH/h9CmT23HgFZf
+         3FfQnxzzstOcejioAaNz3b1aaECfr3pA596jtnfyQR+cqd/GUg4MRdaONeyDQ5mXDh
+         LTZgEJ8KJdsY6HqYJvBHXQolCN0yUxKvbBhcJqHp9eD2xusrLrlfcL/db6vzAxIPXt
+         zn8uIHiTbvUZbJzgQytRmJ1JaUgqJxxC7rlM7c0eR8+pV2p4OvUh/ZcZuq8QYolmTs
+         /oDkk9DN+nPaQ==
+Received: from kevmitch by chmeee with local (Exim 4.95)
+        (envelope-from <kevmitch@chmeee>)
+        id 1n8aFQ-000mub-1e;
+        Fri, 14 Jan 2022 20:01:00 -0800
+From:   Kevin Mitchell <kevmitch@arista.com>
+Cc:     kevmitch@arista.com, Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/1] UDP traceroute packets with no checksum
+Date:   Fri, 14 Jan 2022 20:00:49 -0800
+Message-Id: <20220115040050.187972-1-kevmitch@arista.com>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 10:18:57AM +0100, Peter Zijlstra wrote:
-> On Tue, Jan 11, 2022 at 10:14:25AM -0500, Steven Rostedt wrote:
-> > On Tue, 11 Jan 2022 12:30:42 +0100
-> > Peter Zijlstra <peterz@infradead.org> wrote:
-> > 
-> > > > > >  	if (unlikely(!deref_curr_numa_group(p))) {
-> > > > > > -		unsigned int size = sizeof(struct numa_group) +
-> > > > > > -				    NR_NUMA_HINT_FAULT_STATS *
-> > > > > > -				    nr_node_ids * sizeof(unsigned long);
-> > > > > > +		unsigned int size = struct_size(grp, faults,
-> > > > > > +						NR_NUMA_HINT_FAULT_STATS * nr_node_ids);    
-> > > > > 
-> > > > > Again, why?! The old code was perfectly readable, this, not so much.  
-> > > > 
-> > > > Because it is unsafe,  
-> > > 
-> > > Unsafe how? Changelog doesn't mention anything, nor do you. In fact,
-> > > Changelog says there is no functional change, which makes me hate the
-> > > thing for obscuring something that was simple.
-> > 
-> > If for some reason faults changes in size, the original code must be
-> > updated whereas the new code is robust enough to not need changing.
+We have run into some trouble with third-party devices whose traceroute
+implementation sends UDP packets with empty checksums. Since the
+checksum is optional for UDP inside an IPv4 packet, this is perfectly
+legal, even if slightly strange. However, we found that such a packet
+ends up getting silently ignored by our switch instead of eliciting the
+expected ICMP response. The reason is that we handle UDP traceroute
+packets are with the iptables rule
 
-I think this alone is reason enough. :)
+-A INPUT -p udp -m udp --dport 33434:33636 -j REJECT --reject-with icmp-port-unreachable
 
-> Then I would still much prefer something like:
-> 
-> 	unsigned int size = sizeof(*grp) +
-> 			    NR_NUMA_HINT_FAULT_STATS * numa_node_ids * sizeof(gfp->faults);
-> 
-> Which is still far more readable than some obscure macro. But again, the
+Such packets therefore get an iptables reject normally eliciting the
+desired ICMP_DEST_UNREACH response from nf_send_unreach(). However, it
+seems that before sending the ICMP response, this function determines
+whether it needs to verify the checksum on the incoming packet by
+checking if skb->ip_summed == CHECKSUM_UNNECESSARY or
+skb->csum_valid. If this is not the case, then it proceeds to verify the
+checksum. However, no provision is made here for an empty checksum,
+which of course will fail to verify. In this case, netfilter declines
+to send the ICMP response on the assumption that the packet is garbage
+and the source address cannot be trusted.
 
-I'm not sure it's _obscure_, but it is relatively new. It's even
-documented. ;)
-https://www.kernel.org/doc/html/latest/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments
+As our front panel ports do not perform layer 4 hardware checksum
+verification before sending packets to the kernel, the struct skb passed
+to netif_recieve_skb by the driver are unconditionally marked
+CHECKSUM_NONE.
 
-That said, the original patch is incomplete: it should be using size_t
-for "size".
+The udp_error function makes accommodation for UDP packets with empty
+checksum by declining to run nf_checksum on them and instead indicating
+the packet acceptable. Since nf_checksum already alters the
+skb->ip_summed member by marking it as CHECKSUM_COMPLETE when there is a
+checksum to verify, it seems reasonable that udp_error similarly mark it
+as CHECKSUM_UNNECESSARY when it determines there is no checksum. This is
+supported by the note in skbuff.h that explicitly suggests such a value
+for packets with empty checksum.
 
-> It is a fairly useful and common pattern to have a small structure and
-> an array in the same memory allocation.
-> 
-> Think hash-tables, the structure contains the size of the table and some
-> other things, like for example a seed for the hash function or a lock,
-> and then the table itself as an array.
+It seems that this issue was almost fixed by 7fc38225363d ("netfilter:
+reject: skip csum verification for protocols that don't support it"),
+which addressed protocols other than UDP. I considered adding a
+IPPROTO_UDP branch to the nf_reject_verify_csum switch statement,
+however it would necessarily be more complex than all of the existing
+cases since it would require extracting the UDP header and checking the
+checksum value. I'm open to doing that as well if requested, but it
+doesn't appear to be necessary from what I can tell with the simpler
+one-liner I have proposed here.
 
-Right, the use of flexible arrays is very common in the kernel. So much
-so that we've spent years fixing all the ancient "fake flexible arrays"
-scattered around the kernel messing up all kinds of compile-time and
-run-time flaw mitigations. Flexible array manipulations are notoriously
-prone to mistakes (overflows in allocation, mismatched bounds storage
-sizes, array index overflows, etc). These helpers (with more to come)
-help remove some of the foot-guns that C would normally impart to them.
+Finally, I have made no attempt to distinguish between IPv4 and IPv6 in
+spite of the fact that empty checksums are not strictly allowed for UDP
+inside IPv6. However, this decision to be more permissive appears to
+have already been made since udp_error already declared such packets
+error free. The aforementioned skbuff.h comment also explicitly mentions
+setting empty checksum UDP in IPv6 as CHECKSUM_UNNECESSARY.
 
-> I can't, nor do I want to, remember all these stupid little macros. Esp.
-> not for trivial things like this.
 
-Well, the good news is that other folks will (and are) fixing them for
-you. :) Even if you never make mistakes with flexible arrays, other
-people do, and so we need to take on some improvements to the robustness
-of the kernel source tree-wide.
-
--Kees
-
--- 
-Kees Cook
