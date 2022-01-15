@@ -2,90 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5418DC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:11:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233367AbiAOSIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 13:08:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53647 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231278AbiAOSId (ORCPT
+        id S233392AbiAOSLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 13:11:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231278AbiAOSLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 13:08:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642270113;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JyQfKnGPAvPAfBFOiNiSn6b94cEh37W6h0P28jZ0IfY=;
-        b=d33HeuHzSmYW5cOVYz5GRL2Ira+mxvP7SJQugWrQSdSrTIGMn+XZ1FlTA3nAUXFp7bhPCN
-        H+Tg/WfOEj6oQUzy1mgN3GQmNO4HwJnD1fVOwceyRX1filZtlbfclDjC8Hqs94BtzSoz8S
-        ypns6lPUMzc+uqH32OLJkifQfNbpxtE=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-605-dlVz6wCDMKeqoi5YX3dOlA-1; Sat, 15 Jan 2022 13:08:32 -0500
-X-MC-Unique: dlVz6wCDMKeqoi5YX3dOlA-1
-Received: by mail-oi1-f197.google.com with SMTP id v72-20020acaac4b000000b002c8dd559f44so8580755oie.8
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 10:08:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JyQfKnGPAvPAfBFOiNiSn6b94cEh37W6h0P28jZ0IfY=;
-        b=noGxwCjwFRfConG4tXWSEVjNyyt5GO5795Ne3ah9K3U60T243/aLnSItVK89yeCJsn
-         vL+6qMgb8Mj2WvmPp1gZ5ddfbNuNC5qFXJLOj0Zn0nd5l4dmgkT6I1Nre0gnINq7RoG1
-         2QaRsPgot8TH4kD8XT0BO8YS/+sSZIoYlSc/0YwtPuPiXpD2xBOJIqndfd0Z6kK2QjH5
-         ORv5KXmcJjVKtVbnTZg58fOO3CzIb7WWebAm4Syks3bFaOJcxcNadWJj1PN4Zdy/3DnS
-         dplcuC/0kSHGeSAT2gyfqkoufwlZFM1WWh3DHi5H9m2R5gJNIMxo7g2Hv8y9TiAMdWoW
-         DEDw==
-X-Gm-Message-State: AOAM531rw1I5mh9p5m9bp5RuFmhlXqlMPPI2NyEa3uEXJim3QGTPr7Vx
-        +GYQPx874QVDruxw3n9lY8MmSierH4IBjK6plyTtOmKBTCLveCiLfKBhK0jNbcCAyzQCJ/T4kNM
-        hJCgt9C7ASTL5RpF0C4vcF0Gb9hLjmSf7jo70YolZQB+z+gFqiKZQWwadGXhRs8fJ4ZR1lhw=
-X-Received: by 2002:a05:6808:6d1:: with SMTP id m17mr15682069oih.139.1642270111234;
-        Sat, 15 Jan 2022 10:08:31 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy8UHfpbAEw/DgpZ4065a673gWeLyT611t101R+gnyCobU06v3ZXI9EFNERAOYmadzAH0FkwA==
-X-Received: by 2002:a05:6808:6d1:: with SMTP id m17mr15682062oih.139.1642270111078;
-        Sat, 15 Jan 2022 10:08:31 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id r25sm2345856ota.59.2022.01.15.10.08.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 10:08:30 -0800 (PST)
-From:   trix@redhat.com
-Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] platform/x86: cleanup double word in comment
-Date:   Sat, 15 Jan 2022 10:08:22 -0800
-Message-Id: <20220115180822.298982-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Sat, 15 Jan 2022 13:11:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5F74C061574;
+        Sat, 15 Jan 2022 10:11:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E64AB80A89;
+        Sat, 15 Jan 2022 18:11:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA03BC36AE7;
+        Sat, 15 Jan 2022 18:10:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642270259;
+        bh=2PWywdObtfGp7J3+7ngcsnTM6kfub2PBBTbBnzm4lhE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=s3eJH/ugwNk+p8MbDxFSC9LnvnGfzEsg4QII/QRBsvsG+LEOx/PuNeSj6b60sS/Yy
+         BG9Je6wEtPmHM9ROXxw9QGXrUKeZgVZ5OX+y/CGwneG+mr5VOUlDjk5zeTQGAmYkOL
+         HouggdMpMT8ZCr6LlYrSCFoRgJm4bzJs8qJ+cXD0GxbbSnaE95rX9CJiDOxyVTM1V+
+         qiNS1D9bHHj0FGH7hkjf28pN8RDigxWCTbOSgoRN17xq6/P4tMBpYrXp39AZRlsmzn
+         yUeW9tJbIzWLg+1J2qbRiIwBlTYgd0AwffFN6tf+vK5W/UEWja61rGZRWk6gJJN+a+
+         Oipiw7V9To3tg==
+Date:   Sat, 15 Jan 2022 18:16:59 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH v1 1/1] iio: adc: tsc2046: fix memory corruption by
+ preventing array overflow
+Message-ID: <20220115181659.0c759ec5@jic23-huawei>
+In-Reply-To: <20220110071945.GB3326@pengutronix.de>
+References: <20220107081401.2816357-1-o.rempel@pengutronix.de>
+        <20220109152557.74f06d2d@jic23-huawei>
+        <20220110071945.GB3326@pengutronix.de>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Mon, 10 Jan 2022 08:19:45 +0100
+Oleksij Rempel <o.rempel@pengutronix.de> wrote:
 
-Remove the second 'of'.
+> Hi Jonathan,
+> 
+> On Sun, Jan 09, 2022 at 03:25:57PM +0000, Jonathan Cameron wrote:
+> > On Fri,  7 Jan 2022 09:14:01 +0100
+> > Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> >   
+> > > On one side we have indio_dev->num_channels includes all physical channels +
+> > > timestamp channel. On other side we have an array allocated only for
+> > > physical channels. So, fix memory corruption by ARRAY_SIZE() instead of
+> > > num_channels variable.
+> > > 
+> > > Fixes: 9374e8f5a38d ("iio: adc: add ADC driver for the TI TSC2046 controller")
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>  
+> > Hi Olesij,
+> > 
+> > Have you managed to make this occur, or is it inspection only?  
+> 
+> Yes, this bug has eaten my rx_one and tx_one pointers on probe. I wonted
+> to use this buffers for read_raw and noticed that they do not exist.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- include/linux/platform_data/x86/pmc_atom.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I got hung up on the first case and failed to notice the second one was
+entirely different :(
 
-diff --git a/include/linux/platform_data/x86/pmc_atom.h b/include/linux/platform_data/x86/pmc_atom.h
-index 022bcea9edec5..d4429fbed0940 100644
---- a/include/linux/platform_data/x86/pmc_atom.h
-+++ b/include/linux/platform_data/x86/pmc_atom.h
-@@ -47,7 +47,7 @@
- #define	PMC_S0I2_TMR		0x88
- #define	PMC_S0I3_TMR		0x8C
- #define	PMC_S0_TMR		0x90
--/* Sleep state counter is in units of of 32us */
-+/* Sleep state counter is in units of 32us */
- #define	PMC_TMR_SHIFT		5
- 
- /* Power status of power islands */
--- 
-2.26.3
+> 
+> > I 'think' (it's been a while since I looked at the particular code) that the timestamp
+> > bit in active_scan_mask will never actually be set because we handle that as a
+> > separate flag.  
+> 
+> I didn't tested if active_scan_mask will trigger this issue as well, but
+> It it looked safer to me, to avoid this issue in both places. Even if on
+> of it is only theoretical.
+
+It certainly does no harm to not check a bit that is never set, so I'm fine with
+the change - just don't want to have lots of 'fixes' for this in other drivers
+adding noise and pointless backports.  This one is fine because we need the
+other part of the patch anyway.
+
+Jonathan
+
+
+> 
+> > So it is indeed an efficiency improvement to not check that bit but I don't think
+> > it's a bug to do so.  More than possible I'm missing something though!
+> > 
+> > This one had me quite worried when I first read it because this is a very common
+> > pattern to see in IIO drivers.  
+> 
+> I was thinking about this as well, because big part of this code was
+> inspired by other drivers. But i didn't reviewed other places so far.
+> 
+> Regards,
+> Oleksij
 
