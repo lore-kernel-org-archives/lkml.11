@@ -2,90 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6570FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:01:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FDCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbiAOSBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 13:01:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49687 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232372AbiAOSBc (ORCPT
+        id S232601AbiAOSDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 13:03:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232005AbiAOSDn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 13:01:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642269691;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JyQfKnGPAvPAfBFOiNiSn6b94cEh37W6h0P28jZ0IfY=;
-        b=fBUj3Imt0e0X9MeOjKS+ggu9uTjM91b6PLSAF/dCgTBIXJjXHRYsQGj+l+ploFRnAbWNcD
-        2F/XC+GF1MBoocWwyubkT9Ecx1gQCCw+fl/XBGx1P7QbpFCYVbjeBugcRQ7DwckgPeA4PP
-        WPngZg3LkBv2sex30vy0sUoEePc3fo8=
-Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
- [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-434-y1WkMAoAMpmMKo_tmiiHYw-1; Sat, 15 Jan 2022 13:01:30 -0500
-X-MC-Unique: y1WkMAoAMpmMKo_tmiiHYw-1
-Received: by mail-ot1-f72.google.com with SMTP id y11-20020a056830070b00b00595da7db813so1188070ots.16
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 10:01:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JyQfKnGPAvPAfBFOiNiSn6b94cEh37W6h0P28jZ0IfY=;
-        b=4ge55QYdJKpYPpibLarNFi0wl/odjtgTgALFYTgvvVLnyx15DSOn2euRQ7LR70fs7F
-         sPUjXm1EesEsKRBByIdF3YQijuwU3QhXMVgtSg2bPyNOy0EBTeXvrUAfE4emVoUy6mj8
-         +pmnOK6mQHr76dv6ZdgLbZiagEuFQ9jXW4OywYRAKW75p05pgDyRpbcXcR8KVrGGZ96u
-         OXr+Z6+KNBbEERMrOKzy3c3i5AlN+CUZg7wHXwYO78YQX6rW/FiP2vq+mvxdSaPtch85
-         RUk5XWYnx/alDT9R7H7DZbxYBHXEpb82i6ajqUxuuJr0dBrgW3D//sHCzyGU4OpxINb0
-         BaDw==
-X-Gm-Message-State: AOAM5306IKxL4bnvcI+Vi533WGH26FOBiPy6HXW99ksVgMv44tIZaMFR
-        jU5uurIqfit1go9yA8b1ZuIRk2l1o+634/uhB1Upk8SEox7VITAcryjBwoZmN5l6tXDO9fgyhP6
-        SwnCqF9RAL9csto9W1C9CyGQwaFU3vQIRdavyqoB2UeC0fouIypBdx5jj9IHc34/WDyKdqsM=
-X-Received: by 2002:a9d:43:: with SMTP id 61mr10882517ota.18.1642269689207;
-        Sat, 15 Jan 2022 10:01:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyDQLcjQ6ioy73xO4LMv0dpb80iYO16e7r4SPWviOK+YlZ/dsAnGiRL7IwDC2QiSs3tZ0N0aA==
-X-Received: by 2002:a9d:43:: with SMTP id 61mr10882499ota.18.1642269688977;
-        Sat, 15 Jan 2022 10:01:28 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id k8sm3379615oon.2.2022.01.15.10.01.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 10:01:28 -0800 (PST)
-From:   trix@redhat.com
-To:     linux-kernel@vger.kernel.org
-Cc:     Tom Rix <trix@redhat.com>
-Subject: [PATCH] platform/x86: cleanup double word in comment
-Date:   Sat, 15 Jan 2022 10:00:22 -0800
-Message-Id: <20220115180022.298127-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Sat, 15 Jan 2022 13:03:43 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D03C061574;
+        Sat, 15 Jan 2022 10:03:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CA079CE04F0;
+        Sat, 15 Jan 2022 18:03:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CC6EC36AE7;
+        Sat, 15 Jan 2022 18:03:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642269820;
+        bh=lSEWF5AdYQnuJcWaG8FltWXTLP4RPuyq39ItcWZ8vBE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lqWR0eA71yPDz1lUEry84J6D83hliJ59NmGYm/lq/0MU2oS9Za5Ac25fq12Q/CHgz
+         I9Iw4JFkEZy/vcLVHmW7B/pqHmT0QRNCwPPdXxeING7Uv2B66UgU1j6ZrdyAzGTD+L
+         vmvrshygclDneDj4Y/8qt1PrQe0Kd5yGxMm5yZW61BMJinyJ0ShbgBTVuApt2s3yEg
+         mF5/xsr/4T3Ivdf6I3x4J5nc4l5nd3OEsNns0V6dwcVXflV4Xrv0ku+DGJw/iZtAgB
+         BLWM772WaToqLl9YcicJpG6QmVJz6SR2yJ2V1xKhn0UPEZx74lpB25HTSSZx5m4r3j
+         GSAA9FTk6tG3w==
+Date:   Sat, 15 Jan 2022 18:09:41 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: Re: [PATCH] iio: frequency: admv1013: remove the always true
+ condition
+Message-ID: <20220115180941.709a667a@jic23-huawei>
+In-Reply-To: <YdS3gJYtECMaDDjA@debian-BULLSEYE-live-builder-AMD64>
+References: <YdS3gJYtECMaDDjA@debian-BULLSEYE-live-builder-AMD64>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Wed, 5 Jan 2022 02:09:20 +0500
+Muhammad Usama Anjum <usama.anjum@collabora.com> wrote:
 
-Remove the second 'of'.
+> unsigned int variable is always greater than or equal to zero. Make the
+> if condition simple.
+> 
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Hi,
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- include/linux/platform_data/x86/pmc_atom.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
++ CC Antoniu and this should have a Fixes tag.
 
-diff --git a/include/linux/platform_data/x86/pmc_atom.h b/include/linux/platform_data/x86/pmc_atom.h
-index 022bcea9edec5..d4429fbed0940 100644
---- a/include/linux/platform_data/x86/pmc_atom.h
-+++ b/include/linux/platform_data/x86/pmc_atom.h
-@@ -47,7 +47,7 @@
- #define	PMC_S0I2_TMR		0x88
- #define	PMC_S0I3_TMR		0x8C
- #define	PMC_S0_TMR		0x90
--/* Sleep state counter is in units of of 32us */
-+/* Sleep state counter is in units of 32us */
- #define	PMC_TMR_SHIFT		5
- 
- /* Power status of power islands */
--- 
-2.26.3
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/frequency/admv1013.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
+> index 6cdeb50143af..3f3c478e9baa 100644
+> --- a/drivers/iio/frequency/admv1013.c
+> +++ b/drivers/iio/frequency/admv1013.c
+> @@ -348,7 +348,7 @@ static int admv1013_update_mixer_vgate(struct admv1013_state *st)
+>  
+>  	vcm = regulator_get_voltage(st->reg);
+>  
+> -	if (vcm >= 0 && vcm < 1800000)
+> +	if (vcm < 1800000)
+>  		mixer_vgate = (2389 * vcm / 1000000 + 8100) / 100;
+>  	else if (vcm > 1800000 && vcm < 2600000)
+>  		mixer_vgate = (2375 * vcm / 1000000 + 125) / 100;
 
