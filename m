@@ -2,63 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 784DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 21:17:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 21:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233760AbiAOVRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 16:17:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiAOVRP (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 16:17:15 -0500
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9ACCC061574;
-        Sat, 15 Jan 2022 13:17:14 -0800 (PST)
-Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id F1C412ED;
-        Sat, 15 Jan 2022 21:17:13 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net F1C412ED
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1642281434; bh=oHnYu0rr3p20Z4FUpBLwUPyOBZ53vco0yv77JVEOIlg=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=hdO3397ZgeEJHrvDZ7lAznlTToCNgAaoVEp39x3rP1CxW6vfURBRmxu5D+7Wzz7MB
-         KKC+ruZgYuUth73OtpheVYgtb7BANlyhGiaF9neAqpHTREZLqkCrunFxpTtGb/687k
-         qIe4he5D4hN0h/2v/MhJYNSwgJCwbegtvcFeSJ78kwA9DZOacratTL+XbLC8nBMIPX
-         +axF/eAIE+BRq1UFLELWAf5nWHeZNQbKH5H8x8W+UUFke1XHibCmtCipEaj7Fd7Lqt
-         iWUHwyfnbRnYD/tJJu5nfAeU+o/eLnBcbMmWDspTe0JarxEuG78XCatnkekqLLsezv
-         8SsxmluxbQkrg==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Randy Dunlap <rdunlap@infradead.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH v2 0/4] docs: sphinx/kfigure.py: Improve conversion to PDF
-In-Reply-To: <e03de287-4eef-8a68-89f3-8614db66a74b@gmail.com>
-References: <e01fe9f9-f600-c2fc-c6b3-ef6395655ffe@gmail.com>
- <e545803a-8f09-f0e7-4ca0-16b673ef1796@gmail.com>
- <20220114094535.5bb9ba94@coco.lan>
- <e03de287-4eef-8a68-89f3-8614db66a74b@gmail.com>
-Date:   Sat, 15 Jan 2022 14:17:30 -0700
-Message-ID: <87bl0c7l79.fsf@meer.lwn.net>
+        id S233782AbiAOVlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 16:41:45 -0500
+Received: from mga04.intel.com ([192.55.52.120]:59005 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229671AbiAOVlo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 15 Jan 2022 16:41:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642282904; x=1673818904;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=m27YbEw93OL5ImIEXLaTawUYKfHA+spmhvbsQC94p6s=;
+  b=H7pNrgZKHJlBjjPMGOE9fbYkut/+b8V2g9HLI+KcnNFuQ9GQ6cCWzN45
+   sINoY0hh6bmANquDVe6uTj8EjXpnKBZs9pJkWhr8VJGaSuJ7tvvDXZUbw
+   L67TfSFia5etkm1vk2GqCkXmmfEgS6Wl/tFL6ZjrrVWJXOwMWeH5htmDu
+   B2cPwlRsulgzVvGva/CjntuP7AxXJDCv//u4kosCOyBjCR+VglhoRyObT
+   VNDIP71i8RZI8VIB9AP7d90K8GU2wqPSBXT8hP7mXbIbjLAVurtHeEKRy
+   kKz2lhXzIF8foHtAC/Wv8+qXqSKv7gieK9ZoUAgOEGfpNEaOm0cEp9Dn0
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="243265669"
+X-IronPort-AV: E=Sophos;i="5.88,292,1635231600"; 
+   d="scan'208";a="243265669"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2022 13:41:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,292,1635231600"; 
+   d="scan'208";a="474028457"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 15 Jan 2022 13:41:43 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n8qnu-000AJ6-N0; Sat, 15 Jan 2022 21:41:42 +0000
+Date:   Sun, 16 Jan 2022 05:41:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Helge Deller <deller@gmx.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [deller-parisc:5.16-vdso-6 1/3] kernel/signal.c:2994
+ sys_restart_syscall() warn: inconsistent indenting
+Message-ID: <202201160406.ydB4aO5N-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Akira Yokosawa <akiyks@gmail.com> writes:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/deller/parisc-linux.git 5.16-vdso-6
+head:   b7e375e2ced653c4615242d90232d4a0238dcac1
+commit: 31c51d49e3f587cdcdf22b313b5bbce80b31405f [1/3] add testing vDSO support (v5)
+config: arm-randconfig-m031-20220113 (https://download.01.org/0day-ci/archive/20220116/202201160406.ydB4aO5N-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
 
-> We are in the middle of the v5.17 merge window, and I think of this
-> series as a v5.18 material.
-> Which means it won't be merged into doc-next until v5.17-rc5 or -rc6
-> (mid March or so), unless Jon thinks otherwise.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-I'd rather merge it rather sooner than that if possible; 5.18 stuff will
-start going into docs-next shortly.
+smatch warnings:
+kernel/signal.c:2994 sys_restart_syscall() warn: inconsistent indenting
 
-Thanks,
+vim +2994 kernel/signal.c
 
-jon
+  2983	
+  2984	/*
+  2985	 * System call entry points.
+  2986	 */
+  2987	
+  2988	/**
+  2989	 *  sys_restart_syscall - restart a system call
+  2990	 */
+  2991	SYSCALL_DEFINE0(restart_syscall)
+  2992	{
+  2993		struct restart_block *restart = &current->restart_block;
+> 2994	printk("************** RESTART SYSCALL gestartet\n");
+  2995		return restart->fn(restart);
+  2996	}
+  2997	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
