@@ -2,111 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8007C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:47:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F37C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233441AbiAOSrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 13:47:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58450 "EHLO
+        id S233466AbiAOSuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 13:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiAOSri (ORCPT
+        with ESMTP id S233446AbiAOSuS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 13:47:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044CDC061574;
-        Sat, 15 Jan 2022 10:47:38 -0800 (PST)
+        Sat, 15 Jan 2022 13:50:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA89CC061574;
+        Sat, 15 Jan 2022 10:50:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9926E60ECD;
-        Sat, 15 Jan 2022 18:47:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E82A1C36AE5;
-        Sat, 15 Jan 2022 18:47:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E28AAB80B21;
+        Sat, 15 Jan 2022 18:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F58C36AF3;
+        Sat, 15 Jan 2022 18:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642272457;
-        bh=PxfF8TCrDJEZRPlh4OejGOyk1YzIClKiOQC3iEvEi4w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QgOYeZ6YDGtDusiSwXekCP9ueSZ7jXs1HhzPRrtIPaIq7pXn8YdDIJ1VKicOJY59Y
-         5N5tWjCjuwvqXhZyaiUaueostvvaikTSyS1iEsT6jUJpN9eoVmgd3DnsXm69dr5DPB
-         OUabH8whMSW8Wju1x05nG7aR8TmOFJPiw3SplQq4oHDY3oSLLRfKD13cBM9PlFsdAI
-         2wNt03PV9gEjZonlMlFQjHVJrgH8ybrkhyJD5jzNFaBQAM6R/lcFlrGjXGmkBOLtvp
-         OEOed0ocnBp2fDWFhtwgh16/a/qa71tL2W0zZAV0bbPOf716SZctUw0ZdXhH8baHC2
-         ob4k+0VXJqTig==
-Date:   Sat, 15 Jan 2022 20:46:57 +0200
-From:   Mike Rapoport <rppt@kernel.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill@shutemov.name>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>, x86@kernel.org,
-        linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 5/7] x86/mm: Reserve unaccepted memory bitmap
-Message-ID: <YeMWoTpHoJRRhnoN@kernel.org>
-References: <20220111113314.27173-1-kirill.shutemov@linux.intel.com>
- <20220111113314.27173-6-kirill.shutemov@linux.intel.com>
- <3a361a1d-0e14-8884-c5bb-90aeb87e38ef@intel.com>
- <20220112194302.cyxhjypsptr4mtix@box.shutemov.name>
- <a4b5707f-0f0b-57a8-ccdb-d89f66210b52@intel.com>
+        s=k20201202; t=1642272614;
+        bh=UIo7EekZ67jB1nDi/znzWuTLgVtn/O12F/o980the4w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ct+BKj90U+6lDtpCeH2773zAcqoNUxPXVKUb/mAhdM8hbYHWmO/I95SSIECQpUdY8
+         Xrglik12PS4vTCJSh+Hd+1TAd01a+00zw90ccYOA0bFlX/C+/aVxh+3szl4yaUdJuR
+         f3vuPbaC+MxtTPtkiK/c/ChnlKL9hv7xO3NrHyrfhdNU9ogKMAe5TQwFRC4Ktv/b4D
+         ZALNixB2qegUuQQE9p3b2EsRQMdZZFqb02TsNAsf3PPsNVxXMM9gmFR+aO47AfPaKO
+         uVpssXXixtLFvqGNmr62v/qlCeIBAzzQL7/bH5mquo4TwnY6B/sQZ1+Xd3sGOy88Pv
+         OmdlLGGB2jxWw==
+Date:   Sat, 15 Jan 2022 18:56:15 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ad7124: fix mask used for setting AIN_BUFP &
+ AIN_BUFM bits
+Message-ID: <20220115185615.403ee183@jic23-huawei>
+In-Reply-To: <20220112200036.694490-1-cosmin.tanislav@analog.com>
+References: <20220112200036.694490-1-cosmin.tanislav@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a4b5707f-0f0b-57a8-ccdb-d89f66210b52@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 11:53:42AM -0800, Dave Hansen wrote:
-> On 1/12/22 11:43 AM, Kirill A. Shutemov wrote:
-> > On Tue, Jan 11, 2022 at 11:10:40AM -0800, Dave Hansen wrote:
-> >> On 1/11/22 03:33, Kirill A. Shutemov wrote:
-> >>
-> >>> +	/* Mark unaccepted memory bitmap reserved */
-> >>> +	if (boot_params.unaccepted_memory) {
-> >>> +		unsigned long size;
-> >>> +
-> >>> +		/* One bit per 2MB */
-> >>> +		size = DIV_ROUND_UP(e820__end_of_ram_pfn() * PAGE_SIZE,
-> >>> +				    PMD_SIZE * BITS_PER_BYTE);
-> >>> +		memblock_reserve(boot_params.unaccepted_memory, size);
-> >>> +	}
-> >>
-> >> Is it OK that the size of the bitmap is inferred from
-> >> e820__end_of_ram_pfn()?  Is this OK in the presence of mem= and other things
-> >> that muck with the e820?
-> > 
-> > Good question. I think we are fine. If kernel is not able to allocate
-> > memory from a part of physical address space we don't need the bitmap for
-> > it either.
+On Wed, 12 Jan 2022 22:00:36 +0200
+Cosmin Tanislav <demonsingur@gmail.com> wrote:
+
+> According to page 90 of the datasheet [1], AIN_BUFP is bit 6 and
+> AIN_BUFM is bit 5 of the CONFIG_0 -> CONFIG_7 registers.
 > 
-> That's a good point.  If the e820 range does a one-way shrink it's
-> probably fine.  The only problem would be if the bitmap had space for
-> for stuff past e820__end_of_ram_pfn() *and* it later needed to be accepted.
+> Fix the mask used for setting these bits.
+> 
+> [1]: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7124-8.pdf
+> 
+> Fixes: 0eaecea6e487 ("iio: adc: ad7124: Add buffered input support")
+> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Curious that didn't cause problems anyone noticed before. Ah well.
 
-It's unlikely, but e820 can grow because of EFI and because of memmap=.
-To be completely on the safe side, the unaccepted bitmap should be reserved
-after parse_early_param() and efi_memblock_x86_reserve_range().
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-Since we anyway do not have memblock allocations before
-e820__memblock_setup(), the simplest thing would be to put the reservation
-first thing in e820__memblock_setup().
+Note that branch will probably be rebased after rc1 as I have some
+other things that need rc1 which will be in same pull request.
 
--- 
-Sincerely yours,
-Mike.
+Jonathan
+
+> ---
+>  drivers/iio/adc/ad7124.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+> index e45c600fccc0..18c154afbd7a 100644
+> --- a/drivers/iio/adc/ad7124.c
+> +++ b/drivers/iio/adc/ad7124.c
+> @@ -76,7 +76,7 @@
+>  #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
+>  #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
+>  #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
+> -#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
+> +#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(6, 5)
+>  #define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
+>  
+>  /* AD7124_FILTER_X */
+
