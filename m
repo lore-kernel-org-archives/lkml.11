@@ -2,105 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10D4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54C63C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232362AbiAORti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 12:49:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:44004 "EHLO
+        id S232453AbiAORxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 12:53:11 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43832 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230087AbiAORtg (ORCPT
+        by vger.kernel.org with ESMTP id S232372AbiAORxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 12:49:36 -0500
+        Sat, 15 Jan 2022 12:53:08 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642268975;
+        s=mimecast20190719; t=1642269187;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=5Ub1hbMwAGMv83XYOlhCXiwUBfOTPfG3vBCU3vhpmD4=;
-        b=bcQiEvYtgQRLWOgOqSvqtKaNu5prUQInnJLlYC0mb7dgS0hLPwO8WtC8lVEkw/7l6+GN25
-        ql54LDYV6xJVcQA8gBSSnYTFfcITHaXF0tRptPN1l1HTvyQp9gzpp1rVOOHCrE/tvJB+g7
-        uj6TdLGBq+ntb+GJb02ojMTYu4pDfs8=
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=H6OoxCkI7fG8A16oQRFEumN9Lwt/USiivt1NkSzppcU=;
+        b=BMGzPfkGp0/twyWTm9uwIEKOxihc3rYwg4urQ/urrO2QU/JigM1DlH92h3oDlM8THySxHg
+        Ezc912gltkj/myld8kpa4dbpDt/qEQYQwIFa59UMDyY6O/tZ9XLFsi++MUWuC7s3tVOAOh
+        8ZJDkwFUzrinMOQWAxRguCSt6hdts5U=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-52-c1_U5vflP_eKkMOj-_R82Q-1; Sat, 15 Jan 2022 12:49:33 -0500
-X-MC-Unique: c1_U5vflP_eKkMOj-_R82Q-1
-Received: by mail-ot1-f71.google.com with SMTP id t1-20020a9d7481000000b005919e9a1347so2869831otk.2
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 09:49:33 -0800 (PST)
+ us-mta-487-K_qAHG-VPaKkJt0WK11-yw-1; Sat, 15 Jan 2022 12:53:06 -0500
+X-MC-Unique: K_qAHG-VPaKkJt0WK11-yw-1
+Received: by mail-oi1-f199.google.com with SMTP id s127-20020aca5e85000000b002c807e9c48aso8519941oib.10
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 09:53:06 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=5Ub1hbMwAGMv83XYOlhCXiwUBfOTPfG3vBCU3vhpmD4=;
-        b=3eprZA2HkAUdlTglY/gD7Bq5Qtlf7/0hqs23ziQa85nlq/AYO4itnwzDeMPmuIzIM5
-         h6IoIuHuCoePb0iWE6qOzzIkG+ICmVpWF6lcL+rudhda9ehYEHhZxyLbnkLtfX8VbDsF
-         TGnqZtsktpe/6O6TQPzBRMIrmDaG+5o9rlqx8PD5cx4HbKjEOSz1WtNHY5J5W+u7tznh
-         wUzcVZrHbofdkw1QS2Ba2HelOE3rByX3zvPjaOdO6SGNHJyEUDuM+dtmGYx9zybDA1Xh
-         gNxAloLJJULAUEA/MiJFwOI5m1QNpOwSp2LfFsQE1MDOUcYL56b6EMKM63Tce/ugVaf9
-         JTpg==
-X-Gm-Message-State: AOAM531Q7VPtJyIQfSl7Im/sNlU3UFzFbp3sZSvuIsaoni4GftLork94
-        L3wi7pMlbCe7cqoipICDw4iHttICgnavJ7+rRLFt+ap20UCfYz2PiumEkNdnDiS6n8X4Yzgqudw
-        fwY38s45Ixr5CcMR/AGXtPzEX
-X-Received: by 2002:a9d:6d90:: with SMTP id x16mr10349758otp.104.1642268973022;
-        Sat, 15 Jan 2022 09:49:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxR+KmHmEAcU1CSZCeT7bkPUleD6/z8y+Ucc7A0A1vb7OVK0PdYFegZBJKcQW1fj3jjvlhqdQ==
-X-Received: by 2002:a9d:6d90:: with SMTP id x16mr10349749otp.104.1642268972841;
-        Sat, 15 Jan 2022 09:49:32 -0800 (PST)
+        bh=H6OoxCkI7fG8A16oQRFEumN9Lwt/USiivt1NkSzppcU=;
+        b=SDJi8iRka0Lr3IuJX6az2+3gVcSmGXFvSGHMyEjaxz/NgdmMkq/fbWvY2EqJXOPdqM
+         p1dEFodLZCqZwiv/QdrbSo3R1yOQVBEWB0/CyUhTz3uQK8FCM1haNa9XFuKlEHiNsZVB
+         CaPkzXOzHr+M95ExrNlnaZ0Ir//wy433JiIbEhqyZiVMqe2+e8nfqbqfXD/FDbq1Y//U
+         56Hqc911DmBwIiLNx/YXFEvzZGYqQqmuUO4fF1/uSs01mbl6zFI5LzHliHBXwPKD3Bdd
+         uH0qR4ImDVihupvnqE2830zKAhH97T2ox6uSqybb7P55djn65nQuWy75zgqzlOAm8cBo
+         sKSQ==
+X-Gm-Message-State: AOAM533gqOAZiQUTPrXMhVK0UEJ2prQ2k1RUCQAW0sdSWUNIZV6ntSOz
+        VH5cf7960EeVB5l/kD7Xblb79WxCUDli3BUzkQQLtkVDJF7AzAYfiDPJ/ZFzAYEMzhAeoE/jsY0
+        PsVV0f8rcDeds1XJSCLgxmWCPVff1cKqjcikHfcBU68qv/AjjoTXrsket5DtagjoOntvsD+A=
+X-Received: by 2002:a9d:6452:: with SMTP id m18mr10836767otl.99.1642269185723;
+        Sat, 15 Jan 2022 09:53:05 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx9FEvJu4hwH45VQzjU0SGArx6HF4tcZhBFJpeHe0t/HSRhSFhG4SAO/rliXGInygdXW0hzuA==
+X-Received: by 2002:a9d:6452:: with SMTP id m18mr10836753otl.99.1642269185500;
+        Sat, 15 Jan 2022 09:53:05 -0800 (PST)
 Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id w20sm3239438oti.69.2022.01.15.09.49.30
+        by smtp.gmail.com with ESMTPSA id n26sm3653046oij.5.2022.01.15.09.53.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 09:49:32 -0800 (PST)
+        Sat, 15 Jan 2022 09:53:05 -0800 (PST)
 From:   trix@redhat.com
-To:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, davem@davemloft.net, kuba@kernel.org,
-        matthias.bgg@gmail.com, nathan@kernel.org, ndesaulniers@google.com,
-        opensource@vdorst.com
-Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH v2] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
-Date:   Sat, 15 Jan 2022 09:49:18 -0800
-Message-Id: <20220115174918.297002-1-trix@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] memory: emif: cleanup double word in comment
+Date:   Sat, 15 Jan 2022 09:52:52 -0800
+Message-Id: <20220115175252.297433-1-trix@redhat.com>
 X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tom Rix <trix@redhat.com>
 
-Clang static analysis reports this problem
-mtk_eth_soc.c:394:7: warning: Branch condition evaluates
-  to a garbage value
-                if (err)
-                    ^~~
+Remove the second 'if'.
 
-err is not initialized and only conditionally set.
-So intitialize err.
-
-Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
-v2: change to initializing
-
-drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
+ include/linux/platform_data/emif_plat.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index b67b4323cff08..f02d07ec5ccbf 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -267,7 +267,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 					   phylink_config);
- 	struct mtk_eth *eth = mac->hw;
- 	u32 mcr_cur, mcr_new, sid, i;
--	int val, ge_mode, err;
-+	int val, ge_mode, err = 0;
- 
- 	/* MT76x8 has no hardware settings between for the MAC */
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
+diff --git a/include/linux/platform_data/emif_plat.h b/include/linux/platform_data/emif_plat.h
+index b93feef5d586f..53057713c9fbf 100644
+--- a/include/linux/platform_data/emif_plat.h
++++ b/include/linux/platform_data/emif_plat.h
+@@ -98,7 +98,7 @@ struct emif_custom_configs {
+  *			as type, bus width, density etc
+  * @timings:		Timings information from device datasheet passed
+  *			as an array of 'struct lpddr2_timings'. Can be NULL
+- *			if if default timings are ok
++ *			if default timings are ok
+  * @timings_arr_size:	Size of the timings array. Depends on the number
+  *			of different frequencies for which timings data
+  *			is provided
 -- 
 2.26.3
 
