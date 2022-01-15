@@ -2,95 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5CDAC41535
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:22:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF32C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:22:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbiAORWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 12:22:51 -0500
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:37721 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiAORWn (ORCPT
+        id S233446AbiAORW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 12:22:56 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:34516 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233338AbiAORWr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 12:22:43 -0500
-Received: by mail-ot1-f41.google.com with SMTP id i7-20020a9d68c7000000b0059396529af8so7452794oto.4;
-        Sat, 15 Jan 2022 09:22:42 -0800 (PST)
+        Sat, 15 Jan 2022 12:22:47 -0500
+Received: by mail-oi1-f171.google.com with SMTP id r131so17077005oig.1;
+        Sat, 15 Jan 2022 09:22:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=CYssEdn4U+D0DKxBFx9coxO44MoyGtGFbzFuFgNIr2E=;
-        b=CCTfC01GdzyJC37rJMmrClsZ2vrBV5MvcluOVANBOWa6N4sBJKGUHn4DeenEM7jOvY
-         nzx13joZ7XzSg3a4MNNbVVOHXxX7l1o4fDeiIyaMjWE1FievrEwgvRaQFnEc8Y2ACl8K
-         gPmmo4gm7ve8co5dVP7eB0x13sk9MA7hNXIdIxHB9YlUOokhgbN8qmgX6PBbER3Jvf94
-         QWmsN1Q7R9eF2/Ynsgv5qp7l+/JbW71FjNxroBy3L/8kBYmil1KWY8LZL5OmASpGvNbR
-         BlAC+AnTyJsZb/813yJ2kTrSCtQOQqjcIZC+dj2DE0irrKa3G23b6DLeUFlpLpA1fJR+
-         C3uQ==
-X-Gm-Message-State: AOAM533IACwg1GhlTyCaOrLY/OGl5Fo7EYIXWxiO5ujOwfBLagST1oPm
-        MWuHbQ5MO8cFtrlsJDlvTw==
-X-Google-Smtp-Source: ABdhPJxa0Y95SAgsnFgvzW2QXkzA/LkZ4mlEhY1BKNnbCRyfZlp+mRbzX6AfmWmwF/mz5bmb22E9Bg==
-X-Received: by 2002:a05:6830:4393:: with SMTP id s19mr10668275otv.272.1642267362255;
-        Sat, 15 Jan 2022 09:22:42 -0800 (PST)
+        bh=D9KUhQV6nwKiCBSkUr0wqIeB2WR6mroATQn2jKF4UxE=;
+        b=Sfsh0tSk/v5njWLOW7cmzXDMKu9o6e1f8d5fWSGSx49YkLUad2PiwF84si1PeQqhLu
+         87Xi7GuquyWFek08EZg+eUE8jk75GQLjEhZcYlJf17/P1CqWCm31eED1SpqDzcYmQ3Uh
+         eWoJl5HKSse6AKaGyzPSGApiO3z/qU5HlcULkx+GAMi+a1uvBo+vcG0TrxFIB30/ozXk
+         np1txjdiBIt/InEmtuE878NUCHpC40mDIZz4qT6zmGar2dCtm1sn2IacCCTVorbiiNZX
+         4Bkkpg/46FLVThSvJw2wXyi3yt1++to8YEs+HsHGYEpkIBd8BwUB32TexhCJjLUDrjr4
+         SEuQ==
+X-Gm-Message-State: AOAM533InUg/akWLpxLICZ+m4GL1YFbLveG82BQ8//BHIxc47ssZyqOb
+        xXNMNyhiUEvNKl+x6ZBglg==
+X-Google-Smtp-Source: ABdhPJxOoG4k9FRod8uJApGwVpA3HZfYGEPxP6WWT0ZeH98SGk/oSFiVXje2uXnwcnaifRMr6S0+Dw==
+X-Received: by 2002:a05:6808:22a2:: with SMTP id bo34mr11628503oib.119.1642267365914;
+        Sat, 15 Jan 2022 09:22:45 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id n26sm3426650ooc.48.2022.01.15.09.22.40
+        by smtp.gmail.com with ESMTPSA id a6sm3724294oil.6.2022.01.15.09.22.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 09:22:41 -0800 (PST)
-Received: (nullmailer pid 119892 invoked by uid 1000);
+        Sat, 15 Jan 2022 09:22:44 -0800 (PST)
+Received: (nullmailer pid 119894 invoked by uid 1000);
         Sat, 15 Jan 2022 17:22:30 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     conor.dooley@microchip.com
-Cc:     heiko@sntech.de, daire.mcnamara@microchip.com, palmer@dabbelt.com,
-        bgolaszewski@baylibre.com, alexandre.belloni@bootlin.com,
-        linux-pwm@vger.kernel.org, bin.meng@windriver.com,
-        linux-riscv@lists.infradead.org, robh+dt@kernel.org,
-        atishp@rivosinc.com, broonie@kernel.org, lee.jones@linaro.org,
-        linux-gpio@vger.kernel.org, thierry.reding@gmail.com,
-        linux-spi@vger.kernel.org, ivan.griffin@microchip.com,
-        gregkh@linuxfoundation.org, linux-crypto@vger.kernel.org,
-        lewis.hanly@microchip.com, u.kleine-koenig@pengutronix.de,
-        jassisinghbrar@gmail.com, krzysztof.kozlowski@canonical.com,
-        a.zummo@towertech.it, linux-usb@vger.kernel.org,
-        paul.walmsley@sifive.com, linux-rtc@vger.kernel.org,
-        geert@linux-m68k.org, linus.walleij@linaro.org,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        aou@eecs.berkeley.edu, devicetree@vger.kernel.org
-In-Reply-To: <20220114151727.2319915-10-conor.dooley@microchip.com>
-References: <20220114151727.2319915-1-conor.dooley@microchip.com> <20220114151727.2319915-10-conor.dooley@microchip.com>
-Subject: Re: [PATCH v3 09/15] dt-bindings: pwm: add microchip corepwm binding
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     devicetree@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        Robert Jarzmik <robert.jarzmik@free.fr>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org
+In-Reply-To: <20220114170941.800068-2-sean.anderson@seco.com>
+References: <20220114170941.800068-1-sean.anderson@seco.com> <20220114170941.800068-2-sean.anderson@seco.com>
+Subject: Re: [PATCH 1/4] dt-bindings: usb: usb-nop-xceiv: Repurpose vbus-regulator
 Date:   Sat, 15 Jan 2022 11:22:30 -0600
-Message-Id: <1642267350.939328.119891.nullmailer@robh.at.kernel.org>
+Message-Id: <1642267350.947198.119893.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 15:17:21 +0000, conor.dooley@microchip.com wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
+On Fri, 14 Jan 2022 12:09:38 -0500, Sean Anderson wrote:
+> The vbus-regulator property was never actually read from the device tree.
+> Introduce a new property vbus-supply to represent the regulator powering
+> the VBUS when acting as an A-Device. This supply will be enabled and
+> disabled as necessary. Note that this is different from vbus-regulator,
+> which represented the available current available to draw from VBUS in
+> B-Device mode. Because no one was using vbus-regulator, remove it.
 > 
-> Add device tree bindings for the Microchip fpga fabric based "core" PWM controller.
-> 
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 > ---
->  .../bindings/pwm/microchip,corepwm.yaml       | 75 +++++++++++++++++++
->  1 file changed, 75 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/pwm/microchip,corepwm.yaml
+> 
+>  Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
+./Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml:37:15: [error] empty value in block mapping (empty-values)
+./Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml:40:9: [error] syntax error: mapping values are not allowed here (syntax)
 
 dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/pwm/microchip,corepwm.example.dts:19:18: fatal error: dt-bindings/clock/microchip,mpfs-clock.h: No such file or directory
-   19 |         #include "dt-bindings/clock/microchip,mpfs-clock.h"
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[1]: *** [scripts/Makefile.lib:373: Documentation/devicetree/bindings/pwm/microchip,corepwm.example.dt.yaml] Error 1
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/usb/usb-nop-xceiv.example.dts'
+Traceback (most recent call last):
+  File "/usr/local/bin/dt-extract-example", line 46, in <module>
+    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
+  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
+    return constructor.get_single_data()
+  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
+    node = self.composer.get_single_node()
+  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
+  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 891, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
+ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
+  in "<unicode string>", line 40, column 9
+make[1]: *** [Documentation/devicetree/bindings/Makefile:25: Documentation/devicetree/bindings/usb/usb-nop-xceiv.example.dts] Error 1
 make[1]: *** Waiting for unfinished jobs....
+./Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml:  mapping values are not allowed in this context
+  in "<unicode string>", line 40, column 9
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml: ignoring, error parsing file
 make: *** [Makefile:1413: dt_binding_check] Error 2
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1580131
+See https://patchwork.ozlabs.org/patch/1580217
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
