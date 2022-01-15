@@ -2,181 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 998AAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:26:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1873C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:29:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232004AbiAOB0c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:26:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229584AbiAOB0b (ORCPT
+        id S232004AbiAOB3e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:29:34 -0500
+Received: from out162-62-57-64.mail.qq.com ([162.62.57.64]:55385 "EHLO
+        out162-62-57-64.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229470AbiAOB3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:26:31 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A095C06161C
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:26:31 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id q16-20020a4a3010000000b002dde2463e66so2959583oof.9
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:26:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iGxhzdY+o8fZ08CLZJyGxW7d23UVHciFJHOknE38cZw=;
-        b=iY7KJRBkntVU/rVadUv0PJdb2KFcPKF6PPUUe1IH2Di0GhGZ+a66TCmxaI27Sy6K+O
-         xUleFpkSeSW8rDXQtCd/ZcIsHwxjTi2wj2abfIPaYDB0Gh1AdHQfRGa8ODwTfFypjeN3
-         h+iS6UO4wJDhB41ypCxmNXU1ZILBnL8je6tDO+mAMWOcI4iz+mBvbNDCxL1PqEQexXgr
-         p8ojIWbPPFqewMueT3lthQW2KLwMTqbaScL87wYoUadMGXTaUX4i7SDAfUTUQ0+I7Iv4
-         c8bjM7BhMb7FrVn+cHVwma4ZPp1qBk1MbqcIlAiylmeRZelK0ikhu8JhhOd+ywqRpDEf
-         Tf+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iGxhzdY+o8fZ08CLZJyGxW7d23UVHciFJHOknE38cZw=;
-        b=UuKZU6UoF0N4lyI2/e8MIdvDsjxbvYB4SRxhgH1PGHTwrYRh0v3Q1WLu6n3tlx8+ip
-         mobli78eQqaWhWj11M311K7Uj1XAWsMzmarChrl6uUavcL/SWNMnB+y8TjDtZx5J/kPN
-         /LcupNQRBLx2lQJvzQe+Boop/H4rrj+JIb0qzTB7UVFMF8XX2pnl3ZzggFdjZrAPjqzl
-         g5asOcyWkkmdNn9CiRkHdBCDuYuFRpuiosD7ey1k+DTcsAI+6r+ggKEaFJpQqA+yBlVZ
-         qywCscjHIBOM3UbFLbjg7wpQGdAJagL2rjN20NTl3w8Ucg0EbisdhN6Okrl/fJNxgxWM
-         2dwg==
-X-Gm-Message-State: AOAM530Ii86hxjg66cDoLxD/+n5TrRvviCR1WINVGxDyYyDJLwqkr93P
-        RL9l1JkHWZD55FyM2qPDxyUXRobelNiaMaXi3MuYGg==
-X-Google-Smtp-Source: ABdhPJwnBXn26R+PGLexcGDygO0NDDlzWoHG9/A0kn5cgChrw7gacpCWI4kqdbckb+NpQsQn+2ru/m5TniKKnsyTS9U=
-X-Received: by 2002:a4a:dc16:: with SMTP id p22mr8238076oov.85.1642209990389;
- Fri, 14 Jan 2022 17:26:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20211117080304.38989-1-likexu@tencent.com> <c840f1fe-5000-fb45-b5f6-eac15e205995@redhat.com>
-In-Reply-To: <c840f1fe-5000-fb45-b5f6-eac15e205995@redhat.com>
-From:   Jim Mattson <jmattson@google.com>
-Date:   Fri, 14 Jan 2022 17:26:19 -0800
-Message-ID: <CALMp9eQCEFsQTbm7F9CqotirbP18OF_cQUySb7Q=dqiuiK1FMg@mail.gmail.com>
-Subject: Re: [PATCH] KVM: x86/svm: Add module param to control PMU virtualization
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Like Xu <like.xu.linux@gmail.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 14 Jan 2022 20:29:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1642210170;
+        bh=AWjIEeU8M90gvfUQSZ0cXyepKC8Jutpx7AUkKvY6v24=;
+        h=From:To:Cc:Subject:Date;
+        b=StbzuePMWap3dvoI8OIL5+BQvsqS8u+gqTQ1RgVI+hzVUVwlGOkXLD2ZvjL+amsQ2
+         jn+XxXsxkfZIIZrL7sEnBozxtvTPxOSu9Ad0tSjK0PXPuJdItnFEbj4VVQaCoTmL7k
+         ziCrq6qSFKxWps+MWlW2iKfUSXjSgcbC6My1Ai8o=
+X-QQ-FEAT: oHWrrGTW1dDQiAipz2ZtDt0sp8RnsZZi
+X-QQ-SSF: 00000000000000F0000000000000
+X-QQ-XMAILINFO: NThFvZp7Q7whzHwMGDRMd6M9tOBLNqMaIGYlog8sDHUuPsr83uOccX5r8CbAuG
+         grYT5SdZJ/oDxlDfoImBMw0zKz07K1CPMLmhWtj1xGHyNqDOX/FiQQE86EHYfjO9F293xcyS72/TU
+         412EUzA8VhH06xL/jsyo+6fuVDLkKwIXx1HMng8JTY3DyhlEqIdV2ZaRBBkN+uhyRCTdeg332wsSL
+         uPkgfYoYgPi7nVMMf/btCk3h2TZ16myk66YM3SB7H4WhLMqSLAFkrEVDgDqc+AELhhxwCUbQpPJGc
+         lR0JD63GgWkuZFDkqHxifOus9VIat1h+eHz2fgdLvB16iRxAXMOwCsFn1UoQMz51cOSOFXTeR6KBC
+         JJfi4TPGpzpjzm9M5/bwoyOBUBzsKPHyQAF7oZ/um4PAqmuHCbhkWukJg1NUX1sIq62NIFTvEjh1y
+         7kXA+Jxth8qUQwbClqrhY+n1RQ1PZPEE/R4zAb0jwagZpnC92ru3gfwQMpwfUadNaatB53LLwVAoC
+         97f6ZKymvnx6ng+Zy5qo16TzeMp+PKPZ5Bo6vgGJld4+0bFlNqdrvIIihn8b05EQ1gw5l/VPAREsR
+         CwUp827c3FDQV70J0Wj7UycJgXK5uE5ldGa1LqT9TAeYaJDkIe0X27Jn8AZ1by6l8vVbcN9VJ9KZ8
+         SxuULblycFKmu0CnkvzeWg4DaPspyKM9V9Z8woY21+FBFj6a0cpS47NV2x0eCANsxNaMuYci9Hyxe
+         5hm6u177QN5fMhSEeUti5vxpVcdCbYdyE1m2fEXahguLsREVX6Lhtx8Ej/jRqHzZOe9J+0br6OOUF
+         6KZXzisH6bZLjyLziDRk1V4ivM7NPBPOi/tKDJqzxcA2nmB2rsfpfsX732yVRvm6GmIzAQUDn23d
+X-HAS-ATTACH: no
+X-QQ-BUSINESS-ORIGIN: 2
+X-Originating-IP: 223.75.155.17
+X-QQ-STYLE: 
+X-QQ-mid: webmail813t1642209737t8649820
+From:   "=?ISO-8859-1?B?WGlhb2tlIFdhbmc=?=" <xkernel.wang@foxmail.com>
+To:     "=?ISO-8859-1?B?WGlhb2tlIFdhbmc=?=" <xkernel.wang@foxmail.com>
+Cc:     "=?ISO-8859-1?B?cGF1bA==?=" <paul@paul-moore.com>,
+        "=?ISO-8859-1?B?U3RlcGhlbiBTbWFsbGV5?=" 
+        <stephen.smalley.work@gmail.com>,
+        "=?ISO-8859-1?B?ZXBhcmlz?=" <eparis@parisplace.org>,
+        "=?ISO-8859-1?B?c2VsaW51eA==?=" <selinux@vger.kernel.org>,
+        "=?ISO-8859-1?B?bGludXgta2VybmVs?=" <linux-kernel@vger.kernel.org>
+Subject: Re:[PATCH] selinux: check the return value of audit_log_start()
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="ISO-8859-1"
+Content-Transfer-Encoding: base64
+Date:   Sat, 15 Jan 2022 09:22:16 +0800
+X-Priority: 3
+Message-ID: <tencent_E80FE492D924578DC3838234FC5AC9E61F05@qq.com>
+X-QQ-MIME: TCMime 1.0 by Tencent
+X-Mailer: QQMail 2.x
+X-QQ-Mailer: QQMail 2.x
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Nov 18, 2021 at 5:25 AM Paolo Bonzini <pbonzini@redhat.com> wrote:
->
-> On 11/17/21 09:03, Like Xu wrote:
-> > From: Like Xu <likexu@tencent.com>
-> >
-> > For Intel, the guest PMU can be disabled via clearing the PMU CPUID.
-> > For AMD, all hw implementations support the base set of four
-> > performance counters, with current mainstream hardware indicating
-> > the presence of two additional counters via X86_FEATURE_PERFCTR_CORE.
-> >
-> > In the virtualized world, the AMD guest driver may detect
-> > the presence of at least one counter MSR. Most hypervisor
-> > vendors would introduce a module param (like lbrv for svm)
-> > to disable PMU for all guests.
-> >
-> > Another control proposal per-VM is to pass PMU disable information
-> > via MSR_IA32_PERF_CAPABILITIES or one bit in CPUID Fn4000_00[FF:00].
-> > Both of methods require some guest-side changes, so a module
-> > parameter may not be sufficiently granular, but practical enough.
-> >
-> > Signed-off-by: Like Xu <likexu@tencent.com>
-> > ---
-> >   arch/x86/kvm/cpuid.c   |  2 +-
-> >   arch/x86/kvm/svm/pmu.c |  4 ++++
-> >   arch/x86/kvm/svm/svm.c | 11 +++++++++++
-> >   arch/x86/kvm/svm/svm.h |  1 +
-> >   4 files changed, 17 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> > index 2d70edb0f323..647af2a184ad 100644
-> > --- a/arch/x86/kvm/cpuid.c
-> > +++ b/arch/x86/kvm/cpuid.c
-> > @@ -487,7 +487,7 @@ void kvm_set_cpu_caps(void)
-> >               F(CR8_LEGACY) | F(ABM) | F(SSE4A) | F(MISALIGNSSE) |
-> >               F(3DNOWPREFETCH) | F(OSVW) | 0 /* IBS */ | F(XOP) |
-> >               0 /* SKINIT, WDT, LWP */ | F(FMA4) | F(TBM) |
-> > -             F(TOPOEXT) | F(PERFCTR_CORE)
-> > +             F(TOPOEXT) | 0 /* PERFCTR_CORE */
-> >       );
-> >
-> >       kvm_cpu_cap_mask(CPUID_8000_0001_EDX,
-> > diff --git a/arch/x86/kvm/svm/pmu.c b/arch/x86/kvm/svm/pmu.c
-> > index fdf587f19c5f..a0bcf0144664 100644
-> > --- a/arch/x86/kvm/svm/pmu.c
-> > +++ b/arch/x86/kvm/svm/pmu.c
-> > @@ -16,6 +16,7 @@
-> >   #include "cpuid.h"
-> >   #include "lapic.h"
-> >   #include "pmu.h"
-> > +#include "svm.h"
-> >
-> >   enum pmu_type {
-> >       PMU_TYPE_COUNTER = 0,
-> > @@ -100,6 +101,9 @@ static inline struct kvm_pmc *get_gp_pmc_amd(struct kvm_pmu *pmu, u32 msr,
-> >   {
-> >       struct kvm_vcpu *vcpu = pmu_to_vcpu(pmu);
-> >
-> > +     if (!pmuv)
-> > +             return NULL;
-> > +
-> >       switch (msr) {
-> >       case MSR_F15H_PERF_CTL0:
-> >       case MSR_F15H_PERF_CTL1:
-> > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> > index 21bb81710e0f..062e48c191ee 100644
-> > --- a/arch/x86/kvm/svm/svm.c
-> > +++ b/arch/x86/kvm/svm/svm.c
-> > @@ -190,6 +190,10 @@ module_param(vgif, int, 0444);
-> >   static int lbrv = true;
-> >   module_param(lbrv, int, 0444);
-> >
-> > +/* enable/disable PMU virtualization */
-> > +bool pmuv = true;
-> > +module_param(pmuv, bool, 0444);
-> > +
-> >   static int tsc_scaling = true;
-> >   module_param(tsc_scaling, int, 0444);
-> >
-> > @@ -952,6 +956,10 @@ static __init void svm_set_cpu_caps(void)
-> >           boot_cpu_has(X86_FEATURE_AMD_SSBD))
-> >               kvm_cpu_cap_set(X86_FEATURE_VIRT_SSBD);
-> >
-> > +     /* AMD PMU PERFCTR_CORE CPUID */
-> > +     if (pmuv && boot_cpu_has(X86_FEATURE_PERFCTR_CORE))
-> > +             kvm_cpu_cap_set(X86_FEATURE_PERFCTR_CORE);
-> > +
-> >       /* CPUID 0x8000001F (SME/SEV features) */
-> >       sev_set_cpu_caps();
-> >   }
-> > @@ -1085,6 +1093,9 @@ static __init int svm_hardware_setup(void)
-> >                       pr_info("LBR virtualization supported\n");
-> >       }
-> >
-> > +     if (!pmuv)
-> > +             pr_info("PMU virtualization is disabled\n");
-> > +
-> >       svm_set_cpu_caps();
-> >
-> >       /*
-> > diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-> > index 0d7bbe548ac3..08e1c19ffbdf 100644
-> > --- a/arch/x86/kvm/svm/svm.h
-> > +++ b/arch/x86/kvm/svm/svm.h
-> > @@ -32,6 +32,7 @@
-> >   extern u32 msrpm_offsets[MSRPM_OFFSETS] __read_mostly;
-> >   extern bool npt_enabled;
-> >   extern bool intercept_smi;
-> > +extern bool pmuv;
-> >
-> >   /*
-> >    * Clean bits in VMCB.
-> >
->
-> Queued, thanks - just changed the parameter name to "pmu".
+U29ycnkgYWJvdXQgdGhpcy4gTXkgc2NyaXB0IG1pc3Rha2VubHkgc2VudCB0aGlzIGVtYWls
+IGJlY2F1c2Ugb2YgdGhlCnNhbWUgcHJlZml4IHdpdGggYW5vdGhlciBwYXRjaC4=
 
-Whoops! The global 'pmu' is hidden by a local 'pmu' in get_gp_pmc_amd().
