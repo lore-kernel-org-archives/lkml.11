@@ -2,88 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B54C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83184C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbiAOBNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:13:51 -0500
-Received: from out162-62-57-210.mail.qq.com ([162.62.57.210]:58139 "EHLO
-        out162-62-57-210.mail.qq.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229775AbiAOBNt (ORCPT
+        id S231903AbiAOBR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:17:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231156AbiAOBRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:13:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1642209226;
-        bh=KtC2JAo9Zv4oft7XPe6btVLuXHfV817m3kIZSg+ZITY=;
-        h=From:To:Cc:Subject:Date;
-        b=Oh7AsDnPr5IvUZGlxd+4VZ/tiMiGw2ffhQAgpDmUnnD3s8VUbFFs8S8exdRchof59
-         q2v22sEUkV0cDlfVUaQcCwxuFwUUpRolR6gDhhDM+Qd3FKs2Sx0ZUt7+33PzBWHgFE
-         ltc96/3y0fb55JX8aI0LhFtfUuX2cvu4GfCP1mw0=
-Received: from localhost.localdomain ([218.197.153.188])
-        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
-        id 2A006C80; Sat, 15 Jan 2022 09:10:32 +0800
-X-QQ-mid: xmsmtpt1642209032t17m0k78d
-Message-ID: <tencent_D67F131001E6EB5C358E0E0AB7F03725A907@qq.com>
-X-QQ-XMAILINFO: M7r/zttrUmlksvo2G1dU0x+495CKZ8lA2TaVTDWSgFeh18HvqEBmuBZFhXZFRt
-         p6UboqGlj17odmJTwuN21U3hqVvkbgrsHmLeCTdzUOLJU5nJHOaVPojHZbQ2GHvXDE073hniUIdr
-         amAX6Wmc1M6WKwnM4zeBYvizY+2ZGDxquComGTkU3PJp+xhIAEI43L1/SLKgsg2WUfJi0BpWSBeC
-         B87XSERumlTLYgXg5gqyak9Q6ZlMQPL+P+ZnGBqj37vMlzAh139zrv4C5Mr3DodkHyFqh5SBgJqG
-         PKKwH5/gae/j5n6EXCCjTpaXuk3tITYa4/I/r7gj1to2L1nZ7So1tcviQka9E8nkysMBEUlPDyb0
-         8gpYq/bSqYkBJfd9+ehg7yMltrve/ymP27jjTewlFkY3PSPYspcJSM1bS4STi+iZOltO2t5Ag631
-         ApfcAU2eJAP6PxbFuE9XWpd5rDfoC58xHY8wIczRgtsba6FNo8rFZYdTVuAexLQc8ruSsJiX8GtK
-         tbsgByYjIeBJ0ubM1ZVkJ6CUfc4SSMTHWxXHr274r9uP9dPKzaLu+E4b7mBts8atf25T3ksIs2q1
-         lY7ze3P52yXLwiveaIPhOQGYK32uxDWnPmGdLgHHuJRtqkKteezNkDZqgM4vZuc39oaVVeZ/ODmK
-         qz5b86eK8vHyQDdu7pLxJlJfbtvI0nstsfKgFtRE6PmphUyI0OBXTG5yFWp7bE8Z55U++Sib+0U8
-         Wtv2dTtp4F/gYpwl1Y4O1dtmXK+1ngBPqlBuerNLmHeChU5Da2PhcP798jeLeuvA7pAg77+1Bt6B
-         CNe+uT3A1Dswy+pPojJSf/hOR0oWHEXT7nRepulZoDSl21NV8XnNtyHZrTsssq5QchzLDdfl/1ms
-         sv5wzyp3hQ
-From:   xkernel.wang@foxmail.com
-To:     paul@paul-moore.com, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org
-Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xiaoke Wang <xkernel.wang@foxmail.com>
-Subject: [PATCH] selinux: check the return value of audit_log_start()
-Date:   Sat, 15 Jan 2022 09:10:06 +0800
-X-OQ-MSGID: <20220115011006.1881-1-xkernel.wang@foxmail.com>
-X-Mailer: git-send-email 2.33.0.windows.2
+        Fri, 14 Jan 2022 20:17:55 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BDA1C06161C
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:17:54 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id e3so32873860lfc.9
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:17:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DSUCsXvUq5CC+YLJR6sM+UncKVzG/eChv6GRiJ5ewuo=;
+        b=Km7B94yItHq7aVfP1T9NUkUg0CfyYu53x8ocQbPhc+dKDkm2Z3Qdmqq6lhxvM80Pks
+         16ttYCCVWt7dbiTvfB/TJxujAvsC6cSa06GEpsKkkuaeQlcM8M+t4u99s5lARvhfxInW
+         Ci1oy5mNVTaPwV+2dSBlSscKmvmZ+mg0LMkcK6MV3GSRb+XMtxMOJgcgXRxQrrOziDKZ
+         Bc7zRC9XKZDw0XoE+bVrA4iEkQtZ7fVhKAaqedPN8V6l0oR6BZz+wRBmSzU31XZDthCr
+         spefGhSvdjB+tbrWX7EjLUw/q7lrjUel8Kaldz+FP/57vDBGGjvW2MPQW/bngKKnr/RE
+         IoZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DSUCsXvUq5CC+YLJR6sM+UncKVzG/eChv6GRiJ5ewuo=;
+        b=ArNi0I/jRZOe9iFPR3KtZQHZFBFc46bX73uuRrxTSFajNvHo+D3NxQsvzzjQJChnEb
+         FRNdLWLG0KK6rb9tj8A0S+YozJ8N0/+D+0ZPC3K1XXzdOo0VDlYNxxTtzRvME3A3ZDOw
+         KPNeC+or76hhVvmnI0F3W7YvBTZ0oYOhodjylpHO+nFu05W7S+qfZEQz4VFJt5e4+sik
+         tZWnWScECm6A9oiOaeEhJdQT9q4LT8SZn/s3SIbhJJ0GxG04+NV4v0W2B6nEswPyWV9t
+         ylFBoVeYJMFIuknRPYGMQi/jTqN9LBAsieHfdrCibKmcyv4/ZsYjsPsYX5m79j5dv9qz
+         y1/g==
+X-Gm-Message-State: AOAM532VurwX/qrvzcfHF1Ndu8SnumlHEHPPSgEi9VTb1C/LGpXc4EfI
+        ikEcVeMO9YKliHG7QLfcvhnQh/88Oj97s/i/PcAuxA==
+X-Google-Smtp-Source: ABdhPJySDowHRxGMfXN2K9VReVwH+SUfch9JrimtyE5ccTX6eX5LjL8lOKhq1C4RF1mflvPlwsqfGtTGOZn0hxrfPFg=
+X-Received: by 2002:a05:6512:3e1f:: with SMTP id i31mr4004663lfv.661.1642209473081;
+ Fri, 14 Jan 2022 17:17:53 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAO_48GF=ttKqSOm9GRoA3Mq+-RQOtRjWp449XPcz-wH=kjaTjw@mail.gmail.com>
+ <20220113123406.11520-1-guangming.cao@mediatek.com> <4f88205c1b344aea8608960e2f85b8f4@intel.com>
+ <e657f5257cbf4955817b0bbf037de9f9@intel.com> <24157767-dc29-bbdd-5428-d89ecc6b9606@amd.com>
+ <CALAqxLXRtYDNQ8y1efVGa4SwUH_oAaHviZFjsOVSNFmUHnCCeQ@mail.gmail.com>
+ <6b8182a1-7cdc-7369-5c34-e6d0c24efcca@amd.com> <82faa62f1bc946cf2f9ee2f7d15c567162238eab.camel@mediatek.com>
+In-Reply-To: <82faa62f1bc946cf2f9ee2f7d15c567162238eab.camel@mediatek.com>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Fri, 14 Jan 2022 17:17:39 -0800
+Message-ID: <CALAqxLUSjHoLpgFLcvqmDfv7Uip2VwHS5d_5x2nzw=P3rA2NDA@mail.gmail.com>
+Subject: Re: [PATCH v3] dma-buf: dma-heap: Add a size check for allocation
+To:     "Guangming.Cao" <guangming.cao@mediatek.com>
+Cc:     =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
+        "sumit.semwal@linaro.org" <sumit.semwal@linaro.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "wsd_upstream@mediatek.com" <wsd_upstream@mediatek.com>,
+        "libo.kang@mediatek.com" <libo.kang@mediatek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "yf.wang@mediatek.com" <yf.wang@mediatek.com>,
+        "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "lmark@codeaurora.org" <lmark@codeaurora.org>,
+        "benjamin.gaignard@linaro.org" <benjamin.gaignard@linaro.org>,
+        "bo.song@mediatek.com" <bo.song@mediatek.com>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "mingyuan.ma@mediatek.com" <mingyuan.ma@mediatek.com>,
+        "jianjiao.zeng@mediatek.com" <jianjiao.zeng@mediatek.com>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+On Fri, Jan 14, 2022 at 4:04 AM Guangming.Cao
+<guangming.cao@mediatek.com> wrote:
+>
+> On Fri, 2022-01-14 at 08:16 +0100, Christian K=C3=B6nig wrote:
+> > Am 14.01.22 um 00:26 schrieb John Stultz:
+> > > On Thu, Jan 13, 2022 at 5:05 AM Christian K=C3=B6nig
+> > > <christian.koenig@amd.com> wrote:
+> > > > Am 13.01.22 um 14:00 schrieb Ruhl, Michael J:
+> > > > > > -----Original Message-----
+> > > > > > From: dri-devel <dri-devel-bounces@lists.freedesktop.org> On
+> > > > > > Behalf Of
+> > > > > > Ruhl, Michael J
+> > > > > > > -----Original Message-----
+> > > > > > > From: dri-devel <dri-devel-bounces@lists.freedesktop.org>
+> > > > > > > On Behalf Of
+> > > > > > > guangming.cao@mediatek.com
+> > > > > > > +   /*
+> > > > > > > +    * Invalid size check. The "len" should be less than
+> > > > > > > totalram.
+> > > > > > > +    *
+> > > > > > > +    * Without this check, once the invalid size allocation
+> > > > > > > runs on a process
+> > > > > > > that
+> > > > > > > +    * can't be killed by OOM flow(such as "gralloc" on
+> > > > > > > Android devices), it
+> > > > > > > will
+> > > > > > > +    * cause a kernel exception, and to make matters worse,
+> > > > > > > we can't find
+> > > > > > > who are using
+> > > > > > > +    * so many memory with "dma_buf_debug_show" since the
+> > > > > > > relevant
+> > > > > > > dma-buf hasn't exported.
+> > > > > > > +    */
+> > > > > > > +   if (len >> PAGE_SHIFT > totalram_pages())
+> > > > > >
+> > > > > > If your "heap" is from cma, is this still a valid check?
+> > > > >
+> > > > > And thinking a bit further, if I create a heap from something
+> > > > > else (say device memory),
+> > > > > you will need to be able to figure out the maximum allowable
+> > > > > check for the specific
+> > > > > heap.
+> > > > >
+> > > > > Maybe the heap needs a callback for max size?
+> Yes, I agree with this solution.
+> If dma-heap framework support this via adding a callback to support it,
+> seems it's more clear than adding a limitation in dma-heap framework
+> since each heap maybe has different limitation.
+> If you prefer adding callback, I can update this patch and add totalram
+> limitation to system dma-heap.
 
-audit_log_start() returns audit_buffer pointer on success or NULL on
-error. It is better to check the return value of it so to prevent
-potential memory access error.
+If the max value is per-heap, why not enforce that value in the
+per-heap allocation function?
 
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
----
- security/selinux/ss/services.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Moving the check to the heap alloc to me seems simpler to me than
+adding complexity to the infrastructure to add a heap max_size
+callback. Is there some other use for the callback that you envision?
 
-diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
-index e5f1b27..759d878 100644
---- a/security/selinux/ss/services.c
-+++ b/security/selinux/ss/services.c
-@@ -3277,11 +3277,13 @@ int security_sid_mls_copy(struct selinux_state *state,
- 				ab = audit_log_start(audit_context(),
- 						     GFP_ATOMIC,
- 						     AUDIT_SELINUX_ERR);
--				audit_log_format(ab,
--						 "op=security_sid_mls_copy invalid_context=");
--				/* don't record NUL with untrusted strings */
--				audit_log_n_untrustedstring(ab, s, len - 1);
--				audit_log_end(ab);
-+				if (ab) {
-+					audit_log_format(ab,
-+							"op=security_sid_mls_copy invalid_context=");
-+					/* don't record NUL with untrusted strings */
-+					audit_log_n_untrustedstring(ab, s, len - 1);
-+					audit_log_end(ab);
-+				}
- 				kfree(s);
- 			}
- 			goto out_unlock;
--- 
+thanks
+-john
