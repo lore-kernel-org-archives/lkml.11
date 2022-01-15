@@ -2,26 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B08FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE81C433FE
 	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 13:15:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232040AbiAONPu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 08:15:50 -0500
+        id S232229AbiAONPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 08:15:52 -0500
 Received: from alexa-out.qualcomm.com ([129.46.98.28]:16151 "EHLO
         alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiAONPn (ORCPT
+        with ESMTP id S231833AbiAONPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 15 Jan 2022 08:15:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642252543; x=1673788543;
+  t=1642252544; x=1673788544;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tBGUoEXvKxlGYkBeNgMRWCYfUterZHVE0VWnguF/6c4=;
-  b=zdT8Idx4fgnDPbF6ryG4gdnjMYsUGMn7078yDsHEDywR2A8uPu+Gn3x2
-   /JWiKze/M4PNw0dV8V2Oa5afojGyO544pvxip/493a9pgASn0TQDiRHuP
-   CHIMh8lghzru6gnkRa2U9/wSWWLsAllBDeCJaF2RTwF8UUZXHSxELBPtI
-   I=;
+  bh=DQWaPQ+0rviNbgTffzEDspCm5f8s267jdCGIyLu/vFM=;
+  b=GpSW2Hjqh5dZ8vu4GGglXRtItknlgkx0mFPfgCX3QNSuA0YbqemAngLM
+   NnwiqjP2SYWBSCQcF+cg9Xx//mVO7LGapyYGYmcxbPqmJWcMosXJftjgP
+   t118QWIAbKrxV8apBSmDC+dCH+ijWxLRa+ktJRk8Fn8Erx3vNqIvZ6els
+   A=;
 Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
   by alexa-out.qualcomm.com with ESMTP; 15 Jan 2022 05:15:43 -0800
 X-QCInternal: smtphost
@@ -30,11 +30,11 @@ Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sat, 15 Jan 2022 05:15:29 -0800
+ 15.2.922.19; Sat, 15 Jan 2022 05:15:41 -0800
 Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sat, 15 Jan 2022 05:15:24 -0800
+ 15.2.922.19; Sat, 15 Jan 2022 05:15:36 -0800
 From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 To:     Will Deacon <will@kernel.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
@@ -45,16 +45,18 @@ CC:     gregkh <gregkh@linuxfoundation.org>, <quic_psodagud@quicinc.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-arm-msm@vger.kernel.org>,
         Trilok Soni <quic_tsoni@quicinc.com>,
-        "Sai Prakash Ranjan" <quic_saipraka@quicinc.com>
-Subject: [PATCHv7 1/5] arm64: io: Use asm-generic high level MMIO accessors
-Date:   Sat, 15 Jan 2022 18:44:51 +0530
-Message-ID: <bd7e24709080c665312a519227fbd57ac9633eec.1642233364.git.quic_saipraka@quicinc.com>
+        "Sai Prakash Ranjan" <quic_saipraka@quicinc.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCHv7 3/5] drm/meson: Fix overflow implicit truncation warnings
+Date:   Sat, 15 Jan 2022 18:44:53 +0530
+Message-ID: <28080ab6447e5daf775ba0af2f20b5ea68f20739.1642233364.git.quic_saipraka@quicinc.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1642233364.git.quic_saipraka@quicinc.com>
 References: <cover.1642233364.git.quic_saipraka@quicinc.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
@@ -62,77 +64,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove custom arm64 MMIO accessors read{b,w,l,q} and their relaxed
-versions in support to use asm-generic defined accessors. Also define
-one set of IO barriers (ar/bw version) used by asm-generic code to
-override the arm64 specific variants.
+Fix -Woverflow warnings for drm/meson driver which is a result
+of moving arm64 custom MMIO accessor macros to asm-generic function
+implementations giving a bonus type-checking now and uncovering these
+overflow warnings.
 
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
+drivers/gpu/drm/meson/meson_viu.c: In function ‘meson_viu_init’:
+drivers/gpu/drm/meson/meson_registers.h:1826:48: error: large integer implicitly truncated to unsigned type [-Werror=overflow]
+ #define  VIU_OSD_BLEND_REORDER(dest, src)      ((src) << (dest * 4))
+                                                ^
+drivers/gpu/drm/meson/meson_viu.c:472:18: note: in expansion of macro ‘VIU_OSD_BLEND_REORDER’
+   writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+                  ^~~~~~~~~~~~~~~~~~~~~
+
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 ---
- arch/arm64/include/asm/io.h | 41 ++++++++-----------------------------
- 1 file changed, 8 insertions(+), 33 deletions(-)
+ drivers/gpu/drm/meson/meson_viu.c | 22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm64/include/asm/io.h b/arch/arm64/include/asm/io.h
-index 7fd836bea7eb..1b436810d779 100644
---- a/arch/arm64/include/asm/io.h
-+++ b/arch/arm64/include/asm/io.h
-@@ -91,7 +91,7 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
- }
+diff --git a/drivers/gpu/drm/meson/meson_viu.c b/drivers/gpu/drm/meson/meson_viu.c
+index 259f3e6bec90..bb7e109534de 100644
+--- a/drivers/gpu/drm/meson/meson_viu.c
++++ b/drivers/gpu/drm/meson/meson_viu.c
+@@ -469,17 +469,17 @@ void meson_viu_init(struct meson_drm *priv)
+ 			priv->io_base + _REG(VD2_IF0_LUMA_FIFO_SIZE));
  
- /* IO barriers */
--#define __iormb(v)							\
-+#define __io_ar(v)							\
- ({									\
- 	unsigned long tmp;						\
- 									\
-@@ -108,39 +108,14 @@ static inline u64 __raw_readq(const volatile void __iomem *addr)
- 		     : "memory");					\
- })
+ 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
+-		writel_relaxed(VIU_OSD_BLEND_REORDER(0, 1) |
+-			       VIU_OSD_BLEND_REORDER(1, 0) |
+-			       VIU_OSD_BLEND_REORDER(2, 0) |
+-			       VIU_OSD_BLEND_REORDER(3, 0) |
+-			       VIU_OSD_BLEND_DIN_EN(1) |
+-			       VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
+-			       VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
+-			       VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
+-			       VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
+-			       VIU_OSD_BLEND_HOLD_LINES(4),
+-			       priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
++		u32 val = (u32)VIU_OSD_BLEND_REORDER(0, 1) |
++			  (u32)VIU_OSD_BLEND_REORDER(1, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(2, 0) |
++			  (u32)VIU_OSD_BLEND_REORDER(3, 0) |
++			  (u32)VIU_OSD_BLEND_DIN_EN(1) |
++			  (u32)VIU_OSD_BLEND1_DIN3_BYPASS_TO_DOUT1 |
++			  (u32)VIU_OSD_BLEND1_DOUT_BYPASS_TO_BLEND2 |
++			  (u32)VIU_OSD_BLEND_DIN0_BYPASS_TO_DOUT0 |
++			  (u32)VIU_OSD_BLEND_BLEN2_PREMULT_EN(1) |
++			  (u32)VIU_OSD_BLEND_HOLD_LINES(4);
++		writel_relaxed(val, priv->io_base + _REG(VIU_OSD_BLEND_CTRL));
  
--#define __io_par(v)		__iormb(v)
--#define __iowmb()		dma_wmb()
--#define __iomb()		dma_mb()
--
--/*
-- * Relaxed I/O memory access primitives. These follow the Device memory
-- * ordering rules but do not guarantee any ordering relative to Normal memory
-- * accesses.
-- */
--#define readb_relaxed(c)	({ u8  __r = __raw_readb(c); __r; })
--#define readw_relaxed(c)	({ u16 __r = le16_to_cpu((__force __le16)__raw_readw(c)); __r; })
--#define readl_relaxed(c)	({ u32 __r = le32_to_cpu((__force __le32)__raw_readl(c)); __r; })
--#define readq_relaxed(c)	({ u64 __r = le64_to_cpu((__force __le64)__raw_readq(c)); __r; })
-+#define __io_bw()		dma_wmb()
-+#define __io_br(v)
-+#define __io_aw(v)
- 
--#define writeb_relaxed(v,c)	((void)__raw_writeb((v),(c)))
--#define writew_relaxed(v,c)	((void)__raw_writew((__force u16)cpu_to_le16(v),(c)))
--#define writel_relaxed(v,c)	((void)__raw_writel((__force u32)cpu_to_le32(v),(c)))
--#define writeq_relaxed(v,c)	((void)__raw_writeq((__force u64)cpu_to_le64(v),(c)))
--
--/*
-- * I/O memory access primitives. Reads are ordered relative to any
-- * following Normal memory access. Writes are ordered relative to any prior
-- * Normal memory access.
-- */
--#define readb(c)		({ u8  __v = readb_relaxed(c); __iormb(__v); __v; })
--#define readw(c)		({ u16 __v = readw_relaxed(c); __iormb(__v); __v; })
--#define readl(c)		({ u32 __v = readl_relaxed(c); __iormb(__v); __v; })
--#define readq(c)		({ u64 __v = readq_relaxed(c); __iormb(__v); __v; })
--
--#define writeb(v,c)		({ __iowmb(); writeb_relaxed((v),(c)); })
--#define writew(v,c)		({ __iowmb(); writew_relaxed((v),(c)); })
--#define writel(v,c)		({ __iowmb(); writel_relaxed((v),(c)); })
--#define writeq(v,c)		({ __iowmb(); writeq_relaxed((v),(c)); })
-+/* arm64-specific, don't use in portable drivers */
-+#define __iormb(v)		__io_ar(v)
-+#define __iowmb()		__io_bw()
-+#define __iomb()		dma_mb()
- 
- /*
-  *  I/O port access primitives.
+ 		writel_relaxed(OSD_BLEND_PATH_SEL_ENABLE,
+ 			       priv->io_base + _REG(OSD1_BLEND_SRC_CTRL));
 -- 
 2.33.1
 
