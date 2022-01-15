@@ -2,97 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97CBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 00:26:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7B8C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 00:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231535AbiAOA00 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 19:26:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231501AbiAOA0X (ORCPT
+        id S231545AbiAOA1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 19:27:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49344 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230474AbiAOA1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 19:26:23 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11632C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 16:26:23 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id k14so10352544ion.7
-        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 16:26:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=nnn6TgbEatXba1qMqMpIFTzJjUEOM6DXsCEXS6nFHmE=;
-        b=FxVnvey7Eet1ab80FcuPZfwDVxn5H2v0ZIRgLD9ZXul3iVXfZwPY5wgQdnIwv2jAqG
-         igxt+ClWx1l1WITfulHYOxxaX6FBBsxKb0gyoSAnmvqZAMdWpycW78KfQ5u1oUE73ptF
-         lCwJnuFSkSZpzpIQ0rdUebdau4tf4DW1fTouw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nnn6TgbEatXba1qMqMpIFTzJjUEOM6DXsCEXS6nFHmE=;
-        b=zoir4s6G1sVN6+A8e0XlTPb1G1TgtH9vd38fbIJyndiaH7M9EEYkqIEE4vA3OSIyPq
-         gHxgk5G5jwcLqwAyi8995pSYBLSZrJIA3Xl7D7Zw+NjIs5MWUje2FMr+qwpnc7zyCrTy
-         vPXWGHEtYAxGEMZLUoGz5El2Kq1Lphd2fgQVEAuEhUza9vvoVMKBGNif39eNQA0Prz7f
-         Rk/arsisJr6kDjXqAQ8dEgFSyEM1qsf4wjAAb4OJ+6ASrxtbIlmX5GIn15O0X0aeMN9I
-         gZVaMh1RD/tc44smIW4MZ95pfpEwrwRbzsBXQJuLRtKzvcbfX4V3GrOyGhpe8mVFZD6y
-         W7Jw==
-X-Gm-Message-State: AOAM530baUjwrUNdv7PUXE+fBcKYoNee+gjQY5nfbAOzAAo1qS6MrwXi
-        vS6qipOdGe7HRmSTR9w8BuPjaQ==
-X-Google-Smtp-Source: ABdhPJy2rTnL8+f85ezuzw8CkOTq2U6mFOjYthQYNn28RrDW0EVAxKzGQXezmSDceB0QPn0vK3Oewg==
-X-Received: by 2002:a02:9508:: with SMTP id y8mr2922570jah.295.1642206382413;
-        Fri, 14 Jan 2022 16:26:22 -0800 (PST)
-Received: from [192.168.1.128] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id a7sm4670869ioo.5.2022.01.14.16.26.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Jan 2022 16:26:22 -0800 (PST)
-Subject: Re: [PATCH 5.4 00/18] 5.4.172-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Fri, 14 Jan 2022 19:27:35 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 814F4620A6;
+        Sat, 15 Jan 2022 00:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A30C36AE9;
+        Sat, 15 Jan 2022 00:27:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642206454;
+        bh=hlK7A7JLCpy3UKbMBHbhsr7ctTmoSDrVLCFh2Sh/GyM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pytUqLhCXWQsEp8FfU5STjvL+hX2lEn98MyYCGwuZbaKM3A6qtL+/xHSytHPRm197
+         j48DzhjGTM6fcmrVFK4EJHX+vu0VfBUbCqEU3TdbG+ug2vzbXzlJcp5Qo/2PQU1hVs
+         A93NizF8LralQTbwYKSNreIZnPvCZGLP9Z2pDnNrtHVgUshX62/tRdJoRy0Vjpv0IC
+         H3dwUrmMbiParYuCsgKUamZ5TsRfu1BZOdW8XwVsZyXykg3dl6pEdS4mD59j4+TbUd
+         92MQGNaPVxNZSGpTdEwcoqYAVB8zCOJzvyfsIY7ORyamt1dvJ3SpJwfgsoTOtn+C/T
+         0jhBr9lrGAedQ==
+Date:   Sat, 15 Jan 2022 02:27:21 +0200
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     Nathaniel McCallum <nathaniel@profian.com>,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, dave.hansen@linux.intel.com,
+        tglx@linutronix.de, bp@alien8.de, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org, seanjc@google.com,
+        kai.huang@intel.com, cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
         linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220114081541.465841464@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <f33d717e-9fdc-76bd-f3fe-144e29e1e62a@linuxfoundation.org>
-Date:   Fri, 14 Jan 2022 17:26:19 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Subject: Re: [PATCH 05/25] x86/sgx: Introduce runtime protection bits
+Message-ID: <YeIU6e6wetrifn+b@iki.fi>
+References: <YdzjEzjF0YKn+pZ6@iki.fi>
+ <4195402f-cbf9-bc75-719d-22cea8e36e60@intel.com>
+ <Yd9pMq4lUy56B+50@iki.fi>
+ <Yd9qmMx7NO450mzZ@iki.fi>
+ <CAHAy0tRi2q+wG+yBttq0FYeK-5wUAoK_=ZCtWsfQf0m8oPc1-w@mail.gmail.com>
+ <168fb2c9-de3f-384a-bb17-ab84db2cf533@intel.com>
+ <YeHwzwnfsUcxiNbw@iki.fi>
+ <b0e5c1fc-aa6d-4e26-c18b-d93d93c2131a@intel.com>
+ <YeIEKayEUidj0Dlb@iki.fi>
+ <6e1cb295-b86e-ae09-2cf0-cfefd1a10e65@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220114081541.465841464@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6e1cb295-b86e-ae09-2cf0-cfefd1a10e65@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/14/22 1:16 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.172 release.
-> There are 18 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Fri, Jan 14, 2022 at 04:01:33PM -0800, Reinette Chatre wrote:
+> Hi Jarkko,
 > 
-> Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
-> Anything received after that time might be too late.
+> On 1/14/2022 3:15 PM, Jarkko Sakkinen wrote:
+> > On Fri, Jan 14, 2022 at 03:05:21PM -0800, Reinette Chatre wrote:
+> >> Hi Jarkko,
+> > 
+> > How enclave can check a page range that EPCM has the expected permissions?
 > 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.172-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+> Only way to change EPCM permissions from outside enclave is to run ENCLS[EMODPR]
+> that needs to be accepted from within the enclave via ENCLU[EACCEPT]. At that
+> time the enclave provides the expected permissions and that will fail
+> if there is a mismatch with the EPCM permissions (SGX_PAGE_ATTRIBUTES_MISMATCH).
 
-Compiled and booted on my test system. No dmesg regressions.
+This is a very valid point but that does make the introspection possible
+only at the time of EACCEPT.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+It does not give tools for enclave to make sure that EMODPR-ETRACK dance
+was ever exercised.
 
-thanks,
--- Shuah
-
+/Jarkko
