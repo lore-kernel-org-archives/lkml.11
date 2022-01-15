@@ -2,135 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0E0C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232120AbiAOEsk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 23:48:40 -0500
-Received: from qproxy4-pub.mail.unifiedlayer.com ([66.147.248.250]:38175 "EHLO
-        qproxy4-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229579AbiAOEsj (ORCPT
+        id S232502AbiAOEwa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 23:52:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232330AbiAOEw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 23:48:39 -0500
-X-Greylist: delayed 1408 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Jan 2022 23:48:39 EST
-Received: from progateway7-pub.mail.pro1.eigbox.com (gproxy5-pub.mail.unifiedlayer.com [67.222.38.55])
-        by qproxy4.mail.unifiedlayer.com (Postfix) with ESMTP id DE1438034106
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 04:25:09 +0000 (UTC)
-Received: from cmgw14.mail.unifiedlayer.com (unknown [10.0.90.129])
-        by progateway7.mail.pro1.eigbox.com (Postfix) with ESMTP id 2EB581004870D
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 04:25:09 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id 8acmnCmRX2s5d8acnnqj9U; Sat, 15 Jan 2022 04:25:09 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=BOh2EHcG c=1 sm=1 tr=0 ts=61e24ca5
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=DghFqjY3_ZEA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=-Qcm0AZxhyoZnww38z8A:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2ytazBcu1/WEpQe+c3RwgbycMvD43iurYN7PpL6wsLc=; b=fb0YPheNQsk8n8tjAuXrqr/8nq
-        d7f9/bFZmaSNLxsROFQ6ccY7wFIgPkQztrgC0qXfP7ljZtTA9Cn4eAAqoXFI0iS7X0wFJKRrbejC4
-        aeaNtpNAGUK9QisRV+b/LRJW5;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:60982 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1n8acl-000TEm-Us; Fri, 14 Jan 2022 21:25:08 -0700
-Subject: Re: [PATCH 5.16 00/37] 5.16.1-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-References: <20220114081544.849748488@linuxfoundation.org>
-In-Reply-To: <20220114081544.849748488@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <7da2da48-33a8-6448-6906-03e1661b50b4@w6rz.net>
-Date:   Fri, 14 Jan 2022 20:25:06 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1n8acl-000TEm-Us
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:60982
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+        Fri, 14 Jan 2022 23:52:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97151C061574;
+        Fri, 14 Jan 2022 20:52:28 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34CFBB82A3F;
+        Sat, 15 Jan 2022 04:52:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13291C36AE3;
+        Sat, 15 Jan 2022 04:52:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642222345;
+        bh=kSCnrayE8Mo1ZIMcOG8B3aBkGFLr6EGhQVWCkHxVQUU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QWaz6iKhyIEz8G4LFQIttgPQWdtBsy9HFLengeCDlgwR4uVUAMeWeY+6JE1DoF6h0
+         IMAfEcJWDbYYr/I23d6Or+93YACdc4oAqAJwFQcVSCkcNg0OpbpbUzWCyzjUBcuB7i
+         iYNtsNOqvSHmlsW+Yj5A7F0YzLyP2GswfjKRrL8wtyy+OPR3CtayukTsumfYzH/V7G
+         okYRmvOfFW5sdsYB6/1JicNPE0LKVQqmd4kypyztEO4VJ5lTSSuidocFgk3Z21nl+V
+         NE06EzD5IhnqB/OnKD219ptgLL2JthgY7g+/FM6wzQ8ubXeEJP8RzNNBLhZS7JxCrO
+         gBN/JA9AYZe4A==
+Date:   Sat, 15 Jan 2022 13:52:19 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
+ probe
+Message-Id: <20220115135219.64ef1cc6482d5de8a3bce9b0@kernel.org>
+In-Reply-To: <YeAatqQTKsrxmUkS@krava>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+        <Yd77SYWgtrkhFIYz@krava>
+        <YeAatqQTKsrxmUkS@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/14/22 12:16 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.1 release.
-> There are 37 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.1-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+On Thu, 13 Jan 2022 13:27:34 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+> On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
+> > On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
+> > > Hi Jiri and Alexei,
+> > > 
+> > > Here is the 2nd version of fprobe. This version uses the
+> > > ftrace_set_filter_ips() for reducing the registering overhead.
+> > > Note that this also drops per-probe point private data, which
+> > > is not used anyway.
+> > > 
+> > > This introduces the fprobe, the function entry/exit probe with
+> > > multiple probe point support. This also introduces the rethook
+> > > for hooking function return as same as kretprobe does. This
+> > 
+> > nice, I was going through the multi-user-graph support 
+> > and was wondering that this might be a better way
+> > 
+> > > abstraction will help us to generalize the fgraph tracer,
+> > > because we can just switch it from rethook in fprobe, depending
+> > > on the kernel configuration.
+> > > 
+> > > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
+> > > patches will not be affected by this change.
+> > 
+> > I'll try the bpf selftests on top of this
+> 
+> I'm getting crash and stall when running bpf selftests,
+> the fprobe sample module works fine, I'll check on that
 
-Warnings:
+OK, I got a kernel stall. I missed to enable CONFIG_FPROBE.
+I think vmtest.sh should support menuconfig option.
 
-fs/jffs2/xattr.c: In function ‘jffs2_build_xattr_subsystem’:
-fs/jffs2/xattr.c:887:1: warning: the frame size of 1104 bytes is larger 
-than 1024 bytes [-Wframe-larger-than=]
-   887 | }
-       | ^
-lib/crypto/curve25519-hacl64.c: In function ‘ladder_cmult.constprop’:
-lib/crypto/curve25519-hacl64.c:601:1: warning: the frame size of 1040 
-bytes is larger than 1024 bytes [-Wframe-larger-than=]
-   601 | }
-       | ^
-drivers/net/wireguard/allowedips.c: In function ‘root_remove_peer_lists’:
-drivers/net/wireguard/allowedips.c:77:1: warning: the frame size of 1040 
-bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    77 | }
-       | ^
-drivers/net/wireguard/allowedips.c: In function ‘root_free_rcu’:
-drivers/net/wireguard/allowedips.c:64:1: warning: the frame size of 1040 
-bytes is larger than 1024 bytes [-Wframe-larger-than=]
-    64 | }
-       | ^
-drivers/vhost/scsi.c: In function ‘vhost_scsi_flush’:
-drivers/vhost/scsi.c:1444:1: warning: the frame size of 1040 bytes is 
-larger than 1024 bytes [-Wframe-larger-than=]
-  1444 | }
-       | ^
+#6 bind_perm:OK
+#7 bloom_filter_map:OK
+[  107.282403] clocksource: timekeeping watchdog on CPU0: Marking clocksource 'tsc' as unstable because the skew is too large:
+[  107.283240] clocksource:                       'hpet' wd_nsec: 496216090 wd_now: 7ddc7120 wd_last: 7ae746b7 mask: ffffffff
+[  107.284045] clocksource:                       'tsc' cs_nsec: 495996979 cs_now: 31fdb69b39 cs_last: 31c2d29219 mask: ffffffffffffffff
+[  107.284926] clocksource:                       'tsc' is current clocksource.
+[  107.285487] tsc: Marking TSC unstable due to clocksource watchdog
+[  107.285973] TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
+[  107.286616] sched_clock: Marking unstable (107240582544, 45390230)<-(107291410145, -5437339)
+[  107.290408] clocksource: Not enough CPUs to check clocksource 'tsc'.
+[  107.290879] clocksource: Switched to clocksource hpet
+[  604.210415] INFO: rcu_tasks detected stalls on tasks:
+[  604.210830] (____ptrval____): .. nvcsw: 86/86 holdout: 1 idle_cpu: -1/0
+[  604.211314] task:test_progs      state:R  running task     stack:    0 pid:   87 ppid:    85 flags:0x00004000
+[  604.212058] Call Trace:
+[  604.212246]  <TASK>
+[  604.212452]  __schedule+0x362/0xbb0
+[  604.212723]  ? preempt_schedule_notrace_thunk+0x16/0x18
+[  604.213107]  preempt_schedule_notrace+0x48/0x80
+[  604.217403]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
+[  604.217790]  ? ftrace_regs_call+0xd/0x52
+[  604.218087]  ? bpf_test_finish.isra.0+0x190/0x190
+[  604.218461]  ? bpf_fentry_test1+0x5/0x10
+[  604.218750]  ? trace_clock_x86_tsc+0x10/0x10
+[  604.219064]  ? __sys_bpf+0x8b1/0x2970
+[  604.219337]  ? lock_is_held_type+0xd7/0x130
+[  604.219680]  ? __x64_sys_bpf+0x1c/0x20
+[  604.219957]  ? do_syscall_64+0x35/0x80
+[  604.220237]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  604.220653]  </TASK>
 
-Tested-by: Ron Economos <re@w6rz.net>
+Jiri, is that what you had seen? 
 
+
+Thank you,
+
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
