@@ -2,84 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87505C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 02:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11E2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 02:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232178AbiAOC0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 21:26:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54962 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229665AbiAOCZ7 (ORCPT
+        id S232192AbiAOC03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 21:26:29 -0500
+Received: from m13131.mail.163.com ([220.181.13.131]:58226 "EHLO
+        m13131.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232179AbiAOC02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 21:25:59 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA43061828;
-        Sat, 15 Jan 2022 02:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9254C36AE9;
-        Sat, 15 Jan 2022 02:25:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642213558;
-        bh=Yk4Y6G2HryH0ZQKBp7+/9ICuGW+ToukcMKhMZUl37xE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=M6K3ylKXCK885VCvOCdzru+Wdq6dpiQaxgW/wpb7s+WGtzCGP3uW72L2KJxxMuJ95
-         UFvgHCA+Hq9xXUSKUQS3Ka5kBv57oEFINnyGH8tOgp1sZJ64manfneWEuvvCd1hiux
-         3NHd0RQ20IZHWrAarq+p2QnSzlGhszdjONAWSFk4q9YeBcr9zUrTZQCqGv+ai/NPtz
-         6PqeNwL3OY9+tllY6HGbkjjyFYKLt1wPWSh6ZrG16lLXa8+9d19rhOXRjy8WG+eh0E
-         /0uRDBM367p/JTPBZMBWYUnWavh/tUyOgAWbIj0RYMYt6MmZcuqqn6mx4qdTGlX+jc
-         Yhudlb332Empw==
-Date:   Fri, 14 Jan 2022 18:25:56 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexandra Winter <wintera@linux.ibm.com>
-Cc:     Xu Wang <vulab@iscas.ac.cn>, wenjia@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, borntraeger@linux.ibm.com,
-        agordeev@linux.ibm.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] s390/qeth: Remove redundant 'flush_workqueue()' calls
-Message-ID: <20220114182556.373a159b@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <45b2b8d0-b913-20cd-62ca-e6014505632c@linux.ibm.com>
-References: <20220114084218.42586-1-vulab@iscas.ac.cn>
-        <45b2b8d0-b913-20cd-62ca-e6014505632c@linux.ibm.com>
+        Fri, 14 Jan 2022 21:26:28 -0500
+X-Greylist: delayed 920 seconds by postgrey-1.27 at vger.kernel.org; Fri, 14 Jan 2022 21:26:26 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=1T43d
+        FltCo6Fgh9UbxbaeWXlV3mdmzK3+dU8cgtAtGo=; b=ABvmN62XIqf3qdpRw19cu
+        LtVSxaEFVHYBfaWI4viwh974l9d28Vm1MRj8CjA2qLTnUwSmHxWwcNkVHglh0qEN
+        VinCEoJIzhVL3RKxQP65mms2UvYpfD0xkCOrw76hOSO19yR9HOT1oc3pYy3Vhkb1
+        Z67X6GkU+l6TIhBr4t/RFY=
+Received: from slark_xiao$163.com ( [223.104.68.79] ) by
+ ajax-webmail-wmsvr131 (Coremail) ; Sat, 15 Jan 2022 10:10:40 +0800 (CST)
+X-Originating-IP: [223.104.68.79]
+Date:   Sat, 15 Jan 2022 10:10:40 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     "Loic Poulain" <loic.poulain@linaro.org>
+Cc:     ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, "Shujun Wang" <wsj20369@163.com>
+Subject: Re:Re: [PATCH] Fix MRU mismatch issue which may lead to data
+ connection lost
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <CAMZdPi8g2VxBFzS7Lw=TAN_NPQSuzwLuhEGB2akqn-Tjqer7vQ@mail.gmail.com>
+References: <20220114100731.4033-1-slark_xiao@163.com>
+ <CAMZdPi8g2VxBFzS7Lw=TAN_NPQSuzwLuhEGB2akqn-Tjqer7vQ@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Message-ID: <1d83ef81.381.17e5b804869.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: g8GowAAXHS4hLeJhwHIJAA--.26057W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAwyJZGB0IojNQwABsT
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 12:58:38 +0100 Alexandra Winter wrote:
-> On 14.01.22 09:42, Xu Wang wrote:
-> > 'destroy_workqueue()' already drains the queue before destroying it, so
-> > there is no need to flush it explicitly.
-> > 
-> > Remove the redundant 'flush_workqueue()' calls.
-> > 
-> > Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
-> > ---
-> >  drivers/s390/net/qeth_l3_main.c | 1 -
-> >  1 file changed, 1 deletion(-)
-> > 
-> > diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
-> > index 9251ad276ee8..d2f422a9a4f7 100644
-> > --- a/drivers/s390/net/qeth_l3_main.c
-> > +++ b/drivers/s390/net/qeth_l3_main.c
-> > @@ -1961,7 +1961,6 @@ static void qeth_l3_remove_device(struct ccwgroup_device *cgdev)
-> >  	if (card->dev->reg_state == NETREG_REGISTERED)
-> >  		unregister_netdev(card->dev);
-> >  
-> > -	flush_workqueue(card->cmd_wq);
-> >  	destroy_workqueue(card->cmd_wq);
-> >  	qeth_l3_clear_ip_htable(card, 0);
-> >  	qeth_l3_clear_ipato_list(card);  
-> 
-> Thanks for pointing this out!
-> 
-> IMO, this can go to net-next as it is not a fix, but removes redundancy.
-
-Agreed.
-
-> Acked-by: Alexandra Winter <wintera@linux.ibm.com>
-
-Please keep Alexandra's ack and repost in ~1.5 week -- after 5.17-rc1
-is tagged.
+CgpBdCAyMDIyLTAxLTE0IDIzOjUxOjUzLCAiTG9pYyBQb3VsYWluIiA8bG9pYy5wb3VsYWluQGxp
+bmFyby5vcmc+IHdyb3RlOgo+T24gRnJpLCAxNCBKYW4gMjAyMiBhdCAxMTowNywgU2xhcmsgWGlh
+byA8c2xhcmtfeGlhb0AxNjMuY29tPiB3cm90ZToKPj4KPj4gSW4gcGNpX2dlbmVyaWMuYyB0aGVy
+ZSBpcyBhICdtcnVfZGVmYXVsdCcgaW4gc3RydWN0IG1oaV9wY2lfZGV2X2luZm8uCj4+IFRoaXMg
+dmFsdWUgc2hhbGwgYmUgdXNlZCBmb3Igd2hvbGUgbWhpIGlmIGl0J3MgZ2l2ZW4gYSB2YWx1ZSBm
+b3IgYSBzcGVjaWZpYyBwcm9kdWN0Lgo+PiBCdXQgaW4gZnVuY3Rpb24gbWhpX25ldF9yeF9yZWZp
+bGxfd29yaygpLCBpdCdzIHN0aWxsIHVzaW5nIGhhcmQgY29kZSB2YWx1ZSBNSElfREVGQVVMVF9N
+UlUuCj4+ICdtcnVfZGVmYXVsdCcgc2hhbGwgaGF2ZSBoaWdoZXIgcHJpb3JpdHkgdGhhbiBNSElf
+REVGQVVMVF9NUlUuCj4+IEFuZCBhZnRlciBjaGVja2luZywgdGhpcyBjaGFuZ2UgY291bGQgaGVs
+cCBmaXggYSBkYXRhIGNvbm5lY3Rpb24gbG9zdCBpc3N1ZS4KPgo+SW50ZXJlc3RpbmcsIG5vdCBz
+dXJlIHdoeSBpdCBmaXhlcyBkYXRhIGlzc3Vlcywgc2luY2UgdGhlIGRldmljZQo+c2hvdWxkIGNv
+bXBseSB3aXRoIGFueSBzaXplLkNhbiB5b3UgYWRkIGEgRml4ZXMgdGFnIHRoZW4/IGFuZCBhZGQg
+dGhlCj5jb3JyZWN0IFtQQVRDSCBuZXRdIHN1ZmZpeCBpbiB0aGUgc3ViamVjdDoKPmh0dHBzOi8v
+d3d3Lmtlcm5lbC5vcmcvZG9jL2h0bWwvbGF0ZXN0L25ldHdvcmtpbmcvbmV0ZGV2LUZBUS5odG1s
+Cj4KPldpdGggdGhhdDoKPgo+UmV2aWV3ZWQtYnk6IExvaWMgUG91bGFpbiA8bG9pYy5wb3VsYWlu
+QGxpbmFyby5vcmc+Cj4KPlRoYW5rcywKPkxvaWMKPgpIaSBMb2ljLAogICBBY3R1YWxseSwgZm9y
+IG91ciBGb3hjb25uIGRldmljZSBTRFg1NSwgaXQgaGFzIGJlZW4gY29uZmlybWVkIHRoYXQgTVJV
+IDM1MDAgCndvdWxkIGxlYWQgdG8gYSBJUEEgc3R1Y2suIElQQSBzdHVjayB3b3VsZCBtYWtlIHRo
+ZSBkYXRhIGNvbm5lY3Rpb24gbG9zdC4gCkZvciBvdGhlciBNUlUgdmFsdWUsIGxpa2UgNDAwMCwg
+NDA5NiwzMjc2OCwgd2UgY2FuJ3QgcmVwcm9kdWNlIGl0LiAKICBXZSBhbHNvIGhhdmUgcmVwb3J0
+IHRoaXMgaXNzdWUgaW4gaHR0cHM6Ly9idWd6aWxsYS5rZXJuZWwub3JnL3Nob3dfYnVnLmNnaT9p
+ZD0yMTU0MzMgLgogIEkgd2lsbCBzZW5kIGEgbmV3IHBhdGNoIGxhdGVyLgoKVGhhbmtzClNsYXJr
+Cj4KPgo+Cj4+Cj4+IFNpZ25lZC1vZmYtYnk6IFNodWp1biBXYW5nIDx3c2oyMDM2OUAxNjMuY29t
+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBTbGFyayBYaWFvIDxzbGFya194aWFvQDE2My5jb20+Cj4+IC0t
+LQo+PiAgZHJpdmVycy9uZXQvd3dhbi9taGlfd3dhbl9tYmltLmMgfCA0ICsrLS0KPj4gIDEgZmls
+ZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL25ldC93d2FuL21oaV93d2FuX21iaW0uYyBiL2RyaXZlcnMvbmV0L3d3YW4v
+bWhpX3d3YW5fbWJpbS5jCj4+IGluZGV4IDcxYmY5YjRmNzY5Zi4uNjg3Mjc4MmU4ZGQ4IDEwMDY0
+NAo+PiAtLS0gYS9kcml2ZXJzL25ldC93d2FuL21oaV93d2FuX21iaW0uYwo+PiArKysgYi9kcml2
+ZXJzL25ldC93d2FuL21oaV93d2FuX21iaW0uYwo+PiBAQCAtMzg1LDEzICszODUsMTMgQEAgc3Rh
+dGljIHZvaWQgbWhpX25ldF9yeF9yZWZpbGxfd29yayhzdHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmsp
+Cj4+ICAgICAgICAgaW50IGVycjsKPj4KPj4gICAgICAgICB3aGlsZSAoIW1oaV9xdWV1ZV9pc19m
+dWxsKG1kZXYsIERNQV9GUk9NX0RFVklDRSkpIHsKPj4gLSAgICAgICAgICAgICAgIHN0cnVjdCBz
+a19idWZmICpza2IgPSBhbGxvY19za2IoTUhJX0RFRkFVTFRfTVJVLCBHRlBfS0VSTkVMKTsKPj4g
+KyAgICAgICAgICAgICAgIHN0cnVjdCBza19idWZmICpza2IgPSBhbGxvY19za2IobWJpbS0+bXJ1
+LCBHRlBfS0VSTkVMKTsKPj4KPj4gICAgICAgICAgICAgICAgIGlmICh1bmxpa2VseSghc2tiKSkK
+Pj4gICAgICAgICAgICAgICAgICAgICAgICAgYnJlYWs7Cj4+Cj4+ICAgICAgICAgICAgICAgICBl
+cnIgPSBtaGlfcXVldWVfc2tiKG1kZXYsIERNQV9GUk9NX0RFVklDRSwgc2tiLAo+PiAtICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICBNSElfREVGQVVMVF9NUlUsIE1ISV9FT1QpOwo+
+PiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtYmltLT5tcnUsIE1ISV9FT1Qp
+Owo+PiAgICAgICAgICAgICAgICAgaWYgKHVubGlrZWx5KGVycikpIHsKPj4gICAgICAgICAgICAg
+ICAgICAgICAgICAga2ZyZWVfc2tiKHNrYik7Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGJy
+ZWFrOwo+PiAtLQo+PiAyLjI1LjEKPj4K
