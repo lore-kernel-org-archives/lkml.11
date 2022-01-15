@@ -2,69 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3349DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F5CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230015AbiAORaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 12:30:52 -0500
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:40617 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiAORat (ORCPT
+        id S230087AbiAORcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 12:32:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38394 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229458AbiAORcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 12:30:49 -0500
-Received: by mail-ot1-f41.google.com with SMTP id x31-20020a056830245f00b00599111c8b20so683058otr.7;
-        Sat, 15 Jan 2022 09:30:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3t9nBgeTBjIZbTnYp+Jp4UVlxxnSMO/+rzL7IjxEVIs=;
-        b=FLbd/JBzTJOzICjgxsyn5sRYoHFqoZyRNllc2raokQmIXFTvTsAJD9zyxgCqlwfUIF
-         uNYkUTqcIz9oBT8WLwqtS1F8Uk4dy9uENLgx6FP9hlEv3tJUgwpU1nksb2gD8N1yrggb
-         W91PkO+KnZ0uMLKsrWXF2AJ2FRKEo7ziqGYIoG/galOSzfOCMjfBnXxs9PzTxCn5P8l3
-         2FlOEFdf+hMsumE4DfmVVIbDlb1WEdm5Or/F4U6scOdNSCbJLxt5mz4LF2OFdqWPHAHF
-         4JuGi7AKSgM99hQFmkXXtliW7zWq109KgmQImyMZBP0gLfyGMv1/TQ2UtWTT9VDcxDmG
-         /MTA==
-X-Gm-Message-State: AOAM533PnoHql2Y6A6uq34tf+J/+yvcRSfwYnWK81Hv7DBOsL1zvLWgp
-        +j5tT1aU1uFAFYvrWzaR6DzGRwTDDg==
-X-Google-Smtp-Source: ABdhPJyb1hozHxAR9pgoKPTYNL2He4+TUfRi+8NKfRhzgFUvBQACstUUxJpNTD8z7Gc+O0vvUFJRAg==
-X-Received: by 2002:a9d:5613:: with SMTP id e19mr10796872oti.303.1642267848509;
-        Sat, 15 Jan 2022 09:30:48 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id e6sm2329494oiw.39.2022.01.15.09.30.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 09:30:47 -0800 (PST)
-Received: (nullmailer pid 132309 invoked by uid 1000);
-        Sat, 15 Jan 2022 17:30:47 -0000
-Date:   Sat, 15 Jan 2022 11:30:47 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH] of: base: add parameter doc to
- of_parse_phandle_with_optional_args()
-Message-ID: <YeMEx1z1YeQAuOlT@robh.at.kernel.org>
-References: <20220115113156.435037-1-michael@walle.cc>
+        Sat, 15 Jan 2022 12:32:02 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 443D460DE4;
+        Sat, 15 Jan 2022 17:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C82BC36AEA;
+        Sat, 15 Jan 2022 17:31:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642267921;
+        bh=m5J7+tK2dWkkkUIRZ+mqjcO+qjUeYRLarvpRzjxJJKo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OM4+iEXbS5CpZnCkQBcT1D/SviHwns49WjfKMqcX/j8Dv0YazFek0hHryaoYZzHzi
+         BHpWpHKRFV3iyAWcyUBkYZ17R+QhgjJ9O5RQFQ0tXZ0dB0PYmSA23iBmsvGEVG6lN4
+         nYjmPrIM122QjXg6Nbt/t2vlQ0Jl/Pn5UvwDgtR3s19VG8+C8KemR6BZ2eQB3YVmP5
+         TrEBl68stSRyUMUP50MqZxQxrJqA8mlwc/GW/kG9UESpIo3P7DECanHKruUWN6Z+KD
+         sA+DeSamtrG9OwfF5I9IgrNpgx5T/xObWzyUag0ffi7o8M7j1zkyAZyI5pMMG1OoNV
+         LZBlQ+9OE5S4g==
+Date:   Sat, 15 Jan 2022 17:38:03 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     xkernel.wang@foxmail.com
+Cc:     jic23@jic23.retrosnub.co.uk, lars@metafoo.de,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dummy: iio_simple_dummy: check the return value
+ of kstrdup()
+Message-ID: <20220115173803.417c0b8f@jic23-huawei>
+In-Reply-To: <tencent_E14226FC5CC9EF3F18C480D9249783C39B05@qq.com>
+References: <tencent_E14226FC5CC9EF3F18C480D9249783C39B05@qq.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220115113156.435037-1-michael@walle.cc>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 12:31:56 +0100, Michael Walle wrote:
-> htmldocs produces warnings about the missing documentation. Add them.
-> While at it, fix the typo in the referenced function name.
-> 
-> Fixes: 952c4865d27a ("of: base: add of_parse_phandle_with_optional_args()")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  include/linux/of.h | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
+On Fri, 17 Dec 2021 11:48:28 +0800
+xkernel.wang@foxmail.com wrote:
 
-Applied, thanks!
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> kstrdup() is also a memory allocation-related function, it return NULL
+> when some memory errors happen. So it is better to check the return
+> value of it so to catch the memory error in time. Besides, there should
+> have a kfree() to clear up the allocation if we get a failure later in
+> this function to prevent memory leak.
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+
+Hi a few minor follow on comments. Sorry it took me so long to get back to
+you on this. I wasn't rushing as I won't be picking up fixes until the merge
+window is done and I can rebase on rc1.
+
+> ---
+> Changelog:
+> 1. Clean up some error labels(error_ret & error_kzalloc), directly make
+> them reflect what they are clearing up and return.
+> 2. Clear up indio_dev->name on error path. I put that under label 
+> `error_free_device`, as kfree(NULL) is safe. Or I may need to add an
+> another label as the traget of `goto`.
+> Note: Suggestions are from Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+> ---
+>  drivers/iio/dummy/iio_simple_dummy.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+> index c0b7ef9..430c12a 100644
+> --- a/drivers/iio/dummy/iio_simple_dummy.c
+> +++ b/drivers/iio/dummy/iio_simple_dummy.c
+> @@ -577,7 +577,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+>  	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+>  	if (!swd) {
+>  		ret = -ENOMEM;
+> -		goto error_kzalloc;
+> +		return ERR_PTR(ret);
+
+		return ERR_PTR(-ENOMEM);
+
+>  	}
+>  	/*
+>  	 * Allocate an IIO device.
+> @@ -589,8 +589,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+>  	 */
+>  	indio_dev = iio_device_alloc(parent, sizeof(*st));
+>  	if (!indio_dev) {
+> +		kfree(swd);
+Ah. Not what I meant unfortunately. This should look something like.
+
+	if (!indio_dev) {
+		ret = -ENOMEM;
+		goto error_free_swd;
+	}	
+With error_ret label renamed to error_free_swd to reflect where it is.
+
+>  		ret = -ENOMEM;
+> -		goto error_ret;
+> +		return ERR_PTR(ret);
+>  	}
+>  
+>  	st = iio_priv(indio_dev);
+> @@ -616,6 +617,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+>  	 *    indio_dev->name = spi_get_device_id(spi)->name;
+>  	 */
+>  	indio_dev->name = kstrdup(name, GFP_KERNEL);
+> +	if (!indio_dev->name) {
+> +		ret = -ENOMEM;
+> +		goto error_free_device;
+> +	}
+>  
+>  	/* Provide description of available channels */
+>  	indio_dev->channels = iio_dummy_channels;
+> @@ -650,10 +655,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+>  error_unregister_events:
+>  	iio_simple_dummy_events_unregister(indio_dev);
+>  error_free_device:
+> +	kfree(indio_dev->name);
+>  	iio_device_free(indio_dev);
+> -error_ret:
+>  	kfree(swd);
+> -error_kzalloc:
+>  	return ERR_PTR(ret);
+>  }
+>  
+
