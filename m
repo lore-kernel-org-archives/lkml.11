@@ -2,369 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E99E3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 12:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 342E9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 12:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231579AbiAOMyy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 07:54:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230165AbiAOMyx (ORCPT
+        id S231732AbiAOMzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 07:55:35 -0500
+Received: from qproxy5-pub.mail.unifiedlayer.com ([69.89.21.30]:60158 "EHLO
+        qproxy5-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230165AbiAOMzd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 07:54:53 -0500
-Received: from haggis.mythic-beasts.com (haggis.mythic-beasts.com [IPv6:2a00:1098:0:86:1000:0:2:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8546C061574;
-        Sat, 15 Jan 2022 04:54:52 -0800 (PST)
-Received: from [81.101.6.87] (port=47184 helo=jic23-huawei)
-        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <jic23@jic23.retrosnub.co.uk>)
-        id 1n8iZw-0003Ko-54; Sat, 15 Jan 2022 12:54:44 +0000
-Date:   Sat, 15 Jan 2022 13:00:37 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Cai Huoqing <caihuoqing@baidu.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Denis CIOCCA <denis.ciocca@st.com>
-Subject: Re: [PATCH v3] iio: st_sensors: don't always auto-enable I2C and
- SPI interface drivers
-Message-ID: <20220115130011.5ff5d58c@jic23-huawei>
-In-Reply-To: <20220110152432.3799227-1-nikita.yoush@cogentembedded.com>
-References: <20220110152432.3799227-1-nikita.yoush@cogentembedded.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 15 Jan 2022 07:55:33 -0500
+X-Greylist: delayed 1425 seconds by postgrey-1.27 at vger.kernel.org; Sat, 15 Jan 2022 07:55:33 EST
+Received: from outbound-ss-820.bluehost.com (outbound-ss-820.bluehost.com [69.89.24.241])
+        by qproxy5.mail.unifiedlayer.com (Postfix) with ESMTP id 0361E8023BFB
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 12:31:48 +0000 (UTC)
+Received: from cmgw15.mail.unifiedlayer.com (unknown [10.0.90.130])
+        by progateway2.mail.pro1.eigbox.com (Postfix) with ESMTP id 5C0C810047655
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 12:31:47 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id 8iDjnIvMBikTn8iDjnuQqN; Sat, 15 Jan 2022 12:31:47 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=CeHNWJnl c=1 sm=1 tr=0 ts=61e2beb3
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=DghFqjY3_ZEA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=EiS2R4b7cH6gAcqD88AA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ljzcytYZwH/UWJRlNXc9+FEdgCIqtEZd042mwlrIzNo=; b=P5nzavBzFeZo069fN25nsxOkW6
+        HRaSMldSFdlaxBpr28lt2jkElViMbtXBhtfsO/sxf/XK9OBSjpAtEWDv/4TgvTJyoP05cJi4dRBDf
+        C7nNndSTHdQ0CYPPO/DW40rmM;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:32786 helo=[10.0.1.23])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <re@w6rz.net>)
+        id 1n8iDi-003gEg-41; Sat, 15 Jan 2022 05:31:46 -0700
+Subject: Re: [PATCH 5.15 00/41] 5.15.15-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com, stable@vger.kernel.org
+References: <20220114081545.158363487@linuxfoundation.org>
+ <b94bd7bd-0c8b-1697-f4af-27e99ca9e62f@w6rz.net> <YeKCeIOd8v7vOpdE@kroah.com>
+ <6aa09e6a-9537-72d0-caf0-347038fe37b5@w6rz.net> <YeK69MTpuiz0wqrU@kroah.com>
+In-Reply-To: <YeK69MTpuiz0wqrU@kroah.com>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <78cae1c8-9a2b-b0a4-d9a1-efeb03290f58@w6rz.net>
+Date:   Sat, 15 Jan 2022 04:31:44 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-BlackCat-Spam-Score: 4
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1n8iDi-003gEg-41
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:32786
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 18:24:32 +0300
-Nikita Yushchenko <nikita.yoush@cogentembedded.com> wrote:
+On 1/15/22 4:15 AM, Greg Kroah-Hartman wrote:
+> On Sat, Jan 15, 2022 at 03:52:34AM -0800, Ron Economos wrote:
+>> On 1/15/22 12:14 AM, Greg Kroah-Hartman wrote:
+>>> On Fri, Jan 14, 2022 at 11:59:57AM -0800, Ron Economos wrote:
+>>>> On 1/14/22 12:16 AM, Greg Kroah-Hartman wrote:
+>>>>> This is the start of the stable review cycle for the 5.15.15 release.
+>>>>> There are 41 patches in this series, all will be posted as a response
+>>>>> to this one.  If anyone has any issues with these being applied, please
+>>>>> let me know.
+>>>>>
+>>>>> Responses should be made by Sun, 16 Jan 2022 08:15:33 +0000.
+>>>>> Anything received after that time might be too late.
+>>>>>
+>>>>> The whole patch series can be found in one patch at:
+>>>>> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.15-rc1.gz
+>>>>> or in the git tree and branch at:
+>>>>> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+>>>>> and the diffstat can be found below.
+>>>>>
+>>>>> thanks,
+>>>>>
+>>>>> greg k-h
+>>>> Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+>>>>
+>>>> Warnings:
+>>>>
+>>>> fs/jffs2/xattr.c: In function 'jffs2_build_xattr_subsystem':
+>>>> fs/jffs2/xattr.c:887:1: warning: the frame size of 1104 bytes is larger than
+>>>> 1024 bytes [-Wframe-larger-than=]
+>>>>     887 | }
+>>>>         | ^
+>>>> lib/crypto/curve25519-hacl64.c: In function 'ladder_cmult.constprop':
+>>>> lib/crypto/curve25519-hacl64.c:601:1: warning: the frame size of 1040 bytes
+>>>> is larger than 1024 bytes [-Wframe-larger-than=]
+>>>>     601 | }
+>>>>         | ^
+>>>> drivers/net/wireguard/allowedips.c: In function 'root_remove_peer_lists':
+>>>> drivers/net/wireguard/allowedips.c:77:1: warning: the frame size of 1040
+>>>> bytes is larger than 1024 bytes [-Wframe-larger-than=]
+>>>>      77 | }
+>>>>         | ^
+>>>> drivers/net/wireguard/allowedips.c: In function 'root_free_rcu':
+>>>> drivers/net/wireguard/allowedips.c:64:1: warning: the frame size of 1040
+>>>> bytes is larger than 1024 bytes [-Wframe-larger-than=]
+>>>>      64 | }
+>>>>         | ^
+>>>> drivers/vhost/scsi.c: In function 'vhost_scsi_flush':
+>>>> drivers/vhost/scsi.c:1444:1: warning: the frame size of 1040 bytes is larger
+>>>> than 1024 bytes [-Wframe-larger-than=]
+>>>>    1444 | }
+>>>>         | ^
+>>> Are these new warnings with this release, or old ones?
+>>>
+>>> thanks,
+>>>
+>>> greg k-h
+>> They are old ones.
+> Ok, that's good.  Are they fixed in 5.16?  Anyone planning on fixing
+> them given that -Werror is now allowed to be set?
+>
+> thanks,
+>
+> greg k-h
 
-> This patch makes I2C and SPI interface drivers for STMicroelectronics
-> sensor chips individually selectable via Kconfig.
-> 
-> The default is kept unchanged - I2C and SPI interface drivers are still
-> selected by default if the corresponding bus support is available.
-> 
-> However, the patch makes it possible to explicitly disable drivers
-> that are not needed for a particular target.
-> 
-> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+They are also in 5.16. I'm using the Ubuntu 21.10 config (which includes 
+the kitchen sink), so they're probably not showing up for others.
 
-+CC Denis.
-
-I'm fine with this change so will queue it up but still time for others
-to comment if they wish as I'll be rebasing anyway after rc1.
-
-Applied to the togreg branch of iio.git and pushed out as testing for
-0-day to work it's magic. 
-
-Thanks,
-
-Jonathan
-
-
-> ---
-> Changes since v2:
-> - fix subject and spelling in the commit message
-> Changes since v1:
-> - use "default XXX" instead of "default y if XXX", per suggestion by
->   Arnd Bergmann
-> 
->  drivers/iio/accel/Kconfig             | 35 ++++++++++++++-----------
->  drivers/iio/common/st_sensors/Kconfig |  2 --
->  drivers/iio/gyro/Kconfig              | 37 ++++++++++++++++-----------
->  drivers/iio/imu/st_lsm9ds0/Kconfig    | 28 +++++++++++++++-----
->  drivers/iio/magnetometer/Kconfig      | 35 ++++++++++++++-----------
->  drivers/iio/pressure/Kconfig          | 35 ++++++++++++++-----------
->  6 files changed, 104 insertions(+), 68 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 49587c992a6d..eb17ca40e08a 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -349,8 +349,6 @@ config IIO_ST_ACCEL_3AXIS
->  	depends on !SENSORS_LIS3_I2C
->  	depends on !SENSORS_LIS3_SPI
->  	select IIO_ST_SENSORS_CORE
-> -	select IIO_ST_ACCEL_I2C_3AXIS if (I2C)
-> -	select IIO_ST_ACCEL_SPI_3AXIS if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics accelerometers:
-> @@ -358,23 +356,30 @@ config IIO_ST_ACCEL_3AXIS
->  	  LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12, H3LIS331DL,
->  	  LNG2DM, LIS3DE, LIS2DE12, LIS2HH12
->  
-> -	  This driver can also be built as a module. If so, these modules
-> -	  will be created:
-> -	  - st_accel (core functions for the driver [it is mandatory]);
-> -	  - st_accel_i2c (necessary for the I2C devices [optional*]);
-> -	  - st_accel_spi (necessary for the SPI devices [optional*]);
-> -
-> -	  (*) one of these is necessary to do something.
-> +	  Also need to enable at least one of I2C and SPI interface drivers
-> +	  below.
->  
->  config IIO_ST_ACCEL_I2C_3AXIS
-> -	tristate
-> -	depends on IIO_ST_ACCEL_3AXIS
-> -	depends on IIO_ST_SENSORS_I2C
-> +	tristate "STMicroelectronics accelerometers 3-Axis I2C Interface"
-> +	depends on I2C && IIO_ST_ACCEL_3AXIS
-> +	default I2C && IIO_ST_ACCEL_3AXIS
-> +	select IIO_ST_SENSORS_I2C
-> +	help
-> +	  Build support for STMicroelectronics accelerometers I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_accel_i2c.
->  
->  config IIO_ST_ACCEL_SPI_3AXIS
-> -	tristate
-> -	depends on IIO_ST_ACCEL_3AXIS
-> -	depends on IIO_ST_SENSORS_SPI
-> +	tristate "STMicroelectronics accelerometers 3-Axis SPI Interface"
-> +	depends on SPI_MASTER && IIO_ST_ACCEL_3AXIS
-> +	default SPI_MASTER && IIO_ST_ACCEL_3AXIS
-> +	select IIO_ST_SENSORS_SPI
-> +	help
-> +	  Build support for STMicroelectronics accelerometers SPI interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_accel_spi.
->  
->  config KXSD9
->  	tristate "Kionix KXSD9 Accelerometer Driver"
-> diff --git a/drivers/iio/common/st_sensors/Kconfig b/drivers/iio/common/st_sensors/Kconfig
-> index 9364ec7a811f..eda8f347fda5 100644
-> --- a/drivers/iio/common/st_sensors/Kconfig
-> +++ b/drivers/iio/common/st_sensors/Kconfig
-> @@ -13,5 +13,3 @@ config IIO_ST_SENSORS_SPI
->  
->  config IIO_ST_SENSORS_CORE
->  	tristate
-> -	select IIO_ST_SENSORS_I2C if I2C
-> -	select IIO_ST_SENSORS_SPI if SPI_MASTER
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index a672f7d12bbb..97b86c4a53a6 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -139,30 +139,37 @@ config IIO_ST_GYRO_3AXIS
->  	tristate "STMicroelectronics gyroscopes 3-Axis Driver"
->  	depends on (I2C || SPI_MASTER) && SYSFS
->  	select IIO_ST_SENSORS_CORE
-> -	select IIO_ST_GYRO_I2C_3AXIS if (I2C)
-> -	select IIO_ST_GYRO_SPI_3AXIS if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics gyroscopes:
->  	  L3G4200D, LSM330DL, L3GD20, LSM330DLC, L3G4IS, LSM330, LSM9DS0.
->  
-> -	  This driver can also be built as a module. If so, these modules
-> -	  will be created:
-> -	  - st_gyro (core functions for the driver [it is mandatory]);
-> -	  - st_gyro_i2c (necessary for the I2C devices [optional*]);
-> -	  - st_gyro_spi (necessary for the SPI devices [optional*]);
-> -
-> -	  (*) one of these is necessary to do something.
-> +	  Also need to enable at least one of I2C and SPI interface drivers
-> +	  below.
->  
->  config IIO_ST_GYRO_I2C_3AXIS
-> -	tristate
-> -	depends on IIO_ST_GYRO_3AXIS
-> -	depends on IIO_ST_SENSORS_I2C
-> +	tristate "STMicroelectronics gyroscopes 3-Axis I2C Interface"
-> +	depends on I2C && IIO_ST_GYRO_3AXIS
-> +	default I2C && IIO_ST_GYRO_3AXIS
-> +	select IIO_ST_SENSORS_I2C
-> +	help
-> +	  Build support for STMicroelectronics gyroscopes I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_gyro_i2c.
-> +
->  
->  config IIO_ST_GYRO_SPI_3AXIS
-> -	tristate
-> -	depends on IIO_ST_GYRO_3AXIS
-> -	depends on IIO_ST_SENSORS_SPI
-> +	tristate "STMicroelectronics gyroscopes 3-Axis SPI Interface"
-> +	depends on SPI_MASTER && IIO_ST_GYRO_3AXIS
-> +	default SPI_MASTER && IIO_ST_GYRO_3AXIS
-> +	select IIO_ST_SENSORS_SPI
-> +	help
-> +	  Build support for STMicroelectronics gyroscopes SPI interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_gyro_spi.
-> +
->  
->  config ITG3200
->  	tristate "InvenSense ITG3200 Digital 3-Axis Gyroscope I2C driver"
-> diff --git a/drivers/iio/imu/st_lsm9ds0/Kconfig b/drivers/iio/imu/st_lsm9ds0/Kconfig
-> index 53b7017014f8..d29558edee60 100644
-> --- a/drivers/iio/imu/st_lsm9ds0/Kconfig
-> +++ b/drivers/iio/imu/st_lsm9ds0/Kconfig
-> @@ -5,8 +5,6 @@ config IIO_ST_LSM9DS0
->  	depends on (I2C || SPI_MASTER) && SYSFS
->  	depends on !SENSORS_LIS3_I2C
->  	depends on !SENSORS_LIS3_SPI
-> -	select IIO_ST_LSM9DS0_I2C if I2C
-> -	select IIO_ST_LSM9DS0_SPI if SPI_MASTER
->  	select IIO_ST_ACCEL_3AXIS
->  	select IIO_ST_MAGN_3AXIS
->  
-> @@ -17,12 +15,30 @@ config IIO_ST_LSM9DS0
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called st_lsm9ds0.
->  
-> +	  Also need to enable at least one of I2C and SPI interface drivers
-> +
->  config IIO_ST_LSM9DS0_I2C
-> -	tristate
-> -	depends on IIO_ST_LSM9DS0
-> +	tristate "STMicroelectronics LSM9DS0 IMU I2C interface"
-> +	depends on I2C && IIO_ST_LSM9DS0
-> +	default I2C && IIO_ST_LSM9DS0
-> +	select IIO_ST_ACCEL_I2C_3AXIS
-> +	select IIO_ST_MAGN_I2C_3AXIS
->  	select REGMAP_I2C
-> +	help
-> +	  Build support for STMicroelectronics LSM9DS0 IMU I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_lsm9ds0_i2c.
->  
->  config IIO_ST_LSM9DS0_SPI
-> -	tristate
-> -	depends on IIO_ST_LSM9DS0
-> +	tristate "STMicroelectronics LSM9DS0 IMU SPI interface"
-> +	depends on SPI_MASTER && IIO_ST_LSM9DS0
-> +	default SPI_MASTER && IIO_ST_LSM9DS0
-> +	select IIO_ST_ACCEL_SPI_3AXIS
-> +	select IIO_ST_MAGN_SPI_3AXIS
->  	select REGMAP_SPI
-> +	help
-> +	  Build support for STMicroelectronics LSM9DS0 IMU I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_lsm9ds0_spi.
-> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-> index 565ee41ccb3a..54445365c4bc 100644
-> --- a/drivers/iio/magnetometer/Kconfig
-> +++ b/drivers/iio/magnetometer/Kconfig
-> @@ -117,30 +117,35 @@ config IIO_ST_MAGN_3AXIS
->  	tristate "STMicroelectronics magnetometers 3-Axis Driver"
->  	depends on (I2C || SPI_MASTER) && SYSFS
->  	select IIO_ST_SENSORS_CORE
-> -	select IIO_ST_MAGN_I2C_3AXIS if (I2C)
-> -	select IIO_ST_MAGN_SPI_3AXIS if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics magnetometers:
->  	  LSM303DLHC, LSM303DLM, LIS3MDL.
->  
-> -	  This driver can also be built as a module. If so, these modules
-> -	  will be created:
-> -	  - st_magn (core functions for the driver [it is mandatory]);
-> -	  - st_magn_i2c (necessary for the I2C devices [optional*]);
-> -	  - st_magn_spi (necessary for the SPI devices [optional*]);
-> -
-> -	  (*) one of these is necessary to do something.
-> +	  Also need to enable at least one of I2C and SPI interface drivers
-> +	  below.
->  
->  config IIO_ST_MAGN_I2C_3AXIS
-> -	tristate
-> -	depends on IIO_ST_MAGN_3AXIS
-> -	depends on IIO_ST_SENSORS_I2C
-> +	tristate "STMicroelectronics magnetometers 3-Axis I2C Interface"
-> +	depends on I2C && IIO_ST_MAGN_3AXIS
-> +	default I2C && IIO_ST_MAGN_3AXIS
-> +	select IIO_ST_SENSORS_I2C
-> +	help
-> +	  Build support for STMicroelectronics magnetometers I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_magn_i2c.
->  
->  config IIO_ST_MAGN_SPI_3AXIS
-> -	tristate
-> -	depends on IIO_ST_MAGN_3AXIS
-> -	depends on IIO_ST_SENSORS_SPI
-> +	tristate "STMicroelectronics magnetometers 3-Axis SPI Interface"
-> +	depends on SPI_MASTER && IIO_ST_MAGN_3AXIS
-> +	default SPI_MASTER && IIO_ST_MAGN_3AXIS
-> +	select IIO_ST_SENSORS_SPI
-> +	help
-> +	  Build support for STMicroelectronics magnetometers SPI interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_magn_spi.
->  
->  config SENSORS_HMC5843
->  	tristate
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index fc0d3cfca418..0ff756cea63a 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -194,30 +194,35 @@ config IIO_ST_PRESS
->  	tristate "STMicroelectronics pressure sensor Driver"
->  	depends on (I2C || SPI_MASTER) && SYSFS
->  	select IIO_ST_SENSORS_CORE
-> -	select IIO_ST_PRESS_I2C if (I2C)
-> -	select IIO_ST_PRESS_SPI if (SPI_MASTER)
->  	select IIO_TRIGGERED_BUFFER if (IIO_BUFFER)
->  	help
->  	  Say yes here to build support for STMicroelectronics pressure
->  	  sensors: LPS001WP, LPS25H, LPS331AP, LPS22HB, LPS22HH.
->  
-> -	  This driver can also be built as a module. If so, these modules
-> -	  will be created:
-> -	  - st_pressure (core functions for the driver [it is mandatory]);
-> -	  - st_pressure_i2c (necessary for the I2C devices [optional*]);
-> -	  - st_pressure_spi (necessary for the SPI devices [optional*]);
-> -
-> -	  (*) one of these is necessary to do something.
-> +	  Also need to enable at least one of I2C and SPI interface drivers
-> +	  below.
->  
->  config IIO_ST_PRESS_I2C
-> -	tristate
-> -	depends on IIO_ST_PRESS
-> -	depends on IIO_ST_SENSORS_I2C
-> +	tristate "STMicroelectronics pressure sensor I2C Interface"
-> +	depends on I2C && IIO_ST_PRESS
-> +	default I2C && IIO_ST_PRESS
-> +	select IIO_ST_SENSORS_I2C
-> +	help
-> +	  Build support for STMicroelectronics pressure sensor I2C interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_pressure_i2c.
->  
->  config IIO_ST_PRESS_SPI
-> -	tristate
-> -	depends on IIO_ST_PRESS
-> -	depends on IIO_ST_SENSORS_SPI
-> +	tristate "STMicroelectronics pressure sensor SPI Interface"
-> +	depends on SPI_MASTER && IIO_ST_PRESS
-> +	default SPI_MASTER && IIO_ST_PRESS
-> +	select IIO_ST_SENSORS_SPI
-> +	help
-> +	  Build support for STMicroelectronics pressure sensor SPI interface.
-> +
-> +	  To compile this driver as a module, choose M here. The module
-> +	  will be called st_pressure_spi.
->  
->  config T5403
->  	tristate "EPCOS T5403 digital barometric pressure sensor driver"
+Ron
 
