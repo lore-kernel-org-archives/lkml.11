@@ -2,111 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 18:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233328AbiAOSIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 13:08:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231278AbiAOSIY (ORCPT
+        id S233367AbiAOSIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 13:08:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:53647 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231278AbiAOSId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 13:08:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A457C061574;
-        Sat, 15 Jan 2022 10:08:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD85DB809E3;
-        Sat, 15 Jan 2022 18:08:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D58C36AE5;
-        Sat, 15 Jan 2022 18:08:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642270101;
-        bh=ti3EFz0vjLpT5haAhw/2g1kDCJrvQ9FNEfVIwLyjAGI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ncpxx8oWYCHYt4ZiADAmRIN2UVdscboPCLrjamKcB2VnbjLASvv9zlERBmsHMBVNu
-         muyWJovg3FMNhUKJVMQN/E3AMZVnGmq3NrAio+beFUY/hWPN3EhJUCKRDDHEOb3wJJ
-         1tJuGEvUwTuVVWcJsX3UjimbkKwvBoYTimnXDL83I5Qzmt6C0etnnmL0brZ8+Q6+NB
-         rxnskp9ukWjNJXZCYQRdPPMbMNNkTsEcaV8Yf/3w4V2CgA6TtaGD71zO50JTP1HB+J
-         dLWvOrIwsqxqFztQeL/jRcUsKqeH46bOX4OKF9hDbgN09GWRFNUXYOQZbuxxn7YJKS
-         j2niK1ZojC2qQ==
-Date:   Sat, 15 Jan 2022 18:14:22 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH v1 1/1] iio: adc: tsc2046: rework the trigger state
- machine
-Message-ID: <20220115181422.0b622b69@jic23-huawei>
-In-Reply-To: <20220110123903.GC3326@pengutronix.de>
-References: <20220107074017.2762347-1-o.rempel@pengutronix.de>
-        <20220109154404.75e0ed2f@jic23-huawei>
-        <20220110123903.GC3326@pengutronix.de>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 15 Jan 2022 13:08:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642270113;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JyQfKnGPAvPAfBFOiNiSn6b94cEh37W6h0P28jZ0IfY=;
+        b=d33HeuHzSmYW5cOVYz5GRL2Ira+mxvP7SJQugWrQSdSrTIGMn+XZ1FlTA3nAUXFp7bhPCN
+        H+Tg/WfOEj6oQUzy1mgN3GQmNO4HwJnD1fVOwceyRX1filZtlbfclDjC8Hqs94BtzSoz8S
+        ypns6lPUMzc+uqH32OLJkifQfNbpxtE=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-605-dlVz6wCDMKeqoi5YX3dOlA-1; Sat, 15 Jan 2022 13:08:32 -0500
+X-MC-Unique: dlVz6wCDMKeqoi5YX3dOlA-1
+Received: by mail-oi1-f197.google.com with SMTP id v72-20020acaac4b000000b002c8dd559f44so8580755oie.8
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 10:08:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JyQfKnGPAvPAfBFOiNiSn6b94cEh37W6h0P28jZ0IfY=;
+        b=noGxwCjwFRfConG4tXWSEVjNyyt5GO5795Ne3ah9K3U60T243/aLnSItVK89yeCJsn
+         vL+6qMgb8Mj2WvmPp1gZ5ddfbNuNC5qFXJLOj0Zn0nd5l4dmgkT6I1Nre0gnINq7RoG1
+         2QaRsPgot8TH4kD8XT0BO8YS/+sSZIoYlSc/0YwtPuPiXpD2xBOJIqndfd0Z6kK2QjH5
+         ORv5KXmcJjVKtVbnTZg58fOO3CzIb7WWebAm4Syks3bFaOJcxcNadWJj1PN4Zdy/3DnS
+         dplcuC/0kSHGeSAT2gyfqkoufwlZFM1WWh3DHi5H9m2R5gJNIMxo7g2Hv8y9TiAMdWoW
+         DEDw==
+X-Gm-Message-State: AOAM531rw1I5mh9p5m9bp5RuFmhlXqlMPPI2NyEa3uEXJim3QGTPr7Vx
+        +GYQPx874QVDruxw3n9lY8MmSierH4IBjK6plyTtOmKBTCLveCiLfKBhK0jNbcCAyzQCJ/T4kNM
+        hJCgt9C7ASTL5RpF0C4vcF0Gb9hLjmSf7jo70YolZQB+z+gFqiKZQWwadGXhRs8fJ4ZR1lhw=
+X-Received: by 2002:a05:6808:6d1:: with SMTP id m17mr15682069oih.139.1642270111234;
+        Sat, 15 Jan 2022 10:08:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy8UHfpbAEw/DgpZ4065a673gWeLyT611t101R+gnyCobU06v3ZXI9EFNERAOYmadzAH0FkwA==
+X-Received: by 2002:a05:6808:6d1:: with SMTP id m17mr15682062oih.139.1642270111078;
+        Sat, 15 Jan 2022 10:08:31 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id r25sm2345856ota.59.2022.01.15.10.08.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Jan 2022 10:08:30 -0800 (PST)
+From:   trix@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] platform/x86: cleanup double word in comment
+Date:   Sat, 15 Jan 2022 10:08:22 -0800
+Message-Id: <20220115180822.298982-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-...
+From: Tom Rix <trix@redhat.com>
 
-> > >  
-> > > -static enum hrtimer_restart tsc2046_adc_trig_more(struct hrtimer *hrtimer)
-> > > +static enum hrtimer_restart tsc2046_adc_timer(struct hrtimer *hrtimer)
-> > >  {
-> > >  	struct tsc2046_adc_priv *priv = container_of(hrtimer,
-> > >  						     struct tsc2046_adc_priv,
-> > >  						     trig_timer);
-> > >  	unsigned long flags;
-> > >  
-> > > -	spin_lock_irqsave(&priv->trig_lock, flags);
-> > > -
-> > > -	disable_irq_nosync(priv->spi->irq);
-> > > -
-> > > -	priv->trig_more_count++;
-> > > -	iio_trigger_poll(priv->trig);
-> > > -
-> > > -	spin_unlock_irqrestore(&priv->trig_lock, flags);
-> > > +	spin_lock_irqsave(&priv->state_lock, flags);
-> > > +	switch (priv->state) {
-> > > +	case TSC2046_STATE_ENABLE_IRQ_POLL:
-> > > +		/*
-> > > +		 * IRQ handler called iio_trigger_poll() to sample ADC.
-> > > +		 * Here we
-> > > +		 * - re-enable IRQs
-> > > +		 * - start hrtimer for timeout if no IRQ will occur
-> > > +		 */
-> > > +		priv->state = TSC2046_STATE_POLL;
-> > > +		enable_irq(priv->spi->irq);  
-> > 
-> > I comment on this below, but I'm not sure why you don't move the enable_irq()
-> > here out of this timer function and then have the first entry of the timer
-> > go directly to TSC2046_STATE_POLL after a longer initial wait.  
-> 
-> Hm... yes. You are right.
-> 
-> > It's been a long time since I looked at this, so perhaps I'm missing the
-> > point.  What you have here works as far as I can see, it just seems to push
-> > more than necessary into the state machine.  
-> 
-> The IRQ line is a level shifter connected to one of channels muxed to the core
-> ADC. If we switch internal muxer to different channel, the IRQ line will
-> change the state.
-> 
-> So, we need a trigger which:
-> - do not triggers if we do ADC readings.
-> - keeps triggering as long as we have some state changes on the IRQ line
-> - trigger only with specific rate
-> - still triggers for some amount of time after last interrupt event was
->   detected. Current implementation is doing only one extra read.
-Ah.. Good explanation, I get the point now :)
+Remove the second 'of'.
 
-Jonathan
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ include/linux/platform_data/x86/pmc_atom.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/platform_data/x86/pmc_atom.h b/include/linux/platform_data/x86/pmc_atom.h
+index 022bcea9edec5..d4429fbed0940 100644
+--- a/include/linux/platform_data/x86/pmc_atom.h
++++ b/include/linux/platform_data/x86/pmc_atom.h
+@@ -47,7 +47,7 @@
+ #define	PMC_S0I2_TMR		0x88
+ #define	PMC_S0I3_TMR		0x8C
+ #define	PMC_S0_TMR		0x90
+-/* Sleep state counter is in units of of 32us */
++/* Sleep state counter is in units of 32us */
+ #define	PMC_TMR_SHIFT		5
+ 
+ /* Power status of power islands */
+-- 
+2.26.3
+
