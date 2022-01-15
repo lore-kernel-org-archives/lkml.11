@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 047B0C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 16:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 16:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233238AbiAOQz7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 11:55:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34092 "EHLO
+        id S233306AbiAOQ4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 11:56:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiAOQz5 (ORCPT
+        with ESMTP id S233239AbiAOQ4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 11:55:57 -0500
+        Sat, 15 Jan 2022 11:56:01 -0500
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F6AC06161C
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 08:55:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCF3C06161C
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 08:56:01 -0800 (PST)
 Received: from dslb-178-004-201-171.178.004.pools.vodafone-ip.de ([178.4.201.171] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1n8mLJ-0005N8-Mr; Sat, 15 Jan 2022 17:55:53 +0100
+        id 1n8mLN-0005N8-PX; Sat, 15 Jan 2022 17:55:57 +0100
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -27,9 +27,9 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Michael Straube <straube.linux@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 05/11] staging: r8188eu: remove rtw_list_delete wrapper
-Date:   Sat, 15 Jan 2022 17:55:30 +0100
-Message-Id: <20220115165536.231210-6-martin@kaiser.cx>
+Subject: [PATCH 09/11] staging: r8188eu: remove rtw_netif_start_queue wrapper
+Date:   Sat, 15 Jan 2022 17:55:34 +0100
+Message-Id: <20220115165536.231210-10-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220115165536.231210-1-martin@kaiser.cx>
 References: <20220115165536.231210-1-martin@kaiser.cx>
@@ -39,43 +39,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the rtw_list_delete wrapper function. Call list_del_init directly.
+Remove the rtw_netif_start_queue wrapper function. Call
+netif_tx_start_all_queues directly.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/staging/r8188eu/core/rtw_cmd.c          | 2 +-
  drivers/staging/r8188eu/include/osdep_service.h | 5 -----
+ drivers/staging/r8188eu/os_dep/os_intfs.c       | 2 +-
  2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/staging/r8188eu/core/rtw_cmd.c b/drivers/staging/r8188eu/core/rtw_cmd.c
-index 3d22a8888ea7..410b5dacfaa7 100644
---- a/drivers/staging/r8188eu/core/rtw_cmd.c
-+++ b/drivers/staging/r8188eu/core/rtw_cmd.c
-@@ -133,7 +133,7 @@ static struct cmd_obj *_rtw_dequeue_cmd(struct __queue *queue)
- 		obj = NULL;
- 	} else {
- 		obj = container_of((&queue->queue)->next, struct cmd_obj, list);
--		rtw_list_delete(&obj->list);
-+		list_del_init(&obj->list);
- 	}
- 
- 	spin_unlock_irqrestore(&queue->lock, flags);
 diff --git a/drivers/staging/r8188eu/include/osdep_service.h b/drivers/staging/r8188eu/include/osdep_service.h
-index c5de424842cc..8ca9f86e3c9b 100644
+index b8f983a1254e..51a22ffe41e2 100644
 --- a/drivers/staging/r8188eu/include/osdep_service.h
 +++ b/drivers/staging/r8188eu/include/osdep_service.h
-@@ -54,11 +54,6 @@ static inline struct list_head *get_list_head(struct __queue *queue)
- 	return (&(queue->queue));
+@@ -67,11 +67,6 @@ static inline int rtw_netif_queue_stopped(struct net_device *pnetdev)
+ 		netif_tx_queue_stopped(netdev_get_tx_queue(pnetdev, 3));
  }
  
--static inline void rtw_list_delete(struct list_head *plist)
+-static inline void rtw_netif_start_queue(struct net_device *pnetdev)
 -{
--	list_del_init(plist);
+-	netif_tx_start_all_queues(pnetdev);
 -}
 -
- static inline void _set_timer(struct timer_list *ptimer,u32 delay_time)
+ static inline void rtw_netif_stop_queue(struct net_device *pnetdev)
  {
- 	mod_timer(ptimer , (jiffies+(delay_time*HZ/1000)));
+ 	netif_tx_stop_all_queues(pnetdev);
+diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+index 2e4ad090c77c..96b49cee3ac4 100644
+--- a/drivers/staging/r8188eu/os_dep/os_intfs.c
++++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+@@ -654,7 +654,7 @@ int _netdev_open(struct net_device *pnetdev)
+ 	rtw_set_pwr_state_check_timer(&padapter->pwrctrlpriv);
+ 
+ 	if (!rtw_netif_queue_stopped(pnetdev))
+-		rtw_netif_start_queue(pnetdev);
++		netif_tx_start_all_queues(pnetdev);
+ 	else
+ 		netif_tx_wake_all_queues(pnetdev);
+ 
 -- 
 2.30.2
 
