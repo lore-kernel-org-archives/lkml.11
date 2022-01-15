@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEB94C43217
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 13:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE247C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 13:16:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232445AbiAONPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 08:15:54 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:16151 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231871AbiAONPn (ORCPT
+        id S232134AbiAONP5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 08:15:57 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:42281 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232002AbiAONPu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 08:15:43 -0500
+        Sat, 15 Jan 2022 08:15:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642252544; x=1673788544;
+  t=1642252550; x=1673788550;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=GkPIu+KUNvXmZTEszIYy9MbqlgxYqQSilL8Iut3g6DI=;
-  b=UsGIZ200yNUiRO0pab6d8lzwLNNNGtvQx0TcqtqfupON1hiv1VsQ/xsQ
-   OINafi3gG1o1Wtx9DEHdxLp9KHvTSuJIB+JGm9UOzuII3KAxo+iy4Qqpd
-   frartVr+OlSrwdWItc+w54LqUKrNzaT0DJxlGVk8dG6t9QiTbXCgh9EMs
-   E=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 15 Jan 2022 05:15:43 -0800
+  bh=AeDU4LCfqAthvGVHIbIy9BKfIXnYO2O26+fIsX1MURo=;
+  b=aDfDuUYkVLgjSWRPTXbGCt/6R2A2zdeSfUWnq7JlCWyQiMpKnrR8sVSt
+   y+91fVIkJ2juoi3qO7yaC1+DkG+nLzeAM9SrJy7iP7OPaLiIK0NwOdyww
+   AtOC5qORYMjMqFGFDH1RfYL2ONGrvjV/KEDyBSmJHqSiuSmWEPUSfES20
+   M=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 15 Jan 2022 05:15:49 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2022 05:15:42 -0800
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2022 05:15:48 -0800
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sat, 15 Jan 2022 05:15:35 -0800
+ 15.2.922.19; Sat, 15 Jan 2022 05:15:48 -0800
 Received: from blr-ubuntu-253.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sat, 15 Jan 2022 05:15:30 -0800
+ 15.2.922.19; Sat, 15 Jan 2022 05:15:43 -0800
 From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 To:     Will Deacon <will@kernel.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
@@ -45,16 +45,17 @@ CC:     gregkh <gregkh@linuxfoundation.org>, <quic_psodagud@quicinc.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-arm-msm@vger.kernel.org>,
         Trilok Soni <quic_tsoni@quicinc.com>,
-        "Sai Prakash Ranjan" <quic_saipraka@quicinc.com>
-Subject: [PATCHv7 2/5] irqchip/tegra: Fix overflow implicit truncation warnings
-Date:   Sat, 15 Jan 2022 18:44:52 +0530
-Message-ID: <9b9be40178e4b1677e8d19df45f4bc59ba86ba0f.1642233364.git.quic_saipraka@quicinc.com>
+        Prasad Sodagudi <psodagud@codeaurora.org>,
+        Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+Subject: [PATCHv7 4/5] lib: Add register read/write tracing support
+Date:   Sat, 15 Jan 2022 18:44:54 +0530
+Message-ID: <a46bbf7fc82df6639367174cf6cadac48ac2e60f.1642233364.git.quic_saipraka@quicinc.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <cover.1642233364.git.quic_saipraka@quicinc.com>
 References: <cover.1642233364.git.quic_saipraka@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
 X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
  nalasex01a.na.qualcomm.com (10.47.209.196)
@@ -62,64 +63,283 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix -Woverflow warnings for tegra irqchip driver which is a result
-of moving arm64 custom MMIO accessor macros to asm-generic function
-implementations giving a bonus type-checking now and uncovering these
-overflow warnings.
+From: Prasad Sodagudi <psodagud@codeaurora.org>
 
-drivers/irqchip/irq-tegra.c: In function ‘tegra_ictlr_suspend’:
-drivers/irqchip/irq-tegra.c:151:18: warning: large integer implicitly truncated to unsigned type [-Woverflow]
-   writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-                  ^
+Generic MMIO read/write i.e., __raw_{read,write}{b,l,w,q} accessors
+are typically used to read/write from/to memory mapped registers
+and can cause hangs or some undefined behaviour in following few
+cases,
 
-Cc: Marc Zyngier <maz@kernel.org>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+* If the access to the register space is unclocked, for example: if
+  there is an access to multimedia(MM) block registers without MM
+  clocks.
+
+* If the register space is protected and not set to be accessible from
+  non-secure world, for example: only EL3 (EL: Exception level) access
+  is allowed and any EL2/EL1 access is forbidden.
+
+* If xPU(memory/register protection units) is controlling access to
+  certain memory/register space for specific clients.
+
+and more...
+
+Such cases usually results in instant reboot/SErrors/NOC or interconnect
+hangs and tracing these register accesses can be very helpful to debug
+such issues during initial development stages and also in later stages.
+
+So use ftrace trace events to log such MMIO register accesses which
+provides rich feature set such as early enablement of trace events,
+filtering capability, dumping ftrace logs on console and many more.
+
+Sample output:
+
+rwmmio_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+rwmmio_post_write: __qcom_geni_serial_console_write+0x160/0x1e0 width=32 val=0xa0d5d addr=0xfffffbfffdbff700
+rwmmio_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 addr=0xfffffbfffdbff610
+rwmmio_post_read: qcom_geni_serial_poll_bit+0x94/0x138 width=32 val=0x0 addr=0xfffffbfffdbff610
+
+Signed-off-by: Prasad Sodagudi <psodagud@codeaurora.org>
+Co-developed-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 Signed-off-by: Sai Prakash Ranjan <quic_saipraka@quicinc.com>
 ---
- drivers/irqchip/irq-tegra.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ arch/Kconfig                  |   3 +
+ arch/arm64/Kconfig            |   1 +
+ include/trace/events/rwmmio.h | 112 ++++++++++++++++++++++++++++++++++
+ lib/Kconfig                   |   7 +++
+ lib/Makefile                  |   2 +
+ lib/trace_readwrite.c         |  47 ++++++++++++++
+ 6 files changed, 172 insertions(+)
+ create mode 100644 include/trace/events/rwmmio.h
+ create mode 100644 lib/trace_readwrite.c
 
-diff --git a/drivers/irqchip/irq-tegra.c b/drivers/irqchip/irq-tegra.c
-index e1f771c72fc4..9e4e5b39c701 100644
---- a/drivers/irqchip/irq-tegra.c
-+++ b/drivers/irqchip/irq-tegra.c
-@@ -148,10 +148,10 @@ static int tegra_ictlr_suspend(void)
- 		lic->cop_iep[i] = readl_relaxed(ictlr + ICTLR_COP_IEP_CLASS);
+diff --git a/arch/Kconfig b/arch/Kconfig
+index fdba59052abc..54dd42db882d 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1322,6 +1322,9 @@ config ARCH_HAS_ELFCORE_COMPAT
+ config ARCH_HAS_PARANOID_L1D_FLUSH
+ 	bool
  
- 		/* Disable COP interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(~0u, ictlr + ICTLR_COP_IER_CLR);
++config ARCH_HAVE_TRACE_MMIO_ACCESS
++	bool
++
+ config DYNAMIC_SIGFRAME
+ 	bool
  
- 		/* Disable CPU interrupts */
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(~0u, ictlr + ICTLR_CPU_IER_CLR);
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 3bb0b67292b5..eaa48df2c3bd 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -46,6 +46,7 @@ config ARM64
+ 	select ARCH_HAS_ZONE_DMA_SET if EXPERT
+ 	select ARCH_HAVE_ELF_PROT
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
++	select ARCH_HAVE_TRACE_MMIO_ACCESS
+ 	select ARCH_INLINE_READ_LOCK if !PREEMPTION
+ 	select ARCH_INLINE_READ_LOCK_BH if !PREEMPTION
+ 	select ARCH_INLINE_READ_LOCK_IRQ if !PREEMPTION
+diff --git a/include/trace/events/rwmmio.h b/include/trace/events/rwmmio.h
+new file mode 100644
+index 000000000000..f66397007258
+--- /dev/null
++++ b/include/trace/events/rwmmio.h
+@@ -0,0 +1,112 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++#undef TRACE_SYSTEM
++#define TRACE_SYSTEM rwmmio
++
++#if !defined(_TRACE_RWMMIO_H) || defined(TRACE_HEADER_MULTI_READ)
++#define _TRACE_RWMMIO_H
++
++#include <linux/tracepoint.h>
++
++TRACE_EVENT(rwmmio_write,
++
++	TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void __iomem *addr),
++
++	TP_ARGS(caller, val, width, addr),
++
++	TP_STRUCT__entry(
++		__field(u64, caller)
++		__field(u64, val)
++		__field(u64, addr)
++		__field(u8, width)
++	),
++
++	TP_fast_assign(
++		__entry->caller = caller;
++		__entry->val = val;
++		__entry->addr = (unsigned long)(void *)addr;
++		__entry->width = width;
++	),
++
++	TP_printk("%pS width=%d val=%#llx addr=%#llx",
++		(void *)(unsigned long)__entry->caller, __entry->width,
++		__entry->val, __entry->addr)
++);
++
++TRACE_EVENT(rwmmio_post_write,
++
++	TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void __iomem *addr),
++
++	TP_ARGS(caller, val, width, addr),
++
++	TP_STRUCT__entry(
++		__field(u64, caller)
++		__field(u64, val)
++		__field(u64, addr)
++		__field(u8, width)
++	),
++
++	TP_fast_assign(
++		__entry->caller = caller;
++		__entry->val = val;
++		__entry->addr = (unsigned long)(void *)addr;
++		__entry->width = width;
++	),
++
++	TP_printk("%pS width=%d val=%#llx addr=%#llx",
++		(void *)(unsigned long)__entry->caller, __entry->width,
++		__entry->val, __entry->addr)
++);
++
++TRACE_EVENT(rwmmio_read,
++
++	TP_PROTO(unsigned long caller, u8 width, const volatile void __iomem *addr),
++
++	TP_ARGS(caller, width, addr),
++
++	TP_STRUCT__entry(
++		__field(u64, caller)
++		__field(u64, addr)
++		__field(u8, width)
++	),
++
++	TP_fast_assign(
++		__entry->caller = caller;
++		__entry->addr = (unsigned long)(void *)addr;
++		__entry->width = width;
++	),
++
++	TP_printk("%pS width=%d addr=%#llx",
++		 (void *)(unsigned long)__entry->caller, __entry->width, __entry->addr)
++);
++
++TRACE_EVENT(rwmmio_post_read,
++
++	TP_PROTO(unsigned long caller, u64 val, u8 width, const volatile void __iomem *addr),
++
++	TP_ARGS(caller, val, width, addr),
++
++	TP_STRUCT__entry(
++		__field(u64, caller)
++		__field(u64, val)
++		__field(u64, addr)
++		__field(u8, width)
++	),
++
++	TP_fast_assign(
++		__entry->caller = caller;
++		__entry->val = val;
++		__entry->addr = (unsigned long)(void *)addr;
++		__entry->width = width;
++	),
++
++	TP_printk("%pS width=%d val=%#llx addr=%#llx",
++		 (void *)(unsigned long)__entry->caller, __entry->width,
++		 __entry->val, __entry->addr)
++);
++
++#endif /* _TRACE_RWMMIO_H */
++
++#include <trace/define_trace.h>
+diff --git a/lib/Kconfig b/lib/Kconfig
+index c80fde816a7e..ea520c315c0f 100644
+--- a/lib/Kconfig
++++ b/lib/Kconfig
+@@ -119,6 +119,13 @@ config INDIRECT_IOMEM_FALLBACK
+ 	  mmio accesses when the IO memory address is not a registered
+ 	  emulated region.
  
- 		/* Enable the wakeup sources of ictlr */
- 		writel_relaxed(lic->ictlr_wake_mask[i], ictlr + ICTLR_CPU_IER_SET);
-@@ -172,12 +172,12 @@ static void tegra_ictlr_resume(void)
++config TRACE_MMIO_ACCESS
++	bool "Register read/write tracing"
++	depends on TRACING && ARCH_HAVE_TRACE_MMIO_ACCESS
++	help
++	  Create tracepoints for MMIO read/write operations. These trace events
++	  can be used for logging all MMIO read/write operations.
++
+ source "lib/crypto/Kconfig"
  
- 		writel_relaxed(lic->cpu_iep[i],
- 			       ictlr + ICTLR_CPU_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(~0u, ictlr + ICTLR_CPU_IER_CLR);
- 		writel_relaxed(lic->cpu_ier[i],
- 			       ictlr + ICTLR_CPU_IER_SET);
- 		writel_relaxed(lic->cop_iep[i],
- 			       ictlr + ICTLR_COP_IEP_CLASS);
--		writel_relaxed(~0ul, ictlr + ICTLR_COP_IER_CLR);
-+		writel_relaxed(~0u, ictlr + ICTLR_COP_IER_CLR);
- 		writel_relaxed(lic->cop_ier[i],
- 			       ictlr + ICTLR_COP_IER_SET);
- 	}
-@@ -312,7 +312,7 @@ static int __init tegra_ictlr_init(struct device_node *node,
- 		lic->base[i] = base;
+ config CRC_CCITT
+diff --git a/lib/Makefile b/lib/Makefile
+index 300f569c626b..43813b0061cd 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -152,6 +152,8 @@ lib-y += logic_pio.o
  
- 		/* Disable all interrupts */
--		writel_relaxed(~0UL, base + ICTLR_CPU_IER_CLR);
-+		writel_relaxed(~0U, base + ICTLR_CPU_IER_CLR);
- 		/* All interrupts target IRQ */
- 		writel_relaxed(0, base + ICTLR_CPU_IEP_CLASS);
+ lib-$(CONFIG_INDIRECT_IOMEM) += logic_iomem.o
  
++obj-$(CONFIG_TRACE_MMIO_ACCESS) += trace_readwrite.o
++
+ obj-$(CONFIG_GENERIC_HWEIGHT) += hweight.o
+ 
+ obj-$(CONFIG_BTREE) += btree.o
+diff --git a/lib/trace_readwrite.c b/lib/trace_readwrite.c
+new file mode 100644
+index 000000000000..88637038b30c
+--- /dev/null
++++ b/lib/trace_readwrite.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Register read and write tracepoints
++ *
++ * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
++ */
++
++#include <linux/ftrace.h>
++#include <linux/module.h>
++#include <asm-generic/io.h>
++
++#define CREATE_TRACE_POINTS
++#include <trace/events/rwmmio.h>
++
++#ifdef CONFIG_TRACE_MMIO_ACCESS
++void log_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
++		    unsigned long caller_addr)
++{
++	trace_rwmmio_write(caller_addr, val, width, addr);
++}
++EXPORT_SYMBOL_GPL(log_write_mmio);
++EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_write);
++
++void log_post_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
++			 unsigned long caller_addr)
++{
++	trace_rwmmio_post_write(caller_addr, val, width, addr);
++}
++EXPORT_SYMBOL_GPL(log_post_write_mmio);
++EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_write);
++
++void log_read_mmio(u8 width, const volatile void __iomem *addr,
++		   unsigned long caller_addr)
++{
++	trace_rwmmio_read(caller_addr, width, addr);
++}
++EXPORT_SYMBOL_GPL(log_read_mmio);
++EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_read);
++
++void log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,
++			unsigned long caller_addr)
++{
++	trace_rwmmio_post_read(caller_addr, val, width, addr);
++}
++EXPORT_SYMBOL_GPL(log_post_read_mmio);
++EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_read);
++#endif /* CONFIG_TRACE_MMIO_ACCESS */
 -- 
 2.33.1
 
