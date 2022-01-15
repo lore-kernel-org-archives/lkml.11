@@ -2,102 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89101C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01050C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 04:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232419AbiAOESn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 23:18:43 -0500
-Received: from mga06.intel.com ([134.134.136.31]:11412 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232403AbiAOESl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 23:18:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642220321; x=1673756321;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=eodWSsLTniy2udurew7G6Q+e//rLL+3xQMwFfyhmU4k=;
-  b=W8zdDFvAm1MiKgQe0Ylz4oZs3t9hjR1Ehh16F6xSIbKeBYo00fqYY6aq
-   PkBeAJk8elEgCnVxnLOyLCU6kk1PBUKy7T7TYf1oh0IVEeAtdnWL37YSp
-   9zxSS+0gACK1b3rpc7jT0PcYvn6Iwj1RZq5NDcIqD4mmuKTXW82DQ9Nym
-   FN0Fzh4JiJLC4ZEYO9E/+5dPw1P4xVhmXh/rOgBK4DF9OGUqhTkqGsDbV
-   0E+cW6xo6IKI5QRKirpQC6aKtkjQyyakm0KeHupsRDzouvTLsDtg6cvCb
-   rvVXJfhUSsXTEz3Mvl4OoeOgtNgeWqCyXcKxgeGkquksZCRUGwICa15PW
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="305107646"
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="305107646"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 20:18:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="624566071"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 14 Jan 2022 20:18:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n8aWV-0009Mz-83; Sat, 15 Jan 2022 04:18:39 +0000
-Date:   Sat, 15 Jan 2022 12:18:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 2114/2384]
- arch/mips/vr41xx/common/irq.c:105:13: error: expected '=', ',', ';', 'asm'
- or '__attribute__' before 'arch_init_irq'
-Message-ID: <202201151230.NFPpJt0T-lkp@intel.com>
+        id S232424AbiAOETH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 23:19:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40106 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229964AbiAOETF (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 23:19:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36EA9C061574;
+        Fri, 14 Jan 2022 20:19:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6AA1B82A41;
+        Sat, 15 Jan 2022 04:19:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDF9C36AE7;
+        Sat, 15 Jan 2022 04:19:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642220342;
+        bh=L9jZwPl+ulM1n91M5X+pPqPaIs8EmocblrHHoBwI/NU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=mC7KUJ0WI0h1o6Nvx2jO2cpeYvQp9kXPiY2nfdkJYyUvJIrn9R7dqkllqC5Cw4PAJ
+         0eqkcl5xvR1KKYI+gfO5wUXczedEm1nz7e+7Gud1N+kK95evtZVPqU2X5Ymj+SYNsk
+         xgsbhY2v4IU/5X2ZRHj7HDxb3q8SiS/5XKqDKxrFvap8zIRUKez36i+JKZnjxzHTwM
+         mqxpI+1I/B6G4JtZ2YBwc3PYR4Wy87jchgGA2Z/wiIsACzU+8K8rDPJxAFRmC+y2pT
+         zQB1Rr0pZxcfE0blfDD71Jv8wgoc8kCoh1yWRoslt/6hjRG6CI3lOfWtXUNfcZ/7Uj
+         YVse1suXj1zgg==
+Date:   Fri, 14 Jan 2022 20:19:02 -0800
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        david@fromorbit.com, linux-kernel@vger.kernel.org,
+        sandeen@sandeen.net, hch@lst.de
+Subject: [GIT PULL] xfs: new bug fixes for 5.17
+Message-ID: <20220115041902.GF90423@magnolia>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   4c707c1c0de83967079b4e385012fa5b00e2cd11
-commit: 9b3c6ae85a5f3f3a0471ed5fba5c33471c2d9290 [2114/2384] headers/deps: irq: Optimize <linux/irq.h> dependencies, remove <linux/slab.h>
-config: mips-randconfig-r034-20220113 (https://download.01.org/0day-ci/archive/20220115/202201151230.NFPpJt0T-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=9b3c6ae85a5f3f3a0471ed5fba5c33471c2d9290
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout 9b3c6ae85a5f3f3a0471ed5fba5c33471c2d9290
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/vr41xx/common/
+Hi Linus,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Please pull these bug fixes for Linux 5.17.  These are the last few
+obvious fixes that I found while stress testing online fsck for XFS
+prior to initiating a design review of the whole giant machinery.
 
-All errors (new ones prefixed by >>):
+The branch merges cleanly against upstream as of a few minutes ago.
+Please let me know if anything else strange happens during the merge
+process.  There will definitely be a third pull request coming with a
+removal of the recently troublesome ALLOCSP/FREESP ioctl family and the
+long dead SGI XFS HSM ioctls.
 
-   In file included from include/linux/irq.h:19,
-                    from include/linux/irqdesc.h:6,
-                    from arch/mips/vr41xx/common/irq.c:7:
-   arch/mips/include/asm/irq.h:23:20: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'init_IRQ'
-      23 | extern void __init init_IRQ(void);
-         |                    ^~~~~~~~
-   arch/mips/vr41xx/common/irq.c:22:5: warning: no previous prototype for 'cascade_irq' [-Wmissing-prototypes]
-      22 | int cascade_irq(unsigned int irq, int (*get_irq)(unsigned int))
-         |     ^~~~~~~~~~~
->> arch/mips/vr41xx/common/irq.c:105:13: error: expected '=', ',', ';', 'asm' or '__attribute__' before 'arch_init_irq'
-     105 | void __init arch_init_irq(void)
-         |             ^~~~~~~~~~~~~
+--D
 
+The following changes since commit 7e937bb3cbe1f6b9840a43f879aa6e3f1a5e6537:
 
-vim +105 arch/mips/vr41xx/common/irq.c
+  xfs: warn about inodes with project id of -1 (2022-01-06 10:43:30 -0800)
 
-979934da9e7a00 Yoichi Yuasa 2005-09-03  104  
-979934da9e7a00 Yoichi Yuasa 2005-09-03 @105  void __init arch_init_irq(void)
+are available in the Git repository at:
 
-:::::: The code at line 105 was first introduced by commit
-:::::: 979934da9e7a0005bd9c8b1d7d00febb59ff67f7 [PATCH] mips: update IRQ handling for vr41xx
+  git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.17-merge-3
 
-:::::: TO: Yoichi Yuasa <yuasa@hh.iij4u.or.jp>
-:::::: CC: Linus Torvalds <torvalds@evo.osdl.org>
+for you to fetch changes up to 4a9bca86806fa6fc4fbccf050c1bd36a4778948a:
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+  xfs: fix online fsck handling of v5 feature bits on secondary supers (2022-01-12 09:45:21 -0800)
+
+----------------------------------------------------------------
+New code for 5.17:
+
+ - Fix a minor locking inconsistency in readdir
+ - Fix incorrect fs feature bit validation for secondary superblocks
+
+----------------------------------------------------------------
+Darrick J. Wong (2):
+      xfs: take the ILOCK when readdir inspects directory mapping data
+      xfs: fix online fsck handling of v5 feature bits on secondary supers
+
+ fs/xfs/scrub/agheader.c        | 53 ++++++++++++++++++++--------------------
+ fs/xfs/scrub/agheader_repair.c | 12 +++++++++
+ fs/xfs/xfs_dir2_readdir.c      | 55 +++++++++++++++++++++++++++---------------
+ 3 files changed, 73 insertions(+), 47 deletions(-)
