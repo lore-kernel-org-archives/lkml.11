@@ -2,97 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628F3C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 23:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E1EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 23:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233891AbiAOXAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 18:00:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56222 "EHLO
+        id S232705AbiAOXRF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 18:17:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231483AbiAOXAR (ORCPT
+        with ESMTP id S232603AbiAOXRE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 18:00:17 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1D2C061574
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 15:00:16 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id j7so212743edr.4
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 15:00:16 -0800 (PST)
+        Sat, 15 Jan 2022 18:17:04 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AC4C061574
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 15:17:04 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id j27so6118206pgj.3
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 15:17:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=kjbaItt49HeNYKlAAvgAvUBakX33E0u6vY6bifOEKb4=;
-        b=Uc9cRXojj+6mUIOsHJ+HkmjUfU30TXPHtGXyq8egGJ0VXpmuxOKiCiGo5b3txp8czg
-         ZERq3R659QHGatFaPYjrVp8w3ScLYW3iScEcgRM2tdKk7ySAu34Ph1JSXHeOnypxnkX9
-         yZFSttjGy5C42DP4SMliiBmABHmtdy776sKDmyoOSh7eO2l/Am814i1QMfZoyqs4aShV
-         JKVN+nkoW8Zp5mgbKXSVy0ZULlwsLv57X4GmVRzvpyB/GTIo285VvIdgYWkXGfHJuvSO
-         tccDpuoVXKpo0mI94FS2RMGA8ueXxt5TRamd8rUB0sINcJpHOd0ENlqLxbcVf+Ncvh+k
-         V8Pw==
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sdOdPHO13ELbYkVKga0qbkuFCOM80w2sjWMdUsNelzI=;
+        b=HG5JfIt4nloEMLlZ50FdwxUckJJ8iy7ZPM6gLlXFKzC2Io0iFXqatAZ0mXsz95a953
+         bwabUdT/UYDXVyo1MMaGKSdl3dpwPQB5vJgYCQjVkc6d6jI8J8ZAG7j3+wHbXBodVpBP
+         f/6NPR8h5JO4QK0HHY98iPgKf2MVuNH3Pz5TIRR+CdnOYcyJXevHFatggXpnDeKZQAWI
+         fBOWH5Cw0VejCEROr7nRKr9S5PH1Z3lC/XoTSrnIxL9CSgs2/GxzU6+5NFVCws+N4CVv
+         +jwKzHMv1AYZ0gGCRDghsazU98csRWSttZTnAzJ4w2HBYtBoW3b9lZ0CJpRUeSJpJ36F
+         6FTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kjbaItt49HeNYKlAAvgAvUBakX33E0u6vY6bifOEKb4=;
-        b=Gy2SkYJWaFIZ+AVhDnJBhlxUNTjJogXbZSQmn+gerG6Wsav/u6YdBNsFM3r5125kxM
-         wrApbaM7iNSkW869+aDSF++r1j2Fq0QxfFTlocemq9RiAdCEyAQi1EBIpXhVnM1aAHt6
-         UFMvCFWVDFa54E/PBktOX4cs3XE7GBDdd73i30ydVhCwsvrKJtXf8IRdn9R12Ozsf8W9
-         8WXSG+eM++pPw8vrt0Nsr8d+4Xr6hlQi3SUnnbNYyE+1p1sVQHKlMf5Ce7+SOheludLF
-         b9OtrjZJaUUn1yipZHrtHlGDd8/VR935WYc1rfwBvZr9pFTjE7JcKPPPfnTH5zwnm6yu
-         /TiQ==
-X-Gm-Message-State: AOAM532SuCE1KsOv35bxqF8IdU2H6ML4x/AHY22JGtiAz9lCNluPhb3q
-        Ccwq0xqh1xqPB2A4Xps+8Kk=
-X-Google-Smtp-Source: ABdhPJxT4Tv6oz52W08eKN9B+ubuMQ67i5hKP5HwoRtTuvxWcuu81WX0lvuLnZ7MtO8vTqH+PJ1J3Q==
-X-Received: by 2002:a17:907:d11:: with SMTP id gn17mr11593470ejc.252.1642287615069;
-        Sat, 15 Jan 2022 15:00:15 -0800 (PST)
-Received: from localhost ([185.92.221.13])
-        by smtp.gmail.com with ESMTPSA id 16sm2977557ejx.149.2022.01.15.15.00.14
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 15 Jan 2022 15:00:14 -0800 (PST)
-From:   Wei Yang <richard.weiyang@gmail.com>
-To:     akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org, mhocko@suse.com,
-        Wei Yang <richard.weiyang@gmail.com>
-Subject: [PATCH] mm/page_alloc: clear node_load[] in function build_zonelists
-Date:   Sat, 15 Jan 2022 23:00:02 +0000
-Message-Id: <20220115230002.490-1-richard.weiyang@gmail.com>
-X-Mailer: git-send-email 2.11.0
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=sdOdPHO13ELbYkVKga0qbkuFCOM80w2sjWMdUsNelzI=;
+        b=e54DyfxE+o8eHgnLG68499wznlojnA9BM+GD7Fkfr19prx4TJ2w7Ek49N+dcpmNLLm
+         dbQuYpxs+6i0PUeQZNtW3d/leB2VOXHxOLqmsC5dQG/mLU0WZuhqclNhVVXEFuvhbPdc
+         Uw2OLpAgDiUPQjbtcNdGoIbB7P5ZtzeTb1AbIov/Dtna4Q5OlHmu6/N0PaaOcDSd9arV
+         lLSRXOc9/G26azhX4NQPsSbXgratBD6G/6GsEJ2krXy4lCyn3UCQEGLoebUJSbIbcJQ7
+         aIjNXHWic5DiBAMnRU9nLlHXHHBvLimXdJQvyx0f5KTrsPjBt0ew4dp7wmiuykeYj5+R
+         cIYA==
+X-Gm-Message-State: AOAM531HB5nJNi9eJ5dwuvTru48guZPxLXQFPHVRK4tqFoE7vcLLKDk1
+        b7TSLJUjvcvCjC92TYzlkRXYN0VT3Cg=
+X-Google-Smtp-Source: ABdhPJzGYQZtvYzEXbO5jB+oMm7DZ7FoBOt2wklAeNS+Z15RquTld9i427Mns6SoTKomA9AcWyP03A==
+X-Received: by 2002:a63:6687:: with SMTP id a129mr13053286pgc.477.1642288623494;
+        Sat, 15 Jan 2022 15:17:03 -0800 (PST)
+Received: from bbox-1.mtv.corp.google.com ([2620:15c:211:201:8f5b:e301:1a36:bbbb])
+        by smtp.gmail.com with ESMTPSA id s22sm3139529pje.1.2022.01.15.15.17.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 15 Jan 2022 15:17:02 -0800 (PST)
+Sender: Minchan Kim <minchan.kim@gmail.com>
+From:   Minchan Kim <minchan@kernel.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Tim Murray <timmurray@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Waiman Long <longman@redhat.com>,
+        Minchan Kim <minchan@kernel.org>
+Subject: [PATCH] locking: add missing __sched attributes
+Date:   Sat, 15 Jan 2022 15:16:57 -0800
+Message-Id: <20220115231657.84828-1-minchan@kernel.org>
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-static variable node_load[] is a helper variable during build zonelist.
-On each turn for building zonelist, node_load[] is cleared. So this is
-proper to do this in function build_zonelist.
+This patch adds __sched attributes to a few missing places
+to show blocked function rather than locking function
+in get_wchan.
 
-Another side effect is,  #ifdef CONFIG_NUMA could be removed since
-node_load[] is only defined when CONFIG_NUMA is set.
-
-Signed-off-by: Wei Yang <richard.weiyang@gmail.com>
+Signed-off-by: Minchan Kim <minchan@kernel.org>
 ---
- mm/page_alloc.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ kernel/locking/percpu-rwsem.c | 5 +++--
+ kernel/locking/rwsem.c        | 2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index c5952749ad40..8245f5a24aad 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -6255,6 +6255,7 @@ static void build_zonelists(pg_data_t *pgdat)
- 	prev_node = local_node;
+diff --git a/kernel/locking/percpu-rwsem.c b/kernel/locking/percpu-rwsem.c
+index 70a32a576f3f..c9fdae94e098 100644
+--- a/kernel/locking/percpu-rwsem.c
++++ b/kernel/locking/percpu-rwsem.c
+@@ -7,6 +7,7 @@
+ #include <linux/rcupdate.h>
+ #include <linux/sched.h>
+ #include <linux/sched/task.h>
++#include <linux/sched/debug.h>
+ #include <linux/errno.h>
  
- 	memset(node_order, 0, sizeof(node_order));
-+	memset(node_load, 0, sizeof(node_load));
- 	while ((node = find_next_best_node(local_node, &used_mask)) >= 0) {
- 		/*
- 		 * We don't want to pressure a particular node.
-@@ -6371,10 +6372,6 @@ static void __build_all_zonelists(void *data)
+ int __percpu_init_rwsem(struct percpu_rw_semaphore *sem,
+@@ -162,7 +163,7 @@ static void percpu_rwsem_wait(struct percpu_rw_semaphore *sem, bool reader)
+ 	__set_current_state(TASK_RUNNING);
+ }
  
- 	spin_lock(&lock);
+-bool __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
++bool __sched __percpu_down_read(struct percpu_rw_semaphore *sem, bool try)
+ {
+ 	if (__percpu_down_read_trylock(sem))
+ 		return true;
+@@ -211,7 +212,7 @@ static bool readers_active_check(struct percpu_rw_semaphore *sem)
+ 	return true;
+ }
  
--#ifdef CONFIG_NUMA
--	memset(node_load, 0, sizeof(node_load));
--#endif
--
- 	/*
- 	 * This node is hotadded and no memory is yet present.   So just
- 	 * building zonelists is fine - no need to touch other nodes.
+-void percpu_down_write(struct percpu_rw_semaphore *sem)
++void __sched percpu_down_write(struct percpu_rw_semaphore *sem)
+ {
+ 	might_sleep();
+ 	rwsem_acquire(&sem->dep_map, 0, 0, _RET_IP_);
+diff --git a/kernel/locking/rwsem.c b/kernel/locking/rwsem.c
+index 69aba4abe104..acde5d6f1254 100644
+--- a/kernel/locking/rwsem.c
++++ b/kernel/locking/rwsem.c
+@@ -1048,7 +1048,7 @@ rwsem_down_read_slowpath(struct rw_semaphore *sem, long count, unsigned int stat
+ /*
+  * Wait until we successfully acquire the write lock
+  */
+-static struct rw_semaphore *
++static struct rw_semaphore __sched *
+ rwsem_down_write_slowpath(struct rw_semaphore *sem, int state)
+ {
+ 	long count;
 -- 
-2.33.1
+2.34.1.703.g22d0c6ccf7-goog
 
