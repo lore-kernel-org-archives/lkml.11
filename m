@@ -2,184 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75FC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:08:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231842AbiAOBIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:08:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        id S231848AbiAOBIx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:08:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231825AbiAOBIo (ORCPT
+        with ESMTP id S231851AbiAOBIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:08:44 -0500
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38444C061574;
-        Fri, 14 Jan 2022 17:08:44 -0800 (PST)
-Received: by mail-il1-x132.google.com with SMTP id x15so9783016ilc.5;
-        Fri, 14 Jan 2022 17:08:44 -0800 (PST)
+        Fri, 14 Jan 2022 20:08:47 -0500
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3ABFC061401
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:08:47 -0800 (PST)
+Received: by mail-yb1-xb49.google.com with SMTP id b186-20020a25cbc3000000b00611b032ccadso17035479ybg.16
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:08:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=SguhQSidD98goHcEcMCiT3PaDe/6KqF5jSvhZbAcwRk=;
-        b=NHiGLwf83Z+J4WvcapubnWeXQNYhGQEl4VuM3PQQAStk1h36D1YBs5Nyt5g6c7HJph
-         E9mOJaWWrKC6IcQqeFcM21mbbOAeTgKVNJihbPDFip4jAHUAq+9Zm0XnHHLQeyKrgs0g
-         BIPZ9WM65c/A1vmsU4OTiFsk/Fz+jAdDhhhmRt4WGU9pTZNMMiY+GD/ZIBlKg4h3SB27
-         qitoAMVCl/hmc6W0/F8pH+cFSOKYPVSQYFgYjaHw27oQAzEPsY2rn+zbNHG/9naRBWYO
-         H4Dc64P4YstnCzG1crCDxC8V1FLG7R/7E3mFDyEAJz+gNqZG2Mdmo611Mo9baRDlVJrL
-         5+wQ==
+        bh=ti5KO9A8vk9sjDtc4QE21jT0NFR0GaV/WLBKcRARKgI=;
+        b=S7eWa/B0tO4XbPv0OdCk5n8qWLZPt/5gRI1DTJwTi5GhQHBW/2q4S1Goa6HVJ53kOV
+         C4SDzmhRcejlHxG15TPB2RCHg/RE9n0Klhhmd91JlvLbggw+Zomcqm6xLZmX5+VZmd5v
+         6z2PEUpw/n9msL7glrfIs7RCavPk8+6AWV+iux/DG1QvtvTlcz7OoEHlREsv93KpGfY7
+         7PequsOl0jKjwIIwYcy3wUNuWKC7exUsRjvXFMuBU8C8z0cNytD8ojAHfXP8uaBhODyO
+         ecTIbTrob/3fDmTXsmgbfls5PaDFeVT7ZAhbWGu7Ln8w+tk/R5tS0MQPM33+aFxrGILz
+         73Tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SguhQSidD98goHcEcMCiT3PaDe/6KqF5jSvhZbAcwRk=;
-        b=lG+2bSWsaGG8oYMmZWrwVeCWJwNNcXa85tIX58uZ3v5ryr99+zTeaUXqtCZjVT+TLx
-         bNZ6DudOfNLN5j9nvcglRJ4MwHUrSa1Vqss4WUVAN/JwoVYJH2Slg+Z/lW25K32XO+SG
-         +Sd0+BYijx5lCRlDxdNfcPGxPtun4wQ89mGGHV6QQcqY1IUkhuFV0xt+0nMygYscMmqO
-         xUP61KiqijLRnzIZ1l0zMrssAc7w8uAUxjTAbugIrBGvaZ+xkCMXUd7FvCZoCJ9XXtwx
-         L+ysH48SVIjmjP1BhoCxk6NrMzYfXOlMQz7J4SBo2ztOGAnok7PO6fUY5kqCQMX6he0I
-         xiow==
-X-Gm-Message-State: AOAM533+Xp8gMjN4gjML0QQI8CAzr7oebBAS+deoR7s3rYZp/fDVeoz2
-        o4U31zkbKPEAcUPvMqi8mV/t1PtDQcIxMrUzJxM=
-X-Google-Smtp-Source: ABdhPJwGLYxnU95xaDvzf6OsQToxn3hALPGJAKmy5zkq3aHdqqkbt5gl6/g9wDkG9TeB3ereYnB0dIGh1RV78ImTprE=
-X-Received: by 2002:a05:6e02:1749:: with SMTP id y9mr5705696ill.252.1642208923596;
- Fri, 14 Jan 2022 17:08:43 -0800 (PST)
-MIME-Version: 1.0
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
-In-Reply-To: <164199616622.1247129.783024987490980883.stgit@devnote2>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 14 Jan 2022 17:08:32 -0800
-Message-ID: <CAEf4BzY9qmzemZ=3JSto+eWq9k-kX7hZKgugJRO9zZ61-pasqg@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit probe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=ti5KO9A8vk9sjDtc4QE21jT0NFR0GaV/WLBKcRARKgI=;
+        b=N87RvtJyZ8jQpvXYuhKookrYyN48hisMtXLCrMSlK669zmjyfFZx6eamRhm4Ynzd0w
+         FOlV5NZuwLOtkvRuPnw5eSpkaljVOUNJTbTHR/AoEm2poMsEhIbnXE0z4Ci3YJF/5NGx
+         iXk7FFBf281757GTqDmKidtyg24QKaAZjJlHNsgoNATs80qBj5TO1ystZ+Ioy+ClQFVi
+         NAjiF1XT+/kNxtiVHHcyBBXiDXwkI1ralsRyFB9oja9sZoXMxeezf0O5nMZN4zDvDHvL
+         gLQxyVEE9QXTUX9ITZlvNSqKMPT4DCPrbRdDURCOhsS+NTae2OgEokZG6mJndV+wUt78
+         lv1w==
+X-Gm-Message-State: AOAM532XVHR/4Ts6cznbhZkpIS8KWgHCjwCKWNxM+wxmf1Ik9L5FvRjm
+        DS1rVxKVVv3j41WOM5S5/hkNHSmZy9Y=
+X-Google-Smtp-Source: ABdhPJyx2A41ANkEXxjx9b22jDn5GMaVfTqhW/nKH2++Oa46UOTgyGXsF/oz0GqIRyot11Vvd63nfkZv34o=
+X-Received: from hridya.mtv.corp.google.com ([2620:15c:211:200:5860:362a:3112:9d85])
+ (user=hridya job=sendgmr) by 2002:a05:6902:286:: with SMTP id
+ v6mr15557991ybh.569.1642208926921; Fri, 14 Jan 2022 17:08:46 -0800 (PST)
+Date:   Fri, 14 Jan 2022 17:06:03 -0800
+In-Reply-To: <20220115010622.3185921-1-hridya@google.com>
+Message-Id: <20220115010622.3185921-6-hridya@google.com>
+Mime-Version: 1.0
+References: <20220115010622.3185921-1-hridya@google.com>
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+Subject: [RFC 5/6] dmabuf: system_heap: implement dma-buf op for GPU cgroup
+ charge transfer
+From:   Hridya Valsaraju <hridya@google.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <christian@brauner.io>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Dave Airlie <airlied@redhat.com>,
+        Kenneth Graunke <kenneth@whitecape.org>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Li Li <dualli@google.com>, Marco Ballesio <balejs@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Hang Lu <hangl@codeaurora.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Chris Down <chris@chrisdown.name>,
+        Vipin Sharma <vipinsh@google.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
+        Vlastimil Babka <vbabka@suse.cz>,
+        Arnd Bergmann <arnd@arndb.de>, dri-devel@lists.freedesktop.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        cgroups@vger.kernel.org
+Cc:     Kenny.Ho@amd.com, daniels@collabora.com, kaleshsingh@google.com,
+        tjmercier@google.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 6:02 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hi Jiri and Alexei,
->
-> Here is the 2nd version of fprobe. This version uses the
-> ftrace_set_filter_ips() for reducing the registering overhead.
-> Note that this also drops per-probe point private data, which
-> is not used anyway.
+The DMA-BUF op can be invoked when a process that allocated a buffer
+relinquishes its ownership and passes it over to another process.
 
-This per-probe private data is necessary for the feature called BPF
-cookie, in which each attachment has a unique user-provided u64 value
-associated to it, accessible at runtime through
-bpf_get_attach_cookie() helper. One way or another we'll need to
-support this to make these multi-attach BPF programs really useful for
-generic tracing applications.
+Signed-off-by: Hridya Valsaraju <hridya@google.com>
+---
+ drivers/dma-buf/heaps/system_heap.c | 43 +++++++++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-Jiri,
+diff --git a/drivers/dma-buf/heaps/system_heap.c b/drivers/dma-buf/heaps/system_heap.c
+index adfdc8c576f2..70f5b98f1157 100644
+--- a/drivers/dma-buf/heaps/system_heap.c
++++ b/drivers/dma-buf/heaps/system_heap.c
+@@ -307,6 +307,48 @@ static void system_heap_dma_buf_release(struct dma_buf *dmabuf)
+ 	kfree(buffer);
+ }
+ 
++#ifdef CONFIG_CGROUP_GPU
++static int system_heap_dma_buf_charge(struct dma_buf *dmabuf, struct gpucg *gpucg)
++{
++	struct gpucg *current_gpucg;
++	struct gpucg_device *gpucg_dev;
++	struct system_heap_buffer *buffer = dmabuf->priv;
++	size_t len = buffer->len;
++	int ret = 0;
++
++	/*
++	 * Check that the process requesting the transfer is the same as the one
++	 * to whom the buffer is currently charged to.
++	 */
++	current_gpucg = gpucg_get(current);
++	if (current_gpucg != buffer->gpucg)
++		ret = -EPERM;
++
++	gpucg_put(current_gpucg);
++	if (ret)
++		return ret;
++
++	gpucg_dev = dma_heap_get_gpucg_dev(buffer->heap);
++
++	ret = gpucg_try_charge(gpucg, gpucg_dev, len);
++	if (ret)
++		return ret;
++
++	/* uncharge the buffer from the cgroup its currently charged to. */
++	gpucg_uncharge(buffer->gpucg, gpucg_dev, buffer->len);
++	gpucg_put(buffer->gpucg);
++
++	buffer->gpucg = gpucg;
++
++	return 0;
++}
++#else
++static int system_heap_dma_buf_charge(struct dma_buf *dmabuf, struct gpucg *gpucg)
++{
++	return 0;
++}
++#endif
++
+ static const struct dma_buf_ops system_heap_buf_ops = {
+ 	.attach = system_heap_attach,
+ 	.detach = system_heap_detach,
+@@ -318,6 +360,7 @@ static const struct dma_buf_ops system_heap_buf_ops = {
+ 	.vmap = system_heap_vmap,
+ 	.vunmap = system_heap_vunmap,
+ 	.release = system_heap_dma_buf_release,
++	.charge_to_cgroup = system_heap_dma_buf_charge,
+ };
+ 
+ static struct page *alloc_largest_available(unsigned long size,
+-- 
+2.34.1.703.g22d0c6ccf7-goog
 
-We've discussed with Alexei this week how cookies can be supported for
-multi-attach fentry (where it seems even more challenging than in
-kprobe case), and agreed on rather simple solution, which roughly goes
-like this. When multi-attaching either fentry/fexit program, save
-sorted array of IP addresses and then sorted in the same order as IPs
-list of u64 cookies. At runtime, bpf_get_attach_cookie() helper should
-somehow get access to these two arrays and functions IP (that we
-already have with bpf_get_func_ip()), perform binary search and locate
-necessary cookie. This offloads the overhead of finding this cookie to
-actual call site of bpf_get_attach_cookie() (and it's a log(N), so not
-bad at all, especially if BPF program can be optimized to call this
-helper just once).
-
-I think something like that should be doable for Masami's fprobe-based
-multi-attach kprobes, right? That would allow to have super-fast
-attachment, but still support BPF cookie per each individual IP/kernel
-function attachment. I haven't looked at code thoroughly, though,
-please let me know if I'm missing something fundamental.
-
->
-> This introduces the fprobe, the function entry/exit probe with
-> multiple probe point support. This also introduces the rethook
-> for hooking function return as same as kretprobe does. This
-> abstraction will help us to generalize the fgraph tracer,
-> because we can just switch it from rethook in fprobe, depending
-> on the kernel configuration.
->
-> The patch [1/8] and [7/8] are from your series[1]. Other libbpf
-> patches will not be affected by this change.
->
-> [1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
->
-> I also added an out-of-tree (just for testing) patch at the
-> end of this series ([8/8]) for adding a wildcard support to
-> the sample program. With that patch, it shows how long the
-> registration will take;
->
-> # time insmod fprobe_example.ko symbol='btrfs_*'
-> [   36.130947] fprobe_init: 1028 symbols found
-> [   36.177901] fprobe_init: Planted fprobe at btrfs_*
-> real    0m 0.08s
-> user    0m 0.00s
-> sys     0m 0.07s
->
-> Thank you,
->
-> ---
->
-> Jiri Olsa (2):
->       ftrace: Add ftrace_set_filter_ips function
->       bpf: Add kprobe link for attaching raw kprobes
->
-> Masami Hiramatsu (6):
->       fprobe: Add ftrace based probe APIs
->       rethook: Add a generic return hook
->       rethook: x86: Add rethook x86 implementation
->       fprobe: Add exit_handler support
->       fprobe: Add sample program for fprobe
->       [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
->
->
->  arch/x86/Kconfig                |    1
->  arch/x86/kernel/Makefile        |    1
->  arch/x86/kernel/rethook.c       |  115 ++++++++++++++++++++
->  include/linux/bpf_types.h       |    1
->  include/linux/fprobe.h          |   57 ++++++++++
->  include/linux/ftrace.h          |    3 +
->  include/linux/rethook.h         |   74 +++++++++++++
->  include/linux/sched.h           |    3 +
->  include/uapi/linux/bpf.h        |   12 ++
->  kernel/bpf/syscall.c            |  195 +++++++++++++++++++++++++++++++++-
->  kernel/exit.c                   |    2
->  kernel/fork.c                   |    3 +
->  kernel/kallsyms.c               |    1
->  kernel/trace/Kconfig            |   22 ++++
->  kernel/trace/Makefile           |    2
->  kernel/trace/fprobe.c           |  168 +++++++++++++++++++++++++++++
->  kernel/trace/ftrace.c           |   54 ++++++++-
->  kernel/trace/rethook.c          |  226 +++++++++++++++++++++++++++++++++++++++
->  samples/Kconfig                 |    7 +
->  samples/Makefile                |    1
->  samples/fprobe/Makefile         |    3 +
->  samples/fprobe/fprobe_example.c |  154 +++++++++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h  |   12 ++
->  23 files changed, 1103 insertions(+), 14 deletions(-)
->  create mode 100644 arch/x86/kernel/rethook.c
->  create mode 100644 include/linux/fprobe.h
->  create mode 100644 include/linux/rethook.h
->  create mode 100644 kernel/trace/fprobe.c
->  create mode 100644 kernel/trace/rethook.c
->  create mode 100644 samples/fprobe/Makefile
->  create mode 100644 samples/fprobe/fprobe_example.c
->
-> --
-> Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
