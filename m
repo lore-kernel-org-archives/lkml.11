@@ -2,95 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 16:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F179FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 16:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbiAOQ0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 11:26:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55700 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbiAOQ03 (ORCPT
+        id S233088AbiAOQ1a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 11:27:30 -0500
+Received: from h04mx17.reliablemail.org ([185.76.67.210]:36546 "EHLO
+        h04mx17.reliablemail.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230030AbiAOQ13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 11:26:29 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD51AC061574
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 08:26:28 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id x7so40878481lfu.8
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 08:26:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:user-agent:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4xnnkY/0N7vitggBHBYyS2U/q+4IqBCzhx6kWTZjGxw=;
-        b=DFLIY5qvAceQd6eNdBXxvpVJFkF/1amxaCDjTsCXWvZv3f+yz4gz6EJXJRrlnLdcs6
-         1yFfCIwuz8a4tluCjQrvtSChlWgk2L+rBBmiIHGUhaDZUqhWl1Kwf+29b2ssptS4eRvn
-         L55UyaRl0eIFHWMH14JXMCJi9Nb3Z1t/DF77RdwurVr9CFIrM9Sod4bPaltxSTLNFlQD
-         UZXz0SVdi8UUW8H1p9NKo6e70BcmwTahPZo7CQVWnKQmXpN8tOxRTInZEfjXPbdN8kpj
-         PyBZmqb5DNywbSXYcvK+ZFLlymQ4EceTWle5V0ELPg7SAZjoBTUITJ17qxhxccSb0Jgd
-         fv1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=4xnnkY/0N7vitggBHBYyS2U/q+4IqBCzhx6kWTZjGxw=;
-        b=7ztZ4A2P1EODNclivWjpJhVgPd6nim/aNmzjKipk76OnaioUfOa+LSdF4fgMeZ/9bh
-         6JEivdVxeOgoX28Q9kiWSBJlhZqhz9U4+DGIVVa15jZQ/FleEKzTvuq/nnpAlVDKZImu
-         L9gr/gB0ltZpbHCFb2nwj5WoMTCSEmXpGsKMrhlLZagJsZ8CLaSO81rMX09Jx/ymd7Bp
-         Cin/z+c7BDTP5H+mv7/u6dTTtljEVKLNzmjIVhi9jMrnQKxZnDQmPHctX0UoSg/+CDhw
-         nVTFQ9jktePcb+LYNuNUBQs6mYojG6ybd1/aA3giaX5CkCr+2Osjzcvt/VS8lZjP9hpA
-         42Uw==
-X-Gm-Message-State: AOAM532qkMKrRBA/O5nsWuldXnEwO2F6KNqIZ8s2hCWG3yWW1YQF5YKR
-        OikK3uwuuvucfrIOB+B1D1o=
-X-Google-Smtp-Source: ABdhPJyE6L8fzGlQGy/ier4fQfMSK2AuzP91lK0y4ZIb+Fm1j7k/Ep/M8wewAgqI+E5fn5Bd3pdLIw==
-X-Received: by 2002:a2e:3508:: with SMTP id z8mr9974618ljz.37.1642263986739;
-        Sat, 15 Jan 2022 08:26:26 -0800 (PST)
-Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
-        by smtp.gmail.com with ESMTPSA id x6sm902368lfn.144.2022.01.15.08.26.26
-        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
-        Sat, 15 Jan 2022 08:26:26 -0800 (PST)
-Date:   Sat, 15 Jan 2022 19:32:08 +0300
-From:   Alexander Sergeyev <sergeev917@gmail.com>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Jeremy Szu <jeremy.szu@canonical.com>,
-        Werner Sembach <wse@tuxedocomputers.com>,
-        Hui Wang <hui.wang@canonical.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        Kailang Yang <kailang@realtek.com>, Sami Loone <sami@loone.fi>,
-        Elia Devito <eliadevito@gmail.com>,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] ALSA: hda/realtek: fix speakers and micmute on HP
- 855 G8
-Message-ID: <20220115163208.xmvum6ehqcadonj7@localhost.localdomain>
-User-Agent: mtt
-References: <20220114164904.lgj7yimbei6fmloe@localhost.localdomain>
- <20220114165050.ouw2nknuspclynro@localhost.localdomain>
- <CAAd53p6KXD2mEHgkU_TpTrsU-vQ9Vxdip+6sPfDaVoSOkmaz-g@mail.gmail.com>
+        Sat, 15 Jan 2022 11:27:29 -0500
+X-Halon-Out: 06a35eb1-7620-11ec-a232-556aad082471
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=grimler.se;
+        s=default; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ReV3cTCcQbwKTVST9aqNB4NI1KACvVlqj1N8uT56YnQ=; b=o6TkzjnLdEX9Xls8zB32N/0Cgr
+        4NHScSmIVW1HQZLcPwR4lL9pk9OVj/YhYe3aBUBrQE6NJpj0mK4B5BcbX94fRUkq1t90fXvKHgbSb
+        TAxm3RL6j8RthAnBilbBtNXCpcN/djiJEfDyHF9b0dVUitrobTdthhMSvR9odVdlR6xamrS5GtC1w
+        JIaDXOVgnUp49+/f5eHsdUhNyjcLdR3fKYVII2a+AX41v8tngWP1WAHmcEl0IBbCVrrO+5RsNQ38t
+        bmS6JPbvoKPd54uwnLrbT8zpos1wKwatG7yq3AVDAqpbnX/1UHkTVINb6zMWF8uWgiflv+3b/vZAS
+        DRrJBynA==;
+From:   Henrik Grimler <henrik@grimler.se>
+To:     semen.protsenko@linaro.org, virag.david003@gmail.com,
+        martin.juecker@gmail.com, cw00.choi@samsung.com,
+        m.szyprowski@samsung.com, alim.akhtar@samsung.com,
+        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Cc:     Henrik Grimler <henrik@grimler.se>
+Subject: [PATCH v2 0/3] Add initial support for exynos5420-chagallwifi
+Date:   Sat, 15 Jan 2022 17:27:00 +0100
+Message-Id: <20220115162703.699347-1-henrik@grimler.se>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAd53p6KXD2mEHgkU_TpTrsU-vQ9Vxdip+6sPfDaVoSOkmaz-g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cpsrv07.misshosting.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - grimler.se
+X-Get-Message-Sender-Via: cpsrv07.misshosting.com: authenticated_id: henrik@grimler.se
+X-Authenticated-Sender: cpsrv07.misshosting.com: henrik@grimler.se
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 11:47:40PM +0800, Kai-Heng Feng wrote:
-> > Note that the device can boot up with working speakers and micmute LED
-> > without this patch, but the success rate would be quite low (order of
-> > 16 working boots across 709 boots) at least for the built-in drivers
-> > scenario. This also means that there are some timing issues during early
-> > boot and this patch is a workaround.
->
-> Does this issue happen to warm boot (reboot) or cold boot?
+Samsung's tablet Galaxy Tab S 10.5" (wifi) has codename chagallwifi
+and is one of several tablets released in 2013 - 2014 based on Exynos
+5420.  This initial devicetree adds support for accessing device over
+USB or UART, and allows using a rootfs in either the internal eMMC or
+an external sdcard.  4 out of 8 CPUs are brought up when device boots,
+which is the same as on the somewhat similar device
+exynos5420-arndale-octa.
 
-The issue is definitely not limited to warm boots only. I can confirm cold 
-boots with no sound and also warm boots with functioning sound. With this in 
-mind, the provided numbers (16 good boots across 709 boots) are largely coming 
-from reboots since the testing was scripted and driven by SSH.
+Patch 2 is necessary after a secure-firmware node is added, otherwise
+device hangs during the CPU1BOOT secure monitor call. Without the
+secure-firmware node we are not able to bring up any secondary CPUs.
 
-> If the issue only happen to warm boot, please try reverting commit
-> 9d3fcb28f9b9 "Revert "PM: ACPI: reboot: Use S5 for reboot"".
-> Many HP systems requires it to have a functional reboot.
+Changes since v1
+================
 
-Interesting. I haven't noticed anything breaking with reboots on this 
-particular system (at least so far).
+Fix mmc_0 and usbdrd in patch 3: 
+* Remove extra, non supported, options from mmc_0 node 
+* Do not set usbdrd supplies. Usb networking does not work with them 
+  specified, but it works fine with dummy regulators
+
+Henrik Grimler (3):
+  dt-bindings: arm: samsung: document chagallwifi board binding
+  ARM: exynos: only do SMC_CMD_CPU1BOOT call on Exynos4
+  ARM: dts: Add support for Samsung Chagallwifi
+
+ .../bindings/arm/samsung/samsung-boards.yaml  |   1 +
+ arch/arm/boot/dts/Makefile                    |   1 +
+ arch/arm/boot/dts/exynos5420-chagallwifi.dts  |  57 ++
+ .../dts/exynos5420-galaxy-tab-common.dtsi     | 633 ++++++++++++++++++
+ arch/arm/mach-exynos/firmware.c               |   4 +-
+ 5 files changed, 695 insertions(+), 1 deletion(-)
+ create mode 100644 arch/arm/boot/dts/exynos5420-chagallwifi.dts
+ create mode 100644 arch/arm/boot/dts/exynos5420-galaxy-tab-common.dtsi
+
+-- 
+2.34.1
+
