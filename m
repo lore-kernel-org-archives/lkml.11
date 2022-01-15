@@ -2,66 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEDE1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 12:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E59C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 12:27:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231911AbiAOM10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 07:27:26 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:47532
+        id S231648AbiAOM12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 07:27:28 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:47526
         "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231168AbiAOM1E (ORCPT
+        by vger.kernel.org with ESMTP id S231183AbiAOM1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 15 Jan 2022 07:27:04 -0500
 Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id C543440045
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 12:26:58 +0000 (UTC)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id D349C40749
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 12:27:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642249618;
-        bh=ePWS8huBNB8mOLwzP5l9zhhnqwr/R2aV/N6dfRb+pkA=;
+        s=20210705; t=1642249621;
+        bh=yrlNFOS5f9IRjvA5fm0IVEgclHgNp68QGUe5Q3pp8Vc=;
         h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
          MIME-Version;
-        b=vnd9YjeTAkXxpN3SWdBQaa337/49tJieZIqgKEBiUQHWsuzpNxPY34sQ/iKaPtIuy
-         kftQO22UqiTrGMG/MxJhOPjcVk7bvbyyiyfnHPadRsVUnmVuVyzekYEg6y0pSpNseh
-         UjijZ9YXB3JbAhYa1ceOkL/G50f/h+jenmGykR92DiqW09cjMLhSDFVujHC3cD4/t+
-         upyEjk3kN5x12CDupekVUT5Iyc5RByF5b2rOo9AC2sUWd2t2Dty9qc1oHxsm3mp+RE
-         20e5f0hNC88RcwqBVUJMuuIt1OEzULtpV4MaY2hfytZ1WWHFVvmX7TTDyzLTwJgS1O
-         wpHmt3U1o0LUg==
-Received: by mail-wm1-f72.google.com with SMTP id p14-20020a1c544e000000b003490705086bso3429328wmi.7
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 04:26:58 -0800 (PST)
+        b=dSB/yMdQR6IlRBkuJgYdjY9Dx8Cpa3WyPSaY2J3Y7zQoIG7n/3jzZR+qI+yMlzd26
+         4prvK9O9bdCVJCiWwYo+POkVYyFVNZE1gfyxjTtbHZTP37kszSTru8VOyL200shyHU
+         OPxga1FKS6OPXIlHLkklgsQ/ruj/gxkii7oJylv+1IkD9Zwk9zFd3aPy6qieOC+Wby
+         DVOQJpfnTTTLItgnZktSbjFIoMAtBdpLiSaOSUop2NPQJ8xFZDVmBe5H0DysB6K/mF
+         80z6NCjKgYUs5TXKQabpgKYG+i0UZvVLhG7k/pJCUL2ifM2+0W/WHDXnlMZ+1KNNkN
+         nWuphciUco64A==
+Received: by mail-wm1-f72.google.com with SMTP id o3-20020a05600c4fc300b0034aee9534bdso2624948wmq.2
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 04:27:01 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ePWS8huBNB8mOLwzP5l9zhhnqwr/R2aV/N6dfRb+pkA=;
-        b=7FqXabpZ8cewaOUqH7biFqkx9iE8Yxof0Noz2Du2tG5mCbmllKTamOE67AeR0QsZFV
-         ermU1UoYxymQ1aHlysmGvp/gbUfyEsHJR9YHIohOd1Vcw/KuirsE+piw6nYw6H2q67Hf
-         E5tXmTQ4sone6N4W8rcXH9dW7PLb/NxR/2oFPqxRRxug4gzE2l5Y4bMCNo1Wba7anppK
-         izmhT2oe5D3IxJxlKIbPzocCxVXr1R0VamiGM/ifDSsK2jIYHurb2OVM8f4pX931Lljt
-         aMn5GbCn6r7C9ibRvMY8RjaWzNLrjNTrm+nzB95BcInyuXaP2X2akRKEBuTbekJFnoNF
-         FGSg==
-X-Gm-Message-State: AOAM532zlRJsPYcJgHtR/DyG7EuY5v522J030lc2tmbZ+niFi4MwwiJ2
-        myHKJ4J6p9KokPS9dqPHq32FaNz3XPosc3AM+NwjwAQsNJg6CpXoEJ0BEeuK9pR/BQ5DIA6JUsY
-        ag3RRwLmStlUaEzilVgp2tlK09LaXAJniM+OqCALtaw==
-X-Received: by 2002:a5d:6f0a:: with SMTP id ay10mr12121174wrb.191.1642249618562;
-        Sat, 15 Jan 2022 04:26:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzbQP4Q1giAJ4uAlzrN0vo+MIFiQCq0DOWWfo4iYlUpIw0pSA9ah1HXa5NlBGI3l4j4jOixug==
-X-Received: by 2002:a5d:6f0a:: with SMTP id ay10mr12121168wrb.191.1642249618445;
-        Sat, 15 Jan 2022 04:26:58 -0800 (PST)
+        bh=yrlNFOS5f9IRjvA5fm0IVEgclHgNp68QGUe5Q3pp8Vc=;
+        b=r5kNPRM5QVvSHJwkisYxJzlGkZi2p+HTw3PZEuzY5PA6qDwdLZSKoAjipNsjX7yzMR
+         ujWSGAnH3HDyzsuvOJpi7WIuP5WgZZLFIOt3ieZ90SIWEGhD/nxU8eWg3w/cstehsJtl
+         Z1an0R6p8EgY0Gbr4cXHi/RbFOC9Hix+q4/OniZ/K9Vx8ruX4G9S0tKl3tnPrH7xhJbd
+         gsZRZxHo83AxtfPXoRLMSL5Yp43iH5tUbH304uBC31omil/+GlvsbL3J9LUJybNlHwVC
+         5txMDsjrYaJWcD9feoq0pgfT4pw+NfXvFU96TbErYotY3eBIaSMy0YMYQbpNvmcS0tzv
+         Y2oA==
+X-Gm-Message-State: AOAM530hIw1xdiSGLbWSwcRXKaufj51gcGyX8C3kXEh9FUbjhU8dCSvn
+        zQu2/v31yRGxK6xcGKRzk+YknJnLyN9Na2fp59V8E+IylMJoBlwtPcxjsbC6EplH5zy9fTUtxEM
+        MMnvpEFPCRQzu+Ok6gTR8Oc6vk+wQrM6GNQMbA+7DUg==
+X-Received: by 2002:adf:f0d1:: with SMTP id x17mr12129016wro.223.1642249621083;
+        Sat, 15 Jan 2022 04:27:01 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyuosj48Z96wc9CpVVg353GMRvCJEBxDaoKE+PY1MPfJ8vkd7s+FLfB9jQET/3Y31fE7LgFfQ==
+X-Received: by 2002:adf:f0d1:: with SMTP id x17mr12129002wro.223.1642249620903;
+        Sat, 15 Jan 2022 04:27:00 -0800 (PST)
 Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id bk17sm7878476wrb.105.2022.01.15.04.26.57
+        by smtp.gmail.com with ESMTPSA id bk17sm7878476wrb.105.2022.01.15.04.26.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 04:26:57 -0800 (PST)
+        Sat, 15 Jan 2022 04:27:00 -0800 (PST)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-nfc@lists.01.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/7] nfc: llcp: simplify llcp_sock_connect() error paths
-Date:   Sat, 15 Jan 2022 13:26:46 +0100
-Message-Id: <20220115122650.128182-4-krzysztof.kozlowski@canonical.com>
+Subject: [PATCH 5/7] nfc: llcp: use test_bit()
+Date:   Sat, 15 Jan 2022 13:26:48 +0100
+Message-Id: <20220115122650.128182-6-krzysztof.kozlowski@canonical.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220115122650.128182-1-krzysztof.kozlowski@canonical.com>
 References: <20220115122650.128182-1-krzysztof.kozlowski@canonical.com>
@@ -71,45 +71,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The llcp_sock_connect() error paths were using a mixed way of central
-exit (goto) and cleanup
+Use test_bit() instead of open-coding it.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 ---
- net/nfc/llcp_sock.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/nfc/llcp_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/nfc/llcp_sock.c b/net/nfc/llcp_sock.c
-index e92440c0c4c7..fdf0856182c6 100644
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -712,10 +712,8 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
- 	llcp_sock->local = nfc_llcp_local_get(local);
- 	llcp_sock->ssap = nfc_llcp_get_local_ssap(local);
- 	if (llcp_sock->ssap == LLCP_SAP_MAX) {
--		nfc_llcp_local_put(llcp_sock->local);
--		llcp_sock->local = NULL;
- 		ret = -ENOMEM;
--		goto put_dev;
-+		goto sock_llcp_put_local;
- 	}
+diff --git a/net/nfc/llcp_core.c b/net/nfc/llcp_core.c
+index 5ad5157aa9c5..b70d5042bf74 100644
+--- a/net/nfc/llcp_core.c
++++ b/net/nfc/llcp_core.c
+@@ -383,7 +383,7 @@ u8 nfc_llcp_get_sdp_ssap(struct nfc_llcp_local *local,
+ 			pr_debug("WKS %d\n", ssap);
  
- 	llcp_sock->reserved_ssap = llcp_sock->ssap;
-@@ -760,11 +758,13 @@ static int llcp_sock_connect(struct socket *sock, struct sockaddr *_addr,
+ 			/* This is a WKS, let's check if it's free */
+-			if (local->local_wks & BIT(ssap)) {
++			if (test_bit(ssap, &local->local_wks)) {
+ 				mutex_unlock(&local->sdp_lock);
  
- sock_llcp_release:
- 	nfc_llcp_put_ssap(local, llcp_sock->ssap);
-+
-+sock_llcp_put_local:
- 	nfc_llcp_local_put(llcp_sock->local);
- 	llcp_sock->local = NULL;
-+	llcp_sock->dev = NULL;
- 
- put_dev:
--	llcp_sock->dev = NULL;
- 	nfc_put_device(dev);
- 
- error:
+ 				return LLCP_SAP_MAX;
 -- 
 2.32.0
 
