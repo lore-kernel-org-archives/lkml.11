@@ -2,126 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9B54C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231882AbiAOBNk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:13:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiAOBNj (ORCPT
+        id S231899AbiAOBNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:13:51 -0500
+Received: from out162-62-57-210.mail.qq.com ([162.62.57.210]:58139 "EHLO
+        out162-62-57-210.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229775AbiAOBNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:13:39 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF805C061574;
-        Fri, 14 Jan 2022 17:13:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=j4X69JcLD6mdNWGbTcpDg4N2e78q2bD3JRVc0T2jhBs=; b=lS9h5WOextxA0Om5wNMAfwTXEa
-        oh0VkAalNyGQuqUvoEJC2NPDtDNs2xeN9h6fXM0sQhTfxnvxIpmKPTJse7I6NcVErK8sxJMUN0WPJ
-        CwvZwG8GDtRiDC7lb4bQDAwbXiiiNpbgqMaBDlt7/8/5m5cGiDXiEAjKtC6dlypZOppiJXP03g1Ee
-        5Hu0R3InL5I1gy0L47RZafgBDJ/98wqceuGkCz8NoNEfE7NgOsSdATX+qGW/eMO5gNEqCHQ0yqvAn
-        TZaYJuAMHimVlbSpT5iwGIkaF5EE3vGUBrpCv1cggDbY02o2Dd/caG6n7tnYHoqQWybl4mYVcpA70
-        ri+kW4kQ==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n8XdS-00AWnV-Ui; Sat, 15 Jan 2022 01:13:39 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Stephen Boyd <swboyd@chromium.org>
-Subject: [PATCH] remoteproc: qcom: q6v5: fix service routines build errors
-Date:   Fri, 14 Jan 2022 17:13:38 -0800
-Message-Id: <20220115011338.2973-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        Fri, 14 Jan 2022 20:13:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1642209226;
+        bh=KtC2JAo9Zv4oft7XPe6btVLuXHfV817m3kIZSg+ZITY=;
+        h=From:To:Cc:Subject:Date;
+        b=Oh7AsDnPr5IvUZGlxd+4VZ/tiMiGw2ffhQAgpDmUnnD3s8VUbFFs8S8exdRchof59
+         q2v22sEUkV0cDlfVUaQcCwxuFwUUpRolR6gDhhDM+Qd3FKs2Sx0ZUt7+33PzBWHgFE
+         ltc96/3y0fb55JX8aI0LhFtfUuX2cvu4GfCP1mw0=
+Received: from localhost.localdomain ([218.197.153.188])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id 2A006C80; Sat, 15 Jan 2022 09:10:32 +0800
+X-QQ-mid: xmsmtpt1642209032t17m0k78d
+Message-ID: <tencent_D67F131001E6EB5C358E0E0AB7F03725A907@qq.com>
+X-QQ-XMAILINFO: M7r/zttrUmlksvo2G1dU0x+495CKZ8lA2TaVTDWSgFeh18HvqEBmuBZFhXZFRt
+         p6UboqGlj17odmJTwuN21U3hqVvkbgrsHmLeCTdzUOLJU5nJHOaVPojHZbQ2GHvXDE073hniUIdr
+         amAX6Wmc1M6WKwnM4zeBYvizY+2ZGDxquComGTkU3PJp+xhIAEI43L1/SLKgsg2WUfJi0BpWSBeC
+         B87XSERumlTLYgXg5gqyak9Q6ZlMQPL+P+ZnGBqj37vMlzAh139zrv4C5Mr3DodkHyFqh5SBgJqG
+         PKKwH5/gae/j5n6EXCCjTpaXuk3tITYa4/I/r7gj1to2L1nZ7So1tcviQka9E8nkysMBEUlPDyb0
+         8gpYq/bSqYkBJfd9+ehg7yMltrve/ymP27jjTewlFkY3PSPYspcJSM1bS4STi+iZOltO2t5Ag631
+         ApfcAU2eJAP6PxbFuE9XWpd5rDfoC58xHY8wIczRgtsba6FNo8rFZYdTVuAexLQc8ruSsJiX8GtK
+         tbsgByYjIeBJ0ubM1ZVkJ6CUfc4SSMTHWxXHr274r9uP9dPKzaLu+E4b7mBts8atf25T3ksIs2q1
+         lY7ze3P52yXLwiveaIPhOQGYK32uxDWnPmGdLgHHuJRtqkKteezNkDZqgM4vZuc39oaVVeZ/ODmK
+         qz5b86eK8vHyQDdu7pLxJlJfbtvI0nstsfKgFtRE6PmphUyI0OBXTG5yFWp7bE8Z55U++Sib+0U8
+         Wtv2dTtp4F/gYpwl1Y4O1dtmXK+1ngBPqlBuerNLmHeChU5Da2PhcP798jeLeuvA7pAg77+1Bt6B
+         CNe+uT3A1Dswy+pPojJSf/hOR0oWHEXT7nRepulZoDSl21NV8XnNtyHZrTsssq5QchzLDdfl/1ms
+         sv5wzyp3hQ
+From:   xkernel.wang@foxmail.com
+To:     paul@paul-moore.com, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org
+Cc:     selinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] selinux: check the return value of audit_log_start()
+Date:   Sat, 15 Jan 2022 09:10:06 +0800
+X-OQ-MSGID: <20220115011006.1881-1-xkernel.wang@foxmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_QCOM_AOSS_QMP=m and CONFIG_QCOM_Q6V5_MSS=y, the builtin
-driver cannot call into the loadable module's low-level service
-functions. Trying to build with that config combo causes linker errors.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-There are two problems here. First, drivers/remoteproc/qcom_q6v5.c
-should #include <linux/soc/qcom/qcom_aoss.h> for the definitions of
-the service functions, depending on whether CONFIG_QCOM_AOSS_QMP is
-set/enabled or not. Second, the qcom remoteproc drivers should depend
-on QCOM_AOSS_QMP iff it is enabled (=y or =m) so that the qcom
-remoteproc drivers can be built properly.
+audit_log_start() returns audit_buffer pointer on success or NULL on
+error. It is better to check the return value of it so to prevent
+potential memory access error.
 
-This prevents these build errors:
-
-aarch64-linux-ld: drivers/remoteproc/qcom_q6v5.o: in function `q6v5_load_state_toggle':
-qcom_q6v5.c:(.text+0xc4): undefined reference to `qmp_send'
-aarch64-linux-ld: drivers/remoteproc/qcom_q6v5.o: in function `qcom_q6v5_deinit':
-(.text+0x2e4): undefined reference to `qmp_put'
-aarch64-linux-ld: drivers/remoteproc/qcom_q6v5.o: in function `qcom_q6v5_init':
-(.text+0x778): undefined reference to `qmp_get'
-aarch64-linux-ld: (.text+0x7d8): undefined reference to `qmp_put'
-
-Fixes: c1fe10d238c0 ("remoteproc: qcom: q6v5: Use qmp_send to update co-processor load state")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc: linux-remoteproc@vger.kernel.org
-Cc: Sibi Sankar <sibis@codeaurora.org>
-Cc: Stephen Boyd <swboyd@chromium.org>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
- drivers/remoteproc/Kconfig     |    4 ++++
- drivers/remoteproc/qcom_q6v5.c |    1 +
- 2 files changed, 5 insertions(+)
+ security/selinux/ss/services.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
---- linux-next-20220114.orig/drivers/remoteproc/qcom_q6v5.c
-+++ linux-next-20220114/drivers/remoteproc/qcom_q6v5.c
-@@ -10,6 +10,7 @@
- #include <linux/platform_device.h>
- #include <linux/interrupt.h>
- #include <linux/module.h>
-+#include <linux/soc/qcom/qcom_aoss.h>
- #include <linux/soc/qcom/smem.h>
- #include <linux/soc/qcom/smem_state.h>
- #include <linux/remoteproc.h>
---- linux-next-20220114.orig/drivers/remoteproc/Kconfig
-+++ linux-next-20220114/drivers/remoteproc/Kconfig
-@@ -180,6 +180,7 @@ config QCOM_Q6V5_ADSP
- 	depends on RPMSG_QCOM_GLINK_SMEM || RPMSG_QCOM_GLINK_SMEM=n
- 	depends on QCOM_SYSMON || QCOM_SYSMON=n
- 	depends on RPMSG_QCOM_GLINK || RPMSG_QCOM_GLINK=n
-+	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select MFD_SYSCON
- 	select QCOM_PIL_INFO
- 	select QCOM_MDT_LOADER
-@@ -199,6 +200,7 @@ config QCOM_Q6V5_MSS
- 	depends on RPMSG_QCOM_GLINK_SMEM || RPMSG_QCOM_GLINK_SMEM=n
- 	depends on QCOM_SYSMON || QCOM_SYSMON=n
- 	depends on RPMSG_QCOM_GLINK || RPMSG_QCOM_GLINK=n
-+	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select MFD_SYSCON
- 	select QCOM_MDT_LOADER
- 	select QCOM_PIL_INFO
-@@ -218,6 +220,7 @@ config QCOM_Q6V5_PAS
- 	depends on RPMSG_QCOM_GLINK_SMEM || RPMSG_QCOM_GLINK_SMEM=n
- 	depends on QCOM_SYSMON || QCOM_SYSMON=n
- 	depends on RPMSG_QCOM_GLINK || RPMSG_QCOM_GLINK=n
-+	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select MFD_SYSCON
- 	select QCOM_PIL_INFO
- 	select QCOM_MDT_LOADER
-@@ -239,6 +242,7 @@ config QCOM_Q6V5_WCSS
- 	depends on RPMSG_QCOM_GLINK_SMEM || RPMSG_QCOM_GLINK_SMEM=n
- 	depends on QCOM_SYSMON || QCOM_SYSMON=n
- 	depends on RPMSG_QCOM_GLINK || RPMSG_QCOM_GLINK=n
-+	depends on QCOM_AOSS_QMP || QCOM_AOSS_QMP=n
- 	select MFD_SYSCON
- 	select QCOM_MDT_LOADER
- 	select QCOM_PIL_INFO
+diff --git a/security/selinux/ss/services.c b/security/selinux/ss/services.c
+index e5f1b27..759d878 100644
+--- a/security/selinux/ss/services.c
++++ b/security/selinux/ss/services.c
+@@ -3277,11 +3277,13 @@ int security_sid_mls_copy(struct selinux_state *state,
+ 				ab = audit_log_start(audit_context(),
+ 						     GFP_ATOMIC,
+ 						     AUDIT_SELINUX_ERR);
+-				audit_log_format(ab,
+-						 "op=security_sid_mls_copy invalid_context=");
+-				/* don't record NUL with untrusted strings */
+-				audit_log_n_untrustedstring(ab, s, len - 1);
+-				audit_log_end(ab);
++				if (ab) {
++					audit_log_format(ab,
++							"op=security_sid_mls_copy invalid_context=");
++					/* don't record NUL with untrusted strings */
++					audit_log_n_untrustedstring(ab, s, len - 1);
++					audit_log_end(ab);
++				}
+ 				kfree(s);
+ 			}
+ 			goto out_unlock;
+-- 
