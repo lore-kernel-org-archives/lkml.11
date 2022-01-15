@@ -2,70 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF85C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 00:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 00:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbiAOA6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 19:58:24 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:33768 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229812AbiAOA6Y (ORCPT
+        id S231667AbiAOA7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 19:59:00 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:14861 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229812AbiAOA67 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 19:58:24 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 61C86CE24C2;
-        Sat, 15 Jan 2022 00:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F0E5C36AE7;
-        Sat, 15 Jan 2022 00:58:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642208300;
-        bh=McnEXYJd55Dz/0s+UTqoEnDni3cdecySuuj+DIbfTCE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rO6sYCB1zx3VR1h4CXXO38hSKfTDq7qJ24l1I7kDdd1AEm7JPYkSK77vewZY7OBf0
-         L6FLM/EU7QqAGKFE3Uln4Q8sAtY5ltJRVWQMl+vQm9tGA7UMg6bMvpTfrSYu06+8xp
-         CEQGQcgfMLQlLcApW57I509ytFJw25EHtiQ4Tx0IeBM9bTShAcQErnhkeimEd0nQl8
-         +ky9f5AZ0l3N8E03R3m1+sSwXrv0uxuXaUDHiQLPYwnrZznI9nqDdWp45Rz2/ZYCId
-         HRNUMu1HFS90DCcnb/vRMgDD4g47TIKCwvZY1MDqUpMbIK9eSWmA18BO3SEEHHCJNA
-         A/8pzLpWr0l1A==
-Date:   Sat, 15 Jan 2022 02:58:08 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     Kristen Carlson Accardi <kristen@linux.intel.com>,
-        linux-sgx@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] x86/sgx: account backing pages
-Message-ID: <YeIcIMNUK/ujMTMQ@iki.fi>
-References: <20220107181618.6597-1-kristen@linux.intel.com>
- <20220107181618.6597-3-kristen@linux.intel.com>
- <Ydm2Qk8JFwgdueZa@iki.fi>
- <fda3bb7bd557a37112a4f7c6c205871addda1bd3.camel@linux.intel.com>
- <YeIMqd+o//M3vB6e@iki.fi>
- <3b7e79ea-18f2-afe2-be4e-401524b481f7@intel.com>
+        Fri, 14 Jan 2022 19:58:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642208339; x=1673744339;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=z+JIuWKxJODjguXs3yWrhfZnFZJClraM9Lc/R80g5pc=;
+  b=E/GW2wN08FFf3VZNVXmILhUchNJj/hRHwxw7D9hP0vxsbkbkE+RWjPri
+   vVPgpJ3FupgHirIeNzHEQoZa3PujN3ZsHnQJajjzATNxYJvHTKxs5+26t
+   gd5FSYnYTh5gj5/iwBaK78OqIhzhUwHNL05EkL26WI5Li5ius6cByihWG
+   8=;
+Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
+  by alexa-out.qualcomm.com with ESMTP; 14 Jan 2022 16:58:59 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 16:58:58 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 14 Jan 2022 16:58:51 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 14 Jan 2022 16:58:51 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
+        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
+        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
+        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
+CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
+        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v17 4/4] drm/msm/dp: stop link training after link training 2 failed
+Date:   Fri, 14 Jan 2022 16:58:35 -0800
+Message-ID: <1642208315-9136-5-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1642208315-9136-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1642208315-9136-1-git-send-email-quic_khsieh@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3b7e79ea-18f2-afe2-be4e-401524b481f7@intel.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 03:55:43PM -0800, Dave Hansen wrote:
-> On 1/14/22 3:52 PM, Jarkko Sakkinen wrote:
-> >> I can understand your hesitation, but I agree with Dave here that
-> >> wrapping the function makes the code more clear. I would prefer to keep
-> >> this the way it is.
-> > What if sgx_encl_get_backing() was changed as "static inline", if the
-> > only motivation is encapsulation?
-> 
-> What would the purpose be of adding an 'inline' to the function definition?
+Each DP link training contains link training 1 followed by link
+training 2.  There is maximum of 5 retries of DP link training
+before declared link training failed. It is required to stop link
+training at end of link training 2 if it is failed so that next
+link training 1 can start freshly. This patch fixes link compliance
+test  case 4.3.1.13 (Source Device Link Training EQ Fallback Test).
 
-Agreed, not much sense to do this. I just had troubles to get the way
-things were encapsulated before your response.
+Changes in v10:
+--  group into one series
 
-/Jarkko
+Changes in v11:
+-- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
+
+Fixes: 2e0adc765d88 ("drm/msm/dp: do not end dp link training until video is ready")
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/gpu/drm/msm/dp/dp_ctrl.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index f98df93..245e1b9 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1755,6 +1755,9 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
+ 				/* end with failure */
+ 				break; /* lane == 1 already */
+ 			}
++
++			/* stop link training before start re training  */
++			dp_ctrl_clear_training_pattern(ctrl);
+ 		}
+ 	}
+ 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
