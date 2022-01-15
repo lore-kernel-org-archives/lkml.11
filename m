@@ -2,126 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C03C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:01:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBA4C4332F
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:02:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbiAOBBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:01:51 -0500
-Received: from mga06.intel.com ([134.134.136.31]:4852 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229533AbiAOBBu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:01:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642208510; x=1673744510;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WYKnBtxj0d0Z5N6die+zqAPR/Ua4SB6/AcSav8I8t20=;
-  b=MWDWSFJTNovd1CTkBF7W8U2YrW1ODmNzyri09QVUTM7DAl4dfskq05V3
-   MAbZWsOyiArs+3QY1ryCDUyzo9nQs5/CcjGX0tOkd5e+q8mY3OH8cNUbv
-   8KRTH/Y3vjEFYmqlmRsYBtxVmusZgscpf46uWL/zgfFAhQbyiaMwuLGcG
-   VcuTAO52H/AArLS2+hfVhIvEXWKwsIJzXVv04iZpz/Y2HLVqYJtakAON5
-   iDsxXsnJhNkjOsdQV4g+hTnG+f6LozKk6r9QYRDHHVeXuvjfyTwclKi+S
-   hDsCoyrd3N1ez7dNJdJuZWd28BlHzIbl+PY2c/Pq03oNAhYCbMRx+TGVc
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="305090893"
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="305090893"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 17:01:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="516595864"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 14 Jan 2022 17:01:43 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 74F35C5; Sat, 15 Jan 2022 03:01:55 +0200 (EET)
-Date:   Sat, 15 Jan 2022 04:01:55 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
-        luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 10/26] x86/tdx: Support TDX guest port I/O at
- decompression time
-Message-ID: <20220115010155.ss2hnyotw4a3nljf@black.fi.intel.com>
-References: <20211214150304.62613-1-kirill.shutemov@linux.intel.com>
- <20211214150304.62613-11-kirill.shutemov@linux.intel.com>
- <YeAuehoOEjUH3vZ3@zn.tnic>
+        id S231730AbiAOBCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:02:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53796 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229783AbiAOBCn (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 20:02:43 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B5DC061574;
+        Fri, 14 Jan 2022 17:02:43 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id p7so14478222iod.2;
+        Fri, 14 Jan 2022 17:02:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cV/KQAdoixRP2Jc7kX5ih1D3aR41cK+Dy/TFv78IhVY=;
+        b=C9xJVmTctCuMQKEqz+zvBi80svHjeyHO3AEwdTJnlo2VOzcWk6K+C7ldCp9MdKG/W3
+         0qf7XbyPheYQkoaqB+gW2MWvghElD4sNNg6c/PFptSBioKcBuimTseYrwXj5sqczvlfy
+         EX6V1eIjGYpxRDu7iZkn3NulGT19/d+ZEoXtuRkiZ3mpZjdHCJy8fRgPmJoDopuIprS4
+         7mwdCDDWf/ID/o01w/c2/2YNe0N8/SG/FxOLOXnSrigkvPlSE2hs7fvbQuBfuh2iXcuz
+         d9GYg7KLbPgb9AoD6iANKWGZMnUHu54onqQvWTcp6mWueDAWvwHhQGtd/gCni3V+Rni5
+         vOeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cV/KQAdoixRP2Jc7kX5ih1D3aR41cK+Dy/TFv78IhVY=;
+        b=kyET35kpy/KbUcxv+lrTXXIJGUSbnFbG3IPFaNVNwz4llfRTdCvLSEAbLi607iYGqO
+         zIgfqU7/jE7QnPHIqreF5MTaON+qiCXkVSPjw1QqddEfEJSp7n0ArqWJ/PQ8DG/LyMkO
+         vM3ZEvdixlziHxRWkt/RHDNYcaE8PmOcOE1shQ5lsrtXbRkC6qqBw+btfUvcmHyBhiQY
+         ZDLj9woA1RYcrLe3xs/E0eORhg/u94nwTrmuZ/znpDa7V6vd2MoSveL8zXlwCBrC61i+
+         MKTDRVBcGrsFy+3lFbNl5spj0jr72ssc750phIiFD8ROemfZWnGJmgEvH60gmMbyaZY4
+         UkQg==
+X-Gm-Message-State: AOAM531ZIuSK428TMizggvYEe94YEVKUow+pGFIePVNCJf0FYigWMCos
+        ChnId5vK7wY5bgBxcZUPmW+9EQAXvafNolRB110=
+X-Google-Smtp-Source: ABdhPJw+oat9TzFfSTgsYFB+Vf4ZqawwlYwdDnyJTgKJSotBO+zfX9B5XK3HUrtyeQSvu5BZU8LGaw5S/kZxqYu/E+Y=
+X-Received: by 2002:a02:bb8d:: with SMTP id g13mr5383663jan.103.1642208562404;
+ Fri, 14 Jan 2022 17:02:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YeAuehoOEjUH3vZ3@zn.tnic>
+References: <164199616622.1247129.783024987490980883.stgit@devnote2>
+ <Yd77SYWgtrkhFIYz@krava> <YeAatqQTKsrxmUkS@krava> <20220114234704.41f28e8b5e63368c655d848e@kernel.org>
+ <YeGSeGVnBnEHXTtj@krava>
+In-Reply-To: <YeGSeGVnBnEHXTtj@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 14 Jan 2022 17:02:31 -0800
+Message-ID: <CAEf4Bza01kwiKPyXqDD17grVw9WAQT_MztoTsd0tMd2XuuGteQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit probe
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 02:51:54PM +0100, Borislav Petkov wrote:
-> On Tue, Dec 14, 2021 at 06:02:48PM +0300, Kirill A. Shutemov wrote:
-> > From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-> > 
-> > Port IO triggers a #VE exception in TDX guests.  During normal runtime,
-> > the kernel will handle those exceptions for any port IO.
-> > 
-> > But for the early code in the decompressor, #VE cannot be used because
-> > the IDT needed for handling the exception is not set up.
-> 							  ... yet.
-> 
-> Well, we're setting up and IDT twice in
-> 
-> arch/x86/boot/compressed/idt_64.c
-> 
-> as early as startup_64 for SEV. And the second stage one
-> do_boot_stage2_vc() handles port IO too.
-> 
-> Can't you hook in your VE handler there too?
+On Fri, Jan 14, 2022 at 7:10 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Fri, Jan 14, 2022 at 11:47:04PM +0900, Masami Hiramatsu wrote:
+> > Hi Jiri and Alexei,
+> >
+> > On Thu, 13 Jan 2022 13:27:34 +0100
+> > Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > > On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
+> > > > On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
+> > > > > Hi Jiri and Alexei,
+> > > > >
+> > > > > Here is the 2nd version of fprobe. This version uses the
+> > > > > ftrace_set_filter_ips() for reducing the registering overhead.
+> > > > > Note that this also drops per-probe point private data, which
+> > > > > is not used anyway.
+> > > > >
+> > > > > This introduces the fprobe, the function entry/exit probe with
+> > > > > multiple probe point support. This also introduces the rethook
+> > > > > for hooking function return as same as kretprobe does. This
+> > > >
+> > > > nice, I was going through the multi-user-graph support
+> > > > and was wondering that this might be a better way
+> > > >
+> > > > > abstraction will help us to generalize the fgraph tracer,
+> > > > > because we can just switch it from rethook in fprobe, depending
+> > > > > on the kernel configuration.
+> > > > >
+> > > > > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
+> > > > > patches will not be affected by this change.
+> > > >
+> > > > I'll try the bpf selftests on top of this
+> > >
+> > > I'm getting crash and stall when running bpf selftests,
+> > > the fprobe sample module works fine, I'll check on that
+> >
+> > I've tried to build tools/testing/selftests/bpf on my machine,
+> > but I got below errors. Would you know how I can setup to build
+> > the bpf selftests correctly? (I tried "make M=samples/bpf", but same result)
+>
+> what's your clang version? your distro might be behind,
 
-We certainly can. But do we want to?
+If you have very recent Clang, decently recent pahole, and qemu, try
+using vmtest.sh. That should build the kernel with all the necessary
+kernel config options and start qemu image with that latest image and
+build selftests. And even run selftests automatically.
 
-IIUC, SEV has to handle #VC very early to deal with CPUID and covering
-port I/O in addition via the exception is a logical step.
+> I'm using clang 14 compiled from sources:
+>
+>         $ /opt/clang/bin/clang --version
+>         clang version 14.0.0 (https://github.com/llvm/llvm-project.git 9f8ffaaa0bddcefeec15a3df9858fd50b05fcbae)
+>         Target: x86_64-unknown-linux-gnu
+>         Thread model: posix
+>         InstalledDir: /opt/clang/bin
+>
+> and compiling bpf selftests with:
+>
+>         $ CLANG=/opt/clang/bin/clang make
+>
+> jirka
+>
+>
+> >
 
-We had some back and forth on #VE vs direct hypercalls for port I/O in
-decompresser and we settled on direct hypercalls.
+[...]
 
-Adding all the plumbing for #VE just to deal with port I/O was considered
-overkill. And I expect debugging exception infrastructure is harder than
-direct hypercalls.
-
-Do you see it differently? Do you want to switch to #VE here?
-
-> > Replace IN/OUT instructions with TDX IO hypercalls by defining helper
-> > macros __in/__out and by re-defining them in the decompressor code.
-> > Also, since TDX IO hypercall requires an IO size parameter, allow
-> > __in/__out macros to accept size as an input parameter.
-> 
-> Please end function/macro names with parentheses. I think in this
-> particular case you wanna say
-> 
-> "__in*()/__out*() macros"
-> 
-> When a function is mentioned in the changelog, either the text body or the
-> subject line, please use the format 'function_name()'. Omitting the
-> brackets after the function name can be ambiguous::
-> 
->   Subject: subsys/component: Make reservation_count static
-> 
->   reservation_count is only used in reservation_stats. Make it static.
-> 
-> The variant with brackets is more precise::
-> 
->   Subject: subsys/component: Make reservation_count() static
-> 
->   reservation_count() is only called from reservation_stats(). Make it
->   static.
-
-Okay, got it.
-
--- 
- Kirill A. Shutemov
+> >
+> > Thank you,
+> >
+> > --
+> > Masami Hiramatsu <mhiramat@kernel.org>
+> >
+>
