@@ -2,106 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF32C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15ED5C3526D
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 17:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233446AbiAORW4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 12:22:56 -0500
-Received: from mail-oi1-f171.google.com ([209.85.167.171]:34516 "EHLO
-        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233338AbiAORWr (ORCPT
+        id S233483AbiAORW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 12:22:59 -0500
+Received: from mail-ot1-f49.google.com ([209.85.210.49]:46730 "EHLO
+        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233367AbiAORWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 12:22:47 -0500
-Received: by mail-oi1-f171.google.com with SMTP id r131so17077005oig.1;
-        Sat, 15 Jan 2022 09:22:46 -0800 (PST)
+        Sat, 15 Jan 2022 12:22:49 -0500
+Received: by mail-ot1-f49.google.com with SMTP id t4-20020a05683022e400b00591aaf48277so14122658otc.13;
+        Sat, 15 Jan 2022 09:22:48 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=D9KUhQV6nwKiCBSkUr0wqIeB2WR6mroATQn2jKF4UxE=;
-        b=Sfsh0tSk/v5njWLOW7cmzXDMKu9o6e1f8d5fWSGSx49YkLUad2PiwF84si1PeQqhLu
-         87Xi7GuquyWFek08EZg+eUE8jk75GQLjEhZcYlJf17/P1CqWCm31eED1SpqDzcYmQ3Uh
-         eWoJl5HKSse6AKaGyzPSGApiO3z/qU5HlcULkx+GAMi+a1uvBo+vcG0TrxFIB30/ozXk
-         np1txjdiBIt/InEmtuE878NUCHpC40mDIZz4qT6zmGar2dCtm1sn2IacCCTVorbiiNZX
-         4Bkkpg/46FLVThSvJw2wXyi3yt1++to8YEs+HsHGYEpkIBd8BwUB32TexhCJjLUDrjr4
-         SEuQ==
-X-Gm-Message-State: AOAM533InUg/akWLpxLICZ+m4GL1YFbLveG82BQ8//BHIxc47ssZyqOb
-        xXNMNyhiUEvNKl+x6ZBglg==
-X-Google-Smtp-Source: ABdhPJxOoG4k9FRod8uJApGwVpA3HZfYGEPxP6WWT0ZeH98SGk/oSFiVXje2uXnwcnaifRMr6S0+Dw==
-X-Received: by 2002:a05:6808:22a2:: with SMTP id bo34mr11628503oib.119.1642267365914;
-        Sat, 15 Jan 2022 09:22:45 -0800 (PST)
+        bh=tOd5PlmluudALXw25P1FUTpuTqmX0VJHEIDiSnDnSyQ=;
+        b=P8BNx1KyALy+oCKwvbY/SuZ2uLWvKlelb4y4x47ck3aZCtDH+QThu3OLj2rFKgwhhQ
+         tZ/dsopp4ZhQoFgvu5yNkXlMUQhpLrAuettIeKX0VoCAG6jyI69DV3+Pjh+4f1k6NITn
+         aqY0chnmNxqG4MaqwG9FVDkwLqVfCX+/dNz3L+5F+RrqL5vSqr7ophLGItHr7kEYZ9jr
+         +YQdTwmMtwuo/Ha7/1C8KPXfdq01fOmAeCRNXS8/O0J9lAChvUj213iFQrjtyGImWH+C
+         ckgyaCpUaCSpv6wXeF/zgB4ArCdbTyoJc970lvPEHljuDnE7DbAx96mcCs6YbcDmTOw0
+         KkzA==
+X-Gm-Message-State: AOAM533tH/JBKnjZQSSOoGH38yi96hVIvNTMgVUsG6ljYQi+fd68X3ub
+        M3KqLiF3ZiiXUHynX8mwTA==
+X-Google-Smtp-Source: ABdhPJwIybGqL+uwk2P4tWp5L19eVC71Jl+JwGpTzzBPt2XUw3/wznpGXkiPdKkv8jvQYIA+SGnISQ==
+X-Received: by 2002:a9d:7cc9:: with SMTP id r9mr10587481otn.202.1642267368079;
+        Sat, 15 Jan 2022 09:22:48 -0800 (PST)
 Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id a6sm3724294oil.6.2022.01.15.09.22.44
+        by smtp.gmail.com with ESMTPSA id x13sm3251441oof.19.2022.01.15.09.22.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 09:22:44 -0800 (PST)
-Received: (nullmailer pid 119894 invoked by uid 1000);
+        Sat, 15 Jan 2022 09:22:47 -0800 (PST)
+Received: (nullmailer pid 119886 invoked by uid 1000);
         Sat, 15 Jan 2022 17:22:30 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     devicetree@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        Robert Jarzmik <robert.jarzmik@free.fr>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org
-In-Reply-To: <20220114170941.800068-2-sean.anderson@seco.com>
-References: <20220114170941.800068-1-sean.anderson@seco.com> <20220114170941.800068-2-sean.anderson@seco.com>
-Subject: Re: [PATCH 1/4] dt-bindings: usb: usb-nop-xceiv: Repurpose vbus-regulator
+To:     conor.dooley@microchip.com
+Cc:     linus.walleij@linaro.org, heiko@sntech.de,
+        linux-usb@vger.kernel.org, linux-gpio@vger.kernel.org,
+        aou@eecs.berkeley.edu, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, atishp@rivosinc.com,
+        bgolaszewski@baylibre.com, palmer@dabbelt.com,
+        a.zummo@towertech.it, ivan.griffin@microchip.com,
+        u.kleine-koenig@pengutronix.de, devicetree@vger.kernel.org,
+        daire.mcnamara@microchip.com, thierry.reding@gmail.com,
+        bin.meng@windriver.com, robh+dt@kernel.org,
+        lewis.hanly@microchip.com, lee.jones@linaro.org,
+        linux-crypto@vger.kernel.org, linux-pwm@vger.kernel.org,
+        jassisinghbrar@gmail.com, linux-riscv@lists.infradead.org,
+        geert@linux-m68k.org, linux-rtc@vger.kernel.org,
+        krzysztof.kozlowski@canonical.com, paul.walmsley@sifive.com,
+        alexandre.belloni@bootlin.com, linux-i2c@vger.kernel.org,
+        broonie@kernel.org, gregkh@linuxfoundation.org
+In-Reply-To: <20220114151727.2319915-7-conor.dooley@microchip.com>
+References: <20220114151727.2319915-1-conor.dooley@microchip.com> <20220114151727.2319915-7-conor.dooley@microchip.com>
+Subject: Re: [PATCH v3 06/15] dt-bindings: gpio: add bindings for microchip mpfs gpio
 Date:   Sat, 15 Jan 2022 11:22:30 -0600
-Message-Id: <1642267350.947198.119893.nullmailer@robh.at.kernel.org>
+Message-Id: <1642267350.915591.119885.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 12:09:38 -0500, Sean Anderson wrote:
-> The vbus-regulator property was never actually read from the device tree.
-> Introduce a new property vbus-supply to represent the regulator powering
-> the VBUS when acting as an A-Device. This supply will be enabled and
-> disabled as necessary. Note that this is different from vbus-regulator,
-> which represented the available current available to draw from VBUS in
-> B-Device mode. Because no one was using vbus-regulator, remove it.
+On Fri, 14 Jan 2022 15:17:18 +0000, conor.dooley@microchip.com wrote:
+> From: Conor Dooley <conor.dooley@microchip.com>
 > 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> Add device tree bindings for the gpio controller on
+> the Microchip PolarFire SoC.
+> 
+> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
 > ---
-> 
->  Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  .../bindings/gpio/microchip,mpfs-gpio.yaml    | 80 +++++++++++++++++++
+>  1 file changed, 80 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.yaml
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
 on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
 yamllint warnings/errors:
-./Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml:37:15: [error] empty value in block mapping (empty-values)
-./Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml:40:9: [error] syntax error: mapping values are not allowed here (syntax)
 
 dtschema/dtc warnings/errors:
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/usb/usb-nop-xceiv.example.dts'
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-extract-example", line 46, in <module>
-    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 434, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 119, in get_single_data
-    node = self.composer.get_single_node()
-  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
-  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
-  File "_ruamel_yaml.pyx", line 891, in _ruamel_yaml.CParser._compose_mapping_node
-  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
-ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
-  in "<unicode string>", line 40, column 9
-make[1]: *** [Documentation/devicetree/bindings/Makefile:25: Documentation/devicetree/bindings/usb/usb-nop-xceiv.example.dts] Error 1
+Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.example.dts:19:18: fatal error: dt-bindings/clock/microchip,mpfs-clock.h: No such file or directory
+   19 |         #include "dt-bindings/clock/microchip,mpfs-clock.h"
+      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+compilation terminated.
+make[1]: *** [scripts/Makefile.lib:373: Documentation/devicetree/bindings/gpio/microchip,mpfs-gpio.example.dt.yaml] Error 1
 make[1]: *** Waiting for unfinished jobs....
-./Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml:  mapping values are not allowed in this context
-  in "<unicode string>", line 40, column 9
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/usb/usb-nop-xceiv.yaml: ignoring, error parsing file
 make: *** [Makefile:1413: dt_binding_check] Error 2
 
 doc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1580217
+See https://patchwork.ozlabs.org/patch/1580118
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
