@@ -2,131 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A6AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 00:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2088C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231707AbiAOA7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 19:59:07 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:14861 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231666AbiAOA7A (ORCPT
+        id S231704AbiAOBAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:00:14 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:34122 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229455AbiAOBAN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 19:59:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642208340; x=1673744340;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=aHnFHFh68kfU2VzllW4SeOtJ3jBEvTM/T5LQRp8gB9I=;
-  b=SdQB0eyZAGsjWjujSTr5W20Y+BtjznAwsrgTX6oMM1nlgcOrXje7piBV
-   d5U4jrDWe4WuwUBD+1zTPdLpdABOzSLOhcGeqaBG9UDsV/PmGosyXQSQz
-   +RybOFRoW8thlJv2Ndhm46zUJU9TrlT7mwlDq7nJfHW/roQvJK/jMzn+q
-   8=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 14 Jan 2022 16:58:59 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 16:58:58 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 14 Jan 2022 16:58:49 -0800
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 14 Jan 2022 16:58:48 -0800
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
-        <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
-        <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
-        <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
-        <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v17 2/4] drm/msm/dp:  populate connector of struct  dp_panel
-Date:   Fri, 14 Jan 2022 16:58:33 -0800
-Message-ID: <1642208315-9136-3-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1642208315-9136-1-git-send-email-quic_khsieh@quicinc.com>
-References: <1642208315-9136-1-git-send-email-quic_khsieh@quicinc.com>
+        Fri, 14 Jan 2022 20:00:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 00357CE24C5;
+        Sat, 15 Jan 2022 01:00:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3F812C36AEA;
+        Sat, 15 Jan 2022 01:00:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642208409;
+        bh=mK8RlZtmgrkSHVB8/Qo9CsH7FJoAG438jfe55xe5CwM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iIjYRxmFC3jyo6p5vVqDEoii4K/95e3l4BzmAKlqItf3F/X4GwVyq/+swyzj7mmub
+         bWbqFu1hsfcnfaaKAIVaXZIgDVluEcYmpLJ8bPBXnB7u7YvLRfqylDKpi6Hg+LvSFl
+         JgbO3cBj3jwK340w8KNZCawtGGPLaxJNNihLvwGIP2RLZuE0LezaBZUfsTlpu6Wr1c
+         TQkJC3LSiuXf5TYgVrucELsyyJ3MIPJHsXcMmJde30xJEl+ZmrLEZ08tKm7OT9N6mq
+         hroa5mesetSO8Ry/GHidb7n/df22XFuatjX0TdvYTnilDQhZYwqxYYJrjldFYZ0st7
+         JOw+LtYneJ+fg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 25F4AF6079A;
+        Sat, 15 Jan 2022 01:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf] tools/resolve_btfids: build with host flags
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164220840915.32473.3734511457879421361.git-patchwork-notify@kernel.org>
+Date:   Sat, 15 Jan 2022 01:00:09 +0000
+References: <20220112002503.115968-1-connoro@google.com>
+In-Reply-To: <20220112002503.115968-1-connoro@google.com>
+To:     Connor O'Brien <connoro@google.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-DP CTS test case 4.2.2.6 has valid edid with bad checksum on purpose
-and expect DP source return correct checksum. During drm edid read,
-correct edid checksum is calculated and stored at
-connector::real_edid_checksum.
+Hello:
 
-The problem is struct dp_panel::connector never be assigned, instead the
-connector is stored in struct msm_dp::connector. When we run compliance
-testing test case 4.2.2.6 dp_panel_handle_sink_request() won't have a valid
-edid set in struct dp_panel::edid so we'll try to use the connectors
-real_edid_checksum and hit a NULL pointer dereference error because the
-connector pointer is never assigned.
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
-Changes in V2:
--- populate panel connector at msm_dp_modeset_init() instead of at dp_panel_read_sink_caps()
+On Wed, 12 Jan 2022 00:25:03 +0000 you wrote:
+> resolve_btfids is built using $(HOSTCC) and $(HOSTLD) but does not
+> pick up the corresponding flags. As a result, host-specific settings
+> (such as a sysroot specified via HOSTCFLAGS=--sysroot=..., or a linker
+> specified via HOSTLDFLAGS=-fuse-ld=...) will not be respected.
+> 
+> Fix this by setting CFLAGS to KBUILD_HOSTCFLAGS and LDFLAGS to
+> KBUILD_HOSTLDFLAGS.
+> 
+> [...]
 
-Changes in V3:
--- remove unhelpful kernel crash trace commit text
--- remove renaming dp_display parameter to dp
+Here is the summary with links:
+  - [bpf] tools/resolve_btfids: build with host flags
+    https://git.kernel.org/bpf/bpf-next/c/0e3a1c902ffb
 
-Changes in V4:
--- add more details to commit text
-
-Changes in v10:
---  group into one series
-
-Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
-
-Fixes: 7948fe12d47 ("drm/msm/dp: return correct edid checksum after corrupted edid checksum read")
-Signee-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
-
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/gpu/drm/msm/dp/dp_display.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 5fc90971..9803663 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -1465,6 +1465,7 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 			struct drm_encoder *encoder)
- {
- 	struct msm_drm_private *priv;
-+	struct dp_display_private *dp_priv;
- 	int ret;
- 
- 	if (WARN_ON(!encoder) || WARN_ON(!dp_display) || WARN_ON(!dev))
-@@ -1473,6 +1474,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 	priv = dev->dev_private;
- 	dp_display->drm_dev = dev;
- 
-+	dp_priv = container_of(dp_display, struct dp_display_private, dp_display);
-+
- 	ret = dp_display_request_irq(dp_display);
- 	if (ret) {
- 		DRM_ERROR("request_irq failed, ret=%d\n", ret);
-@@ -1490,6 +1493,8 @@ int msm_dp_modeset_init(struct msm_dp *dp_display, struct drm_device *dev,
- 		return ret;
- 	}
- 
-+	dp_priv->panel->connector = dp_display->connector;
-+
- 	priv->connectors[priv->num_connectors++] = dp_display->connector;
- 
- 	dp_display->bridge = msm_dp_bridge_init(dp_display, dev, encoder);
+You are awesome, thank you!
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
