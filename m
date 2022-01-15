@@ -2,99 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE20C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCED4C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 01:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231753AbiAOBFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 14 Jan 2022 20:05:35 -0500
-Received: from mga07.intel.com ([134.134.136.100]:27592 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229534AbiAOBFe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 14 Jan 2022 20:05:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642208734; x=1673744734;
-  h=subject:to:references:from:message-id:date:mime-version:
-   in-reply-to:content-transfer-encoding;
-  bh=wZ0Ry+mIARE6XgrFHfixgiV08hKw7NCIewYKMb+m2qE=;
-  b=nsWw0v+B2ihKsLi6UUAW/b72FV8iBqPWH1YSGV3B4o1lEohdnUz+eYOr
-   EANYh8i2LLNBeD3aef7cNwGdtZwf7PmHvUns5omPZ1SoctZH8UieJ6oXf
-   mnd2i6yqrx/raFBeM9p+zeURsSAgaUO2VU2jWwqzYmhA63UmcrO6M6i+8
-   jgHj7zYfHI9e0iP7rTTaUtskCF718LHOAaPH4gkxGS/ZHp0JAqlaLWl9q
-   ey9j0IYJIje25TmtVNnlxz5/o/suriTo/woyojtWoOqFqtlCCu5cSsSvr
-   VpJAaJIO6KWWB/iHwcSo1B3yWAu4NFfDVdcYI7FPqdLexyVYTJb2XEfcl
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="307703011"
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="307703011"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 17:05:32 -0800
-X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
-   d="scan'208";a="624531822"
-Received: from dsubasic-mobl.amr.corp.intel.com (HELO [10.212.67.37]) ([10.212.67.37])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 17:05:31 -0800
-Subject: Re: [PATCH] slimbus: qcom: Fix IRQ check in qcom_slim_probe
-To:     Miaoqian Lin <linmq006@gmail.com>, Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        id S231770AbiAOBG4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 14 Jan 2022 20:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229534AbiAOBGz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 14 Jan 2022 20:06:55 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84F22C06173E
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:06:55 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id v66-20020a256145000000b006115377709aso21648070ybb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 14 Jan 2022 17:06:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=wG/PbGVmKjgf1eOd11ftVQTDqJEywAnSirRvk8YQoEA=;
+        b=ra40WJSnTd+Sg9D3TIvHREEZJO5QmFxwXzwakhy95Pj15AdCn96Rg7F+gGkzzdoPHL
+         /LCXltr47kWOGGC4J/j+jKdN7xu6RyW7gUeuH5vavWrndAu7BzKurEIyahiOS6sTnazd
+         kjhutzh5GjtqfNnBjsMi1N1OKm+eTNmejUCgViGcOUkB/EFui5twnu1ZKaXi21WPA1C7
+         hDv3dAKWpj1mixAwX1dUro0zgPo6Npzf7sXOSvaZIstusYMToZmeNzSzidVL3FAMroY6
+         HrShrnaUArO3g2alaInh2tQWQ8dpEbE6FBLnde1xIXMV4W2bjw4NgeUFBmdKReIihG44
+         DGmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=wG/PbGVmKjgf1eOd11ftVQTDqJEywAnSirRvk8YQoEA=;
+        b=I2tTCpIyyG09IosKwnegRvNoZ3fMuV6UeX22UsqA2KPWURLOroj1Yj65q+oXuiWPpt
+         KzqS4AxhUPZNXcNmVZ/kWfjojHwpL2iFI/CP/80kAY89HNW64a9Vtz9pE7fxadSqKt7E
+         hoAMnyLp0SP6pXNUhm55JfrNySf3Bjf1rIHJCUfeCBBcmfvXMvHEQjV1ag/3ody4B0Qg
+         qyeOxkKBWLpQxqM5J482tWZw7Sts5xX3FWDAfSmFZd/O1ie+DCScuABcCpyQezXR76uz
+         WwneL2mDBLJ9sU3Lv7mehofI8ZxjB6u+LJo79CL52PsfhoMZ8T6gXDdQQZhCkRIm/vnX
+         IzYg==
+X-Gm-Message-State: AOAM532HeOs4FJdxKQ+qs6wNCZPyaDwU0koIIyHaRO3DOyv6BLcbte0t
+        uoPaMFcBVnhopShKvDcMTvUKjzuiDd8=
+X-Google-Smtp-Source: ABdhPJxSKZys321+eazB1Vl7zKy4uxTVihorRmwSE2zTWXqOqP6AasI2307MgWBIYRtdeCJygiVD+3F2pr8=
+X-Received: from hridya.mtv.corp.google.com ([2620:15c:211:200:5860:362a:3112:9d85])
+ (user=hridya job=sendgmr) by 2002:a25:874a:: with SMTP id e10mr15875623ybn.422.1642208814583;
+ Fri, 14 Jan 2022 17:06:54 -0800 (PST)
+Date:   Fri, 14 Jan 2022 17:05:58 -0800
+Message-Id: <20220115010622.3185921-1-hridya@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+Subject: [RFC 0/6] Proposal for a GPU cgroup controller
+From:   Hridya Valsaraju <hridya@google.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Corbet <corbet@lwn.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sagar Dharia <sdharia@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org
-References: <20220114061830.13456-1-linmq006@gmail.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Message-ID: <239c3b32-6754-02ba-6bfd-7f05fa2adfed@linux.intel.com>
-Date:   Fri, 14 Jan 2022 09:14:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20220114061830.13456-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        "=?UTF-8?q?Arve=20Hj=C3=B8nnev=C3=A5g?=" <arve@android.com>,
+        Todd Kjos <tkjos@android.com>,
+        Martijn Coenen <maco@android.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Christian Brauner <christian@brauner.io>,
+        Hridya Valsaraju <hridya@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Laura Abbott <labbott@redhat.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <john.stultz@linaro.org>,
+        "=?UTF-8?q?Christian=20K=C3=B6nig?=" <christian.koenig@amd.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Dave Airlie <airlied@redhat.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Kenneth Graunke <kenneth@whitecape.org>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Li Li <dualli@google.com>, Marco Ballesio <balejs@google.com>,
+        Finn Behrens <me@kloenk.de>, Hang Lu <hangl@codeaurora.org>,
+        Wedson Almeida Filho <wedsonaf@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Vipin Sharma <vipinsh@google.com>,
+        Chris Down <chris@chrisdown.name>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Arnd Bergmann <arnd@arndb.de>, dri-devel@lists.freedesktop.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+        cgroups@vger.kernel.org
+Cc:     Kenny.Ho@amd.com, daniels@collabora.com, kaleshsingh@google.com,
+        tjmercier@google.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+This patch series revisits the proposal for a GPU cgroup controller to
+track and limit memory allocations by various device/allocator
+subsystems. The patch series also contains a simple prototype to
+illustrate how Android intends to implement DMA-BUF allocator
+attribution using the GPU cgroup controller. The prototype does not
+include resource limit enforcements.
 
+History of the GPU cgroup controller
+====================================
+The GPU/DRM cgroup controller came into being when a consensus[1]
+was reached that the resources it tracked were unsuitable to be integrated
+into memcg. Originally, the proposed controller was specific to the DRM
+subsystem and was intended to track GEM buffers and GPU-specific resources[2].
+In order to help establish a unified memory accounting model for all GPU and
+all related subsystems, Daniel Vetter put forth a suggestion to move it out of
+the DRM subsystem so that it can be used by other DMA-BUF exporters as well[3].
+This RFC proposes an interface that does the same.
 
-On 1/14/22 12:18 AM, Miaoqian Lin wrote:
-> platform_get_irq() returns negative error number instead 0 on failure.
+[1]: https://patchwork.kernel.org/project/dri-devel/cover/20190501140438.9506-1-brian.welty@intel.com/#22624705
+[2]: https://lore.kernel.org/amd-gfx/20210126214626.16260-1-brian.welty@intel.com/
+[3]: https://lore.kernel.org/amd-gfx/YCVOl8%2F87bqRSQei@phenom.ffwll.local/
 
-the 'instead of' wording is a bit misleading:
+Hridya Valsaraju (6):
+  gpu: rfc: Proposal for a GPU cgroup controller
+  cgroup: gpu: Add a cgroup controller for allocator attribution of GPU
+    memory
+  dmabuf: heaps: Use the GPU cgroup charge/uncharge APIs
+  dma-buf: Add DMA-BUF exporter op to charge a DMA-BUF to a cgroup.
+  dmabuf: system_heap: implement dma-buf op for GPU cgroup charge
+    transfer
+  android: binder: Add a buffer flag to relinquish ownership of fds
 
-platform_get_irq() returns non-zero IRQ number on success, negative
-error number on failure. Zero is not a valid return valid.
+ Documentation/gpu/rfc/gpu-cgroup.rst | 192 +++++++++++++++++
+ Documentation/gpu/rfc/index.rst      |   4 +
+ drivers/android/binder.c             |  32 +++
+ drivers/dma-buf/dma-heap.c           |  27 +++
+ drivers/dma-buf/heaps/system_heap.c  |  68 ++++++
+ include/linux/cgroup_gpu.h           | 120 +++++++++++
+ include/linux/cgroup_subsys.h        |   4 +
+ include/linux/dma-buf.h              |  18 ++
+ include/linux/dma-heap.h             |  11 +
+ include/uapi/linux/android/binder.h  |   1 +
+ init/Kconfig                         |   7 +
+ kernel/cgroup/Makefile               |   1 +
+ kernel/cgroup/gpu.c                  | 305 +++++++++++++++++++++++++++
+ 13 files changed, 790 insertions(+)
+ create mode 100644 Documentation/gpu/rfc/gpu-cgroup.rst
+ create mode 100644 include/linux/cgroup_gpu.h
+ create mode 100644 kernel/cgroup/gpu.c
 
+-- 
+2.34.1.703.g22d0c6ccf7-goog
 
-> And the doc of platform_get_irq() provides a usage example:
-> 
->     int irq = platform_get_irq(pdev, 0);
->     if (irq < 0)
->         return irq;
-> 
-> Fix the check of return value to catch errors correctly.
-> 
-> Fixes: ad7fcbc308b0 ("slimbus: qcom: Add Qualcomm Slimbus controller driver")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-> ---
->  drivers/slimbus/qcom-ctrl.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/slimbus/qcom-ctrl.c b/drivers/slimbus/qcom-ctrl.c
-> index f04b961b96cd..ec58091fc948 100644
-> --- a/drivers/slimbus/qcom-ctrl.c
-> +++ b/drivers/slimbus/qcom-ctrl.c
-> @@ -510,9 +510,9 @@ static int qcom_slim_probe(struct platform_device *pdev)
->  	}
->  
->  	ctrl->irq = platform_get_irq(pdev, 0);
-> -	if (!ctrl->irq) {
-> +	if (ctrl->irq < 0) {
->  		dev_err(&pdev->dev, "no slimbus IRQ\n");
-> -		return -ENODEV;
-> +		return ctrl->irq;
->  	}
->  
->  	sctrl = &ctrl->ctrl;
-> 
