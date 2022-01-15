@@ -2,71 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5BDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 07:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C015C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 15 Jan 2022 07:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230440AbiAOHbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 02:31:00 -0500
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:61494 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230297AbiAOHa6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 02:30:58 -0500
-Received: from [192.168.1.18] ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id 8dWani9skhTNk8dWbn3h1m; Sat, 15 Jan 2022 08:30:57 +0100
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 15 Jan 2022 08:30:57 +0100
-X-ME-IP: 90.126.236.122
-Message-ID: <835ae5f0-79de-af2b-2837-62448bc9e824@wanadoo.fr>
-Date:   Sat, 15 Jan 2022 08:30:56 +0100
+        id S231137AbiAOHbu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 02:31:50 -0500
+Received: from mga04.intel.com ([192.55.52.120]:15465 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230297AbiAOHbs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 15 Jan 2022 02:31:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642231908; x=1673767908;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=ADT4kKYK18b/FFOcSf8II8IdYBpOTs8RkYhyGZyy0ZE=;
+  b=Ijj4PX0zH0adW2drZVlEPoNwfmwX6ZK+HVetszQIC/uO4LOGdWp7/t35
+   pfPHHESPVQA7zATNU2c0a2zAeo5Zx6eKC2RlzGVA3y4atBk9rhRsvYSur
+   Ybs30NACnsY+KElU8W+WQHyXv5nbUKPWYbE90l2gdyxJFwfRvLaupMUvl
+   qH3Jsk+Yjk86lTWOK2qYrBHyWWuZuqO2k/LmdWlkGOATpZtwKrhq6QQng
+   AutHgh2eI6/JKIcvWiVhAtK4ckUjhWSRM90CvXG26fInIouSNVtgM6kFz
+   AAP39VtNIKvmjBqrdKITpcClZ70I1vK5xnoXHvqf6RaCVG/rfILSw4ADz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10227"; a="243201917"
+X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
+   d="scan'208";a="243201917"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2022 23:31:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
+   d="scan'208";a="692485318"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 14 Jan 2022 23:31:47 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n8dXO-0009V8-Lw; Sat, 15 Jan 2022 07:31:46 +0000
+Date:   Sat, 15 Jan 2022 15:31:21 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2353/2384]
+ drivers/media/rc/mtk-cir.c:163:15: error: implicit declaration of function
+ 'DIV_ROUND_CLOSEST'
+Message-ID: <202201151534.1iCJKuH9-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH] dmaengine: qcom_hidma: Remove useless DMA-32 fallback
- configuration
-Content-Language: fr
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        dmaengine@vger.kernel.org
-References: <c4c4eb13d5da283450d675e611d9582e6744dd5c.1642231548.git.christophe.jaillet@wanadoo.fr>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <c4c4eb13d5da283450d675e611d9582e6744dd5c.1642231548.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 15/01/2022 à 08:26, Christophe JAILLET a écrit :
-> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-> dev->dma_mask is non-NULL.
-> So, if it fails, the 32 bits case will also fail for the same reason.
-> 
-> Simplify code and remove some dead code accordingly.
-> 
-> [1]: https://lore.kernel.org/linux-kernel/YL3vSPK5DXTNvgdx@infradead.org/#t
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
->   drivers/dma/ioat/init.c | 2 --
->   1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/dma/ioat/init.c b/drivers/dma/ioat/init.c
-> index 373b8dac6c9b..5d707ff63554 100644
-> --- a/drivers/dma/ioat/init.c
-> +++ b/drivers/dma/ioat/init.c
-> @@ -1364,8 +1364,6 @@ static int ioat_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   		return -ENOMEM;
->   
->   	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> -	if (err)
-> -		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
->   	if (err)
->   		return err;
->   
-> 
-NACK, wrong driver name in the subject. I'll resend.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   4c707c1c0de83967079b4e385012fa5b00e2cd11
+commit: 6bdaa08124f2198c510118e5ae8816748e9816df [2353/2384] headers/deps: time: Optimize <linux/time64.h> dependencies, remove <linux/time64_api.h> inclusion
+config: mips-randconfig-r036-20220113 (https://download.01.org/0day-ci/archive/20220115/202201151534.1iCJKuH9-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=6bdaa08124f2198c510118e5ae8816748e9816df
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 6bdaa08124f2198c510118e5ae8816748e9816df
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/rc/
 
-CJ
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/media/rc/mtk-cir.c: In function 'mtk_chk_period':
+>> drivers/media/rc/mtk-cir.c:163:15: error: implicit declaration of function 'DIV_ROUND_CLOSEST' [-Werror=implicit-function-declaration]
+     163 |         val = DIV_ROUND_CLOSEST(clk_get_rate(ir->bus),
+         |               ^~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +/DIV_ROUND_CLOSEST +163 drivers/media/rc/mtk-cir.c
+
+50c3c1ba171f3f Sean Wang  2017-06-30  154  
+50c3c1ba171f3f Sean Wang  2017-06-30  155  static inline u32 mtk_chk_period(struct mtk_ir *ir)
+50c3c1ba171f3f Sean Wang  2017-06-30  156  {
+50c3c1ba171f3f Sean Wang  2017-06-30  157  	u32 val;
+50c3c1ba171f3f Sean Wang  2017-06-30  158  
+50c3c1ba171f3f Sean Wang  2017-06-30  159  	/*
+50c3c1ba171f3f Sean Wang  2017-06-30  160  	 * Period for software decoder used in the
+50c3c1ba171f3f Sean Wang  2017-06-30  161  	 * unit of raw software sampling
+50c3c1ba171f3f Sean Wang  2017-06-30  162  	 */
+d904eb0b351fe5 Sean Young 2020-11-29 @163  	val = DIV_ROUND_CLOSEST(clk_get_rate(ir->bus),
+d904eb0b351fe5 Sean Young 2020-11-29  164  				USEC_PER_SEC * ir->data->div / MTK_IR_SAMPLE);
+50c3c1ba171f3f Sean Wang  2017-06-30  165  
+50c3c1ba171f3f Sean Wang  2017-06-30  166  	dev_dbg(ir->dev, "@pwm clk  = \t%lu\n",
+50c3c1ba171f3f Sean Wang  2017-06-30  167  		clk_get_rate(ir->bus) / ir->data->div);
+50c3c1ba171f3f Sean Wang  2017-06-30  168  	dev_dbg(ir->dev, "@chkperiod = %08x\n", val);
+50c3c1ba171f3f Sean Wang  2017-06-30  169  
+50c3c1ba171f3f Sean Wang  2017-06-30  170  	return val;
+50c3c1ba171f3f Sean Wang  2017-06-30  171  }
+50c3c1ba171f3f Sean Wang  2017-06-30  172  
+
+:::::: The code at line 163 was first introduced by commit
+:::::: d904eb0b351fe5545d9ba5b85844342f49025923 media: mtk-cir: fix calculation of chk period
+
+:::::: TO: Sean Young <sean@mess.org>
+:::::: CC: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
