@@ -2,82 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25DC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62335C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235266AbiAPMxl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 07:53:41 -0500
-Received: from smtp10.smtpout.orange.fr ([80.12.242.132]:58804 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235028AbiAPMxk (ORCPT
+        id S235275AbiAPMyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 07:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233158AbiAPMyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 07:53:40 -0500
-Received: from pop-os.home ([90.126.236.122])
-        by smtp.orange.fr with ESMTPA
-        id 952QnSJT0EuQ2952QnkOP2; Sun, 16 Jan 2022 13:53:39 +0100
-X-ME-Helo: pop-os.home
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sun, 16 Jan 2022 13:53:39 +0100
-X-ME-IP: 90.126.236.122
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     Andy Shevchenko <andy@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@suse.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH v2] lib/string_helpers: Use the given gfp flag when allocating memory
-Date:   Sun, 16 Jan 2022 13:53:37 +0100
-Message-Id: <1ec96b6e4f2e35599931d7516c6938c4a8845bf0.1642337606.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.32.0
+        Sun, 16 Jan 2022 07:54:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B05CC061574;
+        Sun, 16 Jan 2022 04:54:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3425B60EE3;
+        Sun, 16 Jan 2022 12:54:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7A17C36AE7;
+        Sun, 16 Jan 2022 12:54:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642337682;
+        bh=XSSicNC4Zb22X60TPNdSUq9N4bAQk+IBar3vlC0pBxk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LNzekdYXTVXHhlFhQidn6M5gi8cx8UWyatiWqdVCkbs2BjT+/i1AwGDb+5Lc/MPGX
+         eBY2l9NGhoO7GKCe2qQa+V+Qkx1rxMQN1RBcc5PpRcCqHaWWhyS3SlQ9ZhaGib7P9t
+         REkLNszDFn0OtoD2py+AJ/IVm4EAaVT/3A+DDkeS2k5PIhCkEA5ELkqReICpH9TWC2
+         rB+TcQnvK/zZdTh76+sARHk/51GdsMZuRIGHaPgznn6V0mh9CWcZHnlZbL4o/lGEpW
+         /faevkS3g09wyDSoNPfxC0Xi8vAWoVJOQYrteroWR/JtXcYyTSLrvpDo89XTQt4jJw
+         IDITMUCClFDlA==
+Date:   Sun, 16 Jan 2022 13:00:43 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] Documentation:ABI:testing:admv1014: add ABI docs
+Message-ID: <20220116130043.2639b0c2@jic23-huawei>
+In-Reply-To: <20220110151350.164095-2-antoniu.miclaus@analog.com>
+References: <20220110151350.164095-1-antoniu.miclaus@analog.com>
+        <20220110151350.164095-2-antoniu.miclaus@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kstrdup_quotable_cmdline() and kstrdup_quotable_file() are given a gfp flag
-that is passed and used for memory allocation in kstrdup_quotable() just a
-few lines below.
+On Mon, 10 Jan 2022 17:13:50 +0200
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-It looks reasonable to use this gfp value for the buffer allocated and
-freed in these functions as well.
+> Add documentation for the use of the Digital Attenuator gain.
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Hi Antoniu,
 
-Fixes: 0ee931c4e31a ("mm: treewide: remove GFP_TEMPORARY allocation flag")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-According to what I've found in 5.16, all callers use GFP_KERNEL, so this
-patch should be a no-op.
-But who knows how it will be used in the future. Better safe than sorry.
+Looks good to me though I'm keen to get other people's opinions as
+it is a little unusual.  So even if rest of the set is fine I'll
+leave this on list for a little longer. (I'm reviewing backwards through
+your series as makes more sense to me that way ;)
 
-v2: Add the change for kstrdup_quotable_file()
----
- lib/string_helpers.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thanks,
 
-diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-index 90f9f1b7afec..4433e486b725 100644
---- a/lib/string_helpers.c
-+++ b/lib/string_helpers.c
-@@ -624,7 +624,7 @@ char *kstrdup_quotable_cmdline(struct task_struct *task, gfp_t gfp)
- 	char *buffer, *quoted;
- 	int i, res;
- 
--	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
-+	buffer = kmalloc(PAGE_SIZE, gfp);
- 	if (!buffer)
- 		return NULL;
- 
-@@ -660,7 +660,7 @@ char *kstrdup_quotable_file(struct file *file, gfp_t gfp)
- 		return kstrdup("<unknown>", gfp);
- 
- 	/* We add 11 spaces for ' (deleted)' to be appended */
--	temp = kmalloc(PATH_MAX + 11, GFP_KERNEL);
-+	temp = kmalloc(PATH_MAX + 11, gfp);
- 	if (!temp)
- 		return kstrdup("<no_memory>", gfp);
- 
--- 
-2.32.0
+Jonathan
+
+> ---
+>  .../testing/sysfs-bus-iio-frequency-admv1014  | 23 +++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+> new file mode 100644
+> index 000000000000..5bcd96d77f45
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+> @@ -0,0 +1,23 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_coarse
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_coarse
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_fine
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_I) with fine steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_fine
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
 
