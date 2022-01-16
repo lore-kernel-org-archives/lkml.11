@@ -2,115 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B14C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:27:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D887FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232705AbiAPQ07 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 11:26:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43582 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232084AbiAPQ06 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 11:26:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642350417;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+nAKKNi5XgiAfNAzdu5aMlABcg+AfndDyAJ+czrA3dE=;
-        b=Ezx1eoFtGtYGdIsj6hWy/hyi7trbhFjBkrokNq1GlTlRrxD29AUdJdnBJfRb2xWCimLyqP
-        31g9BVzqayXWFgHXCyzUSd4X3+LJzoP++YhhyLz5Cre+kSs86AeFM5tn0MYDOrpddl2YMd
-        N5yIYJiZsbjwFV2lRsV1qfrRfSGeRzE=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-222-BVDJw2hwMPCCtzpzYhC-XA-1; Sun, 16 Jan 2022 11:26:56 -0500
-X-MC-Unique: BVDJw2hwMPCCtzpzYhC-XA-1
-Received: by mail-ot1-f70.google.com with SMTP id e73-20020a9d01cf000000b005935b064de2so3738236ote.22
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 08:26:56 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=+nAKKNi5XgiAfNAzdu5aMlABcg+AfndDyAJ+czrA3dE=;
-        b=zaTBKs7Nf/oOjV3VlqhnNEWQ6Uwd40jHP9d4I/iFTHnxPCOOXn/z4ZZMllLE7Upe9V
-         UngGmQQaWy/VXagSoI7c4xif2TjLnXgNV3JkZZVbqUWl2ZmnpjOOMPfgsKCJ4cwTcy0L
-         kjsaMQs634hAmXjR7HP0okOavUVQjv0a7efOH8d1DkAXJIWiPIPG/SnD285GHAG2O8Kl
-         6fK2uKgJBZYg8k1/lTmB4n7EWSWzexXPTAIr76km0K33e35xp/Dfs6OKLqdRa72ySRe1
-         zRCaaD8zOqo3meUKGTMOKAxSIC3cU1A3/FyWEuJs/UDlSLX4g6fJAw8l+znWtuKFPrMi
-         Hc/Q==
-X-Gm-Message-State: AOAM530+fvhr7mw6K4uGewSb6B60OtmC4KH3rqcwiMzPKg5ATSoFGP//
-        bTvDWZH3wF6uWdHMaFD1eEp26RcPxKukrnjNgBBYS0fIPAhKGtUtGuk3iBxE1KgXVNlXYIVt3Zs
-        caSvNoQkUrILctG6fKh3B8oa1NWZICQhZoggQsvoO4aifHai5mkurTiz+gcWP8/GrOyT7i7A=
-X-Received: by 2002:a9d:7f0e:: with SMTP id j14mr1680722otq.305.1642350415651;
-        Sun, 16 Jan 2022 08:26:55 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw0frExX8193TcIlUQCAdXQ8x5SRFRqaag+E9CI8NFwDwphAdh5+uw2Ho1hbhxiMP7W3hFeWA==
-X-Received: by 2002:a9d:7f0e:: with SMTP id j14mr1680711otq.305.1642350415410;
-        Sun, 16 Jan 2022 08:26:55 -0800 (PST)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id bo8sm4862700oib.22.2022.01.16.08.26.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 16 Jan 2022 08:26:55 -0800 (PST)
-Subject: Re: [PATCH] NFS: simplify check for freeing cn_resp
-To:     Trond Myklebust <trondmy@hammerspace.com>,
-        "anna.schumaker@netapp.com" <anna.schumaker@netapp.com>
-Cc:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220116144301.399581-1-trix@redhat.com>
- <9362b77845cecef630cd2cf98e3daf557318941b.camel@hammerspace.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <1bfd05a9-5245-9094-b382-f01c8b35f761@redhat.com>
-Date:   Sun, 16 Jan 2022 08:26:53 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S233677AbiAPQaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 11:30:13 -0500
+Received: from rere.qmqm.pl ([91.227.64.183]:63217 "EHLO rere.qmqm.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235731AbiAPQ3q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 11:29:46 -0500
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JcL944DHLz31;
+        Sun, 16 Jan 2022 17:29:44 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1642350584; bh=bGGaw/ldrCq1jAH5EChsBqNxiTNzrIjLK3w+QjVTJCw=;
+        h=Resent-From:Resent-Date:Resent-To:Date:From:Subject:To:Cc:From;
+        b=Pd2VbWB0znYwxMr/zuvbiSNcckRInObFJiQtiRGqwDj3EA7SODdZgaBDWEpmLQh2A
+         r32Jytoo0hFOkKPlS5oktGs6H4MvtCRnrjG5SKPuQZfMFz1QHKGXKbvoDIz8YzB2KT
+         OAmcLV09tAc8c1CyWiXGQtrY6uB1nwwwOhvALBTveCDxX30BSU2O4QnKlVvZudEt/o
+         O3RV5cV5zmk6wRPiP3MhP+rrbtlzeSfCGSVp0OaJ08XMI3lz6dCq6kX+pAEz0HxKP0
+         hJsQFv6g8w7yjPSxfRCVQEtrTcuouKKqTl5P9iK7YiGHn137IUMUYeTZ4veQk5oAI5
+         VRirZxQx/XCIA==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.4 at mail
+X-Bogosity: H 0.000000
+Received: from rere.qmqm.pl
+        by rere.qmqm.pl with LMTP
+        id gCUpJ4tB5GFaKgEAZU03Dg
+        (envelope-from <mirq-linux@rere.qmqm.pl>)
+        for <mirq-linux@rere.qmqm.pl>; Sun, 16 Jan 2022 17:02:19 +0100
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JcKYR2wYTz63;
+        Sun, 16 Jan 2022 17:02:18 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1642348939; bh=bGGaw/ldrCq1jAH5EChsBqNxiTNzrIjLK3w+QjVTJCw=;
+        h=Date:From:Subject:To:Cc:From;
+        b=FBgmvOZ5We0GsAgvaOrgo4c7fgbnPoYnoOImUCCiJsRJ0Iwa9CE7aT+amX8e+RXdS
+         y1eOLOJBwpUDUzkIpzNqL2B7eixDqYjsJFvPx5DKxHBWOVGhz946cHyBzuwywLh+ik
+         1MNjQ4wr91aom/rgSmqDeNmHN8+Dg4js8LxzapMr/YjzsruxFZBS05mCY3AJKre+r8
+         OqLXewNTlPfzcKQ4QCpArFWweFoYQEq+S2swpdM4er4QIg+9YU4hu7IyW/BQDMGoKy
+         9Bkpmw50XCnc0lzS9lMT/AH6G6ObSAv8+pXT0TXlnGsA8lA4ciGOxZU05k1GPxtiJ9
+         jJQddSTQck9wg==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.4 at mail
+Date:   Sun, 16 Jan 2022 17:02:17 +0100
+Message-Id: <cover.1642348712.git.mirq-linux@rere.qmqm.pl>
+From:   =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
+Subject: [PATCH 0/2] i2c: tegra: allow compiling out support for Tegra's special constrollers
 MIME-Version: 1.0
-In-Reply-To: <9362b77845cecef630cd2cf98e3daf557318941b.camel@hammerspace.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+To:     Dmitry Osipenko <digetx@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+To patches that, combined, reduce I2C driver's code by ~2kB and a bit
+from runtime overhead for non-Tegra20 or non-Tegra210 builds.
 
-On 1/16/22 7:47 AM, Trond Myklebust wrote:
-> Hi Tom,
->
-> On Sun, 2022-01-16 at 06:43 -0800, trix@redhat.com wrote:
->> From: Tom Rix <trix@redhat.com>
->>
->> nfs42_files_from_same_server() is called to check if freeing
->> cn_resp is required.  Instead of calling a function, check
->> the pointer.
->>
->> Signed-off-by: Tom Rix <trix@redhat.com>
->> ---
->>   fs/nfs/nfs4file.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
->> index e79ae4cbc395e..677631ea4cfb3 100644
->> --- a/fs/nfs/nfs4file.c
->> +++ b/fs/nfs/nfs4file.c
->> @@ -180,7 +180,7 @@ static ssize_t __nfs4_copy_file_range(struct file
->> *file_in, loff_t pos_in,
->>          ret = nfs42_proc_copy(file_in, pos_in, file_out, pos_out,
->> count,
->>                                  nss, cnrs, sync);
->>   out:
->> -       if (!nfs42_files_from_same_server(file_in, file_out))
->> +       if (cn_resp)
->>                  kfree(cn_resp);
-> The kernel convention in these circumstances is to just skip the NULL
-> pointer check, since kfree() does that anyway.
+Michał Mirosław (2):
+  i2c: tegra: allow DVC support to be compiled out
+  i2c: tegra: allow VI support to be compiled out
 
-Yes. I'll respin.
+ drivers/i2c/busses/Kconfig     | 16 ++++++++++++++++
+ drivers/i2c/busses/i2c-tegra.c | 35 +++++++++++++++++++++-------------
+ 2 files changed, 38 insertions(+), 13 deletions(-)
 
-Tom
-
->
->>          if (ret == -EAGAIN)
->>                  goto retry;
+-- 
+2.30.2
 
