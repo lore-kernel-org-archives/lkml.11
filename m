@@ -2,100 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 368AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F8FC4167B
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235028AbiAPMRQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 07:17:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57880 "EHLO
+        id S235096AbiAPMSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 07:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229610AbiAPMRN (ORCPT
+        with ESMTP id S235053AbiAPMS2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 07:17:13 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D33C061574
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 04:17:13 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id s15so725566pgs.1
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 04:17:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7lHHDE7DULw2iuAGng68Tx7RluE3YCYjYU45KpHja5M=;
-        b=Dw+4IGYoB2O2A7GfZrTCEv7rd5/kz1dz83exENanYGkvT+WU0oTrng5PPLbjx8tDju
-         VfBD1saC0FlIdj7RzKKHDyv+zTb5G3A7vHoB0FEe1rjaKt48ryXYuhNEbsbM4Yp05olv
-         +Tsj3Ip71oHRYyzK8q9+UqqqKtD7tKAijSrwHuhmjPzjAgKbwizexzgtI+XtOlArHJu+
-         w0iDEBOot7u4KeruTgOz4F/OyVwI+GTXcFtF1W/Y1P40hw5KeC/g7eNF38YmVs5AkxSC
-         fkdt3UthhSy4W+YAP058uWG6PLVxfbDzxs7yfsiIyC+IWbNXbMbhgh/CnpWO27DpdXf9
-         feBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7lHHDE7DULw2iuAGng68Tx7RluE3YCYjYU45KpHja5M=;
-        b=57MKRWG5kea6FBPxd3qjClc6f3kTI2KsB5hD6wrktZ0PFtxCkxU4C7CZ7bvmTh4Vwl
-         7zLhWIfemgNjqYovMmEfknNEht92AbPMsqefHC3TBWVHuroK3uq3CehyniA2u5vXbzKG
-         nySyfXvw1OnTv3AhPXbp7c9etGXmhBGGbqxFMaIa/B9CoD0poLbVY5oUXhIkfbYzALZV
-         Ravjvjk+jv+bXLukBcaYINgYJHEtB4IvC5W7vzfthoFMqtISL864tkAOzlL85YyM9S3t
-         /40rlcyX0MeGsrdRrySUSx3QWYofCQyeWaXSLyqZpjYYav4fkbrjY+CiuFDvAtuDbqKo
-         jrsg==
-X-Gm-Message-State: AOAM532/2vIhaQ5TJVG55dJoPo6FTmk6WsomsBafc0tAzj3YGUEppiVK
-        29lkv8XfaSgJvheMhBsen1U=
-X-Google-Smtp-Source: ABdhPJyaZfzHYFYwTW9RagAmwxf+w3WxNxDT+WTUWEh7xjoEvvJu2pNjVqbPqayYkjvtMFmFb+i79g==
-X-Received: by 2002:a63:d245:: with SMTP id t5mr2713419pgi.215.1642335433011;
-        Sun, 16 Jan 2022 04:17:13 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id w23sm16697484pjy.2.2022.01.16.04.17.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 16 Jan 2022 04:17:12 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     javierm@redhat.com
-Cc:     bp@suse.de, daniel.vetter@ffwll.ch, gregkh@linuxfoundation.org,
-        linmq006@gmail.com, linux-kernel@vger.kernel.org,
-        tzimmermann@suse.de
-Subject: [PATCH v2] drivers/firmware: Add missing platform_device_put() in sysfb_create_simplefb
-Date:   Sun, 16 Jan 2022 12:16:54 +0000
-Message-Id: <20220116121654.7730-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <735d2b47-227f-f09d-ddd6-28bc82a066a5@redhat.com>
-References: <735d2b47-227f-f09d-ddd6-28bc82a066a5@redhat.com>
+        Sun, 16 Jan 2022 07:18:28 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DAFC06173E;
+        Sun, 16 Jan 2022 04:18:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description;
+        bh=x22IDWNKLOZQBYNT5ZnUP/ws3USwr++SKpDySW8y9SA=; b=HyvtLeCzLmcJvJgRUexW0kzX6z
+        +CRkAaXfZ/sTESZXnMn5cpVO7vkJEmjCnKIAk9RLbndO0OCnmumRMxPCQOkB1h+hACL+eHJGozBpV
+        YR5aEcdeM3fb+OMfI6dAAXefLBP+ZijUN+2RDaQodeu2/GSvNBpUFyE/8wVkcRrCN3spFVOwfaE5H
+        FhgDkdNCnn4Gn5WzHWwSWrKrPM9IeQIENcEda5qztngwQTt9WBudC3M9mKx+/ZxC50QDup2/c+SXQ
+        IODSc9BcXn9j2IDVgDVnrKAQqCPWOnMAufdlvb149RlGDdTxN2yB9IlfjR+VSYfduJaiteCUzzcM/
+        ZMKSG3cA==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1n94UM-007FUS-LE; Sun, 16 Jan 2022 12:18:26 +0000
+From:   "Matthew Wilcox (Oracle)" <willy@infradead.org>
+To:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Subject: [PATCH 07/12] mm: Make large folios depend on THP
+Date:   Sun, 16 Jan 2022 12:18:17 +0000
+Message-Id: <20220116121822.1727633-8-willy@infradead.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220116121822.1727633-1-willy@infradead.org>
+References: <20220116121822.1727633-1-willy@infradead.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the missing platform_device_put() before return from
-sysfb_create_simplefb() in the error handling case.
+Some parts of the VM still depend on THP to handle large folios
+correctly.  Until those are fixed, prevent creating large folios
+if THP are disabled.
 
-Fixes: 8633ef8 ("drivers/firmware: consolidate EFI framebuffer setup for all arches")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
-Changes in v2:
-- Use goto label to avoid duplicating the error code logic.
----
- drivers/firmware/sysfb_simplefb.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/linux/pagemap.h | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/firmware/sysfb_simplefb.c b/drivers/firmware/sysfb_simplefb.c
-index b86761904949..46d776c29174 100644
---- a/drivers/firmware/sysfb_simplefb.c
-+++ b/drivers/firmware/sysfb_simplefb.c
-@@ -114,11 +114,15 @@ __init int sysfb_create_simplefb(const struct screen_info *si,
- 
- 	ret = platform_device_add_resources(pd, &res, 1);
- 	if (ret)
--		return ret;
-+		goto pdev_put;
- 
- 	ret = platform_device_add_data(pd, mode, sizeof(*mode));
- 	if (ret)
--		return ret;
-+		goto pdev_put;
- 
- 	return platform_device_add(pd);
-+
-+pdev_put:
-+	platform_device_put(pd);
-+	return ret;
+diff --git a/include/linux/pagemap.h b/include/linux/pagemap.h
+index 877dabed0316..3e348e0a9e4e 100644
+--- a/include/linux/pagemap.h
++++ b/include/linux/pagemap.h
+@@ -192,9 +192,14 @@ static inline void mapping_set_large_folios(struct address_space *mapping)
+ 	__set_bit(AS_LARGE_FOLIO_SUPPORT, &mapping->flags);
  }
+ 
++/*
++ * Large folio support currently depends on THP.  These dependencies are
++ * being worked on but are not yet fixed.
++ */
+ static inline bool mapping_large_folio_support(struct address_space *mapping)
+ {
+-	return test_bit(AS_LARGE_FOLIO_SUPPORT, &mapping->flags);
++	return IS_ENABLED(CONFIG_TRANSPARENT_HUGEPAGE) &&
++		test_bit(AS_LARGE_FOLIO_SUPPORT, &mapping->flags);
+ }
+ 
+ static inline int filemap_nr_thps(struct address_space *mapping)
 -- 
-2.17.1
+2.34.1
 
