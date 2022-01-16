@@ -2,141 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7FFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 17:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 17:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiAPRvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 12:51:11 -0500
-Received: from mga11.intel.com ([192.55.52.93]:59816 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231300AbiAPRvK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 12:51:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642355470; x=1673891470;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=L4V4B+IwpyR9wgYyuAvJP6EjO4dTV71ecF6SQLdY6Sk=;
-  b=KkEIFmRagUUD/e8AUWm+HooiQHLSkV5AYwt75XAy/DDDD5ZmLtjYx7fP
-   xxA9aFrz3vHgUN0C4nxKrhrQghULT42uyw+1HZZ//ypuvaJpLTh5bXedz
-   z+fsjzqjOwqgmjR0nIDwQFiV0Ei/sXabmlleJHH17yWIvijk3P97aEe3G
-   Qe0k2Q4ep1YHRZ2z1lILwNemEHW1/0oIVHciOu0PS/Fl6YsutxOO3UkOz
-   Pm+M2+OlAWwVHe3HwNaTMU4UIGQHIfTFfLzbihEdXHSWDS6FZXNJFNzRg
-   42xB3R0Rpto4dDkDulzu6IVbFNmiKqIX/AtS+G6Y9umd/7uGHFBwKaZXH
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="242063695"
-X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
-   d="scan'208";a="242063695"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 09:51:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
-   d="scan'208";a="692828947"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 16 Jan 2022 09:51:08 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n99gJ-000Asu-Fa; Sun, 16 Jan 2022 17:51:07 +0000
-Date:   Mon, 17 Jan 2022 01:50:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Subject: arch/arm/mach-ep93xx/clock.c:210:35: sparse: sparse: Using plain
- integer as NULL pointer
-Message-ID: <202201170148.vIvPQRko-lkp@intel.com>
+        id S235935AbiAPRwC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 12:52:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52130 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231300AbiAPRwA (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 12:52:00 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5DBDB80D89
+        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 17:51:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2176C36AE9;
+        Sun, 16 Jan 2022 17:51:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642355518;
+        bh=e196+80gZDFY6t38nfH8INeMt4XIIH4zE3u56D+0ETk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IBZK89MD3fkHSnoBqePCmvh9XjBqaAo8v8fFwWAYKowaOMQMa9/l7IMebZ9BRMc5F
+         I0HUJq5SMrhZGzA3YtUepSIJ7lAheItdpax5zyb/pOCo1N3poD7f+V4c0X5oz9OwTg
+         g6+KAPNwz3eOdF1G3GDcxWtCz8V9bsUM/CGO3qXbkLRLYYE2sdhzc08YmleiuLKaGD
+         nmf+Oq/BynP9Lg1ot9oGddsNF02SqGJPT4kEHnIu3Pqmyy4WGg7PgohUw0hi3xh/ak
+         u0JUirbyMkBpT5fNufTQItJ8b3GhQTZgWMhOPyN7KoxzFsii0rm86JnsULxB4c2Bzy
+         gJdclsJPxg3iA==
+Date:   Sun, 16 Jan 2022 17:57:56 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Gwendal Grignou <gwendal@chromium.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Dmitry Torokhov <dtor@chromium.org>, bleung@chromium.org,
+        groeck@chromium.org, myungjoo.ham@samsung.com,
+        cw00.choi@samsung.com, benjamin.tissoires@redhat.com,
+        hverkuil-cisco@xs4all.nl, lee.jones@linaro.org,
+        pmalani@chromium.org, sre@kernel.org, thierry.reding@gmail.com,
+        u.kleine-koenig@pengutronix.de, lgirdwood@gmail.com,
+        a.zummo@towertech.it, cychiang@chromium.org, perex@perex.cz,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 00/17] Add export symbol namespace PL_CHROMEOS
+Message-ID: <20220116175756.54919398@jic23-huawei>
+In-Reply-To: <CAPUE2usF1m8rmE1_Nrdv_B5SfXExzKzGnhcZrmcSHFSMQzyjiw@mail.gmail.com>
+References: <20220105220653.122451-1-gwendal@chromium.org>
+        <CAE_wzQ_DTnrU9QbADZuNyt4fszAiTwa04D9muC-xE_S3MM9eGQ@mail.gmail.com>
+        <CAPUE2uu3FPvxHHGYGbckxR=QmWt3=KwFk3DYoqBSmaQd+AO0QA@mail.gmail.com>
+        <20220106110558.49dd6f26@coco.lan>
+        <CAPUE2usF1m8rmE1_Nrdv_B5SfXExzKzGnhcZrmcSHFSMQzyjiw@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   4d66020dcef83314092f2c8c89152a8d122627e2
-commit: 9645ccc7bd7a16cd73c3be9dee70cd702b03be37 ep93xx: clock: convert in-place to COMMON_CLK
-date:   3 months ago
-config: arm-randconfig-s031-20220116 (https://download.01.org/0day-ci/archive/20220117/202201170148.vIvPQRko-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9645ccc7bd7a16cd73c3be9dee70cd702b03be37
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9645ccc7bd7a16cd73c3be9dee70cd702b03be37
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash
+On Mon, 10 Jan 2022 01:31:23 -0800
+Gwendal Grignou <gwendal@chromium.org> wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On Thu, Jan 6, 2022 at 2:06 AM Mauro Carvalho Chehab <mchehab@kernel.org> wrote:
+> >
+> > Em Wed, 5 Jan 2022 20:26:36 -0800
+> > Gwendal Grignou <gwendal@chromium.org> escreveu:
+> >  
+> > > On Wed, Jan 5, 2022 at 2:58 PM Dmitry Torokhov <dtor@chromium.org> wrote:  
+> > > >
+> > > > Hi Gwendal,
+> > > >
+> > > > On Wed, Jan 5, 2022 at 2:07 PM Gwendal Grignou <gwendal@chromium.org> wrote:  
+> > > > >
+> > > > > Add a symbol namespace for functions exported by the plaform chromeos
+> > > > > subsystem.  
+> > > >
+> > > > It would be great to explain why this is needed/desirable. What are
+> > > > the benefits of introducing this namespace? What problem are you
+> > > > trying to solve?  
+> > > The issue came when reviewing an iio sensor
+> > > (https://www.spinics.net/lists/linux-iio/msg66280.html). I wanted to
+> > > be ahead of the curve (for once).  
+> >
+> > Patch 01 should clearly document the reason why this is needed.
+> > Yet, see below.
+> >
+> > While I see value on using namespaces, we should have extra care when
+> > this is used for kAPIs designed for a product/system. I mean, what
+> > prevents that the affected drivers won't support some day different
+> > non-ChromeOS products? We have a media driver originally written to
+> > work with the One Laptop Per Children hardware, that used some
+> > product-specific kAPIs, that were extended a couple years later to
+> > cover different types of hardware.
+> >
+> > What happens if some day, a driver introduced to be used on a ChromeOS
+> > hardware would also be used by a non-ChromeOS hardware? This could
+> > become messy as times goes by.
+Hi Mauro,
 
+I'm not sure I see why this case is a problem or any worse than the
+namespacing that already exists in the function names.  We name a lot
+of stuff after first device that used it and some of it lives for ever.
+Sure, sometime it makes sense to rename when something becomes more
+generic, but we can do that here as needed.
 
-sparse warnings: (new ones prefixed by >>)
->> arch/arm/mach-ep93xx/clock.c:210:35: sparse: sparse: Using plain integer as NULL pointer
-   arch/arm/mach-ep93xx/clock.c:99:9: sparse: sparse: context imbalance in 'ep93xx_clk_enable' - different lock contexts for basic block
-   arch/arm/mach-ep93xx/clock.c:116:9: sparse: sparse: context imbalance in 'ep93xx_clk_disable' - different lock contexts for basic block
-   arch/arm/mach-ep93xx/clock.c:197:9: sparse: sparse: context imbalance in 'ep93xx_mux_set_parent_lock' - different lock contexts for basic block
+> >
+> > Instead, IMO, it would make sense to have per-subsystem namespaces.
+> > So, for instance, placing iio under an IIO-specific namespace
+> > (and the same for other subsystems) makes more sense on my
+> > eyes, as the namespace boundary will be clearer, and an IIO driver
+> > will always be IIO, no matter on what hardware such driver would
+> > be used.  
+> I based this patchset on the current/future use in the IIO subsystem,
+> where the namespaces are used for small subsystem like HID,
+> IIO_HID_ATTRIBUTES, or code shared among sensors drivers of the same
+> vendor (LTC2497, more to come).
 
-vim +210 arch/arm/mach-ep93xx/clock.c
+Not particularly intended to be vendor based, more library module and client
+of library cases.  Obviously it's relatively rare for multiple vendors
+to produce IIO devices that are sufficiently compatible to share code
+beyond the IIO core, but it does happen.  In that particular case the
+library is called LTC2497 as it was the first part to use it it and
+there wasn't a sensible generic name.  Vast majority of IIO cases will
+be a core module exporting stuff to i2c and spi specific modules.
 
-   205	
-   206	static int ep93xx_mux_determine_rate(struct clk_hw *hw,
-   207					struct clk_rate_request *req)
-   208	{
-   209		unsigned long rate = req->rate;
- > 210		struct clk *best_parent = 0;
-   211		unsigned long __parent_rate;
-   212		unsigned long best_rate = 0, actual_rate, mclk_rate;
-   213		unsigned long best_parent_rate;
-   214		int __div = 0, __pdiv = 0;
-   215		int i;
-   216	
-   217		/*
-   218		 * Try the two pll's and the external clock
-   219		 * Because the valid predividers are 2, 2.5 and 3, we multiply
-   220		 * all the clocks by 2 to avoid floating point math.
-   221		 *
-   222		 * This is based on the algorithm in the ep93xx raster guide:
-   223		 * http://be-a-maverick.com/en/pubs/appNote/AN269REV1.pdf
-   224		 *
-   225		 */
-   226		for (i = 0; i < ARRAY_SIZE(mux_parents); i++) {
-   227			struct clk *parent = clk_get_sys(mux_parents[i], NULL);
-   228	
-   229			__parent_rate = clk_get_rate(parent);
-   230			mclk_rate = __parent_rate * 2;
-   231	
-   232			/* Try each predivider value */
-   233			for (__pdiv = 4; __pdiv <= 6; __pdiv++) {
-   234				__div = mclk_rate / (rate * __pdiv);
-   235				if (__div < 2 || __div > 127)
-   236					continue;
-   237	
-   238				actual_rate = mclk_rate / (__pdiv * __div);
-   239				if (is_best(rate, actual_rate, best_rate)) {
-   240					best_rate = actual_rate;
-   241					best_parent_rate = __parent_rate;
-   242					best_parent = parent;
-   243				}
-   244			}
-   245		}
-   246	
-   247		if (!best_parent)
-   248			return -EINVAL;
-   249	
-   250		req->best_parent_rate = best_parent_rate;
-   251		req->best_parent_hw = __clk_get_hw(best_parent);
-   252		req->rate = best_rate;
-   253	
-   254		return 0;
-   255	}
-   256	
+We have drivers named after a particular part that support parts from
+multiple vendors of many different names.  So in a similar fashion
+I'm not that worried about having some future driver have to include
+one of the namespaces that is named after some other part. Perhaps
+the issue here is that the chromeos platform stuff has a name tightly
+coupled to a somewhat 'generic' but also somewhat closed hardware
+ecosystem?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+(Not really relevant here but I do longer term plan to move the main
+IIO core into a namespace, but focusing on the smaller cases first as
+I think both are valid).
+
+So I'm in support of this series but maybe you are right in waiting for
+the dust to settle :)  Note I'd also like to see an IIO_CHROMEOS or
+similar NS for the symbols exported by cros_ec_sensors_core.c.
+
+Eventually I'd expect some of the IIO chromeos modules to have
+MODULE_IMPORT_NS(IIO);
+MODULE_IMPORT_NS(IIO_CHROMEOS);
+MODULE_IMPORT_NS(PL_CHROMEOS);
+
+and probably some others...
+
+Jonathan
+
+> Since the usage of namespace in the kernel is not clearly defined yet,
+> I wait for the dust to settle and more usage to emerge before tuning
+> this patchset.
+> 
+> Thanks,
+> Gwendal.
+> >
+> > Thanks,
+> > Mauro  
+
