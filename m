@@ -2,184 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11933C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06750C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:51:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235853AbiAPQvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 11:51:20 -0500
-Received: from mout.kundenserver.de ([217.72.192.73]:37789 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235783AbiAPQvN (ORCPT
+        id S235884AbiAPQvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 11:51:23 -0500
+Received: from h04mx16.reliablemail.org ([185.76.67.209]:27698 "EHLO
+        h04mx16.reliablemail.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235787AbiAPQvN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 16 Jan 2022 11:51:13 -0500
-Received: from quad ([82.142.13.186]) by mrelayeu.kundenserver.de (mreue108
- [212.227.15.183]) with ESMTPSA (Nemesis) id 1MtOOm-1mK3Bh2Hde-00upva; Sun, 16
- Jan 2022 17:50:55 +0100
-From:   Laurent Vivier <laurent@vivier.eu>
-To:     linux-kernel@vger.kernel.org
-Cc:     Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-m68k@lists.linux-m68k.org,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-rtc@vger.kernel.org, Laurent Vivier <laurent@vivier.eu>
-Subject: [PATCH v9 2/4] rtc: goldfish: introduce goldfish_ioread32()/goldfish_iowrite32()
-Date:   Sun, 16 Jan 2022 17:50:49 +0100
-Message-Id: <20220116165051.120826-3-laurent@vivier.eu>
+X-Halon-Out: 821f4e16-76ec-11ec-a232-556aad082471
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=grimler.se;
+        s=default; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=1FcLjva00SLkPxQdscGEux0R9htdpzwYk7cdxDo4J5g=; b=L/wSZSXtaOkoyNq7IJ6h5NaGNT
+        bD8VNAHXA2rFMXSmcQQC5ZUTsMVjbgshKQKgA8z7LlexSsEEVYzgS3sSGg/zi0ftCVj2RjVq/YRWy
+        qhbmzVwnTwS80avobXnFVVj47FTt9kBBK1QZgn1EfAtJFpf+3v+MMJ/vvixDtEO207hSSHP6tcRtp
+        x3aI1FicStJO7fFz/z6vcr6TiYdM/3fux4yqiC2kiCbiXVQ3BsqFvz+uL0mOGSoK6l9rbX3Di8r3K
+        aNrOcdmGFjuyx+krumu6HdvYJ8qcKemDVIY7Rfx8fOxkKjbctGMY4JlymheqlhxHxpRUJsAt1UG7Q
+        KEKOGWZw==;
+From:   Henrik Grimler <henrik@grimler.se>
+To:     semen.protsenko@linaro.org, virag.david003@gmail.com,
+        martin.juecker@gmail.com, cw00.choi@samsung.com,
+        m.szyprowski@samsung.com, alim.akhtar@samsung.com,
+        krzysztof.kozlowski@canonical.com, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht
+Cc:     Henrik Grimler <henrik@grimler.se>
+Subject: [PATCH v3 1/3] dt-bindings: arm: samsung: document Chagall WiFi board binding
+Date:   Sun, 16 Jan 2022 17:50:33 +0100
+Message-Id: <20220116165035.437274-2-henrik@grimler.se>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220116165051.120826-1-laurent@vivier.eu>
-References: <20220116165051.120826-1-laurent@vivier.eu>
+In-Reply-To: <20220116165035.437274-1-henrik@grimler.se>
+References: <20220116165035.437274-1-henrik@grimler.se>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:+k1FifxnRr8+ISOTLHm6WqlQsIQaRoVY6Z83ax8p5wBA8cD2Tyc
- nVMAMV2wLRlXvXALWqksmqr7ARM0KJ9MwbJLtNIENPsHQLydQWd7KU7JOD75XowHT9oSoAv
- uw1KcRYP9WnXKEXMQS6jFjp1jS37mecIzpbVFsLSHpwpwvqyeZ0aACswVQFK4+XsmRxy+Jt
- c3DVA26WkozM3L3vXIALA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:veMA0nMWdjM=:i75S6vO+lnRqRqnxkbBPR8
- 0ml/9CqhE+UL24AMW939SL+hmNsDrhlkInu/OQeUzQCHGsyvdF/CatAuvSQQBWlWqM0JWEXoq
- ZHIcbn8xmPnxG9gN4GMyZwxB3BeanFacGE24MhRYcNZ+MlMZpSTIZ3+oSg01Vp1xI+5utj1el
- RBq9RO8F+x+c4rjS/bs9YFchxapIBcI8rFGmWqPQeCbBzJhTDtmITktcI7o83TqxKDb+KNPSp
- xGmU7RlWkd82V3uLlfTlgKxrJZqAmYaGvl13wlx/jKlpgfThA8Po9xy9KmRnvJI+FUBbxOT+G
- 2rMTVN2kI8L6XG9C704L0Wqo5q860BS49AR18YSuq0F8xSrs2SCMJRhd/XfwRHCNSr43syvFP
- B1P4cAetq9bae6zB25MbeKy/2i14T1lIPwoiVFwkRvfq+VboJ4ndCi9CcOOdzsdpKPs9D+ZMS
- zeVuyahz7MU3LQHMjhewGnDctmm/kG8AwmjE/p/1V1Dp8TtojMrVK866CqBog3PjU9AVCbBFT
- 8mwi6Dz6x6bA/ZGZTBSSSuqgiOm8b9w/nvAX9oaUlYXcm/eai7yEvAf6TrcwQ7aFtUdcmJITs
- wXl1qK3/6HSTkRFRMvfe3gsgD7nSIQF4KqdP/+PfoC1bmrev2bq0ul2/1CJ8WqXYTCVnzsYaq
- HDr3GAoglrPNGbr0DueEH315SDDggzW82pZYVwyqakyy6X6/DofXhjs6t6ohHt8vkyyE=
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - cpsrv07.misshosting.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - grimler.se
+X-Get-Message-Sender-Via: cpsrv07.misshosting.com: authenticated_id: henrik@grimler.se
+X-Authenticated-Sender: cpsrv07.misshosting.com: henrik@grimler.se
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The goldfish device always uses the same endianness as the architecture
-using it:
-https://android.googlesource.com/platform/external/qemu/+/refs/heads/emu-master-dev/hw/timer/goldfish_timer.c#177
+Add binding for Samsung Galaxy Tab S 10.5", based on Exynos 5420 with
+codename chagall-wifi. It was released in 2014 and has several siblings
+with similar hardware.
 
-On a big-endian machine, the device is also big-endian, on a
-little-endian machine the device is little-endian.
-
-So we need to use the right accessor to read/write values to the goldfish
-registers: ioread32()/iowrite32() on a little-endian machine,
-ioread32be()/iowrite32be() on a big-endian machine.
-
-This patch introduces goldfish_ioread32()/goldfish_iowrite32() that uses
-the expected accessor according to the machine endianness.
-
-Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Signed-off-by: Henrik Grimler <henrik@grimler.se>
 ---
- drivers/rtc/rtc-goldfish.c | 38 +++++++++++++++++++++++---------------
- 1 file changed, 23 insertions(+), 15 deletions(-)
+ .../devicetree/bindings/arm/samsung/samsung-boards.yaml          | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
-index 7ab95d052644..611cc6123bbe 100644
---- a/drivers/rtc/rtc-goldfish.c
-+++ b/drivers/rtc/rtc-goldfish.c
-@@ -23,6 +23,14 @@
- #define TIMER_ALARM_STATUS	0x18
- #define TIMER_CLEAR_INTERRUPT	0x1c
- 
-+#ifdef CONFIG_M68K
-+#define goldfish_ioread32 ioread32be
-+#define goldfish_iowrite32 iowrite32be
-+#else
-+#define goldfish_ioread32 ioread32
-+#define goldfish_iowrite32 iowrite32
-+#endif
-+
- struct goldfish_rtc {
- 	void __iomem *base;
- 	int irq;
-@@ -41,8 +49,8 @@ static int goldfish_rtc_read_alarm(struct device *dev,
- 	rtcdrv = dev_get_drvdata(dev);
- 	base = rtcdrv->base;
- 
--	rtc_alarm_low = readl(base + TIMER_ALARM_LOW);
--	rtc_alarm_high = readl(base + TIMER_ALARM_HIGH);
-+	rtc_alarm_low = goldfish_ioread32(base + TIMER_ALARM_LOW);
-+	rtc_alarm_high = goldfish_ioread32(base + TIMER_ALARM_HIGH);
- 	rtc_alarm = (rtc_alarm_high << 32) | rtc_alarm_low;
- 
- 	do_div(rtc_alarm, NSEC_PER_SEC);
-@@ -50,7 +58,7 @@ static int goldfish_rtc_read_alarm(struct device *dev,
- 
- 	rtc_time64_to_tm(rtc_alarm, &alrm->time);
- 
--	if (readl(base + TIMER_ALARM_STATUS))
-+	if (goldfish_ioread32(base + TIMER_ALARM_STATUS))
- 		alrm->enabled = 1;
- 	else
- 		alrm->enabled = 0;
-@@ -71,18 +79,18 @@ static int goldfish_rtc_set_alarm(struct device *dev,
- 
- 	if (alrm->enabled) {
- 		rtc_alarm64 = rtc_tm_to_time64(&alrm->time) * NSEC_PER_SEC;
--		writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
--		writel(rtc_alarm64, base + TIMER_ALARM_LOW);
--		writel(1, base + TIMER_IRQ_ENABLED);
-+		goldfish_iowrite32((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
-+		goldfish_iowrite32(rtc_alarm64, base + TIMER_ALARM_LOW);
-+		goldfish_iowrite32(1, base + TIMER_IRQ_ENABLED);
- 	} else {
- 		/*
- 		 * if this function was called with enabled=0
- 		 * then it could mean that the application is
- 		 * trying to cancel an ongoing alarm
- 		 */
--		rtc_status_reg = readl(base + TIMER_ALARM_STATUS);
-+		rtc_status_reg = goldfish_ioread32(base + TIMER_ALARM_STATUS);
- 		if (rtc_status_reg)
--			writel(1, base + TIMER_CLEAR_ALARM);
-+			goldfish_iowrite32(1, base + TIMER_CLEAR_ALARM);
- 	}
- 
- 	return 0;
-@@ -98,9 +106,9 @@ static int goldfish_rtc_alarm_irq_enable(struct device *dev,
- 	base = rtcdrv->base;
- 
- 	if (enabled)
--		writel(1, base + TIMER_IRQ_ENABLED);
-+		goldfish_iowrite32(1, base + TIMER_IRQ_ENABLED);
- 	else
--		writel(0, base + TIMER_IRQ_ENABLED);
-+		goldfish_iowrite32(0, base + TIMER_IRQ_ENABLED);
- 
- 	return 0;
- }
-@@ -110,7 +118,7 @@ static irqreturn_t goldfish_rtc_interrupt(int irq, void *dev_id)
- 	struct goldfish_rtc *rtcdrv = dev_id;
- 	void __iomem *base = rtcdrv->base;
- 
--	writel(1, base + TIMER_CLEAR_INTERRUPT);
-+	goldfish_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
- 
- 	rtc_update_irq(rtcdrv->rtc, 1, RTC_IRQF | RTC_AF);
- 
-@@ -128,8 +136,8 @@ static int goldfish_rtc_read_time(struct device *dev, struct rtc_time *tm)
- 	rtcdrv = dev_get_drvdata(dev);
- 	base = rtcdrv->base;
- 
--	time_low = readl(base + TIMER_TIME_LOW);
--	time_high = readl(base + TIMER_TIME_HIGH);
-+	time_low = goldfish_ioread32(base + TIMER_TIME_LOW);
-+	time_high = goldfish_ioread32(base + TIMER_TIME_HIGH);
- 	time = (time_high << 32) | time_low;
- 
- 	do_div(time, NSEC_PER_SEC);
-@@ -149,8 +157,8 @@ static int goldfish_rtc_set_time(struct device *dev, struct rtc_time *tm)
- 	base = rtcdrv->base;
- 
- 	now64 = rtc_tm_to_time64(tm) * NSEC_PER_SEC;
--	writel((now64 >> 32), base + TIMER_TIME_HIGH);
--	writel(now64, base + TIMER_TIME_LOW);
-+	goldfish_iowrite32((now64 >> 32), base + TIMER_TIME_HIGH);
-+	goldfish_iowrite32(now64, base + TIMER_TIME_LOW);
- 
- 	return 0;
- }
+diff --git a/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml b/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml
+index 052cd94113d4..a2a8bf44fe9b 100644
+--- a/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml
++++ b/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml
+@@ -140,6 +140,7 @@ properties:
+         items:
+           - enum:
+               - insignal,arndale-octa           # Insignal Arndale Octa
++              - samsung,chagall-wifi            # Samsung SM-T800
+               - samsung,smdk5420                # Samsung SMDK5420 eval
+           - const: samsung,exynos5420
+           - const: samsung,exynos5
 -- 
 2.34.1
 
