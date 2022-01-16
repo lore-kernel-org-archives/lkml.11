@@ -2,64 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2199FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 11:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45CE8C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:02:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232942AbiAPLzO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 06:55:14 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:39426 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231905AbiAPLzN (ORCPT
+        id S232983AbiAPMCw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 07:02:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231932AbiAPMCv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 06:55:13 -0500
-Received: by mail-io1-f69.google.com with SMTP id p65-20020a6bbf44000000b00604c0757591so8645248iof.6
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 03:55:12 -0800 (PST)
+        Sun, 16 Jan 2022 07:02:51 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DD0C06173E
+        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 04:02:50 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id t9so19310963oie.12
+        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 04:02:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MQugVzR0HUW1l8YQ855U1R3u4rbB4xlEWOyDYT7TwoM=;
+        b=s0yHRZxkpbimGufWxMOVBXxk5R6yRG83z9/XZ9iOTsE+YGZA1cWYi0Zi8fRs2kNaN0
+         eIVgSWV8wxFPOSX1u5DZCLWjSJyhP4NPoY0s9tQfCMq+D3JErlR6sez3A8q8Idu/Zbob
+         pLbqeWLXwGP419yPkutzyTfQf6IauG1pPSExJPOoFOkAhlo6g8wB8BnWbiG9nu/o/H5Q
+         DICRotGEhLY18p8HIWkHifxmVMSOWm9CIMLIVQDzQpwMsV1UCzusUQVI8jiyzOZlWmpy
+         DoMxEqLo1X3LqktlT2cmTUjQEE3a2bB3/Ea1AGr3lCMuusNLXyaNExyDhBQ9mRl/b+CL
+         mD2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=pcqghOLmFHQd4kNv1nK4ZF7/rBgU1CFGoN8hBRKSd1Q=;
-        b=bou41jS0iTHNOhdZxT6lP0xyBmQ5dgSPbNspow5GMwF7E3tI9XTvSmZ5ix0ct903U7
-         /ZWdk4tMb8vRLeReuOFOKYHOc/LWMgLGJOkJu9AjBXtaUucTkJhhHok3KuGrbnPCNNtM
-         nuFmWOL6tBimDE9/6GZZH5Xz4WvTsmfCmXIbohrDnOwUC4RYuNdpZQs0Qnaow6q+lLQc
-         DabIXWTVsJhviWw3h3kwxXM9zY+nWu0O6/PwydOaUxTaUjcn6IpMn5uWwMwRaTtkwNYM
-         TSuKl0WigC4Lfr7cpsNxbCT76OdCh668Cnm2qC2rTewXQgqvomSb4IZs3ug7vcqdkbK1
-         1ZTA==
-X-Gm-Message-State: AOAM531RhK04Xjb+kcDINdTe7pd3160EMngx7wVxlA97N94RNlHzEJx2
-        DYBkvUVA4c8/pseiQxNLSce28bWZ0mLq2pN6E0P0NtXP2Bwz
-X-Google-Smtp-Source: ABdhPJyNE1UXBXOaJSv3x38kfUBkh6qf2pgvHb9ayYaWHoon7Wy48IkgOgp4MvqbPEA+S/toakjHMjXjn7ZqV3S9AeIh3XGkCmeF
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MQugVzR0HUW1l8YQ855U1R3u4rbB4xlEWOyDYT7TwoM=;
+        b=vfh/x0RHg1e6QO8YYIwEIQCqoUomTi92mhSGp0FcLZmQJWHbKmUT3KylLH93QTvNqw
+         pYXphJ9ACfOZaM6sfrMK3JUKudVo4j5KBdd2Iis6ZTbBWJVfUmunY6oILVFQS9v+yagh
+         G9Qws0WeONsSWewm47z2rXQP8eBt7IuKHq4mTuo+RI3a58+d/9pjxa/Z/RgHKnftZsgl
+         5+KYJcCBhC6ISsR3X+PT89N4RjaTqTY4oNtV4cjqwhkpH4peuFJUCnB/cslO6/kRVSuW
+         rWAceQPZQQb3HvAWWnVT40SUXj+36z/Wm/nUmmtObcgXCPPbgemQuie23hDrYMRmBtmW
+         BCUw==
+X-Gm-Message-State: AOAM530HMmiOzUNSb5/IgFE/Y30ID7lx0B6JY7VhGJpCQKbQ2vgb/1Sm
+        IFdSSCWyIlvUyZMNL2KHOxYMjueEiUVAdhsrqK4jGw==
+X-Google-Smtp-Source: ABdhPJz5Vivaiqv+f1v9kMNzZy+LxZx0FYcqZ8u6a+PsYoKEcQKvQ5CcKRTey5EKw7ysWPJCtK7HWm3FeghHnLp48DM=
+X-Received: by 2002:a54:4613:: with SMTP id p19mr13356731oip.162.1642334569955;
+ Sun, 16 Jan 2022 04:02:49 -0800 (PST)
 MIME-Version: 1.0
-X-Received: by 2002:a02:856a:: with SMTP id g97mr3746783jai.199.1642334112626;
- Sun, 16 Jan 2022 03:55:12 -0800 (PST)
-Date:   Sun, 16 Jan 2022 03:55:12 -0800
-In-Reply-To: <20220116114236.2135-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000062bd0405d5b1b5ef@google.com>
-Subject: Re: [syzbot] general protection fault in nfc_alloc_send_skb
-From:   syzbot <syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, krzysztof.kozlowski@canonical.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        nixiaoming@huawei.com, paskripkin@gmail.com,
-        syzkaller-bugs@googlegroups.com
+References: <20220113162617.131697-1-manivannan.sadhasivam@linaro.org>
+In-Reply-To: <20220113162617.131697-1-manivannan.sadhasivam@linaro.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sun, 16 Jan 2022 13:02:38 +0100
+Message-ID: <CACRpkdYraGHxYPW5JL49RMg3Wo8wQgRP8d29VYGqHg4Oc=7Lbg@mail.gmail.com>
+Subject: Re: [PATCH] pinctrl: qcom: Return -EINVAL for setting affinity if no
+ IRQ parent
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     bjorn.andersson@linaro.org, dianders@chromium.org,
+        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Thu, Jan 13, 2022 at 5:26 PM Manivannan Sadhasivam
+<manivannan.sadhasivam@linaro.org> wrote:
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+> The MSM GPIO IRQ controller relies on the parent IRQ controller to set the
+> CPU affinity for the IRQ. And this is only valid if there is any wakeup
+> parent available and defined in DT.
+>
+> For the case of no parent IRQ controller defined in DT,
+> msm_gpio_irq_set_affinity() and msm_gpio_irq_set_vcpu_affinity() should
+> return -EINVAL instead of 0 as the affinity can't be set.
+>
+> Otherwise, below warning will be printed by genirq:
+>
+> genirq: irq_chip msmgpio did not update eff. affinity mask of irq 70
+>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Patch applied for v5.18!
 
-Tested on:
-
-commit:         4d66020d Merge tag 'trace-v5.17' of git://git.kernel.o..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a4d92848a46d5895
-dashboard link: https://syzkaller.appspot.com/bug?extid=7f23bcddf626e0593a39
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=11b7cc60700000
-
-Note: testing is done by a robot and is best-effort only.
+Yours,
+Linus Walleij
