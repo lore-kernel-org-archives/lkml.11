@@ -2,102 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A229AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 14:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9091BC43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 14:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235445AbiAPOeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 09:34:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33146 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiAPOef (ORCPT
+        id S235460AbiAPOnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 09:43:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35910 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235447AbiAPOnP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 09:34:35 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14139B80D05;
-        Sun, 16 Jan 2022 14:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FF34C36AE7;
-        Sun, 16 Jan 2022 14:34:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642343672;
-        bh=oCqvjsNEHd9Y5M9rEsW3iU49LfLeq8eNQ8Zn339zLqU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=j58W1h/obVl+IfAzefOxcsNjkMZGG9Dh7jPlmOPhHkz2nq9mysO1oJvaEn9mQkNfj
-         ylI2Advz7kOA48NCzouItB152EWl6E3XY8I5hGqc9jNY/PpeIAqcx0CHKaudy8Pc9Z
-         KJKtfAh1LmpnPXYD7eyVGZCazzJeMzNPV48SLuuZ7ZP8GyLjllSCfApEZnJIrUVVAG
-         S1f34/3bv2CEgtlXTn3BVTEsuvxHkAatjm0N0NqnQaZuMC5Jtss+lTcguvnLE0AIw7
-         zqYC+7leO0dKC6vTQLEwFC88CA/rv+rcZWpfBRSpqQW0M5i6te5pTUTSdeghWOBGFU
-         6J3bPsKGKjbcQ==
-Date:   Sun, 16 Jan 2022 16:34:20 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Tadeusz Struk <tstruk@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>, linux-integrity@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] selftests: tpm: add async space test with
- noneexisting handle
-Message-ID: <YeQs7Fy5NaK6m6Ar@iki.fi>
-References: <20220116012627.2031-1-tstruk@gmail.com>
- <20220116012627.2031-2-tstruk@gmail.com>
+        Sun, 16 Jan 2022 09:43:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642344194;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=4aMSKSVca3eK/QwHqEjdmSijixRqInpTgDhVvW0va+A=;
+        b=QRAejxZjI4aPYqZzCnikeFHnmCBOv8h30AOJNljZO7Hw2n+sNJ4I+5KblcRaImn5W4fm2a
+        MaHm3dmaGxek/KKwSwEtW4TrS6IlYhZi0LHlnX58StF+tp0/YMNfPQ8WuStO+vrz56yyfs
+        h0w37X15MKeeiXR7faa/ES51MrzjyFU=
+Received: from mail-ot1-f72.google.com (mail-ot1-f72.google.com
+ [209.85.210.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-647-wAwzAyM_NqyRSj5c_0GAMQ-1; Sun, 16 Jan 2022 09:43:13 -0500
+X-MC-Unique: wAwzAyM_NqyRSj5c_0GAMQ-1
+Received: by mail-ot1-f72.google.com with SMTP id z33-20020a9d24a4000000b00579320f89ecso4346223ota.12
+        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 06:43:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4aMSKSVca3eK/QwHqEjdmSijixRqInpTgDhVvW0va+A=;
+        b=j3R6aBk5XMtACvOq3CrPPVNOOLPGjurZDdGld9JC59B9HppNQUuAQvVHM48amMWUPK
+         H+LSLFCbKjxqX+NjgYW0DiQFAmjtn3iiCd4/56/J45In++0yjjx1mMpzbbPmoAPvoDlX
+         Z1a6u0U9bO5W8LhZ5wm2VdRjuJhgIuMwHzgnCQF4DieiTQw+foRCHxkTK5yqjYU2XvFa
+         sSpRVywER0IhHc0ajlMaqZ3OYWS2+kMwcTdSjrheI6qsgKdUy/d7Aik+/KN4FabsZrPM
+         sgxDZq5rEMPKDegGox1LJwZXjOkgBfcUEyp3SWToMxvev6T3hyV26dVu7sXlpjaCdRi/
+         PaBA==
+X-Gm-Message-State: AOAM531AKPm7QXP6+gUvpz2SxtD8iwZRaw1eNrPut3N2NPa5yh0w5CFU
+        D8F1JYaOrYiAOV0yTggP3+ZCLEUxH7id16+eV15+6MVgxI08ZvUcWXsU0aEl+H6tcWD1399T+RK
+        mHr4AtxH5LTWj8PPDNBFqbYnD
+X-Received: by 2002:a9d:744b:: with SMTP id p11mr11033528otk.63.1642344192795;
+        Sun, 16 Jan 2022 06:43:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJx26tGb+Mube4WbOUOxEPS24lxlghEKsEQl+/YDScNYF7dZHgpQUo80OY2jcFvotKU3rsfKcQ==
+X-Received: by 2002:a9d:744b:: with SMTP id p11mr11033516otk.63.1642344192642;
+        Sun, 16 Jan 2022 06:43:12 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id w19sm4958027oiw.29.2022.01.16.06.43.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 Jan 2022 06:43:12 -0800 (PST)
+From:   trix@redhat.com
+To:     trond.myklebust@hammerspace.com, anna.schumaker@netapp.com
+Cc:     linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] NFS: simplify check for freeing cn_resp
+Date:   Sun, 16 Jan 2022 06:43:01 -0800
+Message-Id: <20220116144301.399581-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220116012627.2031-2-tstruk@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 05:26:27PM -0800, Tadeusz Struk wrote:
-> Add a test for /dev/tpmrm0 in async mode that checks if
-> the code handles invalid handles correctly.
-> 
-> Cc: Jarkko Sakkinen <jarkko@kernel.org>
-> Cc: Shuah Khan <shuah@kernel.org>
-> Cc: <linux-integrity@vger.kernel.org>
-> Cc: <linux-kselftest@vger.kernel.org>
-> Cc: <linux-kernel@vger.kernel.org>
-> 
-> Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
-> Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
-> ---
-> Changed in v2:
-> - Updated commit message
-> Changed in v3:
-> - Fixed typo in the function name
-> ---
->  tools/testing/selftests/tpm2/tpm2_tests.py | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/tpm2/tpm2_tests.py b/tools/testing/selftests/tpm2/tpm2_tests.py
-> index 9d764306887b..340ffef97fb6 100644
-> --- a/tools/testing/selftests/tpm2/tpm2_tests.py
-> +++ b/tools/testing/selftests/tpm2/tpm2_tests.py
-> @@ -302,3 +302,19 @@ class AsyncTest(unittest.TestCase):
->          log.debug("Calling get_cap in a NON_BLOCKING mode")
->          async_client.get_cap(tpm2.TPM2_CAP_HANDLES, tpm2.HR_LOADED_SESSION)
->          async_client.close()
-> +
-> +    def test_flush_invalid_context(self):
-> +        log = logging.getLogger(__name__)
-> +        log.debug(sys._getframe().f_code.co_name)
-> +
-> +        async_client = tpm2.Client(tpm2.Client.FLAG_SPACE | tpm2.Client.FLAG_NONBLOCK)
-> +        log.debug("Calling flush_context passing in an invalid handle ")
-> +        handle = 0x80123456
-> +        rc = 0
-> +        try:
-> +            async_client.flush_context(handle)
-> +        except OSError as e:
-> +            rc = e.errno
-> +
-> +        self.assertEqual(rc, 22)
-> +        async_client.close()
-> -- 
-> 2.30.2
-> 
+From: Tom Rix <trix@redhat.com>
 
-Thank you.
+nfs42_files_from_same_server() is called to check if freeing
+cn_resp is required.  Instead of calling a function, check
+the pointer.
 
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ fs/nfs/nfs4file.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-BR, Jarkko
+diff --git a/fs/nfs/nfs4file.c b/fs/nfs/nfs4file.c
+index e79ae4cbc395e..677631ea4cfb3 100644
+--- a/fs/nfs/nfs4file.c
++++ b/fs/nfs/nfs4file.c
+@@ -180,7 +180,7 @@ static ssize_t __nfs4_copy_file_range(struct file *file_in, loff_t pos_in,
+ 	ret = nfs42_proc_copy(file_in, pos_in, file_out, pos_out, count,
+ 				nss, cnrs, sync);
+ out:
+-	if (!nfs42_files_from_same_server(file_in, file_out))
++	if (cn_resp)
+ 		kfree(cn_resp);
+ 	if (ret == -EAGAIN)
+ 		goto retry;
+-- 
+2.26.3
+
