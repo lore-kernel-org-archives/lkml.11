@@ -2,83 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 943DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 21:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 036FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 21:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236221AbiAPVic (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 16:38:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233715AbiAPVi3 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 16:38:29 -0500
-Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADFA9C061574
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 13:38:29 -0800 (PST)
-Received: by mail-oi1-x233.google.com with SMTP id t9so20831939oie.12
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 13:38:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HR3K23prsUMyCbrYWQNTlRCKaozXns392za1xGffNJE=;
-        b=PTHBntgNGcGtWqPyxE+jOxDaAOgIU1CCwc/x1QaLJzZTV6FEBjdXStTwqKGbaEaYhG
-         mQO0wuQgpopoZtaDw2iBlltBJUORg8pOj9HZFBKhbMd+wZ9UV6fM+ixKICzz5P7rpacO
-         7tjv0XHvP+zuM8nq1+JtNz0LZZUBMBuJeNAtwLef2i+Tow+kHGFjzOtdB9itBx9PNvbT
-         KH+md7dVrwj5mLisM6UK7NnzFd78TyeOsPop5ZbQqA5bealuon23ZOdWg9C6Z656L8b/
-         xrY3FlQkm16UNgKCX/Hno4CicAOkjMMkkz/xDWdQo1eurfJOeqiAMCxsEYLYrRKCNPkj
-         RNNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HR3K23prsUMyCbrYWQNTlRCKaozXns392za1xGffNJE=;
-        b=7CEcjWnDYzKWYPHkUt0Nm30cZNXHEp83+ju+5qjnhnHqhVX44pm2vm+0Bvxg64ivUd
-         O9KAroB05yLcpeWmwqZDz89At3MLzKLqBGjGG75XBMYlz3sRMzqas/oH5kagJErWG959
-         ItAUgQwjbehp7ePLdVxOKleEHQG8TNPy5JcbpOo9s+xhcaMlfvfEK1f+DoVhFmzmQ3oJ
-         sa0IkWVyzGqas6CRcw7+jRN3/D6fzgzGr2/3V0VQPEXgIuX+XbjjYm4FXgfZM75VQhkz
-         GvXPONAWXoCRyCD+bmvid/7x0yGN87lLxvZDr5EsKF1/O9sfoLqbiAldc8X7bbiSjaet
-         7X5Q==
-X-Gm-Message-State: AOAM532St59dFImGtUY9zvnCjNq8frdUQUE9wvpp/Rk7a507WidSpqZh
-        IT0gpBuxc6G+KmpRpRyXD0a2eLdYKt7VZ+09iyVhUQ==
-X-Google-Smtp-Source: ABdhPJzgjCBYMq6KY6MkbuygV1J/mBuVzD/YEm2ImA0kCK4gMfbXNFUBiT9ygVZV6q2XvrLyOHltZrObbbdPpw17Vxg=
-X-Received: by 2002:a05:6808:2097:: with SMTP id s23mr10857559oiw.132.1642369108822;
- Sun, 16 Jan 2022 13:38:28 -0800 (PST)
+        id S236243AbiAPVjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 16:39:35 -0500
+Received: from rere.qmqm.pl ([91.227.64.183]:60523 "EHLO rere.qmqm.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233393AbiAPVje (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 16:39:34 -0500
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JcT2X3ZKWz31;
+        Sun, 16 Jan 2022 22:39:32 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1642369172; bh=u+UfWKb8KYuJdL+sC8wfN61AcZxiVf25ra0DbCQHGEg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Kp74/vbQCq7OxDsx336Up7mhZNmT4LazgovEmbiUqrzOpblmG/1hcnbfVRnE/jo0E
+         iw6ggIfhSRemUdA5cgjaYXndEiOjEamZ4r5iYrFUztfiWl1d5RE/niT7Tgxf7KMRq6
+         bLuaq4l+zSkBxD+vA/17G057XUFaDWPptT6L2qgLjHs0kNGf84iGp6rcrKSrC3Ivjb
+         Jb/g2Zq//79uDEHZTqaQS9xZv3ks6/pIhZtk3yL2o3CB2W0umh6fpc7tFW99ax6fBx
+         crj1aFmycL9kScNOZA+920gHK+rZ2Z5GaJ8rTNGHqMvxstpQIFwGsaazlcFSR+LBr4
+         OCPRtnKELtryg==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.4 at mail
+Date:   Sun, 16 Jan 2022 22:39:27 +0100
+From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Jonathan Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 0/2] i2c: tegra: allow compiling out support for Tegra's
+ special constrollers
+Message-ID: <YeSQj/f94IH4SAQ/@qmqm.qmqm.pl>
+References: <cover.1642348712.git.mirq-linux@rere.qmqm.pl>
+ <ea9ab0b7-022b-93e2-ed7d-dccfa95bd900@gmail.com>
+ <YeRd90gLqtsz2zVV@qmqm.qmqm.pl>
+ <e7a9a48b-e924-9e14-a4ff-b13853c5033e@gmail.com>
 MIME-Version: 1.0
-References: <20220111201426.326777-1-krzysztof.kozlowski@canonical.com>
- <20220111201722.327219-18-krzysztof.kozlowski@canonical.com>
- <CACRpkdYTXSOW+sOX3wVtF4jj6xm0jr-F3HKQPGHOdAVjbasP3A@mail.gmail.com> <5047da7c-d3a6-5472-b0ca-7ed3dbe8a5fe@canonical.com>
-In-Reply-To: <5047da7c-d3a6-5472-b0ca-7ed3dbe8a5fe@canonical.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 16 Jan 2022 22:38:16 +0100
-Message-ID: <CACRpkdbhmJ91EW395C5F2WYjWJQdJ-SBHaDm7XnQsxMuyoMmLg@mail.gmail.com>
-Subject: Re: [PATCH v2 24/28] dt-bindings: pinctrl: samsung: convert to dtschema
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Alim Akhtar <alim.akhtar@gmail.com>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e7a9a48b-e924-9e14-a4ff-b13853c5033e@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 6:10 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@canonical.com> wrote:
+On Sun, Jan 16, 2022 at 09:34:42PM +0300, Dmitry Osipenko wrote:
+> 16.01.2022 21:03, Michał Mirosław пишет:
+> > On Sun, Jan 16, 2022 at 08:54:08PM +0300, Dmitry Osipenko wrote:
+> >> 16.01.2022 19:02, Michał Mirosław пишет:
+> >>> To patches that, combined, reduce I2C driver's code by ~2kB and a bit
+> >>> from runtime overhead for non-Tegra20 or non-Tegra210 builds.
+> >>>
+> >>> Michał Mirosław (2):
+> >>>   i2c: tegra: allow DVC support to be compiled out
+> >>>   i2c: tegra: allow VI support to be compiled out
+> >>>
+> >>>  drivers/i2c/busses/Kconfig     | 16 ++++++++++++++++
+> >>>  drivers/i2c/busses/i2c-tegra.c | 35 +++++++++++++++++++++-------------
+> >>>  2 files changed, 38 insertions(+), 13 deletions(-)
+> >>>
+> >>
+> >> 2KB is a too small difference to justify the ifdefs and Kconfig entries,
+> >> IMO.
+> > 
+> > Maybe I should have mentioned that it's ~20%? With my "embedded" hat on:
+> > I think it might be small, but sometimes it is the difference between
+> > bootable kernel or one too big.
+> 
+> 10KB is a small size too. I'm very doubtful that such changes make any
+> real difference in practice.
+> 
+> Much more practical should be to modularize more kernel code. You should
+> be able to squeeze zImage down to 3MB without any code changes by
+> toggling more kernel config options to =m. Try to use grate_defconfig
+> [1] for the base, that is what postmarketOS kernel build uses.
 
-> Anyway DTS and dtschema will have to wait for one release, because they
-> depend on samsung pinctrl driver change (patch #2).
+For normal system this solution is workable. But for recovery, where you
+have to fit kernel+initrd in whatever small partition is provided (like
+eg. in Transformers 8MiB), it becomes a problem from time to time.
+(In this case, modules make it worse due to additional overhead in
+kernel and userspace).
 
-What about I put that (and maybe this schema) on an immutable
-branch so you can pull the commit into your for-arm-soc branch and
-put the DTS changes on top?
-
-Yours,
-Linus Walleij
+Best Regards
+Michał Mirosław
