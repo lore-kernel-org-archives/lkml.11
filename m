@@ -2,79 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E87C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 07:36:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D46C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 07:43:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234526AbiAPHgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 02:36:22 -0500
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:12706 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234512AbiAPHgU (ORCPT
+        id S234584AbiAPHn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 02:43:57 -0500
+Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:46159 "EHLO
+        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234559AbiAPHny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 02:36:20 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R661e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xueshuai@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V1wSe6h_1642318566;
-Received: from localhost.localdomain(mailfrom:xueshuai@linux.alibaba.com fp:SMTPD_---0V1wSe6h_1642318566)
+        Sun, 16 Jan 2022 02:43:54 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V1wFlz1_1642319022;
+Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1wFlz1_1642319022)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 16 Jan 2022 15:36:07 +0800
-From:   Shuai Xue <xueshuai@linux.alibaba.com>
-To:     bp@alien8.de, rric@kernel.org
-Cc:     mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        ardb@kernel.org, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-efi@vger.kernel.org,
-        xueshuai@linux.alibaba.com, zhangliguang@linux.alibaba.com,
-        zhuo.song@linux.alibaba.com
-Subject: [PATCH v3 0/2] EDAC/ghes: refactor memory error reporting to avoid
-Date:   Sun, 16 Jan 2022 15:36:01 +0800
-Message-Id: <20220116073603.11517-1-xueshuai@linux.alibaba.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
-References: <20211210134019.28536-1-xueshuai@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+          Sun, 16 Jan 2022 15:43:52 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     dust.li@linux.alibaba.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net v2] net/smc: Fix hung_task when removing SMC-R devices
+Date:   Sun, 16 Jan 2022 15:43:42 +0800
+Message-Id: <1642319022-99525-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ghes_edac_report_mem_error() in ghes_edac.c is a Long Method and have
-Duplicated Code with cper_mem_err_location(), cper_dimm_err_location(), and
-cper_mem_err_type_str() in drivers/firmware/efi/cper.c. In addition, the
-cper_print_mem() in drivers/firmware/efi/cper.c only reports the error status
-and misses its description.
+A hung_task is observed when removing SMC-R devices. Suppose that
+a link group has two active links(lnk_A, lnk_B) associated with two
+different SMC-R devices(dev_A, dev_B). When dev_A is removed, the
+link group will be removed from smc_lgr_list and added into
+lgr_linkdown_list. lnk_A will be cleared and smcibdev(A)->lnk_cnt
+will reach to zero. However, when dev_B is removed then, the link
+group can't be found in smc_lgr_list and lnk_B won't be cleared,
+making smcibdev->lnk_cnt never reaches zero, which causes a hung_task.
 
-This patch set is to refactor ghes_edac_report_mem_error with:
+This patch fixes this issue by restoring the implementation of
+smc_smcr_terminate_all() to what it was before commit 349d43127dac
+("net/smc: fix kernel panic caused by race of smc_sock"). The original
+implementation also satisfies the intention that make sure QP destroy
+earlier than CQ destroy because we will always wait for smcibdev->lnk_cnt
+reaches zero, which guarantees QP has been destroyed.
 
-- Patch 01 is to wrap up error status decoding logics and reuse it in
-    cper_print_mem().
-- Patch 02 is to introduces cper_*(), into ghes_edac_report_mem_error(),
-  this can avoid bunch of duplicate code lines;
+Fixes: 349d43127dac ("net/smc: fix kernel panic caused by race of smc_sock")
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+---
+v1 -> v2:
+- Remove some comments.
+---
+ net/smc/smc_core.c | 17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
 
-
-Changes since v2:
-
-- delete the unified patch
-- adjust the order of patches
-- Link: https://lore.kernel.org/all/20211210134019.28536-1-xueshuai@linux.alibaba.com/
-- Thanks Borislav Petkov for review comments.
-
-Changes since v1:
-
-- add a new patch to unify ghes and cper before removing duplication.
-- document the changes in patch description
-- add EXPORT_SYMBOL_GPL()s for cper_*()
-- document and the dependency and add UEFI_CPER dependency explicitly
-- Link: https://lore.kernel.org/all/20211207031905.61906-2-xueshuai@linux.alibaba.com/
-- Thanks Robert Richter for review comments.
-
-Shuai Xue (2):
-  efi/cper: add cper_mem_err_status_str to decode error description
-  EDAC/ghes: use cper functions to avoid code duplication
-
- drivers/edac/Kconfig        |   1 +
- drivers/edac/ghes_edac.c    | 196 +++++++-----------------------------
- drivers/firmware/efi/cper.c |  82 +++++++++++----
- include/linux/cper.h        |   3 +
- 4 files changed, 102 insertions(+), 180 deletions(-)
-
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index b19c0aa..5fc84f0 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1524,16 +1524,11 @@ void smc_smcd_terminate_all(struct smcd_dev *smcd)
+ /* Called when an SMCR device is removed or the smc module is unloaded.
+  * If smcibdev is given, all SMCR link groups using this device are terminated.
+  * If smcibdev is NULL, all SMCR link groups are terminated.
+- *
+- * We must wait here for QPs been destroyed before we destroy the CQs,
+- * or we won't received any CQEs and cdc_pend_tx_wr cannot reach 0 thus
+- * smc_sock cannot be released.
+  */
+ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
+ {
+ 	struct smc_link_group *lgr, *lg;
+ 	LIST_HEAD(lgr_free_list);
+-	LIST_HEAD(lgr_linkdown_list);
+ 	int i;
+ 
+ 	spin_lock_bh(&smc_lgr_list.lock);
+@@ -1545,7 +1540,7 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
+ 		list_for_each_entry_safe(lgr, lg, &smc_lgr_list.list, list) {
+ 			for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+ 				if (lgr->lnk[i].smcibdev == smcibdev)
+-					list_move_tail(&lgr->list, &lgr_linkdown_list);
++					smcr_link_down_cond_sched(&lgr->lnk[i]);
+ 			}
+ 		}
+ 	}
+@@ -1557,16 +1552,6 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
+ 		__smc_lgr_terminate(lgr, false);
+ 	}
+ 
+-	list_for_each_entry_safe(lgr, lg, &lgr_linkdown_list, list) {
+-		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+-			if (lgr->lnk[i].smcibdev == smcibdev) {
+-				mutex_lock(&lgr->llc_conf_mutex);
+-				smcr_link_down_cond(&lgr->lnk[i]);
+-				mutex_unlock(&lgr->llc_conf_mutex);
+-			}
+-		}
+-	}
+-
+ 	if (smcibdev) {
+ 		if (atomic_read(&smcibdev->lnk_cnt))
+ 			wait_event(smcibdev->lnks_deleted,
 -- 
-2.20.1.12.g72788fdb
+1.8.3.1
 
