@@ -2,80 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75435C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 00:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC30C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 01:03:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234022AbiAPA65 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 19:58:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53464 "EHLO
+        id S234028AbiAPBDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 20:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234013AbiAPA64 (ORCPT
+        with ESMTP id S232746AbiAPBDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 19:58:56 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA414C06173E
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 16:58:55 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id t9so18023766oie.12
-        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 16:58:55 -0800 (PST)
+        Sat, 15 Jan 2022 20:03:30 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E77C061574
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 17:03:30 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id r138so18111842oie.3
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 17:03:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3Zbir2HQFQZdW9Tmc/FhUTrgl/itixs+HF0NKBgjfVc=;
-        b=Yh0vPDd1G6keQC/FJtF4agKsRM/U93onYrsMyZG2hqH4zxiYv8BwcyI2njKr6aFPMB
-         iCqLfls8da11QehL5xhjaZRimYnfreZ/848FN6buJv6vnAUW8BBHYWW0tHRCTb+DqBpp
-         AQad/LL9E2wlF6MLj9SmH9rh2W96loC1zXRyVTSoJ/a1Rer3usmihSpx+/G1DHnMUsCW
-         bdjgrGTE8033EaBQecjg1vG0sBJVERrEnV69ZipfazKz5cdIioboi42YAy4aKi9wTLjY
-         SH4HggOONaq8/vGf6WlM3wIqq/5XJLlWaRyz1SYJwEmlBJ/rJp/cZ8jV4Nm9AE5szaek
-         uWTg==
+        bh=POoT8lZwdwkVxbrtnXG/2kZ2LyDCImg/KhYjt8hMGj4=;
+        b=ImMWHs/t2csAyPe/7X6ixftncpaVAciibtgZoT/rplnNeX4Pfltee6fYOFiHBLes6E
+         Bxaou6H9Ak5cSokDSdrfZHw3q2tK4NZba9WZ+yuPgrTtSJx7lpurwM8itnWrk0VJbwAL
+         EOtl0Tp4XfO+OCNaKmi6ngD/rysN/lYGD18Y1TmDWOxjztOjzjiVkYRpdxap+ERJgZB8
+         cWNZ8v0kxr3J2/iwIxS8zP0O34lynqLcFYjDLuCJckQgy5wUCfuEQQvxw+l2K9nE7RnN
+         2ZYM38ba6i14Qh1Ab458gzBjPL9lOgqJK3/TMcJaKltrV+jh4UX9j68lmfJ2rHlEWGJ7
+         eQgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3Zbir2HQFQZdW9Tmc/FhUTrgl/itixs+HF0NKBgjfVc=;
-        b=hw6s48MP48pFShoomdSNGirZkDosncFteItGjYmJsae+S0CxWkQoCPcYfjf0PVyAbu
-         lO/3xX/TDveVqNkhLBxq/QJLaqhGSmpGV3pVqRzYOEc8r9MPAfdXcnoS3VrRwFyOt3vp
-         68dUytv2nUDMJcTPwq+f23J+6DJzoubTlqAhvY/q+t1lGoPUE9TnFAiHN/yHuCL67pLV
-         XpdQaNKQVkRR0CgWtfrHdYqgFgN7ga4Vr4jpHWY+u9UyLXWFKDZJmnIuyMkhZs3/OJbp
-         6ZBqrDL/k58qyvUldbs/OHC8aUptLTzwAU/eLPSCeZcq0QSX6hZYfE40LMrrnyaOsqRj
-         s3fg==
-X-Gm-Message-State: AOAM530Arud8Z199H7z3TMQjL8biKKI3K7Fodzy8nSQnyKIOPC6u5z0O
-        PZvLx5u5fhAQjW543uDGfX1VSZ3BDLJ/NVOH0nRgyQ==
-X-Google-Smtp-Source: ABdhPJxWMRX3TsxnLYFJRGSaSneOnzs9jAel1b3dZQqFej3Jh5BIbaG7pKz3veRZwsjhuRLRjjczmU3tGMJEt2q+IJ4=
-X-Received: by 2002:a05:6808:2097:: with SMTP id s23mr8350127oiw.132.1642294735018;
- Sat, 15 Jan 2022 16:58:55 -0800 (PST)
+        bh=POoT8lZwdwkVxbrtnXG/2kZ2LyDCImg/KhYjt8hMGj4=;
+        b=gJhTWVssR3+XmkkG9knDK2pvuVC+LnO5b7OnmG9sdLdf00eQ5Kk36Qpp94xOJrJp8N
+         iJFS7PMC5SGDbZau4YC9+PMJqB372bbMAGrJt+ynK4sNHfB+x522/ZxzGOrOoJYLIHzW
+         hKph+q7oZwhQKV0TREsu/2CozSCqgTA8wFhx7wMCZMm9L8AaM5mDRF/cZWC+W3zw7J3V
+         0rQKbKsHZbVrrqtZRoAFeChCZQZYWrrDDCT1bjN5uUSsgciLsIY4vNILdrhm+eQPPtIc
+         G4rqsVv4peGoT51uQtrU+Rro409Ig4tP4dVBMZy4j2xb3uw7s1jEuguMfZYBVkwi2iAn
+         1eDQ==
+X-Gm-Message-State: AOAM531DUYYOKSLSBrTSbvDiMQfh7Qko/QiT10kmGklpWmKji6YQEOn6
+        ahs5Dlnj4T/pq5DaKfJSODEdGgHmXNO/QTybWfAR6g==
+X-Google-Smtp-Source: ABdhPJwafqmBY0WphS0TwqHoMtj+/tWMv898aZCQzPJBVKAu0PbBomZDNH+c2p3i/XuChSguAPuDYyYNS0Ri078n69I=
+X-Received: by 2002:a05:6808:2097:: with SMTP id s23mr8359331oiw.132.1642295009533;
+ Sat, 15 Jan 2022 17:03:29 -0800 (PST)
 MIME-Version: 1.0
-References: <20220111140519.1.Ie2662d6289af1e9758b14b37149703c846d5f509@changeid>
-In-Reply-To: <20220111140519.1.Ie2662d6289af1e9758b14b37149703c846d5f509@changeid>
+References: <20220103154616.308376-1-gary.bisson@boundarydevices.com> <20220103154616.308376-2-gary.bisson@boundarydevices.com>
+In-Reply-To: <20220103154616.308376-2-gary.bisson@boundarydevices.com>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sun, 16 Jan 2022 01:58:43 +0100
-Message-ID: <CACRpkdZ=dNw19Qx4C5w59hxTuOx7O7x9Dw+5wxSTc99WxPRO8g@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: pinctrl: drive-strength doesn't default to 2
- if unspecified
-To:     Douglas Anderson <dianders@chromium.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 16 Jan 2022 02:03:18 +0100
+Message-ID: <CACRpkdZRL8VuY5K_d69VHE6eXCmUb18ZRs5v9shExe4ipmw90Q@mail.gmail.com>
+Subject: Re: [PATCH 1/3] pinctrl: meson-g12a: add more pwm_f options
+To:     Gary Bisson <gary.bisson@boundarydevices.com>
+Cc:     linux-amlogic@lists.infradead.org,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 11:05 PM Douglas Anderson <dianders@chromium.org> wrote:
+On Mon, Jan 3, 2022 at 4:46 PM Gary Bisson
+<gary.bisson@boundarydevices.com> wrote:
 
-> If the drive-strength isn't specified in the device tree then it
-> doesn't actually default to 2. Instead, it defaults to whatever the
-> heck the BIOS left it at. If the BIOS doesn't touch it then that means
-> it's whatever the heck the initial state of the pin was when the SoC
-> booted.
+> Add missing PWM_F pin muxing for GPIOA_11 and GPIOZ_12.
 >
-> Reported-by: Matthias Kaehlcke <mka@chromium.org>
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> Signed-off-by: Gary Bisson <gary.bisson@boundarydevices.com>
 
-Patch applied.
+This patch 1/3 applied for v5.18.
 
 Yours,
 Linus Walleij
