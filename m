@@ -2,343 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5714CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 21:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 176B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 21:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236261AbiAPVjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 16:39:41 -0500
-Received: from polaris.svanheule.net ([84.16.241.116]:33536 "EHLO
-        polaris.svanheule.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236246AbiAPVjh (ORCPT
+        id S236280AbiAPVkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 16:40:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236244AbiAPVkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 16:39:37 -0500
-Received: from terra.local.svanheule.net (unknown [IPv6:2a02:a03f:eafe:c901:fcd:c16e:b544:6e84])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 020C6292935;
-        Sun, 16 Jan 2022 22:39:34 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1642369175;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJMFMn9s8STk4S2DCf6Twl2pp/xi4XwXH5qJ+uvsl0M=;
-        b=Kvf9zld2ZmCwotIqDmyuYd0GPaiBdpNFB8kMyc5zGkb+Fn1K4kclZkOhwX029vGwLVjsLM
-        Nqr5ntpe9Nho0E3Wo04LnJULb1PEryDpyGzLinOiALQlLYsuwDgSEXU6JLxZ2bclY/GcaO
-        iW0gSOM5i/1/1PzFSw9wUnsCRd1jQm4+wjFkGfy1FhSLhvSwFhYzXehAdVDNZQ3L5B2X/z
-        YdcsuXzVJcX7kp268/SNaIGR/qdUPxRD8SY7WmQ3R+6YoAHZmMZgsQlCrFLOqKW27dza4O
-        wdl4BwLfWPK0ZHOd9DqCNnYi3Mm+jhfqmG/KqoUy5XzdY6rfyhU1a6DhJ2vLUg==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH 2/2] clocksource/drivers: Add Realtek Otto timer driver
-Date:   Sun, 16 Jan 2022 22:39:25 +0100
-Message-Id: <2fb4aa29e8c581f5c7e97ab7678ccb34e99e5c6e.1642369117.git.sander@svanheule.net>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1642369117.git.sander@svanheule.net>
-References: <cover.1642369117.git.sander@svanheule.net>
+        Sun, 16 Jan 2022 16:40:19 -0500
+Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28892C061574;
+        Sun, 16 Jan 2022 13:40:19 -0800 (PST)
+Received: by mail-ua1-x934.google.com with SMTP id 2so2363753uax.10;
+        Sun, 16 Jan 2022 13:40:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gROzuvikK/ATevyfDAedkxS79wFmYsKPnU3R6nd8i+I=;
+        b=BXcT789/tu+tczHDLdb5Blg5wGUleoD63VXRwpeK8lXkexvxLVXgJ5nTLBqLiP1oF/
+         zvq7mNbpnfllyyC1iA5WmwvJuoM0C4RRkW9jzTGpJ2tOrPqBUcET7LpUlAf+IrOjkAK1
+         u1BA/50FPNueazKNYQ1OG1/nh5ARYSbftU2bf59UYotJDhVf8IGSizIMrGVn+ZEfiGuv
+         iTJYbYsRxX4CcKwUuAhghckmkTsOtYJsvHgd8mep55GbhTsCk2JpekFJR64j4Huhl5TC
+         s3pk+llKXWcAsPH189LxijCTL7HZglzjROcyQnkWuKNRoA+rMvJyd2KkbDlrXo9If9JC
+         i5+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gROzuvikK/ATevyfDAedkxS79wFmYsKPnU3R6nd8i+I=;
+        b=e7abSES3bH7iOpEHNceWO5CoGAfJHArL2ZzxXvv+idASFYCEyXMFdn0AxHYGlJ5M/+
+         ri+M/SA9HzPRPnC3GdEBzt7H9BFs45Q3/dtNFJm7P5Nr+QcYkwO0tg3R/2vxThizX7Og
+         1TBkUCcSRbPievzkElUPREUrV95k4tMqwJhHyocGjegOrbsdX2nYPr7jGArZSGE/bk84
+         n1x1oNw9GHjQMZZBKs2gj9hAucunzNLqy/jhOf72fKfmJ3dyn2+ArxxzOaGDMHHRErb2
+         Bc9rSfhUiYbv8sP4LC/96MBbzt/+Ffx4KZwt/Y/Ke0ilakRbDRR7v715E2lFhG7NyWQB
+         ONsA==
+X-Gm-Message-State: AOAM531VwrO1h6PZ+JzIf13jBOd9k3wfFp+ePJoRmWqPVRMSJG7WlemT
+        /huIDopQT6aEeQqva69DgkaTfpoOfW0h2xCVNxEt1uWRx5M=
+X-Google-Smtp-Source: ABdhPJxa15rUV4bT1t1aGIRE+kfsOmxmT1MgdJUAtCHwT44yTHf025+0RYwnZMRunF+WB1eP/8koPfHKNOT3n6Vs8+4=
+X-Received: by 2002:a67:d51b:: with SMTP id l27mr6164960vsj.23.1642369218144;
+ Sun, 16 Jan 2022 13:40:18 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210419212525.12894-1-ljp@linux.ibm.com> <161887560929.13803.2397044457894925895.git-patchwork-notify@kernel.org>
+ <CAOhMmr7MSQvHkFucvF-5fvNsm7PCJt_UVEjhuTvSnjHOypvh1g@mail.gmail.com> <CA+pv=HMqeEUnCs3waDKitgmRn=xXX-_AFAOY2ve1zVqQtX0sag@mail.gmail.com>
+In-Reply-To: <CA+pv=HMqeEUnCs3waDKitgmRn=xXX-_AFAOY2ve1zVqQtX0sag@mail.gmail.com>
+From:   Lijun Pan <lijunp213@gmail.com>
+Date:   Sun, 16 Jan 2022 15:40:07 -0600
+Message-ID: <CAOhMmr7nR---CWzemaytXDb0jWLFembf5xWkjJsPLuCgkg=czA@mail.gmail.com>
+Subject: Re: [PATCH net] MAINTAINERS: update
+To:     Slade Watkins <slade@sladewatkins.com>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Driver to provide initial support for the timer/counter blocks found on
-Realtek Otto MIPS SoCs.
+On Thu, Dec 23, 2021 at 11:26 PM Slade Watkins <slade@sladewatkins.com> wro=
+te:
+>
+> On Fri, Dec 24, 2021 at 12:19 AM Lijun Pan <lijunp213@gmail.com> wrote:
+> >
+> > On Mon, Apr 19, 2021 at 6:40 PM <patchwork-bot+netdevbpf@kernel.org> wr=
+ote:
+> > >
+> > > Hello:
+> > >
+> > > This patch was applied to netdev/net.git (refs/heads/master):
+> > >
+> > > On Mon, 19 Apr 2021 16:25:25 -0500 you wrote:
+> > > > I am making this change again since I received the following instru=
+ction.
+> > > >
+> > > > "As an IBM employee, you are not allowed to use your gmail account =
+to work
+> > > > in any way on VNIC. You are not allowed to use your personal email =
+account
+> > > > as a "hobby". You are an IBM employee 100% of the time.
+> > > > Please remove yourself completely from the maintainers file.
+> > > > I grant you a 1 time exception on contributions to VNIC to make thi=
+s
+> > > > change."
+> > > >
+> > > > [...]
+> > >
+> > > Here is the summary with links:
+> > >   - [net] MAINTAINERS: update
+> > >     https://git.kernel.org/netdev/net/c/4acd47644ef1
+> >
+> >
+> > In the past 8 months I have received many emails from you, asking me
+> > about my current status. I am sorry that I did not have a chance to
+> > answer all of them.
+> >
+> > The most questions being asked were =E2=80=9CAre you still with IBM? Di=
+d they
+> > restore you to the previous job?=E2=80=9D. I think I can answer these
+> > questions now. I am not with IBM anymore. I was terminated this month.
+> > I wasn=E2=80=99t able to work on ibmvnic since June, even as a hobby, w=
+hich
+> > you can figure out from the mailing list traffic. The last 8 months
+> > was tough for me. But I am very thankful to all of you for your
+> > kindness and support.
+>
+> hi Lijun,
+> just wanted to pop in for a sec.
+>
+> I am so sorry to hear about this and I sincerely hope that you are
+> doing better now.
+>
+> >
+> > I will be celebrating the holiday with my family for the rest of the
+> > year. I would be happy to find something worth my time (vs. arguing
+> > about the open source way of doing things with an entity). I would
+> > rather just have a break and relax myself than do something completely
+> > mundane for another company. Thank you in advance for any connections,
+> > advice or opportunities that you can offer.
+>
+> please do! relax and don't burn yourself out. everything will be okay wit=
+h time!
+>
+> Merry Christmas and happy holidays to you, and your family! :)
+>
+> best,
+> slade
 
-This implementation hard enables the derived clock with a divisor of 2,
-to obtain the highest possible timer resolution. A real derived and
-reconfigurable timer clock can be implemented later, should the need
-arise for longer timeouts.
+Thanks for so many of you supporting me and giving me advice during
+the holiday season. I would like to share with you one piece of good
+news, that is my unemployment benefits was approved by the Texas
+Government. It was no easy job since I was fired. And usually a fired
+worker does not get unemployment benefits. The reason for the decision
+from the Texas Government is crystal clear =E2=80=9COur investigation found
+that your employer fired you for a reason that was not misconduct
+connected with the work.=E2=80=9D.[1] If it was not misconduct, what was th=
+e
+reason? You can figure it out.
 
-Since this platform has other clocksources (CSRC_R4K or MIPS GIC), the
-timers are only added as clockevent devices.
+This company plays the =E2=80=9Cat will=E2=80=9D game to the extreme extent=
+.[2] By
+firing me before Dec 15, it does not need to match my whole year=E2=80=99s =
+6%
+401K,[3] it does not need to pay for the rest 2 weeks of December,
+when workers are usually laid back and enjoy the holidays. And of
+course the company knows I have a 1-year-old child to support, lacking
+unemployment benefits would be a disaster to my family. What a company
+it is!
 
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
----
- MAINTAINERS                              |   6 +
- drivers/clocksource/Kconfig              |   8 +
- drivers/clocksource/Makefile             |   1 +
- drivers/clocksource/timer-realtek-otto.c | 216 +++++++++++++++++++++++
- 4 files changed, 231 insertions(+)
- create mode 100644 drivers/clocksource/timer-realtek-otto.c
+I hope, by sharing my own experience with you, it will help when you
+pick an offer in the future.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6d9dafd09de0..ad7c9b10fcd8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16342,6 +16342,12 @@ S:	Maintained
- F:	include/sound/rt*.h
- F:	sound/soc/codecs/rt*
- 
-+REALTEK OTTO TIMER
-+M:	Sander Vanheule <sander@svanheule.net>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/timer/realtek,otto-tc.yaml
-+F:	drivers/clocksource/timer-realtek-otto.c
-+
- REALTEK OTTO WATCHDOG
- M:	Sander Vanheule <sander@svanheule.net>
- L:	linux-watchdog@vger.kernel.org
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index cfb8ea0df3b1..03557568182d 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -84,6 +84,14 @@ config IXP4XX_TIMER
- 	help
- 	  Enables support for the Intel XScale IXP4xx SoC timer.
- 
-+config REALTEK_OTTO_TIMER
-+	bool "Realtek Otto timer driver"
-+	depends on MACH_REALTEK_RTL || COMPILE_TEST
-+	select TIMER_OF
-+	help
-+	  Enables support for the timer/counter found on Realtek's networking
-+	  SoC series RTL838x, RTL839x, RTL930x, RTL931x.
-+
- config ROCKCHIP_TIMER
- 	bool "Rockchip timer driver" if COMPILE_TEST
- 	depends on ARM || ARM64
-diff --git a/drivers/clocksource/Makefile b/drivers/clocksource/Makefile
-index fa5f624eadb6..43c792e4a574 100644
---- a/drivers/clocksource/Makefile
-+++ b/drivers/clocksource/Makefile
-@@ -23,6 +23,7 @@ obj-$(CONFIG_DW_APB_TIMER)	+= dw_apb_timer.o
- obj-$(CONFIG_DW_APB_TIMER_OF)	+= dw_apb_timer_of.o
- obj-$(CONFIG_FTTMR010_TIMER)	+= timer-fttmr010.o
- obj-$(CONFIG_IXP4XX_TIMER)	+= timer-ixp4xx.o
-+obj-$(CONFIG_REALTEK_OTTO_TIMER)      += timer-realtek-otto.o
- obj-$(CONFIG_ROCKCHIP_TIMER)      += timer-rockchip.o
- obj-$(CONFIG_CLKSRC_NOMADIK_MTU)	+= nomadik-mtu.o
- obj-$(CONFIG_CLKSRC_DBX500_PRCMU)	+= clksrc-dbx500-prcmu.o
-diff --git a/drivers/clocksource/timer-realtek-otto.c b/drivers/clocksource/timer-realtek-otto.c
-new file mode 100644
-index 000000000000..2c07be042614
---- /dev/null
-+++ b/drivers/clocksource/timer-realtek-otto.c
-@@ -0,0 +1,216 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Realtek Otto platform timer/counter
-+ *
-+ * Copyright
-+ *	Sander Vanheule - 2022
-+ *
-+ * Up-counting 28-bit timer that can operate in oneshot or repeat mode,
-+ * providing interrupts at roll-over. The maximum value is written to the DATA
-+ * register, while the current timer value can be read from the CNT register.
-+ *
-+ * A divided clock is used to drive the timer, derived from the bus clock. The
-+ * clock divisor is configurable from 2 to 65535. Divisor values of 0 and 1
-+ * disable the timer clock. The timer can also be enabled independently from
-+ * the clock selection with the ENABLE flag.
-+ *
-+ * The SoC's interrupt controller can configure the CPU affinity of the timer
-+ * interrupts to any subset of the available CPUs.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/clocksource.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+
-+#include "timer-of.h"
-+
-+struct otto_tc_ctrl {
-+	struct timer_of to;
-+	spinlock_t lock;
-+};
-+
-+#define OTTO_TC_REG_OFFSET(to, offset)	(timer_of_base(to) + offset)
-+
-+#define OTTO_TC_REG_DATA(to)		OTTO_TC_REG_OFFSET(to, 0x0)
-+#define OTTO_TC_REG_CNT(to)		OTTO_TC_REG_OFFSET(to, 0x4)
-+#define OTTO_TC_WIDTH			28
-+#define OTTO_TC_MAX_PERIOD		BIT(OTTO_TC_WIDTH)
-+
-+#define OTTO_TC_REG_CTL(to)		OTTO_TC_REG_OFFSET(to, 0x8)
-+#define OTTO_TC_CTL_ENABLE		BIT(28)
-+#define OTTO_TC_CTL_MODE		BIT(24)
-+#define OTTO_TC_MODE_ONESHOT		FIELD_PREP(OTTO_TC_CTL_MODE, 0)
-+#define OTTO_TC_MODE_REPEAT		FIELD_PREP(OTTO_TC_CTL_MODE, 1)
-+#define OTTO_TC_CTL_DIVISOR		GENMASK(15, 0)
-+
-+#define OTTO_TC_MIN_DIVISOR		2
-+#define OTTO_TC_MAX_DIVISOR		OTTO_TC_CTL_DIVISOR
-+
-+#define OTTO_TC_REG_ICTL(to)		OTTO_TC_REG_OFFSET(to, 0xC)
-+#define OTTO_TC_ICTL_ENABLE		BIT(20)
-+#define OTTO_TC_ICTL_STATUS		BIT(16)
-+
-+static inline void otto_tc_irq_enable_clear(struct timer_of *to)
-+{
-+	writel(OTTO_TC_ICTL_ENABLE | OTTO_TC_ICTL_STATUS, OTTO_TC_REG_ICTL(to));
-+}
-+
-+static inline struct otto_tc_ctrl *otto_tc_timer_to_ctrl(struct timer_of *to)
-+{
-+	return container_of(to, struct otto_tc_ctrl, to);
-+}
-+
-+static irqreturn_t otto_tc_handler(int irq, void *dev_id)
-+{
-+	struct clock_event_device *ced = dev_id;
-+	struct timer_of *to = to_timer_of(ced);
-+
-+	otto_tc_irq_enable_clear(to);
-+	ced->event_handler(ced);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void otto_tc_set_divisor(struct otto_tc_ctrl *ctrl, u16 divisor)
-+{
-+	struct timer_of *to = &ctrl->to;
-+	unsigned long flags;
-+	u32 val;
-+
-+	spin_lock_irqsave(&ctrl->lock, flags);
-+	val = readl(OTTO_TC_REG_CTL(to)) & ~OTTO_TC_CTL_DIVISOR;
-+	val |= FIELD_PREP(OTTO_TC_CTL_DIVISOR, divisor);
-+	writel(val, OTTO_TC_REG_CTL(to));
-+	spin_unlock_irqrestore(&ctrl->lock, flags);
-+}
-+
-+static void otto_tc_set_timeout(struct clock_event_device *ced, u32 value)
-+{
-+	struct timer_of *to = to_timer_of(ced);
-+	struct otto_tc_ctrl *ctrl = otto_tc_timer_to_ctrl(to);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&ctrl->lock, flags);
-+	writel(value, OTTO_TC_REG_DATA(to));
-+	spin_unlock_irqrestore(&ctrl->lock, flags);
-+}
-+
-+/*
-+ * Timers can only be (re)started from the disabled state. The clkevt state
-+ * machine is expected perform the necessary disables (shutdown) before moving
-+ * a timer into an enabled state through .set_oneshot() or .set_periodic().
-+ */
-+static void otto_tc_set_mode(struct clock_event_device *ced, bool started, u32 mode)
-+{
-+	struct timer_of *to = to_timer_of(ced);
-+	struct otto_tc_ctrl *ctrl = otto_tc_timer_to_ctrl(to);
-+	unsigned long flags;
-+	u32 val;
-+
-+	spin_lock_irqsave(&ctrl->lock, flags);
-+	val = readl(OTTO_TC_REG_CTL(to));
-+	val = (val & ~OTTO_TC_CTL_MODE) | mode;
-+	if (started)
-+		val |= OTTO_TC_CTL_ENABLE;
-+	else
-+		val &= ~OTTO_TC_CTL_ENABLE;
-+	writel(val, OTTO_TC_REG_CTL(to));
-+	spin_unlock_irqrestore(&ctrl->lock, flags);
-+}
-+
-+static int otto_tc_set_next_event(unsigned long evt, struct clock_event_device *ced)
-+{
-+	otto_tc_set_timeout(ced, evt);
-+
-+	return 0;
-+}
-+
-+static int otto_tc_set_periodic(struct clock_event_device *ced)
-+{
-+	struct timer_of *to = to_timer_of(ced);
-+
-+	otto_tc_set_timeout(ced, timer_of_period(to));
-+	otto_tc_set_mode(ced, true, OTTO_TC_MODE_REPEAT);
-+
-+	return 0;
-+}
-+
-+static int otto_tc_set_oneshot(struct clock_event_device *ced)
-+{
-+	otto_tc_set_mode(ced, true, OTTO_TC_MODE_ONESHOT);
-+
-+	return 0;
-+}
-+
-+static int otto_tc_set_oneshot_stopped(struct clock_event_device *ced)
-+{
-+	otto_tc_set_mode(ced, false, OTTO_TC_MODE_ONESHOT);
-+
-+	return 0;
-+}
-+
-+static int otto_tc_set_shutdown(struct clock_event_device *ced)
-+{
-+	otto_tc_set_mode(ced, false, 0);
-+
-+	return 0;
-+}
-+
-+static void __init otto_tc_init_clkevt(struct timer_of *to)
-+{
-+	struct clock_event_device *ced = &to->clkevt;
-+
-+	ced->features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PERIODIC |
-+		CLOCK_EVT_FEAT_DYNIRQ;
-+	ced->set_next_event = otto_tc_set_next_event;
-+	ced->set_state_periodic = otto_tc_set_periodic;
-+	ced->set_state_oneshot = otto_tc_set_oneshot;
-+	ced->set_state_oneshot_stopped = otto_tc_set_oneshot_stopped;
-+	ced->set_state_shutdown = otto_tc_set_shutdown;
-+	ced->cpumask = cpumask_of(0);
-+	ced->rating = 300;
-+
-+	clockevents_config_and_register(ced, timer_of_rate(to), 1, OTTO_TC_MAX_PERIOD);
-+}
-+
-+static int __init otto_tc_init(struct device_node *node)
-+{
-+	struct otto_tc_ctrl *ctrl;
-+	int err;
-+
-+	ctrl = kzalloc(sizeof(*ctrl), GFP_KERNEL);
-+	if (!ctrl)
-+		return -ENOMEM;
-+
-+	spin_lock_init(&ctrl->lock);
-+
-+	ctrl->to.flags = TIMER_OF_BASE | TIMER_OF_IRQ | TIMER_OF_CLOCK;
-+	ctrl->to.of_clk.name = "bus";
-+	ctrl->to.of_irq.flags = IRQF_TIMER;
-+	ctrl->to.of_irq.handler = otto_tc_handler;
-+
-+	err = timer_of_init(node, &ctrl->to);
-+	if (err)
-+		goto err_out;
-+
-+	/* Reset timer state */
-+	writel(0, OTTO_TC_REG_CTL(&ctrl->to));
-+	writel(0, OTTO_TC_REG_DATA(&ctrl->to));
-+
-+	/* TODO Replace by a real derived clock */
-+	otto_tc_set_divisor(ctrl, OTTO_TC_MIN_DIVISOR);
-+	ctrl->to.of_clk.rate /= OTTO_TC_MIN_DIVISOR;
-+	ctrl->to.of_clk.period /= OTTO_TC_MIN_DIVISOR;
-+
-+	otto_tc_irq_enable_clear(&ctrl->to);
-+	otto_tc_init_clkevt(&ctrl->to);
-+
-+	return 0;
-+
-+err_out:
-+	kfree(ctrl);
-+
-+	return err;
-+}
-+TIMER_OF_DECLARE(otto_tc, "realtek,otto-tc", otto_tc_init);
--- 
-2.34.1
+Happy New Year to You and Your Family
+Lijun
 
+
+=E2=80=94
+[1] https://drive.google.com/file/d/1JY8f1QLkvlOsQjgPQKDf_RSKEFt7h108
+
+[2] US workers do not actually sign a contract. It is an =E2=80=9Cat will=
+=E2=80=9D
+offer. Employee and employer can fire/terminate each other at any time
+with any reason. It looks fair to both sides, but in fact employees
+are usually much weaker in front of employer, in terms of the
+resources they own.
+
+[3] https://www.ibm.com/us-en/employment/benefits/assets/2019_Benefits_and_=
+HR_Programs.pdf
+IBM matches 401K after one year of service, if you are on active
+payroll on Dec 15. You may think you should get your first year=E2=80=99s 4=
+01K
+at the end of your first year. The fact is you don=E2=80=99t get it. For
+example, I was hired in Jan 2019, I thought I would have 401K matched
+in Dec 2019. But IBM actually started considering 401K matching from
+Jan 2020. So in my case I only got Year 2020=E2=80=99s 401K matched at end =
+of
+Dec 2020. I was fired before Dec 15, 2021, so I did not get the money
+for year 2021. Given the example above, you know exactly how good the
+401K policy is.
