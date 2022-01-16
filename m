@@ -2,63 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18910C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 06:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44324C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 06:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232885AbiAPGpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 01:45:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51844 "EHLO
+        id S234300AbiAPGpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 01:45:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51838 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231332AbiAPGph (ORCPT
+        with ESMTP id S234283AbiAPGph (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 16 Jan 2022 01:45:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 368A660C8C;
-        Sun, 16 Jan 2022 06:45:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9C8FAC36AF2;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC2CC60C8B;
+        Sun, 16 Jan 2022 06:45:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F92FC36AE7;
         Sun, 16 Jan 2022 06:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1642315536;
-        bh=oSyHYB2d4L5AZ0SdrGJMsCwBgXtU6IydW0hwK8TCcDY=;
+        bh=RK6xmWL/Q3Twf8KVJ/yiNzacgiqoDi1oFGuHGnW+dnM=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=EwE86Bv27zIpHgJ23XKnWIntdfJE7mYX/WfcCVSqyYzG2tL6qXdEokTMgfHPJhWUP
-         cnwcsxPuldf2Aj9s5+/gh3A4hb9cEET1wbRjDW01pYzUNpxo0+fYoa0QKi9nvXqI4K
-         GeovYDVrjoa8761TRq3/PcMI0lqbeTUWlpVv7R7Cd8aC2+pLD7E1rscghwWDtOxCJU
-         /368PHMxM9kIFN4m50qn08k+WyiW1wC/toOarO0aTc41muIhH3DfyNBwF0CQXrHKlT
-         6aNhWDDeQPZ7Ijpbz0v9TvJbTFLr9C+oTwp7/c4eV6+QcLgXl5gpygFI9y6jyEiGsN
-         ibP5BfNsoNlXQ==
+        b=dMO3ZxTkiqzsLipADrEPV6ajI25VghoeWPQGXv7QIcvl4tYTD1kD8yBfYwNEQRsmG
+         Aw82DirJgK99f8rh/NWSvBjKy3rWUwhpgCbXxAGpOdnueI4/wk8+diY250r5HN7cD4
+         cEGBL0O2HtdsCQH8ueOsF1TeX3IaO0Q26OKfd2q/N4YShq2xZcZGYgOkKnCEkXu8vG
+         Odj/loWIrTq3n/QIygbXd0Xm781cQDi5ARMhA2nKsMjGarOS67awg8y7hpYaNMoijV
+         239IrHlAGkpRY41L6vPO/BtmCi5Zq4e4zWFiwbSdD61x86mcXS12+4UueZKoA3P3jS
+         pVWgnumTGafeg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8C325F60799;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3F2D2F60796;
         Sun, 16 Jan 2022 06:45:36 +0000 (UTC)
-Subject: Re: [GIT PULL] PCI changes for v5.17
+Subject: Re: [GIT PULL] 9p for 5.17-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220114155608.GA557997@bhelgaas>
-References: <20220114155608.GA557997@bhelgaas>
+In-Reply-To: <YeC4rCJjQhLOJGlH@codewreck.org>
+References: <YeC4rCJjQhLOJGlH@codewreck.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220114155608.GA557997@bhelgaas>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git tags/pci-v5.17-changes
-X-PR-Tracked-Commit-Id: 87c71931633bd15e9cfd51d4a4d9cd685e8cdb55
+X-PR-Tracked-Message-Id: <YeC4rCJjQhLOJGlH@codewreck.org>
+X-PR-Tracked-Remote: git://github.com/martinetd/linux tags/9p-for-5.17-rc1
+X-PR-Tracked-Commit-Id: 19d1c32652bbbf406063025354845fdddbcecd3a
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: d0a231f01e5b25bacd23e6edc7c979a18a517b2b
-Message-Id: <164231553657.30539.11483720642487121527.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 49ad227d54e842f436ed0122cb7c901d857b86cb
+Message-Id: <164231553625.30539.16557626266973677990.pr-tracker-bot@kernel.org>
 Date:   Sun, 16 Jan 2022 06:45:36 +0000
-To:     Bjorn Helgaas <helgaas@kernel.org>
+To:     Dominique Martinet <asmadeus@codewreck.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+        v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 14 Jan 2022 09:56:08 -0600:
+The pull request you sent on Fri, 14 Jan 2022 08:41:32 +0900:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git tags/pci-v5.17-changes
+> git://github.com/martinetd/linux tags/9p-for-5.17-rc1
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/d0a231f01e5b25bacd23e6edc7c979a18a517b2b
+https://git.kernel.org/torvalds/c/49ad227d54e842f436ed0122cb7c901d857b86cb
 
 Thank you!
 
