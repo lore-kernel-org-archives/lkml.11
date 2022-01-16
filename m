@@ -2,77 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D887FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C803C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:31:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233677AbiAPQaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 11:30:13 -0500
-Received: from rere.qmqm.pl ([91.227.64.183]:63217 "EHLO rere.qmqm.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235731AbiAPQ3q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 11:29:46 -0500
-Received: from remote.user (localhost [127.0.0.1])
-        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JcL944DHLz31;
-        Sun, 16 Jan 2022 17:29:44 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
-        t=1642350584; bh=bGGaw/ldrCq1jAH5EChsBqNxiTNzrIjLK3w+QjVTJCw=;
-        h=Resent-From:Resent-Date:Resent-To:Date:From:Subject:To:Cc:From;
-        b=Pd2VbWB0znYwxMr/zuvbiSNcckRInObFJiQtiRGqwDj3EA7SODdZgaBDWEpmLQh2A
-         r32Jytoo0hFOkKPlS5oktGs6H4MvtCRnrjG5SKPuQZfMFz1QHKGXKbvoDIz8YzB2KT
-         OAmcLV09tAc8c1CyWiXGQtrY6uB1nwwwOhvALBTveCDxX30BSU2O4QnKlVvZudEt/o
-         O3RV5cV5zmk6wRPiP3MhP+rrbtlzeSfCGSVp0OaJ08XMI3lz6dCq6kX+pAEz0HxKP0
-         hJsQFv6g8w7yjPSxfRCVQEtrTcuouKKqTl5P9iK7YiGHn137IUMUYeTZ4veQk5oAI5
-         VRirZxQx/XCIA==
-X-Virus-Status: Clean
-X-Virus-Scanned: clamav-milter 0.103.4 at mail
-X-Bogosity: H 0.000000
-Received: from rere.qmqm.pl
-        by rere.qmqm.pl with LMTP
-        id gCUpJ4tB5GFaKgEAZU03Dg
-        (envelope-from <mirq-linux@rere.qmqm.pl>)
-        for <mirq-linux@rere.qmqm.pl>; Sun, 16 Jan 2022 17:02:19 +0100
-Received: from remote.user (localhost [127.0.0.1])
-        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JcKYR2wYTz63;
-        Sun, 16 Jan 2022 17:02:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
-        t=1642348939; bh=bGGaw/ldrCq1jAH5EChsBqNxiTNzrIjLK3w+QjVTJCw=;
-        h=Date:From:Subject:To:Cc:From;
-        b=FBgmvOZ5We0GsAgvaOrgo4c7fgbnPoYnoOImUCCiJsRJ0Iwa9CE7aT+amX8e+RXdS
-         y1eOLOJBwpUDUzkIpzNqL2B7eixDqYjsJFvPx5DKxHBWOVGhz946cHyBzuwywLh+ik
-         1MNjQ4wr91aom/rgSmqDeNmHN8+Dg4js8LxzapMr/YjzsruxFZBS05mCY3AJKre+r8
-         OqLXewNTlPfzcKQ4QCpArFWweFoYQEq+S2swpdM4er4QIg+9YU4hu7IyW/BQDMGoKy
-         9Bkpmw50XCnc0lzS9lMT/AH6G6ObSAv8+pXT0TXlnGsA8lA4ciGOxZU05k1GPxtiJ9
-         jJQddSTQck9wg==
-X-Virus-Status: Clean
-X-Virus-Scanned: clamav-milter 0.103.4 at mail
-Date:   Sun, 16 Jan 2022 17:02:17 +0100
-Message-Id: <cover.1642348712.git.mirq-linux@rere.qmqm.pl>
-From:   =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
-Subject: [PATCH 0/2] i2c: tegra: allow compiling out support for Tegra's special constrollers
+        id S233830AbiAPQbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 11:31:08 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:33759 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231292AbiAPQbG (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 11:31:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642350648;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    From:Subject:Sender;
+    bh=wd5B5q6uhmXCkTltl4oPLre+b0CAXOOsrH3DYJLPWOk=;
+    b=QAyRW1JmAAA/yFoj8X3QlSMfV7J/1fZy54Yx3ak5/iNi9bBnRjTZ0qdv2HRCVFrQeH
+    4I9sz6VMbpxUQOhW874t2uU7b+e+pkg9hOpqKlo8sy+eGHj5CMVFdSQrAUEgNkj4ko1a
+    +//H9KPf6J9h/viwiQOokXiVltBL/RziMlcqLcyRLAIDnTGiOFY5mqGVGmhdK+R0DkTz
+    UbLMgs+VUrIn5piPwwXZXhDJ7ggj2l/dUCJ/ZReyuW2PRPpX2rdRpICmDN9XGTLvUGxJ
+    4lyglW81xWiXjBh7BIzt/MjXtU7CupYK6pceuw04NaqNn/qWpawq+FnenPnkDAgKJT5Q
+    T5Vw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrK8+86Y="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net
+    by smtp.strato.de (RZmta 47.37.6 AUTH)
+    with ESMTPSA id h68d06y0GGUk8zU
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sun, 16 Jan 2022 17:30:46 +0100 (CET)
+Date:   Sun, 16 Jan 2022 17:30:39 +0100
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Luca Weiss <luca@z3ntu.xyz>
+Cc:     linux-arm-msm@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ohad Ben-Cohen <ohad@wizery.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Subject: Re: [PATCH 09/15] rpmsg: smd: Drop unnecessary condition for channel
+ creation
+Message-ID: <YeRILypv8ajssNae@gerhold.net>
+References: <20220112194118.178026-1-luca@z3ntu.xyz>
+ <20220112194118.178026-10-luca@z3ntu.xyz>
+ <Yd9KebiZUjTuHtIM@gerhold.net>
+ <12385151.O9o76ZdvQC@g550jk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org
+In-Reply-To: <12385151.O9o76ZdvQC@g550jk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To patches that, combined, reduce I2C driver's code by ~2kB and a bit
-from runtime overhead for non-Tegra20 or non-Tegra210 builds.
+On Sun, Jan 16, 2022 at 05:08:29PM +0100, Luca Weiss wrote:
+> On Mittwoch, 12. J�nner 2022 22:39:53 CET Stephan Gerhold wrote:
+> > On Wed, Jan 12, 2022 at 08:40:58PM +0100, Luca Weiss wrote:
+> > > From: Vladimir Lypak <vladimir.lypak@gmail.com>
+> > > 
+> > > RPM Firmware on variety of newer SoCs such as MSM8917 (also likely
+> > > MSM8937, MSM8940, MSM8952), MSM8953 and on some MSM8916 devices) doesn't
+> > > initiate opening of the SMD channel if it was previously opened by
+> > > bootloader. This doesn't allow probing of smd-rpm driver on such devices
+> > > because there is a check that requires RPM this behaviour.
+> > > 
+> > > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
+> > > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
+> > > Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> > 
+> > This is effectively a "Revert "Revert "rpmsg: smd: Create device for all
+> > channels""":
+> > 
+> > https://lore.kernel.org/linux-arm-msm/20171212235857.10432-3-bjorn.andersson
+> > @linaro.org/
+> > https://lore.kernel.org/linux-arm-msm/20180315181244.8859-1-bjorn.andersson
+> > @linaro.org/
+> > 
+> > Won't this cause the same regression reported by Srinivas again?
+> > 
+> 
+> Do you have any suggestion on another way to solve this? Without this commit 
+> the regulators just won't probe at all, I haven't looked very deep into it 
+> though given this patch solves it.
+> 
+> I guess worst case it'll become a devicetree property to enable this quirk?
+> 
 
-Michał Mirosław (2):
-  i2c: tegra: allow DVC support to be compiled out
-  i2c: tegra: allow VI support to be compiled out
+My spontaneous suggestion would be to skip the check only for the
+"rpm_requests" channel, e.g. something like
 
- drivers/i2c/busses/Kconfig     | 16 ++++++++++++++++
- drivers/i2c/busses/i2c-tegra.c | 35 +++++++++++++++++++++-------------
- 2 files changed, 38 insertions(+), 13 deletions(-)
+	if (remote_state != SMD_CHANNEL_OPENING &&
+	    remote_state != SMD_CHANNEL_OPENED &&
+	    strcmp(channel->name, "rpm_requests")
+		continue;
 
--- 
-2.30.2
+This will avoid changing the behavior for anything but the RPM channel.
+I don't think anything else is affected by the same problem (since the
+bootloader or earlier firmware should not make use of any other channel).
+Also, we definitely *always* want to open the channel to the RPM because
+otherwise almost everything breaks.
 
+Many solutions are possible though so at the end it is mostly up to
+Bjorn to decide I think. :)
+
+Thanks,
+Stephan
