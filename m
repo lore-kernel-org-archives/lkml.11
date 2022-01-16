@@ -2,102 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5668EC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 15:59:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22985C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:02:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235546AbiAPP7F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 10:59:05 -0500
-Received: from mga02.intel.com ([134.134.136.20]:5452 "EHLO mga02.intel.com"
+        id S235553AbiAPQCY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 11:02:24 -0500
+Received: from rere.qmqm.pl ([91.227.64.183]:43762 "EHLO rere.qmqm.pl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232426AbiAPP7D (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 10:59:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642348743; x=1673884743;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/f2pNQ4PV7SPzdN485bwzOcHSv6xR3obCYGKlCERdJw=;
-  b=a9BiUqmTbBLf0Z6nNkzuQdXF9m+FK/vvQBJoOfCfvHrzao2OrNRfVa09
-   IJi36H8W2FqzYdRDWUC209AaPDfuE/tmAvJ3KTjDkx/4sqvMifnZDVxCt
-   5v1/nryVHqS59RfJ9djucGbrvkxDCRt2jiVlFE2l46IRFXJQD95cdoQT6
-   RyjZqTqwTYXnwHpkGVd+m5TnBbj2Lpo/2FRLIGen8+7j0TVLWY5sUcuy0
-   UJ/sP9AgOk/d/3GtCi03anYnvXJRhpMbAyfQV9fetPqbTHoN90IGIkoGU
-   UkRvIOSmZJDL8vucrTHtP+XG55eUfLcgw54+FxfezJyULml1XvgZF3v5u
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="231853474"
-X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
-   d="scan'208";a="231853474"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 07:59:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
-   d="scan'208";a="517127552"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 16 Jan 2022 07:59:02 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n97vp-000Aoq-Br; Sun, 16 Jan 2022 15:59:01 +0000
-Date:   Sun, 16 Jan 2022 23:58:12 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mukesh Sisodiya <mukesh.sisodiya@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c:1265:6: warning:
- stack frame size (1040) exceeds limit (1024) in '_iwl_dbg_tlv_time_point'
-Message-ID: <202201162344.1eLplIwD-lkp@intel.com>
+        id S233440AbiAPQCV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 11:02:21 -0500
+Received: from remote.user (localhost [127.0.0.1])
+        by rere.qmqm.pl (Postfix) with ESMTPSA id 4JcKYS0w7PzMc;
+        Sun, 16 Jan 2022 17:02:20 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
+        t=1642348940; bh=b+aXZUEZ/iu/vA0Z9GFMnzJiD2dDum0zArW4qRVtf2o=;
+        h=Date:In-Reply-To:References:From:Subject:To:Cc:From;
+        b=dKJmCZ1XudMh1ggQg5NMcX9+k5jU5RrNDShmOatiazuusXPFWFowhXS4jO9+kgBo+
+         Gl1lUFUpLRqS/r815J3UqfkLhII5OUbaRu6dbPcqwagD8GYaMbGDrMrXSmrgDceQJ0
+         GRdcyh7hRCtSRmc5jE4Mm2kRzG18p5gL+nZtHS1rAF5re+LMS/3zRQnZUBvaVcwZRk
+         CDXvP+K63cUg+RKoFzSbDvxWwGt4ALR4bQsajQxlFviE/57XaV9tPeapxR9tiM7fBd
+         U4/Vc53yWk8/2wiiv6ftvIIxq02WSPjS7+u+oPVvcy8mODYeDP0lGc6mZ3TSxxxBSP
+         eraQ8ocKf6ypQ==
+X-Virus-Status: Clean
+X-Virus-Scanned: clamav-milter 0.103.4 at mail
+Date:   Sun, 16 Jan 2022 17:02:19 +0100
+Message-Id: <b8bc368b7beea938849b89334e4635a59a76f0f3.1642348712.git.mirq-linux@rere.qmqm.pl>
+In-Reply-To: <cover.1642348712.git.mirq-linux@rere.qmqm.pl>
+References: <cover.1642348712.git.mirq-linux@rere.qmqm.pl>
+From:   =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
+Subject: [PATCH 2/2] i2c: tegra: allow VI support to be compiled out
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To:     Laxman Dewangan <ldewangan@nvidia.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mukesh,
+Save a bit of code for older Tegra platforms by compiling out
+VI's I2C mode support that's used only for Tegra210.
 
-FYI, the error/warning still remains.
+$ size i2c-tegra.o
+   text    data     bss     dec     hex filename
+  10385     240       8   10633    2989 i2c-tegra.o (full)
+   9617     240       8    9865    2689 i2c-tegra.o (no-dvc)
+   9389     240       8    9637    25a5 i2c-tegra.o (no-vi)
+   8617     240       8    8865    22a1 i2c-tegra.o (no-vi,no-dvc)
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   4d66020dcef83314092f2c8c89152a8d122627e2
-commit: 020cde4750c5b20be309e028dec9950520384c1e iwlwifi: yoyo: support for DBGC4 for dram
-date:   6 weeks ago
-config: mips-randconfig-r032-20220116 (https://download.01.org/0day-ci/archive/20220116/202201162344.1eLplIwD-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 650fc40b6d8d9a5869b4fca525d5f237b0ee2803)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=020cde4750c5b20be309e028dec9950520384c1e
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 020cde4750c5b20be309e028dec9950520384c1e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/net/wireless/intel/iwlwifi/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c:1265:6: warning: stack frame size (1040) exceeds limit (1024) in '_iwl_dbg_tlv_time_point' [-Wframe-larger-than]
-   void _iwl_dbg_tlv_time_point(struct iwl_fw_runtime *fwrt,
-        ^
-   1 warning generated.
-
-
-vim +/_iwl_dbg_tlv_time_point +1265 drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c
-
-14124b25780db5 Shahar S Matityahu 2019-07-23  1264  
-b8221b0f750a05 Johannes Berg      2021-08-02 @1265  void _iwl_dbg_tlv_time_point(struct iwl_fw_runtime *fwrt,
-
-:::::: The code at line 1265 was first introduced by commit
-:::::: b8221b0f750a05a7ae9cbca84932e2a36a3ee658 iwlwifi: prepare for synchronous error dumps
-
-:::::: TO: Johannes Berg <johannes.berg@intel.com>
-:::::: CC: Luca Coelho <luciano.coelho@intel.com>
-
+Signed-off-by: Michał Mirosław <mirq-linux@rere.qmqm.pl>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/i2c/busses/Kconfig     |  8 ++++++++
+ drivers/i2c/busses/i2c-tegra.c | 20 ++++++++++++--------
+ 2 files changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/i2c/busses/Kconfig b/drivers/i2c/busses/Kconfig
+index b557b832bfec..2dd5974acc14 100644
+--- a/drivers/i2c/busses/Kconfig
++++ b/drivers/i2c/busses/Kconfig
+@@ -1087,6 +1087,14 @@ config I2C_TEGRA_DVC
+ 	  If you say yes to this option, tegra-i2c will also support
+ 	  I2C controller that is part of DVC in Tegra20 SoCs.
+ 
++config I2C_TEGRA_VI
++	bool "NVIDIA Tegra VI I2C controller"
++	depends on I2C_TEGRA
++	default y if ARCH_TEGRA_210_SOC
++	help
++	  If you say yes to this option, tegra-i2c will also support
++	  I2C controller that is part of VI in Tegra210 SoCs.
++
+ config I2C_TEGRA_BPMP
+ 	tristate "NVIDIA Tegra BPMP I2C controller"
+ 	depends on TEGRA_BPMP || COMPILE_TEST
+diff --git a/drivers/i2c/busses/i2c-tegra.c b/drivers/i2c/busses/i2c-tegra.c
+index 60ecf6c9f649..140fbce203cb 100644
+--- a/drivers/i2c/busses/i2c-tegra.c
++++ b/drivers/i2c/busses/i2c-tegra.c
+@@ -295,6 +295,7 @@ struct tegra_i2c_dev {
+ };
+ 
+ #define IS_DVC(dev) (IS_ENABLED(CONFIG_I2C_TEGRA_DVC) && dev->is_dvc)
++#define IS_VI(dev)  (IS_ENABLED(CONFIG_I2C_TEGRA_VI) && dev->is_vi)
+ 
+ static void dvc_writel(struct tegra_i2c_dev *i2c_dev, u32 val,
+ 		       unsigned int reg)
+@@ -315,7 +316,7 @@ static u32 tegra_i2c_reg_addr(struct tegra_i2c_dev *i2c_dev, unsigned int reg)
+ {
+ 	if (IS_DVC(i2c_dev))
+ 		reg += (reg >= I2C_TX_FIFO) ? 0x10 : 0x40;
+-	else if (i2c_dev->is_vi)
++	else if (IS_VI(i2c_dev))
+ 		reg = 0xc00 + (reg << 2);
+ 
+ 	return reg;
+@@ -444,7 +445,7 @@ static int tegra_i2c_init_dma(struct tegra_i2c_dev *i2c_dev)
+ 	u32 *dma_buf;
+ 	int err;
+ 
+-	if (!i2c_dev->hw->has_apb_dma || i2c_dev->is_vi)
++	if (!i2c_dev->hw->has_apb_dma || IS_VI(i2c_dev))
+ 		return 0;
+ 
+ 	if (!IS_ENABLED(CONFIG_TEGRA20_APB_DMA)) {
+@@ -635,7 +636,7 @@ static int tegra_i2c_init(struct tegra_i2c_dev *i2c_dev)
+ 	i2c_writel(i2c_dev, val, I2C_CNFG);
+ 	i2c_writel(i2c_dev, 0, I2C_INT_MASK);
+ 
+-	if (i2c_dev->is_vi)
++	if (IS_VI(i2c_dev))
+ 		tegra_i2c_vi_init(i2c_dev);
+ 
+ 	switch (i2c_dev->bus_clk_rate) {
+@@ -687,7 +688,7 @@ static int tegra_i2c_init(struct tegra_i2c_dev *i2c_dev)
+ 		return err;
+ 	}
+ 
+-	if (!IS_DVC(i2c_dev) && !i2c_dev->is_vi) {
++	if (!IS_DVC(i2c_dev) && !IS_VI(i2c_dev)) {
+ 		u32 sl_cfg = i2c_readl(i2c_dev, I2C_SL_CNFG);
+ 
+ 		sl_cfg |= I2C_SL_CNFG_NACK | I2C_SL_CNFG_NEWSL;
+@@ -1612,7 +1613,9 @@ static const struct tegra_i2c_hw_feature tegra194_i2c_hw = {
+ static const struct of_device_id tegra_i2c_of_match[] = {
+ 	{ .compatible = "nvidia,tegra194-i2c", .data = &tegra194_i2c_hw, },
+ 	{ .compatible = "nvidia,tegra186-i2c", .data = &tegra186_i2c_hw, },
++#if IS_ENABLED(CONFIG_I2C_TEGRA_VI)
+ 	{ .compatible = "nvidia,tegra210-i2c-vi", .data = &tegra210_i2c_hw, },
++#endif
+ 	{ .compatible = "nvidia,tegra210-i2c", .data = &tegra210_i2c_hw, },
+ 	{ .compatible = "nvidia,tegra124-i2c", .data = &tegra124_i2c_hw, },
+ 	{ .compatible = "nvidia,tegra114-i2c", .data = &tegra114_i2c_hw, },
+@@ -1643,7 +1646,8 @@ static void tegra_i2c_parse_dt(struct tegra_i2c_dev *i2c_dev)
+ 	    of_device_is_compatible(np, "nvidia,tegra20-i2c-dvc"))
+ 		i2c_dev->is_dvc = true;
+ 
+-	if (of_device_is_compatible(np, "nvidia,tegra210-i2c-vi"))
++	if (IS_ENABLED(CONFIG_I2C_TEGRA_VI) &&
++	    of_device_is_compatible(np, "nvidia,tegra210-i2c-vi"))
+ 		i2c_dev->is_vi = true;
+ }
+ 
+@@ -1656,7 +1660,7 @@ static int tegra_i2c_init_clocks(struct tegra_i2c_dev *i2c_dev)
+ 	if (i2c_dev->hw == &tegra20_i2c_hw || i2c_dev->hw == &tegra30_i2c_hw)
+ 		i2c_dev->clocks[i2c_dev->nclocks++].id = "fast-clk";
+ 
+-	if (i2c_dev->is_vi)
++	if (IS_VI(i2c_dev))
+ 		i2c_dev->clocks[i2c_dev->nclocks++].id = "slow";
+ 
+ 	err = devm_clk_bulk_get(i2c_dev->dev, i2c_dev->nclocks,
+@@ -1777,7 +1781,7 @@ static int tegra_i2c_probe(struct platform_device *pdev)
+ 	 * VI I2C device shouldn't be marked as IRQ-safe because VI I2C won't
+ 	 * be used for atomic transfers.
+ 	 */
+-	if (!i2c_dev->is_vi)
++	if (!IS_VI(i2c_dev))
+ 		pm_runtime_irq_safe(i2c_dev->dev);
+ 
+ 	pm_runtime_enable(i2c_dev->dev);
+@@ -1850,7 +1854,7 @@ static int __maybe_unused tegra_i2c_runtime_resume(struct device *dev)
+ 	 * power ON/OFF during runtime PM resume/suspend, meaning that
+ 	 * controller needs to be re-initialized after power ON.
+ 	 */
+-	if (i2c_dev->is_vi) {
++	if (IS_VI(i2c_dev)) {
+ 		err = tegra_i2c_init(i2c_dev);
+ 		if (err)
+ 			goto disable_clocks;
+-- 
+2.30.2
+
