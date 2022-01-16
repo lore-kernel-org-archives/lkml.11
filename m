@@ -2,104 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D46C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 07:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 08:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234584AbiAPHn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 02:43:57 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:46159 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234559AbiAPHny (ORCPT
+        id S234606AbiAPIU5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 03:20:57 -0500
+Received: from out162-62-57-64.mail.qq.com ([162.62.57.64]:33233 "EHLO
+        out162-62-57-64.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234582AbiAPIUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 02:43:54 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V1wFlz1_1642319022;
-Received: from e02h04404.eu6sqa(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0V1wFlz1_1642319022)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sun, 16 Jan 2022 15:43:52 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     dust.li@linux.alibaba.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net/smc: Fix hung_task when removing SMC-R devices
-Date:   Sun, 16 Jan 2022 15:43:42 +0800
-Message-Id: <1642319022-99525-1-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        Sun, 16 Jan 2022 03:20:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1642321250;
+        bh=So3WZ5FvjllBHQzS197yDZc/bzSJMtX1iMxl4muakzA=;
+        h=From:To:Cc:Subject:Date;
+        b=PVXFbHNTIynBk7vtWnz6hq4IA4RAORnJcD4gWiaurMEssAsUi0xnb7fCpDxrbp5Vz
+         DBDrrrmUKUdbKCWsmBq5JkvyqzYPFfUve+cOL/QU73goQ/8m+hDGo35Z+A2+YGfdeC
+         9sLITiefviimIHLT76wZLj/hbjeurUZagmTUZLwk=
+Received: from localhost.localdomain ([43.227.136.188])
+        by newxmesmtplogicsvrsza9.qq.com (NewEsmtp) with SMTP
+        id 45A8D61B; Sun, 16 Jan 2022 16:17:26 +0800
+X-QQ-mid: xmsmtpt1642321046t4sl5l64s
+Message-ID: <tencent_949564FE01410898F3734D38FA284CC2E909@qq.com>
+X-QQ-XMAILINFO: Ng3M1C/wDpyJYXCUJikaVHNA7js7JxKDFsyQSgSOzIFX1Ou7rzeXI/GvQqqQG2
+         jeJQdwGI8g4hPFHuvhLr4iAEvrq7gGKc1rEdTy5Ye9Xb/2WxTM/vqc8bPzM+Ebf8AYC10i9VMlQM
+         6lZxecf2x3PWVCv9WduYeRyyaR9iJwbBwBQFB5q2mCW+VmwW3aXpqpViE9bJod7Mrkg3FZX6kuyW
+         gHP281X463p0T5zvGu0y+hcaKN3wYjMszZIsL6xwJeiUXe/PowhmvVOKaM6QeWmiTE8x7oP3A5B9
+         YfxUCCFXB8BUJ4AMCPrdCpzVxJPn+Y6iP75RcpP8RwmTNvrvPjrk0ZjcccGM2Z4anFjADjMnLuQu
+         BTvVHj5KUVImi+SQr+Pq8WHSBNiG8JR5mk4PPxWhD9W00wIxLrDIhCTmVvOJBS7hO/7rzSN4Bv9z
+         U4MH4YojMHErVf051AmVBh1UbZARbnO1xjUF3Wcj0yzGbOdqLImHmc+9LdxR1X1FqZ0v2dpqSaxV
+         ypjkS+2YPviSBYPUywARWCic5PJAtIMaUi22nEacpN7s0X7/Aif7ol4/hCqfU/B9jvMrI3cpCmul
+         +s2E06/ifQbcSVvQfS8l/qPjvp2yWMmgoZWfFdDOdU2lFCpyr1qETiOSOoAR7uyDBjmbLbv5hKiF
+         NHSsb+deT2Z6gZ0ltamsfijqjQA5T52nkyu5PCoUwpVNoUh70z/6rktpkDol8lEs1+bLT9Z65/VU
+         HcXDbnrjq8ztQPGfRXUMyDsT5XU94EjcSDBIZeer9HJa2E6Tj/ZBWzLm+lOB5IwVS+LBLqQHpkbC
+         fi8kB1SY0N56f+HrWw5BAwsyD9KUBIowKti223okH2y/cdQi6HtdN1XDWjU9oYl+aGLjNOqLk6f+
+         KnbYNkBzYqbzLKaRwXMebH3REqSQXv6ubalMRA8Isqnr1bdmuLPkfmB+kkJOWtDcdyrZiWyx9p
+From:   xkernel.wang@foxmail.com
+To:     andy@kernel.org, linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xiaoke Wang <xkernel.wang@foxmail.com>
+Subject: [PATCH] gpio: merrifield: check the return value of devm_kstrdup()
+Date:   Sun, 16 Jan 2022 16:16:38 +0800
+X-OQ-MSGID: <20220116081638.2676-1-xkernel.wang@foxmail.com>
+X-Mailer: git-send-email 2.33.0.windows.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A hung_task is observed when removing SMC-R devices. Suppose that
-a link group has two active links(lnk_A, lnk_B) associated with two
-different SMC-R devices(dev_A, dev_B). When dev_A is removed, the
-link group will be removed from smc_lgr_list and added into
-lgr_linkdown_list. lnk_A will be cleared and smcibdev(A)->lnk_cnt
-will reach to zero. However, when dev_B is removed then, the link
-group can't be found in smc_lgr_list and lnk_B won't be cleared,
-making smcibdev->lnk_cnt never reaches zero, which causes a hung_task.
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-This patch fixes this issue by restoring the implementation of
-smc_smcr_terminate_all() to what it was before commit 349d43127dac
-("net/smc: fix kernel panic caused by race of smc_sock"). The original
-implementation also satisfies the intention that make sure QP destroy
-earlier than CQ destroy because we will always wait for smcibdev->lnk_cnt
-reaches zero, which guarantees QP has been destroyed.
+devm_kstrdup() returns pointer to allocated string on success,
+NULL on failure. So it is better to check the return value of it.
 
-Fixes: 349d43127dac ("net/smc: fix kernel panic caused by race of smc_sock")
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
 ---
-v1 -> v2:
-- Remove some comments.
----
- net/smc/smc_core.c | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+ drivers/gpio/gpio-merrifield.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index b19c0aa..5fc84f0 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1524,16 +1524,11 @@ void smc_smcd_terminate_all(struct smcd_dev *smcd)
- /* Called when an SMCR device is removed or the smc module is unloaded.
-  * If smcibdev is given, all SMCR link groups using this device are terminated.
-  * If smcibdev is NULL, all SMCR link groups are terminated.
-- *
-- * We must wait here for QPs been destroyed before we destroy the CQs,
-- * or we won't received any CQEs and cdc_pend_tx_wr cannot reach 0 thus
-- * smc_sock cannot be released.
-  */
- void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
- {
- 	struct smc_link_group *lgr, *lg;
- 	LIST_HEAD(lgr_free_list);
--	LIST_HEAD(lgr_linkdown_list);
- 	int i;
+diff --git a/drivers/gpio/gpio-merrifield.c b/drivers/gpio/gpio-merrifield.c
+index 42c4d9d..f3d1bae 100644
+--- a/drivers/gpio/gpio-merrifield.c
++++ b/drivers/gpio/gpio-merrifield.c
+@@ -409,6 +409,9 @@ static int mrfld_gpio_add_pin_ranges(struct gpio_chip *chip)
+ 	int retval;
  
- 	spin_lock_bh(&smc_lgr_list.lock);
-@@ -1545,7 +1540,7 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
- 		list_for_each_entry_safe(lgr, lg, &smc_lgr_list.list, list) {
- 			for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
- 				if (lgr->lnk[i].smcibdev == smcibdev)
--					list_move_tail(&lgr->list, &lgr_linkdown_list);
-+					smcr_link_down_cond_sched(&lgr->lnk[i]);
- 			}
- 		}
- 	}
-@@ -1557,16 +1552,6 @@ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
- 		__smc_lgr_terminate(lgr, false);
- 	}
- 
--	list_for_each_entry_safe(lgr, lg, &lgr_linkdown_list, list) {
--		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
--			if (lgr->lnk[i].smcibdev == smcibdev) {
--				mutex_lock(&lgr->llc_conf_mutex);
--				smcr_link_down_cond(&lgr->lnk[i]);
--				mutex_unlock(&lgr->llc_conf_mutex);
--			}
--		}
--	}
--
- 	if (smcibdev) {
- 		if (atomic_read(&smcibdev->lnk_cnt))
- 			wait_event(smcibdev->lnks_deleted,
+ 	pinctrl_dev_name = mrfld_gpio_get_pinctrl_dev_name(priv);
++	if (!pinctrl_dev_name)
++		return -ENOMEM;
++
+ 	for (i = 0; i < ARRAY_SIZE(mrfld_gpio_ranges); i++) {
+ 		range = &mrfld_gpio_ranges[i];
+ 		retval = gpiochip_add_pin_range(&priv->chip, pinctrl_dev_name,
 -- 
-1.8.3.1
-
