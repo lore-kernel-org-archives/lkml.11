@@ -2,134 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B612C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:08:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D66C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:20:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235566AbiAPQIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 11:08:38 -0500
-Received: from mail.z3ntu.xyz ([128.199.32.197]:43306 "EHLO mail.z3ntu.xyz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232447AbiAPQIe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 11:08:34 -0500
-Received: from g550jk.localnet (ip-213-127-106-2.ip.prioritytelecom.net [213.127.106.2])
-        by mail.z3ntu.xyz (Postfix) with ESMTPSA id 95420CE70A;
-        Sun, 16 Jan 2022 16:08:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
-        t=1642349310; bh=4LMg+1VVMXQXKYNpkZ8tcMuM7sLu2TwLatA8b+djne4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=wUEfk15OLngMxPUrqY11hbr6UZvR6c6o7n4bmgShT0A2CeSSPbcSDabmkOOyNtxrd
-         C8Xx5/Y9K0dpWFdFa9zqsxYBC8jH5poVVNnHP9rm9XEspWaceXijKkWbGMhyWS2B0v
-         88IZNlfqxpXtu+WpdgnUZ8zDPcvi9ehnRQcCMEEs=
-From:   Luca Weiss <luca@z3ntu.xyz>
-To:     Stephan Gerhold <stephan@gerhold.net>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 09/15] rpmsg: smd: Drop unnecessary condition for channel creation
-Date:   Sun, 16 Jan 2022 17:08:29 +0100
-Message-ID: <12385151.O9o76ZdvQC@g550jk>
-In-Reply-To: <Yd9KebiZUjTuHtIM@gerhold.net>
-References: <20220112194118.178026-1-luca@z3ntu.xyz> <20220112194118.178026-10-luca@z3ntu.xyz> <Yd9KebiZUjTuHtIM@gerhold.net>
+        id S235593AbiAPQUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 11:20:03 -0500
+Received: from mout.kundenserver.de ([212.227.126.134]:53869 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232279AbiAPQUB (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 11:20:01 -0500
+Received: from mail-wm1-f44.google.com ([209.85.128.44]) by
+ mrelayeu.kundenserver.de (mreue012 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1MK5BG-1mt7ZZ2yII-00LVJU; Sun, 16 Jan 2022 17:19:59 +0100
+Received: by mail-wm1-f44.google.com with SMTP id d187-20020a1c1dc4000000b003474b4b7ebcso17092231wmd.5;
+        Sun, 16 Jan 2022 08:19:59 -0800 (PST)
+X-Gm-Message-State: AOAM531RozIZHsAFI5VdAvCW2ptj0agn0wZcVzCK8YSxvBeFsChcXmx2
+        kTg6pHuMpx7PWTwCt6WYuivJYap0LTMxNSvbK5U=
+X-Google-Smtp-Source: ABdhPJwLndypdoZqcgVySXUrUaTHtCgNSa0LHq+rQ0wsbDBGYparskmUw5otmdG9JKYAHAXXiKO0Lvzj6vDV3ZLvoZo=
+X-Received: by 2002:a05:600c:5c1:: with SMTP id p1mr23740237wmd.1.1642349999360;
+ Sun, 16 Jan 2022 08:19:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+References: <20220115193245.3777833-1-laurent@vivier.eu> <20220115193245.3777833-4-laurent@vivier.eu>
+ <CAK8P3a13g_o4mTsOO-4b=WU6TGRHubY7HCt1x1FdXpVmjy6-Sg@mail.gmail.com> <77e747de-c7d6-314d-e0b0-58852d463326@vivier.eu>
+In-Reply-To: <77e747de-c7d6-314d-e0b0-58852d463326@vivier.eu>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sun, 16 Jan 2022 17:19:43 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1i_ngEaqhsy4xNrQV8=d1jY=JTxGNNUqOZ0g0to5bw8Q@mail.gmail.com>
+Message-ID: <CAK8P3a1i_ngEaqhsy4xNrQV8=d1jY=JTxGNNUqOZ0g0to5bw8Q@mail.gmail.com>
+Subject: Re: [PATCH v8 3/4] clocksource/drivers: Add a goldfish-timer clocksource
+To:     Laurent Vivier <laurent@vivier.eu>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-rtc@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:bThAav2QClU2G8a4VqvDbdC7de32a8IVLrelQESCHmeQjbSLhUj
+ pgzKAzKuhznJp4iR70zztH7hqKuLV4WG2pbQB+KyMhjbvGIRkh33vdizgGaFQU/LFgJNhTJ
+ RHGZetorKATZCv865TdUJZoAPz10ZxbwXIf1UOjDOIUjjmXKTRq1MZUjjxmxJxT9YB558cU
+ pGO4H7hvHDQ4In3U6SQOg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:GsuQMbQxaAQ=:6+LJzRMiLXZF0auSsX8SEM
+ MLG9fkQZT+uzptLgd27Z6+Tk6POLO144shBEmlig0IaK+982IGiD/vTBgRYEeIYL1X9cGoDZ7
+ /T1uHAHO2z8OdTEDPumbealgUyGPudLt/SBhDSMn5S7RggfbW/k9kiAzir1kuFDCRLMUmAZlK
+ 1ZdP1S3qMCDCQRo4sAmRMtuDgMIF7mF8ekho1ujiMuAcDsKtB8RsVtLEe2alRYTDuUAEEW3B+
+ Og90QGYSXJGSDiPSS+AzGArG8vHds1rcwz6BbKVDUg8mA/AdQZfpZ8VLVw0WnjbeZOKF+0ypj
+ JgP0pI6yAlZSwA9t6ZeF/cQrmPgrenk++eCnlK+CD/ZJhX9ZaMijCnVZ1Ly9Q6nU/VCJ4vMro
+ /zdhzKEzGDsDO/zsY90bcDVHzJl0ctPZvajREIgUUxKC3tVgXN+kG0UDvdLjsCrH4Lz8K6LQG
+ 6eo0vDnGXAEMT3q2+LjEhLVLas6T8ESv1PkrSYo/ciX3IuHmI7wASI4dsqUTfJVBmGO7Qf2dh
+ qS8eCGzYdEULU4s2tbfADKP8YILsGw2UH/tj6bSvTXuqu/ZZnyVUUsGwjQDieQelfyFrHH9fM
+ eMRolJMPuzyRLe/zTvI09FoGV51Hw7tfjRSbcwyi64BegguroYZ2zu0nT43q2avq8shy3806Z
+ 6F5TbM5qrlfePvjRfsWe9QDeEC6Xai0dfqgJLOSgevwye1kC363JL76OQohsjjz3RbtdhAMPZ
+ czQhkH4diTUNQ9D/v5ITwPWKeWwWOYoyiRNRzBsvZjdc2mN+ROo5HTjbvKSbUJex+IjWV8zcK
+ CCrm/tZhCjd2J3sxyKdQGn/yj4UiiHLsoKPdK+OTDNOeCmxt1k=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephan,
+On Sun, Jan 16, 2022 at 12:54 PM Laurent Vivier <laurent@vivier.eu> wrote:
+>
+> Virtio has exactly the same problem in the past (prio to v1.0), and it uses __LITTLE_ENDIAN in
+> virtio_legacy_is_little_endian() to know the endianness of the device.
 
-On Mittwoch, 12. J=E4nner 2022 22:39:53 CET Stephan Gerhold wrote:
-> Hi,
->=20
-> +Cc Srinivas
->=20
-> On Wed, Jan 12, 2022 at 08:40:58PM +0100, Luca Weiss wrote:
-> > From: Vladimir Lypak <vladimir.lypak@gmail.com>
-> >=20
-> > RPM Firmware on variety of newer SoCs such as MSM8917 (also likely
-> > MSM8937, MSM8940, MSM8952), MSM8953 and on some MSM8916 devices) doesn't
-> > initiate opening of the SMD channel if it was previously opened by
-> > bootloader. This doesn't allow probing of smd-rpm driver on such devices
-> > because there is a check that requires RPM this behaviour.
-> >=20
-> > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
->=20
-> This is effectively a "Revert "Revert "rpmsg: smd: Create device for all
-> channels""":
->=20
-> https://lore.kernel.org/linux-arm-msm/20171212235857.10432-3-bjorn.anders=
-son
-> @linaro.org/
-> https://lore.kernel.org/linux-arm-msm/20180315181244.8859-1-bjorn.anderss=
-on
-> @linaro.org/
->=20
-> Won't this cause the same regression reported by Srinivas again?
->=20
+Right, that was my point, let's not duplicate the bug from pre-standard virtio.
 
-Do you have any suggestion on another way to solve this? Without this commi=
-t=20
-the regulators just won't probe at all, I haven't looked very deep into it=
-=20
-though given this patch solves it.
+> So the code can become:
+>
+> #ifdef __LITTLE_ENDIAN
+> #define goldfish_ioread32 ioread32
+> #define goldfish_iowrite32 iowrite32
+> #else
+> #define goldfish_ioread32 ioread32be
+> #define goldfish_iowrite32 iowrite32be
+> #endif
 
-I guess worst case it'll become a devicetree property to enable this quirk?
+This is exactly the same as what you had before, it continues to break when
+host and guest disagree on the endianess.
 
-Regards
-Luca
+> What do you prefer: CONFIG_M68K or __LITTLE_ENDIAN?
 
-> Thanks,
-> Stephan
->=20
-> > ---
-> >=20
-> >  drivers/rpmsg/qcom_smd.c | 8 +-------
-> >  1 file changed, 1 insertion(+), 7 deletions(-)
-> >=20
-> > diff --git a/drivers/rpmsg/qcom_smd.c b/drivers/rpmsg/qcom_smd.c
-> > index 8da1b5cb31b3..6a01ef932b01 100644
-> > --- a/drivers/rpmsg/qcom_smd.c
-> > +++ b/drivers/rpmsg/qcom_smd.c
-> > @@ -1280,19 +1280,13 @@ static void qcom_channel_state_worker(struct
-> > work_struct *work)>=20
-> >  	unsigned long flags;
-> >  =09
-> >  	/*
-> >=20
-> > -	 * Register a device for any closed channel where the remote=20
-processor
-> > -	 * is showing interest in opening the channel.
-> > +	 * Register a device for any closed channel.
-> >=20
-> >  	 */
-> >  =09
-> >  	spin_lock_irqsave(&edge->channels_lock, flags);
-> >  	list_for_each_entry(channel, &edge->channels, list) {
-> >  =09
-> >  		if (channel->state !=3D SMD_CHANNEL_CLOSED)
-> >  	=09
-> >  			continue;
-> >=20
-> > -		remote_state =3D GET_RX_CHANNEL_INFO(channel, state);
-> > -		if (remote_state !=3D SMD_CHANNEL_OPENING &&
-> > -		    remote_state !=3D SMD_CHANNEL_OPENED)
-> > -			continue;
-> > -
-> >=20
-> >  		if (channel->registered)
-> >  	=09
-> >  			continue;
+Checking for CONFIG_M68K at least has a chance of working, provided
+that all existing qemu implementations agree on the semantics here.
 
-
-
-
+       Arnd
