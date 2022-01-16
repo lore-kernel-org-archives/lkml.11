@@ -2,124 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9485EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 14:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38AA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 14:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235356AbiAPN5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 08:57:03 -0500
-Received: from mga06.intel.com ([134.134.136.31]:34220 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229785AbiAPN5C (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 08:57:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642341422; x=1673877422;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kFaqcb+FjiNKs4/Y/N17OI7EJSO4oxpial3CgQSEPFU=;
-  b=n6qbx9ce8nzxSp+3nMqORZn1CnMc509hD9ft6p20V9ZiX4t+dKfrb0iD
-   m4RRNNdYejyFRwZ2sg+hACUL91wjfX//CE1zK94ChzWehoqBAchoGrGY+
-   hFcNDF4G5Y2vDmDInnwx+BzuIkAECi5ywwBsnR8PD5W7ZsDK9fmZyXG75
-   i2AePaU+vdo1pzM6L+KQpniWa5Qakh8VZyn1hw/AQUE9lOqOWjrO63cQy
-   4o6ofKY31iA9mRK16hMaRT6YU/JLG6Jo4oQxxRQ/0V9krhEVHSGrW9vdB
-   DgGlCzsY8nkic5BvgClkx/D93ekSSTavbpdH11UnXSatAPkqYXIAKKIh+
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="305223830"
-X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
-   d="scan'208";a="305223830"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 05:57:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
-   d="scan'208";a="624924168"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 16 Jan 2022 05:57:00 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n961j-000Aka-Ab; Sun, 16 Jan 2022 13:56:59 +0000
-Date:   Sun, 16 Jan 2022 21:56:05 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Satya Tangirala <satyat@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Eric Biggers <ebiggers@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android11-kiwi-5.4
- 2937/9999] drivers/mmc/core/crypto.c:14:6: warning: no previous prototype
- for function 'mmc_crypto_setup_queue'
-Message-ID: <202201162151.jM4CfcNA-lkp@intel.com>
+        id S235408AbiAPOG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 09:06:29 -0500
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:33429 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229785AbiAPOG2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 09:06:28 -0500
+Received: from [192.168.0.4] (ip5f5aeaa0.dynamic.kabel-deutschland.de [95.90.234.160])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id E839F61EA1BE4;
+        Sun, 16 Jan 2022 15:06:26 +0100 (CET)
+Message-ID: <7886757f-60f4-b63e-95a6-52dc7dcb86d8@molgen.mpg.de>
+Date:   Sun, 16 Jan 2022 15:06:26 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] Bluetooth: Apply initial command workaround for more
+ Intel chips
+Content-Language: en-US
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Fernando Ramos <greenfoo@u92.eu>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Tedd Ho-Jeong An <tedd.an@intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-bluetooth@vger.kernel.org,
+        Marcel Holtmann <marcel@holtmann.org>
+References: <20211202162256.31837-1-tiwai@suse.de>
+ <acc7b5b4-72cc-9f3b-90a6-6fbf6c3a71e7@molgen.mpg.de>
+ <s5h7dcnt0lp.wl-tiwai@suse.de> <YayVYIAi56097Ltl@zacax395.localdomain>
+ <1D49EE9C-42D4-45C9-AE37-F4C508FD2D64@holtmann.org>
+ <s5hk0gch9ve.wl-tiwai@suse.de>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <s5hk0gch9ve.wl-tiwai@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Satya,
 
-FYI, the error/warning still remains.
-
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android11-kiwi-5.4
-head:   7d1d5848183bd1d9086d0572f9af431d3ded407f
-commit: 555cf12eb672727979bc7b7840c7503f3de27220 [2937/9999] ANDROID: mmc: MMC crypto API
-config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220116/202201162151.jM4CfcNA-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c63a3175c2947e8c1a2d3bbe16a8586600705c54)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/555cf12eb672727979bc7b7840c7503f3de27220
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android11-kiwi-5.4
-        git checkout 555cf12eb672727979bc7b7840c7503f3de27220
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/mmc/core/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/mmc/core/crypto.c:14:6: warning: no previous prototype for function 'mmc_crypto_setup_queue' [-Wmissing-prototypes]
-   void mmc_crypto_setup_queue(struct mmc_host *host, struct request_queue *q)
-        ^
-   drivers/mmc/core/crypto.c:14:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void mmc_crypto_setup_queue(struct mmc_host *host, struct request_queue *q)
-   ^
-   static 
->> drivers/mmc/core/crypto.c:21:6: warning: no previous prototype for function 'mmc_crypto_free_host' [-Wmissing-prototypes]
-   void mmc_crypto_free_host(struct mmc_host *host)
-        ^
-   drivers/mmc/core/crypto.c:21:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void mmc_crypto_free_host(struct mmc_host *host)
-   ^
-   static 
->> drivers/mmc/core/crypto.c:26:6: warning: no previous prototype for function 'mmc_crypto_prepare_req' [-Wmissing-prototypes]
-   void mmc_crypto_prepare_req(struct mmc_queue_req *mqrq)
-        ^
-   drivers/mmc/core/crypto.c:26:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void mmc_crypto_prepare_req(struct mmc_queue_req *mqrq)
-   ^
-   static 
-   3 warnings generated.
+Dear Takashi,
 
 
-vim +/mmc_crypto_setup_queue +14 drivers/mmc/core/crypto.c
+Am 10.12.21 um 14:23 schrieb Takashi Iwai:
+> On Tue, 07 Dec 2021 17:14:02 +0100, Marcel Holtmann wrote:
 
-    13	
-  > 14	void mmc_crypto_setup_queue(struct mmc_host *host, struct request_queue *q)
-    15	{
-    16		if (host->caps2 & MMC_CAP2_CRYPTO)
-    17			q->ksm = host->ksm;
-    18	}
-    19	EXPORT_SYMBOL_GPL(mmc_crypto_setup_queue);
-    20	
-  > 21	void mmc_crypto_free_host(struct mmc_host *host)
-    22	{
-    23		keyslot_manager_destroy(host->ksm);
-    24	}
-    25	
-  > 26	void mmc_crypto_prepare_req(struct mmc_queue_req *mqrq)
+>>>> Thanks, so this seems depending on the hardware, maybe a subtle
+>>>> difference matters.  As far as I read the code changes, the workaround
+>>>> was applied in the past unconditionally, so it must be fairly safe
+>>>> even if the chip works as is.
+>>>>
+>>>> Or, for avoiding the unnecessarily application of the workaround,
+>>>> should it be changed as a fallback after the failure at the first
+>>>> try...?
+>>>
+>>> I don't know if this helps, but I started experiencing this same issue ("hci0:
+>>> command 0xfc05 tx timeout") yesterday after a kernel upgrade.
+>>>
+>>> My controller is a different one:
+>>>
+>>>     8087:0025 Intel Corp. Wireless-AC 9260 Bluetooth Adapter
+>>>     ^^^^^^^^^
+>>>
+>>> I tried with different (older) versions of the v5.15.x kernel but none worked.
+>>>
+>>> Now, this is the interesting (?) part: today, when I switched on the computer
+>>> to keep testing, the bluetooth was *already* working once again.
+>>>
+>>> I have reviewed my bash history to try to figure out what is it that I did, and
+>>> the only thing I see is that yesterday, before going to sleep, I did a full
+>>> poweroff instead of a reset (which is what I used yesterday to try different
+>>> kernels).
+>>>
+>>> This does not make any sense... but then I found this [1] post from someone else
+>>> who experienced the same.
+>>>
+>>> Is there any reasonable explanation for this? Could this be the reason why you
+>>> seem to have different results with the same controller (8087:0a2a)?
+>>
+>> we trying to figure out what went wrong here. This should be really only an
+>> issue on the really early Intel hardware like Wilkens Peak. However it seems
+>> it slipped into later parts now as well. We are investigating what happened >> and see if this can be fixed via a firmware update or if we really 
+have to
+>> mark this hardware as having a broken boot loader.
+> 
+> The upstream bugzilla indicates that 8087:0aa7 seems hitting the same
+> problem:
+>    https://bugzilla.kernel.org/show_bug.cgi?id=215167
+> 
+> OTOH, on openSUSE Bugzilla, there has been a report that applying the
+> workaround for 8087:0026 may cause another issue about the reset
+> error, so the entry for 8087:0026 should be dropped.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Can you confirm that commit 95655456e7ce (Bluetooth: btintel: Fix broken 
+LED quirk for legacy ROM devices) [1] merged in the current Linux 5.17 
+cycle this week fixed the issue?
+
+
+Kind regards,
+
+Paul
+
+
+[1]: 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=95655456e7cee858a23793f67025765b4c4c227b
