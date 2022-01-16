@@ -2,83 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43DEFC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 10:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A8EC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 10:44:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234842AbiAPKog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 05:44:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiAPKof (ORCPT
+        id S234853AbiAPKov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 05:44:51 -0500
+Received: from mout.kundenserver.de ([217.72.192.75]:48663 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234844AbiAPKor (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 05:44:35 -0500
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF1A9C061574
-        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 02:44:34 -0800 (PST)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:76d0:2bff:fec8:549])
-        by xavier.telenet-ops.be with bizsmtp
-        id jNkX260060kcUhD01NkXgF; Sun, 16 Jan 2022 11:44:32 +0100
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1n931S-009zj9-Rx; Sun, 16 Jan 2022 11:44:30 +0100
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1n92p4-009x1i-BF; Sun, 16 Jan 2022 11:31:42 +0100
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] sysctl: Fix one_thousand defined but not used warning
-Date:   Sun, 16 Jan 2022 11:31:42 +0100
-Message-Id: <20220116103142.2371807-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
+        Sun, 16 Jan 2022 05:44:47 -0500
+Received: from mail-ot1-f49.google.com ([209.85.210.49]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mw8cU-1mJ8pN3NlU-00s9Pb; Sun, 16 Jan 2022 11:44:46 +0100
+Received: by mail-ot1-f49.google.com with SMTP id t4-20020a05683022e400b00591aaf48277so16004756otc.13;
+        Sun, 16 Jan 2022 02:44:45 -0800 (PST)
+X-Gm-Message-State: AOAM530Hygi5EFzM6NBfDRVYrrnrU38e+O9R0FY1sm8W79uS07nXAWGf
+        qQ8T6m8Ja1D9qAOylpE3MyCWjNp3n/DfniqPkNU=
+X-Google-Smtp-Source: ABdhPJzlLWoJQBn4VnzmdYliVzW+ITzvPUzHpGKIPBeYP+3HuPIgD4eMUFAmb5UWZ8K1iXz4bS3aEgCyVe9TE/GwoaI=
+X-Received: by 2002:a9d:c61:: with SMTP id 88mr9417588otr.119.1642329884423;
+ Sun, 16 Jan 2022 02:44:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220115193245.3777833-1-laurent@vivier.eu> <20220115193245.3777833-4-laurent@vivier.eu>
+In-Reply-To: <20220115193245.3777833-4-laurent@vivier.eu>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Sun, 16 Jan 2022 11:44:28 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a13g_o4mTsOO-4b=WU6TGRHubY7HCt1x1FdXpVmjy6-Sg@mail.gmail.com>
+Message-ID: <CAK8P3a13g_o4mTsOO-4b=WU6TGRHubY7HCt1x1FdXpVmjy6-Sg@mail.gmail.com>
+Subject: Re: [PATCH v8 3/4] clocksource/drivers: Add a goldfish-timer clocksource
+To:     Laurent Vivier <laurent@vivier.eu>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-rtc@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:/zxqABAkP/uHnTARIqKoj96JMUdcRt8d0RFEaRfSXKNkyCJC+Jp
+ JwMgstSxkp6tkhCmTXzZH/MKk0lfeYxpwwxFCdyWTgyGYTTx7lfvM8asSPEaLIFyNP0GI4P
+ 6c2CqRYXNKaHfL8hnBA1uaikEYntcJhwBCHekvF25Pv5C9g4Suky100r8/d+P28IzIed4nX
+ fBynf6UYmvt+30c/UWgwA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5xefTgbJKy8=:hZpr/e2pQ7j06kl4NJrUBz
+ HKso0/p6kafDwG5PdyApI0+DXORtR5wT6IhLZCQIxfRXgQoVczwAKJr6Gp/95xgDy6FPlJWbv
+ rrylmPWyxVwrs35loHhyyewDdKTqT8eB++BTEkrY+/DMyOHqkMW8I6SwQkfPouZiushlB/a6t
+ rE1KZjr4D8hIma2l201buNrIF52rkLy6dD5rMLsllWiMv/d1ZU4ugVFdFO9qI8pjeVEPbJIHb
+ G0gnlwMM8za4BU4q7KwoZbpuTvU/7OJCC5soyZVT8J+qvlntk6deRFCcXbkgfFpgQd3S/c+YR
+ vFGPLtYE6whhQtDTLYJZ+OAYZpjsDOIKes8vTHNwgdMblN9zEW75C7AJvkQTkXpwAt6soK673
+ RUnupj51Z16diIMoQcaEQgJhlfvzI/qjh+ce4CxFA9VUFJXLti0jYEw2FWw6s4u/q6lzQsO2J
+ OdwWAxFVyb+hwcqmGwlI4BV5Dy6bZO9Pnz2rPX/92SBY04ysobbmic1P3VboQlPi5ekHyJcfk
+ ON9fb5E49zOvFVKUCTKBx94gwt9bXbnyOEs84hVEcJeyUk709Xcjx5HUO2HpkFpROhNmndq3t
+ OPIGSH7tvt+ia6DthsWvhRn8r49ma0w1++bT1KFpLl/EQSBOn9KfPnhqGZhKk14pdgzOkr2Nc
+ ZqYUW0NYsiadkM8RUVlf2CrgnHLQ+pDLZiZOQQmW0TvTKBTZXVOzjPQ4geZq87T0UzRM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_PERF_EVENTS is not set:
+On Sat, Jan 15, 2022 at 8:32 PM Laurent Vivier <laurent@vivier.eu> wrote:
 
-    kernel/sysctl.c:125:12: warning: ‘one_thousand’ defined but not used [-Wunused-variable]
-      125 | static int one_thousand = 1000;
-	  |            ^~~~~~~~~~~~
+> +
+> +/* goldfish endianness depends on CPU endianness */
+> +#ifdef CONFIG_CPU_BIG_ENDIAN
+> +#define goldfish_ioread32 ioread32be
+> +#define goldfish_iowrite32 iowrite32be
+> +#else
+> +#define goldfish_ioread32 ioread32
+> +#define goldfish_iowrite32 iowrite32
+> +#endif
 
-Fix this by protecting the definition of one_thousand by a check for
-CONFIG_PERF_EVENTS, as is used for its single remaining user.
+This is not what I meant here, as you are breaking big-endian support
+for all other
+architectures in the process.
 
-Fixes: 39c65a94cd966153 ("mm/pagealloc: sysctl: change watermark_scale_factor max limit to 30%")
-Reported-by: noreply@ellerman.id.au
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- kernel/sysctl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On architectures that support both big-endian and little-endian kernels, devices
+(including emulated ones) can't know which type of kernel you are running, so
+this has to be fixed by architecture. Ideally this macro should be in
+an architecture
+specific header file, but you can also just make this a check for m68k and  hope
+that qemu doesn't duplicate this bug on architectures that gain support for this
+driver in the future.
 
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index ef77be575d8754d2..d77208f9a56f2907 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -122,12 +122,12 @@ static unsigned long one_ul = 1;
- static unsigned long long_max = LONG_MAX;
- static int one_hundred = 100;
- static int two_hundred = 200;
--static int one_thousand = 1000;
- static int three_thousand = 3000;
- #ifdef CONFIG_PRINTK
- static int ten_thousand = 10000;
- #endif
- #ifdef CONFIG_PERF_EVENTS
-+static int one_thousand = 1000;
- static int six_hundred_forty_kb = 640 * 1024;
- #endif
- 
--- 
-2.25.1
-
+         Arnd
