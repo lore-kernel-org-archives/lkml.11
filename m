@@ -2,125 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CD2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 11:52:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12390C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 11:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234983AbiAPLwY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 06:52:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45128 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232933AbiAPLwX (ORCPT
+        id S234991AbiAPLym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 06:54:42 -0500
+Received: from mout.kundenserver.de ([217.72.192.74]:52965 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232933AbiAPLyk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 06:52:23 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B5C8B80978;
-        Sun, 16 Jan 2022 11:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBDF3C36AE7;
-        Sun, 16 Jan 2022 11:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642333940;
-        bh=Nn5UlheFW3tQqA1zQjKnG0yVDgckawJTxXhXNb922+w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dO1X1bqItNZ+Swz4EtWfTIvkT02D1BqOWTiVxq4XpfymW2m89Q8BJipQBzwdVDcjg
-         +UAYBO2I5FBYlRTCiWsVcccOpfHHanDJtluv7W7ocm5X8mj3cB0f/x7D/6WT+RttUB
-         /9t976qnKrEkm+EBa1t+iy2cVjsOFCWWZR3iqfQ5mbUVb+k6SJ59QdqiMxC+XMVBDJ
-         G+rKqIzivpfV8hjahhHBIJTGkAfMU6SdA6jrhoQls7pFOs33tsK5I8kAh6DWBNA9PK
-         3zMfHAylOnXQUYhqz2KlAEOomgVtgsIXdyASR0wOBJ17sA6IalfO5WocBLZJmLutnM
-         X9Ty5Yw3eMwzg==
-Date:   Sun, 16 Jan 2022 11:58:21 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH v1 1/1] iio: adc: tsc2046: fix memory corruption by
- preventing array overflow
-Message-ID: <20220116115821.1d58b437@jic23-huawei>
-In-Reply-To: <20220115181659.0c759ec5@jic23-huawei>
-References: <20220107081401.2816357-1-o.rempel@pengutronix.de>
-        <20220109152557.74f06d2d@jic23-huawei>
-        <20220110071945.GB3326@pengutronix.de>
-        <20220115181659.0c759ec5@jic23-huawei>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 16 Jan 2022 06:54:40 -0500
+Received: from [192.168.100.1] ([82.142.13.186]) by mrelayeu.kundenserver.de
+ (mreue107 [213.165.67.119]) with ESMTPSA (Nemesis) id
+ 1MF45G-1n6vRv3Iro-00FQij; Sun, 16 Jan 2022 12:54:07 +0100
+Message-ID: <77e747de-c7d6-314d-e0b0-58852d463326@vivier.eu>
+Date:   Sun, 16 Jan 2022 12:54:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v8 3/4] clocksource/drivers: Add a goldfish-timer
+ clocksource
+Content-Language: fr
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        John Stultz <john.stultz@linaro.org>,
+        linux-rtc@vger.kernel.org, Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>
+References: <20220115193245.3777833-1-laurent@vivier.eu>
+ <20220115193245.3777833-4-laurent@vivier.eu>
+ <CAK8P3a13g_o4mTsOO-4b=WU6TGRHubY7HCt1x1FdXpVmjy6-Sg@mail.gmail.com>
+From:   Laurent Vivier <laurent@vivier.eu>
+In-Reply-To: <CAK8P3a13g_o4mTsOO-4b=WU6TGRHubY7HCt1x1FdXpVmjy6-Sg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:X3raeUWjLbG4Qv47KMacOpNsSNYi+XeJ1v535mvSQI9q5vKvWK/
+ ohgGS/PrmpSvQ1hbNTCXKp5KzkldAxzyDGdxxyQ/uxXI4u5qObM5/ccaVIlt5kf8jd6Yrxl
+ plPsDC+2JxuR4Cmzh6Y6DPUzDvBckDbAGpi7a3p+2DjbqnSCZKGs8GYyKOCFR8ejkh4nVql
+ 640D6HnWL1HzY/pH7iyuA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qm+OVm7QkMQ=:9cX7LUVzh36XwM6BDed5Ov
+ sgCqq5kOQzBRNjEA3OK4nBO+t6x4Mk7JKnJlF+I6buSaBxVSRtoo3HJymPf1U5eOoYWiUuKHt
+ DFWwizsC0RS+x1Ra14ajoulm+QG1Bsj/VoCu8UiD6Rg/JD/Rqd/VLfGpygScxtzLIDPyluVAq
+ rxl3+Jd+NHJQRfkVkceLaXIiJ2fkP9JB1vZ8F9l58KUsQEeIN+dE6JUI9N6Av1fH8WTc5PGw1
+ NoyLO0tjWzVCmtPaSQKOTTBuAg+u20EXFfZnwcf0i+en/lkYw14qEyUpi7rVK0VFxUHjS4jW1
+ Qhm1Mahrg+CYWnpXuvc5Ba+0EwmMxAka49i+yhgeMjDYf8mHgC3Ak6Ywr/14mWQtbi3gZQydY
+ P/k8VgtF1bdZ5udOsYqye5bfFdADSELtH8nrtiQm2ivNTXAyFc8mAuyrr36FqLmpzVdq33cVf
+ ai1G4LGtpXV62jjProRKWREd2GbLQnC9rlpxXLGWo2f/uSVAI3JoNoC+p6R0nUB3iw2Nyiy13
+ NiS5zqqA9ZUtcxZwTUMnTX3AwDh4T1FxRzizCAK6hTtdAaPGeyb3OVF8hWWgnspIcAnqG7E6G
+ ww+QZ2uWm0kJV78yK+KOiGNSSg3ofxUnPH/PBPAdnwr+gXEv06Tn9N6umGQOOCQajomom3fpz
+ /dfOT/SDZTpp6tIHmdsl8APCJFfcCkaDRHW8AMs5Vb3DpVKQ9oAM65fh35AeTsTrvbRQ=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 18:16:59 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+Le 16/01/2022 à 11:44, Arnd Bergmann a écrit :
+> On Sat, Jan 15, 2022 at 8:32 PM Laurent Vivier <laurent@vivier.eu> wrote:
+> 
+>> +
+>> +/* goldfish endianness depends on CPU endianness */
+>> +#ifdef CONFIG_CPU_BIG_ENDIAN
+>> +#define goldfish_ioread32 ioread32be
+>> +#define goldfish_iowrite32 iowrite32be
+>> +#else
+>> +#define goldfish_ioread32 ioread32
+>> +#define goldfish_iowrite32 iowrite32
+>> +#endif
+> 
+> This is not what I meant here, as you are breaking big-endian support
+> for all other
+> architectures in the process.
+> 
+> On architectures that support both big-endian and little-endian kernels, devices
+> (including emulated ones) can't know which type of kernel you are running, so
+> this has to be fixed by architecture. Ideally this macro should be in
+> an architecture
+> specific header file, but you can also just make this a check for m68k and  hope
+> that qemu doesn't duplicate this bug on architectures that gain support for this
+> driver in the future.
 
-> On Mon, 10 Jan 2022 08:19:45 +0100
-> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> 
-> > Hi Jonathan,
-> > 
-> > On Sun, Jan 09, 2022 at 03:25:57PM +0000, Jonathan Cameron wrote:  
-> > > On Fri,  7 Jan 2022 09:14:01 +0100
-> > > Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> > >     
-> > > > On one side we have indio_dev->num_channels includes all physical channels +
-> > > > timestamp channel. On other side we have an array allocated only for
-> > > > physical channels. So, fix memory corruption by ARRAY_SIZE() instead of
-> > > > num_channels variable.
-> > > > 
-> > > > Fixes: 9374e8f5a38d ("iio: adc: add ADC driver for the TI TSC2046 controller")
-> > > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>    
-> > > Hi Olesij,
-> > > 
-> > > Have you managed to make this occur, or is it inspection only?    
-> > 
-> > Yes, this bug has eaten my rx_one and tx_one pointers on probe. I wonted
-> > to use this buffers for read_raw and noticed that they do not exist.  
-> 
-> I got hung up on the first case and failed to notice the second one was
-> entirely different :(
-> 
-> >   
-> > > I 'think' (it's been a while since I looked at the particular code) that the timestamp
-> > > bit in active_scan_mask will never actually be set because we handle that as a
-> > > separate flag.    
-> > 
-> > I didn't tested if active_scan_mask will trigger this issue as well, but
-> > It it looked safer to me, to avoid this issue in both places. Even if on
-> > of it is only theoretical.  
-> 
-> It certainly does no harm to not check a bit that is never set, so I'm fine with
-> the change - just don't want to have lots of 'fixes' for this in other drivers
-> adding noise and pointless backports.  This one is fine because we need the
-> other part of the patch anyway.
-> 
-> Jonathan
+Virtio has exactly the same problem in the past (prio to v1.0), and it uses __LITTLE_ENDIAN in 
+virtio_legacy_is_little_endian() to know the endianness of the device.
 
-On that note, applied to the fixes-togreg branch of iio.git and marked for stable
-with a minor addition to the patch description to make
-sure we don't get the first case cargo picked up by anyone who doesn't read this
-thread as something to 'fix' everywhere else.
+So the code can become:
+
+#ifdef __LITTLE_ENDIAN
+#define goldfish_ioread32 ioread32
+#define goldfish_iowrite32 iowrite32
+#else
+#define goldfish_ioread32 ioread32be
+#define goldfish_iowrite32 iowrite32be
+#endif
+
+What do you prefer: CONFIG_M68K or __LITTLE_ENDIAN?
 
 Thanks,
-
-Jonathan
-
-> 
-> 
-> >   
-> > > So it is indeed an efficiency improvement to not check that bit but I don't think
-> > > it's a bug to do so.  More than possible I'm missing something though!
-> > > 
-> > > This one had me quite worried when I first read it because this is a very common
-> > > pattern to see in IIO drivers.    
-> > 
-> > I was thinking about this as well, because big part of this code was
-> > inspired by other drivers. But i didn't reviewed other places so far.
-> > 
-> > Regards,
-> > Oleksij  
-> 
-
+Laurent
